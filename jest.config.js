@@ -1,3 +1,7 @@
 module.exports = {
-  projects: ['<rootDir>/apps/central-front', '<rootDir>/apps/lab-front'],
+  projects: [
+    '<rootDir>/apps/central-front',
+    '<rootDir>/apps/lab-front',
+    '<rootDir>/libs/front-core-lib',
+  ],
 };

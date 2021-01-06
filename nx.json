@@ -36,6 +36,9 @@
     "lab-front-e2e": {
       "tags": [],
       "implicitDependencies": ["lab-front"]
+    },
+    "front-core-lib": {
+      "tags": []
     }
   }
 }

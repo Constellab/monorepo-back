@@ -21,7 +21,9 @@
     "lib": ["es2018", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "paths": {}
+    "paths": {
+      "@monorepo/front-core-lib": ["libs/front-core-lib/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
