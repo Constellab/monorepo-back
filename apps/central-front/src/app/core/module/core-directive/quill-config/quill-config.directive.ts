@@ -10,6 +10,7 @@ import {QuillConfig} from '../../../model/config/quill-config';
  * It uses the default toolbar config and it enable the mention to search on users
  */
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'quill-editor[genQuillConfig]'
 })
 export class QuillConfigDirective implements OnInit {

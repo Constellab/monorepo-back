@@ -124,6 +124,7 @@ export abstract class FormFieldDirective<INNER, OUTER = INNER> implements Contro
     this._disabled = HelpService.coerceBooleanOrEmptyProperty(isDisabled);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   validate(control: AbstractControl<OUTER>): ValidationErrors | null {
     return null;
   }

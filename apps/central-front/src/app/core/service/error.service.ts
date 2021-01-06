@@ -146,7 +146,7 @@ export class ErrorService {
       duration = this.config.defaultApiErrorDuration;
     }
 
-    this.snackBarService.openErrorMessage(message, false, duration, true, true);
+    this.snackBarService.openErrorMessage(message, false, duration, true);
   }
 }
 

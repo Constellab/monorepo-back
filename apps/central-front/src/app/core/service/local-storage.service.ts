@@ -32,7 +32,7 @@ export class LocalStorageService {
    * @param removeItemOnParseError if true, it removes the item if a parse error occurs
    */
   public getParseItemObs(key: string, defaultValue: any = null, removeItemOnParseError: boolean = true): Observable<any> {
-    return of(this.getParsedItem(key, defaultValue));
+    return of(this.getParsedItem(key, defaultValue, removeItemOnParseError));
   }
 
   /**
@@ -105,6 +105,7 @@ export class LocalStorageService {
 
     try {
       for (const key in items) {
+        // eslint-disable-next-line no-prototype-builtins
         if (items.hasOwnProperty(key)) {
           this.removeItem(items[key]);
         }

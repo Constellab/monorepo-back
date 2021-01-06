@@ -17,7 +17,7 @@ export interface TranslateParam {
    *
    * For example : '{{hello}}'
    */
-  param?: object;
+  param?: Record<string, unknown>;
 
   /**
    * When translating a mode can be provided

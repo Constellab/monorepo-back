@@ -131,7 +131,7 @@ export class StringHelper {
    * @param str special regex characters to escape (or normal characters, it will be ignored)
    */
   public static regexEscapeCharacters(str: string): string {
-    const regex = new RegExp(/[-\/\\^$*+?.()|[\]{}]/g);
+    const regex = new RegExp(/[-/\\^$*+?.()|[\]{}]/g);
     return str.replace(regex, '\\$&');
   }
 }

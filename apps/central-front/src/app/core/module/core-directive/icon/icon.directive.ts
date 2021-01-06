@@ -7,6 +7,7 @@ import {MatIcon} from '@angular/material/icon';
  * mat icon and svg icon
  */
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'mat-icon[genIcon]'
 })
 export class IconDirective implements OnInit {

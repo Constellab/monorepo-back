@@ -17,7 +17,18 @@
         "@angular-eslint/component-selector": [
           "error",
           { "type": "element", "prefix": "gen", "style": "kebab-case" }
-        ]
+        ],
+        "max-len": [
+          "error",
+          {
+            "code": 140,
+            "ignorePattern": "^import .*"
+          }
+        ],
+        "@typescript-eslint/no-inferrable-types": "off",
+        "@angular-eslint/no-empty-lifecycle-method": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@angular-eslint/no-input-rename": "off"
       }
     },
     {

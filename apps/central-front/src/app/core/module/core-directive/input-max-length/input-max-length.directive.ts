@@ -8,6 +8,7 @@ import {HelpService} from '../../../utils/help-service';
  * the limit, it display a quick tooltip to warn the user that the limit has been reached
  */
 @Directive({
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'input[genInputMaxLength], textarea[genInputMaxLength]',
   providers: [TooltipService]
 })
@@ -23,13 +24,11 @@ export class InputMaxLengthDirective implements OnInit, OnDestroy {
   /**
    * Duration for the tooltip that show the warnings
    */
-    // tslint:disable-next-line:no-input-rename
   @Input('genInputMaxLengthDuration') duration: number = 2000;
 
   /**
    * Position of the tooltip relative to the input
    */
-    // tslint:disable-next-line:no-input-rename
   @Input('genInputMaxLengthPosition') position: PortalDefaultPosition = 'right';
 
 

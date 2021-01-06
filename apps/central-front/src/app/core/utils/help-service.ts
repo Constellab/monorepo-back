@@ -207,11 +207,9 @@ export class HelpService {
    * Sort an array in the alphabetical order
    * @param array array to sort
    * @param getSortableAttribute method to access sortable attribute
-   * @param toLowerCase if true lowercase before comparing
    * @param nullMode mode for null values
    */
   public static sortAlphabeticalOrder<T>(array: T[], getSortableAttribute: (item: T) => string,
-                                         toLowerCase: boolean = true,
                                          nullMode: 'nullLast' | 'nullFirst' = 'nullLast'): T[] {
     if (array == null) {
       return null;
@@ -221,7 +219,7 @@ export class HelpService {
       const aValue = getSortableAttribute(a);
       const bValue = getSortableAttribute(b);
 
-      return HelpService.sortAlphabeticalFunction(aValue, bValue, toLowerCase, nullMode);
+      return HelpService.sortAlphabeticalFunction(aValue, bValue, nullMode);
     });
   }
 
@@ -229,11 +227,9 @@ export class HelpService {
    * Sort function for alphabetical order
    * @param a string to compare
    * @param b string to compare
-   * @param toLowerCase if true lowercase before comparing
    * @param nullMode mode for null values
    */
-  public static sortAlphabeticalFunction<T>(a: string, b: string,
-                                            toLowerCase: boolean = true,
+  public static sortAlphabeticalFunction(a: string, b: string,
                                             nullMode: 'nullLast' | 'nullFirst' = 'nullLast'): number {
     const nullValue = nullMode === 'nullLast' ? -1 : 1;
 

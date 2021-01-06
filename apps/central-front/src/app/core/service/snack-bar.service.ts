@@ -48,10 +48,9 @@ export class SnackBarService {
    * @param translate if true the text is translated
    * @param duration the duration in millisecond of the snackbar
    * @param showCloseButton if true, a close button is shown in the snackbar
-   * @param showContactSupportText if true, show a text to contact the support
    */
   public openErrorMessage(message: string, translate: boolean = false, duration: number = 3000,
-                          showCloseButton: boolean = true, showContactSupportText: boolean = false)
+                          showCloseButton: boolean = true)
     : MatSnackBarRef<SnackBarInfoComponent> {
     let msg: string;
     if (translate) {

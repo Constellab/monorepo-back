@@ -214,7 +214,7 @@ export class PortalService {
   }
 
   // create an injector to send data to the portal and the overlay ref
-  private createInjector<T>(data: any, overlayRef: CoreOverlayRef): PortalInjector {
+  private createInjector(data: any, overlayRef: CoreOverlayRef): PortalInjector {
     const injectionTokens = new WeakMap();
     // send data to the portal
     injectionTokens.set(PORTAL_DATA, data);

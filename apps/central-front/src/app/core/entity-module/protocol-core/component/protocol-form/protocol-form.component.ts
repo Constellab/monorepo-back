@@ -14,7 +14,7 @@ export class ProtocolFormComponent implements OnInit {
 
   @Input() formGp: FormGroup<Partial<Protocol>>;
 
-  protocolSchema: object = protocolSchema;
+  protocolSchema: Record<string, unknown> = protocolSchema;
 
 
   ngOnInit(): void {

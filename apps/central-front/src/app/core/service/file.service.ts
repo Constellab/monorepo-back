@@ -40,7 +40,7 @@ export class FileService {
    */
   public static extractFilenameFromFullPath(fullPath: string): string {
     // use a new RegExp otherwise the ngc build doesn't works
-    const regex = new RegExp(/^.*[\\\/]/);
+    const regex = new RegExp(/^.*[/]/);
     return fullPath.replace(regex, '');
   }
 

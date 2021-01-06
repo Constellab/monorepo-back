@@ -10,7 +10,7 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class ProtocolJsonComponent implements OnInit {
 
-  @Input() json: object;
+  @Input() json: Record<string, unknown>;
 
   @Input() expandProtocol: boolean = false;
 

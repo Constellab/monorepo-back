@@ -8,7 +8,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 })
 export class EnumToArrayPipe implements PipeTransform {
 
-  transform(data: object): string[] {
+  transform(data: Record<string, unknown>): string[] {
     if (data instanceof Array) {
       return data;
     }

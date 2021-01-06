@@ -1,4 +1,15 @@
-import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Optional, Output, Self, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Optional,
+  Output,
+  Self,
+  ViewChild
+} from '@angular/core';
 import {NgControl, Validator} from '@angular/forms';
 import {defaultJsonEditorConfig, JsonEditorConfig} from './json-editor-option.class';
 import {FormFieldDirective} from '../../../../abstract-directive/form-field.directive';
@@ -7,7 +18,6 @@ import {CoreTranslateService} from '../../../translate/service/core-translate.se
 import {HelpService} from '../../../../utils/help-service';
 import {DropFileEvent} from '../../../core-directive/drag-hover/drop-file-event.class';
 import {SnackBarService} from '../../../../service/snack-bar.service';
-import {AbstractControl} from '@ngneat/reactive-forms';
 import {ValidationErrors} from '@ngneat/reactive-forms/lib/types';
 
 /**
@@ -37,7 +47,7 @@ export class JsonEditorComponent extends FormFieldDirective<any, string>
    * If provided, the json is checked based on the schema
    * and set error {invalidJsonSchema: true} in the control if the json is invalid
    */
-  @Input() jsonSchema: object;
+  @Input() jsonSchema: Record<string, unknown>;
 
   @Output() jsonChange: EventEmitter<any> = new EventEmitter<any>();
 
@@ -109,7 +119,7 @@ export class JsonEditorComponent extends FormFieldDirective<any, string>
     }
   }
 
-  validate(control: AbstractControl<string>): ValidationErrors | null {
+  validate(): ValidationErrors | null {
     if (this.jsonSchema) {
       return this.editorJsonIsValid() ? null : {invalidJsonSchema: true};
 
