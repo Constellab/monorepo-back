@@ -54,6 +54,8 @@ export class GlobalValidators {
         return null;
       }
 
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (control.parent.controls[passwordFormField].value !== control.value) {
         return {incorrectRepeatPassword: true};
       }

@@ -70,6 +70,7 @@
     "@nrwl/tao": "11.0.20",
     "@nrwl/workspace": "11.0.20",
     "@types/jest": "26.0.8",
+    "@types/jsoneditor": "^8.6.0",
     "@types/node": "12.12.38",
     "@typescript-eslint/eslint-plugin": "4.3.0",
     "@typescript-eslint/parser": "4.3.0",
