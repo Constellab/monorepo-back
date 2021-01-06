@@ -1,0 +1,22 @@
+{
+  "server_error": "Server error",
+  "wrong_credentials": "Wrong user or password",
+  "user_locked": "User locked",
+  "column_too_long": "Field '{field}' too long",
+  "email_already_exist": "An account with the same email address already exists",
+  "account_not_activated": "Your account is not activated, please check your email address to activate it",
+  "invalid_link": "Invalid link",
+  "account_already_activated": "Account already activated",
+  "link_expired": "Link expired",
+  "incorrect_argument": "Incorrect argument",
+  "status_not_changed": "The status was not changed",
+  "missing_api_key": "The api key is missing",
+  "wrong_api_key": "The api key is incorrect",
+  "wrong_token": "The token is incorrect",
+  "invalid_protocol": "The protocol is not a valid JSON",
+  "external_experiment_creation": "Error during experiment creation in the lab",
+  "lab_stopped": "The lab in not running",
+  "lab_auth_error": "Error during authentication in lab",
+  "experiment_missing_protocol": "The experiment can't be launched because it doesn't have a protocol",
+  "account_not_admin_activated": "Your account must be validated by an admin"
+}

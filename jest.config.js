@@ -3,5 +3,6 @@ module.exports = {
     '<rootDir>/apps/central-front',
     '<rootDir>/apps/lab-front',
     '<rootDir>/libs/front-core-lib',
+    '<rootDir>/apps/central-back',
   ],
 };

@@ -39,6 +39,9 @@
     },
     "front-core-lib": {
       "tags": []
+    },
+    "central-back": {
+      "tags": []
     }
   }
 }

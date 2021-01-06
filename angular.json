@@ -321,6 +321,57 @@
           }
         }
       }
+    },
+    "central-back": {
+      "root": "apps/central-back",
+      "sourceRoot": "apps/central-back/src",
+      "projectType": "application",
+      "prefix": "central-back",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/central-back",
+            "main": "apps/central-back/src/main.ts",
+            "tsConfig": "apps/central-back/tsconfig.app.json",
+            "assets": ["apps/central-back/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/central-back/src/environments/environment.ts",
+                  "with": "apps/central-back/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "central-back:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/central-back/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/central-back"],
+          "options": {
+            "jestConfig": "apps/central-back/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {
