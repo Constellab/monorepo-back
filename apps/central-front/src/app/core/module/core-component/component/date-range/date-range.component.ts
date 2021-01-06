@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Moment} from 'moment';
+import {DateTime} from 'luxon';
 
 /**
  * Display a date range with text,
@@ -12,11 +12,11 @@ import {Moment} from 'moment';
 })
 export class DateRangeComponent implements OnInit {
 
-  @Input() startingDate?: Moment;
+  @Input() startingDate?: DateTime;
 
-  @Input() endingDate?: Moment;
+  @Input() endingDate?: DateTime;
 
-  @Input() dateFormat: string = 'L';
+  @Input() dateFormat: string = 'D';
 
   mode: 'between' | 'from' | 'to';
 

@@ -7,7 +7,7 @@
       <span>{{'created_at' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let lab">
-      <span>{{lab.createdBy | moment}}</span>
+      <span>{{lab.createdBy | coreDate}}</span>
     </mat-cell>
   </ng-container>
 
@@ -17,7 +17,7 @@
       <span>{{'last_modified_at' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let lab">
-      <span>{{lab.lastModifiedAt | moment}}</span>
+      <span>{{lab.lastModifiedAt | coreDate}}</span>
     </mat-cell>
   </ng-container>
 

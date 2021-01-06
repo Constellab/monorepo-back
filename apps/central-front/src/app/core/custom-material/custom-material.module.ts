@@ -11,13 +11,12 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipModule} from '@angular/material/tooltip';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatMomentDateModule} from '@angular/material-moment-adapter';
-import {MAT_DATE_FORMATS} from '@angular/material/core';
-import {matDateFormats} from '../model/config/date-config';
+import {DateAdapter, MAT_DATE_FORMATS} from '@angular/material/core';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatTableModule} from '@angular/material/table';
+import {LuxonDateAdapter, luxonDateFormat} from '../model/config/luxon-date-adapter';
 
 
 /**
@@ -34,7 +33,6 @@ import {MatTableModule} from '@angular/material/table';
     MatSelectModule,
     MatIconModule,
     MatDatepickerModule,
-    MatMomentDateModule,
     MatDividerModule,
     MatListModule,
     MatChipsModule,
@@ -57,7 +55,9 @@ import {MatTableModule} from '@angular/material/table';
       },
     },
 
-    {provide: MAT_DATE_FORMATS, useValue: matDateFormats},
+    // configure the date picker to work with luxon
+    {provide: DateAdapter, useExisting: LuxonDateAdapter},
+    {provide: MAT_DATE_FORMATS, useValue: luxonDateFormat},
   ]
 })
 export class CustomMaterialModule {

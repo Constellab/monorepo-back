@@ -8,8 +8,8 @@ import {CookieService} from 'ngx-cookie-service';
 import {CorePlatformService} from '../../../service/core-plateform.service';
 import {StringHelper} from '../../../utils/string-helper';
 import {DateHelper} from '../../../utils/date-helper';
-import {moment} from '../../../model/global/date.class';
 import {DateAdapter} from '@angular/material/core';
+import {Settings} from 'luxon';
 
 @Injectable()
 export class CoreTranslateService {
@@ -158,14 +158,14 @@ export class CoreTranslateService {
   }
 
   /**
-   * Set the lang for the translate service, moment and date adapter
+   * Set the lang for the translate service, date and date adapter
    */
   private setAppLanguage(lang: string): void {
     // set the language in the translate service
     this.translateService.use(lang);
 
-    // set the moment local
-    this.setMomentLocale(lang);
+    // set the date local
+    this.setDateLocale(lang);
 
     // set the material date adapter local (for date picker)
     this.adapter.setLocale(lang);
@@ -175,9 +175,9 @@ export class CoreTranslateService {
     return new Date(new Date().getTime() + DateHelper.ONE_YEAR * 10);
   }
 
-  // set the local for moment js dates
-  public setMomentLocale(lang: string): void {
-    moment.locale(lang);
+  // set the local for dates
+  public setDateLocale(lang: string): void {
+    Settings.defaultLocale = lang;
   }
 
   public getDefaultLanguage(): string {

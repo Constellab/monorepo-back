@@ -1,13 +1,13 @@
-import {Moment} from 'moment';
 import {BaseEntity} from './base-entity.class';
 import {JsonObject, JsonProperty} from 'json2typescript';
-import {MomentConverter} from '../../utils/json-converter';
+import {LuxonConverter} from '../../utils/json-converter';
+import {DateTime} from 'luxon';
 
 @JsonObject('StatusHistory')
 export abstract class StatusHistory<S> extends BaseEntity {
 
-  @JsonProperty('endDate', MomentConverter, true)
-  endDate: Moment = null;
+  @JsonProperty('endDate', LuxonConverter, true)
+  endDate: DateTime = null;
 
   // status of this history
   @JsonProperty('status', String)

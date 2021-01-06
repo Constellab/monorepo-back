@@ -1,9 +1,9 @@
 import {BaseEntity} from './base-entity.class';
 import {JsonObject, JsonProperty} from 'json2typescript';
-import {MomentConverter} from '../../utils/json-converter';
-import {Moment} from 'moment';
+import {LuxonConverter} from '../../utils/json-converter';
 import {GetStatusColorClassFunction, GetStatusIconFunction, StatusHistory} from './status-history.class';
 import {EntityPaginatedDatasource} from '../datasource/entity-datasource.class';
+import {DateTime} from 'luxon';
 
 export enum ProjectStatus {
   ACTIVE = 'ACTIVE',
@@ -35,11 +35,11 @@ export class Project extends BaseEntity {
   @JsonProperty('description', String, true)
   description: string = null;
 
-  @JsonProperty('startingDate', MomentConverter)
-  startingDate: Moment = null;
+  @JsonProperty('startingDate', LuxonConverter)
+  startingDate: DateTime = null;
 
-  @JsonProperty('endingDate', MomentConverter, true)
-  endingDate: Moment = null;
+  @JsonProperty('endingDate', LuxonConverter, true)
+  endingDate: DateTime = null;
 
   @JsonProperty('currentStatus', ProjectStatusHistory)
   currentStatus: ProjectStatusHistory = null;

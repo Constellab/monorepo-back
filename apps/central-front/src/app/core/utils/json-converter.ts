@@ -3,8 +3,9 @@
  */
 
 import {JsonConvert, JsonConverter, JsonCustomConvert, OperationMode, ValueCheckingMode} from 'json2typescript';
-import {Moment} from 'moment';
 import {DateHelper} from './date-helper';
+import {DateTime} from 'luxon';
+import {DateInput} from '../model/global/date.class';
 
 /**
  * Basic date convert for json2typescript serialisation/deserialization
@@ -24,22 +25,22 @@ export class DateConverter implements JsonCustomConvert<Date> {
 }
 
 /**
- * Basic moment convert for json2typescript serialisation/deserialization
+ * Basic luxon convert for json2typescript serialisation/deserialization
  */
 @JsonConverter
-export class MomentConverter implements JsonCustomConvert<Moment> {
-  serialize(moment: Moment): any {
-    if (moment == null) {
-      return moment;
+export class LuxonConverter implements JsonCustomConvert<DateTime> {
+  serialize(date: DateTime): any {
+    if (date == null) {
+      return date;
     }
-    return moment.valueOf();
+    return date.valueOf();
   }
 
-  deserialize(moment: any): Moment {
-    if (!moment) {
+  deserialize(date: DateInput): DateTime {
+    if (!date) {
       return null;
     }
-    return DateHelper.getMoment(moment);
+    return DateHelper.getDate(date);
   }
 }
 

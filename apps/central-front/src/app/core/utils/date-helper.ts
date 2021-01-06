@@ -1,14 +1,14 @@
 // Use another variable for import see
 // https://github.com/ng-packagr/ng-packagr/issues/217
 
-import {Moment} from 'moment';
-import {DateInput, moment} from '../model/global/date.class';
+import {DateInput} from '../model/global/date.class';
 import {StringHelper} from './string-helper';
+import {DateTime} from 'luxon';
 
 /**
  * Help that regroup functions to works with Dates
  *
- * It works with moment
+ * It works with Luxon
  */
 export class DateHelper {
 
@@ -24,22 +24,22 @@ export class DateHelper {
 
 
   /**
-   * Get moment from date
-   * @param date date to convert to moment (if null return current moment)
+   * Get dateTime from date
+   * @param date date to convert to dateTime (if null return current dateTime)
    */
-  public static getMoment(date ?: DateInput): Moment {
+  public static getDate(date ?: DateInput): DateTime {
     if (date == null) {
-      return moment();
+      return DateTime.local();
     }
 
-    return DateHelper.convertDateInputToMoment(date);
+    return DateHelper.convertDateInputToDate(date);
   }
 
   /**
-   * Returns the moment of today with time of 00h00m00s00ms
+   * Returns the dateTime of today with time of 00h00m00s00ms
    */
-  public static getTodayMomentWithoutTime(): Moment {
-    return moment().set({hour: 0, minute: 0, second: 0, millisecond: 0});
+  public static getTodayDateWithoutTime(): DateTime {
+    return this.getDate().set({hour: 0, minute: 0, second: 0, millisecond: 0});
   }
 
   /**
@@ -56,10 +56,10 @@ export class DateHelper {
    * @param dateAfter date
    */
   public static getDifferenceInCompleteYears(dateBefore: DateInput, dateAfter: DateInput): number {
-    const dateA = DateHelper.convertDateInputToMoment(dateAfter);
-    const dateB = DateHelper.convertDateInputToMoment(dateBefore);
+    const dateA = DateHelper.convertDateInputToDate(dateAfter);
+    const dateB = DateHelper.convertDateInputToDate(dateBefore);
 
-    return dateA.diff(dateB, 'years');
+    return dateA.diff(dateB, 'years').years;
   }
 
   /**
@@ -68,8 +68,8 @@ export class DateHelper {
    * @param dateAfter date
    */
   public static getDifference(dateBefore: DateInput, dateAfter: DateInput): number {
-    const dateA = DateHelper.convertDateInputToMoment(dateAfter);
-    const dateB = DateHelper.convertDateInputToMoment(dateBefore);
+    const dateA = DateHelper.convertDateInputToDate(dateAfter);
+    const dateB = DateHelper.convertDateInputToDate(dateBefore);
 
     return dateA.valueOf() - dateB.valueOf();
   }
@@ -79,12 +79,12 @@ export class DateHelper {
    * @param time as string format like hh:mm
    * @param date date
    */
-  public static setTimeToDateInput(time: string, date: DateInput): Moment {
+  public static setTimeToDateInput(time: string, date: DateInput): DateTime {
     if (!time || !date) {
-      return date as Moment;
+      return date as DateTime;
     }
 
-    const m = DateHelper.convertDateInputToMoment(date);
+    const m = DateHelper.convertDateInputToDate(date);
 
     // split the hour and minutes
     const times = time.split(':');
@@ -104,42 +104,26 @@ export class DateHelper {
       return '';
     }
 
-    const m = DateHelper.convertDateInputToMoment(date);
-    return m.format('HH:mm');
-  }
-
-  /**
-   * Return true if the 2 dates are the same day
-   * Return false if one of the 2 dates are null
-   * @param date1 date
-   * @param date2 date
-   */
-  public static isSameDate(date1: Date, date2: Date): boolean {
-    if (date1 == null || date2 == null) {
-      return false;
-    }
-
-    return DateHelper.getMoment(date1).diff(date2, 'days') === 0;
+    const m = DateHelper.convertDateInputToDate(date);
+    return m.toFormat('HH:mm');
   }
 
   /**
    * Convert a Date to text such as '5 days ago'
    *
-   * Use the moment local setup by the translate service
+   * Use the dateTime local setup by the translate service
    * @param date date
    * @param capitalize if true capitalize string
-   * @param withoutText without the 'ago' or 'il y a'
    */
-  public static fromNow(date: DateInput, capitalize: boolean = false,
-                        withoutText: boolean = false): string {
+  public static fromNow(date: DateInput, capitalize: boolean = false): string {
     if (!date) {
       return '';
     }
-    // convert to moment
-    const m = DateHelper.convertDateInputToMoment(date);
+    // convert to dateTime
+    const dateTime = DateHelper.convertDateInputToDate(date);
 
     // get from now string
-    let fromNow: string = m.fromNow(withoutText);
+    let fromNow: string = dateTime.toRelative();
 
     // capitalize if necessary
     if (capitalize) {
@@ -149,7 +133,19 @@ export class DateHelper {
   }
 
 
-  public static convertDateInputToMoment(date: DateInput): Moment {
-    return moment(date);
+  public static convertDateInputToDate(date: DateInput): DateTime {
+    if (date === null) {
+      return DateTime.local();
+    } else if (date instanceof DateTime) {
+      return date;
+    } else if (date instanceof Date) {
+      return DateTime.fromJSDate(date);
+    } else if (typeof date === 'number') {
+      return DateTime.fromMillis(date);
+    } else if (typeof date === 'string') {
+      return DateTime.fromISO(date);
+    }
+
+    throw new Error('Wrong input for to create date');
   }
 }

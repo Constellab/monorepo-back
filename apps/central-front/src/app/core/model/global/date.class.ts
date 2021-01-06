@@ -1,20 +1,14 @@
-import * as momentImported from 'moment';
-import {MomentInput} from 'moment';
-
 /**
- * Export to use moment
- */
-export const moment = momentImported;
-
-/**
- * Input for {@HelperService} function that support date input. It uses MomentInput
+ * Input for {@HelperService} function that support date input. It uses DateInput
  *
- * Moment format
+ * DateTime format
  * Date (native js) format
- * Number time of the date
+ * Number time (millisecond) of the date
  * String
  */
-export type DateInput = MomentInput;
+import {DateTime} from 'luxon';
+
+export type DateInput = string | number | Date | DateTime;
 
 
 

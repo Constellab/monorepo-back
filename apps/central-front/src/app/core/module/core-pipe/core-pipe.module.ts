@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ErrorRequiredPipe} from './error-required/error-required.pipe';
 import {CoreTranslateModule} from '../translate/core-translate.module';
-import {MomentPipe} from './moment/moment.pipe';
+import {CoreDatePipe} from './core-date/core-date.pipe';
 import {EnumToArrayPipe} from './enum-to-array/enum-to-array.pipe';
 
 /**
@@ -11,12 +11,12 @@ import {EnumToArrayPipe} from './enum-to-array/enum-to-array.pipe';
 @NgModule({
   declarations: [
     ErrorRequiredPipe,
-    MomentPipe,
+    CoreDatePipe,
     EnumToArrayPipe,
   ],
   exports: [
     ErrorRequiredPipe,
-    MomentPipe,
+    CoreDatePipe,
     EnumToArrayPipe,
   ],
   imports: [

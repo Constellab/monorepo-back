@@ -3,19 +3,19 @@ import {DateInput} from '../../../model/global/date.class';
 import {DateHelper} from '../../../utils/date-helper';
 
 /**
- * Pipe to format moment dates
+ * Pipe to format dates
  */
 @Pipe({
-  name: 'moment'
+  name: 'coreDate'
 })
-export class MomentPipe implements PipeTransform {
+export class CoreDatePipe implements PipeTransform {
 
-  transform(value: DateInput, format: string = 'L'): string {
+  transform(value: DateInput, format: string = 'D'): string {
     if (value == null) {
       return '';
     }
 
-    return DateHelper.getMoment(value).format(format);
+    return DateHelper.getDate(value).toFormat(format);
   }
 
 }

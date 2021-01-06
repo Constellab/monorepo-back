@@ -1,8 +1,8 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {SupportedLanguage} from '../global/supported-language.class';
 import {Entity} from './entity.entity';
-import {Moment} from 'moment';
-import {MomentConverter} from '../../utils/json-converter';
+import {LuxonConverter} from '../../utils/json-converter';
+import {DateTime} from 'luxon';
 
 export enum UserCategory {
   ADMIN = 'ADMIN',
@@ -47,8 +47,8 @@ export class User extends Entity {
   @JsonProperty('photo', String, true)
   photo: string = null;
 
-  @JsonProperty('createdAt', MomentConverter)
-  createdAt: Moment = null;
+  @JsonProperty('createdAt', LuxonConverter)
+  createdAt: DateTime = null;
 
   get fullname(): string {
     return (this.firstname || '') + ' ' + (this.lastname || '');
