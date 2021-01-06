@@ -17,11 +17,11 @@ export class StudiesSecurityLayer extends AbstractSecurityLayer<Study> {
   }
 
   // not used see createStudy
-  async isAuthorizedToCreate(newEntity: Study): Promise<boolean> {
+  async isAuthorizedToCreate(): Promise<boolean> {
     return new RefuseAuthorization().isAuthorized();
   }
 
-  async isAuthorizedToDelete(dbEntity: Study): Promise<boolean> {
+  async isAuthorizedToDelete(): Promise<boolean> {
     return new RefuseAuthorization().isAuthorized();
   }
 

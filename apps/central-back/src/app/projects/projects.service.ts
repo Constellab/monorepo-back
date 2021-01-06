@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
+import {Repository} from 'typeorm';
 import {Project} from './project.entity';
 import {User} from '../users/user.entity';
 import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
@@ -19,7 +19,7 @@ export class ProjectsService extends AbstractWithStatusService<Project, ProjectS
   }
 
 
-  async create(entity: Project, entityManager?: EntityManager): Promise<Project> {
+  async create(entity: Project): Promise<Project> {
     return super.createWithStatus(entity, ProjectStatus.ACTIVE);
   }
 

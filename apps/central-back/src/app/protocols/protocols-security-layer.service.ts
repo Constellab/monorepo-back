@@ -12,7 +12,7 @@ export class ProtocolsSecurityLayer extends AbstractSecurityLayer<Protocol> {
     super(service);
   }
 
-  async isAuthorizedToCreate(newEntity: Protocol): Promise<boolean> {
+  async isAuthorizedToCreate(): Promise<boolean> {
     return Promise.resolve(true);
   }
 
@@ -24,7 +24,7 @@ export class ProtocolsSecurityLayer extends AbstractSecurityLayer<Protocol> {
     return new OwnerAuthorization().isAuthorized(dbEntity);
   }
 
-  async isAuthorizedToUpdate(dbEntity: Protocol): Promise<boolean> {
+  async isAuthorizedToUpdate(): Promise<boolean> {
     return Promise.resolve(false);
   }
 

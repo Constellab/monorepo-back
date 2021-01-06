@@ -92,7 +92,7 @@ export class ExternalLabApiService {
 
   // get the header with api key
   private getHeader(apiKey: string): any {
-    const header = {};
+    const header: any = {};
     header[externalLabApiKeyHeader] = `${externalLabApiKeySchema} ${apiKey}`;
     return header;
   }

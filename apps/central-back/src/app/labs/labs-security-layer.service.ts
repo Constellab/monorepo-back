@@ -13,7 +13,7 @@ export class LabsSecurityLayer extends AbstractSecurityLayer<Lab> {
     super(service);
   }
 
-  async isAuthorizedToCreate(newEntity: Lab): Promise<boolean> {
+  async isAuthorizedToCreate(): Promise<boolean> {
     return new AcceptAuthorization().isAuthorized();
   }
 
@@ -21,7 +21,7 @@ export class LabsSecurityLayer extends AbstractSecurityLayer<Lab> {
     return new OwnerAuthorization().isAuthorized(dbEntity);
   }
 
-  async isAuthorizedToFindOne(dbEntity: Lab): Promise<boolean> {
+  async isAuthorizedToFindOne(): Promise<boolean> {
     return Promise.resolve(false);
   }
 

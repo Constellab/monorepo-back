@@ -14,11 +14,11 @@ export class ReportsSecurityLayer extends AbstractSecurityLayer<Report> {
   }
 
   // not used
-  async isAuthorizedToCreate(newEntity: Report): Promise<boolean> {
+  async isAuthorizedToCreate(): Promise<boolean> {
     return new RefuseAuthorization().isAuthorized();
   }
 
-  async isAuthorizedToDelete(dbEntity: Report): Promise<boolean> {
+  async isAuthorizedToDelete(): Promise<boolean> {
     return new RefuseAuthorization().isAuthorized();
   }
 
@@ -26,7 +26,7 @@ export class ReportsSecurityLayer extends AbstractSecurityLayer<Report> {
     return this.experimentSecurityLayer.isAuthorizedToFindById(dbEntity.experimentId);
   }
 
-  async isAuthorizedToUpdate(dbEntity: Report): Promise<boolean> {
+  async isAuthorizedToUpdate(): Promise<boolean> {
     return new RefuseAuthorization().isAuthorized();
   }
 

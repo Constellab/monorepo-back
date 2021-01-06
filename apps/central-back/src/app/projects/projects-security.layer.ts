@@ -16,11 +16,11 @@ export class ProjectsSecurityLayer extends AbstractSecurityLayer<Project> {
     super(service);
   }
 
-  async isAuthorizedToCreate(newEntity: Project): Promise<boolean> {
+  async isAuthorizedToCreate(): Promise<boolean> {
     return new AcceptAuthorization().isAuthorized();
   }
 
-  async isAuthorizedToDelete(dbEntity: Project): Promise<boolean> {
+  async isAuthorizedToDelete(): Promise<boolean> {
     return new RefuseAuthorization().isAuthorized();
   }
 

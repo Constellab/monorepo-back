@@ -45,6 +45,7 @@ export abstract class AbstractService<T extends EntityWithId> {
    */
   protected async updateWithCompare(newEntity: T, dbEntity: T, entityManager?: EntityManager): Promise<T> {
     for (const property in dbEntity) {
+      // eslint-disable-next-line no-prototype-builtins
       if (!dbEntity.hasOwnProperty(property)) {
         continue;
       }

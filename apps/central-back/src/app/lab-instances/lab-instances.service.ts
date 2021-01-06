@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {LabInstance} from './lab-instance.entity';
-import {EntityManager, Repository} from 'typeorm';
+import {Repository} from 'typeorm';
 import {User} from '../users/user.entity';
 import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
 import {LabInstanceStatus} from './lab-instance-status.enum';
@@ -23,7 +23,7 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
   }
 
 
-  async create(entity: LabInstance, entityManager?: EntityManager): Promise<LabInstance> {
+  async create(entity: LabInstance): Promise<LabInstance> {
     return super.createWithStatus(entity, LabInstanceStatus.STOPPED);
   }
 

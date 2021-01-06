@@ -19,11 +19,11 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
     super(service);
   }
 
-  async isAuthorizedToCreate(newEntity: LabInstance): Promise<boolean> {
+  async isAuthorizedToCreate(): Promise<boolean> {
     return new AdminAuthorization().isAuthorized();
   }
 
-  async isAuthorizedToDelete(dbEntity: LabInstance): Promise<boolean> {
+  async isAuthorizedToDelete(): Promise<boolean> {
     return new AdminAuthorization().isAuthorized();
   }
 
@@ -31,7 +31,7 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
     return new OwnerAuthorization().isAuthorized(dbEntity);
   }
 
-  async isAuthorizedToUpdate(dbEntity: LabInstance): Promise<boolean> {
+  async isAuthorizedToUpdate(): Promise<boolean> {
     return new AdminAuthorization().isAuthorized();
   }
 

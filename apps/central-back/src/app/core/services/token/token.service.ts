@@ -1,7 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {CoreConfigService} from '../../modules/core-config/core-config.service';
-
-const jwt = require('jsonwebtoken');
+import jwt = require('jsonwebtoken');
 
 @Injectable()
 export class TokenService {

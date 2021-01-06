@@ -6,8 +6,8 @@ import {MailConfig, MailTemplate} from '../../model/config/mail-config.class';
 import {User} from '../../../users/user.entity';
 import {SupportedLanguage} from '../../model/config/supported-language.class';
 import {TranslateService} from '../../modules/translate/translate.service';
-
-const nodemailer = require('nodemailer');
+import nodemailer = require('nodemailer');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const hbs = require('nodemailer-express-handlebars');
 
 /**

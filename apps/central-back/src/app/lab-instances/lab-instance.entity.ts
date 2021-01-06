@@ -8,6 +8,7 @@ import {ServerInfo} from '../servers-info/server-info.entity';
 import {LabServerInfo} from '../core/model/config/lab-server-info.class';
 import {LabInstanceStatus} from './lab-instance-status.enum';
 import {User} from '../users/user.entity';
+import crypto = require('crypto')
 
 /**
  * A lab instance is a running lab
@@ -57,7 +58,7 @@ export class LabInstance extends EntityWithStatus<LabInstanceStatusHistory> impl
   // generate the apiKey
   @BeforeInsert()
   generateApiKey(): void {
-    this.apiKey = require('crypto').randomBytes(48).toString('base64').replace(/\W/g, '');
+    this.apiKey = crypto.randomBytes(48).toString('base64').replace(/\W/g, '');
   }
 
   isRunning(): boolean {

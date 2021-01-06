@@ -25,11 +25,11 @@ export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> 
     super(service);
   }
 
-  async isAuthorizedToCreate(newEntity: Experiment): Promise<boolean> {
+  async isAuthorizedToCreate(): Promise<boolean> {
     return new RefuseAuthorization().isAuthorized();
   }
 
-  async isAuthorizedToDelete(dbEntity: Experiment): Promise<boolean> {
+  async isAuthorizedToDelete(): Promise<boolean> {
     return new RefuseAuthorization().isAuthorized();
   }
 

@@ -39,7 +39,7 @@ export class TestE2EHelper {
   }
 
   ///////////////////////////// TEST CRUD /////////////////////////////
-  public async testCrud(body: any): Promise<void> {
+  public async testCrud(): Promise<void> {
 
   }
 
