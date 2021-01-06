@@ -35,9 +35,7 @@
               }
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": [
-              "json2typescript"
-            ]
+            "allowedCommonJsDependencies": ["json2typescript"]
           },
           "configurations": {
             "dev": {
@@ -151,9 +149,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/central-front"
-          ],
+          "outputs": ["coverage/apps/central-front"],
           "options": {
             "jestConfig": "apps/central-front/jest.config.js",
             "passWithNoTests": true
@@ -182,9 +178,121 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
+            "lintFilePatterns": ["apps/central-front-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
+    "lab-front": {
+      "projectType": "application",
+      "root": "apps/lab-front",
+      "sourceRoot": "apps/lab-front/src",
+      "prefix": "monorepo",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/lab-front",
+            "index": "apps/lab-front/src/index.html",
+            "main": "apps/lab-front/src/main.ts",
+            "polyfills": "apps/lab-front/src/polyfills.ts",
+            "tsConfig": "apps/lab-front/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/lab-front/src/favicon.ico",
+              "apps/lab-front/src/assets"
+            ],
+            "styles": ["apps/lab-front/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/lab-front/src/environments/environment.ts",
+                  "with": "apps/lab-front/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "lab-front:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "lab-front:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "lab-front:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
             "lintFilePatterns": [
-              "apps/central-front-e2e/**/*.{js,ts}"
+              "apps/lab-front/src/**/*.ts",
+              "apps/lab-front/src/**/*.html"
             ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/lab-front"],
+          "options": {
+            "jestConfig": "apps/lab-front/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "lab-front-e2e": {
+      "root": "apps/lab-front-e2e",
+      "sourceRoot": "apps/lab-front-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/lab-front-e2e/cypress.json",
+            "tsConfig": "apps/lab-front-e2e/tsconfig.e2e.json",
+            "devServerTarget": "lab-front:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "lab-front:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/lab-front-e2e/**/*.{js,ts}"]
           }
         }
       }

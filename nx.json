@@ -29,6 +29,13 @@
     "central-front-e2e": {
       "tags": [],
       "implicitDependencies": ["central-front"]
+    },
+    "lab-front": {
+      "tags": []
+    },
+    "lab-front-e2e": {
+      "tags": [],
+      "implicitDependencies": ["lab-front"]
     }
   }
 }
