@@ -1,0 +1,11 @@
+<gen-section [isLoading]="isLoading" [object]="study">
+
+  <ng-template genSectionBody>
+    <gen-study-detail [study]="study" (update)="onUpdate($event)">
+    </gen-study-detail>
+
+    <gen-experiments-list class="experiences" [studyId]="study.id"></gen-experiments-list>
+
+  </ng-template>
+
+</gen-section>

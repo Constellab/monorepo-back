@@ -1,0 +1,99 @@
+<gen-dialog-title>
+  {{'signup' | translate}}
+</gen-dialog-title>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="signup-form" [formGroup]="formGp"
+        fxLayout="row wrap" fxLayoutAlign="space-evenly">
+
+    <!--  Firstname  -->
+    <mat-form-field appearance="outline" fxFlex="49%">
+      <mat-label>{{'firstname' | translate}}</mat-label>
+      <input matInput formControlName="firstname" required genInputMaxLength="50"
+             placeholder="{{'firstname' | translate}}">
+      <mat-error *ngIf="formGp.get('firstname').hasError('required')">
+        {{'firstname' | errorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  Lastname  -->
+    <mat-form-field appearance="outline" fxFlex="49%">
+      <mat-label>{{'lastname' | translate}}</mat-label>
+      <input matInput formControlName="lastname" required genInputMaxLength="50"
+             placeholder="{{'lastname' | translate}}">
+      <mat-error *ngIf="formGp.get('lastname').hasError('required')">
+        {{'lastname' | errorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  Email  -->
+    <mat-form-field appearance="outline" fxFlex="49%">
+      <mat-label>{{'email' | translate}}</mat-label>
+      <input matInput type="email" formControlName="email" required
+             placeholder="{{'email' | translate}}" autocomplete="username">
+      <mat-error *ngIf="formGp.get('email').hasError('required')">
+        {{'email' | errorRequired}}
+      </mat-error>
+      <mat-error *ngIf="formGp.get('email').hasError('email')">
+        {{'email_invalid' | translate}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  Phone  -->
+    <mat-form-field appearance="outline" fxFlex="49%">
+      <mat-label>{{'phone' | translate}}</mat-label>
+      <input matInput formControlName="phone" required
+             placeholder="{{'phone' | translate}}">
+      <mat-error *ngIf="formGp.get('phone').hasError('required')">
+        {{'phone' | errorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  Password -->
+    <mat-form-field appearance="outline" fxFlex="49%">
+      <mat-label>{{'password' | translate}}</mat-label>
+      <input matInput type="password" formControlName="password" required
+             placeholder="{{'password' | translate}}" autocomplete="new-password">
+      <mat-error *ngIf="formGp.get('password').hasError('required')">
+        {{'password' | errorRequired}}
+      </mat-error>
+      <mat-error *ngIf="formGp.get('password').hasError('incorrectPasswordFormat')">
+        {{'password_weak_error' | translate}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  Repeat Password -->
+    <mat-form-field appearance="outline" fxFlex="49%">
+      <mat-label>{{'repeat_password' | translate}}</mat-label>
+      <input matInput type="password" formControlName="repeatPassword" required
+             placeholder="{{'repeat_password' | translate}}" autocomplete="off">
+      <mat-error *ngIf="formGp.get('repeatPassword').hasError('required')">
+        {{'repeat_password' | errorRequired}}
+      </mat-error>
+      <mat-error *ngIf="formGp.get('repeatPassword').hasError('incorrectRepeatPassword')">
+        {{'repeat_password_error' | translate}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  Category  -->
+    <mat-form-field appearance="outline" fxFlex="100%">
+      <mat-label>{{'user_category' | translate}}</mat-label>
+      <mat-select formControlName="category" placeholder="{{'user_category' | translate}}"
+                  required>
+        <gen-select-user-category-option></gen-select-user-category-option>
+      </mat-select>
+      <mat-error *ngIf="formGp.get('category').hasError('required')">
+        {{'user_category' | errorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<div matDialogActions>
+  <button mat-raised-button color="primary" type="submit" form="signup-form"
+          class="centered">
+    {{'signup' | translate}}
+    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+  </button>
+</div>

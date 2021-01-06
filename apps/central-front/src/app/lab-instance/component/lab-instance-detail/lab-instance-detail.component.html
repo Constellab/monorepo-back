@@ -1,0 +1,63 @@
+<div>
+
+  <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
+    <gen-text-icon>
+      <mat-icon class="g-icon-big" svgIcon="lab"></mat-icon>
+      <h1>{{labInstance.lab.label}}</h1>
+    </gen-text-icon>
+
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <button mat-icon-button type="button" (click)="openStatusHistoryDialog()"
+              [matTooltip]="'status_history' | translate" class="g-button-action">
+        <mat-icon>history</mat-icon>
+      </button>
+
+      <gen-status-chip [statusHistory]="labInstance.currentStatus"
+                       class="g-text-big">
+      </gen-status-chip>
+    </div>
+  </div>
+
+  <gen-card>
+
+    <gen-card-body>
+
+      <!--   Lab url   -->
+      <gen-text-icon iconPosition="end">
+        <p>
+          <span class="g-text-light">{{'url' | translate}} : </span>
+          <a [href]="labInstance.url" target="_blank" class="g-text-link"
+             [matTooltip]="'open_lab_in_new_tab' | translate">
+            {{labInstance.url}}
+          </a>
+        </p>
+        <mat-icon class="g-icon-small">launch</mat-icon>
+      </gen-text-icon>
+
+      <!--  Lab IPs    -->
+      <p><span class="g-text-light">{{'ip' | translate}} : </span>{{labInstance.ip}}</p>
+      <p *ngIf="labInstance.ipv6">
+        <span class="g-text-light">{{'ipv6' | translate}} : </span>{{labInstance.ipv6}}
+      </p>
+    </gen-card-body>
+
+    <gen-card-footer layoutGap="0.5em">
+      <a *ngIf="labInstance.isRunning()" routerLink="view" mat-raised-button
+         color="primary">
+        {{'go_to_lab' | translate}}
+        <mat-icon>arrow_forward_ios</mat-icon>
+      </a>
+
+      <gen-lab-instance-start-stop [labInstance]="labInstance" (update)="onLabUpdate($event)"
+                                   class="g-button-action">
+      </gen-lab-instance-start-stop>
+
+      <button mat-button type="button" color="primary" disabled
+              class="button">
+        <mat-icon svgIcon="share_arrow"></mat-icon>
+        <span>{{'share' | translate}}</span>
+      </button>
+
+    </gen-card-footer>
+  </gen-card>
+</div>

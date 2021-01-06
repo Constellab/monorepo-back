@@ -1,0 +1,7 @@
+<div class="container" genDragHover="container-file-hover"
+     (genDrop)="onFileDrop($event)">
+  <div class="g-placeholder">
+    <p [ngClass]="{'g-warn-text': error}">{{placeholder}}</p>
+  </div>
+  <div #jsonEditorContainer class="editor-container"></div>
+</div>

@@ -5,7 +5,7 @@
       "projectType": "application",
       "root": "apps/central-front",
       "sourceRoot": "apps/central-front/src",
-      "prefix": "monorepo",
+      "prefix": "gen",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -18,12 +18,51 @@
             "aot": true,
             "assets": [
               "apps/central-front/src/favicon.ico",
-              "apps/central-front/src/assets"
+              "apps/central-front/src/assets",
+              "apps/central-front/src/manifest.webmanifest"
             ],
-            "styles": ["apps/central-front/src/styles.scss"],
-            "scripts": []
+            "styles": [
+              "apps/central-front/src/styles.scss",
+              {
+                "input": "apps/central-front/src/style/theme/light-theme.scss",
+                "bundleName": "light-theme",
+                "inject": false
+              },
+              {
+                "input": "apps/central-front/src/style/theme/dark-theme.scss",
+                "bundleName": "dark-theme",
+                "inject": false
+              }
+            ],
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "json2typescript"
+            ]
           },
           "configurations": {
+            "dev": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "namedChunks": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "serviceWorker": true,
+              "ngswConfigPath": "apps/central-front/ngsw-config.json",
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -38,6 +77,37 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json",
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            },
+            "preprod": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/central-front/src/environments/environment.ts",
+                  "with": "apps/central-front/src/environments/environment.preprod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -81,7 +151,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/central-front"],
+          "outputs": [
+            "coverage/apps/central-front"
+          ],
           "options": {
             "jestConfig": "apps/central-front/jest.config.js",
             "passWithNoTests": true
@@ -110,7 +182,9 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/central-front-e2e/**/*.{js,ts}"]
+            "lintFilePatterns": [
+              "apps/central-front-e2e/**/*.{js,ts}"
+            ]
           }
         }
       }

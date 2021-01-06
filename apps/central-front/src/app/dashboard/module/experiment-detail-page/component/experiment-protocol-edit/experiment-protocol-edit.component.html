@@ -1,0 +1,41 @@
+<gen-card class="g-section">
+  <gen-card-header>
+    <gen-text-icon>
+      <mat-icon svgIcon="protocol" class="g-icon-big"></mat-icon>
+      <h2>{{'protocol' | translate}}</h2>
+    </gen-text-icon>
+  </gen-card-header>
+  <gen-card-body>
+
+    <!--  Label  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'select_existing_protocol' | translate}}</mat-label>
+      <mat-select placeholder="{{'select_existing_protocol' | translate}}"
+                  [(ngModel)]="selectedProtocol"
+                  (selectionChange)="onProtocolSelection($event)">
+        <gen-select-protocol-options></gen-select-protocol-options>
+      </mat-select>
+
+      <mat-hint *ngIf="selectedProtocol">{{selectMatHintText | translate}}</mat-hint>
+    </mat-form-field>
+
+    <form (ngSubmit)="submit()">
+      <div>
+        <gen-protocol-form [formGp]="formGp">
+        </gen-protocol-form>
+      </div>
+
+
+      <div mat-dialog-actions>
+        <button mat-raised-button color="primary" type="submit"
+                class="g-centered-forced">
+          {{'save' | translate}}
+          <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+        </button>
+      </div>
+
+    </form>
+  </gen-card-body>
+
+
+</gen-card>

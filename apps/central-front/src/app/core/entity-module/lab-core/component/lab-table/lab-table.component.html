@@ -1,0 +1,53 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+
+  <!-- Created at -->
+  <ng-container matColumnDef="createdAt">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'created_at' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let lab">
+      <span>{{lab.createdBy | moment}}</span>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Last Modified at -->
+  <ng-container matColumnDef="lastModifiedAt">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'last_modified_at' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let lab">
+      <span>{{lab.lastModifiedAt | moment}}</span>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Actions -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell class="g-table-icon-button-cell" *matCellDef="let lab">
+      <button mat-icon-button type="button"
+              (click)="openUpdateLabDialog(lab)">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column">
+    <mat-header-cell *matHeaderCellDef>
+      <p class="g-table-cell">{{column | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labInstance">
+      <div class="g-table-cell">
+        <span>{{labInstance[column]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>
+

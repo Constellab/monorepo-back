@@ -1,0 +1,26 @@
+<gen-card class="card">
+  <gen-card-header>
+    <p class="g-text-big">{{project.code}}</p>
+    <gen-card-actions>
+      <gen-status-chip [statusHistory]="project.currentStatus"
+                       mode="iconOnly"
+                       class="g-text-normal">
+      </gen-status-chip>
+    </gen-card-actions>
+  </gen-card-header>
+
+
+  <gen-card-body class="body">
+    <div>
+      <p>{{project.title}}</p>
+    </div>
+
+    <gen-text-icon class="dates">
+      <mat-icon>date_range</mat-icon>
+      <gen-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate"
+                      class="g-text-light g-text-small">
+      </gen-date-range>
+    </gen-text-icon>
+
+  </gen-card-body>
+</gen-card>

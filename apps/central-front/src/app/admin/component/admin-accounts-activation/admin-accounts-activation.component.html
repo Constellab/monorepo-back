@@ -1,0 +1,28 @@
+<gen-async-section [arrayObs]="accounts">
+
+  <gen-section-header class="g-page-title">
+    <gen-text-icon>
+      <mat-icon class="g-icon-big">group</mat-icon>
+      <h2>{{'admin_account_activation' | translate}}</h2>
+    </gen-text-icon>
+  </gen-section-header>
+
+  <ng-container *genSectionBody>
+    <gen-card>
+
+      <gen-card-body class="limit-height">
+
+        <gen-user-table [datasource]="accounts" [columns]="displayedColumns">
+
+          <ng-template let-user>
+            <gen-admin-account-activation-button [user]="user" class="activated-button"
+                                                 (accountActivated)="onAccountActivated(user)">
+            </gen-admin-account-activation-button>
+          </ng-template>
+        </gen-user-table>
+      </gen-card-body>
+    </gen-card>
+  </ng-container>
+
+
+</gen-async-section>

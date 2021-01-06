@@ -1,0 +1,9 @@
+<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
+  <gen-status-chip class="chip" [statusHistory]="statusHistory">
+  </gen-status-chip>
+  <p class="g-text-small g-text-light">
+    {{statusHistory.createdBy.fullname}}
+    {{'the' | translate}}
+    {{statusHistory.createdAt | moment}}
+  </p>
+</div>

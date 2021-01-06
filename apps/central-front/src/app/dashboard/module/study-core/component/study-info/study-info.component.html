@@ -1,0 +1,7 @@
+<div *ngIf="study.description; else noDesc" [innerHTML]="study.description"></div>
+<ng-template #noDesc>
+  <div class="g-text-centered g-text-light">
+    <p>{{'no_description' | translate}}</p>
+    <mat-icon>block</mat-icon>
+  </div>
+</ng-template>

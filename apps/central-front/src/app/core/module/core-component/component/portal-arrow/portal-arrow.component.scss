@@ -1,0 +1,28 @@
+.arrow {
+  /* use 0 width and height to make a triangle*/
+  width: 0;
+  height: 0;
+  border-left: 15px solid #6eff0000;
+  border-right: 15px solid transparent;
+  border-top: 15px solid white;
+}
+
+.bottom{
+  transform: rotate(0deg);
+}
+
+.right{
+  transform: rotate(90deg);
+  margin-left: -6.5px;
+  margin-right: -7.5px;
+}
+
+.top{
+  transform: rotate(180deg);
+}
+
+.left{
+  transform: rotate(270deg);
+  margin-left: -7.5px;
+  margin-right: 2.5px;
+}

@@ -1,0 +1,58 @@
+<div>
+  <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
+    <gen-text-icon>
+      <mat-icon class="g-icon-big" svgIcon="project"></mat-icon>
+      <h1>{{project.code}}</h1>
+    </gen-text-icon>
+
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <button mat-icon-button type="button" (click)="openStatusHistory()"
+              [matTooltip]="'status_history' | translate">
+        <mat-icon>history</mat-icon>
+      </button>
+      <gen-status-chip class="status" [statusHistory]="project.currentStatus"></gen-status-chip>
+    </div>
+  </div>
+
+  <gen-card>
+    <gen-card-header>
+      <h2>{{project.title}}</h2>
+    </gen-card-header>
+
+    <gen-card-body>
+      <gen-text-icon class="dates">
+        <mat-icon>date_range</mat-icon>
+        <gen-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate">
+        </gen-date-range>
+      </gen-text-icon>
+
+      <div class="description">
+        <div *ngIf="project.description; else noDesc" [innerHTML]="project.description"></div>
+        <ng-template #noDesc>
+          <div class="g-text-centered g-text-light">
+            <p>{{'no_description' | translate}}</p>
+            <mat-icon>block</mat-icon>
+          </div>
+        </ng-template>
+      </div>
+
+    </gen-card-body>
+
+    <gen-card-footer layoutGap="0.5em">
+      <button mat-button type="button" color="primary" (click)="openUpdateStatusDialog()"
+              class="button">
+        {{'update_status' | translate}}
+      </button>
+      <button mat-button type="button" color="primary" (click)="openUpdateProjectDialog()"
+              class="button">
+        <mat-icon>edit</mat-icon>
+        <span>{{'edit' | translate}}</span>
+      </button>
+      <button mat-button type="button" color="primary" disabled
+              class="button">
+        <mat-icon svgIcon="share_arrow"></mat-icon>
+        <span>{{'share' | translate}}</span>
+      </button>
+    </gen-card-footer>
+  </gen-card>
+</div>

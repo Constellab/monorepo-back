@@ -1,0 +1,17 @@
+<div fxLayout="row" fxLayoutAlign="start center">
+  {{'theme' | translate}}
+  <div class="theme-selection">
+    <button mat-stroked-button type="button"
+            (click)="selectTheme('light-theme')">
+      <span class="round round-light"></span>
+      <span>{{'light' | translate}}</span>
+    </button>
+
+    <button mat-stroked-button type="button" class="second-button"
+            (click)="selectTheme('dark-theme')">
+      <span class="round round-dark"></span>
+      <span>{{'dark' | translate}}</span>
+    </button>
+  </div>
+</div>
+

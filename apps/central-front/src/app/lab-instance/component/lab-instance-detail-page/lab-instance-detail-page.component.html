@@ -1,0 +1,17 @@
+<div class="g-page" fxLayout="column">
+
+  <gen-section [isLoading]="isLoading" [object]="labInstance" fxFlex="grow">
+    <ng-template genSectionBody>
+      <div fxLayout="column" fxFlex="grow">
+        <gen-lab-instance-detail [labInstance]="labInstance"
+                                 (update)="onLabUpdate($event)"></gen-lab-instance-detail>
+
+        <gen-server-info-card [serverInfo]="labInstance.serverInfo"
+                              class="section"></gen-server-info-card>
+
+<!--        <gen-lab-instance-iframe [labUrl]="labInstance.url" fxFlex="grow"-->
+<!--                                 class="section"></gen-lab-instance-iframe>-->
+      </div>
+    </ng-template>
+  </gen-section>
+</div>

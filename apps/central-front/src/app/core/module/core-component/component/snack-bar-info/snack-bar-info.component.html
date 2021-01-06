@@ -1,0 +1,14 @@
+<div fxLayout="row" fxLayoutAlign="space-between center" class="g-full-height">
+
+  <div>
+    <!--  The text color depend on the background  -->
+    <div [ngClass]="{'g-primary-contrast': mode === 'success', 'g-warn-contrast': mode === 'error'}"
+         class="message" [innerHTML]="text">
+    </div>
+  </div>
+
+  <button *ngIf="showCloseButton" class="button"
+          mat-button type="button" (click)="closeSnackBar()">
+        {{'ok' | translate}}
+  </button>
+</div>

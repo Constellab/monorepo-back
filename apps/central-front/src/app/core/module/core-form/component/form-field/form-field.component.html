@@ -1,0 +1,11 @@
+<div class="g-placeholder">
+  <ng-content select="mat-label"></ng-content>
+</div>
+
+<div>
+  <ng-content></ng-content>
+</div>
+
+<div class="g-text-small error" [ngClass]="{'error-content': !removeErrorSpace}">
+  <ng-content *ngIf="showError" select="mat-error"></ng-content>
+</div>

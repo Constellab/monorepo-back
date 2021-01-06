@@ -1,0 +1,37 @@
+<a [routerLink]="labInstanceRoute">
+  <gen-card class="card">
+
+    <gen-card-header>
+      <!--  Title and logo    -->
+      <div fxLayout="row wrap" fxLayoutAlign="start center">
+        <mat-icon class="icon g-icon-big" *ngIf="mode === 'big'" svgIcon="lab"></mat-icon>
+        <p>{{labInstance.lab.label}}</p>
+      </div>
+
+      <gen-card-actions>
+        <gen-status-chip class="status" [statusHistory]="labInstance.currentStatus"
+                         [mode]="statusChipMode"></gen-status-chip>
+      </gen-card-actions>
+    </gen-card-header>
+
+
+    <gen-card-body class="body">
+      <div class="g-text-light g-text-small">
+        {{labInstance.currentStatus.status | translate}} {{'since_the' | translate}}
+        {{labInstance.currentStatus.createdAt | moment}}
+      </div>
+
+
+    </gen-card-body>
+
+    <gen-card-footer layoutGap="0.5em">
+      <a *ngIf="labInstance.isRunning()" [routerLink]="labIframeRoute" mat-button class="g-button-small">
+        <span>{{'go_to_lab' | translate}}</span>
+        <mat-icon>arrow_forward_ios</mat-icon>
+      </a>
+      <gen-lab-instance-start-stop [labInstance]="labInstance" (update)="onLabUpdate($event)">
+      </gen-lab-instance-start-stop>
+    </gen-card-footer>
+
+  </gen-card>
+</a>

@@ -1,0 +1,20 @@
+<gen-async-section [arrayObs]="experimentsArray" emptyText="no_experiment_for_protocol">
+
+  <gen-section-header>
+    <gen-text-icon>
+      <mat-icon svgIcon="experiment" class="g-icon-big"></mat-icon>
+      <h2>{{'experiments_of_protocol' | translate}}</h2>
+    </gen-text-icon>
+  </gen-section-header>
+
+
+  <ng-container *genSectionBody="let experiments">
+    <div fxLayout="row wrap" fxLayoutGap="1%" fxLayoutGap.lt-md="0">
+      <div class="experiment" *ngFor="let experiment of experiments; let i= index"
+           fxFlex="24%" fxFlex.md="49%" fxFlex.lt-md="100%">
+        <gen-experiment-card [experiment]="experiment" fxFill></gen-experiment-card>
+      </div>
+    </div>
+  </ng-container>
+
+</gen-async-section>

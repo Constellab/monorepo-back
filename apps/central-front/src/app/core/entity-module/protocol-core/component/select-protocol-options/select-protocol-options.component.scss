@@ -1,0 +1,6 @@
+
+.container{
+  // same height as material default, to make the infinite work
+  max-height: 256px;
+  overflow: auto;
+}

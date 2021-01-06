@@ -1,0 +1,75 @@
+@import './global-style-theme';
+
+/**
+ This file apply the dark theme to the app
+ /!\ WARNING it must not be imported in other scss files
+ */
+
+
+// Primary
+$custom-primary: (
+  500: #018989,
+  contrast: (
+    500: white,
+  )
+);
+$primary: mat-palette($custom-primary, 500, 500, 500, 500);
+
+// Secondary
+$custom-accent: (
+  500: #e0e0e0,
+  contrast: (
+    500: black,
+  )
+);
+
+$accent: mat-palette($custom-accent, 500, 500, 500, 500);
+
+// The warn palette is optional (defaults to red).
+$warn: mat-palette($mat-red, 800, A200, 800);
+// Create the theme object (a Sass map containing all of the palettes).
+//$light-theme: mat-light-theme($primary, $accent, $warn);
+
+$light-theme: mat-light-theme((
+  color: (
+    primary: $primary,
+    accent: $accent,
+    warn: $warn,
+  )
+));
+
+// Load all global classes link to theme
+@include _global-theme-style($light-theme);
+
+/**
+ * Classes for this theme that can't be defined in global-style-theme.scss
+ */
+.g-text-light {
+  color: rgba(0, 0, 0, .54);
+}
+
+.g-placeholder{
+  color: rgba(0, 0, 0, .54);
+}
+
+.g-card-elevation{
+  border: 1px solid #ddd;
+  box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.05)
+}
+
+/* Used to have a fade in effect at the end of the div*/
+.g-fade-in {
+  width: 100%;
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 50px;
+  background: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(70%, rgba(255, 255, 255, 1)));
+  background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%);
+  background: -o-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%);
+  background: -ms-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 70%);
+}

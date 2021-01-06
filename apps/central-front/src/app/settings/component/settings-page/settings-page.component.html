@@ -1,0 +1,15 @@
+<div class="g-page">
+
+  <h1 class="g-page-title">{{'settings' | translate}}</h1>
+
+  <gen-theme-selection></gen-theme-selection>
+
+
+  <div class="logout">
+    <button mat-raised-button type="button" color="warn" (click)="logout()">
+      {{'logout' | translate}}
+      <gen-button-loader *ngIf="logoutIsLoading"></gen-button-loader>
+    </button>
+  </div>
+</div>
+

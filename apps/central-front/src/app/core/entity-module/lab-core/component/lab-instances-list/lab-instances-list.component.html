@@ -1,0 +1,9 @@
+<div fxLayout="row wrap" fxLayoutGap="1%">
+  <div *ngFor="let labInstance of labInstances; let i = index"
+       fxFlex="15em" fxFlex.xs="49%">
+    <gen-lab-instance-card [labInstance]="labInstance"
+                           (labInstanceUpdated)="onLabUpdated($event, i)">
+    </gen-lab-instance-card>
+  </div>
+</div>
+

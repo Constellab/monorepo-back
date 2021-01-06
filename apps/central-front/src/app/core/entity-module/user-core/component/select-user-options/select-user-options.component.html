@@ -1,0 +1,21 @@
+<ng-container *ngIf="isLoading; else notLoading">
+  <mat-option disabled>
+    {{'loading' | translate}}
+  </mat-option>
+</ng-container>
+
+<ng-template #notLoading>
+  <ng-container *ngIf="users?.length > 0 ; else empty">
+    <mat-option *ngFor="let user of users" [value]="user">
+      <gen-user-inline [user]="user"></gen-user-inline>
+    </mat-option>
+  </ng-container>
+
+
+  <ng-template #empty>
+    <mat-option disabled>
+      <mat-icon>block</mat-icon>
+      {{'no_user' | translate}}
+    </mat-option>
+  </ng-template>
+</ng-template>

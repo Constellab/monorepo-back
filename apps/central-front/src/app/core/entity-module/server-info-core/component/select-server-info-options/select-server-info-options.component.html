@@ -1,0 +1,21 @@
+<ng-container *ngIf="isLoading; else notLoading">
+  <mat-option disabled>
+    {{'loading' | translate}}
+  </mat-option>
+</ng-container>
+
+<ng-template #notLoading>
+  <ng-container *ngIf="serversInfo?.length > 0 ; else empty">
+    <mat-option *ngFor="let serverInfo of serversInfo" [value]="serverInfo">
+      {{serverInfo.host}} - {{serverInfo.name}}
+    </mat-option>
+  </ng-container>
+
+
+  <ng-template #empty>
+    <mat-option disabled>
+      <mat-icon>block</mat-icon>
+      {{'no_server_info' | translate}}
+    </mat-option>
+  </ng-template>
+</ng-template>

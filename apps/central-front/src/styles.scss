@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+
+// Import theme for material
+@import "style/theme/theme";
+// Import the style for the library
+@import "style/global";
+
+// Import the style for the dialog
+@import "./style/dialog";
+@import "./style/icon";
+
+// Import quill style
+@import "./style/quill";
+@import "~jsoneditor/dist/jsoneditor.min.css";
+
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

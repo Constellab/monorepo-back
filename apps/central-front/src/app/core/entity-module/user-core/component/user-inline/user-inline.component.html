@@ -1,0 +1,11 @@
+<div fxLayout="row" fxLayoutAlign="start center"
+     fxLayoutGap="0.4em">
+  <gen-round-image [imageUrl]="user.getPhotoWithDefault()"
+                   size="2.5em">
+  </gen-round-image>
+
+  <div class="g-text-small" *ngIf="showName">
+    {{user.fullname}}
+  </div>
+
+</div>

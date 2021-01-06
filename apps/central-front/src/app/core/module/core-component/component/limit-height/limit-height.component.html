@@ -1,0 +1,14 @@
+<div>
+  <div class="content-container" #content>
+    <ng-content></ng-content>
+
+    <div *ngIf="heightIsLimited && !_expand" class="g-fade-in"></div>
+
+  </div>
+  <ng-container *ngIf="heightIsLimited">
+    <p *ngIf="!_expand" class="g-text-small g-text-light g-text-link"
+       (click)="expand = true">{{'see_more' | translate}}</p>
+    <p *ngIf="_expand" class="g-text-small g-text-light g-text-link"
+       (click)="expand = false">{{'hide' | translate}}</p>
+  </ng-container>
+</div>

@@ -1,0 +1,60 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+  <!-- Lab -->
+  <ng-container matColumnDef="photo">
+    <mat-header-cell class="photo" *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell class="photo" *matCellDef="let user">
+      <gen-round-image [imageUrl]="user.getPhotoWithDefault()"
+                       size="2.5rem">
+      </gen-round-image>
+    </mat-cell>
+  </ng-container>
+
+  <!-- fullname -->
+  <ng-container matColumnDef="fullname">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'fullname' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let user">
+      <span>{{user.fullname}}</span>
+    </mat-cell>
+  </ng-container>
+
+  <!-- fullname -->
+  <ng-container matColumnDef="createdAt">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'created_the' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let user">
+      <span>{{user.createdAt | moment}}</span>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Custom action where template is defined by parent -->
+  <ng-container matColumnDef="customTemplate">
+    <mat-header-cell *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let user">
+      <ng-container *ngTemplateOutlet="templateRef; context: getUserViewContext(user)"></ng-container>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column">
+    <mat-header-cell *matHeaderCellDef>
+      <p class="g-table-cell">{{column | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let user">
+      <div class="g-table-cell">
+        <span>{{user[column]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>
+

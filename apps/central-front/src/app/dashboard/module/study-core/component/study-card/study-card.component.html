@@ -1,0 +1,16 @@
+<gen-card class="g-full">
+
+  <gen-card-header>
+    <div>{{study.title}}</div>
+
+    <gen-card-actions>
+      <gen-status-chip [statusHistory]="study.currentStatus" mode="iconOnly">
+      </gen-status-chip>
+    </gen-card-actions>
+  </gen-card-header>
+
+  <gen-card-body>
+    <gen-study-info [study]="study"></gen-study-info>
+  </gen-card-body>
+
+</gen-card>

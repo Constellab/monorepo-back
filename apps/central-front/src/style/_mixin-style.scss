@@ -1,0 +1,22 @@
+/************************** Mixin global classes ***********************/
+// Import this file in other scss file to get access to mixin so it keeps the import small
+// /!\ All the mixin should start with 'g-' to recognize global mixin
+
+
+/**************************** Text *****************************/
+$color-success: #22B252;
+$color-warning: orange;
+$color-error: darkred;
+
+@mixin g-text-success {
+  color: $color-success;
+}
+
+@mixin g-text-warning {
+  color: $color-warning;
+}
+
+@mixin g-text-error {
+  color: $color-error;
+}
+

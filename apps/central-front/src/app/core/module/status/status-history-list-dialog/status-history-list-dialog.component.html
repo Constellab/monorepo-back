@@ -1,0 +1,28 @@
+<gen-dialog-title>
+  <h1>{{'status_history' | translate}}</h1>
+</gen-dialog-title>
+
+<mat-dialog-content>
+
+  <gen-async-section [arrayObs]="statusHistories" emptyText="no_history">
+
+    <ng-container *genSectionBody="let histories">
+      <div *ngFor="let statusHistory of histories">
+        <gen-status-history-card [statusHistory]="statusHistory">
+        </gen-status-history-card>
+
+        <mat-divider class="divider"></mat-divider>
+      </div>
+    </ng-container>
+  </gen-async-section>
+
+</mat-dialog-content>
+
+
+<div matDialogActions>
+
+  <button mat-button type="button" color="primary"
+          class="g-centered-forced" matDialogClose>
+    {{'ok' | translate}}
+  </button>
+</div>

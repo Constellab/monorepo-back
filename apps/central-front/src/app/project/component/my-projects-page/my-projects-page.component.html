@@ -1,0 +1,28 @@
+<div class="g-page">
+
+  <gen-async-section [arrayObs]="projectsDatasource" emptyText="no_project">
+
+    <gen-section-header class="g-page-title">
+      <gen-text-icon iconPosition="start">
+        <mat-icon class="g-icon-big" svgIcon="project"></mat-icon>
+        <h1>{{'my_projects' | translate}}</h1>
+      </gen-text-icon>
+
+      <gen-section-actions>
+        <button mat-raised-button type="button" color="accent"
+                (click)="openCreateProjectDialog()" class="g-button-small">
+          <mat-icon>add</mat-icon>
+        </button>
+
+      </gen-section-actions>
+    </gen-section-header>
+
+    <ng-container *genSectionBody="let projects">
+      <gen-projects-list [projects]="projects"></gen-projects-list>
+
+      <gen-pagination-load-more-result [datasource]="projectsDatasource"></gen-pagination-load-more-result>
+    </ng-container>
+
+  </gen-async-section>
+
+</div>

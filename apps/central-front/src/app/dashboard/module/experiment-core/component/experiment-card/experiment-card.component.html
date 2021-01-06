@@ -1,0 +1,25 @@
+<gen-card class="g-full">
+
+  <gen-card-header>
+    <div>{{experiment.label}}</div>
+
+    <gen-card-actions>
+      <gen-status-chip [statusHistory]="experiment.currentStatus" mode="iconOnly">
+      </gen-status-chip>
+    </gen-card-actions>
+
+  </gen-card-header>
+
+  <gen-card-body>
+
+    <gen-experiment-info [experiment]="experiment"></gen-experiment-info>
+  </gen-card-body>
+
+  <gen-card-footer>
+    <a *ngIf="openInLabLink" [routerLink]="openInLabLink" [queryParams]="linkQueryParams"
+       mat-button class="g-button-small go-to-button">
+      {{'open_experiment_in_lab' | translate}}
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </a>
+  </gen-card-footer>
+</gen-card>

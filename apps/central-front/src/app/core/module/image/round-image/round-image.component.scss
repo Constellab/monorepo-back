@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+
+.container {
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+}
+
+.circle {
+  display: block;
+  background: no-repeat center center;
+  background-size: cover; /* keep it after background attribut */
+}
+

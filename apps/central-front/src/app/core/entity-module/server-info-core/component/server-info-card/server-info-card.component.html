@@ -1,0 +1,22 @@
+<gen-card>
+  <gen-card-header>
+    <p>{{'server_info' | translate}}</p>
+  </gen-card-header>
+
+  <gen-card-body>
+
+    <p><span class="g-text-light">{{'host' | translate}} :</span> {{serverInfo.host}}</p>
+    <p><span class="g-text-light">{{'name' | translate}} :</span> {{serverInfo.name}}</p>
+    <p><span class="g-text-light">{{'diskSpace' | translate}} :</span> {{serverInfo.diskSpace}}</p>
+    <p><span class="g-text-light">{{'diskType' | translate}} :</span> {{serverInfo.diskType}}</p>
+    <p><span class="g-text-light">{{'cpuCount' | translate}} :</span> {{serverInfo.cpuCount}}</p>
+    <p><span class="g-text-light">{{'cpuType' | translate}} :</span> {{serverInfo.cpuType}}</p>
+
+    <!--  If there is a GPU  -->
+    <ng-container *ngIf="serverInfo.gpuType">
+      <p><span class="g-text-light">{{'gpuCount'}} :</span>{{serverInfo.gpuCount}}</p>
+      <p><span class="g-text-light">{{'gpuType'}} :</span>{{serverInfo.gpuType}}</p>
+    </ng-container>
+  </gen-card-body>
+
+</gen-card>

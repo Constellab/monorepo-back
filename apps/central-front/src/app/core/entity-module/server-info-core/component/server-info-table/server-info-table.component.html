@@ -1,0 +1,32 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+  <!-- Dynamic columns -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell class="g-table-icon-button-cell" *matCellDef="let serverInfo">
+      <div class="action-buttons">
+        <button mat-icon-button type="button" (click)="openEditServerInfo(serverInfo)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column">
+    <mat-header-cell *matHeaderCellDef>
+      <p class="g-table-cell">{{column | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let serverInfo">
+      <div class="g-table-cell">
+        <span>{{serverInfo[column]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>
+

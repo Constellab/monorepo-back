@@ -1,0 +1,24 @@
+<ng-container *ngIf="datasource.firstPageIsLoading; else notLoading">
+  <mat-option disabled>
+    {{'loading' | translate}}
+  </mat-option>
+</ng-container>
+
+<ng-template #notLoading>
+  <div (genInfiniteScroll)="loadMoreResult()"
+       [genInfiniteDisabled]="datasource.isLoading || datasource.page?.last"
+       class="container" *ngIf="datasource.connect() | async as protocols; else noProtocol">
+    <mat-option *ngFor="let protocol of protocols" [value]="protocol">
+      {{protocol.label}}
+    </mat-option>
+
+    <gen-pagination-load-more-result [datasource]="datasource"></gen-pagination-load-more-result>
+  </div>
+
+  <ng-template #noProtocol>
+    <mat-option disabled>
+      <mat-icon>block</mat-icon>
+      {{'no_protocol' | translate}}
+    </mat-option>
+  </ng-template>
+</ng-template>

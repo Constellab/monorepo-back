@@ -1,0 +1,45 @@
+<form [formGroup]="formGp" (ngSubmit)="login()" class="form">
+
+  <img src="assets/images/logo.png" alt="Gencovery logo" class="logo"/>
+
+  <!--  Email  -->
+  <mat-form-field class="g-form-input" appearance="outline">
+    <mat-label>{{'email' | translate}}</mat-label>
+    <input matInput type="email" formControlName="email" required
+           placeholder="{{'email' | translate}}" autocomplete="username">
+    <mat-error *ngIf="formGp.get('email').hasError('required')">
+      {{'email' | errorRequired}}
+    </mat-error>
+    <mat-error *ngIf="formGp.get('email').hasError('email')">
+      {{'email_invalid' | translate}}
+    </mat-error>
+  </mat-form-field>
+
+  <!--  Password -->
+  <mat-form-field class="g-form-input" appearance="outline">
+    <mat-label>{{'password' | translate}}</mat-label>
+    <input matInput type="password" formControlName="password" required
+           placeholder="{{'password' | translate}}" autocomplete="current-password">
+    <mat-error *ngIf="formGp.get('password').hasError('required')">
+      {{'password' | errorRequired}}
+    </mat-error>
+  </mat-form-field>
+
+
+  <button mat-raised-button color="accent" type="submit"
+          [disabled]="isLoading" class="connection-button g-button-big">
+    {{'sign_in' | translate}}
+    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+  </button>
+
+
+  <div class="footer" fxLayout="row wrap" fxLayoutAlign="space-between">
+    <span class="g-text-light g-text-small g-text-link" (click)="openPasswordForgotten()">
+      {{'forgot_password' | translate}}
+    </span>
+    <span class="g-primary-text g-text-small g-text-link" (click)="openSignupDialog()">
+      {{'signup_link' | translate}}
+    </span>
+  </div>
+</form>
+

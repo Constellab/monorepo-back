@@ -1,0 +1,36 @@
+<gen-card class="g-full">
+
+  <gen-card-body>
+    <gen-experiment-info [experiment]="experiment"></gen-experiment-info>
+  </gen-card-body>
+
+  <gen-card-footer layoutGap="1em">
+    <!--   Start experiment button when DRAFT   -->
+    <div *ngIf="experiment.statusIsDraft(); else notDraft"
+         [matTooltip]="disabledStartButtonText | translate" [matTooltipDisabled]="!disabledStartButton">
+      <button mat-raised-button type="button" color="primary" (click)="startExperiment()"
+              [disabled]="disabledStartButton">
+        {{'start_experiment' | translate}}
+      </button>
+    </div>
+
+    <ng-template #notDraft>
+      <a *ngIf="openInLabLink" [routerLink]="openInLabLink" [queryParams]="linkQueryParams"
+         mat-button>
+        {{'open_experiment_in_lab' | translate}}
+        <mat-icon>arrow_forward_ios</mat-icon>
+      </a>
+
+      <button mat-button type="button" (click)="openUpdateStatusDialog()"
+              color="primary">
+        {{'update_status' | translate}}
+      </button>
+    </ng-template>
+
+    <button mat-button type="button" (click)="openUpdateExperimentDialog()"
+            color="primary">
+      <mat-icon>edit</mat-icon>
+      {{'edit' | translate}}
+    </button>
+  </gen-card-footer>
+</gen-card>

@@ -1,0 +1,18 @@
+<div mat-dialog-title [innerHTML]="title"></div>
+
+<div mat-dialog-content>
+  <div [innerHTML]="content" class="content g-text-with-jump"></div>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-stroked-button (click)="closeDialog(true)" type="button"
+          [disabled]="isLoading" tabindex="-1" color="primary"
+          class="yes-button">
+    {{'yes' | translate}}
+    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+  </button>
+  <button mat-stroked-button type="button" (click)="closeDialog(false)"
+          [disabled]="isLoading" tabindex="-1" color="warn">
+    {{'no' | translate}}
+  </button>
+</div>

@@ -1,0 +1,20 @@
+<div class="g-page">
+  <gen-section [isLoading]="isLoading" [object]="protocol">
+
+    <ng-template genSectionBody>
+      <gen-text-icon>
+        <mat-icon class="g-icon-big" svgIcon="protocol"></mat-icon>
+        <h1>{{protocol.label}}</h1>
+      </gen-text-icon>
+
+      <gen-card>
+        <gen-card-body>
+          <gen-protocol-json [json]="protocol.getJsonProtocol()" [expandProtocol]="true"></gen-protocol-json>
+        </gen-card-body>
+      </gen-card>
+
+      <gen-protocol-experiments-list [protocolId]="protocol.id"
+                                     class="g-section"></gen-protocol-experiments-list>
+    </ng-template>
+  </gen-section>
+</div>

@@ -1,0 +1,19 @@
+{
+  "server_info": "Server information",
+  "server_info_list": "Available servers",
+  "host": "Host",
+  "ram": "Ram (GB)",
+  "diskSpace": "Disk space (GB)",
+  "diskType": "Disk type",
+  "cpuCount": "Nb. CPU",
+  "cpuType": "CPU type",
+  "gpuCount": "Nb. GPU",
+  "gpuType": "GPU type",
+  "create_server_info": "Create server",
+  "server_info_created": "Server information created",
+  "update_server_info": "Update server info",
+  "server_info_updated": "Server information updated",
+  "no_server_info": "No server info",
+  "ip": "Ip address",
+  "ipv6": "Ipv6 address"
+}

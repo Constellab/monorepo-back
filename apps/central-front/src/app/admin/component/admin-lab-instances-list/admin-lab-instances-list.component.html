@@ -1,0 +1,27 @@
+<gen-async-section [arrayObs]="labInstances" emptyText="no_lab_instance">
+
+  <gen-section-header class="g-page-title">
+    <gen-text-icon>
+      <mat-icon class="g-icon-big" svgIcon="lab"></mat-icon>
+      <h2>{{'lab_instances' | translate}}</h2>
+    </gen-text-icon>
+
+    <gen-section-actions>
+      <button mat-raised-button type="button" color="accent"
+              class="g-button-small" (click)="openCreateLabInstanceForm()"
+              [matTooltip]="'create_lab_instance' | translate">
+        <mat-icon>add</mat-icon>
+      </button>
+    </gen-section-actions>
+  </gen-section-header>
+
+  <ng-container *genSectionBody="let servers">
+    <gen-card>
+      <gen-card-body class="limit-height">
+        <gen-lab-instance-table [datasource]="labInstances" [columns]="displayedColumns"></gen-lab-instance-table>
+      </gen-card-body>
+    </gen-card>
+  </ng-container>
+
+
+</gen-async-section>

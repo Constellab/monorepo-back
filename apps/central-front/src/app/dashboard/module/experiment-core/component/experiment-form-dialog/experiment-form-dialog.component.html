@@ -1,0 +1,53 @@
+<gen-dialog-title>
+  {{title | translate}}
+</gen-dialog-title>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="project-form" [formGroup]="formGp">
+
+    <!--  Label  -->
+    <div class="g-form-input" fxLayout="row wrap" fxLayoutAlign="space-between">
+      <mat-form-field fxFlex="49%" appearance="outline">
+        <mat-label>{{'label' | translate}}</mat-label>
+        <input matInput formControlName="label" required genInputMaxLength="50"
+               placeholder="{{'label' | translate}}">
+        <mat-error *ngIf="formGp.get('label').hasError('required')">
+          {{'label' | errorRequired}}
+        </mat-error>
+      </mat-form-field>
+
+      <!--  Lab Instance  -->
+      <mat-form-field fxFlex="49%" appearance="outline">
+        <mat-label>{{'lab_instance' | translate}}</mat-label>
+        <mat-select formControlName="labInstance" required
+                    placeholder="{{'lab_instance' | translate}}">
+          <gen-select-accessible-lab-instance-options></gen-select-accessible-lab-instance-options>
+        </mat-select>
+        <mat-error *ngIf="formGp.get('labInstance').hasError('required')">
+          {{'lab_instance' | errorRequired}}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <!--    Description      -->
+    <gen-form-field class="g-form-input">
+      <mat-label>{{'description' | translate}}</mat-label>
+      <quill-editor formControlName="description" placeholder="{{'description' | translate}}"
+                    class="g-full"
+                    [styles]="{height: '8em'}">
+      </quill-editor>
+      <mat-error *ngIf="formGp.get('description').hasError('required')">
+        {{'description' | errorRequired}}
+      </mat-error>
+    </gen-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" form="project-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+  </button>
+</div>

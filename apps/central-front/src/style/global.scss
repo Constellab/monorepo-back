@@ -1,0 +1,250 @@
+//!\\ WARNING //!\\ this file must be only imported ONCE in the global style file or in the angular.json file
+
+// This style need to be imported in order to user the library
+// It includes global style required for dialog, snackbar...
+
+@import "./mixin-style";
+
+
+/************************ Global override *************************/
+html {
+  font-size: 14px;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+h1, h2 {
+  margin: 0;
+  font-weight: normal;
+}
+
+ul, ol {
+  margin: 0;
+}
+
+/************************** Global classes ***********************/
+// /!\ All the style should start with 'g-' to recognize global style
+
+.g-full {
+  width: 100%
+}
+
+.g-full-height {
+  height: 100%;
+}
+
+.g-centered {
+  margin: auto;
+}
+
+.g-centered-forced {
+  margin: auto !important;
+  display: block !important;
+}
+
+.g-form-input {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.g-page {
+  padding: 2em 2em 0 2em;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 600px) {
+  .g-page {
+    padding: 1em 1em 0 1em;
+
+  }
+}
+
+.g-page-title {
+  margin-bottom: 2rem;
+}
+
+.g-section {
+  margin-top: 2em;
+  display: block;
+}
+
+.g-headline {
+  margin-bottom: 10px;
+}
+
+
+/***************************** Table *****************************/
+
+.g-table-cell {
+  padding-right: 0.5em;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.g-column-width-fit {
+  flex: initial !important;
+}
+
+// in flex table it set the width of 1 icon button
+.g-table-icon-button-cell {
+  flex: initial !important;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  width: 40px; // width of icon button
+}
+
+
+/***************************** Scrollable Element *****************************/
+// Make an element scrollable with a small scroll bar
+.g-scrollable-element {
+  overflow: auto;
+}
+
+/* width and height */
+.g-scrollable-element::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Handle */
+.g-scrollable-element::-webkit-scrollbar-thumb {
+  background: #E9EAEF;
+}
+
+/* Handle on hover */
+.g-scrollable-element::-webkit-scrollbar-thumb:hover {
+  background: #c4c4c4;
+}
+
+/**************************** Button *****************************/
+.g-button-medium {
+  font-size: 1.3rem !important;
+}
+
+.g-button-medium mat-icon {
+  margin-top: -0.23em;
+  margin-right: 0.3em;
+}
+
+.g-button-big {
+  font-size: 1.5rem !important;
+  padding: 0.6em !important;
+}
+
+.g-button-small {
+  font-size: 0.8rem !important;
+  padding-left: 0.5em !important;
+  padding-right: 0.5em !important;
+  line-height: 2.5em !important;
+}
+
+.g-button-hide-text span {
+  display: none;
+}
+
+// separate the buttons in a card action
+.g-button-action {
+  margin-left: 0.5em !important;
+}
+
+.mat-stroked-button, .mat-raised-button, .mat-button, .mat-flat-button {
+  text-transform: uppercase;
+}
+
+/**************************** Text *****************************/
+
+.g-text-small {
+  font-size: 0.8rem;
+}
+
+.g-text-tiny {
+  font-size: 0.7rem;
+}
+
+.g-text-normal {
+  font-size: 1rem;
+}
+
+.g-text-big {
+  font-size: 1.4rem;
+}
+
+.g-text-not-selectable {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+}
+
+.g-text-centered {
+  text-align: center;
+}
+
+.g-text-success {
+  @include g-text-success;
+}
+
+.g-text-error {
+  @include g-text-error;
+}
+
+.g-text-warning {
+  @include g-text-warning;
+}
+
+.g-text-white {
+  color: white;
+}
+
+// Text transform
+.g-text-uppercase {
+  text-transform: uppercase;
+}
+
+.g-text-capitalize {
+  text-transform: capitalize;
+}
+
+.g-text-capitalize-first {
+  text-transform: lowercase;
+  display: block;
+}
+
+.g-text-capitalize-first::first-letter {
+  text-transform: uppercase;
+}
+
+.g-text-lowercase {
+  text-transform: lowercase;
+}
+
+.g-text-link {
+  cursor: pointer;
+}
+
+.g-text-link:hover {
+  text-decoration: underline;
+}
+
+/**************************** Other *****************************/
+
