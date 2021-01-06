@@ -25,7 +25,14 @@
     "update": "nx migrate latest",
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
-    "help": "nx help"
+    "help": "nx help",
+    "central-front:build-prod": "nx build central-front --prod",
+    "central-front:build-pre-prod": "nx build central-front --configuration=preprod",
+    "central-front:build-dev": "nx build central-front --configuration=dev",
+    "central-front:caprover-deploy-preprod": "caprover deploy --host https://captain.gws.gencovery.com --appName pre-prod-front  --branch master",
+    "central-front:caprover-deploy-prod": "caprover deploy --host https://captain.gws.gencovery.com --appName prod-front  --branch master",
+    "central-front:build-stats": "nx build central-front --prod --stats-json && webpack-bundle-analyzer.cmd dist/apps/central-front/stats.json",
+    "central-front:build-image-dev": "docker build -f apps/central-front/Dockerfile -t central-front --build-arg ENVIRONMENT_PROFILE=dev ."
   },
   "private": true,
   "dependencies": {

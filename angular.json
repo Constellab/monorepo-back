@@ -78,7 +78,7 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json",
+              "ngswConfigPath": "apps/central-front/ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -107,7 +107,7 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "serviceWorker": true,
-              "ngswConfigPath": "ngsw-config.json",
+              "ngswConfigPath": "apps/central-front/ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",

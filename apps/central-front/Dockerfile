@@ -6,15 +6,22 @@ ARG ENVIRONMENT_PROFILE=${ENVIRONMENT_PROFILE}
 WORKDIR /app
 
 # Copy package.json
-COPY ./package.json ./package-lock.json /app/
+COPY /package.json /package-lock.json /app/
+
+#COPY ./nginx.conf /app/
 
 # Install dependencies
 RUN npm ci
 
-# Copy code and build the app
-COPY . /app
+# Copy the workspace and build the app
+COPY / /app
 
-RUN npm run build-$ENVIRONMENT_PROFILE
+RUN echo "Host geoserver"
+
+RUN pwd
+RUN ls
+
+RUN npm run central-front:build-$ENVIRONMENT_PROFILE
 
 # Run step
 FROM nginx:alpine
@@ -24,7 +31,7 @@ WORKDIR /app
 #COPY --from=buildContainer /app/package.json /app
 
 # Get build result
-COPY --from=buildContainer /app/dist/central-front /usr/share/nginx/html
+COPY --from=buildContainer /app/dist/apps/central-front /usr/share/nginx/html
 
 # Copy the default nginx.conf
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY /apps/central-front/nginx.conf /etc/nginx/conf.d/default.conf
