@@ -335,7 +335,10 @@
             "outputPath": "dist/apps/central-back",
             "main": "apps/central-back/src/main.ts",
             "tsConfig": "apps/central-back/tsconfig.app.json",
-            "assets": ["apps/central-back/src/assets", "apps/central-back/src/environments"]
+            "assets": [
+              "apps/central-back/src/assets",
+              "apps/central-back/src/environments"
+            ]
           },
           "configurations": {
             "production": {
@@ -368,6 +371,27 @@
           "outputs": ["coverage/apps/central-back"],
           "options": {
             "jestConfig": "apps/central-back/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "core-lib": {
+      "root": "libs/core-lib",
+      "sourceRoot": "libs/core-lib/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/core-lib/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/core-lib"],
+          "options": {
+            "jestConfig": "libs/core-lib/jest.config.js",
             "passWithNoTests": true
           }
         }

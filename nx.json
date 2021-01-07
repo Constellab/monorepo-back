@@ -42,6 +42,9 @@
     },
     "central-back": {
       "tags": []
+    },
+    "core-lib": {
+      "tags": []
     }
   }
 }
