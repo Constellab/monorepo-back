@@ -18,6 +18,8 @@
           "error",
           { "type": "element", "prefix": "gen", "style": "kebab-case" }
         ],
+        "@angular-eslint/no-empty-lifecycle-method": "off",
+        "@angular-eslint/no-input-rename": "off",
         "max-len": [
           "error",
           {
@@ -26,9 +28,7 @@
           }
         ],
         "@typescript-eslint/no-inferrable-types": "off",
-        "@angular-eslint/no-empty-lifecycle-method": "off",
-        "@typescript-eslint/no-empty-function": "off",
-        "@angular-eslint/no-input-rename": "off"
+        "@typescript-eslint/no-empty-function": "off"
       }
     },
     {

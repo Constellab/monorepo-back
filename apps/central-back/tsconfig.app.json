@@ -9,6 +9,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "noImplicitReturns": true,
     "target": "es2017",
     "sourceMap": true,
     "outDir": "./dist",
