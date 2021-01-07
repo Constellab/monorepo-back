@@ -16,6 +16,6 @@ export function NotUpdatable(): PropertyDecorator {
  * @param target object class
  * @param key property name to check if annotated
  */
-export function propertyIsNotUpdatable(target: Record<string, unknown>, key: string): boolean {
+export function propertyIsNotUpdatable(target: any, key: string): boolean {
   return Reflect.getMetadata(notUpdatableMetadata, target.constructor, key) === true;
 }

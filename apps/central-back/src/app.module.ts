@@ -51,7 +51,7 @@ function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
     // let the config module on top of the imports
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'apps/central-back/src/environments/dev.env',
+      envFilePath: join(__dirname, 'environments', 'dev.env'),
     }),
 
 
@@ -113,7 +113,7 @@ function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
     },
   ],
 })
-export class AppModule implements NestModule{
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere

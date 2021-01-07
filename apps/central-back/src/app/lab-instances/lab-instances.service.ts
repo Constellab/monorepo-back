@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {LabInstance} from './lab-instance.entity';
-import {Repository} from 'typeorm';
+import {ObjectLiteral, Repository} from 'typeorm';
 import {User} from '../users/user.entity';
 import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
 import {LabInstanceStatus} from './lab-instance-status.enum';
@@ -40,7 +40,7 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
     const user: User = RequestContextHelper.getAndCheckCurrentUser();
 
     return this.repository.find({
-      where: qb => {
+      where: (qb: ObjectLiteral) => {
         qb.where({owner: user.id})
           .andWhere('status = :status', {status: LabInstanceStatus.RUNNING});
       },

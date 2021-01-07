@@ -26,6 +26,8 @@ export class CookieHelper {
         }
       }
     }
+
+    return null;
   }
 
   /**
@@ -41,5 +43,7 @@ export class CookieHelper {
         value: cookies.slice(1).join('=')
       };
     }
+
+    return null;
   }
 }

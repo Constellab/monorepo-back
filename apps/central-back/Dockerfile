@@ -6,26 +6,27 @@ FROM node:12-alpine as builder
 WORKDIR /app
 
 # Copy package and package-lock.json file for modules installation
-COPY ./package.json ./package-lock.json ./
+COPY /package.json /package-lock.json ./
 
 # Run modules installation
 RUN npm ci
 
 # copy the rest of the app
-COPY . .
-RUN npm run build
+COPY / .
 
-# Second Stage : Setup command to run your app using lightweight node image
+RUN npm run central-back:build
+
+## Second Stage : Setup command to run your app using lightweight node image
 FROM node:12-alpine
 WORKDIR /app
 
 COPY --from=builder /app/package.json /app/package-lock.json ./
 
+# dependency are needed and there are not build in chunck
 RUN npm install --only=production
 
+# copy dist
+COPY --from=builder /app/dist/apps/central-back ./dist
 
-COPY --from=builder /app/dist ./dist
-
-#COPY --from=builder /app/node_modules ./node_modules
 EXPOSE 3000
 CMD ["node", "dist/main"]
