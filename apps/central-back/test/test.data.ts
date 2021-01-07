@@ -5,6 +5,7 @@ import {Project} from '../src/app/projects/project.entity';
 
 export class TestData {
 
+  // eslint-disable-next-line max-len
   public static readonly adminUserToken: string = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwNjg2NjU0Mi1mMDg5LTQ2ZGMtYjU3Zi1hMTFlMjVhMjNhYTUiLCJlbWFpbCI6InVzZXIuYWRtaW5AZ2VuY292ZXJ5LmNvbSIsImlhdCI6MTYwNjgzNTAxMiwiZXhwIjoxOTIyMTk1MDEyfQ.XS6d9sP7I6m5VcUla11vt5XzFnygMpJGCf4Rn0iiDZ4';
 
   public static get newProject(): Project {

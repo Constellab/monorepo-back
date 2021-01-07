@@ -3,7 +3,7 @@ import {ApiService} from './api.service';
 import {Observable} from 'rxjs';
 import {Protocol, ProtocolDatasource} from '../model/entities/protocol.entity';
 import {EntityPaginatedDatasource} from '../model/datasource/entity-datasource.class';
-import {GetPageFunction} from '../model/global/page.class';
+import {GetPageFunction, Page} from '../model/global/page.class';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +30,7 @@ export class ProtocolService {
   }
 
   private getMyProtocolsMethod(): GetPageFunction<Protocol> {
-    return (page: number, pageSize: number) => this.apiService.get(`${this.route}/current`, Protocol,
+    return (page: number, pageSize: number): Observable<Page<Protocol>> => this.apiService.get(`${this.route}/current`, Protocol,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 

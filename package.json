@@ -34,12 +34,14 @@
     "central-front:build-stats": "nx build central-front --prod --stats-json && npm run central-front:view-stats",
     "central-front:view-stats": "webpack-bundle-analyzer.cmd dist/apps/central-front/stats.json",
     "central-front:build-image-dev": "docker build -f apps/central-front/Dockerfile -t central-front --build-arg ENVIRONMENT_PROFILE=dev .",
+    "central-front:lint": "nx run central-front:lint",
     "central-back:build": "nx run central-back:build",
     "central-back:start-dev": "nx run central-back:serve",
     "central-back:start-prod": "node dist/main",
     "central-back:test-e2e": "set ENVIRONMENT_PROFILE=test&& set DATABASE=gencoveryDbTest&& jest --config ./apps/central-back/test/jest-e2e.json",
     "central-back:caprover-deploy-preprod": "caprover deploy --host https://captain.gws.gencovery.com --appName pre-prod-back  --branch master",
-    "central-back:caprover-deploy-prod": "caprover deploy --host https://captain.gws.gencovery.com --appName prod-back  --branch master"
+    "central-back:caprover-deploy-prod": "caprover deploy --host https://captain.gws.gencovery.com --appName prod-back  --branch master",
+    "central-back:lint": "nx run central-back:lint"
   },
   "private": true,
   "dependencies": {

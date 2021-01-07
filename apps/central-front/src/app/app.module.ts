@@ -27,15 +27,15 @@ const appConfig: AppConfig = {
 };
 
 function loadThemeOnInit(themeService: ThemeService): () => void {
-  return () => themeService.init();
+  return (): void => themeService.init();
 }
 
 function registerCustomIcon(iconRegistryService: IconRegistryService): () => void {
-  return () => iconRegistryService.registerCustomIcons();
+  return (): void => iconRegistryService.registerCustomIcons();
 }
 
 function checkSWWebsiteVersion(swService: ServiceWorkerService): () => void {
-  return () => swService.checkForNewVersion();
+  return (): void => swService.checkForNewVersion();
 }
 
 @NgModule({

@@ -1,7 +1,35 @@
 {
-  "extends": "../../.eslintrc.json",
+  "extends": [
+    "../../.eslintrc.json"
+  ],
   "ignorePatterns": [
     "!**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "extends": [
+        "plugin:@nrwl/nx/angular"
+      ],
+      "parserOptions": {
+        "project": [
+          "apps/central-back/tsconfig.*?.json"
+        ]
+      },
+      "rules": {
+        "max-len": [
+          "error",
+          {
+            "code": 140,
+            "ignorePattern": "^import .*"
+          }
+        ],
+        "@typescript-eslint/no-inferrable-types": "off",
+        "@typescript-eslint/no-empty-function": "off"
+      }
+    }
   ],
   "rules": {
     "@typescript-eslint/no-inferrable-types": "off",

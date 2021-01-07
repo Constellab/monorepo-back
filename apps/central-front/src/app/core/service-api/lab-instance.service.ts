@@ -3,7 +3,7 @@ import {ApiService} from './api.service';
 import {Observable} from 'rxjs';
 import {LabInstance, LabInstanceDatasource, LabInstanceStatusHistory, LabInstanceToken} from '../model/entities/lab-instance.class';
 import {EntityPaginatedDatasource} from '../model/datasource/entity-datasource.class';
-import {GetPageFunction} from '../model/global/page.class';
+import {GetPageFunction, Page} from '../model/global/page.class';
 import {ArrayObs} from '../model/datasource/array-obs.class';
 import {EntityArrayObs} from '../model/datasource/entity-array.class';
 
@@ -44,7 +44,7 @@ export class LabInstanceService {
   }
 
   private getCurrentLabInstanceMethod(): GetPageFunction<LabInstance> {
-    return (page: number, pageSize: number) => this.apiService.get(`${this.route}/current`, LabInstance,
+    return (page: number, pageSize: number): Observable<Page<LabInstance>> => this.apiService.get(`${this.route}/current`, LabInstance,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 

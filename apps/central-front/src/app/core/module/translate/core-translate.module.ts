@@ -18,7 +18,7 @@ export function TranslationLoaderFactory(http: HttpClient, config: TranslateModu
 export function initTranslateService(service: CoreTranslateService): () => void {
   // use a local variable otherwise the ng package build failed
   // noinspection UnnecessaryLocalVariableJS
-  const func = () => service.init();
+  const func = (): void => service.init();
   return func;
 }
 

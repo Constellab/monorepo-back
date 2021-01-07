@@ -52,7 +52,7 @@ export class ExperimentService {
 
   // use to pass the updateStatus method to UpdateStatusFormDialog
   public getUpdateStatusMethod(id: string): (status: ExperimentStatus) => Observable<Experiment> {
-    return (status => this.updateStatus(id, status));
+    return (status): Observable<Experiment> => this.updateStatus(id, status);
   }
 
   public updateStatus(id: string, status: ExperimentStatus): Observable<Experiment> {
