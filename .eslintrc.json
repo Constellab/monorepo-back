@@ -38,7 +38,8 @@
         "*.tsx"
       ],
       "extends": [
-        "plugin:@nrwl/nx/typescript"
+        "plugin:@nrwl/nx/typescript",
+        "plugin:@nrwl/nx/angular"
       ],
       "parserOptions": {
         "project": "./tsconfig.*?.json"
@@ -53,6 +54,7 @@
         ],
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-inferrable-types": "off",
+        "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/explicit-function-return-type": [
           "error",
           {

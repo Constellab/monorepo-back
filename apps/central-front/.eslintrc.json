@@ -5,7 +5,6 @@
     {
       "files": ["*.ts"],
       "extends": [
-        "plugin:@nrwl/nx/angular",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "parserOptions": { "project": ["apps/central-front/tsconfig.*?.json"] },
@@ -19,16 +18,7 @@
           { "type": "element", "prefix": "gen", "style": "kebab-case" }
         ],
         "@angular-eslint/no-empty-lifecycle-method": "off",
-        "@angular-eslint/no-input-rename": "off",
-        "max-len": [
-          "error",
-          {
-            "code": 140,
-            "ignorePattern": "^import .*"
-          }
-        ],
-        "@typescript-eslint/no-inferrable-types": "off",
-        "@typescript-eslint/no-empty-function": "off"
+        "@angular-eslint/no-input-rename": "off"
       }
     },
     {

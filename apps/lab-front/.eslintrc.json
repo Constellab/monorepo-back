@@ -5,7 +5,6 @@
     {
       "files": ["*.ts"],
       "extends": [
-        "plugin:@nrwl/nx/angular",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "parserOptions": { "project": ["apps/lab-front/tsconfig.*?.json"] },
@@ -18,16 +17,7 @@
           "error",
           { "type": "element", "prefix": "monorepo", "style": "kebab-case" }
         ],
-        "max-len": [
-          "error",
-          {
-            "code": 140,
-            "ignorePattern": "^import .*"
-          }
-        ],
-        "@typescript-eslint/no-inferrable-types": "off",
         "@angular-eslint/no-empty-lifecycle-method": "off",
-        "@typescript-eslint/no-empty-function": "off",
         "@angular-eslint/no-input-rename": "off"
       }
     },
