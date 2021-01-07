@@ -24,27 +24,27 @@
   },
   "projects": {
     "central-front": {
-      "tags": []
+      "tags": ["front"]
     },
     "central-front-e2e": {
-      "tags": [],
+      "tags": ["test"],
       "implicitDependencies": ["central-front"]
     },
     "lab-front": {
-      "tags": []
+      "tags": ["front"]
     },
     "lab-front-e2e": {
-      "tags": [],
+      "tags": ["test"],
       "implicitDependencies": ["lab-front"]
     },
     "front-core-lib": {
-      "tags": []
+      "tags": ["front"]
     },
     "central-back": {
-      "tags": []
+      "tags": ["back"]
     },
     "core-lib": {
-      "tags": []
+      "tags": ["ts-core"]
     }
   }
 }

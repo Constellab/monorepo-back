@@ -22,6 +22,20 @@
             "allow": [],
             "depConstraints": [
               {
+                "sourceTag": "front",
+                "onlyDependOnLibsWithTags": [
+                  "front",
+                  "ts-core"
+                ]
+              },
+              {
+                "sourceTag": "back",
+                "onlyDependOnLibsWithTags": [
+                  "back",
+                  "ts-core"
+                ]
+              },
+              {
                 "sourceTag": "*",
                 "onlyDependOnLibsWithTags": [
                   "*"
