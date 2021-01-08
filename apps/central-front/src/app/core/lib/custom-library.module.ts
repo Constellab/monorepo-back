@@ -9,6 +9,7 @@ import {
   FlImageModule,
   FlLoaderModule,
   FlSectionModule,
+  FlSnackBarModule,
   FlSvgIconModule,
   FlTextIconModule,
   FlTranslateModule
@@ -36,6 +37,7 @@ import {
     FlSectionModule,
     FlTextIconModule,
     FlDialogModule,
+    FlSnackBarModule,
 
   ]
 })

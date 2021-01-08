@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 import {FlConfirmDialogInput, FlConfirmDialogResult} from '../../model/fl-confirm-dialog.class';
-import {FlSnackBarService} from '../../../../service/fl-snack-bar.service';
+import {FlSnackBarService} from '../../../fl-snack-bar/fl-snack-bar.service';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
 
 @Component({

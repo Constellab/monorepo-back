@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
-import {FlSnackBarService} from './fl-snack-bar.service';
+import {FlSnackBarService} from '../module/fl-snack-bar/fl-snack-bar.service';
 import {FlNewWebsiteVersionComponent} from '../module/fl-core-component/component/fl-new-website-version/fl-new-website-version.component';
 
 @Injectable({

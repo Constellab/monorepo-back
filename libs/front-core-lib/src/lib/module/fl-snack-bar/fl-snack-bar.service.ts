@@ -2,15 +2,13 @@ import {Injectable} from '@angular/core';
 import {MatSnackBar, MatSnackBarConfig, MatSnackBarRef} from '@angular/material/snack-bar';
 import {ComponentType} from '@angular/cdk/overlay';
 import {FlSnackBarInfoInput} from './model/fl-snack-bar.class';
-import {FlSnackBarInfoComponent} from '../module/fl-core-component/component/fl-snack-bar-info/fl-snack-bar-info.component';
-import {FlTranslateService} from '../module/fl-translate/service/fl-translate.service';
+import {FlSnackBarInfoComponent} from './component/fl-snack-bar-info/fl-snack-bar-info.component';
+import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 
 /**
  * Snack bar service to create snack bar
  */
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class FlSnackBarService {
 
   constructor(private matSnackBar: MatSnackBar,
@@ -25,7 +23,7 @@ export class FlSnackBarService {
    * @param duration the duration in millisecond of the snackbar
    * @param showCloseButton if true a close button is shown in the snackbar
    */
-  public openSuccessMessage(message: string, translate: boolean = false, duration: number = 3000,
+  public openSuccessMessage(message: string, translate: boolean = false, duration: number = 300000000,
                             showCloseButton: boolean = true)
     : MatSnackBarRef<FlSnackBarInfoComponent> {
     let msg: string;

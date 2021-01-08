@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FlSnackBarInfoComponent} from './component/fl-snack-bar-info/fl-snack-bar-info.component';
 import {FlPortalArrowComponent} from './component/fl-portal-arrow/fl-portal-arrow.component';
 import {FlTooltipComponent} from './component/fl-tooltip/fl-tooltip.component';
 import {FlDateRangeComponent} from './component/fl-date-range/fl-date-range.component';
@@ -25,7 +24,6 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
  */
 @NgModule({
   declarations: [
-    FlSnackBarInfoComponent,
     FlPortalArrowComponent,
     FlTooltipComponent,
     FlDateRangeComponent,
