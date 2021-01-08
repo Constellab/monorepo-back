@@ -1,7 +1,5 @@
 # core-lib
 
-This library was generated with [Nx](https://nx.dev).
+This is the typescript core library.
 
-## Running unit tests
-
-Run `nx test core-lib` to execute the unit tests via [Jest](https://jestjs.io).
+Every exportable object and angular objects must be suffixed with cl (for core library)

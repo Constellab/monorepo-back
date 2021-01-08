@@ -16,13 +16,13 @@
     </div>
   </div>
 
-  <gen-card class="g-full">
+  <fl-card class="g-full">
 
-    <gen-card-body>
+    <fl-card-body>
       <gen-study-info [study]="study"></gen-study-info>
-    </gen-card-body>
+    </fl-card-body>
 
-    <gen-card-footer layoutGap="1em">
+    <fl-card-footer layoutGap="1em">
       <button mat-button type="button" color="primary" (click)="openUpdateStatusDialog()"
               class="button">
         {{'update_status' | translate}}
@@ -32,6 +32,6 @@
         <mat-icon>edit</mat-icon>
         <span>{{'edit' | translate}}</span>
       </button>
-    </gen-card-footer>
-  </gen-card>
+    </fl-card-footer>
+  </fl-card>
 </div>

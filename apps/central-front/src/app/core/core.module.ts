@@ -6,8 +6,6 @@ import {CoreDirectiveModule} from './module/core-directive/core-directive.module
 import {CustomMaterialModule} from './custom-material/custom-material.module';
 import {LoaderModule} from './module/loader/loader.module';
 import {CoreTranslateModule} from './module/translate/core-translate.module';
-import {ImageModule} from './module/image/image.module';
-import {CardModule} from './module/card/card.module';
 import {TextIconModule} from './module/text-icon/text-icon.module';
 import {CoreSelectModule} from './module/core-select/core-select.module';
 import {SectionModule} from './module/section/section.module';
@@ -15,6 +13,7 @@ import {QuillModule} from 'ngx-quill';
 import {CoreFormModule} from './module/core-form/core-form.module';
 import {StatusModule} from './module/status/status.module';
 import {UserCoreModule} from './entity-module/user-core/user-core.module';
+import {CustomLibraryModule} from './lib/custom-library.module';
 
 /**
  * Core module of the app containing, component, services, directives and pipes
@@ -34,8 +33,6 @@ import {UserCoreModule} from './entity-module/user-core/user-core.module';
     // other modules
     LoaderModule,
     CoreTranslateModule,
-    ImageModule,
-    CardModule,
     TextIconModule,
     CoreSelectModule,
     SectionModule,
@@ -45,6 +42,9 @@ import {UserCoreModule} from './entity-module/user-core/user-core.module';
 
     // Material Module
     CustomMaterialModule,
+
+    // Library
+    CustomLibraryModule,
 
     // Quill
     QuillModule,

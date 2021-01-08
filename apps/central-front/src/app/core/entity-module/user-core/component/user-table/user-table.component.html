@@ -5,9 +5,9 @@
     <mat-header-cell class="photo" *matHeaderCellDef>
     </mat-header-cell>
     <mat-cell class="photo" *matCellDef="let user">
-      <gen-round-image [imageUrl]="user.getPhotoWithDefault()"
+      <fl-round-image [imageUrl]="user.getPhotoWithDefault()"
                        size="2.5rem">
-      </gen-round-image>
+      </fl-round-image>
     </mat-cell>
   </ng-container>
 

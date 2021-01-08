@@ -7,11 +7,11 @@
         <h1>{{protocol.label}}</h1>
       </gen-text-icon>
 
-      <gen-card>
-        <gen-card-body>
+      <fl-card>
+        <fl-card-body>
           <gen-protocol-json [json]="protocol.getJsonProtocol()" [expandProtocol]="true"></gen-protocol-json>
-        </gen-card-body>
-      </gen-card>
+        </fl-card-body>
+      </fl-card>
 
       <gen-protocol-experiments-list [protocolId]="protocol.id"
                                      class="g-section"></gen-protocol-experiments-list>

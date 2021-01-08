@@ -1,16 +1,16 @@
-<gen-card class="card">
-  <gen-card-header>
+<fl-card class="card">
+  <fl-card-header>
     <p class="g-text-big">{{project.code}}</p>
-    <gen-card-actions>
+    <fl-card-actions>
       <gen-status-chip [statusHistory]="project.currentStatus"
                        mode="iconOnly"
                        class="g-text-normal">
       </gen-status-chip>
-    </gen-card-actions>
-  </gen-card-header>
+    </fl-card-actions>
+  </fl-card-header>
 
 
-  <gen-card-body class="body">
+  <fl-card-body class="body">
     <div>
       <p>{{project.title}}</p>
     </div>
@@ -22,5 +22,5 @@
       </gen-date-range>
     </gen-text-icon>
 
-  </gen-card-body>
-</gen-card>
+  </fl-card-body>
+</fl-card>

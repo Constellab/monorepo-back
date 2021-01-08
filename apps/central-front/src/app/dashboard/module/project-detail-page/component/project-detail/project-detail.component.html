@@ -14,12 +14,12 @@
     </div>
   </div>
 
-  <gen-card>
-    <gen-card-header>
+  <fl-card>
+    <fl-card-header>
       <h2>{{project.title}}</h2>
-    </gen-card-header>
+    </fl-card-header>
 
-    <gen-card-body>
+    <fl-card-body>
       <gen-text-icon class="dates">
         <mat-icon>date_range</mat-icon>
         <gen-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate">
@@ -36,9 +36,9 @@
         </ng-template>
       </div>
 
-    </gen-card-body>
+    </fl-card-body>
 
-    <gen-card-footer layoutGap="0.5em">
+    <fl-card-footer layoutGap="0.5em">
       <button mat-button type="button" color="primary" (click)="openUpdateStatusDialog()"
               class="button">
         {{'update_status' | translate}}
@@ -53,6 +53,6 @@
         <mat-icon svgIcon="share_arrow"></mat-icon>
         <span>{{'share' | translate}}</span>
       </button>
-    </gen-card-footer>
-  </gen-card>
+    </fl-card-footer>
+  </fl-card>
 </div>

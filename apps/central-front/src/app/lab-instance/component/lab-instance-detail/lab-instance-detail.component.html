@@ -18,9 +18,9 @@
     </div>
   </div>
 
-  <gen-card>
+  <fl-card>
 
-    <gen-card-body>
+    <fl-card-body>
 
       <!--   Lab url   -->
       <gen-text-icon iconPosition="end">
@@ -39,9 +39,9 @@
       <p *ngIf="labInstance.ipv6">
         <span class="g-text-light">{{'ipv6' | translate}} : </span>{{labInstance.ipv6}}
       </p>
-    </gen-card-body>
+    </fl-card-body>
 
-    <gen-card-footer layoutGap="0.5em">
+    <fl-card-footer layoutGap="0.5em">
       <a *ngIf="labInstance.isRunning()" routerLink="view" mat-raised-button
          color="primary">
         {{'go_to_lab' | translate}}
@@ -58,6 +58,6 @@
         <span>{{'share' | translate}}</span>
       </button>
 
-    </gen-card-footer>
-  </gen-card>
+    </fl-card-footer>
+  </fl-card>
 </div>

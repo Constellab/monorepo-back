@@ -1,10 +1,10 @@
-<gen-card class="g-full">
+<fl-card class="g-full">
 
-  <gen-card-body>
+  <fl-card-body>
     <gen-experiment-info [experiment]="experiment"></gen-experiment-info>
-  </gen-card-body>
+  </fl-card-body>
 
-  <gen-card-footer layoutGap="1em">
+  <fl-card-footer layoutGap="1em">
     <!--   Start experiment button when DRAFT   -->
     <div *ngIf="experiment.statusIsDraft(); else notDraft"
          [matTooltip]="disabledStartButtonText | translate" [matTooltipDisabled]="!disabledStartButton">
@@ -32,5 +32,5 @@
       <mat-icon>edit</mat-icon>
       {{'edit' | translate}}
     </button>
-  </gen-card-footer>
-</gen-card>
+  </fl-card-footer>
+</fl-card>

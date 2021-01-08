@@ -5,7 +5,6 @@ import {CustomMaterialModule} from '../../custom-material/custom-material.module
 import {ConfirmDialogComponent} from './component/confirm-dialog/confirm-dialog.component';
 import {LoaderModule} from '../loader/loader.module';
 import {CoreTranslateModule} from '../translate/core-translate.module';
-import {ImageModule} from '../image/image.module';
 import {PortalArrowComponent} from './component/portal-arrow/portal-arrow.component';
 import {TooltipComponent} from './component/tooltip/tooltip.component';
 import {DateRangeComponent} from './component/date-range/date-range.component';
@@ -20,6 +19,7 @@ import {DialogTitleComponent} from './component/dialog-title/dialog-title.compon
 import {NewWebsiteVersionComponent} from './component/new-website-version/new-website-version.component';
 import {ChipComponent} from './component/chip/chip.component';
 import {PaginationLoadMoreResultComponent} from './component/pagination-load-more-result/pagination-load-more-result.component';
+import {CustomLibraryModule} from '../../lib/custom-library.module';
 
 /**
  * Core modules containing components
@@ -56,11 +56,11 @@ import {PaginationLoadMoreResultComponent} from './component/pagination-load-mor
 
     LoaderModule,
     CoreTranslateModule,
-    ImageModule,
     CorePipeModule,
     CoreDirectiveModule,
 
     CustomMaterialModule,
+    CustomLibraryModule,
   ]
 })
 export class CoreComponentModule {

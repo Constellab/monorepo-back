@@ -19,14 +19,14 @@
 
     <ng-container *genSectionBody="let protocols">
 
-      <gen-card>
-        <gen-card-body>
+      <fl-card>
+        <fl-card-body>
           <gen-protocols-list [protocols]="protocols"></gen-protocols-list>
 
           <gen-pagination-load-more-result [datasource]="protocolsDatasource"></gen-pagination-load-more-result>
 
-        </gen-card-body>
-      </gen-card>
+        </fl-card-body>
+      </fl-card>
 
     </ng-container>
   </gen-async-section>

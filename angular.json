@@ -71,7 +71,7 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "namedChunks": false,
+              "namedChunks": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -187,7 +187,7 @@
       "projectType": "application",
       "root": "apps/lab-front",
       "sourceRoot": "apps/lab-front/src",
-      "prefix": "monorepo",
+      "prefix": "gen",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -301,7 +301,7 @@
       "projectType": "library",
       "root": "libs/front-core-lib",
       "sourceRoot": "libs/front-core-lib/src",
-      "prefix": "monorepo",
+      "prefix": "fl",
       "architect": {
         "lint": {
           "builder": "@nrwl/linter:eslint",
