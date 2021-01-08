@@ -1,7 +1,7 @@
 import {Directive, ElementRef, Input, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {ClHelpService} from '@monorepo/core-lib';
-import {FlTooltipService} from '../../../service/fl-tooltip.service';
-import {FlPortalDefaultPosition} from '../../../service/model/portal/fl-portal.class';
+import {FlTooltipService} from '../../fl-portal/service/fl-tooltip.service';
+import {FlPortalDefaultPosition} from '../../fl-portal/model/fl-portal.class';
 
 /**
  * Directive to be placed in a input or a textarea to limit the length of it and if the user reached

@@ -4,6 +4,7 @@ import {FlInputMaxLengthDirective} from './fl-input-max-length/fl-input-max-leng
 import {FlQuillConfigDirective} from './fl-quill-config/fl-quill-config.directive';
 import {FlDragHoverDirective} from './fl-drag-hover/fl-drag-hover.directive';
 import {FlInfiniteScrollDirective} from './fl-infinite-scroll/fl-infinite-scroll.directive';
+import {FlPortalModule} from '../fl-portal/fl-portal.module';
 
 
 /**
@@ -23,7 +24,9 @@ import {FlInfiniteScrollDirective} from './fl-infinite-scroll/fl-infinite-scroll
     FlInfiniteScrollDirective,
   ],
   imports: [
-    CommonModule
+    CommonModule,
+
+    FlPortalModule,
   ]
 })
 export class FlCoreDirectiveModule {

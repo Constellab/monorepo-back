@@ -8,9 +8,9 @@ import {
 } from '@angular/cdk/overlay';
 import {Subscription} from 'rxjs';
 import {ClHelpService} from '@monorepo/core-lib';
-import {FlOverlayRef} from '../../../../service/model/portal/fl-overlay-ref.class';
-import {FlPortalConfig} from '../../../../service/model/portal/fl-portal-config';
-import {FL_PORTAL_DATA, flPortalArrowOffset} from '../../../../service/model/portal/fl-portal.class';
+import {FlOverlayRef} from '../../model/fl-overlay-ref.class';
+import {FlPortalConfig} from '../../model/fl-portal-config.class';
+import {FL_PORTAL_DATA, flPortalArrowOffset} from '../../model/fl-portal.class';
 
 /**
  * Small component to display an arrow on the portal with arrow

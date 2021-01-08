@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FL_PORTAL_DATA} from '../../../../service/model/portal/fl-portal.class';
+import {FL_PORTAL_DATA} from '../../model/fl-portal.class';
 
 /**
  * Simple tooltip component that reuse material classes

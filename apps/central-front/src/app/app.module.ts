@@ -14,13 +14,15 @@ import {CookieService} from 'ngx-cookie-service';
 import {QuillModule} from 'ngx-quill';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {
-  FlSnackBarModule,
+  FlDialogModule,
   FlHttpInterceptorService,
+  FlPortalModule,
   FlQuillConfig,
   FlServiceWorkerService,
+  FlSnackBarModule,
   FlSvgIconModule,
   FlThemeService,
-  FlTranslateModule, FlDialogModule
+  FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {svgIcons} from './core/model/config/svg-icon-config';
 
@@ -71,6 +73,7 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     }),
     FlDialogModule.forRoot(),
     FlSnackBarModule.forRoot(),
+    FlPortalModule.forRoot(),
 
     QuillModule.forRoot({
       modules: {

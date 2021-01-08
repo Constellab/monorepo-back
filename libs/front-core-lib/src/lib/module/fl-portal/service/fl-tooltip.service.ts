@@ -3,12 +3,12 @@ import {ConnectedPosition} from '@angular/cdk/overlay';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import {FlPortalService} from './fl-portal.service';
-import {FlOverlayConfig, FlPortalDefaultPosition} from './model/portal/fl-portal.class';
-import {FlOverlayRef} from './model/portal/fl-overlay-ref.class';
-import {FlPortalConfig} from './model/portal/fl-portal-config';
-import {FlTooltipComponent} from '../module/fl-core-component/component/fl-tooltip/fl-tooltip.component';
-import {FlTranslateService} from '../module/fl-translate/service/fl-translate.service';
-import {FlTranslateParam} from '../module/fl-translate/model/fl-translate-param';
+import {FlOverlayConfig, FlPortalDefaultPosition} from '../model/fl-portal.class';
+import {FlOverlayRef} from '../model/fl-overlay-ref.class';
+import {FlPortalConfig} from '../model/fl-portal-config.class';
+import {FlTooltipComponent} from '../component/fl-tooltip/fl-tooltip.component';
+import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
+import {FlTranslateParam} from '../../fl-translate/model/fl-translate-param';
 
 /**
  * Service to create tooltip in typescript

@@ -13,10 +13,10 @@ import {NavigationStart, Router} from '@angular/router';
 import {filter, first, map} from 'rxjs/operators';
 import {merge, Observable} from 'rxjs';
 import {CloseScrollStrategyConfig} from '@angular/cdk/overlay/scroll/close-scroll-strategy';
-import {FlPortalConfig} from './model/portal/fl-portal-config';
-import {FL_PORTAL_DATA, FlOverlayConfig, flPortalArrowOffset, FlPortalDefaultPosition} from './model/portal/fl-portal.class';
-import {FlOverlayRef} from './model/portal/fl-overlay-ref.class';
-import {FlPortalArrowComponent} from '../module/fl-core-component/component/fl-portal-arrow/fl-portal-arrow.component';
+import {FlPortalConfig} from '../model/fl-portal-config.class';
+import {FL_PORTAL_DATA, FlOverlayConfig, flPortalArrowOffset, FlPortalDefaultPosition} from '../model/fl-portal.class';
+import {FlOverlayRef} from '../model/fl-overlay-ref.class';
+import {FlPortalArrowComponent} from '../component/fl-portal-arrow/fl-portal-arrow.component';
 
 
 /**
@@ -29,7 +29,7 @@ import {FlPortalArrowComponent} from '../module/fl-core-component/component/fl-p
  * See :https://material.angular.io/cdk/portal/overview
  *
  */
-@Injectable({providedIn: 'root'})
+@Injectable()
 export class FlPortalService {
 
   constructor(private overlay: Overlay, private injector: Injector,

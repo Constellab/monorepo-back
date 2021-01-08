@@ -1,7 +1,5 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FlPortalArrowComponent} from './component/fl-portal-arrow/fl-portal-arrow.component';
-import {FlTooltipComponent} from './component/fl-tooltip/fl-tooltip.component';
 import {FlDateRangeComponent} from './component/fl-date-range/fl-date-range.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FlBreadcrumbComponent} from './component/fl-breadcrumb/fl-breadcrumb.component';
@@ -24,8 +22,6 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
  */
 @NgModule({
   declarations: [
-    FlPortalArrowComponent,
-    FlTooltipComponent,
     FlDateRangeComponent,
     FlBreadcrumbComponent,
     FlLimitHeightComponent,
