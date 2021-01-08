@@ -3,9 +3,7 @@ import {ApiService} from '../../core/service-api/api.service';
 import {Credentials} from '../../core/model/global/credentials.class';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {CoreCookieService} from '../../core/service/core-cookie.service';
-import {authExpiredCookie} from '../../core/model/global/cookie.class';
-import {CleanerService} from '../../core/utils/cleanable-service';
+import {flAuthExpiredCookie, FlCleanerService, FlCookieService} from '@monorepo/front-core-lib';
 
 /**
  * Service to handle login and logout and store cookie to check if user is connected
@@ -17,7 +15,7 @@ export class AuthenticationService {
 
   private readonly route: string = 'auth';
 
-  constructor(private apiService: ApiService, private cookieService: CoreCookieService) {
+  constructor(private apiService: ApiService, private cookieService: FlCookieService) {
   }
 
   /**
@@ -48,12 +46,12 @@ export class AuthenticationService {
     const date = new Date(new Date().getTime() + expiresIn.expiresIn);
     // clear the millisecond to get closer to real expiration
     date.setMilliseconds(0);
-    this.cookieService.setCookie(authExpiredCookie, date.getTime(),
+    this.cookieService.setCookie(flAuthExpiredCookie, date.getTime(),
       {expires: date, sameSite: 'Strict', path: '/', secure: false});
   }
 
   private clearAuthExpirationCookie(): void {
-    this.cookieService.removeCookie(authExpiredCookie,
+    this.cookieService.removeCookie(flAuthExpiredCookie,
       {sameSite: 'Strict', path: '/', secure: false});
   }
 
@@ -62,14 +60,14 @@ export class AuthenticationService {
    * @private
    */
   private clearServices(): void {
-    CleanerService.getInstance().cleanServices();
+    FlCleanerService.getInstance().cleanServices();
   }
 
   /**
    * Return true if the cookie 'Auth_Expiration' exists
    */
   public hasAuthorizationCookie(): boolean {
-    return this.cookieService.check(authExpiredCookie);
+    return this.cookieService.check(flAuthExpiredCookie);
   }
 
   /**
@@ -77,7 +75,7 @@ export class AuthenticationService {
    * or null if no token is present
    */
   public getTokenExpiration(): Date {
-    const stringDate = this.cookieService.getStringCookie(authExpiredCookie);
+    const stringDate = this.cookieService.getStringCookie(flAuthExpiredCookie);
     if (!stringDate) {
       return null;
     } else {

@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
-import {CleanableService, CleanerService} from '../utils/cleanable-service';
 import {User, UserCategory} from '../model/entities/user.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {ApiService} from './api.service';
 import {map} from 'rxjs/operators';
 import {SupportedLanguage} from '../model/global/supported-language.class';
-import {CoreTranslateService} from '../module/translate/service/core-translate.service';
+import {FlCleanableService, FlCleanerService, FlTranslateService} from '@monorepo/front-core-lib';
 
 /**
  * Service to handle the current authenticated user
@@ -13,7 +12,7 @@ import {CoreTranslateService} from '../module/translate/service/core-translate.s
 @Injectable({
   providedIn: 'root'
 })
-export class AuthenticatedUserService implements CleanableService {
+export class AuthenticatedUserService implements FlCleanableService {
 
   private readonly usersRoute: string = 'users';
 
@@ -23,8 +22,8 @@ export class AuthenticatedUserService implements CleanableService {
 
 
   constructor(private apiService: ApiService,
-              private translateService: CoreTranslateService) {
-    CleanerService.getInstance().registerService(this);
+              private translateService: FlTranslateService) {
+    FlCleanerService.getInstance().registerService(this);
   }
 
   /**

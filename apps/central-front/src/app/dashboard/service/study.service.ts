@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {ApiService} from '../../core/service-api/api.service';
 import {Observable} from 'rxjs';
 import {Study, StudyStatus, StudyStatusHistory} from '../../core/model/entities/study.class';
-import {ArrayObs} from '../../core/model/datasource/array-obs.class';
-import {EntityArrayObs} from '../../core/model/datasource/entity-array.class';
+import {FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -19,8 +18,8 @@ export class StudyService {
     return this.apiService.get(`${this.route}/${id}`, Study);
   }
 
-  public getStudiesOfProject(projectId: string): ArrayObs<Study> {
-    return new EntityArrayObs(this.apiService.get(`${this.route}/project/${projectId}`, Study));
+  public getStudiesOfProject(projectId: string): FlArrayObs<Study> {
+    return new FlEntityArrayObs(this.apiService.get(`${this.route}/project/${projectId}`, Study));
   }
 
   public create(study: Partial<Study>, projectId: string): Observable<Study> {
@@ -43,7 +42,7 @@ export class StudyService {
       null, Study);
   }
 
-  public getStatusHistories(id: string): ArrayObs<StudyStatusHistory> {
-    return new EntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, StudyStatusHistory));
+  public getStatusHistories(id: string): FlArrayObs<StudyStatusHistory> {
+    return new FlEntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, StudyStatusHistory));
   }
 }

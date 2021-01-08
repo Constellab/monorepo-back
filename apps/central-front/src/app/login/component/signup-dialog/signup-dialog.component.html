@@ -1,6 +1,6 @@
-<gen-dialog-title>
+<fl-dialog-title>
   {{'signup' | translate}}
-</gen-dialog-title>
+</fl-dialog-title>
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="signup-form" [formGroup]="formGp"
@@ -9,20 +9,20 @@
     <!--  Firstname  -->
     <mat-form-field appearance="outline" fxFlex="49%">
       <mat-label>{{'firstname' | translate}}</mat-label>
-      <input matInput formControlName="firstname" required genInputMaxLength="50"
+      <input matInput formControlName="firstname" required flInputMaxLength="50"
              placeholder="{{'firstname' | translate}}">
       <mat-error *ngIf="formGp.get('firstname').hasError('required')">
-        {{'firstname' | errorRequired}}
+        {{'firstname' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
     <!--  Lastname  -->
     <mat-form-field appearance="outline" fxFlex="49%">
       <mat-label>{{'lastname' | translate}}</mat-label>
-      <input matInput formControlName="lastname" required genInputMaxLength="50"
+      <input matInput formControlName="lastname" required flInputMaxLength="50"
              placeholder="{{'lastname' | translate}}">
       <mat-error *ngIf="formGp.get('lastname').hasError('required')">
-        {{'lastname' | errorRequired}}
+        {{'lastname' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
@@ -32,7 +32,7 @@
       <input matInput type="email" formControlName="email" required
              placeholder="{{'email' | translate}}" autocomplete="username">
       <mat-error *ngIf="formGp.get('email').hasError('required')">
-        {{'email' | errorRequired}}
+        {{'email' | flErrorRequired}}
       </mat-error>
       <mat-error *ngIf="formGp.get('email').hasError('email')">
         {{'email_invalid' | translate}}
@@ -45,7 +45,7 @@
       <input matInput formControlName="phone" required
              placeholder="{{'phone' | translate}}">
       <mat-error *ngIf="formGp.get('phone').hasError('required')">
-        {{'phone' | errorRequired}}
+        {{'phone' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
@@ -55,7 +55,7 @@
       <input matInput type="password" formControlName="password" required
              placeholder="{{'password' | translate}}" autocomplete="new-password">
       <mat-error *ngIf="formGp.get('password').hasError('required')">
-        {{'password' | errorRequired}}
+        {{'password' | flErrorRequired}}
       </mat-error>
       <mat-error *ngIf="formGp.get('password').hasError('incorrectPasswordFormat')">
         {{'password_weak_error' | translate}}
@@ -68,7 +68,7 @@
       <input matInput type="password" formControlName="repeatPassword" required
              placeholder="{{'repeat_password' | translate}}" autocomplete="off">
       <mat-error *ngIf="formGp.get('repeatPassword').hasError('required')">
-        {{'repeat_password' | errorRequired}}
+        {{'repeat_password' | flErrorRequired}}
       </mat-error>
       <mat-error *ngIf="formGp.get('repeatPassword').hasError('incorrectRepeatPassword')">
         {{'repeat_password_error' | translate}}
@@ -83,7 +83,7 @@
         <gen-select-user-category-option></gen-select-user-category-option>
       </mat-select>
       <mat-error *ngIf="formGp.get('category').hasError('required')">
-        {{'user_category' | errorRequired}}
+        {{'user_category' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
@@ -94,6 +94,6 @@
   <button mat-raised-button color="primary" type="submit" form="signup-form"
           class="centered">
     {{'signup' | translate}}
-    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 </div>

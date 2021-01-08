@@ -1,11 +1,11 @@
 <div class="g-page">
-  <gen-section [isLoading]="isLoading" [object]="protocol">
+  <fl-section [isLoading]="isLoading" [object]="protocol">
 
-    <ng-template genSectionBody>
-      <gen-text-icon>
+    <ng-template flSectionBody>
+      <fl-text-icon>
         <mat-icon class="g-icon-big" svgIcon="protocol"></mat-icon>
         <h1>{{protocol.label}}</h1>
-      </gen-text-icon>
+      </fl-text-icon>
 
       <fl-card>
         <fl-card-body>
@@ -16,5 +16,5 @@
       <gen-protocol-experiments-list [protocolId]="protocol.id"
                                      class="g-section"></gen-protocol-experiments-list>
     </ng-template>
-  </gen-section>
+  </fl-section>
 </div>

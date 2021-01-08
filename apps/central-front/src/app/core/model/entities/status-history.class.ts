@@ -1,12 +1,12 @@
 import {BaseEntity} from './base-entity.class';
 import {JsonObject, JsonProperty} from 'json2typescript';
-import {LuxonConverter} from '../../utils/json-converter';
 import {DateTime} from 'luxon';
+import {ClLuxonConverter} from '@monorepo/core-lib';
 
 @JsonObject('StatusHistory')
 export abstract class StatusHistory<S> extends BaseEntity {
 
-  @JsonProperty('endDate', LuxonConverter, true)
+  @JsonProperty('endDate', ClLuxonConverter, true)
   endDate: DateTime = null;
 
   // status of this history

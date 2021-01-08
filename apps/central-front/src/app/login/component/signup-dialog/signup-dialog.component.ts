@@ -2,8 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {NewUser} from '../../../core/model/entities/user.class';
 import {Validators} from '@angular/forms';
-import {GlobalValidators} from '../../../core/utils/global.validators';
-import {SnackBarService} from '../../../core/service/snack-bar.service';
+import {FlGlobalValidators, FlSnackBarService} from '@monorepo/front-core-lib';
 import {MatDialogRef} from '@angular/material/dialog';
 import {UserAccountsService} from '../../../core/service-api/user-accounts.service';
 
@@ -22,7 +21,7 @@ export class SignupDialogComponent implements OnInit {
   isLoading: boolean = false;
 
   constructor(private userAccountService: UserAccountsService,
-              private snackBarService: SnackBarService,
+              private snackBarService: FlSnackBarService,
               private dialogRef: MatDialogRef<SignupDialogComponent>) {
   }
 
@@ -36,9 +35,9 @@ export class SignupDialogComponent implements OnInit {
       firstname: [null, Validators.required],
       lastname: [null, Validators.required],
       email: [null, [Validators.required, Validators.email]],
-      password: [null, [Validators.required, GlobalValidators.passwordValidator()]],
+      password: [null, [Validators.required, FlGlobalValidators.passwordValidator()]],
       repeatPassword: [null, [Validators.required,
-        GlobalValidators.repeatPasswordValidator('password')]],
+        FlGlobalValidators.repeatPasswordValidator('password')]],
       phone: [null, Validators.required],
       category: [null, Validators.required],
     });

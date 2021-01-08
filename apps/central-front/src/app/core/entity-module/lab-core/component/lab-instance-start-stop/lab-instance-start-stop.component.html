@@ -3,13 +3,13 @@
         (click)="stopLab($event)" class="g-button-small">
   <mat-icon>stop</mat-icon>
   <span>{{'stop_lab' | translate}}</span>
-  <gen-button-loader *ngIf="isLoading" size="small" position="override"></gen-button-loader>
+  <fl-button-loader *ngIf="isLoading" size="small" position="override"></fl-button-loader>
 </button>
 <ng-template #stopped>
   <button mat-button color="primary" type="button"
           (click)="startLab($event)" class="g-button-small">
     <mat-icon>play_arrow</mat-icon>
     <span>{{'start_lab' | translate}}</span>
-    <gen-button-loader *ngIf="isLoading" size="small" position="override"></gen-button-loader>
+    <fl-button-loader *ngIf="isLoading" size="small" position="override"></fl-button-loader>
   </button>
 </ng-template>

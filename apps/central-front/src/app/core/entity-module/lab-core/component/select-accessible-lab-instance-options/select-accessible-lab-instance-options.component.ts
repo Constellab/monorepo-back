@@ -1,15 +1,15 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {LabInstanceService} from '../../../../service-api/lab-instance.service';
 import {MatSelect} from '@angular/material/select';
-import {EmbeddedOptionsAbstractDirective} from '../../../../abstract-directive/embedded-options-abstract.directive';
 import {LabInstance} from '../../../../model/entities/lab-instance.class';
+import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-select-accessible-lab-instance-options',
   templateUrl: './select-accessible-lab-instance-options.component.html',
   styleUrls: ['./select-accessible-lab-instance-options.component.scss']
 })
-export class SelectAccessibleLabInstanceOptionsComponent extends EmbeddedOptionsAbstractDirective
+export class SelectAccessibleLabInstanceOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit {
 
   labInstances: LabInstance[];

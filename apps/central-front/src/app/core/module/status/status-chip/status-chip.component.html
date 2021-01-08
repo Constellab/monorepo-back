@@ -1,7 +1,7 @@
-<gen-chip [ngClass]="statusColorClass">
-  <gen-text-icon [gap]="gap" [iconPosition]="iconPosition">
-    <mat-icon *ngIf="showIcon" [genIcon]="icon" class="g-icon-small"></mat-icon>
+<fl-chip [ngClass]="statusColorClass">
+  <fl-text-icon [gap]="gap" [iconPosition]="iconPosition">
+    <mat-icon *ngIf="showIcon" [flIcon]="icon" class="g-icon-small"></mat-icon>
     <span *ngIf="showText" class="g-text-uppercase">{{statusHistory.status | translate}}</span>
-  </gen-text-icon>
-</gen-chip>
+  </fl-text-icon>
+</fl-chip>
 

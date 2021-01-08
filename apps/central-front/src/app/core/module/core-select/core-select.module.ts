@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {SelectUserCategoryOptionComponent} from './select-user-category-option/select-user-category-option.component';
 import {CustomMaterialModule} from '../../custom-material/custom-material.module';
-import {CoreTranslateModule} from '../translate/core-translate.module';
+import {CustomLibraryModule} from '../../lib/custom-library.module';
 
 /**
  * Module for all generic select or select options component
@@ -17,7 +17,7 @@ import {CoreTranslateModule} from '../translate/core-translate.module';
   imports: [
     CommonModule,
     CustomMaterialModule,
-    CoreTranslateModule,
+    CustomLibraryModule,
   ]
 })
 export class CoreSelectModule {

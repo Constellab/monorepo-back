@@ -4,9 +4,7 @@ import {UserInlineComponent} from './component/user-inline/user-inline.component
 import {CustomMaterialModule} from '../../custom-material/custom-material.module';
 import {SelectUserOptionsComponent} from './component/select-user-options/select-user-options.component';
 import {AuthenticatedUserInlineComponent} from './component/authenticated-user-inline/authenticated-user-inline.component';
-import {CoreTranslateModule} from '../../module/translate/core-translate.module';
 import {UserTableComponent} from './component/user-table/user-table.component';
-import {CorePipeModule} from '../../module/core-pipe/core-pipe.module';
 import {CustomLibraryModule} from '../../lib/custom-library.module';
 
 /**
@@ -30,9 +28,6 @@ import {CustomLibraryModule} from '../../lib/custom-library.module';
 
     CustomMaterialModule,
     CustomLibraryModule,
-
-    CoreTranslateModule,
-    CorePipeModule,
   ]
 })
 export class UserCoreModule {

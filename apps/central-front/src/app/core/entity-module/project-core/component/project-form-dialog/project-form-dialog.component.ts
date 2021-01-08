@@ -1,13 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormDialogInput} from '../../../../model/global/form.class';
 import {Project} from '../../../../model/entities/project.class';
 import {ProjectService} from '../../../../../dashboard/service/project.service';
-import {SnackBarService} from '../../../../service/snack-bar.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {FormDialogAbstractDirective} from '../../../../abstract-directive/form-dialog-abstract.directive';
 import {Observable} from 'rxjs';
+import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 
 /**
  * Dialog to create or update a project
@@ -17,15 +15,15 @@ import {Observable} from 'rxjs';
   templateUrl: './project-form-dialog.component.html',
   styleUrls: ['./project-form-dialog.component.scss']
 })
-export class ProjectFormDialogComponent extends FormDialogAbstractDirective<Partial<Project>, Project> implements OnInit {
+export class ProjectFormDialogComponent extends FlFormDialogAbstractDirective<Partial<Project>, Project> implements OnInit {
 
   formGp: FormGroup<Partial<Project>>;
 
   isLoading: boolean = false;
 
-  constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FormDialogInput<Project>,
+  constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<Project>,
               private projectService: ProjectService,
-              snackBarService: SnackBarService,
+              snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<ProjectFormDialogComponent>) {
     super(dialogInput, snackBarService, dialogRef, 'project_created', 'project_updated');
   }

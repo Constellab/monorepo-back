@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Params} from '@angular/router';
-import {SnackBarService} from '../../../core/service/snack-bar.service';
+import {FlSnackBarService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-login-page',
@@ -10,7 +10,7 @@ import {SnackBarService} from '../../../core/service/snack-bar.service';
 export class LoginPageComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
-              private snackBarService: SnackBarService) {
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {

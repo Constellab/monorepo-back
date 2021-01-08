@@ -1,9 +1,9 @@
 <div>
   <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
-    <gen-text-icon>
+    <fl-text-icon>
       <mat-icon class="g-icon-big" svgIcon="project"></mat-icon>
       <h1>{{project.code}}</h1>
-    </gen-text-icon>
+    </fl-text-icon>
 
     <div fxLayout="row" fxLayoutAlign="start center">
       <button mat-icon-button type="button" (click)="openStatusHistory()"
@@ -20,11 +20,11 @@
     </fl-card-header>
 
     <fl-card-body>
-      <gen-text-icon class="dates">
+      <fl-text-icon class="dates">
         <mat-icon>date_range</mat-icon>
-        <gen-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate">
-        </gen-date-range>
-      </gen-text-icon>
+        <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate">
+        </fl-date-range>
+      </fl-text-icon>
 
       <div class="description">
         <div *ngIf="project.description; else noDesc" [innerHTML]="project.description"></div>

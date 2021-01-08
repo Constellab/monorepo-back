@@ -2,8 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl} from '@ngneat/reactive-forms';
 import {MatDialogRef} from '@angular/material/dialog';
 import {UserAccountsService} from '../../../core/service-api/user-accounts.service';
-import {SnackBarService} from '../../../core/service/snack-bar.service';
 import {Validators} from '@angular/forms';
+import {FlSnackBarService} from '@monorepo/front-core-lib';
 
 /**
  * Dialog with a simple form where the user enter his email to receive the
@@ -22,7 +22,7 @@ export class PasswordForgottenComponent implements OnInit {
 
   constructor(private dialogRef: MatDialogRef<PasswordForgottenComponent>,
               private userAccountsService: UserAccountsService,
-              private snackBarService: SnackBarService) {
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {

@@ -3,8 +3,8 @@ import {BaseEntity} from './base-entity.class';
 import {Lab} from './lab.class';
 import {StatusHistory} from './status-history.class';
 import {ServerInfo} from './server-info.class';
-import {EntityPaginatedDatasource} from '../datasource/entity-datasource.class';
 import {User} from './user.class';
+import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
 export enum LabInstanceStatus {
   RUNNING = 'RUNNING',
@@ -56,7 +56,7 @@ export class LabInstance extends BaseEntity {
   }
 }
 
-export type LabInstanceDatasource = EntityPaginatedDatasource<LabInstance>;
+export type LabInstanceDatasource = FlEntityPaginatedDatasource<LabInstance>;
 
 
 export function getLabInstanceStatusColorClass(status: LabInstanceStatus,

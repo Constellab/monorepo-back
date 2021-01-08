@@ -1,26 +1,26 @@
 <div class="g-page">
 
-  <gen-async-section [arrayObs]="labsArrays" emptyText="no_lab_instance">
+  <fl-async-section [arrayObs]="labsArrays" emptyText="no_lab_instance">
 
-    <gen-section-header class="g-page-title">
-      <gen-text-icon iconPosition="start">
+    <fl-section-header class="g-page-title">
+      <fl-text-icon iconPosition="start">
         <mat-icon class="g-icon-big">view_list</mat-icon>
         <h1>{{'labs_catalog' | translate}}</h1>
-      </gen-text-icon>
+      </fl-text-icon>
 
-      <gen-section-actions>
+      <fl-section-actions>
         <button mat-raised-button type="button" color="accent"
                 class="g-button-small" (click)="openCreateLabDialog()">
           <mat-icon>add</mat-icon>
         </button>
 
-      </gen-section-actions>
-    </gen-section-header>
+      </fl-section-actions>
+    </fl-section-header>
 
-    <ng-container *genSectionBody>
+    <ng-container *flSectionBody>
       <gen-lab-table [datasource]="labsArrays" [columns]="columns"></gen-lab-table>
     </ng-container>
 
-  </gen-async-section>
+  </fl-async-section>
 
 </div>

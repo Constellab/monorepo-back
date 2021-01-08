@@ -1,15 +1,15 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
-import {EmbeddedOptionsAbstractDirective} from '../../../../abstract-directive/embedded-options-abstract.directive';
 import {MatSelect} from '@angular/material/select';
 import {LabService} from '../../../../../dashboard/service/lab.service';
 import {Lab} from '../../../../model/entities/lab.class';
+import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-select-lab-options',
   templateUrl: './select-lab-options.component.html',
   styleUrls: ['./select-lab-options.component.scss']
 })
-export class SelectLabOptionsComponent extends EmbeddedOptionsAbstractDirective
+export class SelectLabOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit {
 
   labs: Lab[];

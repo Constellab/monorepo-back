@@ -1,0 +1,15 @@
+<ng-container *ngIf="datasource.page">
+  <div *ngIf="!datasource.page.last" fxLayout="row" fxLayoutAlign="center">
+    <button [disabled]="datasource.isLoading"
+            mat-button color="primary" type="button" (click)="loadMoreResults()">
+      {{'show_more_result' | translate}}
+      <fl-button-loader *ngIf="datasource.nextPageIsLoading"></fl-button-loader>
+    </button>
+  </div>
+
+  <div class="g-text-light g-text-centered end-result" *ngIf="datasource.page.last">
+    <p *ngIf="datasource.page.totalElements > 0 ;else noElement">{{'no_more_result' | translate}}</p>
+    <ng-template #noElement><p>{{'no_result' | translate}}</p></ng-template>
+    <mat-icon>block</mat-icon>
+  </div>
+</ng-container>

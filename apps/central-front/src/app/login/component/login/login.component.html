@@ -8,7 +8,7 @@
     <input matInput type="email" formControlName="email" required
            placeholder="{{'email' | translate}}" autocomplete="username">
     <mat-error *ngIf="formGp.get('email').hasError('required')">
-      {{'email' | errorRequired}}
+      {{'email' | flErrorRequired}}
     </mat-error>
     <mat-error *ngIf="formGp.get('email').hasError('email')">
       {{'email_invalid' | translate}}
@@ -21,7 +21,7 @@
     <input matInput type="password" formControlName="password" required
            placeholder="{{'password' | translate}}" autocomplete="current-password">
     <mat-error *ngIf="formGp.get('password').hasError('required')">
-      {{'password' | errorRequired}}
+      {{'password' | flErrorRequired}}
     </mat-error>
   </mat-form-field>
 
@@ -29,7 +29,7 @@
   <button mat-raised-button color="accent" type="submit"
           [disabled]="isLoading" class="connection-button g-button-big">
     {{'sign_in' | translate}}
-    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 
 

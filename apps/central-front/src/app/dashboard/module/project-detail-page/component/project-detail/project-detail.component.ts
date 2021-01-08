@@ -1,7 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Project, ProjectStatus} from '../../../../../core/model/entities/project.class';
-import {DialogService} from '../../../../../core/service/dialog.service';
-import {FormDialogInput} from '../../../../../core/model/global/form.class';
 import {ProjectFormDialogComponent} from '../../../../../core/entity-module/project-core/component/project-form-dialog/project-form-dialog.component';
 import {
   UpdateStatusFormDialogComponent,
@@ -12,6 +10,7 @@ import {
   StatusHistoryListDialogComponent,
   StatusHistoryListDialogInput
 } from '../../../../../core/module/status/status-history-list-dialog/status-history-list-dialog.component';
+import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
 
 /**
  * Show detailed information for a project , used in ProjectDetailPage
@@ -27,7 +26,7 @@ export class ProjectDetailComponent implements OnInit {
 
   @Output() projectUpdated: EventEmitter<Project> = new EventEmitter<Project>();
 
-  constructor(private dialogService: DialogService,
+  constructor(private dialogService: FlDialogService,
               private projectService: ProjectService) {
   }
 
@@ -35,7 +34,7 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   openUpdateProjectDialog(): void {
-    const dialogInput: FormDialogInput<Project> = {
+    const dialogInput: FlFormDialogInput<Project> = {
       mode: 'update',
       object: this.project
     };

@@ -1,17 +1,17 @@
-<gen-async-section [arrayObs]="projectsDatasource" emptyText="no_project">
+<fl-async-section [arrayObs]="projectsDatasource" emptyText="no_project">
 
-  <gen-section-header class="g-headline">
+  <fl-section-header class="g-headline">
     <a [routerLink]="myProjectsRoute" class="text-link">
-      <gen-text-icon iconPosition="start">
+      <fl-text-icon iconPosition="start">
         <mat-icon class="g-icon-big" svgIcon="project"></mat-icon>
         <h2>{{'my_projects' | translate}}</h2>
-      </gen-text-icon>
+      </fl-text-icon>
     </a>
-  </gen-section-header>
+  </fl-section-header>
 
-  <ng-container *genSectionBody="let projects">
+  <ng-container *flSectionBody="let projects">
     <gen-projects-list [projects]="projects"></gen-projects-list>
   </ng-container>
 
-</gen-async-section>
+</fl-async-section>
 

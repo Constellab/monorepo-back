@@ -1,6 +1,6 @@
-<gen-dialog-title>
+<fl-dialog-title>
   {{'new_protocol' | translate}}
-</gen-dialog-title>
+</fl-dialog-title>
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="protocol-form">
@@ -12,6 +12,6 @@
   <button mat-raised-button color="primary" type="submit" form="protocol-form"
           class="g-centered-forced">
     {{'save' | translate}}
-    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 </div>

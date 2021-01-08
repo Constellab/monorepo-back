@@ -1,10 +1,8 @@
-export interface SvgIcon {
-  name: string;
-  filename: string;
-}
 
 // define the list of svg icon
-export const svgIcons: SvgIcon[] = [
+import {FlSvgIcon} from '@monorepo/front-core-lib';
+
+export const svgIcons: FlSvgIcon[] = [
   {name: 'experiment', filename: 'flask-solid.svg'},
   {name: 'study', filename: 'chalkboard-teacher-solid.svg'},
   {name: 'protocol', filename: 'cogs-solid.svg'},

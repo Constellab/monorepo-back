@@ -1,24 +1,10 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Optional,
-  Output,
-  Self,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Optional, Output, Self, ViewChild} from '@angular/core';
 import {NgControl, Validator} from '@angular/forms';
 import {defaultJsonEditorConfig, JsonEditorConfig} from './json-editor-option.class';
-import {FormFieldDirective} from '../../../../abstract-directive/form-field.directive';
 import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
-import {CoreTranslateService} from '../../../translate/service/core-translate.service';
-import {HelpService} from '../../../../utils/help-service';
-import {DropFileEvent} from '../../../core-directive/drag-hover/drop-file-event.class';
-import {SnackBarService} from '../../../../service/snack-bar.service';
 import {ValidationErrors} from '@ngneat/reactive-forms/lib/types';
+import {ClHelpService} from '@monorepo/core-lib';
+import {FlDropFileEvent, FlFormFieldDirective, FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
 
 /**
  * NgModel component for json editor. It uses the package jsoneditor
@@ -33,10 +19,10 @@ import {ValidationErrors} from '@ngneat/reactive-forms/lib/types';
   templateUrl: './json-editor.component.html',
   styleUrls: ['./json-editor.component.scss'],
   providers: [
-    {provide: FormFieldDirective, useExisting: JsonEditorComponent},
+    {provide: FlFormFieldDirective, useExisting: JsonEditorComponent},
   ]
 })
-export class JsonEditorComponent extends FormFieldDirective<any, string>
+export class JsonEditorComponent extends FlFormFieldDirective<any, string>
   implements OnInit, OnDestroy, Validator {
 
   @Input() placeholder: string;
@@ -55,8 +41,8 @@ export class JsonEditorComponent extends FormFieldDirective<any, string>
   private editor: JSONEditor;
 
   constructor(@Optional() @Self() ngControl: NgControl,
-              private translateService: CoreTranslateService,
-              private snackBarService: SnackBarService) {
+              private translateService: FlTranslateService,
+              private snackBarService: FlSnackBarService) {
     super(ngControl);
   }
 
@@ -158,7 +144,7 @@ export class JsonEditorComponent extends FormFieldDirective<any, string>
 
 
   protected convertOuterToInner(outerValue: string): any {
-    if (HelpService.isNullOrEmpty(outerValue)) {
+    if (ClHelpService.isNullOrEmpty(outerValue)) {
       return null;
     }
     try {
@@ -173,7 +159,7 @@ export class JsonEditorComponent extends FormFieldDirective<any, string>
     return innerValue != null ? JSON.stringify(innerValue) : null;
   }
 
-  async onFileDrop(ev: DropFileEvent): Promise<void> {
+  async onFileDrop(ev: FlDropFileEvent): Promise<void> {
     if (ev.files.length === 0) {
       return;
     }

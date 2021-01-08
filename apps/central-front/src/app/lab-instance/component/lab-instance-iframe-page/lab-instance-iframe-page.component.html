@@ -1,9 +1,9 @@
-<gen-section class="full-page" [isLoading]="isLoading" [object]="labInstanceToken" [emptyText]="errorText">
+<fl-section class="full-page" [isLoading]="isLoading" [object]="labInstanceToken" [emptyText]="errorText">
 
-  <ng-template genSectionBody>
+  <ng-template flSectionBody>
     <gen-lab-instance-iframe [labUrl]="labInstanceToken.labInstance.url"
                              [token]="labInstanceToken.token"
                              [iframeOption]="iframeOptions"></gen-lab-instance-iframe>
   </ng-template>
 
-</gen-section>
+</fl-section>

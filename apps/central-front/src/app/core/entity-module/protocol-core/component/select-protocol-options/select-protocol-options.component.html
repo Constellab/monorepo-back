@@ -5,14 +5,14 @@
 </ng-container>
 
 <ng-template #notLoading>
-  <div (genInfiniteScroll)="loadMoreResult()"
-       [genInfiniteDisabled]="datasource.isLoading || datasource.page?.last"
+  <div (flInfiniteScroll)="loadMoreResult()"
+       [flInfiniteDisabled]="datasource.isLoading || datasource.page?.last"
        class="container" *ngIf="datasource.connect() | async as protocols; else noProtocol">
     <mat-option *ngFor="let protocol of protocols" [value]="protocol">
       {{protocol.label}}
     </mat-option>
 
-    <gen-pagination-load-more-result [datasource]="datasource"></gen-pagination-load-more-result>
+    <fl-pagination-load-more-result [datasource]="datasource"></fl-pagination-load-more-result>
   </div>
 
   <ng-template #noProtocol>

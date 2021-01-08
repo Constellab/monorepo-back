@@ -1,25 +1,23 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormDialogAbstractDirective} from '../../../../abstract-directive/form-dialog-abstract.directive';
 import {LabInstance} from '../../../../model/entities/lab-instance.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormDialogInput} from '../../../../model/global/form.class';
-import {SnackBarService} from '../../../../service/snack-bar.service';
 import {LabInstanceService} from '../../../../service-api/lab-instance.service';
 import {Validators} from '@angular/forms';
+import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-lab-instance-form-dialog',
   templateUrl: './lab-instance-form-dialog.component.html',
   styleUrls: ['./lab-instance-form-dialog.component.scss']
 })
-export class LabInstanceFormDialogComponent extends FormDialogAbstractDirective<Partial<LabInstance>, LabInstance>
+export class LabInstanceFormDialogComponent extends FlFormDialogAbstractDirective<Partial<LabInstance>, LabInstance>
   implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FormDialogInput<LabInstance>,
+  constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<LabInstance>,
               private labInstanceService: LabInstanceService,
-              snackBarService: SnackBarService,
+              snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<LabInstanceFormDialogComponent>) {
     super(dialogInput, snackBarService, dialogRef, 'create_lab_instance', 'update_lab_instance');
   }

@@ -1,15 +1,13 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormDialogInput} from '../../../../../core/model/global/form.class';
 import {Experiment} from '../../../../../core/model/entities/experiment.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {SnackBarService} from '../../../../../core/service/snack-bar.service';
 import {Validators} from '@angular/forms';
 import {ExperimentService} from '../../../../service/experiment.service';
-import {FormDialogAbstractDirective} from '../../../../../core/abstract-directive/form-dialog-abstract.directive';
 import {Observable} from 'rxjs';
+import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 
-export interface ExperimentFormDialogInput extends FormDialogInput<Experiment> {
+export interface ExperimentFormDialogInput extends FlFormDialogInput<Experiment> {
   studyId?: string;
 }
 
@@ -21,7 +19,7 @@ export interface ExperimentFormDialogInput extends FormDialogInput<Experiment> {
   templateUrl: './experiment-form-dialog.component.html',
   styleUrls: ['./experiment-form-dialog.component.scss']
 })
-export class ExperimentFormDialogComponent extends FormDialogAbstractDirective<Partial<Experiment>, Experiment>
+export class ExperimentFormDialogComponent extends FlFormDialogAbstractDirective<Partial<Experiment>, Experiment>
   implements OnInit {
 
   formGp: FormGroup<Partial<Experiment>>;
@@ -30,7 +28,7 @@ export class ExperimentFormDialogComponent extends FormDialogAbstractDirective<P
 
   constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: ExperimentFormDialogInput,
               private experimentService: ExperimentService,
-              snackBarService: SnackBarService,
+              snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<ExperimentFormDialogComponent>) {
     super(dialogInput, snackBarService, dialogRef, 'experiment_created', 'experiment_updated');
   }

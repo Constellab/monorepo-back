@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ArrayObs} from '../../../core/model/datasource/array-obs.class';
 import {User} from '../../../core/model/entities/user.class';
 import {UserAccountsService} from '../../../core/service-api/user-accounts.service';
-import {TableColumn} from '../../../core/abstract-directive/table-abstract.directive';
+import {FlArrayObs, FlTableColumn} from '@monorepo/front-core-lib';
 
 /**
  * admin component to activate user accounts
@@ -14,9 +13,9 @@ import {TableColumn} from '../../../core/abstract-directive/table-abstract.direc
 })
 export class AdminAccountsActivationComponent implements OnInit {
 
-  accounts: ArrayObs<User>;
+  accounts: FlArrayObs<User>;
 
-  displayedColumns: TableColumn<User>[] = ['photo', 'fullname', 'email', 'phone', 'createdAt', 'customTemplate'];
+  displayedColumns: FlTableColumn<User>[] = ['photo', 'fullname', 'email', 'phone', 'createdAt', 'customTemplate'];
 
   constructor(private accountService: UserAccountsService) {
   }

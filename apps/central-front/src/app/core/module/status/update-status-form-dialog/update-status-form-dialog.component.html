@@ -1,6 +1,6 @@
-<gen-dialog-title>
+<fl-dialog-title>
   {{title | translate}}
-</gen-dialog-title>
+</fl-dialog-title>
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="status-form">
@@ -10,12 +10,12 @@
       <mat-label>{{'status' | translate}}</mat-label>
       <mat-select [formControl]="formControl" placeholder="{{'status' | translate}}"
                   required>
-        <mat-option *ngFor="let status of enum | enumToArray" [value]="status">
+        <mat-option *ngFor="let status of enum | flEnumToArray" [value]="status">
           {{status | translate}}
         </mat-option>
       </mat-select>
       <mat-error *ngIf="formControl.hasError('required')">
-        {{'status' | errorRequired}}
+        {{'status' | flErrorRequired}}
       </mat-error>
       <mat-error *ngIf="formControl.hasError('sameValue')">
         {{'same_status_error' | translate}}
@@ -29,6 +29,6 @@
   <button mat-raised-button color="primary" type="submit" form="status-form"
           class="g-centered-forced">
     {{'save' | translate}}
-    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 </div>

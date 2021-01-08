@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Report} from '../../../../../core/model/entities/report.class';
 import {ReportService} from '../../../../service/report.service';
-import {ArrayObs} from '../../../../../core/model/datasource/array-obs.class';
+import {FlArrayObs} from '@monorepo/front-core-lib';
 
 /**
  * For the experiment detail page, it get the list of report and displays it
@@ -15,7 +15,7 @@ export class ReportsListComponent implements OnInit {
 
   @Input() experimentId: string;
 
-  reportsArray: ArrayObs<Report>;
+  reportsArray: FlArrayObs<Report>;
 
 
   constructor(private reportService: ReportService) {

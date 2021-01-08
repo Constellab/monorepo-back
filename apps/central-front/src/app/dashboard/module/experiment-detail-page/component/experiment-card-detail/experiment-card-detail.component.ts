@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Experiment, ExperimentStatus} from '../../../../../core/model/entities/experiment.class';
-import {DialogService} from '../../../../../core/service/dialog.service';
 import {ExperimentService} from '../../../../service/experiment.service';
 import {
   ExperimentFormDialogComponent,
@@ -11,7 +10,7 @@ import {
   UpdateStatusFormDialogInput
 } from '../../../../../core/module/status/update-status-form-dialog/update-status-form-dialog.component';
 import {LabIframeOptions, RouterService} from '../../../../../core/service/router.service';
-import {ConfirmDialogInput, ConfirmDialogResult} from '../../../../../core/model/global/confirm.dialog.class';
+import {FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService} from '@monorepo/front-core-lib';
 
 /**
  * Detail card of the experiment used in the experiment page
@@ -29,7 +28,7 @@ export class ExperimentCardDetailComponent implements OnInit {
   openInLabLink: string;
   linkQueryParams: LabIframeOptions;
 
-  constructor(private dialogService: DialogService,
+  constructor(private dialogService: FlDialogService,
               private experimentService: ExperimentService,
               private routerService: RouterService) {
   }
@@ -86,7 +85,7 @@ export class ExperimentCardDetailComponent implements OnInit {
   }
 
   startExperiment(): void {
-    const dialogInput: ConfirmDialogInput = {
+    const dialogInput: FlConfirmDialogInput = {
       title: 'start_experiment',
       content: 'start_experiment_confirmation',
       translateTitleAndContent: true,
@@ -100,7 +99,7 @@ export class ExperimentCardDetailComponent implements OnInit {
     );
   }
 
-  private onStartExperimentClosed(result: ConfirmDialogResult<Experiment>): void {
+  private onStartExperimentClosed(result: FlConfirmDialogResult<Experiment>): void {
     if (result.choice) {
       const experiment: Experiment = result.result;
       this.routerService.navigateToLabIframe(experiment.labInstance.id,

@@ -16,7 +16,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatTableModule} from '@angular/material/table';
-import {LuxonDateAdapter, luxonDateFormat} from '../model/config/luxon-date-adapter';
+import {FlLuxonDateAdapter, flLuxonDateFormat} from '@monorepo/front-core-lib';
 
 
 /**
@@ -56,8 +56,8 @@ import {LuxonDateAdapter, luxonDateFormat} from '../model/config/luxon-date-adap
     },
 
     // configure the date picker to work with luxon
-    {provide: DateAdapter, useExisting: LuxonDateAdapter},
-    {provide: MAT_DATE_FORMATS, useValue: luxonDateFormat},
+    {provide: DateAdapter, useExisting: FlLuxonDateAdapter},
+    {provide: MAT_DATE_FORMATS, useValue: flLuxonDateFormat},
   ]
 })
 export class CustomMaterialModule {

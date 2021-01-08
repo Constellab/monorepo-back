@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Protocol, ProtocolDatasource} from '../../../core/model/entities/protocol.entity';
 import {ProtocolService} from '../../../core/service-api/protocol.service';
 import {ProtocolFormDialogComponent} from '../../../core/entity-module/protocol-core/component/protocol-form-dialog/protocol-form-dialog.component';
-import {DialogService} from '../../../core/service/dialog.service';
+import {FlDialogService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-my-protocols-page',
@@ -14,7 +14,7 @@ export class MyProtocolsPageComponent implements OnInit {
   protocolsDatasource: ProtocolDatasource;
 
   constructor(private protocolService: ProtocolService,
-              private dialogService: DialogService) {
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {

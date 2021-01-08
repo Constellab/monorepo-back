@@ -2,11 +2,11 @@ import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} fr
 import {newProtocolFormGp, Protocol} from '../../../../../core/model/entities/protocol.entity';
 import {Experiment} from '../../../../../core/model/entities/experiment.class';
 import {ExperimentService} from '../../../../service/experiment.service';
-import {SnackBarService} from '../../../../../core/service/snack-bar.service';
 import {FormGroup} from '@ngneat/reactive-forms';
 import {MatSelectChange} from '@angular/material/select';
 import {Subscription} from 'rxjs';
 import {SelectProtocolOptionsComponent} from '../../../../../core/entity-module/protocol-core/component/select-protocol-options/select-protocol-options.component';
+import {FlSnackBarService} from '@monorepo/front-core-lib';
 
 /**
  * Form to update the protocol of a experiment
@@ -39,7 +39,7 @@ export class ExperimentProtocolEditComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
 
   constructor(private experimentService: ExperimentService,
-              private snackBarService: SnackBarService) {
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {

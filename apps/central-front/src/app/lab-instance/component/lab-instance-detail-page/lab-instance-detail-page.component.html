@@ -1,7 +1,7 @@
 <div class="g-page" fxLayout="column">
 
-  <gen-section [isLoading]="isLoading" [object]="labInstance" fxFlex="grow">
-    <ng-template genSectionBody>
+  <fl-section [isLoading]="isLoading" [object]="labInstance" fxFlex="grow">
+    <ng-template flSectionBody>
       <div fxLayout="column" fxFlex="grow">
         <gen-lab-instance-detail [labInstance]="labInstance"
                                  (update)="onLabUpdate($event)"></gen-lab-instance-detail>
@@ -13,5 +13,5 @@
 <!--                                 class="section"></gen-lab-instance-iframe>-->
       </div>
     </ng-template>
-  </gen-section>
+  </fl-section>
 </div>

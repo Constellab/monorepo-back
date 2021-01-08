@@ -1,8 +1,8 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {SupportedLanguage} from '../global/supported-language.class';
-import {Entity} from './entity.entity';
-import {LuxonConverter} from '../../utils/json-converter';
 import {DateTime} from 'luxon';
+import {ClLuxonConverter} from '@monorepo/core-lib';
+import {FlEntity} from '@monorepo/front-core-lib';
 
 export enum UserCategory {
   ADMIN = 'ADMIN',
@@ -22,7 +22,7 @@ export interface NewUser {
 }
 
 @JsonObject('User')
-export class User extends Entity {
+export class User extends FlEntity {
   @JsonProperty('firstname', String)
   firstname: string = null;
 
@@ -47,7 +47,7 @@ export class User extends Entity {
   @JsonProperty('photo', String, true)
   photo: string = null;
 
-  @JsonProperty('createdAt', LuxonConverter)
+  @JsonProperty('createdAt', ClLuxonConverter)
   createdAt: DateTime = null;
 
   get fullname(): string {

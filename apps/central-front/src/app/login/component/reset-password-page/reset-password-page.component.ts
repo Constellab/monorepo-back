@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserAccountsService} from '../../../core/service-api/user-accounts.service';
-import {SnackBarService} from '../../../core/service/snack-bar.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {first} from 'rxjs/operators';
 import {Validators} from '@angular/forms';
-import {GlobalValidators} from '../../../core/utils/global.validators';
+import {FlGlobalValidators, FlSnackBarService} from '@monorepo/front-core-lib';
 
 interface ResetPasswordForm {
   password: string;
@@ -26,7 +25,7 @@ export class ResetPasswordPageComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private userAccountService: UserAccountsService,
-              private snackBarService: SnackBarService,
+              private snackBarService: FlSnackBarService,
               private router: Router) {
   }
 
@@ -37,9 +36,9 @@ export class ResetPasswordPageComponent implements OnInit {
   private initForm(): void {
     const fb = new FormBuilder();
     this.formGp = fb.group({
-      password: [null, [Validators.required, GlobalValidators.passwordValidator()]],
+      password: [null, [Validators.required, FlGlobalValidators.passwordValidator()]],
       repeatPassword: [null, [Validators.required,
-        GlobalValidators.repeatPasswordValidator('password')]],
+        FlGlobalValidators.repeatPasswordValidator('password')]],
     });
   }
 

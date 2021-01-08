@@ -1,0 +1,23 @@
+<div fxLayout="column" fxFlex="grow">
+  <div fxFlex="auto">
+    <ng-content select="fl-section-header">
+    </ng-content>
+  </div>
+
+  <div class="content" fxFlex="grow">
+    <div *ngIf="_isLoading; else notLoading" fxLayoutAlign="center center">
+      <fl-loader size="medium"></fl-loader>
+    </div>
+
+    <ng-template #notLoading>
+      <div *ngIf="objectIsNullOrEmpty" class="g-text-centered g-text-light">
+        <p>{{emptyText | translate}}</p>
+        <mat-icon>block</mat-icon>
+      </div>
+    </ng-template>
+
+    <!--  Render the body  -->
+    <ng-template [cdkPortalOutlet]="portal"></ng-template>
+  </div>
+
+</div>

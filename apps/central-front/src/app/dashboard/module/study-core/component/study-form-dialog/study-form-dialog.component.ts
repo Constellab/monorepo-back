@@ -1,15 +1,13 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormDialogInput} from '../../../../../core/model/global/form.class';
 import {Study} from '../../../../../core/model/entities/study.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {SnackBarService} from '../../../../../core/service/snack-bar.service';
 import {Validators} from '@angular/forms';
 import {StudyService} from '../../../../service/study.service';
-import {FormDialogAbstractDirective} from '../../../../../core/abstract-directive/form-dialog-abstract.directive';
 import {Observable} from 'rxjs';
+import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 
-export interface StudyFormDialogInput extends FormDialogInput<Study> {
+export interface StudyFormDialogInput extends FlFormDialogInput<Study> {
   projectId?: string;
 }
 
@@ -21,7 +19,7 @@ export interface StudyFormDialogInput extends FormDialogInput<Study> {
   templateUrl: './study-form-dialog.component.html',
   styleUrls: ['./study-form-dialog.component.scss']
 })
-export class StudyFormDialogComponent extends FormDialogAbstractDirective<Partial<Study>, Study> implements OnInit {
+export class StudyFormDialogComponent extends FlFormDialogAbstractDirective<Partial<Study>, Study> implements OnInit {
 
   formGp: FormGroup<Partial<Study>>;
 
@@ -29,7 +27,7 @@ export class StudyFormDialogComponent extends FormDialogAbstractDirective<Partia
 
   constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: StudyFormDialogInput,
               private studyService: StudyService,
-              snackBarService: SnackBarService,
+              snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<StudyFormDialogComponent>) {
     super(dialogInput, snackBarService, dialogRef, 'study_created', 'study_updated');
   }

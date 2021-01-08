@@ -2,25 +2,25 @@
   <!--  Label  -->
   <mat-form-field class="g-full" appearance="outline">
     <mat-label>{{'label' | translate}}</mat-label>
-    <input matInput formControlName="label" required genInputMaxLength="50"
+    <input matInput formControlName="label" required flInputMaxLength="50"
            placeholder="{{'label' | translate}}">
     <mat-error *ngIf="formGp.get('label').hasError('required')">
-      {{'label' | errorRequired}}
+      {{'label' | flErrorRequired}}
     </mat-error>
   </mat-form-field>
 
   <!-- Json Protocol-->
-  <gen-form-field>
+  <fl-form-field>
     <gen-json-editor formControlName="json" placeholder="{{'protocol' | translate}}"
                      [jsonSchema]="protocolSchema">
     </gen-json-editor>
 
     <mat-error *ngIf="formGp.get('json').hasError('required')">
-      {{'protocol' | errorRequired}}
+      {{'protocol' | flErrorRequired}}
     </mat-error>
     <mat-error *ngIf="formGp.get('json').hasError('invalidJsonSchema')">
       {{'invalid_json_protocol' | translate}}
     </mat-error>
-  </gen-form-field>
+  </fl-form-field>
 
 </div>

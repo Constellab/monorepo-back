@@ -3,10 +3,7 @@ import {ApiCrudService} from '../../core/service-api/api-crud.service';
 import {Project, ProjectDatasource, ProjectStatus, ProjectStatusHistory} from '../../core/model/entities/project.class';
 import {ApiService} from '../../core/service-api/api.service';
 import {Observable} from 'rxjs';
-import {EntityPaginatedDatasource} from '../../core/model/datasource/entity-datasource.class';
-import {GetPageFunction} from '../../core/model/global/page.class';
-import {ArrayObs} from '../../core/model/datasource/array-obs.class';
-import {EntityArrayObs} from '../../core/model/datasource/entity-array.class';
+import {FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource, FlGetPageFunction} from '@monorepo/front-core-lib';
 
 /**
  * Service to manage project entity
@@ -24,17 +21,17 @@ export class ProjectService extends ApiCrudService<Project, Partial<Project>> {
    * Return the list of the current user's projects
    */
   public getMyProjectsDatasource(): ProjectDatasource {
-    return new EntityPaginatedDatasource(this.getMyProjectsMethod(), 20);
+    return new FlEntityPaginatedDatasource(this.getMyProjectsMethod(), 20);
   }
 
   /**
    * Return the list of the 4 first project for a user
    */
   public getDashboardMyProjectsDatasource(): ProjectDatasource {
-    return new EntityPaginatedDatasource(this.getMyProjectsMethod(), 4);
+    return new FlEntityPaginatedDatasource(this.getMyProjectsMethod(), 4);
   }
 
-  private getMyProjectsMethod(): GetPageFunction<Project> {
+  private getMyProjectsMethod(): FlGetPageFunction<Project> {
     return (page: number, pageSize: number) => this.apiService.get(`${this.route}/current`, Project,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
@@ -49,7 +46,7 @@ export class ProjectService extends ApiCrudService<Project, Partial<Project>> {
       null, Project);
   }
 
-  public getStatusHistories(id: string): ArrayObs<ProjectStatusHistory> {
-    return new EntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, ProjectStatusHistory));
+  public getStatusHistories(id: string): FlArrayObs<ProjectStatusHistory> {
+    return new FlEntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, ProjectStatusHistory));
   }
 }

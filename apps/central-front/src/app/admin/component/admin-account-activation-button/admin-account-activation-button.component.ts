@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {User} from '../../../core/model/entities/user.class';
 import {UserAccountsService} from '../../../core/service-api/user-accounts.service';
-import {SnackBarService} from '../../../core/service/snack-bar.service';
+import {FlSnackBarService} from '@monorepo/front-core-lib';
 
 /**
  * Button to admin activate a user
@@ -20,7 +20,7 @@ export class AdminAccountActivationButtonComponent implements OnInit {
   isLoading: boolean = false;
 
   constructor(private accountService: UserAccountsService,
-              private snackBarService: SnackBarService) {
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {

@@ -1,11 +1,11 @@
-<gen-section [isLoading]="isLoading" [object]="experiment">
+<fl-section [isLoading]="isLoading" [object]="experiment">
 
-  <ng-template genSectionBody>
+  <ng-template flSectionBody>
     <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
-      <gen-text-icon>
+      <fl-text-icon>
         <mat-icon class="g-icon-big" svgIcon="experiment"></mat-icon>
         <h1>{{experiment.label}}</h1>
-      </gen-text-icon>
+      </fl-text-icon>
 
       <div fxLayout="row" fxLayoutAlign="start center">
         <button mat-icon-button type="button" (click)="openStatusHistory()"
@@ -47,10 +47,10 @@
       <!--  Report  -->
       <fl-card class="g-section">
         <fl-card-header>
-          <gen-text-icon>
+          <fl-text-icon>
             <mat-icon class="g-icon-big">assignment</mat-icon>
             <p>{{'reports' | translate}}</p>
-          </gen-text-icon>
+          </fl-text-icon>
         </fl-card-header>
 
         <fl-card-body>
@@ -59,4 +59,4 @@
       </fl-card>
     </ng-template>
   </ng-template>
-</gen-section>
+</fl-section>

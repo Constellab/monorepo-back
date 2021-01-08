@@ -1,15 +1,15 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {ServerInfoService} from '../../../../service-api/server-info.service';
 import {ServerInfo} from '../../../../model/entities/server-info.class';
-import {EmbeddedOptionsAbstractDirective} from '../../../../abstract-directive/embedded-options-abstract.directive';
 import {MatSelect} from '@angular/material/select';
+import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-select-server-info-options',
   templateUrl: './select-server-info-options.component.html',
   styleUrls: ['./select-server-info-options.component.scss']
 })
-export class SelectServerInfoOptionsComponent extends EmbeddedOptionsAbstractDirective
+export class SelectServerInfoOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit {
 
   serversInfo: ServerInfo[];

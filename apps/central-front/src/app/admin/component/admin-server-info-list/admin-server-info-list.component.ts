@@ -1,11 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ServerInfo} from '../../../core/model/entities/server-info.class';
 import {ServerInfoService} from '../../../core/service-api/server-info.service';
-import {ArrayObs} from '../../../core/model/datasource/array-obs.class';
-import {TableColumn} from '../../../core/abstract-directive/table-abstract.directive';
-import {FormDialogInput} from '../../../core/model/global/form.class';
-import {DialogService} from '../../../core/service/dialog.service';
 import {ServerInfoFormDialogComponent} from '../../../core/entity-module/server-info-core/component/server-info-form-dialog/server-info-form-dialog.component';
+import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
 
 /**
  * List of all server info and possibility to add one
@@ -17,13 +14,13 @@ import {ServerInfoFormDialogComponent} from '../../../core/entity-module/server-
 })
 export class AdminServerInfoListComponent implements OnInit {
 
-  serversInfo: ArrayObs<ServerInfo>;
+  serversInfo: FlArrayObs<ServerInfo>;
 
-  displayedColumns: TableColumn<ServerInfo>[] = ['host', 'name', 'ram', 'diskSpace', 'diskType',
+  displayedColumns: FlTableColumn<ServerInfo>[] = ['host', 'name', 'ram', 'diskSpace', 'diskType',
     'cpuCount', 'cpuType', 'gpuCount', 'gpuType', 'actions'];
 
   constructor(private serverInfoService: ServerInfoService,
-              private dialogService: DialogService) {
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -35,7 +32,7 @@ export class AdminServerInfoListComponent implements OnInit {
   }
 
   openCreateServerInfo(): void {
-    const dialogInput: FormDialogInput = {
+    const dialogInput: FlFormDialogInput = {
       mode: 'create'
     };
 

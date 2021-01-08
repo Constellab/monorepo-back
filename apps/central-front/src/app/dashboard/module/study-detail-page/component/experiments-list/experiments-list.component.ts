@@ -1,13 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Experiment} from '../../../../../core/model/entities/experiment.class';
 import {ExperimentService} from '../../../../service/experiment.service';
-import {DialogService} from '../../../../../core/service/dialog.service';
 import {
   ExperimentFormDialogComponent,
   ExperimentFormDialogInput
 } from '../../../experiment-core/component/experiment-form-dialog/experiment-form-dialog.component';
 import {ActivatedRoute, Router} from '@angular/router';
-import {ArrayObs} from '../../../../../core/model/datasource/array-obs.class';
+import {FlArrayObs, FlDialogService} from '@monorepo/front-core-lib';
 
 /**
  * In the study detail page, show the list of experiences
@@ -21,11 +20,11 @@ export class ExperimentsListComponent implements OnInit {
 
   @Input() studyId: string;
 
-  experimentsArray: ArrayObs<Experiment>;
+  experimentsArray: FlArrayObs<Experiment>;
 
 
   constructor(private experimentService: ExperimentService,
-              private dialogService: DialogService,
+              private dialogService: FlDialogService,
               private router: Router,
               private route: ActivatedRoute) {
   }

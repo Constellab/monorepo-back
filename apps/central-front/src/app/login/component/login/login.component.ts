@@ -1,13 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {Validators} from '@angular/forms';
 import {AuthenticationService} from '../../service/authentication.service';
-import {DialogService} from '../../../core/service/dialog.service';
 import {SignupDialogComponent} from '../signup-dialog/signup-dialog.component';
 import {PasswordForgottenComponent} from '../password-forgotten/password-forgotten.component';
-import {LoginSavedRoute} from '../../../core/utils/login-saved-route';
 import {Router} from '@angular/router';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Credentials} from '../../../core/model/global/credentials.class';
+import {FlDialogService, FlLoginSavedRoute} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-login',
@@ -20,7 +19,7 @@ export class LoginComponent implements OnInit {
   isLoading = false;
 
   constructor(private loginService: AuthenticationService,
-              private dialogService: DialogService,
+              private dialogService: FlDialogService,
               private router: Router) {
   }
 
@@ -50,9 +49,9 @@ export class LoginComponent implements OnInit {
     this.isLoading = false;
     // redirect to the app
     // if a route has been saved, redirect to this route
-    if (LoginSavedRoute.hasRoute()) {
-      this.router.navigate([LoginSavedRoute.getRoutePath()], {queryParams: LoginSavedRoute.getRouteQueryParams()});
-      LoginSavedRoute.clearRoute();
+    if (FlLoginSavedRoute.hasRoute()) {
+      this.router.navigate([FlLoginSavedRoute.getRoutePath()], {queryParams: FlLoginSavedRoute.getRouteQueryParams()});
+      FlLoginSavedRoute.clearRoute();
     } else {
       this.router.navigate(['/app']);
     }

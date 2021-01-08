@@ -3,10 +3,10 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {catchError, map, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {APP_CONFIG, AppConfig} from '../model/config/app-config';
-import {FileService} from '../service/file.service';
 import {ErrorService} from '../service/error.service';
 import {HttpOption} from '../model/global/http-option.class';
-import {CoreJsonConvert} from '../utils/json-converter';
+import {ClCoreJsonConvert} from '@monorepo/core-lib';
+import {FlFileService} from '@monorepo/front-core-lib';
 
 /**
  * Global service to call make Http request. This service formats input and output
@@ -20,7 +20,7 @@ export class ApiService {
 
   constructor(protected http: HttpClient,
               @Inject(APP_CONFIG) config: AppConfig,
-              private fileService: FileService,
+              private fileService: FlFileService,
               private errorService: ErrorService) {
     // get the api url from the config
     this.apiUrl = config.apiUrl;
@@ -166,7 +166,7 @@ export class ApiService {
    * Deserialize an object or array using json2typescript package if the input are not null
    * @param json json object
    * @param classReference class reference of object
-   * @param isPaginated if true the result is considered as a {@link Page}
+   * @param isPaginated if true the result is considered as a {@link FlPage}
    */
   public deserialize<T = any>(json: any, classReference: new() => T, isPaginated: boolean = false): T | T[] {
     if (json && classReference) {
@@ -174,10 +174,10 @@ export class ApiService {
       try {
         // if the result if paginated (we supposed the json is type of LibPage
         if (isPaginated && json.objects != null && json.objects instanceof Array) {
-          json.objects = CoreJsonConvert.deserialize(json.objects, classReference);
+          json.objects = ClCoreJsonConvert.deserialize(json.objects, classReference);
           return json;
         } else {
-          return CoreJsonConvert.deserialize(json, classReference);
+          return ClCoreJsonConvert.deserialize(json, classReference);
         }
       } catch (e) {
         this.errorService.handleDeserializationError(e, classReference);

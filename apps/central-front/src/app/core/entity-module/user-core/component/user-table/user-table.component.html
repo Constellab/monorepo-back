@@ -27,7 +27,7 @@
       <span>{{'created_the' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let user">
-      <span>{{user.createdAt | coreDate}}</span>
+      <span>{{user.createdAt | flDate}}</span>
     </mat-cell>
   </ng-container>
 

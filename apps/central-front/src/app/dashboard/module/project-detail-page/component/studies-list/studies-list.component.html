@@ -1,21 +1,21 @@
-<gen-async-section [arrayObs]="studiesArray" emptyText="no_study">
+<fl-async-section [arrayObs]="studiesArray" emptyText="no_study">
 
-  <gen-section-header>
-    <gen-text-icon>
+  <fl-section-header>
+    <fl-text-icon>
       <mat-icon svgIcon="study" class="g-icon-big"></mat-icon>
       <h2>{{'studies' | translate}}</h2>
-    </gen-text-icon>
+    </fl-text-icon>
 
-    <gen-section-actions>
+    <fl-section-actions>
       <button mat-mini-fab type="button" color="accent"
               (click)="openCreateStudyDialog()"
               [matTooltip]="'new_study' | translate">
         <mat-icon>add</mat-icon>
       </button>
-    </gen-section-actions>
-  </gen-section-header>
+    </fl-section-actions>
+  </fl-section-header>
 
-  <ng-container *genSectionBody="let studies">
+  <ng-container *flSectionBody="let studies">
     <div fxLayout="row wrap" fxLayoutGap="1%" fxLayoutGap.lt-md="0">
       <a class="study" *ngFor="let study of studies"
          [routerLink]="'study/' + study.id"
@@ -25,4 +25,4 @@
     </div>
   </ng-container>
 
-</gen-async-section>
+</fl-async-section>

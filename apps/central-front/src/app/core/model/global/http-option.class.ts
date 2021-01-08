@@ -21,7 +21,7 @@ export interface HttpOption {
   pageSize?: number;
 
   /**
-   * if set to true the call supposed that the result is a {@link Page}
+   * if set to true the call supposed that the result is a {@link FlPage}
    * and if a class reference is provided to convert the result to class with json2typescript,
    * the Page.content will be convert to class reference array
    */

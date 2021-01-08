@@ -1,10 +1,10 @@
 <div>
 
   <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
-    <gen-text-icon>
+    <fl-text-icon>
       <mat-icon class="g-icon-big" svgIcon="lab"></mat-icon>
       <h1>{{labInstance.lab.label}}</h1>
-    </gen-text-icon>
+    </fl-text-icon>
 
     <div fxLayout="row" fxLayoutAlign="start center">
       <button mat-icon-button type="button" (click)="openStatusHistoryDialog()"
@@ -23,7 +23,7 @@
     <fl-card-body>
 
       <!--   Lab url   -->
-      <gen-text-icon iconPosition="end">
+      <fl-text-icon iconPosition="end">
         <p>
           <span class="g-text-light">{{'url' | translate}} : </span>
           <a [href]="labInstance.url" target="_blank" class="g-text-link"
@@ -32,7 +32,7 @@
           </a>
         </p>
         <mat-icon class="g-icon-small">launch</mat-icon>
-      </gen-text-icon>
+      </fl-text-icon>
 
       <!--  Lab IPs    -->
       <p><span class="g-text-light">{{'ip' | translate}} : </span>{{labInstance.ip}}</p>

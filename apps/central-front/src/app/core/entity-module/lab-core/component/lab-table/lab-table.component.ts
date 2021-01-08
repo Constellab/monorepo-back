@@ -1,18 +1,16 @@
 import {Component, OnInit} from '@angular/core';
-import {TableAbstractDirective} from '../../../../abstract-directive/table-abstract.directive';
 import {Lab} from '../../../../model/entities/lab.class';
-import {DialogService} from '../../../../service/dialog.service';
-import {FormDialogInput} from '../../../../model/global/form.class';
 import {LabFormDialogComponent} from '../lab-form-dialog/lab-form-dialog.component';
+import {FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-lab-table',
   templateUrl: './lab-table.component.html',
   styleUrls: ['./lab-table.component.scss']
 })
-export class LabTableComponent extends TableAbstractDirective<Lab> implements OnInit {
+export class LabTableComponent extends FlTableAbstractDirective<Lab> implements OnInit {
 
-  constructor(private dialogService: DialogService) {
+  constructor(private dialogService: FlDialogService) {
     super(['createdAt', 'lastModifiedAt', 'actions']);
   }
 
@@ -20,7 +18,7 @@ export class LabTableComponent extends TableAbstractDirective<Lab> implements On
   }
 
   openUpdateLabDialog(lab: Lab): void {
-    const dialogInput: FormDialogInput<Lab> = {
+    const dialogInput: FlFormDialogInput<Lab> = {
       mode: 'update',
       object: lab
     };

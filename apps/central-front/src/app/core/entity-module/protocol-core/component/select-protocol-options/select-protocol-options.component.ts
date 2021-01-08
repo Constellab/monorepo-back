@@ -1,8 +1,8 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
-import {EmbeddedOptionsAbstractDirective} from '../../../../abstract-directive/embedded-options-abstract.directive';
 import {MatSelect} from '@angular/material/select';
 import {ProtocolDatasource} from '../../../../model/entities/protocol.entity';
 import {ProtocolService} from '../../../../service-api/protocol.service';
+import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 
 /**
  * Component to be included in <mat-select> to automatically add the list of
@@ -15,7 +15,7 @@ import {ProtocolService} from '../../../../service-api/protocol.service';
   templateUrl: './select-protocol-options.component.html',
   styleUrls: ['./select-protocol-options.component.scss']
 })
-export class SelectProtocolOptionsComponent extends EmbeddedOptionsAbstractDirective
+export class SelectProtocolOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit {
 
   datasource: ProtocolDatasource;

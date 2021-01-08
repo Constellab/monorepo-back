@@ -1,34 +1,34 @@
 <div class="g-page">
 
-  <gen-async-section [arrayObs]="protocolsDatasource" emptyText="no_protocol">
+  <fl-async-section [arrayObs]="protocolsDatasource" emptyText="no_protocol">
 
-    <gen-section-header class="g-page-title">
-      <gen-text-icon iconPosition="start">
+    <fl-section-header class="g-page-title">
+      <fl-text-icon iconPosition="start">
         <mat-icon class="g-icon-big" svgIcon="protocol"></mat-icon>
         <h1>{{'protocols' | translate}}</h1>
-      </gen-text-icon>
+      </fl-text-icon>
 
-      <gen-section-actions>
+      <fl-section-actions>
         <button mat-raised-button type="button" color="accent" (click)="createProtocol()"
                 class="g-button-small" [matTooltip]="'new_protocol' | translate">
           <mat-icon>add</mat-icon>
         </button>
-      </gen-section-actions>
-    </gen-section-header>
+      </fl-section-actions>
+    </fl-section-header>
 
 
-    <ng-container *genSectionBody="let protocols">
+    <ng-container *flSectionBody="let protocols">
 
       <fl-card>
         <fl-card-body>
           <gen-protocols-list [protocols]="protocols"></gen-protocols-list>
 
-          <gen-pagination-load-more-result [datasource]="protocolsDatasource"></gen-pagination-load-more-result>
+          <fl-pagination-load-more-result [datasource]="protocolsDatasource"></fl-pagination-load-more-result>
 
         </fl-card-body>
       </fl-card>
 
     </ng-container>
-  </gen-async-section>
+  </fl-async-section>
 </div>
 

@@ -1,6 +1,6 @@
-<gen-dialog-title>
+<fl-dialog-title>
   {{title | translate}}
-</gen-dialog-title>
+</fl-dialog-title>
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="project-form" [formGroup]="formGp">
@@ -8,25 +8,25 @@
     <!--  title  -->
     <mat-form-field class="g-form-input" appearance="outline">
       <mat-label>{{'title' | translate}}</mat-label>
-      <input matInput formControlName="title" required genInputMaxLength="50"
+      <input matInput formControlName="title" required flInputMaxLength="50"
              placeholder="{{'title' | translate}}">
       <mat-error *ngIf="formGp.get('title').hasError('required')">
-        {{'title' | errorRequired}}
+        {{'title' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
 
     <!--    Description      -->
-    <gen-form-field class="g-form-input">
+    <fl-form-field class="g-form-input">
       <mat-label>{{'description' | translate}}</mat-label>
       <quill-editor formControlName="description" placeholder="{{'description' | translate}}"
                     class="g-full"
                     [styles]="{height: '8em'}">
       </quill-editor>
       <mat-error *ngIf="formGp.get('description').hasError('required')">
-        {{'description' | errorRequired}}
+        {{'description' | flErrorRequired}}
       </mat-error>
-    </gen-form-field>
+    </fl-form-field>
 
   </form>
 </mat-dialog-content>
@@ -35,6 +35,6 @@
   <button mat-raised-button color="primary" type="submit" form="project-form"
           class="g-centered-forced">
     {{'save' | translate}}
-    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 </div>

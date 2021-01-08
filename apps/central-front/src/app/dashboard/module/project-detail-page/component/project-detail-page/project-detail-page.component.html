@@ -1,8 +1,8 @@
 <div>
 
-  <gen-section [isLoading]="isLoading" [object]="project">
+  <fl-section [isLoading]="isLoading" [object]="project">
 
-    <ng-template genSectionBody>
+    <ng-template flSectionBody>
       <gen-project-detail [project]="project"
                           (projectUpdated)="onProjectUpdate($event)">
       </gen-project-detail>
@@ -10,5 +10,5 @@
 
       <gen-studies-list class="studies" [projectId]="project.id"></gen-studies-list>
     </ng-template>
-  </gen-section>
+  </fl-section>
 </div>

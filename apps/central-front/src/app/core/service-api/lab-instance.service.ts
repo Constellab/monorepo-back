@@ -2,10 +2,7 @@ import {Injectable} from '@angular/core';
 import {ApiService} from './api.service';
 import {Observable} from 'rxjs';
 import {LabInstance, LabInstanceDatasource, LabInstanceStatusHistory, LabInstanceToken} from '../model/entities/lab-instance.class';
-import {EntityPaginatedDatasource} from '../model/datasource/entity-datasource.class';
-import {GetPageFunction, Page} from '../model/global/page.class';
-import {ArrayObs} from '../model/datasource/array-obs.class';
-import {EntityArrayObs} from '../model/datasource/entity-array.class';
+import {FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -17,11 +14,11 @@ export class LabInstanceService {
   constructor(private apiService: ApiService) {
   }
 
-  public create(entity: Partial<LabInstance>): Observable<LabInstance>{
+  public create(entity: Partial<LabInstance>): Observable<LabInstance> {
     return this.apiService.post(this.route, entity, LabInstance);
   }
 
-  public update(entity: Partial<LabInstance>): Observable<LabInstance>{
+  public update(entity: Partial<LabInstance>): Observable<LabInstance> {
     return this.apiService.put(this.route, entity, LabInstance);
   }
 
@@ -33,18 +30,18 @@ export class LabInstanceService {
    * Return the list of the current user's projects
    */
   public getCurrentLabInstancesDatasource(): LabInstanceDatasource {
-    return new EntityPaginatedDatasource(this.getCurrentLabInstanceMethod(), 20);
+    return new FlEntityPaginatedDatasource(this.getCurrentLabInstanceMethod(), 20);
   }
 
   /**
    * Return the list of the 4 first lab instance for a user
    */
   public getDashboardCurrentLabInstancesDatasource(): LabInstanceDatasource {
-    return new EntityPaginatedDatasource(this.getCurrentLabInstanceMethod(), 4);
+    return new FlEntityPaginatedDatasource(this.getCurrentLabInstanceMethod(), 4);
   }
 
-  private getCurrentLabInstanceMethod(): GetPageFunction<LabInstance> {
-    return (page: number, pageSize: number): Observable<Page<LabInstance>> => this.apiService.get(`${this.route}/current`, LabInstance,
+  private getCurrentLabInstanceMethod(): FlGetPageFunction<LabInstance> {
+    return (page: number, pageSize: number): Observable<FlPage<LabInstance>> => this.apiService.get(`${this.route}/current`, LabInstance,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
@@ -64,8 +61,8 @@ export class LabInstanceService {
     return this.apiService.get(`${this.route}/${id}`, LabInstance);
   }
 
-  public getStatusHistories(id: string): ArrayObs<LabInstanceStatusHistory> {
-    return new EntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, LabInstanceStatusHistory));
+  public getStatusHistories(id: string): FlArrayObs<LabInstanceStatusHistory> {
+    return new FlEntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, LabInstanceStatusHistory));
   }
 
   /**
@@ -75,7 +72,7 @@ export class LabInstanceService {
     return this.apiService.post(`${this.route}/${id}/login`, null, LabInstanceToken);
   }
 
-  public getAll(): ArrayObs<LabInstance> {
-    return new EntityArrayObs(this.apiService.get(this.route, LabInstance));
+  public getAll(): FlArrayObs<LabInstance> {
+    return new FlEntityArrayObs(this.apiService.get(this.route, LabInstance));
   }
 }

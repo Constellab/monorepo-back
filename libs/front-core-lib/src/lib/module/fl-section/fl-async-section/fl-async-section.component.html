@@ -1,0 +1,26 @@
+<div class="card" fxLayout="column" fxFlex="grow">
+  <div fxFlex="auto">
+    <ng-content select="fl-section-header">
+    </ng-content>
+  </div>
+
+  <div class="content" fxFlex="grow">
+    <div *ngIf="isLoading; else notLoading" fxLayoutAlign="center center">
+      <fl-loader size="medium"></fl-loader>
+    </div>
+
+    <ng-template #notLoading>
+      <div *ngIf="objectIsNullOrEmpty; else showBody" class="g-text-centered g-text-light">
+        <p>{{emptyText | translate}}</p>
+        <mat-icon>block</mat-icon>
+      </div>
+
+      <!--  Render the body  -->
+      <ng-template #showBody>
+        <ng-container *ngTemplateOutlet="lazyContent; context: viewContext"></ng-container>
+      </ng-template>
+    </ng-template>
+
+  </div>
+
+</div>

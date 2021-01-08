@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {ApiService} from './api.service';
 import {Observable} from 'rxjs';
 import {Protocol, ProtocolDatasource} from '../model/entities/protocol.entity';
-import {EntityPaginatedDatasource} from '../model/datasource/entity-datasource.class';
-import {GetPageFunction, Page} from '../model/global/page.class';
+import {FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -19,18 +18,18 @@ export class ProtocolService {
    * Return the list of the current user's projects
    */
   public getMyProtocolsDatasource(): ProtocolDatasource {
-    return new EntityPaginatedDatasource(this.getMyProtocolsMethod(), 20);
+    return new FlEntityPaginatedDatasource(this.getMyProtocolsMethod(), 20);
   }
 
   /**
    * Return the list of the 4 first project for a user
    */
   public getDashboardMyProtocolsDatasource(): ProtocolDatasource {
-    return new EntityPaginatedDatasource(this.getMyProtocolsMethod(), 4);
+    return new FlEntityPaginatedDatasource(this.getMyProtocolsMethod(), 4);
   }
 
-  private getMyProtocolsMethod(): GetPageFunction<Protocol> {
-    return (page: number, pageSize: number): Observable<Page<Protocol>> => this.apiService.get(`${this.route}/current`, Protocol,
+  private getMyProtocolsMethod(): FlGetPageFunction<Protocol> {
+    return (page: number, pageSize: number): Observable<FlPage<Protocol>> => this.apiService.get(`${this.route}/current`, Protocol,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 

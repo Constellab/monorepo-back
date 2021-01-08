@@ -1,9 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {DialogService} from '../../../../../core/service/dialog.service';
 import {Study} from '../../../../../core/model/entities/study.class';
 import {StudyService} from '../../../../service/study.service';
 import {StudyFormDialogComponent, StudyFormDialogInput} from '../../../study-core/component/study-form-dialog/study-form-dialog.component';
-import {ArrayObs} from '../../../../../core/model/datasource/array-obs.class';
+import {FlArrayObs, FlDialogService} from '@monorepo/front-core-lib';
 
 /**
  * In the project detail page, show the list of studies
@@ -17,11 +16,11 @@ export class StudiesListComponent implements OnInit {
 
   @Input() projectId: string;
 
-  studiesArray: ArrayObs<Study>;
+  studiesArray: FlArrayObs<Study>;
 
 
   constructor(private studyService: StudyService,
-              private dialogService: DialogService) {
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {

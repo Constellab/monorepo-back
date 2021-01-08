@@ -1,21 +1,21 @@
-<gen-async-section [arrayObs]="serversInfo" emptyText="no_server_info">
+<fl-async-section [arrayObs]="serversInfo" emptyText="no_server_info">
 
-  <gen-section-header class="g-page-title">
-    <gen-text-icon>
+  <fl-section-header class="g-page-title">
+    <fl-text-icon>
       <mat-icon class="g-icon-big">computer</mat-icon>
       <h2>{{'server_info_list' | translate}}</h2>
-    </gen-text-icon>
+    </fl-text-icon>
 
-    <gen-section-actions>
+    <fl-section-actions>
       <button mat-raised-button type="button" color="accent"
               class="g-button-small" (click)="openCreateServerInfo()"
               [matTooltip]="'create_server_info' | translate">
         <mat-icon>add</mat-icon>
       </button>
-    </gen-section-actions>
-  </gen-section-header>
+    </fl-section-actions>
+  </fl-section-header>
 
-  <ng-container *genSectionBody="let servers">
+  <ng-container *flSectionBody="let servers">
     <fl-card>
       <fl-card-body class="limit-height">
         <gen-server-info-table [datasource]="serversInfo" [columns]="displayedColumns"></gen-server-info-table>
@@ -24,4 +24,4 @@
   </ng-container>
 
 
-</gen-async-section>
+</fl-async-section>

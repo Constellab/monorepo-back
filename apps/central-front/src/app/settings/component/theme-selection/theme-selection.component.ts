@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Theme} from '../../../core/model/global/theme.class';
-import {ThemeService} from '../../../core/service/theme.service';
+import {FlTheme, FlThemeService} from '@monorepo/front-core-lib';
 
 /**
  * Component to select theme
@@ -12,16 +11,16 @@ import {ThemeService} from '../../../core/service/theme.service';
 })
 export class ThemeSelectionComponent implements OnInit {
 
-  private currentTheme: Theme;
+  private currentTheme: FlTheme;
 
-  constructor(private themeService: ThemeService) {
+  constructor(private themeService: FlThemeService) {
   }
 
   ngOnInit(): void {
     this.currentTheme = this.themeService.getCurrentTheme();
   }
 
-  selectTheme(theme: Theme): void {
+  selectTheme(theme: FlTheme): void {
     if (this.currentTheme !== theme) {
       this.themeService.changeTheme(theme);
       this.currentTheme = theme;

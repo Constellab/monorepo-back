@@ -1,6 +1,6 @@
-<gen-dialog-title>
+<fl-dialog-title>
   {{title | translate}}
-</gen-dialog-title>
+</fl-dialog-title>
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="server-info-form" [formGroup]="formGp">
@@ -12,17 +12,17 @@
         <gen-select-server-info-host-options></gen-select-server-info-host-options>
       </mat-select>
       <mat-error *ngIf="formGp.get('host').hasError('required')">
-        {{'host' | errorRequired}}
+        {{'host' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
     <!--  Name  -->
     <mat-form-field class="g-form-input" appearance="outline">
       <mat-label>{{'name' | translate}}</mat-label>
-      <input matInput formControlName="name" required genInputMaxLength="30"
+      <input matInput formControlName="name" required flInputMaxLength="30"
              placeholder="{{'name' | translate}}">
       <mat-error *ngIf="formGp.get('name').hasError('required')">
-        {{'name' | errorRequired}}
+        {{'name' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
@@ -32,7 +32,7 @@
       <input matInput formControlName="ram" required
              placeholder="{{'ram' | translate}}" type="number">
       <mat-error *ngIf="formGp.get('ram').hasError('required')">
-        {{'ram' | errorRequired}}
+        {{'ram' | flErrorRequired}}
       </mat-error>
       <mat-error *ngIf="formGp.get('ram').hasError('min')">
         {{'input_number_must_be_positive' | translate}}
@@ -46,7 +46,7 @@
         <input matInput formControlName="diskSpace" required
                placeholder="{{'diskSpace' | translate}}" type="number">
         <mat-error *ngIf="formGp.get('diskSpace').hasError('required')">
-          {{'diskSpace' | errorRequired}}
+          {{'diskSpace' | flErrorRequired}}
         </mat-error>
         <mat-error *ngIf="formGp.get('diskSpace').hasError('min')">
           {{'input_number_must_be_positive' | translate}}
@@ -60,7 +60,7 @@
           <gen-select-disk-type-options></gen-select-disk-type-options>
         </mat-select>
         <mat-error *ngIf="formGp.get('diskType').hasError('required')">
-          {{'diskType' | errorRequired}}
+          {{'diskType' | flErrorRequired}}
         </mat-error>
       </mat-form-field>
 
@@ -70,7 +70,7 @@
         <input matInput formControlName="cpuCount" required
                placeholder="{{'cpuCount' | translate}}" type="number">
         <mat-error *ngIf="formGp.get('cpuCount').hasError('required')">
-          {{'cpuCount' | errorRequired}}
+          {{'cpuCount' | flErrorRequired}}
         </mat-error>
         <mat-error *ngIf="formGp.get('cpuCount').hasError('min')">
           {{'input_number_must_be_positive' | translate}}
@@ -81,9 +81,9 @@
       <mat-form-field fxFlex="49%" class="g-form-input" appearance="outline">
         <mat-label>{{'cpuType' | translate}}</mat-label>
         <input matInput formControlName="cpuType" required
-               placeholder="{{'cpuType' | translate}}" genInputMaxLength="30">
+               placeholder="{{'cpuType' | translate}}" flInputMaxLength="30">
         <mat-error *ngIf="formGp.get('cpuType').hasError('required')">
-          {{'cpuType' | errorRequired}}
+          {{'cpuType' | flErrorRequired}}
         </mat-error>
       </mat-form-field>
 
@@ -101,7 +101,7 @@
       <mat-form-field fxFlex="49%" class="g-form-input" appearance="outline">
         <mat-label>{{'gpuType' | translate}}</mat-label>
         <input matInput formControlName="gpuType"
-               placeholder="{{'gpuType' | translate}}" genInputMaxLength="30">
+               placeholder="{{'gpuType' | translate}}" flInputMaxLength="30">
       </mat-form-field>
     </div>
 
@@ -112,6 +112,6 @@
   <button mat-raised-button color="primary" type="submit" form="server-info-form"
           class="g-centered-forced">
     {{'save' | translate}}
-    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 </div>

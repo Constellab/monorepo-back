@@ -7,7 +7,7 @@ import {
   StatusHistoryListDialogComponent,
   StatusHistoryListDialogInput
 } from '../../../../../core/module/status/status-history-list-dialog/status-history-list-dialog.component';
-import {DialogService} from '../../../../../core/service/dialog.service';
+import {FlDialogService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-experiment-detail-page',
@@ -24,7 +24,7 @@ export class ExperimentDetailPageComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private experimentService: ExperimentService,
-              private dialogService: DialogService) {
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {

@@ -1,6 +1,6 @@
-<gen-dialog-title>
+<fl-dialog-title>
   {{title | translate}}
-</gen-dialog-title>
+</fl-dialog-title>
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="server-info-form" [formGroup]="formGp">
@@ -8,10 +8,10 @@
     <!--  Ip  -->
     <mat-form-field class="g-form-input" appearance="outline">
       <mat-label>{{'label' | translate}}</mat-label>
-      <input matInput formControlName="label" required genInputMaxLength="50"
+      <input matInput formControlName="label" required flInputMaxLength="50"
              placeholder="{{'label' | translate}}">
       <mat-error *ngIf="formGp.get('label').hasError('required')">
-        {{'label' | errorRequired}}
+        {{'label' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
@@ -22,6 +22,6 @@
   <button mat-raised-button color="primary" type="submit" form="server-info-form"
           class="g-centered-forced">
     {{'save' | translate}}
-    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 </div>

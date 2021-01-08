@@ -1,0 +1,16 @@
+<ng-container [ngSwitch]="mode">
+
+  <div *ngSwitchCase="'between'">
+    {{'between_the_from' | translate}} {{startingDate | flDate:dateFormat}}
+    {{'between_the_to' | translate}} {{endingDate | flDate:dateFormat}}
+  </div>
+
+  <div *ngSwitchCase="'from'">
+    {{'from_the' | translate}} {{startingDate | flDate:dateFormat}}
+  </div>
+
+  <div *ngSwitchCase="'to'">
+    {{'until_the' | translate}} {{endingDate | flDate:dateFormat}}
+  </div>
+
+</ng-container>

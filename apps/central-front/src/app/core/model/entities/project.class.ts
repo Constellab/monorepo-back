@@ -1,9 +1,9 @@
 import {BaseEntity} from './base-entity.class';
 import {JsonObject, JsonProperty} from 'json2typescript';
-import {LuxonConverter} from '../../utils/json-converter';
 import {GetStatusColorClassFunction, GetStatusIconFunction, StatusHistory} from './status-history.class';
-import {EntityPaginatedDatasource} from '../datasource/entity-datasource.class';
 import {DateTime} from 'luxon';
+import {ClLuxonConverter} from '@monorepo/core-lib';
+import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
 export enum ProjectStatus {
   ACTIVE = 'ACTIVE',
@@ -35,17 +35,17 @@ export class Project extends BaseEntity {
   @JsonProperty('description', String, true)
   description: string = null;
 
-  @JsonProperty('startingDate', LuxonConverter)
+  @JsonProperty('startingDate', ClLuxonConverter)
   startingDate: DateTime = null;
 
-  @JsonProperty('endingDate', LuxonConverter, true)
+  @JsonProperty('endingDate', ClLuxonConverter, true)
   endingDate: DateTime = null;
 
   @JsonProperty('currentStatus', ProjectStatusHistory)
   currentStatus: ProjectStatusHistory = null;
 }
 
-export type ProjectDatasource = EntityPaginatedDatasource<Project>;
+export type ProjectDatasource = FlEntityPaginatedDatasource<Project>;
 
 
 export const getProjectStatusColorClass: GetStatusColorClassFunction = (projectStatus: ProjectStatus,

@@ -4,11 +4,7 @@ import {Observable, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {APP_CONFIG, AppConfig} from '../model/config/app-config';
 import {NestError, ServerError} from '../model/global/server-error.class';
-import {LoginSavedRoute} from '../utils/login-saved-route';
-import {SnackBarService} from './snack-bar.service';
-import {CoreTranslateService} from '../module/translate/service/core-translate.service';
-import {CoreCookieService} from './core-cookie.service';
-import {authExpiredCookie} from '../model/global/cookie.class';
+import {flAuthExpiredCookie, FlCookieService, FlLoginSavedRoute, FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
 
 
 /**
@@ -19,11 +15,11 @@ import {authExpiredCookie} from '../model/global/cookie.class';
   providedIn: 'root'
 })
 export class ErrorService {
-  constructor(private snackBarService: SnackBarService,
-              private translateService: CoreTranslateService,
+  constructor(private snackBarService: FlSnackBarService,
+              private translateService: FlTranslateService,
               @Inject(APP_CONFIG) private config: AppConfig,
               private router: Router,
-              private cookieService: CoreCookieService) {
+              private cookieService: FlCookieService) {
   }
 
   /**
@@ -80,12 +76,12 @@ export class ErrorService {
 
     // save the url if it's different
     if (currentRoute !== this.config.loginRoute) {
-      LoginSavedRoute.route = currentRoute;
+      FlLoginSavedRoute.route = currentRoute;
     }
 
     // for security clear the authentication expiration cookie
     // to assure the user is disconnect
-    this.cookieService.removeCookie(authExpiredCookie);
+    this.cookieService.removeCookie(flAuthExpiredCookie);
 
     // redirect the user to the login page
     this.router.navigate([this.config.loginRoute]);

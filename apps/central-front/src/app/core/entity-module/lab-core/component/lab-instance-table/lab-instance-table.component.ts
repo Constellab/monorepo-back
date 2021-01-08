@@ -1,9 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {LabInstance} from '../../../../model/entities/lab-instance.class';
-import {TableAbstractDirective} from '../../../../abstract-directive/table-abstract.directive';
-import {FormDialogInput} from '../../../../model/global/form.class';
-import {DialogService} from '../../../../service/dialog.service';
 import {LabInstanceFormDialogComponent} from '../lab-instance-form-dialog/lab-instance-form-dialog.component';
+import {FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
 
 
 @Component({
@@ -11,9 +9,9 @@ import {LabInstanceFormDialogComponent} from '../lab-instance-form-dialog/lab-in
   templateUrl: './lab-instance-table.component.html',
   styleUrls: ['./lab-instance-table.component.scss']
 })
-export class LabInstanceTableComponent extends TableAbstractDirective<LabInstance> implements OnInit {
+export class LabInstanceTableComponent extends FlTableAbstractDirective<LabInstance> implements OnInit {
 
-  constructor(private dialogService: DialogService) {
+  constructor(private dialogService: FlDialogService) {
     super(['lab', 'owner', 'createdBy', 'currentStatus', 'serverInfo', 'createdBy', 'actions']);
   }
 
@@ -21,7 +19,7 @@ export class LabInstanceTableComponent extends TableAbstractDirective<LabInstanc
   }
 
   openUpdateDialog(labInstance: LabInstance): void {
-    const dialogInput: FormDialogInput<LabInstance> = {
+    const dialogInput: FlFormDialogInput<LabInstance> = {
       mode: 'update', object: labInstance
     };
 

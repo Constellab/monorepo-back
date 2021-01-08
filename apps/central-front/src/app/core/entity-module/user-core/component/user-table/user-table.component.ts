@@ -1,7 +1,7 @@
 import {Component, ContentChild, OnInit, TemplateRef} from '@angular/core';
-import {TableAbstractDirective} from '../../../../abstract-directive/table-abstract.directive';
 import {User} from '../../../../model/entities/user.class';
-import {ViewContext} from '../../../../model/global/view-context.class';
+import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
+import {FlViewContext} from '@monorepo/front-core-lib';
 
 /**
  * Table to display users
@@ -12,7 +12,7 @@ import {ViewContext} from '../../../../model/global/view-context.class';
   templateUrl: './user-table.component.html',
   styleUrls: ['./user-table.component.scss']
 })
-export class UserTableComponent extends TableAbstractDirective<User> implements OnInit {
+export class UserTableComponent extends FlTableAbstractDirective<User> implements OnInit {
 
   @ContentChild(TemplateRef) templateRef: TemplateRef<any>;
 
@@ -23,7 +23,7 @@ export class UserTableComponent extends TableAbstractDirective<User> implements 
   ngOnInit(): void {
   }
 
-  getUserViewContext(user: User): ViewContext<User> {
+  getUserViewContext(user: User): FlViewContext<User> {
     return {$implicit: user};
   }
 

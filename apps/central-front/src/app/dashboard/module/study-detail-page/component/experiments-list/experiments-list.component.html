@@ -1,22 +1,22 @@
-<gen-async-section [arrayObs]="experimentsArray" emptyText="no_experiment">
+<fl-async-section [arrayObs]="experimentsArray" emptyText="no_experiment">
 
-  <gen-section-header>
-    <gen-text-icon>
+  <fl-section-header>
+    <fl-text-icon>
       <mat-icon svgIcon="experiment"></mat-icon>
       <h2>{{'experiments' | translate}}</h2>
-    </gen-text-icon>
+    </fl-text-icon>
 
-    <gen-section-actions>
+    <fl-section-actions>
       <button mat-mini-fab type="button" color="accent"
               (click)="openCreateExperimentDialog()"
               [matTooltip]="'new_experiment' | translate">
         <mat-icon>add</mat-icon>
       </button>
-    </gen-section-actions>
-  </gen-section-header>
+    </fl-section-actions>
+  </fl-section-header>
 
 
-  <ng-container *genSectionBody="let experiments">
+  <ng-container *flSectionBody="let experiments">
     <div fxLayout="row wrap" fxLayoutGap="1%" fxLayoutGap.lt-md="0">
       <a class="experiment" *ngFor="let experiment of experiments; let i= index"
          [routerLink]="'experiment/' + experiment.id"
@@ -26,4 +26,4 @@
     </div>
   </ng-container>
 
-</gen-async-section>
+</fl-async-section>

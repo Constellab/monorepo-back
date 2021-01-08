@@ -1,11 +1,11 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {LabInstance} from '../../../core/model/entities/lab-instance.class';
-import {DialogService} from '../../../core/service/dialog.service';
 import {LabInstanceService} from '../../../core/service-api/lab-instance.service';
 import {
   StatusHistoryListDialogComponent,
   StatusHistoryListDialogInput
 } from '../../../core/module/status/status-history-list-dialog/status-history-list-dialog.component';
+import {FlDialogService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-lab-instance-detail',
@@ -17,7 +17,7 @@ export class LabInstanceDetailComponent implements OnInit {
   @Input() labInstance: LabInstance;
   @Output() update: EventEmitter<LabInstance> = new EventEmitter<LabInstance>();
 
-  constructor(private dialogService: DialogService,
+  constructor(private dialogService: FlDialogService,
               private labInstanceService: LabInstanceService) {
   }
 

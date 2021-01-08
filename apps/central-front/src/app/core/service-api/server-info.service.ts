@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {ApiService} from './api.service';
-import {ArrayObs} from '../model/datasource/array-obs.class';
 import {ServerInfo} from '../model/entities/server-info.class';
-import {EntityArrayObs} from '../model/datasource/entity-array.class';
 import {Observable} from 'rxjs';
+import {FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +14,8 @@ export class ServerInfoService {
   constructor(private apiService: ApiService) {
   }
 
-  public findAllArrayObs(): ArrayObs<ServerInfo> {
-    return new EntityArrayObs(this.findAll());
+  public findAllArrayObs(): FlArrayObs<ServerInfo> {
+    return new FlEntityArrayObs(this.findAll());
   }
 
   public findAll(): Observable<ServerInfo[]> {

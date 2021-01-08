@@ -1,13 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormDialogInput} from '../../../../model/global/form.class';
-import {SnackBarService} from '../../../../service/snack-bar.service';
 import {Validators} from '@angular/forms';
 import {ServerInfo} from '../../../../model/entities/server-info.class';
 import {ServerInfoService} from '../../../../service-api/server-info.service';
-import {FormDialogAbstractDirective} from '../../../../abstract-directive/form-dialog-abstract.directive';
 import {Observable} from 'rxjs';
+import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 
 /**
  * Dialog to create or update a server info
@@ -17,15 +15,15 @@ import {Observable} from 'rxjs';
   templateUrl: './server-info-form-dialog.component.html',
   styleUrls: ['./server-info-form-dialog.component.scss']
 })
-export class ServerInfoFormDialogComponent extends FormDialogAbstractDirective<ServerInfo> implements OnInit {
+export class ServerInfoFormDialogComponent extends FlFormDialogAbstractDirective<ServerInfo> implements OnInit {
 
   formGp: FormGroup<ServerInfo>;
 
   isLoading: boolean = false;
 
-  constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FormDialogInput<ServerInfo>,
+  constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<ServerInfo>,
               private serverInfoService: ServerInfoService,
-              snackBarService: SnackBarService,
+              snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<ServerInfoFormDialogComponent>) {
     super(dialogInput, snackBarService, dialogRef, 'server_info_created', 'server_info_updated');
   }

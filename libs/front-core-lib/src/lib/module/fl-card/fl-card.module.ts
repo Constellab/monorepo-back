@@ -8,7 +8,7 @@ import {FlCardBodyComponent} from './fl-card-body/fl-card-body.component';
 import {FlCardHeaderComponent} from './fl-card-header/fl-card-header.component';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {FlCardFooterComponent} from './fl-card-footer/fl-card-footer.component';
-import {FlImageModule} from '../fl-image';
+import {FlImageModule} from '../fl-image/fl-image.module';
 
 /**
  * Custom card with colored header

@@ -1,6 +1,6 @@
-<gen-dialog-title>
+<fl-dialog-title>
 {{title | translate}}
-</gen-dialog-title>
+</fl-dialog-title>
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="project-form" [formGroup]="formGp">
@@ -8,20 +8,20 @@
     <!--  Code  -->
     <mat-form-field class="g-form-input" appearance="outline">
       <mat-label>{{'code' | translate}}</mat-label>
-      <input matInput formControlName="code" required genInputMaxLength="20"
+      <input matInput formControlName="code" required flInputMaxLength="20"
              placeholder="{{'code' | translate}}">
       <mat-error *ngIf="formGp.get('code').hasError('required')">
-        {{'code' | errorRequired}}
+        {{'code' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
     <!--  Title  -->
     <mat-form-field class="g-form-input" appearance="outline">
       <mat-label>{{'title' | translate}}</mat-label>
-      <input matInput formControlName="title" required genInputMaxLength="50"
+      <input matInput formControlName="title" required flInputMaxLength="50"
              placeholder="{{'title' | translate}}">
       <mat-error *ngIf="formGp.get('title').hasError('required')">
-        {{'title' | errorRequired}}
+        {{'title' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
@@ -36,7 +36,7 @@
         <mat-datepicker-toggle matSuffix [for]="startingPicker"></mat-datepicker-toggle>
         <mat-datepicker #startingPicker startView="month"></mat-datepicker>
         <mat-error *ngIf="formGp.get('startingDate').hasError('required')">
-          {{'starting_date' | errorRequired }}
+          {{'starting_date' | flErrorRequired }}
         </mat-error>
       </mat-form-field>
 
@@ -48,7 +48,7 @@
         <mat-datepicker-toggle matSuffix [for]="endingPicker"></mat-datepicker-toggle>
         <mat-datepicker #endingPicker startView="month"></mat-datepicker>
         <!--        <mat-error *ngIf="formGp.get('endingDate').hasError('required')">-->
-        <!--          {{'ending_date' | errorRequired }}-->
+        <!--          {{'ending_date' | flErrorRequired }}-->
         <!--        </mat-error>-->
         <mat-error *ngIf="formGp.get('endingDate').hasError('matDatepickerMin')">
           {{'error_end_date_before_start' | translate}}
@@ -57,15 +57,15 @@
     </div>
 
     <!--    Description      -->
-    <gen-form-field class="g-form-input">
+    <fl-form-field class="g-form-input">
       <mat-label>{{'description' | translate}}</mat-label>
       <quill-editor formControlName="description" placeholder="{{'description' | translate}}"
                     class="g-full" [styles]="{height: '8em'}">
       </quill-editor>
       <mat-error *ngIf="formGp.get('description').hasError('required')">
-        {{'description' | errorRequired}}
+        {{'description' | flErrorRequired}}
       </mat-error>
-    </gen-form-field>
+    </fl-form-field>
   </form>
 </mat-dialog-content>
 
@@ -73,6 +73,6 @@
   <button mat-raised-button color="primary" type="submit" form="project-form"
           class="centered">
     {{'save' | translate}}
-    <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 </div>

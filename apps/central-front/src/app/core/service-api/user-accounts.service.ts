@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {ApiService} from './api.service';
 import {NewUser, User} from '../model/entities/user.class';
 import {Observable} from 'rxjs';
-import {ArrayObs} from '../model/datasource/array-obs.class';
-import {EntityArrayObs} from '../model/datasource/entity-array.class';
+import {FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
 
 /**
  * Service to manage users' accounts
@@ -47,7 +46,7 @@ export class UserAccountsService {
     return this.apiService.post(`${this.route}/adminActivation/${userId}`, User);
   }
 
-  public findUsersToAdminActivate(): ArrayObs<User> {
-    return new EntityArrayObs(this.apiService.get(`${this.route}/usersToAdminActivate`, User));
+  public findUsersToAdminActivate(): FlArrayObs<User> {
+    return new FlEntityArrayObs(this.apiService.get(`${this.route}/usersToAdminActivate`, User));
   }
 }

@@ -1,10 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {StatusHistory} from '../../../model/entities/status-history.class';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {ArrayObs} from '../../../model/datasource/array-obs.class';
+import {FlArrayObs} from '@monorepo/front-core-lib';
 
 export interface StatusHistoryListDialogInput {
-  statusHistoriesObs: ArrayObs<StatusHistory<any>>;
+  statusHistoriesObs: FlArrayObs<StatusHistory<any>>;
 }
 
 /**
@@ -17,7 +17,7 @@ export interface StatusHistoryListDialogInput {
 })
 export class StatusHistoryListDialogComponent implements OnInit {
 
-  statusHistories: ArrayObs<StatusHistory<any>>;
+  statusHistories: FlArrayObs<StatusHistory<any>>;
 
   constructor(@Inject(MAT_DIALOG_DATA) private dialogInput: StatusHistoryListDialogInput) {
   }

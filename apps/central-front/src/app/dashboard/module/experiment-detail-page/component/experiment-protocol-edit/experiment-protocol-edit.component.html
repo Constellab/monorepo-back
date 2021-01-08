@@ -1,9 +1,9 @@
 <fl-card class="g-section">
   <fl-card-header>
-    <gen-text-icon>
+    <fl-text-icon>
       <mat-icon svgIcon="protocol" class="g-icon-big"></mat-icon>
       <h2>{{'protocol' | translate}}</h2>
-    </gen-text-icon>
+    </fl-text-icon>
   </fl-card-header>
   <fl-card-body>
 
@@ -30,7 +30,7 @@
         <button mat-raised-button color="primary" type="submit"
                 class="g-centered-forced">
           {{'save' | translate}}
-          <gen-button-loader *ngIf="isLoading"></gen-button-loader>
+          <fl-button-loader *ngIf="isLoading"></fl-button-loader>
         </button>
       </div>
 

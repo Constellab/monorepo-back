@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Host, Input, OnInit} from '@angular/core';
-import {EmbeddedOptionsAbstractDirective} from '../../../abstract-directive/embedded-options-abstract.directive';
 import {MatSelect} from '@angular/material/select';
+import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 
 /**
  * List of option for a {@link UserCategory}
@@ -10,7 +10,7 @@ import {MatSelect} from '@angular/material/select';
   templateUrl: './select-user-category-option.component.html',
   styleUrls: ['./select-user-category-option.component.scss']
 })
-export class SelectUserCategoryOptionComponent extends EmbeddedOptionsAbstractDirective
+export class SelectUserCategoryOptionComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit {
 
   // in basic mode, the ADMIN category is not shown

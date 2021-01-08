@@ -3,8 +3,7 @@ import {ApiService} from '../../core/service-api/api.service';
 import {Observable} from 'rxjs';
 import {Experiment, ExperimentStatus, ExperimentStatusHistory} from '../../core/model/entities/experiment.class';
 import {Protocol} from '../../core/model/entities/protocol.entity';
-import {ArrayObs} from '../../core/model/datasource/array-obs.class';
-import {EntityArrayObs} from '../../core/model/datasource/entity-array.class';
+import {FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +19,8 @@ export class ExperimentService {
     return this.apiService.get(`${this.route}/${id}`, Experiment);
   }
 
-  public getExperimentsOfStudy(studyId: string): ArrayObs<Experiment> {
-    return new EntityArrayObs(this.apiService.get(`${this.route}/study/${studyId}`, Experiment));
+  public getExperimentsOfStudy(studyId: string): FlArrayObs<Experiment> {
+    return new FlEntityArrayObs(this.apiService.get(`${this.route}/study/${studyId}`, Experiment));
   }
 
   public create(experiment: Partial<Experiment>, studyId: string): Observable<Experiment> {
@@ -43,8 +42,8 @@ export class ExperimentService {
   /**
    * retrieve the list of user's experiments that uses the protocol
    */
-  public getExperimentsByProtocol(protocolId: string): ArrayObs<Experiment> {
-    return new EntityArrayObs(this.apiService.get(`${this.route}/protocol/${protocolId}`, Experiment));
+  public getExperimentsByProtocol(protocolId: string): FlArrayObs<Experiment> {
+    return new FlEntityArrayObs(this.apiService.get(`${this.route}/protocol/${protocolId}`, Experiment));
   }
 
 
@@ -60,7 +59,7 @@ export class ExperimentService {
       null, Experiment);
   }
 
-  public getStatusHistories(id: string): ArrayObs<ExperimentStatusHistory> {
-    return new EntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, ExperimentStatusHistory));
+  public getStatusHistories(id: string): FlArrayObs<ExperimentStatusHistory> {
+    return new FlEntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, ExperimentStatusHistory));
   }
 }

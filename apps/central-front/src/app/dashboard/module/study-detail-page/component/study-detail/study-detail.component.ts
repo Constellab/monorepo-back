@@ -1,11 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Study, StudyStatus} from '../../../../../core/model/entities/study.class';
-import {DialogService} from '../../../../../core/service/dialog.service';
 import {StudyService} from '../../../../service/study.service';
-import {
-  StudyFormDialogComponent,
-  StudyFormDialogInput
-} from '../../../study-core/component/study-form-dialog/study-form-dialog.component';
+import {StudyFormDialogComponent, StudyFormDialogInput} from '../../../study-core/component/study-form-dialog/study-form-dialog.component';
 import {
   UpdateStatusFormDialogComponent,
   UpdateStatusFormDialogInput
@@ -14,6 +10,7 @@ import {
   StatusHistoryListDialogComponent,
   StatusHistoryListDialogInput
 } from '../../../../../core/module/status/status-history-list-dialog/status-history-list-dialog.component';
+import {FlDialogService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-study-detail',
@@ -26,7 +23,7 @@ export class StudyDetailComponent implements OnInit {
 
   @Output() update: EventEmitter<Study> = new EventEmitter<Study>();
 
-  constructor(private dialogService: DialogService,
+  constructor(private dialogService: FlDialogService,
               private studyService: StudyService) {
   }
 

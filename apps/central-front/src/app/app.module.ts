@@ -7,18 +7,22 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CoreModule} from './core/core.module';
 import {LoginModule} from './login/login.module';
 import {MainModule} from './main/main.module';
-import {CoreTranslateModule} from './core/module/translate/core-translate.module';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {APP_CONFIG, AppConfig} from './core/model/config/app-config';
 import {environment} from '../environments/environment';
 import {CookieService} from 'ngx-cookie-service';
-import {HttpInterceptorService} from './core/service/http-interceptor.service';
-import {ThemeService} from './core/service/theme.service';
-import {QuillConfig} from './core/model/config/quill-config';
 import {QuillModule} from 'ngx-quill';
 import {ServiceWorkerModule} from '@angular/service-worker';
-import {IconRegistryService} from './core/service/icon-registry.service';
-import {ServiceWorkerService} from './core/service/service-worker.service';
+import {
+  FlDialogModule,
+  FlHttpInterceptorService,
+  FlQuillConfig,
+  FlServiceWorkerService,
+  FlSvgIconModule,
+  FlThemeService,
+  FlTranslateModule
+} from '@monorepo/front-core-lib';
+import {svgIcons} from './core/model/config/svg-icon-config';
 
 const appConfig: AppConfig = {
   apiUrl: environment.apiUrl,
@@ -26,15 +30,12 @@ const appConfig: AppConfig = {
   defaultApiErrorDuration: 3000
 };
 
-function loadThemeOnInit(themeService: ThemeService): () => void {
+function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
 }
 
-function registerCustomIcon(iconRegistryService: IconRegistryService): () => void {
-  return (): void => iconRegistryService.registerCustomIcons();
-}
 
-function checkSWWebsiteVersion(swService: ServiceWorkerService): () => void {
+function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
   return (): void => swService.checkForNewVersion();
 }
 
@@ -56,16 +57,23 @@ function checkSWWebsiteVersion(swService: ServiceWorkerService): () => void {
     CoreModule,
 
     // Setup translate module
-    CoreTranslateModule.forRoot({
+    FlTranslateModule.forRoot({
       defaultLang: 'en',
       availableLang: ['en'],
       filenames: ['global-', 'dashboard-', 'settings-', 'server-info-', 'lab-']
     }),
-    CoreTranslateModule.forRoot2(),
+    FlTranslateModule.forRoot2(),
+
+    // configuration of Front library
+    FlSvgIconModule.forRoot({
+      iconFolder: 'assets/mat-icons/',
+      iconsToRegister: svgIcons
+    }),
+    FlDialogModule.forRoot(),
 
     QuillModule.forRoot({
       modules: {
-        toolbar: QuillConfig.defaultToolbarConfig,
+        toolbar: FlQuillConfig.defaultToolbarConfig,
       },
     }),
 
@@ -75,12 +83,11 @@ function checkSWWebsiteVersion(swService: ServiceWorkerService): () => void {
     {provide: APP_CONFIG, useValue: appConfig},
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: HttpInterceptorService,
+      useClass: FlHttpInterceptorService,
       multi: true
     },
-    {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [ThemeService], multi: true},
-    {provide: APP_INITIALIZER, useFactory: registerCustomIcon, deps: [IconRegistryService], multi: true},
-    {provide: APP_INITIALIZER, useFactory: checkSWWebsiteVersion, deps: [ServiceWorkerService], multi: true},
+    {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},
+    {provide: APP_INITIALIZER, useFactory: checkSWWebsiteVersion, deps: [FlServiceWorkerService], multi: true},
     CookieService,
   ],
   bootstrap: [AppComponent]

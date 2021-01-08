@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ProjectService} from '../../../dashboard/service/project.service';
-import {DialogService} from '../../../core/service/dialog.service';
 import {Project, ProjectDatasource} from '../../../core/model/entities/project.class';
-import {FormDialogInput} from '../../../core/model/global/form.class';
 import {ProjectFormDialogComponent} from '../../../core/entity-module/project-core/component/project-form-dialog/project-form-dialog.component';
+import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-my-projects-page',
@@ -15,7 +14,7 @@ export class MyProjectsPageComponent implements OnInit {
   projectsDatasource: ProjectDatasource;
 
   constructor(private projectService: ProjectService,
-              private dialogService: DialogService) {
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -23,7 +22,7 @@ export class MyProjectsPageComponent implements OnInit {
   }
 
   openCreateProjectDialog(): void {
-    const dialogInput: FormDialogInput = {
+    const dialogInput: FlFormDialogInput = {
       mode: 'create'
     };
     this.dialogService.openSmallDialog(ProjectFormDialogComponent, {data: dialogInput})

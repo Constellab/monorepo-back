@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {LabInstance} from '../../../../model/entities/lab-instance.class';
-import {HelpService} from '../../../../utils/help-service';
 import {LabInstanceService} from '../../../../service-api/lab-instance.service';
-import {SnackBarService} from '../../../../service/snack-bar.service';
+import {ClHelpService} from '@monorepo/core-lib';
+import {FlSnackBarService} from '@monorepo/front-core-lib';
 
 /**
  * Toggle button to start or stop the lab instance
@@ -20,14 +20,14 @@ export class LabInstanceStartStopComponent implements OnInit {
   isLoading: boolean = false;
 
   constructor(private labInstanceService: LabInstanceService,
-              private snackBarService: SnackBarService) {
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {
   }
 
   startLab(event: Event): void {
-    HelpService.stopEventPropagation(event);
+    ClHelpService.stopEventPropagation(event);
 
     this.isLoading = true;
     this.labInstanceService.startLabInstance(this.labInstance.id).subscribe(
@@ -37,7 +37,7 @@ export class LabInstanceStartStopComponent implements OnInit {
   }
 
   stopLab(event: Event): void {
-    HelpService.stopEventPropagation(event);
+    ClHelpService.stopEventPropagation(event);
 
     this.isLoading = true;
     this.labInstanceService.stopLabInstance(this.labInstance.id).subscribe(

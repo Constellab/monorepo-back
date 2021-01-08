@@ -1,9 +1,9 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {BaseEntity} from './base-entity.class';
-import {HelpService} from '../../utils/help-service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
-import {EntityPaginatedDatasource} from '../datasource/entity-datasource.class';
+import {ClHelpService} from '@monorepo/core-lib';
+import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
 @JsonObject('Protocol')
 export class Protocol extends BaseEntity {
@@ -27,11 +27,11 @@ export class Protocol extends BaseEntity {
   }
 
   hasProtocol(): boolean {
-    return !HelpService.isNullOrEmpty(this.json);
+    return !ClHelpService.isNullOrEmpty(this.json);
   }
 }
 
-export type ProtocolDatasource = EntityPaginatedDatasource<Protocol>;
+export type ProtocolDatasource = FlEntityPaginatedDatasource<Protocol>;
 
 export function newProtocolFormGp(): FormGroup<Partial<Protocol>> {
   return new FormBuilder().group({

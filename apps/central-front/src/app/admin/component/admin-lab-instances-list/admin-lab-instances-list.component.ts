@@ -1,11 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {LabInstance} from '../../../core/model/entities/lab-instance.class';
 import {LabInstanceService} from '../../../core/service-api/lab-instance.service';
-import {ArrayObs} from '../../../core/model/datasource/array-obs.class';
-import {TableColumn} from '../../../core/abstract-directive/table-abstract.directive';
-import {FormDialogInput} from '../../../core/model/global/form.class';
-import {DialogService} from '../../../core/service/dialog.service';
 import {LabInstanceFormDialogComponent} from '../../../core/entity-module/lab-core/component/lab-instance-form-dialog/lab-instance-form-dialog.component';
+import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
 
 /**
  * List of lab instance in lab admin page, possibility to create and update the labs
@@ -17,13 +14,13 @@ import {LabInstanceFormDialogComponent} from '../../../core/entity-module/lab-co
 })
 export class AdminLabInstancesListComponent implements OnInit {
 
-  labInstances: ArrayObs<LabInstance>;
+  labInstances: FlArrayObs<LabInstance>;
 
-  displayedColumns: TableColumn<LabInstance>[] = ['lab', 'owner', 'currentStatus', 'ip', 'ipv6', 'url',
+  displayedColumns: FlTableColumn<LabInstance>[] = ['lab', 'owner', 'currentStatus', 'ip', 'ipv6', 'url',
     'serverInfo', 'actions'];
 
   constructor(private labInstanceService: LabInstanceService,
-              private dialogService: DialogService) {
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -35,7 +32,7 @@ export class AdminLabInstancesListComponent implements OnInit {
   }
 
   openCreateLabInstanceForm(): void {
-    const dialogInput: FormDialogInput = {
+    const dialogInput: FlFormDialogInput = {
       mode: 'create'
     };
 

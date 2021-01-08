@@ -1,3 +1,25 @@
+// Export the abstract directives
+export * from './lib/abstract-directive/public-api';
+
 // Export the modules
-export * from './lib/module/fl-card';
-export * from './lib/module/fl-image';
+export * from './lib/module/fl-card/public-api';
+export * from './lib/module/fl-core-component/public-api';
+export * from './lib/module/fl-core-directive/public-api';
+export * from './lib/module/fl-core-pipe/public-api';
+export * from './lib/module/fl-dialog/public-api';
+export * from './lib/module/fl-form/public-api';
+export * from './lib/module/fl-image/public-api';
+export * from './lib/module/fl-loader/public-api';
+export * from './lib/module/fl-section/public-api';
+export * from './lib/module/fl-svg-icon/public-api';
+export * from './lib/module/fl-text-icon/public-api';
+export * from './lib/module/fl-translate/public-api';
+
+// Export the services
+export * from './lib/service/public-api';
+
+// Export the models
+export * from './lib/model/public-api';
+
+// Export the utils
+export * from './lib/utils/public-api';

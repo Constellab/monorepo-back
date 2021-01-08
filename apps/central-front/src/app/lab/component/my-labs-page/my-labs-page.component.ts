@@ -1,11 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {ArrayObs} from '../../../core/model/datasource/array-obs.class';
 import {Lab} from '../../../core/model/entities/lab.class';
 import {LabService} from '../../../dashboard/service/lab.service';
-import {TableColumn} from '../../../core/abstract-directive/table-abstract.directive';
-import {FormDialogInput} from '../../../core/model/global/form.class';
-import {DialogService} from '../../../core/service/dialog.service';
 import {LabFormDialogComponent} from '../../../core/entity-module/lab-core/component/lab-form-dialog/lab-form-dialog.component';
+import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-my-labs-page',
@@ -14,12 +11,12 @@ import {LabFormDialogComponent} from '../../../core/entity-module/lab-core/compo
 })
 export class MyLabsPageComponent implements OnInit {
 
-  labsArrays: ArrayObs<Lab>;
+  labsArrays: FlArrayObs<Lab>;
 
-  columns: TableColumn<Lab>[] = ['label', 'createdAt', 'lastModifiedAt', 'actions'];
+  columns: FlTableColumn<Lab>[] = ['label', 'createdAt', 'lastModifiedAt', 'actions'];
 
   constructor(private labService: LabService,
-              private dialogService: DialogService) {
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -27,7 +24,7 @@ export class MyLabsPageComponent implements OnInit {
   }
 
   openCreateLabDialog(): void {
-    const dialogInput: FormDialogInput<Lab> = {
+    const dialogInput: FlFormDialogInput<Lab> = {
       mode: 'create'
     };
 

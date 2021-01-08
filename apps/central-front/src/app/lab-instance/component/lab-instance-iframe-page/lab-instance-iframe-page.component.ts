@@ -2,9 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {LabInstanceToken} from '../../../core/model/entities/lab-instance.class';
 import {LabInstanceService} from '../../../core/service-api/lab-instance.service';
 import {ActivatedRoute, Params} from '@angular/router';
-import {SnackBarService} from '../../../core/service/snack-bar.service';
 import {combineLatest} from 'rxjs';
 import {LabIframeOptions} from '../../../core/service/router.service';
+import {FlSnackBarService} from '@monorepo/front-core-lib';
 
 /**
  * Page for the lab instance iframe
@@ -26,7 +26,7 @@ export class LabInstanceIframePageComponent implements OnInit {
 
   constructor(private labInstanceService: LabInstanceService,
               private route: ActivatedRoute,
-              private snackBarService: SnackBarService) {
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {

@@ -2,8 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@ngneat/reactive-forms';
 import {newProtocolFormGp, Protocol} from '../../../../model/entities/protocol.entity';
 import {ProtocolService} from '../../../../service-api/protocol.service';
-import {SnackBarService} from '../../../../service/snack-bar.service';
 import {MatDialogRef} from '@angular/material/dialog';
+import {FlSnackBarService} from '@monorepo/front-core-lib';
 
 /**
  * Form dialog to create a protocol
@@ -20,7 +20,7 @@ export class ProtocolFormDialogComponent implements OnInit {
   isLoading: boolean = false;
 
   constructor(private protocolService: ProtocolService,
-              private snackBarService: SnackBarService,
+              private snackBarService: FlSnackBarService,
               private dialogRef: MatDialogRef<ProtocolFormDialogComponent>) {
   }
 
