@@ -5,7 +5,7 @@ import {MonoTypeOperatorFunction} from 'rxjs';
  * Simple RXJS operator to debug the value emitted in a operator
  * @param tag optional tag for the observable to differentiate it
  */
-export function rxjsDebug<T>(tag ?: string): MonoTypeOperatorFunction<T> {
+export function clRxjsDebug<T>(tag ?: string): MonoTypeOperatorFunction<T> {
   if (tag == null) {
     tag = '';
   } else {
@@ -13,13 +13,13 @@ export function rxjsDebug<T>(tag ?: string): MonoTypeOperatorFunction<T> {
   }
 
   return tap({
-    next(value): void {
+    next(value) {
       console.log(`%c[${tag}Next]`, 'background: #009688; color: #fff; padding: 3px; font-size: 9px;', value);
     },
-    error(error): void {
+    error(error) {
       console.log(`%c[${tag}Error]`, 'background: #E91E63; color: #fff; padding: 3px; font-size: 9px;', error);
     },
-    complete(): void {
+    complete() {
       console.log(`%c[${tag}Complete]`, 'background: #00BCD4; color: #fff; padding: 3px; font-size: 9px;');
     }
   });
