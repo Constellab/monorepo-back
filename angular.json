@@ -24,12 +24,12 @@
             "styles": [
               "apps/central-front/src/styles.scss",
               {
-                "input": "apps/central-front/src/style/theme/light-theme.scss",
+                "input": "libs/front-core-lib/src/style/theme/light-theme.scss",
                 "bundleName": "light-theme",
                 "inject": false
               },
               {
-                "input": "apps/central-front/src/style/theme/dark-theme.scss",
+                "input": "libs/front-core-lib/src/style/theme/dark-theme.scss",
                 "bundleName": "dark-theme",
                 "inject": false
               }
