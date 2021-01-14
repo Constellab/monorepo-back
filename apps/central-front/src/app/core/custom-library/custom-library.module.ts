@@ -7,7 +7,7 @@ import {
   FlCorePipeModule,
   FlDialogModule,
   FlFormModule,
-  FlImageModule,
+  FlImageModule, FlJsonEditorModule,
   FlLoaderModule,
   FlSectionModule,
   FlSnackBarModule,
@@ -40,6 +40,7 @@ import {
     FlTextIconModule,
     FlDialogModule,
     FlSnackBarModule,
+    FlJsonEditorModule,
 
   ]
 })

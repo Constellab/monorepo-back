@@ -1,10 +1,13 @@
 import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Optional, Output, Self, ViewChild} from '@angular/core';
 import {NgControl, Validator} from '@angular/forms';
-import {defaultJsonEditorConfig, JsonEditorConfig} from './json-editor-option.class';
+import {defaultJsonEditorConfig, JsonEditorConfig} from '../fl-json-editor-option.class';
 import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
 import {ValidationErrors} from '@ngneat/reactive-forms/lib/types';
 import {ClHelpService} from '@monorepo/core-lib';
-import {FlDropFileEvent, FlFormFieldDirective, FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
+import {FlFormFieldDirective} from '../../../abstract-directive/fl-form-field.directive';
+import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
+import {FlSnackBarService} from '../../fl-snack-bar/fl-snack-bar.service';
+import {FlDropFileEvent} from '../../fl-core-directive/fl-drag-hover/fl-drop-file-event.class';
 
 /**
  * NgModel component for json editor. It uses the package jsoneditor
@@ -15,14 +18,14 @@ import {FlDropFileEvent, FlFormFieldDirective, FlSnackBarService, FlTranslateSer
  * Possibility to drop a json file on the component to load json
  */
 @Component({
-  selector: 'gen-json-editor',
-  templateUrl: './json-editor.component.html',
-  styleUrls: ['./json-editor.component.scss'],
+  selector: 'fl-json-editor',
+  templateUrl: './fl-json-editor.component.html',
+  styleUrls: ['./fl-json-editor.component.scss'],
   providers: [
-    {provide: FlFormFieldDirective, useExisting: JsonEditorComponent},
+    {provide: FlFormFieldDirective, useExisting: FlJsonEditorComponent},
   ]
 })
-export class JsonEditorComponent extends FlFormFieldDirective<any, string>
+export class FlJsonEditorComponent extends FlFormFieldDirective<any, string>
   implements OnInit, OnDestroy, Validator {
 
   @Input() placeholder: string;

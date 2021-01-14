@@ -6,7 +6,7 @@ import {StatusHistoryListDialogComponent} from './status-history-list-dialog/sta
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CustomMaterialModule} from '../../custom-material/custom-material.module';
 import {StatusHistoryCardComponent} from './status-history-card/status-history-card.component';
-import {CustomLibraryModule} from '../../lib/custom-library.module';
+import {CustomLibraryModule} from '../../custom-library/custom-library.module';
 
 
 /**

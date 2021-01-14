@@ -5,7 +5,7 @@ import {CustomMaterialModule} from '../../custom-material/custom-material.module
 import {SelectUserOptionsComponent} from './component/select-user-options/select-user-options.component';
 import {AuthenticatedUserInlineComponent} from './component/authenticated-user-inline/authenticated-user-inline.component';
 import {UserTableComponent} from './component/user-table/user-table.component';
-import {CustomLibraryModule} from '../../lib/custom-library.module';
+import {CustomLibraryModule} from '../../custom-library/custom-library.module';
 
 /**
  * Module containing users component

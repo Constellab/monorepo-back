@@ -6,7 +6,7 @@ import {CoreSelectModule} from './module/core-select/core-select.module';
 import {QuillModule} from 'ngx-quill';
 import {StatusModule} from './module/status/status.module';
 import {UserCoreModule} from './entity-module/user-core/user-core.module';
-import {CustomLibraryModule} from './lib/custom-library.module';
+import {CustomLibraryModule} from './custom-library/custom-library.module';
 
 /**
  * Core module of the app containing, component, services, directives and pipes

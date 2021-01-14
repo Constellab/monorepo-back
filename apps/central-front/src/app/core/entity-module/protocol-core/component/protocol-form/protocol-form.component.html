@@ -11,9 +11,9 @@
 
   <!-- Json Protocol-->
   <fl-form-field>
-    <gen-json-editor formControlName="json" placeholder="{{'protocol' | translate}}"
+    <fl-json-editor formControlName="json" placeholder="{{'protocol' | translate}}"
                      [jsonSchema]="protocolSchema">
-    </gen-json-editor>
+    </fl-json-editor>
 
     <mat-error *ngIf="formGp.get('json').hasError('required')">
       {{'protocol' | flErrorRequired}}
