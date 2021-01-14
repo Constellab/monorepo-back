@@ -8,3 +8,4 @@ export * from './service/fl-api-crud.service';
 // Export the models
 export * from './model/fl-api-module.config.class';
 export * from './model/fl-http-option.class';
+export * from './model/fl-server-error.class';

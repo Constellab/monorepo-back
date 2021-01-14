@@ -1,17 +1,6 @@
 /**
  * Error sent by the API and format by the FlApiService
  */
-import {HttpErrorResponse} from '@angular/common/http';
-
-export interface ServerError {
-  response?: HttpErrorResponse;
-  logDetail: LogDetail;
-}
-
-export interface LogDetail {
-  timestamp: Date;
-  message: string;
-}
 
 export interface NestError {
   statusCode: number;

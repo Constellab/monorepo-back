@@ -2,7 +2,7 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {Router} from '@angular/router';
-import {NestError, ServerError} from '../model/global/server-error.class';
+import {NestError} from '../model/global/server-error.class';
 import {
   FL_API_MODULE_CONFIG,
   FlApiErrorService,
@@ -10,6 +10,7 @@ import {
   flAuthExpiredCookie,
   FlCookieService,
   FlLoginSavedRoute,
+  FlServerError,
   FlSnackBarService,
   FlTranslateService
 } from '@monorepo/front-core-lib';
@@ -39,7 +40,7 @@ export class ErrorService extends FlApiErrorService {
    */
   public handleServerError(error: HttpErrorResponse, hideError: boolean = false,
                            snackBarDuration?: number, defaultError: string = 'Server error'): Observable<never> {
-    const serverError: ServerError = {
+    const serverError: FlServerError = {
       response: error,
       logDetail: {
         message: '',
@@ -77,7 +78,7 @@ export class ErrorService extends FlApiErrorService {
   /**
    * Redirect the user to the login page
    */
-  private sessionExpired(serverError: ServerError, snackBarDuration: number): Observable<never> {
+  private sessionExpired(serverError: FlServerError, snackBarDuration: number): Observable<never> {
     // save the current url for rerouting after login
     const currentRoute = this.router.routerState.snapshot.url;
 

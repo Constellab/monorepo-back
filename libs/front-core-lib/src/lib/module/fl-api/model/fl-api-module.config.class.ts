@@ -1,9 +1,9 @@
 import {InjectionToken} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {ServerError} from '../../../../../../../apps/central-front/src/app/core/model/global/server-error.class';
 import {FlSnackBarService} from '../../fl-snack-bar/fl-snack-bar.service';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
+import {FlServerError} from './fl-server-error.class';
 
 /**
  * ApiModule configuration
@@ -83,7 +83,7 @@ export abstract class FlApiErrorService {
 
     // throw the exception
     // noinspection UnnecessaryLocalVariableJS
-    const returnError: ServerError = {
+    const returnError: FlServerError = {
       response: null,
       logDetail: {
         message: errorMessage,
