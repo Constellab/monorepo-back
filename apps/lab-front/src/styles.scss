@@ -1,1 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
+
+// Import theme for material
+@import "../../../libs/front-core-lib/src/style/theme/theme";
+// Import the style for the library
+@import "../../../libs/front-core-lib/src/style/global";
+
+// Import the style for the dialog
+@import "../../../libs/front-core-lib/src/style/dialog";
+@import "../../../libs/front-core-lib/src/style/icon";
+
+// Import drawflow style
+@import "~drawflow/dist/drawflow.min.css";
