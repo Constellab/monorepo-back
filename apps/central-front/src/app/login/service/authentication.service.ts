@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
-import {ApiService} from '../../core/service-api/api.service';
 import {Credentials} from '../../core/model/global/credentials.class';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {flAuthExpiredCookie, FlCleanerService, FlCookieService} from '@monorepo/front-core-lib';
+import {FlApiService, flAuthExpiredCookie, FlCleanerService, FlCookieService} from '@monorepo/front-core-lib';
 
 /**
  * Service to handle login and logout and store cookie to check if user is connected
@@ -15,7 +14,7 @@ export class AuthenticationService {
 
   private readonly route: string = 'auth';
 
-  constructor(private apiService: ApiService, private cookieService: FlCookieService) {
+  constructor(private apiService: FlApiService, private cookieService: FlCookieService) {
   }
 
   /**

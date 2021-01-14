@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
 import {User, UserCategory} from '../model/entities/user.class';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {ApiService} from './api.service';
 import {map} from 'rxjs/operators';
 import {SupportedLanguage} from '../model/global/supported-language.class';
-import {FlCleanableService, FlCleanerService, FlTranslateService} from '@monorepo/front-core-lib';
+import {FlApiService, FlCleanableService, FlCleanerService, FlTranslateService} from '@monorepo/front-core-lib';
 
 /**
  * Service to handle the current authenticated user
@@ -21,7 +20,7 @@ export class AuthenticatedUserService implements FlCleanableService {
   private userSubject: BehaviorSubject<User> = new BehaviorSubject<User>(null);
 
 
-  constructor(private apiService: ApiService,
+  constructor(private apiService: FlApiService,
               private translateService: FlTranslateService) {
     FlCleanerService.getInstance().registerService(this);
   }

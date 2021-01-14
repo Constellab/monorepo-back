@@ -2,26 +2,23 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {catchError, map, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
-import {APP_CONFIG, AppConfig} from '../model/config/app-config';
-import {ErrorService} from '../service/error.service';
-import {HttpOption} from '../model/global/http-option.class';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
-import {FlFileService} from '@monorepo/front-core-lib';
+import {FL_API_MODULE_CONFIG, FlApiErrorService, FlApiModuleConfig} from '../model/fl-api-module.config.class';
+import {FlFileService} from '../../../service/fl-file.service';
+import {FlHttpOption} from '../model/fl-http-option.class';
 
 /**
  * Global service to call make Http request. This service formats input and output
  * and handles errors
  */
-@Injectable({
-  providedIn: 'root'
-})
-export class ApiService {
+@Injectable()
+export class FlApiService {
   private readonly apiUrl: string;
 
   constructor(protected http: HttpClient,
-              @Inject(APP_CONFIG) config: AppConfig,
+              @Inject(FL_API_MODULE_CONFIG) config: FlApiModuleConfig,
               private fileService: FlFileService,
-              private errorService: ErrorService) {
+              private flErrorService: FlApiErrorService) {
     // get the api url from the config
     this.apiUrl = config.apiUrl;
   }
@@ -35,7 +32,7 @@ export class ApiService {
    * @param options custom http options
    */
   public getById(route: string, id: string, classReference ?: new() => any,
-                 options: HttpOption = {}): Observable<any> {
+                 options: FlHttpOption = {}): Observable<any> {
     return this.http.get(this.getUrlForId(route, id), options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -49,7 +46,7 @@ export class ApiService {
    * @param options custom http options
    */
   public get(route: string, classReference ?: new() => any,
-             options: HttpOption = {}): Observable<any> {
+             options: FlHttpOption = {}): Observable<any> {
     return this.http.get(this.getUrl(route, options.page, options.pageSize), options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -64,7 +61,7 @@ export class ApiService {
    * @param options custom http options
    */
   public put(route: string, body: any, classReference ?: new() => any,
-             options: HttpOption = {}): Observable<any> {
+             options: FlHttpOption = {}): Observable<any> {
     return this.http.put(this.getUrl(route, options.page, options.pageSize), body, options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -79,7 +76,7 @@ export class ApiService {
    * @param options custom http options
    */
   public patch(route: string, body: any, classReference ?: new() => any,
-               options: HttpOption = {}): Observable<any> {
+               options: FlHttpOption = {}): Observable<any> {
     return this.http.patch(this.getUrl(route, options.page, options.pageSize), body, options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -94,7 +91,7 @@ export class ApiService {
    * @param options custom http options
    */
   public post(route: string, body: any, classReference ?: new() => any,
-              options: HttpOption = {}): Observable<any> {
+              options: FlHttpOption = {}): Observable<any> {
     return this.http.post(this.getUrl(route, options.page, options.pageSize), body, options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -110,7 +107,7 @@ export class ApiService {
    * @param options custom http options
    */
   public deleteById(route: string, id: string, classReference ?: new() => any,
-                    options: HttpOption = {}): Observable<any> {
+                    options: FlHttpOption = {}): Observable<any> {
     return this.http.delete(this.getUrlForId(route, id), options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -124,7 +121,7 @@ export class ApiService {
    * @param options custom http options
    */
   public delete(route: string, classReference ?: new() => any,
-                options: HttpOption = {}): Observable<any> {
+                options: FlHttpOption = {}): Observable<any> {
     return this.http.delete(this.getUrl(route), options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -180,7 +177,7 @@ export class ApiService {
           return ClCoreJsonConvert.deserialize(json, classReference);
         }
       } catch (e) {
-        this.errorService.handleDeserializationError(e, classReference);
+        this.flErrorService.handleDeserializationError(e, classReference);
       }
     } else {
       return json;
@@ -248,8 +245,8 @@ export class ApiService {
     }
   }
 
-  private catchError(error: HttpErrorResponse, httpOptions: HttpOption = {}): Observable<never> {
-    return this.errorService.handleServerError(error, httpOptions.hideSnackBarError,
+  private catchError(error: HttpErrorResponse, httpOptions: FlHttpOption = {}): Observable<never> {
+    return this.flErrorService.handleServerError(error, httpOptions.hideSnackBarError,
       httpOptions.errorSnackBarDuration, httpOptions.defaultError);
   }
 }

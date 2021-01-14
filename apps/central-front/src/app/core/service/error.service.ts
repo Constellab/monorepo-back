@@ -2,24 +2,31 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {Router} from '@angular/router';
-import {APP_CONFIG, AppConfig} from '../model/config/app-config';
 import {NestError, ServerError} from '../model/global/server-error.class';
-import {flAuthExpiredCookie, FlCookieService, FlLoginSavedRoute, FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
+import {
+  FL_API_MODULE_CONFIG,
+  FlApiErrorService,
+  FlApiModuleConfig,
+  flAuthExpiredCookie,
+  FlCookieService,
+  FlLoginSavedRoute,
+  FlSnackBarService,
+  FlTranslateService
+} from '@monorepo/front-core-lib';
 
 
 /**
  * Manage the errors of the application
  * The errors opens a snackbar
  */
-@Injectable({
-  providedIn: 'root'
-})
-export class ErrorService {
-  constructor(private snackBarService: FlSnackBarService,
-              private translateService: FlTranslateService,
-              @Inject(APP_CONFIG) private config: AppConfig,
+@Injectable()
+export class ErrorService extends FlApiErrorService {
+  constructor(snackBarService: FlSnackBarService,
+              translateService: FlTranslateService,
+              @Inject(FL_API_MODULE_CONFIG) config: FlApiModuleConfig,
               private router: Router,
               private cookieService: FlCookieService) {
+    super(config, snackBarService, translateService);
   }
 
   /**
@@ -88,7 +95,7 @@ export class ErrorService {
 
     serverError.logDetail.message = this.translateService.translate('session_expired');
 
-    // hsow error to the user
+    // show error to the user
     this.showError(serverError.logDetail.message, snackBarDuration);
 
     // throw the error to propagate it
@@ -100,49 +107,6 @@ export class ErrorService {
    */
   private getErrorMessage(error: NestError, defaultError: string): string {
     return error.message || defaultError;
-  }
-
-  /**
-   * Handle an error during deserialization of the API response
-   * @param error deserialization error
-   * @param classReference class tried to be converted
-   */
-  public handleDeserializationError(error: any, classReference: new() => any): never {
-    // get the predefine error message
-    const errorMessage = this.translateService.translate('error_deserialize', {
-      param: {className: classReference.name}
-    });
-
-    // console logs
-    console.error(errorMessage);
-    console.error(error);
-
-    // open the error dialog
-    this.showError(errorMessage);
-
-    // throw the exception
-    // noinspection UnnecessaryLocalVariableJS
-    const returnError: ServerError = {
-      response: null,
-      logDetail: {
-        message: errorMessage,
-        timestamp: new Date()
-      }
-    };
-    throw returnError;
-  }
-
-  /**
-   * Open an error dialog with the text
-   * @param message message to display
-   * @param duration snackbar duration
-   */
-  public showError(message: string, duration?: number): void {
-    if (duration == null) {
-      duration = this.config.defaultApiErrorDuration;
-    }
-
-    this.snackBarService.openErrorMessage(message, false, duration, true);
   }
 }
 

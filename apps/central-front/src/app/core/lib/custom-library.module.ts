@@ -1,5 +1,6 @@
 import {NgModule} from '@angular/core';
 import {
+  FlApiModule,
   FlCardModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
@@ -28,6 +29,7 @@ import {
     FlCoreDirectiveModule,
 
     // other module
+    FlApiModule,
     FlLoaderModule,
     FlTranslateModule,
     FlFormModule,

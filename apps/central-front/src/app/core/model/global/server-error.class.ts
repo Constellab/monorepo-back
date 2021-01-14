@@ -1,5 +1,5 @@
 /**
- * Error sent by the API and format by the ApiService
+ * Error sent by the API and format by the FlApiService
  */
 import {HttpErrorResponse} from '@angular/common/http';
 

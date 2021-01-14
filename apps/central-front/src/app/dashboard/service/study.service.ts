@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ApiService} from '../../core/service-api/api.service';
 import {Observable} from 'rxjs';
 import {Study, StudyStatus, StudyStatusHistory} from '../../core/model/entities/study.class';
-import {FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
+import {FlApiService, FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +10,7 @@ export class StudyService {
 
   private readonly route: string = 'studies';
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: FlApiService) {
   }
 
   public findById(id: string): Observable<Study> {

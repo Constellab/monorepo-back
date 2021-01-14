@@ -1,12 +1,12 @@
 import {Observable} from 'rxjs';
-import {ApiService} from './api.service';
+import {FlApiService} from './fl-api.service';
 
 /**
  * Abstract CRUD service for basic api calls
  * T is the type of the object returns by the api route
  * K is an optional type if the object send for create or update are different than T
  */
-export abstract class ApiCrudService<T, K = T> {
+export abstract class FlApiCrudService<T, K = T> {
 
   /**
    * @param route route for the api calls
@@ -14,7 +14,7 @@ export abstract class ApiCrudService<T, K = T> {
    * @param apiService apiService
    */
   protected constructor(protected route: string, protected classReference: new() => T,
-                        protected apiService: ApiService) {
+                        protected apiService: FlApiService) {
   }
 
   /**

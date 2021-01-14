@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ApiService} from './api.service';
 import {NewUser, User} from '../model/entities/user.class';
 import {Observable} from 'rxjs';
-import {FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
+import {FlApiService, FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
 
 /**
  * Service to manage users' accounts
@@ -14,7 +13,7 @@ export class UserAccountsService {
 
   private readonly route: string = 'accounts';
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: FlApiService) {
   }
 
   /**

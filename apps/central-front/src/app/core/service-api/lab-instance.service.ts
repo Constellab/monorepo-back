@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ApiService} from './api.service';
 import {Observable} from 'rxjs';
 import {LabInstance, LabInstanceDatasource, LabInstanceStatusHistory, LabInstanceToken} from '../model/entities/lab-instance.class';
-import {FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
+import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +10,7 @@ export class LabInstanceService {
 
   private readonly route: string = 'lab-instances';
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: FlApiService) {
   }
 
   public create(entity: Partial<LabInstance>): Observable<LabInstance> {

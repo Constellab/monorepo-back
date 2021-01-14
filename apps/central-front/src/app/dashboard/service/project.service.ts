@@ -1,9 +1,14 @@
 import {Injectable} from '@angular/core';
-import {ApiCrudService} from '../../core/service-api/api-crud.service';
 import {Project, ProjectDatasource, ProjectStatus, ProjectStatusHistory} from '../../core/model/entities/project.class';
-import {ApiService} from '../../core/service-api/api.service';
 import {Observable} from 'rxjs';
-import {FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource, FlGetPageFunction} from '@monorepo/front-core-lib';
+import {
+  FlApiCrudService,
+  FlApiService,
+  FlArrayObs,
+  FlEntityArrayObs,
+  FlEntityPaginatedDatasource,
+  FlGetPageFunction
+} from '@monorepo/front-core-lib';
 
 /**
  * Service to manage project entity
@@ -11,9 +16,9 @@ import {FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource, FlGetPageFunc
 @Injectable({
   providedIn: 'root'
 })
-export class ProjectService extends ApiCrudService<Project, Partial<Project>> {
+export class ProjectService extends FlApiCrudService<Project, Partial<Project>> {
 
-  constructor(apiService: ApiService) {
+  constructor(apiService: FlApiService) {
     super('projects', Project, apiService);
   }
 

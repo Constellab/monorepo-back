@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ApiService} from './api.service';
 import {Observable} from 'rxjs';
 import {Protocol, ProtocolDatasource} from '../model/entities/protocol.entity';
-import {FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +10,7 @@ export class ProtocolService {
 
   private readonly route: string = 'protocols';
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: FlApiService) {
   }
 
   /**
