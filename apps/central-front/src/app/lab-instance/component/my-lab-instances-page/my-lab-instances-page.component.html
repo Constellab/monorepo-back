@@ -20,7 +20,7 @@
     <ng-container *flSectionBody="let labInstances">
       <gen-lab-instances-list [labInstances]="labInstances"></gen-lab-instances-list>
 
-      <fl-pagination-load-more-result [datasource]="labInstancesDatasource"></fl-pagination-load-more-result>
+      <fl-infinite-load-more-result [datasource]="labInstancesDatasource"></fl-infinite-load-more-result>
     </ng-container>
 
   </fl-async-section>

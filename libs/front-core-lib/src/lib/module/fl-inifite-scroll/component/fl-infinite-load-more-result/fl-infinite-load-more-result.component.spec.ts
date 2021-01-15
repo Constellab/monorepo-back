@@ -1,20 +1,20 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FlPaginationLoadMoreResultComponent} from './fl-pagination-load-more-result.component';
+import {FlInfiniteLoadMoreResultComponent} from './fl-infinite-load-more-result.component';
 
 describe('LoadMoreResultComponent', () => {
-  let component: FlPaginationLoadMoreResultComponent;
-  let fixture: ComponentFixture<FlPaginationLoadMoreResultComponent>;
+  let component: FlInfiniteLoadMoreResultComponent;
+  let fixture: ComponentFixture<FlInfiniteLoadMoreResultComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FlPaginationLoadMoreResultComponent ]
+      declarations: [ FlInfiniteLoadMoreResultComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FlPaginationLoadMoreResultComponent);
+    fixture = TestBed.createComponent(FlInfiniteLoadMoreResultComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

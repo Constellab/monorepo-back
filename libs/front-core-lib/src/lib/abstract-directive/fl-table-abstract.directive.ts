@@ -5,7 +5,7 @@ export type FlTableColumn<T> = keyof T | string;
 
 /**
  * Abstract directive for the Table component
- * It  supports dynamic columns in the HTML by providing the list of static column in the constructor
+ * It supports dynamic columns in the HTML by providing the list of static column in the constructor
  */
 @Directive()
 export abstract class FlTableAbstractDirective<T> {

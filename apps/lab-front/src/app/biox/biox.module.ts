@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { BioxRoutingModule } from './biox-routing.module';
 import {BioxExperimentsPageModule} from './module/biox-experiments-page/biox-experiments-page.module';
+import {BioxExperimentDetailPageModule} from './module/biox-experiment-detail-page/biox-experiment-detail-page.module';
 
 
 @NgModule({
@@ -12,6 +13,7 @@ import {BioxExperimentsPageModule} from './module/biox-experiments-page/biox-exp
 
     // Biox modules
     BioxExperimentsPageModule,
+    BioxExperimentDetailPageModule,
 
     // routing
     BioxRoutingModule,

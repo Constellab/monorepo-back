@@ -10,6 +10,7 @@ export * from './lib/module/fl-core-pipe/public-api';
 export * from './lib/module/fl-dialog/public-api';
 export * from './lib/module/fl-form/public-api';
 export * from './lib/module/fl-image/public-api';
+export * from './lib/module/fl-inifite-scroll/public-api';
 export * from './lib/module/fl-json-editor/public-api';
 export * from './lib/module/fl-loader/public-api';
 export * from './lib/module/fl-portal/public-api';

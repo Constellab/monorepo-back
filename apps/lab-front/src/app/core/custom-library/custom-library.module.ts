@@ -1,9 +1,9 @@
 import {NgModule} from '@angular/core';
 import {
-  FlCardModule,
+  FlCardModule, FlCoreComponentModule,
   FlCoreDirectiveModule,
   FlCorePipeModule,
-  FlDialogModule, FlSectionModule,
+  FlDialogModule, FlInfiniteScrollModule, FlSectionModule,
   FlSnackBarModule, FlStatusModule,
   FlSvgIconModule, FlTextIconModule,
   FlTranslateModule
@@ -18,6 +18,7 @@ import {
   exports: [
     FlCoreDirectiveModule,
     FlCorePipeModule,
+    FlCoreComponentModule,
 
     FlTranslateModule,
     FlDialogModule,
@@ -27,6 +28,7 @@ import {
     FlCardModule,
     FlTextIconModule,
     FlStatusModule,
+    FlInfiniteScrollModule,
 
   ]
 })

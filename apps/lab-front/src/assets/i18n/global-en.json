@@ -8,5 +8,7 @@
   "no_lab_experiment": "There is no experiment",
   "lab_experiments": "Experiments",
   "finished": "Finished",
-  "running": "Running"
+  "running": "Running",
+  "show_more_result": "Show more results",
+  "no_more_result": "No more result"
 }

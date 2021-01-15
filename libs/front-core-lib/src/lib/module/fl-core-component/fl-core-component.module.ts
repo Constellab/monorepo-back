@@ -7,7 +7,6 @@ import {RouterModule} from '@angular/router';
 import {FlLimitHeightComponent} from './component/fl-limit-height/fl-limit-height.component';
 import {FlNewWebsiteVersionComponent} from './component/fl-new-website-version/fl-new-website-version.component';
 import {FlChipComponent} from './component/fl-chip/fl-chip.component';
-import {FlPaginationLoadMoreResultComponent} from './component/fl-pagination-load-more-result/fl-pagination-load-more-result.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIconModule} from '@angular/material/icon';
@@ -27,14 +26,12 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
     FlLimitHeightComponent,
     FlNewWebsiteVersionComponent,
     FlChipComponent,
-    FlPaginationLoadMoreResultComponent,
   ],
   exports: [
     FlDateRangeComponent,
     FlBreadcrumbComponent,
     FlLimitHeightComponent,
     FlChipComponent,
-    FlPaginationLoadMoreResultComponent,
   ],
   imports: [
     CommonModule,

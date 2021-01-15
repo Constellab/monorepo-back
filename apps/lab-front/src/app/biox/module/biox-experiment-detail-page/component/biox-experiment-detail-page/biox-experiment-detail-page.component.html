@@ -1,0 +1,11 @@
+
+<div class="g-page">
+  <fl-async-section [observable]="getExperiment">
+
+    <ng-container *flSectionBody="let experiment">
+      <gen-lab-experiment-card [experiment]="experiment"></gen-lab-experiment-card>
+    </ng-container>
+
+  </fl-async-section>
+
+</div>

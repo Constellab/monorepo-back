@@ -7,10 +7,13 @@ import {
   FlCorePipeModule,
   FlDialogModule,
   FlFormModule,
-  FlImageModule, FlJsonEditorModule,
+  FlImageModule,
+  FlInfiniteScrollModule,
+  FlJsonEditorModule,
   FlLoaderModule,
   FlSectionModule,
-  FlSnackBarModule, FlStatusModule,
+  FlSnackBarModule,
+  FlStatusModule,
   FlSvgIconModule,
   FlTextIconModule,
   FlTranslateModule
@@ -42,6 +45,7 @@ import {
     FlSnackBarModule,
     FlJsonEditorModule,
     FlStatusModule,
+    FlInfiniteScrollModule,
   ]
 })
 export class CustomLibraryModule {

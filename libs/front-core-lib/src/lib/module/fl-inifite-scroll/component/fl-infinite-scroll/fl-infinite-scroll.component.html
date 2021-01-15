@@ -1,0 +1,11 @@
+<div (flInfiniteScroll)="getNextPage()" [flInfiniteDisabled]="isInfiniteDisabled"
+     [flInfiniteMode]="infiniteMode" [flInfiniteAfterDebounce]="infiniteAfterDebounce"
+     [flInfiniteCheckOnInit]="infiniteCheckOnInit" [flInfiniteTriggerDistance]="infiniteTriggerDistance"
+     [ngClass]="{'g-scrollable-element': infiniteMode === 'container'}"
+     class="container" fxLayout="column">
+  <ng-content></ng-content>
+
+  <fl-infinite-load-more-result [datasource]="datasource"></fl-infinite-load-more-result>
+
+</div>
+
