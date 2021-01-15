@@ -7,6 +7,8 @@ import {MainModule} from './main/main.module';
 import {CoreModule} from './core/core.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
+import {FlDialogModule, FlSnackBarModule, FlSvgIconModule, FlTranslateModule} from '@monorepo/front-core-lib';
+import {svgIcons} from './core/utils/svg-icon-config';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,6 +23,24 @@ import {HttpClientModule} from '@angular/common/http';
 
     // Core module
     CoreModule,
+
+    // Fl setup modules
+    // Setup translate module
+    FlTranslateModule.forRoot({
+      defaultLang: 'en',
+      availableLang: ['en'],
+      filenames: ['global-', 'biox-', 'biota-']
+    }),
+    FlTranslateModule.forRoot2(),
+
+    // configuration of Front library
+    FlSvgIconModule.forRoot({
+      iconFolder: 'assets/mat-icons/',
+      iconsToRegister: svgIcons
+    }),
+
+    FlDialogModule.forRoot(),
+    FlSnackBarModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],

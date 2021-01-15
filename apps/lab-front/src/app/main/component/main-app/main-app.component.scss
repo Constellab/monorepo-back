@@ -1,0 +1,25 @@
+
+.page{
+  min-height: 100vh;
+}
+
+.toolbar{
+  height: var(--menu-toolbar-height);
+}
+
+.nav-button {
+  opacity: 0.7;
+}
+
+.nav-button:hover {
+  opacity: 1;
+}
+
+// Opacity 1 for the selected menu
+.selected-menu {
+  opacity: 1;
+}
+
+.page-content{
+  min-height: calc(100vh - var(--menu-toolbar-height));
+}

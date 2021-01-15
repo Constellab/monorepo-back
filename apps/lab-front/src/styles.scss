@@ -11,3 +11,33 @@
 
 // Import drawflow style
 @import "~drawflow/dist/drawflow.min.css";
+
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// list of global variable
+:root{
+  --menu-toolbar-height: 58px
+}
+
+.g-page {
+  padding: 2em 2em 0 2em;
+  min-height: calc(100vh - var(--menu-toolbar-height));
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 600px) {
+  .g-page {
+    padding: 1em 1em 0 1em;
+  }
+}

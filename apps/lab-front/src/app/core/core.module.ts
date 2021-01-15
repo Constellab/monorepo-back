@@ -12,6 +12,10 @@ import {CustomLibraryModule} from './custom-library/custom-library.module';
 
     CustomMaterialModule,
     CustomLibraryModule,
+  ],
+  exports: [
+    CustomLibraryModule,
+    CustomMaterialModule
   ]
 })
 export class CoreModule { }

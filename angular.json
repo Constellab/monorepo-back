@@ -17,9 +17,18 @@
             "tsConfig": "apps/central-front/tsconfig.app.json",
             "aot": true,
             "assets": [
-              "apps/central-front/src/favicon.ico",
               "apps/central-front/src/assets",
-              "apps/central-front/src/manifest.webmanifest"
+              "apps/central-front/src/manifest.webmanifest",
+              {
+                "glob": "**/*",
+                "input": "libs/front-core-lib/src/assets/mat-icons",
+                "output": "assets/mat-icons"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "libs/front-core-lib/src/",
+                "output": "./"
+              }
             ],
             "styles": [
               "apps/central-front/src/styles.scss",
@@ -199,8 +208,17 @@
             "tsConfig": "apps/lab-front/tsconfig.app.json",
             "aot": true,
             "assets": [
-              "apps/lab-front/src/favicon.ico",
-              "apps/lab-front/src/assets"
+              "apps/lab-front/src/assets",
+              {
+                "glob": "**/*",
+                "input": "libs/front-core-lib/src/assets/mat-icons",
+                "output": "assets/mat-icons"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "libs/front-core-lib/src/",
+                "output": "./"
+              }
             ],
             "styles": [
               "apps/lab-front/src/styles.scss",
@@ -215,8 +233,8 @@
                 "inject": false
               }
             ],
-
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": ["json2typescript"]
           },
           "configurations": {
             "production": {
