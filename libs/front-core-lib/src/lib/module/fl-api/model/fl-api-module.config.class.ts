@@ -1,9 +1,10 @@
-import {InjectionToken} from '@angular/core';
+import {InjectionToken, Type} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {FlSnackBarService} from '../../fl-snack-bar/fl-snack-bar.service';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 import {FlServerError} from './fl-server-error.class';
+import {FlPage} from '../../../model/fl-page.class';
 
 /**
  * ApiModule configuration
@@ -15,19 +16,38 @@ export interface FlApiModuleConfig {
   apiUrl: string;
 
   /**
-   * Absolute route for the front login page
-   *
-   * This user is automatically redirect to this route when his access is forbidden
-   * by the API (expired or wrong token).
-   */
-  loginRoute: string;
-
-  /**
    * Default duration (in milliseconds) for the snackbar when showing an API error
    *
    * If not provided, default is 5000 milliseconds
    */
   defaultApiErrorDuration?: number;
+
+  /**
+   * Class for the error service
+   */
+  errorApiService: Type<FlApiErrorService>;
+
+  /**
+   * Configuration of the pagination
+   */
+  pagination: {
+    /**
+     * Name of the query param page for the page number
+     */
+    pageQueryParam: string;
+
+    /**
+     * Name of the query param for the page size
+     */
+    pageSizeQueryParam: string;
+
+    /**
+     * Method to deserialize page
+     * @param json returned json form the api
+     * @param classReference for deserialization
+     */
+    deserializePage: (json: any, classReference: new() => any) => FlPage<any>
+  }
 
 }
 

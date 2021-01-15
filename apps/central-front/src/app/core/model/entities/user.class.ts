@@ -2,7 +2,7 @@ import {JsonObject, JsonProperty} from 'json2typescript';
 import {SupportedLanguage} from '../global/supported-language.class';
 import {DateTime} from 'luxon';
 import {ClLuxonConverter} from '@monorepo/core-lib';
-import {FlEntity} from '@monorepo/front-core-lib';
+import {Entity} from './entity.entity';
 
 export enum UserCategory {
   ADMIN = 'ADMIN',
@@ -22,7 +22,7 @@ export interface NewUser {
 }
 
 @JsonObject('User')
-export class User extends FlEntity {
+export class User extends Entity {
   @JsonProperty('firstname', String)
   firstname: string = null;
 

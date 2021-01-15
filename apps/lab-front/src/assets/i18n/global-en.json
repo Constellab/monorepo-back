@@ -1,3 +1,12 @@
 {
-
+  "connection_lost": "The connection has been lost",
+  "description": "Description",
+  "title": "Title",
+  "score": "Score",
+  "status": "Status",
+  "datetime": "Date time",
+  "no_lab_experiment": "There is no experiment",
+  "lab_experiments": "Experiments",
+  "finished": "Finished",
+  "running": "Running"
 }

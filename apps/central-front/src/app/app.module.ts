@@ -24,7 +24,7 @@ import {
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {svgIcons} from './core/model/config/svg-icon-config';
-import {ErrorService} from './core/service/error.service';
+import {apiModuleConfig} from './core/model/config/api-module.config';
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -52,11 +52,7 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     // Core Modules
     CoreModule,
 
-    FlApiModule.forRoot({
-      apiUrl: environment.apiUrl,
-      loginRoute: '/login',
-      defaultApiErrorDuration: 3000
-    }, ErrorService),
+    FlApiModule.forRoot(apiModuleConfig),
 
     // Setup translate module
     FlTranslateModule.forRoot({

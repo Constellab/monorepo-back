@@ -2,7 +2,7 @@
 export * from './datasource/public-api';
 
 // Export the model
-export * from './fl-entity.entity';
+export * from './fl-entity.class';
 export * from './fl-form.class';
 export * from './fl-page.class';
 export * from './fl-theme.class';

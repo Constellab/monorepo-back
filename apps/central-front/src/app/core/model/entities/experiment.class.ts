@@ -1,8 +1,9 @@
 import {BaseEntity} from './base-entity.class';
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {LabInstance} from './lab-instance.class';
-import {GetStatusColorClassFunction, GetStatusIconFunction, StatusHistory} from './status-history.class';
+import {StatusHistory} from './status-history.class';
 import {Protocol} from './protocol.entity';
+import {FlGetStatusClassColorFunction, FlGetStatusIconFunction} from '@monorepo/front-core-lib';
 
 export enum ExperimentStatus {
   DRAFT = 'DRAFT',
@@ -13,11 +14,11 @@ export enum ExperimentStatus {
 
 @JsonObject('ExperimentStatusHistory')
 export class ExperimentStatusHistory extends StatusHistory<ExperimentStatus> {
-  getColor(mode: 'background' | 'text'): string {
+  getStatusClassColor(mode: 'background' | 'text'): string {
     return getExperimentStatusColorClass(this.status, mode);
   }
 
-  getIcon(): string {
+  getStatusIcon(): string {
     return getExperimentStatusIcon(this.status);
   }
 }
@@ -49,8 +50,8 @@ export class Experiment extends BaseEntity {
   }
 }
 
-export const getExperimentStatusColorClass: GetStatusColorClassFunction = (status: ExperimentStatus,
-                                                                           mode: 'background' | 'text' = 'background'): string => {
+export const getExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: ExperimentStatus,
+                                                                             mode: 'background' | 'text' = 'background'): string => {
   switch (status) {
     case 'STARTED':
       return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
@@ -64,7 +65,7 @@ export const getExperimentStatusColorClass: GetStatusColorClassFunction = (statu
   }
 };
 
-export const getExperimentStatusIcon: GetStatusIconFunction = (status: ExperimentStatus): string => {
+export const getExperimentStatusIcon: FlGetStatusIconFunction = (status: ExperimentStatus): string => {
   switch (status) {
     case 'DRAFT':
       return 'edit';

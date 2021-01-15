@@ -4,8 +4,8 @@
     <div>{{experiment.label}}</div>
 
     <fl-card-actions>
-      <gen-status-chip [statusHistory]="experiment.currentStatus" mode="iconOnly">
-      </gen-status-chip>
+      <fl-status-chip [status]="experiment.currentStatus" mode="iconOnly">
+      </fl-status-chip>
     </fl-card-actions>
 
   </fl-card-header>

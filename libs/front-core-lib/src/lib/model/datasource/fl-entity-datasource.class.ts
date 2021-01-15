@@ -1,7 +1,7 @@
 import {FlDatasourcePaginated} from './fl-datasource-paginated.class';
 import {ClHelpService} from '@monorepo/core-lib';
-import {FlEntity} from '../fl-entity.entity';
 import {FlGetPageFunction} from '../fl-page.class';
+import {FlEntity} from '../fl-entity.class';
 
 
 export class FlEntityPaginatedDatasource<T extends FlEntity> extends FlDatasourcePaginated<T> {

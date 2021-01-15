@@ -10,7 +10,7 @@ import {
   FlImageModule, FlJsonEditorModule,
   FlLoaderModule,
   FlSectionModule,
-  FlSnackBarModule,
+  FlSnackBarModule, FlStatusModule,
   FlSvgIconModule,
   FlTextIconModule,
   FlTranslateModule
@@ -41,7 +41,7 @@ import {
     FlDialogModule,
     FlSnackBarModule,
     FlJsonEditorModule,
-
+    FlStatusModule,
   ]
 })
 export class CustomLibraryModule {

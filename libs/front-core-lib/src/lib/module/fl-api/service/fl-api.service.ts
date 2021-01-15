@@ -16,7 +16,7 @@ export class FlApiService {
   private readonly apiUrl: string;
 
   constructor(protected http: HttpClient,
-              @Inject(FL_API_MODULE_CONFIG) config: FlApiModuleConfig,
+              @Inject(FL_API_MODULE_CONFIG) private config: FlApiModuleConfig,
               private fileService: FlFileService,
               private flErrorService: FlApiErrorService) {
     // get the api url from the config
@@ -149,7 +149,7 @@ export class FlApiService {
    * @param body object to post
    * @param defaultError the default error if the api does not return an explicit error
    * @param filename name of the file of direct download is true
-   * @param directDownload if true, the file is directly donwloaded on users's computer
+   * @param directDownload if true, the file is directly downloaded on users's computer
    */
   public downloadFilePost(route: string, body: any, defaultError ?: string, filename ?: string,
                           directDownload: boolean = true): Observable<Blob> {
@@ -165,14 +165,13 @@ export class FlApiService {
    * @param classReference class reference of object
    * @param isPaginated if true the result is considered as a {@link FlPage}
    */
-  public deserialize<T = any>(json: any, classReference: new() => T, isPaginated: boolean = false): T | T[] {
+  public deserialize(json: any, classReference: new() => any, isPaginated: boolean = false): any {
     if (json && classReference) {
 
       try {
-        // if the result if paginated (we supposed the json is type of LibPage
-        if (isPaginated && json.objects != null && json.objects instanceof Array) {
-          json.objects = ClCoreJsonConvert.deserialize(json.objects, classReference);
-          return json;
+        if (isPaginated) {
+          // deserialize page
+          return this.config.pagination.deserializePage(json, classReference);
         } else {
           return ClCoreJsonConvert.deserialize(json, classReference);
         }
@@ -206,12 +205,12 @@ export class FlApiService {
 
       // add the page parameter
       if (page != null) {
-        fullRoute += `${firstCarac}page=${page}`;
+        fullRoute += `${firstCarac}${this.config.pagination.pageQueryParam}=${page}`;
         firstCarac = '&';
       }
       // add the size parameter
       if (size != null) {
-        fullRoute += `${firstCarac}size=${size}`;
+        fullRoute += `${firstCarac}${this.config.pagination.pageSizeQueryParam}=${size}`;
       }
 
     }

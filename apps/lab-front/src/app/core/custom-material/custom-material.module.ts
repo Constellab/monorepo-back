@@ -8,6 +8,7 @@ import {DateAdapter, MAT_DATE_FORMATS} from '@angular/material/core';
 import {FlLuxonDateAdapter, flLuxonDateFormat} from '@monorepo/front-core-lib';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatTableModule} from '@angular/material/table';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -22,6 +23,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     MatIconModule,
     MatTooltipModule,
     MatToolbarModule,
+    MatTableModule,
 
     FlexLayoutModule,
   ],

@@ -13,11 +13,11 @@ export enum LabInstanceStatus {
 
 @JsonObject('LabInstanceStatusHistory')
 export class LabInstanceStatusHistory extends StatusHistory<LabInstanceStatus> {
-  getColor(mode: 'background' | 'text'): string {
+  getStatusClassColor(mode: 'background' | 'text'): string {
     return getLabInstanceStatusColorClass(this.status, mode);
   }
 
-  getIcon(): string {
+  getStatusIcon(): string {
     return getLabInstanceStatusIcon(this.status);
   }
 }

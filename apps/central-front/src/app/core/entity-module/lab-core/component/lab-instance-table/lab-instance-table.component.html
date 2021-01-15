@@ -28,7 +28,7 @@
       <span>{{'status' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
-      <gen-status-chip [statusHistory]="labInstance.currentStatus"></gen-status-chip>
+      <fl-status-chip [status]="labInstance.currentStatus"></fl-status-chip>
     </mat-cell>
   </ng-container>
 

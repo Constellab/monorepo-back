@@ -1,6 +1,7 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {BaseEntity} from './base-entity.class';
-import {GetStatusColorClassFunction, GetStatusIconFunction, StatusHistory} from './status-history.class';
+import {StatusHistory} from './status-history.class';
+import {FlGetStatusClassColorFunction, FlGetStatusIconFunction} from '@monorepo/front-core-lib';
 
 export enum StudyStatus {
   STARTED = 'STARTED',
@@ -10,11 +11,11 @@ export enum StudyStatus {
 
 @JsonObject('StudyStatusHistory')
 export class StudyStatusHistory extends StatusHistory<StudyStatus> {
-  getColor(mode: 'background' | 'text'): string {
+  getStatusClassColor(mode: 'background' | 'text'): string {
     return getStudyStatusColorClass(this.status, mode);
   }
 
-  getIcon(): string {
+  getStatusIcon(): string {
     return getStudyStatusIcon(this.status);
   }
 }
@@ -31,8 +32,8 @@ export class Study extends BaseEntity {
   currentStatus: StudyStatusHistory = null;
 }
 
-export const getStudyStatusColorClass: GetStatusColorClassFunction = (status: StudyStatus,
-                                                                      mode: 'background' | 'text' = 'background'): string => {
+export const getStudyStatusColorClass: FlGetStatusClassColorFunction = (status: StudyStatus,
+                                                                        mode: 'background' | 'text' = 'background'): string => {
   switch (status) {
     case 'STARTED':
       return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
@@ -45,7 +46,7 @@ export const getStudyStatusColorClass: GetStatusColorClassFunction = (status: St
   }
 };
 
-export const getStudyStatusIcon: GetStatusIconFunction = (status: StudyStatus): string => {
+export const getStudyStatusIcon: FlGetStatusIconFunction = (status: StudyStatus): string => {
   switch (status) {
     case 'STARTED':
       return 'cached';

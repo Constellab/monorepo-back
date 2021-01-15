@@ -14,6 +14,7 @@ import {
   FlSnackBarService,
   FlTranslateService
 } from '@monorepo/front-core-lib';
+import {constLoginRoute} from '../utils/base-route';
 
 
 /**
@@ -83,7 +84,7 @@ export class ErrorService extends FlApiErrorService {
     const currentRoute = this.router.routerState.snapshot.url;
 
     // save the url if it's different
-    if (currentRoute !== this.config.loginRoute) {
+    if (currentRoute !== constLoginRoute) {
       FlLoginSavedRoute.route = currentRoute;
     }
 
@@ -92,7 +93,7 @@ export class ErrorService extends FlApiErrorService {
     this.cookieService.removeCookie(flAuthExpiredCookie);
 
     // redirect the user to the login page
-    this.router.navigate([this.config.loginRoute]);
+    this.router.navigate([constLoginRoute]);
 
     serverError.logDetail.message = this.translateService.translate('session_expired');
 

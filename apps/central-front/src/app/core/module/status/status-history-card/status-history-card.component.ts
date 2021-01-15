@@ -20,7 +20,7 @@ export class StatusHistoryCardComponent implements OnInit {
 
   ngOnInit(): void {
     // get the status color
-    this.statusColorClass = this.statusHistory.getColor('background');
+    this.statusColorClass = this.statusHistory.getStatusClassColor('background');
   }
 
 }

@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {LabInstance} from '../../../../model/entities/lab-instance.class';
 import {RouterService} from '../../../../service/router.service';
-import {StatusChipMode} from '../../../../module/status/status-chip/status-chip.component';
+import {FlStatusChipMode} from '@monorepo/front-core-lib';
 
 /**
  * Card to display a {@link LabInstance}
@@ -38,7 +38,7 @@ export class LabInstanceCardComponent implements OnInit {
     this.labInstanceUpdated.emit(lab);
   }
 
-  get statusChipMode(): StatusChipMode {
+  get statusChipMode(): FlStatusChipMode {
     return this.mode === 'small' ? 'iconOnly' : 'iconText';
   }
 

@@ -10,6 +10,7 @@ export const constSettingsRoute = 'settings';
 export const constProjectsRoute = 'projects';
 export const constLabsConfig = 'lab-configs';
 export const constAdminRoute = 'admin';
+export const constLoginRoute = '/login';
 
 export const constDashboardFullRoute = `/${constBaseRoute}/${constDashboardRoute}`;
 export const constLabInstancesFullRoute = `/${constBaseRoute}/${constLabInstancesRoute}`;

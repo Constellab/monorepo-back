@@ -1,5 +1,5 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
-import {FlEntity} from '@monorepo/front-core-lib';
+import {Entity} from './entity.entity';
 
 /**
  * Host for the server like OVH, AWS, GCP...
@@ -18,7 +18,7 @@ export enum DiskType {
 
 
 @JsonObject('ServerInfo')
-export class ServerInfo extends FlEntity {
+export class ServerInfo extends Entity {
 
   // host like OVH, AWS...
   @JsonProperty('host', String)

@@ -7,8 +7,9 @@ import {MainModule} from './main/main.module';
 import {CoreModule} from './core/core.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
-import {FlDialogModule, FlSnackBarModule, FlSvgIconModule, FlTranslateModule} from '@monorepo/front-core-lib';
+import {FlApiModule, FlDialogModule, FlSnackBarModule, FlSvgIconModule, FlTranslateModule} from '@monorepo/front-core-lib';
 import {svgIcons} from './core/utils/svg-icon-config';
+import {apiModuleConfig} from './core/utils/api-module.config';
 
 @NgModule({
   declarations: [AppComponent],
@@ -23,6 +24,8 @@ import {svgIcons} from './core/utils/svg-icon-config';
 
     // Core module
     CoreModule,
+
+    FlApiModule.forRoot(apiModuleConfig),
 
     // Fl setup modules
     // Setup translate module

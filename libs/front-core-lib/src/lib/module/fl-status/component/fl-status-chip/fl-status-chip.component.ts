@@ -1,19 +1,19 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {StatusHistory} from '../../../model/entities/status-history.class';
+import {FlStatus} from '../../model/fl-status.class';
 
-export type StatusChipMode = 'iconText' | 'iconOnly' | 'textOnly';
+export type FlStatusChipMode = 'iconText' | 'iconOnly' | 'textOnly';
 
 /**
  * Simple component to display a status on a chip with color
  */
 @Component({
-  selector: 'gen-status-chip',
-  templateUrl: './status-chip.component.html',
-  styleUrls: ['./status-chip.component.scss']
+  selector: 'fl-status-chip',
+  templateUrl: './fl-status-chip.component.html',
+  styleUrls: ['./fl-status-chip.component.scss']
 })
-export class StatusChipComponent implements OnInit {
+export class FlStatusChipComponent implements OnInit {
 
-  @Input() statusHistory: StatusHistory<any>;
+  @Input() status: FlStatus;
 
   /**
    * The position of the icon. Start --> the icon before the text. End --> the icon is after the text
@@ -23,7 +23,7 @@ export class StatusChipComponent implements OnInit {
   /**
    * Display or not the icon or text
    */
-  @Input() mode: StatusChipMode = 'iconText';
+  @Input() mode: FlStatusChipMode = 'iconText';
 
   icon: string;
 
@@ -33,8 +33,8 @@ export class StatusChipComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.statusColorClass = this.statusHistory.getColor('background');
-    this.icon = this.statusHistory.getIcon();
+    this.statusColorClass = this.status.getStatusClassColor('background');
+    this.icon = this.status.getStatusIcon();
   }
 
   get showIcon(): boolean {

@@ -1,0 +1,61 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+  <!-- Title -->
+  <ng-container matColumnDef="title">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'title' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labExperiment">
+      <span>{{labExperiment.data.title}}</span>
+    </mat-cell>
+  </ng-container>
+
+  <!-- score -->
+  <ng-container matColumnDef="score">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'score' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labExperiment">
+      <span>{{labExperiment.score}}</span>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Status -->
+  <ng-container matColumnDef="status">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'status' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labExperiment">
+      <fl-status-chip [status]="labExperiment" mode="iconText">
+      </fl-status-chip>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Datetime -->
+  <ng-container matColumnDef="createdAt">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'datetime' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labExperiment">
+      <span>{{labExperiment.createdAt | flDate}}</span>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column">
+    <mat-header-cell *matHeaderCellDef>
+      <p class="g-table-cell">{{column | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labInstance">
+      <div class="g-table-cell">
+        <span>{{labInstance[column]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>
+

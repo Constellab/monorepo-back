@@ -2,10 +2,10 @@ import {JsonObject, JsonProperty} from 'json2typescript';
 import {User} from './user.class';
 import {DateTime} from 'luxon';
 import {ClLuxonConverter} from '@monorepo/core-lib';
-import {FlEntity} from '@monorepo/front-core-lib';
+import {Entity} from './entity.entity';
 
 @JsonObject('BaseEntity')
-export class BaseEntity extends FlEntity {
+export class BaseEntity extends Entity {
 
   @JsonProperty('id', String, true)
   id: string = null;

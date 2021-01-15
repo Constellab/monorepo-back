@@ -1,9 +1,9 @@
 import {BaseEntity} from './base-entity.class';
 import {JsonObject, JsonProperty} from 'json2typescript';
-import {GetStatusColorClassFunction, GetStatusIconFunction, StatusHistory} from './status-history.class';
+import {StatusHistory} from './status-history.class';
 import {DateTime} from 'luxon';
 import {ClLuxonConverter} from '@monorepo/core-lib';
-import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction} from '@monorepo/front-core-lib';
 
 export enum ProjectStatus {
   ACTIVE = 'ACTIVE',
@@ -13,11 +13,11 @@ export enum ProjectStatus {
 
 @JsonObject('ProjectStatusHistory')
 export class ProjectStatusHistory extends StatusHistory<ProjectStatus> {
-  getColor(mode: 'background' | 'text'): string {
+  getStatusClassColor(mode: 'background' | 'text'): string {
     return getProjectStatusColorClass(this.status, mode);
   }
 
-  getIcon(): string {
+  getStatusIcon(): string {
     return getProjectStatusIcon(this.status);
   }
 }
@@ -48,8 +48,8 @@ export class Project extends BaseEntity {
 export type ProjectDatasource = FlEntityPaginatedDatasource<Project>;
 
 
-export const getProjectStatusColorClass: GetStatusColorClassFunction = (projectStatus: ProjectStatus,
-                                                                        mode: 'background' | 'text' = 'background'): string => {
+export const getProjectStatusColorClass: FlGetStatusClassColorFunction = (projectStatus: ProjectStatus,
+                                                                          mode: 'background' | 'text' = 'background'): string => {
   switch (projectStatus) {
     case 'ACTIVE':
       return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
@@ -62,7 +62,7 @@ export const getProjectStatusColorClass: GetStatusColorClassFunction = (projectS
   }
 };
 
-export const getProjectStatusIcon: GetStatusIconFunction = (projectStatus: ProjectStatus): string => {
+export const getProjectStatusIcon: FlGetStatusIconFunction = (projectStatus: ProjectStatus): string => {
   switch (projectStatus) {
     case 'ACTIVE':
       return 'done';

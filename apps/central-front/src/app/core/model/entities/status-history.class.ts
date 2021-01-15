@@ -2,9 +2,11 @@ import {BaseEntity} from './base-entity.class';
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {DateTime} from 'luxon';
 import {ClLuxonConverter} from '@monorepo/core-lib';
+import {FlStatus} from '@monorepo/front-core-lib';
 
 @JsonObject('StatusHistory')
-export abstract class StatusHistory<S> extends BaseEntity {
+export abstract class StatusHistory<S extends string> extends BaseEntity
+  implements FlStatus {
 
   @JsonProperty('endDate', ClLuxonConverter, true)
   endDate: DateTime = null;
@@ -13,12 +15,11 @@ export abstract class StatusHistory<S> extends BaseEntity {
   @JsonProperty('status', String)
   status: S = null;
 
-  abstract getColor(mode: 'background' | 'text'): string;
+  abstract getStatusClassColor(mode: 'background' | 'text'): string;
 
-  abstract getIcon(): string;
+  abstract getStatusIcon(): string;
+
+  getStatusName(): string {
+    return this.status;
+  }
 }
-
-export type GetStatusColorClassFunction = (status: string,
-                                           mode: 'background' | 'text') => string;
-
-export type GetStatusIconFunction = (status: string) => string;

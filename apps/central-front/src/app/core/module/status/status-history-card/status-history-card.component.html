@@ -1,6 +1,6 @@
 <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
-  <gen-status-chip class="chip" [statusHistory]="statusHistory">
-  </gen-status-chip>
+  <fl-status-chip class="chip" [status]="statusHistory">
+  </fl-status-chip>
   <p class="g-text-small g-text-light">
     {{statusHistory.createdBy.fullname}}
     {{'the' | translate}}
