@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {LabExperimentService} from '../../../../../core/entity-service/lab-experiment.service';
+import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
 import {FlTableColumn} from '@monorepo/front-core-lib';
-import {LabExperiment, LabExperimentDatasource} from '../../../../../core/model/entities/lab-experiment.entity';
+import {BioxExperiment, BioxExperimentDatasource} from '../../../../../core/model/entities/biox-experiment.entity';
 
 @Component({
   selector: 'gen-biox-experiments-page',
@@ -10,15 +10,15 @@ import {LabExperiment, LabExperimentDatasource} from '../../../../../core/model/
 })
 export class BioxExperimentsPageComponent implements OnInit {
 
-  labExperiments: LabExperimentDatasource;
+  labExperiments: BioxExperimentDatasource;
 
-  displayedColumns: FlTableColumn<LabExperiment>[] = ['title', 'score', 'status', 'createdAt',];
+  displayedColumns: FlTableColumn<BioxExperiment>[] = ['title', 'score', 'status', 'createdAt',];
 
-  constructor(private labExperimentService: LabExperimentService) {
+  constructor(private bioxExperimentService: BioxExperimentService) {
   }
 
   ngOnInit(): void {
-    this.labExperiments = this.labExperimentService.getExperimentsDatasource();
+    this.labExperiments = this.bioxExperimentService.getExperimentsDatasource();
   }
 
 

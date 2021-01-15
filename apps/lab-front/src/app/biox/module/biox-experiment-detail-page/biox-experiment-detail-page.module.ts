@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CoreModule} from '../../../core/core.module';
 import {BioxExperimentDetailPageComponent} from './component/biox-experiment-detail-page/biox-experiment-detail-page.component';
-import {LabExperimentCoreModule} from '../../../core/entity-module/lab-experiment-core/lab-experiment-core.module';
+import {BioxExperimentCoreModule} from '../../../core/entity-module/biox-experiment-core/biox-experiment-core.module';
 
 
 @NgModule({
@@ -13,7 +13,7 @@ import {LabExperimentCoreModule} from '../../../core/entity-module/lab-experimen
     CommonModule,
 
     CoreModule,
-    LabExperimentCoreModule,
+    BioxExperimentCoreModule,
   ]
 })
 export class BioxExperimentDetailPageModule {

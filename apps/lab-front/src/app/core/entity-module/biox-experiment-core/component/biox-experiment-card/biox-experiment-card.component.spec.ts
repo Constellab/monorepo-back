@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LabExperimentCardComponent } from './lab-experiment-card.component';
+import { BioxExperimentCardComponent } from './biox-experiment-card.component';
 
 describe('LabExperimentCardComponent', () => {
-  let component: LabExperimentCardComponent;
-  let fixture: ComponentFixture<LabExperimentCardComponent>;
+  let component: BioxExperimentCardComponent;
+  let fixture: ComponentFixture<BioxExperimentCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabExperimentCardComponent ]
+      declarations: [ BioxExperimentCardComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabExperimentCardComponent);
+    fixture = TestBed.createComponent(BioxExperimentCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

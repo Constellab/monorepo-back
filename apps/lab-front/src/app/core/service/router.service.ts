@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {constBaseRoute} from '../../../../../central-front/src/app/core/utils/base-route';
-import {constBioxFullRoute} from '../utils/base-route';
+import {constBaseRoute, constBioxFullRoute} from '../utils/base-route';
 
 /**
  * Class to get app route paths
@@ -19,7 +18,7 @@ export class RouterService {
   }
 
   // public
-  public static getLabExperimentDetailRoute(labExperimentId: string): string {
-    return `${constBioxFullRoute}/experiment/${labExperimentId}`;
+  public static getBioxExperimentDetailRoute(bioxExperimentId: string): string {
+    return `${constBioxFullRoute}/experiment/${bioxExperimentId}`;
   }
 }

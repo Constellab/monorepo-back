@@ -5,8 +5,8 @@ import {DateTime} from 'luxon';
 import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
 
 
-@JsonObject('LabExperimentData')
-export class LabExperimentData extends LabEntity {
+@JsonObject('BioxExperimentData')
+export class BioxExperimentData extends LabEntity {
 
   @JsonProperty('title', String, true)
   title: string = null;
@@ -15,8 +15,8 @@ export class LabExperimentData extends LabEntity {
   description: string = null;
 }
 
-@JsonObject('LabExperiment')
-export class LabExperiment extends LabEntity implements FlStatus {
+@JsonObject('BioxExperiment')
+export class BioxExperiment extends LabEntity implements FlStatus {
 
   // python class link
   @JsonProperty('type', String, true)
@@ -34,15 +34,15 @@ export class LabExperiment extends LabEntity implements FlStatus {
   @JsonProperty('is_in_progress', Boolean)
   isInProgress: boolean = null;
 
-  @JsonProperty('data', LabExperimentData, true)
-  data: LabExperimentData = null;
+  @JsonProperty('data', BioxExperimentData, true)
+  data: BioxExperimentData = null;
 
   getStatusClassColor(mode: 'background' | 'text'): string {
-    return getLabExperimentStatusColorClass(this.isInProgress, mode);
+    return getBioxExperimentStatusColorClass(this.isInProgress, mode);
   }
 
   getStatusIcon(): string {
-    return getLabExperimentStatusStatusIcon(this.isInProgress);
+    return getBioxExperimentStatusStatusIcon(this.isInProgress);
   }
 
   getStatusName(): string {
@@ -52,9 +52,9 @@ export class LabExperiment extends LabEntity implements FlStatus {
 
 }
 
-export type LabExperimentDatasource = FlEntityPaginatedDatasource<LabExperiment>;
+export type BioxExperimentDatasource = FlEntityPaginatedDatasource<BioxExperiment>;
 
-const getLabExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: boolean,
+const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: boolean,
                                                                          mode: 'background' | 'text' = 'background'): string => {
   // if is in progress
   if (status) {
@@ -64,7 +64,7 @@ const getLabExperimentStatusColorClass: FlGetStatusClassColorFunction = (status:
   }
 };
 
-const getLabExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: boolean): string => {
+const getBioxExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: boolean): string => {
   // if is in progress
   if (status) {
     return 'cached';

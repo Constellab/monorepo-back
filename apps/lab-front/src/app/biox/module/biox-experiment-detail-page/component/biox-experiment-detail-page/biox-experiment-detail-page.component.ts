@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
-import {LabExperiment} from '../../../../../core/model/entities/lab-experiment.entity';
-import {LabExperimentService} from '../../../../../core/entity-service/lab-experiment.service';
+import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
+import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
 
 /**
  * Page for the biox experiment detail with workflow view/edit
@@ -14,10 +14,10 @@ import {LabExperimentService} from '../../../../../core/entity-service/lab-exper
 })
 export class BioxExperimentDetailPageComponent implements OnInit {
 
-  getExperiment: Observable<LabExperiment>;
+  getExperiment: Observable<BioxExperiment>;
 
   constructor(private route: ActivatedRoute,
-              private labExperimentService: LabExperimentService) {
+              private bioxExperimentService: BioxExperimentService) {
   }
 
   ngOnInit(): void {
@@ -27,7 +27,7 @@ export class BioxExperimentDetailPageComponent implements OnInit {
   }
 
   private init(experimentId: string): void {
-    this.getExperiment = this.labExperimentService.getExperiment(experimentId);
+    this.getExperiment = this.bioxExperimentService.getExperiment(experimentId);
   }
 
 
