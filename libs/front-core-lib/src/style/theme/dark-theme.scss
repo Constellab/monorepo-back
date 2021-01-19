@@ -40,11 +40,18 @@ $foreground-color: mat-color($foreground, text);
 $background-color: mat-color($background, background);
 $background-color: mat-color($background, background);
 
+//////////////////// GLOBAL CSS VARIABLES ///////////////////////
+:root {
+  --light-color: rgba(255, 255, 255, .54);
+  --card-border-color: #1d1d1d;
+}
+
+
 /**
  * Classes for this theme that can't be defined in global-style-theme.scss
  */
 .g-text-light {
-  color: rgba(255, 255, 255, .54);
+  color: var(--light-color);
 }
 
 // quill specific override
@@ -56,8 +63,8 @@ $background-color: mat-color($background, background);
   color: rgba(255, 255, 255, 0.7);
 }
 
-.g-card-elevation{
-  border: 1px solid #1d1d1d;
+.g-card-elevation {
+  border: 1px solid var(--card-border-color);
   box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.05)
 }
 

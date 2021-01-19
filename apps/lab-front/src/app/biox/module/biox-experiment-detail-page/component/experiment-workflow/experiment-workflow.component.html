@@ -1,0 +1,38 @@
+<div fxLayout="row" class="container">
+
+
+  <!--  Left section with available protocol and processes -->
+  <fl-card class="left-section" fxFlex="25%">
+    <fl-card-body>
+      <mat-tab-group class="tab-group">
+        <!--                    Protocols    -->
+        <mat-tab [label]="'protocols' | translate">
+          <fl-infinite-scroll [datasource]="availableProtocols">
+            <gen-biox-protocol-card *ngFor="let protocol of availableProtocols.connect() | async"
+                                    [protocol]="protocol"
+                                    draggable="true" class="draggable-card"
+                                    (dragstart)="dragStart(protocol)"></gen-biox-protocol-card>
+          </fl-infinite-scroll>
+        </mat-tab>
+
+        <!--    Processes    -->
+        <mat-tab [label]="'processes' | translate">
+          <fl-infinite-scroll [datasource]="availableProcesses">
+            <gen-biox-process-card *ngFor="let process of availableProcesses.connect() | async"
+                                   draggable="true" class="draggable-card"
+                                   (dragstart)="dragStart(process)"
+                                   [process]="process"></gen-biox-process-card>
+          </fl-infinite-scroll>
+        </mat-tab>
+      </mat-tab-group>
+
+
+    </fl-card-body>
+  </fl-card>
+
+  <!-- Right section with workflow -->
+  <div fxFlex="auto" (dragover)="allowDrop($event)" (drop)="addProcessable($event)">
+    <button mat-button (click)="switch()">Switch</button>
+    <div class="experiment-workflow" #workflow></div>
+  </div>
+</div>

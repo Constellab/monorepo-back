@@ -3,6 +3,7 @@ import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
 import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
+import {clRxjsDebug} from '@monorepo/core-lib';
 
 /**
  * Page for the biox experiment detail with workflow view/edit
@@ -10,11 +11,12 @@ import {BioxExperimentService} from '../../../../../core/entity-service/biox-exp
 @Component({
   selector: 'gen-biox-experiment-detail-page',
   templateUrl: './biox-experiment-detail-page.component.html',
-  styleUrls: ['./biox-experiment-detail-page.component.css']
+  styleUrls: ['./biox-experiment-detail-page.component.scss']
 })
 export class BioxExperimentDetailPageComponent implements OnInit {
 
   getExperiment: Observable<BioxExperiment>;
+
 
   constructor(private route: ActivatedRoute,
               private bioxExperimentService: BioxExperimentService) {
@@ -27,8 +29,9 @@ export class BioxExperimentDetailPageComponent implements OnInit {
   }
 
   private init(experimentId: string): void {
-    this.getExperiment = this.bioxExperimentService.getExperiment(experimentId);
-  }
+    this.getExperiment = this.bioxExperimentService.getExperiment(experimentId).pipe(clRxjsDebug());
 
+    this.bioxExperimentService.getExperimentFlow(experimentId).pipe(clRxjsDebug()).subscribe();
+  }
 
 }

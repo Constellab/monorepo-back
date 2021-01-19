@@ -10,5 +10,9 @@
   "finished": "Finished",
   "running": "Running",
   "show_more_result": "Show more results",
-  "no_more_result": "No more result"
+  "no_more_result": "No more result",
+  "protocols": "Protocols",
+  "processes": "Processes",
+  "no_protocol": "There is no protocol",
+  "no_processes": "There is no processes"
 }

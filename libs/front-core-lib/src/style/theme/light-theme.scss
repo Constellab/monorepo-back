@@ -41,19 +41,25 @@ $light-theme: mat-light-theme((
 // Load all global classes link to theme
 @include _global-theme-style($light-theme);
 
+//////////////////// GLOBAL CSS VARIABLES ///////////////////////
+:root{
+  --light-color: rgba(0, 0, 0, .54);
+  --card-border-color: #ddd;
+}
+
 /**
  * Classes for this theme that can't be defined in global-style-theme.scss
  */
 .g-text-light {
-  color: rgba(0, 0, 0, .54);
+  color: var(--light-color);
 }
 
 .g-placeholder{
-  color: rgba(0, 0, 0, .54);
+  color: var(--light-color);
 }
 
 .g-card-elevation{
-  border: 1px solid #ddd;
+  border: 1px solid var(--card-border-color);
   box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.05)
 }
 

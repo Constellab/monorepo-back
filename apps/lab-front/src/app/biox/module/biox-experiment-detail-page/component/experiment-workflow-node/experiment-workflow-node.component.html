@@ -1,0 +1,27 @@
+<div>
+
+  <div fxLayout="row wrap" fxLayoutAlign="space-between center">
+
+    <!-- Title   -->
+    <div>
+      {{node.object.type}}
+    </div>
+
+    <!--  actions -->
+    <div fxLayout="row" fxLayoutGap="0.5em">
+      <!--   Only for protocol, possibility to zoom in   -->
+      <button *ngIf="nodeIsProtocol()"
+              mat-icon-button type="button">
+        <mat-icon>loupe</mat-icon>
+      </button>
+
+      <button mat-icon-button type="button">
+        <mat-icon>settings</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div>
+  </div>
+</div>

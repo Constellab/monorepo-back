@@ -353,5 +353,13 @@
   .ace-jsoneditor .ace_string {
     color: $color-success !important;
   }
+
+
+  ///////////////////////////// DRAWFLOW ////////////////////////////
+  .drawflow .drawflow-node {
+    background-color: mat-color($background, card) !important;
+    color: $foreground-color !important;
+    border: 1px solid var(--card-border-color) !important;
+  }
 }
 

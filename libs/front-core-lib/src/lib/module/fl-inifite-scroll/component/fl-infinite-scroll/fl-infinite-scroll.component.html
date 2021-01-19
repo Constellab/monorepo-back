@@ -7,5 +7,8 @@
 
   <fl-infinite-load-more-result [datasource]="datasource"></fl-infinite-load-more-result>
 
+  <div class="g-centered-forced loader">
+    <fl-loader *ngIf="datasource.firstPageIsLoading"></fl-loader>
+  </div>
 </div>
 

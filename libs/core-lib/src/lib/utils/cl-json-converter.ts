@@ -21,6 +21,36 @@ export class ClDateConverter implements JsonCustomConvert<Date> {
   }
 }
 
+/**
+ * Basic date convert for json2typescript serialisation/deserialization
+ */
+@JsonConverter
+export abstract class ClRecordConverter<T> implements JsonCustomConvert<Record<string, T>> {
+  serialize(record: Record<string, T>): Record<string, any> {
+    const result: Record<string, any> = {};
+    for (const property of Object.keys(record)) {
+      result[property] = this.serializeItem(record[property]);
+    }
+
+    return result;
+  }
+
+  deserialize(record: Record<string, any>): Record<string, T> {
+    const result: Record<string, T> = {};
+    for (const property of Object.keys(record)) {
+      result[property] = this.deserializeItem(record[property]);
+    }
+
+    return result;
+  }
+
+  serializeItem(item: T): any {
+    return ClCoreJsonConvert.serialize(item);
+  }
+
+  abstract deserializeItem(item: any): T;
+}
+
 
 /**
  * Simple static class to deserialize and serialize JSON object
