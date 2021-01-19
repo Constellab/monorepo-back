@@ -30,6 +30,8 @@ declare module 'drawflow' {
 
     changeModule(moduleName: string): void;
 
+    getNodeFromId(id: string): DrawflowNode;
+
   }
 
   export interface ConnectionEvent {
@@ -54,5 +56,28 @@ declare module 'drawflow' {
     input_class: string;
   }
 
+  export interface DrawflowNode {
+    class: string;
+    data: any;
+    html: string;
+    id: string;
+    inputs: Record<string, DrawflowConnection>;
+    name: string;
+    outputs: Record<string, DrawflowConnection>;
+    pos_x: number;
+    pos_y: number;
+    typenode: boolean;
+  }
+
+  export interface DrawflowConnection {
+    connections: DrawflowConnectionDetail[];
+  }
+
+  export interface DrawflowConnectionDetail {
+    input: string;
+    node: string;
+  }
+
   export = Drawflow;
 }
+

@@ -38,8 +38,7 @@ export class Workflow<T extends WorkflowNode<any>, H> {
       node.initialPosY, '', {}, node.html, false);
 
     // set the nodeId in workflow node
-    node.nodeId = nodeId.toString();
-    console.log(this.editor.drawflow);
+    node.initNode(nodeId.toString(), (id: string) => this.editor.getNodeFromId(id));
   }
 
   public findNodeWithHTMLId(nodeId: string): T {
@@ -61,10 +60,7 @@ export class Workflow<T extends WorkflowNode<any>, H> {
     const node: T = this.findNodeWithId(connection.input_id);
 
     // check if the input is available
-    if (node.inputIsAvailable(connection.input_class)) {
-      // mark the input as used
-      node.markInputAsUnavailable(connection.input_class);
-    } else {
+    if (!node.inputIsValid(connection.input_class)) {
       console.log('Input not available');
       // remove the connection
       this.editor.removeSingleConnection(connection.output_id, connection.input_id,
@@ -73,9 +69,7 @@ export class Workflow<T extends WorkflowNode<any>, H> {
   }
 
   private onConnectionRemoved(connection: ConnectionEvent): void {
-    // mark the correspond node input as available
-    const node: T = this.findNodeWithId(connection.input_id);
-    node.markInputAsAvailable(connection.input_class);
+    console.log(connection);
   }
 
   private onNodeRemoved(nodeId: string): void {
