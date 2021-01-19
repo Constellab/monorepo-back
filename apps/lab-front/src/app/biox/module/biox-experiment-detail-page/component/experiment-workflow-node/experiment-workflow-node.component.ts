@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {WorkflowManagerService} from '../../service/workflow-manager.service';
 import {WorkflowNode} from '../../model/workflow-node.class';
-import {BioxProcessable} from '../../../../../core/model/global/biox-processable.class';
+import {BioxJob} from '../../../../../core/model/entities/biox-job.entity';
 
 /**
  * Node of an experiment in the workflow
@@ -17,7 +17,7 @@ export class ExperimentWorkflowNodeComponent implements OnInit {
 
   @Input() id: string;
 
-  node: WorkflowNode<BioxProcessable>;
+  node: WorkflowNode<BioxJob>;
 
   constructor(private workflowManager: WorkflowManagerService) {
   }
@@ -30,7 +30,7 @@ export class ExperimentWorkflowNodeComponent implements OnInit {
   }
 
   nodeIsProtocol(): boolean {
-    return this.node.object.objectType === 'protocol';
+    return this.node.object.process.isProtocol();
   }
 
 }

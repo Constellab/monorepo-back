@@ -12,21 +12,57 @@ import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 export class BioxProcessableBase extends LabBaseEntity {
 
   @JsonProperty('input_specs', Any, true)
-  inputSpecs: any = null;
+  inputSpecs: Record<string, string[]> = null;
 
   @JsonProperty('output_specs', Any, true)
-  outputSpecs: any = null;
+  outputSpecs: Record<string, string[]> = null;
 
   @JsonProperty('config_specs', Any, true)
   configSpecs: any = null;
 
-  // Todo remove + 1
   public getInputSpecsCount(): number {
-    return (Object.keys(this.inputSpecs).length) + 1;
+    return (Object.keys(this.inputSpecs).length);
   }
 
   public getOutputSpecsCount(): number {
-    return (Object.keys(this.outputSpecs).length) + 1;
+    return (Object.keys(this.outputSpecs).length);
+  }
+
+  public isProtocol(): boolean {
+    return this.type === 'gws.model.Protocol';
+  }
+
+  public isProcess(): boolean {
+    return !this.isProtocol();
+  }
+
+  public findInputSpec(inputName: string): string[] | undefined {
+    return this.inputSpecs[inputName];
+  }
+
+  /**
+   * Check if the input exists and if this input is compatible to
+   * an input type.
+   * It is compatible if all the output types are compatible with the input spec
+   * @param inputSpecName name of the inputSpec to check
+   * @param outputTypes outputSpec of another BioxProcessableBase
+   */
+  public outputSpecIsCompatible(inputSpecName: string, outputTypes: string[]): boolean {
+    const input = this.findInputSpec(inputSpecName);
+    if (input == null) {
+      return false;
+    }
+
+    for (const outputType of outputTypes) {
+      if (!input.includes(outputType)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public findOutputSpec(outputName: string): string[] | undefined {
+    return this.outputSpecs[outputName];
   }
 }
 
@@ -72,7 +108,6 @@ export class BioxProtocolGraph extends LabEntity {
 
 @JsonObject('BioxProtocolData')
 export class BioxProtocolData extends LabEntity {
-  // python class link
   @JsonProperty('input_specs', Any, true)
   inputSpecs: any = null;
 
@@ -96,9 +131,6 @@ export class BioxProtocol extends BioxProcessableBase {
 
   objectType: 'protocol' = 'protocol';
 
-  getTitle(): string {
-    return this.type;
-  }
 }
 
 export type BioxProtocolDatasource = FlEntityPaginatedDatasource<BioxProtocol>;
@@ -123,10 +155,6 @@ export class BioxProcess extends BioxProcessableBase {
   data: BioxProcessData = null;
 
   objectType: 'process' = 'process';
-
-  getTitle(): string {
-    return this.data.title;
-  }
 }
 
 export type BioxProcessDatasource = FlEntityPaginatedDatasource<BioxProcess>;

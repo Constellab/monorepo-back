@@ -6,14 +6,14 @@
     <fl-card-body>
       <mat-tab-group class="tab-group">
         <!--                    Protocols    -->
-        <mat-tab [label]="'protocols' | translate">
-          <fl-infinite-scroll [datasource]="availableProtocols">
-            <gen-biox-protocol-card *ngFor="let protocol of availableProtocols.connect() | async"
-                                    [protocol]="protocol"
-                                    draggable="true" class="draggable-card"
-                                    (dragstart)="dragStart(protocol)"></gen-biox-protocol-card>
-          </fl-infinite-scroll>
-        </mat-tab>
+        <!--        <mat-tab [label]="'protocols' | translate">-->
+        <!--          <fl-infinite-scroll [datasource]="availableProtocols">-->
+        <!--            <gen-biox-protocol-card *ngFor="let protocol of availableProtocols.connect() | async"-->
+        <!--                                    [protocol]="protocol"-->
+        <!--                                    draggable="true" class="draggable-card"-->
+        <!--                                    (dragstart)="dragStart(protocol)"></gen-biox-protocol-card>-->
+        <!--          </fl-infinite-scroll>-->
+        <!--        </mat-tab>-->
 
         <!--    Processes    -->
         <mat-tab [label]="'processes' | translate">
@@ -34,5 +34,9 @@
   <div fxFlex="auto" (dragover)="allowDrop($event)" (drop)="addProcessable($event)">
     <button mat-button (click)="switch()">Switch</button>
     <div class="experiment-workflow" #workflow></div>
+
+    <div class="g-centered-forced">
+      <fl-loader *ngIf="flowIsLoading"></fl-loader>
+    </div>
   </div>
 </div>

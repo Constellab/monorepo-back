@@ -3,7 +3,7 @@ import {
   FlCardModule, FlCoreComponentModule,
   FlCoreDirectiveModule,
   FlCorePipeModule,
-  FlDialogModule, FlInfiniteScrollModule, FlSectionModule,
+  FlDialogModule, FlInfiniteScrollModule, FlLoaderModule, FlSectionModule,
   FlSnackBarModule, FlStatusModule,
   FlSvgIconModule, FlTextIconModule,
   FlTranslateModule
@@ -29,6 +29,7 @@ import {
     FlTextIconModule,
     FlStatusModule,
     FlInfiniteScrollModule,
+    FlLoaderModule,
 
   ]
 })

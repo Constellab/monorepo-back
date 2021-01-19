@@ -20,6 +20,10 @@ declare module 'drawflow' {
     addNode(name: string, inputs: number, outputs: number, posx: number, posy: number,
             className: string, data: any, html: string, typenode: false): number;
 
+    addConnection(outputNodeId: string, inputNodeId: string, outputName: string, inputName: string): void;
+
+    removeSingleConnection(id_output: string, id_input: string, output_class: string, input_class: string)
+
     on(eventName: string, callback: (event: any) => void);
 
     addModule(moduleName: string): void;
@@ -29,9 +33,24 @@ declare module 'drawflow' {
   }
 
   export interface ConnectionEvent {
-    outputId: string;
-    input_id: string,
-    output_class: string,
+    /**
+     * outputNodeId
+     */
+    output_id: string;
+
+    /**
+     * inputNodeId
+     */
+    input_id: string;
+
+    /**
+     * name of the output
+     */
+    output_class: string;
+
+    /**
+     * name of the input
+     */
     input_class: string;
   }
 

@@ -25,5 +25,4 @@ export class BioxProtocolService {
     return (page: number, pageSize: number): Observable<FlPage<BioxProtocol>> => this.getProtocols(page, pageSize);
   }
 
-
 }

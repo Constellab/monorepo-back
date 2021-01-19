@@ -4,6 +4,8 @@ import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment
 import {BioxProcessService} from '../../../../../core/entity-service/biox-process.service';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
 import {BioxProcessable, BioxProcessDatasource, BioxProtocolDatasource} from '../../../../../core/model/global/biox-processable.class';
+import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
+import {BioxExperimentFlow} from '../../../../../core/model/entities/biox-experiment-flow.entity';
 
 @Component({
   selector: 'gen-experiment-workflow',
@@ -16,26 +18,46 @@ export class ExperimentWorkflowComponent implements OnInit {
 
   @ViewChild('workflow', {static: true}) container: ElementRef<HTMLElement>;
 
+  flow: BioxExperimentFlow;
+
   availableProtocols: BioxProtocolDatasource;
   availableProcesses: BioxProcessDatasource;
 
   // store the current dragged process
   draggingProcessable: BioxProcessable;
 
+  flowIsLoading: boolean = false;
+
   constructor(private workflowManagerService: WorkflowManagerService,
               private bioxProtocolService: BioxProtocolService,
-              private bioxProcessService: BioxProcessService) {
+              private bioxProcessService: BioxProcessService,
+              private bioxExperimentService: BioxExperimentService) {
   }
 
   ngOnInit(): void {
-    this.workflowManagerService.init(this.container.nativeElement);
+    this.loadExperimentFlow();
 
     // get protocols
-    this.availableProtocols = this.bioxProtocolService.getProtocolsDatasource();
+    // this.availableProtocols = this.bioxProtocolService.getProtocolsDatasource();
 
     // get process
     this.availableProcesses = this.bioxProcessService.getProcessesDatasource();
   }
+
+  private loadExperimentFlow(): void {
+    this.flowIsLoading = true;
+    this.bioxExperimentService.getExperimentFlow(this.experiment.id).subscribe(
+      flow => this.loadExperimentFlowSuccess(flow),
+      () => this.flowIsLoading = false
+    );
+  }
+
+  private loadExperimentFlowSuccess(flow: BioxExperimentFlow): void {
+    this.workflowManagerService.init(this.container.nativeElement, flow);
+    this.flow = flow;
+    this.flowIsLoading = false;
+  }
+
 
   addNode(): void {
     // const node: WorkflowNode = new WorkflowNode('name', 1, 2);
@@ -49,7 +71,9 @@ export class ExperimentWorkflowComponent implements OnInit {
 
   // todo check that the object is a processable
   addProcessable(ev: DragEvent): void {
-    this.workflowManagerService.addNode(this.draggingProcessable, ev.offsetX, ev.offsetY);
+    this.workflowManagerService.addProcessableNode(this.draggingProcessable,
+      this.experiment.id, this.flow.id,
+      ev.offsetX, ev.offsetY);
     this.draggingProcessable = null;
   }
 

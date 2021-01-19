@@ -22,7 +22,8 @@ export class ClDateConverter implements JsonCustomConvert<Date> {
 }
 
 /**
- * Basic date convert for json2typescript serialisation/deserialization
+ * Abstract convert for Record<string, T>, it call the serializeItem or deserializeItem
+ * for each property of the record
  */
 @JsonConverter
 export abstract class ClRecordConverter<T> implements JsonCustomConvert<Record<string, T>> {

@@ -31,4 +31,18 @@ export class BioxJob extends LabBaseEntity {
 
   @JsonProperty('process', BioxProcessableBase)
   process: BioxProcessableBase = null;
+
+  public static fromProcessable(processable: BioxProcessableBase,
+                                experimentId: string, parentJobId: string): BioxJob {
+    const job: BioxJob = new BioxJob();
+    job.type = 'gws.model.Job';
+    job.isRunning = false;
+    job.isFinished = false;
+    job.process = processable;
+    job.experimentId = experimentId;
+    job.parentJobId = parentJobId;
+    job.config = BioxConfig.empty();
+
+    return job;
+  }
 }

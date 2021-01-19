@@ -30,7 +30,7 @@ export class BioxExperimentService {
     return this.apiService.get(`gws.model.Experiment/${id}`, BioxExperiment);
   }
 
-  public getExperimentFlow(id: string): Observable<BioxExperiment> {
+  public getExperimentFlow(id: string): Observable<BioxExperimentFlow> {
     return this.apiService.get(`flow?experiment_uri=${id}`, BioxExperimentFlow);
   }
 }

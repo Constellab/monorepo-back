@@ -33,9 +33,12 @@ export class BioxExperimentFlowJob {
   jobId: string = null;
 
   @JsonProperty('process', BioxExperimentFlowProcess)
-  process: string = null;
+  process: BioxExperimentFlowProcess = null;
 }
 
+/**
+ * Object that contains the resources passed between process
+ */
 @JsonObject('BioxExperimentFlowStep')
 export class BioxExperimentFlowStep {
 

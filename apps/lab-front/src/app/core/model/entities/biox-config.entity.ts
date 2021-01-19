@@ -9,8 +9,14 @@ export class BioxConfig extends LabEntity {
 
   // python class link
   @JsonProperty('type', String, true)
-  type: string = null;
+  type: 'gws.model.Config' = null;
 
   @JsonProperty('params', Any)
   params: Record<string, unknown> = null;
+
+  public static empty(): BioxConfig {
+    const config = new BioxConfig();
+    config.type = 'gws.model.Config';
+    return config;
+  }
 }
