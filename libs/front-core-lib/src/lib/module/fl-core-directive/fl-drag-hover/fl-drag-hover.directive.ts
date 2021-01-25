@@ -48,7 +48,7 @@ export class FlDragHoverDirective {
    * @ignore
    * Drag enter event
    */
-  @HostListener('dragEnter')
+  @HostListener('dragenter')
   dragEnter(): void {
     if (!this.flDragHoverDisabled) {
       this.onDraflter();
