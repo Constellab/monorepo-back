@@ -49,14 +49,6 @@ export abstract class BioxNode extends LabEntity {
   public getInputsCount(): number {
     return (Object.keys(this.inputs).length);
   }
-
-  public getOutputsCount(): number {
-    return (Object.keys(this.outputs).length);
-  }
-
-  public getAllOutputs(): BioxConnectionPart[]{
-    return [].concat(...Object.keys(this.outputs).map(key => this.outputs[key]));
-  }
 }
 
 @JsonObject('BioxConnectionManager')

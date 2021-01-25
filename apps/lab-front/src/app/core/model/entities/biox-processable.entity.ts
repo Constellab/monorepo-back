@@ -1,9 +1,9 @@
 import {Any, JsonConverter, JsonObject, JsonProperty} from 'json2typescript';
-import {LabBaseEntity, LabEntity} from './lab-entity.entity';
+import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
 import {ClCoreJsonConvert, ClRecordConverter} from '@monorepo/core-lib';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {BioxConnection, BioxConnectionManager, BioxConnectionPart} from './biox-connection.class';
-import {BioxProcessableBase} from './biox-processable-base.class';
+import {BioxConnection, BioxConnectionManager, BioxConnectionPart} from '../global/biox-connection.class';
+import {BioxProcessableBase} from './biox-processable-base.entity';
 
 ////////////////////////////////// LINK ///////////////////////////////////////
 

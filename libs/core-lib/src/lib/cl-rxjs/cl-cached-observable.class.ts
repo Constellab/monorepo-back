@@ -21,6 +21,8 @@ export class ClCachedObservable<T> {
   private isError: boolean = false;
   private isComplete: boolean = false;
 
+  public isLoading: boolean = false;
+
   /**
    *
    * @param internalObservable the observable to cache
@@ -60,6 +62,7 @@ export class ClCachedObservable<T> {
    * This method is called only once
    */
   private subscribeToObservable(): Subject<T> {
+    this.isLoading = true;
     this.subject = new Subject<T>();
     this.internalObservable.subscribe(
       value => this.onSuccess(value),
@@ -83,6 +86,7 @@ export class ClCachedObservable<T> {
     this.isError = true;
     this.isSuccess = false;
     this.isComplete = true;
+    this.isLoading = false;
     this.subject.error(error);
   }
 
@@ -90,5 +94,6 @@ export class ClCachedObservable<T> {
   private onComplete(): void {
     this.subject.complete();
     this.isComplete = true;
+    this.isLoading = false;
   }
 }

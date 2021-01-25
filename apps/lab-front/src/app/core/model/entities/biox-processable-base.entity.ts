@@ -1,7 +1,7 @@
 import {Any, JsonObject, JsonProperty} from 'json2typescript';
 import {ClLuxonConverter} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {BioxNode} from './biox-connection.class';
+import {BioxNode} from '../global/biox-connection.class';
 
 @JsonObject('BioxProcessableBase')
 export class BioxProcessableBase extends BioxNode {

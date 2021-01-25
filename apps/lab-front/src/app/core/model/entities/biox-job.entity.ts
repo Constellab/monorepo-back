@@ -1,6 +1,6 @@
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {BioxConfig} from './biox-config.entity';
-import {BioxProcessableBase} from '../global/biox-processable-base.class';
+import {BioxProcessableBase} from './biox-processable-base.entity';
 import {ClLuxonConverter} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {BioxNode} from '../global/biox-connection.class';

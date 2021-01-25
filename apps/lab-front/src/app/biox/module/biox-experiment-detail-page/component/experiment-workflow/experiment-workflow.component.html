@@ -1,19 +1,19 @@
-<div fxLayout="row" class="container">
+<div fxLayout="row">
 
 
   <!--  Left section with available protocol and processes -->
   <fl-card class="left-section" fxFlex="25%">
     <fl-card-body>
-      <mat-tab-group class="tab-group">
+      <mat-tab-group>
         <!--                    Protocols    -->
-<!--                <mat-tab [label]="'protocols' | translate">-->
-<!--                  <fl-infinite-scroll [datasource]="availableProtocols">-->
-<!--                    <gen-biox-protocol-card *ngFor="let protocol of availableProtocols.connect() | async"-->
-<!--                                            [protocol]="protocol"-->
-<!--                                            draggable="true" class="draggable-card"-->
-<!--                                            (dragstart)="dragStart(protocol)"></gen-biox-protocol-card>-->
-<!--                  </fl-infinite-scroll>-->
-<!--                </mat-tab>-->
+                <mat-tab [label]="'protocols' | translate">
+                  <fl-infinite-scroll [datasource]="availableProtocols">
+                    <gen-biox-protocol-card *ngFor="let protocol of availableProtocols.connect() | async"
+                                            [protocol]="protocol"
+                                            draggable="true" class="draggable-card"
+                                            (dragstart)="dragStart(protocol)"></gen-biox-protocol-card>
+                  </fl-infinite-scroll>
+                </mat-tab>
 
         <!--    Processes    -->
         <mat-tab [label]="'processes' | translate">
@@ -31,11 +31,12 @@
   </fl-card>
 
   <!-- Right section with workflow -->
-  <div fxFlex="auto" (dragover)="allowDrop($event)" (drop)="addProcessable($event)">
+  <div fxFlex="auto">
     <div class="breadcrumb">
       <gen-biox-workflow-layers-breadcrumb *ngIf="!flowIsLoading"></gen-biox-workflow-layers-breadcrumb>
     </div>
-    <div class="experiment-workflow" #workflow></div>
+    <div class="experiment-workflow" #workflow
+         (dragover)="allowDrop($event)" (drop)="addProcessable($event)" flDragHover="drop-border"></div>
 
     <div class="g-centered-forced">
       <fl-loader *ngIf="flowIsLoading"></fl-loader>

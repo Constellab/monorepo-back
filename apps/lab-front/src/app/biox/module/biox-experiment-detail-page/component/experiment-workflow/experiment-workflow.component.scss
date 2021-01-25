@@ -1,11 +1,4 @@
-
-.container {
-  position: relative;
-}
-
-
 .left-section {
-  z-index: 999;
   position: relative;
 }
 
@@ -19,30 +12,16 @@
 .experiment-workflow {
   width: 100%;
   height: 80vh;
+  border: 2px dashed transparent;
+}
+
+.drop-border{
+  border-color: var(--light-color);
 }
 
 .draggable-card {
   cursor: move;
 }
 
-.draggable-card img {
-  background-color: red;
-}
 
-.tab-group {
-  overflow-x: hidden;
-}
 
-.cdk-drag-dragging {
-  //position: absolute;
-}
-
-.example-box {
-  width: 50px;
-  height: 50px;
-  background-color: #22B252;
-}
-
-.cdk-drag-placeholder {
-  opacity: 1;
-}

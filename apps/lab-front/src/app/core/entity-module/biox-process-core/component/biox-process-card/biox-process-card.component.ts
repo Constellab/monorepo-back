@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BioxProcess} from '../../../../model/global/biox-processable.class';
+import {BioxProcess} from '../../../../model/entities/biox-processable.entity';
 
 @Component({
   selector: 'gen-biox-process-card',

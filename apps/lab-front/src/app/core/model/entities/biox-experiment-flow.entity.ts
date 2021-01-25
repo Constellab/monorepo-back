@@ -5,7 +5,7 @@ import {BioxJob} from './biox-job.entity';
 import {ClCoreJsonConvert, ClLuxonConverter, ClRecordConverter} from '@monorepo/core-lib';
 import {BioxConnection, BioxConnectionManager, BioxConnectionPart} from '../global/biox-connection.class';
 import {DateTime} from 'luxon';
-import {BioxProcessableBase} from '../global/biox-processable-base.class';
+import {BioxProcessableBase} from './biox-processable-base.entity';
 
 
 /**

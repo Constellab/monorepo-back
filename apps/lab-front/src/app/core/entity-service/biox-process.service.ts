@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {BioxProcess, BioxProcessDatasource} from '../model/global/biox-processable.class';
+import {BioxProcess, BioxProcessDatasource} from '../model/entities/biox-processable.entity';
 
 @Injectable({
   providedIn: 'root'

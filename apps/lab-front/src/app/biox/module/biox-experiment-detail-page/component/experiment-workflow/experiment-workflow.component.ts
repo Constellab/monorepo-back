@@ -3,7 +3,7 @@ import {WorkflowManagerService} from '../../service/workflow-manager.service';
 import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
 import {BioxProcessService} from '../../../../../core/entity-service/biox-process.service';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
-import {BioxProcessable, BioxProcessDatasource, BioxProtocolDatasource} from '../../../../../core/model/global/biox-processable.class';
+import {BioxProcessable, BioxProcessDatasource, BioxProtocolDatasource} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
 import {BioxExperimentFlow} from '../../../../../core/model/entities/biox-experiment-flow.entity';
 
@@ -39,7 +39,7 @@ export class ExperimentWorkflowComponent implements OnInit {
     this.loadExperimentFlow();
 
     // get protocols
-    // this.availableProtocols = this.bioxProtocolService.getProtocolsDatasource();
+    this.availableProtocols = this.bioxProtocolService.getProtocolsDatasource();
 
     // get process
     this.availableProcesses = this.bioxProcessService.getProcessesDatasource();
@@ -59,12 +59,6 @@ export class ExperimentWorkflowComponent implements OnInit {
     this.workflowManagerService.init(this.container.nativeElement, flow, this.experiment.id);
     this.flow = flow;
     this.flowIsLoading = false;
-  }
-
-
-  addNode(): void {
-    // const node: WorkflowNode = new WorkflowNode('name', 1, 2);
-    // this.workflowManagerService.addNode(node);
   }
 
   allowDrop(ev: DragEvent): void {

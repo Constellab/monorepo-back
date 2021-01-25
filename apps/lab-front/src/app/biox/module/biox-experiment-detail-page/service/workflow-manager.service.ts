@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Workflow} from '../model/workflow.class';
-import {BioxProcessable, BioxProtocol, BioxProtocolGraph} from '../../../../core/model/global/biox-processable.class';
+import {BioxProcessable, BioxProtocol, BioxProtocolGraph} from '../../../../core/model/entities/biox-processable.entity';
 import {WorkflowNodeProcessable} from '../model/workflow-node-processable.class';
 import {BioxExperimentFlow} from '../../../../core/model/entities/biox-experiment-flow.entity';
 import {BioxJob} from '../../../../core/model/entities/biox-job.entity';
@@ -9,7 +9,7 @@ import {BioxConnection, BioxNode} from '../../../../core/model/global/biox-conne
 import {WorkflowConnectionLink} from '../model/workflow-connection-link.class';
 import {WorkflowLayer} from '../model/workflow-layer.class';
 import {Observable} from 'rxjs';
-import {BioxProcessableBase} from '../../../../core/model/global/biox-processable-base.class';
+import {BioxProcessableBase} from '../../../../core/model/entities/biox-processable-base.entity';
 
 @Injectable()
 export class WorkflowManagerService {
