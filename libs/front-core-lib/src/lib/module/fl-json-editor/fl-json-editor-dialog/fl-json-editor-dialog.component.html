@@ -1,0 +1,12 @@
+<fl-dialog-title>
+  {{input.title | translate}}
+</fl-dialog-title>
+
+<mat-dialog-content>
+  <div class="container" [flJsonEditor]="input.value" [flJsonEditorConfig]="input.config"
+       [flJsonEditorSchema]="input.jsonSchema"></div>
+</mat-dialog-content>
+
+
+
+

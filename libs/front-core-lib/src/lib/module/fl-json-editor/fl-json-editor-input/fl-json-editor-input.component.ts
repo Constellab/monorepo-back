@@ -1,13 +1,13 @@
-import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Optional, Output, Self, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Optional, Output, Self, ViewChild} from '@angular/core';
 import {NgControl, Validator} from '@angular/forms';
-import {defaultJsonEditorConfig, JsonEditorConfig} from '../fl-json-editor-option.class';
-import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
+import {JsonEditorConfig} from '../fl-json-editor-option.class';
 import {ValidationErrors} from '@ngneat/reactive-forms/lib/types';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlFormFieldDirective} from '../../../abstract-directive/fl-form-field.directive';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 import {FlSnackBarService} from '../../fl-snack-bar/fl-snack-bar.service';
 import {FlDropFileEvent} from '../../fl-core-directive/fl-drag-hover/fl-drop-file-event.class';
+import {FlJsonEditorDirective} from '../fl-json-editor.directive';
 
 /**
  * NgModel component for json editor. It uses the package jsoneditor
@@ -18,15 +18,15 @@ import {FlDropFileEvent} from '../../fl-core-directive/fl-drag-hover/fl-drop-fil
  * Possibility to drop a json file on the component to load json
  */
 @Component({
-  selector: 'fl-json-editor',
-  templateUrl: './fl-json-editor.component.html',
-  styleUrls: ['./fl-json-editor.component.scss'],
+  selector: 'fl-json-editor-input',
+  templateUrl: './fl-json-editor-input.component.html',
+  styleUrls: ['./fl-json-editor-input.component.scss'],
   providers: [
-    {provide: FlFormFieldDirective, useExisting: FlJsonEditorComponent},
+    {provide: FlFormFieldDirective, useExisting: FlJsonEditorInputComponent},
   ]
 })
-export class FlJsonEditorComponent extends FlFormFieldDirective<any, string>
-  implements OnInit, OnDestroy, Validator {
+export class FlJsonEditorInputComponent extends FlFormFieldDirective<any, string>
+  implements OnInit, Validator {
 
   @Input() placeholder: string;
 
@@ -40,8 +40,7 @@ export class FlJsonEditorComponent extends FlFormFieldDirective<any, string>
 
   @Output() jsonChange: EventEmitter<any> = new EventEmitter<any>();
 
-  @ViewChild('jsonEditorContainer', {static: true}) jsonEditorContainer: ElementRef;
-  private editor: JSONEditor;
+  @ViewChild(FlJsonEditorDirective, {static: true}) jsonEditorDirective: FlJsonEditorDirective;
 
   constructor(@Optional() @Self() ngControl: NgControl,
               private translateService: FlTranslateService,
@@ -51,35 +50,7 @@ export class FlJsonEditorComponent extends FlFormFieldDirective<any, string>
 
 
   ngOnInit(): void {
-    this.initEditor();
     this.registerValidateMethod();
-  }
-
-  private initEditor(): void {
-    const options: JSONEditorOptions = Object.assign(defaultJsonEditorConfig, this.config);
-
-    // set the correct language
-    options.language = this.translateService.getUserLanguage();
-
-    // not used on code mode
-    // if (!options.onChangeJSON && this.jsonChange) {
-    //   options.onChangeJSON = this.onEditorChangeJSON.bind(this);
-    // }
-    options.onChange = this.onEditorChange.bind(this);
-
-    if (!this.jsonEditorContainer.nativeElement) {
-      console.error(`Can't find the ElementRef reference for json editor)`);
-    }
-
-    if (this.jsonSchema) {
-      options.schema = this.jsonSchema;
-    }
-
-    this.editor = new JSONEditor(this.jsonEditorContainer.nativeElement, options, this.value);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy();
   }
 
   writeValue(value: string): void {
@@ -91,21 +62,20 @@ export class FlJsonEditorComponent extends FlFormFieldDirective<any, string>
 
   // set the json value in the json editor
   private setEditorValue(value: any): void {
-    if (this.editor) {
-      this.editor.set(value);
+    if (this.jsonEditorDirective.editor) {
+      this.jsonEditorDirective.editor.set(value);
     }
   }
 
-  onEditorChange(): void {
-    if (this.editor) {
-      try {
-        this.setAndEmitValue(this.editor.get());
-      } catch (e) {
-        if (this.value != null) {
-          this.setAndEmitValue(null);
-        }
+  onEditorChange(value: any): void {
+    try {
+      this.setAndEmitValue(value);
+    } catch (e) {
+      if (this.value != null) {
+        this.setAndEmitValue(null);
       }
     }
+
   }
 
   validate(): ValidationErrors | null {
@@ -120,7 +90,7 @@ export class FlJsonEditorComponent extends FlFormFieldDirective<any, string>
 
   // return the list of error of the json editor
   private editorJsonIsValid(): boolean {
-    return (this.editor as any)?.validateSchema(this.value) ?? false;
+    return (this.jsonEditorDirective.editor as any)?.validateSchema(this.value) ?? false;
   }
 
   // not use on code mode
@@ -140,11 +110,6 @@ export class FlJsonEditorComponent extends FlFormFieldDirective<any, string>
   callChangeEvent(value: string): void {
     this.jsonChange.emit(value);
   }
-
-  public destroy(): void {
-    this.editor.destroy();
-  }
-
 
   protected convertOuterToInner(outerValue: string): any {
     if (ClHelpService.isNullOrEmpty(outerValue)) {

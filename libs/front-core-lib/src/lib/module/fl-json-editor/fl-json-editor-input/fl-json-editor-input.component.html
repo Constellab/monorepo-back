@@ -3,5 +3,8 @@
   <div class="g-placeholder">
     <p [ngClass]="{'g-warn-text': error}">{{placeholder}}</p>
   </div>
-  <div #jsonEditorContainer class="editor-container"></div>
+  <div [flJsonEditor]="value" [flJsonEditorConfig]="config"
+       [flJsonEditorSchema]="jsonSchema"
+       (flJsonChange)="onEditorChange($event)"
+       class="editor-container"></div>
 </div>

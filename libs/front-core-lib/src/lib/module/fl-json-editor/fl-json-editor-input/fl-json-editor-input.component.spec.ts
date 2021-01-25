@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FlJsonEditorComponent} from './fl-json-editor.component';
+import {FlJsonEditorInputComponent} from './fl-json-editor-input.component';
 
 describe('JsonEditorComponent', () => {
-  let component: FlJsonEditorComponent;
-  let fixture: ComponentFixture<FlJsonEditorComponent>;
+  let component: FlJsonEditorInputComponent;
+  let fixture: ComponentFixture<FlJsonEditorInputComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FlJsonEditorComponent ]
+      declarations: [ FlJsonEditorInputComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FlJsonEditorComponent);
+    fixture = TestBed.createComponent(FlJsonEditorInputComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
