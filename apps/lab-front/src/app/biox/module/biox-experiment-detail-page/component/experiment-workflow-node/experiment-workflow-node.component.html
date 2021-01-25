@@ -4,13 +4,13 @@
 
     <!-- Title   -->
     <div>
-      {{node.object.process.type}}
+      {{name}} {{node.object.process.type}}
     </div>
 
     <!--  actions -->
     <div fxLayout="row" fxLayoutGap="0.5em">
       <!--   Only for protocol, possibility to zoom in   -->
-      <button *ngIf="nodeIsProtocol()"
+      <button *ngIf="nodeIsProtocol()" (click)="zoomInProtocol()"
               mat-icon-button type="button">
         <mat-icon>loupe</mat-icon>
       </button>

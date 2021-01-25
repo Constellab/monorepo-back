@@ -10,6 +10,7 @@ import {createCustomElement} from '@angular/elements';
 import {WorkflowManagerService} from './service/workflow-manager.service';
 import {BioxProtocolCoreModule} from '../../../core/entity-module/biox-protocol-core/biox-protocol-core.module';
 import {BioxProcessCoreModule} from '../../../core/entity-module/biox-process-core/biox-process-core.module';
+import {BioxWorkflowLayersBreadcrumbComponent} from './component/biox-workflow-layers-breadcrumb/biox-workflow-layers-breadcrumb.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import {BioxProcessCoreModule} from '../../../core/entity-module/biox-process-co
     BioxExperimentDetailPageComponent,
     TestDrawflowComponent,
     ExperimentWorkflowNodeComponent,
-    ExperimentWorkflowComponent
+    ExperimentWorkflowComponent,
+    BioxWorkflowLayersBreadcrumbComponent,
   ],
   imports: [
     CommonModule,

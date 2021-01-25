@@ -17,7 +17,6 @@ export class BioxExperimentDetailPageComponent implements OnInit {
 
   getExperiment: Observable<BioxExperiment>;
 
-
   constructor(private route: ActivatedRoute,
               private bioxExperimentService: BioxExperimentService) {
   }
@@ -30,8 +29,6 @@ export class BioxExperimentDetailPageComponent implements OnInit {
 
   private init(experimentId: string): void {
     this.getExperiment = this.bioxExperimentService.getExperiment(experimentId).pipe(clRxjsDebug());
-
-    this.bioxExperimentService.getExperimentFlow(experimentId).pipe(clRxjsDebug()).subscribe();
   }
 
 }

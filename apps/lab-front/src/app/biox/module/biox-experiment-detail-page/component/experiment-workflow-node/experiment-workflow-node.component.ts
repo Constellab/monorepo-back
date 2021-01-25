@@ -15,7 +15,8 @@ import {BioxJob} from '../../../../../core/model/entities/biox-job.entity';
 })
 export class ExperimentWorkflowNodeComponent implements OnInit {
 
-  @Input() id: string;
+  // Name of the node
+  @Input() name: string;
 
   node: WorkflowNode<BioxJob>;
 
@@ -23,14 +24,18 @@ export class ExperimentWorkflowNodeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.node = this.workflowManager.findNodeWithHTMLId(this.id);
+    this.node = this.workflowManager.findNodeWithName(this.name);
     if (this.node == null) {
-      console.error('Couldn\'t find node with html id : ' + this.id);
+      console.error('Couldn\'t find node with name : ' + this.name);
     }
   }
 
   nodeIsProtocol(): boolean {
     return this.node.object.process.isProtocol();
+  }
+
+  zoomInProtocol(): void {
+    return this.workflowManager.selectLayer(this.node.object.process.id);
   }
 
 }

@@ -1,12 +1,10 @@
 import {DrawflowConnectionDetail, DrawflowNode} from 'drawflow';
+import {LabEntity} from '../../../../core/model/global/lab-entity.entity';
 
 /**
  * Single node in the workflow
  */
-export class WorkflowNode<T> {
-
-  private static id: number = 0;
-  public readonly htmlId: string;
+export class WorkflowNode<T extends LabEntity> {
 
   public html: string;
 
@@ -18,14 +16,13 @@ export class WorkflowNode<T> {
   private readonly INPUT_NAME_PREFIX: string = 'input_';
   private readonly OUTPUT_NAME_PREFIX: string = 'output_';
 
-  constructor(public readonly name: string,
+  constructor(public readonly nodeName: string,
+              public readonly title: string,
               public readonly nbInputs: number,
               public readonly nbOutputs: number,
               public readonly object: T,
               public readonly initialPosX: number = 0,
               public readonly initialPosY: number = 0) {
-    this.htmlId = WorkflowNode.id.toString();
-    WorkflowNode.id++;
   }
 
   public initNode(nodeId: string, getDrawflowNodeMethod: (id: string) => DrawflowNode): void {

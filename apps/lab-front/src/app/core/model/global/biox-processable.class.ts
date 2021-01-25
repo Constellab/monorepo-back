@@ -1,69 +1,49 @@
 import {Any, JsonConverter, JsonObject, JsonProperty} from 'json2typescript';
 import {LabBaseEntity, LabEntity} from './lab-entity.entity';
 import {ClCoreJsonConvert, ClRecordConverter} from '@monorepo/core-lib';
-import {BioxLink} from '../entities/biox-link.entity';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {BioxConnection, BioxConnectionManager, BioxConnectionPart} from './biox-connection.class';
+import {BioxProcessableBase} from './biox-processable-base.class';
 
+////////////////////////////////// LINK ///////////////////////////////////////
 
-////////////////////////////////// BASE ///////////////////////////////////////
+@JsonObject('BioxLinkPart')
+export class BioxLinkPart implements BioxConnectionPart {
 
+  @JsonProperty('node', String)
+  nodeName: string = null;
 
-@JsonObject('BioxProcessableBase')
-export class BioxProcessableBase extends LabBaseEntity {
+  @JsonProperty('port', String)
+  port: string = null;
 
-  @JsonProperty('input_specs', Any, true)
-  inputSpecs: Record<string, string[]> = null;
+  node: BioxProcessable;
 
-  @JsonProperty('output_specs', Any, true)
-  outputSpecs: Record<string, string[]> = null;
-
-  @JsonProperty('config_specs', Any, true)
-  configSpecs: any = null;
-
-  public getInputSpecsCount(): number {
-    return (Object.keys(this.inputSpecs).length);
+  getNodeName(): string {
+    return this.nodeName;
   }
 
-  public getOutputSpecsCount(): number {
-    return (Object.keys(this.outputSpecs).length);
+  getPort(): string {
+    return this.port;
   }
 
-  public isProtocol(): boolean {
-    return this.type === 'gws.model.Protocol';
+  getNode(): BioxProcessable {
+    return this.node;
   }
 
-  public isProcess(): boolean {
-    return !this.isProtocol();
+  setNode(node: BioxProcessable): void {
+    this.node = node;
   }
 
-  public findInputSpec(inputName: string): string[] | undefined {
-    return this.inputSpecs[inputName];
-  }
+}
 
-  /**
-   * Check if the input exists and if this input is compatible to
-   * an input type.
-   * It is compatible if all the output types are compatible with the input spec
-   * @param inputSpecName name of the inputSpec to check
-   * @param outputTypes outputSpec of another BioxProcessableBase
-   */
-  public outputSpecIsCompatible(inputSpecName: string, outputTypes: string[]): boolean {
-    const input = this.findInputSpec(inputSpecName);
-    if (input == null) {
-      return false;
-    }
+@JsonObject('BioxLink')
+export class BioxLink implements BioxConnection {
 
-    for (const outputType of outputTypes) {
-      if (!input.includes(outputType)) {
-        return false;
-      }
-    }
-    return true;
-  }
+  @JsonProperty('from', BioxLinkPart)
+  from: BioxLinkPart = null;
 
-  public findOutputSpec(outputName: string): string[] | undefined {
-    return this.outputSpecs[outputName];
-  }
+  @JsonProperty('to', BioxLinkPart)
+  to: BioxLinkPart = null;
 }
 
 
@@ -85,7 +65,7 @@ export class BioxProtocolGraphNodeConverter extends ClRecordConverter<BioxProces
 }
 
 @JsonObject('BioxProtocolGraph')
-export class BioxProtocolGraph extends LabEntity {
+export class BioxProtocolGraph extends BioxConnectionManager {
 
   @JsonProperty('title', String, true)
   title: any = null;
@@ -104,6 +84,20 @@ export class BioxProtocolGraph extends LabEntity {
 
   @JsonProperty('nodes', BioxProtocolGraphNodeConverter)
   nodes: Record<string, BioxProcessable> = null;
+
+  getNodesArray(): BioxProcessable[] {
+    return Object.keys(this.nodes).map(key => this.nodes[key]);
+  }
+
+  getConnections(): BioxConnection[] {
+    return this.links;
+  }
+
+  getNodes(): Record<string, BioxProcessable> {
+    return this.nodes;
+  }
+
+
 }
 
 @JsonObject('BioxProtocolData')

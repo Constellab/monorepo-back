@@ -1,18 +1,23 @@
-import {LabBaseEntity} from '../global/lab-entity.entity';
 import {JsonObject, JsonProperty} from 'json2typescript';
 import {BioxConfig} from './biox-config.entity';
-import {BioxProcessableBase} from '../global/biox-processable.class';
+import {BioxProcessableBase} from '../global/biox-processable-base.class';
+import {ClLuxonConverter} from '@monorepo/core-lib';
+import {DateTime} from 'luxon';
+import {BioxNode} from '../global/biox-connection.class';
 
 
 /**
  * Executed or ready to be executed process of a job
  */
 @JsonObject('BioxJob')
-export class BioxJob extends LabBaseEntity {
+export class BioxJob extends BioxNode {
 
   // python class link
   @JsonProperty('type', String, true)
   type: 'gws.model.Job' = null;
+
+  @JsonProperty('creation_datetime', ClLuxonConverter, true)
+  createdAt: DateTime = null;
 
   @JsonProperty('is_running', Boolean)
   isRunning: boolean = null;
@@ -42,6 +47,7 @@ export class BioxJob extends LabBaseEntity {
     job.experimentId = experimentId;
     job.parentJobId = parentJobId;
     job.config = BioxConfig.empty();
+    job.name = processable.name;
 
     return job;
   }

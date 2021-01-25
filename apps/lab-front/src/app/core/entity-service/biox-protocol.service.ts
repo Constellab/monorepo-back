@@ -1,20 +1,25 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
+import {FlApiWithCacheService, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {clRxjsDebug} from '@monorepo/core-lib';
 import {BioxProtocol, BioxProtocolDatasource} from '../model/global/biox-processable.class';
+import {map} from 'rxjs/operators';
+import {clRxjsDebug} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BioxProtocolService {
 
-  constructor(private apiService: FlApiService) {
+
+  constructor(private apiService: FlApiWithCacheService) {
   }
 
   public getProtocols(page: number, pageSize: number): Observable<FlPage<BioxProtocol>> {
     return this.apiService.get(`protocol/list`, BioxProtocol,
-      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize}).pipe(clRxjsDebug());
+      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize}).pipe(
+      map(protocols => this.initProtocolsPageConnections(protocols)),
+      clRxjsDebug()
+    );
   }
 
   public getProtocolsDatasource(): BioxProtocolDatasource {
@@ -23,6 +28,26 @@ export class BioxProtocolService {
 
   private getProtocolsMethod(): FlGetPageFunction<BioxProtocol> {
     return (page: number, pageSize: number): Observable<FlPage<BioxProtocol>> => this.getProtocols(page, pageSize);
+  }
+
+  public getProtocol(id: string): Observable<BioxProtocol> {
+    return this.apiService.getByIdWithCache(`protocol`, id, BioxProtocol).pipe(
+      map(protocol => this.initProtocolConnection(protocol))
+    );
+  }
+
+  private initProtocolsPageConnections(protocols: FlPage<BioxProtocol>): FlPage<BioxProtocol> {
+    this.initProtocolsConnections(protocols.objects);
+    return protocols;
+  }
+
+  private initProtocolsConnections(protocols: BioxProtocol[]): BioxProtocol[] {
+    return protocols.map(p => this.initProtocolConnection(p));
+  }
+
+  private initProtocolConnection(protocol: BioxProtocol): BioxProtocol {
+    protocol.data.graph.initConnectionsAndNodes();
+    return protocol;
   }
 
 }

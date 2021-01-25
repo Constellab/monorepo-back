@@ -2,15 +2,28 @@ import {WorkflowNode} from './workflow-node.class';
 import * as Drawflow from 'drawflow';
 import {ConnectionEvent} from 'drawflow';
 import {WorkflowConnection} from './workflow-connection.class';
+import {WorkflowLayer} from './workflow-layer.class';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-export class Workflow<T extends WorkflowNode<any>, H> {
+export class Workflow<T extends WorkflowNode<any>> {
 
   private readonly editor: Drawflow;
 
-  public readonly nodes: T[] = [];
+  private readonly layers: WorkflowLayer<T>[];
+  private currentLayer$: BehaviorSubject<WorkflowLayer<T>>;
+
+  private nodeGeneration: number = 0;
 
   constructor(private element: HTMLElement) {
     this.editor = new Drawflow(element);
+
+    // init layers
+    const currentLayer: WorkflowLayer<T> = new WorkflowLayer<T>(this.editor, 'Home', 'Experiment', null);
+    this.layers = [currentLayer];
+
+    // init subject
+    this.currentLayer$ = new BehaviorSubject<WorkflowLayer<T>>(currentLayer);
 
     this.editor.on('connectionCreated',
       (connection) => this.onConnectionCreated(connection));
@@ -19,6 +32,11 @@ export class Workflow<T extends WorkflowNode<any>, H> {
       (connection) => this.onConnectionRemoved(connection));
 
     this.editor.on('nodeRemoved', node => this.onNodeRemoved(node));
+  }
+
+
+  get currentLayer(): WorkflowLayer<T> {
+    return this.currentLayer$.value;
   }
 
 
@@ -32,26 +50,42 @@ export class Workflow<T extends WorkflowNode<any>, H> {
   }
 
   public addNode(node: T): void {
-    this.nodes.push(node);
-    const nodeId: number = this.editor.addNode(node.name,
-      node.nbInputs, node.nbOutputs, node.initialPosX,
-      node.initialPosY, '', {}, node.html, false);
-
-    // set the nodeId in workflow node
-    node.initNode(nodeId.toString(), (id: string) => this.editor.getNodeFromId(id));
-  }
-
-  public findNodeWithHTMLId(nodeId: string): T {
-    return this.nodes.find((node) => node.htmlId === nodeId);
+    this.currentLayer.addNode(node);
   }
 
   public findNodeWithId(nodeId: string): T {
-    return this.nodes.find((node) => node.nodeId === nodeId);
+    for (const layer of this.layers) {
+      const node = layer.findNodeWithId(nodeId);
+      if (node != null) {
+        return node;
+      }
+    }
+    return null;
   }
 
-  public addConnection(connection: WorkflowConnection<H>): void {
-    this.editor.addConnection(connection.outputNode.nodeId, connection.inputNode.nodeId,
-      connection.outputName, connection.inputName);
+  public findNodeWithName(nodeName: string): T {
+    for (const layer of this.layers) {
+      const node = layer.findNodeWithName(nodeName);
+      if (node != null) {
+        return node;
+      }
+    }
+    return null;
+  }
+
+  public findNode(predicate: (node: T) => boolean): T {
+    for (const layer of this.layers) {
+      const node = layer.findNode(predicate);
+      if (node != null) {
+        return node;
+      }
+    }
+    return null;
+  }
+
+
+  public addConnection(connection: WorkflowConnection<any>): void {
+    this.currentLayer.addConnection(connection);
   }
 
 
@@ -73,16 +107,52 @@ export class Workflow<T extends WorkflowNode<any>, H> {
   }
 
   private onNodeRemoved(nodeId: string): void {
-    // remove the node in the local array
-    const index: number = this.nodes.findIndex((node) => node.nodeId === nodeId);
-    if (index >= 0) {
-      this.nodes.splice(index, 1);
-    } else {
-      console.error('Couldn\'t find node with id ' + nodeId);
-    }
+    this.currentLayer$.value.onNodeRemoved(nodeId);
   }
 
-  public switchModule(): void {
-    this.editor.changeModule(this.editor.module === 'Home' ? 'test' : 'Home');
+  public selectLayer(layerId: string): void {
+    // do nothing if this is the current layer
+    if (this.currentLayer.id === layerId) {
+      return;
+    }
+
+    const layer: WorkflowLayer<T> = this.findLayerWithId(layerId);
+    if (!layerId) {
+      throw new Error(`The layer with id ${layerId} doesn't exist`);
+    }
+
+    this.editor.changeModule(layerId);
+    // update the current layer
+    this.currentLayer$.next(layer);
   }
+
+  public createSubLayerIfNotExists(layerId: string, name: string): void {
+    if (this.findLayerWithId(layerId) == null) {
+      this.editor.addModule(layerId);
+      this.layers.push(new WorkflowLayer<T>(this.editor, layerId, name, this.currentLayer));
+    }
+
+    this.selectLayer(layerId);
+  }
+
+  public hasLayer(layerId: string): boolean {
+    return this.findLayerWithId(layerId) != null;
+  }
+
+  // return the layer with the id
+  private findLayerWithId(layerId: string): WorkflowLayer<T> {
+    return this.layers.find(layer => layer.id === layerId);
+  }
+
+
+  public getCurrentLayerHierarchy(): Observable<WorkflowLayer<T>[]> {
+    return this.currentLayer$.asObservable().pipe(
+      map(layer => layer.getLayerHierarchy())
+    );
+  }
+
+  public generateNodeName(): string {
+    return `n${this.nodeGeneration++}`;
+  }
+
 }
