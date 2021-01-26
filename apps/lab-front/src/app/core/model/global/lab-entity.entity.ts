@@ -1,30 +1,28 @@
-import {JsonObject, JsonProperty} from 'json2typescript';
 import {FlEntity} from '@monorepo/front-core-lib';
-import {ClLuxonConverter} from '@monorepo/core-lib';
+import {ClLuxonTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
+import {Expose} from 'class-transformer';
 
 /**
  * Base entity for the lab entities
  */
-@JsonObject('LabEntity')
 export class LabEntity implements FlEntity {
 
-  @JsonProperty('uri', String, true)
-  id: string = null;
+  @Expose({name: 'uri'})
+  id: string;
 
 }
 
 /**
  * Base entity for the lab entities
  */
-@JsonObject('LabBaseEntity')
-export class LabBaseEntity extends LabEntity{
+export class LabBaseEntity extends LabEntity {
 
   // python class link
-  @JsonProperty('type', String, true)
-  type: string = null;
+  type: string;
 
-  @JsonProperty('creation_datetime', ClLuxonConverter, true)
-  createdAt: DateTime = null;
+  @Expose({name: 'creation_datetime'})
+  @ClLuxonTransform()
+  createdAt: DateTime;
 
 }

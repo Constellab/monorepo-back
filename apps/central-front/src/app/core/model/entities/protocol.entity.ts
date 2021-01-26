@@ -1,18 +1,14 @@
-import {JsonObject, JsonProperty} from 'json2typescript';
 import {BaseEntity} from './base-entity.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
-@JsonObject('Protocol')
 export class Protocol extends BaseEntity {
 
-  @JsonProperty('label', String)
-  label: string = null;
+  label: string;
 
-  @JsonProperty('json', String)
-  json: string = null;
+  json: string;
 
   getJsonProtocol(): any {
     if (!this.hasProtocol()) {

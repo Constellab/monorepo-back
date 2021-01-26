@@ -1,4 +1,3 @@
-import {JsonObject} from 'json2typescript';
 import {LabEntity} from './lab-entity.entity';
 
 // todo rename class and methods
@@ -18,7 +17,6 @@ export interface BioxConnection {
   to: BioxConnectionPart
 }
 
-@JsonObject('BioxNode')
 export abstract class BioxNode extends LabEntity {
 
   inputs: Record<string, BioxConnectionPart> = {};
@@ -51,7 +49,6 @@ export abstract class BioxNode extends LabEntity {
   }
 }
 
-@JsonObject('BioxConnectionManager')
 export abstract class BioxConnectionManager extends LabEntity {
 
   abstract getConnections(): BioxConnection[];
@@ -100,9 +97,9 @@ export abstract class BioxConnectionManager extends LabEntity {
   }
 
   // init the name of the nodes
-  private initNodeNames(): void{
+  private initNodeNames(): void {
     const nodes: Record<string, BioxNode> = this.getNodes();
-    for(const name of Object.keys(nodes)){
+    for (const name of Object.keys(nodes)) {
       nodes[name].name = name;
     }
   }

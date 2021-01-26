@@ -1,20 +1,18 @@
-import {Any, JsonConverter, JsonObject, JsonProperty} from 'json2typescript';
 import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
-import {ClCoreJsonConvert, ClRecordConverter} from '@monorepo/core-lib';
+import {ClCoreJsonConvert, ClDeserializeItem, ClRecordTransformOverride} from '@monorepo/core-lib';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {BioxConnection, BioxConnectionManager, BioxConnectionPart} from '../global/biox-connection.class';
 import {BioxProcessableBase} from './biox-processable-base.entity';
+import {Expose, Type} from 'class-transformer';
 
 ////////////////////////////////// LINK ///////////////////////////////////////
 
-@JsonObject('BioxLinkPart')
 export class BioxLinkPart implements BioxConnectionPart {
 
-  @JsonProperty('node', String)
-  nodeName: string = null;
+  @Expose({name: 'node'})
+  nodeName: string;
 
-  @JsonProperty('port', String)
-  port: string = null;
+  port: string;
 
   node: BioxProcessable;
 
@@ -36,53 +34,44 @@ export class BioxLinkPart implements BioxConnectionPart {
 
 }
 
-@JsonObject('BioxLink')
 export class BioxLink implements BioxConnection {
 
-  @JsonProperty('from', BioxLinkPart)
+  @Type(() => BioxLinkPart)
   from: BioxLinkPart = null;
 
-  @JsonProperty('to', BioxLinkPart)
+  @Type(() => BioxLinkPart)
   to: BioxLinkPart = null;
 }
 
 
 ////////////////////////////////// PROTOCOL ///////////////////////////////////////
 
-
 /**
- * Converter for the biox processable nodes
+ * Deserializer for the protocol graph node
  */
-@JsonConverter
-export class BioxProtocolGraphNodeConverter extends ClRecordConverter<BioxProcessable> {
-  deserializeItem(item: LabBaseEntity): BioxProcessable {
-    if (item.type === 'gws.model.Protocol') {
-      return ClCoreJsonConvert.deserializeObject(item, BioxProtocol);
-    } else {
-      return ClCoreJsonConvert.deserializeObject(item, BioxProcess);
-    }
+const deserializeGraphNode: ClDeserializeItem<BioxProcessable> = (item: LabBaseEntity): BioxProcessable => {
+  if (item.type === 'gws.model.Protocol') {
+    return ClCoreJsonConvert.deserializeObject(item, BioxProtocol);
+  } else {
+    return ClCoreJsonConvert.deserializeObject(item, BioxProcess);
   }
-}
+};
 
-@JsonObject('BioxProtocolGraph')
+
 export class BioxProtocolGraph extends BioxConnectionManager {
 
-  @JsonProperty('title', String, true)
-  title: any = null;
+  title: any;
 
-  @JsonProperty('interfaces', Any)
-  interfaces: Record<string, unknown> = null;
+  interfaces: Record<string, unknown>;
 
-  @JsonProperty('outerfaces', Any)
-  outerfaces: Record<string, unknown> = null;
+  outerfaces: Record<string, unknown>;
 
-  @JsonProperty('layout', Any)
-  layout: Record<string, unknown> = null;
+  layout: Record<string, unknown>;
 
-  @JsonProperty('links', [BioxLink])
-  links: BioxLink[] = null;
+  @Type(() => BioxLink)
+  links: BioxLink[];
 
-  @JsonProperty('nodes', BioxProtocolGraphNodeConverter)
+  @ClRecordTransformOverride(deserializeGraphNode)
   nodes: Record<string, BioxProcessable> = null;
 
   getNodesArray(): BioxProcessable[] {
@@ -100,28 +89,25 @@ export class BioxProtocolGraph extends BioxConnectionManager {
 
 }
 
-@JsonObject('BioxProtocolData')
 export class BioxProtocolData extends LabEntity {
-  @JsonProperty('input_specs', Any, true)
-  inputSpecs: any = null;
+  @Expose({name: 'input_specs'})
+  inputSpecs: any;
 
-  @JsonProperty('output_specs', Any, true)
-  outputSpecs: any = null;
+  @Expose({name: 'output_specs'})
+  outputSpecs: any;
 
   // protocol detail
-  @JsonProperty('graph', BioxProtocolGraph, true)
-  graph: BioxProtocolGraph = null;
+  @Type(() => BioxProtocolGraph)
+  graph: BioxProtocolGraph;
 }
 
-@JsonObject('BioxProtocol')
 export class BioxProtocol extends BioxProcessableBase {
 
   // python class link
-  @JsonProperty('type', String, true)
-  type: 'gws.model.Protocol' = null;
+  type: 'gws.model.Protocol';
 
-  @JsonProperty('data', BioxProtocolData, true)
-  data: BioxProtocolData = null;
+  @Type(() => BioxProtocolData)
+  data: BioxProtocolData;
 
   objectType: 'protocol' = 'protocol';
 
@@ -132,20 +118,15 @@ export type BioxProtocolDatasource = FlEntityPaginatedDatasource<BioxProtocol>;
 
 ////////////////////////////////// PROCESS ///////////////////////////////////////
 
-@JsonObject('BioxProcessData')
 export class BioxProcessData extends LabEntity {
 
-  @JsonProperty('title', String, true)
-  title: string = null;
+  title: string;
 
-  @JsonProperty('description', String, true)
-  description: string = null;
+  description: string;
 }
 
-@JsonObject('BioxProcess')
 export class BioxProcess extends BioxProcessableBase {
-
-  @JsonProperty('data', BioxProcessData, true)
+  @Type(() => BioxProcessData)
   data: BioxProcessData = null;
 
   objectType: 'process' = 'process';

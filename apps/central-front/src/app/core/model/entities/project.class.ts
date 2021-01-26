@@ -1,9 +1,9 @@
 import {BaseEntity} from './base-entity.class';
-import {JsonObject, JsonProperty} from 'json2typescript';
 import {StatusHistory} from './status-history.class';
 import {DateTime} from 'luxon';
-import {ClLuxonConverter} from '@monorepo/core-lib';
+import {ClLuxonTransform} from '@monorepo/core-lib';
 import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction} from '@monorepo/front-core-lib';
+import {Type} from 'class-transformer';
 
 export enum ProjectStatus {
   ACTIVE = 'ACTIVE',
@@ -11,7 +11,6 @@ export enum ProjectStatus {
   ARCHIVED = 'ARCHIVED'
 }
 
-@JsonObject('ProjectStatusHistory')
 export class ProjectStatusHistory extends StatusHistory<ProjectStatus> {
   getStatusClassColor(mode: 'background' | 'text'): string {
     return getProjectStatusColorClass(this.status, mode);
@@ -23,26 +22,22 @@ export class ProjectStatusHistory extends StatusHistory<ProjectStatus> {
 }
 
 
-@JsonObject('Project')
 export class Project extends BaseEntity {
 
-  @JsonProperty('code', String)
-  code: string = null;
+  code: string;
 
-  @JsonProperty('title', String)
-  title: string = null;
+  title: string;
 
-  @JsonProperty('description', String, true)
-  description: string = null;
+  description: string;
 
-  @JsonProperty('startingDate', ClLuxonConverter)
-  startingDate: DateTime = null;
+  @ClLuxonTransform()
+  startingDate: DateTime;
 
-  @JsonProperty('endingDate', ClLuxonConverter, true)
-  endingDate: DateTime = null;
+  @ClLuxonTransform()
+  endingDate: DateTime;
 
-  @JsonProperty('currentStatus', ProjectStatusHistory)
-  currentStatus: ProjectStatusHistory = null;
+  @Type(() => ProjectStatusHistory)
+  currentStatus: ProjectStatusHistory;
 }
 
 export type ProjectDatasource = FlEntityPaginatedDatasource<Project>;

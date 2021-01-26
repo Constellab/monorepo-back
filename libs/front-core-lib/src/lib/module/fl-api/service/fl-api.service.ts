@@ -28,7 +28,7 @@ export class FlApiService {
    * @param route the route for the api call
    * @param id of the object to get. The id is added to at the end of the request with a '/'.
    * Can be add²  ed in the anywhere in the request with the string '\{id\}'
-   * @param classReference if not null the response is converted to the classReference (using json2typescript)
+   * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
   public getById(route: string, id: string, classReference ?: new() => any,
@@ -42,7 +42,7 @@ export class FlApiService {
   /**
    * HTTP GET. Basic get request.
    * @param route the route for the api call
-   * @param classReference if not null the response is converted to the classReference (using json2typescript)
+   * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
   public get(route: string, classReference ?: new() => any,
@@ -57,7 +57,7 @@ export class FlApiService {
    * HTTP PUT. Call a put request
    * @param route the route for the api call
    * @param body object to update
-   * @param classReference if not null the response is converted to the classReference (using json2typescript)
+   * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
   public put(route: string, body: any, classReference ?: new() => any,
@@ -72,7 +72,7 @@ export class FlApiService {
    * HTTP PATCH. Call a patch request
    * @param route the route for the api call
    * @param body object to patch
-   * @param classReference if not null the response is converted to the classReference (using json2typescript)
+   * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
   public patch(route: string, body: any, classReference ?: new() => any,
@@ -87,7 +87,7 @@ export class FlApiService {
    * HTTP POST. Call a post request.
    * @param route the route for the api call
    * @param body object to post
-   * @param classReference if not null the response is converted to the classReference (using json2typescript)
+   * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
   public post(route: string, body: any, classReference ?: new() => any,
@@ -103,7 +103,7 @@ export class FlApiService {
    * @param route the route for the api call
    * @param id of the object to delete. The id is added to at the end of the request with a '/'.
    * Can be added in the anywhere in the request with the string '\{id\}'
-   * @param classReference if not null the response is converted to the classReference (using json2typescript)
+   * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
   public deleteById(route: string, id: string, classReference ?: new() => any,
@@ -117,7 +117,7 @@ export class FlApiService {
   /**
    * HTTP DELETE. Call a delete request.
    * @param route the route for the api call
-   * @param classReference if not null the response is converted to the classReference (using json2typescript)
+   * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
   public delete(route: string, classReference ?: new() => any,
@@ -133,7 +133,7 @@ export class FlApiService {
    * @param route the route for the api call
    * @param defaultError the default error if the api does not return an explicit error
    * @param filename name of the file of direct download is true
-   * @param directDownload if true, the file is directly donwloaded on users's computer
+   * @param directDownload if true, the file is directly downloaded on users' computer
    */
   public downloadFile(route: string, defaultError ?: string, filename ?: string,
                       directDownload: boolean = true): Observable<Blob> {
@@ -149,7 +149,7 @@ export class FlApiService {
    * @param body object to post
    * @param defaultError the default error if the api does not return an explicit error
    * @param filename name of the file of direct download is true
-   * @param directDownload if true, the file is directly downloaded on users's computer
+   * @param directDownload if true, the file is directly downloaded on users' computer
    */
   public downloadFilePost(route: string, body: any, defaultError ?: string, filename ?: string,
                           directDownload: boolean = true): Observable<Blob> {
@@ -160,7 +160,7 @@ export class FlApiService {
   }
 
   /**
-   * Deserialize an object or array using json2typescript package if the input are not null
+   * Deserialize an object or array using json converter package if the input are not null
    * @param json json object
    * @param classReference class reference of object
    * @param isPaginated if true the result is considered as a {@link FlPage}

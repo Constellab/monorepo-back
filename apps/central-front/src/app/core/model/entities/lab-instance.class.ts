@@ -1,17 +1,16 @@
-import {JsonObject, JsonProperty} from 'json2typescript';
 import {BaseEntity} from './base-entity.class';
 import {Lab} from './lab.class';
 import {StatusHistory} from './status-history.class';
 import {ServerInfo} from './server-info.class';
 import {User} from './user.class';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {Type} from 'class-transformer';
 
 export enum LabInstanceStatus {
   RUNNING = 'RUNNING',
   STOPPED = 'STOPPED'
 }
 
-@JsonObject('LabInstanceStatusHistory')
 export class LabInstanceStatusHistory extends StatusHistory<LabInstanceStatus> {
   getStatusClassColor(mode: 'background' | 'text'): string {
     return getLabInstanceStatusColorClass(this.status, mode);
@@ -25,31 +24,27 @@ export class LabInstanceStatusHistory extends StatusHistory<LabInstanceStatus> {
 /**
  * A lab instance is a running lab
  */
-@JsonObject('LabInstance')
 export class LabInstance extends BaseEntity {
 
-  @JsonProperty('lab', Lab)
+  @Type(() => Lab)
   lab: Lab = null;
 
-  @JsonProperty('owner', User, true)
+  @Type(() => User)
   owner: User = null;
 
-  @JsonProperty('currentStatus', LabInstanceStatusHistory)
+  @Type(() => LabInstanceStatusHistory)
   currentStatus: LabInstanceStatusHistory = null;
 
-  @JsonProperty('ip', String)
-  ip: string = null;
+  ip: string;
 
   // ip v6 of the server
-  @JsonProperty('ipv6', String, true)
-  ipv6: string = null;
+  ipv6: string;
 
   // ip v6 of the server
-  @JsonProperty('url', String)
-  url: string = null;
+  url: string;
 
-  @JsonProperty('serverInfo', ServerInfo)
-  serverInfo: ServerInfo = null;
+  @Type(() => ServerInfo)
+  serverInfo: ServerInfo;
 
   public isRunning(): boolean {
     return this.currentStatus.status === 'RUNNING';
@@ -86,12 +81,10 @@ export function getLabInstanceStatusIcon(status: LabInstanceStatus): string {
  * Return by the lab instance login
  * Lab instance object with single use token to logon lab
  */
-@JsonObject('LabInstanceToken')
 export class LabInstanceToken {
 
-  @JsonProperty('labInstance', LabInstance)
-  labInstance: LabInstance = null;
+  @Type(() => LabInstance)
+  labInstance: LabInstance;
 
-  @JsonProperty('token', String)
   token: string = null;
 }

@@ -1,9 +1,9 @@
 import {BaseEntity} from './base-entity.class';
-import {JsonObject, JsonProperty} from 'json2typescript';
 import {LabInstance} from './lab-instance.class';
 import {StatusHistory} from './status-history.class';
 import {Protocol} from './protocol.entity';
 import {FlGetStatusClassColorFunction, FlGetStatusIconFunction} from '@monorepo/front-core-lib';
+import {Type} from 'class-transformer';
 
 export enum ExperimentStatus {
   DRAFT = 'DRAFT',
@@ -12,7 +12,6 @@ export enum ExperimentStatus {
   ARCHIVED = 'ARCHIVED'
 }
 
-@JsonObject('ExperimentStatusHistory')
 export class ExperimentStatusHistory extends StatusHistory<ExperimentStatus> {
   getStatusClassColor(mode: 'background' | 'text'): string {
     return getExperimentStatusColorClass(this.status, mode);
@@ -23,23 +22,20 @@ export class ExperimentStatusHistory extends StatusHistory<ExperimentStatus> {
   }
 }
 
-@JsonObject('Experiment')
 export class Experiment extends BaseEntity {
 
-  @JsonProperty('label', String)
-  label: string = null;
+  label: string;
 
-  @JsonProperty('description', String, true)
-  description: string = null;
+  description: string;
 
-  @JsonProperty('protocol', Protocol, true)
-  protocol: Protocol = null;
+  @Type(() => Protocol)
+  protocol: Protocol;
 
-  @JsonProperty('labInstance', LabInstance)
-  labInstance: LabInstance = null;
+  @Type(() => LabInstance)
+  labInstance: LabInstance;
 
-  @JsonProperty('currentStatus', ExperimentStatusHistory)
-  currentStatus: ExperimentStatusHistory = null;
+  @Type(() => ExperimentStatusHistory)
+  currentStatus: ExperimentStatusHistory;
 
   hasProtocol(): boolean {
     return this.protocol?.hasProtocol() ?? false;

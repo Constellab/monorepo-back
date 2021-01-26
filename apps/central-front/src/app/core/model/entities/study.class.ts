@@ -1,7 +1,7 @@
-import {JsonObject, JsonProperty} from 'json2typescript';
 import {BaseEntity} from './base-entity.class';
 import {StatusHistory} from './status-history.class';
 import {FlGetStatusClassColorFunction, FlGetStatusIconFunction} from '@monorepo/front-core-lib';
+import {Type} from 'class-transformer';
 
 export enum StudyStatus {
   STARTED = 'STARTED',
@@ -9,7 +9,6 @@ export enum StudyStatus {
   ARCHIVED = 'ARCHIVED'
 }
 
-@JsonObject('StudyStatusHistory')
 export class StudyStatusHistory extends StatusHistory<StudyStatus> {
   getStatusClassColor(mode: 'background' | 'text'): string {
     return getStudyStatusColorClass(this.status, mode);
@@ -20,16 +19,13 @@ export class StudyStatusHistory extends StatusHistory<StudyStatus> {
   }
 }
 
-@JsonObject('Study')
 export class Study extends BaseEntity {
-  @JsonProperty('title', String)
-  title: string = null;
+  title: string;
 
-  @JsonProperty('description', String, true)
-  description: string = null;
+  description: string;
 
-  @JsonProperty('currentStatus', StudyStatusHistory)
-  currentStatus: StudyStatusHistory = null;
+  @Type(() => StudyStatusHistory)
+  currentStatus: StudyStatusHistory;
 }
 
 export const getStudyStatusColorClass: FlGetStatusClassColorFunction = (status: StudyStatus,

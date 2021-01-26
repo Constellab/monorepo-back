@@ -1,25 +1,24 @@
-import {Any, JsonObject, JsonProperty} from 'json2typescript';
-import {ClLuxonConverter} from '@monorepo/core-lib';
+import {ClLuxonTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {BioxNode} from '../global/biox-connection.class';
+import {Expose} from 'class-transformer';
 
-@JsonObject('BioxProcessableBase')
 export class BioxProcessableBase extends BioxNode {
 
-  @JsonProperty('input_specs', Any, true)
+  @Expose({name: 'input_specs'})
   inputSpecs: Record<string, string[]> = null;
 
-  @JsonProperty('output_specs', Any, true)
+  @Expose({name: 'output_specs'})
   outputSpecs: Record<string, string[]> = null;
 
-  @JsonProperty('config_specs', Any, true)
-  configSpecs: any = null;
+  @Expose({name: 'config_specs'})
+  configSpecs: any;
 
   // python class link
-  @JsonProperty('type', String, true)
-  type: string = null;
+  type: string;
 
-  @JsonProperty('creation_datetime', ClLuxonConverter, true)
+  @Expose({name: 'creation_datetime'})
+  @ClLuxonTransform()
   createdAt: DateTime = null;
 
   public getInputSpecs(): any {

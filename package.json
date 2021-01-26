@@ -84,7 +84,6 @@
     "document-register-element": "^1.7.2",
     "drawflow": "0.0.33",
     "form-data": "^3.0.0",
-    "json2typescript": "^1.4.1",
     "jsoneditor": "^9.1.4",
     "luxon": "^1.25.0",
     "mysql": "^2.18.1",

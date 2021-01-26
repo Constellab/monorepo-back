@@ -44,7 +44,7 @@
               }
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": ["json2typescript"]
+            "allowedCommonJsDependencies": ["class-transformer"]
           },
           "configurations": {
             "dev": {
@@ -234,7 +234,7 @@
               }
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": ["json2typescript"]
+            "allowedCommonJsDependencies": ["class-transformer"]
           },
           "configurations": {
             "production": {

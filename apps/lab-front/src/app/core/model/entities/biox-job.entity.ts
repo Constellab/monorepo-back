@@ -1,40 +1,40 @@
-import {JsonObject, JsonProperty} from 'json2typescript';
 import {BioxConfig} from './biox-config.entity';
 import {BioxProcessableBase} from './biox-processable-base.entity';
-import {ClLuxonConverter} from '@monorepo/core-lib';
+import {ClLuxonTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {BioxNode} from '../global/biox-connection.class';
+import {Expose, Type} from 'class-transformer';
 
 
 /**
  * Executed or ready to be executed process of a job
  */
-@JsonObject('BioxJob')
 export class BioxJob extends BioxNode {
 
   // python class link
-  @JsonProperty('type', String, true)
-  type: 'gws.model.Job' = null;
+  type: 'gws.model.Job';
 
-  @JsonProperty('creation_datetime', ClLuxonConverter, true)
-  createdAt: DateTime = null;
+  @Expose({name: 'creation_datetime'})
+  @ClLuxonTransform()
+  createdAt: DateTime;
 
-  @JsonProperty('is_running', Boolean)
-  isRunning: boolean = null;
+  @Expose({name: 'is_running'})
+  isRunning: boolean;
 
-  @JsonProperty('is_finished', Boolean)
-  isFinished: boolean = null;
+  @Expose({name: 'is_finished'})
+  isFinished: boolean;
 
-  @JsonProperty('experiment_uri', String, true)
-  experimentId: string = null;
+  @Expose({name: 'experiment_uri'})
 
-  @JsonProperty('parent_job_uri', String, true)
+  experimentId: string;
+
+  @Expose({name: 'parent_job_uri'})
   parentJobId: string = null;
 
-  @JsonProperty('config', BioxConfig)
+  @Type(() => BioxConfig)
   config: BioxConfig = null;
 
-  @JsonProperty('process', BioxProcessableBase)
+  @Type(() => BioxProcessableBase)
   process: BioxProcessableBase = null;
 
   public static fromProcessable(processable: BioxProcessableBase,

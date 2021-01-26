@@ -1,42 +1,27 @@
 import {LabEntity} from '../global/lab-entity.entity';
-import {Any, JsonConverter, JsonObject, JsonProperty} from 'json2typescript';
 import {BioxConfig} from './biox-config.entity';
 import {BioxJob} from './biox-job.entity';
-import {ClCoreJsonConvert, ClLuxonConverter, ClRecordConverter} from '@monorepo/core-lib';
+import {ClLuxonTransform, ClRecordTransform} from '@monorepo/core-lib';
 import {BioxConnection, BioxConnectionManager, BioxConnectionPart} from '../global/biox-connection.class';
 import {DateTime} from 'luxon';
 import {BioxProcessableBase} from './biox-processable-base.entity';
+import {Expose, Type} from 'class-transformer';
 
 
-/**
- * Converter for the flow jobs
- */
-@JsonConverter
-export class BioxJobsConverter extends ClRecordConverter<BioxJob> {
-
-  deserializeItem(item: any): BioxJob {
-    return ClCoreJsonConvert.deserializeObject(item, BioxJob);
-  }
-}
-
-@JsonObject('BioxExperimentFlowProcess')
 export class BioxExperimentFlowProcess extends LabEntity {
-  @JsonProperty('port', String)
-  port: string = null;
+  port: string;
 
-  @JsonProperty('instance_name', String)
-  instanceName: string = null;
-
+  @Expose({name: 'instance_name'})
+  instanceName: string;
 }
 
-@JsonObject('BioxExperimentFlowJob')
 export class BioxExperimentFlowJob implements BioxConnectionPart {
 
-  @JsonProperty('job_uri', String)
-  jobId: string = null;
+  @Expose({name: 'job_uri'})
+  jobId: string;
 
-  @JsonProperty('process', BioxExperimentFlowProcess)
-  process: BioxExperimentFlowProcess = null;
+  @Type(() => BioxExperimentFlowProcess)
+  process: BioxExperimentFlowProcess;
 
   job: BioxJob;
 
@@ -61,58 +46,53 @@ export class BioxExperimentFlowJob implements BioxConnectionPart {
 /**
  * Object that contains the resources passed between process
  */
-@JsonObject('BioxExperimentFlowStep')
 export class BioxExperimentFlowStep implements BioxConnection {
 
-  @JsonProperty('from', BioxExperimentFlowJob)
-  from: BioxExperimentFlowJob = null;
+  @Type(() => BioxExperimentFlowJob)
+  from: BioxExperimentFlowJob;
 
-  @JsonProperty('to', BioxExperimentFlowJob)
-  to: BioxExperimentFlowJob = null;
+  @Type(() => BioxExperimentFlowJob)
+  to: BioxExperimentFlowJob;
 
-  @JsonProperty('resource_uri', String)
-  resourceId: boolean = null;
+  @Expose({name: 'resource_uri'})
+  resourceId: boolean;
 }
 
 
-@JsonObject('BioxExperimentFlow')
 export class BioxExperimentFlow extends BioxConnectionManager {
 
-  @JsonProperty('experiment_uri', String, true)
+  @Expose({name: 'experiment_uri'})
   experimentId: string = null;
 
-  @JsonProperty('is_running', Boolean)
+  @Expose({name: 'is_running'})
   isRunning: boolean = null;
 
-  @JsonProperty('is_finished', Boolean)
+  @Expose({name: 'is_finished'})
   isFinished: boolean = null;
 
-  @JsonProperty('config', BioxConfig)
+  @Type(() => BioxConfig)
   config: BioxConfig = null;
 
-  @JsonProperty('process', BioxProcessableBase)
+  @Type(() => BioxProcessableBase)
   process: BioxProcessableBase = null;
 
-  @JsonProperty('jobs', BioxJobsConverter)
+  @ClRecordTransform(BioxJob)
   jobs: Record<string, BioxJob> = null;
 
-  @JsonProperty('flows', [BioxExperimentFlowStep])
+  @Type(() => BioxExperimentFlowStep)
   flows: BioxExperimentFlowStep[] = null;
 
-  @JsonProperty('interfaces', Any)
   interfaces: Record<string, unknown> = null;
 
-  @JsonProperty('outerfaces', Any)
   outerfaces: Record<string, unknown> = null;
 
-  @JsonProperty('layout', Any)
   layout: Record<string, unknown> = null;
 
   // python class link
-  @JsonProperty('type', String, true)
   type: string = null;
 
-  @JsonProperty('creation_datetime', ClLuxonConverter, true)
+  @Expose({name: 'creation_datetime'})
+  @ClLuxonTransform()
   createdAt: DateTime = null;
 
   getConnections(): BioxConnection[] {

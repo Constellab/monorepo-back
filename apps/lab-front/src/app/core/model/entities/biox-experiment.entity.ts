@@ -1,41 +1,36 @@
-import {Any, JsonObject, JsonProperty} from 'json2typescript';
 import {LabEntity} from '../global/lab-entity.entity';
-import {ClLuxonConverter} from '@monorepo/core-lib';
+import {ClLuxonTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
+import {Expose, Type} from 'class-transformer';
 
 
-@JsonObject('BioxExperimentData')
 export class BioxExperimentData extends LabEntity {
 
-  @JsonProperty('title', String, true)
-  title: string = null;
+  title: string;
 
-  @JsonProperty('description', String, true)
-  description: string = null;
+  description: string;
 }
 
-@JsonObject('BioxExperiment')
 export class BioxExperiment extends LabEntity implements FlStatus {
 
   // python class link
-  @JsonProperty('type', String, true)
-  type: string = null;
+  type: string;
 
-  @JsonProperty('creation_datetime', ClLuxonConverter, true)
-  createdAt: DateTime = null;
+  @Expose({name: 'creation_datetime'})
+  @ClLuxonTransform()
+  createdAt: DateTime;
 
-  @JsonProperty('protocol_job_uri', String, true)
-  protocolJobId: string = null;
+  @Expose({name: 'protocol_job_uri'})
+  protocolJobId: string;
 
-  @JsonProperty('score', Any, true)
-  score: any = null;
+  score: any;
 
-  @JsonProperty('is_in_progress', Boolean)
-  isInProgress: boolean = null;
+  @Expose({name: 'is_in_progress'})
+  isInProgress: boolean;
 
-  @JsonProperty('data', BioxExperimentData, true)
-  data: BioxExperimentData = null;
+  @Type(() => BioxExperimentData)
+  data: BioxExperimentData;
 
   getStatusClassColor(mode: 'background' | 'text'): string {
     return getBioxExperimentStatusColorClass(this.isInProgress, mode);
@@ -55,7 +50,7 @@ export class BioxExperiment extends LabEntity implements FlStatus {
 export type BioxExperimentDatasource = FlEntityPaginatedDatasource<BioxExperiment>;
 
 const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: boolean,
-                                                                         mode: 'background' | 'text' = 'background'): string => {
+                                                                          mode: 'background' | 'text' = 'background'): string => {
   // if is in progress
   if (status) {
     return mode === 'background' ? 'g-primary-background' : 'g-primary-text';

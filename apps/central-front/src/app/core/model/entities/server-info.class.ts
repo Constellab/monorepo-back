@@ -1,4 +1,3 @@
-import {JsonObject, JsonProperty} from 'json2typescript';
 import {Entity} from './entity.entity';
 
 /**
@@ -17,43 +16,33 @@ export enum DiskType {
 }
 
 
-@JsonObject('ServerInfo')
 export class ServerInfo extends Entity {
 
   // host like OVH, AWS...
-  @JsonProperty('host', String)
-  host: ServerHost = null;
+  host: ServerHost;
 
   // the ram of the server in MB
-  @JsonProperty('name', String)
-  name: string = null;
+  name: string;
 
   // the ram of the server in MB
-  @JsonProperty('ram', Number)
-  ram: number = null;
+  ram: number;
 
   // Disk size of the server in GB
-  @JsonProperty('diskSpace', Number)
-  diskSpace: number = null;
+  diskSpace: number;
 
   // type of disk, SSD or HDD
-  @JsonProperty('diskType', String)
-  diskType: DiskType = null;
+  diskType: DiskType;
 
   // number of CPU
-  @JsonProperty('cpuCount', Number)
-  cpuCount: number = null;
+  cpuCount: number;
 
   // info about the cpu
-  @JsonProperty('cpuType', String)
-  cpuType: string = null;
+  cpuType: string;
 
   // number of GPU
-  @JsonProperty('gpuType', Number, true)
-  gpuCount: number = null;
+  gpuCount: number;
 
   // info about the GPU
-  @JsonProperty('gpuType', String, true)
-  gpuType: string = null;
+  gpuType: string;
 
 }

@@ -36,7 +36,7 @@ export class FlApiWithCacheService extends FlApiService implements FlCleanableSe
    * @param route the route for the api call
    * @param id of the object to get. The id is added to at the end of the request with a '/'.
    * Can be added in the anywhere in the request with the string '\{id\}'
-   * @param classReference if not null the response is converted to the classReference (using json2typescript)
+   * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
   public getByIdWithCache(route: string, id: string, classReference ?: new() => any,
@@ -53,7 +53,7 @@ export class FlApiWithCacheService extends FlApiService implements FlCleanableSe
   /**
    * HTTP GET. Basic get request where the result is cached.
    * @param route the route for the api call
-   * @param classReference if not null the response is converted to the classReference (using json2typescript)
+   * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
   public getWithCache(route: string, classReference ?: new() => any,

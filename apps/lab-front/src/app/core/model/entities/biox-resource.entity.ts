@@ -1,15 +1,13 @@
 import {LabBaseEntity} from '../global/lab-entity.entity';
-import {Any, JsonObject, JsonProperty} from 'json2typescript';
+import {Expose} from 'class-transformer';
 
-@JsonObject('BioxResource')
-export class BioxResource extends LabBaseEntity{
+export class BioxResource extends LabBaseEntity {
 
-  @JsonProperty('job_uri', String)
+  @Expose({name: 'job_uri'})
   jobId: string = null;
 
-  @JsonProperty('experiment_uri', String)
+  @Expose({name: 'experiment_uri'})
   experimentId: string = null;
 
-  @JsonProperty('data', Any)
   data: Record<string, any> = null;
 }

@@ -1,7 +1,6 @@
-import {JsonObject, JsonProperty} from 'json2typescript';
 import {SupportedLanguage} from '../global/supported-language.class';
 import {DateTime} from 'luxon';
-import {ClLuxonConverter} from '@monorepo/core-lib';
+import {ClLuxonTransform} from '@monorepo/core-lib';
 import {Entity} from './entity.entity';
 
 export enum UserCategory {
@@ -21,34 +20,25 @@ export interface NewUser {
   repeatPassword: string;
 }
 
-@JsonObject('User')
 export class User extends Entity {
-  @JsonProperty('firstname', String)
-  firstname: string = null;
+  firstname: string;
 
-  @JsonProperty('lastname', String)
-  lastname: string = null;
+  lastname: string;
 
-  @JsonProperty('email', String)
-  email: string = null;
+  email: string;
 
-  @JsonProperty('category', String)
-  category: UserCategory = null;
+  category: UserCategory;
 
-  @JsonProperty('phone', String)
-  phone: string = null;
+  phone: string;
 
-  @JsonProperty('job', String)
-  job: string = null;
+  job: string;
 
-  @JsonProperty('lang', String)
-  lang: SupportedLanguage = null;
+  lang: SupportedLanguage;
 
-  @JsonProperty('photo', String, true)
-  photo: string = null;
+  photo: string;
 
-  @JsonProperty('createdAt', ClLuxonConverter)
-  createdAt: DateTime = null;
+  @ClLuxonTransform()
+  createdAt: DateTime;
 
   get fullname(): string {
     return (this.firstname || '') + ' ' + (this.lastname || '');

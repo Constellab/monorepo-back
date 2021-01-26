@@ -1,18 +1,14 @@
-import {Any, JsonObject, JsonProperty} from 'json2typescript';
 import {LabEntity} from '../global/lab-entity.entity';
 
 /**
  * Config object for a job
  */
-@JsonObject('BioxConfig')
 export class BioxConfig extends LabEntity {
 
   // python class link
-  @JsonProperty('type', String, true)
-  type: 'gws.model.Config' = null;
+  type: 'gws.model.Config';
 
-  @JsonProperty('params', Any)
-  params: Record<string, unknown> = null;
+  params: Record<string, unknown>;
 
   public static empty(): BioxConfig {
     const config = new BioxConfig();

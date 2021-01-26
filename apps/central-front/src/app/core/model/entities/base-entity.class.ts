@@ -1,25 +1,21 @@
-import {JsonObject, JsonProperty} from 'json2typescript';
 import {User} from './user.class';
 import {DateTime} from 'luxon';
-import {ClLuxonConverter} from '@monorepo/core-lib';
+import {ClLuxonTransform} from '@monorepo/core-lib';
 import {Entity} from './entity.entity';
+import {Type} from 'class-transformer';
 
-@JsonObject('BaseEntity')
 export class BaseEntity extends Entity {
 
-  @JsonProperty('id', String, true)
-  id: string = null;
+  @ClLuxonTransform()
+  createdAt: DateTime;
 
-  @JsonProperty('createdAt', ClLuxonConverter, true)
-  createdAt: DateTime = null;
+  @Type(() => User)
+  createdBy: User;
 
-  @JsonProperty('createdBy', User, true)
-  createdBy: User = null;
+  @ClLuxonTransform()
+  lastModifiedAt ?: DateTime;
 
-  @JsonProperty('lastModifiedAt', ClLuxonConverter, true)
-  lastModifiedAt ?: DateTime = null;
-
-  @JsonProperty('lastModifiedBy', User, true)
-  lastModifiedBy ?: User = null;
+  @Type(() => User)
+  lastModifiedBy ?: User;
 
 }
