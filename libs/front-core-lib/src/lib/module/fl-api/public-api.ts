@@ -10,3 +10,4 @@ export * from './service/fl-api-with-cache.service';
 export * from './model/fl-api-module.config.class';
 export * from './model/fl-http-option.class';
 export * from './model/fl-server-error.class';
+export * from './model/fl-service.class';

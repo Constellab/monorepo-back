@@ -56,6 +56,10 @@ export class ClCachedObservable<T> {
     }
   }
 
+  toPromise(): Promise<T> {
+    return this.getObs().toPromise();
+  }
+
 
   /**
    * create the subject, subscribe to intern observable and return subject

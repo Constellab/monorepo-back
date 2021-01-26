@@ -1,12 +1,13 @@
 import {Observable} from 'rxjs';
 import {FlApiService} from './fl-api.service';
+import {FlGetById} from '../model/fl-service.class';
 
 /**
  * Abstract CRUD service for basic api calls
  * T is the type of the object returns by the api route
  * K is an optional type if the object send for create or update are different than T
  */
-export abstract class FlApiCrudService<T, K = T> {
+export abstract class FlApiCrudService<T, K = T> implements FlGetById<T>{
 
   /**
    * @param route route for the api calls

@@ -6,6 +6,9 @@ import {BioxConnection, BioxConnectionManager, BioxConnectionPart} from '../glob
 import {DateTime} from 'luxon';
 import {BioxProcessableBase} from './biox-processable-base.entity';
 import {Expose, Type} from 'class-transformer';
+import {BioxResource} from './biox-resource.entity';
+import {FlLazyProperty, FlLazyPropertyTransform} from '@monorepo/front-core-lib';
+import {BioxResourceService} from '../../entity-service/biox-resource.service';
 
 
 export class BioxExperimentFlowProcess extends LabEntity {
@@ -55,7 +58,8 @@ export class BioxExperimentFlowStep implements BioxConnection {
   to: BioxExperimentFlowJob;
 
   @Expose({name: 'resource_uri'})
-  resourceId: boolean;
+  @FlLazyPropertyTransform(BioxResourceService)
+  resource: FlLazyProperty<BioxResource>;
 }
 
 

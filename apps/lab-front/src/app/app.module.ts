@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {Injector, NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
 import {RouterModule} from '@angular/router';
@@ -7,7 +7,14 @@ import {MainModule} from './main/main.module';
 import {CoreModule} from './core/core.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
-import {FlApiModule, FlDialogModule, FlSnackBarModule, FlSvgIconModule, FlTranslateModule} from '@monorepo/front-core-lib';
+import {
+  FlApiModule,
+  FlDialogModule,
+  flSetRootInjector,
+  FlSnackBarModule,
+  FlSvgIconModule,
+  FlTranslateModule
+} from '@monorepo/front-core-lib';
 import {svgIcons} from './core/utils/svg-icon-config';
 import {apiModuleConfig} from './core/utils/api-module.config';
 
@@ -49,4 +56,9 @@ import {apiModuleConfig} from './core/utils/api-module.config';
   bootstrap: [AppComponent],
 })
 export class AppModule {
+  constructor(injector: Injector) {
+    // set the root injector in a variable
+    flSetRootInjector(injector);
+  }
+
 }
