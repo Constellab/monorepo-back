@@ -98,14 +98,12 @@ export class WorkflowLayer<T extends WorkflowNode<any>> {
   ///////////////////////// OTHER //////////////////////////
 
   public getLayerHierarchy(): WorkflowLayer<T>[] {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    let layer: WorkflowLayer<T> = this;
-    const hierarchy: WorkflowLayer<T>[] = [layer];
-    while (layer.parentLayer != null) {
-      layer = layer.parentLayer;
-      hierarchy.unshift(layer);
+    const layers: WorkflowLayer<T>[] = [this];
+    if(this.parentLayer == null){
+      return layers;
     }
-    return hierarchy;
+
+    return [...this.parentLayer.getLayerHierarchy(), ...layers];
   }
 
 

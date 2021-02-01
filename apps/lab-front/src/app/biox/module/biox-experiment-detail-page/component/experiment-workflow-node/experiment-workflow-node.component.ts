@@ -35,7 +35,7 @@ export class ExperimentWorkflowNodeComponent implements OnInit {
   }
 
   zoomInProtocol(): void {
-    return this.workflowManager.selectLayer(this.node.object.process.id);
+    return this.workflowManager.selectLayer(this.node.nodeId);
   }
 
 }

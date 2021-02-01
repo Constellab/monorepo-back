@@ -127,14 +127,12 @@ export class Workflow<T extends WorkflowNode<any>> {
     return null;
   }
 
-  public findNodeWithName(nodeName: string): T {
-    for (const layer of this.layers) {
-      const node = layer.findNodeWithName(nodeName);
-      if (node != null) {
-        return node;
-      }
-    }
-    return null;
+  /**
+   * Find (in the current layer) the node with the given name
+   * We must search in current layer because in multiple layer we can have the same same
+   */
+  public findNodeWithNameInCurrentLayer(nodeName: string): T {
+    return this.currentLayer.findNodeWithName(nodeName);
   }
 
   public findNode(predicate: (node: T) => boolean): T {

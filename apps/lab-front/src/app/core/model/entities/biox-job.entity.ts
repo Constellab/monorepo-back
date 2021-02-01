@@ -36,18 +36,4 @@ export class BioxJob extends BioxNode {
   @Type(() => BioxProcessableBase)
   process: BioxProcessableBase = null;
 
-  public static fromProcessable(processable: BioxProcessableBase,
-                                experimentId: string, parentJobId: string): BioxJob {
-    const job: BioxJob = new BioxJob();
-    job.type = 'gws.model.Job';
-    job.isRunning = false;
-    job.isFinished = false;
-    job.process = processable;
-    job.experimentId = experimentId;
-    job.parentJobId = parentJobId;
-    job.config = BioxConfig.empty();
-    job.name = processable.name;
-
-    return job;
-  }
 }

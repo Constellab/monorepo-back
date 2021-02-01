@@ -44,6 +44,7 @@ export class BioxExperimentFlowJob implements BioxConnectionPart {
     this.job = node;
   }
 
+
 }
 
 /**
@@ -60,6 +61,7 @@ export class BioxExperimentFlowStep implements BioxConnection {
   @Expose({name: 'resource_uri'})
   @FlLazyPropertyTransform(BioxResourceService)
   resource: FlLazyProperty<BioxResource>;
+
 }
 
 
@@ -107,6 +109,4 @@ export class BioxExperimentFlow extends BioxConnectionManager {
     return this.jobs;
   }
 
-
 }
-

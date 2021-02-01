@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {BioxExperiment, BioxExperimentDatasource} from '../model/entities/biox-experiment.entity';
 import {BioxExperimentFlow} from '../model/entities/biox-experiment-flow.entity';
 import {map} from 'rxjs/operators';
+import {clRxjsDebug} from '@monorepo/core-lib';
 
 
 @Injectable({
@@ -34,7 +35,8 @@ export class BioxExperimentService {
   /////////////////////// FLOW ////////////////////////
   public getExperimentFlow(id: string): Observable<BioxExperimentFlow> {
     return this.apiService.get(`flow?experiment_uri=${id}`, BioxExperimentFlow).pipe(
-      map(flow => this.initFlowConnections(flow))
+      map(flow => this.initFlowConnections(flow)),
+      clRxjsDebug(),
     );
   }
 

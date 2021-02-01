@@ -60,7 +60,7 @@ export class ExperimentWorkflowComponent implements OnInit {
   }
 
   private loadExperimentFlowSuccess(flow: BioxExperimentFlow): void {
-    this.workflowManagerService.init(this.container.nativeElement, flow, this.experiment.id);
+    this.workflowManagerService.init(this.container.nativeElement, flow, this.experiment);
     this.flow = flow;
     this.flowIsLoading = false;
 

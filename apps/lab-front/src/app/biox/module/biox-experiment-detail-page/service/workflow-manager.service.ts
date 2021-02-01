@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Workflow} from '../model/workflow.class';
-import {BioxProcessable, BioxProtocol, BioxProtocolGraph} from '../../../../core/model/entities/biox-processable.entity';
+import {BioxProcessable, BioxProtocol} from '../../../../core/model/entities/biox-processable.entity';
 import {WorkflowNodeProcessable} from '../model/workflow-node-processable.class';
 import {BioxExperimentFlow} from '../../../../core/model/entities/biox-experiment-flow.entity';
 import {BioxJob} from '../../../../core/model/entities/biox-job.entity';
@@ -8,9 +8,10 @@ import {BioxProtocolService} from '../../../../core/entity-service/biox-protocol
 import {BioxConnection, BioxNode} from '../../../../core/model/global/biox-connection.class';
 import {WorkflowLayer} from '../model/workflow-layer.class';
 import {Observable} from 'rxjs';
-import {BioxProcessableBase} from '../../../../core/model/entities/biox-processable-base.entity';
 import {WorkflowConnectionSelected} from '../model/workflow-event.class';
 import {WorkflowConnection} from '../model/workflow-connection.class';
+import {BioxExperiment} from '../../../../core/model/entities/biox-experiment.entity';
+import {BioxExperimentFlowFactory} from '../../../../core/utils/biox-experiment-flow.factory';
 
 
 // todo handle on destroy
@@ -25,15 +26,15 @@ export class WorkflowManagerService {
   private readonly htmlOffsetX: number = 20;
   private readonly htmlOffsetY: number = 20;
 
-  private experimentId: string;
+  private experiment: BioxExperiment;
 
 
   constructor(private bioxProtocolService: BioxProtocolService) {
     console.log('New workflow manager');
   }
 
-  public init(element: HTMLElement, flow: BioxExperimentFlow, experimentId: string): void {
-    this.experimentId = experimentId;
+  public init(element: HTMLElement, flow: BioxExperimentFlow, experiment: BioxExperiment): void {
+    this.experiment = experiment;
     this.workflow = new Workflow(element, 'edit');
 
     this.workflow.start();
@@ -44,7 +45,7 @@ export class WorkflowManagerService {
 
   private initFlow(flow: BioxExperimentFlow): void {
     // add all nodes
-    this.addNodesAndRecursively(flow.getRootNodes(), [], 0, 0);
+    this.addNodesRecursively(flow.getRootNodes(), [], 0, 0);
 
     // create the connections
     for (const step of flow.flows) {
@@ -62,13 +63,13 @@ export class WorkflowManagerService {
   }
 
   public addProcessableNode(bioxProcessable: BioxProcessable, parentJobId: string, coordX: number = 0, coordY: number = 0): void {
-    const job: BioxJob = BioxJob.fromProcessable(bioxProcessable, this.experimentId, parentJobId);
+    const job: BioxJob = BioxExperimentFlowFactory.flowJobFromProcessable(bioxProcessable, this.experiment.id);
     this.addJobNode(job, coordX, coordY);
   }
 
   private addConnection(connection: BioxConnection): void {
-    const outputNode: WorkflowNodeProcessable = this.workflow.findNodeWithName(connection.from.getNodeName());
-    const inputNode: WorkflowNodeProcessable = this.workflow.findNodeWithName(connection.to.getNodeName());
+    const outputNode: WorkflowNodeProcessable = this.findNodeWithName(connection.from.getNodeName());
+    const inputNode: WorkflowNodeProcessable = this.findNodeWithName(connection.to.getNodeName());
 
     const inputName: string = inputNode.findInputName(connection.to.getPort());
     const outputName: string = outputNode.findOutputName(connection.from.getPort());
@@ -79,34 +80,31 @@ export class WorkflowManagerService {
   }
 
   public findNodeWithName(name: string): WorkflowNodeProcessable {
-    return this.workflow.findNodeWithName(name);
+    return this.workflow.findNodeWithNameInCurrentLayer(name);
   }
 
-  public selectLayer(protocolId: string): void {
-    if (this.workflow.hasLayer(protocolId)) {
-      this.workflow.selectLayer(protocolId);
+
+  public selectLayer(nodeId: string): void {
+    if (this.workflow.hasLayer(nodeId)) {
+      this.workflow.selectLayer(nodeId);
     } else {
-      this.bioxProtocolService.getProtocol(protocolId).subscribe(
-        protocol => this.addProtocolLayer(protocol)
+      const node: WorkflowNodeProcessable = this.workflow.findNodeWithId(nodeId);
+      this.bioxProtocolService.getProtocol(node.object.process.id).subscribe(
+        protocol => this.addProtocolLayer(protocol, node)
       );
     }
   }
 
-  private addProtocolLayer(protocol: BioxProtocol): void {
-    this.workflow.createSubLayerIfNotExists(protocol.id, protocol.type);
 
-    const graph: BioxProtocolGraph = protocol.data.graph;
 
-    // add all nodes
-    this.addNodesAndRecursively(graph.getRootNodes(), [], 0, 0);
+  private addProtocolLayer(protocol: BioxProtocol, node: WorkflowNodeProcessable): void {
+    this.workflow.createSubLayerIfNotExists(node.nodeId, protocol.type);
 
-    for (const links of graph.links) {
-      // todo handle parentJobId
-      this.addConnection(links);
-    }
+    const experimentFlow: BioxExperimentFlow = BioxExperimentFlowFactory.bioxExperimentFromProtocol(protocol, this.experiment);
+    this.initFlow(experimentFlow);
   }
 
-  private addNodesAndRecursively(nodes: BioxNode[], addedNodes: BioxNode[], posX: number, basePosY: number): number {
+  private addNodesRecursively(nodes: BioxNode[], addedNodes: BioxNode[], posX: number, basePosY: number): number {
     let currentPosY: number = basePosY - 1;
     for (const node of nodes) {
       currentPosY++;
@@ -122,8 +120,8 @@ export class WorkflowManagerService {
       // and the node and mark it as added
       if (node instanceof BioxJob) {
         this.addJobNode(node, coordX, coordY);
-      } else if (node instanceof BioxProcessableBase) {
-        this.addProcessableNode(node as BioxProcessable, '', coordX, coordY);
+        // } else if (node instanceof BioxProcessableBase) {
+        //   this.addProcessableNode(node as BioxProcessable, '', coordX, coordY);
       } else {
         throw new Error(`The node ${node.name} is not a BioxJob nor a BioxProcessableBase`);
       }
@@ -132,7 +130,7 @@ export class WorkflowManagerService {
 
       for (const key of Object.keys(node.outputs)) {
         const outputNodes: BioxNode[] = node.outputs[key].map(output => output.getNode());
-        currentPosY = this.addNodesAndRecursively(outputNodes, addedNodes, posX + 1, currentPosY);
+        currentPosY = this.addNodesRecursively(outputNodes, addedNodes, posX + 1, currentPosY);
       }
     }
 
