@@ -1,0 +1,8 @@
+
+<ng-container *ngIf="resource; else isLoading">
+  <gen-biox-resource-info [resource]="resource"></gen-biox-resource-info>
+</ng-container>
+
+<ng-template #isLoading>
+  <fl-loader></fl-loader>
+</ng-template>

@@ -1,6 +1,6 @@
 import {JSONEditorMode} from 'jsoneditor';
 
-export interface JsonEditorConfig {
+export interface FlJsonEditorConfig {
   enableSort: boolean;
   enableTransform: boolean;
   escapeUnicode: boolean;
@@ -18,7 +18,7 @@ export interface JsonEditorConfig {
   languages?: any;
 }
 
-export const defaultJsonEditorConfig: JsonEditorConfig = {
+export const flDefaultJsonEditorConfig: FlJsonEditorConfig = {
   enableSort: false,
   enableTransform: false,
   escapeUnicode: false,

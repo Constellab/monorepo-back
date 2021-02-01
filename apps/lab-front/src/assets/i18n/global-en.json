@@ -15,5 +15,10 @@
   "processes": "Processes",
   "no_protocol": "There is no protocol",
   "no_processes": "There is no processes",
-  "object_not_found": "Object not found"
+  "object_not_found": "Object not found",
+  "created_by": "Created by",
+  "created_at": "Created at",
+  "created_the": "Created the",
+  "last_modified_at": "Last modified at",
+  "last_modified_by": "Last modified by"
 }

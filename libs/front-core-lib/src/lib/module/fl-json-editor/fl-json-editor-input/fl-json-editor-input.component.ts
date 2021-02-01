@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Optional, Output, Self, ViewChild} from '@angular/core';
 import {NgControl, Validator} from '@angular/forms';
-import {JsonEditorConfig} from '../fl-json-editor-option.class';
+import {FlJsonEditorConfig} from '../fl-json-editor-config.class';
 import {ValidationErrors} from '@ngneat/reactive-forms/lib/types';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlFormFieldDirective} from '../../../abstract-directive/fl-form-field.directive';
@@ -30,7 +30,7 @@ export class FlJsonEditorInputComponent extends FlFormFieldDirective<any, string
 
   @Input() placeholder: string;
 
-  @Input() config: Partial<JsonEditorConfig> = {};
+  @Input() config: Partial<FlJsonEditorConfig> = {};
 
   /**
    * If provided, the json is checked based on the schema

@@ -3,7 +3,6 @@ import {FlApiWithCacheService, FlEntityPaginatedDatasource, FlGetPageFunction, F
 import {Observable} from 'rxjs';
 import {BioxProtocol, BioxProtocolDatasource} from '../model/entities/biox-processable.entity';
 import {map} from 'rxjs/operators';
-import {clRxjsDebug} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +16,7 @@ export class BioxProtocolService {
   public getProtocols(page: number, pageSize: number): Observable<FlPage<BioxProtocol>> {
     return this.apiService.get(`protocol/list`, BioxProtocol,
       {resultIsPaginated: true, page: (page + 1), pageSize: pageSize}).pipe(
-      map(protocols => this.initProtocolsPageConnections(protocols)),
-      clRxjsDebug()
+      map(protocols => this.initProtocolsPageConnections(protocols))
     );
   }
 

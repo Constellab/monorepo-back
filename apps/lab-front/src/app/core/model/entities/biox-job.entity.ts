@@ -25,7 +25,6 @@ export class BioxJob extends BioxNode {
   isFinished: boolean;
 
   @Expose({name: 'experiment_uri'})
-
   experimentId: string;
 
   @Expose({name: 'parent_job_uri'})

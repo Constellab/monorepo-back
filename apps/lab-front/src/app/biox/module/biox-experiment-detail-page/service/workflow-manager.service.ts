@@ -6,11 +6,14 @@ import {BioxExperimentFlow} from '../../../../core/model/entities/biox-experimen
 import {BioxJob} from '../../../../core/model/entities/biox-job.entity';
 import {BioxProtocolService} from '../../../../core/entity-service/biox-protocol.service';
 import {BioxConnection, BioxNode} from '../../../../core/model/global/biox-connection.class';
-import {WorkflowConnectionLink} from '../model/workflow-connection-link.class';
 import {WorkflowLayer} from '../model/workflow-layer.class';
 import {Observable} from 'rxjs';
 import {BioxProcessableBase} from '../../../../core/model/entities/biox-processable-base.entity';
+import {WorkflowConnectionSelected} from '../model/workflow-event.class';
+import {WorkflowConnection} from '../model/workflow-connection.class';
 
+
+// todo handle on destroy
 @Injectable()
 export class WorkflowManagerService {
 
@@ -31,7 +34,7 @@ export class WorkflowManagerService {
 
   public init(element: HTMLElement, flow: BioxExperimentFlow, experimentId: string): void {
     this.experimentId = experimentId;
-    this.workflow = new Workflow(element);
+    this.workflow = new Workflow(element, 'edit');
 
     this.workflow.start();
 
@@ -67,7 +70,11 @@ export class WorkflowManagerService {
     const outputNode: WorkflowNodeProcessable = this.workflow.findNodeWithName(connection.from.getNodeName());
     const inputNode: WorkflowNodeProcessable = this.workflow.findNodeWithName(connection.to.getNodeName());
 
-    const workflowConnectionLink: WorkflowConnectionLink = new WorkflowConnectionLink(outputNode, inputNode, connection);
+    const inputName: string = inputNode.findInputName(connection.to.getPort());
+    const outputName: string = outputNode.findOutputName(connection.from.getPort());
+
+    const workflowConnectionLink: WorkflowConnection = new WorkflowConnection(outputNode, inputNode,
+      outputName, inputName, connection);
     this.workflow.addConnection(workflowConnectionLink);
   }
 
@@ -135,4 +142,10 @@ export class WorkflowManagerService {
   public getCurrentLayerHierarchy(): Observable<WorkflowLayer<WorkflowNodeProcessable>[]> {
     return this.workflow.getCurrentLayerHierarchy();
   }
+
+  public onConnectionSelected(): Observable<WorkflowConnectionSelected> {
+    return this.workflow.onConnectionSelected();
+  }
+
 }
+

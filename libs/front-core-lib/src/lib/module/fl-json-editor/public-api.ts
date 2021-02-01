@@ -9,4 +9,4 @@ export * from './fl-json-editor-dialog/fl-json-editor-dialog.component';
 export * from './fl-json-editor.directive'
 
 // Export the model
-export * from './fl-json-editor-option.class';
+export * from './fl-json-editor-config.class';

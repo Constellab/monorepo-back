@@ -1,0 +1,46 @@
+.invisible {
+  display: none;
+}
+
+.children{
+  padding-left: 25px;
+}
+
+mat-tree-node{
+  min-height: 0;
+}
+
+.clickable{
+  cursor: pointer;
+}
+
+.key-color{
+  //color: #741a8d;
+}
+
+.string-value{
+  //color: #a8201c;
+}
+
+.no-string-value{
+  //color: #1d00ca;
+}
+
+.key{
+  padding-left: 17px;
+}
+
+.value{
+  padding-left: 10px;
+
+}
+
+.icon{
+  font-size: 17px;
+  height: 17px;
+  width: 17px;
+}
+
+.preview{
+  padding-left: 15px;
+}

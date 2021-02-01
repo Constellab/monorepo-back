@@ -1,5 +1,5 @@
 import {Directive, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {defaultJsonEditorConfig, JsonEditorConfig} from './fl-json-editor-option.class';
+import {flDefaultJsonEditorConfig, FlJsonEditorConfig} from './fl-json-editor-config.class';
 import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 
@@ -17,7 +17,7 @@ export class FlJsonEditorDirective implements OnInit, OnDestroy {
    */
   @Input('flJsonEditor') value: any;
 
-  @Input('flJsonEditorConfig') config: Partial<JsonEditorConfig> = {};
+  @Input('flJsonEditorConfig') config: Partial<FlJsonEditorConfig> = {};
 
   /**
    * If provided, the json is checked based on the schema
@@ -37,7 +37,7 @@ export class FlJsonEditorDirective implements OnInit, OnDestroy {
   }
 
   private initEditor(): void {
-    const options: JSONEditorOptions = Object.assign(defaultJsonEditorConfig, this.config);
+    const options: JSONEditorOptions = Object.assign(flDefaultJsonEditorConfig, this.config);
 
     // set the correct language
     options.language = this.translateService.getUserLanguage();

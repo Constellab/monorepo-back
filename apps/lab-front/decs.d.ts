@@ -12,6 +12,8 @@ declare module 'drawflow' {
 
     drawflow: any;
 
+    editor_mode: DrawFlowEditorMode = 'edit';
+
     start(): void;
 
     import(data: any): void;
@@ -77,6 +79,8 @@ declare module 'drawflow' {
     input: string;
     node: string;
   }
+
+  export type DrawFlowEditorMode = 'edit' | 'fixed';
 
   export = Drawflow;
 }

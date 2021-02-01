@@ -1,5 +1,6 @@
 import {WorkflowNode} from './workflow-node.class';
 import * as Drawflow from 'drawflow';
+import {ConnectionEvent} from 'drawflow';
 import {WorkflowConnection} from './workflow-connection.class';
 
 /**
@@ -9,11 +10,16 @@ export class WorkflowLayer<T extends WorkflowNode<any>> {
 
   public readonly nodes: T[] = [];
 
+  public readonly connections: WorkflowConnection[] = [];
+
   constructor(private readonly editor: Drawflow,
               public readonly id: string,
               public readonly name: string,
               public readonly parentLayer: WorkflowLayer<T>) {
   }
+
+
+  ///////////////////////////// NODE ////////////////////////////////
 
   public addNode(node: T): void {
     this.nodes.push(node);
@@ -24,6 +30,8 @@ export class WorkflowLayer<T extends WorkflowNode<any>> {
     // set the nodeId in workflow node
     node.initNode(nodeId.toString(), (id: string) => this.editor.getNodeFromId(id));
   }
+
+  // todo add node on node creation
 
   public findNodeWithId(nodeId: string): T {
     return this.findNode((node) => node.nodeId === nodeId);
@@ -37,12 +45,6 @@ export class WorkflowLayer<T extends WorkflowNode<any>> {
     return this.nodes.find((node) => predicate(node));
   }
 
-
-  public addConnection(connection: WorkflowConnection<any>): void {
-    this.editor.addConnection(connection.outputNode.nodeId, connection.inputNode.nodeId,
-      connection.outputName, connection.inputName);
-  }
-
   public onNodeRemoved(nodeId: string): void {
     // remove the node in the local array
     const index: number = this.nodes.findIndex((node) => node.nodeId === nodeId);
@@ -52,6 +54,48 @@ export class WorkflowLayer<T extends WorkflowNode<any>> {
       console.error('Couldn\'t find node with id ' + nodeId);
     }
   }
+
+  ///////////////////////////////// CONNECTION //////////////////////////////////////
+
+
+  public addConnection(connection: WorkflowConnection): void {
+    this.connections.push(connection);
+    this.editor.addConnection(connection.outputNode.nodeId, connection.inputNode.nodeId,
+      connection.outputName, connection.inputName);
+  }
+
+  // add the connection to the local list
+  public saveConnection(event: ConnectionEvent): void {
+    // only add the connection if it doesn't exist
+    if (this.findConnection(event.output_id, event.input_id, event.output_class, event.input_class) == null) {
+      const outputNode: T = this.findNodeWithId(event.output_id);
+      const inputNode: T = this.findNodeWithId(event.input_id);
+      // todo voir le null
+      const workflowConnection: WorkflowConnection = new WorkflowConnection(outputNode, inputNode,
+        event.output_class, event.input_class, null);
+      this.connections.push(workflowConnection);
+    }
+  }
+
+  public removeConnection(event: ConnectionEvent): void {
+    const connectionIndex: number = this.findConnectionIndex(event.output_id, event.input_id, event.output_class, event.input_class);
+    if (connectionIndex >= 0) {
+      this.connections.splice(connectionIndex, 1);
+    }
+  }
+
+  public findConnection(outputNodeId: string, inputNodeId: string, outputName: string, inputName: string): WorkflowConnection {
+    const connectionIndex: number = this.findConnectionIndex(outputNodeId, inputNodeId, outputName, inputName);
+    return connectionIndex >= 0 ? this.connections[connectionIndex] : null;
+  }
+
+  public findConnectionIndex(nodeOutputId: string, nodeInputId: string, outputName: string, inputName: string): number {
+    return this.connections.findIndex(c => c.outputNode.nodeId === nodeOutputId && c.inputNode.nodeId === nodeInputId &&
+      c.outputName === outputName && c.inputName === inputName);
+  }
+
+
+  ///////////////////////// OTHER //////////////////////////
 
   public getLayerHierarchy(): WorkflowLayer<T>[] {
     // eslint-disable-next-line @typescript-eslint/no-this-alias

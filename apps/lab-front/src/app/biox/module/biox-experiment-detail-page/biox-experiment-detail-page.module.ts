@@ -3,7 +3,6 @@ import {CommonModule} from '@angular/common';
 import {CoreModule} from '../../../core/core.module';
 import {BioxExperimentDetailPageComponent} from './component/biox-experiment-detail-page/biox-experiment-detail-page.component';
 import {BioxExperimentCoreModule} from '../../../core/entity-module/biox-experiment-core/biox-experiment-core.module';
-import {TestDrawflowComponent} from './component/test-drawflow/test-drawflow.component';
 import {ExperimentWorkflowNodeComponent} from './component/experiment-workflow-node/experiment-workflow-node.component';
 import {ExperimentWorkflowComponent} from './component/experiment-workflow/experiment-workflow.component';
 import {createCustomElement} from '@angular/elements';
@@ -11,12 +10,12 @@ import {WorkflowManagerService} from './service/workflow-manager.service';
 import {BioxProtocolCoreModule} from '../../../core/entity-module/biox-protocol-core/biox-protocol-core.module';
 import {BioxProcessCoreModule} from '../../../core/entity-module/biox-process-core/biox-process-core.module';
 import {BioxWorkflowLayersBreadcrumbComponent} from './component/biox-workflow-layers-breadcrumb/biox-workflow-layers-breadcrumb.component';
+import {BioxResourceCoreModule} from '../../../core/entity-module/biox-resource-core/biox-resource-core.module';
 
 
 @NgModule({
   declarations: [
     BioxExperimentDetailPageComponent,
-    TestDrawflowComponent,
     ExperimentWorkflowNodeComponent,
     ExperimentWorkflowComponent,
     BioxWorkflowLayersBreadcrumbComponent,
@@ -28,6 +27,7 @@ import {BioxWorkflowLayersBreadcrumbComponent} from './component/biox-workflow-l
     BioxExperimentCoreModule,
     BioxProtocolCoreModule,
     BioxProcessCoreModule,
+    BioxResourceCoreModule,
   ],
   providers: [WorkflowManagerService]
 })

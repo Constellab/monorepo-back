@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {JsonEditorConfig} from '../fl-json-editor-option.class';
+import {FlJsonEditorConfig} from '../fl-json-editor-config.class';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 export interface JsonEditorDialogInput {
@@ -8,7 +8,7 @@ export interface JsonEditorDialogInput {
   // json initial value
   value: any;
   // configuration for the json editor
-  config: JsonEditorConfig;
+  config: FlJsonEditorConfig;
   // json schema for the editor
   jsonSchema: Record<string, unknown>
 }

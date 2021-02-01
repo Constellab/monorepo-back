@@ -1,10 +1,10 @@
 import {DrawflowConnectionDetail, DrawflowNode} from 'drawflow';
-import {LabEntity} from '../../../../core/model/global/lab-entity.entity';
+import {BioxNode} from '../../../../core/model/global/biox-connection.class';
 
 /**
  * Single node in the workflow
  */
-export class WorkflowNode<T extends LabEntity> {
+export class WorkflowNode<T extends BioxNode> {
 
   public html: string;
 
@@ -31,6 +31,8 @@ export class WorkflowNode<T extends LabEntity> {
   }
 
 
+  /////////////////////////////// INPUT //////////////////////////////
+
   /**
    * Check if the input exist and if it has not multiple connection
    *
@@ -48,13 +50,40 @@ export class WorkflowNode<T extends LabEntity> {
     return connection.length <= 1;
   }
 
-  public getInputName(id: string | number): string {
+
+  // find the input name that match the portName
+  public findInputName(portName: string): string {
+    return this.findPortName(portName, this.object.inputs, (id) => this.getInputName(id));
+  }
+
+  private getInputName(id: string | number): string {
     return this.INPUT_NAME_PREFIX + id.toString();
   }
 
+  /////////////////////////////// OUTPUT //////////////////////////////
 
-  public getOutputName(id: string | number): string {
+  // find the output name that match the portName
+  public findOutputName(portName: string): string {
+    return this.findPortName(portName, this.object.outputs, (id) => this.getOutputName(id));
+  }
+
+  private getOutputName(id: string | number): string {
     return this.OUTPUT_NAME_PREFIX + id.toString();
+  }
+
+  /////////////////////////////// OTHER //////////////////////////////
+
+  private findPortName(portName: string, specs: Record<string, any>, getName: (id: number) => string): string {
+    let i = 1;
+    for (const property of Object.keys(specs)) {
+      if (property === portName) {
+        return getName(i);
+      }
+      i++;
+    }
+
+    console.error('Port not found');
+    return null;
   }
 
   private getDrawflowNode(): DrawflowNode {

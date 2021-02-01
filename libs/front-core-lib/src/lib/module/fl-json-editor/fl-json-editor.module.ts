@@ -8,6 +8,11 @@ import {FlJsonEditorDialogComponent} from './fl-json-editor-dialog/fl-json-edito
 import {FlJsonEditorDirective} from './fl-json-editor.directive';
 import {MatDialogModule} from '@angular/material/dialog';
 import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
+import { FlPrettyJsonComponent } from './fl-pretty-json/fl-pretty-json.component';
+import {MatTreeModule} from '@angular/material/tree';
+import {MatIconModule} from '@angular/material/icon';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
 
 /**
  * Module containing a component to edit json in html
@@ -16,16 +21,24 @@ import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
   declarations: [
     FlJsonEditorInputComponent,
     FlJsonEditorDialogComponent,
-    FlJsonEditorDirective
+    FlJsonEditorDirective,
+    FlPrettyJsonComponent
   ],
   exports: [
-    FlJsonEditorInputComponent
+    FlJsonEditorInputComponent,
+    FlJsonEditorDirective,
+    FlPrettyJsonComponent,
   ],
   imports: [
     CommonModule,
 
-    FlDialogModule,
     MatDialogModule,
+    MatTreeModule,
+    MatIconModule,
+    FlexLayoutModule,
+    FlTextIconModule,
+
+    FlDialogModule,
     FlTranslateModule,
     FlSnackBarModule,
     FlCoreDirectiveModule,

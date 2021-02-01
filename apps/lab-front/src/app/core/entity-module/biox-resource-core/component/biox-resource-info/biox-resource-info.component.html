@@ -1,0 +1,9 @@
+
+<div>
+  <p>{{'created_at' | translate}} {{resource.createdAt | flDate: 'D HH:mm'}}</p>
+
+<!--  <div class="json-container"-->
+<!--       [flJsonEditor]="resource.data" [flJsonEditorConfig]="jsonEditorConfig"></div>-->
+
+  <fl-pretty-json [object]="resource.data"></fl-pretty-json>
+</div>

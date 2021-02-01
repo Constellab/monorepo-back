@@ -5,7 +5,11 @@ import {BioxProcessService} from '../../../../../core/entity-service/biox-proces
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
 import {BioxProcessable, BioxProcessDatasource, BioxProtocolDatasource} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
-import {BioxExperimentFlow} from '../../../../../core/model/entities/biox-experiment-flow.entity';
+import {BioxExperimentFlow, BioxExperimentFlowStep} from '../../../../../core/model/entities/biox-experiment-flow.entity';
+import {WorkflowConnectionSelected} from '../../model/workflow-event.class';
+import {FlDialogService} from '@monorepo/front-core-lib';
+import {BioxConnection} from '../../../../../core/model/global/biox-connection.class';
+import {BioxResourceDialogComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-dialog/biox-resource-dialog.component';
 
 
 @Component({
@@ -32,7 +36,8 @@ export class ExperimentWorkflowComponent implements OnInit {
   constructor(private workflowManagerService: WorkflowManagerService,
               private bioxProtocolService: BioxProtocolService,
               private bioxProcessService: BioxProcessService,
-              private bioxExperimentService: BioxExperimentService) {
+              private bioxExperimentService: BioxExperimentService,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -55,10 +60,13 @@ export class ExperimentWorkflowComponent implements OnInit {
   }
 
   private loadExperimentFlowSuccess(flow: BioxExperimentFlow): void {
-    console.log(flow);
     this.workflowManagerService.init(this.container.nativeElement, flow, this.experiment.id);
     this.flow = flow;
     this.flowIsLoading = false;
+
+    this.workflowManagerService.onConnectionSelected().subscribe(
+      connection => this.onConnectionSelected(connection)
+    );
   }
 
   allowDrop(ev: DragEvent): void {
@@ -76,6 +84,16 @@ export class ExperimentWorkflowComponent implements OnInit {
 
   dragStart(processable: BioxProcessable): void {
     this.draggingProcessable = processable;
+  }
+
+  // todo handle on destroy
+  onConnectionSelected(connectionEvent: WorkflowConnectionSelected): void {
+    const connection: BioxConnection = connectionEvent.connection.object;
+
+    if (connection instanceof BioxExperimentFlowStep) {
+      this.dialogService.openSmallDialog(BioxResourceDialogComponent, {data: connection.resource.getObs()});
+    }
+
   }
 
 
