@@ -1,11 +1,19 @@
 import {NgModule} from '@angular/core';
 import {
-  FlCardModule, FlCoreComponentModule,
+  FlCardModule,
+  FlCoreComponentModule,
   FlCoreDirectiveModule,
   FlCorePipeModule,
-  FlDialogModule, FlInfiniteScrollModule, FlJsonEditorModule, FlLoaderModule, FlSectionModule,
-  FlSnackBarModule, FlStatusModule,
-  FlSvgIconModule, FlTextIconModule,
+  FlDialogModule,
+  FlDynamicFieldModule,
+  FlInfiniteScrollModule,
+  FlJsonEditorModule,
+  FlLoaderModule,
+  FlSectionModule,
+  FlSnackBarModule,
+  FlStatusModule,
+  FlSvgIconModule,
+  FlTextIconModule,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 
@@ -31,7 +39,7 @@ import {
     FlInfiniteScrollModule,
     FlLoaderModule,
     FlJsonEditorModule,
-
+    FlDynamicFieldModule
   ]
 })
 export class CustomLibraryModule {

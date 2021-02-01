@@ -20,5 +20,7 @@
   "created_at": "Created at",
   "created_the": "Created the",
   "last_modified_at": "Last modified at",
-  "last_modified_by": "Last modified by"
+  "last_modified_by": "Last modified by",
+  "save": "Save",
+  "close": "Close"
 }

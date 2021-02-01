@@ -2,6 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {WorkflowManagerService} from '../../service/workflow-manager.service';
 import {WorkflowNode} from '../../model/workflow-node.class';
 import {BioxJob} from '../../../../../core/model/entities/biox-job.entity';
+import {FlDialogService} from '@monorepo/front-core-lib';
+import {BioxConfigureSpecsDialogComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
 
 /**
  * Node of an experiment in the workflow
@@ -20,7 +22,8 @@ export class ExperimentWorkflowNodeComponent implements OnInit {
 
   node: WorkflowNode<BioxJob>;
 
-  constructor(private workflowManager: WorkflowManagerService) {
+  constructor(private workflowManager: WorkflowManagerService,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -36,6 +39,23 @@ export class ExperimentWorkflowNodeComponent implements OnInit {
 
   zoomInProtocol(): void {
     return this.workflowManager.selectLayer(this.node.nodeId);
+  }
+
+  get showConfigButton(): boolean {
+    return this.node.object.process.hasConfigSpecs();
+  }
+
+  openConfig(): void {
+    this.dialogService.openSmallDialog(BioxConfigureSpecsDialogComponent,
+      {data: this.node.object.process.configSpecs}).afterClosed().subscribe(
+      config => this.onConfigDialogClosed(config)
+    );
+  }
+
+  private onConfigDialogClosed(config?: any): void{
+    if(config != null){
+      this.node.object.config.params = config;
+    }
   }
 
 }

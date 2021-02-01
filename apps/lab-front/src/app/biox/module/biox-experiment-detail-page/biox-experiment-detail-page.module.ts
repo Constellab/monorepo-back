@@ -11,6 +11,7 @@ import {BioxProtocolCoreModule} from '../../../core/entity-module/biox-protocol-
 import {BioxProcessCoreModule} from '../../../core/entity-module/biox-process-core/biox-process-core.module';
 import {BioxWorkflowLayersBreadcrumbComponent} from './component/biox-workflow-layers-breadcrumb/biox-workflow-layers-breadcrumb.component';
 import {BioxResourceCoreModule} from '../../../core/entity-module/biox-resource-core/biox-resource-core.module';
+import {BioxConfigCoreModule} from '../../../core/entity-module/biox-config-core/biox-config-core.module';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import {BioxResourceCoreModule} from '../../../core/entity-module/biox-resource-
     BioxProtocolCoreModule,
     BioxProcessCoreModule,
     BioxResourceCoreModule,
+    BioxConfigCoreModule,
   ],
   providers: [WorkflowManagerService]
 })

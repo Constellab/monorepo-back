@@ -60,7 +60,7 @@ export class BioxExperimentFlowFactory {
     flow.isRunning = experiment.isInProgress;
     flow.isFinished = !experiment.isInProgress;
     // todo check type
-    flow.config = process.configSpecs;
+    flow.config = BioxConfig.empty();
     flow.process = process;
 
     // create the jobs

@@ -2,6 +2,7 @@ import {ClLuxonTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {BioxNode} from '../global/biox-connection.class';
 import {Expose} from 'class-transformer';
+import {BioxConfigSpecs} from './biox-config.entity';
 
 export class BioxProcessableBase extends BioxNode {
 
@@ -12,7 +13,7 @@ export class BioxProcessableBase extends BioxNode {
   outputSpecs: Record<string, string[]> = null;
 
   @Expose({name: 'config_specs'})
-  configSpecs: any;
+  configSpecs: BioxConfigSpecs;
 
   // python class link
   type: string;
@@ -73,4 +74,9 @@ export class BioxProcessableBase extends BioxNode {
   public findOutputSpec(outputName: string): string[] | undefined {
     return this.outputSpecs[outputName];
   }
+
+  public hasConfigSpecs(): boolean {
+    return (Object.keys(this.configSpecs ?? {}).length) > 0;
+  }
+
 }

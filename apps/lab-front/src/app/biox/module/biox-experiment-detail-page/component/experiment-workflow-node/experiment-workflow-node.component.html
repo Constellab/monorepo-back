@@ -15,7 +15,9 @@
         <mat-icon>loupe</mat-icon>
       </button>
 
-      <button mat-icon-button type="button">
+      <button mat-icon-button type="button"
+              *ngIf="showConfigButton"
+              (click)="openConfig()">
         <mat-icon>settings</mat-icon>
       </button>
     </div>

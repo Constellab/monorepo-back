@@ -1,0 +1,28 @@
+<ng-container [ngSwitch]="config.type">
+
+  <!--  Material input-->
+  <ng-container *ngSwitchCase="'input'">
+    <mat-form-field appearance="outline" class="g-full">
+      <mat-label>{{config.placeholder}}</mat-label>
+      <input matInput [type]="config.inputType" [formControl]="formControl"
+             (ngModelChange)="emitValue($event)"
+             placeholder="{{config.placeholder}}">
+    </mat-form-field>
+  </ng-container>
+
+
+  <!--  Material select-->
+  <ng-container *ngSwitchCase="'select'">
+    <!--  Server info  -->
+    <mat-form-field appearance="outline" class="g-full">
+      <mat-label>{{config.placeholder}}</mat-label>
+      <mat-select placeholder="{{config.placeholder}}"
+                  [formControl]="formControl"
+                  (ngModelChange)="emitValue($event)">
+        <mat-option *ngFor="let option of config.selectOptions" [value]="option">{{option}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </ng-container>
+
+</ng-container>
+

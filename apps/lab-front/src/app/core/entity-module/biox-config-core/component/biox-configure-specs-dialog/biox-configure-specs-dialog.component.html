@@ -1,0 +1,19 @@
+<fl-dialog-title>
+  <!-- todo translate -->
+  Config
+</fl-dialog-title>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="config-form">
+    <gen-biox-configure-specs [specs]="configSpecs" [formGp]="formGp"></gen-biox-configure-specs>
+  </form>
+</mat-dialog-content>
+
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" form="config-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+  </button>
+</div>
+

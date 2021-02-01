@@ -1,0 +1,23 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {CoreModule} from '../../core.module';
+import { BioxConfigureSpecsComponent } from './component/biox-configure-specs/biox-configure-specs.component';
+import { BioxConfigureSpecsDialogComponent } from './component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+
+
+@NgModule({
+  declarations: [
+    BioxConfigureSpecsComponent,
+    BioxConfigureSpecsDialogComponent
+  ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+
+    CoreModule,
+  ],
+  exports: [BioxConfigureSpecsComponent]
+})
+export class BioxConfigCoreModule { }
