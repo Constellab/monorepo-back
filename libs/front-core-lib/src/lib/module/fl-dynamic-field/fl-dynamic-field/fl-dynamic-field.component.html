@@ -7,6 +7,10 @@
       <input matInput [type]="config.inputType" [formControl]="formControl"
              (ngModelChange)="emitValue($event)"
              placeholder="{{config.placeholder}}">
+
+      <span *ngIf="config.prefix" matPrefix>{{config.prefix}}</span>
+      <span *ngIf="config.suffix" matSuffix>{{config.suffix}}</span>
+      <mat-hint *ngIf="config.hint">{{config.hint}}</mat-hint>
     </mat-form-field>
   </ng-container>
 
@@ -21,6 +25,10 @@
                   (ngModelChange)="emitValue($event)">
         <mat-option *ngFor="let option of config.selectOptions" [value]="option">{{option}}</mat-option>
       </mat-select>
+
+      <span *ngIf="config.prefix" matPrefix>{{config.prefix}}</span>
+      <span *ngIf="config.suffix" matSuffix>{{config.suffix}}</span>
+      <mat-hint *ngIf="config.hint">{{config.hint}}</mat-hint>
     </mat-form-field>
   </ng-container>
 

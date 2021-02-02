@@ -1,13 +1,17 @@
 import {WorkflowNode} from './workflow-node.class';
 import * as Drawflow from 'drawflow';
-import {ConnectionEvent, DrawFlowEditorMode} from 'drawflow';
+import {ConnectionEvent} from 'drawflow';
 import {WorkflowConnection} from './workflow-connection.class';
 import {WorkflowLayer} from './workflow-layer.class';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {WorkflowConnectionSelected} from './workflow-event.class';
 
+export type WorkflowMode = 'edit' | 'readOnly';
 
+/**
+ * Class to manage Drawflow
+ */
 export class Workflow<T extends WorkflowNode<any>> {
 
   private readonly editor: Drawflow;
@@ -20,7 +24,9 @@ export class Workflow<T extends WorkflowNode<any>> {
   // subject to trigger event when selected a workflow connection
   private connectionSelected$: Subject<WorkflowConnectionSelected> = new Subject<WorkflowConnectionSelected>();
 
-  constructor(private element: HTMLElement, mode: DrawFlowEditorMode = 'edit') {
+  private mode: WorkflowMode;
+
+  constructor(private element: HTMLElement, mode: WorkflowMode = 'edit') {
     this.editor = new Drawflow(element);
 
     // set edit or readonly mode
@@ -228,7 +234,12 @@ export class Workflow<T extends WorkflowNode<any>> {
     }
   }
 
-  public setMode(mode: DrawFlowEditorMode): void {
-    this.editor.editor_mode = mode;
+  public setMode(mode: WorkflowMode): void {
+    this.editor.editor_mode = mode === 'edit' ? 'edit' : 'fixed';
+    this.mode = mode;
+  }
+
+  public getMode(): WorkflowMode {
+    return this.mode;
   }
 }

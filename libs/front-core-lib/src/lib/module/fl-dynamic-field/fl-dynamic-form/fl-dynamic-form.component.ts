@@ -28,7 +28,11 @@ export class FlDynamicFormComponent implements OnInit {
 
   private initForm(): void {
     for (const config of this.configs) {
-      this.formGp.addControl(config.controlName, new FormControl(config.defaultValue));
+      this.formGp.addControl(config.controlName, new FormControl({
+          value: config.initValue,
+          disabled: config.disabled === true
+        })
+      );
     }
   }
 

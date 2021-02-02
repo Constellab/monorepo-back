@@ -4,7 +4,8 @@
 export interface FlDynamicFormFieldConfig {
   controlName: string;
   fieldConfig: FlDynamicFieldConfig;
-  defaultValue?: any;
+  initValue?: any;
+  disabled?: boolean;
 }
 
 

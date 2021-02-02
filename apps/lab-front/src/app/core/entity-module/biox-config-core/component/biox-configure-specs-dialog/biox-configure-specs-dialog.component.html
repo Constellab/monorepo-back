@@ -1,11 +1,11 @@
 <fl-dialog-title>
-  <!-- todo translate -->
-  Config
+  {{'configuration' | translate}}
 </fl-dialog-title>
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="config-form">
-    <gen-biox-configure-specs [specs]="configSpecs" [formGp]="formGp"></gen-biox-configure-specs>
+    <gen-biox-configure-specs [specs]="configSpecs" [currentConfig]="currentConfig"
+                              [formGp]="formGp"></gen-biox-configure-specs>
   </form>
 </mat-dialog-content>
 

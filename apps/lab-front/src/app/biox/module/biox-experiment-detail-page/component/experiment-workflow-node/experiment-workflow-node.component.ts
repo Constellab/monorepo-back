@@ -1,9 +1,14 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {WorkflowManagerService} from '../../service/workflow-manager.service';
 import {WorkflowNode} from '../../model/workflow-node.class';
 import {BioxJob} from '../../../../../core/model/entities/biox-job.entity';
-import {FlDialogService} from '@monorepo/front-core-lib';
-import {BioxConfigureSpecsDialogComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
+import {FlDialogService, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
+import {
+  BioxConfigureSpecsDialogComponent,
+  BioxConfigureSpecsDialogInput
+} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
+import {ConnectedPosition} from '@angular/cdk/overlay';
+import {BioxShowConfigPortalComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-show-config-portal/biox-show-config-portal.component';
 
 /**
  * Node of an experiment in the workflow
@@ -20,10 +25,13 @@ export class ExperimentWorkflowNodeComponent implements OnInit {
   // Name of the node
   @Input() name: string;
 
+  @ViewChild('container', {static: true}) container: ElementRef<HTMLElement>;
+
   node: WorkflowNode<BioxJob>;
 
   constructor(private workflowManager: WorkflowManagerService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private portalService: FlPortalService) {
   }
 
   ngOnInit(): void {
@@ -46,14 +54,41 @@ export class ExperimentWorkflowNodeComponent implements OnInit {
   }
 
   openConfig(): void {
-    this.dialogService.openSmallDialog(BioxConfigureSpecsDialogComponent,
-      {data: this.node.object.process.configSpecs}).afterClosed().subscribe(
-      config => this.onConfigDialogClosed(config)
-    );
+    if (this.workflowManager.getMode() === 'edit') {
+      const input: BioxConfigureSpecsDialogInput = {
+        configSpecs: this.node.object.process.configSpecs,
+        currentConfig: this.node.object.config.params,
+      };
+
+      this.dialogService.openSmallDialog(BioxConfigureSpecsDialogComponent,
+        {data: input}).afterClosed().subscribe(
+        config => this.onConfigDialogClosed(config)
+      );
+
+    } else {
+      const position: ConnectedPosition[] = [{
+        originX: 'center',
+        originY: 'top',
+        overlayX: 'center',
+        overlayY: 'bottom',
+        offsetY: -20
+      }];
+      const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(
+        this.container.nativeElement, position, {
+          panelClass: 'g-portal-panel',
+          elevation: true,
+          disposeOnNavigation: true,
+          size: 'small',
+          disposeOnOutsideClick: true,
+        }
+      );
+      this.portalService.createPortal(BioxShowConfigPortalComponent, portalConfig, this.node.object);
+    }
+
   }
 
-  private onConfigDialogClosed(config?: any): void{
-    if(config != null){
+  private onConfigDialogClosed(config?: any): void {
+    if (config != null) {
       this.node.object.config.params = config;
     }
   }

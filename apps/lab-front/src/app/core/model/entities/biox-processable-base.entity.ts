@@ -1,8 +1,8 @@
-import {ClLuxonTransform} from '@monorepo/core-lib';
+import {ClLuxonTransform, ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {BioxNode} from '../global/biox-connection.class';
 import {Expose} from 'class-transformer';
-import {BioxConfigSpecs} from './biox-config.entity';
+import {BioxConfigSpecs, BioxConfigSpecTyped} from './biox-config.entity';
 
 export class BioxProcessableBase extends BioxNode {
 
@@ -12,6 +12,7 @@ export class BioxProcessableBase extends BioxNode {
   @Expose({name: 'output_specs'})
   outputSpecs: Record<string, string[]> = null;
 
+  @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecTyped)
   @Expose({name: 'config_specs'})
   configSpecs: BioxConfigSpecs;
 
@@ -76,7 +77,7 @@ export class BioxProcessableBase extends BioxNode {
   }
 
   public hasConfigSpecs(): boolean {
-    return (Object.keys(this.configSpecs ?? {}).length) > 0;
+    return this.configSpecs.hasProperties();
   }
 
 }

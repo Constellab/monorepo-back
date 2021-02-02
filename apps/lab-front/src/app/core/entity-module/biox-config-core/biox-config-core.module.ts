@@ -4,12 +4,14 @@ import {CoreModule} from '../../core.module';
 import { BioxConfigureSpecsComponent } from './component/biox-configure-specs/biox-configure-specs.component';
 import { BioxConfigureSpecsDialogComponent } from './component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { BioxShowConfigPortalComponent } from './component/biox-show-config-portal/biox-show-config-portal.component';
 
 
 @NgModule({
   declarations: [
     BioxConfigureSpecsComponent,
-    BioxConfigureSpecsDialogComponent
+    BioxConfigureSpecsDialogComponent,
+    BioxShowConfigPortalComponent
   ],
   imports: [
     CommonModule,
@@ -18,6 +20,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
     CoreModule,
   ],
-  exports: [BioxConfigureSpecsComponent]
+  exports: [BioxConfigureSpecsComponent, BioxShowConfigPortalComponent]
 })
 export class BioxConfigCoreModule { }

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Workflow} from '../model/workflow.class';
+import {Workflow, WorkflowMode} from '../model/workflow.class';
 import {BioxProcessable, BioxProtocol} from '../../../../core/model/entities/biox-processable.entity';
 import {WorkflowNodeProcessable} from '../model/workflow-node-processable.class';
 import {BioxFlow} from '../../../../core/model/entities/biox-flow.entity';
@@ -165,6 +165,10 @@ export class WorkflowManagerService {
 
   public onConnectionSelected(): Observable<WorkflowConnectionSelected> {
     return this.workflow.onConnectionSelected();
+  }
+
+  public getMode(): WorkflowMode {
+    return this.workflow.getMode();
   }
 
 }
