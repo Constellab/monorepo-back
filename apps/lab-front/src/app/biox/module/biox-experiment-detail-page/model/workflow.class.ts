@@ -156,7 +156,7 @@ export class Workflow<T extends WorkflowNode<any>> {
     const node: T = this.findNodeWithId(connection.input_id);
 
     // check if the input is available
-    if (!node.inputIsValid(connection.input_class)) {
+    if (!node.inputIsAvailable(connection.input_class)) {
       console.log('Input not available');
       // remove the connection
       this.editor.removeSingleConnection(connection.output_id, connection.input_id,

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {BioxExperiment, BioxExperimentDatasource} from '../model/entities/biox-experiment.entity';
-import {BioxExperimentFlow} from '../model/entities/biox-experiment-flow.entity';
+import {BioxFlow} from '../model/entities/biox-flow.entity';
 import {map} from 'rxjs/operators';
 import {clRxjsDebug} from '@monorepo/core-lib';
 
@@ -33,14 +33,14 @@ export class BioxExperimentService {
   }
 
   /////////////////////// FLOW ////////////////////////
-  public getExperimentFlow(id: string): Observable<BioxExperimentFlow> {
-    return this.apiService.get(`flow?experiment_uri=${id}`, BioxExperimentFlow).pipe(
+  public getExperimentFlow(id: string): Observable<BioxFlow> {
+    return this.apiService.get(`flow?experiment_uri=${id}`, BioxFlow).pipe(
       map(flow => this.initFlowConnections(flow)),
       clRxjsDebug(),
     );
   }
 
-  private initFlowConnections(protocol: BioxExperimentFlow): BioxExperimentFlow {
+  private initFlowConnections(protocol: BioxFlow): BioxFlow {
     protocol.initConnectionsAndNodes();
     return protocol;
   }

@@ -1,4 +1,5 @@
 import {LabEntity} from './lab-entity.entity';
+import {BioxFlowInterface} from '../entities/biox-flow.entity';
 
 // todo rename class and methods
 export interface BioxConnectionPart {
@@ -12,9 +13,19 @@ export interface BioxConnectionPart {
   setNode(node: BioxNode): void;
 }
 
+/**
+ * Type of the connection
+ * node --> connection between 2 nodes
+ * interface --> representing an interface of the manager
+ * outerface --> representing an outerface of the manager
+ */
+export type BioxConnectionType = 'node' | 'interface' | 'outerface';
+
 export interface BioxConnection {
   from: BioxConnectionPart;
   to: BioxConnectionPart
+
+  getType(): BioxConnectionType;
 }
 
 export abstract class BioxNode extends LabEntity {
@@ -23,6 +34,7 @@ export abstract class BioxNode extends LabEntity {
 
   outputs: Record<string, BioxConnectionPart[]> = {};
 
+  // name automatically set by the ConnectionManager
   name: string;
 
   setInput(connectionPart: BioxConnectionPart): void {
@@ -51,9 +63,13 @@ export abstract class BioxNode extends LabEntity {
 
 export abstract class BioxConnectionManager extends LabEntity {
 
-  abstract getConnections(): BioxConnection[];
+  abstract getAllConnections(): BioxConnection[];
 
   abstract getNodes(): Record<string, BioxNode>;
+
+  abstract getInterfaces(): Record<string, BioxFlowInterface>;
+
+  abstract getOuterfaces(): Record<string, BioxFlowInterface>;
 
   public getNodesArray(): BioxNode[] {
     const nodes: Record<string, BioxNode> = this.getNodes();
@@ -68,11 +84,11 @@ export abstract class BioxConnectionManager extends LabEntity {
   }
 
   /**
-   * Set the node objects in the BioxConnectionPart to directly have access to T object in part
+   * Set the node objects in the BioxConnectionPart to directly have access to BioxNode object in part
    */
   private initConnectionNodes(): void {
     const nodes: Record<string, BioxNode> = this.getNodes();
-    for (const connection of this.getConnections()) {
+    for (const connection of this.getNodesConnections()) {
       // init from node
       const fromNode: BioxNode = nodes[connection.from.getNodeName()];
       connection.from.setNode(fromNode);
@@ -87,7 +103,7 @@ export abstract class BioxConnectionManager extends LabEntity {
    * Init the node inputs and outputs connections
    */
   private initNodesInputsOutputs(): void {
-    for (const connection of this.getConnections()) {
+    for (const connection of this.getNodesConnections()) {
       const from: BioxNode = connection.from.getNode();
       from.addOutput(connection.to);
 
@@ -115,5 +131,12 @@ export abstract class BioxConnectionManager extends LabEntity {
     }
 
     return roots;
+  }
+
+  /**
+   * return the connections between nodes (not the interfaces nor the outerfaces)
+   */
+  public getNodesConnections(): BioxConnection[] {
+    return this.getAllConnections().filter(connection => connection.getType() === 'node');
   }
 }

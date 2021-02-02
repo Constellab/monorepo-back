@@ -1,11 +1,11 @@
 import {BioxLink, BioxLinkPart, BioxProcess, BioxProcessable, BioxProtocol} from '../model/entities/biox-processable.entity';
 import {BioxExperiment} from '../model/entities/biox-experiment.entity';
 import {
-  BioxExperimentFlow,
-  BioxExperimentFlowJob,
-  BioxExperimentFlowProcess,
-  BioxExperimentFlowStep
-} from '../model/entities/biox-experiment-flow.entity';
+  BioxFlow,
+  BioxFlowJob,
+  BioxFlowProcess,
+  BioxFlowStep
+} from '../model/entities/biox-flow.entity';
 import {BioxProcessableBase} from '../model/entities/biox-processable-base.entity';
 import {BioxConfig} from '../model/entities/biox-config.entity';
 import {BioxJob} from '../model/entities/biox-job.entity';
@@ -16,7 +16,7 @@ import {BioxJob} from '../model/entities/biox-job.entity';
  */
 export class BioxExperimentFlowFactory {
 
-  public static bioxExperimentFromProcessable(bioxProcessable: BioxProcessable, experiment: BioxExperiment): BioxExperimentFlow {
+  public static bioxExperimentFromProcessable(bioxProcessable: BioxProcessable, experiment: BioxExperiment): BioxFlow {
     if (bioxProcessable instanceof BioxProtocol) {
       return BioxExperimentFlowFactory.bioxExperimentFromProtocol(bioxProcessable, experiment);
     } else if (bioxProcessable instanceof BioxProcess) {
@@ -27,8 +27,8 @@ export class BioxExperimentFlowFactory {
   }
 
 
-  public static bioxExperimentFromProtocol(protocol: BioxProtocol, experiment: BioxExperiment): BioxExperimentFlow {
-    const flow: BioxExperimentFlow = BioxExperimentFlowFactory.initExperimentFlow(protocol, experiment);
+  public static bioxExperimentFromProtocol(protocol: BioxProtocol, experiment: BioxExperiment): BioxFlow {
+    const flow: BioxFlow = BioxExperimentFlowFactory.initExperimentFlow(protocol, experiment);
 
     // create the jobs
     for (const nodeName of Object.keys(protocol.data.graph.nodes)) {
@@ -47,12 +47,12 @@ export class BioxExperimentFlowFactory {
     return flow;
   }
 
-  public static bioxExperimentFromProcess(process: BioxProcess, experiment: BioxExperiment): BioxExperimentFlow {
+  public static bioxExperimentFromProcess(process: BioxProcess, experiment: BioxExperiment): BioxFlow {
     return BioxExperimentFlowFactory.initExperimentFlow(process, experiment);
   }
 
-  private static initExperimentFlow(process: BioxProcessableBase, experiment: BioxExperiment): BioxExperimentFlow {
-    const flow: BioxExperimentFlow = new BioxExperimentFlow();
+  private static initExperimentFlow(process: BioxProcessableBase, experiment: BioxExperiment): BioxFlow {
+    const flow: BioxFlow = new BioxFlow();
     flow.experimentId = experiment.id;
     flow.type = process.type;
     flow.createdAt = process.createdAt;
@@ -89,8 +89,8 @@ export class BioxExperimentFlowFactory {
     return job;
   }
 
-  private static flowStepFromBioxLink(link: BioxLink): BioxExperimentFlowStep {
-    const flowStep: BioxExperimentFlowStep = new BioxExperimentFlowStep();
+  private static flowStepFromBioxLink(link: BioxLink): BioxFlowStep {
+    const flowStep: BioxFlowStep = new BioxFlowStep();
 
     flowStep.from = BioxExperimentFlowFactory.flowJobFromLinkPart(link.from);
     flowStep.to = BioxExperimentFlowFactory.flowJobFromLinkPart(link.to);
@@ -99,11 +99,11 @@ export class BioxExperimentFlowFactory {
     return flowStep;
   }
 
-  private static flowJobFromLinkPart(linkPart: BioxLinkPart): BioxExperimentFlowJob {
-    const flowJob: BioxExperimentFlowJob = new BioxExperimentFlowJob();
+  private static flowJobFromLinkPart(linkPart: BioxLinkPart): BioxFlowJob {
+    const flowJob: BioxFlowJob = new BioxFlowJob();
     flowJob.jobId = null;
 
-    const flowProcess: BioxExperimentFlowProcess = new BioxExperimentFlowProcess();
+    const flowProcess: BioxFlowProcess = new BioxFlowProcess();
     flowProcess.instanceName = linkPart.getNodeName();
     flowProcess.port = linkPart.getPort();
 

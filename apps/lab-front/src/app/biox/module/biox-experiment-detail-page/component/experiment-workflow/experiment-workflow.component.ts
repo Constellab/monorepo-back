@@ -4,12 +4,12 @@ import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment
 import {BioxProcessService} from '../../../../../core/entity-service/biox-process.service';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
 import {BioxProcessable, BioxProcessDatasource, BioxProtocolDatasource} from '../../../../../core/model/entities/biox-processable.entity';
-import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
-import {BioxExperimentFlow, BioxExperimentFlowStep} from '../../../../../core/model/entities/biox-experiment-flow.entity';
+import {BioxFlow, BioxFlowStep} from '../../../../../core/model/entities/biox-flow.entity';
 import {WorkflowConnectionSelected} from '../../model/workflow-event.class';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {BioxConnection} from '../../../../../core/model/global/biox-connection.class';
 import {BioxResourceDialogComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-dialog/biox-resource-dialog.component';
+import {BioxFlowService} from '../../../../../core/entity-service/biox-flow.service';
 
 
 @Component({
@@ -23,7 +23,7 @@ export class ExperimentWorkflowComponent implements OnInit {
 
   @ViewChild('workflow', {static: true}) container: ElementRef<HTMLElement>;
 
-  flow: BioxExperimentFlow;
+  flow: BioxFlow;
 
   availableProtocols: BioxProtocolDatasource;
   availableProcesses: BioxProcessDatasource;
@@ -36,7 +36,7 @@ export class ExperimentWorkflowComponent implements OnInit {
   constructor(private workflowManagerService: WorkflowManagerService,
               private bioxProtocolService: BioxProtocolService,
               private bioxProcessService: BioxProcessService,
-              private bioxExperimentService: BioxExperimentService,
+              private bioxFlowService: BioxFlowService,
               private dialogService: FlDialogService) {
   }
 
@@ -53,13 +53,13 @@ export class ExperimentWorkflowComponent implements OnInit {
 
   private loadExperimentFlow(): void {
     this.flowIsLoading = true;
-    this.bioxExperimentService.getExperimentFlow(this.experiment.id).subscribe(
+    this.bioxFlowService.getExperimentFlow(this.experiment.id).subscribe(
       flow => this.loadExperimentFlowSuccess(flow),
       () => this.flowIsLoading = false
     );
   }
 
-  private loadExperimentFlowSuccess(flow: BioxExperimentFlow): void {
+  private loadExperimentFlowSuccess(flow: BioxFlow): void {
     this.workflowManagerService.init(this.container.nativeElement, flow, this.experiment);
     this.flow = flow;
     this.flowIsLoading = false;
@@ -90,7 +90,7 @@ export class ExperimentWorkflowComponent implements OnInit {
   onConnectionSelected(connectionEvent: WorkflowConnectionSelected): void {
     const connection: BioxConnection = connectionEvent.connection.object;
 
-    if (connection instanceof BioxExperimentFlowStep) {
+    if (connection instanceof BioxFlowStep) {
       this.dialogService.openSmallDialog(BioxResourceDialogComponent, {data: connection.resource.getObs()});
     }
 

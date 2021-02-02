@@ -1,9 +1,10 @@
 import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
 import {ClCoreJsonConvert, ClDeserializeItem, ClRecordTransformOverride} from '@monorepo/core-lib';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {BioxConnection, BioxConnectionManager, BioxConnectionPart} from '../global/biox-connection.class';
+import {BioxConnection, BioxConnectionManager, BioxConnectionPart, BioxConnectionType} from '../global/biox-connection.class';
 import {BioxProcessableBase} from './biox-processable-base.entity';
 import {Expose, Type} from 'class-transformer';
+import {BioxFlowInterface} from './biox-flow.entity';
 
 ////////////////////////////////// LINK ///////////////////////////////////////
 
@@ -41,6 +42,12 @@ export class BioxLink implements BioxConnection {
 
   @Type(() => BioxLinkPart)
   to: BioxLinkPart = null;
+
+  getType(): BioxConnectionType {
+    return 'node';
+  }
+
+
 }
 
 
@@ -62,9 +69,9 @@ export class BioxProtocolGraph extends BioxConnectionManager {
 
   title: any;
 
-  interfaces: Record<string, unknown>;
+  interfaces: Record<string, any>;
 
-  outerfaces: Record<string, unknown>;
+  outerfaces: Record<string, any>;
 
   layout: Record<string, unknown>;
 
@@ -78,12 +85,20 @@ export class BioxProtocolGraph extends BioxConnectionManager {
     return Object.keys(this.nodes).map(key => this.nodes[key]);
   }
 
-  getConnections(): BioxConnection[] {
+  getAllConnections(): BioxConnection[] {
     return this.links;
   }
 
   getNodes(): Record<string, BioxProcessable> {
     return this.nodes;
+  }
+
+  getInterfaces(): Record<string, BioxFlowInterface> {
+    return this.interfaces;
+  }
+
+  getOuterfaces(): Record<string, BioxFlowInterface> {
+    return this.outerfaces;
   }
 
 

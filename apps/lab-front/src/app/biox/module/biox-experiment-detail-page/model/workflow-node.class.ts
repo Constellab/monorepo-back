@@ -38,7 +38,7 @@ export class WorkflowNode<T extends BioxNode> {
    *
    * @param inputName
    */
-  public inputIsValid(inputName: string): boolean {
+  public inputIsAvailable(inputName: string): boolean {
     const connection: DrawflowConnectionDetail[] = this.getDrawflowNode().inputs[inputName]?.connections || null;
 
     // if the input doesn't exist
