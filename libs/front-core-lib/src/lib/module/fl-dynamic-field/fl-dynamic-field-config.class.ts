@@ -6,6 +6,7 @@ export interface FlDynamicFormFieldConfig {
   fieldConfig: FlDynamicFieldConfig;
   initValue?: any;
   disabled?: boolean;
+  required?: boolean;
 }
 
 

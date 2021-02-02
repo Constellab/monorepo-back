@@ -5,12 +5,16 @@
     <mat-form-field appearance="outline" class="g-full">
       <mat-label>{{config.placeholder}}</mat-label>
       <input matInput [type]="config.inputType" [formControl]="formControl"
-             (ngModelChange)="emitValue($event)"
+             (ngModelChange)="emitValue($event)" [required]="required"
              placeholder="{{config.placeholder}}">
 
       <span *ngIf="config.prefix" matPrefix>{{config.prefix}}</span>
       <span *ngIf="config.suffix" matSuffix>{{config.suffix}}</span>
       <mat-hint *ngIf="config.hint">{{config.hint}}</mat-hint>
+
+      <mat-error *ngIf="formControl.hasError('required')">
+        {{config.placeholder | flErrorRequired:false}}
+      </mat-error>
     </mat-form-field>
   </ng-container>
 
@@ -21,7 +25,7 @@
     <mat-form-field appearance="outline" class="g-full">
       <mat-label>{{config.placeholder}}</mat-label>
       <mat-select placeholder="{{config.placeholder}}"
-                  [formControl]="formControl"
+                  [formControl]="formControl" [required]="required"
                   (ngModelChange)="emitValue($event)">
         <mat-option *ngFor="let option of config.selectOptions" [value]="option">{{option}}</mat-option>
       </mat-select>
@@ -29,6 +33,10 @@
       <span *ngIf="config.prefix" matPrefix>{{config.prefix}}</span>
       <span *ngIf="config.suffix" matSuffix>{{config.suffix}}</span>
       <mat-hint *ngIf="config.hint">{{config.hint}}</mat-hint>
+
+      <mat-error *ngIf="formControl.hasError('required')">
+        {{config.placeholder | flErrorRequired:false}}
+      </mat-error>
     </mat-form-field>
   </ng-container>
 

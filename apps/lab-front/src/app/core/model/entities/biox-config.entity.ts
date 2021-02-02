@@ -44,7 +44,8 @@ export class BioxConfigSpecs extends FlRecordWrapper<BioxConfigSpec> {
     const formFieldConfig: FlDynamicFormFieldConfig = {
       controlName: fieldName,
       initValue: currentConfig !== undefined ? currentConfig : spec.default,
-      fieldConfig: null
+      fieldConfig: null,
+      required: !spec.hasDefaultValue() // required if there is no default value
     };
 
     // create a select
@@ -54,7 +55,7 @@ export class BioxConfigSpecs extends FlRecordWrapper<BioxConfigSpec> {
         placeholder: fieldName,
         selectOptions: spec.allowed_values,
         hint: spec.description,
-        suffix: spec.unit
+        suffix: spec.unit,
       };
     }
     // create a input
@@ -78,7 +79,7 @@ export class BioxConfigSpecs extends FlRecordWrapper<BioxConfigSpec> {
     const defaultConfig: any = {};
     for (const specName of Object.keys(this.record)) {
       const spec: BioxConfigSpec = this.record[specName];
-      if (spec.default !== undefined) {
+      if (spec.hasDefaultValue()) {
         defaultConfig[specName] = spec.default;
       }
     }
@@ -89,8 +90,8 @@ export class BioxConfigSpecs extends FlRecordWrapper<BioxConfigSpec> {
    * Merge a config with the default to get the complete config
    * if not all the field are provided
    */
-  public mergeConfigWithDefault(config?: any): any{
-    if(config == null){
+  public mergeConfigWithDefault(config?: any): any {
+    if (config == null) {
       config = {};
     }
     return Object.assign(this.getDefaultConfig(), config);
@@ -130,6 +131,10 @@ export class BioxConfigSpecTyped<T extends BioxConfigSpecType, H> {
    * Measure unit of the value (ex km)
    */
   unit?: string;
+
+  public hasDefaultValue(): boolean {
+    return this.default !== undefined;
+  }
 }
 
 

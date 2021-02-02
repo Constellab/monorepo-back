@@ -20,7 +20,6 @@ export class BioxConfigureSpecsComponent implements OnInit {
 
   @Input() formGp: FormGroup;
 
-
   configs: FlDynamicFormFieldConfig[];
 
   constructor() {

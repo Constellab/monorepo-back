@@ -8,6 +8,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import { FlDynamicFormComponent } from './fl-dynamic-form/fl-dynamic-form.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 
 
 /**
@@ -27,6 +28,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     FlexLayoutModule,
 
     FlTranslateModule,
+    FlCorePipeModule,
   ],
   exports: [FlDynamicFieldComponent, FlDynamicFormComponent]
 })

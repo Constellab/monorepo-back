@@ -1,5 +1,8 @@
 <div [formGroup]="formGp" fxLayout="row wrap" fxLayoutGap="1em">
   <div *ngFor="let config of configs" class="field-container">
-    <fl-dynamic-field [config]="config.fieldConfig" [formControlName]="config.controlName"></fl-dynamic-field>
+    <fl-dynamic-field [config]="config.fieldConfig"
+                      [formControlName]="config.controlName"
+                      [required]="config.required">
+    </fl-dynamic-field>
   </div>
 </div>

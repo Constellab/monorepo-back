@@ -3,7 +3,7 @@
 </fl-dialog-title>
 
 <mat-dialog-content>
-  <form (ngSubmit)="submit()" id="config-form">
+  <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
     <gen-biox-configure-specs [specs]="configSpecs" [currentConfig]="currentConfig"
                               [formGp]="formGp"></gen-biox-configure-specs>
   </form>

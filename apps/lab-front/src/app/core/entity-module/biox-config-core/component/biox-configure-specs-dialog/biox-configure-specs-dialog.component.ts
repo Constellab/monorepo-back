@@ -21,7 +21,7 @@ export interface BioxConfigureSpecsDialogInput {
 })
 export class BioxConfigureSpecsDialogComponent implements OnInit {
 
-  formGp: FormGroup = new FormGroup({});
+  formGp: FormGroup;
 
   configSpecs: BioxConfigSpecs;
   currentConfig: any;
@@ -33,6 +33,7 @@ export class BioxConfigureSpecsDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.formGp = new FormGroup({});
   }
 
   submit(): void {

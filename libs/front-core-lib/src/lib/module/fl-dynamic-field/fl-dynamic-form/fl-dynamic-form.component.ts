@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
 
 /**
@@ -28,11 +28,16 @@ export class FlDynamicFormComponent implements OnInit {
 
   private initForm(): void {
     for (const config of this.configs) {
-      this.formGp.addControl(config.controlName, new FormControl({
-          value: config.initValue,
-          disabled: config.disabled === true
-        })
-      );
+      const control: FormControl = new FormControl({
+        value: config.initValue,
+        disabled: config.disabled === true
+      });
+
+      if(config.required){
+        control.setValidators(Validators.required);
+      }
+
+      this.formGp.addControl(config.controlName, control);
     }
   }
 
