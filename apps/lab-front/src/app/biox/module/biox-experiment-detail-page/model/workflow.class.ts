@@ -77,9 +77,9 @@ export class Workflow<T extends WorkflowNode<any>> {
       throw new Error(`The layer with id ${layerId} doesn't exist`);
     }
 
-    this.editor.changeModule(layerId);
     // update the current layer
     this.currentLayer$.next(layer);
+    this.editor.changeModule(layerId);
   }
 
   public createSubLayerIfNotExists(layerId: string, name: string): void {
