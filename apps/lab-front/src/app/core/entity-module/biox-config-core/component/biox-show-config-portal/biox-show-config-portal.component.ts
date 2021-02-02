@@ -1,6 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
-import {BioxJob} from '../../../../model/entities/biox-job.entity';
 
 /**
  * Simple dialog to show a config json
@@ -14,9 +13,8 @@ export class BioxShowConfigPortalComponent implements OnInit {
 
   config: any;
 
-  constructor(@Inject(FL_PORTAL_DATA) job: BioxJob) {
-    // merge the current config with the default values
-    this.config = job.process.configSpecs.mergeConfigWithDefault(job.config.params);
+  constructor(@Inject(FL_PORTAL_DATA) config: any) {
+    this.config = config;
   }
 
   ngOnInit(): void {

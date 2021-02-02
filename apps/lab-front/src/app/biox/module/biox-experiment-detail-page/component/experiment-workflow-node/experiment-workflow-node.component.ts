@@ -82,7 +82,7 @@ export class ExperimentWorkflowNodeComponent implements OnInit {
           disposeOnOutsideClick: true,
         }
       );
-      this.portalService.createPortal(BioxShowConfigPortalComponent, portalConfig, this.node.object);
+      this.portalService.createPortal(BioxShowConfigPortalComponent, portalConfig, this.node.object.getCurrentConfig());
     }
 
   }

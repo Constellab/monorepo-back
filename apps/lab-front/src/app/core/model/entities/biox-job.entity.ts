@@ -36,4 +36,9 @@ export class BioxJob extends BioxNode {
   @Type(() => BioxProcessableBase)
   process: BioxProcessableBase = null;
 
+  // merge the current config with the default values to ge tte current config
+  public getCurrentConfig(): any{
+    return this.process.configSpecs.mergeConfigWithDefault(this.config.params);
+  }
+
 }
