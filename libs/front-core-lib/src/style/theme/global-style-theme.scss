@@ -18,6 +18,10 @@
   // define the material theme
   @include angular-material-theme($mat-theme);
 
+  :root {
+    --card-background: #{mat-color($background, card)};
+  }
+
   body {
     background-color: $background-color;
     color: $foreground-color;

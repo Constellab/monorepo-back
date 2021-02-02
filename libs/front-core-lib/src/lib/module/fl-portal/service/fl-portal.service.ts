@@ -1,4 +1,4 @@
-import {ElementRef, Injectable, Injector} from '@angular/core';
+import {ElementRef, Injectable, Injector, Renderer2, RendererFactory2} from '@angular/core';
 import {
   BlockScrollStrategy,
   CloseScrollStrategy,
@@ -17,6 +17,7 @@ import {FlPortalConfig} from '../model/fl-portal-config.class';
 import {FL_PORTAL_DATA, FlOverlayConfig, flPortalArrowOffset, FlPortalDefaultPosition} from '../model/fl-portal.class';
 import {FlOverlayRef} from '../model/fl-overlay-ref.class';
 import {FlPortalArrowComponent} from '../component/fl-portal-arrow/fl-portal-arrow.component';
+import {FlEventWrapper} from '../../../model/fl-event-wrapper.class';
 
 
 /**
@@ -26,14 +27,17 @@ import {FlPortalArrowComponent} from '../component/fl-portal-arrow/fl-portal-arr
  *
  * See : https://material.angular.io/cdk/overlay/overview
  *
- * See :https://material.angular.io/cdk/portal/overview
+ * See : https://material.angular.io/cdk/portal/overview
  *
  */
 @Injectable()
 export class FlPortalService {
 
+  private renderer: Renderer2;
+
   constructor(private overlay: Overlay, private injector: Injector,
-              private router: Router) {
+              private router: Router, rendererFactory: RendererFactory2) {
+    this.renderer = rendererFactory.createRenderer(null, null);
   }
 
   /**
@@ -173,13 +177,35 @@ export class FlPortalService {
       obs$.push(overlayRef.backdropClick().pipe(map(() => true)));
     }
 
+    // manage the disposeOnOutsideClick
+    let outsideClickListener: () => void;
+    if (config.config.disposeOnOutsideClick) {
+      // wait 500 ms before listening to event because it will be called if the portal is opened with a click
+      setTimeout(() => {
+        // add a listener on the body
+        outsideClickListener = this.renderer.listen('body', 'click',
+          (event: MouseEvent) => this.handleOutsideClick(event, overlayRef));
+      }, 500);
+    }
+
     // merge events and unsubscribe on the first emission
     merge(...obs$).pipe(first()).subscribe((val) => {
       // if we received a true --> close the portal
       if (val) {
         overlayRef.dispose();
       }
+      // clear the outside click listener if it exists
+      if (outsideClickListener) {
+        outsideClickListener();
+      }
     });
+  }
+
+  private handleOutsideClick(event: MouseEvent, overlay: FlOverlayRef): void {
+    const wrapper: FlEventWrapper = new FlEventWrapper(event);
+    if (!wrapper.parentHasClass('cdk-overlay-container')) {
+      overlay.dispose();
+    }
   }
 
   /**

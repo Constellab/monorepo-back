@@ -6,10 +6,11 @@ import {BioxProtocolService} from '../../../../../core/entity-service/biox-proto
 import {BioxProcessable, BioxProcessDatasource, BioxProtocolDatasource} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxFlow, BioxFlowStep} from '../../../../../core/model/entities/biox-flow.entity';
 import {WorkflowConnectionSelected} from '../../model/workflow-event.class';
-import {FlDialogService} from '@monorepo/front-core-lib';
+import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {BioxConnection} from '../../../../../core/model/global/biox-connection.class';
-import {BioxResourceDialogComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-dialog/biox-resource-dialog.component';
+import {BioxResourcePortalComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-portal/biox-resource-portal.component';
 import {BioxFlowService} from '../../../../../core/entity-service/biox-flow.service';
+import {ConnectedPosition} from '@angular/cdk/overlay';
 
 
 @Component({
@@ -37,9 +38,10 @@ export class ExperimentWorkflowComponent implements OnInit {
               private bioxProtocolService: BioxProtocolService,
               private bioxProcessService: BioxProcessService,
               private bioxFlowService: BioxFlowService,
-              private dialogService: FlDialogService) {
+              private portalService: FlPortalService) {
   }
 
+  // todo handle on destroy
   ngOnInit(): void {
     this.loadExperimentFlow();
 
@@ -74,7 +76,6 @@ export class ExperimentWorkflowComponent implements OnInit {
   }
 
 
-  // todo check that the object is a processable and handle process name
   addProcessable(ev: DragEvent): void {
     this.workflowManagerService.addProcessableNode(this.draggingProcessable,
       this.flow.id, ev.offsetX, ev.offsetY);
@@ -86,12 +87,26 @@ export class ExperimentWorkflowComponent implements OnInit {
     this.draggingProcessable = processable;
   }
 
-  // todo handle on destroy
   onConnectionSelected(connectionEvent: WorkflowConnectionSelected): void {
     const connection: BioxConnection = connectionEvent.connection.object;
 
     if (connection instanceof BioxFlowStep) {
-      this.dialogService.openSmallDialog(BioxResourceDialogComponent, {data: connection.resource.getObs()});
+      const position: ConnectedPosition[] = [{
+        originX: 'center',
+        originY: 'top',
+        overlayX: 'center',
+        overlayY: 'bottom',
+        offsetY: -20
+      }];
+      const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(connectionEvent.event.target as any, position, {
+        panelClass: 'g-portal-panel',
+        elevation: true,
+        disposeOnNavigation: true,
+        size: 'small',
+        disposeOnOutsideClick: true,
+      });
+
+      this.portalService.createPortal(BioxResourcePortalComponent, portalConfig, connection.resource.getObs());
     }
 
   }

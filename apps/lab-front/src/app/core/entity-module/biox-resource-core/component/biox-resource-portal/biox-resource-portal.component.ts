@@ -1,18 +1,18 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {BioxResource} from '../../../../model/entities/biox-resource.entity';
 import {Observable} from 'rxjs';
+import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
 
 @Component({
-  selector: 'gen-biox-resource-dialog',
-  templateUrl: './biox-resource-dialog.component.html',
-  styleUrls: ['./biox-resource-dialog.component.scss']
+  selector: 'gen-biox-resource-portal',
+  templateUrl: './biox-resource-portal.component.html',
+  styleUrls: ['./biox-resource-portal.component.scss']
 })
-export class BioxResourceDialogComponent implements OnInit {
+export class BioxResourcePortalComponent implements OnInit {
 
   resource: BioxResource;
 
-  constructor(@Inject(MAT_DIALOG_DATA) input: BioxResource | Observable<BioxResource>) {
+  constructor(@Inject(FL_PORTAL_DATA) input: BioxResource | Observable<BioxResource>) {
     if (input instanceof Observable) {
       input.subscribe(
         resources => this.resource = resources

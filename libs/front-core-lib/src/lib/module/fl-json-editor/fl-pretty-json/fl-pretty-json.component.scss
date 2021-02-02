@@ -1,3 +1,7 @@
+.tree-node{
+  align-items: initial;
+}
+
 .invisible {
   display: none;
 }
@@ -14,16 +18,16 @@ mat-tree-node{
   cursor: pointer;
 }
 
-.key-color{
-  //color: #741a8d;
+.boolean{
+  color: #569cd6;
 }
 
-.string-value{
-  //color: #a8201c;
+.number{
+  color: #a0d982;
 }
 
-.no-string-value{
-  //color: #1d00ca;
+.string{
+  color: #ce9178;
 }
 
 .key{

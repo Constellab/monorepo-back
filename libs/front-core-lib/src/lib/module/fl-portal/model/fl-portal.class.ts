@@ -31,6 +31,12 @@ export interface FlOverlayConfig extends OverlayConfig {
   disposeOnBackdropClick?: boolean;
 
   /**
+   * To be used when there is no backdrop. It dispose the portal when a click occurred outside the portal
+   * It starts listening to outside click 500 ms after portal opening
+   */
+  disposeOnOutsideClick?: boolean;
+
+  /**
    * Add an elevation to the panel (class mat-elevation-z5)
    */
   elevation?: boolean;

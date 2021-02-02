@@ -9,7 +9,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
 import {
   FlApiModule,
-  FlDialogModule,
+  FlDialogModule, FlPortalModule,
   flSetRootInjector,
   FlSnackBarModule,
   FlSvgIconModule,
@@ -51,6 +51,7 @@ import {apiModuleConfig} from './core/utils/api-module.config';
 
     FlDialogModule.forRoot(),
     FlSnackBarModule.forRoot(),
+    FlPortalModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],

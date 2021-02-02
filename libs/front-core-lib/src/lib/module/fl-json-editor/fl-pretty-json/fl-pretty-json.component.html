@@ -3,18 +3,18 @@
 
   <!-- Primitive object -->
   <mat-tree *ngIf="object != null" [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
-    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle class="tree-node">
       <span class="key-color key">{{node.key}}</span>&nbsp;:
 
       <span class="value">
-      <span class="g-light-text" *ngIf="node.value == null">null</span>
+      <span class="g-text-light" *ngIf="node.value == null">null</span>
 
-      <span *ngIf="node.type === 'string' ;else noString">
-        "<span class="string-value">{{node.value}}</span>"
+
+      <span [ngClass]="node.type">
+        <ng-container *ngIf="node.type === 'string'">"</ng-container>
+        <span class="string-value">{{node.value}}</span>
+        <ng-container *ngIf="node.type === 'string'">"</ng-container>
       </span>
-      <ng-template #noString>
-        <span class="no-string-value">{{node.value}}</span>
-      </ng-template>
     </span>
     </mat-tree-node>
 
@@ -32,12 +32,12 @@
           </fl-text-icon>
         </div>
 
-        <div [ngClass]="{'g-light-text': !nestedTreeControl.isExpanded(node)}">
+        <div [ngClass]="{'g-text-light': !nestedTreeControl.isExpanded(node)}">
           &nbsp;{{node.information}}
         </div>
 
         <div *ngIf="!nestedTreeControl.isExpanded(node)">
-          &nbsp;<span class="g-light-text">{{node.preview}}</span>
+          &nbsp;<span class="g-text-light">{{node.preview}}</span>
         </div>
       </div>
 

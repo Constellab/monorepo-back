@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BioxResourceDialogComponent } from './biox-resource-dialog.component';
+import { BioxResourcePortalComponent } from './biox-resource-portal.component';
 
 describe('BioxResourceDialogComponent', () => {
-  let component: BioxResourceDialogComponent;
-  let fixture: ComponentFixture<BioxResourceDialogComponent>;
+  let component: BioxResourcePortalComponent;
+  let fixture: ComponentFixture<BioxResourcePortalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BioxResourceDialogComponent ]
+      declarations: [ BioxResourcePortalComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BioxResourceDialogComponent);
+    fixture = TestBed.createComponent(BioxResourcePortalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

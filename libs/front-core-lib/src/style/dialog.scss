@@ -1,4 +1,4 @@
-// Style used for the dialog
+// Style used for the dialog and portal
 
 // set the max height for the content as full screen
 .mat-dialog-content {
@@ -98,6 +98,13 @@
 
 
 /*******************************   PORTAL  *************************************/
+// style used for the portals
+.g-portal-panel{
+  padding: 1em;
+  background-color: var(--card-background);
+}
+
+
 /* CSS for the Portal Arrow (Make it disappear on small screen) */
 @media (max-width: 600px) {
   .g-arrow-overlay {

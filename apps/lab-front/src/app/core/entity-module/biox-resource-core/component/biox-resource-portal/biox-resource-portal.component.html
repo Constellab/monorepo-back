@@ -1,0 +1,11 @@
+<div>
+  <ng-container *ngIf="resource; else isLoading">
+    <gen-biox-resource-info [resource]="resource"></gen-biox-resource-info>
+  </ng-container>
+
+  <ng-template #isLoading>
+    <div class="g-text-centered">
+      <fl-loader></fl-loader>
+    </div>
+  </ng-template>
+</div>
