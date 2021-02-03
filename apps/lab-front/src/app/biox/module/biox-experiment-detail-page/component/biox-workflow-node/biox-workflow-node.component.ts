@@ -16,11 +16,11 @@ import {BioxShowConfigPortalComponent} from '../../../../../core/entity-module/b
  * This component is converted to an angular element to be injectable in css
  */
 @Component({
-  selector: 'gen-experiment-workflow-node',
-  templateUrl: './experiment-workflow-node.component.html',
-  styleUrls: ['./experiment-workflow-node.component.scss']
+  selector: 'gen-biox-workflow-node',
+  templateUrl: './biox-workflow-node.component.html',
+  styleUrls: ['./biox-workflow-node.component.scss']
 })
-export class ExperimentWorkflowNodeComponent implements OnInit {
+export class BioxWorkflowNodeComponent implements OnInit {
 
   // Name of the node
   @Input() name: string;

@@ -12,12 +12,12 @@ export type WorkflowMode = 'edit' | 'readOnly';
 /**
  * Class to manage Drawflow
  */
-export class Workflow<T extends WorkflowNode<any>> {
+export class Workflow {
 
   private readonly editor: Drawflow;
 
-  private readonly layers: WorkflowLayer<T>[];
-  private currentLayer$: BehaviorSubject<WorkflowLayer<T>>;
+  private readonly layers: WorkflowLayer[];
+  private currentLayer$: BehaviorSubject<WorkflowLayer>;
 
   private nodeGeneration: number = 0;
 
@@ -33,11 +33,11 @@ export class Workflow<T extends WorkflowNode<any>> {
     this.setMode(mode);
 
     // init layers
-    const currentLayer: WorkflowLayer<T> = new WorkflowLayer<T>(this.editor, 'Home', 'Experiment', null);
+    const currentLayer: WorkflowLayer = new WorkflowLayer(this.editor, 'Home', 'Experiment', null);
     this.layers = [currentLayer];
 
     // init subject
-    this.currentLayer$ = new BehaviorSubject<WorkflowLayer<T>>(currentLayer);
+    this.currentLayer$ = new BehaviorSubject<WorkflowLayer>(currentLayer);
 
     this.editor.on('connectionCreated',
       (connection) => this.onConnectionCreated(connection));
@@ -62,7 +62,7 @@ export class Workflow<T extends WorkflowNode<any>> {
 
 
   ////////////////////// LAYERS ///////////////////////////
-  get currentLayer(): WorkflowLayer<T> {
+  get currentLayer(): WorkflowLayer {
     return this.currentLayer$.value;
   }
 
@@ -72,7 +72,7 @@ export class Workflow<T extends WorkflowNode<any>> {
       return;
     }
 
-    const layer: WorkflowLayer<T> = this.findLayerWithId(layerId);
+    const layer: WorkflowLayer = this.findLayerWithId(layerId);
     if (!layerId) {
       throw new Error(`The layer with id ${layerId} doesn't exist`);
     }
@@ -85,7 +85,7 @@ export class Workflow<T extends WorkflowNode<any>> {
   public createSubLayerIfNotExists(layerId: string, name: string): void {
     if (this.findLayerWithId(layerId) == null) {
       this.editor.addModule(layerId);
-      this.layers.push(new WorkflowLayer<T>(this.editor, layerId, name, this.currentLayer));
+      this.layers.push(new WorkflowLayer(this.editor, layerId, name, this.currentLayer));
     }
 
     this.selectLayer(layerId);
@@ -97,19 +97,19 @@ export class Workflow<T extends WorkflowNode<any>> {
 
 
   // return the layer with the id
-  private findLayerWithId(layerId: string): WorkflowLayer<T> {
+  private findLayerWithId(layerId: string): WorkflowLayer {
     return this.layers.find(layer => layer.id === layerId);
   }
 
 
-  public getCurrentLayerHierarchy(): Observable<WorkflowLayer<T>[]> {
+  public getCurrentLayerHierarchy(): Observable<WorkflowLayer[]> {
     return this.currentLayer$.asObservable().pipe(
       map(layer => layer.getLayerHierarchy())
     );
   }
 
   ////////////////////// NODE ///////////////////////////
-  public addNode(node: T): void {
+  public addNode(node: WorkflowNode<any>): void {
     this.currentLayer.addNode(node);
   }
 
@@ -123,7 +123,7 @@ export class Workflow<T extends WorkflowNode<any>> {
     return `n${this.nodeGeneration++}`;
   }
 
-  public findNodeWithId(nodeId: string): T {
+  public findNodeWithId(nodeId: string): WorkflowNode<any> {
     for (const layer of this.layers) {
       const node = layer.findNodeWithId(nodeId);
       if (node != null) {
@@ -137,11 +137,11 @@ export class Workflow<T extends WorkflowNode<any>> {
    * Find (in the current layer) the node with the given name
    * We must search in current layer because in multiple layer we can have the same same
    */
-  public findNodeWithNameInCurrentLayer(nodeName: string): T {
+  public findNodeWithNameInCurrentLayer(nodeName: string): WorkflowNode<any> {
     return this.currentLayer.findNodeWithName(nodeName);
   }
 
-  public findNode(predicate: (node: T) => boolean): T {
+  public findNode(predicate: (node: WorkflowNode<any>) => boolean): WorkflowNode<any> {
     for (const layer of this.layers) {
       const node = layer.findNode(predicate);
       if (node != null) {
@@ -159,7 +159,7 @@ export class Workflow<T extends WorkflowNode<any>> {
 
   private onConnectionCreated(connection: ConnectionEvent): void {
     // check if input is available for the node
-    const node: T = this.findNodeWithId(connection.input_id);
+    const node: WorkflowNode<any> = this.findNodeWithId(connection.input_id);
 
     // check if the input is available
     if (!node.inputIsAvailable(connection.input_class)) {

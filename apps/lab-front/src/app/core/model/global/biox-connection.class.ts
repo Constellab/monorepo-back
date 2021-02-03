@@ -1,5 +1,5 @@
 import {LabEntity} from './lab-entity.entity';
-import {BioxFlowInterface} from '../entities/biox-flow.entity';
+import {BioxFlowJob} from '../entities/biox-flow.entity';
 
 // todo rename class and methods
 export interface BioxConnectionPart {
@@ -10,13 +10,14 @@ export interface BioxConnectionPart {
 
   getNode(): BioxNode;
 
+  // called by the ConnectionManager to set the node
   setNode(node: BioxNode): void;
 }
 
 /**
  * Type of the connection
  * node --> connection between 2 nodes
- * interface --> representing an interface of the manager
+ * interface --> representing an interface or an outerface of the manager
  * outerface --> representing an outerface of the manager
  */
 export type BioxConnectionType = 'node' | 'interface' | 'outerface';
@@ -30,8 +31,10 @@ export interface BioxConnection {
 
 export abstract class BioxNode extends LabEntity {
 
+  // inputs automatically set by the ConnectionManager
   inputs: Record<string, BioxConnectionPart> = {};
 
+  // outputs automatically set by the ConnectionManager
   outputs: Record<string, BioxConnectionPart[]> = {};
 
   // name automatically set by the ConnectionManager
@@ -61,70 +64,45 @@ export abstract class BioxNode extends LabEntity {
   }
 }
 
+export class BioxInterfaceNode extends BioxNode {
+
+}
+
+export class BioxOuterfaceNode extends BioxNode {
+
+}
+
+
 export abstract class BioxConnectionManager extends LabEntity {
 
   abstract getAllConnections(): BioxConnection[];
 
   abstract getNodes(): Record<string, BioxNode>;
 
-  abstract getInterfaces(): Record<string, BioxFlowInterface>;
+  abstract getInterfaces(): Record<string, BioxConnection>;
 
-  abstract getOuterfaces(): Record<string, BioxFlowInterface>;
+  abstract getOuterfaces(): Record<string, BioxConnection>;
 
-  public getNodesArray(): BioxNode[] {
+  // list of interface as nodes
+  interfaceNodes: Record<string, BioxNode>;
+
+  // list of outerface as nodes
+  outerfaceNodes: Record<string, BioxNode>;
+
+  public getAllNodes(): Record<string, BioxNode> {
+    return Object.assign(this.getNodes(), this.interfaceNodes, this.outerfaceNodes);
+  }
+
+  public getAllNodesArray(): BioxNode[] {
     const nodes: Record<string, BioxNode> = this.getNodes();
     return Object.keys(nodes).map(key => nodes[key]);
-  }
-
-
-  public initConnectionsAndNodes(): void {
-    this.initNodeNames();
-    this.initConnectionNodes();
-    this.initNodesInputsOutputs();
-  }
-
-  /**
-   * Set the node objects in the BioxConnectionPart to directly have access to BioxNode object in part
-   */
-  private initConnectionNodes(): void {
-    const nodes: Record<string, BioxNode> = this.getNodes();
-    for (const connection of this.getNodesConnections()) {
-      // init from node
-      const fromNode: BioxNode = nodes[connection.from.getNodeName()];
-      connection.from.setNode(fromNode);
-
-      // init to node
-      const toNode: BioxNode = nodes[connection.to.getNodeName()];
-      connection.to.setNode(toNode);
-    }
-  }
-
-  /**
-   * Init the node inputs and outputs connections
-   */
-  private initNodesInputsOutputs(): void {
-    for (const connection of this.getNodesConnections()) {
-      const from: BioxNode = connection.from.getNode();
-      from.addOutput(connection.to);
-
-      const to: BioxNode = connection.to.getNode();
-      to.setInput(connection.from);
-    }
-  }
-
-  // init the name of the nodes
-  private initNodeNames(): void {
-    const nodes: Record<string, BioxNode> = this.getNodes();
-    for (const name of Object.keys(nodes)) {
-      nodes[name].name = name;
-    }
   }
 
   // return the nodes that do not have any inputs
   public getRootNodes(): BioxNode[] {
     const roots: BioxNode[] = [];
 
-    for (const node of this.getNodesArray()) {
+    for (const node of this.getAllNodesArray()) {
       if (node.getInputsCount() === 0) {
         roots.push(node);
       }
@@ -139,4 +117,81 @@ export abstract class BioxConnectionManager extends LabEntity {
   public getNodesConnections(): BioxConnection[] {
     return this.getAllConnections().filter(connection => connection.getType() === 'node');
   }
+
+  ////////////////////////////// INIT METHODS /////////////////////////////////
+
+  public initConnectionsAndNodes(): void {
+    this.initInterfaceNodes();
+    this.initOuterfaceNodes();
+    this.initNodeNames();
+    this.initConnectionNodes();
+    this.initNodesInputsOutputs();
+  }
+
+  /**
+   * Set the node objects in the BioxConnectionPart to directly have access to BioxNode object in part
+   */
+  private initConnectionNodes(): void {
+    const nodes: Record<string, BioxNode> = this.getAllNodes();
+    for (const connection of this.getAllConnections()) {
+
+      // TODO improve this management
+      // used to replace the port name to make the connection works
+      // because it has a strange formatting and name
+      if (connection.getType() === 'interface') {
+        const job: BioxFlowJob = connection.from as any;
+        job.process.instanceName = 'i_' + job.process.port;
+      }
+
+      // init from node
+      const fromNode: BioxNode = nodes[connection.from.getNodeName()];
+      connection.from.setNode(fromNode);
+
+      // init to node
+      const toNode: BioxNode = nodes[connection.to.getNodeName()];
+      connection.to.setNode(toNode);
+    }
+  }
+
+  /**
+   * Init the node inputs and outputs connections
+   */
+  private initNodesInputsOutputs(): void {
+    for (const connection of this.getAllConnections()) {
+      const from: BioxNode = connection.from.getNode();
+      from.addOutput(connection.to);
+
+      const to: BioxNode = connection.to.getNode();
+      to.setInput(connection.from);
+    }
+  }
+
+  // init the name of the classic nodes
+  private initNodeNames(): void {
+    const nodes: Record<string, BioxNode> = this.getAllNodes();
+    for (const name of Object.keys(nodes)) {
+      nodes[name].name = name;
+    }
+  }
+
+  /**
+   * Create empty interface nodes
+   */
+  private initInterfaceNodes(): void {
+    this.interfaceNodes = {};
+    for (const interfaceName of Object.keys(this.getInterfaces())) {
+      this.interfaceNodes['i_' + interfaceName] = new BioxInterfaceNode();
+    }
+  }
+
+  /**
+   * Create empty outerface nodes
+   */
+  private initOuterfaceNodes(): void {
+    this.outerfaceNodes = {};
+    for (const outerfaceName of Object.keys(this.getOuterfaces())) {
+      this.outerfaceNodes['o_' + outerfaceName] = new BioxOuterfaceNode();
+    }
+  }
+
 }

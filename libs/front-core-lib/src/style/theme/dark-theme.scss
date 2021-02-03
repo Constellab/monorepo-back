@@ -38,7 +38,6 @@ $foreground: map-get($dark-theme, foreground);
 $background: map-get($dark-theme, background);
 $foreground-color: mat-color($foreground, text);
 $background-color: mat-color($background, background);
-$background-color: mat-color($background, background);
 
 //////////////////// GLOBAL CSS VARIABLES ///////////////////////
 :root {

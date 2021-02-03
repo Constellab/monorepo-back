@@ -4,7 +4,7 @@ import {BioxProcessable, BioxProtocol} from '../../../../core/model/entities/bio
 import {WorkflowNodeProcessable} from '../model/workflow-node-processable.class';
 import {BioxFlow} from '../../../../core/model/entities/biox-flow.entity';
 import {BioxJob} from '../../../../core/model/entities/biox-job.entity';
-import {BioxConnection, BioxNode} from '../../../../core/model/global/biox-connection.class';
+import {BioxConnection, BioxInterfaceNode, BioxNode, BioxOuterfaceNode} from '../../../../core/model/global/biox-connection.class';
 import {WorkflowLayer} from '../model/workflow-layer.class';
 import {Observable} from 'rxjs';
 import {WorkflowConnectionSelected} from '../model/workflow-event.class';
@@ -14,13 +14,15 @@ import {BioxExperimentFlowFactory} from '../../../../core/utils/biox-experiment-
 import {BioxFlowService} from '../../../../core/entity-service/biox-flow.service';
 import {BioxProtocolService} from '../../../../core/entity-service/biox-protocol.service';
 import {WorkflowNode} from '../model/workflow-node.class';
+import {WorkflowNodeInterface} from '../model/workflow-node-interface.class';
+import {WorkflowNodeOuterface} from '../model/workflow-node-outerface.class';
 
 
 // todo handle on destroy
 @Injectable()
 export class WorkflowManagerService {
 
-  private workflow: Workflow<WorkflowNodeProcessable>;
+  private workflow: Workflow;
 
   private readonly htmlNodeWidth: number = 200;
   private readonly htmlNodeHeight: number = 100;
@@ -47,27 +49,69 @@ export class WorkflowManagerService {
   }
 
   private initFlow(flow: BioxFlow): void {
+    // add the interfaces
+    // for(const interfaceName of Object.keys(flow.interfaces)){
+    //   this.workflow.addInterface(new WorkflowNodeInterface());
+    // }
+
     // add all nodes
-    this.addNodesRecursively(flow.getRootNodes(), [], 0, 0);
+    this.addNodesRecursively(flow.getRootNodes(), 0, 0);
+
+    // add the outerface
+    // for(const interfaceName of Object.keys(flow.interfaces)){
+    //   this.workflow.addInterface(new WorkflowNodeInterface());
+    // }
 
     // create the connections
-    for (const step of flow.getNodesConnections()) {
+    for (const step of flow.getAllConnections()) {
       this.addConnection(step);
     }
+
+
   }
 
   private addJobNode(bioxJob: BioxJob, coordX: number = 0, coordY: number = 0): void {
+    const node: WorkflowNodeProcessable = this.convertJobToNode(bioxJob, coordX, coordY);
+    this.workflow.addNode(node);
+  }
+
+  private convertJobToNode(bioxJob: BioxJob, coordX: number = 0, coordY: number = 0): WorkflowNode<BioxJob> {
     if (bioxJob.name == null) {
       bioxJob.name = this.workflow.generateNodeName();
     }
 
-    const node: WorkflowNodeProcessable = new WorkflowNodeProcessable(bioxJob, bioxJob.name, coordX, coordY);
-    this.workflow.addNode(node);
+    return new WorkflowNodeProcessable(bioxJob, bioxJob.name, coordX, coordY);
   }
 
   public addProcessableNode(bioxProcessable: BioxProcessable, parentJobId: string, coordX: number = 0, coordY: number = 0): void {
     const job: BioxJob = BioxExperimentFlowFactory.flowJobFromProcessable(bioxProcessable, this.experiment.id);
     this.addJobNode(job, coordX, coordY);
+  }
+
+  /**
+   *
+   * @param node
+   * @param posX position in the workflow like in 2d array
+   * @param posY position in the workflow like in 2d array
+   */
+  public addBioxNodeOnPosition(node: BioxNode, posX: number, posY: number): void {
+    // convert the 2D position to coords
+    const coordX = ((this.htmlNodeWidth + this.htmlDefaultNodeSpace) * posX) + this.htmlOffsetX;
+    const coordY = ((this.htmlNodeHeight + this.htmlDefaultNodeSpace) * posY) + this.htmlOffsetY;
+
+    let workflowNode: WorkflowNode<any>;
+    if (node instanceof BioxJob) {
+      workflowNode = new WorkflowNodeProcessable(node, node.name, coordX, coordY);
+    } else if (node instanceof BioxInterfaceNode) {
+      workflowNode = new WorkflowNodeInterface(node.name, coordX, coordY);
+    } else if (node instanceof BioxOuterfaceNode) {
+      workflowNode = new WorkflowNodeOuterface(node.name, coordX, coordY);
+    } else {
+      throw new Error('Node type unknown');
+    }
+
+    // and the node and mark it as added
+    this.workflow.addNode(workflowNode);
   }
 
   /**
@@ -85,7 +129,7 @@ export class WorkflowManagerService {
     this.workflow.addConnection(workflowConnectionLink);
   }
 
-  public findNodeWithName(name: string): WorkflowNodeProcessable {
+  public findNodeWithName(name: string): WorkflowNode<any> {
     return this.workflow.findNodeWithNameInCurrentLayer(name);
   }
 
@@ -126,40 +170,30 @@ export class WorkflowManagerService {
     this.initFlow(flow);
   }
 
-  private addNodesRecursively(nodes: BioxNode[], addedNodes: BioxNode[], posX: number, basePosY: number): number {
+  private addNodesRecursively(nodes: BioxNode[], posX: number, basePosY: number): number {
     let currentPosY: number = basePosY - 1;
     for (const node of nodes) {
       currentPosY++;
 
-      // if has already been added
-      if (addedNodes.find(n => n.name === node.name) != null) {
+
+      // check if the node has already been added
+      if (this.workflow.findNodeWithNameInCurrentLayer(node.name) != null) {
         continue;
       }
 
-      const coordX: number = ((this.htmlNodeWidth + this.htmlDefaultNodeSpace) * posX) + this.htmlOffsetX;
-      const coordY: number = ((this.htmlNodeHeight + this.htmlDefaultNodeSpace) * currentPosY) + this.htmlOffsetY;
-
       // and the node and mark it as added
-      if (node instanceof BioxJob) {
-        this.addJobNode(node, coordX, coordY);
-        // } else if (node instanceof BioxProcessableBase) {
-        //   this.addProcessableNode(node as BioxProcessable, '', coordX, coordY);
-      } else {
-        throw new Error(`The node ${node.name} is not a BioxJob nor a BioxProcessableBase`);
-      }
-
-      addedNodes.push(node);
+      this.addBioxNodeOnPosition(node, posX, currentPosY);
 
       for (const key of Object.keys(node.outputs)) {
         const outputNodes: BioxNode[] = node.outputs[key].map(output => output.getNode());
-        currentPosY = this.addNodesRecursively(outputNodes, addedNodes, posX + 1, currentPosY);
+        currentPosY = this.addNodesRecursively(outputNodes, posX + 1, currentPosY);
       }
     }
 
     return currentPosY;
   }
 
-  public getCurrentLayerHierarchy(): Observable<WorkflowLayer<WorkflowNodeProcessable>[]> {
+  public getCurrentLayerHierarchy(): Observable<WorkflowLayer[]> {
     return this.workflow.getCurrentLayerHierarchy();
   }
 

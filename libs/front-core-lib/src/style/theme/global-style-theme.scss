@@ -20,6 +20,7 @@
 
   :root {
     --card-background: #{mat-color($background, card)};
+    --color-foreground: #{$foreground-color};
   }
 
   body {
@@ -361,13 +362,4 @@
   .jsoneditor-preview {
     color: $foreground-color !important;
   }
-
-
-  ///////////////////////////// DRAWFLOW ////////////////////////////
-  .drawflow .drawflow-node {
-    background-color: mat-color($background, card) !important;
-    color: $foreground-color !important;
-    border: 1px solid var(--card-border-color) !important;
-  }
 }
-

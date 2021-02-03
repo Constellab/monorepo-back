@@ -14,11 +14,11 @@ import {ConnectedPosition} from '@angular/cdk/overlay';
 
 
 @Component({
-  selector: 'gen-experiment-workflow',
-  templateUrl: './experiment-workflow.component.html',
-  styleUrls: ['./experiment-workflow.component.scss']
+  selector: 'gen-biox-workflow',
+  templateUrl: './biox-workflow.component.html',
+  styleUrls: ['./biox-workflow.component.scss']
 })
-export class ExperimentWorkflowComponent implements OnInit {
+export class BioxWorkflowComponent implements OnInit {
 
   @Input() experiment: BioxExperiment;
 

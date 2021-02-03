@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExperimentWorkflowComponent } from './experiment-workflow.component';
+import { BioxWorkflowNodeComponent } from './biox-workflow-node.component';
 
-describe('ExperimentWorkflowComponent', () => {
-  let component: ExperimentWorkflowComponent;
-  let fixture: ComponentFixture<ExperimentWorkflowComponent>;
+describe('ExperimentWorkflowNodeComponent', () => {
+  let component: BioxWorkflowNodeComponent;
+  let fixture: ComponentFixture<BioxWorkflowNodeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ExperimentWorkflowComponent ]
+      declarations: [ BioxWorkflowNodeComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ExperimentWorkflowComponent);
+    fixture = TestBed.createComponent(BioxWorkflowNodeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

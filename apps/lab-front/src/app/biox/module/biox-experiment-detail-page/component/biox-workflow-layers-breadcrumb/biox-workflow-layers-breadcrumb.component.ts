@@ -13,7 +13,7 @@ import {WorkflowLayer} from '../../model/workflow-layer.class';
 })
 export class BioxWorkflowLayersBreadcrumbComponent implements OnInit {
 
-  layers$: Observable<WorkflowLayer<any>[]>;
+  layers$: Observable<WorkflowLayer[]>;
 
   constructor(private workflowManager: WorkflowManagerService) {
   }

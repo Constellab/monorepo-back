@@ -46,7 +46,7 @@ export class BioxFlowInterface implements BioxConnection {
   to: BioxFlowInterfacePart;
 
   getType(): BioxConnectionType {
-    return undefined;
+    return 'interface';
   }
 }
 

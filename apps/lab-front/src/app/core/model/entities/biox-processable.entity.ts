@@ -81,7 +81,7 @@ export class BioxProtocolGraph extends BioxConnectionManager {
   @ClRecordTransformOverride(deserializeGraphNode)
   nodes: Record<string, BioxProcessable> = null;
 
-  getNodesArray(): BioxProcessable[] {
+  getAllNodesArray(): BioxProcessable[] {
     return Object.keys(this.nodes).map(key => this.nodes[key]);
   }
 

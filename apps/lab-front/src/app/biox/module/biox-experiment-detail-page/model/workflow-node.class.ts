@@ -1,10 +1,9 @@
 import {DrawflowConnectionDetail, DrawflowNode} from 'drawflow';
-import {BioxNode} from '../../../../core/model/global/biox-connection.class';
 
 /**
  * Single node in the workflow
  */
-export class WorkflowNode<T extends BioxNode> {
+export abstract class WorkflowNode<T> {
 
   public html: string;
 
@@ -16,13 +15,16 @@ export class WorkflowNode<T extends BioxNode> {
   private readonly INPUT_NAME_PREFIX: string = 'input_';
   private readonly OUTPUT_NAME_PREFIX: string = 'output_';
 
-  constructor(public readonly nodeName: string,
-              public readonly title: string,
-              public readonly nbInputs: number,
-              public readonly nbOutputs: number,
-              public readonly object: T,
-              public readonly initialPosX: number = 0,
-              public readonly initialPosY: number = 0) {
+  protected constructor(
+    // unique node name in the layer
+    public readonly nodeName: string,
+    public readonly title: string,
+    public readonly nbInputs: number,
+    public readonly nbOutputs: number,
+    public readonly object: T,
+    public readonly className: string,
+    public readonly initialCoordX: number = 0,
+    public readonly initialCoordY: number = 0) {
   }
 
   public initNode(nodeId: string, getDrawflowNodeMethod: (id: string) => DrawflowNode): void {
@@ -52,32 +54,32 @@ export class WorkflowNode<T extends BioxNode> {
 
 
   // find the input name that match the portName
-  public findInputName(portName: string): string {
-    return this.findPortName(portName, this.object.inputs, (id) => this.getInputName(id));
-  }
+  public abstract findInputName(portName: string): string ;
 
-  private getInputName(id: string | number): string {
+  protected getInputName(id: string | number): string {
     return this.INPUT_NAME_PREFIX + id.toString();
   }
 
   /////////////////////////////// OUTPUT //////////////////////////////
 
   // find the output name that match the portName
-  public findOutputName(portName: string): string {
-    return this.findPortName(portName, this.object.outputs, (id) => this.getOutputName(id));
-  }
+  public abstract findOutputName(portName: string): string ;
 
-  private getOutputName(id: string | number): string {
+  protected getOutputName(id: string | number): string {
     return this.OUTPUT_NAME_PREFIX + id.toString();
   }
 
   /////////////////////////////// OTHER //////////////////////////////
 
-  private findPortName(portName: string, specs: Record<string, any>, getName: (id: number) => string): string {
+  protected findPortName(portName: string, specs: Record<string, any>, type: 'input' | 'output'): string {
     let i = 1;
     for (const property of Object.keys(specs)) {
       if (property === portName) {
-        return getName(i);
+        if (type === 'input') {
+          return this.getInputName(i);
+        } else {
+          return this.getOutputName(i);
+        }
       }
       i++;
     }

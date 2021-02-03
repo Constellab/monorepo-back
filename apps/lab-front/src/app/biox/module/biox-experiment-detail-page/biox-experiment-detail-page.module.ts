@@ -3,8 +3,8 @@ import {CommonModule} from '@angular/common';
 import {CoreModule} from '../../../core/core.module';
 import {BioxExperimentDetailPageComponent} from './component/biox-experiment-detail-page/biox-experiment-detail-page.component';
 import {BioxExperimentCoreModule} from '../../../core/entity-module/biox-experiment-core/biox-experiment-core.module';
-import {ExperimentWorkflowNodeComponent} from './component/experiment-workflow-node/experiment-workflow-node.component';
-import {ExperimentWorkflowComponent} from './component/experiment-workflow/experiment-workflow.component';
+import {BioxWorkflowNodeComponent} from './component/biox-workflow-node/biox-workflow-node.component';
+import {BioxWorkflowComponent} from './component/biox-workflow/biox-workflow.component';
 import {createCustomElement} from '@angular/elements';
 import {WorkflowManagerService} from './service/workflow-manager.service';
 import {BioxProtocolCoreModule} from '../../../core/entity-module/biox-protocol-core/biox-protocol-core.module';
@@ -12,14 +12,16 @@ import {BioxProcessCoreModule} from '../../../core/entity-module/biox-process-co
 import {BioxWorkflowLayersBreadcrumbComponent} from './component/biox-workflow-layers-breadcrumb/biox-workflow-layers-breadcrumb.component';
 import {BioxResourceCoreModule} from '../../../core/entity-module/biox-resource-core/biox-resource-core.module';
 import {BioxConfigCoreModule} from '../../../core/entity-module/biox-config-core/biox-config-core.module';
+import {BioxWorkflowInterfaceComponent} from './component/biox-workflow-interface/biox-workflow-interface.component';
 
 
 @NgModule({
   declarations: [
     BioxExperimentDetailPageComponent,
-    ExperimentWorkflowNodeComponent,
-    ExperimentWorkflowComponent,
+    BioxWorkflowNodeComponent,
+    BioxWorkflowComponent,
     BioxWorkflowLayersBreadcrumbComponent,
+    BioxWorkflowInterfaceComponent,
   ],
   imports: [
     CommonModule,
@@ -36,12 +38,20 @@ import {BioxConfigCoreModule} from '../../../core/entity-module/biox-config-core
 export class BioxExperimentDetailPageModule {
   constructor(injector: Injector) {
 
-    // declare the ExperimentWorkflowNodeComponent as angular element to make the tag
-    // experiment-workflow-node work natively
-    const ngElement = createCustomElement(ExperimentWorkflowNodeComponent, {
+    // declare the BioxWorkflowNodeComponent as angular element to make the tag
+    // biox-workflow-node work natively
+    const ngElement = createCustomElement(BioxWorkflowNodeComponent, {
       injector,
     });
 
-    customElements.define(`experiment-workflow-node`, ngElement);
+    customElements.define('biox-workflow-node', ngElement);
+
+    // declare the BioxWorkflowInterfaceComponent as angular element to make the tag
+    // biox-workflow-interface work natively
+    const ngElement2 = createCustomElement(BioxWorkflowInterfaceComponent, {
+      injector,
+    });
+
+    customElements.define('biox-workflow-interface', ngElement2);
   }
 }

@@ -6,42 +6,37 @@ import {WorkflowConnection} from './workflow-connection.class';
 /**
  * One layer of the workflow, it contains the list of nodes
  */
-export class WorkflowLayer<T extends WorkflowNode<any>> {
+export class WorkflowLayer {
 
-  public readonly nodes: T[] = [];
+  public readonly nodes: WorkflowNode<any>[] = [];
 
   public readonly connections: WorkflowConnection[] = [];
 
   constructor(private readonly editor: Drawflow,
               public readonly id: string,
               public readonly name: string,
-              public readonly parentLayer: WorkflowLayer<T>) {
+              public readonly parentLayer: WorkflowLayer) {
   }
 
 
   ///////////////////////////// NODE ////////////////////////////////
 
-  public addNode(node: T): void {
+  public addNode(node: WorkflowNode<any>): void {
     this.nodes.push(node);
-    const nodeId: number = this.editor.addNode(node.title,
-      node.nbInputs, node.nbOutputs, node.initialPosX,
-      node.initialPosY, '', {}, node.html, false);
-
-    // set the nodeId in workflow node
-    node.initNode(nodeId.toString(), (id: string) => this.editor.getNodeFromId(id));
+    this.createAndInitNode(node);
   }
 
   // todo add node on node creation
 
-  public findNodeWithId(nodeId: string): T {
+  public findNodeWithId(nodeId: string): WorkflowNode<any> {
     return this.findNode((node) => node.nodeId === nodeId);
   }
 
-  public findNodeWithName(nodeName: string): T {
+  public findNodeWithName(nodeName: string): WorkflowNode<any> {
     return this.findNode((node) => node.nodeName === nodeName);
   }
 
-  public findNode(predicate: (node: T) => boolean): T {
+  public findNode(predicate: (node: WorkflowNode<any>) => boolean): WorkflowNode<any> {
     return this.nodes.find((node) => predicate(node));
   }
 
@@ -54,6 +49,19 @@ export class WorkflowLayer<T extends WorkflowNode<any>> {
       console.error('Couldn\'t find node with id ' + nodeId);
     }
   }
+
+  /**
+   * Create the node in the editor and init those values
+   */
+  private createAndInitNode(node: WorkflowNode<any>): void {
+    const nodeId: number = this.editor.addNode(node.title,
+      node.nbInputs, node.nbOutputs, node.initialCoordX,
+      node.initialCoordY, node.className, {}, node.html, false);
+
+    // set the nodeId in workflow node
+    node.initNode(nodeId.toString(), (id: string) => this.editor.getNodeFromId(id));
+  }
+
 
   ///////////////////////////////// CONNECTION //////////////////////////////////////
 
@@ -68,8 +76,8 @@ export class WorkflowLayer<T extends WorkflowNode<any>> {
   public saveConnection(event: ConnectionEvent): void {
     // only add the connection if it doesn't exist
     if (this.findConnection(event.output_id, event.input_id, event.output_class, event.input_class) == null) {
-      const outputNode: T = this.findNodeWithId(event.output_id);
-      const inputNode: T = this.findNodeWithId(event.input_id);
+      const outputNode: WorkflowNode<any> = this.findNodeWithId(event.output_id);
+      const inputNode: WorkflowNode<any> = this.findNodeWithId(event.input_id);
       // todo voir le null
       const workflowConnection: WorkflowConnection = new WorkflowConnection(outputNode, inputNode,
         event.output_class, event.input_class, null);
@@ -97,9 +105,9 @@ export class WorkflowLayer<T extends WorkflowNode<any>> {
 
   ///////////////////////// OTHER //////////////////////////
 
-  public getLayerHierarchy(): WorkflowLayer<T>[] {
-    const layers: WorkflowLayer<T>[] = [this];
-    if(this.parentLayer == null){
+  public getLayerHierarchy(): WorkflowLayer[] {
+    const layers: WorkflowLayer[] = [this];
+    if (this.parentLayer == null) {
       return layers;
     }
 
