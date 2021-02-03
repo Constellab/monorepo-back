@@ -4,7 +4,6 @@ import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {BioxConnection, BioxConnectionManager, BioxConnectionPart, BioxConnectionType} from '../global/biox-connection.class';
 import {BioxProcessableBase} from './biox-processable-base.entity';
 import {Expose, Type} from 'class-transformer';
-import {BioxFlowInterface} from './biox-flow.entity';
 
 ////////////////////////////////// LINK ///////////////////////////////////////
 
@@ -93,12 +92,13 @@ export class BioxProtocolGraph extends BioxConnectionManager {
     return this.nodes;
   }
 
-  getInterfaces(): Record<string, BioxFlowInterface> {
-    return this.interfaces;
+  // todo how to implement it ? the specs are in the parent
+  getInputSpecs(): Record<string, string[]> {
+    return undefined;
   }
 
-  getOuterfaces(): Record<string, BioxFlowInterface> {
-    return this.outerfaces;
+  getOutputSpecs(): Record<string, string[]> {
+    return undefined;
   }
 
 

@@ -163,13 +163,15 @@ export class BioxFlow extends BioxConnectionManager {
     return this.jobs;
   }
 
-  getInterfaces(): Record<string, BioxFlowInterface> {
-    return this.interfaces;
+  getInputSpecs(): Record<string, string[]> {
+    return this.process.getInputSpecs();
   }
 
-  getOuterfaces(): Record<string, BioxFlowInterface> {
-    return this.outerfaces;
+  getOutputSpecs(): Record<string, string[]> {
+    return this.process.getOutputSpecs();
   }
+
+
 
 }
 

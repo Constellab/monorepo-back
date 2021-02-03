@@ -39,7 +39,8 @@ export abstract class WorkflowNode<T> {
   /////////////////////////////// INPUT //////////////////////////////
 
   /**
-   * Check if the input exist and if it has not multiple connection
+   * Check if the input exist and if it is not already connected
+   * And check if the in
    *
    * @param inputName
    */

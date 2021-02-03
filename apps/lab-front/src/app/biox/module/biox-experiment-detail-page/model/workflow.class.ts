@@ -6,6 +6,7 @@ import {WorkflowLayer} from './workflow-layer.class';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {WorkflowConnectionSelected} from './workflow-event.class';
+import {WorkflowPort} from './workflow-port.class';
 
 export type WorkflowMode = 'edit' | 'readOnly';
 
@@ -159,10 +160,14 @@ export class Workflow {
 
   private onConnectionCreated(connection: ConnectionEvent): void {
     // check if input is available for the node
-    const node: WorkflowNode<any> = this.findNodeWithId(connection.input_id);
+    const inputNode: WorkflowNode<any> = this.findNodeWithId(connection.input_id);
+    const outputNode: WorkflowNode<any> = this.findNodeWithId(connection.output_id);
+    const inputPort: WorkflowPort = inputNode.findInputPortByDrawflowName(connection.input_class);
+    const outputPort: WorkflowPort = outputNode.findOutputPortByDrawflowName(connection.output_class);
 
-    // check if the input is available
-    if (!node.inputIsAvailable(connection.input_class)) {
+    // check if the input is available and if the port are compatible
+    if (!inputNode.inputIsAvailable(connection.input_class) ||
+      !inputPort.isCompatible(outputPort)) {
       console.log('Input not available');
       // remove the connection
       this.editor.removeSingleConnection(connection.output_id, connection.input_id,

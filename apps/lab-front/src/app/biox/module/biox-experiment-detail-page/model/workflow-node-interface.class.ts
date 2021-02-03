@@ -16,6 +16,7 @@ export class WorkflowNodeInterface extends WorkflowNode<BioxInterfaceNode> {
   protected initPorts(): void {
     // no input ports
     this.inputPorts = [];
-    this.outputPorts = [new WorkflowPort(this.object.portName, WorkflowPort.getOutputDrawflowName(1), null)];
+    this.outputPorts = [new WorkflowPort(this.object.portName,
+      WorkflowPort.getOutputDrawflowName(1), this.object.portType)];
   }
 }
