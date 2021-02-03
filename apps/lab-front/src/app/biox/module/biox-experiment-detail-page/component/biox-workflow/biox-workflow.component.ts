@@ -5,12 +5,12 @@ import {BioxProcessService} from '../../../../../core/entity-service/biox-proces
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
 import {BioxProcessable, BioxProcessDatasource, BioxProtocolDatasource} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxFlow, BioxFlowStep} from '../../../../../core/model/entities/biox-flow.entity';
-import {WorkflowConnectionSelected} from '../../model/workflow-event.class';
 import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {BioxConnection} from '../../../../../core/model/global/biox-connection.class';
 import {BioxResourcePortalComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-portal/biox-resource-portal.component';
 import {BioxFlowService} from '../../../../../core/entity-service/biox-flow.service';
 import {ConnectedPosition} from '@angular/cdk/overlay';
+import {WorkflowConnection} from '../../model/workflow-connection.class';
 
 
 @Component({
@@ -87,10 +87,16 @@ export class BioxWorkflowComponent implements OnInit {
     this.draggingProcessable = processable;
   }
 
-  onConnectionSelected(connectionEvent: WorkflowConnectionSelected): void {
-    const connection: BioxConnection = connectionEvent.connection.object;
+  onConnectionSelected(workflowConnection: WorkflowConnection): void {
+    const connection: BioxConnection = workflowConnection.object;
 
     if (connection instanceof BioxFlowStep) {
+      const connectionHtmlElement: HTMLElement = workflowConnection.getHTMLElement();
+
+      if (connectionHtmlElement == null) {
+        return;
+      }
+
       const position: ConnectedPosition[] = [{
         originX: 'center',
         originY: 'top',
@@ -98,7 +104,7 @@ export class BioxWorkflowComponent implements OnInit {
         overlayY: 'bottom',
         offsetY: -20
       }];
-      const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(connectionEvent.event.target as any, position, {
+      const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(connectionHtmlElement, position, {
         panelClass: 'g-portal-panel',
         elevation: true,
         disposeOnNavigation: true,

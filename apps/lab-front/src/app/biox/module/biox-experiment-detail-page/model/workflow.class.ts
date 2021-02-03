@@ -5,7 +5,6 @@ import {WorkflowConnection} from './workflow-connection.class';
 import {WorkflowLayer} from './workflow-layer.class';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {WorkflowConnectionSelected} from './workflow-event.class';
 import {WorkflowPort} from './workflow-port.class';
 
 export type WorkflowMode = 'edit' | 'readOnly';
@@ -23,7 +22,7 @@ export class Workflow {
   private nodeGeneration: number = 0;
 
   // subject to trigger event when selected a workflow connection
-  private connectionSelected$: Subject<WorkflowConnectionSelected> = new Subject<WorkflowConnectionSelected>();
+  private connectionSelected$: Subject<WorkflowConnection> = new Subject<WorkflowConnection>();
 
   private mode: WorkflowMode;
 
@@ -48,7 +47,8 @@ export class Workflow {
 
     this.editor.on('nodeRemoved', node => this.onNodeRemoved(node));
 
-    this.editor.on('click', event => this.onClickEvent(event));
+    this.editor.on('connectionSelected',
+      event => this.emitConnectionSelected(event));
   }
 
 
@@ -182,62 +182,21 @@ export class Workflow {
     this.currentLayer.removeConnection(connection);
   }
 
-  public onConnectionSelected(): Observable<WorkflowConnectionSelected> {
+  public onConnectionSelected(): Observable<WorkflowConnection> {
     return this.connectionSelected$.asObservable();
   }
 
+  private emitConnectionSelected(connectionEvent: ConnectionEvent): void {
+    const connection: WorkflowConnection = this.currentLayer.findConnection(
+      connectionEvent.output_id, connectionEvent.input_id, connectionEvent.output_class, connectionEvent.input_class
+    );
+
+    if (connection != null) {
+      this.connectionSelected$.next(connection);
+    }
+  }
+
   //////////////////// OTHER ///////////////////////
-
-  private onClickEvent(ev: MouseEvent): void {
-    const targets: HTMLElement[] = ev.composedPath() as any;
-
-    for (const target of targets) {
-      // we stop if we reach the container
-      if (target === this.element) {
-        return;
-      }
-
-      this.checkIfConnectionSelected(target, ev);
-    }
-  }
-
-  /**
-   * Method to check if a click is on a connection and find the connection
-   */
-  private checkIfConnectionSelected(target: HTMLElement, ev: MouseEvent): void {
-    if (target.tagName === 'svg') {
-      let outputNodeId: string;
-      let inputNodeId: string;
-      let outputName: string;
-      let inputName: string;
-
-      // find the connection based on classes on element
-      // example of classes "connection node_in_node-3 node_out_node-2 output_1 input_1"
-      for (const className of target.getAttribute('class').split(' ')) {
-        if (className.startsWith('node_out_node-')) {
-          outputNodeId = className.substr(14);
-        } else if (className.startsWith('node_in_node-')) {
-          inputNodeId = className.substr(13);
-        } else if (className.startsWith('output_')) {
-          outputName = className;
-        } else if (className.startsWith('input_')) {
-          inputName = className;
-        }
-      }
-
-      // try to find the connection with information
-      const connection: WorkflowConnection =
-        this.currentLayer.findConnection(outputNodeId, inputNodeId, outputName, inputName);
-
-      // if we found the connection, emit the event
-      if (connection) {
-        this.connectionSelected$.next({
-          connection: connection,
-          event: ev
-        });
-      }
-    }
-  }
 
   public setMode(mode: WorkflowMode): void {
     this.editor.editor_mode = mode === 'edit' ? 'edit' : 'fixed';

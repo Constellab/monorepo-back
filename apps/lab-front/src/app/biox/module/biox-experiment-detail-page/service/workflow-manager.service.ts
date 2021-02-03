@@ -7,7 +7,6 @@ import {BioxJob} from '../../../../core/model/entities/biox-job.entity';
 import {BioxConnection, BioxInterfaceNode, BioxNode, BioxOuterfaceNode} from '../../../../core/model/global/biox-connection.class';
 import {WorkflowLayer} from '../model/workflow-layer.class';
 import {Observable} from 'rxjs';
-import {WorkflowConnectionSelected} from '../model/workflow-event.class';
 import {WorkflowConnection} from '../model/workflow-connection.class';
 import {BioxExperiment} from '../../../../core/model/entities/biox-experiment.entity';
 import {BioxExperimentFlowFactory} from '../../../../core/utils/biox-experiment-flow.factory';
@@ -108,7 +107,7 @@ export class WorkflowManagerService {
    */
   private addConnection(connection: BioxConnection): void {
     const outputNode: WorkflowNode<any> = this.findNodeWithName(connection.from.getNodeName());
-    const inputNode:  WorkflowNode<any> = this.findNodeWithName(connection.to.getNodeName());
+    const inputNode: WorkflowNode<any> = this.findNodeWithName(connection.to.getNodeName());
 
     const inputPort: WorkflowPort = inputNode.findInputPortByName(connection.to.getPort());
     const outputPort: WorkflowPort = outputNode.findOutputPortByName(connection.from.getPort());
@@ -186,7 +185,7 @@ export class WorkflowManagerService {
     return this.workflow.getCurrentLayerHierarchy();
   }
 
-  public onConnectionSelected(): Observable<WorkflowConnectionSelected> {
+  public onConnectionSelected(): Observable<WorkflowConnection> {
     return this.workflow.onConnectionSelected();
   }
 
