@@ -16,6 +16,7 @@ import {BioxProtocolService} from '../../../../core/entity-service/biox-protocol
 import {WorkflowNode} from '../model/workflow-node.class';
 import {WorkflowNodeInterface} from '../model/workflow-node-interface.class';
 import {WorkflowNodeOuterface} from '../model/workflow-node-outerface.class';
+import {WorkflowPort} from '../model/workflow-port.class';
 
 
 // todo handle on destroy
@@ -49,29 +50,17 @@ export class WorkflowManagerService {
   }
 
   private initFlow(flow: BioxFlow): void {
-    // add the interfaces
-    // for(const interfaceName of Object.keys(flow.interfaces)){
-    //   this.workflow.addInterface(new WorkflowNodeInterface());
-    // }
-
     // add all nodes
     this.addNodesRecursively(flow.getRootNodes(), 0, 0);
-
-    // add the outerface
-    // for(const interfaceName of Object.keys(flow.interfaces)){
-    //   this.workflow.addInterface(new WorkflowNodeInterface());
-    // }
 
     // create the connections
     for (const step of flow.getAllConnections()) {
       this.addConnection(step);
     }
-
-
   }
 
   private addJobNode(bioxJob: BioxJob, coordX: number = 0, coordY: number = 0): void {
-    const node: WorkflowNodeProcessable = this.convertJobToNode(bioxJob, coordX, coordY);
+    const node: WorkflowNode<any> = this.convertJobToNode(bioxJob, coordX, coordY);
     this.workflow.addNode(node);
   }
 
@@ -103,9 +92,9 @@ export class WorkflowManagerService {
     if (node instanceof BioxJob) {
       workflowNode = new WorkflowNodeProcessable(node, node.name, coordX, coordY);
     } else if (node instanceof BioxInterfaceNode) {
-      workflowNode = new WorkflowNodeInterface(node.name, coordX, coordY);
+      workflowNode = new WorkflowNodeInterface(node, coordX, coordY);
     } else if (node instanceof BioxOuterfaceNode) {
-      workflowNode = new WorkflowNodeOuterface(node.name, coordX, coordY);
+      workflowNode = new WorkflowNodeOuterface(node, coordX, coordY);
     } else {
       throw new Error('Node type unknown');
     }
@@ -119,13 +108,13 @@ export class WorkflowManagerService {
    */
   private addConnection(connection: BioxConnection): void {
     const outputNode: WorkflowNode<any> = this.findNodeWithName(connection.from.getNodeName());
-    const inputNode: WorkflowNodeProcessable = this.findNodeWithName(connection.to.getNodeName());
+    const inputNode:  WorkflowNode<any> = this.findNodeWithName(connection.to.getNodeName());
 
-    const inputName: string = inputNode.findInputName(connection.to.getPort());
-    const outputName: string = outputNode.findOutputName(connection.from.getPort());
+    const inputPort: WorkflowPort = inputNode.findInputPortByName(connection.to.getPort());
+    const outputPort: WorkflowPort = outputNode.findOutputPortByName(connection.from.getPort());
 
     const workflowConnectionLink: WorkflowConnection = new WorkflowConnection(outputNode, inputNode,
-      outputName, inputName, connection);
+      outputPort, inputPort, connection);
     this.workflow.addConnection(workflowConnectionLink);
   }
 
@@ -138,7 +127,7 @@ export class WorkflowManagerService {
     if (this.workflow.hasLayer(nodeId)) {
       this.workflow.selectLayer(nodeId);
     } else {
-      const node: WorkflowNodeProcessable = this.workflow.findNodeWithId(nodeId);
+      const node: WorkflowNode<any> = this.workflow.findNodeWithId(nodeId);
 
       // if the node has an ID, it is a saved job
       if (node.object.id != null) {

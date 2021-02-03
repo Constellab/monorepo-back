@@ -10,11 +10,11 @@ type NodeType = 'interface' | 'outerface';
  * Component to show interface or outerface in the workflow
  */
 @Component({
-  selector: 'gen-biox-workflow-interface',
-  templateUrl: './biox-workflow-interface.component.html',
-  styleUrls: ['./biox-workflow-interface.component.scss']
+  selector: 'gen-biox-workflow-node-interface',
+  templateUrl: './biox-workflow-node-interface.component.html',
+  styleUrls: ['./biox-workflow-node-interface.component.scss']
 })
-export class BioxWorkflowInterfaceComponent implements OnInit {
+export class BioxWorkflowNodeInterfaceComponent implements OnInit {
 
   // Name of the node
   @Input() name: string;

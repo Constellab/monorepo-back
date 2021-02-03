@@ -64,12 +64,22 @@ export abstract class BioxNode extends LabEntity {
   }
 }
 
+/**
+ * Specific node for the interface that only has one output port
+ * It's name correspond to the port name
+ */
 export class BioxInterfaceNode extends BioxNode {
-
+  // name of the single output port set by the BioxConnectionManager
+  portName: string;
 }
 
+/**
+ * Specific node for the outerface that only has one input port
+ * It's name correspond to the port name
+ */
 export class BioxOuterfaceNode extends BioxNode {
-
+  // name of the single input port set by the BioxConnectionManager
+  portName: string;
 }
 
 
@@ -180,7 +190,11 @@ export abstract class BioxConnectionManager extends LabEntity {
   private initInterfaceNodes(): void {
     this.interfaceNodes = {};
     for (const interfaceName of Object.keys(this.getInterfaces())) {
-      this.interfaceNodes['i_' + interfaceName] = new BioxInterfaceNode();
+      const node: BioxInterfaceNode = new BioxInterfaceNode();
+      // init the port name as the interface name
+      node.portName = interfaceName;
+      // create a unique name to avoid duplicate with output node
+      this.interfaceNodes['i_' + interfaceName] = node;
     }
   }
 
@@ -190,7 +204,11 @@ export abstract class BioxConnectionManager extends LabEntity {
   private initOuterfaceNodes(): void {
     this.outerfaceNodes = {};
     for (const outerfaceName of Object.keys(this.getOuterfaces())) {
-      this.outerfaceNodes['o_' + outerfaceName] = new BioxOuterfaceNode();
+      const node: BioxInterfaceNode = new BioxOuterfaceNode();
+      // init the port name as the interface name
+      node.portName = outerfaceName;
+      // create a unique name to avoid duplicate with input node
+      this.outerfaceNodes['o_' + outerfaceName] = node;
     }
   }
 

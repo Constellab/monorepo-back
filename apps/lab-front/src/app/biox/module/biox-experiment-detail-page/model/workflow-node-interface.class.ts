@@ -1,26 +1,21 @@
 import {WorkflowNode} from './workflow-node.class';
+import {WorkflowPort} from './workflow-port.class';
+import {BioxInterfaceNode} from '../../../../core/model/global/biox-connection.class';
 
 
 /**
  * Node for the interfaces
  */
-export class WorkflowNodeInterface extends WorkflowNode<void> {
+export class WorkflowNodeInterface extends WorkflowNode<BioxInterfaceNode> {
 
-  constructor(name: string, initialCoordX: number = 0, initialCoordY: number = 0) {
-    super(name, name,
-      0, 1, null, 'interface', initialCoordX, initialCoordY);
-    this.html = `<biox-workflow-interface name="${this.nodeName}"></biox-workflow-interface>`;
+  constructor(bioxInterfaceNode: BioxInterfaceNode, initialCoordX: number = 0, initialCoordY: number = 0) {
+    super(bioxInterfaceNode.name, bioxInterfaceNode.name, bioxInterfaceNode, 'interface', initialCoordX, initialCoordY);
+    this.html = `<biox-workflow-node-interface name="${this.nodeName}"></biox-workflow-node-interface>`;
   }
 
-  // it doesn't have an input
-  findInputName(): string {
-    return '';
+  protected initPorts(): void {
+    // no input ports
+    this.inputPorts = [];
+    this.outputPorts = [new WorkflowPort(this.object.portName, WorkflowPort.getOutputDrawflowName(1), null)];
   }
-
-  // it has only one output
-  findOutputName(): string {
-    return this.getOutputName(1);
-  }
-
-
 }

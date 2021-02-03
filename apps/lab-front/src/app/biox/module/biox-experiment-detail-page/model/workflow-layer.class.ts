@@ -55,7 +55,7 @@ export class WorkflowLayer {
    */
   private createAndInitNode(node: WorkflowNode<any>): void {
     const nodeId: number = this.editor.addNode(node.title,
-      node.nbInputs, node.nbOutputs, node.initialCoordX,
+      node.countInputs(), node.countOutputs(), node.initialCoordX,
       node.initialCoordY, node.className, {}, node.html, false);
 
     // set the nodeId in workflow node
@@ -69,7 +69,7 @@ export class WorkflowLayer {
   public addConnection(connection: WorkflowConnection): void {
     this.connections.push(connection);
     this.editor.addConnection(connection.outputNode.nodeId, connection.inputNode.nodeId,
-      connection.outputName, connection.inputName);
+      connection.outputPort.drawFlowName, connection.inputPort.drawFlowName);
   }
 
   // add the connection to the local list
@@ -78,9 +78,11 @@ export class WorkflowLayer {
     if (this.findConnection(event.output_id, event.input_id, event.output_class, event.input_class) == null) {
       const outputNode: WorkflowNode<any> = this.findNodeWithId(event.output_id);
       const inputNode: WorkflowNode<any> = this.findNodeWithId(event.input_id);
+
+
       // todo voir le null
       const workflowConnection: WorkflowConnection = new WorkflowConnection(outputNode, inputNode,
-        event.output_class, event.input_class, null);
+       outputNode.findOutputPortByDrawflowName(event.output_class), inputNode.findInputPortByDrawflowName(event.input_class), null);
       this.connections.push(workflowConnection);
     }
   }
@@ -99,7 +101,7 @@ export class WorkflowLayer {
 
   public findConnectionIndex(nodeOutputId: string, nodeInputId: string, outputName: string, inputName: string): number {
     return this.connections.findIndex(c => c.outputNode.nodeId === nodeOutputId && c.inputNode.nodeId === nodeInputId &&
-      c.outputName === outputName && c.inputName === inputName);
+      c.outputPort.drawFlowName === outputName && c.inputPort.drawFlowName === inputName);
   }
 
 

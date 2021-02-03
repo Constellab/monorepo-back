@@ -12,7 +12,7 @@ import {BioxProcessCoreModule} from '../../../core/entity-module/biox-process-co
 import {BioxWorkflowLayersBreadcrumbComponent} from './component/biox-workflow-layers-breadcrumb/biox-workflow-layers-breadcrumb.component';
 import {BioxResourceCoreModule} from '../../../core/entity-module/biox-resource-core/biox-resource-core.module';
 import {BioxConfigCoreModule} from '../../../core/entity-module/biox-config-core/biox-config-core.module';
-import {BioxWorkflowInterfaceComponent} from './component/biox-workflow-interface/biox-workflow-interface.component';
+import {BioxWorkflowNodeInterfaceComponent} from './component/biox-workflow-interface/biox-workflow-node-interface.component';
 
 
 @NgModule({
@@ -21,7 +21,7 @@ import {BioxWorkflowInterfaceComponent} from './component/biox-workflow-interfac
     BioxWorkflowNodeComponent,
     BioxWorkflowComponent,
     BioxWorkflowLayersBreadcrumbComponent,
-    BioxWorkflowInterfaceComponent,
+    BioxWorkflowNodeInterfaceComponent,
   ],
   imports: [
     CommonModule,
@@ -47,11 +47,11 @@ export class BioxExperimentDetailPageModule {
     customElements.define('biox-workflow-node', ngElement);
 
     // declare the BioxWorkflowInterfaceComponent as angular element to make the tag
-    // biox-workflow-interface work natively
-    const ngElement2 = createCustomElement(BioxWorkflowInterfaceComponent, {
+    // biox-workflow-node-interface work natively
+    const ngElement2 = createCustomElement(BioxWorkflowNodeInterfaceComponent, {
       injector,
     });
 
-    customElements.define('biox-workflow-interface', ngElement2);
+    customElements.define('biox-workflow-node-interface', ngElement2);
   }
 }

@@ -7,10 +7,10 @@ import {BioxConfigSpecs, BioxConfigSpecTyped} from './biox-config.entity';
 export class BioxProcessableBase extends BioxNode {
 
   @Expose({name: 'input_specs'})
-  inputSpecs: Record<string, string[]> = null;
+  inputSpecs: Record<string, string[]>;
 
   @Expose({name: 'output_specs'})
-  outputSpecs: Record<string, string[]> = null;
+  outputSpecs: Record<string, string[]>;
 
   @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecTyped)
   @Expose({name: 'config_specs'})
@@ -21,13 +21,13 @@ export class BioxProcessableBase extends BioxNode {
 
   @Expose({name: 'creation_datetime'})
   @ClLuxonTransform()
-  createdAt: DateTime = null;
+  createdAt: DateTime;
 
-  public getInputSpecs(): any {
+  public getInputSpecs(): Record<string, string[]> {
     return this.inputSpecs ?? {};
   }
 
-  public getOutputSpecs(): any {
+  public getOutputSpecs(): Record<string, string[]> {
     return this.outputSpecs ?? {};
   }
 
