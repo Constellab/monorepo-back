@@ -1,0 +1,46 @@
+@import '~@angular/material/theming';
+@import "./json-editor-theme-base";
+
+@mixin _json-editor-theme-dark($mat-theme) {
+
+  // include json editor base theme
+  @include _json-editor-theme-base($mat-theme);
+
+  $foreground: map-get($mat-theme, foreground);
+  $background: map-get($mat-theme, background);
+  $foreground-color: mat-color($foreground, text);
+  $background-color: mat-color($background, background);
+
+  // Specific styles for the dark theme
+
+  // current active line background
+  .ace-jsoneditor .ace_marker-layer .ace_active-line {
+    background: #565656;
+  }
+
+  // left bar of the editor
+  .ace-jsoneditor .ace_scroller {
+    background-color: #424242 !important;
+  }
+
+  // left active bar
+  .ace-jsoneditor .ace_gutter-active-line {
+    background-color: #424242 !important;
+  }
+
+  // left bar of the editor
+  .ace-jsoneditor .ace_gutter {
+    background: $background-color;
+    color: $foreground-color;
+  }
+
+  // bottom bar of the editor
+  .jsoneditor-statusbar {
+    background-color: $background-color !important;
+  }
+
+  // selected color text
+  .ace-jsoneditor .ace_marker-layer .ace_selection {
+    background: #212121;
+  }
+}

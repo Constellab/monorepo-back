@@ -1,0 +1,10 @@
+@import "libs/front-core-lib/src/style/theme/base/base-theme-dark";
+@import "libs/front-core-lib/src/style/theme/json-editor/json-editor-theme-dark";
+@import "libs/front-core-lib/src/style/theme/quill/quill-theme-dark";
+
+
+// include dark theme for json editor
+@include _json-editor-theme-dark($theme);
+
+// include dark theme for quill
+@include _quill-theme-dark($theme);

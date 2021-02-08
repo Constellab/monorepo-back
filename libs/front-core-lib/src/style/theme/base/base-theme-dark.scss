@@ -1,4 +1,4 @@
-@import './global-style-theme';
+@import "./base-theme";
 
 /**
  This file apply the dark theme to the app
@@ -28,14 +28,14 @@ $accent: mat-palette($custom-accent, 500, 500, 500, 500);
 $warn: mat-palette($mat-red, 800, A200, 800);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$dark-theme: mat-dark-theme($primary, $accent, $warn);
+$theme: mat-dark-theme($primary, $accent, $warn);
 
 
 // Load all global classes to theme
-@include _global-theme-style($dark-theme);
+@include _base-theme($theme);
 
-$foreground: map-get($dark-theme, foreground);
-$background: map-get($dark-theme, background);
+$foreground: map-get($theme, foreground);
+$background: map-get($theme, background);
 $foreground-color: mat-color($foreground, text);
 $background-color: mat-color($background, background);
 
@@ -47,7 +47,7 @@ $background-color: mat-color($background, background);
 
 
 /**
- * Classes for this theme that can't be defined in global-style-theme.scss
+ * Classes for this theme that can't be defined in _base-theme.scss
  */
 .g-text-light {
   color: var(--light-color);
@@ -84,37 +84,6 @@ $background-color: mat-color($background, background);
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, mat-color($background, card) 70%);
 }
 
-//////////////////////////// JSON editor ////////////////////////////////////
 
-// current active line background
-.ace-jsoneditor .ace_marker-layer .ace_active-line {
-  background: #565656;
-}
-
-// left bar of the editor
-.ace-jsoneditor .ace_scroller {
-  background-color: #424242 !important;
-}
-
-// left active bar
-.ace-jsoneditor .ace_gutter-active-line {
-  background-color: #424242 !important;
-}
-
-// left bar of the editor
-.ace-jsoneditor .ace_gutter {
-  background: $background-color;
-  color: $foreground-color;
-}
-
-// bottom bar of the editor
-.jsoneditor-statusbar {
-  background-color: $background-color !important;
-}
-
-// selected color text
-.ace-jsoneditor .ace_marker-layer .ace_selection {
-  background: #212121;
-}
 
 

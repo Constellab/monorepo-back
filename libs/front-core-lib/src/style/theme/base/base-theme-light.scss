@@ -1,4 +1,4 @@
-@import './global-style-theme';
+@import "./base-theme";
 
 /**
  This file apply the dark theme to the app
@@ -30,7 +30,7 @@ $warn: mat-palette($mat-red, 800, A200, 800);
 // Create the theme object (a Sass map containing all of the palettes).
 //$light-theme: mat-light-theme($primary, $accent, $warn);
 
-$light-theme: mat-light-theme((
+$theme: mat-light-theme((
   color: (
     primary: $primary,
     accent: $accent,
@@ -39,7 +39,7 @@ $light-theme: mat-light-theme((
 ));
 
 // Load all global classes link to theme
-@include _global-theme-style($light-theme);
+@include _base-theme($theme);
 
 //////////////////// GLOBAL CSS VARIABLES ///////////////////////
 :root{
@@ -48,7 +48,7 @@ $light-theme: mat-light-theme((
 }
 
 /**
- * Classes for this theme that can't be defined in global-style-theme.scss
+ * Classes for this theme that can't be defined in _base-theme.scss
  */
 .g-text-light {
   color: var(--light-color);

@@ -1,0 +1,184 @@
+@import 'node_modules/@angular/material/theming';
+@import "libs/front-core-lib/src/style/mixin-style";
+
+/**
+ * It apply the theme in parameter and define global css variable for theme
+  This mixin must be call only once
+ */
+@mixin _base-theme($mat-theme) {
+  $primary: map-get($mat-theme, primary);
+  $accent: map-get($mat-theme, accent);
+  $warn: map-get($mat-theme, warn);
+  $foreground: map-get($mat-theme, foreground);
+  $background: map-get($mat-theme, background);
+  $foreground-color: mat-color($foreground, text);
+  $background-color: mat-color($background, background);
+  $divider: mat-color($foreground, dividers);
+
+  // define the material theme
+  @include angular-material-theme($mat-theme);
+
+  :root {
+    --card-background: #{mat-color($background, card)};
+    --color-foreground: #{$foreground-color};
+  }
+
+  body {
+    background-color: $background-color;
+    color: $foreground-color;
+  }
+
+  /**
+   Text with the colors of the palettes
+   */
+  .g-primary-text {
+    color: mat-color($primary);
+  }
+
+  .g-accent-text {
+    color: mat-color($accent);
+  }
+
+  .g-warn-text {
+    color: mat-color($warn);
+  }
+
+  /**
+   Background color based on the theme and set the text color
+   */
+  .g-primary-background {
+    background-color: mat-color($primary);
+    color: mat-color($primary, default-contrast);
+  }
+
+  .g-accent-background {
+    background-color: mat-color($accent);
+    color: mat-color($accent, default-contrast);
+  }
+
+  .g-warn-background {
+    background-color: mat-color($warn);
+    color: mat-color($warn, default-contrast);
+  }
+
+  /**
+    Contrast text for palette. The best color (white or black) depending on the background
+   */
+  .g-primary-contrast {
+    color: mat-color($primary, default-contrast);
+  }
+
+  .g-accent-contrast {
+    color: mat-color($accent, default-contrast);
+  }
+
+  .g-warn-contrast {
+    color: mat-color($warn, default-contrast);
+  }
+
+  /**
+    Text with other primary colors
+   */
+  .g-primary-text-extra-light {
+    color: mat-color($primary, 50);
+  }
+
+  .g-primary-text-light {
+    color: mat-color($primary, 200);
+  }
+
+  .g-primary-text-dark {
+    color: mat-color($primary, 600);
+  }
+
+  .g-primary-text-extra-dark {
+    color: mat-color($primary, 800);
+  }
+
+
+  /**
+   Background color based on the theme and set the text color
+   */
+  .g-primary-background-extra-light {
+    background-color: mat-color($primary, 50);
+    color: mat-color($primary, default-contrast, 50);
+  }
+
+  .g-primary-background-light {
+    background-color: mat-color($primary, 200);
+    color: mat-color($primary, default-contrast, 200);
+  }
+
+  .g-primary-background-dark {
+    background-color: mat-color($primary, 600);
+    color: mat-color($primary, default-contrast, 600);
+  }
+
+  .g-primary-background-extra-dark {
+    background-color: mat-color($primary, 800);
+    color: mat-color($primary, default-contrast, 800);
+  }
+
+
+  /**
+    Contrast border for palette. The best color (white or black) depending on the background
+   */
+  .g-primary-border-contrast {
+    border-color: mat-color($primary, default-contrast);
+  }
+
+  .g-accent-border-contrast {
+    color: mat-color($accent, default-contrast);
+  }
+
+  .g-warn-border-contrast {
+    color: mat-color($warn, default-contrast);
+  }
+
+  /**
+   * Define colors in the same color as background theme for text, background and border
+   */
+  .g-theme-text {
+    color: $background-color;
+  }
+
+  .g-theme-background {
+    background-color: $background-color;
+  }
+
+  .g-theme-border {
+    border-color: $background-color;
+  }
+
+
+  /**
+   * Define colors in the same color as text theme for text, background and border
+   */
+  .g-opposite-text {
+    border-color: $foreground-color;
+  }
+
+  .g-opposite-background {
+    border-color: $foreground-color;
+  }
+
+  .g-opposite-border {
+    border-color: $foreground-color;
+  }
+
+
+  //////////////// OTHER /////////////////////
+  .g-card-background {
+    background-color: mat-color($background, card);
+  }
+
+  // grey color working for both theme
+  .g-grey-background {
+    background-color: grey;
+    color: white;
+  }
+
+  .g-grey-text {
+    background-color: grey;
+  }
+}

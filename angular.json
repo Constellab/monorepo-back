@@ -33,12 +33,12 @@
             "styles": [
               "apps/central-front/src/styles.scss",
               {
-                "input": "libs/front-core-lib/src/style/theme/light-theme.scss",
+                "input": "apps/central-front/src/theme/light-theme.scss",
                 "bundleName": "light-theme",
                 "inject": false
               },
               {
-                "input": "libs/front-core-lib/src/style/theme/dark-theme.scss",
+                "input": "apps/central-front/src/theme/dark-theme.scss",
                 "bundleName": "dark-theme",
                 "inject": false
               }
@@ -223,12 +223,12 @@
             "styles": [
               "apps/lab-front/src/styles.scss",
               {
-                "input": "libs/front-core-lib/src/style/theme/light-theme.scss",
+                "input": "apps/lab-front/src/theme/light-theme.scss",
                 "bundleName": "light-theme",
                 "inject": false
               },
               {
-                "input": "libs/front-core-lib/src/style/theme/dark-theme.scss",
+                "input": "apps/lab-front/src/theme/dark-theme.scss",
                 "bundleName": "dark-theme",
                 "inject": false
               }
