@@ -34,9 +34,10 @@
   <div fxFlex="auto">
 
     <!--  Workflow header  -->
-    <div class="header" fxLayout="row" fxLayoutAlign="space-between center">
+    <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
+         *ngIf="!flowIsLoading">
 
-      <gen-biox-workflow-layers-breadcrumb *ngIf="!flowIsLoading"></gen-biox-workflow-layers-breadcrumb>
+      <gen-biox-workflow-layers-breadcrumb></gen-biox-workflow-layers-breadcrumb>
 
       <gen-biox-workflow-actions></gen-biox-workflow-actions>
     </div>

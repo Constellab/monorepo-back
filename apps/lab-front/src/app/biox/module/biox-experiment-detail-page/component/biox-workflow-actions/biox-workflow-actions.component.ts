@@ -25,4 +25,7 @@ export class BioxWorkflowActionsComponent implements OnInit {
     this.workflowManager.addOuterface();
   }
 
+  save(): void{
+    console.log(this.workflowManager.workflow);
+  }
 }

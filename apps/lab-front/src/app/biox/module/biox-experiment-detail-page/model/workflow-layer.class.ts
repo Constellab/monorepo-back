@@ -26,8 +26,6 @@ export class WorkflowLayer {
     this.createAndInitNode(node);
   }
 
-  // todo add node on node creation
-
   public findNodeWithId(nodeId: string): WorkflowNode<any> {
     return this.findNode((node) => node.nodeId === nodeId);
   }
