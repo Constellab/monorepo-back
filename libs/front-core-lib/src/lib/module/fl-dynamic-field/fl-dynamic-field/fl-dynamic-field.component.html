@@ -3,17 +3,17 @@
   <!--  Material input-->
   <ng-container *ngSwitchCase="'input'">
     <mat-form-field appearance="outline" class="g-full">
-      <mat-label>{{config.placeholder}}</mat-label>
-      <input matInput [type]="config.inputType" [formControl]="formControl"
+      <mat-label>{{inputConfig.placeholder}}</mat-label>
+      <input matInput [type]="inputConfig.inputType" [formControl]="formControl"
              (ngModelChange)="emitValue($event)" [required]="required"
-             placeholder="{{config.placeholder}}">
+             placeholder="{{inputConfig.placeholder}}">
 
-      <span *ngIf="config.prefix" matPrefix>{{config.prefix}}</span>
-      <span *ngIf="config.suffix" matSuffix>{{config.suffix}}</span>
-      <mat-hint *ngIf="config.hint">{{config.hint}}</mat-hint>
+      <span *ngIf="inputConfig.prefix" matPrefix>{{inputConfig.prefix}}</span>
+      <span *ngIf="inputConfig.suffix" matSuffix>{{inputConfig.suffix}}</span>
+      <mat-hint *ngIf="inputConfig.hint">{{inputConfig.hint}}</mat-hint>
 
       <mat-error *ngIf="formControl.hasError('required')">
-        {{config.placeholder | flErrorRequired:false}}
+        {{inputConfig.placeholder | flErrorRequired:false}}
       </mat-error>
     </mat-form-field>
   </ng-container>
@@ -23,19 +23,19 @@
   <ng-container *ngSwitchCase="'select'">
     <!--  Server info  -->
     <mat-form-field appearance="outline" class="g-full">
-      <mat-label>{{config.placeholder}}</mat-label>
-      <mat-select placeholder="{{config.placeholder}}"
+      <mat-label>{{selectConfig.placeholder}}</mat-label>
+      <mat-select placeholder="{{selectConfig.placeholder}}"
                   [formControl]="formControl" [required]="required"
                   (ngModelChange)="emitValue($event)">
-        <mat-option *ngFor="let option of config.selectOptions" [value]="option">{{option}}</mat-option>
+        <mat-option *ngFor="let option of selectConfig.selectOptions" [value]="option">{{option}}</mat-option>
       </mat-select>
 
-      <span *ngIf="config.prefix" matPrefix>{{config.prefix}}</span>
-      <span *ngIf="config.suffix" matSuffix>{{config.suffix}}</span>
-      <mat-hint *ngIf="config.hint">{{config.hint}}</mat-hint>
+      <span *ngIf="selectConfig.prefix" matPrefix>{{selectConfig.prefix}}</span>
+      <span *ngIf="selectConfig.suffix" matSuffix>{{selectConfig.suffix}}</span>
+      <mat-hint *ngIf="selectConfig.hint">{{selectConfig.hint}}</mat-hint>
 
       <mat-error *ngIf="formControl.hasError('required')">
-        {{config.placeholder | flErrorRequired:false}}
+        {{selectConfig.placeholder | flErrorRequired:false}}
       </mat-error>
     </mat-form-field>
   </ng-container>

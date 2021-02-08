@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Optional, Output, Self} from '@angular/core';
-import {FlDynamicFieldConfig} from '../fl-dynamic-field-config.class';
+import {FlDynamicFieldConfig, FlDynamicFieldConfigInput, FlDynamicFieldConfigSelect} from '../fl-dynamic-field-config.class';
 import {ControlValueAccessor, FormControl, NgControl, Validators} from '@angular/forms';
 import {ClHelpService} from '@monorepo/core-lib';
 
@@ -118,5 +118,12 @@ export class FlDynamicFieldComponent implements OnInit, ControlValueAccessor {
     }
   }
 
+  // getter to avoid error in HTML
+  get inputConfig(): FlDynamicFieldConfigInput {
+    return this.config as FlDynamicFieldConfigInput;
+  }
 
+  get selectConfig(): FlDynamicFieldConfigSelect {
+    return this.config as FlDynamicFieldConfigSelect;
+  }
 }

@@ -1,7 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
   "files": [],
-  "include": ["decs.d.ts"],
+  "include": [
+    "decs.d.ts"
+  ],
   "references": [
     {
       "path": "./tsconfig.app.json"
@@ -12,5 +14,10 @@
     {
       "path": "./tsconfig.editor.json"
     }
-  ]
+  ],
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
 }
