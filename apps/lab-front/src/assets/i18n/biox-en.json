@@ -1,4 +1,8 @@
 {
   "biox": "BioX",
-  "configuration": "Configuration"
+  "configuration": "Configuration",
+  "add_object": "Add object",
+  "run_experiment": "Run experiment",
+  "interface": "Interface",
+  "outerface": "Outerface"
 }

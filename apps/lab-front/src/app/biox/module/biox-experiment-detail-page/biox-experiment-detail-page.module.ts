@@ -13,6 +13,7 @@ import {BioxWorkflowLayersBreadcrumbComponent} from './component/biox-workflow-l
 import {BioxResourceCoreModule} from '../../../core/entity-module/biox-resource-core/biox-resource-core.module';
 import {BioxConfigCoreModule} from '../../../core/entity-module/biox-config-core/biox-config-core.module';
 import {BioxWorkflowNodeInterfaceComponent} from './component/biox-workflow-interface/biox-workflow-node-interface.component';
+import { BioxWorkflowActionsComponent } from './component/biox-workflow-actions/biox-workflow-actions.component';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import {BioxWorkflowNodeInterfaceComponent} from './component/biox-workflow-inte
     BioxWorkflowComponent,
     BioxWorkflowLayersBreadcrumbComponent,
     BioxWorkflowNodeInterfaceComponent,
+    BioxWorkflowActionsComponent,
   ],
   imports: [
     CommonModule,

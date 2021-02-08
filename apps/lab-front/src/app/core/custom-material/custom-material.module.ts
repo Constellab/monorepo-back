@@ -10,6 +10,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatMenuModule} from '@angular/material/menu';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -26,6 +27,7 @@ import {MatTabsModule} from '@angular/material/tabs';
     MatToolbarModule,
     MatTableModule,
     MatTabsModule,
+    MatMenuModule,
 
     FlexLayoutModule,
   ],

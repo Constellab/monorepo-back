@@ -1,0 +1,32 @@
+<div fxLayout="row wrap" fxLayoutGap="1em">
+
+  <!-- Add object button  -->
+  <button mat-icon-button type="button"
+          [matTooltip]="'add_object' | translate" matTooltipPosition="below"
+          [matMenuTriggerFor]="addObject">
+    <mat-icon>add</mat-icon>
+  </button>
+
+
+  <button mat-icon-button type="button"
+          [matTooltip]="'save' | translate" matTooltipPosition="below">
+    <mat-icon>save</mat-icon>
+  </button>
+
+  <button mat-icon-button type="button"
+          [matTooltip]="'run_experiment' | translate" matTooltipPosition="below">
+    <mat-icon>play_arrow</mat-icon>
+  </button>
+</div>
+
+
+<!-- Add object menu -->
+<mat-menu #addObject="matMenu">
+  <button mat-menu-item (click)="addInterface()" type="button">
+    <mat-icon>login</mat-icon>
+    {{'interface' | translate}}
+  </button>
+  <button mat-menu-item (click)="addOuterface()" type="button">
+    <mat-icon>logout</mat-icon>
+    {{'outerface' | translate}}</button>
+</mat-menu>

@@ -30,7 +30,7 @@ export abstract class WorkflowNode<T> {
   public initNode(nodeId: string, getDrawflowNodeMethod: (id: string) => DrawflowNode): void {
     this.nodeId = nodeId;
     this.getDrawflowNodeMethod = getDrawflowNodeMethod;
-    this.setPortColors();
+    this.initPortColors();
   }
 
   protected abstract initPorts(): void;
@@ -96,7 +96,7 @@ export abstract class WorkflowNode<T> {
   /**
    * set the port color based on port type
    */
-  public setPortColors(): void {
+  public initPortColors(): void {
     // retrieve the node HTML element
     const element: HTMLElement = document.getElementById(this.getHTMLId());
 
