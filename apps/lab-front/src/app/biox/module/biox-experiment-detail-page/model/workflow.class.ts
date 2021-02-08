@@ -206,4 +206,9 @@ export class Workflow {
   public getMode(): WorkflowMode {
     return this.mode;
   }
+
+  public destroy(): void {
+    this.connectionSelected$.complete();
+    this.currentLayer$.complete();
+  }
 }

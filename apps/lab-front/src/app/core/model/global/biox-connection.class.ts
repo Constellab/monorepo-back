@@ -1,7 +1,6 @@
 import {LabEntity} from './lab-entity.entity';
 import {BioxFlowJob} from '../entities/biox-flow.entity';
 
-// todo rename class and methods
 export interface BioxConnectionPart {
 
   getNodeName(): string;

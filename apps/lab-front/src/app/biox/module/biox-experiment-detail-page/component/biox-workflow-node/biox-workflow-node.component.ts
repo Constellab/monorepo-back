@@ -1,5 +1,5 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {WorkflowManagerService} from '../../service/workflow-manager.service';
+import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {WorkflowNode} from '../../model/workflow-node.class';
 import {BioxJob} from '../../../../../core/model/entities/biox-job.entity';
 import {FlDialogService, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
@@ -29,7 +29,7 @@ export class BioxWorkflowNodeComponent implements OnInit {
 
   node: WorkflowNode<BioxJob>;
 
-  constructor(private workflowManager: WorkflowManagerService,
+  constructor(private workflowManager: WorkflowManagerState,
               private dialogService: FlDialogService,
               private portalService: FlPortalService) {
   }

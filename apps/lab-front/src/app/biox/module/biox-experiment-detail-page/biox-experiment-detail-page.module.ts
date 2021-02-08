@@ -6,7 +6,6 @@ import {BioxExperimentCoreModule} from '../../../core/entity-module/biox-experim
 import {BioxWorkflowNodeComponent} from './component/biox-workflow-node/biox-workflow-node.component';
 import {BioxWorkflowComponent} from './component/biox-workflow/biox-workflow.component';
 import {createCustomElement} from '@angular/elements';
-import {WorkflowManagerService} from './service/workflow-manager.service';
 import {BioxProtocolCoreModule} from '../../../core/entity-module/biox-protocol-core/biox-protocol-core.module';
 import {BioxProcessCoreModule} from '../../../core/entity-module/biox-process-core/biox-process-core.module';
 import {BioxWorkflowLayersBreadcrumbComponent} from './component/biox-workflow-layers-breadcrumb/biox-workflow-layers-breadcrumb.component';
@@ -14,6 +13,7 @@ import {BioxResourceCoreModule} from '../../../core/entity-module/biox-resource-
 import {BioxConfigCoreModule} from '../../../core/entity-module/biox-config-core/biox-config-core.module';
 import {BioxWorkflowNodeInterfaceComponent} from './component/biox-workflow-interface/biox-workflow-node-interface.component';
 import { BioxWorkflowActionsComponent } from './component/biox-workflow-actions/biox-workflow-actions.component';
+import {WorkflowManagerState} from './state/workflow-manager-state';
 
 
 @NgModule({
@@ -35,7 +35,7 @@ import { BioxWorkflowActionsComponent } from './component/biox-workflow-actions/
     BioxResourceCoreModule,
     BioxConfigCoreModule,
   ],
-  providers: [WorkflowManagerService]
+  providers: [WorkflowManagerState]
 })
 export class BioxExperimentDetailPageModule {
   constructor(injector: Injector) {

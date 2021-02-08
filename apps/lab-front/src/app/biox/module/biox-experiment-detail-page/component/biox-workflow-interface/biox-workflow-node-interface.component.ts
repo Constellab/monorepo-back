@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {WorkflowNode} from '../../model/workflow-node.class';
-import {WorkflowManagerService} from '../../service/workflow-manager.service';
+import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {WorkflowNodeInterface} from '../../model/workflow-node-interface.class';
 import {WorkflowNodeOuterface} from '../../model/workflow-node-outerface.class';
 
@@ -24,7 +24,7 @@ export class BioxWorkflowNodeInterfaceComponent implements OnInit {
   node: WorkflowNode<void>;
 
 
-  constructor(private workflowManager: WorkflowManagerService) {
+  constructor(private workflowManager: WorkflowManagerState) {
   }
 
   ngOnInit(): void {

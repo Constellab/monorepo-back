@@ -1,5 +1,5 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {WorkflowManagerService} from '../../service/workflow-manager.service';
+import {Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
 import {BioxProcessService} from '../../../../../core/entity-service/biox-process.service';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
@@ -18,7 +18,7 @@ import {WorkflowConnection} from '../../model/workflow-connection.class';
   templateUrl: './biox-workflow.component.html',
   styleUrls: ['./biox-workflow.component.scss']
 })
-export class BioxWorkflowComponent implements OnInit {
+export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   @Input() experiment: BioxExperiment;
 
@@ -34,14 +34,13 @@ export class BioxWorkflowComponent implements OnInit {
 
   flowIsLoading: boolean = false;
 
-  constructor(private workflowManagerService: WorkflowManagerService,
+  constructor(private workflowManagerService: WorkflowManagerState,
               private bioxProtocolService: BioxProtocolService,
               private bioxProcessService: BioxProcessService,
               private bioxFlowService: BioxFlowService,
               private portalService: FlPortalService) {
   }
 
-  // todo handle on destroy
   ngOnInit(): void {
     this.loadExperimentFlow();
 
@@ -114,8 +113,13 @@ export class BioxWorkflowComponent implements OnInit {
 
       this.portalService.createPortal(BioxResourcePortalComponent, portalConfig, connection.resource.getObs());
     }
-
   }
+
+  ngOnDestroy(): void {
+    this.workflowManagerService.clear();
+  }
+
+
 
 
 }

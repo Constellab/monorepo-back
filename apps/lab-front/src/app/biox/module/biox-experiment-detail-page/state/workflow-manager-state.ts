@@ -17,10 +17,11 @@ import {WorkflowNodeInterface} from '../model/workflow-node-interface.class';
 import {WorkflowNodeOuterface} from '../model/workflow-node-outerface.class';
 import {WorkflowPort} from '../model/workflow-port.class';
 
-
-// todo handle on destroy
+/**
+ * State for the workflow, it is created for the module and can only manage on state a the time
+ */
 @Injectable()
-export class WorkflowManagerService {
+export class WorkflowManagerState {
 
   public workflow: Workflow;
 
@@ -40,6 +41,7 @@ export class WorkflowManagerService {
   }
 
   public init(element: HTMLElement, flow: BioxFlow, experiment: BioxExperiment): void {
+    this.clear();
     this.experiment = experiment;
     this.workflow = new Workflow(element, 'edit');
 
@@ -233,6 +235,14 @@ export class WorkflowManagerService {
   private generateId(prefix: string = ''): string {
     return prefix + this.idGenerator++;
   }
+
+  public clear(): void {
+    this.idGenerator = 0;
+    this.experiment = null;
+    this.workflow?.destroy();
+    this.workflow = null;
+  }
+
 
 }
 

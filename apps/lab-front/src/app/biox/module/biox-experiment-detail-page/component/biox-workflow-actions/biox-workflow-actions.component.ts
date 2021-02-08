@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {WorkflowManagerService} from '../../service/workflow-manager.service';
+import {WorkflowManagerState} from '../../state/workflow-manager-state';
 
 /**
  * Actions button for the workflow
@@ -11,7 +11,7 @@ import {WorkflowManagerService} from '../../service/workflow-manager.service';
 })
 export class BioxWorkflowActionsComponent implements OnInit {
 
-  constructor(private workflowManager: WorkflowManagerService) {
+  constructor(private workflowManager: WorkflowManagerState) {
   }
 
   ngOnInit(): void {

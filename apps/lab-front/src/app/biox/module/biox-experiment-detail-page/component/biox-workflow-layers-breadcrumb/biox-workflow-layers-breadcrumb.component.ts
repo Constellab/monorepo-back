@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {WorkflowManagerService} from '../../service/workflow-manager.service';
+import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {Observable} from 'rxjs';
 import {WorkflowLayer} from '../../model/workflow-layer.class';
 
@@ -15,7 +15,7 @@ export class BioxWorkflowLayersBreadcrumbComponent implements OnInit {
 
   layers$: Observable<WorkflowLayer[]>;
 
-  constructor(private workflowManager: WorkflowManagerService) {
+  constructor(private workflowManager: WorkflowManagerState) {
   }
 
   ngOnInit(): void {
