@@ -72,7 +72,7 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
     this.isLoading = true;
     this.getPageFunction(this.pageNumber, this.pageSize).subscribe(
       result => this.onSuccess(result),
-      () => this.error()
+      error => this.error(error)
     );
   }
 
@@ -89,11 +89,12 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
   }
 
   // revert pageNumber and clear loaders
-  private error(): void {
+  private error(error: any): void {
     if (this.pageNumber > 0) {
       this.pageNumber--;
     }
     this.clearAfterCall();
+    this.emitError(error);
   }
 
   // clear loadings and subscriptions

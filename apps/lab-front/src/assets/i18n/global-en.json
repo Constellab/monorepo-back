@@ -1,4 +1,7 @@
 {
+  "yes": "Yes",
+  "no": "No",
+  "ok": "Ok",
   "connection_lost": "The connection has been lost",
   "description": "Description",
   "title": "Title",
