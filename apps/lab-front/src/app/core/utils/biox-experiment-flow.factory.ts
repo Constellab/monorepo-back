@@ -63,6 +63,7 @@ export class BioxExperimentFlowFactory {
     flow.config = BioxConfig.empty();
     flow.process = process;
 
+
     // create the jobs
     flow.jobs = {};
 
@@ -104,8 +105,8 @@ export class BioxExperimentFlowFactory {
     flowJob.jobId = null;
 
     const flowProcess: BioxFlowProcess = new BioxFlowProcess();
-    flowProcess.instanceName = linkPart.getNodeName();
-    flowProcess.port = linkPart.getPort();
+    flowProcess.instanceName = linkPart.nodeName;
+    flowProcess.port = linkPart.port;
 
     flowJob.process = flowProcess;
     return flowJob;

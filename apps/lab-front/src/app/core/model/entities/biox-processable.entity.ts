@@ -1,51 +1,26 @@
 import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
 import {ClCoreJsonConvert, ClDeserializeItem, ClRecordTransformOverride} from '@monorepo/core-lib';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {BioxConnection, BioxConnectionManager, BioxConnectionPart, BioxConnectionType} from '../global/biox-connection.class';
 import {BioxProcessableBase} from './biox-processable-base.entity';
 import {Expose, Type} from 'class-transformer';
 
 ////////////////////////////////// LINK ///////////////////////////////////////
 
-export class BioxLinkPart implements BioxConnectionPart {
+export class BioxLinkPart {
 
   @Expose({name: 'node'})
   nodeName: string;
 
   port: string;
-
-  node: BioxProcessable;
-
-  getNodeName(): string {
-    return this.nodeName;
-  }
-
-  getPort(): string {
-    return this.port;
-  }
-
-  getNode(): BioxProcessable {
-    return this.node;
-  }
-
-  setNode(node: BioxProcessable): void {
-    this.node = node;
-  }
-
 }
 
-export class BioxLink implements BioxConnection {
+export class BioxLink {
 
   @Type(() => BioxLinkPart)
   from: BioxLinkPart = null;
 
   @Type(() => BioxLinkPart)
   to: BioxLinkPart = null;
-
-  getType(): BioxConnectionType {
-    return 'node';
-  }
-
 
 }
 
@@ -64,7 +39,7 @@ const deserializeGraphNode: ClDeserializeItem<BioxProcessable> = (item: LabBaseE
 };
 
 
-export class BioxProtocolGraph extends BioxConnectionManager {
+export class BioxProtocolGraph {
 
   title: any;
 
@@ -79,28 +54,6 @@ export class BioxProtocolGraph extends BioxConnectionManager {
 
   @ClRecordTransformOverride(deserializeGraphNode)
   nodes: Record<string, BioxProcessable> = null;
-
-  getAllNodesArray(): BioxProcessable[] {
-    return Object.keys(this.nodes).map(key => this.nodes[key]);
-  }
-
-  getAllConnections(): BioxConnection[] {
-    return this.links;
-  }
-
-  getNodes(): Record<string, BioxProcessable> {
-    return this.nodes;
-  }
-
-  // todo how to implement it ? the specs are in the parent
-  getInputSpecs(): Record<string, string[]> {
-    return undefined;
-  }
-
-  getOutputSpecs(): Record<string, string[]> {
-    return undefined;
-  }
-
 
 }
 

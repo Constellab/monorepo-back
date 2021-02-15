@@ -1,5 +1,5 @@
 import {LabEntity} from './lab-entity.entity';
-import {BioxFlowJob} from '../entities/biox-flow.entity';
+import {BioxFlowInterface} from '../entities/biox-inteface.entity';
 
 export interface BioxConnectionPart {
 
@@ -90,13 +90,17 @@ export class BioxOuterfaceNode extends BioxNode {
 
 export abstract class BioxConnectionManager extends LabEntity {
 
-  abstract getAllConnections(): BioxConnection[];
+  abstract getConnections(): BioxConnection[];
 
   abstract getNodes(): Record<string, BioxNode>;
 
   abstract getInputSpecs(): Record<string, string[]>;
 
   abstract getOutputSpecs(): Record<string, string[]>;
+
+  abstract getInterfacesConnections(): Record<string, BioxFlowInterface>;
+
+  abstract getOuterfacesConnections(): Record<string, BioxFlowInterface>;
 
   // list of interface as nodes
   interfaceNodes: Record<string, BioxNode>;
@@ -128,9 +132,21 @@ export abstract class BioxConnectionManager extends LabEntity {
 
   /**
    * return the connections between nodes (not the interfaces nor the outerfaces)
+   * todo delete when pulled
    */
   public getNodesConnections(): BioxConnection[] {
-    return this.getAllConnections().filter(connection => connection.getType() === 'node');
+    return this.getConnections().filter(connection => connection.getType() === 'node');
+  }
+
+  /**
+   * return the connections between nodes with interfaces and outerfaces connections
+   */
+  public getAllConnections(): BioxConnection[] {
+    const interfaces: Record<string, BioxFlowInterface> = this.getInterfacesConnections();
+    const interfacesConnections: BioxConnection[] = Object.keys(interfaces).map(key => interfaces[key]);
+    const outerfaces: Record<string, BioxFlowInterface> = this.getOuterfacesConnections();
+    const outerfacesConnections: BioxConnection[] = Object.keys(outerfaces).map(key => outerfaces[key]);
+    return [...this.getNodesConnections(), ...interfacesConnections, ...outerfacesConnections];
   }
 
   ////////////////////////////// INIT METHODS /////////////////////////////////
@@ -149,14 +165,6 @@ export abstract class BioxConnectionManager extends LabEntity {
   private initConnectionNodes(): void {
     const nodes: Record<string, BioxNode> = this.getAllNodes();
     for (const connection of this.getAllConnections()) {
-
-      // TODO improve this management
-      // used to replace the port name to make the connection works
-      // because it has a strange formatting and name
-      if (connection.getType() === 'interface') {
-        const job: BioxFlowJob = connection.from as any;
-        job.process.instanceName = 'i_' + job.process.port;
-      }
 
       // init from node
       const fromNode: BioxNode = nodes[connection.from.getNodeName()];
@@ -195,7 +203,7 @@ export abstract class BioxConnectionManager extends LabEntity {
   private initInterfaceNodes(): void {
     this.interfaceNodes = {};
     const specs: Record<string, string[]> = this.getInputSpecs();
-    if(specs == null){
+    if (specs == null) {
       return;
     }
 
@@ -204,8 +212,14 @@ export abstract class BioxConnectionManager extends LabEntity {
       // init the port name as the interface name
       node.portName = interfaceName;
       node.portType = specs[interfaceName];
-      // create a unique name to avoid duplicate with output node
-      this.interfaceNodes['i_' + interfaceName] = node;
+
+      // create a unique name to avoid duplicate node name
+      const interfaceNodeName: string = 'i_' + interfaceName;
+      this.interfaceNodes[interfaceNodeName] = node;
+
+      // override the output node name to point to the interface node (using the generate node name)
+      const outputNode: BioxFlowInterface = this.getInterfacesConnections()[interfaceName];
+      outputNode.from.nodeName = interfaceNodeName;
     }
   }
 
@@ -215,7 +229,7 @@ export abstract class BioxConnectionManager extends LabEntity {
   private initOuterfaceNodes(): void {
     this.outerfaceNodes = {};
     const specs: Record<string, string[]> = this.getOutputSpecs();
-    if(specs == null){
+    if (specs == null) {
       return;
     }
 
@@ -224,8 +238,16 @@ export abstract class BioxConnectionManager extends LabEntity {
       // init the port name as the interface name
       node.portName = outerfaceName;
       node.portType = specs[outerfaceName];
-      // create a unique name to avoid duplicate with input node
-      this.outerfaceNodes['o_' + outerfaceName] = node;
+
+
+      // create a unique name to avoid duplicate node name
+      const outerfaceNodeName: string = 'o_' + outerfaceName;
+
+      this.outerfaceNodes[outerfaceNodeName] = node;
+
+      // override the input node name to point to the outerface node (using the generate node name)
+      const inputNode: BioxFlowInterface = this.getOuterfacesConnections()[outerfaceName];
+      inputNode.to.nodeName = outerfaceNodeName;
     }
   }
 

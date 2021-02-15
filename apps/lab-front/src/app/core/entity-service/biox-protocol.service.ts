@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {FlApiWithCacheService, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {BioxProtocol, BioxProtocolDatasource} from '../model/entities/biox-processable.entity';
-import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +14,7 @@ export class BioxProtocolService {
 
   public getProtocols(page: number, pageSize: number): Observable<FlPage<BioxProtocol>> {
     return this.apiService.get(`protocol/list`, BioxProtocol,
-      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize}).pipe(
-      map(protocols => this.initProtocolsPageConnections(protocols))
-    );
+      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
 
   public getProtocolsDatasource(): BioxProtocolDatasource {
@@ -29,23 +26,8 @@ export class BioxProtocolService {
   }
 
   public getProtocol(id: string): Observable<BioxProtocol> {
-    return this.apiService.getByIdWithCache(`protocol`, id, BioxProtocol).pipe(
-      map(protocol => this.initProtocolConnection(protocol))
-    );
+    return this.apiService.getByIdWithCache(`protocol`, id, BioxProtocol);
   }
 
-  private initProtocolsPageConnections(protocols: FlPage<BioxProtocol>): FlPage<BioxProtocol> {
-    this.initProtocolsConnections(protocols.objects);
-    return protocols;
-  }
-
-  private initProtocolsConnections(protocols: BioxProtocol[]): BioxProtocol[] {
-    return protocols.map(p => this.initProtocolConnection(p));
-  }
-
-  private initProtocolConnection(protocol: BioxProtocol): BioxProtocol {
-    protocol.data.graph.initConnectionsAndNodes();
-    return protocol;
-  }
 
 }

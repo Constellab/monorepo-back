@@ -2,53 +2,14 @@ import {LabEntity} from '../global/lab-entity.entity';
 import {BioxConfig} from './biox-config.entity';
 import {BioxJob} from './biox-job.entity';
 import {ClLuxonTransform, ClRecordTransform} from '@monorepo/core-lib';
-import {BioxConnection, BioxConnectionManager, BioxConnectionPart, BioxConnectionType, BioxNode} from '../global/biox-connection.class';
+import {BioxConnection, BioxConnectionManager, BioxConnectionPart, BioxConnectionType} from '../global/biox-connection.class';
 import {DateTime} from 'luxon';
 import {BioxProcessableBase} from './biox-processable-base.entity';
 import {Expose, Type} from 'class-transformer';
 import {BioxResource} from './biox-resource.entity';
 import {FlLazyProperty, FlLazyPropertyTransform} from '@monorepo/front-core-lib';
 import {BioxResourceService} from '../../entity-service/biox-resource.service';
-
-
-export class BioxFlowInterfacePart implements BioxConnectionPart {
-
-  @Expose({name: 'node'})
-  nodeName: string;
-
-  node: BioxNode;
-
-  port: string;
-
-  getNodeName(): string {
-    return this.nodeName;
-  }
-
-  getPort(): string {
-    return this.port;
-  }
-
-  getNode(): BioxNode {
-    return this.node;
-  }
-
-  setNode(node: BioxNode): void {
-    this.node = node;
-  }
-}
-
-export class BioxFlowInterface implements BioxConnection {
-
-  @Type(() => BioxFlowInterfacePart)
-  from: BioxFlowInterfacePart;
-
-  @Type(() => BioxFlowInterfacePart)
-  to: BioxFlowInterfacePart;
-
-  getType(): BioxConnectionType {
-    return 'interface';
-  }
-}
+import {BioxFlowInterface, BioxFlowOuterface} from './biox-inteface.entity';
 
 
 export class BioxFlowProcess extends LabEntity {
@@ -104,12 +65,12 @@ export class BioxFlowStep implements BioxConnection {
   resource: FlLazyProperty<BioxResource>;
 
   getType(): BioxConnectionType {
-    if(this.from.interface != null){
+    if (this.from.interface != null) {
       return 'interface';
     }
-    // todo handle outerface
-    else{
-      return 'node'
+    // todo delete when interface are not in connection anymore
+    else {
+      return 'node';
     }
   }
 
@@ -143,8 +104,8 @@ export class BioxFlow extends BioxConnectionManager {
   @ClRecordTransform(BioxFlowInterface)
   interfaces: Record<string, BioxFlowInterface>;
 
-  @ClRecordTransform(BioxFlowInterface)
-  outerfaces: Record<string, BioxFlowInterface>;
+  @ClRecordTransform(BioxFlowOuterface)
+  outerfaces: Record<string, BioxFlowOuterface>;
 
   layout: Record<string, unknown>;
 
@@ -155,7 +116,7 @@ export class BioxFlow extends BioxConnectionManager {
   @ClLuxonTransform()
   createdAt: DateTime;
 
-  getAllConnections(): BioxConnection[] {
+  getConnections(): BioxConnection[] {
     return this.flows;
   }
 
@@ -171,6 +132,13 @@ export class BioxFlow extends BioxConnectionManager {
     return this.process.getOutputSpecs();
   }
 
+  getInterfacesConnections(): Record<string, BioxFlowInterface> {
+    return this.interfaces;
+  }
+
+  getOuterfacesConnections(): Record<string, BioxFlowInterface> {
+    return this.outerfaces;
+  }
 
 
 }
