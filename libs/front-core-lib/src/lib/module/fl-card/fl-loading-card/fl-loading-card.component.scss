@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+
+
+.animate {
+  // generate max 2 lines
+  //background: linear-gradient(var(--main-background) 16px, transparent 16px 32px, var(--main-background) 32px 48px, transparent 48px 64px);
+
+  // generate line until bottom
+  background: linear-gradient(var(--main-background) 16px, transparent 16px) round;
+  background-size: 100% 32px; // 32 = 16 * 2
+}
+
+.title {
+  height: 1em;
+}
+
+.body {
+  height: 100%;
+}

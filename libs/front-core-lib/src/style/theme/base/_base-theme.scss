@@ -21,6 +21,7 @@
   :root {
     --card-background: #{mat-color($background, card)};
     --color-foreground: #{$foreground-color};
+    --main-background: #{$background-color}
   }
 
   body {
