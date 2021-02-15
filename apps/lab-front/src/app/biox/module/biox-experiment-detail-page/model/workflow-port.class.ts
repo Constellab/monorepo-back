@@ -46,13 +46,13 @@ export class WorkflowPort {
   }
 
   /**
-   * return the port color base on type
+   * return the port color base on first type
    */
   public getColor(): string {
-    if (this.type == null) {
+    if (this.type == null || this.type.length === 0) {
       return '#ffffff';
     } else {
-      return FlColorHelper.stringToRGBColor(this.type.join(''));
+      return FlColorHelper.stringToRGBColor(this.type[0]);
     }
   }
 }
