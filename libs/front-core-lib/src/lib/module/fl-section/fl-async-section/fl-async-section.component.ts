@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, Input, OnDestroy, OnInit, TemplateRef} from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {FlSectionBodyDirective} from '../fl-section-body';
-import {skip} from 'rxjs/operators';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlViewContext} from '../../../model/fl-view-context.class';
 import {FlArrayObs} from '../../../model/datasource/fl-array-obs.class';
@@ -45,7 +44,7 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
       obs = this.observable;
     } else if (this.arrayObs) {
       // if this is a datasource, skip the first because it returns an empty array
-      obs = this.arrayObs.connect().pipe(skip(1));
+      obs = this.arrayObs.connect();
     } else {
       console.error('Not observable provided');
       return;

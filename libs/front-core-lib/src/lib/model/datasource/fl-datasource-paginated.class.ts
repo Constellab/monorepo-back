@@ -1,5 +1,7 @@
 import {FlArrayObs} from './fl-array-obs.class';
 import {FlGetPageFunction, FlPage} from '../fl-page.class';
+import {Observable} from 'rxjs';
+import {filter} from 'rxjs/operators';
 
 /**
  * Datasource that work with a method that returns paginated results.
@@ -21,6 +23,9 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
   // true when next page is loading
   public nextPageIsLoading: boolean = false;
 
+  // changed to true after first loading
+  private isReady: boolean = false;
+
   // when the datasource it prevent all call to be made event if a filter of function are called
   private disabled: boolean = false;
 
@@ -29,6 +34,11 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
     if (initFirstPage) {
       this.getFirstPage();
     }
+  }
+
+  // don't emit until the datasource is ready
+  connect(): Observable<T[]> {
+    return super.connect().pipe(filter(() => this.isReady));
   }
 
   disconnect(): void {
@@ -78,6 +88,7 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
 
   // add results to current array and save page
   private onSuccess(result: FlPage<T>): void {
+    this.isReady = true;
     this.page = result;
     this.clearAfterCall();
 
@@ -88,8 +99,10 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
     }
   }
 
+
   // revert pageNumber and clear loaders
   private error(error: any): void {
+    this.isReady = true;
     if (this.pageNumber > 0) {
       this.pageNumber--;
     }

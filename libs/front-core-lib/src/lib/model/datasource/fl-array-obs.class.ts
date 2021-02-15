@@ -182,7 +182,7 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
     return this._array == null || this._array.length === 0;
   }
 
-  public emitError(error: any): void{
+  public emitError(error: any): void {
     this.arrayChange$.error(error);
   }
 
