@@ -18,6 +18,14 @@ export class WorkflowLayer {
               public readonly parentLayer: WorkflowLayer) {
   }
 
+  // function to call when this layer is selected
+  // if node exists in this layer we reset their port color
+  public selectLayer(): void {
+    for (const node of this.nodes) {
+      node.initPortColors();
+    }
+  }
+
 
   ///////////////////////////// NODE ////////////////////////////////
 
@@ -80,7 +88,7 @@ export class WorkflowLayer {
 
       // todo voir le null
       const workflowConnection: WorkflowConnection = new WorkflowConnection(outputNode, inputNode,
-       outputNode.findOutputPortByDrawflowName(event.output_class), inputNode.findInputPortByDrawflowName(event.input_class), null);
+        outputNode.findOutputPortByDrawflowName(event.output_class), inputNode.findInputPortByDrawflowName(event.input_class), null);
       this.connections.push(workflowConnection);
     }
   }

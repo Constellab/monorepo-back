@@ -81,6 +81,7 @@ export class Workflow {
     // update the current layer
     this.currentLayer$.next(layer);
     this.editor.changeModule(layerId);
+    layer.selectLayer();
   }
 
   public createSubLayerIfNotExists(layerId: string, name: string): void {
