@@ -58,6 +58,18 @@ declare module 'drawflow' {
     input_class: string;
   }
 
+  export interface ConnectionStartEvent {
+    /**
+     * outputNodeId
+     */
+    output_id: string;
+
+    /**
+     * name of the output
+     */
+    output_class: string;
+  }
+
   export interface DrawflowNode {
     class: string;
     data: any;

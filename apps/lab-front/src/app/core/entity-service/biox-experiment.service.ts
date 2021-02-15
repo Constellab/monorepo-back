@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {BioxExperiment, BioxExperimentDatasource} from '../model/entities/biox-experiment.entity';
-import {delay} from 'rxjs/operators';
 
 
 @Injectable({
@@ -16,7 +15,7 @@ export class BioxExperimentService {
 
   public getExperiments(page: number, pageSize: number): Observable<FlPage<BioxExperiment>> {
     return this.apiService.get(`experiment/list`, BioxExperiment,
-      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize}).pipe(delay(3000));
+      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
 
   public getExperimentsDatasource(): BioxExperimentDatasource {

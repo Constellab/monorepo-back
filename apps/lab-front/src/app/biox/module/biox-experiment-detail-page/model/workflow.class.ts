@@ -1,6 +1,6 @@
 import {WorkflowNode} from './workflow-node.class';
 import * as Drawflow from 'drawflow';
-import {ConnectionEvent} from 'drawflow';
+import {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 import {WorkflowConnection} from './workflow-connection.class';
 import {WorkflowLayer} from './workflow-layer.class';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
@@ -49,6 +49,12 @@ export class Workflow {
 
     this.editor.on('connectionSelected',
       event => this.emitConnectionSelected(event));
+
+    this.editor.on('connectionStart',
+      event => this.onConnectionStarted(event));
+
+    this.editor.on('connectionCancel',
+      () => this.onConnectionCanceled());
   }
 
 
@@ -110,6 +116,14 @@ export class Workflow {
     );
   }
 
+  private onConnectionStarted(event: ConnectionStartEvent): void {
+    this.currentLayer.onConnectionStarted(event);
+  }
+
+  private onConnectionCanceled(): void {
+    this.currentLayer.resetPortColors();
+  }
+
   ////////////////////// NODE ///////////////////////////
   public addNode(node: WorkflowNode<any>): void {
     this.currentLayer.addNode(node);
@@ -167,7 +181,8 @@ export class Workflow {
     const outputPort: WorkflowPort = outputNode.findOutputPortByDrawflowName(connection.output_class);
 
     // check if the input is available and if the port are compatible
-    if (!inputNode.inputIsAvailable(connection.input_class) ||
+    // refuse if there are more than one connection (the new one is counting)
+    if (inputNode.countInputConnections(connection.input_class) > 1 ||
       !inputPort.isCompatible(outputPort)) {
       console.log('Input not available');
       // remove the connection

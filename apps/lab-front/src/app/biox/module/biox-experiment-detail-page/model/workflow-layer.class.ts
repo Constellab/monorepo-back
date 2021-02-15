@@ -1,7 +1,8 @@
 import {WorkflowNode} from './workflow-node.class';
 import * as Drawflow from 'drawflow';
-import {ConnectionEvent} from 'drawflow';
+import {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 import {WorkflowConnection} from './workflow-connection.class';
+import {WorkflowPort} from './workflow-port.class';
 
 /**
  * One layer of the workflow, it contains the list of nodes
@@ -21,9 +22,7 @@ export class WorkflowLayer {
   // function to call when this layer is selected
   // if node exists in this layer we reset their port color
   public selectLayer(): void {
-    for (const node of this.nodes) {
-      node.initPortColors();
-    }
+    this.resetPortColors();
   }
 
 
@@ -68,6 +67,18 @@ export class WorkflowLayer {
     node.initNode(nodeId.toString(), (id: string) => this.editor.getNodeFromId(id));
   }
 
+  /**
+   * Disable incompatible port when a new connection starts
+   */
+  private disableIncompatiblePorts(outputNode: WorkflowNode<any>, port: WorkflowPort): void {
+    for (const node of this.nodes) {
+      node.disableIncompatibleInputPort(port);
+      if (node.nodeId !== outputNode.nodeId) {
+        node.disableOutputPorts();
+      }
+    }
+  }
+
 
   ///////////////////////////////// CONNECTION //////////////////////////////////////
 
@@ -91,6 +102,7 @@ export class WorkflowLayer {
         outputNode.findOutputPortByDrawflowName(event.output_class), inputNode.findInputPortByDrawflowName(event.input_class), null);
       this.connections.push(workflowConnection);
     }
+    this.resetPortColors();
   }
 
   public removeConnection(event: ConnectionEvent): void {
@@ -122,5 +134,16 @@ export class WorkflowLayer {
     return [...this.parentLayer.getLayerHierarchy(), ...layers];
   }
 
+  public onConnectionStarted(event: ConnectionStartEvent): void {
+    const outputNode: WorkflowNode<any> = this.findNodeWithId(event.output_id);
+    const port: WorkflowPort = outputNode.findOutputPortByDrawflowName(event.output_class);
+    this.disableIncompatiblePorts(outputNode, port);
+  }
+
+  public resetPortColors(): void {
+    for (const node of this.nodes) {
+      node.initPortColors();
+    }
+  }
 
 }
