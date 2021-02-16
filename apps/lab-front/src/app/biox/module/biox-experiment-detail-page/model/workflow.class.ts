@@ -129,9 +129,8 @@ export class Workflow {
     this.currentLayer.addNode(node);
   }
 
-
-  private onNodeRemoved(nodeId: string): void {
-    this.currentLayer$.value.onNodeRemoved(nodeId);
+  private onNodeRemoved(nodeId: number): void {
+    this.currentLayer.onNodeRemoved(nodeId.toString());
   }
 
 
