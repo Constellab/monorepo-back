@@ -27,11 +27,11 @@ export class MailService {
   private readonly templateOptions = {
     viewEngine: {
       extname: '.hbs', // handlebars extension
-      layoutsDir: join(__dirname, '../../../../assets/templates/'), // location of handlebars templates
+      layoutsDir: join(__dirname, 'assets/templates/'), // location of handlebars templates
       defaultLayout: 'main', // name of main template, will wrap all other templates
-      partialsDir: join(__dirname, '../../../../assets/templates/'), // location of your subtemplates aka. header, footer etc
+      partialsDir: join(__dirname, 'assets/templates/'), // location of your subtemplates aka. header, footer etc
     },
-    viewPath: join(__dirname, '../../../../assets/templates/'),
+    viewPath: join(__dirname, 'assets/templates/'),
     extName: '.hbs'
   };
 
