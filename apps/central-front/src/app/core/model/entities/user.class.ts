@@ -1,6 +1,5 @@
-import {SupportedLanguage} from '../global/supported-language.class';
 import {DateTime} from 'luxon';
-import {ClLuxonTransform} from '@monorepo/core-lib';
+import {ClLuxonTransform, ClSupportedLanguage} from '@monorepo/core-lib';
 import {Entity} from './entity.entity';
 
 export enum UserCategory {
@@ -33,7 +32,7 @@ export class User extends Entity {
 
   job: string;
 
-  lang: SupportedLanguage;
+  lang: ClSupportedLanguage;
 
   photo: string;
 

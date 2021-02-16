@@ -1,0 +1,19 @@
+{
+  "server_info": "Informations serveurs",
+  "server_info_list": "Serveurs disponibles",
+  "host": "Hébérgeur",
+  "ram": "Ram (Go)",
+  "diskSpace": "Espace disque (Go)",
+  "diskType": "Type de disque",
+  "cpuCount": "Nb. CPU",
+  "cpuType": "Type de CPU",
+  "gpuCount": "Nb. GPU",
+  "gpuType": "Type de GPU",
+  "create_server_info": "Créer un serveur",
+  "server_info_created": "Information de serveur créée",
+  "update_server_info": "Modifier les infos du serveur",
+  "server_info_updated": "Informations du serveur modifié",
+  "no_server_info": "Aucun serveur",
+  "ip": "Adresse Ip",
+  "ipv6": "Adresse Ipv6"
+}

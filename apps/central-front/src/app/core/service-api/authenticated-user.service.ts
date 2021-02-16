@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {User, UserCategory} from '../model/entities/user.class';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {SupportedLanguage} from '../model/global/supported-language.class';
+import {map, tap} from 'rxjs/operators';
 import {FlApiService, FlCleanableService, FlCleanerService, FlTranslateService} from '@monorepo/front-core-lib';
+import {ClSupportedLanguage} from '@monorepo/core-lib';
 
 /**
  * Service to handle the current authenticated user
@@ -59,24 +59,42 @@ export class AuthenticatedUserService implements FlCleanableService {
   }
 
   // change the lang of the user
-  private checkAndChangeUserLanguage(lang: SupportedLanguage): void {
+  private checkAndChangeUserLanguage(lang: ClSupportedLanguage): void {
     // if the language has changed
     if (this.translateService.getUserLanguageCookie() !== lang) {
       this.translateService.changeAppLanguage(lang);
     }
   }
 
-  clean(): void {
-    this.userAuthenticated = null;
-    this.userSubject.next(null);
-  }
 
   /////////////////////////////// METHOD ON AUTHENTICATED USER //////////////////////////
+
+  public changeLanguage(lang: ClSupportedLanguage): Observable<void> {
+    return this.apiService.put(`${this.usersRoute}/language/${lang}`, null).pipe(
+      tap(() => this.changeLanguageSuccess(lang))
+    );
+  }
+
+  private changeLanguageSuccess(lang: ClSupportedLanguage): void {
+    this.checkAndChangeUserLanguage(lang);
+    if (this.userAuthenticated) {
+      this.userAuthenticated.lang = lang;
+      this.notifyUserChange();
+    }
+  }
+
+
   public isAdmin(): boolean {
     return this.userAuthenticated?.isAdmin() ?? false;
   }
 
   public isCategory(...categories: UserCategory[]): boolean {
     return this.userAuthenticated?.isCategory(...categories) ?? false;
+  }
+
+  /////////////////////////////// OTHER //////////////////////////
+  clean(): void {
+    this.userAuthenticated = null;
+    this.userSubject.next(null);
   }
 }

@@ -4,8 +4,10 @@
 
   <gen-theme-selection></gen-theme-selection>
 
+  <gen-language-selection class="g-section"></gen-language-selection>
 
-  <div class="logout">
+
+  <div class="g-section">
     <button mat-raised-button type="button" color="warn" (click)="logout()">
       {{'logout' | translate}}
       <fl-button-loader *ngIf="logoutIsLoading"></fl-button-loader>

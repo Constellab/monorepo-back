@@ -4,14 +4,21 @@ import {SettingsPageComponent} from './component/settings-page/settings-page.com
 import {CoreModule} from '../core/core.module';
 import {SettingsRoutingModule} from './settings-routing.module';
 import {ThemeSelectionComponent} from './component/theme-selection/theme-selection.component';
+import {LanguageSelectionComponent} from './component/language-selection/language-selection.component';
+import {FormsModule} from '@angular/forms';
 
 /**
  * Module for the settings page
  */
 @NgModule({
-  declarations: [SettingsPageComponent, ThemeSelectionComponent],
+  declarations: [
+    SettingsPageComponent,
+    ThemeSelectionComponent,
+    LanguageSelectionComponent
+  ],
   imports: [
     CommonModule,
+    FormsModule,
 
     CoreModule,
 

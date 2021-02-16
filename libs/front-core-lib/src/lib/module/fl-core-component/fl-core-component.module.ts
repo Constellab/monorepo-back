@@ -15,6 +15,8 @@ import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.modu
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
+import { FlSelectLanguageOptionsComponent } from './component/fl-select-language-options/fl-select-language-options.component';
+import {MatOptionModule} from '@angular/material/core';
 
 /**
  * Core modules containing components
@@ -26,12 +28,14 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
     FlLimitHeightComponent,
     FlNewWebsiteVersionComponent,
     FlChipComponent,
+    FlSelectLanguageOptionsComponent,
   ],
   exports: [
     FlDateRangeComponent,
     FlBreadcrumbComponent,
     FlLimitHeightComponent,
     FlChipComponent,
+    FlSelectLanguageOptionsComponent,
   ],
   imports: [
     CommonModule,
@@ -49,6 +53,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
     MatTooltipModule,
     MatIconModule,
     MatButtonModule,
+    MatOptionModule,
   ]
 })
 export class FlCoreComponentModule {

@@ -3,7 +3,7 @@
  */
 export enum ClSupportedLanguage {
   en = 'en',
-  // fr = 'fr'
+  fr = 'fr'
 }
 
 export const clDefaultLang: ClSupportedLanguage = ClSupportedLanguage.en;
@@ -25,5 +25,5 @@ export function clLangIsSupported(lang: string): boolean {
  */
 export const clLangNameMap: Record<ClSupportedLanguage, string> = {
   en: 'English',
-  // fr: 'Français'
+  fr: 'Français'
 };
