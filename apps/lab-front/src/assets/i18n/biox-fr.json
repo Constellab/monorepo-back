@@ -1,0 +1,15 @@
+{
+  "biox": {
+    "biox": "BioX",
+    "configuration": "Configuration",
+    "add_object": "Ajouter un objet",
+    "run_experiment": "Lancer l'expérience",
+    "interface": "Interface",
+    "outerface": "Outerface",
+    "new_experiment": "Nouvelle expérience",
+    "update_experiment": "Modifier l'expérience",
+    "experiment_created": "Expérience créé",
+    "experiment_updated": "Expérience modifié",
+    "score": "Score"
+  }
+}

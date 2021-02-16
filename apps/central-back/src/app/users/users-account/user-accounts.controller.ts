@@ -47,7 +47,7 @@ export class UserAccountsController {
   }
 
   /**
-   * Open route for account activation with link sent by mail
+   * Open route to unlock account with link sent by mail
    */
   @Public()
   @Get('unlock/:token')

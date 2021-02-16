@@ -1,0 +1,23 @@
+{
+  "server_error": "Erreur serveur",
+  "wrong_credentials": "Mauvais identifiant ou mot de passe",
+  "user_locked": "Utilisateur bloqué",
+  "column_too_long": "Champ '{field}' trop long",
+  "email_already_exist": "Un compte avec la même adresse email existe déjà",
+  "account_not_activated": "Votre compte n'est pas activé, merci de vérifier votre adresse email pour l'activer",
+  "invalid_link": "Lien invalide",
+  "account_already_activated": "Compte déjà activé",
+  "link_expired": "Lien expiré",
+  "incorrect_argument": "Argument incorrect",
+  "status_not_changed": "Le statut n'a pas changé",
+  "missing_api_key": "La clé d'api est manquante",
+  "wrong_api_key": "La clé d'api est incorrect",
+  "wrong_token": "Le token est incorrect",
+  "invalid_protocol": "Le json du protocole n'est pas valide",
+  "external_experiment_creation": "Erreur pendant la création de l'expérience dans le lab",
+  "lab_stopped": "Le lab n'est pas démarré",
+  "lab_auth_error": "Erreur pendant l'authentification au lab",
+  "experiment_missing_protocol": "L'expérience ne peut pas être lancée car le protcole n'est pas défini",
+  "account_not_admin_activated": "Votre compte doit être validé par un admin",
+  "language_not_supported": "La langue n'est pas supportée"
+}
