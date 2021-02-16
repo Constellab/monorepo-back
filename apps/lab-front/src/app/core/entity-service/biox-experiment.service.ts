@@ -30,5 +30,15 @@ export class BioxExperimentService {
     return this.apiService.get(`gws.model.Experiment/${id}`, BioxExperiment);
   }
 
+  // todo route
+  public create(experiment: Partial<BioxExperiment>): Observable<BioxExperiment>{
+    return this.apiService.post('', experiment, BioxExperiment);
+  }
+
+  // todo route
+  public update(experiment: Partial<BioxExperiment>): Observable<BioxExperiment>{
+    return this.apiService.put('', experiment, BioxExperiment);
+  }
+
 
 }

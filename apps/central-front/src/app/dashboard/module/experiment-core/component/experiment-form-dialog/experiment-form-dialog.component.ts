@@ -22,10 +22,6 @@ export interface ExperimentFormDialogInput extends FlFormDialogInput<Experiment>
 export class ExperimentFormDialogComponent extends FlFormDialogAbstractDirective<Partial<Experiment>, Experiment>
   implements OnInit {
 
-  formGp: FormGroup<Partial<Experiment>>;
-
-  isLoading: boolean = false;
-
   constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: ExperimentFormDialogInput,
               private experimentService: ExperimentService,
               snackBarService: FlSnackBarService,

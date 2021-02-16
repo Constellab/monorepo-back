@@ -4,5 +4,9 @@
   "add_object": "Add object",
   "run_experiment": "Run experiment",
   "interface": "Interface",
-  "outerface": "Outerface"
+  "outerface": "Outerface",
+  "new_experiment": "New experiment",
+  "update_experiment": "Updated experiment",
+  "experiment_created": "Experiment created",
+  "experiment_updated": "Experiment updated"
 }

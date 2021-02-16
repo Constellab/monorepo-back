@@ -9,7 +9,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HttpClientModule} from '@angular/common/http';
 import {
   FlApiModule,
-  FlDialogModule, FlPortalModule,
+  FlDialogModule, FlPortalModule, FlQuillConfig,
   flSetRootInjector,
   FlSnackBarModule,
   FlSvgIconModule,
@@ -17,6 +17,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {svgIcons} from './core/utils/svg-icon-config';
 import {apiModuleConfig} from './core/utils/api-module.config';
+import {QuillModule} from 'ngx-quill';
 
 @NgModule({
   declarations: [AppComponent],
@@ -52,6 +53,12 @@ import {apiModuleConfig} from './core/utils/api-module.config';
     FlDialogModule.forRoot(),
     FlSnackBarModule.forRoot(),
     FlPortalModule.forRoot(),
+
+    QuillModule.forRoot({
+      modules: {
+        toolbar: FlQuillConfig.defaultToolbarConfig,
+      },
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -11,6 +11,8 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -28,6 +30,9 @@ import {MatMenuModule} from '@angular/material/menu';
     MatTableModule,
     MatTabsModule,
     MatMenuModule,
+    MatFormFieldModule,
+    MatInputModule,
+
 
     FlexLayoutModule,
   ],

@@ -1,4 +1,3 @@
-
 <div class="g-page">
   <fl-async-section [arrayObs]="labExperiments" emptyText="no_lab_experiment">
 
@@ -10,7 +9,8 @@
 
       <fl-section-actions>
         <button mat-raised-button type="button" color="accent"
-                class="g-button-small" disabled>
+                class="g-button-small" [matTooltip]="'new_experiment' | translate"
+                (click)="createExperiment()">
           <mat-icon>add</mat-icon>
         </button>
       </fl-section-actions>
@@ -22,7 +22,7 @@
           <gen-biox-experiment-table [datasource]="labExperiments" [columns]="displayedColumns">
           </gen-biox-experiment-table>
 
-<!--          <fl-infinite-load-more-result [datasource]="labExperiments"></fl-infinite-load-more-result>-->
+          <!--          <fl-infinite-load-more-result [datasource]="labExperiments"></fl-infinite-load-more-result>-->
         </fl-card-body>
       </fl-card>
     </ng-container>

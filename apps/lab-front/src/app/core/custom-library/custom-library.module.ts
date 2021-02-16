@@ -5,7 +5,7 @@ import {
   FlCoreDirectiveModule,
   FlCorePipeModule,
   FlDialogModule,
-  FlDynamicFieldModule,
+  FlDynamicFieldModule, FlFormModule,
   FlInfiniteScrollModule,
   FlJsonEditorModule,
   FlLoaderModule,
@@ -41,7 +41,8 @@ import {
     FlInfiniteScrollModule,
     FlLoaderModule,
     FlJsonEditorModule,
-    FlDynamicFieldModule
+    FlDynamicFieldModule,
+    FlFormModule,
   ]
 })
 export class CustomLibraryModule {
