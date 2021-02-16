@@ -1,10 +1,10 @@
 import {RequestContext} from './request-context.model';
 import {User} from '../../../users/user.entity';
 import {UnauthorizedException} from '@nestjs/common';
-import {defaultLang, langCookie, langIsSupported, SupportedLanguage} from '../../model/config/supported-language.class';
 import {CookieHelper} from '../../utils/cookie.helper';
 import {Request} from 'express';
 import {LabInstance} from '../../../lab-instances/lab-instance.entity';
+import {clDefaultLang, clLangCookie, clLangIsSupported, ClSupportedLanguage} from '@monorepo/core-lib';
 
 /**
  * Request Context helper to access the current user or request
@@ -61,20 +61,20 @@ export class RequestContextHelper {
    * If not it get the lang from the 'lang' header
    * Otherwise it return the default lang
    */
-  static getCurrentLang(): SupportedLanguage {
+  static getCurrentLang(): ClSupportedLanguage {
     let lang = this.getCurrentUser()?.lang ||
-      this.getLangHeader() || defaultLang;
+      this.getLangHeader() || clDefaultLang;
 
     // check that the lang exists
-    if (!langIsSupported(lang)) {
-      lang = defaultLang;
+    if (!clLangIsSupported(lang)) {
+      lang = clDefaultLang;
     }
 
-    return lang as SupportedLanguage;
+    return lang as ClSupportedLanguage;
   }
 
   private static getLangHeader(): string {
-    return this.getHeaderFromContext(langCookie);
+    return this.getHeaderFromContext(clLangCookie);
   }
 
 

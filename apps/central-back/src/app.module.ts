@@ -12,7 +12,6 @@ import {DatabaseConfig} from './app/core/model/config/database-config.class';
 import {CoreConfigModule} from './app/core/modules/core-config/core-config.module';
 import {I18nJsonParser, I18nModule} from 'nestjs-i18n';
 import {join} from 'path';
-import {defaultLang} from './app/core/model/config/supported-language.class';
 import {LabsModule} from './app/labs/labs.module';
 import {ExperimentsModule} from './app/experiments/experiments.module';
 import {BricksModule} from './app/bricks/bricks.module';
@@ -29,6 +28,7 @@ import {ReportsModule} from './app/reports/reports.module';
 import {PersistenceLogger} from './app/core/services/persistence-logger/persistence-logger';
 import {ProtocolsModule} from './app/protocols/protocols.module';
 import {RequestContextMiddleware} from './app/core/modules/request-context/request-context.middleware';
+import {clDefaultLang} from '@monorepo/core-lib';
 
 function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
   const dbConfig: DatabaseConfig = configService.getDatabaseConfig();
@@ -62,7 +62,7 @@ function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
     }),
 
     I18nModule.forRoot({
-      fallbackLanguage: defaultLang,
+      fallbackLanguage: clDefaultLang,
       parser: I18nJsonParser,
       parserOptions: {
         path: join(__dirname, 'assets/i18n/'),

@@ -2,13 +2,13 @@
   {{'theme' | translate}}
   <div class="theme-selection">
     <button mat-stroked-button type="button"
-            (click)="selectTheme('light-theme')">
+            (click)="selectTheme(theme.LIGHT_THEME)">
       <span class="round round-light"></span>
       <span>{{'light' | translate}}</span>
     </button>
 
     <button mat-stroked-button type="button" class="second-button"
-            (click)="selectTheme('dark-theme')">
+            (click)="selectTheme(theme.DARK_THEME)">
       <span class="round round-dark"></span>
       <span>{{'dark' | translate}}</span>
     </button>

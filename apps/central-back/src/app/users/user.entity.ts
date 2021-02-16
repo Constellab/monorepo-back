@@ -2,10 +2,10 @@ import {BeforeInsert, Column, CreateDateColumn, Entity, ManyToMany, OneToOne} fr
 import {EntityWithId} from '../core/model/entities/entity-with-id.entity';
 import {Exclude} from 'class-transformer';
 import {UserCategory} from './user-category.enum';
-import {SupportedLanguage} from '../core/model/config/supported-language.class';
 import {GroupSingleUser, GroupUsers} from '../groups/group.entity';
 import * as argon2 from 'argon2';
 import {DateTransform} from '../core/decorators/date-transform.decorator';
+import {clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 
 
 @Entity()
@@ -41,8 +41,11 @@ export class User extends EntityWithId {
   @Column({nullable: true})
   lastLoginAttempt: Date = null;
 
-  @Column({nullable: false, type: 'enum', enum: SupportedLanguage, default: SupportedLanguage.en})
-  lang: SupportedLanguage;
+  @Column({nullable: false, type: 'enum', enum: ClSupportedLanguage, default: clDefaultLang})
+  lang: ClSupportedLanguage;
+
+  @Column({nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme})
+  theme: ClTheme;
 
   @ManyToMany(() => GroupUsers, (group: GroupUsers) => group.users)
   groups: GroupUsers[];
@@ -73,7 +76,8 @@ export class User extends EntityWithId {
     this.activated = false;
     this.adminActivated = false;
     // force the lang to en
-    this.lang = SupportedLanguage.en;
+    this.lang = clDefaultLang;
+    this.theme = clDefaultTheme;
   }
 
   async comparePassword(attempt: string): Promise<boolean> {

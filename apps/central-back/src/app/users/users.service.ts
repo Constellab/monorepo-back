@@ -1,9 +1,11 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {User} from './user.entity';
 import {Repository} from 'typeorm';
 import {AbstractService} from '../core/class/abstract.service';
 import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
+import {ErrorText} from '../core/model/config/error-text.class';
+import {clLangIsSupported, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 
 @Injectable()
 export class UsersService extends AbstractService<User> {
@@ -37,6 +39,22 @@ export class UsersService extends AbstractService<User> {
 
   getCurrent(): User {
     return RequestContextHelper.getAndCheckCurrentUser();
+  }
+
+  async updateLanguage(lang: ClSupportedLanguage): Promise<void> {
+    if (!clLangIsSupported(lang)) {
+      throw new BadRequestException(ErrorText.LANGUAGE_NOT_SUPPORTED);
+    }
+
+    const user: User = this.getCurrent();
+    user.lang = lang;
+    await this.update(user);
+  }
+
+  async updateTheme(theme: ClTheme): Promise<void> {
+    const user: User = this.getCurrent();
+    user.theme = theme;
+    await this.update(user);
   }
 
 

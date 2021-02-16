@@ -4,8 +4,8 @@ import {CoreConfigService} from '../../modules/core-config/core-config.service';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import {MailConfig, MailTemplate} from '../../model/config/mail-config.class';
 import {User} from '../../../users/user.entity';
-import {SupportedLanguage} from '../../model/config/supported-language.class';
 import {TranslateService} from '../../modules/translate/translate.service';
+import {ClSupportedLanguage} from '@monorepo/core-lib';
 import nodemailer = require('nodemailer');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const hbs = require('nodemailer-express-handlebars');
@@ -76,7 +76,7 @@ export class MailService {
   }
 
   // return the correct template path based on lang
-  private getTemplatePath(template: MailTemplate, lang: SupportedLanguage): string {
+  private getTemplatePath(template: MailTemplate, lang: ClSupportedLanguage): string {
     return join(lang, template);
   }
 

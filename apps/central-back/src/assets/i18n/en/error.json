@@ -18,5 +18,6 @@
   "lab_stopped": "The lab in not running",
   "lab_auth_error": "Error during authentication in lab",
   "experiment_missing_protocol": "The experiment can't be launched because it doesn't have a protocol",
-  "account_not_admin_activated": "Your account must be validated by an admin"
+  "account_not_admin_activated": "Your account must be validated by an admin",
+  "language_not_supported": "The language is not supported"
 }

@@ -2,7 +2,7 @@ import {Inject, Injectable, Renderer2, RendererFactory2} from '@angular/core';
 import {FlPlatformService} from './fl-plateform.service';
 import {FlLocalStorageService} from './fl-local-storage.service';
 import {DOCUMENT} from '@angular/common';
-import {FlTheme} from '../model/fl-theme.class';
+import {ClTheme, clThemeIsSupported} from '@monorepo/core-lib';
 
 /**
  * Service to manage light and dark theme
@@ -30,8 +30,8 @@ export class FlThemeService {
   /**
    * Return the current theme or the default
    */
-  public getCurrentTheme(): FlTheme {
-    let theme: FlTheme = this.localStorageService.getItem(this.themeKey) as FlTheme;
+  public getCurrentTheme(): ClTheme {
+    let theme: ClTheme = this.localStorageService.getItem(this.themeKey) as ClTheme;
 
     if (!this.checkTheme(theme)) {
       theme = this.getBrowserTheme();
@@ -43,7 +43,7 @@ export class FlThemeService {
   /**
    * change the current app theme and save it in the local storage
    */
-  public changeTheme(theme: FlTheme): void {
+  public changeTheme(theme: ClTheme): void {
     if (this.checkTheme(theme)) {
       this.loadTheme(theme);
 
@@ -52,7 +52,7 @@ export class FlThemeService {
   }
 
   // change the app theme by changing the css file
-  private loadTheme(theme: FlTheme): void {
+  private loadTheme(theme: ClTheme): void {
     const link = (this.document.getElementById('app-theme') as HTMLLinkElement);
 
     if (link) {
@@ -60,20 +60,20 @@ export class FlThemeService {
     }
   }
 
-  private storeTheme(theme: FlTheme): void {
+  private storeTheme(theme: ClTheme): void {
     this.localStorageService.setItem(this.themeKey, theme);
   }
 
 
-  private checkTheme(theme: FlTheme | string): boolean {
-    return theme === 'light-theme' || theme === 'dark-theme';
+  private checkTheme(theme: ClTheme | string): boolean {
+    return clThemeIsSupported(theme);
   }
 
   // get the theme of the browser
-  public getBrowserTheme(): FlTheme {
+  public getBrowserTheme(): ClTheme {
     // dark-mode media query matched or not
     const matched: boolean = window?.matchMedia('(prefers-color-scheme: dark)')?.matches ?? true;
 
-    return matched ? 'dark-theme' : 'light-theme';
+    return matched ? ClTheme.DARK_THEME : ClTheme.LIGHT_THEME;
   }
 }
