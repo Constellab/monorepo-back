@@ -2,7 +2,7 @@
 
   <!-- Add object button  -->
   <button mat-icon-button type="button"
-          [matTooltip]="'add_object' | translate" matTooltipPosition="below"
+          [matTooltip]="'biox.add_object' | translate" matTooltipPosition="below"
           [matMenuTriggerFor]="addObject">
     <mat-icon>add</mat-icon>
   </button>
@@ -15,7 +15,7 @@
   </button>
 
   <button mat-icon-button type="button"
-          [matTooltip]="'run_experiment' | translate" matTooltipPosition="below">
+          [matTooltip]="'biox.run_experiment' | translate" matTooltipPosition="below">
     <mat-icon>play_arrow</mat-icon>
   </button>
 </div>
@@ -25,9 +25,9 @@
 <mat-menu #addObject="matMenu">
   <button mat-menu-item (click)="addInterface()" type="button">
     <mat-icon>login</mat-icon>
-    {{'interface' | translate}}
+    {{'biox.interface' | translate}}
   </button>
   <button mat-menu-item (click)="addOuterface()" type="button">
     <mat-icon>logout</mat-icon>
-    {{'outerface' | translate}}</button>
+    {{'biox.outerface' | translate}}</button>
 </mat-menu>

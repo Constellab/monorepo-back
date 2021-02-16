@@ -12,12 +12,12 @@ export interface MainMenuLink {
 // list of the main menu links buttons
 export const mainMenuLinks: MainMenuLink[] = [
   {
-    label: 'biox',
+    label: 'biox.biox',
     icon: 'vials',
     route: constBioxFullRoute
   },
   {
-    label: 'biota',
+    label: 'biota.biota',
     icon: 'database',
     route: constBiotaFullRoute
   }
