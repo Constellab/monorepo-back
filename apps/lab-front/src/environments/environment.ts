@@ -4,8 +4,7 @@
 
 import {Environment} from './environment.class';
 
-// const apiBaseUrl: string = 'http://localhost:3001/';
-const apiBaseUrl: string = 'https://lab.atom.gencovery.io/';
+const apiBaseUrl: string = 'http://localhost:3001/';
 export const environment: Environment = {
   production: false,
   apiBaseUrl: apiBaseUrl,
