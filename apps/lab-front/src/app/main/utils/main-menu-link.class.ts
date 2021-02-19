@@ -20,5 +20,10 @@ export const mainMenuLinks: MainMenuLink[] = [
     label: 'biota.biota',
     icon: 'database',
     route: constBiotaFullRoute
+  },
+  {
+    label: 'add_brick',
+    icon: 'view_in_ar',
+    route: '/app/brick'
   }
 ];
