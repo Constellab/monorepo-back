@@ -26,5 +26,7 @@
   "save": "Save",
   "close": "Close",
   "error_required": "The field '{{field}}' is mandatory",
-  "add_brick": "Add brick"
+  "add_brick": "Add brick",
+  "documentation": "Documentation",
+  "gws": "Web services"
 }

@@ -1,12 +1,28 @@
 <div class="page">
 
-  <mat-toolbar fxLayout="row" fxLayoutGap="2em" class="mat-elevation-z1 toolbar" color="primary">
-    <div *ngFor="let link of accessibleLinks">
-      <a mat-button [routerLink]="link.route"
-         class="nav-button" routerLinkActive="selected-menu">
-        <mat-icon [flIcon]="link.icon"></mat-icon>
-        {{link.label | translate}}
-      </a>
+  <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="mat-elevation-z1 toolbar" color="primary">
+    <div fxLayout="row" fxLayoutGap="2em">
+      <div *ngFor="let link of accessibleLinks">
+        <a mat-button [routerLink]="link.route"
+           class="nav-button" routerLinkActive="selected-menu">
+          <mat-icon [flIcon]="link.icon"></mat-icon>
+          {{link.label | translate}}
+        </a>
+      </div>
+    </div>
+
+    <div>
+      <button mat-icon-button type="button" [matTooltip]="'documentation' | translate" matTooltipPosition="before"
+              [matMenuTriggerFor]="menu">
+        <mat-icon>help</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <a mat-menu-item *ngFor="let documentation of documentationBricks"
+           target="_blank" [href]="documentation.url">
+          <mat-icon [flIcon]="documentation.icon"></mat-icon>
+          <span>{{documentation.label | translate}}</span>
+        </a>
+      </mat-menu>
     </div>
   </mat-toolbar>
 
