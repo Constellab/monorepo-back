@@ -3,7 +3,13 @@ import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
 import {BioxProcessService} from '../../../../../core/entity-service/biox-process.service';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
-import {BioxProcessable, BioxProcessDatasource, BioxProtocolDatasource} from '../../../../../core/model/entities/biox-processable.entity';
+import {
+  BioxProcess,
+  BioxProcessable,
+  BioxProcessDatasource,
+  BioxProtocol,
+  BioxProtocolDatasource
+} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxFlow, BioxFlowStep} from '../../../../../core/model/entities/biox-flow.entity';
 import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {BioxConnection} from '../../../../../core/model/global/biox-connection.class';
@@ -11,6 +17,7 @@ import {BioxResourcePortalComponent} from '../../../../../core/entity-module/bio
 import {BioxFlowService} from '../../../../../core/entity-service/biox-flow.service';
 import {ConnectedPosition} from '@angular/cdk/overlay';
 import {WorkflowConnection} from '../../model/workflow-connection.class';
+import {Observable} from 'rxjs';
 
 
 @Component({
@@ -27,7 +34,9 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   flow: BioxFlow;
 
   availableProtocols: BioxProtocolDatasource;
+  protocols$: Observable<BioxProtocol[]>;
   availableProcesses: BioxProcessDatasource;
+  processes$: Observable<BioxProcess[]>;
 
   // store the current dragged process
   draggingProcessable: BioxProcessable;
@@ -46,9 +55,11 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
     // get protocols
     this.availableProtocols = this.bioxProtocolService.getProtocolsDatasource();
+    this.protocols$ = this.availableProtocols.connect();
 
     // get process
     this.availableProcesses = this.bioxProcessService.getProcessesDatasource();
+    this.processes$ = this.availableProcesses.connect();
   }
 
 
@@ -118,8 +129,6 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.workflowManagerService.clear();
   }
-
-
 
 
 }

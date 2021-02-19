@@ -1,0 +1,29 @@
+<fl-infinite-scroll [datasource]="datasource" infiniteMode="body">
+  <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
+
+    <!-- Title -->
+    <ng-container matColumnDef="title">
+      <mat-header-cell *matHeaderCellDef>
+        <span>{{'title' | translate}}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let biotaData">
+          {{biotaData.data.title}}
+      </mat-cell>
+    </ng-container>
+
+
+    <!-- Definition -->
+    <ng-container matColumnDef="definition">
+      <mat-header-cell *matHeaderCellDef>
+        <span>{{'biota.definition' | translate}}</span>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let biotaData">
+        {{biotaData.data.definition}}
+      </mat-cell>
+    </ng-container>
+
+
+    <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+  </mat-table>
+</fl-infinite-scroll>

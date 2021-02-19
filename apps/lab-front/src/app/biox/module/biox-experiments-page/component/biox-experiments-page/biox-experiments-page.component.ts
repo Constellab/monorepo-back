@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
 import {FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
 import {BioxExperiment, BioxExperimentDatasource} from '../../../../../core/model/entities/biox-experiment.entity';
 import {BioxExperimentFormDialogComponent} from '../../../../../core/entity-module/biox-experiment-core/component/biox-experiment-form-dialog/biox-experiment-form-dialog.component';
+import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
 
 @Component({
   selector: 'gen-biox-experiments-page',
@@ -11,16 +11,16 @@ import {BioxExperimentFormDialogComponent} from '../../../../../core/entity-modu
 })
 export class BioxExperimentsPageComponent implements OnInit {
 
-  labExperiments: BioxExperimentDatasource;
+  bioxExperiments: BioxExperimentDatasource;
 
-  displayedColumns: FlTableColumn<BioxExperiment>[] = ['title', 'score', 'status', 'createdAt',];
+  displayedColumns: FlTableColumn<BioxExperiment>[] = ['title', 'description', 'status', 'createdAt'];
 
   constructor(private bioxExperimentService: BioxExperimentService,
               private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
-    this.labExperiments = this.bioxExperimentService.getExperimentsDatasource();
+    this.bioxExperiments = this.bioxExperimentService.getExperimentsDatasource();
   }
 
   createExperiment(): void {

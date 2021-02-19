@@ -1,0 +1,19 @@
+<div class="g-page">
+
+  <div *ngFor="let group of databasesGroups" class="g-section">
+
+    <div class="g-text-big g-primary-text">
+      <fl-text-icon>
+        <mat-icon class="g-icon-big" [flIcon]="group.icon"></mat-icon>
+        {{group.name | translate}}
+      </fl-text-icon>
+    </div>
+
+    <div fxLayout="row wrap" fxLayoutGap="2em">
+      <a class="database-card" *ngFor="let database of group.databases" [routerLink]="'database/' + database.type">
+        <gen-biota-database-card [database]="database">
+        </gen-biota-database-card>
+      </a>
+    </div>
+  </div>
+</div>

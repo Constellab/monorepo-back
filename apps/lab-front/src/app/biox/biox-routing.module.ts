@@ -6,7 +6,6 @@ import {BioxExperimentDetailPageComponent} from './module/biox-experiment-detail
 const routes: Routes = [
   {path: '', component: BioxExperimentsPageComponent},
   {path: 'experiment/:id', component: BioxExperimentDetailPageComponent},
-
 ];
 
 @NgModule({

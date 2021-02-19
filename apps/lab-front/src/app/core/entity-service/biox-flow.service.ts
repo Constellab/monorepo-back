@@ -27,7 +27,7 @@ export class BioxFlowService {
   }
 
   private getFlow(id: string, objectType: string): Observable<BioxFlow> {
-    return this.apiService.get(`flow?${objectType}=${id}`, BioxFlow).pipe(
+    return this.apiService.get(`job/flow?${objectType}=${id}`, BioxFlow).pipe(
       map(flow => this.initFlowConnections(flow)),
       clRxjsDebug(),
     );

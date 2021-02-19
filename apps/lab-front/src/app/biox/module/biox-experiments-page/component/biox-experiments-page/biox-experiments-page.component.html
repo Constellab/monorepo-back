@@ -1,5 +1,5 @@
 <div class="g-page">
-  <fl-async-section [arrayObs]="labExperiments" emptyText="no_lab_experiment">
+  <fl-async-section [arrayObs]="bioxExperiments" emptyText="no_lab_experiment">
 
     <fl-section-header class="g-page-title">
       <fl-text-icon>
@@ -16,13 +16,11 @@
       </fl-section-actions>
     </fl-section-header>
 
-    <ng-container *flSectionBody="let servers">
+    <ng-container *flSectionBody>
       <fl-card>
         <fl-card-body>
-          <gen-biox-experiment-table [datasource]="labExperiments" [columns]="displayedColumns">
+          <gen-biox-experiment-table [datasource]="bioxExperiments" [columns]="displayedColumns">
           </gen-biox-experiment-table>
-
-          <!--          <fl-infinite-load-more-result [datasource]="labExperiments"></fl-infinite-load-more-result>-->
         </fl-card-body>
       </fl-card>
     </ng-container>

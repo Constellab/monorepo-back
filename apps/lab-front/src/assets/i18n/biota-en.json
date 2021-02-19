@@ -1,5 +1,21 @@
 {
   "biota": {
-    "biota": "Biota"
+    "biota": "Biota",
+    "ontology_base": "Ontology base",
+    "go": "Gene Ontology",
+    "sbo": "Systems Biology Ontology",
+    "eco": "Evidence and Conclusion Ontology",
+    "bto": "Brenda Tissue Ontology",
+    "taxonomy": "Taxonomy",
+    "pwo": "Metabolic pathways",
+    "molecular_base": "Molecular base",
+    "compound": "Metabolic compounds",
+    "enzyme": "Enzymes",
+    "enzo": "Enzyme Orthologs",
+    "reaction": "Metabolic Reactions",
+    "protein": "Proteins",
+    "entries": "entries",
+    "no_entry": "No entry",
+    "definition": "Definition"
   }
 }
