@@ -22,10 +22,13 @@ export class LabIframeService {
    * @param iframeOption additional option to open the iframe
    */
   public getLoginSafeUrl(labUrl: string, loginToken: string, iframeOption ?: LabIframeOptions): SafeUrl {
+    // todo to remove
+    return this.sanitizer.bypassSecurityTrustResourceUrl('https://pre-prod-lab-front.gws.gencovery.com');
+    // return this.sanitizer.bypassSecurityTrustResourceUrl('http://localhost');
     // set the iframe option in the query params
-    const queryParams: string = iframeOption != null ? `?object_type=${iframeOption.objectType}&object_uri=${iframeOption.objectId}` : '';
+    // const queryParams: string = iframeOption != null ? `?object_type=${iframeOption.objectType}&object_uri=${iframeOption.objectId}` : '';
 
-    return this.sanitizer.bypassSecurityTrustResourceUrl(`${labUrl}${this.baseRoute}/login/${loginToken}${queryParams}`);
+    // return this.sanitizer.bypassSecurityTrustResourceUrl(`${labUrl}${this.baseRoute}/login/${loginToken}${queryParams}`);
   }
 
 }

@@ -1,9 +1,13 @@
-<fl-section class="full-page" [isLoading]="isLoading" [object]="labInstanceToken" [emptyText]="errorText">
+<!--<fl-section class="full-page" [isLoading]="isLoading" [object]="labInstanceToken" [emptyText]="errorText">-->
 
-  <ng-template flSectionBody>
-    <gen-lab-instance-iframe [labUrl]="labInstanceToken.labInstance.url"
-                             [token]="labInstanceToken.token"
-                             [iframeOption]="iframeOptions"></gen-lab-instance-iframe>
-  </ng-template>
+<!--  <ng-template flSectionBody>-->
+<!--    <gen-lab-instance-iframe [labUrl]="labInstanceToken.labInstance.url"-->
+<!--                             [token]="labInstanceToken.token"-->
+<!--                             [iframeOption]="iframeOptions"></gen-lab-instance-iframe>-->
+<!--  </ng-template>-->
 
-</fl-section>
+<!--</fl-section>-->
+<div class="full-page">
+
+  <gen-lab-instance-iframe></gen-lab-instance-iframe>
+</div>
