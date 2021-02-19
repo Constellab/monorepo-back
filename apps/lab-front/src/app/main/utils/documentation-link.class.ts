@@ -10,7 +10,7 @@ export interface DocumentationBrick {
   url: string;
 }
 
-const docUrlPrefix = environment.apiUrl + 'docs';
+const docUrlPrefix = environment.apiBaseUrl + 'docs';
 const docUrlSuffix = 'index.html';
 
 /**

@@ -1,4 +1,8 @@
-export const environment = {
+import {Environment} from './environment.class';
+
+const apiBaseUrl: string = 'https://lab.benj.gencovery.io/';
+export const environment: Environment = {
   production: true,
-  apiUrl: 'https://lab.benj.gencovery.io/core-api/',
+  apiBaseUrl: apiBaseUrl,
+  apiUrl: `${apiBaseUrl}core-api/`,
 };
