@@ -1,11 +1,10 @@
 import {WorkflowNode} from './workflow-node.class';
-import * as Drawflow from 'drawflow';
-import {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 import {WorkflowConnection} from './workflow-connection.class';
 import {WorkflowLayer} from './workflow-layer.class';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {WorkflowPort} from './workflow-port.class';
+import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 
 export type WorkflowMode = 'edit' | 'readOnly';
 

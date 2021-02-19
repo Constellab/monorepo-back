@@ -1,9 +1,6 @@
 {
   "extends": "../../tsconfig.base.json",
   "files": [],
-  "include": [
-    "decs.d.ts"
-  ],
   "references": [
     {
       "path": "./tsconfig.app.json"

@@ -1,8 +1,7 @@
 import {WorkflowNode} from './workflow-node.class';
-import * as Drawflow from 'drawflow';
-import {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 import {WorkflowConnection} from './workflow-connection.class';
 import {WorkflowPort} from './workflow-port.class';
+import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 
 /**
  * One layer of the workflow, it contains the list of nodes
