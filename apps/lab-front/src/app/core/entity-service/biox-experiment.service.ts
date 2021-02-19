@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {BioxExperiment, BioxExperimentDatasource} from '../model/entities/biox-experiment.entity';
+import {BioxExperiment, BioxExperimentDatasource, BioxExperimentView} from '../model/entities/biox-experiment.entity';
+import {map} from 'rxjs/operators';
 
 
 @Injectable({
@@ -27,16 +28,18 @@ export class BioxExperimentService {
   }
 
   public getExperiment(id: string): Observable<BioxExperiment> {
-    return this.apiService.get(`gws.model.Experiment/${id}`, BioxExperiment);
+    return this.apiService.get(`view/gws.model.Experiment/${id}`, BioxExperimentView).pipe(
+      map((view: BioxExperimentView) => view.model)
+    );
   }
 
   // todo route
-  public create(experiment: Partial<BioxExperiment>): Observable<BioxExperiment>{
+  public create(experiment: Partial<BioxExperiment>): Observable<BioxExperiment> {
     return this.apiService.post('', experiment, BioxExperiment);
   }
 
   // todo route
-  public update(experiment: Partial<BioxExperiment>): Observable<BioxExperiment>{
+  public update(experiment: Partial<BioxExperiment>): Observable<BioxExperiment> {
     return this.apiService.put('', experiment, BioxExperiment);
   }
 

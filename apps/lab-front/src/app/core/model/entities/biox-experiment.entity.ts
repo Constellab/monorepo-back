@@ -43,8 +43,12 @@ export class BioxExperiment extends LabEntity implements FlStatus {
   getStatusName(): string {
     return this.isInProgress ? 'running' : 'finished';
   }
+}
 
-
+// todo improve view model
+export class BioxExperimentView {
+  @Type(() => BioxExperiment)
+  model: BioxExperiment;
 }
 
 export type BioxExperimentDatasource = FlEntityPaginatedDatasource<BioxExperiment>;
