@@ -1,5 +1,5 @@
 import {LabEntity} from './lab-entity.entity';
-import {BioxFlowInterface} from '../entities/biox-inteface.entity';
+import {BioxFlowInterface, BioxFlowOuterface} from '../entities/biox-inteface.entity';
 
 export interface BioxConnectionPart {
 
@@ -100,7 +100,7 @@ export abstract class BioxConnectionManager extends LabEntity {
 
   abstract getInterfacesConnections(): Record<string, BioxFlowInterface>;
 
-  abstract getOuterfacesConnections(): Record<string, BioxFlowInterface>;
+  abstract getOuterfacesConnections(): Record<string, BioxFlowOuterface>;
 
   // list of interface as nodes
   interfaceNodes: Record<string, BioxNode>;
@@ -131,14 +131,6 @@ export abstract class BioxConnectionManager extends LabEntity {
   }
 
   /**
-   * return the connections between nodes (not the interfaces nor the outerfaces)
-   * todo delete when pulled
-   */
-  public getNodesConnections(): BioxConnection[] {
-    return this.getConnections().filter(connection => connection.getType() === 'node');
-  }
-
-  /**
    * return the connections between nodes with interfaces and outerfaces connections
    */
   public getAllConnections(): BioxConnection[] {
@@ -146,8 +138,9 @@ export abstract class BioxConnectionManager extends LabEntity {
     const interfacesConnections: BioxConnection[] = Object.keys(interfaces).map(key => interfaces[key]);
     const outerfaces: Record<string, BioxFlowInterface> = this.getOuterfacesConnections();
     const outerfacesConnections: BioxConnection[] = Object.keys(outerfaces).map(key => outerfaces[key]);
-    return [...this.getNodesConnections(), ...interfacesConnections, ...outerfacesConnections];
+    return [...this.getConnections(), ...interfacesConnections, ...outerfacesConnections];
   }
+
 
   ////////////////////////////// INIT METHODS /////////////////////////////////
 
@@ -168,10 +161,17 @@ export abstract class BioxConnectionManager extends LabEntity {
 
       // init from node
       const fromNode: BioxNode = nodes[connection.from.getNodeName()];
+      if(fromNode == null){
+        console.error(`Can't find from node with name ${connection.from.getNodeName()}. Connection : `, connection);
+      }
+
       connection.from.setNode(fromNode);
 
       // init to node
       const toNode: BioxNode = nodes[connection.to.getNodeName()];
+      if(toNode == null){
+        console.error(`Can't find to node with name ${connection.to.getNodeName()}. Connection : `, connection);
+      }
       connection.to.setNode(toNode);
     }
   }

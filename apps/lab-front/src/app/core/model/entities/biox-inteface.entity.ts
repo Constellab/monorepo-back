@@ -43,12 +43,9 @@ export class BioxFlowInterface implements BioxConnection {
 
 export class BioxFlowOuterface implements BioxConnection {
 
-  // exchange the from and to properties, because they are in the wrong order in the back
-  @Expose({name: 'to'})
   @Type(() => BioxFlowInterfacePart)
   from: BioxFlowInterfacePart;
 
-  @Expose({name: 'from'})
   @Type(() => BioxFlowInterfacePart)
   to: BioxFlowInterfacePart;
 
