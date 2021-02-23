@@ -10,14 +10,16 @@
     </div>
 
     <ng-template #notLoading>
-      <div *ngIf="objectIsNullOrEmpty; else showBody" class="g-text-centered g-text-light">
-        <p>{{emptyText | translate}}</p>
-        <mat-icon>block</mat-icon>
-      </div>
+      <ng-container *ngIf="showBody; else showEmptyText">
+        <ng-container *ngTemplateOutlet="lazyContent; context: viewContext"></ng-container>
+      </ng-container>
 
       <!--  Render the body  -->
-      <ng-template #showBody>
-        <ng-container *ngTemplateOutlet="lazyContent; context: viewContext"></ng-container>
+      <ng-template #showEmptyText>
+        <div class="g-text-centered g-text-light">
+          <p>{{emptyText | translate}}</p>
+          <mat-icon>block</mat-icon>
+        </div>
       </ng-template>
     </ng-template>
 

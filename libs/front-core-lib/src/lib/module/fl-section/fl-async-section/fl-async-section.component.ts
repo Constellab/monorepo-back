@@ -21,8 +21,17 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
 
   @Input() emptyText: string = 'object_not_found';
 
+  /**
+   * If true, the null, undefined or empty array result is considered as a valid value
+   * and the body will be lazy loaded
+   */
+  @Input() nullOrEmptyIsValid: boolean = false;
+
   /** Content that will be rendered lazily. */
   @ContentChild(FlSectionBodyDirective, {read: TemplateRef, static: true}) lazyContent: TemplateRef<any>;
+
+  // when true, the body is lazy loaded
+  showBody: boolean = false;
 
   result: any;
   isLoading: boolean = false;
@@ -59,11 +68,16 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
   private onSuccess(result: any): void {
     this.isLoading = false;
     this.result = result;
+
+    // show the result if it not null of we consider null as a valid value
+    this.showBody = this.nullOrEmptyIsValid || !ClHelpService.isNullOrEmpty(this.result);
+
     this.cdr.detectChanges();
   }
 
   private onError(): void {
     this.isLoading = false;
+    this.showBody = false;
     this.cdr.detectChanges();
   }
 
@@ -71,9 +85,6 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
     return {$implicit: this.result};
   }
 
-  get objectIsNullOrEmpty(): boolean {
-    return ClHelpService.isNullOrEmpty(this.result);
-  }
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
