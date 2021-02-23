@@ -14,7 +14,7 @@ export class BioxResourceService implements FlGetById<BioxResource>{
   }
 
   public getById(id: string): Observable<BioxResource> {
-    return this.apiService.get(`resource/${id}`, BioxResource);
+    return this.apiService.get(`view/resource/${id}`, BioxResource);
   }
 
 }
