@@ -28,5 +28,6 @@
   "error_required": "Le champ '{{field}}' est obligatoire",
   "add_brick": "Ajouter une brick",
   "documentation": "Documentation",
-  "gws": "Web services"
+  "gws": "Web services",
+  "input_max_length": "Taille max {{count}}"
 }
