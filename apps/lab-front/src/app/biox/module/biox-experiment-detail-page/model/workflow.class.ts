@@ -186,6 +186,9 @@ export class Workflow {
       // remove the connection
       this.editor.removeSingleConnection(connection.output_id, connection.input_id,
         connection.output_class, connection.input_class);
+
+      // consider the connection was canceled
+      this.onConnectionCanceled();
       return;
     }
 
