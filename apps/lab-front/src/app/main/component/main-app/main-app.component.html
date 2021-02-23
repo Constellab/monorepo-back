@@ -12,6 +12,11 @@
     </div>
 
     <div>
+      <a mat-icon-button type="button" matTooltip="JupyterLab" matTooltipPosition="before"
+              [href]="juptyterLabUrl" target="_blank">
+        <mat-icon flIcon="code"></mat-icon>
+      </a>
+
       <button mat-icon-button type="button" [matTooltip]="'documentation' | translate" matTooltipPosition="before"
               [matMenuTriggerFor]="menu">
         <mat-icon>help</mat-icon>
