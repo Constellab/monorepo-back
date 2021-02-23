@@ -17,19 +17,33 @@ export class LanguageSelectionComponent implements OnInit {
 
   isLoading: boolean = false;
 
+  previousValue: ClSupportedLanguage;
+
   constructor(private authenticatedUserService: AuthenticatedUserService) {
   }
 
   ngOnInit(): void {
     this.language = this.authenticatedUserService.getUser().lang;
+    this.previousValue = this.language;
   }
 
   onLangChange(selectionChange: MatSelectChange): void {
     this.isLoading = true;
     this.authenticatedUserService.changeLanguage(selectionChange.value).subscribe(
-      () => this.isLoading = false,
-      () => this.isLoading = false
+      () => this.onLangChangeSuccess(selectionChange.value),
+      () => this.onLangChangeError()
     );
+  }
+
+  private onLangChangeSuccess(lang: ClSupportedLanguage): void {
+    this.previousValue = lang;
+    this.isLoading = false;
+  }
+
+  private onLangChangeError(): void {
+    // reset the lang
+    this.language = this.previousValue;
+    this.isLoading = false;
   }
 
 
