@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Protocol} from '../../../core/model/entities/protocol.entity';
 import {ProtocolService} from '../../../core/service-api/protocol.service';
 import {ActivatedRoute} from '@angular/router';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'gen-protocol-detail-page',
@@ -10,9 +11,7 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class ProtocolDetailPageComponent implements OnInit {
 
-  protocol: Protocol;
-
-  isLoading: boolean = false;
+  protocol: Observable<Protocol>;
 
   constructor(private protocolService: ProtocolService,
               private route: ActivatedRoute) {
@@ -25,14 +24,6 @@ export class ProtocolDetailPageComponent implements OnInit {
   }
 
   private getProtocolById(id: string): void {
-    this.protocolService.findById(id).subscribe(
-      protocol => this.getSuccess(protocol),
-      () => this.isLoading = false
-    );
-  }
-
-  private getSuccess(protocol: Protocol): void {
-    this.protocol = protocol;
-    this.isLoading = false;
+    this.protocol = this.protocolService.findById(id);
   }
 }

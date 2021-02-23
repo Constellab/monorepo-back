@@ -12,12 +12,20 @@ import {FlArrayObs} from '../../../model/datasource/fl-array-obs.class';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlAsyncSectionComponent implements OnInit, OnDestroy {
-  @Input() observable: Observable<any>;
+  @Input() set observable(observable: Observable<any>) {
+    if (observable && observable instanceof Observable) {
+      this.subscribeToObservable(observable);
+    }
+  }
 
   /**
    * If an array obs is provided, it disconnect it on destroy
    */
-  @Input() arrayObs: FlArrayObs;
+  @Input() set arrayObs(arrayObs: FlArrayObs) {
+    if (arrayObs && arrayObs instanceof FlArrayObs) {
+      this.subscribeToObservable(arrayObs.connect());
+    }
+  }
 
   @Input() emptyText: string = 'object_not_found';
 
@@ -42,24 +50,15 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscribeToObservable();
   }
 
-  private subscribeToObservable(): void {
+  private subscribeToObservable(observable: Observable<any>): void {
     this.isLoading = true;
 
-    let obs: Observable<any>;
-    if (this.observable) {
-      obs = this.observable;
-    } else if (this.arrayObs) {
-      // if this is a datasource, skip the first because it returns an empty array
-      obs = this.arrayObs.connect();
-    } else {
-      console.error('Not observable provided');
-      return;
-    }
+    // clear previous subscription if it exists
+    this.subscription?.unsubscribe();
 
-    this.subscription = obs.subscribe(
+    this.subscription = observable.subscribe(
       result => this.onSuccess(result),
       () => this.onError()
     );

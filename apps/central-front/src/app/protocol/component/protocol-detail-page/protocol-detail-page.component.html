@@ -1,7 +1,7 @@
 <div class="g-page">
-  <fl-section [isLoading]="isLoading" [object]="protocol">
+  <fl-async-section [observable]="protocol">
 
-    <ng-template flSectionBody>
+    <ng-container *flSectionBody="let protocol">
       <fl-text-icon>
         <mat-icon class="g-icon-big" svgIcon="protocol"></mat-icon>
         <h1>{{protocol.label}}</h1>
@@ -15,6 +15,6 @@
 
       <gen-protocol-experiments-list [protocolId]="protocol.id"
                                      class="g-section"></gen-protocol-experiments-list>
-    </ng-template>
-  </fl-section>
+    </ng-container>
+  </fl-async-section>
 </div>

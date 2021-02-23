@@ -50,7 +50,8 @@
     "central-back:test-e2e": "set ENVIRONMENT_PROFILE=test&& set DATABASE=gencoveryDbTest&& jest --config ./apps/central-back/test/jest-e2e.json",
     "central-back:caprover-deploy-preprod": "caprover deploy --host https://captain.gws.gencovery.com --appName pre-prod-back  --branch master",
     "central-back:caprover-deploy-prod": "caprover deploy --host https://captain.gws.gencovery.com --appName prod-back  --branch master",
-    "central-back:lint": "nx run central-back:lint"
+    "central-back:lint": "nx run central-back:lint",
+    "central-back:build-image-dev": "docker build -f apps/central-back/Dockerfile -t central-back ."
   },
   "private": true,
   "dependencies": {
