@@ -1,5 +1,5 @@
 import {DateTime} from 'luxon';
-import {ClLuxonTransform, ClSupportedLanguage} from '@monorepo/core-lib';
+import {ClLuxonTransform, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {Entity} from './entity.entity';
 
 export enum UserCategory {
@@ -33,6 +33,8 @@ export class User extends Entity {
   job: string;
 
   lang: ClSupportedLanguage;
+
+  theme: ClTheme;
 
   photo: string;
 

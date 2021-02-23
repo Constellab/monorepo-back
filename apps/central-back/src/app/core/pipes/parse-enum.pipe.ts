@@ -12,12 +12,13 @@ export class ParseEnumPipe implements PipeTransform {
   }
 
   transform(value: any): any {
-    const enumElement = this.enumeration[value];
-
-    if (enumElement == null) {
-      throw new BadRequestException(ErrorText.INCORRECT_ARGUMENT);
+    for(const property of Object.keys(this.enumeration)){
+      if(this.enumeration[property] === value){
+        return value;
+      }
     }
 
-    return enumElement;
+    // if we couldn't find the enum value
+      throw new BadRequestException(ErrorText.INCORRECT_ARGUMENT);
   }
 }

@@ -44,7 +44,7 @@ export class FlThemeService {
    * change the current app theme and save it in the local storage
    */
   public changeTheme(theme: ClTheme): void {
-    if (this.checkTheme(theme)) {
+    if (this.checkTheme(theme) && theme !== this.getCurrentTheme()) {
       this.loadTheme(theme);
 
       this.storeTheme(theme);

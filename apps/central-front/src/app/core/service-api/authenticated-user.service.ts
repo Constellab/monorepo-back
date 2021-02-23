@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {User, UserCategory} from '../model/entities/user.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
-import {FlApiService, FlCleanableService, FlCleanerService, FlTranslateService} from '@monorepo/front-core-lib';
-import {ClSupportedLanguage} from '@monorepo/core-lib';
+import {FlApiService, FlCleanableService, FlCleanerService, FlThemeService, FlTranslateService} from '@monorepo/front-core-lib';
+import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 
 /**
  * Service to handle the current authenticated user
@@ -21,7 +21,8 @@ export class AuthenticatedUserService implements FlCleanableService {
 
 
   constructor(private apiService: FlApiService,
-              private translateService: FlTranslateService) {
+              private translateService: FlTranslateService,
+              private themeService: FlThemeService) {
     FlCleanerService.getInstance().registerService(this);
   }
 
@@ -46,6 +47,9 @@ export class AuthenticatedUserService implements FlCleanableService {
 
     // check the user language
     this.checkAndChangeUserLanguage(user.lang);
+
+    // set the user theme
+    this.themeService.changeTheme(user.theme);
 
     this.userAuthenticated = user;
     this.notifyUserChange();
@@ -81,6 +85,17 @@ export class AuthenticatedUserService implements FlCleanableService {
       this.userAuthenticated.lang = lang;
       this.notifyUserChange();
     }
+  }
+
+  public changeTheme(theme: ClTheme): Observable<void> {
+    return this.apiService.put(`${this.usersRoute}/theme/${theme}`, null).pipe(
+      tap(() => this.changeThemeSuccess(theme))
+    );
+  }
+
+  private changeThemeSuccess(theme: ClTheme): void {
+    this.userAuthenticated.theme = theme;
+    this.notifyUserChange();
   }
 
 
