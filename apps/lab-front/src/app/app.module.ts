@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {Injector, NgModule} from '@angular/core';
+import {APP_INITIALIZER, Injector, NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
 import {RouterModule} from '@angular/router';
@@ -12,12 +12,16 @@ import {
   FlDialogModule, FlPortalModule, FlQuillConfig,
   flSetRootInjector,
   FlSnackBarModule,
-  FlSvgIconModule,
+  FlSvgIconModule, FlThemeService,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {svgIcons} from './core/utils/svg-icon-config';
 import {apiModuleConfig} from './core/utils/api-module.config';
 import {QuillModule} from 'ngx-quill';
+
+function loadThemeOnInit(themeService: FlThemeService): () => void {
+  return (): void => themeService.init();
+}
 
 @NgModule({
   declarations: [AppComponent],
@@ -60,7 +64,9 @@ import {QuillModule} from 'ngx-quill';
       },
     }),
   ],
-  providers: [],
+  providers: [
+    {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {

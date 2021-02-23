@@ -2,11 +2,10 @@
 
   <fl-card-header>
     <div class="animate title"></div>
-
   </fl-card-header>
 
-  <fl-card-body>
-    <div class="animate body"></div>
+  <fl-card-body class="card-body">
+    <div *ngFor="let val of bodyLines" class="animate body"></div>
   </fl-card-body>
 
 </fl-card>

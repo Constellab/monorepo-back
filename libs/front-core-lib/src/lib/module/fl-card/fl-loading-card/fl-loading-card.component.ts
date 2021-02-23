@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'fl-loading-card',
@@ -7,9 +7,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FlLoadingCardComponent implements OnInit {
 
+  @Input() numberOfBodyLines: number = 2;
+
+  bodyLines: null[];
+
   constructor() { }
 
   ngOnInit(): void {
+    this.bodyLines = Array(this.numberOfBodyLines).fill(null);
   }
 
 }
