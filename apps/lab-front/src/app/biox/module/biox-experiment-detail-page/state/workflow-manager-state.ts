@@ -169,13 +169,12 @@ export class WorkflowManagerState {
   private addNodesRecursively(nodes: BioxNode[], posX: number, basePosY: number): number {
     let currentPosY: number = basePosY - 1;
     for (const node of nodes) {
-      currentPosY++;
-
-
       // check if the node has already been added
       if (this.workflow.findNodeWithNameInCurrentLayer(node.name) != null) {
         continue;
       }
+
+      currentPosY++;
 
       // and the node and mark it as added
       this.addBioxNodeOnPosition(node, posX, currentPosY);
