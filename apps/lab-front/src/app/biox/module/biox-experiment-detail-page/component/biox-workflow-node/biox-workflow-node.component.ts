@@ -60,7 +60,7 @@ export class BioxWorkflowNodeComponent implements OnInit {
         currentConfig: this.node.object.config.params,
       };
 
-      this.dialogService.openSmallDialog(BioxConfigureSpecsDialogComponent,
+      this.dialogService.openMediumDialog(BioxConfigureSpecsDialogComponent,
         {data: input}).afterClosed().subscribe(
         config => this.onConfigDialogClosed(config)
       );

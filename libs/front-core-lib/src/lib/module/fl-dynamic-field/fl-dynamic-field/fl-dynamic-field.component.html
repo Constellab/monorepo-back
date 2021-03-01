@@ -2,7 +2,7 @@
 
   <!--  Material input-->
   <ng-container *ngSwitchCase="'input'">
-    <mat-form-field appearance="outline" class="g-full">
+    <mat-form-field appearance="outline" class="g-full g-form-field-hint-include">
       <mat-label>{{inputConfig.placeholder}}</mat-label>
       <input matInput [type]="inputConfig.inputType" [formControl]="formControl"
              (ngModelChange)="emitValue($event)" [required]="required"
@@ -22,7 +22,7 @@
   <!--  Material select-->
   <ng-container *ngSwitchCase="'select'">
     <!--  Server info  -->
-    <mat-form-field appearance="outline" class="g-full">
+    <mat-form-field appearance="outline" class="g-full g-form-field-hint-include">
       <mat-label>{{selectConfig.placeholder}}</mat-label>
       <mat-select placeholder="{{selectConfig.placeholder}}"
                   [formControl]="formControl" [required]="required"
