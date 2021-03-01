@@ -5,7 +5,8 @@
 // Import the style for the library
 @import "libs/front-core-lib/src/style/global";
 
-// Import the style for the dialog
+// Import the style for material
+@import "libs/front-core-lib/src/style/material-override";
 @import "libs/front-core-lib/src/style/dialog";
 @import "libs/front-core-lib/src/style/icon";
 

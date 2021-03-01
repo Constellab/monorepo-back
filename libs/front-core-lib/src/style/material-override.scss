@@ -1,0 +1,75 @@
+/**
+  Global file to override material properties
+ */
+
+
+//////////////////////////////////// FORM FIELD //////////////////////////////////
+
+// class to make the mat-hint relative so the form-field includes it even if it is big
+.g-form-field-hint-include .mat-form-field-subscript-wrapper{
+  position: relative;
+}
+
+// if the mat hint is include, not need for the bottom padding
+.g-form-field-hint-include .mat-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+
+//////////////////////////////////// BUTTON //////////////////////////////////
+// set the button texts to uppercase
+.mat-stroked-button, .mat-raised-button, .mat-button, .mat-flat-button {
+  text-transform: uppercase;
+}
+
+.g-button-medium {
+  font-size: 1.3rem !important;
+}
+
+.g-button-medium mat-icon {
+  margin-top: -0.23em;
+  margin-right: 0.3em;
+}
+
+.g-button-big {
+  font-size: 1.5rem !important;
+  padding: 0.6em !important;
+}
+
+.g-button-small {
+  font-size: 0.8rem !important;
+  padding-left: 0.5em !important;
+  padding-right: 0.5em !important;
+  line-height: 2.5em !important;
+}
+
+.g-button-hide-text span {
+  display: none;
+}
+
+// separate the buttons in a card action
+.g-button-action {
+  margin-left: 0.5em !important;
+}
+
+
+
+/***************************** Table *****************************/
+
+.g-table-cell {
+  padding-right: 0.5em;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.g-column-width-fit {
+  flex: initial !important;
+}
+
+// in flex table it set the width of 1 icon button
+.g-table-icon-button-cell {
+  flex: initial !important;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  width: 40px; // width of icon button
+}
