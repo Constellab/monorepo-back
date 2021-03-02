@@ -27,6 +27,7 @@ export class Workflow {
 
   constructor(private element: HTMLElement, mode: WorkflowMode = 'edit') {
     this.editor = new Drawflow(element);
+    this.editor.zoom_value = 0.1;
 
     // set edit or readonly mode
     this.setMode(mode);
