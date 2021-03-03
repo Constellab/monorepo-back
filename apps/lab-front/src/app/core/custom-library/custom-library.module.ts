@@ -12,6 +12,7 @@ import {
   FlPortalModule,
   FlSectionModule,
   FlSnackBarModule,
+  FlSpreadsheetModule,
   FlStatusModule,
   FlSvgIconModule,
   FlTextIconModule,
@@ -43,6 +44,7 @@ import {
     FlJsonEditorModule,
     FlDynamicFieldModule,
     FlFormModule,
+    FlSpreadsheetModule,
   ]
 })
 export class CustomLibraryModule {

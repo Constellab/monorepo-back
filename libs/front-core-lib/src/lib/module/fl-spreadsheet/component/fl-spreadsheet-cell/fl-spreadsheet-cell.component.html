@@ -1,0 +1,10 @@
+<div class="container" #container tabindex="-1">
+  <div class="content" *ngIf="!edit; else editMode" (dblclick)="enableEditMode()">
+    {{cell.value}}
+  </div>
+
+  <ng-template #editMode>
+    <input class="input" #input [(ngModel)]="cell.value" (blur)="disableEditMode()"
+           size="1">
+  </ng-template>
+</div>

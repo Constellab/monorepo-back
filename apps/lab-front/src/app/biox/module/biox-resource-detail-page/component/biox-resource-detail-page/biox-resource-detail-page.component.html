@@ -1,0 +1,11 @@
+<div class="g-page-fixed g-page-bottom-padding" fxLayout="column">
+  <fl-async-section fxFlex [observable]="resource$">
+
+    <ng-container *flSectionBody="let resource">
+      <gen-biox-resource-spreadsheet [resource]="resource"></gen-biox-resource-spreadsheet>
+    </ng-container>
+
+  </fl-async-section>
+
+
+</div>

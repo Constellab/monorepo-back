@@ -21,7 +21,6 @@
     "strictFunctionTypes": false,
     "suppressImplicitAnyIndexErrors": true,
     "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
     "paths": {
       "@monorepo/front-core-lib": ["libs/front-core-lib/src/index.ts"],
       "@monorepo/core-lib": ["libs/core-lib/src/index.ts"]

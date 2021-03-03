@@ -33,19 +33,31 @@ body {
   --menu-toolbar-height: 58px
 }
 
-.g-page {
+.g-page, .g-page-fixed{
   padding: 2em 2em 0 2em;
-  min-height: calc(100vh - var(--menu-toolbar-height));
   width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
 
+// full page with possibility to grow
+.g-page{
+  min-height: calc(100vh - var(--menu-toolbar-height));
+}
+
+// 100% height max
+.g-page-fixed {
+  height: calc(100vh - var(--menu-toolbar-height));
+  max-height: calc(100vh - var(--menu-toolbar-height));
+}
+
 @media (max-width: 600px) {
-  .g-page {
+  .g-page, .g-page-fixed {
     padding: 1em 1em 0 1em;
   }
 }
 
-
+.g-page-bottom-padding{
+  padding-bottom: 2em;
+}

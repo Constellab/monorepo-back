@@ -1,0 +1,20 @@
+<table class="table">
+  <tr>
+    <th *ngFor="let column of columns | async" class="header">
+      <div>{{column.value}}</div>
+<!--      <fl-spreadsheet-header-cell [value]="column.value"></fl-spreadsheet-header-cell>-->
+    </th>
+  </tr>
+
+  <tr *ngFor="let rows of cells | async; let index = index">
+
+    <!--  Row header cells  -->
+    <td class="header">
+      <div>{{index + 1}}</div>
+    </td>
+
+    <td *ngFor="let cell of rows">
+      <fl-spreadsheet-cell [cell]="cell"></fl-spreadsheet-cell>
+    </td>
+  </tr>
+</table>
