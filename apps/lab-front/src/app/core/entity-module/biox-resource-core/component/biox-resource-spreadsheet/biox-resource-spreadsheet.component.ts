@@ -21,8 +21,8 @@ export class BioxResourceSpreadsheetComponent implements OnInit {
   ngOnInit(): void {
     this.spreadSheet = new FlSpreadsheet('Sheet');
 
-    const columnCount = 5;
-    const rowCount = 20;
+    const columnCount = 50;
+    const rowCount = 100;
 
     for(let i = 0 ; i < columnCount; i++){
       this.spreadSheet.currentSheet.insertColumn();

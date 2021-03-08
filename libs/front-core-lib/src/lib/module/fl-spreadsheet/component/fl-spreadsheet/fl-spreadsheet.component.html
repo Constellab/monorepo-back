@@ -1,20 +1,31 @@
-<table class="table">
-  <tr>
-    <th *ngFor="let column of columns | async" class="header">
-      <div>{{column.value}}</div>
-<!--      <fl-spreadsheet-header-cell [value]="column.value"></fl-spreadsheet-header-cell>-->
-    </th>
-  </tr>
+<!--<div class="table-container">-->
+  <cdk-virtual-scroll-viewport itemSize="24" class="table-container">
+  <table class="table">
+    <thead>
+    <tr>
+      <fl-spreadsheet-header-cell class="column-header" *ngFor="let column of headerColumns | async; let index = index"
+                                  [index]="index - 1" type="column"
+                                  [style.top]="headerTop"></fl-spreadsheet-header-cell>
+    </tr>
+    </thead>
 
-  <tr *ngFor="let rows of cells | async; let index = index">
+    <tbody>
 
-    <!--  Row header cells  -->
-    <td class="header">
-      <div>{{index + 1}}</div>
-    </td>
+    <!--    <cdk-virtual-scroll-viewport itemSize="24" class="body-group">-->
+    <tr *cdkVirtualFor="let rows of cells | async; let rowIndex = index">
 
-    <td *ngFor="let cell of rows">
-      <fl-spreadsheet-cell [cell]="cell"></fl-spreadsheet-cell>
-    </td>
-  </tr>
-</table>
+      <!--  Row header cells  -->
+      <fl-spreadsheet-header-cell class="row-header" [index]="rowIndex" type="row"></fl-spreadsheet-header-cell>
+
+
+      <fl-spreadsheet-cell *flForById="let cell of rows; let columnIndex = index" [cell]="cell"
+                           [row]="rowIndex" [column]="columnIndex"></fl-spreadsheet-cell>
+
+    </tr>
+    <!--    </cdk-virtual-scroll-viewport>-->
+    </tbody>
+
+  </table>
+<!--</div>-->
+</cdk-virtual-scroll-viewport>
+

@@ -1,21 +1,39 @@
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {FlSheet} from './fl-sheet.class';
 
 export class FlSpreadsheet {
 
-  private readonly sheets: FlSheet[];
-  private currentSheet$: BehaviorSubject<FlSheet>;
+  private readonly sheets: FlSheet[] =  [];
+  private currentSheet$: BehaviorSubject<FlSheet> = new BehaviorSubject<FlSheet>(null);
 
-  constructor(sheetName: string) {
-    const sheet: FlSheet = new FlSheet(sheetName);
-    this.sheets = [sheet];
-    this.currentSheet$ = new BehaviorSubject<FlSheet>(sheet);
-
+  constructor(defaultSheetName: string) {
+    this.sheets = [];
+    this.addSheet(defaultSheetName);
   }
 
 
   ///////////////////////////// SHEET //////////////////////////////
   get currentSheet(): FlSheet {
     return this.currentSheet$.value;
+  }
+
+  getCurrentSheet$(): Observable<FlSheet> {
+    return this.currentSheet$.asObservable();
+  }
+
+  public addSheet(name: string): FlSheet {
+    const sheet: FlSheet = new FlSheet(name);
+    this.sheets.push(sheet);
+    this.selectSheet(sheet.id);
+    return sheet;
+  }
+
+  private selectSheet(id: number): void {
+    const sheet: FlSheet = this.findSheet(id);
+    this.currentSheet$.next(sheet);
+  }
+
+  private findSheet(id: number): FlSheet {
+    return this.sheets.find(sheet => sheet.id === id);
   }
 }

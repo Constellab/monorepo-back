@@ -1,19 +1,45 @@
+$cell-selected-border-color: #058989;
 
 :host {
   padding: 3px;
-  display: block;
+  // make the host as td element
+  display: table-cell;
+  //display: block;
+  vertical-align: inherit;
+
+  &.cell-selected {
+    // make the cell border higher than neighbour border
+    border-style: double !important;
+    background-color: #565656; // todo light theme
+  }
+
+  &.selected-border-top {
+    border-top-color: $cell-selected-border-color !important;
+  }
+
+  &.selected-border-left {
+    border-left-color: $cell-selected-border-color !important;
+  }
+
+  &.selected-border-bottom {
+    border-bottom-color: $cell-selected-border-color !important;
+  }
+
+  &.selected-border-right {
+    border-right-color: $cell-selected-border-color !important;
+  }
 }
 
 .container:focus {
   outline: none;
 }
 
-.content{
+.view-content {
   max-height: 1.2em;
   overflow: hidden;
 }
 
-.input{
+.input {
   min-width: initial;
   width: 100%;
   box-sizing: border-box;
@@ -22,6 +48,7 @@
   border: none;
   padding: 0;
   font-size: 1em;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
 input:focus {

@@ -1,40 +1,48 @@
+.table-container {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
 .table {
   border-spacing: 0;
+  border-collapse: collapse;
+  height: 100%;
+  width: 100%;
 }
 
-.table td,
-.table th {
-  border: 1px solid #dddddd;
-  border-right-width: 0;
-  border-bottom-width: 0;
+.table fl-spreadsheet-header-cell,
+.table fl-spreadsheet-cell {
+  border: 1px solid #949494; // todo do light mode
 }
 
-.table tr td:last-child,
-.table tr th:last-child {
-  border-right-width: 1px;
-}
-
-.table tr:last-child td {
-  border-bottom: 1px solid #dddddd;
-}
 
 // make the column horizontally resizable
-.table th:not(:first-of-type) {
+.table fl-spreadsheet-header-cell:not(:first-of-type) {
   resize: horizontal;
   overflow: auto;
 }
 
 // set width of the first column
-.table tr th:first-child {
+.table tr fl-spreadsheet-header-cell:first-child {
   width: 40px;
 }
 
 // set the default column width to 80
-.table tr th:not(:first-of-type) {
+.table tr fl-spreadsheet-header-cell:not(:first-of-type) {
   width: 80px;
 }
 
-.header{
-  background-color: #464646;
-  text-align: center;
-}
+//.column-header {
+//  position: -webkit-sticky;
+//  position: sticky;
+//  top: 0;
+//}
+//
+//.row-header {
+//  position: -webkit-sticky;
+//  position: sticky;
+//  left: 0;
+//}
+
+

@@ -1,8 +1,12 @@
 import {FlBasicCell, FlCell, FlColumnHeaderCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
+import {FlSheetSelectionRange} from './fl-sheet-selection-change.class';
 
 export class FlSheet {
+
+  private static idGenerator: number = 0;
+  public id: number;
 
   public name: string;
 
@@ -16,6 +20,7 @@ export class FlSheet {
 
   constructor(name: string) {
     this.name = name;
+    this.id = FlSheet.idGenerator++;
     this.cells = [];
     this.cellsChanged = new BehaviorSubject(null);
   }
@@ -81,6 +86,34 @@ export class FlSheet {
 
   private emitCellChange(): void {
     this.cellsChanged.next();
+  }
+
+  public findCell(id: number): FlCell {
+    for (const row of this.cells) {
+      const cell: FlCell | null = row.find(cell => cell.id === id);
+      if (cell != null) {
+        return cell;
+      }
+    }
+    return null;
+  }
+
+  public getCell(row: number, column: number): FlCell {
+    return this.cells[row][column];
+  }
+
+  public getCellsFromRange(range: FlSheetSelectionRange): FlCell[] {
+    const cells: FlCell[] = [];
+
+    // the to values can be Infinity
+    const toRow: number = Math.min(range.to.row, (this.rowsCount - 1))
+    const toColumn: number = Math.min(range.to.column, (this.columnsCount - 1))
+
+    for(let row = range.from.row; row <= toRow; row++){
+      cells.push(...this.cells[row].slice(range.from.column, toColumn + 1));
+    }
+
+    return cells;
   }
 
 }
