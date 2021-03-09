@@ -8,6 +8,12 @@ import {FormsModule} from '@angular/forms';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {CellHeaderPipe} from './pipe/cell-header.pipe';
 import {ScrollingModule} from '@angular/cdk/scrolling';
+import {MatMenuModule} from '@angular/material/menu';
+import {FlPortalModule} from '../fl-portal/fl-portal.module';
+import { FlSpreadsheetContextMenuComponent } from './component/fl-spreadsheet-context-menu/fl-spreadsheet-context-menu.component';
+import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
+import {MatIconModule} from '@angular/material/icon';
+import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
 
 
 @NgModule({
@@ -17,6 +23,7 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
     FlSpreadsheetCellComponent,
     FlSpreadsheetHeaderCellComponent,
     CellHeaderPipe,
+    FlSpreadsheetContextMenuComponent,
   ],
   exports: [
     FlSpreadsheetDirective,
@@ -24,10 +31,16 @@ import {ScrollingModule} from '@angular/cdk/scrolling';
   ],
   imports: [
     CommonModule,
-    FlCoreDirectiveModule,
-
     FormsModule,
+
+    FlCoreDirectiveModule,
+    FlPortalModule,
+    FlSvgIconModule,
+
     ScrollingModule,
+    MatMenuModule,
+    FlCorePipeModule,
+    MatIconModule
   ],
 })
 export class FlSpreadsheetModule {

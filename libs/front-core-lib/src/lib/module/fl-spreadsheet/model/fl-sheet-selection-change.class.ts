@@ -1,4 +1,4 @@
-import {FlCell} from '@monorepo/front-core-lib';
+import {FlCell, FlSheet} from '@monorepo/front-core-lib';
 
 export type FlSheetSelectionType = 'single' | 'multiple' | 'columns' | 'rows';
 
@@ -6,10 +6,11 @@ export type FlSheetSelectionType = 'single' | 'multiple' | 'columns' | 'rows';
 export type FlSheetSelectionDirection = 'normal' | 'reverse';
 
 
-export class FlSheetSelectionChange {
+export class FlSheetSelection {
 
 
   private constructor(
+    public sheet: FlSheet,
     public type: FlSheetSelectionType,
     private startRow: number,
     private startColumn: number,
@@ -17,21 +18,22 @@ export class FlSheetSelectionChange {
     private endColumn: number) {
   }
 
-  public static Single(row: number, column: number): FlSheetSelectionChange {
-    return new FlSheetSelectionChange('single', row, column, row, column);
+  public static Single(sheet: FlSheet, row: number, column: number): FlSheetSelection {
+    return new FlSheetSelection(sheet, 'single', row, column, row, column);
   }
 
-  public static Multiple(startRow: number, startColumn: number,
-                         endRow: number, endColumn: number): FlSheetSelectionChange {
-    return new FlSheetSelectionChange('multiple', startRow, startColumn, endRow, endColumn);
+  public static Multiple(sheet: FlSheet,
+                         startRow: number, startColumn: number,
+                         endRow: number, endColumn: number): FlSheetSelection {
+    return new FlSheetSelection(sheet, 'multiple', startRow, startColumn, endRow, endColumn);
   }
 
-  public static Columns(from: number, to: number): FlSheetSelectionChange {
-    return new FlSheetSelectionChange('columns', 0, from, Infinity, to);
+  public static Columns(sheet: FlSheet, from: number, to: number): FlSheetSelection {
+    return new FlSheetSelection(sheet, 'columns', 0, from, sheet.getRowsCount() - 1, to);
   }
 
-  public static Rows(from: number, to: number): FlSheetSelectionChange {
-    return new FlSheetSelectionChange('rows', from, 0, to, Infinity);
+  public static Rows(sheet: FlSheet, from: number, to: number): FlSheetSelection {
+    return new FlSheetSelection(sheet, 'rows', from, 0, to, sheet.getColumnsCount() - 1);
   }
 
   /**
@@ -59,18 +61,18 @@ export class FlSheetSelectionChange {
   }
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
-  public expandSelection(row: number, column: number): FlSheetSelectionChange {
-    return FlSheetSelectionChange.Multiple(this.startRow, this.startColumn, row, column);
+  public expandSelection(row: number, column: number): FlSheetSelection {
+    return FlSheetSelection.Multiple(this.sheet, this.startRow, this.startColumn, row, column);
   }
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
-  public expandRowsSelection(row: number): FlSheetSelectionChange {
-    return FlSheetSelectionChange.Rows(this.startRow, row);
+  public expandRowsSelection(row: number): FlSheetSelection {
+    return FlSheetSelection.Rows(this.sheet, this.startRow, row);
   }
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
-  public expandColumnsSelection(column: number): FlSheetSelectionChange {
-    return FlSheetSelectionChange.Columns(this.startColumn, column);
+  public expandColumnsSelection(column: number): FlSheetSelection {
+    return FlSheetSelection.Columns(this.sheet, this.startColumn, column);
   }
 
   // public getDifference(newSelection: FlSheetSelectionChange): FlSheetSelectionDifference {
@@ -102,17 +104,6 @@ export interface FlSheetSelectionRange {
 export interface FlCellCoord {
   row: number;
   column: number;
-}
-
-export interface FlSheetSelectionDifference {
-  row: number;
-  column: number;
-}
-
-// selection change event specific for a cell
-export interface FlSheetSelectionChangeCell {
-  coord: FlCellCoord;
-  range: FlSheetSelectionRange;
 }
 
 export interface FlCellWithCoord {

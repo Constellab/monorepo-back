@@ -9,7 +9,7 @@ import {
 import {Subscription} from 'rxjs';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlOverlayRef} from '../../model/fl-overlay-ref.class';
-import {FlPortalConfig} from '../../model/fl-portal-config.class';
+import {FlRelativePortalConfig} from '../../model/fl-portal-config.class';
 import {FL_PORTAL_DATA, flPortalArrowOffset} from '../../model/fl-portal.class';
 
 /**
@@ -25,7 +25,7 @@ export class FlPortalArrowComponent implements OnInit, OnDestroy {
   mode: 'left' | 'right' | 'top' | 'bottom';
 
   // config of the main overlay
-  mainConfig: FlPortalConfig;
+  mainConfig: FlRelativePortalConfig;
   arrowColor: string;
 
   subscription: Subscription;
@@ -46,7 +46,6 @@ export class FlPortalArrowComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     // listen to main overlay position change
     const position: FlexibleConnectedPositionStrategy =
       this.mainConfig.config.positionStrategy as FlexibleConnectedPositionStrategy;

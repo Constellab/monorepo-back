@@ -11,9 +11,10 @@ import {
   ViewChild
 } from '@angular/core';
 import {FlCell, FlCellSelectionChange} from '../../model/fl-cell.class';
-import {FlSpreadsheetState} from '../../state/fl-spreadsheet-state.service';
+import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {Subscription} from 'rxjs';
 import {FlCellCoord, FlCellWithCoord, FlSheetSelectionRange} from '../../model/fl-sheet-selection-change.class';
+import {FlKeyboardHelper, FlKeyboardKey} from '../../../../utils/fl-keyboard.helper';
 
 @Component({
   selector: 'fl-spreadsheet-cell',
@@ -35,13 +36,15 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
   selected: boolean = false;
   edit: boolean = false;
 
+  cellValue: any;
+
   selectedBorderClasses: string[] = [];
 
   subscription: Subscription;
 
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef<HTMLElement>,
-              private state: FlSpreadsheetState, private cdr: ChangeDetectorRef) {
+              private state: FlSpreadsheetSelectionState, private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -52,23 +55,24 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
   // enable edit mode on keydown event
   @HostListener('keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    // ignore if we already are in edit mode
-    // ignore if key is not a single character
-    console.log('Keydown', event.key);
-    if (this.edit || event.key.length > 1) {
-      return;
+    console.log('Keydown', event.key, event.ctrlKey, event.altKey);
+
+    if (!this.edit) {
+      if (event.key === FlKeyboardKey.DELETE) {
+        this.cell.value = '';
+      } else if (FlKeyboardHelper.keyboardKeyIsPrintable(event.key)) {
+        // when pressing a key, we enable the edit
+        this.enableEditMode(this.cell.value + event.key);
+      }
+
     }
 
-    this.cell.value += event.key;
-    // when pressing a key, we enable the edit
-    this.enableEditMode();
   }
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent): void {
     // left click
     if (event.button === 0) {
-      this.state.startSelection();
       this.state.selectUniqueCell(this.cellWithCoord);
     }
   }
@@ -78,6 +82,11 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
     if (this.state.isSelecting) {
       this.state.expandSelection(this.coord);
     }
+  }
+
+  @HostListener('dblclick')
+  onDoubleClick(): void {
+    this.enableEditMode(this.cell.value);
   }
 
   @HostListener('contextmenu', ['$event'])
@@ -129,18 +138,30 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
     }
   }
 
-  enableEditMode(): void {
+  enableEditMode(value: any): void {
     if (!this.edit) {
       this.edit = true;
+      this.cellValue = value;
       setTimeout(() => {
         this.input?.nativeElement.focus();
       });
+      this.cdr.markForCheck();
     }
   }
 
+  cancelEditMode(): void {
+    this.disableEditMode();
+  }
 
-  disableEditMode(): void {
+  validateEditMode(): void {
+    this.cell.value = this.cellValue;
+    this.disableEditMode();
+  }
+
+
+  private disableEditMode(): void {
     this.edit = false;
+    this.cdr.markForCheck();
   }
 
   get cellWithCoord(): FlCellWithCoord {

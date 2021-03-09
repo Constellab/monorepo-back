@@ -39,6 +39,26 @@ export class FlSheet {
     this.emitCellChange();
   }
 
+  // delete columns in the interval inclusive
+  public deleteColumns(from: number, to: number): void {
+    const fromIndex: number = Math.min(from, to);
+    const deleteCount: number = Math.max(from, to) - fromIndex + 1;
+
+    // delete cells for each rows
+    for (let i = 0; i < this.rowsCount; i++) {
+      this.cells[i].splice(fromIndex, deleteCount);
+    }
+
+    this.columnsCount -= deleteCount;
+
+    // security to prevent sheet without columns
+    if (this.columnsCount <= 0) {
+      this.insertColumn(0);
+    }
+
+    this.emitCellChange();
+  }
+
 
   ////////////////////////////// ROW ///////////////////////////////
   public insertRow(position?: number): void {
@@ -57,6 +77,23 @@ export class FlSheet {
     this.emitCellChange();
   }
 
+  // delete rows in the interval inclusive
+  public deleteRows(from: number, to: number): void {
+    const fromIndex: number = Math.min(from, to);
+    const deleteCount: number = Math.max(from, to) - fromIndex + 1;
+
+    // delete rows
+    this.cells.splice(fromIndex, deleteCount);
+
+    this.rowsCount -= deleteCount;
+
+    // security to prevent sheet without rows
+    if (this.rowsCount <= 0) {
+      this.insertRow(0);
+    }
+
+    this.emitCellChange();
+  }
 
   ////////////////////////////// CELL ///////////////////////////////
 
@@ -106,14 +143,24 @@ export class FlSheet {
     const cells: FlCell[] = [];
 
     // the to values can be Infinity
-    const toRow: number = Math.min(range.to.row, (this.rowsCount - 1))
-    const toColumn: number = Math.min(range.to.column, (this.columnsCount - 1))
+    const toRow: number = Math.min(range.to.row, (this.rowsCount - 1));
+    const toColumn: number = Math.min(range.to.column, (this.columnsCount - 1));
 
-    for(let row = range.from.row; row <= toRow; row++){
+    for (let row = range.from.row; row <= toRow; row++) {
       cells.push(...this.cells[row].slice(range.from.column, toColumn + 1));
     }
 
     return cells;
+  }
+
+
+  ////////////////////////////// CELL ///////////////////////////////
+  public getColumnsCount(): number {
+    return this.columnsCount;
+  }
+
+  public getRowsCount(): number {
+    return this.rowsCount;
   }
 
 }

@@ -5,6 +5,7 @@ import {
   ComponentType,
   ConnectedPosition,
   FlexibleConnectedPositionStrategy,
+  GlobalPositionStrategy,
   Overlay,
   OverlayRef
 } from '@angular/cdk/overlay';
@@ -13,8 +14,14 @@ import {NavigationStart, Router} from '@angular/router';
 import {filter, first, map} from 'rxjs/operators';
 import {merge, Observable} from 'rxjs';
 import {CloseScrollStrategyConfig} from '@angular/cdk/overlay/scroll/close-scroll-strategy';
-import {FlPortalConfig} from '../model/fl-portal-config.class';
-import {FL_PORTAL_DATA, FlOverlayConfig, flPortalArrowOffset, FlPortalDefaultPosition} from '../model/fl-portal.class';
+import {FlPortalConfig, FlRelativePortalConfig} from '../model/fl-portal-config.class';
+import {
+  FL_PORTAL_DATA,
+  FlOverlayConfig,
+  flPortalArrowOffset,
+  FlPortalDefaultPosition,
+  FlRelativeOverlayConfig
+} from '../model/fl-portal.class';
 import {FlOverlayRef} from '../model/fl-overlay-ref.class';
 import {FlPortalArrowComponent} from '../component/fl-portal-arrow/fl-portal-arrow.component';
 import {FlEventWrapper} from '../../../model/fl-event-wrapper.class';
@@ -49,17 +56,17 @@ export class FlPortalService {
    */
   public configureRelativePortal(element: Element | ElementRef,
                                  position: ConnectedPosition[] | FlPortalDefaultPosition,
-                                 configuration: FlOverlayConfig = {}): FlPortalConfig {
+                                 configuration: FlRelativeOverlayConfig = {}): FlPortalConfig {
 
     // save the element to the config
     const hostElement = this.convertToElementRef(element);
-    const config: FlPortalConfig = new FlPortalConfig(hostElement, configuration);
+    const config: FlRelativePortalConfig = new FlRelativePortalConfig(hostElement, configuration);
 
     // convert position to ConnectedPosition[]
     const positions: ConnectedPosition[] = this.convertPositionToConnectedPosition(position);
 
     // set the position strategy
-    config.setRelativePositionStrategy(this.getFlexiblePositionStrategy(element, positions));
+    config.setPositionStrategy(this.getFlexiblePositionStrategy(element, positions));
 
     // if we show the arrow
     if (config.config.showArrow) {
@@ -83,8 +90,34 @@ export class FlPortalService {
       .withPositions(positions).withViewportMargin(20);
   }
 
+  /**
+   * Configure an absolute portal form the position of a mouse event
+   * This portal is not linked to an host element
+   */
+  public configureAbsolutePortalFromMouseEvent(mouseEvent: MouseEvent, configuration: FlOverlayConfig = {}): FlPortalConfig {
+    return this.configureAbsolutePortal(mouseEvent.pageY + 'px', mouseEvent.pageX + 'px', configuration);
+  }
+
+  /**
+   * Configure an absolute portal form top and left position
+   * This portal is not linked to an host element
+   */
+  public configureAbsolutePortal(top: string, left: string, configuration: FlOverlayConfig = {}): FlPortalConfig {
+    // save the element to the config
+    const config: FlPortalConfig = new FlPortalConfig(configuration);
+
+    config.setPositionStrategy(this.getAbsolutePositionStrategy(top, left));
+
+    return config;
+  }
+
+  public getAbsolutePositionStrategy(top: string, left: string): GlobalPositionStrategy {
+    // set the portal position relative to the element with a margin of 10 for the viewport
+    return this.overlay.position().global().top(top).left(left);
+  }
+
   // configure the overlay offset if we need an arrow
-  private configureOffset(positions: ConnectedPosition[], config: FlPortalConfig): void {
+  private configureOffset(positions: ConnectedPosition[], config: FlRelativePortalConfig): void {
     for (const position of positions) {
       if (position.offsetY == null) {
         position.offsetY = 0;
@@ -138,7 +171,7 @@ export class FlPortalService {
     overlayRef.attach(componentPortal);
 
     // created the arrow if needed before the main portal so that it is under it
-    if (config.config.showArrow) {
+    if (config instanceof FlRelativePortalConfig && config.config.showArrow) {
       this.createArrowPortal(config, overlayRef);
     }
 
@@ -180,12 +213,9 @@ export class FlPortalService {
     // manage the disposeOnOutsideClick
     let outsideClickListener: () => void;
     if (config.config.disposeOnOutsideClick) {
-      // wait 500 ms before listening to event because it will be called if the portal is opened with a click
-      setTimeout(() => {
-        // add a listener on the body
-        outsideClickListener = this.renderer.listen('body', 'click',
-          (event: MouseEvent) => this.handleOutsideClick(event, overlayRef));
-      }, 500);
+      // add a listener on the body
+      outsideClickListener = this.renderer.listen('body', 'mousedown',
+        (event: MouseEvent) => this.handleOutsideClick(event, overlayRef));
     }
 
     // merge events and unsubscribe on the first emission
@@ -213,7 +243,7 @@ export class FlPortalService {
    * @param mainConfig PortalConfig of the main portal
    * @param mainOverlayRef overlay of the main portal
    */
-  private createArrowPortal(mainConfig: FlPortalConfig, mainOverlayRef: FlOverlayRef): void {
+  private createArrowPortal(mainConfig: FlRelativePortalConfig, mainOverlayRef: FlOverlayRef): void {
     const arrowConfig: FlOverlayConfig = {};
 
     // if the overlay has a size, add the specific class to hide the arrow on small screen

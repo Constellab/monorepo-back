@@ -1,0 +1,6 @@
+<button *ngFor="let button of config.buttons" mat-menu-item
+        (click)="selectOption(button)">
+  <mat-icon [flIcon]="button.icon"></mat-icon>
+  <!--  TODO translate-->
+  {{button.text}}
+</button>

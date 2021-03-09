@@ -1,6 +1,6 @@
 import {PositionStrategy} from '@angular/cdk/overlay';
 import {ElementRef} from '@angular/core';
-import {FlOverlayConfig} from './fl-portal.class';
+import {FlOverlayConfig, FlRelativeOverlayConfig} from './fl-portal.class';
 
 /**
  * Config for the portal
@@ -10,11 +10,11 @@ export class FlPortalConfig {
   public config: FlOverlayConfig;
 
 
-  constructor(public hostElement: ElementRef<HTMLElement>, config: FlOverlayConfig = {}) {
+  constructor(config: FlOverlayConfig = {}) {
     this.configureOverlay(config);
   }
 
-  public setRelativePositionStrategy(strategy: PositionStrategy): void {
+  public setPositionStrategy(strategy: PositionStrategy): void {
     this.config.positionStrategy = strategy;
   }
 
@@ -52,7 +52,7 @@ export class FlPortalConfig {
   }
 
   // configure the panel
-  private configurePanel(config: FlOverlayConfig): void {
+  protected configurePanel(config: FlOverlayConfig): void {
     // convert the panel class to string[] to simplify manipulation
     const panelClass: string[] = this.convertToStringArray(config.panelClass);
 
@@ -75,11 +75,6 @@ export class FlPortalConfig {
       case 'full':
         panelClass.push('g-full-dialog');
         break;
-      case 'hostWidth':
-        config.width = this.hostElement.nativeElement.clientWidth;
-        break;
-      case 'hostHeight':
-        config.height = this.hostElement.nativeElement.clientHeight;
     }
 
     // set classes to config
@@ -88,7 +83,7 @@ export class FlPortalConfig {
 
 
   // convert the string | string[] to string[]
-  private convertToStringArray(obj: string | string[]): string[] {
+  protected convertToStringArray(obj: string | string[]): string[] {
     let array: string[] = [];
     if (typeof obj === 'string') {
       array.push(obj);
@@ -98,5 +93,35 @@ export class FlPortalConfig {
 
     return array;
   }
+}
 
+export class FlRelativePortalConfig extends FlPortalConfig {
+
+  public config: FlRelativeOverlayConfig;
+
+  constructor(public hostElement: ElementRef<HTMLElement>, config: FlRelativeOverlayConfig = {}) {
+    super(config);
+  }
+
+  // configure the panel
+  protected configurePanel(config: FlRelativeOverlayConfig): void {
+    super.configurePanel(config);
+
+    // manage host size
+    switch (config.hostSize) {
+
+      case 'width':
+        config.width = this.hostElement.nativeElement.clientWidth;
+        break;
+      case 'height':
+        config.height = this.hostElement.nativeElement.clientHeight;
+        break;
+      case 'both':
+        config.height = this.hostElement.nativeElement.clientHeight;
+        config.width = this.hostElement.nativeElement.clientWidth;
+        break;
+
+    }
+
+  }
 }

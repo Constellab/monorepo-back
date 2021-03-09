@@ -1,56 +1,71 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {FlCell, FlSpreadsheet} from '@monorepo/front-core-lib';
-import {FlCellCoord, FlCellWithCoord, FlSheetSelectionChange, FlSheetSelectionRange} from '../model/fl-sheet-selection-change.class';
+import {FlCellCoord, FlCellWithCoord, FlSheetSelection, FlSheetSelectionRange} from '../model/fl-sheet-selection-change.class';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {FlSpreadsheetState} from './fl-spreadsheet.state';
+import {FlSheet} from '../model/fl-sheet.class';
+import {FlCell} from '../model/fl-cell.class';
 
+/**
+ * Unique state shared across the spreadsheet to manage the selection
+ */
 @Injectable()
-export class FlSpreadsheetState implements OnDestroy {
+export class FlSpreadsheetSelectionState implements OnDestroy {
 
-  private spreadsheet: FlSpreadsheet;
-
-  private currentSelection$: BehaviorSubject<FlSheetSelectionChange> =
-    new BehaviorSubject<FlSheetSelectionChange>(null);
+  private currentSelection$: BehaviorSubject<FlSheetSelection> =
+    new BehaviorSubject<FlSheetSelection>(null);
 
   private _isSelecting: boolean = false;
 
-  public init(spreadsheet: FlSpreadsheet): void {
-    this.spreadsheet = spreadsheet;
+  constructor(private spreadsheetState: FlSpreadsheetState) {
   }
 
-  public get currentSelection(): FlSheetSelectionChange {
+
+  private get currentSheet(): FlSheet {
+    return this.spreadsheetState.currentSheet;
+  }
+
+  public get currentSelection(): FlSheetSelection {
     return this.currentSelection$.value;
   }
 
 
   public selectUniqueCell(cell: FlCellWithCoord): void {
-    this.clearCurrentSelection();
-    const selection: FlSheetSelectionChange = FlSheetSelectionChange.Single(cell.coord.row, cell.coord.column);
+    this.startSelection();
+    this.unselectCurrentSelection();
+    const selection: FlSheetSelection = FlSheetSelection.Single(this.currentSheet, cell.coord.row, cell.coord.column);
     cell.cell.select(selection.selectionRange());
     this.currentSelection$.next(selection);
   }
 
   public selectUniqueRow(rowIndex: number): void {
-    this.clearCurrentSelection();
-    const selection: FlSheetSelectionChange = FlSheetSelectionChange.Rows(rowIndex, rowIndex);
+    this.startSelection();
+    this.unselectCurrentSelection();
+    const selection: FlSheetSelection = FlSheetSelection.Rows(this.currentSheet, rowIndex, rowIndex);
     this.selectCellsFromSelection(selection);
     this.currentSelection$.next(selection);
   }
 
   public selectUniqueColumn(columnIndex: number): void {
-    this.clearCurrentSelection();
-    const selection: FlSheetSelectionChange = FlSheetSelectionChange.Columns(columnIndex, columnIndex);
+    this.startSelection();
+    this.unselectCurrentSelection();
+    const selection: FlSheetSelection = FlSheetSelection.Columns(this.currentSheet, columnIndex, columnIndex);
     this.selectCellsFromSelection(selection);
     this.currentSelection$.next(selection);
   }
 
+  public clearCurrentSelection(): void {
+    this.unselectCurrentSelection();
+    this.currentSelection$.next(null);
+  }
 
-  private clearCurrentSelection(): void {
+
+  private unselectCurrentSelection(): void {
     if (this.currentSelection != null) {
       this.unSelectCellsFromSelection(this.currentSelection);
     }
   }
 
-  private selectCellsFromSelection(selection: FlSheetSelectionChange): void {
+  private selectCellsFromSelection(selection: FlSheetSelection): void {
     const range: FlSheetSelectionRange = selection.selectionRange();
     const cells: FlCell[] = this.getCellsFromRange(range);
 
@@ -59,7 +74,7 @@ export class FlSpreadsheetState implements OnDestroy {
     }
   }
 
-  private unSelectCellsFromSelection(selection: FlSheetSelectionChange): void {
+  private unSelectCellsFromSelection(selection: FlSheetSelection): void {
     const range: FlSheetSelectionRange = selection.selectionRange();
     const cells: FlCell[] = this.getCellsFromRange(range);
 
@@ -69,7 +84,7 @@ export class FlSpreadsheetState implements OnDestroy {
   }
 
   private getCellsFromRange(range: FlSheetSelectionRange): FlCell[] {
-    return this.spreadsheet.currentSheet.getCellsFromRange(range);
+    return this.currentSheet.getCellsFromRange(range);
   }
 
   public startSelection(): void {
@@ -90,9 +105,9 @@ export class FlSpreadsheetState implements OnDestroy {
       return;
     }
 
-    const newSelection: FlSheetSelectionChange = this.currentSelection.expandSelection(coord.row, coord.column);
+    const newSelection: FlSheetSelection = this.currentSelection.expandSelection(coord.row, coord.column);
     // todo use difference between selection instead of clear
-    this.clearCurrentSelection();
+    this.unselectCurrentSelection();
     this.selectCellsFromSelection(newSelection);
 
     this.currentSelection$.next(newSelection);
@@ -103,8 +118,8 @@ export class FlSpreadsheetState implements OnDestroy {
       return;
     }
 
-    this.clearCurrentSelection();
-    const newSelection: FlSheetSelectionChange = this.currentSelection.expandRowsSelection(rowIndex);
+    this.unselectCurrentSelection();
+    const newSelection: FlSheetSelection = this.currentSelection.expandRowsSelection(rowIndex);
     this.selectCellsFromSelection(newSelection);
 
     this.currentSelection$.next(newSelection);
@@ -115,14 +130,14 @@ export class FlSpreadsheetState implements OnDestroy {
       return;
     }
 
-    this.clearCurrentSelection();
-    const newSelection: FlSheetSelectionChange = this.currentSelection.expandColumnsSelection(rowIndex);
+    this.unselectCurrentSelection();
+    const newSelection: FlSheetSelection = this.currentSelection.expandColumnsSelection(rowIndex);
     this.selectCellsFromSelection(newSelection);
 
     this.currentSelection$.next(newSelection);
   }
 
-  public getSelection(): Observable<FlSheetSelectionChange> {
+  public getSelection(): Observable<FlSheetSelection> {
     return this.currentSelection$.asObservable();
   }
 
