@@ -10,11 +10,11 @@ import {
   Renderer2,
   ViewChild
 } from '@angular/core';
-import {FlCell, FlCellSelectionChange} from '../../model/fl-cell.class';
+import {FlCell, FlCellEditChange, FlCellSelectionChange} from '../../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
-import {Subscription} from 'rxjs';
-import {FlCellCoord, FlCellWithCoord, FlSheetSelectionRange} from '../../model/fl-sheet-selection-change.class';
-import {FlKeyboardHelper, FlKeyboardKey} from '../../../../utils/fl-keyboard.helper';
+import {Observable} from 'rxjs';
+import {FlCellCoord, FlCellWithCoord, FlSheetSelectionRange} from '../../model/fl-sheet-selection.class';
+import {ClSubscriptionHandler} from '@monorepo/core-lib';
 
 @Component({
   selector: 'fl-spreadsheet-cell',
@@ -30,17 +30,18 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
 
   @Input() row: number;
 
-  @ViewChild('container', {static: true}) content: ElementRef<HTMLElement>;
   @ViewChild('input') input: ElementRef<HTMLElement>;
+
+  cellValue$: Observable<any>;
+  inputValue: any;
 
   selected: boolean = false;
   edit: boolean = false;
 
-  cellValue: any;
 
   selectedBorderClasses: string[] = [];
 
-  subscription: Subscription;
+  subscription: ClSubscriptionHandler = new ClSubscriptionHandler();
 
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef<HTMLElement>,
@@ -48,26 +49,11 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.cellValue$ = this.cell.value$;
+    this.subscribeToEdit();
     this.subscribeToSelection();
   }
 
-
-  // enable edit mode on keydown event
-  @HostListener('keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent): void {
-    console.log('Keydown', event.key, event.ctrlKey, event.altKey);
-
-    if (!this.edit) {
-      if (event.key === FlKeyboardKey.DELETE) {
-        this.cell.value = '';
-      } else if (FlKeyboardHelper.keyboardKeyIsPrintable(event.key)) {
-        // when pressing a key, we enable the edit
-        this.enableEditMode(this.cell.value + event.key);
-      }
-
-    }
-
-  }
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent): void {
@@ -86,14 +72,7 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
 
   @HostListener('dblclick')
   onDoubleClick(): void {
-    this.enableEditMode(this.cell.value);
-  }
-
-  @HostListener('contextmenu', ['$event'])
-  onContextMenu(event: MouseEvent): void {
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-    event.preventDefault();
+    this.cell.setEdit(true);
   }
 
   private selectCell(range: FlSheetSelectionRange): void {
@@ -125,9 +104,9 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
 
 
   private subscribeToSelection(): void {
-    this.subscription = this.cell.getSelected$().subscribe(
+    this.subscription.add(this.cell.getSelected$().subscribe(
       selected => this.onSelectionChange(selected)
-    );
+    ));
   }
 
   private onSelectionChange(selected: FlCellSelectionChange): void {
@@ -138,31 +117,57 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
     }
   }
 
-  enableEditMode(value: any): void {
+  private subscribeToEdit(): void {
+    this.subscription.add(this.cell.edit$.subscribe(
+      edit => this.onEditChange(edit)
+    ));
+  }
+
+  private onEditChange(editEvent: FlCellEditChange): void {
+    if (editEvent.edit) {
+      this.enableEditMode(editEvent.value);
+    } else {
+      this.disableEditMode();
+    }
+  }
+
+  private enableEditMode(value?: string): void {
     if (!this.edit) {
+      const cellValue: any = this.cell.value;
       this.edit = true;
-      this.cellValue = value;
+
+      if (value != null &&
+        (typeof this.cell.value === 'number' || typeof this.cell.value === 'string')) {
+        this.inputValue = cellValue + value;
+      } else {
+        this.inputValue = cellValue;
+      }
+
       setTimeout(() => {
-        this.input?.nativeElement.focus();
+        this.focusInput();
       });
       this.cdr.markForCheck();
     }
   }
 
-  cancelEditMode(): void {
-    this.disableEditMode();
-  }
-
-  validateEditMode(): void {
-    this.cell.value = this.cellValue;
-    this.disableEditMode();
-  }
-
-
   private disableEditMode(): void {
     this.edit = false;
     this.cdr.markForCheck();
   }
+
+  cancelEditMode(): void {
+    this.cell.setEdit(false);
+  }
+
+  // save the input value to the cell and close edit mode
+  saveValueAndDisableEdit(): void {
+    this.cell.setValueAndCloseEdit(this.inputValue);
+  }
+
+  private focusInput(): void {
+    this.input?.nativeElement.focus();
+  }
+
 
   get cellWithCoord(): FlCellWithCoord {
     return {

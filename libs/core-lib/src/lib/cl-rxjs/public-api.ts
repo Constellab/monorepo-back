@@ -1,5 +1,6 @@
 // Export the classes
 export * from './cl-cached-observable.class';
+export * from './cl-unsubscriber.class';
 
 // Export the operators
 export * from './operator/cl-rxjs-debug';

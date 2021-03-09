@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {Subscription} from 'rxjs';
-import {FlSheetSelection, FlSheetSelectionRange} from '../../model/fl-sheet-selection-change.class';
+import {FlSheetSelection, FlSheetSelectionRange} from '../../model/fl-sheet-selection.class';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {FlPortalConfig} from '../../../fl-portal/model/fl-portal-config.class';
 import {FlSpreadsheetContextMenuComponent} from '../fl-spreadsheet-context-menu/fl-spreadsheet-context-menu.component';

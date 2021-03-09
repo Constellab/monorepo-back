@@ -23,6 +23,10 @@
   overflow: auto;
 }
 
+.table tr{
+  height: 24px;
+}
+
 // set width of the first column
 .table tr fl-spreadsheet-header-cell:first-child {
   width: 40px;

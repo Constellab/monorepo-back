@@ -6,12 +6,18 @@ import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.
 import {map} from 'rxjs/operators';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlSpreadsheetContextMenu} from '../../state/fl-spreadsheet-context-menu.state';
+import {FlSpreadsheetKeyboardManagerState} from '../../state/fl-spreadsheet-keyboard-manager.state';
 
 @Component({
   selector: 'fl-spreadsheet',
   templateUrl: './fl-spreadsheet.component.html',
   styleUrls: ['./fl-spreadsheet.component.scss'],
-  providers: [FlSpreadsheetState, FlSpreadsheetSelectionState, FlSpreadsheetContextMenu],
+  providers: [
+    FlSpreadsheetState,
+    FlSpreadsheetSelectionState,
+    FlSpreadsheetContextMenu,
+    FlSpreadsheetKeyboardManagerState
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlSpreadsheetComponent implements OnInit, OnDestroy {
@@ -21,19 +27,18 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
   headerColumns: Observable<FlCell[]>;
   cells: Observable<FlCell[][]>;
 
-
-  headerTop = '0px';
-
   private mouseUpListener: () => void;
 
   constructor(private state: FlSpreadsheetState,
               private selectionState: FlSpreadsheetSelectionState,
+              private keyboardState: FlSpreadsheetKeyboardManagerState,
               private renderer: Renderer2) {
   }
 
   ngOnInit(): void {
 
     this.state.init(this.spreadsheet);
+    this.keyboardState.init();
     this.headerColumns = this.spreadsheet.currentSheet.getColumnHeaderCells();
     //create a new instance of the cells array for the virtual scroll
     this.cells = this.spreadsheet.currentSheet.getCells().pipe(map(cells => [...cells]));

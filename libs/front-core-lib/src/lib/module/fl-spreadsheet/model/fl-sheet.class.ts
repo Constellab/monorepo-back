@@ -1,7 +1,7 @@
 import {FlBasicCell, FlCell, FlColumnHeaderCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
-import {FlSheetSelectionRange} from './fl-sheet-selection-change.class';
+import {FlSheetSelectionRange} from './fl-sheet-selection.class';
 
 export class FlSheet {
 
@@ -142,12 +142,8 @@ export class FlSheet {
   public getCellsFromRange(range: FlSheetSelectionRange): FlCell[] {
     const cells: FlCell[] = [];
 
-    // the to values can be Infinity
-    const toRow: number = Math.min(range.to.row, (this.rowsCount - 1));
-    const toColumn: number = Math.min(range.to.column, (this.columnsCount - 1));
-
-    for (let row = range.from.row; row <= toRow; row++) {
-      cells.push(...this.cells[row].slice(range.from.column, toColumn + 1));
+    for (let row = range.from.row; row <= range.to.row; row++) {
+      cells.push(...this.cells[row].slice(range.from.column, range.to.column + 1));
     }
 
     return cells;

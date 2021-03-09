@@ -7,9 +7,9 @@ const columnNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
  * Pipe to display the value of a celle header (row or column)
  */
 @Pipe({
-  name: 'cellHeader'
+  name: 'flCellHeader'
 })
-export class CellHeaderPipe implements PipeTransform {
+export class FlCellHeaderPipe implements PipeTransform {
 
   transform(index: number, type: 'row' | 'column'): string {
     if (index == null) {

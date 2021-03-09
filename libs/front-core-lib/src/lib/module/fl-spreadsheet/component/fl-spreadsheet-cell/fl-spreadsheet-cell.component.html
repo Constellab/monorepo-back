@@ -1,10 +1,10 @@
-<div class="container" #container tabindex="-1">
+<div class="container" tabindex="-1">
   <div class="view-content g-text-not-selectable" *ngIf="!edit; else editMode">
-    {{cell.value}}
+    {{cellValue$ | async}}
   </div>
 
   <ng-template #editMode>
-    <input class="input" #input [(ngModel)]="cellValue" size="1" (blur)="validateEditMode()"
-           (keyup.escape)="cancelEditMode()" (keyup.enter)="validateEditMode()">
+    <input class="input" #input [(ngModel)]="inputValue" size="1" (blur)="saveValueAndDisableEdit()"
+           (keyup.escape)="cancelEditMode()" (keyup.enter)="saveValueAndDisableEdit()">
   </ng-template>
 </div>

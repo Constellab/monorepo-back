@@ -1,5 +1,11 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {FlCellCoord, FlCellWithCoord, FlSheetSelection, FlSheetSelectionRange} from '../model/fl-sheet-selection-change.class';
+import {
+  FlCellCoord,
+  FlCellWithCoord,
+  FlSheetSelection,
+  FlSheetSelectionFull,
+  FlSheetSelectionRange
+} from '../model/fl-sheet-selection.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {FlSheet} from '../model/fl-sheet.class';
@@ -11,8 +17,8 @@ import {FlCell} from '../model/fl-cell.class';
 @Injectable()
 export class FlSpreadsheetSelectionState implements OnDestroy {
 
-  private currentSelection$: BehaviorSubject<FlSheetSelection> =
-    new BehaviorSubject<FlSheetSelection>(null);
+  private currentSelection$: BehaviorSubject<FlSheetSelectionFull> =
+    new BehaviorSubject<FlSheetSelectionFull>(null);
 
   private _isSelecting: boolean = false;
 
@@ -24,7 +30,15 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     return this.spreadsheetState.currentSheet;
   }
 
+  /**
+   * Return a simple FlSheetSelection without the edit method because
+   * the outside must not edit the selection
+   */
   public get currentSelection(): FlSheetSelection {
+    return this.currentSelection$.value;
+  }
+
+  private get currentSelectionFull(): FlSheetSelectionFull {
     return this.currentSelection$.value;
   }
 
@@ -32,7 +46,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   public selectUniqueCell(cell: FlCellWithCoord): void {
     this.startSelection();
     this.unselectCurrentSelection();
-    const selection: FlSheetSelection = FlSheetSelection.Single(this.currentSheet, cell.coord.row, cell.coord.column);
+    const selection: FlSheetSelectionFull = FlSheetSelectionFull.Single(this.currentSheet, cell.coord.row, cell.coord.column);
     cell.cell.select(selection.selectionRange());
     this.currentSelection$.next(selection);
   }
@@ -40,7 +54,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   public selectUniqueRow(rowIndex: number): void {
     this.startSelection();
     this.unselectCurrentSelection();
-    const selection: FlSheetSelection = FlSheetSelection.Rows(this.currentSheet, rowIndex, rowIndex);
+    const selection: FlSheetSelectionFull = FlSheetSelectionFull.Rows(this.currentSheet, rowIndex, rowIndex);
     this.selectCellsFromSelection(selection);
     this.currentSelection$.next(selection);
   }
@@ -48,7 +62,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   public selectUniqueColumn(columnIndex: number): void {
     this.startSelection();
     this.unselectCurrentSelection();
-    const selection: FlSheetSelection = FlSheetSelection.Columns(this.currentSheet, columnIndex, columnIndex);
+    const selection: FlSheetSelectionFull = FlSheetSelectionFull.Columns(this.currentSheet, columnIndex, columnIndex);
     this.selectCellsFromSelection(selection);
     this.currentSelection$.next(selection);
   }
@@ -67,7 +81,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
 
   private selectCellsFromSelection(selection: FlSheetSelection): void {
     const range: FlSheetSelectionRange = selection.selectionRange();
-    const cells: FlCell[] = this.getCellsFromRange(range);
+    const cells: FlCell[] = selection.getSelectedCells();
 
     for (const cell of cells) {
       cell.select(range);
@@ -75,17 +89,13 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   }
 
   private unSelectCellsFromSelection(selection: FlSheetSelection): void {
-    const range: FlSheetSelectionRange = selection.selectionRange();
-    const cells: FlCell[] = this.getCellsFromRange(range);
+    const cells: FlCell[] = selection.getSelectedCells();
 
     for (const cell of cells) {
       cell.unselect();
     }
   }
 
-  private getCellsFromRange(range: FlSheetSelectionRange): FlCell[] {
-    return this.currentSheet.getCellsFromRange(range);
-  }
 
   public startSelection(): void {
     this._isSelecting = true;
@@ -100,12 +110,12 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   }
 
   public expandSelection(coord: FlCellCoord): void {
-    if (!this._isSelecting || this.currentSelection == null ||
-      (this.currentSelection.type !== 'single' && this.currentSelection.type !== 'multiple')) {
+    if (!this._isSelecting || this.currentSelectionFull == null ||
+      (this.currentSelectionFull.type !== 'single' && this.currentSelectionFull.type !== 'multiple')) {
       return;
     }
 
-    const newSelection: FlSheetSelection = this.currentSelection.expandSelection(coord.row, coord.column);
+    const newSelection: FlSheetSelectionFull = this.currentSelectionFull.expandSelection(coord.row, coord.column);
     // todo use difference between selection instead of clear
     this.unselectCurrentSelection();
     this.selectCellsFromSelection(newSelection);
@@ -114,24 +124,24 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   }
 
   public expandRowsSelection(rowIndex: number): void {
-    if (!this._isSelecting || this.currentSelection == null || this.currentSelection.type !== 'rows') {
+    if (!this._isSelecting || this.currentSelectionFull == null || this.currentSelectionFull.type !== 'rows') {
       return;
     }
 
     this.unselectCurrentSelection();
-    const newSelection: FlSheetSelection = this.currentSelection.expandRowsSelection(rowIndex);
+    const newSelection: FlSheetSelectionFull = this.currentSelectionFull.expandRowsSelection(rowIndex);
     this.selectCellsFromSelection(newSelection);
 
     this.currentSelection$.next(newSelection);
   }
 
   public expandColumnsSelection(rowIndex: number): void {
-    if (!this._isSelecting || this.currentSelection == null || this.currentSelection.type !== 'columns') {
+    if (!this._isSelecting || this.currentSelectionFull == null || this.currentSelectionFull.type !== 'columns') {
       return;
     }
 
     this.unselectCurrentSelection();
-    const newSelection: FlSheetSelection = this.currentSelection.expandColumnsSelection(rowIndex);
+    const newSelection: FlSheetSelectionFull = this.currentSelectionFull.expandColumnsSelection(rowIndex);
     this.selectCellsFromSelection(newSelection);
 
     this.currentSelection$.next(newSelection);

@@ -4,8 +4,7 @@
     <thead>
     <tr>
       <fl-spreadsheet-header-cell class="column-header" *ngFor="let column of headerColumns | async; let index = index"
-                                  [index]="index - 1" type="column"
-                                  [style.top]="headerTop"></fl-spreadsheet-header-cell>
+                                  [index]="index - 1" type="column"></fl-spreadsheet-header-cell>
     </tr>
     </thead>
 

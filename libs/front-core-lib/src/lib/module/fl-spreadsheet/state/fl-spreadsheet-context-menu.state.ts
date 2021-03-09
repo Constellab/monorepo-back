@@ -1,7 +1,7 @@
 /**
  * Config object for the Context menu of a spread sheet
  */
-import {FlSheetSelection, FlSheetSelectionRange} from '../model/fl-sheet-selection-change.class';
+import {FlSheetSelection, FlSheetSelectionRange} from '../model/fl-sheet-selection.class';
 import {Injectable} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 
