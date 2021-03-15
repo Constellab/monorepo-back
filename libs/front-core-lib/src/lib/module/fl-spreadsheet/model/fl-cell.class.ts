@@ -115,3 +115,6 @@ export class FlRowHeaderCell extends FlCell {
     this.value = index;
   }
 }
+
+export const rowIdAttributeName: string = 'row-id';
+export const columnIdAttributeName: string = 'column-id';

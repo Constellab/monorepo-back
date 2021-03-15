@@ -16,6 +16,7 @@ export * from './pipe/fl-cell-header.pipe';
 export * from './state/fl-spreadsheet.state';
 export * from './state/fl-spreadsheet-context-menu.state';
 export * from './state/fl-spreadsheet-keyboard-manager.state';
+export * from './state/fl-spreadsheet-mouse-manager.state';
 export * from './state/fl-spreadsheet-selection.state';
 
 // Export the models

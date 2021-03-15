@@ -5,7 +5,7 @@ import {FlSheetSelection} from '../model/fl-sheet-selection.class';
 import {FlCell} from '../model/fl-cell.class';
 
 /**
- * Unique state shared across the spreadsheet to handle spreadsheet events
+ * Unique state shared across the spreadsheet to handle spreadsheet keyboard events
  */
 @Injectable()
 export class FlSpreadsheetKeyboardManagerState implements OnDestroy {

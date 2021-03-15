@@ -7,6 +7,7 @@ import {map} from 'rxjs/operators';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlSpreadsheetContextMenu} from '../../state/fl-spreadsheet-context-menu.state';
 import {FlSpreadsheetKeyboardManagerState} from '../../state/fl-spreadsheet-keyboard-manager.state';
+import {FlSpreadsheetMouseManagerState} from '../../state/fl-spreadsheet-mouse-manager.state';
 
 @Component({
   selector: 'fl-spreadsheet',
@@ -16,7 +17,8 @@ import {FlSpreadsheetKeyboardManagerState} from '../../state/fl-spreadsheet-keyb
     FlSpreadsheetState,
     FlSpreadsheetSelectionState,
     FlSpreadsheetContextMenu,
-    FlSpreadsheetKeyboardManagerState
+    FlSpreadsheetKeyboardManagerState,
+    FlSpreadsheetMouseManagerState
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
