@@ -8,6 +8,7 @@ import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlSpreadsheetContextMenu} from '../../state/fl-spreadsheet-context-menu.state';
 import {FlSpreadsheetKeyboardManagerState} from '../../state/fl-spreadsheet-keyboard-manager.state';
 import {FlSpreadsheetMouseManagerState} from '../../state/fl-spreadsheet-mouse-manager.state';
+import {FlSpreadsheetClipboardState} from '../../state/fl-spreadsheet-clipboard.state';
 
 @Component({
   selector: 'fl-spreadsheet',
@@ -18,7 +19,8 @@ import {FlSpreadsheetMouseManagerState} from '../../state/fl-spreadsheet-mouse-m
     FlSpreadsheetSelectionState,
     FlSpreadsheetContextMenu,
     FlSpreadsheetKeyboardManagerState,
-    FlSpreadsheetMouseManagerState
+    FlSpreadsheetMouseManagerState,
+    FlSpreadsheetClipboardState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

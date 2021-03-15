@@ -44,7 +44,11 @@ export abstract class FlSheetSelection {
     return this.startColumn <= this.endColumn ? 'normal' : 'reverse';
   }
 
-  public getSelectedCells(): FlCell[] {
+  public getSelectedCellsFlat(): FlCell[] {
+    return this.sheet.getCellsFromRangeFlat(this.selectionRange());
+  }
+
+  public getSelectedCells(): FlCell[][] {
     return this.sheet.getCellsFromRange(this.selectionRange());
   }
 
@@ -52,13 +56,27 @@ export abstract class FlSheetSelection {
    * return the first column where the selection started
    * If this is a row or a column selection, we return the first column
    */
-  public getFirstSelectedCell(): FlCell | null {
+  public getFirstSelectedCell(): FlCell {
+    const coord: FlCellCoord = this.getFirstSelectedCellCoord();
+    return this.sheet.getCell(coord.row, coord.column);
+  }
+
+  public getFirstSelectedCellCoord(): FlCellCoord {
     if (this.type === 'columns') {
-      return this.sheet.getCell(0, this.startColumn);
+      return {
+        row: 0,
+        column: this.startColumn
+      };
     } else if (this.type === 'rows') {
-      return this.sheet.getCell(this.startRow, 0);
+      return {
+        row: this.startRow,
+        column: 0
+      };
     } else {
-      return this.sheet.getCell(this.startRow, this.startColumn);
+      return {
+        row: this.startRow,
+        column: this.startColumn
+      };
     }
   }
 

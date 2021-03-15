@@ -14,6 +14,7 @@ export * from './pipe/fl-cell-header.pipe';
 
 // Export the state
 export * from './state/fl-spreadsheet.state';
+export * from './state/fl-spreadsheet-clipboard.state';
 export * from './state/fl-spreadsheet-context-menu.state';
 export * from './state/fl-spreadsheet-keyboard-manager.state';
 export * from './state/fl-spreadsheet-mouse-manager.state';

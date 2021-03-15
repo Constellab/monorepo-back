@@ -139,11 +139,21 @@ export class FlSheet {
     return this.cells[row][column];
   }
 
-  public getCellsFromRange(range: FlSheetSelectionRange): FlCell[] {
+  public getCellsFromRangeFlat(range: FlSheetSelectionRange): FlCell[] {
     const cells: FlCell[] = [];
 
     for (let row = range.from.row; row <= range.to.row; row++) {
       cells.push(...this.cells[row].slice(range.from.column, range.to.column + 1));
+    }
+
+    return cells;
+  }
+
+  public getCellsFromRange(range: FlSheetSelectionRange): FlCell[][] {
+    const cells: FlCell[][] = [];
+
+    for (let row = range.from.row; row <= range.to.row; row++) {
+      cells.push(this.cells[row].slice(range.from.column, range.to.column + 1));
     }
 
     return cells;

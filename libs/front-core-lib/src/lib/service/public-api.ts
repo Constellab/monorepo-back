@@ -1,4 +1,5 @@
 // Export the services
+export * from './fl-clipboard.service';
 export * from './fl-cookie.service';
 export * from './fl-file.service';
 export * from './fl-http-interceptor.service';
