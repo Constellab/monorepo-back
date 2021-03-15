@@ -34,3 +34,9 @@ export class FlKeyboardHelper {
     return event.key === key && event.altKey;
   }
 }
+
+export enum FlMouseButton {
+  LEFT = 0,
+  MIDDLE = 1,
+  RIGHT = 2
+}

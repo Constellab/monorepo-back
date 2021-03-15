@@ -29,11 +29,11 @@ export class FlSpreadsheet {
   }
 
   private selectSheet(id: number): void {
-    const sheet: FlSheet = this.findSheet(id);
+    const sheet: FlSheet = this.getSheet(id);
     this.currentSheet$.next(sheet);
   }
 
-  private findSheet(id: number): FlSheet {
+  public getSheet(id: number): FlSheet {
     return this.sheets.find(sheet => sheet.id === id);
   }
 }

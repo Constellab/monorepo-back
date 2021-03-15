@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlCellCoord} from '../model/fl-sheet-selection.class';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
-import {FlCell} from '../model/fl-cell.class';
 import {FlClipboardService} from '../../../service/fl-clipboard.service';
+import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 
 /**
  * Unique state shared across the spreadsheet to handle clipboard
@@ -18,7 +18,8 @@ export class FlSpreadsheetClipboardState {
 
   constructor(private state: FlSpreadsheetState,
               private selectionState: FlSpreadsheetSelectionState,
-              private clipboard: FlClipboardService) {
+              private clipboard: FlClipboardService,
+              private actionState: FlSpreadsheetActions) {
   }
 
   /**
@@ -28,7 +29,8 @@ export class FlSpreadsheetClipboardState {
     const selection = this.selectionState.currentSelection;
 
     if (selection) {
-      const cellsValues: string[][] = selection.getSelectedCells().map(rows => rows.map(cell => cell.value.toString()));
+      const cellsValues: string[][] = selection.getSelectedCellsValues().map(rows =>
+        rows.map(value => value?.toString() ?? null));
 
       this.clipboard.copy(this.convertCellsValuesToText(cellsValues));
     }
@@ -50,18 +52,18 @@ export class FlSpreadsheetClipboardState {
     }
 
     const cellsValues: string[][] = this.convertTextToCellsValues(clipText);
-    const startCoord: FlCellCoord = selection.getFirstSelectedCellCoord();
 
-    for (let i = startCoord.row; i < (startCoord.row + cellsValues.length); i++) {
-      const copyCellRow: number = i - startCoord.row;
-      for (let j = startCoord.column; j < (startCoord.column + cellsValues[copyCellRow].length); j++) {
-        const copyCellColumn: number = j - startCoord.column;
-        const cell: FlCell = this.state.currentSheet.getCell(i, j);
-        if (cell != null) {
-          cell.value = cellsValues[copyCellRow][copyCellColumn];
-        }
-      }
-    }
+    const from: FlCellCoord = selection.from;
+
+    const maxValuesRowLength: number = cellsValues.reduce((m, x) => m.length > x.length ? m : x, []).length;
+    const to: FlCellCoord = {
+      row: from.row + cellsValues.length,
+      column: from.column + maxValuesRowLength
+    };
+
+    this.selectionState.selectMultipleCell(selection.from, to, true);
+
+    this.actionState.updateCellsValues(cellsValues, selection);
   }
 
   private convertCellsValuesToText(cells: string[][]): string {

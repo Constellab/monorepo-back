@@ -52,10 +52,6 @@ export abstract class FlCell {
     }
   }
 
-  public setValueAndCloseEdit(value: any): void {
-    this.value = value;
-    this.setEdit(false);
-  }
 
   get edit$(): Observable<FlCellEditChange> {
     return this._edit$.asObservable();

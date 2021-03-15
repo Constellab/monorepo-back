@@ -1,12 +1,12 @@
 /**
  * Config object for the Context menu of a spread sheet
  */
-import {FlSheetSelection, FlSheetSelectionRange} from '../model/fl-sheet-selection.class';
 import {Injectable} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
 import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
 import {FlSpreadsheetContextMenuComponent} from '../component/fl-spreadsheet-context-menu/fl-spreadsheet-context-menu.component';
+import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 
 export interface FlContextMenuConfig {
   buttons: FlContextMenuButton[];
@@ -29,7 +29,8 @@ export interface FlContextMenuButton {
 export class FlSpreadsheetContextMenu {
 
   constructor(private selectionState: FlSpreadsheetSelectionState,
-              private portalService: FlPortalService) {
+              private portalService: FlPortalService,
+              private action: FlSpreadsheetActions) {
   }
 
   public openHeaderColumnContextMenu(mouseEvent: MouseEvent): void {
@@ -57,8 +58,6 @@ export class FlSpreadsheetContextMenu {
    * Get config for the header column based on a selection
    */
   public getConfigForHeaderColumn(): FlContextMenuConfig {
-    const selection: FlSheetSelection = this.selectionState.currentSelection;
-    const range: FlSheetSelectionRange = selection.selectionRange();
 
     return {
       buttons: [
@@ -66,21 +65,13 @@ export class FlSpreadsheetContextMenu {
         {
           text: 'add',
           icon: 'add',
-          onClick: () => {
-            selection.sheet.insertColumn(range.from.column);
-            // clear selection after to avoid weird selection
-            this.selectionState.clearCurrentSelection();
-          }
+          onClick: () => this.action.addColumn()
         },
         // button to delete columns
         {
           text: 'delete',
           icon: 'delete',
-          onClick: () => {
-            selection.sheet.deleteColumns(range.from.column, range.to.column);
-            // clear selection after to avoid weird selection
-            this.selectionState.clearCurrentSelection();
-          }
+          onClick: () => this.action.deleteColumns()
         }
       ]
     };
@@ -90,29 +81,19 @@ export class FlSpreadsheetContextMenu {
    * Get config for the header row based on a selection
    */
   public getConfigForHeaderRow(): FlContextMenuConfig {
-    const selection: FlSheetSelection = this.selectionState.currentSelection;
-    const range: FlSheetSelectionRange = selection.selectionRange();
     return {
       buttons: [
         // button to create a row
         {
           text: 'add',
           icon: 'add',
-          onClick: () => {
-            selection.sheet.insertRow(range.from.row);
-            // clear selection after to avoid weird selection
-            this.selectionState.clearCurrentSelection();
-          }
+          onClick: () => this.action.addRow()
         },
         // button to delete rows
         {
           text: 'delete',
           icon: 'delete',
-          onClick: () => {
-            selection.sheet.deleteRows(range.from.row, range.to.row);
-            // clear selection after to avoid weird selection
-            this.selectionState.clearCurrentSelection();
-          }
+          onClick: () => this.action.deleteRows()
         }
       ]
     };

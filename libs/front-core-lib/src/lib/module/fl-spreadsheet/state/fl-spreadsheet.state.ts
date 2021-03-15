@@ -16,4 +16,8 @@ export class FlSpreadsheetState {
   public get currentSheet(): FlSheet {
     return this.spreadsheet.currentSheet;
   }
+
+  public getSheet(id: number): FlSheet {
+    return this.spreadsheet.getSheet(id);
+  }
 }

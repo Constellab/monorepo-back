@@ -14,6 +14,8 @@ export * from './pipe/fl-cell-header.pipe';
 
 // Export the state
 export * from './state/fl-spreadsheet.state';
+export * from './state/fl-spreadsheet-action.store';
+export * from './state/fl-spreadsheet-actions.state';
 export * from './state/fl-spreadsheet-clipboard.state';
 export * from './state/fl-spreadsheet-context-menu.state';
 export * from './state/fl-spreadsheet-keyboard-manager.state';
@@ -22,7 +24,11 @@ export * from './state/fl-spreadsheet-selection.state';
 
 // Export the models
 export * from './model/fl-cell.class';
-export * from './state/fl-spreadsheet-context-menu.state';
 export * from './model/fl-sheet.class';
 export * from './model/fl-sheet-selection.class';
 export * from './model/fl-spreadsheet.class';
+
+// Export the actions
+export * from './model/action/fl-header-cell.action';
+export * from './model/action/fl-sheet.action';
+export * from './model/action/fl-update-cell.action';

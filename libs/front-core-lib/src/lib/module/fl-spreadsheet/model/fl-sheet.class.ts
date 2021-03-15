@@ -26,17 +26,31 @@ export class FlSheet {
   }
 
   ////////////////////////////// COLUMN ///////////////////////////////
+  public insertMultipleColumns(from: number, to: number): void {
+    for (let i = from; i <= to; i++) {
+      this.createColumn(i);
+    }
+    this.emitCellChange();
+  }
+
+
   public insertColumn(position?: number): void {
     if (position == null || position > this.columnsCount) {
       position = this.columnsCount;
     }
 
+    this.createColumn(position);
+
+    this.emitCellChange();
+  }
+
+  // create an empty column without emitting
+  private createColumn(position: number): void {
     // add cell for each row
     for (let i = 0; i < this.rowsCount; i++) {
       this.insertCell(i, position);
     }
     this.columnsCount++;
-    this.emitCellChange();
   }
 
   // delete columns in the interval inclusive
@@ -61,11 +75,25 @@ export class FlSheet {
 
 
   ////////////////////////////// ROW ///////////////////////////////
+  public insertMultipleRows(from: number, to: number): void {
+    for (let i = from; i <= to; i++) {
+      this.createRow(i);
+    }
+    this.emitCellChange();
+  }
+
+
   public insertRow(position?: number): void {
     if (position == null || position > this.rowsCount) {
       position = this.rowsCount;
     }
 
+    this.createRow(position);
+    this.emitCellChange();
+  }
+
+  // create an empty column without emitting
+  private createRow(position: number): void {
     // create the row
     this.cells.splice(position, 0, []);
 
@@ -74,7 +102,6 @@ export class FlSheet {
       this.insertCell(position, i);
     }
     this.rowsCount++;
-    this.emitCellChange();
   }
 
   // delete rows in the interval inclusive
@@ -157,6 +184,21 @@ export class FlSheet {
     }
 
     return cells;
+  }
+
+  public setValuesFromRange(values: any[][], range: FlSheetSelectionRange): void {
+    const cells: FlCell[][] = this.getCellsFromRange(range);
+
+    for (let i = 0; i < values.length; i++) {
+      const row: FlCell[] = cells[i];
+      // loop through all the columns of row
+      for (let j = 0; j < row.length; j++) {
+        const cell: FlCell = cells[i][j];
+        if (cell != null) {
+          cell.value = values[i][j];
+        }
+      }
+    }
   }
 
 

@@ -1,11 +1,5 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {
-  FlCellCoord,
-  FlCellWithCoord,
-  FlSheetSelection,
-  FlSheetSelectionFull,
-  FlSheetSelectionRange
-} from '../model/fl-sheet-selection.class';
+import {FlCellCoord, FlSheetSelection, FlSheetSelectionFull, FlSheetSelectionRange} from '../model/fl-sheet-selection.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {FlSheet} from '../model/fl-sheet.class';
@@ -42,29 +36,44 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     return this.currentSelection$.value;
   }
 
-
-  public selectUniqueCell(cell: FlCellWithCoord): void {
-    this.startSelection();
-    this.unselectCurrentSelection();
-    const selection: FlSheetSelectionFull = FlSheetSelectionFull.Single(this.currentSheet, cell.coord.row, cell.coord.column);
-    cell.cell.select(selection.selectionRange());
-    this.currentSelection$.next(selection);
+  public selectUniqueCell(coord: FlCellCoord, endSelection: boolean = false): void {
+    const selection: FlSheetSelectionFull = FlSheetSelectionFull.Single(this.currentSheet, coord.row, coord.column);
+    this.newSelection(selection, endSelection);
   }
 
-  public selectUniqueRow(rowIndex: number): void {
-    this.startSelection();
-    this.unselectCurrentSelection();
+  public selectMultipleCell(from: FlCellCoord, to: FlCellCoord, endSelection: boolean = false): void {
+    const selection: FlSheetSelectionFull = FlSheetSelectionFull.Multiple(this.currentSheet,
+      from.row, from.column, to.row, to.column);
+    this.newSelection(selection, endSelection);
+  }
+
+  public selectUniqueRow(rowIndex: number, endSelection: boolean = false): void {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.Rows(this.currentSheet, rowIndex, rowIndex);
-    this.selectCellsFromSelection(selection);
-    this.currentSelection$.next(selection);
+    this.newSelection(selection, endSelection);
   }
 
-  public selectUniqueColumn(columnIndex: number): void {
-    this.startSelection();
-    this.unselectCurrentSelection();
+  public selectUniqueColumn(columnIndex: number, endSelection: boolean = false): void {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.Columns(this.currentSheet, columnIndex, columnIndex);
+    this.newSelection(selection, endSelection);
+  }
+
+  public setSelection(sheet: FlSheet, range: FlSheetSelectionRange): void {
+    const selection: FlSheetSelectionFull = FlSheetSelectionFull.FromRange(sheet, range);
+    this.newSelection(selection, true);
+  }
+
+  private newSelection(selection: FlSheetSelectionFull, endSelection: boolean = false): void {
+    if (!endSelection) {
+      this.startSelection();
+    }
+
+    this.unselectCurrentSelection();
     this.selectCellsFromSelection(selection);
     this.currentSelection$.next(selection);
+
+    if (endSelection) {
+      this.endSelection();
+    }
   }
 
   public clearCurrentSelection(): void {
@@ -80,11 +89,10 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   }
 
   private selectCellsFromSelection(selection: FlSheetSelection): void {
-    const range: FlSheetSelectionRange = selection.selectionRange();
     const cells: FlCell[] = selection.getSelectedCellsFlat();
 
     for (const cell of cells) {
-      cell.select(range);
+      cell.select(selection);
     }
   }
 
@@ -120,7 +128,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
 
     const endCoord: FlCellCoord = currentSelectionFull.getEndCoord();
     // if the end selection didn't change
-    if(endCoord.row === coord.row && endCoord.column === coord.column){
+    if (endCoord.row === coord.row && endCoord.column === coord.column) {
       return;
     }
 

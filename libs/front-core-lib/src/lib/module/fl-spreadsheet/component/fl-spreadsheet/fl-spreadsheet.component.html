@@ -3,7 +3,7 @@
   <table class="table">
     <thead>
     <tr>
-      <fl-spreadsheet-header-cell class="column-header" *ngFor="let column of headerColumns | async; let index = index"
+      <fl-spreadsheet-header-cell class="column-header" *ngFor="let column of headerColumns; let index = index"
                                   [index]="index - 1" type="column"></fl-spreadsheet-header-cell>
     </tr>
     </thead>
@@ -11,7 +11,7 @@
     <tbody>
 
     <!--    <cdk-virtual-scroll-viewport itemSize="24" class="body-group">-->
-    <tr *cdkVirtualFor="let rows of cells | async; let rowIndex = index">
+    <tr *cdkVirtualFor="let rows of cells; let rowIndex = index">
 
       <!--  Row header cells  -->
       <fl-spreadsheet-header-cell class="row-header" [index]="rowIndex" type="row"></fl-spreadsheet-header-cell>

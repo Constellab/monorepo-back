@@ -15,6 +15,7 @@ import {columnIdAttributeName, FlCell, FlCellEditChange, FlCellSelectionChange, 
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {FlCellCoord, FlCellWithCoord, FlSheetSelectionRange} from '../../model/fl-sheet-selection.class';
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
+import {FlSpreadsheetActions} from '../../state/fl-spreadsheet-actions.state';
 
 @Component({
   selector: 'fl-spreadsheet-cell',
@@ -51,7 +52,9 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
 
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef<HTMLElement>,
-              private state: FlSpreadsheetSelectionState, private cdr: ChangeDetectorRef) {
+              private state: FlSpreadsheetSelectionState,
+              private actionState: FlSpreadsheetActions,
+              private cdr: ChangeDetectorRef) {
     this.id = FlSpreadsheetCellComponent.id++;
   }
 
@@ -67,16 +70,35 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
     }
   }
 
+  /////////////////////////////// VALUE ///////////////////////////////
+
   private subscribeToValue(): void {
     this.subscription.add(this.cell.value$.subscribe(
       value => this.onNewValue(value)
     ));
   }
 
-  private onNewValue(value: any): void{
+  private onNewValue(value: any): void {
     this.cellValue = value;
     // use detect change because this code is run outside angular zone
     this.cdr.detectChanges();
+  }
+
+
+/////////////////////////////// SELECTION ///////////////////////////////
+
+  private subscribeToSelection(): void {
+    this.subscription.add(this.cell.getSelected$().subscribe(
+      selected => this.onSelectionChange(selected)
+    ));
+  }
+
+  private onSelectionChange(selected: FlCellSelectionChange): void {
+    if (selected === false) {
+      this.unSelectCell();
+    } else {
+      this.selectCell(selected);
+    }
   }
 
   private selectCell(range: FlSheetSelectionRange): void {
@@ -102,24 +124,12 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
       // clear border classes
       this.removeClasses(this.selectedBorderClasses);
       this.selectedBorderClasses = [];
-      this.cdr.markForCheck();
+      this.cdr.detectChanges();
     }
   }
 
 
-  private subscribeToSelection(): void {
-    this.subscription.add(this.cell.getSelected$().subscribe(
-      selected => this.onSelectionChange(selected)
-    ));
-  }
-
-  private onSelectionChange(selected: FlCellSelectionChange): void {
-    if (selected === false) {
-      this.unSelectCell();
-    } else {
-      this.selectCell(selected);
-    }
-  }
+  /////////////////////////////// EDIT ///////////////////////////////
 
   private subscribeToEdit(): void {
     this.subscription.add(this.cell.edit$.subscribe(
@@ -165,7 +175,8 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
 
   // save the input value to the cell and close edit mode
   saveValueAndDisableEdit(): void {
-    this.cell.setValueAndCloseEdit(this.inputValue);
+    this.actionState.updateCellValue(this.inputValue, this.coord);
+    this.cell.setEdit(false);
   }
 
   private focusInput(): void {

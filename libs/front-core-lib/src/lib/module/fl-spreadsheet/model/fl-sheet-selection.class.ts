@@ -1,64 +1,35 @@
 import {FlCell, FlSheet} from '@monorepo/front-core-lib';
 
-export type FlSheetSelectionFullype = 'single' | 'multiple' | 'columns' | 'rows';
+export type FlSheetSelectionType = 'single' | 'multiple' | 'columns' | 'rows';
 
 
-export type FlSheetSelectionDirection = 'normal' | 'reverse';
-
-/**
- * Class containing the selection of a spreadsheet with only read method
- * This object is immutable
- */
-export abstract class FlSheetSelection {
+export class FlSheetSelectionRange {
 
   protected constructor(
-    public sheet: FlSheet,
-    public type: FlSheetSelectionFullype,
-    protected startRow: number,
-    protected startColumn: number,
-    protected endRow: number,
-    protected endColumn: number) {
+    public type: FlSheetSelectionType,
+    public startRow: number,
+    public startColumn: number,
+    public endRow: number,
+    public endColumn: number) {
   }
 
+
   /**
-   * Return the selection range in order ('from' <= 'to)
+   * Object representing a selection range
+   * The 'from' coord are lower or equals than the 'to' coord
    */
-  public selectionRange(): FlSheetSelectionRange {
+  public get from(): FlCellCoord {
     return {
-      from: {
-        row: Math.min(this.startRow, this.endRow),
-        column: Math.min(this.startColumn, this.endColumn)
-      },
-      to: {
-        row: Math.max(this.startRow, this.endRow),
-        column: Math.max(this.startColumn, this.endColumn)
-      }
+      row: Math.min(this.startRow, this.endRow),
+      column: Math.min(this.startColumn, this.endColumn)
     };
   }
 
-  private get rowDirection(): FlSheetSelectionDirection {
-    return this.startRow <= this.endRow ? 'normal' : 'reverse';
-  }
-
-  private get columnDirection(): FlSheetSelectionDirection {
-    return this.startColumn <= this.endColumn ? 'normal' : 'reverse';
-  }
-
-  public getSelectedCellsFlat(): FlCell[] {
-    return this.sheet.getCellsFromRangeFlat(this.selectionRange());
-  }
-
-  public getSelectedCells(): FlCell[][] {
-    return this.sheet.getCellsFromRange(this.selectionRange());
-  }
-
-  /**
-   * return the first column where the selection started
-   * If this is a row or a column selection, we return the first column
-   */
-  public getFirstSelectedCell(): FlCell {
-    const coord: FlCellCoord = this.getFirstSelectedCellCoord();
-    return this.sheet.getCell(coord.row, coord.column);
+  public get to(): FlCellCoord {
+    return {
+      row: Math.max(this.startRow, this.endRow),
+      column: Math.max(this.startColumn, this.endColumn)
+    };
   }
 
   public getFirstSelectedCellCoord(): FlCellCoord {
@@ -78,6 +49,51 @@ export abstract class FlSheetSelection {
         column: this.startColumn
       };
     }
+  }
+
+}
+
+/**
+ * Class containing the selection of a spreadsheet with only read method
+ * This object is immutable
+ */
+export class FlSheetSelection extends FlSheetSelectionRange {
+
+  protected constructor(
+    public sheet: FlSheet,
+    type: FlSheetSelectionType,
+    startRow: number,
+    startColumn: number,
+    endRow: number,
+    endColumn: number) {
+    super(type, startRow, startColumn, endRow, endColumn);
+  }
+
+
+  public getSelectedCellsFlat(): FlCell[] {
+    return this.sheet.getCellsFromRangeFlat(this);
+  }
+
+  public getSelectedCells(): FlCell[][] {
+    return this.sheet.getCellsFromRange(this);
+  }
+
+  public getSelectedCellsValues(): any[][] {
+    return this.getSelectedCells().map(rows => rows.map(cell => cell.value));
+  }
+
+  /**
+   * return the first column where the selection started
+   * If this is a row or a column selection, we return the first column
+   */
+  public getFirstSelectedCell(): FlCell {
+    const coord: FlCellCoord = this.getFirstSelectedCellCoord();
+    return this.sheet.getCell(coord.row, coord.column);
+  }
+
+
+  public exportToRange(): FlSheetSelectionRange {
+    return new FlSheetSelectionRange(this.type, this.startRow, this.startColumn, this.endRow, this.endColumn);
   }
 
 
@@ -102,13 +118,13 @@ export abstract class FlSheetSelection {
  * This object is immutable
  */
 export class FlSheetSelectionFull extends FlSheetSelection {
-  protected constructor(
+  constructor(
     public sheet: FlSheet,
-    public type: FlSheetSelectionFullype,
-    protected startRow: number,
-    protected startColumn: number,
-    protected endRow: number,
-    protected endColumn: number) {
+    type: FlSheetSelectionType,
+    startRow: number,
+    startColumn: number,
+    endRow: number,
+    endColumn: number) {
     super(sheet, type, startRow, startColumn, endRow, endColumn);
   }
 
@@ -129,6 +145,12 @@ export class FlSheetSelectionFull extends FlSheetSelection {
   public static Rows(sheet: FlSheet, from: number, to: number): FlSheetSelectionFull {
     return new FlSheetSelectionFull(sheet, 'rows', from, 0, to, sheet.getColumnsCount() - 1);
   }
+
+  public static FromRange(sheet: FlSheet, range: FlSheetSelectionRange): FlSheetSelectionFull {
+    return new FlSheetSelectionFull(sheet, range.type, range.startRow, range.startColumn,
+      range.endRow, range.endColumn);
+  }
+
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
   public expandSelection(row: number, column: number): FlSheetSelectionFull {
@@ -153,15 +175,6 @@ export class FlSheetSelectionFull extends FlSheetSelection {
   }
 }
 
-
-/**
- * Object representing a selection range
- * The 'from' coord are lower or equals than the 'to' coord
- */
-export interface FlSheetSelectionRange {
-  from: FlCellCoord;
-  to: FlCellCoord;
-}
 
 export interface FlCellCoord {
   row: number;

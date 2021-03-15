@@ -4,6 +4,7 @@ import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {columnIdAttributeName, FlCell, headerIndexAttributeName, headerTypeAttributeName, rowIdAttributeName} from '../model/fl-cell.class';
 import {FlCellCoord, FlHeaderCellType} from '../model/fl-sheet-selection.class';
 import {FlSpreadsheetContextMenu} from './fl-spreadsheet-context-menu.state';
+import {FlMouseButton} from '../../../utils/fl-keyboard.helper';
 
 type MouseEventCell = Cell | HeaderCell;
 
@@ -60,7 +61,13 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
       (event: MouseEvent) => this.onContextMenu(event));
   }
 
+
   private onMouseDown(event: MouseEvent): void {
+    // on listen to left click
+    if(event.button !== FlMouseButton.LEFT){
+      return;
+    }
+
     const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
 
     if (cellEvent == null) {
@@ -68,7 +75,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     }
 
     if (cellEvent.type === 'cell') {
-      this.selectionState.selectUniqueCell(cellEvent);
+      this.selectionState.selectUniqueCell(cellEvent.coord);
     } else {
       if (cellEvent.headerType === 'row') {
         this.selectionState.selectUniqueRow(cellEvent.index);
