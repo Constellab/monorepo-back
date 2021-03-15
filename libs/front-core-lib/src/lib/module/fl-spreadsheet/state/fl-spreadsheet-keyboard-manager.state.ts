@@ -25,7 +25,7 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
     // run event listener outside angular zone to prevent automatic change detection
     this.ngZone.runOutsideAngular(() => {
       this.keyboardListener = this.renderer.listen('body', 'keydown',
-      (event: KeyboardEvent) => this.onKeydown(event));
+        (event: KeyboardEvent) => this.onKeydown(event));
     });
   }
 

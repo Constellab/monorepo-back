@@ -1,6 +1,6 @@
 <div class="container" tabindex="-1">
   <div class="view-content g-text-not-selectable" *ngIf="!edit; else editMode">
-    {{cellValue$ | async}}
+    {{cellValue}}
   </div>
 
   <ng-template #editMode>

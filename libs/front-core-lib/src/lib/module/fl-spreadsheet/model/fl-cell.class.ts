@@ -118,3 +118,6 @@ export class FlRowHeaderCell extends FlCell {
 
 export const rowIdAttributeName: string = 'row-id';
 export const columnIdAttributeName: string = 'column-id';
+
+export const headerIndexAttributeName: string = 'header-index';
+export const headerTypeAttributeName: string = 'header-type';

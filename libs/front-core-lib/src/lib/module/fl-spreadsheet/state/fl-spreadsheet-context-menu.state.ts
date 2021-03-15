@@ -4,6 +4,9 @@
 import {FlSheetSelection, FlSheetSelectionRange} from '../model/fl-sheet-selection.class';
 import {Injectable} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
+import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
+import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
+import {FlSpreadsheetContextMenuComponent} from '../component/fl-spreadsheet-context-menu/fl-spreadsheet-context-menu.component';
 
 export interface FlContextMenuConfig {
   buttons: FlContextMenuButton[];
@@ -25,7 +28,29 @@ export interface FlContextMenuButton {
 @Injectable()
 export class FlSpreadsheetContextMenu {
 
-  constructor(private selectionState: FlSpreadsheetSelectionState) {
+  constructor(private selectionState: FlSpreadsheetSelectionState,
+              private portalService: FlPortalService) {
+  }
+
+  public openHeaderColumnContextMenu(mouseEvent: MouseEvent): void {
+    const portalConfig: FlPortalConfig = this.getHeaderContextMenuPortalConfig(mouseEvent);
+    this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
+      this.getConfigForHeaderColumn());
+  }
+
+  public openHeaderRowContextMenu(mouseEvent: MouseEvent): void {
+    const portalConfig: FlPortalConfig = this.getHeaderContextMenuPortalConfig(mouseEvent);
+    this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
+      this.getConfigForHeaderRow());
+  }
+
+  private getHeaderContextMenuPortalConfig(mouseEvent: MouseEvent): FlPortalConfig {
+    return this.portalService.configureAbsolutePortalFromMouseEvent(mouseEvent, {
+      panelClass: 'g-portal-background',
+      elevation: true,
+      disposeOnNavigation: true,
+      disposeOnOutsideClick: true,
+    });
   }
 
   /**

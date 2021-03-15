@@ -154,3 +154,5 @@ export interface FlCellWithCoord {
   coord: FlCellCoord;
   cell: FlCell;
 }
+
+export type FlHeaderCellType = 'row' | 'column';

@@ -1,9 +1,23 @@
 import {ElementRef, Injectable, NgZone, OnDestroy, Renderer2} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
-import {columnIdAttributeName, rowIdAttributeName} from '../model/fl-cell.class';
-import {FlCellWithCoord} from '../model/fl-sheet-selection.class';
+import {columnIdAttributeName, FlCell, headerIndexAttributeName, headerTypeAttributeName, rowIdAttributeName} from '../model/fl-cell.class';
+import {FlCellCoord, FlHeaderCellType} from '../model/fl-sheet-selection.class';
+import {FlSpreadsheetContextMenu} from './fl-spreadsheet-context-menu.state';
 
+type MouseEventCell = Cell | HeaderCell;
+
+interface Cell {
+  type: 'cell';
+  coord: FlCellCoord;
+  cell: FlCell;
+}
+
+interface HeaderCell {
+  type: 'header';
+  headerType: FlHeaderCellType;
+  index: number;
+}
 
 /**
  * Unique state shared across the spreadsheet to handle spreadsheet mouse events
@@ -15,9 +29,11 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
   private mouseMoveListener: () => void;
   private mouseUpListener: () => void;
   private dblClickListener: () => void;
+  private contextMenuListener: () => void;
 
   constructor(private state: FlSpreadsheetState,
               private selectionState: FlSpreadsheetSelectionState,
+              private contextMenuState: FlSpreadsheetContextMenu,
               private renderer: Renderer2, private elementRef: ElementRef,
               private ngZone: NgZone) {
   }
@@ -39,31 +55,60 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
       this.dblClickListener = this.renderer.listen(this.elementRef.nativeElement, 'dblclick',
         (event: MouseEvent) => this.onMouseDblClick(event));
     });
+
+    this.contextMenuListener = this.renderer.listen(this.elementRef.nativeElement, 'contextmenu',
+      (event: MouseEvent) => this.onContextMenu(event));
   }
 
   private onMouseDown(event: MouseEvent): void {
-    const cell: FlCellWithCoord = this.getCellFromMouseEventTarget(event);
+    const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
 
-    if (cell != null) {
-      this.selectionState.selectUniqueCell(cell);
-
-      this.clearMouseMoveListener();
-      this.mouseMoveListener = this.renderer.listen(this.elementRef.nativeElement, 'mousemove',
-        (event: MouseEvent) => this.onMouseMove(event));
+    if (cellEvent == null) {
+      return;
     }
+
+    if (cellEvent.type === 'cell') {
+      this.selectionState.selectUniqueCell(cellEvent);
+    } else {
+      if (cellEvent.headerType === 'row') {
+        this.selectionState.selectUniqueRow(cellEvent.index);
+      } else {
+        this.selectionState.selectUniqueColumn(cellEvent.index);
+      }
+    }
+
+    this.clearMouseMoveListener();
+    this.mouseMoveListener = this.renderer.listen(this.elementRef.nativeElement, 'mousemove',
+      (event: MouseEvent) => this.onMouseMove(event));
   }
 
   private onMouseMove(event: MouseEvent): void {
-    const cell: FlCellWithCoord = this.getCellFromMouseEventTarget(event);
-    if (cell) {
-      this.selectionState.expandSelection(cell.coord);
+    const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
+
+    if (cellEvent == null) {
+      return;
+    }
+
+    if (cellEvent.type === 'cell') {
+      this.selectionState.expandSelection(cellEvent.coord);
+    } else {
+      if (cellEvent.headerType === 'row') {
+        this.selectionState.expandRowsSelection(cellEvent.index);
+      } else {
+        this.selectionState.expandColumnsSelection(cellEvent.index);
+      }
     }
   }
 
   private onMouseDblClick(event: MouseEvent): void {
-    const cell: FlCellWithCoord = this.getCellFromMouseEventTarget(event);
-    if (cell) {
-      cell.cell.setEdit(true);
+    const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
+
+    if (cellEvent == null) {
+      return;
+    }
+
+    if (cellEvent.type === 'cell') {
+      cellEvent.cell.setEdit(true);
     }
   }
 
@@ -72,35 +117,67 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     this.clearMouseMoveListener();
   }
 
+  private onContextMenu(event: MouseEvent): void {
+    const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
 
-  private getCellFromMouseEventTarget(event: MouseEvent): FlCellWithCoord | null {
+    if (cellEvent == null) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (cellEvent.type === 'header') {
+      if (cellEvent.headerType === 'row') {
+        this.contextMenuState.openHeaderColumnContextMenu(event);
+      } else {
+        this.contextMenuState.openHeaderRowContextMenu(event);
+      }
+    }
+  }
+
+
+  private getCellFromMouseEventTarget(event: MouseEvent): MouseEventCell | null {
     const targets: Element[] = event.composedPath() as any;
 
-    let element: Element;
     for (const target of targets) {
       if (target.tagName === 'TABLE') {
         break;
       }
 
       if (target.tagName === 'FL-SPREADSHEET-CELL') {
-        element = target;
-        break;
+        return this.getCellFromTarget(target);
+      } else if (target.tagName === 'FL-SPREADSHEET-HEADER-CELL') {
+        return this.getHeaderCellFromTarget(target);
       }
     }
-    if (element == null) {
-      return null;
-    }
 
+    return null;
+  }
 
+  // returns cell based on a target element : FL-SPREADSHEET-CELL
+  private getCellFromTarget(element: Element): Cell {
     const row: number = parseInt(element.getAttribute(rowIdAttributeName));
     const column: number = parseInt(element.getAttribute(columnIdAttributeName));
 
     return {
+      type: 'cell',
       cell: this.state.currentSheet.getCell(row, column),
       coord: {
         row: row,
         column: column
       }
+    };
+  }
+
+  // returns header cell info based on a target element : FL-SPREADSHEET-HEADER-CELL
+  private getHeaderCellFromTarget(element: Element): HeaderCell {
+    const index: number = parseInt(element.getAttribute(headerIndexAttributeName));
+    const type: FlHeaderCellType = element.getAttribute(headerTypeAttributeName) as FlHeaderCellType;
+
+    return {
+      type: 'header',
+      headerType: type,
+      index: index
     };
   }
 
@@ -116,6 +193,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     this.mouseDownListener();
     this.mouseMoveListener();
     this.dblClickListener();
+    this.contextMenuListener();
     this.clearMouseMoveListener();
   }
 

@@ -6,7 +6,6 @@ import {
   ElementRef,
   HostBinding,
   Input,
-  NgZone,
   OnDestroy,
   OnInit,
   Renderer2,
@@ -14,7 +13,6 @@ import {
 } from '@angular/core';
 import {columnIdAttributeName, FlCell, FlCellEditChange, FlCellSelectionChange, rowIdAttributeName} from '../../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
-import {Observable} from 'rxjs';
 import {FlCellCoord, FlCellWithCoord, FlSheetSelectionRange} from '../../model/fl-sheet-selection.class';
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
 
@@ -40,7 +38,7 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
 
   @ViewChild('input') input: ElementRef<HTMLElement>;
 
-  cellValue$: Observable<any>;
+  cellValue: any;
   inputValue: any;
 
   selected: boolean = false;
@@ -53,13 +51,12 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
 
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef<HTMLElement>,
-              private state: FlSpreadsheetSelectionState, private cdr: ChangeDetectorRef,
-              private ngZone: NgZone) {
+              private state: FlSpreadsheetSelectionState, private cdr: ChangeDetectorRef) {
     this.id = FlSpreadsheetCellComponent.id++;
   }
 
   ngOnInit(): void {
-    this.cellValue$ = this.cell.value$;
+    this.subscribeToValue();
     this.subscribeToEdit();
     this.subscribeToSelection();
   }
@@ -68,6 +65,18 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
     if (this.id === 0) {
       console.log('Check');
     }
+  }
+
+  private subscribeToValue(): void {
+    this.subscription.add(this.cell.value$.subscribe(
+      value => this.onNewValue(value)
+    ));
+  }
+
+  private onNewValue(value: any): void{
+    this.cellValue = value;
+    // use detect change because this code is run outside angular zone
+    this.cdr.detectChanges();
   }
 
   private selectCell(range: FlSheetSelectionRange): void {
@@ -124,7 +133,7 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
     } else {
       this.disableEditMode();
     }
-    // use detect range because this code is run outside angular zone
+    // use detect change because this code is run outside angular zone
     this.cdr.detectChanges();
   }
 
