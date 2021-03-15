@@ -126,6 +126,13 @@ export class FlSheetSelectionFull extends FlSheetSelection {
   public expandColumnsSelection(column: number): FlSheetSelectionFull {
     return FlSheetSelectionFull.Columns(this.sheet, this.startColumn, column);
   }
+
+  public getEndCoord(): FlCellCoord {
+    return {
+      row: this.endRow,
+      column: this.endColumn
+    };
+  }
 }
 
 

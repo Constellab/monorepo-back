@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FlSpreadsheet} from '../../model/fl-spreadsheet.class';
 import {FlCell} from '../../model/fl-cell.class';
 import {Observable} from 'rxjs';
@@ -34,19 +34,17 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
   constructor(private state: FlSpreadsheetState,
               private selectionState: FlSpreadsheetSelectionState,
               private keyboardState: FlSpreadsheetKeyboardManagerState,
-              private renderer: Renderer2) {
+              private mouseState: FlSpreadsheetMouseManagerState) {
   }
 
   ngOnInit(): void {
 
     this.state.init(this.spreadsheet);
     this.keyboardState.init();
+    this.mouseState.init();
     this.headerColumns = this.spreadsheet.currentSheet.getColumnHeaderCells();
     //create a new instance of the cells array for the virtual scroll
     this.cells = this.spreadsheet.currentSheet.getCells().pipe(map(cells => [...cells]));
-
-    // listen to mouseup event to clear current selection
-    this.mouseUpListener = this.renderer.listen('window', 'mouseup', () => this.selectionState.endSelection());
   }
 
 

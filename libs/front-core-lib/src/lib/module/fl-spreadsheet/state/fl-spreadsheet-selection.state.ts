@@ -110,12 +110,21 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   }
 
   public expandSelection(coord: FlCellCoord): void {
-    if (!this._isSelecting || this.currentSelectionFull == null ||
-      (this.currentSelectionFull.type !== 'single' && this.currentSelectionFull.type !== 'multiple')) {
+    const currentSelectionFull: FlSheetSelectionFull = this.currentSelectionFull;
+
+    // check if the current selection is valid to expand
+    if (!this._isSelecting || currentSelectionFull == null ||
+      (currentSelectionFull.type !== 'single' && currentSelectionFull.type !== 'multiple')) {
       return;
     }
 
-    const newSelection: FlSheetSelectionFull = this.currentSelectionFull.expandSelection(coord.row, coord.column);
+    const endCoord: FlCellCoord = currentSelectionFull.getEndCoord();
+    // if the end selection didn't change
+    if(endCoord.row === coord.row && endCoord.column === coord.column){
+      return;
+    }
+
+    const newSelection: FlSheetSelectionFull = currentSelectionFull.expandSelection(coord.row, coord.column);
     // todo use difference between selection instead of clear
     this.unselectCurrentSelection();
     this.selectCellsFromSelection(newSelection);

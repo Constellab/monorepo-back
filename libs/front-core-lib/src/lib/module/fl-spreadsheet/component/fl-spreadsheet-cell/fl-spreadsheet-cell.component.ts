@@ -2,15 +2,17 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  DoCheck,
   ElementRef,
-  HostListener,
+  HostBinding,
   Input,
+  NgZone,
   OnDestroy,
   OnInit,
   Renderer2,
   ViewChild
 } from '@angular/core';
-import {FlCell, FlCellEditChange, FlCellSelectionChange} from '../../model/fl-cell.class';
+import {columnIdAttributeName, FlCell, FlCellEditChange, FlCellSelectionChange, rowIdAttributeName} from '../../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {Observable} from 'rxjs';
 import {FlCellCoord, FlCellWithCoord, FlSheetSelectionRange} from '../../model/fl-sheet-selection.class';
@@ -22,13 +24,19 @@ import {ClSubscriptionHandler} from '@monorepo/core-lib';
   styleUrls: ['./fl-spreadsheet-cell.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
+export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
+
+  static id: number = 0;
+  id: number;
 
   @Input() cell: FlCell;
 
+  @HostBinding('attr.' + columnIdAttributeName)
   @Input() column: number;
 
+  @HostBinding('attr.' + rowIdAttributeName)
   @Input() row: number;
+
 
   @ViewChild('input') input: ElementRef<HTMLElement>;
 
@@ -45,7 +53,9 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
 
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef<HTMLElement>,
-              private state: FlSpreadsheetSelectionState, private cdr: ChangeDetectorRef) {
+              private state: FlSpreadsheetSelectionState, private cdr: ChangeDetectorRef,
+              private ngZone: NgZone) {
+    this.id = FlSpreadsheetCellComponent.id++;
   }
 
   ngOnInit(): void {
@@ -54,25 +64,10 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
     this.subscribeToSelection();
   }
 
-
-  @HostListener('mousedown', ['$event'])
-  onMouseDown(event: MouseEvent): void {
-    // left click
-    if (event.button === 0) {
-      this.state.selectUniqueCell(this.cellWithCoord);
+  ngDoCheck(): void {
+    if (this.id === 0) {
+      console.log('Check');
     }
-  }
-
-  @HostListener('mouseenter')
-  onMouseEnter(): void {
-    if (this.state.isSelecting) {
-      this.state.expandSelection(this.coord);
-    }
-  }
-
-  @HostListener('dblclick')
-  onDoubleClick(): void {
-    this.cell.setEdit(true);
   }
 
   private selectCell(range: FlSheetSelectionRange): void {
@@ -129,6 +124,8 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
     } else {
       this.disableEditMode();
     }
+    // use detect range because this code is run outside angular zone
+    this.cdr.detectChanges();
   }
 
   private enableEditMode(value?: string): void {
@@ -146,13 +143,11 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.focusInput();
       });
-      this.cdr.markForCheck();
     }
   }
 
   private disableEditMode(): void {
     this.edit = false;
-    this.cdr.markForCheck();
   }
 
   cancelEditMode(): void {

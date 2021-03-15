@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy, Renderer2} from '@angular/core';
+import {Injectable, NgZone, OnDestroy, Renderer2} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlKeyboardHelper, FlKeyboardKey} from '../../../utils/fl-keyboard.helper';
 import {FlSheetSelection} from '../model/fl-sheet-selection.class';
@@ -13,7 +13,7 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
   private keyboardListener: () => void;
 
   constructor(private selectionState: FlSpreadsheetSelectionState,
-              private renderer: Renderer2) {
+              private renderer: Renderer2, private ngZone: NgZone) {
   }
 
   public init(): void {
@@ -21,8 +21,12 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
       console.error('The init method must be called only once');
       return;
     }
-    this.keyboardListener = this.renderer.listen('body', 'keydown',
+
+    // run event listener outside angular zone to prevent automatic change detection
+    this.ngZone.runOutsideAngular(() => {
+      this.keyboardListener = this.renderer.listen('body', 'keydown',
       (event: KeyboardEvent) => this.onKeydown(event));
+    });
   }
 
   private onKeydown(event: KeyboardEvent): void {

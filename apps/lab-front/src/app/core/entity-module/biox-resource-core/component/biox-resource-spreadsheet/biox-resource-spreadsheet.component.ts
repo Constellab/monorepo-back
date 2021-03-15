@@ -8,7 +8,7 @@ import {FlSpreadsheet} from '@monorepo/front-core-lib';
 @Component({
   selector: 'gen-biox-resource-spreadsheet',
   templateUrl: './biox-resource-spreadsheet.component.html',
-  styleUrls: ['./biox-resource-spreadsheet.component.scss']
+  styleUrls: ['./biox-resource-spreadsheet.component.scss'],
 })
 export class BioxResourceSpreadsheetComponent implements OnInit {
 
@@ -21,8 +21,8 @@ export class BioxResourceSpreadsheetComponent implements OnInit {
   ngOnInit(): void {
     this.spreadSheet = new FlSpreadsheet('Sheet');
 
-    const columnCount = 5;
-    const rowCount = 5;
+    const columnCount = 50;
+    const rowCount = 50;
 
     for(let i = 0 ; i < columnCount; i++){
       this.spreadSheet.currentSheet.insertColumn();
