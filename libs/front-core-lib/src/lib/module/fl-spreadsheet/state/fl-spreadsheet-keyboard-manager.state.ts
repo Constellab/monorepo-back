@@ -30,7 +30,7 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
   }
 
   private onKeydown(event: KeyboardEvent): void {
-    console.log('Keydown', event.key, event.ctrlKey, event.altKey);
+    console.log('Keydown', event.key, event.ctrlKey, event.altKey, event.shiftKey);
 
     if (event.ctrlKey) {
       this.handleCtrlKeys(event);

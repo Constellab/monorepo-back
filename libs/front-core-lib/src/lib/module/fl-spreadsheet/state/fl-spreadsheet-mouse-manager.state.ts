@@ -128,9 +128,9 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
 
     if (cellEvent.type === 'header') {
       if (cellEvent.headerType === 'row') {
-        this.contextMenuState.openHeaderColumnContextMenu(event);
-      } else {
         this.contextMenuState.openHeaderRowContextMenu(event);
+      } else {
+        this.contextMenuState.openHeaderColumnContextMenu(event);
       }
     }
   }
