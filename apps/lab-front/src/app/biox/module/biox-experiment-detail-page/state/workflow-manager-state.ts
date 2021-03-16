@@ -68,7 +68,7 @@ export class WorkflowManagerState {
         // otherwise it's a protocol
       } else {
         this.bioxProtocolService.getProtocol(node.object.process.id).subscribe(
-          protocol => this.addProtocolLayer(protocol, nodeId)
+          protocol => this.addProtocolLayer(protocol.model, nodeId)
         );
       }
     }

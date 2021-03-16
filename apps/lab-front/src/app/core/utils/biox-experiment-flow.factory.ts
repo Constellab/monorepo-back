@@ -61,7 +61,8 @@ export class BioxExperimentFlowFactory {
     flow.isFinished = !experiment.isInProgress;
     // todo check type
     flow.config = BioxConfig.empty();
-    flow.process = process;
+    // todo check if process without interface and outerface is ok
+    flow.process = process as any;
 
 
     // create the jobs
