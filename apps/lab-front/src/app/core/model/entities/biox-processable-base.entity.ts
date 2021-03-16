@@ -4,6 +4,7 @@ import {BioxNode} from '../global/biox-connection.class';
 import {Expose} from 'class-transformer';
 import {BioxConfigSpecs, BioxConfigSpecTyped} from './biox-config.entity';
 
+
 export class BioxProcessableBase extends BioxNode {
 
   @Expose({name: 'input_specs'})
