@@ -79,5 +79,4 @@ export class BioxProcessableBase extends BioxNode {
   public hasConfigSpecs(): boolean {
     return this.configSpecs.hasProperties();
   }
-
 }

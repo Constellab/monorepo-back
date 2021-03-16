@@ -33,9 +33,10 @@ export class BioxFlowService {
     );
   }
 
-  private initFlowConnections(protocol: BioxFlow): BioxFlow {
-    protocol.initConnectionsAndNodes();
-    return protocol;
+  private initFlowConnections(flow: BioxFlow): BioxFlow {
+    console.log(flow);
+    flow.initConnectionsAndNodes();
+    return flow;
   }
 
 

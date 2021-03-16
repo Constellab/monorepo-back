@@ -9,9 +9,9 @@
         <mat-tab [label]="'protocols' | translate">
           <fl-infinite-scroll [datasource]="availableProtocols">
             <gen-biox-protocol-card *ngFor="let protocol of protocols$ | async"
-                                    [protocol]="protocol"
+                                    [protocol]="protocol.model"
                                     draggable="true" class="draggable-card"
-                                    (dragstart)="dragStart(protocol)"></gen-biox-protocol-card>
+                                    (dragstart)="dragStart(protocol.model)"></gen-biox-protocol-card>
           </fl-infinite-scroll>
         </mat-tab>
 
@@ -20,8 +20,8 @@
           <fl-infinite-scroll [datasource]="availableProcesses">
             <gen-biox-process-card *ngFor="let process of processes$ | async"
                                    draggable="true" class="draggable-card"
-                                   (dragstart)="dragStart(process)"
-                                   [process]="process"></gen-biox-process-card>
+                                   (dragstart)="dragStart(process.model)"
+                                   [process]="process.model"></gen-biox-process-card>
           </fl-infinite-scroll>
         </mat-tab>
       </mat-tab-group>

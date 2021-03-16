@@ -1,7 +1,7 @@
 import {FlApiModuleConfig, FlPage} from '@monorepo/front-core-lib';
 import {environment} from '../../../../environments/environment';
 import {ErrorService} from '../../service/error.service';
-import {ClCoreJsonConvert} from '@monorepo/core-lib';
+import {ClCoreJsonConvert, ClDeserializationRef} from '@monorepo/core-lib';
 
 export const apiModuleConfig: FlApiModuleConfig = {
   apiUrl: environment.apiUrl,
@@ -10,7 +10,7 @@ export const apiModuleConfig: FlApiModuleConfig = {
   pagination: {
     pageQueryParam: 'page',
     pageSizeQueryParam: 'size',
-    deserializePage: (json: any, classReference: new() => any): FlPage<any> => {
+    deserializePage: (json: any, classReference: ClDeserializationRef): FlPage<any> => {
       // if the result if paginated (we supposed the json is type of FlPage)
       if (json.objects != null && json.objects instanceof Array) {
         json.objects = ClCoreJsonConvert.deserialize(json.objects, classReference);

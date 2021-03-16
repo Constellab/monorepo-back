@@ -1,5 +1,6 @@
 import {ClHelpService} from '../utils/cl-help-service';
 import {classToPlain, plainToClass} from 'class-transformer';
+import {ClClassReference} from '../model/cl-class-reference.class';
 
 /**
  * File for the json to class converter
@@ -12,6 +13,15 @@ export type ClSerializeItem<T> = (object: T) => any;
 // type of method to deserialize item
 export type ClDeserializeItem<T> = (object: any) => T;
 
+/**
+ * Simple function type to create an object
+ */
+export type ClConstructorFunction<T = any> = (json: any) => T;
+
+/**
+ * Type to create object, can be either a class reference of a function to create the object
+ */
+export type ClDeserializationRef<T = any> = ClClassReference<T> | ClConstructorFunction<T>;
 
 /**
  * Simple static class to deserialize and serialize JSON object
@@ -24,20 +34,27 @@ export class ClCoreJsonConvert {
    * Tries to deserialize given JSON to a TypeScript object or array of objects.
    *
    * @param json the JSON as object or array
-   * @param classReference the class reference
+   * @param classReference class reference or function to create the object
    */
-  public static deserialize<T>(json: any, classReference: new() => T): T | T[] {
-    return plainToClass(classReference, json);
+  public static deserialize<T>(json: any, classReference: ClDeserializationRef<T>): T | T[] {
+    // if this is a class reference
+    if (classReference.prototype != null) {
+      return plainToClass(classReference as ClClassReference, json);
+    }
+    // if this a a constructor function
+    else {
+      return (classReference as ClConstructorFunction)(json);
+    }
   }
 
   /**
    * Tries to deserialize a JSON object to a TypeScript object.
    *
    * @param json the JSON object
-   * @param classReference the class reference
+   * @param classReference class reference or function to create the object
    */
-  public static deserializeObject<T>(json: any, classReference: new() => T): T {
-    return plainToClass(classReference, json);
+  public static deserializeObject<T>(json: any, classReference: ClDeserializationRef<T>): T {
+    return ClCoreJsonConvert.deserialize(json, classReference) as T;
   }
 
   /**

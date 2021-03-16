@@ -1,8 +1,9 @@
 import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
 import {ClCoreJsonConvert, ClDeserializeItem, ClRecordTransformOverride} from '@monorepo/core-lib';
-import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {BioxProcessableBase} from './biox-processable-base.entity';
 import {Expose, Type} from 'class-transformer';
+import {ViewModelDatasourcePaginated} from '../../utils/view-model.datasource';
+import {ViewModel} from '../global/view-model.entity';
 
 ////////////////////////////////// LINK ///////////////////////////////////////
 
@@ -81,7 +82,10 @@ export class BioxProtocol extends BioxProcessableBase {
 
 }
 
-export type BioxProtocolDatasource = FlEntityPaginatedDatasource<BioxProtocol>;
+export type BioxProtocolVM = ViewModel<BioxProtocol>;
+
+
+export type BioxProtocolDatasource = ViewModelDatasourcePaginated<BioxProtocol>;
 
 
 ////////////////////////////////// PROCESS ///////////////////////////////////////
@@ -100,7 +104,9 @@ export class BioxProcess extends BioxProcessableBase {
   objectType: 'process' = 'process';
 }
 
-export type BioxProcessDatasource = FlEntityPaginatedDatasource<BioxProcess>;
+export type BioxProcessVM = ViewModel<BioxProcess>;
+
+export type BioxProcessDatasource = ViewModelDatasourcePaginated<BioxProcess>;
 
 // create a union type to improve type checking
 export type BioxProcessable = BioxProtocol | BioxProcess;

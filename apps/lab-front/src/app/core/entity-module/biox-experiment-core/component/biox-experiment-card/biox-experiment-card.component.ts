@@ -11,7 +11,6 @@ export class BioxExperimentCardComponent implements OnInit {
   @Input() experiment: BioxExperiment;
 
   constructor() {
-    console.log(this.experiment);
   }
 
   ngOnInit(): void {

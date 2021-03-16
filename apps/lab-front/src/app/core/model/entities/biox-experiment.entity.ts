@@ -1,8 +1,10 @@
 import {LabEntity} from '../global/lab-entity.entity';
 import {ClLuxonTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
+import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
+import {ViewModelDatasourcePaginated} from '../../utils/view-model.datasource';
+import {ViewModel} from '../global/view-model.entity';
 
 
 export class BioxExperimentData {
@@ -45,7 +47,9 @@ export class BioxExperiment extends LabEntity implements FlStatus {
   }
 }
 
-export type BioxExperimentDatasource = FlEntityPaginatedDatasource<BioxExperiment>;
+export type BioxExperimentVM = ViewModel<BioxExperiment>;
+
+export type BioxExperimentDatasource = ViewModelDatasourcePaginated<BioxExperiment>;
 
 const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: boolean,
                                                                           mode: 'background' | 'text' = 'background'): string => {

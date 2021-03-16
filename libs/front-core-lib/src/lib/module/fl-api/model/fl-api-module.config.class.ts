@@ -5,6 +5,7 @@ import {FlSnackBarService} from '../../fl-snack-bar/fl-snack-bar.service';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 import {FlServerError} from './fl-server-error.class';
 import {FlPage} from '../../../model/fl-page.class';
+import {ClDeserializationRef} from '@monorepo/core-lib';
 
 /**
  * ApiModule configuration
@@ -46,7 +47,7 @@ export interface FlApiModuleConfig {
      * @param json returned json form the api
      * @param classReference for deserialization
      */
-    deserializePage: (json: any, classReference: new() => any) => FlPage<any>
+    deserializePage: (json: any, classReference: ClDeserializationRef) => FlPage<any>
   }
 
 }
@@ -88,7 +89,7 @@ export abstract class FlApiErrorService {
    * @param error deserialization error
    * @param classReference class tried to be converted
    */
-  public handleDeserializationError(error: any, classReference: new() => any): never {
+  public handleDeserializationError(error: any, classReference: ClDeserializationRef): never {
     // get the predefine error message
     const errorMessage = this.translateService.translate('error_deserialize', {
       param: {className: classReference.name}

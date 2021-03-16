@@ -3,6 +3,7 @@ import {FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front
 import {BioxExperiment, BioxExperimentDatasource} from '../../../../../core/model/entities/biox-experiment.entity';
 import {BioxExperimentFormDialogComponent} from '../../../../../core/entity-module/biox-experiment-core/component/biox-experiment-form-dialog/biox-experiment-form-dialog.component';
 import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
+import {clRxjsDebug} from '@monorepo/core-lib';
 
 @Component({
   selector: 'gen-biox-experiments-page',
@@ -21,6 +22,7 @@ export class BioxExperimentsPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.bioxExperiments = this.bioxExperimentService.getExperimentsDatasource();
+    this.bioxExperiments.connect().pipe(clRxjsDebug()).subscribe();
   }
 
   createExperiment(): void {

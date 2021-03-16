@@ -4,11 +4,11 @@ import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment
 import {BioxProcessService} from '../../../../../core/entity-service/biox-process.service';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
 import {
-  BioxProcess,
   BioxProcessable,
   BioxProcessDatasource,
-  BioxProtocol,
-  BioxProtocolDatasource
+  BioxProcessVM,
+  BioxProtocolDatasource,
+  BioxProtocolVM
 } from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxFlow, BioxFlowStep} from '../../../../../core/model/entities/biox-flow.entity';
 import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
@@ -34,9 +34,9 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   flow: BioxFlow;
 
   availableProtocols: BioxProtocolDatasource;
-  protocols$: Observable<BioxProtocol[]>;
+  protocols$: Observable<BioxProtocolVM[]>;
   availableProcesses: BioxProcessDatasource;
-  processes$: Observable<BioxProcess[]>;
+  processes$: Observable<BioxProcessVM[]>;
 
   // store the current dragged process
   draggingProcessable: BioxProcessable;
@@ -129,6 +129,5 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.workflowManagerService.clear();
   }
-
 
 }

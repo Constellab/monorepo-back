@@ -1,6 +1,6 @@
 <div>
   <ng-container *ngIf="resource; else isLoading">
-    <gen-biox-resource-info [resource]="resource"></gen-biox-resource-info>
+    <gen-biox-resource-info [resource]="resource.model"></gen-biox-resource-info>
   </ng-container>
 
   <ng-template #isLoading>

@@ -214,8 +214,11 @@ export class FlPortalService {
     let outsideClickListener: () => void;
     if (config.config.disposeOnOutsideClick) {
       // add a listener on the body
-      outsideClickListener = this.renderer.listen('body', 'mousedown',
-        (event: MouseEvent) => this.handleOutsideClick(event, overlayRef));
+      // wait 500 ms before listening to event because it will be called if the portal is opened with a click
+      setTimeout(() => {
+        outsideClickListener = this.renderer.listen('body', 'mousedown',
+          (event: MouseEvent) => this.handleOutsideClick(event, overlayRef));
+      }, 0);
     }
 
     // merge events and unsubscribe on the first emission

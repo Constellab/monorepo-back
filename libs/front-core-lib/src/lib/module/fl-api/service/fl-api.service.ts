@@ -2,7 +2,7 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {catchError, map, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
-import {ClCoreJsonConvert} from '@monorepo/core-lib';
+import {ClCoreJsonConvert, ClDeserializationRef} from '@monorepo/core-lib';
 import {FL_API_MODULE_CONFIG, FlApiErrorService, FlApiModuleConfig} from '../model/fl-api-module.config.class';
 import {FlFileService} from '../../../service/fl-file.service';
 import {FlHttpOption} from '../model/fl-http-option.class';
@@ -31,7 +31,7 @@ export class FlApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public getById(route: string, id: string, classReference ?: new() => any,
+  public getById(route: string, id: string, classReference?: ClDeserializationRef,
                  options: FlHttpOption = {}): Observable<any> {
     return this.http.get(this.getUrlForId(route, id), options).pipe(
       catchError(err => this.catchError(err, options)),
@@ -45,7 +45,7 @@ export class FlApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public get(route: string, classReference ?: new() => any,
+  public get(route: string, classReference?: ClDeserializationRef,
              options: FlHttpOption = {}): Observable<any> {
     return this.http.get(this.getUrl(route, options.page, options.pageSize), options).pipe(
       catchError(err => this.catchError(err, options)),
@@ -60,7 +60,7 @@ export class FlApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public put(route: string, body: any, classReference ?: new() => any,
+  public put(route: string, body: any, classReference?: ClDeserializationRef,
              options: FlHttpOption = {}): Observable<any> {
     return this.http.put(this.getUrl(route, options.page, options.pageSize), body, options).pipe(
       catchError(err => this.catchError(err, options)),
@@ -75,7 +75,7 @@ export class FlApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public patch(route: string, body: any, classReference ?: new() => any,
+  public patch(route: string, body: any, classReference?: ClDeserializationRef,
                options: FlHttpOption = {}): Observable<any> {
     return this.http.patch(this.getUrl(route, options.page, options.pageSize), body, options).pipe(
       catchError(err => this.catchError(err, options)),
@@ -90,7 +90,7 @@ export class FlApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public post(route: string, body: any, classReference ?: new() => any,
+  public post(route: string, body: any, classReference?: ClDeserializationRef,
               options: FlHttpOption = {}): Observable<any> {
     return this.http.post(this.getUrl(route, options.page, options.pageSize), body, options).pipe(
       catchError(err => this.catchError(err, options)),
@@ -106,7 +106,7 @@ export class FlApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public deleteById(route: string, id: string, classReference ?: new() => any,
+  public deleteById(route: string, id: string, classReference?: ClDeserializationRef,
                     options: FlHttpOption = {}): Observable<any> {
     return this.http.delete(this.getUrlForId(route, id), options).pipe(
       catchError(err => this.catchError(err, options)),
@@ -120,7 +120,7 @@ export class FlApiService {
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public delete(route: string, classReference ?: new() => any,
+  public delete(route: string, classReference?: ClDeserializationRef,
                 options: FlHttpOption = {}): Observable<any> {
     return this.http.delete(this.getUrl(route), options).pipe(
       catchError(err => this.catchError(err, options)),
@@ -165,7 +165,7 @@ export class FlApiService {
    * @param classReference class reference of object
    * @param isPaginated if true the result is considered as a {@link FlPage}
    */
-  public deserialize(json: any, classReference: new() => any, isPaginated: boolean = false): any {
+  public deserialize(json: any, classReference: ClDeserializationRef, isPaginated: boolean = false): any {
     if (json && classReference) {
 
       try {

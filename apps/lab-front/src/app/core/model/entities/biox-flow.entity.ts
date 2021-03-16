@@ -4,13 +4,23 @@ import {BioxJob} from './biox-job.entity';
 import {ClLuxonTransform, ClRecordTransform} from '@monorepo/core-lib';
 import {BioxConnection, BioxConnectionManager, BioxConnectionPart, BioxConnectionType} from '../global/biox-connection.class';
 import {DateTime} from 'luxon';
-import {BioxProcessableBase} from './biox-processable-base.entity';
 import {Expose, Type} from 'class-transformer';
-import {BioxResource} from './biox-resource.entity';
+import {BioxResourceVM} from './biox-resource.entity';
 import {FlLazyProperty, FlLazyPropertyTransform} from '@monorepo/front-core-lib';
 import {BioxResourceService} from '../../entity-service/biox-resource.service';
 import {BioxFlowInterface, BioxFlowOuterface} from './biox-inteface.entity';
+import {BioxProcessableBase} from './biox-processable-base.entity';
 
+/**
+ * Process object under flow
+ */
+export class BioxProcessableFlow extends BioxProcessableBase {
+  @ClRecordTransform(BioxFlowInterface)
+  interfaces: Record<string, BioxFlowInterface>;
+
+  @ClRecordTransform(BioxFlowOuterface)
+  outerfaces: Record<string, BioxFlowOuterface>;
+}
 
 export class BioxFlowProcess extends LabEntity {
   port: string;
@@ -62,7 +72,7 @@ export class BioxFlowStep implements BioxConnection {
 
   @Expose({name: 'resource_uri'})
   @FlLazyPropertyTransform(BioxResourceService)
-  resource: FlLazyProperty<BioxResource>;
+  resource: FlLazyProperty<BioxResourceVM>;
 
   getType(): BioxConnectionType {
     if (this.from.interface != null) {
@@ -92,8 +102,8 @@ export class BioxFlow extends BioxConnectionManager {
   @Type(() => BioxConfig)
   config: BioxConfig;
 
-  @Type(() => BioxProcessableBase)
-  process: BioxProcessableBase;
+  @Type(() => BioxProcessableFlow)
+  process: BioxProcessableFlow;
 
   @ClRecordTransform(BioxJob)
   jobs: Record<string, BioxJob>;
@@ -101,11 +111,6 @@ export class BioxFlow extends BioxConnectionManager {
   @Type(() => BioxFlowStep)
   flows: BioxFlowStep[];
 
-  @ClRecordTransform(BioxFlowInterface)
-  interfaces: Record<string, BioxFlowInterface>;
-
-  @ClRecordTransform(BioxFlowOuterface)
-  outerfaces: Record<string, BioxFlowOuterface>;
 
   layout: Record<string, unknown>;
 
@@ -133,13 +138,12 @@ export class BioxFlow extends BioxConnectionManager {
   }
 
   getInterfacesConnections(): Record<string, BioxFlowInterface> {
-    return this.interfaces;
+    return this.process.interfaces;
   }
 
   getOuterfacesConnections(): Record<string, BioxFlowInterface> {
-    return this.outerfaces;
+    return this.process.outerfaces;
   }
-
 
 }
 

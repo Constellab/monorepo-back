@@ -1,16 +1,41 @@
 import {LabBaseEntity} from './lab-entity.entity';
 import {Transform} from 'class-transformer';
-import {ClCoreJsonConvert} from '@monorepo/core-lib';
+import {ClConstructorFunction, ClCoreJsonConvert} from '@monorepo/core-lib';
 import {typeToClassMap} from '../../utils/type-to-class.map';
+import {FlPage} from '@monorepo/front-core-lib';
+import {ClClassReference} from '../../../../../../../libs/core-lib/src/lib/model/cl-class-reference.class';
 
 export class ViewModel<T extends LabBaseEntity> extends LabBaseEntity {
 
   type: 'gws.model.ViewModel';
 
-  @ViewModelTransform()
   model: T;
 }
 
+export type ViewModelPage<T extends LabBaseEntity> = FlPage<ViewModel<T>>;
+
+/**
+ * Function to instantiate the view model and instantiate the model under it
+ * @param modelClassReference class reference of the model under the view model
+ */
+export function createViewModel<T extends LabBaseEntity>(modelClassReference: ClClassReference<T>)
+  : ClConstructorFunction<ViewModel<T> | ViewModel<T>[]> {
+  return (json: any): ViewModel<T> | ViewModel<T>[] => {
+    // instantiate the view model or view models
+    const viewModel: ViewModel<T> | ViewModel<T>[] = ClCoreJsonConvert.deserialize(json, ViewModel) as any;
+
+    // if this is an array
+    if (viewModel instanceof Array) {
+      // instantiate all the model
+      for (const model of viewModel) {
+        model.model = ClCoreJsonConvert.deserializeObject(model.model, modelClassReference);
+      }
+    } else {
+      viewModel.model = ClCoreJsonConvert.deserializeObject(viewModel.model, modelClassReference);
+    }
+    return viewModel;
+  };
+}
 
 /**
  * Transform decorator for ViewModel
@@ -49,9 +74,10 @@ function modelToClass(entity: LabBaseEntity): LabBaseEntity {
 
   const type: string = entity.type;
 
-  if (!typeToClassMap.has(type)) {
+  if (typeToClassMap[type] == null) {
     console.error(`The type ${type} does not exist in typeToClassMap`, entity);
     return null;
   }
-  return ClCoreJsonConvert.deserialize(entity, typeToClassMap.get(type));
+  return ClCoreJsonConvert.deserialize(entity, typeToClassMap[type]);
 }
+

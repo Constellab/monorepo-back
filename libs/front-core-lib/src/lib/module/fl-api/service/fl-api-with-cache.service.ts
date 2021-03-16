@@ -7,7 +7,7 @@ import {FlCleanableService, FlCleanerService} from '../../../utils/fl-cleanable-
 import {FL_API_MODULE_CONFIG, FlApiErrorService, FlApiModuleConfig} from '../model/fl-api-module.config.class';
 import {FlFileService} from '../../../service/fl-file.service';
 import {FlHttpOption} from '../model/fl-http-option.class';
-import {ClCachedObservable} from '@monorepo/core-lib';
+import {ClCachedObservable, ClDeserializationRef} from '@monorepo/core-lib';
 
 
 /**
@@ -39,7 +39,7 @@ export class FlApiWithCacheService extends FlApiService implements FlCleanableSe
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public getByIdWithCache(route: string, id: string, classReference ?: new() => any,
+  public getByIdWithCache(route: string, id: string, classReference ?: ClDeserializationRef,
                           options: FlHttpOption = {}): Observable<any> {
     const fullRoute = this.getUrlForId(route, id);
 
@@ -56,7 +56,7 @@ export class FlApiWithCacheService extends FlApiService implements FlCleanableSe
    * @param classReference if not null the response is converted to the classReference
    * @param options custom http options
    */
-  public getWithCache(route: string, classReference ?: new() => any,
+  public getWithCache(route: string, classReference ?: ClDeserializationRef,
                       options: FlHttpOption = {}): Observable<any> {
     if (options.page != null || options.pageSize != null) {
       console.error('The getWithCache method does not support pagination, please use normal get');

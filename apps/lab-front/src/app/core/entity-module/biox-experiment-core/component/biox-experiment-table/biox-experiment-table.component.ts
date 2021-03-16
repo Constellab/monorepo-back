@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FlPaginatedTableAbstractDirective} from '@monorepo/front-core-lib';
-import {BioxExperiment} from '../../../../model/entities/biox-experiment.entity';
+import {BioxExperimentVM} from '../../../../model/entities/biox-experiment.entity';
 import {RouterService} from '../../../../service/router.service';
 
 @Component({
@@ -8,7 +8,7 @@ import {RouterService} from '../../../../service/router.service';
   templateUrl: './biox-experiment-table.component.html',
   styleUrls: ['./biox-experiment-table.component.css']
 })
-export class BioxExperimentTableComponent extends FlPaginatedTableAbstractDirective<BioxExperiment>
+export class BioxExperimentTableComponent extends FlPaginatedTableAbstractDirective<BioxExperimentVM>
   implements OnInit {
 
   constructor() {
@@ -18,7 +18,7 @@ export class BioxExperimentTableComponent extends FlPaginatedTableAbstractDirect
   ngOnInit(): void {
   }
 
-  getBioxExperimentRoute(experiment: BioxExperiment): string {
-    return RouterService.getBioxExperimentDetailRoute(experiment.id);
+  getBioxExperimentRoute(experiment: BioxExperimentVM): string {
+    return RouterService.getBioxExperimentDetailRoute(experiment.model.id);
   }
 }

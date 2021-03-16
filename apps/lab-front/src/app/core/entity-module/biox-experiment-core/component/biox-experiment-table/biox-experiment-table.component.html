@@ -6,9 +6,9 @@
       <mat-header-cell *matHeaderCellDef>
         <span>{{'title' | translate}}</span>
       </mat-header-cell>
-      <mat-cell *matCellDef="let bioxExperiment">
-        <a [routerLink]="getBioxExperimentRoute(bioxExperiment)" class="g-text-link">
-          <span>{{bioxExperiment.data.title}}</span>
+      <mat-cell *matCellDef="let bioxExperimentVM">
+        <a [routerLink]="getBioxExperimentRoute(bioxExperimentVM)" class="g-text-link">
+          <span>{{bioxExperimentVM.model.data.title}}</span>
         </a>
       </mat-cell>
     </ng-container>
@@ -18,8 +18,8 @@
       <mat-header-cell *matHeaderCellDef>
         <span>{{'biox.score' | translate}}</span>
       </mat-header-cell>
-      <mat-cell *matCellDef="let bioxExperiment">
-        <span>{{bioxExperiment.score}}</span>
+      <mat-cell *matCellDef="let bioxExperimentVM">
+        <span>{{bioxExperimentVM.model.score}}</span>
       </mat-cell>
     </ng-container>
 
@@ -28,8 +28,8 @@
       <mat-header-cell *matHeaderCellDef>
         <span>{{'status' | translate}}</span>
       </mat-header-cell>
-      <mat-cell *matCellDef="let bioxExperiment">
-        <fl-status-chip [status]="bioxExperiment" mode="iconText">
+      <mat-cell *matCellDef="let bioxExperimentVM">
+        <fl-status-chip [status]="$any(bioxExperimentVM.model)" mode="iconText">
         </fl-status-chip>
       </mat-cell>
     </ng-container>
@@ -39,8 +39,8 @@
       <mat-header-cell *matHeaderCellDef>
         <span>{{'datetime' | translate}}</span>
       </mat-header-cell>
-      <mat-cell *matCellDef="let bioxExperiment">
-        <span>{{bioxExperiment.createdAt | flDate}}</span>
+      <mat-cell *matCellDef="let bioxExperimentVM">
+        <span>{{bioxExperimentVM.model.createdAt | flDate}}</span>
       </mat-cell>
     </ng-container>
 
@@ -50,9 +50,9 @@
       <mat-header-cell *matHeaderCellDef>
         <p class="g-table-cell">{{column | translate}}</p>
       </mat-header-cell>
-      <mat-cell *matCellDef="let labInstance">
+      <mat-cell *matCellDef="let bioxExperimentVM">
         <div class="g-table-cell">
-          <span>{{labInstance[column]}}</span>
+          <span>{{bioxExperimentVM.model[column]}}</span>
         </div>
       </mat-cell>
     </ng-container>

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
-import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
+import {BioxExperimentVM} from '../../../../../core/model/entities/biox-experiment.entity';
 import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
 import {clRxjsDebug} from '@monorepo/core-lib';
 
@@ -15,7 +15,7 @@ import {clRxjsDebug} from '@monorepo/core-lib';
 })
 export class BioxExperimentDetailPageComponent implements OnInit {
 
-  getExperiment: Observable<BioxExperiment>;
+  getExperiment: Observable<BioxExperimentVM>;
 
   constructor(private route: ActivatedRoute,
               private bioxExperimentService: BioxExperimentService) {

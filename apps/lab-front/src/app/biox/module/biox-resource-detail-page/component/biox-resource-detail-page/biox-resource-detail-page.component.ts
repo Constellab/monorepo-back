@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {BioxResourceService} from '../../../../../core/entity-service/biox-resource.service';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
-import {BioxResource} from '../../../../../core/model/entities/biox-resource.entity';
+import {BioxResourceVM} from '../../../../../core/model/entities/biox-resource.entity';
 
 @Component({
   selector: 'gen-biox-resource-detail-page',
@@ -11,7 +11,7 @@ import {BioxResource} from '../../../../../core/model/entities/biox-resource.ent
 })
 export class BioxResourceDetailPageComponent implements OnInit {
 
-  resource$: Observable<BioxResource>;
+  resource$: Observable<BioxResourceVM>;
 
   constructor(private resourceService: BioxResourceService,
               private route: ActivatedRoute) {
