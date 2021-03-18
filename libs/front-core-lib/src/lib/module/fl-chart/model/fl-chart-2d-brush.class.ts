@@ -1,6 +1,7 @@
 import {FlChart2d} from './fl-chart-2d.class';
 import {BrushBehavior} from 'd3-brush';
 import * as d3 from 'd3';
+import {Selection} from 'd3-selection';
 
 
 export abstract class FlChartBrush {
@@ -8,6 +9,8 @@ export abstract class FlChartBrush {
   protected brush: BrushBehavior<any>;
 
   protected chart: FlChart2d<any>;
+
+  public brushContainer: Selection<any, any, null, null>;
 
   // todo replace with chart zoomable
   protected constructor(brush: BrushBehavior<any>,
@@ -33,7 +36,7 @@ export abstract class FlChartBrush {
       .on('end', (event) => this.updateChart(event));
 
     // Add the brushing
-    this.chart.chartContainer
+    this.brushContainer = this.chart.chartContainer
       .append('g')
       .attr('class', 'brush')
       .call(this.brush);

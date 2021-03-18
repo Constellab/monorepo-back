@@ -10,6 +10,8 @@ import {FlChartScaleColor} from './fl-chart-scale-color.class';
 export class FlChart2dLineMulti<Datum extends FlChart2dDatumSerie>
   extends FlChart2d<Datum> {
 
+  private readonly serieClassName: string = 'serie';
+
   public colorScale: FlChartScaleColor;
 
   protected dataContainer: FlChart2dMultipleSerie<Datum>;
@@ -31,7 +33,7 @@ export class FlChart2dLineMulti<Datum extends FlChart2dDatumSerie>
       .append('path')
       .attr('fill', 'none')
       .attr('stroke', serie => this.colorScale.scale(serie.serie))
-      .attr('class', 'line')  // I add the class line to be able to modify this line later on.
+      .attr('class', this.serieClassName)  // I add the class line to be able to modify this line later on.
       .attr('stroke-width', 1.5)
       .attr('d', (d: FlChart2dSerie<Datum>) => d3.line<FlChart2dDatum>()
         .x((d: FlChart2dDatum) => this.xScale.scale(d.getX()))
@@ -42,7 +44,7 @@ export class FlChart2dLineMulti<Datum extends FlChart2dDatumSerie>
 
   protected refreshData(): void {
     this.chartContainer
-      .selectAll('path')
+      .selectAll(`.${this.serieClassName}`)
       .transition()
       .attr('d', (d: FlChart2dSerie<Datum>) => d3.line<FlChart2dDatum>()
         .x((d: FlChart2dDatum) => this.xScale.scale(d.getX()))

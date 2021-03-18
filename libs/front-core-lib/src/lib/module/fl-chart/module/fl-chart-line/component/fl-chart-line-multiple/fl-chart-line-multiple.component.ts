@@ -1,31 +1,13 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {FlChart2dDatumSerie, FlChart2dMultipleSerie, FlChart2dSerie, SerieType} from '../../../../model/fl-chart-2d-data.class';
-import {multipleSeries} from '../../../../model/data';
+import {FlChart2dMultipleSerie} from '../../../../model/fl-chart-2d-data.class';
+import {getMultiSerieData, MultiSerieData} from '../../../../model/data';
 import {FlChart2d} from '../../../../model/fl-chart-2d.class';
 import {FlChart2dLineMulti} from '../../../../model/fl-chart-2d-line-multi.class';
 import {FlChartAxisScale, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
-import {FlChart2dBrushY, FlChartBrush} from '../../../../model/fl-chart-2d-brush.class';
+import {FlChart2dBrush, FlChartBrush} from '../../../../model/fl-chart-2d-brush.class';
+import {FlChart2dHoverLine} from '../../../../model/fl-chart-2d-hover.class';
 
-class Data implements FlChart2dDatumSerie {
-  constructor(private year: number,
-              private value: number,
-              private serie: string) {
-  }
-
-  getSerie(): SerieType {
-    return this.serie;
-  }
-
-
-  getX(): number {
-    return this.year;
-  }
-
-  getY(): number {
-    return this.value;
-  }
-}
 
 @Component({
   selector: 'fl-chart-line-multiple',
@@ -36,9 +18,9 @@ export class FlChartLineMultipleComponent implements OnInit {
 
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
 
-  chart: FlChart2d<Data>;
+  chart: FlChart2d<MultiSerieData>;
 
-  series: FlChart2dMultipleSerie<Data>;
+  series: FlChart2dMultipleSerie<MultiSerieData>;
 
   brush: FlChartBrush;
 
@@ -46,27 +28,18 @@ export class FlChartLineMultipleComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.series = this.getData();
+    this.series = new FlChart2dMultipleSerie<MultiSerieData>(getMultiSerieData());
 
     this.initChart();
     this.initBrush();
+    this.initHover();
   }
 
-  private getData(): FlChart2dMultipleSerie<Data> {
-    const series: FlChart2dSerie<Data>[] = [];
-    for (const serie of multipleSeries) {
-      series.push(new FlChart2dSerie<Data>(
-        serie.values.map(data => new Data(parseInt(data.year), parseInt(data.n), data.name))
-        , serie.key));
-    }
-
-    return new FlChart2dMultipleSerie<Data>(series);
-  }
 
 
   private initChart(): void {
 
-    const chart: FlChart2dLineMulti<Data> = new FlChart2dLineMulti<Data>(460, 400);
+    const chart: FlChart2dLineMulti<MultiSerieData> = new FlChart2dLineMulti<MultiSerieData>(460, 400);
 
     const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleNumber()
       .domain(this.series.getExtentX())
@@ -86,9 +59,11 @@ export class FlChartLineMultipleComponent implements OnInit {
   }
 
   private initBrush(): void {
-    this.brush = new FlChart2dBrushY(this.chart);
-
+    this.brush = new FlChart2dBrush(this.chart);
   }
 
+  private initHover(): void {
+    new FlChart2dHoverLine(this.chart);
+  }
 
 }
