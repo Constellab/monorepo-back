@@ -24,7 +24,7 @@ export class BioxResourceDetailPageComponent implements OnInit {
   }
 
   private init(id: string): void {
-    this.resource$ = this.resourceService.getById(id);
+    // this.resource$ = this.resourceService.getById(id);
   }
 
 }

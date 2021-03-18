@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {
-  FlCardModule,
+  FlCardModule, FlChartModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
   FlCorePipeModule,
@@ -45,6 +45,7 @@ import {
     FlDynamicFieldModule,
     FlFormModule,
     FlSpreadsheetModule,
+    FlChartModule,
   ]
 })
 export class CustomLibraryModule {
