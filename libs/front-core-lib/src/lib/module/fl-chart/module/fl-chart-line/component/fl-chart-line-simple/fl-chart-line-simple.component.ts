@@ -1,12 +1,13 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Numeric} from 'd3';
-import {FlChart2d} from '../../../../model/fl-chart-2d.class';
-import {FlChartAxisScale, FlChartAxisScaleDate, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
-import {FlChart2dLine} from '../../model/fl-chart-2d-line.class';
-import {FlChart2dData, FlChart2dDataContainer} from '../../../../model/fl-chart-2d-data.class';
-import {FlChart2dBrushX, FlChartBrush} from '../../../../model/fl-chart-2d-brush.class';
+import {FlChartAxisScaleDate, FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
+import {FlChart2dDataContainer, FlChart2dDataContainerLinear} from '../../../../model/fl-chart-2d-data.class';
+import {FlChart2dBrush, FlChartBrush} from '../../../../model/fl-chart-2d-brush.class';
 import {FlChart2dHoverLine} from '../../../../model/fl-chart-2d-hover.class';
 import {getSingleSerieData, SingleSerieData} from '../../../../model/data';
+import {FlChartSvg} from '../../../../model/fl-chart-svg.class';
+import {FlChartRendererLine} from '../../model/fl-chart-renderer-line.class';
+import {FlChartContainer2d} from '../../../../model/fl-chart-container.class';
 
 @Component({
   selector: 'fl-chart-line-simple',
@@ -17,9 +18,9 @@ export class FlChartLineSimpleComponent implements OnInit {
 
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
 
-  chart: FlChart2d<SingleSerieData>;
+  chart: FlChartContainer2d<FlChart2dDataContainerLinear<SingleSerieData>>;
 
-  data: FlChart2dDataContainer<SingleSerieData>;
+  data: FlChart2dDataContainerLinear<SingleSerieData>;
 
   brush: FlChartBrush;
 
@@ -35,28 +36,30 @@ export class FlChartLineSimpleComponent implements OnInit {
 
 
   private initChart(data: SingleSerieData[]): void {
-    this.data = new FlChart2dData(data);
+    this.data = new FlChart2dDataContainer(data);
 
-    const chart: FlChart2d<SingleSerieData> = new FlChart2dLine<SingleSerieData>(460, 400);
+    const svg: FlChartSvg = new FlChartSvg(460, 400).initSvg(this.chartHtmlContainer.nativeElement);
+    const chart: FlChartContainer2d<FlChart2dDataContainerLinear<SingleSerieData>> = new FlChartContainer2d(svg.svg, svg.width, svg.height);
 
-    const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleDate()
-      .domain(this.data.getExtentX())
+
+    const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleDate()
+      .domain(this.data.getDomainX())
       .range(chart.getRangeX());
 
-    const yScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleNumber()
-      .domain(this.data.getExtentY())
+    const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
+      .domain(this.data.getDomainY())
       .range(chart.getRangeY());
 
-    chart.initSvg(this.chartHtmlContainer.nativeElement)
-      .initX(xScale)
+    chart.initX(xScale)
       .initY(yScale)
+      .addRenderer(new FlChartRendererLine())
       .initData(this.data);
 
     this.chart = chart;
   }
 
   private initBrush(): void {
-    this.brush = new FlChart2dBrushX(this.chart);
+    this.brush = new FlChart2dBrush(this.chart);
   }
 
   private initHover(): void {

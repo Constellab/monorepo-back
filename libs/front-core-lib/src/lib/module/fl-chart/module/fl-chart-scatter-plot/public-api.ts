@@ -7,5 +7,5 @@ export * from './component/fl-chart-scatter-plot-multiple/fl-chart-scatter-plot-
 export * from './component/fl-chart-scatter-plot-simple/fl-chart-scatter-plot-simple.component';
 
 // Export the models
-export * from './model/fl-chart-2d-scatter-plot.class';
-export * from './model/fl-chart-2d-scatter-plot-multi.class';
+export * from './model/fl-chart-renderer-scatter-plot.class';
+export * from './model/fl-chart-scatter-plot-renderer-multi.class';

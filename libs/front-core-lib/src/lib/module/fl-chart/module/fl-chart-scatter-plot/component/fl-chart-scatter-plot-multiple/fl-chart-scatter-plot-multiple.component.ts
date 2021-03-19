@@ -1,11 +1,12 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {FlChart2d} from '../../../../model/fl-chart-2d.class';
 import {getMultiSerieData, MultiSerieData} from '../../../../model/data';
 import {FlChart2dMultipleSerie} from '../../../../model/fl-chart-2d-data.class';
-import {FlChartAxisScale, FlChartAxisScaleDate, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
+import {FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
 import {FlChart2dBrush} from '../../../../model/fl-chart-2d-brush.class';
-import {FlChart2dScatterPlotMulti} from '../../model/fl-chart-2d-scatter-plot-multi.class';
+import {FlChartScatterPlotRendererMulti} from '../../model/fl-chart-scatter-plot-renderer-multi.class';
+import {FlChartSvg} from '../../../../model/fl-chart-svg.class';
+import {FlChartContainer2d} from '../../../../model/fl-chart-container.class';
 
 @Component({
   selector: 'fl-chart-scatter-plot-multiple',
@@ -18,7 +19,8 @@ export class FlChartScatterPlotMultipleComponent implements OnInit {
 
   series: FlChart2dMultipleSerie<MultiSerieData>;
 
-  chart: FlChart2d<MultiSerieData>;
+  chart: FlChartContainer2d<FlChart2dMultipleSerie<MultiSerieData>>;
+
 
   constructor() {
   }
@@ -33,20 +35,21 @@ export class FlChartScatterPlotMultipleComponent implements OnInit {
 
   private initChart(): void {
 
-    const chart: FlChart2dScatterPlotMulti<MultiSerieData> = new FlChart2dScatterPlotMulti<MultiSerieData>(460, 400);
+    const svg: FlChartSvg = new FlChartSvg(460, 400).initSvg(this.chartHtmlContainer.nativeElement);
+    const chart: FlChartContainer2d<FlChart2dMultipleSerie<MultiSerieData>> = new FlChartContainer2d(svg.svg, svg.width, svg.height);
 
-    const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleDate()
-      .domain(this.series.getExtentX())
+    const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
+      .domain(this.series.getDomainX())
       .range(chart.getRangeX());
 
-    const yScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleNumber()
-      .domain(this.series.getExtentY())
+    const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
+      .domain(this.series.getDomainY())
       .range(chart.getRangeY());
 
-    chart.initSvg(this.chartHtmlContainer.nativeElement)
+    chart
       .initX(xScale)
       .initY(yScale)
-      .initColor(this.series.series)
+      .addRenderer(new FlChartScatterPlotRendererMulti())
       .initData(this.series);
 
     this.chart = chart;

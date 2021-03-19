@@ -1,0 +1,201 @@
+import {Selection} from 'd3-selection';
+import {FlChart2dDataContainerI, FlChartAxisScaleLinear} from '@monorepo/front-core-lib';
+import * as d3 from 'd3';
+import {Numeric} from 'd3';
+import {FlChart2dRenderer} from './fl-chart-2d-renderer.class';
+
+export abstract class FlChartContainer<Data> {
+
+  public group: Selection<any, null, null, null>;
+  public chartContainer: Selection<SVGElement, null, null, null>;
+
+  protected dataContainer: Data;
+
+  protected readonly groupWidth: number;
+  protected readonly groupHeight: number;
+
+  protected renderers: FlChart2dRenderer<Data>[];
+
+
+  // margin for the axis
+  private margin = {top: 10, right: 30, bottom: 30, left: 40};
+
+  constructor(parent: Selection<any, any, any, any>, width: number, height: number) {
+    this.groupWidth = width;
+    this.groupHeight = height;
+    this.renderers = [];
+    this.initChart(parent);
+  }
+
+  protected abstract firstChartRendering(): void
+
+  public initData(data: Data): this {
+    this.dataContainer = data;
+    this.firstChartRendering();
+    return this;
+  }
+
+  public addRenderer(renderer: FlChart2dRenderer<Data>): this {
+    this.renderers.push(renderer);
+    return this;
+  }
+
+
+  private initChart(parent: Selection<any, any, any, any>): this {
+    this.group = parent.append('g')
+      .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+
+    this.chartContainer = this.group.append('g')
+      .attr('clip-path', 'url(#clip)') as any;  // prevent line to overflow
+
+    // Add a clipPath: everything out of this area won't be drawn.
+    this.group.append('defs').append('svg:clipPath')
+      .attr('id', 'clip')
+      .append('svg:rect')
+      .attr('width', this.chartWidth)
+      .attr('height', this.chartHeight)
+      .attr('x', 0)
+      .attr('y', 0);
+
+    return this;
+  }
+
+
+  public getRangeX(): [number, number] {
+    return [0, this.chartWidth];
+  }
+
+  public getRangeY(): [number, number] {
+    return [this.chartHeight, 0];
+  }
+
+
+  public get chartWidth(): number {
+    return this.groupWidth - this.margin.left - this.margin.right;
+  }
+
+  public get chartHeight(): number {
+    return this.groupHeight - this.margin.top - this.margin.bottom;
+  }
+}
+
+export class FlChartContainer2d<Datum extends FlChart2dDataContainerI<any>> extends FlChartContainer<Datum> {
+  public xScale: FlChartAxisScaleLinear<Numeric>;
+
+  public yScale: FlChartAxisScaleLinear<Numeric>;
+
+  public xAxis: Selection<any, void, null, undefined>;
+
+  public yAxis: Selection<any, void, null, undefined>;
+
+
+  public zoomTransitionDuration: number = 250;
+
+
+  public initX(scale: FlChartAxisScaleLinear<Numeric>): this {
+    this.xScale = scale;
+
+    this.xAxis = this.group.append('g')
+      .attr('transform', 'translate(0,' + this.chartHeight + ')')
+      .call(d3.axisBottom(scale.d3Scale));
+
+    return this;
+  }
+
+  public initY(scale: FlChartAxisScaleLinear<Numeric>): this {
+    this.yScale = scale;
+
+    this.yAxis = this.group.append('g')
+      .call(d3.axisLeft(scale.d3Scale));
+
+    return this;
+  }
+
+
+  ///////////////////////////////// RENDERING ////////////////////////////
+
+  protected firstChartRendering(): void {
+    this.renderers.forEach(renderer => renderer.initData(this.chartContainer, this.dataContainer, this.xScale, this.yScale));
+  }
+
+  private refreshChartRendering(): void {
+    this.renderers.forEach(renderer => renderer.refreshData(this.chartContainer, this.dataContainer, this.xScale, this.yScale));
+  }
+
+  ///////////////////////////////// ZOOM ////////////////////////////////
+
+  public zoom(fromX: number, toX: number,
+              fromY: number, toY: number): void {
+    if (fromX == null || toX == null || fromY == null || toY == null) {
+      return;
+    }
+
+    this.zoomXAxis(fromX, toX);
+    this.zoomYAxis(fromY, toY);
+    this.refreshChartRendering();
+  }
+
+  public resetZoom(): void {
+    this.resetAxisX();
+    this.resetAxisY();
+    this.refreshChartRendering();
+  }
+
+
+  ///////////////////////////////// ZOOM X ////////////////////////////////
+
+  public zoomX(from: number, to: number): void {
+    if (from == null || to == null) {
+      return;
+    }
+
+    this.zoomXAxis(from, to);
+    this.refreshChartRendering();
+  }
+
+  private zoomXAxis(from: number, to: number): void {
+    // update x scale domain
+    this.xScale.domain([this.xScale.invert(from), this.xScale.invert(to)]);
+
+    // Update axis and line position
+    this.xAxis.transition().duration(this.zoomTransitionDuration).call(d3.axisBottom(this.xScale.d3Scale));
+  }
+
+  public resetZoomX(): void {
+    this.resetAxisX();
+    this.refreshChartRendering();
+  }
+
+  private resetAxisX(): void {
+    this.xScale.domain(this.dataContainer.getDomainX());
+    this.xAxis.transition().call(d3.axisBottom(this.xScale.d3Scale));
+  }
+
+  ///////////////////////////////////////// ZOOM Y //////////////////////////////////
+  public zoomY(from: number, to: number): void {
+    if (from == null || to == null) {
+      return;
+    }
+
+    this.zoomYAxis(from, to);
+    this.refreshChartRendering();
+  }
+
+  private zoomYAxis(from: number, to: number): void {
+    // update x scale domain
+    this.yScale.domain([this.yScale.invert(to), this.yScale.invert(from)]);
+
+    // Update axis and line position
+    this.yAxis.transition().duration(this.zoomTransitionDuration).call(d3.axisLeft(this.yScale.d3Scale));
+  }
+
+  public resetZoomY(): void {
+    this.resetAxisY();
+    this.refreshChartRendering();
+  }
+
+  private resetAxisY(): void {
+    this.yScale.domain(this.dataContainer.getDomainY());
+    this.yAxis.transition().call(d3.axisLeft(this.yScale.d3Scale));
+  }
+}

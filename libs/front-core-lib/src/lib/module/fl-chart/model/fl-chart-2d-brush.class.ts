@@ -1,20 +1,20 @@
-import {FlChart2d} from './fl-chart-2d.class';
 import {BrushBehavior} from 'd3-brush';
 import * as d3 from 'd3';
 import {Selection} from 'd3-selection';
+import {FlChartContainer2d} from './fl-chart-container.class';
 
 
 export abstract class FlChartBrush {
 
   protected brush: BrushBehavior<any>;
 
-  protected chart: FlChart2d<any>;
+  protected chart: FlChartContainer2d<any>;
 
   public brushContainer: Selection<any, any, null, null>;
 
   // todo replace with chart zoomable
   protected constructor(brush: BrushBehavior<any>,
-                        chart: FlChart2d<any>) {
+                        chart: FlChartContainer2d<any>) {
     this.brush = brush;
     this.chart = chart;
     this.initBrush();
@@ -63,7 +63,7 @@ export abstract class FlChartBrush {
 
   // If user double click, reinitialize the chart
   private listenToDblClick(): void {
-    this.chart.svg.on('dblclick', () => this.doubleClick());
+    this.chart.group.on('dblclick', () => this.doubleClick());
   }
 
   private doubleClick(): void {
@@ -73,7 +73,7 @@ export abstract class FlChartBrush {
 
 export class FlChart2dBrush extends FlChartBrush {
 
-  constructor(chart: FlChart2d<any>) {
+  constructor(chart: FlChartContainer2d<any>) {
     super(d3.brush(), chart);
   }
 
@@ -89,7 +89,7 @@ export class FlChart2dBrush extends FlChartBrush {
 
 export class FlChart2dBrushX extends FlChartBrush {
 
-  constructor(chart: FlChart2d<any>) {
+  constructor(chart: FlChartContainer2d<any>) {
     super(d3.brushX(), chart);
   }
 
@@ -105,7 +105,7 @@ export class FlChart2dBrushX extends FlChartBrush {
 
 export class FlChart2dBrushY extends FlChartBrush {
 
-  constructor(chart: FlChart2d<any>) {
+  constructor(chart: FlChartContainer2d<any>) {
     super(d3.brushY(), chart);
   }
 

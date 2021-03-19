@@ -1,12 +1,12 @@
-import {FlChart2d} from './fl-chart-2d.class';
 import {Selection} from 'd3-selection';
 import * as d3 from 'd3';
+import {FlChartContainer} from './fl-chart-container.class';
 
 export abstract class FlChart2dHover {
 
-  protected chart: FlChart2d<any>;
+  protected chart: FlChartContainer<any>;
 
-  protected constructor(chart: FlChart2d<any>) {
+  protected constructor(chart: FlChartContainer<any>) {
     this.chart = chart;
     this.initHover();
   }
@@ -35,7 +35,7 @@ export class FlChart2dHoverLine extends FlChart2dHover {
 
   private readonly verticalLineClass = 'mouse-vertical-line';
 
-  constructor(chart: FlChart2d<any>) {
+  constructor(chart: FlChartContainer<any>) {
     super(chart);
     this.init();
   }
@@ -56,8 +56,8 @@ export class FlChart2dHoverLine extends FlChart2dHover {
         // height is from 0 to height, and x is from mouse[o] event
         // todo see to improve, we shift the list to 1px so the brush selection still works if there is a brush
         return 'M' + (mouse[0] + 1) + ',' + this.chart.chartHeight
-          +  ' ' + (mouse[0] + 1) + ',' + 0;
-      })
+          + ' ' + (mouse[0] + 1) + ',' + 0;
+      });
   }
 
   protected onMouseOut(): void {
@@ -70,7 +70,7 @@ export class FlChart2dHoverLine extends FlChart2dHover {
     this.getVerticalLine().style('opacity', '1');
   }
 
-  private getVerticalLine(): Selection<any, any, any, any>{
+  private getVerticalLine(): Selection<any, any, any, any> {
     return this.chartContainer.select(`.${this.verticalLineClass}`);
   }
 

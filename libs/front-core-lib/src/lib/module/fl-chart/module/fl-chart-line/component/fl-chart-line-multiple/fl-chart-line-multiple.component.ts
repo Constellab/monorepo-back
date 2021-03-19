@@ -1,12 +1,13 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FlChart2dMultipleSerie} from '../../../../model/fl-chart-2d-data.class';
 import {getMultiSerieData, MultiSerieData} from '../../../../model/data';
-import {FlChart2d} from '../../../../model/fl-chart-2d.class';
-import {FlChart2dLineMulti} from '../../model/fl-chart-2d-line-multi.class';
-import {FlChartAxisScale, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
+import {FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
 import {FlChart2dBrush, FlChartBrush} from '../../../../model/fl-chart-2d-brush.class';
 import {FlChart2dHoverLine} from '../../../../model/fl-chart-2d-hover.class';
+import {FlChartSvg} from '../../../../model/fl-chart-svg.class';
+import {FlChartContainer2d} from '../../../../model/fl-chart-container.class';
+import {FlChartRendererLineMulti} from '../../model/fl-chart-renderer-line-multi.class';
 
 
 @Component({
@@ -18,7 +19,7 @@ export class FlChartLineMultipleComponent implements OnInit {
 
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
 
-  chart: FlChart2d<MultiSerieData>;
+  chart: FlChartContainer2d<FlChart2dMultipleSerie<MultiSerieData>>;
 
   series: FlChart2dMultipleSerie<MultiSerieData>;
 
@@ -36,23 +37,23 @@ export class FlChartLineMultipleComponent implements OnInit {
   }
 
 
-
   private initChart(): void {
 
-    const chart: FlChart2dLineMulti<MultiSerieData> = new FlChart2dLineMulti<MultiSerieData>(460, 400);
+    const svg: FlChartSvg = new FlChartSvg(460, 400).initSvg(this.chartHtmlContainer.nativeElement);
+    const chart: FlChartContainer2d<FlChart2dMultipleSerie<MultiSerieData>> = new FlChartContainer2d(svg.svg, svg.width, svg.height);
 
-    const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleNumber()
-      .domain(this.series.getExtentX())
+    const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
+      .domain(this.series.getDomainX())
       .range(chart.getRangeX());
 
-    const yScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleNumber()
-      .domain(this.series.getExtentY())
+    const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
+      .domain(this.series.getDomainY())
       .range(chart.getRangeY());
 
-    chart.initSvg(this.chartHtmlContainer.nativeElement)
+    chart
       .initX(xScale)
       .initY(yScale)
-      .initColor(this.series.series)
+      .addRenderer(new FlChartRendererLineMulti())
       .initData(this.series);
 
     this.chart = chart;

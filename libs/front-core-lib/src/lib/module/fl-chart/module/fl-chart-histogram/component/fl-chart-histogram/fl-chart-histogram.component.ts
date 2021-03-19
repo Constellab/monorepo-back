@@ -5,8 +5,8 @@ import {FlChart2dHistogram} from '../../model/fl-chart-2d-histogram.class';
 import {FlChartAxisScale, FlChartAxisScaleDate, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
 import {getSingleSerieData, SingleSerieData} from '../../../../model/data';
 import {
-  FlChart2dData,
   FlChart2dDataContainer,
+  FlChart2dDataContainerLinear,
   FlChart2dHistoDataContainer,
   FlChart2dHistogramDatum
 } from '../../../../model/fl-chart-2d-data.class';
@@ -58,11 +58,11 @@ export class FlChartHistogramComponent implements OnInit {
     const chart: FlChart2dHistogram<any> = new FlChart2dHistogram<any>(460, 400);
 
     const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleDate()
-      .domain(dataContainer.getExtentX())
+      .domain(dataContainer.getDomainX())
       .range(chart.getRangeX());
 
     const yScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleNumber()
-      .domain(dataContainer.getExtentY())
+      .domain(dataContainer.getDomainY())
       .range(chart.getRangeY());
 
 
@@ -75,21 +75,21 @@ export class FlChartHistogramComponent implements OnInit {
   }
 
   private getData(): FlChart2dHistoDataContainer<Data> {
-    const simpleData: FlChart2dDataContainer<SingleSerieData> = new FlChart2dData(getSingleSerieData());
+    const simpleData: FlChart2dDataContainerLinear<SingleSerieData> = new FlChart2dDataContainer(getSingleSerieData());
 
     // todo a ameliorer, la conversion en donnée histogram ce fait dans le
     // todo chart directmement ? ça permetterais de zoomer
     // todo a voir avec le format des données en entrée
     // fake scale to construct the histogram
     const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleDate()
-      .domain(simpleData.getExtentX())
+      .domain(simpleData.getDomainX())
       .range([0, this.chartWidth]);
 
 
     // set the parameters for the histogram
     const histogram = d3.bin<SingleSerieData, any>()
       .value(d => d.getX())   // I need to give the vector of value
-      .domain(simpleData.getExtentX() as any)  // then the domain of the graphic
+      .domain(simpleData.getDomainX() as any)  // then the domain of the graphic
       .thresholds(xScale.ticks(100)); // then the numbers of bins
 
     // And apply this function to data to get the bins
