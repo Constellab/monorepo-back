@@ -1,5 +1,5 @@
-import {FlChart2dHistogramDatum} from './fl-chart-2d-data.class';
-import {FlChart2d} from './fl-chart-2d.class';
+import {FlChart2dHistogramDatum} from '../../../model/fl-chart-2d-data.class';
+import {FlChart2d} from '../../../model/fl-chart-2d.class';
 
 
 export class FlChart2dHistogram<Datum extends FlChart2dHistogramDatum>

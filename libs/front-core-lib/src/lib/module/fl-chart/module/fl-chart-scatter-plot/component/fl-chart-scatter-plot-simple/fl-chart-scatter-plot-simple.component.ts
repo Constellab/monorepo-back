@@ -4,7 +4,7 @@ import {getSingleSerieData, SingleSerieData} from '../../../../model/data';
 import {FlChart2dData, FlChart2dDataContainer} from '../../../../model/fl-chart-2d-data.class';
 import {FlChartAxisScale, FlChartAxisScaleDate, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
-import {FlChart2dScatterPlot} from '../../../../model/fl-chart-2d-scatter-plot.class';
+import {FlChart2dScatterPlot} from '../../model/fl-chart-2d-scatter-plot.class';
 import {FlChart2dBrush} from '../../../../model/fl-chart-2d-brush.class';
 
 @Component({

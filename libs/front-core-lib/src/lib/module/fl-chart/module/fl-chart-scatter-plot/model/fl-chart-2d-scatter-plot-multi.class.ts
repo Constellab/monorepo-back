@@ -1,6 +1,6 @@
-import {FlChart2dDatumSerie, FlChart2dMultipleSerie, FlChart2dSerie} from './fl-chart-2d-data.class';
-import {FlChart2d} from './fl-chart-2d.class';
-import {FlChartScaleColor} from './fl-chart-scale-color.class';
+import {FlChart2dDatumSerie, FlChart2dMultipleSerie, FlChart2dSerie} from '../../../model/fl-chart-2d-data.class';
+import {FlChart2d} from '../../../model/fl-chart-2d.class';
+import {FlChartScaleColor} from '../../../model/fl-chart-scale-color.class';
 
 export class FlChart2dScatterPlotMulti<Datum extends FlChart2dDatumSerie>
   extends FlChart2d<Datum> {

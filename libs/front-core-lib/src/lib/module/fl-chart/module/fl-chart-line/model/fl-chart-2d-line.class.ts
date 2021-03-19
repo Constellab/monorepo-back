@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
-import {FlChart2dDatum} from './fl-chart-2d-data.class';
-import {FlChart2d} from './fl-chart-2d.class';
+import {FlChart2dDatum} from '../../../model/fl-chart-2d-data.class';
+import {FlChart2d} from '../../../model/fl-chart-2d.class';
 
 export class FlChart2dLine<Datum extends FlChart2dDatum>
   extends FlChart2d<Datum> {

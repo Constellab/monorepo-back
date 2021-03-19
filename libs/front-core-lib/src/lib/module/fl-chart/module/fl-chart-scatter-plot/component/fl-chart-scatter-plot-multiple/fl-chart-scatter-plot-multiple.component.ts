@@ -5,7 +5,7 @@ import {FlChart2dMultipleSerie} from '../../../../model/fl-chart-2d-data.class';
 import {FlChartAxisScale, FlChartAxisScaleDate, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
 import {FlChart2dBrush} from '../../../../model/fl-chart-2d-brush.class';
-import {FlChart2dScatterPlotMulti} from '../../../../model/fl-chart-2d-scatter-plot-multi.class';
+import {FlChart2dScatterPlotMulti} from '../../model/fl-chart-2d-scatter-plot-multi.class';
 
 @Component({
   selector: 'fl-chart-scatter-plot-multiple',

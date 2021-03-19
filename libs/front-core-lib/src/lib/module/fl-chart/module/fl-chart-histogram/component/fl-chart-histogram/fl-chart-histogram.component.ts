@@ -1,7 +1,7 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 import {Bin, Numeric} from 'd3';
-import {FlChart2dHistogram} from '../../../../model/fl-chart-2d-histogram.class';
+import {FlChart2dHistogram} from '../../model/fl-chart-2d-histogram.class';
 import {FlChartAxisScale, FlChartAxisScaleDate, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
 import {getSingleSerieData, SingleSerieData} from '../../../../model/data';
 import {

@@ -2,7 +2,7 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FlChart2dMultipleSerie} from '../../../../model/fl-chart-2d-data.class';
 import {getMultiSerieData, MultiSerieData} from '../../../../model/data';
 import {FlChart2d} from '../../../../model/fl-chart-2d.class';
-import {FlChart2dLineMulti} from '../../../../model/fl-chart-2d-line-multi.class';
+import {FlChart2dLineMulti} from '../../model/fl-chart-2d-line-multi.class';
 import {FlChartAxisScale, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
 import {FlChart2dBrush, FlChartBrush} from '../../../../model/fl-chart-2d-brush.class';
