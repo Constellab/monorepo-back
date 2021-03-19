@@ -6,10 +6,9 @@ export interface FlChart2dDatum {
   getX(): Numeric;
 
   getY(): Numeric;
-
 }
 
-export interface FlChart2dDataContainer<Data extends FlChart2dDatum> {
+export interface FlChart2dDataContainer<Data> {
 
   getData(): Data[];
 
@@ -84,4 +83,42 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatumSerie> implements
   getExtentY(): [Numeric, Numeric] {
     return d3.extent(this.getData(), (data: Data) => data.getY());
   }
+}
+
+
+///////////////////////// HISTOGRAM ////////////////////
+export interface FlChart2dHistogramDatum {
+
+  getX0(): Numeric;
+
+  getX1(): Numeric;
+
+  getYCount(): number;
+}
+
+export class FlChart2dHistoDataContainer<Data extends FlChart2dHistogramDatum>
+  implements FlChart2dDataContainer<Data> {
+
+  data: Data[];
+
+  constructor(data: Data[]) {
+    this.data = data;
+  }
+
+  getData(): Data[] {
+    return this.data;
+  }
+
+  getExtentX(): [Numeric, Numeric] {
+    return [
+      d3.min(this.getData(), (data: Data) => data.getX0()),
+      d3.max(this.getData(), (data: Data) => data.getX1())
+    ];
+  }
+
+  getExtentY(): [Numeric, Numeric] {
+    return d3.extent(this.getData(), (data: Data) => data.getYCount());
+  }
+
+
 }

@@ -1,10 +1,10 @@
 import {Selection} from 'd3-selection';
 import * as d3 from 'd3';
-import {FlChartAxisScale} from './fl-chart-scale.class';
-import {FlChart2dDataContainer, FlChart2dDatum} from './fl-chart-2d-data.class';
 import {Numeric} from 'd3';
+import {FlChartAxisScale} from './fl-chart-scale.class';
+import {FlChart2dDataContainer} from './fl-chart-2d-data.class';
 
-export abstract class FlChart2d<Datum extends FlChart2dDatum> {
+export abstract class FlChart2d<Datum> {
 
   private readonly svgWidth: number;
   private readonly svgHeight: number;
@@ -145,7 +145,7 @@ export abstract class FlChart2d<Datum extends FlChart2dDatum> {
     this.xAxis.transition().call(d3.axisBottom(this.xScale.d3Scale));
   }
 
-  public getRangeX(): [number, number]{
+  public getRangeX(): [number, number] {
     return [0, this.chartWidth];
   }
 
@@ -177,7 +177,7 @@ export abstract class FlChart2d<Datum extends FlChart2dDatum> {
     this.yAxis.transition().call(d3.axisLeft(this.yScale.d3Scale));
   }
 
-  public getRangeY(): [number, number]{
+  public getRangeY(): [number, number] {
     return [this.chartHeight, 0];
   }
 }

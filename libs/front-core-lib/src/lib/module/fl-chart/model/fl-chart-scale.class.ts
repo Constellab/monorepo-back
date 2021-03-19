@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 import {AxisScale, Numeric} from 'd3';
 
 
-
 export interface FlD3AxisScale<Value extends Numeric> extends AxisScale<Value> {
   (value: Value): number;
 
@@ -20,6 +19,8 @@ export interface FlD3AxisScale<Value extends Numeric> extends AxisScale<Value> {
   copy(): this;
 
   bandwidth?(): number;
+
+  ticks(count: number): Value[];
 
 }
 
@@ -53,8 +54,19 @@ export abstract class FlChartAxisScale<Value extends Numeric> {
     return this;
   }
 
+
   public simpleDomain(from: Value, to: Value): this {
     return this.domain([from, to]);
+  }
+
+  /////////////////////// GET METHODS ///////////////////////
+
+  public ticks(count: number): Value[] {
+    return this.d3Scale.ticks(count);
+  }
+
+  public getDomain(): Value[] {
+    return this.d3Scale.domain();
   }
 }
 

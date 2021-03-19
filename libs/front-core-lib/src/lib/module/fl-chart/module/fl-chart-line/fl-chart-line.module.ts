@@ -4,6 +4,7 @@ import {FlChartLineSimpleComponent} from './component/fl-chart-line-simple/fl-ch
 import {FlChartLineMultipleComponent} from './component/fl-chart-line-multiple/fl-chart-line-multiple.component';
 import {FlChartScatterPlotSimpleComponent} from './component/fl-chart-scatter-plot-simple/fl-chart-scatter-plot-simple.component';
 import {FlChartScatterPlotMultipleComponent} from './component/fl-chart-scatter-plot-multiple/fl-chart-scatter-plot-multiple.component';
+import { FlChartHistogramComponent } from './component/fl-chart-histogram/fl-chart-histogram.component';
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import {FlChartScatterPlotMultipleComponent} from './component/fl-chart-scatter-
     FlChartLineSimpleComponent,
     FlChartLineMultipleComponent,
     FlChartScatterPlotSimpleComponent,
-    FlChartScatterPlotMultipleComponent
+    FlChartScatterPlotMultipleComponent,
+    FlChartHistogramComponent
   ],
   imports: [
     CommonModule
@@ -19,7 +21,8 @@ import {FlChartScatterPlotMultipleComponent} from './component/fl-chart-scatter-
   exports: [FlChartLineSimpleComponent,
     FlChartLineMultipleComponent,
     FlChartScatterPlotSimpleComponent,
-    FlChartScatterPlotMultipleComponent
+    FlChartScatterPlotMultipleComponent,
+    FlChartHistogramComponent
   ],
 })
 export class FlChartLineModule {
