@@ -2,6 +2,7 @@
 export * from './fl-chart.module';
 
 // Export charts modules
+export * from './module/fl-chart-core/public-api';
 export * from './module/fl-chart-heat-map/public-api';
 export * from './module/fl-chart-histogram/public-api';
 export * from './module/fl-chart-line/public-api';

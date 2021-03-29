@@ -21,6 +21,8 @@ export class FlChartLineMultipleComponent implements OnInit {
 
   chart: FlChartContainer2d<FlChart2dMultipleSerie<MultiSerieData>>;
 
+
+  renderer: FlChartRendererLineMulti;
   series: FlChart2dMultipleSerie<MultiSerieData>;
 
   brush: FlChartBrush;
@@ -50,10 +52,12 @@ export class FlChartLineMultipleComponent implements OnInit {
       .domain(this.series.getDomainY())
       .range(chart.getRangeY());
 
+    this.renderer = new FlChartRendererLineMulti();
+
     chart
       .initX(xScale)
       .initY(yScale)
-      .addRenderer(new FlChartRendererLineMulti())
+      .addRenderer(this.renderer)
       .initData(this.series);
 
     this.chart = chart;
