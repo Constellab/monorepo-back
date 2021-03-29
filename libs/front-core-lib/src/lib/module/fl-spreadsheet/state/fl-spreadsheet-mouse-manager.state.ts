@@ -2,7 +2,7 @@ import {ElementRef, Injectable, NgZone, OnDestroy, Renderer2} from '@angular/cor
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {columnIdAttributeName, FlCell, headerIndexAttributeName, headerTypeAttributeName, rowIdAttributeName} from '../model/fl-cell.class';
-import {FlCellCoord, FlHeaderCellType} from '../model/fl-sheet-selection.class';
+import {FlCellCoord, FlHeaderCellType, FlSheetSelection} from '../model/fl-sheet-selection.class';
 import {FlSpreadsheetContextMenu} from './fl-spreadsheet-context-menu.state';
 import {FlMouseButton} from '../../../utils/fl-keyboard.helper';
 
@@ -64,7 +64,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
 
   private onMouseDown(event: MouseEvent): void {
     // on listen to left click
-    if(event.button !== FlMouseButton.LEFT){
+    if (event.button !== FlMouseButton.LEFT) {
       return;
     }
 
@@ -132,11 +132,28 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
 
     event.preventDefault();
 
+    const selection: FlSheetSelection = this.selectionState.currentSelection;
+
     if (cellEvent.type === 'header') {
       if (cellEvent.headerType === 'row') {
         this.contextMenuState.openHeaderRowContextMenu(event);
+
+        // if the clicked row is not within selection
+        if (!selection || selection.type !== 'rows' || !selection.rowIsSelected(cellEvent.index)) {
+          this.selectionState.selectUniqueRow(cellEvent.index);
+        }
       } else {
         this.contextMenuState.openHeaderColumnContextMenu(event);
+
+        // if the clicked column is not within selection
+        if (!selection || selection.type !== 'columns' || !selection.columnIsSelected(cellEvent.index)) {
+          this.selectionState.selectUniqueColumn(cellEvent.index);
+        }
+      }
+    } else {
+      // if clicked cell is not in the current selection, select the cell
+      if (!selection || !selection.coordIsSelected(cellEvent.coord)) {
+        this.selectionState.selectUniqueCell(cellEvent.coord);
       }
     }
   }
