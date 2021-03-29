@@ -7,7 +7,6 @@ export class FlChartHistogramRenderer
 
 
   initData(input: FlChart2dRendererInput<FlChart2dHistoDataContainer<FlChart2dHistogramDatum>>): void {
-    console.log(input);
     input.container
       .selectAll()
       .data(input.data.getData())
@@ -18,7 +17,7 @@ export class FlChartHistogramRenderer
       .attr('transform',
         (d: FlChart2dHistogramDatum) => 'translate(' + input.xScale.scale(d.getX1()) + ',' + input.yScale.scale(d.getYCount()) + ')'
       )
-      // todo a voir pour la width, le -1 gènère un négatif
+      // todo a voir pour la width, le -1 gènère une width négatif
       .attr('width', d => input.xScale.scale(d.getX1()) - input.xScale.scale(d.getX0()) - 1)
       .attr('height', d => input.chartHeight - input.yScale.scale(d.getYCount()))
       .style('fill', '#69b3a2');

@@ -24,7 +24,7 @@ export class FlChartRendererLineMulti
       .enter()
       .append('path')
       .attr('fill', 'none')
-      .attr('stroke', serie => this.colorScale.scale(serie.serie))
+      .attr('stroke', serie => this.colorScale.scale(serie.serieKey))
       .attr('class', this.serieClassName)  // I add the class line to be able to modify this line later on.
       .attr('stroke-width', 1.5)
       .attr('d', this.getDValue(input.xScale, input.yScale)
@@ -46,4 +46,3 @@ export class FlChartRendererLineMulti
       (d.getData()); // use to loop through serie's data
   }
 }
-

@@ -26,18 +26,20 @@ export interface FlChart2dRenderer<Data> {
   refreshData(input: FlChart2dRendererInput<Data>): void;
 }
 
-
+/**
+ * Render for chart with multiple series
+ */
 export abstract class FlChart2dRendererMultiple<Data extends FlChart2dMultipleSerie<any>>
   implements FlChart2dRenderer<Data> {
 
-  protected colorScale: FlChartScaleColor;
+  public colorScale: FlChartScaleColor;
 
   abstract initData(input: FlChart2dRendererInput<Data>): void;
 
   abstract refreshData(input: FlChart2dRendererInput<Data>): void;
 
   protected initColor(series: FlChart2dMultipleSerie<FlChart2dDatumSerie>): this {
-    this.colorScale = new FlChartScaleColor().domain(series.series.map(d => d.serie));
+    this.colorScale = new FlChartScaleColor().domain(series.series.map(d => d.serieKey));
     return this;
   }
 }

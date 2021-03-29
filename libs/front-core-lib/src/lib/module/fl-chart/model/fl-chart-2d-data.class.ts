@@ -56,20 +56,23 @@ export class FlChart2dDataContainer<Data extends FlChart2dDatum>
   }
 }
 
-export type SerieType = Numeric | string;
+/**
+ * Key to distingue a serie form another
+ */
+export type SerieKey = Numeric | string;
 
 export interface FlChart2dDatumSerie extends FlChart2dDatum {
 
-  getSerie(): SerieType;
+  getSerie(): SerieKey;
 }
 
 export class FlChart2dSerie<Data extends FlChart2dDatumSerie> extends FlChart2dDataContainer<Data> {
 
-  serie: SerieType;
+  serieKey: SerieKey;
 
-  constructor(data: Data[], serie: SerieType) {
+  constructor(data: Data[], serie: SerieKey) {
     super(data);
-    this.serie = serie;
+    this.serieKey = serie;
   }
 
 }

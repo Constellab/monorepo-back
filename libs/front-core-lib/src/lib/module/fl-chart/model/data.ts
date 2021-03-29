@@ -1,4 +1,4 @@
-import {FlChart2dDatum, FlChart2dDatumSerie, FlChart2dSerie, SerieType} from './fl-chart-2d-data.class';
+import {FlChart2dDatum, FlChart2dDatumSerie, FlChart2dSerie, SerieKey} from './fl-chart-2d-data.class';
 
 /////////////////////////////////////////////// SINGLE LINE ///////////////////////////////////////////////////
 export const singleSerie = [
@@ -6449,7 +6449,7 @@ export class MultiSerieData implements FlChart2dDatumSerie {
               private serie: string) {
   }
 
-  getSerie(): SerieType {
+  getSerie(): SerieKey {
     return this.serie;
   }
 
