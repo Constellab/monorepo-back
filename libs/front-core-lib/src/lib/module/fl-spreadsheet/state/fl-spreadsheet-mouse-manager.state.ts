@@ -197,7 +197,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
 
   ngOnDestroy(): void {
     this.mouseDownListener();
-    this.mouseMoveListener();
+    this.mouseUpListener();
     this.dblClickListener();
     this.contextMenuListener();
     this.clearMouseMoveListener();
