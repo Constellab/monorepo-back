@@ -1,23 +1,17 @@
 import {FlChart2dDatumSerie, FlChart2dMultipleSerie} from '../../../model/fl-chart-2d-data.class';
-import {FlChart2dRendererMultiple} from '../../../model/fl-chart-2d-renderer.class';
-import {FlChartAxisScaleLinear} from '../../../model/fl-chart-scale.class';
-import {Numeric} from 'd3';
-import {Selection} from 'd3-selection';
+import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../../../model/fl-chart-2d-renderer.class';
 
 export class FlChartScatterPlotRendererMulti
   extends FlChart2dRendererMultiple<FlChart2dMultipleSerie<FlChart2dDatumSerie>> {
 
 
-  initData(container: Selection<Element, null, null, null>,
-           data: FlChart2dMultipleSerie<FlChart2dDatumSerie>,
-           xScale: FlChartAxisScaleLinear<Numeric>,
-           yScale: FlChartAxisScaleLinear<Numeric>): void {
-    this.initColor(data);
+  initData(input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatumSerie>>): void {
+    this.initColor(input.data);
     // Add dots
-    container
+    input.container
       // generate groups for the series
       .selectAll()
-      .data(data.series)
+      .data(input.data.series)
       .enter()
       .append('g')
 
@@ -27,21 +21,17 @@ export class FlChartScatterPlotRendererMulti
       .enter()
       .append('circle')
       .attr('r', 1.5)
-      .style('fill', '#69b3a2')
       .style('fill', (d: FlChart2dDatumSerie) => this.colorScale.scale(d.getSerie()))
-      .attr('cx', (d: FlChart2dDatumSerie) => xScale.scale(d.getX()))
-      .attr('cy', (d: FlChart2dDatumSerie) => yScale.scale(d.getY()));
+      .attr('cx', (d: FlChart2dDatumSerie) => input.xScale.scale(d.getX()))
+      .attr('cy', (d: FlChart2dDatumSerie) => input.yScale.scale(d.getY()));
   }
 
-  refreshData(container: Selection<Element, null, null, null>,
-              data: FlChart2dMultipleSerie<FlChart2dDatumSerie>,
-              xScale: FlChartAxisScaleLinear<Numeric>,
-              yScale: FlChartAxisScaleLinear<Numeric>): void {
-    container
+  refreshData(input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatumSerie>>): void {
+    input.container
       .selectAll(`circle`)
       .transition()
-      .attr('cx', (d: FlChart2dDatumSerie) => xScale.scale(d.getX()))
-      .attr('cy', (d: FlChart2dDatumSerie) => yScale.scale(d.getY()));
+      .attr('cx', (d: FlChart2dDatumSerie) => input.xScale.scale(d.getX()))
+      .attr('cy', (d: FlChart2dDatumSerie) => input.yScale.scale(d.getY()));
   }
 
 }

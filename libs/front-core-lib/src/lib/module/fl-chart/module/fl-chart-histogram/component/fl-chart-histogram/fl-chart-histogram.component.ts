@@ -1,15 +1,13 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 import {Bin, Numeric} from 'd3';
-import {FlChart2dHistogram} from '../../model/fl-chart-2d-histogram.class';
-import {FlChartAxisScale, FlChartAxisScaleDate, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
+import {FlChartAxisScaleDate, FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../../../../model/fl-chart-scale.class';
 import {getSingleSerieData, SingleSerieData} from '../../../../model/data';
-import {
-  FlChart2dDataContainer,
-  FlChart2dDataContainerLinear,
-  FlChart2dHistoDataContainer,
-  FlChart2dHistogramDatum
-} from '../../../../model/fl-chart-2d-data.class';
+import {FlChart2dDataContainer, FlChart2dDataContainerLinear,} from '../../../../model/fl-chart-2d-data.class';
+import {FlChartSvg} from '../../../../model/fl-chart-svg.class';
+import {FlChartContainer2d} from '../../../../model/fl-chart-container.class';
+import {FlChartHistogramRenderer} from '../../model/fl-chart-histogram-renderer.class';
+import {FlChart2dHistoDataContainer, FlChart2dHistogramDatum} from '../../model/fl-chart-histogram-data.class';
 
 class Data implements FlChart2dHistogramDatum {
 
@@ -46,7 +44,7 @@ export class FlChartHistogramComponent implements OnInit {
 
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
 
-  chart: FlChart2dHistogram<any>;
+  chart: FlChartContainer2d<FlChart2dHistoDataContainer<FlChart2dHistogramDatum>>;
 
   constructor() {
   }
@@ -54,21 +52,22 @@ export class FlChartHistogramComponent implements OnInit {
   ngOnInit(): void {
     const dataContainer: FlChart2dHistoDataContainer<Data> = this.getData();
 
+    const svg: FlChartSvg = new FlChartSvg(460, 400).initSvg(this.chartHtmlContainer.nativeElement);
+    const chart: FlChartContainer2d<FlChart2dHistoDataContainer<FlChart2dHistogramDatum>>
+      = new FlChartContainer2d(svg.svg, svg.width, svg.height);
 
-    const chart: FlChart2dHistogram<any> = new FlChart2dHistogram<any>(460, 400);
-
-    const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleDate()
+    const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleDate()
       .domain(dataContainer.getDomainX())
       .range(chart.getRangeX());
 
-    const yScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleNumber()
+    const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
       .domain(dataContainer.getDomainY())
       .range(chart.getRangeY());
 
 
-    chart.initSvg(this.chartHtmlContainer.nativeElement)
-      .initX(xScale)
+    chart.initX(xScale)
       .initY(yScale)
+      .addRenderer(new FlChartHistogramRenderer())
       .initData(dataContainer);
 
     this.chart = chart;
@@ -81,7 +80,7 @@ export class FlChartHistogramComponent implements OnInit {
     // todo chart directmement ? ça permetterais de zoomer
     // todo a voir avec le format des données en entrée
     // fake scale to construct the histogram
-    const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleDate()
+    const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleDate()
       .domain(simpleData.getDomainX())
       .range([0, this.chartWidth]);
 

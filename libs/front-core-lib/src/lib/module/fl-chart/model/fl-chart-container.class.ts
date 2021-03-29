@@ -1,5 +1,5 @@
 import {Selection} from 'd3-selection';
-import {FlChart2dDataContainerI, FlChartAxisScaleLinear} from '@monorepo/front-core-lib';
+import {FlChart2dDataContainerI, FlChart2dRendererInput, FlChartAxisScaleLinear} from '@monorepo/front-core-lib';
 import * as d3 from 'd3';
 import {Numeric} from 'd3';
 import {FlChart2dRenderer} from './fl-chart-2d-renderer.class';
@@ -79,7 +79,7 @@ export abstract class FlChartContainer<Data> {
   }
 }
 
-export class FlChartContainer2d<Datum extends FlChart2dDataContainerI<any>> extends FlChartContainer<Datum> {
+export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> extends FlChartContainer<Data> {
   public xScale: FlChartAxisScaleLinear<Numeric>;
 
   public yScale: FlChartAxisScaleLinear<Numeric>;
@@ -115,11 +115,22 @@ export class FlChartContainer2d<Datum extends FlChart2dDataContainerI<any>> exte
   ///////////////////////////////// RENDERING ////////////////////////////
 
   protected firstChartRendering(): void {
-    this.renderers.forEach(renderer => renderer.initData(this.chartContainer, this.dataContainer, this.xScale, this.yScale));
+    this.renderers.forEach(renderer => renderer.initData(this.getRendererInput()));
   }
 
   private refreshChartRendering(): void {
-    this.renderers.forEach(renderer => renderer.refreshData(this.chartContainer, this.dataContainer, this.xScale, this.yScale));
+    this.renderers.forEach(renderer => renderer.refreshData(this.getRendererInput()));
+  }
+
+  private getRendererInput(): FlChart2dRendererInput<Data> {
+    return {
+      container: this.chartContainer,
+      data: this.dataContainer,
+      xScale: this.xScale,
+      yScale: this.yScale,
+      chartHeight: this.chartHeight,
+      chartWidth: this.chartWidth
+    };
   }
 
   ///////////////////////////////// ZOOM ////////////////////////////////
