@@ -5,6 +5,6 @@
 
   <ng-template #editMode>
     <input class="input" #input [(ngModel)]="inputValue" size="1" (blur)="saveValueAndDisableEdit()"
-           (keyup.escape)="cancelEditMode()" (keyup.enter)="saveValueAndDisableEdit()">
+           (keyup)="onInputKeyup($event)">
   </ng-template>
 </div>

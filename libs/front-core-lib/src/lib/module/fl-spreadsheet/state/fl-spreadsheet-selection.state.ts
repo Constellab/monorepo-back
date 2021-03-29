@@ -14,8 +14,6 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   private currentSelection$: BehaviorSubject<FlSheetSelectionFull> =
     new BehaviorSubject<FlSheetSelectionFull>(null);
 
-  private _isSelecting: boolean = false;
-
   constructor(private spreadsheetState: FlSpreadsheetState) {
   }
 
@@ -36,44 +34,36 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     return this.currentSelection$.value;
   }
 
-  public selectUniqueCell(coord: FlCellCoord, endSelection: boolean = false): void {
+  public selectUniqueCell(coord: FlCellCoord): void {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.Single(this.currentSheet, coord.row, coord.column);
-    this.newSelection(selection, endSelection);
+    this.newSelection(selection);
   }
 
-  public selectMultipleCell(from: FlCellCoord, to: FlCellCoord, endSelection: boolean = false): void {
+  public selectMultipleCell(from: FlCellCoord, to: FlCellCoord): void {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.Multiple(this.currentSheet,
       from.row, from.column, to.row, to.column);
-    this.newSelection(selection, endSelection);
+    this.newSelection(selection);
   }
 
-  public selectUniqueRow(rowIndex: number, endSelection: boolean = false): void {
+  public selectUniqueRow(rowIndex: number): void {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.Rows(this.currentSheet, rowIndex, rowIndex);
-    this.newSelection(selection, endSelection);
+    this.newSelection(selection);
   }
 
-  public selectUniqueColumn(columnIndex: number, endSelection: boolean = false): void {
+  public selectUniqueColumn(columnIndex: number): void {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.Columns(this.currentSheet, columnIndex, columnIndex);
-    this.newSelection(selection, endSelection);
+    this.newSelection(selection);
   }
 
   public setSelection(sheet: FlSheet, range: FlSheetSelectionRange): void {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.FromRange(sheet, range);
-    this.newSelection(selection, true);
+    this.newSelection(selection);
   }
 
-  private newSelection(selection: FlSheetSelectionFull, endSelection: boolean = false): void {
-    if (!endSelection) {
-      this.startSelection();
-    }
-
+  private newSelection(selection: FlSheetSelectionFull): void {
     this.unselectCurrentSelection();
     this.selectCellsFromSelection(selection);
     this.currentSelection$.next(selection);
-
-    if (endSelection) {
-      this.endSelection();
-    }
   }
 
   public clearCurrentSelection(): void {
@@ -104,24 +94,28 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     }
   }
 
+  /**
+   * Expand current selection with a shift from the current coord
+   * @param rowShift
+   * @param columnShift
+   */
+  public expandSelectionWithShift(rowShift: number, columnShift: number): void {
+    const newCoord: FlCellCoord = this.shiftCurrentSelection(rowShift, columnShift);
 
-  public startSelection(): void {
-    this._isSelecting = true;
-  }
-
-  public endSelection(): void {
-    this._isSelecting = false;
-  }
-
-  public get isSelecting(): boolean {
-    return this._isSelecting;
+    if (newCoord) {
+      this.expandSelection(newCoord);
+    }
   }
 
   public expandSelection(coord: FlCellCoord): void {
+    if (!this.currentSheet.coordIsValue(coord)) {
+      return;
+    }
+
     const currentSelectionFull: FlSheetSelectionFull = this.currentSelectionFull;
 
     // check if the current selection is valid to expand
-    if (!this._isSelecting || currentSelectionFull == null ||
+    if (currentSelectionFull == null ||
       (currentSelectionFull.type !== 'single' && currentSelectionFull.type !== 'multiple')) {
       return;
     }
@@ -141,7 +135,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   }
 
   public expandRowsSelection(rowIndex: number): void {
-    if (!this._isSelecting || this.currentSelectionFull == null || this.currentSelectionFull.type !== 'rows') {
+    if (this.currentSelectionFull == null || this.currentSelectionFull.type !== 'rows') {
       return;
     }
 
@@ -153,7 +147,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   }
 
   public expandColumnsSelection(rowIndex: number): void {
-    if (!this._isSelecting || this.currentSelectionFull == null || this.currentSelectionFull.type !== 'columns') {
+    if (this.currentSelectionFull == null || this.currentSelectionFull.type !== 'columns') {
       return;
     }
 
@@ -166,6 +160,35 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
 
   public getSelection(): Observable<FlSheetSelection> {
     return this.currentSelection$.asObservable();
+  }
+
+
+  public moveCurrentSelection(rowShift: number, columnShift: number): void {
+    const newCoord: FlCellCoord = this.shiftCurrentSelection(rowShift, columnShift);
+
+    if (newCoord) {
+      this.selectUniqueCell(newCoord);
+    }
+  }
+
+  // shit the current selection coord
+  // return null if the new coord is not valid
+  private shiftCurrentSelection(rowShift: number, columnShift: number): FlCellCoord | null {
+    const selection: FlSheetSelection = this.currentSelection;
+
+    if (selection != null) {
+
+      const coord: FlCellCoord = {
+        row: selection.getFirstSelectedCellCoord().row + rowShift,
+        column: selection.getFirstSelectedCellCoord().column + columnShift,
+      };
+
+      if (this.currentSheet.coordIsValue(coord)) {
+        return coord;
+      }
+    }
+
+    return null;
   }
 
   ngOnDestroy(): void {

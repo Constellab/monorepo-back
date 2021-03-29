@@ -1,7 +1,7 @@
 import {Injectable, NgZone, OnDestroy, Renderer2} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlKeyboardHelper, FlKeyboardKey} from '../../../utils/fl-keyboard.helper';
-import {FlSheetSelection} from '../model/fl-sheet-selection.class';
+import {FlCellCoord, FlSheetSelection} from '../model/fl-sheet-selection.class';
 import {FlSpreadsheetClipboardState} from './fl-spreadsheet-clipboard.state';
 import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 import {FlSpreadsheetActionStore} from './fl-spreadsheet-action.store';
@@ -39,8 +39,8 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
 
     if (event.ctrlKey) {
       this.handleCtrlKeys(event);
-    } else if (event.altKey) {
-      this.handleAltKeys(event);
+    } else if (event.shiftKey) {
+      this.handleShiftKeys(event);
     } else {
       this.handleSimpleKeys(event);
     }
@@ -51,6 +51,14 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
       this.handleDeleteKey();
     } else if (FlKeyboardHelper.keyboardKeyIsPrintable(event.key)) {
       this.handlePrintableKeys(event.key);
+    } else if (event.key === FlKeyboardKey.ARROW_DOWN) {
+      this.handleSimpleArrow(1, 0);
+    } else if (event.key === FlKeyboardKey.ARROW_UP) {
+      this.handleSimpleArrow(-1, 0);
+    } else if (event.key === FlKeyboardKey.ARROW_LEFT) {
+      this.handleSimpleArrow(0, -1);
+    } else if (event.key === FlKeyboardKey.ARROW_RIGHT) {
+      this.handleSimpleArrow(0, 1);
     }
   }
 
@@ -70,8 +78,16 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
     }
   }
 
-  private handleAltKeys(event: KeyboardEvent): void {
-
+  private handleShiftKeys(event: KeyboardEvent): void {
+    if (event.key === FlKeyboardKey.ARROW_DOWN) {
+      this.handleShiftArrow(1, 0);
+    } else if (event.key === FlKeyboardKey.ARROW_UP) {
+      this.handleShiftArrow(-1, 0);
+    } else if (event.key === FlKeyboardKey.ARROW_LEFT) {
+      this.handleShiftArrow(0, -1);
+    } else if (event.key === FlKeyboardKey.ARROW_RIGHT) {
+      this.handleShiftArrow(0, 1);
+    }
   }
 
   // Handler for the DELETE key
@@ -111,6 +127,22 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
 
   private handleRedo(): void {
     this.actionStore.redoLastAction();
+  }
+
+  private handleSimpleArrow(rowShift: number, columnShift: number): void {
+    this.selectionState.moveCurrentSelection(rowShift, columnShift);
+  }
+
+  private handleShiftArrow(rowShift: number, columnShift: number): void {
+    const selection: FlSheetSelection = this.selectionState.currentSelection;
+
+    if (selection != null) {
+      const coord: FlCellCoord = {
+        column: selection.endColumn + columnShift,
+        row: selection.endRow + rowShift
+      };
+      this.selectionState.expandSelection(coord);
+    }
   }
 
   ngOnDestroy(): void {

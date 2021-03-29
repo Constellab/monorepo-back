@@ -120,7 +120,6 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
   }
 
   private onMouseUp(): void {
-    this.selectionState.endSelection();
     this.clearMouseMoveListener();
   }
 

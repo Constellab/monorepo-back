@@ -16,6 +16,7 @@ import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.
 import {FlCellCoord, FlCellWithCoord, FlSheetSelectionRange} from '../../model/fl-sheet-selection.class';
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
 import {FlSpreadsheetActions} from '../../state/fl-spreadsheet-actions.state';
+import {FlKeyboardHelper, FlKeyboardKey} from '../../../../utils/fl-keyboard.helper';
 
 @Component({
   selector: 'fl-spreadsheet-cell',
@@ -167,6 +168,15 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
 
   private disableEditMode(): void {
     this.edit = false;
+  }
+
+  onInputKeyup(event: KeyboardEvent): void{
+    if(event.key === FlKeyboardKey.ESCAPE){
+      this.cancelEditMode();
+    }
+    else if(event.key === FlKeyboardKey.ENTER || FlKeyboardHelper.keyIsArrow(event.key)){
+      this.saveValueAndDisableEdit();
+    }
   }
 
   cancelEditMode(): void {

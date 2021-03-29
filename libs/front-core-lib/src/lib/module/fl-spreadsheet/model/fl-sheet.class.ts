@@ -1,7 +1,7 @@
 import {FlBasicCell, FlCell, FlColumnHeaderCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
-import {FlSheetSelectionRange} from './fl-sheet-selection.class';
+import {FlCellCoord, FlSheetSelectionRange} from './fl-sheet-selection.class';
 
 export class FlSheet {
 
@@ -211,4 +211,8 @@ export class FlSheet {
     return this.rowsCount;
   }
 
+  public coordIsValue(coord: FlCellCoord): boolean {
+    return coord.row >= 0 && coord.row < this.rowsCount &&
+      coord.column >= 0 && coord.column < this.columnsCount;
+  }
 }
