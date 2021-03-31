@@ -205,7 +205,7 @@ export class FlSheetSelectionFull extends FlSheetSelection {
    * @param selection
    * @constructor
    */
-  public static FromString(sheet: FlSheet, selection: string): FlSheetSelectionFull {
+  public static fromString(sheet: FlSheet, selection: string): FlSheetSelectionFull {
     const coords: string[] = selection.split(FlSpreadsheetHelper.coordSplitter);
     const from: FlCellCoord = FlSpreadsheetHelper.coordFromString(coords[0]);
     const to: FlCellCoord = FlSpreadsheetHelper.coordFromString(coords[1]);
@@ -213,7 +213,6 @@ export class FlSheetSelectionFull extends FlSheetSelection {
     return new FlSheetSelectionFull(sheet, 'multiple', from.row, from.column,
       to.row, to.column);
   }
-
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
   public expandSelection(row: number, column: number): FlSheetSelectionFull {

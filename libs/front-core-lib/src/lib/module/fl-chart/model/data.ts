@@ -1,4 +1,5 @@
-import {FlChart2dDatum, FlChart2dSerie} from './fl-chart-2d-data.class';
+import {FlChart2dDatum} from './fl-chart-2d-data.class';
+import { FlChart2dSerie } from './fl-chart-2d-serie.class';
 
 /////////////////////////////////////////////// SINGLE LINE ///////////////////////////////////////////////////
 export const singleSerie = [

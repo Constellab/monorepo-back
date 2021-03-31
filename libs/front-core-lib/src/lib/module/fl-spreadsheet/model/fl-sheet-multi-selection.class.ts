@@ -20,7 +20,7 @@ export class FlSheetMultiSelection {
 
     const rows: string[] = selection.split(FlSpreadsheetHelper.selectionsSplitter);
     for (const row of rows) {
-      selections.push(FlSheetSelectionFull.FromString(sheet, row));
+      selections.push(FlSheetSelectionFull.fromString(sheet, row));
     }
 
     return new FlSheetMultiSelection(selections);

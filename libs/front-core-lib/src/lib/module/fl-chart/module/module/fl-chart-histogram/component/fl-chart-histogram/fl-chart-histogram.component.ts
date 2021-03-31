@@ -8,6 +8,7 @@ import {FlChartSvg} from '../../../../../model/fl-chart-svg.class';
 import {FlChartContainer2d} from '../../../../../model/fl-chart-container.class';
 import {FlChartHistogramRenderer} from '../../model/fl-chart-histogram-renderer.class';
 import {FlChart2dHistoDataContainer, FlChart2dHistogramDatum} from '../../model/fl-chart-histogram-data.class';
+import {FlChartAxis} from '../../../../../model/fl-chart-axis.class';
 
 class Data implements FlChart2dHistogramDatum {
 
@@ -59,14 +60,16 @@ export class FlChartHistogramComponent implements OnInit {
     const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleDate()
       .domain(dataContainer.getDomainX())
       .range(chart.getRangeX());
+    const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale);
 
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
       .domain(dataContainer.getDomainY())
       .range(chart.getRangeY());
+    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
 
-    chart.initX(xScale)
-      .initY(yScale)
+    chart.initXAxis(xAxis)
+      .initAxisY(yAxis)
       .addRenderer(new FlChartHistogramRenderer())
       .initData(dataContainer);
 

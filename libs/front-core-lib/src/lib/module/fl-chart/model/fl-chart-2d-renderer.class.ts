@@ -1,8 +1,9 @@
 import {Selection} from 'd3-selection';
 import {Numeric} from 'd3';
 import {FlChartAxisScaleLinear} from './fl-chart-scale.class';
-import {FlChart2dDatum, FlChart2dMultipleSerie} from './fl-chart-2d-data.class';
+import {FlChart2dDatum} from './fl-chart-2d-data.class';
 import {FlChartScaleColor} from './fl-chart-scale-color.class';
+import {FlChart2dMultipleSerie} from './fl-chart-2d-serie.class';
 
 /**
  * Object needed by the renderer to renderer the chart

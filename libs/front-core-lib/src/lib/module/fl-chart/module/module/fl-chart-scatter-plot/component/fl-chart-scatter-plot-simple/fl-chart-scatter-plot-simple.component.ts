@@ -7,6 +7,7 @@ import {FlChartRendererScatterPlot} from '../../model/fl-chart-renderer-scatter-
 import {FlChart2dBrush} from '../../../../../model/fl-chart-2d-brush.class';
 import {FlChartContainer2d} from '../../../../../model/fl-chart-container.class';
 import {FlChartSvg} from '../../../../../model/fl-chart-svg.class';
+import {FlChartAxis} from '../../../../../model/fl-chart-axis.class';
 
 @Component({
   selector: 'fl-chart-scatter-plot-simple',
@@ -41,14 +42,16 @@ export class FlChartScatterPlotSimpleComponent implements OnInit {
     const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleDate()
       .domain(dataContainer.getDomainX())
       .range(chart.getRangeX());
+    const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale);
 
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
       .domain(dataContainer.getDomainY())
       .range(chart.getRangeY());
+    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
     chart
-      .initX(xScale)
-      .initY(yScale)
+      .initXAxis(xAxis)
+      .initAxisY(yAxis)
       .addRenderer(new FlChartRendererScatterPlot())
       .initData(dataContainer);
 

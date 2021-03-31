@@ -1,19 +1,20 @@
 import {FlSheetMultiSelection} from './fl-sheet-multi-selection.class';
 import {FlSheetSelection} from './fl-sheet-selection.class';
-import {FlChart2dDatum, FlChart2dMultipleSerie, FlChart2dSerie} from '../../fl-chart/model/fl-chart-2d-data.class';
+import {FlChart2dDatum, FlChartAxisTickFormat} from '../../fl-chart/model/fl-chart-2d-data.class';
 import {FlCell} from './fl-cell.class';
 import {Numeric} from 'd3';
+import {FlChart2dMultipleSerie, FlChart2dSerie} from '../../fl-chart/model/fl-chart-2d-serie.class';
 
 /**
  * Class to store a selection for a basic chart
  */
 export class FlSheetChartSelection {
   seriesData: FlSheetMultiSelection;
-  seriesLabels: FlSheetSelection;
+  seriesLabels: FlSheetSelection | null;
   xLabels: FlSheetSelection;
 
-  constructor(series: FlSheetMultiSelection, seriesLabels: FlSheetSelection,
-              xLabels: FlSheetSelection) {
+  constructor(series: FlSheetMultiSelection, seriesLabels: FlSheetSelection | null,
+              xLabels: FlSheetSelection | null) {
     this.seriesData = series;
     this.seriesLabels = seriesLabels;
     this.xLabels = xLabels;
@@ -26,8 +27,10 @@ export class FlSheetChartSelection {
     for (let i = 0; i < seriesSelections.length; i++) {
       series.addSerie(new FlChart2dSerie<any>(
         this.getSerieData(seriesSelections[i]),
-        this.getXLabelAtIndex(i)));
+        this.getSerieNameAtIndex(i)));
     }
+
+    series.setXAxisFormat(this.getXAxisFormat());
 
     return series;
   }
@@ -41,7 +44,12 @@ export class FlSheetChartSelection {
     return values.map((value, index) => new FlSheetChartDatum(index, isNaN(value) ? 0 : value));
   }
 
-  private getXLabelAtIndex(index: number): string {
+  // retrieve the serie name from the series labels selection at a specific index
+  private getSerieNameAtIndex(index: number): string {
+    if (this.seriesLabels == null) {
+      return index.toString();
+    }
+
     const cells: FlCell[] = this.seriesLabels.getSelectedCellsFlat();
 
     // if there is not more label, return the index as x label
@@ -52,6 +60,19 @@ export class FlSheetChartSelection {
     return cells[index].value.toString();
   }
 
+  /**
+   * return the method to format the x labels
+   */
+  private getXAxisFormat(): FlChartAxisTickFormat | null {
+    if (this.xLabels == null) {
+      // show only the integer x
+      return ((x: number) => Number.isInteger(x) ? x.toString() : '');
+    }
+
+    const values: any = this.xLabels.getSelectedCellsValuesFlat();
+    // return a string only for integer
+    return ((x: number) => Number.isInteger(x) ? values[x].toString() ?? '' : '');
+  }
 
 }
 

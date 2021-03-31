@@ -14,7 +14,7 @@ import {FlSheetChartSelection} from '../../model/fl-sheet-chart-selection.class'
 interface FormObject {
   // dataSelection: string;
   seriesData: string;
-  seriesName: string;
+  seriesNames: string;
   xLabels: string;
 }
 
@@ -46,12 +46,10 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
         Validators.required,
         this.multipleSelectionValidator(),
       ]],
-      seriesName: [null, [
-        Validators.required,
+      seriesNames: [null, [
         this.singleSelectionValidator()
       ]],
       xLabels: [null, [
-        Validators.required,
         this.singleSelectionValidator()
       ]],
     });
@@ -66,10 +64,13 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
 
   submit(): void {
     if (this.formGp.valid) {
+      const sheet: FlSheet = this.state.currentSheet;
+      const value: FormObject = this.formGp.value;
+
       const selection: FlSheetChartSelection = new FlSheetChartSelection(
-        FlSheetMultiSelection.fromString(this.state.currentSheet, this.formGp.value.seriesData),
-        FlSheetSelectionFull.FromString(this.state.currentSheet, this.formGp.value.seriesName),
-        FlSheetSelectionFull.FromString(this.state.currentSheet, this.formGp.value.xLabels),
+        FlSheetMultiSelection.fromString(sheet, this.formGp.value.seriesData),
+        value.seriesNames != null ? FlSheetSelectionFull.fromString(sheet, this.formGp.value.seriesNames) : null,
+        value.xLabels != null ? FlSheetSelectionFull.fromString(sheet, this.formGp.value.xLabels) : null,
       );
       this.overlayRef.dispose(selection);
     }
@@ -93,7 +94,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
 
       const sheet: FlSheet = this.state.currentSheet;
 
-      const selection: FlSheetSelection = FlSheetSelectionFull.FromString(sheet, control.value);
+      const selection: FlSheetSelection = FlSheetSelectionFull.fromString(sheet, control.value);
 
       const outBoundCoord: FlCellCoord | null = sheet.checkRangeValidity(selection);
       if (outBoundCoord != null) {

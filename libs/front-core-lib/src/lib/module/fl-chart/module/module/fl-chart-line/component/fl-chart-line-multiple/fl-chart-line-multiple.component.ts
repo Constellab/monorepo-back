@@ -1,5 +1,4 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {FlChart2dMultipleSerie} from '../../../../../model/fl-chart-2d-data.class';
 import {MultiSerieData} from '../../../../../model/data';
 import {FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../../../../../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
@@ -9,6 +8,8 @@ import {FlChartSvg} from '../../../../../model/fl-chart-svg.class';
 import {FlChartContainer2d} from '../../../../../model/fl-chart-container.class';
 import {FlChartRendererLineMulti} from '../../model/fl-chart-renderer-line-multi.class';
 import {FlChartComponent} from '../../../../../model/fl-chart-component.class';
+import {FlChartAxis} from '../../../../../model/fl-chart-axis.class';
+import {FlChart2dMultipleSerie} from '../../../../../model/fl-chart-2d-serie.class';
 
 
 @Component({
@@ -47,16 +48,21 @@ export class FlChartLineMultipleComponent implements OnInit, FlChartComponent {
     const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
       .domain(this.data.getDomainX())
       .range(chart.getRangeX());
+    const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
+      .setTickFormat(this.data.getXAxisFormat());
+
 
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
       .domain(this.data.getDomainY())
       .range(chart.getRangeY());
+    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
+
 
     this.renderer = new FlChartRendererLineMulti();
 
     chart
-      .initX(xScale)
-      .initY(yScale)
+      .initXAxis(xAxis)
+      .initAxisY(yAxis)
       .addRenderer(this.renderer)
       .initData(this.data);
 

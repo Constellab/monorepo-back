@@ -1,9 +1,7 @@
 import {Selection} from 'd3-selection';
-import * as d3 from 'd3';
-import {Numeric} from 'd3';
 import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
 import {FlChart2dDataContainerI} from './fl-chart-2d-data.class';
-import {FlChartAxisScaleLinear} from './fl-chart-scale.class';
+import {FlChartAxis} from './fl-chart-axis.class';
 
 export abstract class FlChartContainer<Data> {
 
@@ -81,34 +79,25 @@ export abstract class FlChartContainer<Data> {
 }
 
 export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> extends FlChartContainer<Data> {
-  public xScale: FlChartAxisScaleLinear<Numeric>;
 
-  public yScale: FlChartAxisScaleLinear<Numeric>;
+  public xAxis: FlChartAxis;
 
-  public xAxis: Selection<any, void, null, undefined>;
-
-  public yAxis: Selection<any, void, null, undefined>;
+  public yAxis: FlChartAxis;
 
 
   public zoomTransitionDuration: number = 250;
 
 
-  public initX(scale: FlChartAxisScaleLinear<Numeric>): this {
-    this.xScale = scale;
-
-    this.xAxis = this.group.append('g')
-      .attr('transform', 'translate(0,' + this.chartHeight + ')')
-      .call(d3.axisBottom(scale.d3Scale));
-        // .tickValues([0, 1, 2, 3]));
+  public initXAxis(axis: FlChartAxis): this {
+    this.xAxis = axis.setZoomDuration(this.zoomTransitionDuration)
+      .create(this.group, this.chartHeight, this.chartWidth);
 
     return this;
   }
 
-  public initY(scale: FlChartAxisScaleLinear<Numeric>): this {
-    this.yScale = scale;
-
-    this.yAxis = this.group.append('g')
-      .call(d3.axisLeft(scale.d3Scale));
+  public initAxisY(yAxis: FlChartAxis): this {
+    this.yAxis = yAxis.setZoomDuration(this.zoomTransitionDuration)
+      .create(this.group, this.chartHeight, this.chartWidth);
 
     return this;
   }
@@ -128,8 +117,8 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
     return {
       container: this.chartContainer,
       data: this.dataContainer,
-      xScale: this.xScale,
-      yScale: this.yScale,
+      xScale: this.xAxis.scale,
+      yScale: this.yAxis.scale,
       chartHeight: this.chartHeight,
       chartWidth: this.chartWidth
     };
@@ -143,8 +132,8 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
       return;
     }
 
-    this.zoomXAxis(fromX, toX);
-    this.zoomYAxis(fromY, toY);
+    this.zoomX(fromX, toX);
+    this.zoomY(fromY, toY);
     this.refreshChartRendering();
   }
 
@@ -162,16 +151,8 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
       return;
     }
 
-    this.zoomXAxis(from, to);
+    this.xAxis.zoom(from, to);
     this.refreshChartRendering();
-  }
-
-  private zoomXAxis(from: number, to: number): void {
-    // update x scale domain
-    this.xScale.domain([this.xScale.invert(from), this.xScale.invert(to)]);
-
-    // Update axis and line position
-    this.xAxis.transition().duration(this.zoomTransitionDuration).call(d3.axisBottom(this.xScale.d3Scale));
   }
 
   public resetZoomX(): void {
@@ -180,8 +161,8 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
   }
 
   private resetAxisX(): void {
-    this.xScale.domain(this.dataContainer.getDomainX());
-    this.xAxis.transition().call(d3.axisBottom(this.xScale.d3Scale));
+    this.xAxis.resetZoom(this.dataContainer.getDomainX());
+
   }
 
   ///////////////////////////////////////// ZOOM Y //////////////////////////////////
@@ -190,16 +171,8 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
       return;
     }
 
-    this.zoomYAxis(from, to);
+    this.yAxis.zoom(to, from);
     this.refreshChartRendering();
-  }
-
-  private zoomYAxis(from: number, to: number): void {
-    // update x scale domain
-    this.yScale.domain([this.yScale.invert(to), this.yScale.invert(from)]);
-
-    // Update axis and line position
-    this.yAxis.transition().duration(this.zoomTransitionDuration).call(d3.axisLeft(this.yScale.d3Scale));
   }
 
   public resetZoomY(): void {
@@ -208,7 +181,6 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
   }
 
   private resetAxisY(): void {
-    this.yScale.domain(this.dataContainer.getDomainY());
-    this.yAxis.transition().call(d3.axisLeft(this.yScale.d3Scale));
+    this.yAxis.resetZoom(this.dataContainer.getDomainY());
   }
 }

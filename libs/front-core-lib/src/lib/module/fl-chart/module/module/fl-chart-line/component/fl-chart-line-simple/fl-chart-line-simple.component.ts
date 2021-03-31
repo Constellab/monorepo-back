@@ -8,6 +8,7 @@ import {getSingleSerieData, SingleSerieData} from '../../../../../model/data';
 import {FlChartSvg} from '../../../../../model/fl-chart-svg.class';
 import {FlChartRendererLine} from '../../model/fl-chart-renderer-line.class';
 import {FlChartContainer2d} from '../../../../../model/fl-chart-container.class';
+import {FlChartAxis} from '../../../../../model/fl-chart-axis.class';
 
 @Component({
   selector: 'fl-chart-line-simple',
@@ -45,13 +46,16 @@ export class FlChartLineSimpleComponent implements OnInit {
     const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleDate()
       .domain(this.data.getDomainX())
       .range(chart.getRangeX());
+    const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale);
 
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
       .domain(this.data.getDomainY())
       .range(chart.getRangeY());
+    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
-    chart.initX(xScale)
-      .initY(yScale)
+
+    chart.initXAxis(xAxis)
+      .initAxisY(yAxis)
       .addRenderer(new FlChartRendererLine())
       .initData(this.data);
 

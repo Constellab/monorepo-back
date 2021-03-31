@@ -21,6 +21,8 @@ export * from './model/fl-chart-2d-brush.class';
 export * from './model/fl-chart-2d-data.class';
 export * from './model/fl-chart-2d-hover.class';
 export * from './model/fl-chart-2d-renderer.class';
+export * from './model/fl-chart-2d-serie.class';
+export * from './model/fl-chart-axis.class';
 export * from './model/fl-chart-component.class';
 export * from './model/fl-chart-container.class';
 export * from './model/fl-chart-scale.class';

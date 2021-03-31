@@ -3,8 +3,8 @@ import {Observable, Subject} from 'rxjs';
 
 /**
  * Directive to group all the {@link FlSpreadsheetSelectionInputComponent} into one group
- * When two component are in the same group they can't be activated at the same time. An activation
- * deactivate other component (like radio button)
+ * When two components are in the same group they can't be activated at the same time. An activation
+ * deactivate other components (like radio button)
  */
 @Directive({
   selector: '[flSpreadsheetSelectionInputGroup]'
