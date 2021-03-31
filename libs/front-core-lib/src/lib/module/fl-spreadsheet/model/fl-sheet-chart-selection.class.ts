@@ -4,20 +4,19 @@ import {FlChart2dDatum, FlChartAxisTickFormat} from '../../fl-chart/model/fl-cha
 import {FlCell} from './fl-cell.class';
 import {Numeric} from 'd3';
 import {FlChart2dMultipleSerie, FlChart2dSerie} from '../../fl-chart/model/fl-chart-2d-serie.class';
+import {FlChartComponentType} from '../../fl-chart/model/fl-chart-component.class';
 
 /**
  * Class to store a selection for a basic chart
  */
 export class FlSheetChartSelection {
-  seriesData: FlSheetMultiSelection;
-  seriesLabels: FlSheetSelection | null;
-  xLabels: FlSheetSelection;
 
-  constructor(series: FlSheetMultiSelection, seriesLabels: FlSheetSelection | null,
-              xLabels: FlSheetSelection | null) {
-    this.seriesData = series;
-    this.seriesLabels = seriesLabels;
-    this.xLabels = xLabels;
+
+  constructor(public chartType: FlChartComponentType,
+              public seriesData: FlSheetMultiSelection,
+              public seriesLabels: FlSheetSelection | null,
+              public xLabels: FlSheetSelection | null) {
+
   }
 
   public exportToSeries(): FlChart2dMultipleSerie<any> {
@@ -30,7 +29,7 @@ export class FlSheetChartSelection {
         this.getSerieNameAtIndex(i)));
     }
 
-    series.setXAxisFormat(this.getXAxisFormat());
+    series.axisXFormat = this.getXAxisFormat();
 
     return series;
   }
@@ -81,21 +80,11 @@ export class FlSheetChartDatum implements FlChart2dDatum {
   constructor(private x: number, private y: number) {
   }
 
-
   getX(): Numeric {
     return this.x;
-  }
-
-  getXLabel(): string {
-    return '';
   }
 
   getY(): Numeric {
     return this.y;
   }
-
-  getYLabel(): string {
-    return '';
-  }
-
 }

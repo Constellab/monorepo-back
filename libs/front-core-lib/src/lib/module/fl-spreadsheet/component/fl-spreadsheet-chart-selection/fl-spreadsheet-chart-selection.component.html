@@ -1,6 +1,6 @@
 <div class="container">
 
-  <!-- todo Translate-->
+  <!-- todo Translate & error required-->
   <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
        cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
        cdkDragBoundary="body">
@@ -16,6 +16,23 @@
 
   <div class="body">
     <form [formGroup]="formGp" (ngSubmit)="submit()" flSpreadsheetSelectionInputGroup>
+
+      <!--   Chart type selection   -->
+      <mat-form-field class="g-form-input" appearance="outline">
+        <!--         todo translate -->
+        <mat-label>Chart type</mat-label>
+        <mat-select formControlName="chartType" required
+                    placeholder="{{'ip' | translate}}">
+          <mat-select-trigger>
+            {{formGp.value.chartType}}
+          </mat-select-trigger>
+          <fl-chart-component-select-options></fl-chart-component-select-options>
+        </mat-select>
+
+        <!--        <mat-error *ngIf="formGp.get('ip').hasError('required')">-->
+        <!--          {{'ip' | flErrorRequired}}-->
+        <!--        </mat-error>-->
+      </mat-form-field>
 
       <!--   Serie selection   -->
       <mat-form-field class="g-form-input" appearance="outline">

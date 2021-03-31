@@ -5,15 +5,13 @@ export type FlChartAxisTickFormat = (domainValue: Numeric, index: number) => str
 
 export interface FlChart2dDataContainerI<Data> {
 
+  axisXFormat: FlChartAxisTickFormat | null;
+
   getData(): Data[];
 
   getDomainX(): Numeric[];
 
   getDomainY(): Numeric[];
-
-  setXAxisFormat(format: FlChartAxisTickFormat): this;
-
-  getXAxisFormat(): FlChartAxisTickFormat;
 }
 
 
@@ -31,11 +29,6 @@ export interface FlChart2dDatum {
   getX(): Numeric;
 
   getY(): Numeric;
-
-  // todo use the label in tickformat of axis
-  getXLabel(): string;
-
-  getYLabel(): string;
 }
 
 
@@ -44,7 +37,7 @@ export class FlChart2dDataContainer<Data extends FlChart2dDatum>
 
   data: Data[];
 
-  format: FlChartAxisTickFormat | null;
+  axisXFormat: FlChartAxisTickFormat | null;
 
 
   constructor(data: Data[]) {
@@ -63,16 +56,6 @@ export class FlChart2dDataContainer<Data extends FlChart2dDatum>
   getDomainY(): [Numeric, Numeric] {
     return d3.extent(this.data, (data: Data) => data.getY());
   }
-
-  setXAxisFormat(format: FlChartAxisTickFormat): this {
-    this.format = format;
-    return this;
-  }
-
-  getXAxisFormat(): FlChartAxisTickFormat {
-    return this.format;
-  }
-
 
 }
 

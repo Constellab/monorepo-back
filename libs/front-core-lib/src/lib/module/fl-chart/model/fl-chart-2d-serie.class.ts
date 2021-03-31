@@ -42,8 +42,7 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlCh
 
   series: FlChart2dSerie<Data>[];
 
-  format: FlChartAxisTickFormat | null;
-
+  axisXFormat: FlChartAxisTickFormat | null;
 
   constructor(series: FlChart2dSerie<Data>[] = []) {
     this.series = series;
@@ -67,15 +66,6 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlCh
 
   public addSerie(serie: FlChart2dSerie<Data>): void {
     this.series.push(serie);
-  }
-
-  public setXAxisFormat(format: FlChartAxisTickFormat): this {
-    this.format = format;
-    return this;
-  }
-
-  getXAxisFormat(): FlChartAxisTickFormat {
-    return this.format;
   }
 
 }

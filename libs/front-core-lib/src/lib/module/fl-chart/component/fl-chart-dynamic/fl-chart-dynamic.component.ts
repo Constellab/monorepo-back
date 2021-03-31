@@ -1,6 +1,6 @@
 import {Component, ComponentFactoryResolver, Input, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentType} from '@angular/cdk/overlay';
-import {FlChartComponent} from '../../model/fl-chart-component.class';
+import {FlChartComponent, FlChartComponentType, flChartComponentTypeFactory} from '../../model/fl-chart-component.class';
 
 @Component({
   selector: 'fl-chart-dynamic',
@@ -11,7 +11,7 @@ export class FlChartDynamicComponent implements OnInit {
 
   @Input() data: any;
 
-  @Input() chartComponent: ComponentType<FlChartComponent>;
+  @Input() chartComponent: ComponentType<FlChartComponent> | FlChartComponentType;
 
   // get a view ref to generate chart component in it
   @ViewChild('vc', {read: ViewContainerRef, static: true}) vc: ViewContainerRef;
@@ -24,7 +24,9 @@ export class FlChartDynamicComponent implements OnInit {
   }
 
   private initChart(): void {
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.chartComponent);
+    const chartComponent: ComponentType<FlChartComponent> = flChartComponentTypeFactory(this.chartComponent);
+
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(chartComponent);
 
     const componentRef = this.vc.createComponent<FlChartComponent>(componentFactory);
     componentRef.instance.data = this.data;

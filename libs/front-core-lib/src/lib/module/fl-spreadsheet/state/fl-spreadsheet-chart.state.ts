@@ -6,7 +6,6 @@ import {FlOverlayRef} from '../../fl-portal/model/fl-overlay-ref.class';
 import {FlSheetChartSelection} from '../model/fl-sheet-chart-selection.class';
 import {FlChartPortalService} from '../../fl-chart/service/fl-chart-portal.service';
 import {FlChartDynamicConfig} from '../../fl-chart/model/fl-chart-component.class';
-import {FlChartLineMultipleComponent} from '../../fl-chart/module/module/fl-chart-line/component/fl-chart-line-multiple/fl-chart-line-multiple.component';
 
 
 @Injectable()
@@ -46,7 +45,7 @@ export class FlSpreadsheetChartState {
     if (chartSelection) {
       const chartConfig: FlChartDynamicConfig = {
         data: chartSelection.exportToSeries(),
-        component: FlChartLineMultipleComponent
+        component: chartSelection.chartType
       };
 
 

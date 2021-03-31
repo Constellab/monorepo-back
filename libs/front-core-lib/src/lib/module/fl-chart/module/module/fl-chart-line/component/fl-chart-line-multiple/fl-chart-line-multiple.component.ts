@@ -36,7 +36,7 @@ export class FlChartLineMultipleComponent implements OnInit, FlChartComponent {
   ngOnInit(): void {
     this.initChart();
     this.initBrush();
-    this.initHover();
+    // this.initHover();
   }
 
 
@@ -49,7 +49,7 @@ export class FlChartLineMultipleComponent implements OnInit, FlChartComponent {
       .domain(this.data.getDomainX())
       .range(chart.getRangeX());
     const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
-      .setTickFormat(this.data.getXAxisFormat());
+      .setTickFormat(this.data.axisXFormat);
 
 
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()

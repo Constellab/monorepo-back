@@ -10,9 +10,10 @@ import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
 import {FlSheetMultiSelection} from '../../model/fl-sheet-multi-selection.class';
 import {FlSheet} from '../../model/fl-sheet.class';
 import {FlSheetChartSelection} from '../../model/fl-sheet-chart-selection.class';
+import {FlChartComponentType} from '../../../fl-chart/model/fl-chart-component.class';
 
 interface FormObject {
-  // dataSelection: string;
+  chartType: FlChartComponentType;
   seriesData: string;
   seriesNames: string;
   xLabels: string;
@@ -30,6 +31,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
 
   formGp: FormGroup<FormObject>;
 
+
   constructor(private selectionState: FlSpreadsheetSelectionState,
               private state: FlSpreadsheetState,
               @Inject(FL_PORTAL_DATA) data: any,
@@ -42,6 +44,9 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
 
   private initForm(): void {
     this.formGp = new FormBuilder().group({
+      chartType: [null, [
+        Validators.required,
+      ]],
       seriesData: [null, [
         Validators.required,
         this.multipleSelectionValidator(),
@@ -68,6 +73,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
       const value: FormObject = this.formGp.value;
 
       const selection: FlSheetChartSelection = new FlSheetChartSelection(
+        value.chartType,
         FlSheetMultiSelection.fromString(sheet, this.formGp.value.seriesData),
         value.seriesNames != null ? FlSheetSelectionFull.fromString(sheet, this.formGp.value.seriesNames) : null,
         value.xLabels != null ? FlSheetSelectionFull.fromString(sheet, this.formGp.value.xLabels) : null,

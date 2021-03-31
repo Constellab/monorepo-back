@@ -2,6 +2,7 @@
 export * from './fl-chart.module';
 
 // Export the component
+export * from './component/fl-chart-component-select-options/fl-chart-component-select-options.component';
 export * from './component/fl-chart-dynamic/fl-chart-dynamic.component';
 export * from './component/fl-chart-dynamic-portal/fl-chart-dynamic-portal.component';
 

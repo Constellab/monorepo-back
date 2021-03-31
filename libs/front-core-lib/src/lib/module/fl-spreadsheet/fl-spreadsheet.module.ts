@@ -22,6 +22,8 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {MatInputModule} from '@angular/material/input';
 import {FlSpreadsheetSelectionInputComponent} from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
 import { FlSpreadsheetSelectionInputGroupDirective } from './directive/fl-spreadsheet-selection-input-group.directive';
+import {MatSelectModule} from '@angular/material/select';
+import {FlChartModule} from '../fl-chart/fl-chart.module';
 
 
 @NgModule({
@@ -48,6 +50,7 @@ import { FlSpreadsheetSelectionInputGroupDirective } from './directive/fl-spread
     FlSvgIconModule,
     FlCorePipeModule,
     FlTranslateModule,
+    FlChartModule,
 
     ScrollingModule,
     MatMenuModule,
@@ -57,6 +60,7 @@ import { FlSpreadsheetSelectionInputGroupDirective } from './directive/fl-spread
     MatTooltipModule,
     MatButtonModule,
     MatInputModule,
+    MatSelectModule,
   ],
 })
 export class FlSpreadsheetModule {
