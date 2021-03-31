@@ -1,0 +1,74 @@
+<div class="container">
+
+  <!-- todo Translate-->
+  <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
+       cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
+       cdkDragBoundary="body">
+    <div class="title">Nouveal graphique</div>
+
+    <button mat-icon-button type="button"
+            [matTooltip]="'close' | translate"
+            flPortalClose tabindex="-1">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+
+  <div class="body">
+    <form [formGroup]="formGp" (ngSubmit)="submit()">
+
+      <!--   Data selection   -->
+      <!--      <mat-form-field class="g-form-input" appearance="outline">-->
+      <!--        &lt;!&ndash;         todo translate &ndash;&gt;-->
+      <!--        <mat-label>Select des data</mat-label>-->
+      <!--        <input matInput formControlName="dataSelection" required-->
+      <!--               placeholder="{{'ip' | translate}}">-->
+      <!--        &lt;!&ndash;        <mat-error *ngIf="formGp.get('ip').hasError('required')">&ndash;&gt;-->
+      <!--        &lt;!&ndash;          {{'ip' | flErrorRequired}}&ndash;&gt;-->
+      <!--        &lt;!&ndash;        </mat-error>&ndash;&gt;-->
+      <!--      </mat-form-field>-->
+
+      <!--   Serie selection   -->
+      <mat-form-field class="g-form-input" appearance="outline">
+        <!--         todo translate -->
+        <mat-label>Select des data series</mat-label>
+        <input matInput formControlName="series" required
+               placeholder="{{'ip' | translate}}">
+        <fl-spreadsheet-selection-input matSuffix mode="splitRows"
+                                        [inputFormControl]="formGp.get('series')"></fl-spreadsheet-selection-input>
+        <!--        <mat-error *ngIf="formGp.get('ip').hasError('required')">-->
+        <!--          {{'ip' | flErrorRequired}}-->
+        <!--        </mat-error>-->
+        <mat-error *ngIf="formGp.get('series').hasError('invalidFormat')">
+          Wrong format, example A1:A2,B1:B2
+        </mat-error>
+        <mat-error *ngIf="formGp.get('series').hasError('selectionOutOfBound')">
+          Selection out of bound : {{formGp.get('series').getError('selectionOutOfBound')}}
+        </mat-error>
+      </mat-form-field>
+
+
+      <!--      -->
+      <mat-form-field class="g-form-input" appearance="outline">
+        <!--         todo translate -->
+        <mat-label>Select des data</mat-label>
+        <input matInput formControlName="xLabels" required
+               placeholder="{{'ip' | translate}}">
+        <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('xLabels')">
+        </fl-spreadsheet-selection-input>
+
+        <mat-error *ngIf="formGp.get('xLabels').hasError('invalidFormat')">
+          Wrong format, example A1:B2
+        </mat-error>
+        <mat-error *ngIf="formGp.get('xLabels').hasError('selectionOutOfBound')">
+          Selection out of bound : {{formGp.get('xLabels').getError('selectionOutOfBound')}}
+        </mat-error>
+      </mat-form-field>
+
+
+      <button mat-raised-button color="primary" type="submit">
+        {{'validate' | translate}}
+      </button>
+    </form>
+  </div>
+</div>

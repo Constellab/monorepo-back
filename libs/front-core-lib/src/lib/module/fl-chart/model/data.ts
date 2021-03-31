@@ -1,4 +1,4 @@
-import {FlChart2dDatum, FlChart2dDatumSerie, FlChart2dSerie, SerieKey} from './fl-chart-2d-data.class';
+import {FlChart2dDatum, FlChart2dSerie} from './fl-chart-2d-data.class';
 
 /////////////////////////////////////////////// SINGLE LINE ///////////////////////////////////////////////////
 export const singleSerie = [
@@ -6443,14 +6443,9 @@ export const multipleSeries = [
     }, {year: '2015', sex: 'F', name: 'Ashley', n: '3409', prop: '0.00176165787043521'}]
   }];
 
-export class MultiSerieData implements FlChart2dDatumSerie {
+export class MultiSerieData implements FlChart2dDatum {
   constructor(private year: number,
-              private value: number,
-              private serie: string) {
-  }
-
-  getSerie(): SerieKey {
-    return this.serie;
+              private value: number) {
   }
 
 
@@ -6477,7 +6472,7 @@ export function getMultiSerieData(): FlChart2dSerie<MultiSerieData>[] {
   const series: FlChart2dSerie<MultiSerieData>[] = [];
   for (const serie of multipleSeries) {
     series.push(new FlChart2dSerie<MultiSerieData>(
-      serie.values.map(data => new MultiSerieData(parseInt(data.year), parseInt(data.n), data.name))
+      serie.values.map(data => new MultiSerieData(parseInt(data.year), parseInt(data.n)))
       , serie.key));
   }
 

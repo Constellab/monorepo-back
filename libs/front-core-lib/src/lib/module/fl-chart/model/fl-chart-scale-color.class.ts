@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 import {ScaleOrdinal} from 'd3';
-import {SerieKey} from './fl-chart-2d-data.class';
 
 export class FlChartScaleColor {
 
@@ -16,12 +15,12 @@ export class FlChartScaleColor {
       '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999']);
   }
 
-  public domain(domain: SerieKey[]): this {
+  public domain(domain: number[]): this {
     this.d3Scale.domain(domain.map(d => d.toString()));
     return this;
   }
 
-  public scale(value: SerieKey): string {
+  public scale(value: number): string {
     return this.d3Scale(value.toString());
   }
 }

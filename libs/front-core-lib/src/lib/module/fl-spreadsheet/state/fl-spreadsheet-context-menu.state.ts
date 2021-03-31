@@ -7,6 +7,7 @@ import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
 import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
 import {FlSpreadsheetContextMenuComponent} from '../component/fl-spreadsheet-context-menu/fl-spreadsheet-context-menu.component';
 import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
+import {FlSpreadsheetChartState} from './fl-spreadsheet-chart.state';
 
 export interface FlContextMenuConfig {
   buttons: FlContextMenuButton[];
@@ -30,22 +31,29 @@ export class FlSpreadsheetContextMenu {
 
   constructor(private selectionState: FlSpreadsheetSelectionState,
               private portalService: FlPortalService,
-              private action: FlSpreadsheetActions) {
+              private action: FlSpreadsheetActions,
+              private chartState: FlSpreadsheetChartState) {
+  }
+
+  public openCellContextMenu(mouseEvent: MouseEvent): void {
+    const portalConfig: FlPortalConfig = this.getMenuPortalConfig(mouseEvent);
+    this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
+      this.getCellConfig(mouseEvent));
   }
 
   public openHeaderColumnContextMenu(mouseEvent: MouseEvent): void {
-    const portalConfig: FlPortalConfig = this.getHeaderContextMenuPortalConfig(mouseEvent);
+    const portalConfig: FlPortalConfig = this.getMenuPortalConfig(mouseEvent);
     this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
-      this.getConfigForHeaderColumn());
+      this.getConfigForHeaderColumn(mouseEvent));
   }
 
   public openHeaderRowContextMenu(mouseEvent: MouseEvent): void {
-    const portalConfig: FlPortalConfig = this.getHeaderContextMenuPortalConfig(mouseEvent);
+    const portalConfig: FlPortalConfig = this.getMenuPortalConfig(mouseEvent);
     this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
-      this.getConfigForHeaderRow());
+      this.getConfigForHeaderRow(mouseEvent));
   }
 
-  private getHeaderContextMenuPortalConfig(mouseEvent: MouseEvent): FlPortalConfig {
+  private getMenuPortalConfig(mouseEvent: MouseEvent): FlPortalConfig {
     return this.portalService.configureAbsolutePortalFromMouseEvent(mouseEvent, {
       panelClass: 'g-portal-background',
       elevation: true,
@@ -57,7 +65,7 @@ export class FlSpreadsheetContextMenu {
   /**
    * Get config for the header column based on a selection
    */
-  public getConfigForHeaderColumn(): FlContextMenuConfig {
+  public getConfigForHeaderColumn(mouseEvent: MouseEvent): FlContextMenuConfig {
 
     return {
       buttons: [
@@ -72,7 +80,8 @@ export class FlSpreadsheetContextMenu {
           text: 'delete',
           icon: 'delete',
           onClick: () => this.action.deleteColumns()
-        }
+        },
+        this.getCreateChartConfig(mouseEvent)
       ]
     };
   }
@@ -80,7 +89,7 @@ export class FlSpreadsheetContextMenu {
   /**
    * Get config for the header row based on a selection
    */
-  public getConfigForHeaderRow(): FlContextMenuConfig {
+  public getConfigForHeaderRow(mouseEvent: MouseEvent): FlContextMenuConfig {
     return {
       buttons: [
         // button to create a row
@@ -94,8 +103,26 @@ export class FlSpreadsheetContextMenu {
           text: 'delete',
           icon: 'delete',
           onClick: () => this.action.deleteRows()
-        }
+        },
+        this.getCreateChartConfig(mouseEvent)
       ]
+    };
+  }
+
+  /**
+   * Get config for the header row based on a selection
+   */
+  public getCellConfig(mouseEvent: MouseEvent): FlContextMenuConfig {
+    return {
+      buttons: [this.getCreateChartConfig(mouseEvent)]
+    };
+  }
+
+  private getCreateChartConfig(mouseEvent: MouseEvent): FlContextMenuButton {
+    return {
+      text: 'create_chart',
+      icon: 'addchart',
+      onClick: () => this.chartState.openChartSelectionDialog(mouseEvent)
     };
   }
 

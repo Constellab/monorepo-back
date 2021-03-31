@@ -34,30 +34,35 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     return this.currentSelection$.value;
   }
 
-  public selectUniqueCell(coord: FlCellCoord): void {
+  public selectUniqueCell(coord: FlCellCoord): FlSheetSelection {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.Single(this.currentSheet, coord.row, coord.column);
     this.newSelection(selection);
+    return selection;
   }
 
-  public selectMultipleCell(from: FlCellCoord, to: FlCellCoord): void {
+  public selectMultipleCell(from: FlCellCoord, to: FlCellCoord): FlSheetSelection {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.Multiple(this.currentSheet,
       from.row, from.column, to.row, to.column);
     this.newSelection(selection);
+    return selection;
   }
 
-  public selectUniqueRow(rowIndex: number): void {
+  public selectUniqueRow(rowIndex: number): FlSheetSelection {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.Rows(this.currentSheet, rowIndex, rowIndex);
     this.newSelection(selection);
+    return selection;
   }
 
-  public selectUniqueColumn(columnIndex: number): void {
+  public selectUniqueColumn(columnIndex: number): FlSheetSelection {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.Columns(this.currentSheet, columnIndex, columnIndex);
     this.newSelection(selection);
+    return selection;
   }
 
-  public setSelection(sheet: FlSheet, range: FlSheetSelectionRange): void {
+  public setSelection(sheet: FlSheet, range: FlSheetSelectionRange): FlSheetSelection {
     const selection: FlSheetSelectionFull = FlSheetSelectionFull.FromRange(sheet, range);
     this.newSelection(selection);
+    return selection;
   }
 
   private newSelection(selection: FlSheetSelectionFull): void {
@@ -108,7 +113,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   }
 
   public expandSelection(coord: FlCellCoord): void {
-    if (!this.currentSheet.coordIsValue(coord)) {
+    if (!this.currentSheet.coordIsValid(coord)) {
       return;
     }
 
@@ -183,7 +188,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
         column: selection.getFirstSelectedCellCoord().column + columnShift,
       };
 
-      if (this.currentSheet.coordIsValue(coord)) {
+      if (this.currentSheet.coordIsValid(coord)) {
         return coord;
       }
     }

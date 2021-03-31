@@ -151,6 +151,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
         }
       }
     } else {
+      this.contextMenuState.openCellContextMenu(event);
       // if clicked cell is not in the current selection, select the cell
       if (!selection || !selection.coordIsSelected(cellEvent.coord)) {
         this.selectionState.selectUniqueCell(cellEvent.coord);

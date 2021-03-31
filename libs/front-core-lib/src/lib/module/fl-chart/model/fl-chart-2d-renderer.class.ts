@@ -1,7 +1,7 @@
 import {Selection} from 'd3-selection';
 import {Numeric} from 'd3';
 import {FlChartAxisScaleLinear} from './fl-chart-scale.class';
-import {FlChart2dDatumSerie, FlChart2dMultipleSerie} from './fl-chart-2d-data.class';
+import {FlChart2dDatum, FlChart2dMultipleSerie} from './fl-chart-2d-data.class';
 import {FlChartScaleColor} from './fl-chart-scale-color.class';
 
 /**
@@ -38,8 +38,8 @@ export abstract class FlChart2dRendererMultiple<Data extends FlChart2dMultipleSe
 
   abstract refreshData(input: FlChart2dRendererInput<Data>): void;
 
-  protected initColor(series: FlChart2dMultipleSerie<FlChart2dDatumSerie>): this {
-    this.colorScale = new FlChartScaleColor().domain(series.series.map(d => d.serieKey));
+  protected initColor(series: FlChart2dMultipleSerie<FlChart2dDatum>): this {
+    this.colorScale = new FlChartScaleColor().domain(series.series.map(d => d.key));
     return this;
   }
 }

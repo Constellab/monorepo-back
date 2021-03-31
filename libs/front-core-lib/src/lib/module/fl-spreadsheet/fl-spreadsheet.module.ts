@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {FlSpreadsheetComponent} from './component/fl-spreadsheet/fl-spreadsheet.component';
 import {FlSpreadsheetCellComponent} from './component/fl-spreadsheet-cell/fl-spreadsheet-cell.component';
 import {FlSpreadsheetHeaderCellComponent} from './component/fl-spreadsheet-header-cell/fl-spreadsheet-header-cell.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {FlCellHeaderPipe} from './pipe/fl-cell-header.pipe';
 import {ScrollingModule} from '@angular/cdk/scrolling';
@@ -13,6 +13,14 @@ import {FlSpreadsheetContextMenuComponent} from './component/fl-spreadsheet-cont
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {MatIconModule} from '@angular/material/icon';
 import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
+import {FlSpreadsheetChartSelectionComponent} from './component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-selection.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatButtonModule} from '@angular/material/button';
+import {FlTranslateModule} from '../fl-translate/fl-translate.module';
+import {MatInputModule} from '@angular/material/input';
+import {FlSpreadsheetSelectionInputComponent} from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
 
 
 @NgModule({
@@ -22,6 +30,8 @@ import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
     FlSpreadsheetHeaderCellComponent,
     FlCellHeaderPipe,
     FlSpreadsheetContextMenuComponent,
+    FlSpreadsheetChartSelectionComponent,
+    FlSpreadsheetSelectionInputComponent,
   ],
   exports: [
     FlSpreadsheetComponent,
@@ -29,15 +39,22 @@ import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
 
     FlCoreDirectiveModule,
     FlPortalModule,
     FlSvgIconModule,
+    FlCorePipeModule,
+    FlTranslateModule,
 
     ScrollingModule,
     MatMenuModule,
-    FlCorePipeModule,
-    MatIconModule
+    MatIconModule,
+    DragDropModule,
+    FlexLayoutModule,
+    MatTooltipModule,
+    MatButtonModule,
+    MatInputModule,
   ],
 })
 export class FlSpreadsheetModule {

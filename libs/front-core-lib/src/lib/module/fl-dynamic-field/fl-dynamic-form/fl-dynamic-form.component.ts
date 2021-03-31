@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
+import {FlDynamicFormFieldConfig} from '../fl-dynamic-field-config.class';
 
 /**
  * Component to create dynamic form based on {@link FlDynamicFieldComponent}

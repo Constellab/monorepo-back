@@ -1,4 +1,3 @@
-
 // Export the module
 export * from './fl-portal.module';
 
@@ -9,6 +8,9 @@ export * from './service/fl-portal.service';
 // Export the components
 export * from './component/fl-portal-arrow/fl-portal-arrow.component';
 export * from './component/fl-tooltip/fl-tooltip.component';
+
+// Export the directives
+export * from './directive/fl-portal-close.directive';
 
 // Export model
 export * from './model/fl-overlay-ref.class';

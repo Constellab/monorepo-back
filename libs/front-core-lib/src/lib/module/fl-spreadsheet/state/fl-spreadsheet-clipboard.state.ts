@@ -45,25 +45,28 @@ export class FlSpreadsheetClipboardState {
     );
   }
 
+  // todo gérer quand le text copié a + de colones ou lignes que le tableau
   private pasteValue(clipText: string): void {
     const selection = this.selectionState.currentSelection;
     if (clipText == null || clipText.length === 0 || selection == null) {
       return;
     }
 
+    // get values from pasted text
     const cellsValues: string[][] = this.convertTextToCellsValues(clipText);
 
     const from: FlCellCoord = selection.from;
 
     const maxValuesRowLength: number = cellsValues.reduce((m, x) => m.length > x.length ? m : x, []).length;
     const to: FlCellCoord = {
-      row: from.row + cellsValues.length,
-      column: from.column + maxValuesRowLength
+      row: from.row + cellsValues.length - 1,
+      column: from.column + maxValuesRowLength - 1
     };
 
-    this.selectionState.selectMultipleCell(selection.from, to, true);
+    // select the same size as pasted cells
+    const newSelection = this.selectionState.selectMultipleCell(selection.from, to);
 
-    this.actionState.updateCellsValues(cellsValues, selection);
+    this.actionState.updateCellsValues(cellsValues, newSelection);
   }
 
   private convertCellsValuesToText(cells: string[][]): string {

@@ -1,4 +1,4 @@
-import {ElementRef, Injectable, Injector, Renderer2, RendererFactory2} from '@angular/core';
+import {ElementRef, Injectable, Injector, Renderer2, RendererFactory2, StaticProvider} from '@angular/core';
 import {
   BlockScrollStrategy,
   CloseScrollStrategy,
@@ -9,7 +9,7 @@ import {
   Overlay,
   OverlayRef
 } from '@angular/cdk/overlay';
-import {ComponentPortal, PortalInjector} from '@angular/cdk/portal';
+import {ComponentPortal} from '@angular/cdk/portal';
 import {NavigationStart, Router} from '@angular/router';
 import {filter, first, map} from 'rxjs/operators';
 import {merge, Observable} from 'rxjs';
@@ -161,7 +161,7 @@ export class FlPortalService {
     }
 
     // create the injector
-    const injector = this.createInjector(data, overlayRef);
+    const injector = this.createInjector(data, overlayRef, config.config.customProviders);
 
     // create the component with the inject
     const componentPortal: ComponentPortal<T> =
@@ -274,14 +274,20 @@ export class FlPortalService {
   }
 
   // create an injector to send data to the portal and the overlay ref
-  private createInjector(data: any, overlayRef: FlOverlayRef): PortalInjector {
+  private createInjector(data: any, overlayRef: FlOverlayRef, providers: StaticProvider[] = []): Injector {
     const injectionTokens = new WeakMap();
     // send data to the portal
     injectionTokens.set(FL_PORTAL_DATA, data);
     // inject the overlay ref
     injectionTokens.set(FlOverlayRef, overlayRef);
 
-    return new PortalInjector(this.injector, injectionTokens);
+    return Injector.create({
+      parent: this.injector, providers: [
+        ...providers,
+        {provide: FL_PORTAL_DATA, useValue: data},
+        {provide: FlOverlayRef, useValue: overlayRef},
+      ]
+    });
   }
 
   /**

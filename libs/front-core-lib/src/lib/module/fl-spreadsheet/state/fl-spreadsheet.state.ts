@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
-import {FlSheet, FlSpreadsheet} from '@monorepo/front-core-lib';
+import {FlSpreadsheet} from '../model/fl-spreadsheet.class';
+import {FlSheet} from '../model/fl-sheet.class';
 
 /**
  * Unique state shared across the spreadsheet to store the current spreadsheet

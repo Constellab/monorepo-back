@@ -13,12 +13,12 @@ export class FlUpdateCellsAction extends FlSheetAction {
   }
 
   execute(sheet: FlSheet): boolean {
-    sheet.setValuesFromRange(this.newValues, this.range);
+    sheet.setValuesFromCoord(this.newValues, this.range.from);
     return true;
   }
 
   rollback(sheet: FlSheet): boolean {
-    sheet.setValuesFromRange(this.previousValues, this.range);
+    sheet.setValuesFromCoord(this.previousValues, this.range.from);
     return true;
   }
 }

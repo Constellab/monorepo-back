@@ -1,8 +1,9 @@
 import {Selection} from 'd3-selection';
-import {FlChart2dDataContainerI, FlChart2dRendererInput, FlChartAxisScaleLinear} from '@monorepo/front-core-lib';
 import * as d3 from 'd3';
 import {Numeric} from 'd3';
-import {FlChart2dRenderer} from './fl-chart-2d-renderer.class';
+import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
+import {FlChart2dDataContainerI} from './fl-chart-2d-data.class';
+import {FlChartAxisScaleLinear} from './fl-chart-scale.class';
 
 export abstract class FlChartContainer<Data> {
 

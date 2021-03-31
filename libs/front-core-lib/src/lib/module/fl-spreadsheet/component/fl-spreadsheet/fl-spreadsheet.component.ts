@@ -10,6 +10,8 @@ import {FlSpreadsheetClipboardState} from '../../state/fl-spreadsheet-clipboard.
 import {FlSpreadsheetActions} from '../../state/fl-spreadsheet-actions.state';
 import {FlSpreadsheetActionStore} from '../../state/fl-spreadsheet-action.store';
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
+import {FlSpreadsheetChartState} from '../../state/fl-spreadsheet-chart.state';
+import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 
 @Component({
   selector: 'fl-spreadsheet',
@@ -24,6 +26,8 @@ import {ClSubscriptionHandler} from '@monorepo/core-lib';
     FlSpreadsheetClipboardState,
     FlSpreadsheetActionStore,
     FlSpreadsheetActions,
+    FlSpreadsheetChartState,
+    FlPortalService, // providers to access the state in portal
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

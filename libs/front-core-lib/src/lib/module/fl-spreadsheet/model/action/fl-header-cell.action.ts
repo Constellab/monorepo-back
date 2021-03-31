@@ -65,7 +65,7 @@ export class FlDeleteColumnAction extends FlSheetAction {
     // recreate the columns
     sheet.insertMultipleColumns(this.range.from.column, this.range.to.column);
 
-    sheet.setValuesFromRange(this.values, this.range);
+    sheet.setValuesFromCoord(this.values, this.range.from);
     return true;
   }
 }
@@ -90,7 +90,7 @@ export class FlDeleteRowAction extends FlSheetAction {
     // recreate the columns
     sheet.insertMultipleRows(this.range.from.row, this.range.to.row);
 
-    sheet.setValuesFromRange(this.values, this.range);
+    sheet.setValuesFromCoord(this.values, this.range.from);
     return true;
   }
 }

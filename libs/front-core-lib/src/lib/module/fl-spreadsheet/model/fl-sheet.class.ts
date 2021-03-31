@@ -26,6 +26,15 @@ export class FlSheet {
   }
 
   ////////////////////////////// COLUMN ///////////////////////////////
+  public appendMultipleColumns(count: number): void {
+    for (let i = 0; i < count; i++) {
+      this.createColumn(this.columnsCount);
+    }
+
+    this.emitCellChange();
+  }
+
+
   public insertMultipleColumns(from: number, to: number): void {
     for (let i = from; i <= to; i++) {
       this.createColumn(i);
@@ -75,6 +84,14 @@ export class FlSheet {
 
 
   ////////////////////////////// ROW ///////////////////////////////
+  public appendMultipleRows(count: number): void {
+    for (let i = 0; i < count; i++) {
+      this.createRow(this.rowsCount);
+    }
+
+    this.emitCellChange();
+  }
+
   public insertMultipleRows(from: number, to: number): void {
     for (let i = from; i <= to; i++) {
       this.createRow(i);
@@ -166,6 +183,11 @@ export class FlSheet {
     return this.cells[row][column];
   }
 
+  /**
+   * Get the selection cell from a range in a simple array
+   * Array is flatten by rows
+   * @param range
+   */
   public getCellsFromRangeFlat(range: FlSheetSelectionRange): FlCell[] {
     const cells: FlCell[] = [];
 
@@ -186,14 +208,14 @@ export class FlSheet {
     return cells;
   }
 
-  public setValuesFromRange(values: any[][], range: FlSheetSelectionRange): void {
-    const cells: FlCell[][] = this.getCellsFromRange(range);
-
+  public setValuesFromCoord(values: any[][], from: FlCellCoord): void {
     for (let i = 0; i < values.length; i++) {
-      const row: FlCell[] = cells[i];
+      const cellRow: number = i + from.row;
       // loop through all the columns of row
-      for (let j = 0; j < row.length; j++) {
-        const cell: FlCell = cells[i][j];
+      for (let j = 0; j < values[i].length; j++) {
+        const cellColumn: number = j + from.column;
+
+        const cell: FlCell = this.cells[cellRow][cellColumn];
         if (cell != null) {
           cell.value = values[i][j];
         }
@@ -211,8 +233,36 @@ export class FlSheet {
     return this.rowsCount;
   }
 
-  public coordIsValue(coord: FlCellCoord): boolean {
+  /**
+   * return true if the coord is within the sheet size
+   */
+  public coordIsValid(coord: FlCellCoord): boolean {
     return coord.row >= 0 && coord.row < this.rowsCount &&
       coord.column >= 0 && coord.column < this.columnsCount;
+  }
+
+  /**
+   * return true if the range is within the sheet size
+   */
+  public rangeIsValid(range: FlSheetSelectionRange): boolean {
+    return this.coordIsValid(range.from) && this.coordIsValid(range.to);
+  }
+
+  /**
+   * Check if the range is within the sheet size
+   * If range is valid, returns null
+   * Otherwise it return the coord that is wrong
+   * @param range
+   */
+  public checkRangeValidity(range: FlSheetSelectionRange): FlCellCoord | null {
+    if (!this.coordIsValid(range.from)) {
+      return range.from;
+    }
+
+    if (!this.coordIsValid(range.to)) {
+      return range.to;
+    }
+
+    return null;
   }
 }

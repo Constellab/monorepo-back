@@ -36,6 +36,11 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
 
   private onKeydown(event: KeyboardEvent): void {
     console.log('Keydown', event.key, event.ctrlKey, event.altKey, event.shiftKey);
+    // do nothing if the event was trigger from an input or textarea
+    const targetTag: string = (event.target as HTMLElement).tagName;
+    if (targetTag === 'INPUT' || targetTag === 'TEXTAREA') {
+      return;
+    }
 
     if (event.ctrlKey) {
       this.handleCtrlKeys(event);

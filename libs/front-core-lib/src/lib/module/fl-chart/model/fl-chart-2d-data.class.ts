@@ -59,30 +59,45 @@ export class FlChart2dDataContainer<Data extends FlChart2dDatum>
 /**
  * Key to distingue a serie form another
  */
-export type SerieKey = Numeric | string;
-
-export interface FlChart2dDatumSerie extends FlChart2dDatum {
-
-  getSerie(): SerieKey;
+export interface FlChartDataWithSerie {
+  data: FlChart2dDatum;
+  serieKey: number;
+  serieName: string;
 }
 
-export class FlChart2dSerie<Data extends FlChart2dDatumSerie> extends FlChart2dDataContainer<Data> {
 
-  serieKey: SerieKey;
+export class FlChart2dSerie<Data extends FlChart2dDatum> extends FlChart2dDataContainer<Data> {
 
-  constructor(data: Data[], serie: SerieKey) {
+  private static key: number = 0;
+
+  readonly key: number;
+
+  name: string;
+
+  constructor(data: Data[], serieName: string) {
     super(data);
-    this.serieKey = serie;
+    this.key = FlChart2dSerie.key++;
+    this.name = serieName;
+  }
+
+  public getDataWithSerie(): FlChartDataWithSerie[] {
+    return this.getData().map(data => {
+      return {
+        data: data,
+        serieKey: this.key,
+        serieName: this.name
+      };
+    });
   }
 
 }
 
-export class FlChart2dMultipleSerie<Data extends FlChart2dDatumSerie> implements FlChart2dDataContainerLinear<Data> {
+export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlChart2dDataContainerLinear<Data> {
 
   series: FlChart2dSerie<Data>[];
 
 
-  constructor(series: FlChart2dSerie<Data>[]) {
+  constructor(series: FlChart2dSerie<Data>[] = []) {
     this.series = series;
   }
 
@@ -100,6 +115,10 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatumSerie> implements
 
   getDomainY(): [Numeric, Numeric] {
     return d3.extent(this.getData(), (data: Data) => data.getY());
+  }
+
+  public addSerie(serie: FlChart2dSerie<Data>): void {
+    this.series.push(serie);
   }
 }
 

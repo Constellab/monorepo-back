@@ -5,6 +5,7 @@ import {FlPortalArrowComponent} from './component/fl-portal-arrow/fl-portal-arro
 import {FlTooltipComponent} from './component/fl-tooltip/fl-tooltip.component';
 import {FlPortalService} from './service/fl-portal.service';
 import {FlTooltipService} from './service/fl-tooltip.service';
+import { FlPortalCloseDirective } from './directive/fl-portal-close.directive';
 
 /**
  * Core modules containing components
@@ -13,8 +14,11 @@ import {FlTooltipService} from './service/fl-tooltip.service';
   declarations: [
     FlPortalArrowComponent,
     FlTooltipComponent,
+    FlPortalCloseDirective,
   ],
-  exports: [],
+  exports: [
+    FlPortalCloseDirective
+  ],
   imports: [
     CommonModule,
 
