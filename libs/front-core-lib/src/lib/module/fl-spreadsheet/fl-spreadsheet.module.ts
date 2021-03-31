@@ -21,6 +21,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {MatInputModule} from '@angular/material/input';
 import {FlSpreadsheetSelectionInputComponent} from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
+import { FlSpreadsheetSelectionInputGroupDirective } from './directive/fl-spreadsheet-selection-input-group.directive';
 
 
 @NgModule({
@@ -32,6 +33,7 @@ import {FlSpreadsheetSelectionInputComponent} from './component/fl-spreadsheet-s
     FlSpreadsheetContextMenuComponent,
     FlSpreadsheetChartSelectionComponent,
     FlSpreadsheetSelectionInputComponent,
+    FlSpreadsheetSelectionInputGroupDirective,
   ],
   exports: [
     FlSpreadsheetComponent,

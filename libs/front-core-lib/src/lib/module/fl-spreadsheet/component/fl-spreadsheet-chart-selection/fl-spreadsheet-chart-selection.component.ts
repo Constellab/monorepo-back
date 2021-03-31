@@ -13,7 +13,8 @@ import {FlSheetChartSelection} from '../../model/fl-sheet-chart-selection.class'
 
 interface FormObject {
   // dataSelection: string;
-  series: string;
+  seriesData: string;
+  seriesName: string;
   xLabels: string;
 }
 
@@ -33,7 +34,6 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
               private state: FlSpreadsheetState,
               @Inject(FL_PORTAL_DATA) data: any,
               private overlayRef: FlOverlayRef) {
-    console.log(data, overlayRef);
   }
 
   ngOnInit(): void {
@@ -42,13 +42,17 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
 
   private initForm(): void {
     this.formGp = new FormBuilder().group({
-      series: [null, [
+      seriesData: [null, [
         Validators.required,
-        this.multipleSelectionIsValid(),
+        this.multipleSelectionValidator(),
+      ]],
+      seriesName: [null, [
+        Validators.required,
+        this.singleSelectionValidator()
       ]],
       xLabels: [null, [
         Validators.required,
-        this.singleSelectionIsValid()
+        this.singleSelectionValidator()
       ]],
     });
 
@@ -63,8 +67,9 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
   submit(): void {
     if (this.formGp.valid) {
       const selection: FlSheetChartSelection = new FlSheetChartSelection(
-        FlSheetMultiSelection.fromString(this.state.currentSheet, this.formGp.value.series),
-        FlSheetSelectionFull.FromString(this.state.currentSheet, this.formGp.value.xLabels)
+        FlSheetMultiSelection.fromString(this.state.currentSheet, this.formGp.value.seriesData),
+        FlSheetSelectionFull.FromString(this.state.currentSheet, this.formGp.value.seriesName),
+        FlSheetSelectionFull.FromString(this.state.currentSheet, this.formGp.value.xLabels),
       );
       this.overlayRef.dispose(selection);
     }
@@ -76,7 +81,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
    * Error selectionOutOfBound is selection is out of bound (pass the name of the coord problem)
    * @private
    */
-  private singleSelectionIsValid(): ValidatorFn {
+  private singleSelectionValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } => {
       if (!control.value) {
         return null;
@@ -107,7 +112,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
    * Error selectionOutOfBound is selection is out of bound
    * @private
    */
-  private multipleSelectionIsValid(): ValidatorFn {
+  private multipleSelectionValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } => {
       if (!control.value) {
         return null;

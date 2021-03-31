@@ -10,6 +10,7 @@ export * from './component/fl-spreadsheet-header-cell/fl-spreadsheet-header-cell
 export * from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
 
 // Export the directives
+export * from './directive/fl-spreadsheet-selection-input-group.directive';
 
 // Export the pipe
 export * from './pipe/fl-cell-header.pipe';

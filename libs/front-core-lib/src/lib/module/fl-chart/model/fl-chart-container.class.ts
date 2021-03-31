@@ -99,6 +99,7 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
     this.xAxis = this.group.append('g')
       .attr('transform', 'translate(0,' + this.chartHeight + ')')
       .call(d3.axisBottom(scale.d3Scale));
+        // .tickValues([0, 1, 2, 3]));
 
     return this;
   }

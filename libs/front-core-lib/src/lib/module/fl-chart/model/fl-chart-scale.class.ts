@@ -23,6 +23,8 @@ export interface FlD3AxisScaleLinear<Value extends Numeric> extends FlD3AxisScal
   invert(rangeValue: NumberValue): Value;
 
   ticks(count: number): Value[];
+
+  // tickValues(values: Value[]): this;
 }
 
 

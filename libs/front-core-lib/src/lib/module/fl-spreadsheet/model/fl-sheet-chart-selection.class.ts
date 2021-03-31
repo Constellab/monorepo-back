@@ -4,19 +4,25 @@ import {FlChart2dDatum, FlChart2dMultipleSerie, FlChart2dSerie} from '../../fl-c
 import {FlCell} from './fl-cell.class';
 import {Numeric} from 'd3';
 
+/**
+ * Class to store a selection for a basic chart
+ */
 export class FlSheetChartSelection {
-  series: FlSheetMultiSelection;
+  seriesData: FlSheetMultiSelection;
+  seriesLabels: FlSheetSelection;
   xLabels: FlSheetSelection;
 
-  constructor(series: FlSheetMultiSelection, xLabels: FlSheetSelection) {
-    this.series = series;
+  constructor(series: FlSheetMultiSelection, seriesLabels: FlSheetSelection,
+              xLabels: FlSheetSelection) {
+    this.seriesData = series;
+    this.seriesLabels = seriesLabels;
     this.xLabels = xLabels;
   }
 
   public exportToSeries(): FlChart2dMultipleSerie<any> {
     const series: FlChart2dMultipleSerie<any> = new FlChart2dMultipleSerie();
 
-    const seriesSelections: FlSheetSelection[] = this.series.selections;
+    const seriesSelections: FlSheetSelection[] = this.seriesData.selections;
     for (let i = 0; i < seriesSelections.length; i++) {
       series.addSerie(new FlChart2dSerie<any>(
         this.getSerieData(seriesSelections[i]),
@@ -36,7 +42,7 @@ export class FlSheetChartSelection {
   }
 
   private getXLabelAtIndex(index: number): string {
-    const cells: FlCell[] = this.xLabels.getSelectedCellsFlat();
+    const cells: FlCell[] = this.seriesLabels.getSelectedCellsFlat();
 
     // if there is not more label, return the index as x label
     if (index >= cells.length) {

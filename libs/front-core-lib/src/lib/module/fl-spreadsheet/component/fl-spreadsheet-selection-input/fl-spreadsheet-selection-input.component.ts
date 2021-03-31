@@ -1,13 +1,15 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, Optional} from '@angular/core';
 import {ThemePalette} from '@angular/material/core/common-behaviors/color';
 import {Subscription} from 'rxjs';
 import {AbstractControl} from '@angular/forms';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {FlSheetSelection} from '../../model/fl-sheet-selection.class';
 import {FlSheetMultiSelection} from '../../model/fl-sheet-multi-selection.class';
+import {FlSpreadsheetSelectionInputGroupDirective} from '../../directive/fl-spreadsheet-selection-input-group.directive';
+import {filter} from 'rxjs/operators';
 
 /**
- * Component to link with input to listen to selection and fill input
+ * Component to place in a input to listen to selection and fill input
  */
 @Component({
   selector: 'fl-spreadsheet-selection-input',
@@ -15,6 +17,8 @@ import {FlSheetMultiSelection} from '../../model/fl-sheet-multi-selection.class'
   styleUrls: ['./fl-spreadsheet-selection-input.component.scss']
 })
 export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
+
+  private static id: number = 0;
 
   @Input() inputFormControl: AbstractControl;
 
@@ -27,12 +31,30 @@ export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
 
   selected: boolean = false;
 
-  subscription: Subscription;
+  private subscription: Subscription;
+  private groupSubscription: Subscription;
 
-  constructor(private selectionState: FlSpreadsheetSelectionState) {
+  private readonly id: number;
+
+  constructor(private selectionState: FlSpreadsheetSelectionState,
+              @Optional() private group: FlSpreadsheetSelectionInputGroupDirective) {
+    this.id = FlSpreadsheetSelectionInputComponent.id++;
   }
 
   ngOnInit(): void {
+    if (this.group) {
+      this.subscribeToGroup();
+    }
+  }
+
+  private subscribeToGroup(): void {
+    this.group.subscribeToSelection().pipe(
+      // ignore the emission of this component instance
+      // ignore if this component is not selected
+      filter(id => this.id !== id && this.selected)
+    ).subscribe(
+      () => this.disableSelection()
+    );
   }
 
   get color(): ThemePalette | null {
@@ -40,15 +62,29 @@ export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
   }
 
   toggleSelected(): void {
-    this.selected = !this.selected;
-
-    if (this.selected) {
-      this.subscription = this.selectionState.getSelection().subscribe(
-        selection => this.onNewSelection(selection)
-      );
+    if (!this.selected) {
+      this.enableSelection();
     } else {
-      this.subscription.unsubscribe();
-      this.subscription = null;
+      this.disableSelection();
+    }
+  }
+
+
+  private disableSelection(): void {
+    this.selected = false;
+    this.subscription.unsubscribe();
+    this.subscription = null;
+  }
+
+  private enableSelection(): void {
+    this.selected = true;
+    this.subscription = this.selectionState.getSelection().subscribe(
+      selection => this.onNewSelection(selection)
+    );
+
+    // if the group exists, warn it that this selection is selected
+    if (this.group) {
+      this.group.emitSelection(this.id);
     }
   }
 
@@ -72,6 +108,7 @@ export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
+    this.groupSubscription?.unsubscribe();
   }
 
 
