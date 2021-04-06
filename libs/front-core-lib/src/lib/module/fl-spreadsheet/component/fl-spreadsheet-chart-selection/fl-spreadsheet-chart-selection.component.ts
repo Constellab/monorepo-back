@@ -59,6 +59,15 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
       ]],
     });
 
+    // todo to test remove after
+    this.formGp.patchValue({
+        chartType: FlChartComponentType.HISTOGRAM,
+        seriesData: 'B2:E2,B3:E3,B4:E4,B5:E5',
+        seriesNames: 'A2:A5',
+        xLabels: 'B1:E1'
+      }
+    );
+
     // if there is a multiple selection
     const currentSelection: FlSheetSelection = this.selectionState.currentSelection;
     if (currentSelection && currentSelection.type !== 'single') {

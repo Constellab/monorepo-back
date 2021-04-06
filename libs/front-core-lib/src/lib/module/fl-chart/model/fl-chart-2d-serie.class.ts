@@ -36,6 +36,18 @@ export class FlChart2dSerie<Data extends FlChart2dDatum> extends FlChart2dDataCo
     });
   }
 
+  public getDataWithSerieAt(index: number): FlChartDataWithSerie {
+    return {
+      data: this.getData()[index] ?? null,
+      serieKey: this.key,
+      serieName: this.name
+    };
+  }
+
+  public countData(): number {
+    return this.data.length;
+  }
+
 }
 
 export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlChart2dDataContainerLinear<Data> {
@@ -66,6 +78,34 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlCh
 
   public addSerie(serie: FlChart2dSerie<Data>): void {
     this.series.push(serie);
+  }
+
+  public countSerie(): number {
+    return this.series.length;
+  }
+
+  // return the biggest number of data for a serie
+  public maxSerieDataCount(): number {
+    return this.series.reduce(
+      (p, c) => p?.countData() ?? 0 > c.countData() ? p : c)
+      .countData();
+  }
+
+  public invert(): FlChartDataWithSerie[][] {
+    const max: number = this.maxSerieDataCount();
+
+    const data: FlChartDataWithSerie[][] = [];
+    for (let i = 0; i < max; i++) {
+      const d: FlChartDataWithSerie[] = [];
+
+      for (const serie of this.series) {
+        d.push(serie.getDataWithSerieAt(i));
+      }
+
+      data.push(d);
+    }
+
+    return data;
   }
 
 }
