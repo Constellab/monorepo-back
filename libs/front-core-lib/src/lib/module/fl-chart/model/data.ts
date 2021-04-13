@@ -1,5 +1,6 @@
 import {FlChart2dDatum} from './fl-chart-2d-data.class';
-import { FlChart2dSerie } from './fl-chart-2d-serie.class';
+import {FlChart2dSerie} from './fl-chart-2d-serie.class';
+import {FlChartDomainLinear} from '@monorepo/front-core-lib';
 
 /////////////////////////////////////////////// SINGLE LINE ///////////////////////////////////////////////////
 export const singleSerie = [
@@ -6473,8 +6474,9 @@ export function getMultiSerieData(): FlChart2dSerie<MultiSerieData>[] {
   const series: FlChart2dSerie<MultiSerieData>[] = [];
   for (const serie of multipleSeries) {
     series.push(new FlChart2dSerie<MultiSerieData>(
-      serie.values.map(data => new MultiSerieData(parseInt(data.year), parseInt(data.n)))
-      , serie.key));
+      serie.values.map(data => new MultiSerieData(parseInt(data.year), parseInt(data.n))),
+      new FlChartDomainLinear(),
+      serie.key));
   }
 
   return series;

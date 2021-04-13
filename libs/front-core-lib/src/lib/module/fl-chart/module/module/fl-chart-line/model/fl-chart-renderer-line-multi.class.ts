@@ -2,7 +2,7 @@ import {FlChart2dDatum} from '../../../../model/fl-chart-2d-data.class';
 import * as d3 from 'd3';
 import {Numeric} from 'd3';
 import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../../../../model/fl-chart-2d-renderer.class';
-import {FlChartAxisScaleLinear} from '../../../../model/fl-chart-scale.class';
+import {FlChartAxisScale} from '../../../../model/fl-chart-scale.class';
 import {ValueFn} from 'd3-selection';
 import {FlChart2dMultipleSerie, FlChart2dSerie} from '../../../../model/fl-chart-2d-serie.class';
 
@@ -39,8 +39,8 @@ export class FlChartRendererLineMulti
       .attr('d', this.getDValue(input.xScale, input.yScale));
   }
 
-  private getDValue(xScale: FlChartAxisScaleLinear<Numeric>,
-                    yScale: FlChartAxisScaleLinear<Numeric>): ValueFn<any, FlChart2dSerie<FlChart2dDatum>, any> {
+  private getDValue(xScale: FlChartAxisScale<Numeric>,
+                    yScale: FlChartAxisScale<Numeric>): ValueFn<any, FlChart2dSerie<FlChart2dDatum>, any> {
     return (d: FlChart2dSerie<FlChart2dDatum>) => d3.line<FlChart2dDatum>()
       .x((d: FlChart2dDatum) => xScale.scale(d.getX()))
       .y((d: FlChart2dDatum) => yScale.scale(d.getY()))

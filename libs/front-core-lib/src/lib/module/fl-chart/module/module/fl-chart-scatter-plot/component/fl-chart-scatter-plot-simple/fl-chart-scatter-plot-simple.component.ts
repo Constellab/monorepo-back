@@ -1,6 +1,6 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {getSingleSerieData, SingleSerieData} from '../../../../../model/data';
-import {FlChart2dDataContainer, FlChart2dDataContainerLinear} from '../../../../../model/fl-chart-2d-data.class';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {SingleSerieData} from '../../../../../model/data';
+import {FlChart2dDataContainerLinearI} from '../../../../../model/fl-chart-2d-data.class';
 import {FlChartAxisScaleDate, FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../../../../../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
 import {FlChartRendererScatterPlot} from '../../model/fl-chart-renderer-scatter-plot.class';
@@ -16,36 +16,36 @@ import {FlChartAxis} from '../../../../../model/fl-chart-axis.class';
 })
 export class FlChartScatterPlotSimpleComponent implements OnInit {
 
-
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
 
-  chart: FlChartContainer2d<FlChart2dDataContainerLinear<SingleSerieData>>;
+  @Input() data: FlChart2dDataContainerLinearI<SingleSerieData>;
+
+  chart: FlChartContainer2d<FlChart2dDataContainerLinearI<SingleSerieData>>;
 
 
   constructor() {
   }
 
   ngOnInit(): void {
-    const data: SingleSerieData[] = getSingleSerieData();
-    this.initChart(data);
+    this.initChart();
     this.initBrush();
   }
 
 
   // todo est exactement pareil que le line simple sauf le renderer
-  private initChart(data: SingleSerieData[]): void {
-    const dataContainer: FlChart2dDataContainerLinear<SingleSerieData> = new FlChart2dDataContainer(data);
+  private initChart(): void {
 
     const svg: FlChartSvg = new FlChartSvg(460, 400).initSvg(this.chartHtmlContainer.nativeElement);
-    const chart: FlChartContainer2d<FlChart2dDataContainerLinear<SingleSerieData>> = new FlChartContainer2d(svg.svg, svg.width, svg.height);
+    const chart: FlChartContainer2d<FlChart2dDataContainerLinearI<SingleSerieData>>
+      = new FlChartContainer2d(svg.svg, svg.width, svg.height);
 
     const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleDate()
-      .domain(dataContainer.getDomainX())
+      .domain(this.data.getDomainX())
       .range(chart.getRangeX());
     const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale);
 
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
-      .domain(dataContainer.getDomainY())
+      .domain(this.data.getDomainY())
       .range(chart.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
@@ -53,7 +53,7 @@ export class FlChartScatterPlotSimpleComponent implements OnInit {
       .initXAxis(xAxis)
       .initAxisY(yAxis)
       .addRenderer(new FlChartRendererScatterPlot())
-      .initData(dataContainer);
+      .initData(this.data);
 
     this.chart = chart;
   }

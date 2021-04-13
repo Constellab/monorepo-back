@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 import {Numeric} from 'd3';
-import {FlChart2dDataContainer, FlChart2dDataContainerLinear, FlChart2dDatum, FlChartAxisTickFormat} from './fl-chart-2d-data.class';
+import {FlChart2dDataContainer, FlChart2dDataContainerI, FlChart2dDatum, FlChartAxisTickFormat} from './fl-chart-2d-data.class';
+import {FlChartDomain} from './fl-chart-domain.class';
 
 /**
  * Key to distingue a serie form another
@@ -20,8 +21,8 @@ export class FlChart2dSerie<Data extends FlChart2dDatum> extends FlChart2dDataCo
 
   name: string;
 
-  constructor(data: Data[], serieName: string) {
-    super(data);
+  constructor(data: Data[], domainX: FlChartDomain, serieName: string) {
+    super(data, domainX);
     this.key = FlChart2dSerie.key++;
     this.name = serieName;
   }
@@ -50,13 +51,17 @@ export class FlChart2dSerie<Data extends FlChart2dDatum> extends FlChart2dDataCo
 
 }
 
-export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlChart2dDataContainerLinear<Data> {
+export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlChart2dDataContainerI<Data> {
 
   series: FlChart2dSerie<Data>[];
 
   axisXFormat: FlChartAxisTickFormat | null;
 
-  constructor(series: FlChart2dSerie<Data>[] = []) {
+  domainX: FlChartDomain;
+
+
+  constructor(domainX: FlChartDomain, series: FlChart2dSerie<Data>[] = []) {
+    this.domainX = domainX;
     this.series = series;
   }
 
@@ -68,8 +73,8 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlCh
   }
 
 
-  getDomainX(): [Numeric, Numeric] {
-    return d3.extent(this.getData(), (data: Data) => data.getX());
+  getDomainX(): Numeric[] {
+    return this.domainX.getDomain(this.getData(), (data) => data.getX());
   }
 
   getDomainY(): [Numeric, Numeric] {

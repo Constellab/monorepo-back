@@ -1,5 +1,5 @@
 import {extent, Numeric, min, max} from 'd3';
-import {FlChart2dDataContainerLinear, FlChartAxisTickFormat} from '../../../../model/fl-chart-2d-data.class';
+import {FlChart2dDataContainerLinearI, FlChartAxisTickFormat} from '../../../../model/fl-chart-2d-data.class';
 
 export interface FlChart2dHistogramDatum {
 
@@ -11,7 +11,7 @@ export interface FlChart2dHistogramDatum {
 }
 
 export class FlChart2dHistoDataContainer<Data extends FlChart2dHistogramDatum>
-  implements FlChart2dDataContainerLinear<Data> {
+  implements FlChart2dDataContainerLinearI<Data> {
 
   data: Data[];
 

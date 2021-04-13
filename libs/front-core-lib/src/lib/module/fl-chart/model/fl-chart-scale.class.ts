@@ -38,14 +38,26 @@ export abstract class FlChartAxisScale<Value> {
 
   protected abstract initScale(): FlD3AxisScale<Value>;
 
+  /**
+   * Function used to recalibrate the domain (usually for zooming)
+   * @param from start position of the new range
+   * @param to end position of the new range
+   * @protected
+   */
+  public abstract zoom(from: number, to: number): void;
+
   public scale(value: Value): number {
     return this.d3Scale(value);
   }
 
 
-  public range(range: Iterable<number>): this {
+  public range(range: [number, number]): this {
     this.d3Scale.range(range);
     return this;
+  }
+
+  public getRange(): [number, number] {
+    return this.d3Scale.range() as [number, number];
   }
 
   public domain(domain: Value[]): this {
@@ -70,6 +82,16 @@ export abstract class FlChartAxisScaleLinear<Value extends Numeric> extends FlCh
   public readonly d3Scale: FlD3AxisScaleLinear<Value>;
 
   protected abstract initScale(): FlD3AxisScaleLinear<Value>;
+
+  /**
+   *
+   * @param from
+   * @param to
+   */
+  public zoom(from: number, to: number): void {
+    // use invert method to get domain value based on position
+    this.d3Scale.domain([this.d3Scale.invert(from), this.d3Scale.invert(to)]);
+  }
 
   public invert(rangeValue: number): Value {
     return this.d3Scale.invert(rangeValue);
@@ -111,11 +133,24 @@ export class FlChartAxisScaleBand extends FlChartAxisScale<Numeric> {
   }
 
   protected initScale(): ScaleBand<Numeric> {
-    return d3.scaleBand();
+    const band: ScaleBand<Numeric> = d3.scaleBand();
+    band.padding(0.1);
+    return band;
   }
 
   public bandwidth(): number {
     return this.d3Scale.bandwidth();
+  }
+
+  public zoom(from: number, to: number): void {
+    const fromDomain: number = this.invertPos(from);
+    const toDomain: number = this.invertPos(to);
+
+    this.domain(this.getDomain().slice(fromDomain, toDomain + 1));
+  }
+
+  private invertPos(rangeValue: number): number {
+    return Math.trunc(rangeValue / this.bandwidth());
   }
 
 

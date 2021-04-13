@@ -1,27 +1,26 @@
 import * as d3 from 'd3';
 import {Numeric} from 'd3';
+import {FlChartDomain} from './fl-chart-domain.class';
 
 export type FlChartAxisTickFormat = (domainValue: Numeric, index: number) => string;
 
+/**
+ *
+ */
 export interface FlChart2dDataContainerI<Data> {
-
   axisXFormat: FlChartAxisTickFormat | null;
 
   getData(): Data[];
 
   getDomainX(): Numeric[];
 
-  getDomainY(): Numeric[];
+  getDomainY(): [Numeric, Numeric];
 }
 
 
-export interface FlChart2dDataContainerLinear<Data> extends FlChart2dDataContainerI<Data> {
-
-  getData(): Data[];
+export interface FlChart2dDataContainerLinearI<Data> extends FlChart2dDataContainerI<Data> {
 
   getDomainX(): [Numeric, Numeric];
-
-  getDomainY(): [Numeric, Numeric];
 }
 
 export interface FlChart2dDatum {
@@ -31,32 +30,31 @@ export interface FlChart2dDatum {
   getY(): Numeric;
 }
 
-
-export class FlChart2dDataContainer<Data extends FlChart2dDatum>
-  implements FlChart2dDataContainerLinear<Data> {
+export abstract class FlChart2dDataContainer<Data extends FlChart2dDatum>
+  implements FlChart2dDataContainerI<Data> {
 
   data: Data[];
 
+  domainX: FlChartDomain;
+
   axisXFormat: FlChartAxisTickFormat | null;
 
-
-  constructor(data: Data[]) {
+  protected constructor(data: Data[], domainX: FlChartDomain) {
     this.data = data;
+    this.domainX = domainX;
   }
 
-  getData(): Data[] {
+  public getData(): Data[] {
     return this.data;
   }
 
-
-  getDomainX(): [Numeric, Numeric] {
-    return d3.extent(this.data, (data: Data) => data.getX());
+  getDomainX(): Numeric[] {
+    return this.domainX.getDomain(this.data, (data: Data) => data.getX());
   }
 
-  getDomainY(): [Numeric, Numeric] {
+  public getDomainY(): [Numeric, Numeric] {
     return d3.extent(this.data, (data: Data) => data.getY());
   }
-
 }
 
 ////////////////////// HEAT MAP ////////////////////

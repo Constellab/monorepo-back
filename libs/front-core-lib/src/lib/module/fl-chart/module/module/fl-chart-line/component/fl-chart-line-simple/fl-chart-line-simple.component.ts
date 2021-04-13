@@ -1,10 +1,10 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Numeric} from 'd3';
 import {FlChartAxisScaleDate, FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../../../../../model/fl-chart-scale.class';
-import {FlChart2dDataContainer, FlChart2dDataContainerLinear} from '../../../../../model/fl-chart-2d-data.class';
+import {FlChart2dDataContainerLinearI} from '../../../../../model/fl-chart-2d-data.class';
 import {FlChart2dBrush, FlChartBrush} from '../../../../../model/fl-chart-2d-brush.class';
 import {FlChart2dHoverLine} from '../../../../../model/fl-chart-2d-hover.class';
-import {getSingleSerieData, SingleSerieData} from '../../../../../model/data';
+import {SingleSerieData} from '../../../../../model/data';
 import {FlChartSvg} from '../../../../../model/fl-chart-svg.class';
 import {FlChartRendererLine} from '../../model/fl-chart-renderer-line.class';
 import {FlChartContainer2d} from '../../../../../model/fl-chart-container.class';
@@ -19,9 +19,9 @@ export class FlChartLineSimpleComponent implements OnInit {
 
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
 
-  chart: FlChartContainer2d<FlChart2dDataContainerLinear<SingleSerieData>>;
+  @Input() data: FlChart2dDataContainerLinearI<SingleSerieData>;
 
-  data: FlChart2dDataContainerLinear<SingleSerieData>;
+  chart: FlChartContainer2d<FlChart2dDataContainerLinearI<SingleSerieData>>;
 
   brush: FlChartBrush;
 
@@ -29,18 +29,17 @@ export class FlChartLineSimpleComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const data: SingleSerieData[] = getSingleSerieData();
-    this.initChart(data);
+    this.initChart();
     this.initBrush();
     this.initHover();
   }
 
 
-  private initChart(data: SingleSerieData[]): void {
-    this.data = new FlChart2dDataContainer(data);
+  private initChart(): void {
 
     const svg: FlChartSvg = new FlChartSvg(460, 400).initSvg(this.chartHtmlContainer.nativeElement);
-    const chart: FlChartContainer2d<FlChart2dDataContainerLinear<SingleSerieData>> = new FlChartContainer2d(svg.svg, svg.width, svg.height);
+    const chart: FlChartContainer2d<FlChart2dDataContainerLinearI<SingleSerieData>>
+      = new FlChartContainer2d(svg.svg, svg.width, svg.height);
 
 
     const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleDate()

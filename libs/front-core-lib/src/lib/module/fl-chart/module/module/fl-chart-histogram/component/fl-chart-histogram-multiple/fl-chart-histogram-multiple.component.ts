@@ -3,7 +3,7 @@ import {FlChartComponent} from '../../../../../model/fl-chart-component.class';
 import {FlChart2dMultipleSerie} from '../../../../../model/fl-chart-2d-serie.class';
 import {MultiSerieData} from '../../../../../model/data';
 import {FlChartContainer2d} from '../../../../../model/fl-chart-container.class';
-import {FlChartBrush} from '../../../../../model/fl-chart-2d-brush.class';
+import {FlChart2dBrushX, FlChartBrush} from '../../../../../model/fl-chart-2d-brush.class';
 import {FlChartSvg} from '../../../../../model/fl-chart-svg.class';
 import {
   FlChartAxisScale,
@@ -32,11 +32,13 @@ export class FlChartHistogramMultipleComponent implements OnInit, FlChartCompone
 
   brush: FlChartBrush;
 
+
   constructor() {
   }
 
   ngOnInit(): void {
     this.initChart();
+    this.initBrush();
     // this.initHover();
   }
 
@@ -46,14 +48,11 @@ export class FlChartHistogramMultipleComponent implements OnInit, FlChartCompone
     const svg: FlChartSvg = new FlChartSvg(460, 400).initSvg(this.chartHtmlContainer.nativeElement);
     const chart: FlChartContainer2d<FlChart2dMultipleSerie<MultiSerieData>> = new FlChartContainer2d(svg.svg, svg.width, svg.height);
 
-    const xScale2: FlChartAxisScale<Numeric> = new FlChartAxisScaleBand()
-      .domain(this.data.series[0].getData().map(data => data.getX()))
-      .range(chart.getRangeX());
-
-    const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
+    const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleBand()
       .domain(this.data.getDomainX())
       .range(chart.getRangeX());
-    const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale2)
+
+    const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
       .setTickFormat(this.data.axisXFormat);
 
 
@@ -71,6 +70,10 @@ export class FlChartHistogramMultipleComponent implements OnInit, FlChartCompone
       .initData(this.data);
 
     this.chart = chart;
+  }
+
+  private initBrush(): void {
+    this.brush = new FlChart2dBrushX(this.chart);
   }
 
 }

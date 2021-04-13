@@ -132,8 +132,8 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
       return;
     }
 
-    this.zoomX(fromX, toX);
-    this.zoomY(fromY, toY);
+    this.zoomXAxis(fromX, toX);
+    this.zoomYAxis(fromY, toY);
     this.refreshChartRendering();
   }
 
@@ -151,8 +151,12 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
       return;
     }
 
-    this.xAxis.zoom(from, to);
+    this.zoomXAxis(from, to);
     this.refreshChartRendering();
+  }
+
+  private zoomXAxis(from: number, to: number): void {
+    this.xAxis.zoom(from, to);
   }
 
   public resetZoomX(): void {
@@ -162,7 +166,6 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
 
   private resetAxisX(): void {
     this.xAxis.resetZoom(this.dataContainer.getDomainX());
-
   }
 
   ///////////////////////////////////////// ZOOM Y //////////////////////////////////
@@ -171,8 +174,12 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
       return;
     }
 
-    this.yAxis.zoom(to, from);
+    this.zoomYAxis(from, to);
     this.refreshChartRendering();
+  }
+
+  private zoomYAxis(from: number, to: number): void {
+    this.yAxis.zoom(to, from);
   }
 
   public resetZoomY(): void {

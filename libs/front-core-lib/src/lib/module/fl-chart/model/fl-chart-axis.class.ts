@@ -1,4 +1,4 @@
-import {FlChartAxisScaleLinear} from './fl-chart-scale.class';
+import {FlChartAxisScale} from './fl-chart-scale.class';
 import {axisBottom, axisLeft, axisRight, axisTop, Numeric} from 'd3';
 import {Selection} from 'd3-selection';
 import {Axis, AxisScale} from 'd3-axis';
@@ -12,7 +12,7 @@ export type FlChartAxisType = 'left' | 'bottom' | 'right' | 'top';
 
 export class FlChartAxis {
 
-  public scale: FlChartAxisScaleLinear<Numeric>;
+  public scale: FlChartAxisScale<Numeric>;
 
   public axisContainer: Selection<any, void, null, undefined>;
 
@@ -26,7 +26,7 @@ export class FlChartAxis {
     this.type = type;
   }
 
-  public setScale(scale: FlChartAxisScaleLinear<Numeric>): this {
+  public setScale(scale: FlChartAxisScale<Numeric>): this {
     this.scale = scale;
     return this;
   }
@@ -101,7 +101,7 @@ export class FlChartAxis {
     }
 
     // update x scale domain
-    this.scale.domain([this.scale.invert(from), this.scale.invert(to)]);
+    this.scale.zoom(from, to);
 
     // Update axis
     this.axisContainer.transition().duration(this.zoomDuration).call(this.createAxis());

@@ -5,6 +5,7 @@ import {FlCell} from './fl-cell.class';
 import {Numeric} from 'd3';
 import {FlChart2dMultipleSerie, FlChart2dSerie} from '../../fl-chart/model/fl-chart-2d-serie.class';
 import {FlChartComponentType} from '../../fl-chart/model/fl-chart-component.class';
+import {FlChartDomain, FlChartDomainComplete, FlChartDomainLinear} from '../../fl-chart/model/fl-chart-domain.class';
 
 /**
  * Class to store a selection for a basic chart
@@ -20,12 +21,14 @@ export class FlSheetChartSelection {
   }
 
   public exportToSeries(): FlChart2dMultipleSerie<any> {
-    const series: FlChart2dMultipleSerie<any> = new FlChart2dMultipleSerie();
+    const domainX: FlChartDomain = this.getDomainX();
+    const series: FlChart2dMultipleSerie<any> = new FlChart2dMultipleSerie(domainX);
 
     const seriesSelections: FlSheetSelection[] = this.seriesData.selections;
     for (let i = 0; i < seriesSelections.length; i++) {
       series.addSerie(new FlChart2dSerie<any>(
         this.getSerieData(seriesSelections[i]),
+        domainX,
         this.getSerieNameAtIndex(i)));
     }
 
@@ -70,7 +73,20 @@ export class FlSheetChartSelection {
 
     const values: any = this.xLabels.getSelectedCellsValuesFlat();
     // return a string only for integer
-    return ((x: number) => Number.isInteger(x) ? values[x].toString() ?? '' : '');
+    return ((x: number) => Number.isInteger(x) ? values[(x)].toString() ?? '' : '');
+  }
+
+  /**
+   * Get the object to get the X domain
+   * @private
+   */
+  private getDomainX(): FlChartDomain {
+    switch (this.chartType) {
+      case FlChartComponentType.HISTOGRAM:
+        return new FlChartDomainComplete();
+      default:
+        return new FlChartDomainLinear();
+    }
   }
 
 }
