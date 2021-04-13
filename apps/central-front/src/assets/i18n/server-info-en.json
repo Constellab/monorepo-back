@@ -15,5 +15,7 @@
   "server_info_updated": "Server information updated",
   "no_server_info": "No server info",
   "ip": "Ip address",
-  "ipv6": "Ipv6 address"
+  "ipv6": "Ipv6 address",
+  "apiUrl": "Api url",
+  "frontUrl": "Front url"
 }

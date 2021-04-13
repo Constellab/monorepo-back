@@ -22,13 +22,23 @@
              placeholder="{{'ipv6' | translate}}">
     </mat-form-field>
 
-    <!--  URL  -->
+    <!--  API URL  -->
     <mat-form-field class="g-form-input" appearance="outline">
-      <mat-label>{{'url' | translate}}</mat-label>
-      <input matInput formControlName="url" required
-             placeholder="{{'url' | translate}}" >
-      <mat-error *ngIf="formGp.get('url').hasError('required')">
-        {{'url' | flErrorRequired}}
+      <mat-label>{{'apiUrl' | translate}}</mat-label>
+      <input matInput formControlName="apiUrl" required
+             placeholder="{{'apiUrl' | translate}}" >
+      <mat-error *ngIf="formGp.get('apiUrl').hasError('required')">
+        {{'apiUrl' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  Front URL  -->
+    <mat-form-field class="g-form-input" appearance="outline">
+      <mat-label>{{'frontUrl' | translate}}</mat-label>
+      <input matInput formControlName="frontUrl" required
+             placeholder="{{'frontUrl' | translate}}" >
+      <mat-error *ngIf="formGp.get('frontUrl').hasError('required')">
+        {{'frontUrl' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 

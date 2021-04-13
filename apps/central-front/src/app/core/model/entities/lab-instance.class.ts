@@ -40,8 +40,11 @@ export class LabInstance extends BaseEntity {
   // ip v6 of the server
   ipv6: string;
 
-  // ip v6 of the server
-  url: string;
+  // api url of the lab
+  apiUrl: string;
+
+  // front url of the lab
+  frontUrl: string;
 
   @Type(() => ServerInfo)
   serverInfo: ServerInfo;

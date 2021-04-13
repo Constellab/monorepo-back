@@ -36,7 +36,8 @@ export class LabInstanceFormDialogComponent extends FlFormDialogAbstractDirectiv
       id: [null],
       ip: [null, Validators.required],
       ipv6: [null],
-      url: [null, [Validators.required, Validators.min(0)]],
+      apiUrl: [null, [Validators.required]],
+      frontUrl: [null, [Validators.required]],
       serverInfo: [null, [Validators.required]],
       owner: [null, Validators.required],
       lab: [{value: null, disabled: this.isUpdateMode()}, Validators.required]

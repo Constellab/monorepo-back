@@ -2,10 +2,17 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {constBaseRoute, constBiotaRoute, constBioxRoute} from '../core/utils/base-route';
 import {MainAppComponent} from './component/main-app/main-app.component';
+import {AutoLoginGuard} from './guard/auto-login.guard';
+import {FlLabRoute} from '@monorepo/front-core-lib';
 
 const routes: Routes = [
   {
     path: '', redirectTo: constBaseRoute, pathMatch: 'full'
+  },
+  {
+    // route to get the token from url and auto-log the user
+    // the children : [] is used to make a route without a component because there is a redirection
+    path: FlLabRoute.autoLogin.route, canActivate: [AutoLoginGuard], children: [],
   },
   {
     path: constBaseRoute, component: MainAppComponent, canActivate: [],

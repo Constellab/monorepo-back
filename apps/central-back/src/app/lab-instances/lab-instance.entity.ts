@@ -44,9 +44,13 @@ export class LabInstance extends EntityWithStatus<LabInstanceStatusHistory> impl
   @Column({nullable: true, length: 50})
   ipv6: string;
 
-  // ip v6 of the server
+  // url of the api server
   @Column({nullable: false, length: 255})
-  url: string;
+  apiUrl: string;
+
+  // url of the front server
+  @Column({nullable: false, length: 255})
+  frontUrl: string;
 
   @NotUpdatable()
   @Type(() => ServerInfo)

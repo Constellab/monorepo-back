@@ -63,7 +63,7 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
 
       return {
         labInstance: labInstance,
-        token: labAuth.access_token
+        token: 'Bearer ' + labAuth.access_token
       };
     } catch (e) {
       console.log(e);

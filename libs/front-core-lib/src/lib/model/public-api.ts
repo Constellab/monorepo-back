@@ -1,6 +1,9 @@
 // Export the datasource
 export * from './datasource/public-api';
 
+// Export the shared
+export * from './shared/public-api';
+
 // Export the model
 export * from './fl-entity.class';
 export * from './fl-event-wrapper.class';

@@ -21,7 +21,7 @@ export class ExternalLabApiService {
    * Make an http post with the ip of the lab and the API key of the lab in header
    */
   public post(labInfo: LabServerInfo, route: string, body: any): Observable<any> {
-    return this.httpService.post(this.constructRoute(labInfo.url, route), body, this.getRequestConfig(labInfo.apiKey)).pipe(
+    return this.httpService.post(this.constructRoute(labInfo.apiUrl, route), body, this.getRequestConfig(labInfo.apiKey)).pipe(
       map(response => response.data)
     );
   }
@@ -30,7 +30,7 @@ export class ExternalLabApiService {
    * Make an http put with the ip of the lab and the API key of the lab in header
    */
   public put(labInfo: LabServerInfo, route: string, body: any): Observable<any> {
-    return this.httpService.put(this.constructRoute(labInfo.url, route), body, this.getRequestConfig(labInfo.apiKey)).pipe(
+    return this.httpService.put(this.constructRoute(labInfo.apiUrl, route), body, this.getRequestConfig(labInfo.apiKey)).pipe(
       map(response => response.data)
     );
   }
@@ -65,7 +65,7 @@ export class ExternalLabApiService {
     // add the formData header
     requestConfig.headers = Object.assign(requestConfig.headers, formData.getHeaders());
 
-    return this.httpService.post(this.constructRoute(labInfo.url, route), formData.getBuffer(),
+    return this.httpService.post(this.constructRoute(labInfo.apiUrl, route), formData.getBuffer(),
       {headers: formData.getHeaders()}).pipe(
       map(response => response.data)
     );

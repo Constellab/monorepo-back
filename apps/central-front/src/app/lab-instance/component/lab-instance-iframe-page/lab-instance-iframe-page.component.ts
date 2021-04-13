@@ -36,7 +36,7 @@ export class LabInstanceIframePageComponent implements OnInit {
   }
 
   private init(id: string, queryParams: Params): void {
-    // this.logUserToLab(id);
+    this.logUserToLab(id);
 
     if (queryParams && queryParams.objectType && queryParams.objectId) {
       this.iframeOptions = queryParams as LabIframeOptions;

@@ -3,7 +3,7 @@ import {HttpEvent, HttpHandler, HttpHeaders, HttpInterceptor, HttpRequest} from 
 import {Observable} from 'rxjs';
 import {FlTranslateService} from '../module/fl-translate/service/fl-translate.service';
 
-@Injectable({providedIn: 'root'})
+@Injectable()
 export class FlHttpInterceptorService implements HttpInterceptor {
 
   constructor(private translateService: FlTranslateService) {

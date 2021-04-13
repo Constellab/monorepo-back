@@ -10,4 +10,7 @@ export interface Environment {
 
   // url for the jupyter lab
   jupyterLabUrl: string;
+
+  // url for the central api
+  centralApiUrl: string;
 }

@@ -6,5 +6,6 @@ export const environment: Environment = {
   apiBaseUrl: apiBaseUrl,
   apiUrl: `${apiBaseUrl}core-api/`,
   jupyterLabUrl: 'https://jlab.benj.gencovery.io/' +
-    '?token=JSLaMCrFtncD66b4D9kr2Bfod5E5XAT4iaVgtHE3KeER4NPPeLDMVqjL7Qqi6XMDZR7uqGSMcDDXKcLX3b65kPUkdKsXXq24'
+    '?token=JSLaMCrFtncD66b4D9kr2Bfod5E5XAT4iaVgtHE3KeER4NPPeLDMVqjL7Qqi6XMDZR7uqGSMcDDXKcLX3b65kPUkdKsXXq24',
+  centralApiUrl: 'https://prod-back.gws.gencovery.com/'
 };

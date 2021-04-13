@@ -1,15 +1,6 @@
 import {HttpHeaders, HttpParams} from '@angular/common/http';
 
-export interface FlHttpOption {
-  headers?: HttpHeaders | {
-    [header: string]: string | string[];
-  };
-  observe?: any;
-  params?: HttpParams | {
-    [param: string]: string | string[];
-  };
-  reportProgress?: boolean;
-
+export interface FlHttpGetUrlOption{
   /**
    * the N° of the page if the request if paginated
    */
@@ -19,6 +10,22 @@ export interface FlHttpOption {
    * the size of the page if the request if paginated
    */
   pageSize?: number;
+
+  /**
+   * If provided it overrides the api url
+   */
+  overrideApiUrl?: string;
+}
+
+export interface FlHttpOption extends FlHttpGetUrlOption{
+  headers?: HttpHeaders | {
+    [header: string]: string | string[];
+  };
+  observe?: any;
+  params?: HttpParams | {
+    [param: string]: string | string[];
+  };
+  reportProgress?: boolean;
 
   /**
    * if set to true the call supposed that the result is a {@link FlPage}
@@ -43,5 +50,6 @@ export interface FlHttpOption {
    * duration of the snackbar if an error is triggered
    */
   errorSnackBarDuration?: number;
+
 }
 

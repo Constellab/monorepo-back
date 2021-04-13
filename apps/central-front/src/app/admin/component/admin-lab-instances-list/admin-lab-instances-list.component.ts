@@ -16,8 +16,8 @@ export class AdminLabInstancesListComponent implements OnInit {
 
   labInstances: FlArrayObs<LabInstance>;
 
-  displayedColumns: FlTableColumn<LabInstance>[] = ['lab', 'owner', 'currentStatus', 'ip', 'ipv6', 'url',
-    'serverInfo', 'actions'];
+  displayedColumns: FlTableColumn<LabInstance>[] = ['lab', 'owner', 'currentStatus', 'ip', 'ipv6', 'apiUrl',
+    'frontUrl', 'serverInfo', 'actions'];
 
   constructor(private labInstanceService: LabInstanceService,
               private dialogService: FlDialogService) {

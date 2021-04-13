@@ -20,21 +20,12 @@ export class ExternalLabUserService {
    * Log the user to the lab, it returns a one time token for the user
    * to open the lab. Then in the lab it will generate a JWT for the user
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public login(labInfo: LabServerInfo, user: User): Promise<ExternalLabLoginResponse> {
+    // todo replace with user
     const body: any = {
-      uri: '123456'
+      uri: 'be6fd0a0-4494-4ad2-9a62-9a403e64d733'
     };
 
     return this.externalLabApiService.post(labInfo, `${this.route}/generate-access-token`, body).toPromise();
-
-    // const formData: FormData = new FormData();
-    // formData.append('username', '123');
-    // formData.append('password', 'string');
-    // formData.append('scope', '');
-    // formData.append('client_id', '');
-    // formData.append('client_secret', '');
-    //
-    // return this.externalLabApiService.postFormData(labInfo, `handshake`, formData).toPromise();
   }
 }

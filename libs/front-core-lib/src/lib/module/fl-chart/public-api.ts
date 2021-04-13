@@ -26,6 +26,7 @@ export * from './model/fl-chart-2d-serie.class';
 export * from './model/fl-chart-axis.class';
 export * from './model/fl-chart-component.class';
 export * from './model/fl-chart-container.class';
+export * from './model/fl-chart-domain.class';
 export * from './model/fl-chart-scale.class';
 export * from './model/fl-chart-scale-color.class';
 export * from './model/fl-chart-svg.class';

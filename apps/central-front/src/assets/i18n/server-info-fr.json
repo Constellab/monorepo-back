@@ -15,5 +15,7 @@
   "server_info_updated": "Informations du serveur modifié",
   "no_server_info": "Aucun serveur",
   "ip": "Adresse Ip",
-  "ipv6": "Adresse Ipv6"
+  "ipv6": "Adresse Ipv6",
+  "apiUrl": "Url de l'API",
+  "frontUrl": "URL du front"
 }
