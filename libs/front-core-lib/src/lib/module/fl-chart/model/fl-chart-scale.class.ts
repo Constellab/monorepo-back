@@ -1,6 +1,6 @@
-import {NumberValue, ScaleBand} from 'd3-scale';
+import {InterpolatorFactory, NumberValue, ScaleBand} from 'd3-scale';
 import * as d3 from 'd3';
-import {AxisScale, Numeric} from 'd3';
+import {AxisScale, interpolateRound, Numeric} from 'd3';
 
 export interface FlD3AxisScale<Value> extends AxisScale<Value> {
   (value: Value): number;
@@ -24,6 +24,10 @@ export interface FlD3AxisScaleLinear<Value extends Numeric> extends FlD3AxisScal
 
   ticks(count: number): Value[];
 
+  interpolate(interpolate: InterpolatorFactory<any, any>): this;
+
+  nice(count?: number): this;
+
   // tickValues(values: Value[]): this;
 }
 
@@ -45,6 +49,11 @@ export abstract class FlChartAxisScale<Value> {
    * @protected
    */
   public abstract zoom(from: number, to: number): void;
+
+  /**
+   * Function to extends slightly the domain so all the values are in the graph
+   */
+  public abstract nice(): this;
 
   public scale(value: Value): number {
     return this.d3Scale(value);
@@ -100,6 +109,11 @@ export abstract class FlChartAxisScaleLinear<Value extends Numeric> extends FlCh
   public ticks(count: number): Value[] {
     return this.d3Scale.ticks(count);
   }
+
+  public interpolate(): this {
+    this.d3Scale.interpolate(interpolateRound);
+    return this;
+  }
 }
 
 
@@ -112,6 +126,12 @@ export class FlChartAxisScaleDate extends FlChartAxisScaleLinear<Numeric> {
   protected initScale(): FlD3AxisScaleLinear<Date> {
     return d3.scaleTime();
   }
+
+
+  public nice(): this {
+    this.d3Scale.nice(1);
+    return this;
+  }
 }
 
 export class FlChartAxisScaleNumber extends FlChartAxisScaleLinear<Numeric> {
@@ -122,6 +142,12 @@ export class FlChartAxisScaleNumber extends FlChartAxisScaleLinear<Numeric> {
 
   protected initScale(): FlD3AxisScaleLinear<Numeric> {
     return d3.scaleLinear();
+  }
+
+  public nice(): this {
+    // todo a améliorer car ça ne fonction pas très bien pour les X = 0 1 2 3 4...
+    this.d3Scale.nice();
+    return this;
   }
 }
 
@@ -152,6 +178,13 @@ export class FlChartAxisScaleBand extends FlChartAxisScale<Numeric> {
   private invertPos(rangeValue: number): number {
     return Math.trunc(rangeValue / this.bandwidth());
   }
+
+  // do nothing on band, because the domain is already good
+  nice(): this {
+    return this;
+  }
+
+
 
 
 }

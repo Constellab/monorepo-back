@@ -42,9 +42,45 @@ export class FlSheetChartSelection {
 
     // create a chart datum for each values
     // take index as x and cell value as Y if it's a number (0 otherwise)
-    // todo check if we et 0 in case of NAN
-    return values.map((value, index) => new FlSheetChartDatum(index, isNaN(value) ? 0 : value));
+    // todo check if we set 0 in case of NAN
+    return values.map((value, index) => new FlSheetChartDatum(index, isNaN(value) ? 0 : parseFloat(value)));
   }
+
+
+  // TODO to improve the methods 2
+  // elle servent a utiliser des données comme X au lieu de Y (voir excel salaire/voiture
+  public exportToSeries2(): FlChart2dMultipleSerie<any> {
+    const domainX: FlChartDomain = this.getDomainX();
+    const series: FlChart2dMultipleSerie<any> = new FlChart2dMultipleSerie(domainX);
+
+    const seriesSelections: FlSheetSelection[] = this.seriesData.selections;
+
+    const xData: any[] = seriesSelections[0].getSelectedCellsValuesFlat();
+
+    for (let i = 1; i < seriesSelections.length; i++) {
+      series.addSerie(new FlChart2dSerie<any>(
+        this.getSerieData2(xData, seriesSelections[i]),
+        domainX,
+        this.getSerieNameAtIndex(i)));
+    }
+
+    series.axisXFormat = this.getXAxisFormat();
+
+    return series;
+  }
+
+  private getSerieData2(xData: any[], selection: FlSheetSelection): FlChart2dDatum[] {
+    const values: any[] = selection.getSelectedCellsValuesFlat();
+
+    // create a chart datum for each values
+    // take index as x and cell value as Y if it's a number (0 otherwise)
+    // todo check if we set 0 in case of NAN
+    return values.map((value, index) => new FlSheetChartDatum(
+      isNaN(xData[index]) ? 0 : parseFloat(xData[index]),
+      isNaN(value) ? 0 : parseFloat(value)
+    ));
+  }
+
 
   // retrieve the serie name from the series labels selection at a specific index
   private getSerieNameAtIndex(index: number): string {
@@ -73,7 +109,7 @@ export class FlSheetChartSelection {
 
     const values: any = this.xLabels.getSelectedCellsValuesFlat();
     // return a string only for integer
-    return ((x: number) => Number.isInteger(x) ? values[(x)].toString() ?? '' : '');
+    return ((x: number) => Number.isInteger(x) ? values[(x)]?.toString() ?? x : '');
   }
 
   /**
@@ -84,6 +120,8 @@ export class FlSheetChartSelection {
     switch (this.chartType) {
       case FlChartComponentType.HISTOGRAM:
         return new FlChartDomainComplete();
+      case FlChartComponentType.SCATTER_PLOT:
+        return new FlChartDomainLinear(0.5);
       default:
         return new FlChartDomainLinear();
     }

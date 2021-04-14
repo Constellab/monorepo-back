@@ -21,7 +21,7 @@ export class FlChartScatterPlotRendererMulti
       .data((d) => d.getDataWithSerie())
       .enter()
       .append('circle')
-      .attr('r', 1.5)
+      .attr('r', 3)
       .style('fill', (d: FlChartDataWithSerie) => this.colorScale.scale(d.serieKey))
       .attr('cx', (d: FlChartDataWithSerie) => input.xScale.scale(d.data.getX()))
       .attr('cy', (d: FlChartDataWithSerie) => input.yScale.scale(d.data.getY()));

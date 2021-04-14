@@ -84,8 +84,8 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
       const selection: FlSheetChartSelection = new FlSheetChartSelection(
         value.chartType,
         FlSheetMultiSelection.fromString(sheet, this.formGp.value.seriesData),
-        value.seriesNames != null ? FlSheetSelectionFull.fromString(sheet, this.formGp.value.seriesNames) : null,
-        value.xLabels != null ? FlSheetSelectionFull.fromString(sheet, this.formGp.value.xLabels) : null,
+        value.seriesNames ? FlSheetSelectionFull.fromString(sheet, this.formGp.value.seriesNames) : null,
+        value.xLabels ? FlSheetSelectionFull.fromString(sheet, this.formGp.value.xLabels) : null,
       );
       this.overlayRef.dispose(selection);
     }

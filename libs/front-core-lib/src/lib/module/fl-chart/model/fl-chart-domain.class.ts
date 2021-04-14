@@ -26,8 +26,21 @@ export abstract class FlChartDomain {
  */
 export class FlChartDomainLinear extends FlChartDomain {
 
+  /**
+   * @param extendDomain if set, the domain is extended
+   *                     useful for the X domain where values are 0,1,2,3...
+   */
+  constructor(private extendDomain: number = 0) {
+    super();
+  }
+
   getDomainFromNumeric(data: Numeric[]): [Numeric, Numeric] {
-    return extent(data, (data) => data);
+    const domain: [Numeric, Numeric] = extent(data, (data) => data);
+
+    if (this.extendDomain !== 0) {
+      return [domain[0].valueOf() - this.extendDomain, domain[1].valueOf() + this.extendDomain];
+    }
+    return domain;
   }
 
   getDomain<T>(data: T[], accessor: (datum: T, index: number, array: Iterable<T>) => Numeric): [Numeric, Numeric] {

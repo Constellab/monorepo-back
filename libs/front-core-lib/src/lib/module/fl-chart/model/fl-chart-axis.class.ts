@@ -27,7 +27,7 @@ export class FlChartAxis {
   }
 
   public setScale(scale: FlChartAxisScale<Numeric>): this {
-    this.scale = scale;
+    this.scale = scale.nice();
     return this;
   }
 
@@ -109,7 +109,7 @@ export class FlChartAxis {
 
   public resetZoom(domain: Numeric[]): void {
     // reset the scale
-    this.scale.domain(domain);
+    this.scale.domain(domain).nice();
     // recreate the axis
     this.axisContainer.transition().call(this.createAxis());
   }

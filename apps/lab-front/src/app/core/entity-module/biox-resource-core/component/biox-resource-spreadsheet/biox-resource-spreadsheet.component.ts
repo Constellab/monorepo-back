@@ -3,7 +3,7 @@ import {BioxResource} from '../../../../model/entities/biox-resource.entity';
 import {FlSpreadsheet} from '@monorepo/front-core-lib';
 
 const data: any[][] = [
-  ['Item', 2012, 2013, 2014, 2015],
+  ['Item', 2012, 2013, 2014, 2015, null, null, null, null, null],
   ['Desktop', 20, 12, 13, 12],
   ['Laptops', 34, 45, 40, 39],
   ['Monitors', 12, 10, 17, 15],
