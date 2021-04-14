@@ -21,9 +21,11 @@ import {MatButtonModule} from '@angular/material/button';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {MatInputModule} from '@angular/material/input';
 import {FlSpreadsheetSelectionInputComponent} from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
-import { FlSpreadsheetSelectionInputGroupDirective } from './directive/fl-spreadsheet-selection-input-group.directive';
+import {FlSpreadsheetSelectionInputGroupDirective} from './directive/fl-spreadsheet-selection-input-group.directive';
 import {MatSelectModule} from '@angular/material/select';
 import {FlChartModule} from '../fl-chart/fl-chart.module';
+import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
+import {flSpreadSheetI18n} from './i18n/fl-spreadsheet.i18n';
 
 
 @NgModule({
@@ -64,4 +66,7 @@ import {FlChartModule} from '../fl-chart/fl-chart.module';
   ],
 })
 export class FlSpreadsheetModule {
+  constructor(translateService: FlTranslateService) {
+    translateService.addModuleTranslation('FlSpreadsheetModule', flSpreadSheetI18n);
+  }
 }

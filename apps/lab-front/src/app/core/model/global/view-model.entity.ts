@@ -1,9 +1,8 @@
 import {LabBaseEntity} from './lab-entity.entity';
 import {Transform} from 'class-transformer';
-import {ClConstructorFunction, ClCoreJsonConvert} from '@monorepo/core-lib';
+import {ClClassReference, ClConstructorFunction, ClCoreJsonConvert} from '@monorepo/core-lib';
 import {typeToClassMap} from '../../utils/type-to-class.map';
 import {FlPage} from '@monorepo/front-core-lib';
-import {ClClassReference} from '../../../../../../../libs/core-lib/src/lib/model/cl-class-reference.class';
 
 export class ViewModel<T extends LabBaseEntity> extends LabBaseEntity {
 

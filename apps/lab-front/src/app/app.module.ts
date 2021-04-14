@@ -23,6 +23,7 @@ import {apiModuleConfig} from './core/utils/api-module.config';
 import {QuillModule} from 'ngx-quill';
 import {AuthenticationInterceptor} from './core/service/authentication.interceptor';
 import {AuthenticatedUserService} from './core/service/authenticated-user.service';
+import {ClSupportedLanguage} from '@monorepo/core-lib';
 
 function loadTokenFromLocalStorage(authenticationService: AuthenticatedUserService): () => void {
   return (): void => authenticationService.loadTokenFromLocalStorage();
@@ -52,8 +53,8 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     // Fl setup modules
     // Setup translate module
     FlTranslateModule.forRoot({
-      defaultLang: 'en',
-      availableLang: ['en'],
+      defaultLang: ClSupportedLanguage.en,
+      availableLang: [ClSupportedLanguage.en],
       filenames: ['global-', 'biox-', 'biota-']
     }),
     FlTranslateModule.forRoot2(),

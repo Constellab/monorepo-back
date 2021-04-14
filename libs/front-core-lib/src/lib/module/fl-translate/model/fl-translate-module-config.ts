@@ -1,4 +1,5 @@
 import {InjectionToken} from '@angular/core';
+import {ClSupportedLanguage} from '@monorepo/core-lib';
 
 /**
  * Configuration for the Translate Module
@@ -7,14 +8,14 @@ export interface FlTranslateModuleConfig {
   /**
    * If not filled --> EN
    */
-  defaultLang?: string;
+  defaultLang?: ClSupportedLanguage;
 
   /**
    * List the available language on the application
    *
    * Languages must be short names like 'fr', 'en'...
    */
-  availableLang: string[];
+  availableLang: ClSupportedLanguage[];
 
   /**
    * list of the filenames to load (the language key is added directly after the filename)
@@ -46,3 +47,6 @@ export interface FlTranslateModuleConfig {
  */
 export const FL_TRANSLATE_MODULE_CONFIG =
   new InjectionToken<FlTranslateModuleConfig>('CORE_TRANSLATE_MODULE_CONFIG');
+
+export const FL_TRANSLATE_MODULE_CHILD =
+  new InjectionToken<FlTranslateModuleConfig>('FL_TRANSLATE_MODULE_CHILD');

@@ -30,7 +30,7 @@ export function initTranslateService(service: FlTranslateService): () => void {
   ],
   imports: [
     CommonModule,
-    TranslateModule,
+    TranslateModule.forChild(),
   ]
 })
 export class FlTranslateModule {
@@ -75,6 +75,8 @@ export class FlTranslateModule {
         provide: MissingTranslationHandler,
         useExisting: FlMissingTranslationLogService
       },
+      // useful, this init translation even if translate object is not null
+      extend: true
     });
   }
 }

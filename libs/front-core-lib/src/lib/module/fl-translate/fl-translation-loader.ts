@@ -2,6 +2,8 @@ import {TranslateLoader} from '@ngx-translate/core';
 import {Observable, zip} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {map} from 'rxjs/operators';
+import {FlTranslateObject} from './model/fl-translate-param';
+import {ClSupportedLanguage} from '@monorepo/core-lib';
 
 /**
  * @ignore
@@ -45,7 +47,7 @@ export class FlTranslationLoader implements TranslateLoader {
   }
 
   // load the app translation and add the library translation
-  getTranslation(lang: string): Observable<any> {
+  getTranslation(lang: string): Observable<FlTranslateObject> {
     const obs$: Observable<any>[] = [];
 
     // create observable to get all translation
@@ -60,8 +62,11 @@ export class FlTranslationLoader implements TranslateLoader {
   }
 
   // add the translation from the library to the app translation
-  private getTranslationSuccess(translations: any[]): any {
-    const translation: any = {};
+  private getTranslationSuccess(translations: any[]): FlTranslateObject {
+    const translation: FlTranslateObject = {
+      [ClSupportedLanguage.en]: {},
+      [ClSupportedLanguage.fr]: {}
+    };
 
     // merge all translations
     for (const transl of translations) {

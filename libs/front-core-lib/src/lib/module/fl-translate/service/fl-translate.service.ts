@@ -1,13 +1,13 @@
 import {Inject, Injectable} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import {FlTranslateMode, FlTranslateParam} from '../model/fl-translate-param';
+import {FlTranslateMode, FlTranslateObject, FlTranslateParam} from '../model/fl-translate-param';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {FL_TRANSLATE_MODULE_CONFIG, FlTranslateModuleConfig} from '../model/fl-translate-module-config';
 import {CookieService} from 'ngx-cookie-service';
 import {DateAdapter} from '@angular/material/core';
 import {Settings} from 'luxon';
-import {ClDateHelper, ClStringHelper} from '@monorepo/core-lib';
+import {ClDateHelper, ClStringHelper, ClSupportedLanguage} from '@monorepo/core-lib';
 import {FlPlatformService} from '../../../service/fl-plateform.service';
 
 @Injectable()
@@ -17,6 +17,9 @@ export class FlTranslateService {
 
   // key to store the user language in the cookie
   private readonly cookieKey = 'lang';
+
+  // store the module that have been translated
+  private modulesTranslation: string[] = [];
 
   constructor(private translateService: TranslateService,
               private platformService: FlPlatformService,
@@ -97,15 +100,15 @@ export class FlTranslateService {
   /**
    * Returns the user's browser preferred language within the available languages
    */
-  public getUserLanguage(): string {
+  public getUserLanguage(): ClSupportedLanguage {
     // check for the platform because of the use of navigator
     if (this.platformService.isBrowserPlatform()) {
 
       // get the language from the cookie if it exists
       const cookieLang: string = this.getUserLanguageCookie();
       // if it exists, returns the lang from the cookie
-      if (cookieLang) {
-        return cookieLang;
+      if (cookieLang && this.langIsSupported(cookieLang)) {
+        return cookieLang as ClSupportedLanguage;
       }
 
       if (navigator?.languages?.length) {
@@ -115,8 +118,8 @@ export class FlTranslateService {
         // check if the language is available
         for (const lang of languages) {
           // if the language is available
-          if (this.config.availableLang.indexOf(lang) !== -1) {
-            return lang;
+          if (this.langIsSupported(lang)) {
+            return lang as ClSupportedLanguage;
           }
         }
       }
@@ -132,8 +135,28 @@ export class FlTranslateService {
   /**
    * Sets the translated value of a key, after compiling it
    */
-  public setTranslation(key: string, value: string, lang?: string): void {
+  public setTranslation(key: string, value: string, lang?: ClSupportedLanguage): void {
     this.translateService.set(key, value, lang);
+  }
+
+  /**
+   * Add translation for all supported lang
+   */
+  public addTranslation(value: FlTranslateObject): void {
+    for (const key of Object.keys(value)) {
+      this.translateService.setTranslation(key, value[key], true);
+    }
+  }
+
+  /**
+   * Add translation for all supported lang
+   */
+  public addModuleTranslation(moduleName: string, value: FlTranslateObject): void {
+    // check if the translation has already been loaded
+    if(this.modulesTranslation.indexOf(moduleName) === -1){
+      this.addTranslation(value);
+      this.modulesTranslation.push(moduleName);
+    }
   }
 
   /**
@@ -147,7 +170,7 @@ export class FlTranslateService {
    * Set the user language and store it in the cookies
    * @param lang the language of the user
    */
-  public changeAppLanguage(lang: string): void {
+  public changeAppLanguage(lang: ClSupportedLanguage): void {
     // set the language in the cookies
     this.cookieService.set(this.cookieKey, lang,
       this.getDateInTenYears(), '/', null, false
@@ -159,7 +182,7 @@ export class FlTranslateService {
   /**
    * Set the lang for the translate service, date and date adapter
    */
-  private setAppLanguage(lang: string): void {
+  private setAppLanguage(lang: ClSupportedLanguage): void {
     // set the language in the translate service
     this.translateService.use(lang);
 
@@ -174,12 +197,17 @@ export class FlTranslateService {
     return new Date(new Date().getTime() + ClDateHelper.ONE_YEAR * 10);
   }
 
+  private langIsSupported(lang: string): boolean {
+    return this.config.availableLang.indexOf(lang as ClSupportedLanguage) !== -1;
+  }
+
+
   // set the local for dates
-  public setDateLocale(lang: string): void {
+  public setDateLocale(lang: ClSupportedLanguage): void {
     Settings.defaultLocale = lang;
   }
 
-  public getDefaultLanguage(): string {
-    return this.config.defaultLang || 'en';
+  public getDefaultLanguage(): ClSupportedLanguage {
+    return this.config.defaultLang || ClSupportedLanguage.en;
   }
 }

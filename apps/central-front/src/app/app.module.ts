@@ -25,6 +25,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {svgIcons} from './core/model/config/svg-icon-config';
 import {apiModuleConfig} from './core/model/config/api-module.config';
+import {ClSupportedLanguage} from '@monorepo/core-lib';
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -56,8 +57,8 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
 
     // Setup translate module
     FlTranslateModule.forRoot({
-      defaultLang: 'en',
-      availableLang: ['en'],
+      defaultLang: ClSupportedLanguage.en,
+      availableLang: [ClSupportedLanguage.en],
       filenames: ['global-', 'dashboard-', 'settings-', 'server-info-', 'lab-']
     }),
     FlTranslateModule.forRoot2(),

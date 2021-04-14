@@ -2,7 +2,14 @@
  * When translating a mode can be provided
  * to change the case of the translated text
  */
+import {ClObject, ClSupportedLanguage} from '@monorepo/core-lib';
+
 export type FlTranslateMode = 'lowerCase' | 'upperCase' | 'capitalize';
+
+/**
+ * Object containing translation for a single language
+ */
+export type FlLangTranslation = ClObject;
 
 /**
  * Optional params when translating a field
@@ -17,11 +24,18 @@ export interface FlTranslateParam {
    *
    * For example : '{{hello}}'
    */
-  param?: Record<string, unknown>;
+  param?: FlLangTranslation;
 
   /**
    * When translating a mode can be provided
    * to change the case of the translated text
    */
   mode?: FlTranslateMode;
+}
+
+/**
+ * Object that contain translation values for each supported lang
+ */
+export type FlTranslateObject = {
+  [K in ClSupportedLanguage]: FlLangTranslation;
 }
