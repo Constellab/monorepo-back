@@ -71,13 +71,13 @@ export class FlSpreadsheetContextMenu {
       buttons: [
         // button to create a column
         {
-          text: 'add',
+          text: 'flSpreadsheet.add',
           icon: 'add',
           onClick: () => this.action.addColumn()
         },
         // button to delete columns
         {
-          text: 'delete',
+          text: 'flSpreadsheet.delete',
           icon: 'delete',
           onClick: () => this.action.deleteColumns()
         },
@@ -94,13 +94,13 @@ export class FlSpreadsheetContextMenu {
       buttons: [
         // button to create a row
         {
-          text: 'add',
+          text: 'flSpreadsheet.add',
           icon: 'add',
           onClick: () => this.action.addRow()
         },
         // button to delete rows
         {
-          text: 'delete',
+          text: 'flSpreadsheet.delete',
           icon: 'delete',
           onClick: () => this.action.deleteRows()
         },
@@ -120,7 +120,7 @@ export class FlSpreadsheetContextMenu {
 
   private getCreateChartConfig(mouseEvent: MouseEvent): FlContextMenuButton {
     return {
-      text: 'create_chart',
+      text: 'flSpreadsheet.create_chart',
       icon: 'addchart',
       onClick: () => this.chartState.openChartSelectionDialog(mouseEvent)
     };
