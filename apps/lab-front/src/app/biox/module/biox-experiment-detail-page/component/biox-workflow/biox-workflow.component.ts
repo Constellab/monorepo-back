@@ -1,15 +1,12 @@
 import {Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
-import {BioxProcessService} from '../../../../../core/entity-service/biox-process.service';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
 import {
-  BioxProtocolLink,
   BioxProcessable,
-  BioxProcessDatasource,
-  BioxProcessVM,
   BioxProtocol,
   BioxProtocolDatasource,
+  BioxProtocolLink,
   BioxProtocolVM
 } from '../../../../../core/model/entities/biox-processable.entity';
 import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
@@ -18,6 +15,8 @@ import {BioxResourcePortalComponent} from '../../../../../core/entity-module/bio
 import {ConnectedPosition} from '@angular/cdk/overlay';
 import {WorkflowConnection} from '../../model/workflow-connection.class';
 import {Observable} from 'rxjs';
+import {BioxProcessTypeDatasource, BioxProcessTypeVM} from '../../../../../core/model/entities/biox-process-type.entity';
+import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
 
 
 @Component({
@@ -35,8 +34,8 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   availableProtocols: BioxProtocolDatasource;
   protocols$: Observable<BioxProtocolVM[]>;
-  availableProcesses: BioxProcessDatasource;
-  processes$: Observable<BioxProcessVM[]>;
+  availableProcesses: BioxProcessTypeDatasource;
+  processes$: Observable<BioxProcessTypeVM[]>;
 
   // store the current dragged process
   draggingProcessable: BioxProcessable;
@@ -45,7 +44,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   constructor(private workflowManagerService: WorkflowManagerState,
               private bioxProtocolService: BioxProtocolService,
-              private bioxProcessService: BioxProcessService,
+              private bioxProcessTypeService: BioxProcessTypeService,
               private portalService: FlPortalService) {
   }
 
@@ -57,7 +56,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
     // this.protocols$ = this.availableProtocols.connect();
 
     // get process
-    this.availableProcesses = this.bioxProcessService.getProcessesDatasource();
+    this.availableProcesses = this.bioxProcessTypeService.getProcessesDatasource();
     this.processes$ = this.availableProcesses.connect();
   }
 

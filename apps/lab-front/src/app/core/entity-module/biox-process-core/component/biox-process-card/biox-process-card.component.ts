@@ -14,7 +14,6 @@ export class BioxProcessCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.process);
   }
 
 }

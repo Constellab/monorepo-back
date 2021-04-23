@@ -1,0 +1,13 @@
+<fl-card>
+  <fl-card-header>
+    {{processType.ptype}}
+    <fl-card-actions>
+      <ng-content></ng-content>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+    <!--    {{process.type}}-->
+    {{processType.createdAt | flDate}}
+  </fl-card-body>
+</fl-card>

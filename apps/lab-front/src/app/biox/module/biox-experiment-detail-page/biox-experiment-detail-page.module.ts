@@ -14,6 +14,7 @@ import {BioxConfigCoreModule} from '../../../core/entity-module/biox-config-core
 import {BioxWorkflowNodeInterfaceComponent} from './component/biox-workflow-interface/biox-workflow-node-interface.component';
 import { BioxWorkflowActionsComponent } from './component/biox-workflow-actions/biox-workflow-actions.component';
 import {WorkflowManagerState} from './state/workflow-manager-state';
+import {BioxProcessTypeModule} from '../../../core/entity-module/biox-process-type/biox-process-type.module';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import {WorkflowManagerState} from './state/workflow-manager-state';
     BioxProcessCoreModule,
     BioxResourceCoreModule,
     BioxConfigCoreModule,
+    BioxProcessTypeModule,
   ],
   providers: [WorkflowManagerState]
 })
