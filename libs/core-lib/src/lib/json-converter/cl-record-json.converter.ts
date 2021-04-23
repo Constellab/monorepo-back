@@ -1,6 +1,6 @@
 import {Transform} from 'class-transformer';
 import {ClCoreJsonConvert, ClDeserializeItem, ClSerializeItem} from './cl-json.converter';
-import {FlRecordWrapper} from '../model/cl-record-wrapper.class';
+import {ClRecordWrapper} from '../model/cl-record-wrapper.class';
 
 
 /**
@@ -12,7 +12,7 @@ import {FlRecordWrapper} from '../model/cl-record-wrapper.class';
  * @param recordItemReference class reference for deserialization of an item
  * @constructor
  */
-export function ClRecordWrapperTransform<WRAPPER extends FlRecordWrapper<ITEM>, ITEM>(
+export function ClRecordWrapperTransform<WRAPPER extends ClRecordWrapper<ITEM>, ITEM>(
   wrapperReference: new() => WRAPPER,
   recordItemReference: new() => ITEM): PropertyDecorator {
   // convert date to time
@@ -103,7 +103,7 @@ function deserializeRecord<T>(record: Record<string, any>, deserializeItem: ClDe
 /**
  * Function to serialize a record wrapper. It serialize only the record property
  */
-function serializeRecordWrapper(recordWrapper: FlRecordWrapper<any>,
+function serializeRecordWrapper(recordWrapper: ClRecordWrapper<any>,
                                 serializeItem: ClSerializeItem<any>): Record<string, any> {
   if (recordWrapper == null) {
     return null;
@@ -116,7 +116,7 @@ function serializeRecordWrapper(recordWrapper: FlRecordWrapper<any>,
 /**
  * Function to deserialize a record wrapper (class that wrap the record)
  */
-function deserializeRecordWrapper<T extends FlRecordWrapper<any>>(wrapperReference: new() => T, record: Record<string, any>,
+function deserializeRecordWrapper<T extends ClRecordWrapper<any>>(wrapperReference: new() => T, record: Record<string, any>,
                                                                   deserializeItem: ClDeserializeItem<any>): T {
   if (record == null) {
     return null;

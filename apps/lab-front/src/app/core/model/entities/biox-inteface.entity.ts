@@ -1,12 +1,12 @@
-import {BioxConnection, BioxConnectionPart, BioxConnectionType, BioxNode} from '../global/biox-connection.class';
+import {BioxConnection, BioxConnectionPart, BioxNode} from '../global/biox-connection.class';
 import {Expose, Type} from 'class-transformer';
 
-export class BioxFlowInterfacePart implements BioxConnectionPart {
+export class BioxProtocolInterfacePart implements BioxConnectionPart {
 
   @Expose({name: 'node'})
   nodeName: string;
 
-  // name automatically set by the ConnectionManager
+  // node automatically set by the ConnectionManager
   node: BioxNode;
 
   port: string;
@@ -28,28 +28,22 @@ export class BioxFlowInterfacePart implements BioxConnectionPart {
   }
 }
 
-export class BioxFlowInterface implements BioxConnection {
+export class BioxProtocolInterface implements BioxConnection {
 
-  @Type(() => BioxFlowInterfacePart)
-  from: BioxFlowInterfacePart;
+  @Type(() => BioxProtocolInterfacePart)
+  from: BioxProtocolInterfacePart;
 
-  @Type(() => BioxFlowInterfacePart)
-  to: BioxFlowInterfacePart;
+  @Type(() => BioxProtocolInterfacePart)
+  to: BioxProtocolInterfacePart;
 
-  getType(): BioxConnectionType {
-    return 'interface';
-  }
 }
 
-export class BioxFlowOuterface implements BioxConnection {
+export class BioxProtocolOuterface implements BioxConnection {
 
-  @Type(() => BioxFlowInterfacePart)
-  from: BioxFlowInterfacePart;
+  @Type(() => BioxProtocolInterfacePart)
+  from: BioxProtocolInterfacePart;
 
-  @Type(() => BioxFlowInterfacePart)
-  to: BioxFlowInterfacePart;
+  @Type(() => BioxProtocolInterfacePart)
+  to: BioxProtocolInterfacePart;
 
-  getType(): BioxConnectionType {
-    return 'outerface';
-  }
 }

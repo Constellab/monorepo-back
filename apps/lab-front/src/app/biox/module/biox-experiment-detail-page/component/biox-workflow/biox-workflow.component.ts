@@ -4,17 +4,17 @@ import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment
 import {BioxProcessService} from '../../../../../core/entity-service/biox-process.service';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
 import {
+  BioxProtocolLink,
   BioxProcessable,
   BioxProcessDatasource,
   BioxProcessVM,
+  BioxProtocol,
   BioxProtocolDatasource,
   BioxProtocolVM
 } from '../../../../../core/model/entities/biox-processable.entity';
-import {BioxFlow, BioxFlowStep} from '../../../../../core/model/entities/biox-flow.entity';
 import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {BioxConnection} from '../../../../../core/model/global/biox-connection.class';
 import {BioxResourcePortalComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-portal/biox-resource-portal.component';
-import {BioxFlowService} from '../../../../../core/entity-service/biox-flow.service';
 import {ConnectedPosition} from '@angular/cdk/overlay';
 import {WorkflowConnection} from '../../model/workflow-connection.class';
 import {Observable} from 'rxjs';
@@ -31,7 +31,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   @ViewChild('workflow', {static: true}) container: ElementRef<HTMLElement>;
 
-  flow: BioxFlow;
+  protocol: BioxProtocol;
 
   availableProtocols: BioxProtocolDatasource;
   protocols$: Observable<BioxProtocolVM[]>;
@@ -46,7 +46,6 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   constructor(private workflowManagerService: WorkflowManagerState,
               private bioxProtocolService: BioxProtocolService,
               private bioxProcessService: BioxProcessService,
-              private bioxFlowService: BioxFlowService,
               private portalService: FlPortalService) {
   }
 
@@ -54,8 +53,8 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
     this.loadExperimentFlow();
 
     // get protocols
-    this.availableProtocols = this.bioxProtocolService.getProtocolsDatasource();
-    this.protocols$ = this.availableProtocols.connect();
+    // this.availableProtocols = this.bioxProtocolService.getProtocolsDatasource();
+    // this.protocols$ = this.availableProtocols.connect();
 
     // get process
     this.availableProcesses = this.bioxProcessService.getProcessesDatasource();
@@ -65,15 +64,15 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   private loadExperimentFlow(): void {
     this.flowIsLoading = true;
-    this.bioxFlowService.getExperimentFlow(this.experiment.id).subscribe(
+    this.bioxProtocolService.getProtocolOfExperiment(this.experiment.id).subscribe(
       flow => this.loadExperimentFlowSuccess(flow),
       () => this.flowIsLoading = false
     );
   }
 
-  private loadExperimentFlowSuccess(flow: BioxFlow): void {
+  private loadExperimentFlowSuccess(flow: BioxProtocol): void {
     this.workflowManagerService.init(this.container.nativeElement, flow, this.experiment);
-    this.flow = flow;
+    this.protocol = flow;
     this.flowIsLoading = false;
 
     this.workflowManagerService.onConnectionSelected().subscribe(
@@ -88,7 +87,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   addProcessable(ev: DragEvent): void {
     this.workflowManagerService.addProcessableNode(this.draggingProcessable,
-      this.flow.id, ev.offsetX, ev.offsetY);
+      this.protocol.id, ev.offsetX, ev.offsetY);
     this.draggingProcessable = null;
   }
 
@@ -100,7 +99,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   onConnectionSelected(workflowConnection: WorkflowConnection): void {
     const connection: BioxConnection = workflowConnection.object;
 
-    if (connection instanceof BioxFlowStep) {
+    if (connection instanceof BioxProtocolLink) {
       const connectionHtmlElement: HTMLElement = workflowConnection.getHTMLElement();
 
       if (connectionHtmlElement == null) {

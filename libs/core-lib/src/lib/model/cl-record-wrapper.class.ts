@@ -3,7 +3,7 @@
  *
  * Can by instantiate with {@link ClRecordWrapperTransform}
  */
-export class FlRecordWrapper<T> {
+export class ClRecordWrapper<T> {
   record: Record<string, T>;
 
   /**

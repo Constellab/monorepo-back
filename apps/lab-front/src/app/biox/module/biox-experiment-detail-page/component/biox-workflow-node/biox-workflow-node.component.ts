@@ -1,7 +1,6 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {WorkflowNode} from '../../model/workflow-node.class';
-import {BioxJob} from '../../../../../core/model/entities/biox-job.entity';
 import {FlDialogService, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {
   BioxConfigureSpecsDialogComponent,
@@ -9,6 +8,7 @@ import {
 } from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
 import {ConnectedPosition} from '@angular/cdk/overlay';
 import {BioxShowConfigPortalComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-show-config-portal/biox-show-config-portal.component';
+import {BioxProcessableBase} from '../../../../../core/model/entities/biox-processable.entity';
 
 /**
  * Node of an experiment in the workflow
@@ -27,7 +27,7 @@ export class BioxWorkflowNodeComponent implements OnInit {
 
   @ViewChild('container', {static: true}) container: ElementRef<HTMLElement>;
 
-  node: WorkflowNode<BioxJob>;
+  node: WorkflowNode<BioxProcessableBase>;
 
   constructor(private workflowManager: WorkflowManagerState,
               private dialogService: FlDialogService,
@@ -42,7 +42,7 @@ export class BioxWorkflowNodeComponent implements OnInit {
   }
 
   nodeIsProtocol(): boolean {
-    return this.node.object.process.isProtocol();
+    return this.node.object.isProtocol();
   }
 
   zoomInProtocol(): void {
@@ -50,14 +50,14 @@ export class BioxWorkflowNodeComponent implements OnInit {
   }
 
   get showConfigButton(): boolean {
-    return this.node.object.process.hasConfigSpecs();
+    return this.node.object.hasConfig();
   }
 
   openConfig(): void {
     if (this.workflowManager.getMode() === 'edit') {
       const input: BioxConfigureSpecsDialogInput = {
-        configSpecs: this.node.object.process.configSpecs,
-        currentConfig: this.node.object.config.params,
+        configSpecs: this.node.object.config.data.specs,
+        currentConfig: this.node.object.config.data,
       };
 
       this.dialogService.openMediumDialog(BioxConfigureSpecsDialogComponent,
@@ -82,14 +82,15 @@ export class BioxWorkflowNodeComponent implements OnInit {
           disposeOnOutsideClick: true,
         }
       );
-      this.portalService.createPortal(BioxShowConfigPortalComponent, portalConfig, this.node.object.getCurrentConfig());
+      this.portalService.createPortal(BioxShowConfigPortalComponent, portalConfig,
+        this.node.object.config.data.mergeConfigWithDefault());
     }
 
   }
 
   private onConfigDialogClosed(config?: any): void {
     if (config != null) {
-      this.node.object.config.params = config;
+      this.node.object.config.data = config;
     }
   }
 

@@ -1,23 +1,24 @@
 import {WorkflowNode} from './workflow-node.class';
-import {BioxJob} from '../../../../core/model/entities/biox-job.entity';
 import {WorkflowPort} from './workflow-port.class';
+import {BioxProcessableBase} from '../../../../core/model/entities/biox-processable.entity';
+import {BioxSpec} from '../../../../core/model/entities/biox-spec.entity';
 
-export class WorkflowNodeProcessable extends WorkflowNode<BioxJob> {
+export class WorkflowNodeProcessable extends WorkflowNode<BioxProcessableBase> {
 
-  constructor(job: BioxJob,
-              jobName: string,
+  constructor(processable: BioxProcessableBase,
+              processableName: string,
               initialCoordX: number = 0, initialCoordY: number = 0) {
-    super(jobName, job.type, job, 'node-processable', initialCoordX, initialCoordY);
+    super(processableName, processable.data.title, processable, 'node-processable', initialCoordX, initialCoordY);
     this.html = `<biox-workflow-node name="${this.nodeName}"></biox-workflow-node>`;
   }
 
   protected initPorts(): void {
-    this.inputPorts = this.generatePorts(this.object.process.getInputSpecs(), 'input');
-    this.outputPorts = this.generatePorts(this.object.process.getOutputSpecs(), 'output');
+    this.inputPorts = this.generatePorts(this.object.input, 'input');
+    this.outputPorts = this.generatePorts(this.object.output, 'output');
   }
 
   // generate ports base on input or output spec
-  private generatePorts(specs: Record<string, string[]>, type: 'input' | 'output'): WorkflowPort[] {
+  private generatePorts(specs: Record<string, BioxSpec>, type: 'input' | 'output'): WorkflowPort[] {
     const ports: WorkflowPort[] = [];
     let i = 1;
     for (const property of Object.keys(specs)) {
@@ -30,7 +31,7 @@ export class WorkflowNodeProcessable extends WorkflowNode<BioxJob> {
       }
 
       // create the port
-      ports.push(new WorkflowPort(property, drawFlowName, specs[property]));
+      ports.push(new WorkflowPort(property, drawFlowName, specs[property].specs));
       i++;
     }
 

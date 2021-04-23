@@ -1,16 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Workflow, WorkflowMode} from '../model/workflow.class';
-import {BioxProcessable, BioxProtocol} from '../../../../core/model/entities/biox-processable.entity';
 import {WorkflowNodeProcessable} from '../model/workflow-node-processable.class';
-import {BioxFlow} from '../../../../core/model/entities/biox-flow.entity';
-import {BioxJob} from '../../../../core/model/entities/biox-job.entity';
+import {BioxProcessableBase, BioxProtocol} from '../../../../core/model/entities/biox-processable.entity';
 import {BioxConnection, BioxInterfaceNode, BioxNode, BioxOuterfaceNode} from '../../../../core/model/global/biox-connection.class';
 import {WorkflowLayer} from '../model/workflow-layer.class';
 import {Observable} from 'rxjs';
 import {WorkflowConnection} from '../model/workflow-connection.class';
 import {BioxExperiment} from '../../../../core/model/entities/biox-experiment.entity';
 import {BioxExperimentFlowFactory} from '../../../../core/utils/biox-experiment-flow.factory';
-import {BioxFlowService} from '../../../../core/entity-service/biox-flow.service';
 import {BioxProtocolService} from '../../../../core/entity-service/biox-protocol.service';
 import {WorkflowNode} from '../model/workflow-node.class';
 import {WorkflowNodeInterface} from '../model/workflow-node-interface.class';
@@ -35,12 +32,11 @@ export class WorkflowManagerState {
 
   private idGenerator: number = 0;
 
-  constructor(private bioxFlowService: BioxFlowService,
-              private bioxProtocolService: BioxProtocolService) {
+  constructor(private bioxProtocolService: BioxProtocolService) {
     console.log('New workflow manager');
   }
 
-  public init(element: HTMLElement, flow: BioxFlow, experiment: BioxExperiment): void {
+  public init(element: HTMLElement, flow: BioxProtocol, experiment: BioxExperiment): void {
     this.clear();
     this.experiment = experiment;
     this.workflow = new Workflow(element, 'edit');
@@ -60,25 +56,17 @@ export class WorkflowManagerState {
     } else {
       const node: WorkflowNode<any> = this.workflow.findNodeWithId(nodeId);
 
-      // if the node has an ID, it is a saved job
-      if (node.object.id != null) {
-        this.bioxFlowService.getProtocolFlow(node.object.id).subscribe(
-          flow => this.addFlowLayer(flow, nodeId)
-        );
-        // otherwise it's a protocol
-      } else {
-        this.bioxProtocolService.getProtocol(node.object.process.id).subscribe(
-          protocol => this.addProtocolLayer(protocol.model, nodeId)
-        );
-      }
+      this.bioxProtocolService.getProtocol(node.object.id).subscribe(
+        protocol => this.addFlowLayer(protocol, nodeId)
+      );
     }
   }
 
   /**
    * Create a new layer and init it with the flow information
    */
-  private addFlowLayer(flow: BioxFlow, nodeId: string): void {
-    this.workflow.createSubLayerIfNotExists(nodeId, flow.process.type);
+  private addFlowLayer(flow: BioxProtocol, nodeId: string): void {
+    this.workflow.createSubLayerIfNotExists(nodeId, flow.data.title);
     this.initFlow(flow);
   }
 
@@ -86,29 +74,24 @@ export class WorkflowManagerState {
    * Convert protocol to Flow and init layer
    */
   private addProtocolLayer(protocol: BioxProtocol, nodeId: string): void {
-    const experimentFlow: BioxFlow = BioxExperimentFlowFactory.bioxExperimentFromProtocol(protocol, this.experiment);
+    const experimentFlow: BioxProtocol = BioxExperimentFlowFactory.bioxExperimentFromProtocol(protocol, this.experiment);
     this.addFlowLayer(experimentFlow, nodeId);
   }
 
 
   //////////////////////// NODE ////////////////////////////
 
-  public addProcessableNode(bioxProcessable: BioxProcessable, parentJobId: string, coordX: number = 0, coordY: number = 0): void {
-    const job: BioxJob = BioxExperimentFlowFactory.flowJobFromProcessable(bioxProcessable, this.experiment.id);
-    this.addJobNode(job, coordX, coordY);
-  }
-
-  private addJobNode(bioxJob: BioxJob, coordX: number = 0, coordY: number = 0): void {
-    const node: WorkflowNode<any> = this.convertJobToNode(bioxJob, coordX, coordY);
+  public addProcessableNode(bioxProcessable: BioxProcessableBase, parentJobId: string, coordX: number = 0, coordY: number = 0): void {
+    const node: WorkflowNode<any> = this.createNodeFromProcessable(bioxProcessable, coordX, coordY);
     this.addNode(node);
   }
 
-  private convertJobToNode(bioxJob: BioxJob, coordX: number = 0, coordY: number = 0): WorkflowNode<BioxJob> {
-    if (bioxJob.name == null) {
-      bioxJob.name = this.workflow.generateNodeName();
+  private createNodeFromProcessable(processable: BioxProcessableBase, coordX: number = 0, coordY: number = 0): WorkflowNodeProcessable {
+    if (processable.name == null) {
+      processable.name = this.workflow.generateNodeName();
     }
 
-    return new WorkflowNodeProcessable(bioxJob, bioxJob.name, coordX, coordY);
+    return new WorkflowNodeProcessable(processable, processable.name, coordX, coordY);
   }
 
   public addInterface(): void {
@@ -155,12 +138,12 @@ export class WorkflowManagerState {
 
   //////////////////////// INIT NODES AND CONNECTIONS FOR FLOW ////////////////////////////
   // create nodes and connection for a flow
-  private initFlow(flow: BioxFlow): void {
+  private initFlow(flow: BioxProtocol): void {
     // add all nodes
-    this.addNodesRecursively(flow.getRootNodes(), 0, 0);
+    this.addNodesRecursively(flow.data.getRootNodes(), 0, 0);
 
     // create the connections
-    for (const step of flow.getAllConnections()) {
+    for (const step of flow.data.getAllConnections()) {
       this.addConnection(step);
     }
   }
@@ -200,7 +183,7 @@ export class WorkflowManagerState {
     const coordY = ((this.htmlNodeHeight + this.htmlDefaultNodeSpace) * posY) + this.htmlOffsetY;
 
     let workflowNode: WorkflowNode<any>;
-    if (node instanceof BioxJob) {
+    if (node instanceof BioxProcessableBase) {
       workflowNode = new WorkflowNodeProcessable(node, node.name, coordX, coordY);
     } else if (node instanceof BioxInterfaceNode) {
       workflowNode = new WorkflowNodeInterface(node, coordX, coordY);

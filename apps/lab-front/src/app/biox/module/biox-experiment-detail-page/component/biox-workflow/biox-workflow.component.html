@@ -5,15 +5,15 @@
   <fl-card class="left-section" fxFlex="25%">
     <fl-card-body>
       <mat-tab-group>
-        <!--                    Protocols    -->
-        <mat-tab [label]="'protocols' | translate">
-          <fl-infinite-scroll [datasource]="availableProtocols">
-            <gen-biox-protocol-card *ngFor="let protocol of protocols$ | async"
-                                    [protocol]="protocol.model"
-                                    draggable="true" class="draggable-card"
-                                    (dragstart)="dragStart(protocol.model)"></gen-biox-protocol-card>
-          </fl-infinite-scroll>
-        </mat-tab>
+<!--        &lt;!&ndash;                    Protocols    &ndash;&gt;-->
+<!--        <mat-tab [label]="'protocols' | translate">-->
+<!--          <fl-infinite-scroll [datasource]="availableProtocols">-->
+<!--            <gen-biox-protocol-card *ngFor="let protocol of protocols$ | async"-->
+<!--                                    [protocol]="protocol.model"-->
+<!--                                    draggable="true" class="draggable-card"-->
+<!--                                    (dragstart)="dragStart(protocol.model)"></gen-biox-protocol-card>-->
+<!--          </fl-infinite-scroll>-->
+<!--        </mat-tab>-->
 
         <!--    Processes    -->
         <mat-tab [label]="'processes' | translate">

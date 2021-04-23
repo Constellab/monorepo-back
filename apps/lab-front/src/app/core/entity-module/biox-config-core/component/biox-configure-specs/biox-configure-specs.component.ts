@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {BioxConfigSpecs} from '../../../../model/entities/biox-config.entity';
 import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
+import {BioxConfigSpecs} from '../../../../model/entities/biox-config-spec.entity';
 
 
 /**
