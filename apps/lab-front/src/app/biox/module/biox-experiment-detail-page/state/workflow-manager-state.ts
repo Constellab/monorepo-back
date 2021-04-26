@@ -2,12 +2,17 @@ import {Injectable} from '@angular/core';
 import {Workflow, WorkflowMode} from '../model/workflow.class';
 import {WorkflowNodeProcessable} from '../model/workflow-node-processable.class';
 import {BioxProcessableBase, BioxProtocol} from '../../../../core/model/entities/biox-processable.entity';
-import {BioxConnection, BioxInterfaceNode, BioxNode, BioxOuterfaceNode} from '../../../../core/model/global/biox-connection.class';
+import {
+  BioxConnection,
+  BioxFlow,
+  BioxInterfaceNode,
+  BioxNode,
+  BioxOuterfaceNode
+} from '../../../../core/model/global/biox-connection.class';
 import {WorkflowLayer} from '../model/workflow-layer.class';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {WorkflowConnection} from '../model/workflow-connection.class';
 import {BioxExperiment} from '../../../../core/model/entities/biox-experiment.entity';
-import {BioxExperimentFlowFactory} from '../../../../core/utils/biox-experiment-flow.factory';
 import {BioxProtocolService} from '../../../../core/entity-service/biox-protocol.service';
 import {WorkflowNode} from '../model/workflow-node.class';
 import {WorkflowNodeInterface} from '../model/workflow-node-interface.class';
@@ -20,7 +25,7 @@ import {WorkflowPort} from '../model/workflow-port.class';
 @Injectable()
 export class WorkflowManagerState {
 
-  public workflow: Workflow;
+  public workflow: Workflow = null;
 
   private readonly htmlNodeWidth: number = 200;
   private readonly htmlNodeHeight: number = 100;
@@ -28,16 +33,18 @@ export class WorkflowManagerState {
   private readonly htmlOffsetX: number = 20;
   private readonly htmlOffsetY: number = 20;
 
-  private experiment: BioxExperiment;
+  private experiment: BioxExperiment = null;
 
   private idGenerator: number = 0;
+
+  // emit to true when loading
+  private _layerIsLoading$: Subject<boolean> = new BehaviorSubject(false);
 
   constructor(private bioxProtocolService: BioxProtocolService) {
     console.log('New workflow manager');
   }
 
-  public init(element: HTMLElement, flow: BioxProtocol, experiment: BioxExperiment): void {
-    this.clear();
+  public init(element: HTMLElement, flow: BioxFlow<BioxProtocol>, experiment: BioxExperiment): void {
     this.experiment = experiment;
     this.workflow = new Workflow(element, 'edit');
 
@@ -54,30 +61,36 @@ export class WorkflowManagerState {
     if (this.workflow.hasLayer(nodeId)) {
       this.workflow.selectLayer(nodeId);
     } else {
-      const node: WorkflowNode<any> = this.workflow.findNodeWithId(nodeId);
-
-      this.bioxProtocolService.getProtocol(node.object.id).subscribe(
-        protocol => this.addFlowLayer(protocol, nodeId)
-      );
+      this.loadNodeLayer(nodeId);
     }
   }
 
+  private loadNodeLayer(nodeId: string): void {
+    this._layerIsLoading$.next(true);
+    const node: WorkflowNode<any> = this.workflow.findNodeWithId(nodeId);
+    this.bioxProtocolService.getProtocolAsFlow(node.object.id).subscribe(
+      protocol => this.onLoadLayerSuccess(protocol, nodeId),
+      () => this._layerIsLoading$.next(false)
+    );
+  }
+
+  private onLoadLayerSuccess(flow: BioxFlow<BioxProtocol>, nodeId: string): void {
+    this._layerIsLoading$.next(false);
+    this.addProtocolLayer(flow, nodeId);
+  }
+
   /**
-   * Create a new layer and init it with the flow information
+   * Create a new layer and init it with the protocol information
    */
-  private addFlowLayer(flow: BioxProtocol, nodeId: string): void {
-    this.workflow.createSubLayerIfNotExists(nodeId, flow.data.title);
+  private addProtocolLayer(flow: BioxFlow<BioxProtocol>, nodeId: string): void {
+    this.workflow.createSubLayerIfNotExists(nodeId, flow.object.data.title);
     this.initFlow(flow);
   }
 
-  /**
-   * Convert protocol to Flow and init layer
-   */
-  private addProtocolLayer(protocol: BioxProtocol, nodeId: string): void {
-    const experimentFlow: BioxProtocol = BioxExperimentFlowFactory.bioxExperimentFromProtocol(protocol, this.experiment);
-    this.addFlowLayer(experimentFlow, nodeId);
-  }
 
+  public get layerIsLoading$(): Observable<boolean> {
+    return this._layerIsLoading$.asObservable();
+  }
 
   //////////////////////// NODE ////////////////////////////
 
@@ -138,12 +151,12 @@ export class WorkflowManagerState {
 
   //////////////////////// INIT NODES AND CONNECTIONS FOR FLOW ////////////////////////////
   // create nodes and connection for a flow
-  private initFlow(flow: BioxProtocol): void {
+  private initFlow(protocol: BioxFlow<BioxProtocol>): void {
     // add all nodes
-    this.addNodesRecursively(flow.data.getRootNodes(), 0, 0);
+    this.addNodesRecursively(protocol.getRootNodes(), 0, 0);
 
     // create the connections
-    for (const step of flow.data.getAllConnections()) {
+    for (const step of protocol.getAllConnections()) {
       this.addConnection(step);
     }
   }
@@ -221,10 +234,10 @@ export class WorkflowManagerState {
   public clear(): void {
     this.idGenerator = 0;
     this.experiment = null;
-    this.workflow?.destroy();
     this.workflow = null;
+    this.workflow?.destroy();
+    this._layerIsLoading$.complete();
   }
-
 
 }
 

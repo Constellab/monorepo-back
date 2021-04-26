@@ -1,7 +1,7 @@
 import {LabEntity} from '../global/lab-entity.entity';
 import {BioxConfig} from './biox-config.entity';
 import {ClCoreJsonConvert, ClDeserializeItem, ClRecordTransform} from '@monorepo/core-lib';
-import {BioxConnection, BioxConnectionManager, BioxConnectionPart, BioxNode} from '../global/biox-connection.class';
+import {BioxConnection, BioxFlowManager, BioxConnectionPart, BioxNode} from '../global/biox-connection.class';
 import {Expose, Type} from 'class-transformer';
 import {BioxResourceVM} from './biox-resource.entity';
 import {FlLazyProperty, FlLazyPropertyTransform} from '@monorepo/front-core-lib';
@@ -123,46 +123,12 @@ export class BioxProtocolGraph extends LabEntity {
 }
 
 
-export class BioxProtocolData extends BioxConnectionManager {
+export class BioxProtocolData {
 
   title: string;
 
   @Type(() => BioxProtocolGraph)
   graph: BioxProtocolGraph;
-
-  @Expose({name: 'input_specs'})
-  @ClRecordTransform(BioxSpec)
-  inputSpecs: Record<string, BioxSpec>;
-
-  @Expose({name: 'output_specs'})
-  @ClRecordTransform(BioxSpec)
-  outputSpecs: Record<string, BioxSpec>;
-
-  getConnections(): BioxConnection[] {
-    return this.graph.links;
-  }
-
-  getNodes(): Record<string, BioxNode> {
-    return this.graph.nodes;
-  }
-
-
-  getInputSpecs(): Record<string, BioxSpec> {
-    return this.inputSpecs;
-  }
-
-  getOutputSpecs(): Record<string, BioxSpec> {
-    return this.outputSpecs;
-  }
-
-
-  getInterfacesConnections(): Record<string, BioxProtocolInterface> {
-    return this.graph.interfaces;
-  }
-
-  getOuterfacesConnections(): Record<string, BioxProtocolOuterface> {
-    return this.graph.outerfaces;
-  }
 }
 
 export class BioxProcessData {
@@ -186,10 +152,40 @@ const bioxFlowBaseDeserialization: ClDeserializeItem<BioxFlowData> = (item: { gr
 };
 
 
-export class BioxProtocol extends BioxProcessableBase {
+export class BioxProtocol extends BioxProcessableBase implements BioxFlowManager {
 
   @Type(() => BioxProtocolData)
   data: BioxProtocolData;
+
+
+  interfaceNodes: Record<string, BioxNode>;
+  outerfaceNodes: Record<string, BioxNode>;
+
+  getConnections(): BioxConnection[] {
+    return this.data.graph.links;
+  }
+
+  getNodes(): Record<string, BioxNode> {
+    return this.data.graph.nodes;
+  }
+
+  getInterfacesConnections(): Record<string, BioxProtocolInterface> {
+    return this.data.graph.interfaces;
+  }
+
+  getOuterfacesConnections(): Record<string, BioxProtocolOuterface> {
+    return this.data.graph.outerfaces;
+  }
+
+  getInputSpecs(): Record<string, BioxSpec> {
+    return this.input;
+  }
+
+  getOutputSpecs(): Record<string, BioxSpec> {
+    return this.output;
+  }
+
+
 }
 
 export class BioxProcess extends BioxProcessableBase {

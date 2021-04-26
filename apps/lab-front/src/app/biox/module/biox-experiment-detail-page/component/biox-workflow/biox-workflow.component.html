@@ -20,7 +20,7 @@
           <fl-infinite-scroll [datasource]="availableProcesses">
             <gen-biox-process-type-card *ngFor="let process of processes$ | async"
                                         class="draggable-card"
-                                        [processType]="process.model"></gen-biox-process-type-card>
+                                        [processType]="process"></gen-biox-process-type-card>
           </fl-infinite-scroll>
         </mat-tab>
       </mat-tab-group>

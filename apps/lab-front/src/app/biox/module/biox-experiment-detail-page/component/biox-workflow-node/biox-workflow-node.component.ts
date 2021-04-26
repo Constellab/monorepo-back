@@ -9,6 +9,7 @@ import {
 import {ConnectedPosition} from '@angular/cdk/overlay';
 import {BioxShowConfigPortalComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-show-config-portal/biox-show-config-portal.component';
 import {BioxProcessableBase} from '../../../../../core/model/entities/biox-processable.entity';
+import {Observable} from 'rxjs';
 
 /**
  * Node of an experiment in the workflow
@@ -29,6 +30,8 @@ export class BioxWorkflowNodeComponent implements OnInit {
 
   node: WorkflowNode<BioxProcessableBase>;
 
+  layerIsLoading$: Observable<boolean>;
+
   constructor(private workflowManager: WorkflowManagerState,
               private dialogService: FlDialogService,
               private portalService: FlPortalService) {
@@ -39,6 +42,8 @@ export class BioxWorkflowNodeComponent implements OnInit {
     if (this.node == null) {
       console.error('Couldn\'t find node with name : ' + this.name);
     }
+
+    this.layerIsLoading$ = this.workflowManager.layerIsLoading$;
   }
 
   nodeIsProtocol(): boolean {

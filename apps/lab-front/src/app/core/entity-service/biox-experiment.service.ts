@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {BioxExperiment, BioxExperimentDatasource, BioxExperimentVM} from '../model/entities/biox-experiment.entity';
-import {ViewModelDatasourcePaginated} from '../utils/view-model.datasource';
 import {createViewModel} from '../model/global/view-model.entity';
 
 
@@ -14,18 +13,18 @@ export class BioxExperimentService {
   constructor(private apiService: FlApiService) {
   }
 
-  public getExperiments(page: number, pageSize: number): Observable<FlPage<BioxExperimentVM>> {
-    return this.apiService.get(`experiment/list`, createViewModel(BioxExperiment),
+  public getExperiments(page: number, pageSize: number): Observable<FlPage<BioxExperiment>> {
+    return this.apiService.get(`experiment/list`, BioxExperiment,
       {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
 
 
   public getExperimentsDatasource(): BioxExperimentDatasource {
-    return new ViewModelDatasourcePaginated(this.getExperimentsMethod(), 20, true);
+    return new FlEntityPaginatedDatasource(this.getExperimentsMethod(), 20, true);
   }
 
-  private getExperimentsMethod(): FlGetPageFunction<BioxExperimentVM> {
-    return (page: number, pageSize: number): Observable<FlPage<BioxExperimentVM>> => this.getExperiments(page, pageSize);
+  private getExperimentsMethod(): FlGetPageFunction<BioxExperiment> {
+    return (page: number, pageSize: number): Observable<FlPage<BioxExperiment>> => this.getExperiments(page, pageSize);
   }
 
   public getExperiment(id: string): Observable<BioxExperimentVM> {

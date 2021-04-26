@@ -6,6 +6,7 @@ import {ViewModelDatasourcePaginated} from '../utils/view-model.datasource';
 import {BioxProtocol, BioxProtocolDatasource, BioxProtocolVM} from '../model/entities/biox-processable.entity';
 import {map} from 'rxjs/operators';
 import {clRxjsDebug} from '@monorepo/core-lib';
+import {BioxFlow} from '../model/global/biox-connection.class';
 
 @Injectable({
   providedIn: 'root'
@@ -29,25 +30,19 @@ export class BioxProtocolService {
     return (page: number, pageSize: number): Observable<FlPage<BioxProtocolVM>> => this.getProtocols(page, pageSize);
   }
 
-
-  public getProtocolOfExperiment(experimentId: string): Observable<BioxProtocol> {
-    return this.getAndInitProtocol(experimentId, 'experiment_uri');
-  }
-
   public getProtocol(protocolId: string): Observable<BioxProtocol> {
-    return this.getAndInitProtocol(protocolId, 'protocol_uri');
+    return this.apiService.get(`protocol/${protocolId}`, BioxProtocol);
   }
 
-  private getAndInitProtocol(id: string, objectType: string): Observable<BioxProtocol> {
-    return this.apiService.get(`protocol?${objectType}=${id}`, BioxProtocol).pipe(
-      map(flow => this.initProtocolConnectionsAndNodes(flow)),
+  public getProtocolAsFlow(protocolId: string): Observable<BioxFlow<BioxProtocol>> {
+    return this.getProtocol(protocolId).pipe(
+      map(flow => this.initProtocolFlow(flow)),
       clRxjsDebug(),
     );
   }
 
-  private initProtocolConnectionsAndNodes(flow: BioxProtocol): BioxProtocol {
-    console.log(flow);
-    flow.data.initConnectionsAndNodes();
-    return flow;
+  private initProtocolFlow(protocol: BioxProtocol): BioxFlow<BioxProtocol> {
+    console.log(protocol);
+    return new BioxFlow<BioxProtocol>(protocol);
   }
 }

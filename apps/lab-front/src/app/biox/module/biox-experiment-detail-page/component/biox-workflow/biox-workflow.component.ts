@@ -10,12 +10,12 @@ import {
   BioxProtocolVM
 } from '../../../../../core/model/entities/biox-processable.entity';
 import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
-import {BioxConnection} from '../../../../../core/model/global/biox-connection.class';
+import {BioxConnection, BioxFlow} from '../../../../../core/model/global/biox-connection.class';
 import {BioxResourcePortalComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-portal/biox-resource-portal.component';
 import {ConnectedPosition} from '@angular/cdk/overlay';
 import {WorkflowConnection} from '../../model/workflow-connection.class';
 import {Observable} from 'rxjs';
-import {BioxProcessTypeDatasource, BioxProcessTypeVM} from '../../../../../core/model/entities/biox-process-type.entity';
+import {BioxProcessType, BioxProcessTypeDatasource} from '../../../../../core/model/entities/biox-process-type.entity';
 import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
 
 
@@ -30,12 +30,12 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   @ViewChild('workflow', {static: true}) container: ElementRef<HTMLElement>;
 
-  protocol: BioxProtocol;
+  protocol: BioxFlow<BioxProtocol>;
 
   availableProtocols: BioxProtocolDatasource;
   protocols$: Observable<BioxProtocolVM[]>;
   availableProcesses: BioxProcessTypeDatasource;
-  processes$: Observable<BioxProcessTypeVM[]>;
+  processes$: Observable<BioxProcessType[]>;
 
   // store the current dragged process
   draggingProcessable: BioxProcessable;
@@ -63,13 +63,13 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   private loadExperimentFlow(): void {
     this.flowIsLoading = true;
-    this.bioxProtocolService.getProtocolOfExperiment(this.experiment.id).subscribe(
+    this.bioxProtocolService.getProtocolAsFlow(this.experiment.protocol.id).subscribe(
       flow => this.loadExperimentFlowSuccess(flow),
       () => this.flowIsLoading = false
     );
   }
 
-  private loadExperimentFlowSuccess(flow: BioxProtocol): void {
+  private loadExperimentFlowSuccess(flow: BioxFlow<BioxProtocol>): void {
     this.workflowManagerService.init(this.container.nativeElement, flow, this.experiment);
     this.protocol = flow;
     this.flowIsLoading = false;
@@ -86,7 +86,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   addProcessable(ev: DragEvent): void {
     this.workflowManagerService.addProcessableNode(this.draggingProcessable,
-      this.protocol.id, ev.offsetX, ev.offsetY);
+      this.protocol.object.id, ev.offsetX, ev.offsetY);
     this.draggingProcessable = null;
   }
 

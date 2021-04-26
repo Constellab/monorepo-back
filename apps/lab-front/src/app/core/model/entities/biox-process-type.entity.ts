@@ -1,6 +1,6 @@
 import {LabBaseEntity} from '../global/lab-entity.entity';
 import {ViewModel} from '../global/view-model.entity';
-import {ViewModelDatasourcePaginated} from '../../utils/view-model.datasource';
+import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
 export class BioxProcessType extends LabBaseEntity {
 
@@ -12,4 +12,4 @@ export class BioxProcessType extends LabBaseEntity {
 
 export type BioxProcessTypeVM = ViewModel<BioxProcessType>;
 
-export type BioxProcessTypeDatasource = ViewModelDatasourcePaginated<BioxProcessType>;
+export type BioxProcessTypeDatasource = FlEntityPaginatedDatasource<BioxProcessType>;
