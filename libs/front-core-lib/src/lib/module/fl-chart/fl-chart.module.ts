@@ -16,6 +16,7 @@ import { FlChartComponentSelectOptionsComponent } from './component/fl-chart-com
 import {MatOptionModule} from '@angular/material/core';
 import {CommonModule} from '@angular/common';
 import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
+import {FlChartPathwayModule} from './module/module/fl-chart-pathway/fl-chart-pathway.module';
 
 /**
  * Main module exporting all the chart modules
@@ -33,6 +34,7 @@ import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
     FlChartLineModule,
     FlChartPieModule,
     FlChartScatterPlotModule,
+    FlChartPathwayModule,
   ],
   declarations: [
     FlChartDynamicComponent,

@@ -14,6 +14,7 @@ export * from './module/module/fl-chart-core/public-api';
 export * from './module/module/fl-chart-heat-map/public-api';
 export * from './module/module/fl-chart-histogram/public-api';
 export * from './module/module/fl-chart-line/public-api';
+export * from './module/module/fl-chart-pathway/public-api';
 export * from './module/module/fl-chart-pie/public-api';
 export * from './module/module/fl-chart-scatter-plot/public-api';
 
