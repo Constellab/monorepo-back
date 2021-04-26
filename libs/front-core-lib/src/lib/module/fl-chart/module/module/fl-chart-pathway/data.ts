@@ -553,8 +553,8 @@ export const realPathwayData: FlPathway = {
       metabolites: {
         adp_c: 1.0,
         atp_c: -1.0,
-        gln_L_c: 1.0,
-        gln_L_e: -1.0
+        gln_L_c: 2.0,
+        gln_L_e: -2.0
       },
       lower_bound: 0.0,
       upper_bound: 1000.0

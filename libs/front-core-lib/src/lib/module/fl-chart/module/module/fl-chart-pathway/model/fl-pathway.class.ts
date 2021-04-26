@@ -16,7 +16,7 @@ export interface FlPathwayMetabolites {
   charge?: any;
   mass?: any;
   formula?: string;
-  chebi_id ?: string;
+  chebi_id?: string;
 }
 
 export interface FlPathwayReactions {
@@ -40,9 +40,6 @@ export interface FlChartPathwayData {
 export type FlChartPathwayNodeType = 'metabolite' | 'reaction';
 
 export class FlChartPathwayNode implements SimulationNodeDatum {
-  id: string;
-  name: string;
-  type: FlChartPathwayNodeType;
 
   // the following properties are set by d3
   /**
@@ -74,20 +71,35 @@ export class FlChartPathwayNode implements SimulationNodeDatum {
    */
   fy?: number | null;
 
-  constructor(id: string, name: string, type: FlChartPathwayNodeType) {
-    this.id = id;
-    this.name = name;
-    this.type = type;
-  }
+  constructor(public id: string, public name: string, public type: FlChartPathwayNodeType, public color: string) {
 
+  }
 
 
 }
 
-export interface FlChartPathwayLink<Node extends (string | FlChartPathwayNode)>
-  extends SimulationLinkDatum<FlChartPathwayNode> {
-  source: Node;
-  target: Node;
-  value: number;
+export class FlChartPathwayLink<Node extends (string | FlChartPathwayNode)>
+  implements SimulationLinkDatum<FlChartPathwayNode> {
+
+  absValue: number;
+
+  constructor(public source: Node, public target: Node,
+              public value: number) {
+    this.absValue = Math.abs(value);
+  }
+
+  /**
+   * return true if the link is positive, on the right of the reaction
+   *
+   * If positive
+   *    Source = reaction (rect)
+   *    Target = metabolite (circle)
+   * If negative
+   *    Source = metabolite (circle)
+   *    Target = reaction (rect)
+   */
+  public isPositive(): boolean {
+    return this.value > 0;
+  }
 }
 
