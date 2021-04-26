@@ -26,6 +26,9 @@ export class FlChartPathwayComponent implements OnInit {
   reactions: FlD3SelectionSimple<FlChartPathwayNode>;
   links: FlD3SelectionSimple<FlChartPathwayLink<FlChartPathwayNode>>;
 
+
+  simulationEnded: boolean = false;
+
   ////////////// READONLY VARIABLE //////////////////
 
   readonly height = 1000;
@@ -33,7 +36,7 @@ export class FlChartPathwayComponent implements OnInit {
 
   // size for the reaction rect
   readonly reactionWidth: number = 45;
-  readonly reactionHeight: number = 15;
+  readonly reactionHeight: number = 12;
 
   readonly metaboliteRadius: number = 7;
 
@@ -50,10 +53,15 @@ export class FlChartPathwayComponent implements OnInit {
     this.initSimulation();
     this.initLinks();
     this.initMetabolites();
-    this.initReactions()
+    this.initReactions();
     this.defineArrowMarker();
     this.enableZoom();
     this.launchSimulation();
+
+    // speed up the simulation to quickly end it
+    this.simulation.tick(1000);
+
+    this.simulation.on('end', () => this.endSimulation());
   }
 
   private initSimulation(): void {
@@ -66,6 +74,18 @@ export class FlChartPathwayComponent implements OnInit {
       .force('charge', d3.forceManyBody().strength(-40))
       .force('center', d3.forceCenter(this.width / 2, this.height / 2))
       .force('collide', d3.forceCollide().radius(this.collideRadius));
+  }
+
+  // disable all force so the user can move the node independently
+  private endSimulation(): void{
+    if (!this.simulationEnded) {
+      // clear all forces, so the user can drag easily
+      this.simulation.force('link', null);
+      this.simulation.force('charge', null);
+      this.simulation.force('center', null);
+      this.simulation.force('collide', null);
+      this.simulationEnded = true;
+    }
   }
 
   private initSVG(): void {
@@ -81,9 +101,9 @@ export class FlChartPathwayComponent implements OnInit {
 
   private launchSimulation(): void {
     this.simulation.on('tick', () => {
+
       // refresh link points
       this.links.attr('points', (d: FlChartPathwayLink<FlChartPathwayNode>) => this.getPolylinePoints(d));
-
 
       // refresh metabolites positions
       this.metabolites.attr('transform',
@@ -114,7 +134,7 @@ export class FlChartPathwayComponent implements OnInit {
       .join('circle')
       .attr('r', this.metaboliteRadius)
       .attr('stroke', (d: FlChartPathwayNode) => d.color)
-      .attr('stroke-width', 1.5)
+      .attr('stroke-width', 1)
       .attr('fill', 'white');
 
 
@@ -144,7 +164,7 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('width', this.reactionWidth)
       .attr('height', this.reactionHeight)
       .attr('stroke', this.grey)
-      .attr('stroke-width', 1.5)
+      .attr('stroke-width', 1)
       .attr('fill', 'white');
 
     // create the text for reaction
@@ -156,7 +176,6 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('text-anchor', 'middle')
       .attr('fill', this.grey)
       .style('font-size', '0.5em');
-
 
 
     this.reactions.append('title')
@@ -177,7 +196,7 @@ export class FlChartPathwayComponent implements OnInit {
 
   drag = (simulation: any): any => {
 
-    function dragstarted(event: any): void {
+    function dragStarted(event: any): void {
       if (!event.active) simulation.alphaTarget(0.3).restart();
       event.subject.fx = event.subject.x;
       event.subject.fy = event.subject.y;
@@ -188,20 +207,19 @@ export class FlChartPathwayComponent implements OnInit {
       event.subject.fy = event.y;
     }
 
-    function dragended(event: any): void {
+    function dragEnded(event: any): void {
       if (!event.active) simulation.alphaTarget(0);
       event.subject.fx = null;
       event.subject.fy = null;
     }
 
     return d3.drag()
-      .on('start', dragstarted)
+      .on('start', dragStarted)
       .on('drag', dragged)
-      .on('end', dragended);
+      .on('end', dragEnded);
   };
 
   private enableZoom(): void {
-    // ZOOM
     //add zoom capabilities
     const zoom_handler = d3.zoom()
       .on('zoom', (event) => this.zoom_actions(event));
@@ -231,20 +249,35 @@ export class FlChartPathwayComponent implements OnInit {
 
   // returns the coord of the line
   private getLineCoords(d: FlChartPathwayLink<FlChartPathwayNode>): [FlCoord, FlCoord] {
-    // link to rect x
-    // if value is positive, link to the right of the rect
+    // attach it to the center
     if (d.isPositive()) {
       return [
-        {x: d.source.x + this.reactionWidth, y: d.source.y + (this.reactionHeight / 2)},
+        {x: d.source.x + (this.reactionWidth / 2), y: d.source.y + (this.reactionHeight / 2)},
         {x: d.target.x, y: d.target.y}
       ];
     } else {
       // otherwise link it to the left of the rect
       return [
         {x: d.source.x, y: d.source.y},
-        {x: d.target.x, y: d.target.y + (this.reactionHeight / 2)}
+        {x: d.target.x + (this.reactionWidth / 2), y: d.target.y + (this.reactionHeight / 2)}
       ];
     }
+
+
+    // link to rect x
+    // if value is positive, link to the right of the rect
+    // if (d.isPositive()) {
+    //   return [
+    //     {x: d.source.x + this.reactionWidth, y: d.source.y + (this.reactionHeight / 2)},
+    //     {x: d.target.x, y: d.target.y}
+    //   ];
+    // } else {
+    //   // otherwise link it to the left of the rect
+    //   return [
+    //     {x: d.source.x, y: d.source.y},
+    //     {x: d.target.x, y: d.target.y + (this.reactionHeight / 2)}
+    //   ];
+    // }
   }
 
   // define the arrow marker to use it in lines
