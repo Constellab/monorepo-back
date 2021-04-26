@@ -21,9 +21,8 @@ export class ExternalLabUserService {
    * to open the lab. Then in the lab it will generate a JWT for the user
    */
   public login(labInfo: LabServerInfo, user: User): Promise<ExternalLabLoginResponse> {
-    // todo replace with user
     const body: any = {
-      uri: 'be6fd0a0-4494-4ad2-9a62-9a403e64d733'
+      uri: user.id
     };
 
     return this.externalLabApiService.post(labInfo, `${this.route}/generate-access-token`, body).toPromise();
