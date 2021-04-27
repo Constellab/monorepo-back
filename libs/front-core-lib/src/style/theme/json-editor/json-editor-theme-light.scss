@@ -1,9 +1,0 @@
-@import "./json-editor-theme-base";
-
-@mixin _json-editor-theme-light($mat-theme) {
-
-  // include json editor base theme
-  @include _json-editor-theme-base($mat-theme);
-
-  // Specific styles for the light theme
-}
