@@ -6,7 +6,7 @@ export enum ClTheme {
   DARK_THEME = 'dark-theme'
 }
 
-export const clDefaultTheme: ClTheme = ClTheme.DARK_THEME;
+export const clDefaultTheme: ClTheme = ClTheme.LIGHT_THEME;
 
 /**
  * Return true if the string theme is a theme
