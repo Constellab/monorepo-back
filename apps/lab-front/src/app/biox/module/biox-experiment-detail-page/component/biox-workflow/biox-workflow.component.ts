@@ -119,6 +119,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
         disposeOnNavigation: true,
         size: 'small',
         disposeOnOutsideClick: true,
+        scrollStrategy: this.portalService.getCloseOnScrollStrategy()
       });
 
       this.portalService.createPortal(BioxResourcePortalComponent, portalConfig, connection.resource.getObs());
