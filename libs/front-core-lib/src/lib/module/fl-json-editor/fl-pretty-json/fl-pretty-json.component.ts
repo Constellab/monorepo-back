@@ -41,13 +41,11 @@ export class FlPrettyJsonComponent implements OnInit {
     if (this.object == null) {
       this.startChar = 'null';
       return;
-    } else if (Array.isArray(this.object)) {
-      this.startChar = '[';
-      this.endChar = ']';
-    } else if (typeof this.object === 'object') {
-      this.startChar = '{';
-      this.endChar = '}';
     }
+
+    this.startChar = this.getStartChar(this.object);
+    this.endChar = this.getEndChar(this.object);
+
     this.initialize();
   }
 
@@ -114,7 +112,7 @@ export class FlPrettyJsonComponent implements OnInit {
   }
 
   private getPreview(object: any): string {
-    let preview: string = '{';
+    let preview: string = this.getStartChar(object);
     let count = 0;
     let keys: any;
 
@@ -160,9 +158,31 @@ export class FlPrettyJsonComponent implements OnInit {
       preview = preview.substr(0, 100) + '...';
     }
 
-    preview += '}';
+    preview += this.getEndChar(object);
 
     return preview;
+  }
+
+  private getStartChar(object: any): string {
+    if (Array.isArray(object)) {
+      return '[';
+    } else if (typeof object === 'object') {
+      return '{';
+    } else {
+      console.error('Wrong object ', object);
+      return '';
+    }
+  }
+
+  private getEndChar(object: any): string {
+    if (Array.isArray(object)) {
+      return ']';
+    } else if (typeof object === 'object') {
+      return '}';
+    } else {
+      console.error('Wrong object ', object);
+      return '';
+    }
   }
 
 }
