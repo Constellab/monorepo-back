@@ -54,7 +54,7 @@ export class ApiErrorService extends FlApiErrorService {
    * Handle the error message for the not specific errors
    */
   private getErrorMessage(error: any, defaultError: string): string {
-    return error.message || defaultError;
+    return error.detail || defaultError;
   }
 
 
