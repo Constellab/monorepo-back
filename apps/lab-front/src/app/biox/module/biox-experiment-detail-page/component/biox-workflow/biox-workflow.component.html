@@ -38,7 +38,7 @@
 
       <gen-biox-workflow-layers-breadcrumb></gen-biox-workflow-layers-breadcrumb>
 
-      <gen-biox-workflow-actions></gen-biox-workflow-actions>
+      <gen-biox-workflow-actions *ngIf="experimentIsUpdatable"></gen-biox-workflow-actions>
     </div>
     <div class="experiment-workflow" #workflow fxFlex="auto"
          (dragover)="allowDrop($event)" (drop)="addProcessable($event)" flDragHover="drop-border">
