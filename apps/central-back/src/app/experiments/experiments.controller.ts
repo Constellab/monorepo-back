@@ -5,7 +5,6 @@ import {ExperimentStatus} from './experiment-status.enum';
 import {ParseEnumPipe} from '../core/pipes/parse-enum.pipe';
 import {ExperimentsSecurityLayer} from './experiments-security-layer.service';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
-import {Protocol} from '../protocols/protocol.entity';
 
 @Controller('experiments')
 export class ExperimentsController {
@@ -27,22 +26,6 @@ export class ExperimentsController {
     return this.securityLayer.updateSecure(experiment);
   }
 
-  /**
-   * Update the protocol of the experiment (only if the experiment is in status DRAFT)
-   */
-  @Put(':id/protocol')
-  updateProtocol(@Body(new ParsePipe(Protocol)) protocol: Protocol,
-                 @Param('id', new ParseUUIDPipe()) id: string): Promise<Experiment> {
-    return this.securityLayer.updateProtocol(id, protocol);
-  }
-
-  /**
-   * Start the experiment, create it in the lab and change its status
-   */
-  @Put(':id/start')
-  start(@Param('id', new ParseUUIDPipe()) id: string): Promise<Experiment> {
-    return this.securityLayer.startExperiment(id);
-  }
 
   @Get(':id')
   findById(@Param('id', new ParseUUIDPipe()) id: string): Promise<Experiment> {
@@ -57,15 +40,6 @@ export class ExperimentsController {
   public getExperimentOfStudy(@Param('studyId', ParseUUIDPipe) studyId: string): Promise<Experiment[]> {
     return this.securityLayer.getExperimentsOfStudy(studyId);
   }
-
-  /**
-   * returns the list of experiment that uses the protocol
-   */
-  @Get('protocol/:protocolId')
-  getExperimentOfProtocol(@Param('protocolId', new ParseUUIDPipe()) protocolId: string): Promise<Experiment[]> {
-    return this.securityLayer.getCurrentExperimentByProtocol(protocolId);
-  }
-
 
   ////////////////////// STATUS ////////////////////
   /**

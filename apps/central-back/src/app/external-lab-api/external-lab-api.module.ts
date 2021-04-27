@@ -1,7 +1,6 @@
 import {HttpModule, Module} from '@nestjs/common';
 import {ExternalLabApiService} from './external-lab-api.service';
 import {CoreModule} from '../core/core.module';
-import {ExternalLabExperimentService} from './external-lab-experiment.service';
 import {ExternalLabUserService} from './external-lab-user.service';
 
 /**
@@ -14,12 +13,10 @@ import {ExternalLabUserService} from './external-lab-user.service';
   ],
   providers: [
     ExternalLabApiService,
-    ExternalLabExperimentService,
     ExternalLabUserService,
   ],
   exports: [
     ExternalLabApiService,
-    ExternalLabExperimentService,
     ExternalLabUserService,
   ]
 })

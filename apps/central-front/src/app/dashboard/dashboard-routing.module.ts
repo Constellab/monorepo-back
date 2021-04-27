@@ -5,7 +5,6 @@ import {ProjectDetailPageComponent} from './module/project-detail-page/component
 import {ExperimentDetailPageComponent} from './module/experiment-detail-page/component/experiment-detail-page/experiment-detail-page.component';
 import {StudyDetailPageComponent} from './module/study-detail-page/component/study-detail-page/study-detail-page.component';
 import {DashboardModulePageComponent} from './module/dashboard-page/component/dashboard-module-page/dashboard-module-page.component';
-import {ProtocolDetailPageComponent} from '../protocol/component/protocol-detail-page/protocol-detail-page.component';
 
 const routes: Route[] = [
   {
@@ -14,7 +13,6 @@ const routes: Route[] = [
       {path: 'project/:id', component: ProjectDetailPageComponent, children: []},
       {path: 'project/:id/study/:studyId', component: StudyDetailPageComponent, children: []},
       {path: 'project/:id/study/:studyId/experiment/:id', component: ExperimentDetailPageComponent},
-      {path: 'protocol/:id', component: ProtocolDetailPageComponent},
     ]
   }
 ];

@@ -26,7 +26,6 @@ import {CustomExceptionHandlerFilter} from './app/core/filters/core-exception-ha
 import {StudiesModule} from './app/studies/studies.module';
 import {ReportsModule} from './app/reports/reports.module';
 import {PersistenceLogger} from './app/core/services/persistence-logger/persistence-logger';
-import {ProtocolsModule} from './app/protocols/protocols.module';
 import {RequestContextMiddleware} from './app/core/modules/request-context/request-context.middleware';
 import {clDefaultLang} from '@monorepo/core-lib';
 
@@ -87,7 +86,6 @@ function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
     ServersInfoModule,
     StudiesModule,
     ReportsModule,
-    ProtocolsModule,
   ],
   controllers: [],
   providers: [

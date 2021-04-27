@@ -7,10 +7,8 @@ import {RouterModule} from '@angular/router';
 import {LabsCatalogComponent} from './component/labs-catalog/labs-catalog.component';
 import {LabCoreModule} from '../../../core/entity-module/lab-core/lab-core.module';
 import {DashboardModulePageComponent} from './component/dashboard-module-page/dashboard-module-page.component';
-import {ProtocolCoreModule} from '../../../core/entity-module/protocol-core/protocol-core.module';
 import {DashboardProjectsComponent} from './component/dashboard-projects/dashboard-projects.component';
 import {DashboardLabInstancesComponent} from './component/dashboard-lab-instances/dashboard-lab-instances.component';
-import {DashboardProtocolsComponent} from './component/dashboard-protocols/dashboard-protocols.component';
 
 /**
  * Module for the dashboard page
@@ -22,7 +20,6 @@ import {DashboardProtocolsComponent} from './component/dashboard-protocols/dashb
     DashboardModulePageComponent,
     DashboardProjectsComponent,
     DashboardLabInstancesComponent,
-    DashboardProtocolsComponent,
   ],
   imports: [
     CommonModule,
@@ -31,7 +28,6 @@ import {DashboardProtocolsComponent} from './component/dashboard-protocols/dashb
     CoreModule,
     ProjectCoreModule,
     LabCoreModule,
-    ProtocolCoreModule,
   ]
 })
 export class DashboardPageModule {

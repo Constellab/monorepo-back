@@ -8,7 +8,6 @@ import {
   constLabInstancesRoute,
   constLabsConfig,
   constProjectsRoute,
-  constProtocolsRoute,
   constSettingsRoute
 } from '../core/utils/base-route';
 import {LoadUserGuard} from './guard/load-user.guard';
@@ -47,12 +46,6 @@ const routes: Route[] = [
         path: constLabsConfig,
         loadChildren: () => import('../lab/lab.module').then(m => m.LabModule)
       },
-      //////////////////////// PROTOCOL /////////////////////////
-      {
-        path: constProtocolsRoute,
-        loadChildren: () => import('../protocol/protocol.module').then(m => m.ProtocolModule)
-      },
-
       //////////////////////// Admin /////////////////////////
       {
         path: constAdminRoute,

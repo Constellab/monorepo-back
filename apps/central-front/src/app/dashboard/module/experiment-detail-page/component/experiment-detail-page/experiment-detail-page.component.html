@@ -13,7 +13,7 @@
           <mat-icon>history</mat-icon>
         </button>
         <fl-status-chip [status]="experiment.currentStatus"
-                         class="g-text-big">
+                        class="g-text-big">
         </fl-status-chip>
       </div>
     </div>
@@ -32,31 +32,20 @@
       </div>
     </div>
 
-    <!--  Protocol  -->
-    <div class="g-section" *ngIf="showProtocolForm; else protocolCard">
-      <gen-experiment-protocol-edit [experimentId]="experiment.id"
-                                    [protocol]="experiment.protocol"
-                                    (protocolUpdate)="onExperimentUpdate($event)">
-      </gen-experiment-protocol-edit>
-    </div>
 
-    <ng-template #protocolCard>
-      <gen-protocol-card-detail class="g-section" [protocol]="experiment.protocol">
-      </gen-protocol-card-detail>
+    <!--  Report  -->
+    <fl-card class="g-section">
+      <fl-card-header>
+        <fl-text-icon>
+          <mat-icon class="g-icon-big">assignment</mat-icon>
+          <p>{{'reports' | translate}}</p>
+        </fl-text-icon>
+      </fl-card-header>
 
-      <!--  Report  -->
-      <fl-card class="g-section">
-        <fl-card-header>
-          <fl-text-icon>
-            <mat-icon class="g-icon-big">assignment</mat-icon>
-            <p>{{'reports' | translate}}</p>
-          </fl-text-icon>
-        </fl-card-header>
+      <fl-card-body>
+        <gen-reports-list [experimentId]="experiment.id"></gen-reports-list>
+      </fl-card-body>
+    </fl-card>
 
-        <fl-card-body>
-          <gen-reports-list [experimentId]="experiment.id"></gen-reports-list>
-        </fl-card-body>
-      </fl-card>
-    </ng-template>
   </ng-template>
 </fl-section>

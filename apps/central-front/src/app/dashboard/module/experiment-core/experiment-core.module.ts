@@ -6,7 +6,6 @@ import {ExperimentFormDialogComponent} from './component/experiment-form-dialog/
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabCoreModule} from '../../../core/entity-module/lab-core/lab-core.module';
 import {ExperimentStatusColorPipe} from './pipe/experiment-status-color/experiment-status-color.pipe';
-import {ProtocolCoreModule} from '../../../core/entity-module/protocol-core/protocol-core.module';
 import {RouterModule} from '@angular/router';
 import {ExperimentInfoComponent} from './component/experiment-info/experiment-info.component';
 
@@ -32,7 +31,6 @@ import {ExperimentInfoComponent} from './component/experiment-info/experiment-in
 
     CoreModule,
     LabCoreModule,
-    ProtocolCoreModule,
   ]
 })
 export class ExperimentCoreModule {

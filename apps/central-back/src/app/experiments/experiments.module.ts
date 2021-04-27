@@ -9,7 +9,6 @@ import {ExperimentsSecurityLayer} from './experiments-security-layer.service';
 import {LabInstancesModule} from '../lab-instances/lab-instances.module';
 import {StudiesModule} from '../studies/studies.module';
 import {ExternalLabApiModule} from '../external-lab-api/external-lab-api.module';
-import {ProtocolsModule} from '../protocols/protocols.module';
 
 @Module({
   imports: [
@@ -21,7 +20,6 @@ import {ProtocolsModule} from '../protocols/protocols.module';
     StudiesModule,
     LabInstancesModule,
     ExternalLabApiModule,
-    ProtocolsModule,
   ],
   controllers: [ExperimentsController],
   providers: [ExperimentsService, ExperimentsSecurityLayer],
