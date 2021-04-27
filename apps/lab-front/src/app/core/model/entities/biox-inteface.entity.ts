@@ -1,5 +1,9 @@
 import {BioxConnection, BioxConnectionPart, BioxNode} from '../global/biox-connection.class';
 import {Expose, Type} from 'class-transformer';
+import {FlLazyPropertyLabTransform} from '../../utils/lab-lazy-property.transform';
+import {BioxResourceService} from '../../entity-service/biox-resource.service';
+import {FlLazyProperty} from '@monorepo/front-core-lib';
+import {BioxResourceVM} from './biox-resource.entity';
 
 export class BioxProtocolInterfacePart implements BioxConnectionPart {
 
@@ -36,14 +40,7 @@ export class BioxProtocolInterface implements BioxConnection {
   @Type(() => BioxProtocolInterfacePart)
   to: BioxProtocolInterfacePart;
 
+  @FlLazyPropertyLabTransform(BioxResourceService)
+  resource: FlLazyProperty<BioxResourceVM>;
 }
 
-export class BioxProtocolOuterface implements BioxConnection {
-
-  @Type(() => BioxProtocolInterfacePart)
-  from: BioxProtocolInterfacePart;
-
-  @Type(() => BioxProtocolInterfacePart)
-  to: BioxProtocolInterfacePart;
-
-}

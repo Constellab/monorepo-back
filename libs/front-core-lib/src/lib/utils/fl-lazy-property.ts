@@ -20,35 +20,10 @@ export function FlLazyPropertyTransform<SERVICE, ENTITY>(serviceType: Type<SERVI
 export function FlLazyPropertyTransform<SERVICE extends FlGetById<ENTITY>, ENTITY>(serviceType: Type<SERVICE>): PropertyDecorator;
 export function FlLazyPropertyTransform<SERVICE, ENTITY>(serviceType: Type<any>,
                                                          getObs?: (service: SERVICE, id: string) => Observable<ENTITY>): PropertyDecorator {
-
-
   // create date from string
   const transformToClass = Transform(
     (id: string) => {
-      if (flRootInjector == null) {
-        throw new Error('[FlLazyPropertyTransform] The flRootInjector was not initiated, please call setFlRootInjector in AppModule');
-      }
-      if (id == null) {
-        return null;
-      }
-
-      // get the service instance
-      const service: SERVICE = flRootInjector.get(serviceType);
-
-      // retrieve the entity observable
-      let obs: Observable<ENTITY>;
-
-      if (typeof (service as any).getById === 'function') {
-        // get the observable directly from the service
-        obs = (service as any).getById(id);
-      } else if (getObs != null) {
-        // get the observable from the getObs method
-        obs = getObs(service, id);
-      } else {
-        throw new Error('[FlLazyPropertyTransform] Wrong inputs');
-      }
-
-      return new FlLazyProperty<ENTITY>(id, obs);
+      return flLazyPropertyTransformToClass(id, serviceType, getObs);
     },
     {toClassOnly: true});
 
@@ -56,6 +31,42 @@ export function FlLazyPropertyTransform<SERVICE, ENTITY>(serviceType: Type<any>,
     transformToClass(target, key);
   };
 }
+
+/**
+ * Transform function to create a FlLazyProperty from an id and a service
+ * @param id
+ * @param serviceType
+ * @param getObs
+ */
+export function flLazyPropertyTransformToClass<SERVICE, ENTITY>(id: string, serviceType: Type<any>,
+                                                                getObs?: (service: SERVICE, id: string)
+                                                                  => Observable<ENTITY>): FlLazyProperty<any> {
+  if (flRootInjector == null) {
+    throw new Error('[FlLazyPropertyTransform] The flRootInjector was not initiated, please call setFlRootInjector in AppModule');
+  }
+  if (id == null) {
+    return null;
+  }
+
+  // get the service instance
+  const service: SERVICE = flRootInjector.get(serviceType);
+
+  // retrieve the entity observable
+  let obs: Observable<ENTITY>;
+
+  if (typeof (service as any).getById === 'function') {
+    // get the observable directly from the service
+    obs = (service as any).getById(id);
+  } else if (getObs != null) {
+    // get the observable from the getObs method
+    obs = getObs(service, id);
+  } else {
+    throw new Error('[FlLazyPropertyTransform] Wrong inputs');
+  }
+
+  return new FlLazyProperty<ENTITY>(id, obs);
+}
+
 
 /**
  * Class used to lazy load entity, initiated with {@link FlLazyPropertyTransform} decorator

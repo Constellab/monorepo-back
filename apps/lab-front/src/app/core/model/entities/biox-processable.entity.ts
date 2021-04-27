@@ -1,15 +1,16 @@
 import {LabEntity} from '../global/lab-entity.entity';
 import {BioxConfig} from './biox-config.entity';
 import {ClCoreJsonConvert, ClDeserializeItem, ClRecordTransform} from '@monorepo/core-lib';
-import {BioxConnection, BioxFlowManager, BioxConnectionPart, BioxNode} from '../global/biox-connection.class';
+import {BioxConnection, BioxConnectionPart, BioxFlowManager, BioxNode} from '../global/biox-connection.class';
 import {Expose, Type} from 'class-transformer';
 import {BioxResourceVM} from './biox-resource.entity';
-import {FlLazyProperty, FlLazyPropertyTransform} from '@monorepo/front-core-lib';
+import {FlLazyProperty} from '@monorepo/front-core-lib';
 import {BioxResourceService} from '../../entity-service/biox-resource.service';
-import {BioxProtocolInterface, BioxProtocolOuterface} from './biox-inteface.entity';
+import {BioxProtocolInterface} from './biox-inteface.entity';
 import {BioxSpec} from './biox-spec.entity';
 import {ViewModel} from '../global/view-model.entity';
 import {ViewModelDatasourcePaginated} from '../../utils/view-model.datasource';
+import {FlLazyPropertyLabTransform} from '../../utils/lab-lazy-property.transform';
 
 /**
  * Part of a link between different processable in protocol
@@ -51,8 +52,7 @@ export class BioxProtocolLink implements BioxConnection {
   @Type(() => BioxProtocolLinkPart)
   to: BioxProtocolLinkPart;
 
-  @Expose({name: 'resource_uri'})
-  @FlLazyPropertyTransform(BioxResourceService)
+  @FlLazyPropertyLabTransform(BioxResourceService)
   resource: FlLazyProperty<BioxResourceVM>;
 }
 
@@ -112,8 +112,8 @@ export class BioxProtocolGraph extends LabEntity {
   @ClRecordTransform(BioxProtocolInterface)
   interfaces: Record<string, BioxProtocolInterface>;
 
-  @ClRecordTransform(BioxProtocolOuterface)
-  outerfaces: Record<string, BioxProtocolOuterface>;
+  @ClRecordTransform(BioxProtocolInterface)
+  outerfaces: Record<string, BioxProtocolInterface>;
 
   @ClRecordTransform(BioxProcessableBase)
   nodes: Record<string, BioxProcessableBase>;
@@ -173,7 +173,7 @@ export class BioxProtocol extends BioxProcessableBase implements BioxFlowManager
     return this.data.graph.interfaces;
   }
 
-  getOuterfacesConnections(): Record<string, BioxProtocolOuterface> {
+  getOuterfacesConnections(): Record<string, BioxProtocolInterface> {
     return this.data.graph.outerfaces;
   }
 

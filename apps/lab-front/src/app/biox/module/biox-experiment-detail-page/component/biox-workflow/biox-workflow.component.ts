@@ -17,6 +17,7 @@ import {WorkflowConnection} from '../../model/workflow-connection.class';
 import {Observable} from 'rxjs';
 import {BioxProcessType, BioxProcessTypeDatasource} from '../../../../../core/model/entities/biox-process-type.entity';
 import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
+import {BioxProtocolInterface} from '../../../../../core/model/entities/biox-inteface.entity';
 
 
 @Component({
@@ -98,7 +99,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   onConnectionSelected(workflowConnection: WorkflowConnection): void {
     const connection: BioxConnection = workflowConnection.object;
 
-    if (connection instanceof BioxProtocolLink) {
+    if (connection instanceof BioxProtocolLink || connection instanceof BioxProtocolInterface) {
       const connectionHtmlElement: HTMLElement = workflowConnection.getHTMLElement();
 
       if (connectionHtmlElement == null) {

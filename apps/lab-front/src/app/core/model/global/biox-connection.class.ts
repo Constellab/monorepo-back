@@ -1,5 +1,5 @@
 import {LabBaseEntity} from './lab-entity.entity';
-import {BioxProtocolInterface, BioxProtocolOuterface} from '../entities/biox-inteface.entity';
+import {BioxProtocolInterface} from '../entities/biox-inteface.entity';
 import {BioxSpec} from '../entities/biox-spec.entity';
 
 export interface BioxConnectionPart {
@@ -99,7 +99,7 @@ export interface BioxFlowManager {
 
   getInterfacesConnections(): Record<string, BioxProtocolInterface>;
 
-  getOuterfacesConnections(): Record<string, BioxProtocolOuterface>;
+  getOuterfacesConnections(): Record<string, BioxProtocolInterface>;
 
   // list of interface as nodes
   interfaceNodes: Record<string, BioxNode>;

@@ -26,3 +26,8 @@ export class LabBaseEntity extends LabEntity {
   createdAt: DateTime;
 
 }
+
+
+export interface LabUnconvertedEntity {
+  uri: string;
+}
