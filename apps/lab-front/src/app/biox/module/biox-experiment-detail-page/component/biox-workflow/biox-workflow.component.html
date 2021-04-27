@@ -30,7 +30,7 @@
   </fl-card>
 
   <!-- Right section with workflow -->
-  <div fxFlex="auto" fxLayout="column">
+  <div fxFlex="auto" fxLayout="column" *ngIf="!error; else showError">
 
     <!--  Workflow header  -->
     <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
@@ -46,6 +46,13 @@
       <div class="g-text-centered" *ngIf="flowIsLoading">
         <fl-loader></fl-loader>
       </div>
+
     </div>
   </div>
+
+  <ng-template #showError>
+    <div class="g-text-centered g-full">
+      {{'biox.workflow_loading_error' | translate}}
+    </div>
+  </ng-template>
 </div>

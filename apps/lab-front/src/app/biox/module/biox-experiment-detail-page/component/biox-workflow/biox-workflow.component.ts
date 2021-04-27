@@ -29,7 +29,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   @Input() experiment: BioxExperiment;
 
-  @ViewChild('workflow', {static: true}) container: ElementRef<HTMLElement>;
+  @ViewChild('workflow', {static: false}) container: ElementRef<HTMLElement>;
 
   protocol: BioxFlow<BioxProtocol>;
 
@@ -42,6 +42,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   draggingProcessable: BioxProcessable;
 
   flowIsLoading: boolean = false;
+  error: boolean = false;
 
   constructor(private workflowManagerService: WorkflowManagerState,
               private bioxProtocolService: BioxProtocolService,
@@ -66,7 +67,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
     this.flowIsLoading = true;
     this.bioxProtocolService.getProtocolAsFlow(this.experiment.protocol.id).subscribe(
       flow => this.loadExperimentFlowSuccess(flow),
-      () => this.flowIsLoading = false // todo gérer quand y'a une erreur
+      () => this.onError()
     );
   }
 
@@ -128,6 +129,11 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
       this.portalService.createPortal(BioxResourcePortalComponent, portalConfig, connection.resource.getObs());
     }
+  }
+
+  private onError(): void{
+    this.flowIsLoading = false;
+    this.error = true;
   }
 
   ngOnDestroy(): void {
