@@ -66,7 +66,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
     this.flowIsLoading = true;
     this.bioxProtocolService.getProtocolAsFlow(this.experiment.protocol.id).subscribe(
       flow => this.loadExperimentFlowSuccess(flow),
-      () => this.flowIsLoading = false
+      () => this.flowIsLoading = false // todo gérer quand y'a une erreur
     );
   }
 

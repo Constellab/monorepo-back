@@ -84,7 +84,7 @@ export class FlBasicCell extends FlCell {
 
   constructor() {
     super();
-    this.value = 'Super';
+    this.value = null;
   }
 
 }

@@ -29,5 +29,7 @@
   "add_brick": "Add brick",
   "documentation": "Documentation",
   "gws": "Web services",
-  "input_max_length": "Max length {{count}}"
+  "input_max_length": "Max length {{count}}",
+  "open_resource_detail": "Open detail",
+  "resource": "Resource"
 }

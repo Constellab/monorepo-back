@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BioxResource} from '../../../../model/entities/biox-resource.entity';
-import {FlSpreadsheet} from '@monorepo/front-core-lib';
+import {BioxResourceVM} from '../../../../model/entities/biox-resource.entity';
+import {FlSpreadsheet, FlSpreadsheetFactory} from '@monorepo/front-core-lib';
 
 const data: any[][] = [
   ['Item', 2012, 2013, 2014, 2015, null, null, null, null, null],
@@ -20,7 +20,7 @@ const data: any[][] = [
 })
 export class BioxResourceSpreadsheetComponent implements OnInit {
 
-  @Input() resource: BioxResource;
+  @Input() resource: BioxResourceVM;
 
   spreadSheet: FlSpreadsheet;
 
@@ -28,7 +28,7 @@ export class BioxResourceSpreadsheetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.spreadSheet = FlSpreadsheet.fromArray(data, 'Sheet');
+    this.spreadSheet = FlSpreadsheetFactory.fromAny(this.resource.model.data, 'Sheet');
 
     // const columnCount = 5;
     // const rowCount = 5;

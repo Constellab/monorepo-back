@@ -1,24 +1,33 @@
 <div class="g-page-fixed g-page-bottom-padding" fxLayout="column">
-<!--  <fl-async-section fxFlex [observable]="resource$">-->
+  <fl-async-section fxFlex [observable]="resource$">
 
-<!--    <ng-container *flSectionBody="let resource">-->
-<!--      <gen-biox-resource-spreadsheet [resource]="resource"></gen-biox-resource-spreadsheet>-->
-<!--    </ng-container>-->
-<!---->
-<!--  </fl-async-section>-->
+    <fl-section-header>
+      <h2>{{'resource' | translate}} : {{resourceId}}</h2>
+      <fl-section-actions *ngIf="availableViews">
+        <a *ngFor="let view of availableViews"
+           mat-icon-button type="button"
+           [routerLink]="'./'" [queryParams]="getQueryParam(view)"
+           [replaceUrl]="true"
+           [color]="view.route === currentView ? 'primary': null"
+           [matTooltip]="view.tooltip | translate" matTooltipPosition="below">
+          <mat-icon *ngIf="view.icon; else text">calendar_view_month</mat-icon>
+          <ng-template #text>{{view.text}}</ng-template>
+        </a>
+      </fl-section-actions>
+    </fl-section-header>
 
-<!--  <gen-biox-resource-spreadsheet class="g-full-height"></gen-biox-resource-spreadsheet>-->
+    <ng-container *flSectionBody="let resource">
 
-<!--  <fl-chart-line-simple></fl-chart-line-simple>-->
+      <ng-container [ngSwitch]="currentView">
+        <gen-biox-resource-json *ngSwitchCase="'json'"
+                                [resource]="resource"></gen-biox-resource-json>
 
+        <gen-biox-resource-spreadsheet *ngSwitchCase="'spreadsheet'"
+                                       [resource]="resource"></gen-biox-resource-spreadsheet>
 
-<!--  <fl-chart-line-multiple></fl-chart-line-multiple>-->
+      </ng-container>
+    </ng-container>
 
-<!--  <fl-chart-scatter-plot-simple></fl-chart-scatter-plot-simple>-->
+  </fl-async-section>
 
-<!--  <fl-chart-scatter-plot-multiple></fl-chart-scatter-plot-multiple>-->
-
-<!--  <fl-chart-histogram></fl-chart-histogram>-->
-
-  <fl-chart-pathway></fl-chart-pathway>
 </div>

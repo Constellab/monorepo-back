@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BioxResource} from '../../../../model/entities/biox-resource.entity';
+import {RouterService} from '../../../../service/router.service';
 
 /**
  * Simple component to display information about a {@link BioxResource}
@@ -13,10 +14,13 @@ export class BioxResourceInfoComponent implements OnInit {
 
   @Input() resource: BioxResource;
 
+  resourceDetailUrl: string;
+
   constructor() {
   }
 
   ngOnInit(): void {
+    this.resourceDetailUrl = RouterService.getBioxResourceDetailRoute(this.resource.id);
   }
 
 }

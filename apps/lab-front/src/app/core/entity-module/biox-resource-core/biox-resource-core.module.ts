@@ -4,21 +4,26 @@ import { BioxResourceInfoComponent } from './component/biox-resource-info/biox-r
 import {CoreModule} from '../../core.module';
 import { BioxResourcePortalComponent } from './component/biox-resource-portal/biox-resource-portal.component';
 import { BioxResourceSpreadsheetComponent } from './component/biox-resource-spreadsheet/biox-resource-spreadsheet.component';
+import {RouterModule} from '@angular/router';
+import { BioxResourceJsonComponent } from './component/biox-resource-json/biox-resource-json.component';
 
 
 @NgModule({
   declarations: [
     BioxResourceInfoComponent,
     BioxResourcePortalComponent,
-    BioxResourceSpreadsheetComponent
+    BioxResourceSpreadsheetComponent,
+    BioxResourceJsonComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
     BioxResourcePortalComponent,
-    BioxResourceSpreadsheetComponent
+    BioxResourceSpreadsheetComponent,
+    BioxResourceJsonComponent,
   ],
   imports: [
     CommonModule,
+    RouterModule,
 
     CoreModule,
   ],

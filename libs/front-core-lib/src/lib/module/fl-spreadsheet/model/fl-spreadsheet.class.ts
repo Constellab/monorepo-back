@@ -11,31 +11,6 @@ export class FlSpreadsheet {
     this.addSheet(defaultSheetName);
   }
 
-  /**
-   * Create a spreadsheet with a single sheet, initiated with the values
-   * @param values
-   * @param defaultSheetName
-   */
-  public static fromArray(values: any[][], defaultSheetName: string): FlSpreadsheet {
-    const spreadSheet: FlSpreadsheet = new FlSpreadsheet(defaultSheetName);
-    const sheet: FlSheet = spreadSheet.currentSheet;
-
-    // get the maximum number of columns from the values
-    const maxColumnsLength: number = values.reduce((m, x) => m.length > x.length ? m : x, []).length;
-
-    // create the columns
-    sheet.appendMultipleColumns(maxColumnsLength);
-
-    // create the rows and set value
-    sheet.appendMultipleRows(values.length);
-
-    // set the cell values
-    sheet.setValuesFromCoord(values, {row: 0, column: 0});
-
-    return spreadSheet;
-  }
-
-
   ///////////////////////////// SHEET //////////////////////////////
   get currentSheet(): FlSheet {
     return this.currentSheet$.value;

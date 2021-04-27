@@ -1,7 +1,15 @@
-
 <div>
   <fl-pretty-json [object]="resource.data"></fl-pretty-json>
-  <p class="g-text-small g-text-light created-at">
-    {{'created_at' | translate}} {{resource.createdAt | flDate: 'D HH:mm'}}
-  </p>
+
+
+  <div fxLayout="row" fxLayoutAlign="space-between center" class="g-section">
+    <a [routerLink]="resourceDetailUrl" mat-flat-button color="primary">
+      {{'open_resource_detail' | translate}}
+    </a>
+
+    <p class="g-text-small g-text-light created-at">
+      {{'created_at' | translate}} {{resource.createdAt | flDate: 'D HH:mm'}}
+    </p>
+
+  </div>
 </div>

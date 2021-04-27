@@ -40,4 +40,5 @@ export * from './model/action/fl-sheet.action';
 export * from './model/action/fl-update-cell.action';
 
 // Export the utils
+export * from './utils/fl-spreadsheet.factory';
 export * from './utils/fl-spreadsheet.helper';
