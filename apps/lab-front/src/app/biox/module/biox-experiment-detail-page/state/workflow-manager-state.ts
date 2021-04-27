@@ -152,6 +152,8 @@ export class WorkflowManagerState {
   //////////////////////// INIT NODES AND CONNECTIONS FOR FLOW ////////////////////////////
   // create nodes and connection for a flow
   private initFlow(protocol: BioxFlow<BioxProtocol>): void {
+    // disable check on workflow to force creation
+    this.workflow.disableCheck();
     // add all nodes
     this.addNodesRecursively(protocol.getRootNodes(), 0, 0);
 
@@ -159,6 +161,9 @@ export class WorkflowManagerState {
     for (const step of protocol.getAllConnections()) {
       this.addConnection(step);
     }
+
+    // re-enable check after init
+    this.workflow.enableCheck();
   }
 
 

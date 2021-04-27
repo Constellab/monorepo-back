@@ -25,6 +25,9 @@ export class Workflow {
 
   private mode: WorkflowMode;
 
+  // if false there is no check when creating nodes or connections
+  private checkOnCreate: boolean = true;
+
   constructor(private element: HTMLElement, mode: WorkflowMode = 'edit') {
     this.editor = new Drawflow(element);
     this.editor.zoom_value = 0.1;
@@ -181,9 +184,9 @@ export class Workflow {
 
     // check if the input is available and if the port are compatible
     // refuse if there are more than one connection (the new one is counting)
-    if (inputNode.countInputConnections(connection.input_class) > 1 ||
-      !inputPort.isCompatible(outputPort)) {
-      console.log('Input not available');
+    if (this.checkOnCreate && (
+      inputNode.countInputConnections(connection.input_class) > 1 ||
+      !inputPort.isCompatible(outputPort))) {
       // remove the connection
       this.editor.removeSingleConnection(connection.output_id, connection.input_id,
         connection.output_class, connection.input_class);
@@ -205,9 +208,7 @@ export class Workflow {
   }
 
   private emitConnectionSelected(connectionEvent: ConnectionEvent): void {
-    const connection: WorkflowConnection = this.currentLayer.findConnection(
-      connectionEvent.output_id, connectionEvent.input_id, connectionEvent.output_class, connectionEvent.input_class
-    );
+    const connection: WorkflowConnection = this.currentLayer.findConnection(connectionEvent);
 
     if (connection != null) {
       this.connectionSelected$.next(connection);
@@ -223,6 +224,14 @@ export class Workflow {
 
   public getMode(): WorkflowMode {
     return this.mode;
+  }
+
+  public disableCheck(): void {
+    this.checkOnCreate = false;
+  }
+
+  public enableCheck(): void {
+    this.checkOnCreate = true;
   }
 
   public destroy(): void {

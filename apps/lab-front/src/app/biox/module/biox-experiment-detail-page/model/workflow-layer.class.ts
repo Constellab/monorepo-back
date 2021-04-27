@@ -91,7 +91,7 @@ export class WorkflowLayer {
   // add the connection to the local list
   public saveConnection(event: ConnectionEvent): void {
     // only add the connection if it doesn't exist
-    if (this.findConnection(event.output_id, event.input_id, event.output_class, event.input_class) == null) {
+    if (this.findConnection(event) == null) {
       const outputNode: WorkflowNode<any> = this.findNodeWithId(event.output_id);
       const inputNode: WorkflowNode<any> = this.findNodeWithId(event.input_id);
 
@@ -105,20 +105,21 @@ export class WorkflowLayer {
   }
 
   public removeConnection(event: ConnectionEvent): void {
-    const connectionIndex: number = this.findConnectionIndex(event.output_id, event.input_id, event.output_class, event.input_class);
+    const connectionIndex: number = this.findConnectionIndex(event);
     if (connectionIndex >= 0) {
       this.connections.splice(connectionIndex, 1);
     }
   }
 
-  public findConnection(outputNodeId: string, inputNodeId: string, outputName: string, inputName: string): WorkflowConnection {
-    const connectionIndex: number = this.findConnectionIndex(outputNodeId, inputNodeId, outputName, inputName);
+  public findConnection(connectionEvent: ConnectionEvent): WorkflowConnection {
+    const connectionIndex: number = this.findConnectionIndex(connectionEvent);
     return connectionIndex >= 0 ? this.connections[connectionIndex] : null;
   }
 
-  public findConnectionIndex(nodeOutputId: string, nodeInputId: string, outputName: string, inputName: string): number {
-    return this.connections.findIndex(c => c.outputNode.nodeId === nodeOutputId && c.inputNode.nodeId === nodeInputId &&
-      c.outputPort.drawFlowName === outputName && c.inputPort.drawFlowName === inputName);
+  public findConnectionIndex(connectionEvent: ConnectionEvent): number {
+    return this.connections.findIndex(c =>
+      c.outputNode.nodeId === connectionEvent.output_id && c.inputNode.nodeId === connectionEvent.input_id &&
+      c.outputPort.drawFlowName === connectionEvent.output_class && c.inputPort.drawFlowName === connectionEvent.input_class);
   }
 
 
