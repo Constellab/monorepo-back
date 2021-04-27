@@ -139,7 +139,11 @@ export class FlPrettyJsonComponent implements OnInit {
       }
 
       if (count < 3) {
-        preview += key + ': ';
+
+        // if the object is an array, don't show the key
+        if (!Array.isArray(object)) {
+          preview += key + ': ';
+        }
 
         if (typeof value === 'object') {
           preview += '{...}';
