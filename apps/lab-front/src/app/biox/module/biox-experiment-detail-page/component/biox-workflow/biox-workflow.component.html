@@ -1,8 +1,8 @@
-<div fxLayout="row">
+<div fxLayout="row" class="g-full-height">
 
 
   <!--  Left section with available protocol and processes -->
-  <fl-card class="left-section" fxFlex="25%">
+  <fl-card class="left-section" fxFlex="25%" *ngIf="experimentIsUpdatable">
     <fl-card-body>
       <mat-tab-group>
         <!--        &lt;!&ndash;                    Protocols    &ndash;&gt;-->
@@ -30,7 +30,7 @@
   </fl-card>
 
   <!-- Right section with workflow -->
-  <div fxFlex="auto">
+  <div fxFlex="auto" fxLayout="column">
 
     <!--  Workflow header  -->
     <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
@@ -40,11 +40,12 @@
 
       <gen-biox-workflow-actions></gen-biox-workflow-actions>
     </div>
-    <div class="experiment-workflow" #workflow
-         (dragover)="allowDrop($event)" (drop)="addProcessable($event)" flDragHover="drop-border"></div>
+    <div class="experiment-workflow" #workflow fxFlex="auto"
+         (dragover)="allowDrop($event)" (drop)="addProcessable($event)" flDragHover="drop-border">
 
-    <div class="g-centered-forced">
-      <fl-loader *ngIf="flowIsLoading"></fl-loader>
+      <div class="g-text-centered" *ngIf="flowIsLoading">
+        <fl-loader></fl-loader>
+      </div>
     </div>
   </div>
 </div>

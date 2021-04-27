@@ -84,6 +84,10 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
     ev.preventDefault();
   }
 
+  get experimentIsUpdatable(): boolean{
+    return this.experiment.getStatusName() !== 'finished';
+  }
+
 
   addProcessable(ev: DragEvent): void {
     this.workflowManagerService.addProcessableNode(this.draggingProcessable,

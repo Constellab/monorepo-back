@@ -1,10 +1,12 @@
 <div class="g-page">
-  <fl-async-section [observable]="getExperiment">
+  <fl-async-section [observable]="getExperiment" fxFlex="auto">
 
     <ng-container *flSectionBody="let experimentVM">
-      <gen-biox-experiment-card [experiment]="experimentVM.model"></gen-biox-experiment-card>
+      <div fxLayout="column" class="g-full-height">
+        <gen-biox-experiment-card [experiment]="experimentVM.model"></gen-biox-experiment-card>
 
-      <gen-biox-workflow [experiment]="experimentVM.model" class="g-section"></gen-biox-workflow>
+        <gen-biox-workflow [experiment]="experimentVM.model" fxFlex="auto" class="g-section"></gen-biox-workflow>
+      </div>
     </ng-container>
 
   </fl-async-section>

@@ -13,6 +13,8 @@ export class BioxExperimentData {
   description: string;
 }
 
+export type BioxExperimentStatus = 'running' | 'finished';
+
 export class BioxExperiment extends LabEntity implements FlStatus {
 
   // python class link
@@ -44,7 +46,7 @@ export class BioxExperiment extends LabEntity implements FlStatus {
     return getBioxExperimentStatusStatusIcon(this.isInProgress);
   }
 
-  getStatusName(): string {
+  getStatusName(): BioxExperimentStatus {
     return this.isInProgress ? 'running' : 'finished';
   }
 }
