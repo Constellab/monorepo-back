@@ -3,6 +3,7 @@ import {FlPlatformService} from './fl-plateform.service';
 import {FlLocalStorageService} from './fl-local-storage.service';
 import {DOCUMENT} from '@angular/common';
 import {ClTheme, clThemeIsSupported} from '@monorepo/core-lib';
+import {FlThemeDetail, flThemeDetailDark, flThemeDetailLight} from './model/fl-theme-detail.class';
 
 /**
  * Service to manage light and dark theme
@@ -75,5 +76,15 @@ export class FlThemeService {
     const matched: boolean = window?.matchMedia('(prefers-color-scheme: dark)')?.matches ?? true;
 
     return matched ? ClTheme.DARK_THEME : ClTheme.LIGHT_THEME;
+  }
+
+
+  /**
+   * Return the current theme detail
+   */
+  public getCurrentThemeDetail(): FlThemeDetail {
+    const theme: ClTheme = this.getCurrentTheme();
+
+    return theme === ClTheme.LIGHT_THEME ? flThemeDetailLight : flThemeDetailDark;
   }
 }

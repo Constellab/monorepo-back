@@ -12,3 +12,4 @@ export * from './fl-theme.service';
 
 // export the models
 export * from './model/fl-cookie.class';
+export * from './model/fl-theme-detail.class';

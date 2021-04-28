@@ -7,6 +7,8 @@ import {Simulation} from 'd3-force';
 import {FlChartPathwayFactory} from '../fl-chart-pathway.factory';
 import {ValueFn} from 'd3-selection';
 import {ClHelpService} from '@monorepo/core-lib';
+import {FlThemeService} from '../../../../../../service/fl-theme.service';
+import {FlThemeDetail} from '../../../../../../service/model/fl-theme-detail.class';
 
 @Component({
   selector: 'fl-chart-pathway',
@@ -45,8 +47,13 @@ export class FlChartPathwayComponent implements OnInit {
 
   readonly collideRadius: number = 25;
   readonly grey: string = '#999';
+  readonly textColor: string;
+  readonly backgroundColor: string;
 
-  constructor() {
+  constructor(themeService: FlThemeService) {
+    const themeDetail: FlThemeDetail = themeService.getCurrentThemeDetail();
+    this.textColor = themeDetail.foreground;
+    this.backgroundColor = themeDetail.background;
   }
 
   ngOnInit(): void {
@@ -157,7 +164,8 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('y', this.metaboliteRadius)
       .attr('dy', '1em')
       .attr('text-anchor', 'middle')
-      .attr('fill', this.grey)
+      .attr('fill',this.textColor)
+      .style('text-shadow', this.getTextShadow())
       .style('font-size', '0.5em');
 
     this.metabolites.append('title')
@@ -189,9 +197,10 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('x', this.reactionWidth / 2) // center x
       .attr('dominant-baseline', 'middle')
       .attr('text-anchor', 'middle')
-      .attr('fill', this.grey)
+      .attr('fill', this.textColor)
+      .style('text-shadow', this.getTextShadow())
       .style('font-size', '0.5em');
-
+    //text-shadow:;
 
     this.reactions.append('title')
       .text((d: FlChartPathwayNode) => d.name);
@@ -371,6 +380,11 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
       .attr('fill', this.grey)
       .style('stroke', 'none');
+  }
+
+  private getTextShadow(): string{
+    return `-1px -1px 0 ${this.backgroundColor}, 1px -1px 0 ${this.backgroundColor},
+            -1px 1px 0 ${this.backgroundColor}, 1px 1px 0 ${this.backgroundColor}`;
   }
 
 }
