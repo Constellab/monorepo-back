@@ -1,9 +1,19 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {NestedTreeControl} from '@angular/cdk/tree';
-import {MatTreeNestedDataSource} from '@angular/material/tree';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 
-export class ObjectNode {
+class ObjectNode {
   children?: ObjectNode[];
+  key: string;
+  value?: any;
+  type: string;
+  preview ?: string;
+  information ?: string;
+}
+
+class ObjectFlatNode {
+  expandable: boolean;
+  level: number;
   key: string;
   value?: any;
   type: string;
@@ -14,23 +24,35 @@ export class ObjectNode {
 @Component({
   selector: 'fl-pretty-json',
   templateUrl: './fl-pretty-json.component.html',
-  styleUrls: ['./fl-pretty-json.component.scss']
+  styleUrls: ['./fl-pretty-json.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlPrettyJsonComponent implements OnInit {
 
   @Input() object: any;
 
-  nestedTreeControl: NestedTreeControl<any>;
-  nestedDataSource: MatTreeNestedDataSource<any>;
-
   startChar: string;
   endChar: string;
 
-  // return true if the node has an object
-  hasNestedChild = (_: number, nodeData: ObjectNode): boolean => nodeData.children != null;
+  treeControl: FlatTreeControl<ObjectFlatNode>;
 
-  // return the list of children
-  private _getChildren = (node: ObjectNode): ObjectNode[] => node.children;
+  treeFlattener: MatTreeFlattener<ObjectNode, ObjectFlatNode>;
+
+  dataSource: MatTreeFlatDataSource<ObjectNode, ObjectFlatNode>;
+
+  private _transformer = (node: ObjectNode, level: number): ObjectFlatNode => {
+    return {
+      expandable: !!node.children && node.children.length > 0,
+      level: level,
+      key: node.key,
+      value: node.value,
+      information: node.information,
+      preview: node.preview,
+      type: node.type
+    };
+  };
+
+  hasChild = (_: number, node: ObjectFlatNode): boolean => node.expandable;
 
 
   constructor() {
@@ -52,10 +74,16 @@ export class FlPrettyJsonComponent implements OnInit {
   initialize(): void {
     const data = this.buildFileTree(this.object, 0);
 
-    this.nestedTreeControl = new NestedTreeControl<ObjectNode>(this._getChildren);
-    this.nestedDataSource = new MatTreeNestedDataSource();
-    this.nestedDataSource.data = data;
+    this.treeControl = new FlatTreeControl<ObjectFlatNode>(
+      node => node.level, node => node.expandable);
 
+    // object to flatten tree
+    this.treeFlattener = new MatTreeFlattener(
+      this._transformer, node => node.level, node => node.expandable, node => node.children);
+
+    // create the datasource and set data
+    this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+    this.dataSource.data = data;
   }
 
   /**

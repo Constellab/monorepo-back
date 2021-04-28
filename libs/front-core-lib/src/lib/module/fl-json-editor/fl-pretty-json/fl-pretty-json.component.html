@@ -1,51 +1,44 @@
 <div class="g-list-padding">
   {{startChar}}
+  <mat-tree *ngIf="object != null" [dataSource]="dataSource" [treeControl]="treeControl">
 
-  <!-- Primitive object -->
-  <mat-tree *ngIf="object != null" [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
-    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle class="tree-node">
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle class="tree-node" matTreeNodePadding [matTreeNodePaddingIndent]="20">
       <span class="key-color key">{{node.key}}</span>&nbsp;:
 
       <span class="value">
-      <span class="g-text-light" *ngIf="node.value == null">null</span>
+          <span class="g-text-light" *ngIf="node.value == null">null</span>
 
 
-      <span [ngClass]="node.type">
-        <ng-container *ngIf="node.type === 'string'">"</ng-container>
-        <span class="string-value">{{node.value}}</span>
-        <ng-container *ngIf="node.type === 'string'">"</ng-container>
-      </span>
-    </span>
+          <span [ngClass]="node.type">
+            <ng-container *ngIf="node.type === 'string'">"</ng-container>
+            <span class="string-value">{{node.value}}</span>
+            <ng-container *ngIf="node.type === 'string'">"</ng-container>
+          </span>
+        </span>
     </mat-tree-node>
 
 
-    <!-- Nested object-->
-    <mat-nested-tree-node *matTreeNodeDef="let node; when: hasNestedChild">
+    <!-- This is the tree node template for expandable nodes -->
+    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding [matTreeNodePaddingIndent]="20">
       <div matTreeNodeToggle class="clickable" fxLayout="row" fxLayoutAlign="start center">
         <div>
           <fl-text-icon [gap]="'0px'">
             <mat-icon class="icon">
-              <ng-container *ngIf="nestedTreeControl.isExpanded(node) ; else noExp">arrow_drop_down</ng-container>
+              <ng-container *ngIf="treeControl.isExpanded(node) ; else noExp">arrow_drop_down</ng-container>
               <ng-template #noExp>arrow_right</ng-template>
             </mat-icon>
             <span class="key-color">{{node.key}}</span> :
           </fl-text-icon>
         </div>
 
-        <div [ngClass]="{'g-text-light': !nestedTreeControl.isExpanded(node)}">
+        <div [ngClass]="{'g-text-light': !treeControl.isExpanded(node)}">
           &nbsp;{{node.information}}
         </div>
 
-        <div *ngIf="!nestedTreeControl.isExpanded(node)">
+        <div *ngIf="!treeControl.isExpanded(node)">
           &nbsp;<span class="g-text-light">{{node.preview}}</span>
         </div>
       </div>
-
-      <div class="children"
-           [class.invisible]="!nestedTreeControl.isExpanded(node)">
-        <ng-container matTreeNodeOutlet></ng-container>
-      </div>
-    </mat-nested-tree-node>
+    </mat-tree-node>
   </mat-tree>
-
   {{endChar}}</div>

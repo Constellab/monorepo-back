@@ -2,10 +2,6 @@
   align-items: initial;
 }
 
-.invisible {
-  display: none;
-}
-
 .children{
   padding-left: 25px;
 }
@@ -43,8 +39,4 @@ mat-tree-node{
   font-size: 17px;
   height: 17px;
   width: 17px;
-}
-
-.preview{
-  padding-left: 15px;
 }
