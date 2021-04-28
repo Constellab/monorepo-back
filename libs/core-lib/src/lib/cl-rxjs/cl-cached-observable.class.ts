@@ -1,4 +1,5 @@
 import {Observable, of, Subject, throwError} from 'rxjs';
+import {delay} from 'rxjs/operators';
 
 
 /**
@@ -69,13 +70,13 @@ export class ClCachedObservable<T> {
     this.isLoading = true;
     this.subject = new Subject<T>();
 
-    setTimeout(() => {
-      this.internalObservable.subscribe(
-        value => this.onSuccess(value),
-        error => this.onError(error),
-        () => this.onComplete()
-      );
-    }, 0);
+    // the delay allow to return the observable before it completes
+    // (if it's an observable that complete directly)
+    this.internalObservable.pipe(delay(0)).subscribe(
+      value => this.onSuccess(value),
+      error => this.onError(error),
+      () => this.onComplete()
+    );
 
     return this.subject;
   }
