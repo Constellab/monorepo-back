@@ -1,4 +1,4 @@
-import {FlChartPathwayData, FlChartPathwayLink, FlChartPathwayNode, FlPathway} from './model/fl-pathway.class';
+import {FlChartPathwayData, FlChartPathwayLink, FlChartPathwayNode, FlPathway, FlPathwayMetabolites} from './model/fl-pathway.class';
 import {FlColorHelper} from '../../../../../utils/fl-color-helper.class';
 
 export class FlChartPathwayFactory {
@@ -12,15 +12,11 @@ export class FlChartPathwayFactory {
 
     // create the metabolites nodes
     for (const metabolite of pathway.metabolites) {
-      const color: string = metabolite.compartment ?
-        FlColorHelper.stringToRGBColor(metabolite.compartment) : defaultColor;
-
-
       data.metabolites.push(
         new FlChartPathwayNode(metabolite.id,
           metabolite.name ? metabolite.name : metabolite.id,
           'metabolite',
-          color
+          this.getMetaboliteColor(metabolite, defaultColor)
         ));
     }
 
@@ -49,6 +45,14 @@ export class FlChartPathwayFactory {
     }
 
     return data;
+  }
+
+  private static getMetaboliteColor(metabolite: FlPathwayMetabolites, defaultColor: string): string {
+    return metabolite.compartment ?
+      // as the compartment is a single letter, we duplicate it to have really different colors
+      FlColorHelper.stringToRGBColor(metabolite.compartment + metabolite.compartment +
+        metabolite.compartment + metabolite.compartment) :
+      defaultColor;
   }
 
 }
