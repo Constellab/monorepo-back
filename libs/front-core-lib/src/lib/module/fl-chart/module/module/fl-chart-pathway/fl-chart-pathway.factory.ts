@@ -16,7 +16,8 @@ export class FlChartPathwayFactory {
         new FlChartPathwayNode(metabolite.id,
           metabolite.name ? metabolite.name : metabolite.id,
           'metabolite',
-          this.getMetaboliteColor(metabolite, defaultColor)
+          this.getMetaboliteColor(metabolite, defaultColor),
+          metabolite
         ));
     }
 
@@ -24,7 +25,8 @@ export class FlChartPathwayFactory {
     for (const reaction of pathway.reactions) {
       data.reactions.push(new FlChartPathwayNode(reaction.id,
         reaction.name ? reaction.name : reaction.id, 'reaction',
-        defaultColor
+        defaultColor,
+        reaction
       ));
     }
 

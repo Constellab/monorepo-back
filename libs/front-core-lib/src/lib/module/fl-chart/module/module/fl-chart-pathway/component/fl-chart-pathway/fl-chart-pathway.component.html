@@ -1,0 +1,11 @@
+<mat-drawer-container class="g-full-height" [hasBackdrop]="false">
+
+  <!-- Main content with chart -->
+  <mat-drawer-content>
+    <div #chart class="g-full g-full-height"></div>
+  </mat-drawer-content>
+
+  <mat-drawer mode="over" position="end" [(opened)]="drawerState" (closed)="resetNodeAndLinkOpacity()">
+    <fl-chart-pathway-node-detail *ngIf="selectedNode" [node]="selectedNode"></fl-chart-pathway-node-detail>
+  </mat-drawer>
+</mat-drawer-container>

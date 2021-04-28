@@ -71,8 +71,8 @@ export class FlChartPathwayNode implements SimulationNodeDatum {
    */
   fy?: number | null;
 
-  constructor(public id: string, public name: string, public type: FlChartPathwayNodeType, public color: string) {
-
+  constructor(public id: string, public name: string, public type: FlChartPathwayNodeType, public color: string,
+              public data: FlPathwayMetabolites | FlPathwayReactions) {
   }
 
 

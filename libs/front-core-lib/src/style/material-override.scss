@@ -78,3 +78,10 @@
 mat-tree{
   background-color: transparent !important;
 }
+
+
+/******************************* SIDENAV & DRAWER ***************************/
+// class to hide the backdrop of a drawer
+.g-sidenav-hide-backdrop .mat-drawer-backdrop.mat-drawer-shown {
+   background-color: transparent;
+}

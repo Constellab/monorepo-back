@@ -1,7 +1,7 @@
-<div class="g-page-fixed g-page-bottom-padding" fxLayout="column">
+<div class="g-page-fixed page" fxLayout="column">
   <fl-async-section fxFlex [object]="resource$" class="section">
 
-    <fl-section-header>
+    <fl-section-header class="page-padding">
       <h2>{{'resource' | translate}} : {{resourceId}}</h2>
       <fl-section-actions *ngIf="availableViews">
         <a *ngFor="let view of availableViews"
@@ -19,12 +19,20 @@
     <ng-container *flSectionBody="let resource">
 
       <ng-container [ngSwitch]="currentView">
-        <gen-biox-resource-json *ngSwitchCase="'json'"
-                                [resource]="resource"></gen-biox-resource-json>
 
-        <gen-biox-resource-spreadsheet *ngSwitchCase="'spreadsheet'"
-                                       [resource]="resource"></gen-biox-resource-spreadsheet>
+        <!--    Json view    -->
+        <div class="page-padding g-full-height" *ngSwitchCase="'json'">
+          <gen-biox-resource-json class="page-padding"
+                                  [resource]="resource"></gen-biox-resource-json>
+        </div>
 
+        <!--    Spreadsheet view    -->
+        <div class="page-padding g-full-height" *ngSwitchCase="'spreadsheet'">
+          <gen-biox-resource-spreadsheet class="page-padding"
+                                         [resource]="resource"></gen-biox-resource-spreadsheet>
+        </div>
+
+        <!--    Pathway view    -->
         <fl-chart-pathway *ngSwitchCase="'pathway'" [data]="resource.model.data.network"></fl-chart-pathway>
 
       </ng-container>

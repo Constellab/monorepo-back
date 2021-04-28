@@ -5,6 +5,7 @@ import {FlQuillConfigDirective} from './fl-quill-config/fl-quill-config.directiv
 import {FlDragHoverDirective} from './fl-drag-hover/fl-drag-hover.directive';
 import {FlPortalModule} from '../fl-portal/fl-portal.module';
 import { FlForByIdOfDirective } from './fl-for-by-id-of/fl-for-by-id-of.directive';
+import {FlDrawerCloseDirective} from './fl-drawer-close/fl-drawer-close.directive';
 
 
 /**
@@ -16,12 +17,14 @@ import { FlForByIdOfDirective } from './fl-for-by-id-of/fl-for-by-id-of.directiv
     FlQuillConfigDirective,
     FlDragHoverDirective,
     FlForByIdOfDirective,
+    FlDrawerCloseDirective,
   ],
   exports: [
     FlInputMaxLengthDirective,
     FlQuillConfigDirective,
     FlDragHoverDirective,
     FlForByIdOfDirective,
+    FlDrawerCloseDirective,
   ],
   imports: [
     CommonModule,

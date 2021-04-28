@@ -1,13 +1,13 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
-import {FlChartPathwayData, FlChartPathwayLink, FlChartPathwayNode, FlPathway} from '../model/fl-pathway.class';
-import {FlCoord, FlD3SelectionSimple, FlD3ZoomEvent} from '../../../../model/fl-d3.class';
+import {FlChartPathwayData, FlChartPathwayLink, FlChartPathwayNode, FlPathway} from '../../model/fl-pathway.class';
+import {FlCoord, FlD3SelectionSimple, FlD3ZoomEvent} from '../../../../../model/fl-d3.class';
 import {Simulation} from 'd3-force';
-import {FlChartPathwayFactory} from '../fl-chart-pathway.factory';
+import {FlChartPathwayFactory} from '../../fl-chart-pathway.factory';
 import {ValueFn} from 'd3-selection';
 import {ClHelpService} from '@monorepo/core-lib';
-import {FlThemeService} from '../../../../../../service/fl-theme.service';
-import {FlThemeDetail} from '../../../../../../service/model/fl-theme-detail.class';
+import {FlThemeService} from '../../../../../../../service/fl-theme.service';
+import {FlThemeDetail} from '../../../../../../../service/model/fl-theme-detail.class';
 
 @Component({
   selector: 'fl-chart-pathway',
@@ -34,8 +34,10 @@ export class FlChartPathwayComponent implements OnInit {
   reactions: FlD3SelectionSimple<FlChartPathwayNode>;
   links: FlD3SelectionSimple<FlChartPathwayLink<FlChartPathwayNode>>;
 
-
   simulationEnded: boolean = false;
+
+  drawerState: boolean = false;
+  selectedNode: FlChartPathwayNode;
 
   ////////////// READONLY VARIABLE //////////////////
 
@@ -115,7 +117,7 @@ export class FlChartPathwayComponent implements OnInit {
       .append('svg')
       .attr('width', this.chartWidth)
       .attr('height', this.chartHeight)
-      .on('click', this.resetNodeAndLinkOpacity()); // reset the opacity of node and link when clicking on svg
+      .on('click', () => this.resetNodeAndLinkOpacity()); // reset the opacity of node and link when clicking on svg
 
     //add encompassing group for the zoom
     this.mainGroup = this.svg.append('g')
@@ -160,7 +162,7 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('stroke-width', 1)
       .attr('fill', 'white')
       .style('cursor', 'pointer')
-      .on('click', this.updateLinkAndNodeOpacity(0.1));
+      .on('click', this.onNodeClicked(0.1));
 
 
     // create the text for metabolite
@@ -184,7 +186,7 @@ export class FlChartPathwayComponent implements OnInit {
       .join('g')
       .call(this.drag(this.simulation))
       .style('cursor', 'pointer')
-      .on('click', this.updateLinkAndNodeOpacity(0.1));
+      .on('click', this.onNodeClicked(0.1));
 
     // create the rect of reaction
     this.reactions.append('rect')
@@ -307,7 +309,7 @@ export class FlChartPathwayComponent implements OnInit {
    * @param opacity
    * @private
    */
-  private updateLinkAndNodeOpacity(opacity: number): any {
+  private onNodeClicked(opacity: number): any {
     return (mouseEvent: MouseEvent, clickedNode: FlChartPathwayNode) => {
       // stop the event propagation do prevent click event on svg that reset the opacity
       ClHelpService.stopEventPropagation(mouseEvent);
@@ -321,7 +323,16 @@ export class FlChartPathwayComponent implements OnInit {
 
       // update link opacity
       this.links.style('opacity', this.updateLinkOpacity(opacity, clickedNode));
+
+      // open the drawer with detail
+      this.openDrawer(clickedNode);
     };
+  }
+
+  // set the current node and open the drawer
+  private openDrawer(node: FlChartPathwayNode): void {
+    this.selectedNode = node;
+    this.drawerState = true;
   }
 
   // update the opacity of node that are not the clickedNode or in connected node
@@ -340,16 +351,13 @@ export class FlChartPathwayComponent implements OnInit {
     };
   }
 
-  private resetNodeAndLinkOpacity(): any {
-    return () => {
+  resetNodeAndLinkOpacity(): any {
+    // update opacity of metabolites and reaction
+    this.metabolites.style('opacity', 1);
+    this.reactions.style('opacity', 1);
 
-      // update opacity of metabolites and reaction
-      this.metabolites.style('opacity', 1);
-      this.reactions.style('opacity', 1);
-
-      // update link opacity
-      this.links.style('opacity', 1);
-    };
+    // update link opacity
+    this.links.style('opacity', 1);
   }
 
 
@@ -390,5 +398,6 @@ export class FlChartPathwayComponent implements OnInit {
     return `-1px -1px 0 ${this.backgroundColor}, 1px -1px 0 ${this.backgroundColor},
             -1px 1px 0 ${this.backgroundColor}, 1px 1px 0 ${this.backgroundColor}`;
   }
+
 
 }

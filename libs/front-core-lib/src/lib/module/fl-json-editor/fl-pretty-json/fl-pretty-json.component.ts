@@ -29,7 +29,24 @@ class ObjectFlatNode {
 })
 export class FlPrettyJsonComponent implements OnInit {
 
-  @Input() object: any;
+  @Input() set object(object: any) {
+    if (this.componentIsInitiated) {
+      this.initJson(object);
+    }
+    this._object = object;
+  }
+
+  _object: any;
+
+  /**
+   * Number max of character in the json object preview
+   */
+  @Input() previewMaxTextLength: number = 100;
+
+  /**
+   * Number max of object showed in the preview (nb of attribute or nb of element in array)
+   */
+  @Input() previewMaxObjectShowed: number = 3;
 
   startChar: string;
   endChar: string;
@@ -39,6 +56,8 @@ export class FlPrettyJsonComponent implements OnInit {
   treeFlattener: MatTreeFlattener<ObjectNode, ObjectFlatNode>;
 
   dataSource: MatTreeFlatDataSource<ObjectNode, ObjectFlatNode>;
+
+  componentIsInitiated: boolean = false;
 
   private _transformer = (node: ObjectNode, level: number): ObjectFlatNode => {
     return {
@@ -59,20 +78,21 @@ export class FlPrettyJsonComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initJson(this._object);
+    this.componentIsInitiated = true;
+  }
 
-    if (this.object == null) {
+  private initJson(object: any): void {
+    if (object == null) {
       this.startChar = 'null';
+      this.endChar = '';
       return;
     }
 
-    this.startChar = this.getStartChar(this.object);
-    this.endChar = this.getEndChar(this.object);
+    this.startChar = this.getStartChar(object);
+    this.endChar = this.getEndChar(object);
 
-    this.initialize();
-  }
-
-  initialize(): void {
-    const data = this.buildFileTree(this.object, 0);
+    const data = this.buildFileTree(object, 0);
 
     this.treeControl = new FlatTreeControl<ObjectFlatNode>(
       node => node.level, node => node.expandable);
@@ -90,7 +110,7 @@ export class FlPrettyJsonComponent implements OnInit {
    * Build the file structure tree. The `value` is the Json object, or a sub-tree of a Json object.
    * The return value is the list of `ObjectNode`.
    */
-  buildFileTree(obj: { [key: string]: any }, level: number): ObjectNode[] {
+  private buildFileTree(obj: { [key: string]: any }, level: number): ObjectNode[] {
 
     let keys: any;
 
@@ -166,7 +186,7 @@ export class FlPrettyJsonComponent implements OnInit {
         preview += ', ';
       }
 
-      if (count < 3) {
+      if (count < this.previewMaxObjectShowed) {
 
         // if the object is an array, don't show the key
         if (!Array.isArray(object)) {
@@ -186,8 +206,8 @@ export class FlPrettyJsonComponent implements OnInit {
       count++;
     }
 
-    if (preview.length > 100) {
-      preview = preview.substr(0, 100) + '...';
+    if (preview.length > this.previewMaxTextLength) {
+      preview = preview.substr(0, this.previewMaxTextLength) + '...';
     }
 
     preview += this.getEndChar(object);
