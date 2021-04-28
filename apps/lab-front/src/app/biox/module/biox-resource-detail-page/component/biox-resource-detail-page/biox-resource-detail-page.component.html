@@ -25,7 +25,7 @@
         <gen-biox-resource-spreadsheet *ngSwitchCase="'spreadsheet'"
                                        [resource]="resource"></gen-biox-resource-spreadsheet>
 
-        <fl-chart-pathway *ngSwitchCase="'pathway'"></fl-chart-pathway>
+        <fl-chart-pathway *ngSwitchCase="'pathway'" [data]="resource.model.data.network"></fl-chart-pathway>
 
       </ng-container>
     </ng-container>

@@ -10,8 +10,11 @@ interface View {
   icon?: string;
   text?: string;
   tooltip: string;
-
 }
+
+const jsonView: View = {route: 'json', text: '{ }', tooltip: 'biox.resource_view_json'};
+const spreadsheetView: View = {route: 'spreadsheet', icon: 'calendar_view_month', tooltip: 'biox.resource_view_spreadsheet'};
+const pathwayView: View = {route: 'pathway', icon: 'share', tooltip: 'biox.resource_view_pathway'};
 
 @Component({
   selector: 'gen-biox-resource-detail-page',
@@ -49,17 +52,21 @@ export class BioxResourceDetailPageComponent implements OnInit {
   }
 
   private initViews(resource: BioxResourceVM): void {
-    this.availableViews = [
-      {route: 'json', text: '{ }', tooltip: 'biox.resource_view_json'},
-      {route: 'spreadsheet', icon: 'calendar_view_month', tooltip: 'biox.resource_view_spreadsheet'},
-      {route: 'pathway', icon: 'share', tooltip: 'biox.resource_view_pathway'},
-    ];
+    this.availableViews = [jsonView, spreadsheetView];
+    let defaultView: View = this.availableViews[0];
+
+    // if the resource is a network, add the network view and set it by default
+    if (resource.model.type === 'gena.network.Network') {
+      this.availableViews.push(pathwayView);
+      defaultView = pathwayView;
+    }
+
 
     if (this.currentView == null) {
       // init the first mode if there is not mode selected
       this.router.navigate(['./'], {
         relativeTo: this.route,
-        queryParams: this.getQueryParam(this.availableViews[0]),
+        queryParams: this.getQueryParam(defaultView),
         replaceUrl: true
       });
     }

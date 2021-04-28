@@ -1,7 +1,6 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
-import {bigPathwayData} from '../data';
-import {FlChartPathwayData, FlChartPathwayLink, FlChartPathwayNode} from '../model/fl-pathway.class';
+import {FlChartPathwayData, FlChartPathwayLink, FlChartPathwayNode, FlPathway} from '../model/fl-pathway.class';
 import {FlCoord, FlD3SelectionSimple, FlD3ZoomEvent} from '../../../../model/fl-d3.class';
 import {Simulation} from 'd3-force';
 import {FlChartPathwayFactory} from '../fl-chart-pathway.factory';
@@ -17,12 +16,14 @@ import {FlThemeDetail} from '../../../../../../service/model/fl-theme-detail.cla
 })
 export class FlChartPathwayComponent implements OnInit {
 
+  @Input() data: FlPathway;
+
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
 
   chartHeight: number;
   chartWidth: number;
 
-  data: FlChartPathwayData;
+  chartData: FlChartPathwayData;
 
   simulation: Simulation<FlChartPathwayNode, any>;
 
@@ -57,9 +58,13 @@ export class FlChartPathwayComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.data == null) {
+      console.error('[FlChartPathwayComponent] Data not provided');
+    }
+
     this.initChartSize();
 
-    this.data = FlChartPathwayFactory.convertPathwayToChartPathway(bigPathwayData, this.grey);
+    this.chartData = FlChartPathwayFactory.convertPathwayToChartPathway(this.data, this.grey);
 
     this.initSVG();
     this.initSimulation();
@@ -82,9 +87,9 @@ export class FlChartPathwayComponent implements OnInit {
   }
 
   private initSimulation(): void {
-    this.simulation = d3.forceSimulation([...this.data.metabolites, ...this.data.reactions])
+    this.simulation = d3.forceSimulation([...this.chartData.metabolites, ...this.chartData.reactions])
       .force('link',
-        d3.forceLink(this.data.links).distance(100)
+        d3.forceLink(this.chartData.links).distance(100)
           .id((d: FlChartPathwayNode) => d.id)
         // .strength((d: FlChartPathwayLink<FlChartPathwayNode>) => d.absValue)
       )
@@ -142,7 +147,7 @@ export class FlChartPathwayComponent implements OnInit {
   private initMetabolites(): void {
     this.metabolites = this.mainGroup.append('g')
       .selectAll('g')
-      .data(this.data.metabolites)
+      .data(this.chartData.metabolites)
       .join('g')
       .call(this.drag(this.simulation));
 
@@ -164,7 +169,7 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('y', this.metaboliteRadius)
       .attr('dy', '1em')
       .attr('text-anchor', 'middle')
-      .attr('fill',this.textColor)
+      .attr('fill', this.textColor)
       .style('text-shadow', this.getTextShadow())
       .style('font-size', '0.5em');
 
@@ -175,7 +180,7 @@ export class FlChartPathwayComponent implements OnInit {
   private initReactions(): void {
     this.reactions = this.mainGroup.append('g')
       .selectAll('g')
-      .data(this.data.reactions)
+      .data(this.chartData.reactions)
       .join('g')
       .call(this.drag(this.simulation))
       .style('cursor', 'pointer')
@@ -197,8 +202,7 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('x', this.reactionWidth / 2) // center x
       .attr('dominant-baseline', 'middle')
       .attr('text-anchor', 'middle')
-      .attr('fill', this.textColor)
-      .style('text-shadow', this.getTextShadow())
+      .attr('fill', 'black')
       .style('font-size', '0.5em');
     //text-shadow:;
 
@@ -211,7 +215,7 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('stroke', this.grey)
       .attr('stroke-opacity', 0.6)
       .selectAll('polyline')
-      .data(this.data.links)
+      .data(this.chartData.links)
       .join('polyline')
       .attr('stroke-width', (d: FlChartPathwayLink<FlChartPathwayNode>) => d.absValue)
       .attr('marker-mid', 'url(#mid_arrow)') as any;
@@ -290,7 +294,7 @@ export class FlChartPathwayComponent implements OnInit {
 
   // return all the directly connected node of the node
   private getConnectedNodes(nodeIndex: number): FlChartPathwayNode[] {
-    return this.data.links
+    return this.chartData.links
       // filter the link directly connected
       .filter(link => link.target.index === nodeIndex || link.source.index === nodeIndex)
       // get the connected node (the one not with different index)
@@ -339,13 +343,13 @@ export class FlChartPathwayComponent implements OnInit {
   private resetNodeAndLinkOpacity(): any {
     return () => {
 
-    // update opacity of metabolites and reaction
-    this.metabolites.style('opacity', 1);
-    this.reactions.style('opacity', 1);
+      // update opacity of metabolites and reaction
+      this.metabolites.style('opacity', 1);
+      this.reactions.style('opacity', 1);
 
-    // update link opacity
-    this.links.style('opacity', 1);
-    }
+      // update link opacity
+      this.links.style('opacity', 1);
+    };
   }
 
 
@@ -382,7 +386,7 @@ export class FlChartPathwayComponent implements OnInit {
       .style('stroke', 'none');
   }
 
-  private getTextShadow(): string{
+  private getTextShadow(): string {
     return `-1px -1px 0 ${this.backgroundColor}, 1px -1px 0 ${this.backgroundColor},
             -1px 1px 0 ${this.backgroundColor}, 1px 1px 0 ${this.backgroundColor}`;
   }
