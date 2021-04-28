@@ -32,5 +32,8 @@
   "input_max_length": "Taille max {{count}}",
   "open_resource_detail": "ouvrir le détail",
   "resource": "Ressource",
-  "resource_empty": "Ressource vide"
+  "resource_empty": "Ressource vide",
+  "name": "Nom",
+  "id": "Id",
+  "type": "Type"
 }

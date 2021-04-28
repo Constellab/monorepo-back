@@ -22,27 +22,27 @@ const biotaOntologyDbGroup: BiotaDatabaseGroup = {
   databases: [
     {
       name: 'biota.go',
-      type: 'biota.db.go.GO'
+      type: 'biota.go.GO'
     },
     {
       name: 'biota.sbo',
-      type: 'biota.db.sbo.SBO'
+      type: 'biota.sbo.SBO'
     },
     {
       name: 'biota.eco',
-      type: 'biota.db.eco.ECO'
+      type: 'biota.eco.ECO'
     },
     {
       name: 'biota.bto',
-      type: 'biota.db.bto.BTO'
+      type: 'biota.bto.BTO'
     },
     {
       name: 'biota.taxonomy',
-      type: 'biota.db.taxonomy.Taxonomy'
+      type: 'biota.taxonomy.Taxonomy'
     },
     // {
     //   name: 'biota.pwo',
-    //   type: 'biota.db.pwo.PWO'
+    //   type: 'biota.pwo.PWO'
     // }
   ]
 };
@@ -54,23 +54,23 @@ const biotaMolecularDbGroup: BiotaDatabaseGroup = {
   databases: [
     {
       name: 'biota.compound',
-      type: 'biota.db.compound.Compound'
+      type: 'biota.compound.Compound'
     },
     {
       name: 'biota.enzyme',
-      type: 'biota.db.enzyme.Enzyme'
+      type: 'biota.enzyme.Enzyme'
     },
     {
       name: 'biota.enzo',
-      type: 'biota.db.enzyme.Enzo'
+      type: 'biota.enzyme.Enzo'
     },
     {
       name: 'biota.reaction',
-      type: 'biota.db.reaction.Reaction'
+      type: 'biota.reaction.Reaction'
     },
     {
       name: 'biota.protein',
-      type: 'biota.db.protein.Protein'
+      type: 'biota.protein.Protein'
     },
   ]
 };

@@ -18,7 +18,7 @@ export class BiotaDatabaseDetailPageComponent implements OnInit {
 
   datasource: BiotaDataDatasource;
 
-  columns: string[] = ['title', 'definition'];
+  columns: string[] = ['id', 'name', 'type'];
 
   constructor(private biotaDatabaseService: BiotaDatabaseService,
               private route: ActivatedRoute) {

@@ -12,7 +12,7 @@ export class BiotaDatabaseTableComponent extends FlPaginatedTableAbstractDirecti
 
 
   constructor() {
-    super(['title', 'definition']);
+    super(['id', 'name', 'type']);
   }
 
   ngOnInit(): void {
