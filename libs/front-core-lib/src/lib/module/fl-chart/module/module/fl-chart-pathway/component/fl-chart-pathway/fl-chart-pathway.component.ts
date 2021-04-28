@@ -52,11 +52,13 @@ export class FlChartPathwayComponent implements OnInit {
   readonly grey: string = '#999';
   readonly textColor: string;
   readonly backgroundColor: string;
+  readonly selectNodeColor: string;
 
   constructor(themeService: FlThemeService) {
     const themeDetail: FlThemeDetail = themeService.getCurrentThemeDetail();
     this.textColor = themeDetail.foreground;
     this.backgroundColor = themeDetail.background;
+    this.selectNodeColor = themeDetail.warn;
   }
 
   ngOnInit(): void {
@@ -324,6 +326,12 @@ export class FlChartPathwayComponent implements OnInit {
       // update link opacity
       this.links.style('opacity', this.updateLinkOpacity(opacity, clickedNode));
 
+      // set a specific color to the selected node
+      this.metabolites.selectAll('circle')
+        .attr('stroke', (d: FlChartPathwayNode) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
+      this.reactions.selectAll('rect')
+        .attr('stroke', (d: FlChartPathwayNode) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
+
       // open the drawer with detail
       this.openDrawer(clickedNode);
     };
@@ -355,6 +363,12 @@ export class FlChartPathwayComponent implements OnInit {
     // update opacity of metabolites and reaction
     this.metabolites.style('opacity', 1);
     this.reactions.style('opacity', 1);
+
+    // set a specific color to the selected node
+    this.metabolites.selectAll('circle')
+      .attr('stroke', (d: FlChartPathwayNode) => d.color);
+    this.reactions.selectAll('rect')
+      .attr('stroke', (d: FlChartPathwayNode) => d.color);
 
     // update link opacity
     this.links.style('opacity', 1);
