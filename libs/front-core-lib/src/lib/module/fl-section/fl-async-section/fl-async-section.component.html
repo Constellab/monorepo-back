@@ -10,11 +10,11 @@
     </div>
 
     <ng-template #notLoading>
+      <!--  Render the body  -->
       <ng-container *ngIf="showBody; else showEmptyText">
         <ng-container *ngTemplateOutlet="lazyContent; context: viewContext"></ng-container>
       </ng-container>
 
-      <!--  Render the body  -->
       <ng-template #showEmptyText>
         <div class="g-text-centered g-text-light">
           <p>{{emptyText | translate}}</p>

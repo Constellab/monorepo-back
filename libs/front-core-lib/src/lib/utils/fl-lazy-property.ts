@@ -1,7 +1,7 @@
 import {Transform} from 'class-transformer';
-import {ClCachedObservable} from '@monorepo/core-lib';
+import {ClCachedObservable, ClHelpService} from '@monorepo/core-lib';
 import {Type} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {FlGetById} from '../module/fl-api/model/fl-service.class';
 import {flRootInjector} from './fl-root-injector';
 
@@ -44,8 +44,8 @@ export function flLazyPropertyTransformToClass<SERVICE, ENTITY>(id: string, serv
   if (flRootInjector == null) {
     throw new Error('[FlLazyPropertyTransform] The flRootInjector was not initiated, please call setFlRootInjector in AppModule');
   }
-  if (id == null) {
-    return null;
+  if (ClHelpService.isNullOrEmpty(id)) {
+    return new FlLazyProperty<any>(id, of(null));
   }
 
   // get the service instance

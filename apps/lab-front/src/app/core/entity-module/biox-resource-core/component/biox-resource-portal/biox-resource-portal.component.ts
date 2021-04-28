@@ -10,19 +10,12 @@ import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
 })
 export class BioxResourcePortalComponent implements OnInit {
 
-  resource: BioxResourceVM;
+  resource: BioxResourceVM | Observable<BioxResourceVM>;
 
   constructor(@Inject(FL_PORTAL_DATA) input: BioxResourceVM | Observable<BioxResourceVM>) {
-    if (input instanceof Observable) {
-      input.subscribe(
-        resources => this.resource = resources
-      );
-    } else {
-      this.resource = input;
-    }
+    this.resource = input;
   }
 
   ngOnInit(): void {
   }
-
 }

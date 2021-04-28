@@ -12,9 +12,17 @@ import {FlArrayObs} from '../../../model/datasource/fl-array-obs.class';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlAsyncSectionComponent implements OnInit, OnDestroy {
-  @Input() set observable(observable: Observable<any>) {
-    if (observable && observable instanceof Observable) {
-      this.subscribeToObservable(observable);
+
+  /**
+   * Provide an observable or a simple object (directly resolved)
+   * @param object
+   */
+  @Input() set object(object: Observable<any> | any) {
+    if (object && object instanceof Observable) {
+      this.subscribeToObservable(object);
+    }
+    else{
+      this.onSuccess(object);
     }
   }
 

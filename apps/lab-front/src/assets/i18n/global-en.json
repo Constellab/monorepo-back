@@ -31,5 +31,6 @@
   "gws": "Web services",
   "input_max_length": "Max length {{count}}",
   "open_resource_detail": "Open detail",
-  "resource": "Resource"
+  "resource": "Resource",
+  "resource_empty": "Empty resource"
 }

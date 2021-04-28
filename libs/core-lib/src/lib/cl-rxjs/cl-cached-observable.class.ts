@@ -68,11 +68,14 @@ export class ClCachedObservable<T> {
   private subscribeToObservable(): Subject<T> {
     this.isLoading = true;
     this.subject = new Subject<T>();
-    this.internalObservable.subscribe(
-      value => this.onSuccess(value),
-      error => this.onError(error),
-      () => this.onComplete()
-    );
+
+    setTimeout(() => {
+      this.internalObservable.subscribe(
+        value => this.onSuccess(value),
+        error => this.onError(error),
+        () => this.onComplete()
+      );
+    }, 0);
 
     return this.subject;
   }

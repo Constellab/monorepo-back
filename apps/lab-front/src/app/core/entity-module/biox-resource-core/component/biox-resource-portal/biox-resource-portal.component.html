@@ -1,11 +1,9 @@
-<div>
-  <ng-container *ngIf="resource; else isLoading">
-    <gen-biox-resource-info [resource]="resource.model"></gen-biox-resource-info>
-  </ng-container>
+<fl-async-section [object]="resource" [nullOrEmptyIsValid]="true">
+  <ng-container *flSectionBody="let resource">
+    <gen-biox-resource-info *ngIf="resource; else noResource" [resource]="resource.model"></gen-biox-resource-info>
 
-  <ng-template #isLoading>
-    <div class="g-text-centered">
-      <fl-loader></fl-loader>
-    </div>
-  </ng-template>
-</div>
+    <ng-template #noResource>
+      {{'resource_empty' | translate}}
+    </ng-template>
+  </ng-container>
+</fl-async-section>
