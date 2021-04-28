@@ -34,7 +34,7 @@ export interface FlPathwayReactions {
 export interface FlChartPathwayData {
   metabolites: FlChartPathwayNode[];
   reactions: FlChartPathwayNode[];
-  links: FlChartPathwayLink<string | FlChartPathwayNode>[];
+  links: FlChartPathwayLink<FlChartPathwayNode>[];
 }
 
 export type FlChartPathwayNodeType = 'metabolite' | 'reaction';
@@ -78,13 +78,20 @@ export class FlChartPathwayNode implements SimulationNodeDatum {
 
 }
 
-export class FlChartPathwayLink<Node extends (string | FlChartPathwayNode)>
+export class FlChartPathwayLink<Node extends FlChartPathwayNode>
   implements SimulationLinkDatum<FlChartPathwayNode> {
 
+  source: Node;
+  target: Node;
+  value: number
   absValue: number;
 
-  constructor(public source: Node, public target: Node,
-              public value: number) {
+  constructor(source: string, target: string,
+              value: number) {
+    // the source and target ids, will be replace by node by d3 on init
+    this.source = source as any;
+    this.target = target as any;
+    this.value = value;
     this.absValue = Math.abs(value);
   }
 

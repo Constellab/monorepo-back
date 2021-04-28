@@ -1,10 +1,12 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 import {bigPathwayData} from '../data';
-import {FlChartPathwayData, FlChartPathwayLink, FlChartPathwayNode, FlPathway} from '../model/fl-pathway.class';
+import {FlChartPathwayData, FlChartPathwayLink, FlChartPathwayNode} from '../model/fl-pathway.class';
 import {FlCoord, FlD3SelectionSimple, FlD3ZoomEvent} from '../../../../model/fl-d3.class';
-import {FlColorHelper} from '../../../../../../utils/fl-color-helper.class';
 import {Simulation} from 'd3-force';
+import {FlChartPathwayFactory} from '../fl-chart-pathway.factory';
+import {ValueFn} from 'd3-selection';
+import {ClHelpService} from '@monorepo/core-lib';
 
 @Component({
   selector: 'fl-chart-pathway',
@@ -50,7 +52,7 @@ export class FlChartPathwayComponent implements OnInit {
   ngOnInit(): void {
     this.initChartSize();
 
-    this.data = this.convertPathwayToChartPathway(bigPathwayData);
+    this.data = FlChartPathwayFactory.convertPathwayToChartPathway(bigPathwayData, this.grey);
 
     this.initSVG();
     this.initSimulation();
@@ -68,8 +70,8 @@ export class FlChartPathwayComponent implements OnInit {
   }
 
   private initChartSize(): void {
-    this.chartWidth = Math.max(this.chartHtmlContainer.nativeElement.clientWidth, 500);
-    this.chartHeight = Math.max(this.chartHtmlContainer.nativeElement.clientHeight, 500);
+    this.chartWidth = this.chartHtmlContainer.nativeElement.clientWidth;
+    this.chartHeight = this.chartHtmlContainer.nativeElement.clientHeight;
   }
 
   private initSimulation(): void {
@@ -100,7 +102,8 @@ export class FlChartPathwayComponent implements OnInit {
     this.svg = d3.select(this.chartHtmlContainer.nativeElement)
       .append('svg')
       .attr('width', this.chartWidth)
-      .attr('height', this.chartHeight);
+      .attr('height', this.chartHeight)
+      .on('click', this.resetNodeAndLinkOpacity()); // reset the opacity of node and link when clicking on svg
 
     //add encompassing group for the zoom
     this.mainGroup = this.svg.append('g')
@@ -143,7 +146,9 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('r', this.metaboliteRadius)
       .attr('stroke', (d: FlChartPathwayNode) => d.color)
       .attr('stroke-width', 1)
-      .attr('fill', 'white');
+      .attr('fill', 'white')
+      .style('cursor', 'pointer')
+      .on('click', this.updateLinkAndNodeOpacity(0.1));
 
 
     // create the text for metabolite
@@ -164,7 +169,9 @@ export class FlChartPathwayComponent implements OnInit {
       .selectAll('g')
       .data(this.data.reactions)
       .join('g')
-      .call(this.drag(this.simulation));
+      .call(this.drag(this.simulation))
+      .style('cursor', 'pointer')
+      .on('click', this.updateLinkAndNodeOpacity(0.1));
 
     // create the rect of reaction
     this.reactions.append('rect')
@@ -270,23 +277,83 @@ export class FlChartPathwayComponent implements OnInit {
         {x: d.target.x + (this.reactionWidth / 2), y: d.target.y + (this.reactionHeight / 2)}
       ];
     }
-
-
-    // link to rect x
-    // if value is positive, link to the right of the rect
-    // if (d.isPositive()) {
-    //   return [
-    //     {x: d.source.x + this.reactionWidth, y: d.source.y + (this.reactionHeight / 2)},
-    //     {x: d.target.x, y: d.target.y}
-    //   ];
-    // } else {
-    //   // otherwise link it to the left of the rect
-    //   return [
-    //     {x: d.source.x, y: d.source.y},
-    //     {x: d.target.x, y: d.target.y + (this.reactionHeight / 2)}
-    //   ];
-    // }
   }
+
+  // return all the directly connected node of the node
+  private getConnectedNodes(nodeIndex: number): FlChartPathwayNode[] {
+    return this.data.links
+      // filter the link directly connected
+      .filter(link => link.target.index === nodeIndex || link.source.index === nodeIndex)
+      // get the connected node (the one not with different index)
+      .map(link => link.target.index === nodeIndex ? link.source : link.target);
+  }
+
+  /**
+   * Update the opacity of node and link not connected to clicked node
+   * to the opacity provided
+   * @param opacity
+   * @private
+   */
+  private updateLinkAndNodeOpacity(opacity: number): any {
+    return (mouseEvent: MouseEvent, clickedNode: FlChartPathwayNode) => {
+      // stop the event propagation do prevent click event on svg that reset the opacity
+      ClHelpService.stopEventPropagation(mouseEvent);
+
+      // retrieve connected node
+      const connectedNodes: FlChartPathwayNode[] = this.getConnectedNodes(clickedNode.index);
+
+      // update opacity of metabolites and reaction
+      this.metabolites.style('opacity', this.updateNodeOpacity(opacity, clickedNode, connectedNodes));
+      this.reactions.style('opacity', this.updateNodeOpacity(opacity, clickedNode, connectedNodes));
+
+      // update link opacity
+      this.links.style('opacity', this.updateLinkOpacity(opacity, clickedNode));
+    };
+  }
+
+  // update the opacity of node that are not the clickedNode or in connected node
+  private updateNodeOpacity(opacity: number, clickedNode: FlChartPathwayNode, connectedNodes: FlChartPathwayNode[])
+    : ValueFn<any, any, number> {
+    return (other: FlChartPathwayNode) => {
+      return clickedNode.index === other.index ||
+      connectedNodes.findIndex((connected) => connected.index === other.index) >= 0 ? 1 : opacity;
+    };
+  }
+
+  // update the opacity to opacity on link that are not connected to node
+  private updateLinkOpacity(opacity: number, clickedNode: FlChartPathwayNode): ValueFn<any, any, number> {
+    return (other: FlChartPathwayLink<FlChartPathwayNode>) => {
+      return other.source.index === clickedNode.index || other.target.index === clickedNode.index ? 1 : opacity;
+    };
+  }
+
+  private resetNodeAndLinkOpacity(): any {
+    return () => {
+
+    // update opacity of metabolites and reaction
+    this.metabolites.style('opacity', 1);
+    this.reactions.style('opacity', 1);
+
+    // update link opacity
+    this.links.style('opacity', 1);
+    }
+  }
+
+
+  // link to rect x
+  // if value is positive, link to the right of the rect
+  // if (d.isPositive()) {
+  //   return [
+  //     {x: d.source.x + this.reactionWidth, y: d.source.y + (this.reactionHeight / 2)},
+  //     {x: d.target.x, y: d.target.y}
+  //   ];
+  // } else {
+  //   // otherwise link it to the left of the rect
+  //   return [
+  //     {x: d.source.x, y: d.source.y},
+  //     {x: d.target.x, y: d.target.y + (this.reactionHeight / 2)}
+  //   ];
+  // }
 
   // define the arrow marker to use it in lines
   private defineArrowMarker(): void {
@@ -304,55 +371,6 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
       .attr('fill', this.grey)
       .style('stroke', 'none');
-  }
-
-
-  private convertPathwayToChartPathway(pathway: FlPathway): FlChartPathwayData {
-    const data: FlChartPathwayData = {
-      metabolites: [],
-      reactions: [],
-      links: []
-    };
-
-    // create the metabolites nodes
-    for (const metabolite of pathway.metabolites) {
-      const color: string = metabolite.compartment ?
-        FlColorHelper.stringToRGBColor(metabolite.compartment) : this.grey;
-
-
-      data.metabolites.push(
-        new FlChartPathwayNode(metabolite.id,
-          metabolite.name ? metabolite.name : metabolite.id,
-          'metabolite',
-          color
-        ));
-    }
-
-    // create the reactions nodes
-    for (const reaction of pathway.reactions) {
-      data.reactions.push(new FlChartPathwayNode(reaction.id,
-        reaction.name ? reaction.name : reaction.id, 'reaction',
-        this.grey
-      ));
-    }
-
-    // create the links
-    for (const reaction of pathway.reactions) {
-      for (const metaboliteId of Object.keys(reaction.metabolites)) {
-        const reactionValue: number = reaction.metabolites[metaboliteId];
-
-        // right side of the link
-        if (reactionValue > 0) {
-          data.links.push(new FlChartPathwayLink(reaction.id, metaboliteId, reactionValue));
-        }
-        // left side of the link
-        else {
-          data.links.push(new FlChartPathwayLink(metaboliteId, reaction.id, reactionValue));
-        }
-      }
-    }
-
-    return data;
   }
 
 }

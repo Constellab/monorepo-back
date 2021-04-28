@@ -6,3 +6,6 @@ export * from './fl-chart-pathway/fl-chart-pathway.component';
 
 // Models
 export * from './model/fl-pathway.class';
+
+// Other
+export * from './fl-chart-pathway.factory';
