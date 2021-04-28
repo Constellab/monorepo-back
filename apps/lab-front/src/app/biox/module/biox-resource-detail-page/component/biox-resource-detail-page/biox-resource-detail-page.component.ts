@@ -52,6 +52,7 @@ export class BioxResourceDetailPageComponent implements OnInit {
     this.availableViews = [
       {route: 'json', text: '{ }', tooltip: 'biox.resource_view_json'},
       {route: 'spreadsheet', icon: 'calendar_view_month', tooltip: 'biox.resource_view_spreadsheet'},
+      {route: 'pathway', icon: 'share', tooltip: 'biox.resource_view_pathway'},
     ];
 
     if (this.currentView == null) {

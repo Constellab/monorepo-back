@@ -15,6 +15,9 @@ export class FlChartPathwayComponent implements OnInit {
 
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
 
+  chartHeight: number;
+  chartWidth: number;
+
   data: FlChartPathwayData;
 
   simulation: Simulation<FlChartPathwayNode, any>;
@@ -31,8 +34,6 @@ export class FlChartPathwayComponent implements OnInit {
 
   ////////////// READONLY VARIABLE //////////////////
 
-  readonly height = 1000;
-  readonly width = 1000;
 
   // size for the reaction rect
   readonly reactionWidth: number = 45;
@@ -47,6 +48,8 @@ export class FlChartPathwayComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initChartSize();
+
     this.data = this.convertPathwayToChartPathway(bigPathwayData);
 
     this.initSVG();
@@ -64,6 +67,11 @@ export class FlChartPathwayComponent implements OnInit {
     this.simulation.on('end', () => this.endSimulation());
   }
 
+  private initChartSize(): void {
+    this.chartWidth = Math.max(this.chartHtmlContainer.nativeElement.clientWidth, 500);
+    this.chartHeight = Math.max(this.chartHtmlContainer.nativeElement.clientHeight, 500);
+  }
+
   private initSimulation(): void {
     this.simulation = d3.forceSimulation([...this.data.metabolites, ...this.data.reactions])
       .force('link',
@@ -72,12 +80,12 @@ export class FlChartPathwayComponent implements OnInit {
         // .strength((d: FlChartPathwayLink<FlChartPathwayNode>) => d.absValue)
       )
       .force('charge', d3.forceManyBody().strength(-40))
-      .force('center', d3.forceCenter(this.width / 2, this.height / 2))
+      .force('center', d3.forceCenter(this.chartWidth / 2, this.chartHeight / 2))
       .force('collide', d3.forceCollide().radius(this.collideRadius));
   }
 
   // disable all force so the user can move the node independently
-  private endSimulation(): void{
+  private endSimulation(): void {
     if (!this.simulationEnded) {
       // clear all forces, so the user can drag easily
       this.simulation.force('link', null);
@@ -91,8 +99,8 @@ export class FlChartPathwayComponent implements OnInit {
   private initSVG(): void {
     this.svg = d3.select(this.chartHtmlContainer.nativeElement)
       .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height);
+      .attr('width', this.chartWidth)
+      .attr('height', this.chartHeight);
 
     //add encompassing group for the zoom
     this.mainGroup = this.svg.append('g')

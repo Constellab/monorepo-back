@@ -1,5 +1,5 @@
 <div class="g-page-fixed g-page-bottom-padding" fxLayout="column">
-  <fl-async-section fxFlex [object]="resource$">
+  <fl-async-section fxFlex [object]="resource$" class="section">
 
     <fl-section-header>
       <h2>{{'resource' | translate}} : {{resourceId}}</h2>
@@ -10,7 +10,7 @@
            [replaceUrl]="true"
            [color]="view.route === currentView ? 'primary': null"
            [matTooltip]="view.tooltip | translate" matTooltipPosition="below">
-          <mat-icon *ngIf="view.icon; else text">calendar_view_month</mat-icon>
+          <mat-icon *ngIf="view.icon; else text">{{view.icon}}</mat-icon>
           <ng-template #text>{{view.text}}</ng-template>
         </a>
       </fl-section-actions>
@@ -24,6 +24,8 @@
 
         <gen-biox-resource-spreadsheet *ngSwitchCase="'spreadsheet'"
                                        [resource]="resource"></gen-biox-resource-spreadsheet>
+
+        <fl-chart-pathway *ngSwitchCase="'pathway'"></fl-chart-pathway>
 
       </ng-container>
     </ng-container>
