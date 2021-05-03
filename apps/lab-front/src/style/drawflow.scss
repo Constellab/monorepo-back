@@ -1,0 +1,47 @@
+// Import drawflow style
+@import "~drawflow/dist/drawflow.min.css";
+
+
+// style drawflow
+.drawflow .drawflow-node {
+  width: initial;
+  border: 1px solid var(--card-border-color) !important;
+  // Padding of the nodes
+  padding: 5px 15px;
+  border-radius: 30px;
+
+  // style for the processable node
+  &.node-processable {
+    color: var(--color-foreground);
+    background-color: var(--card-background);
+  }
+
+  // style for interface nodes
+  &.interface {
+    color: white;
+    background-color: #569cd6;
+  }
+
+  // style for outerface nodes
+  &.outerface {
+    color: white;
+    background-color: #a0d982;
+  }
+
+  // width and height of input and output port
+  .input, .output {
+    width: 12px;
+    height: 12px;
+  }
+
+  // adapt output position
+  .output {
+    right: -7px;
+  }
+  // adapt input position
+  .input {
+    left: -23px;
+  }
+
+}
+

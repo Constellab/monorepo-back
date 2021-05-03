@@ -10,11 +10,11 @@
 @import "libs/front-core-lib/src/style/dialog";
 @import "libs/front-core-lib/src/style/icon";
 
-// Import drawflow style
-@import "~drawflow/dist/drawflow.min.css";
-
 // Import quill style
 @import "libs/front-core-lib/src/style/quill";
+
+// Import drawflow
+@import "./style/drawflow";
 
 html, body {
   height: 100%;

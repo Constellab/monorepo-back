@@ -24,28 +24,3 @@
 }
 
 
-// style drawflow
-::ng-deep{
-.drawflow .drawflow-node {
-  width: initial;
-  border: 1px solid var(--card-border-color) !important;
-
-  // style for the processable node
-  &.node-processable {
-    color: var(--color-foreground);
-    background-color: var(--card-background);
-  }
-
-  // style for interface nodes
-  &.interface {
-    color: white;
-    background-color: #569cd6;
-  }
-
-  // style for outerface nodes
-  &.outerface {
-    color: white;
-    background-color: #a0d982;
-  }
-}
-}

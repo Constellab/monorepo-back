@@ -29,7 +29,7 @@ export class WorkflowManagerState {
 
   private readonly htmlNodeWidth: number = 200;
   private readonly htmlNodeHeight: number = 100;
-  private readonly htmlDefaultNodeSpace: number = 100;
+  private readonly htmlDefaultNodeSpace: number = 70;
   private readonly htmlOffsetX: number = 20;
   private readonly htmlOffsetY: number = 20;
 
