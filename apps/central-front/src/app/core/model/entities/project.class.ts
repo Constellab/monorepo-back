@@ -2,8 +2,14 @@ import {BaseEntity} from './base-entity.class';
 import {StatusHistory} from './status-history.class';
 import {DateTime} from 'luxon';
 import {ClLuxonTransform} from '@monorepo/core-lib';
-import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction} from '@monorepo/front-core-lib';
+import {
+  FlEntityPaginatedDatasource,
+  FlGetStatusClassColorFunction,
+  FlGetStatusIconFunction,
+  FlSanitizeTransform
+} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
+import {SecurityContext} from '@angular/core';
 
 export enum ProjectStatus {
   ACTIVE = 'ACTIVE',
@@ -28,6 +34,7 @@ export class Project extends BaseEntity {
 
   title: string;
 
+  @FlSanitizeTransform(SecurityContext.HTML)
   description: string;
 
   @ClLuxonTransform()

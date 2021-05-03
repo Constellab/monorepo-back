@@ -1,6 +1,4 @@
-import {LabEntity} from '../global/lab-entity.entity';
-import {ClLuxonTransform} from '@monorepo/core-lib';
-import {DateTime} from 'luxon';
+import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
 import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {ViewModel} from '../global/view-model.entity';
@@ -10,19 +8,13 @@ export class BioxExperimentData {
 
   title: string;
 
+  // todo to sanitize ?
   description: string;
 }
 
 export type BioxExperimentStatus = 'running' | 'finished';
 
-export class BioxExperiment extends LabEntity implements FlStatus {
-
-  // python class link
-  type: string;
-
-  @Expose({name: 'creation_datetime'})
-  @ClLuxonTransform()
-  createdAt: DateTime;
+export class BioxExperiment extends LabBaseEntity implements FlStatus {
 
   @Expose({name: 'protocol_job_uri'})
   protocolJobId: string;

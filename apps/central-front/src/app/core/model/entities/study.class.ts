@@ -1,7 +1,8 @@
 import {BaseEntity} from './base-entity.class';
 import {StatusHistory} from './status-history.class';
-import {FlGetStatusClassColorFunction, FlGetStatusIconFunction} from '@monorepo/front-core-lib';
+import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlSanitizeTransform} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
+import {SecurityContext} from '@angular/core';
 
 export enum StudyStatus {
   STARTED = 'STARTED',
@@ -22,6 +23,7 @@ export class StudyStatusHistory extends StatusHistory<StudyStatus> {
 export class Study extends BaseEntity {
   title: string;
 
+  @FlSanitizeTransform(SecurityContext.HTML)
   description: string;
 
   @Type(() => StudyStatusHistory)

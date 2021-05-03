@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {APP_INITIALIZER, Injector, NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -17,7 +17,7 @@ import {
   FlHttpInterceptorService,
   FlPortalModule,
   FlQuillConfig,
-  FlServiceWorkerService,
+  FlServiceWorkerService, flSetRootInjector,
   FlSnackBarModule,
   FlSvgIconModule,
   FlThemeService,
@@ -93,4 +93,8 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
   bootstrap: [AppComponent]
 })
 export class AppModule {
+  constructor(injector: Injector) {
+    // set the root injector in a variable
+    flSetRootInjector(injector);
+  }
 }
