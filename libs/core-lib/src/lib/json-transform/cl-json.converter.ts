@@ -7,6 +7,18 @@ import {ClClassReference} from '../model/cl-class-reference.class';
  * Currently using class-transformer
  */
 
+/**
+ * PAram of the transform methods, use form class-transformer v 0.4
+ */
+// export interface FlTransformFnParams<T = any> {
+//   value: T;
+//   key: string;
+//   obj: any;
+//   type: TransformationType;
+//   options: ClassTransformOptions;
+// }
+
+
 // type of method to serialize item
 export type ClSerializeItem<T> = (object: T) => any;
 

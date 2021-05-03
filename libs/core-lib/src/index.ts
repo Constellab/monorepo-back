@@ -5,7 +5,7 @@ export * from './lib/cl-rxjs/public-api';
 export * from './lib/config/public-api';
 
 // Export the json convert
-export * from './lib/json-converter/public-api';
+export * from './lib/json-transform/public-api';
 
 // Export the models
 export * from './lib/model/public-api';

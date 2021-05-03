@@ -6,6 +6,7 @@ import {FlDragHoverDirective} from './fl-drag-hover/fl-drag-hover.directive';
 import {FlPortalModule} from '../fl-portal/fl-portal.module';
 import { FlForByIdOfDirective } from './fl-for-by-id-of/fl-for-by-id-of.directive';
 import {FlDrawerCloseDirective} from './fl-drawer-close/fl-drawer-close.directive';
+import {FlMouseHoverDirective} from './fl-mouse-hover/fl-mouse-hover.directive';
 
 
 /**
@@ -18,6 +19,7 @@ import {FlDrawerCloseDirective} from './fl-drawer-close/fl-drawer-close.directiv
     FlDragHoverDirective,
     FlForByIdOfDirective,
     FlDrawerCloseDirective,
+    FlMouseHoverDirective,
   ],
   exports: [
     FlInputMaxLengthDirective,
@@ -25,6 +27,7 @@ import {FlDrawerCloseDirective} from './fl-drawer-close/fl-drawer-close.directiv
     FlDragHoverDirective,
     FlForByIdOfDirective,
     FlDrawerCloseDirective,
+    FlMouseHoverDirective,
   ],
   imports: [
     CommonModule,

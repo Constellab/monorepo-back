@@ -2,8 +2,8 @@ import {Directive} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
-import {FlSnackBarService} from '../module/fl-snack-bar/fl-snack-bar.service';
-import {FlFormDialogInput} from '../model/fl-form.class';
+import {FlSnackBarService} from '../../module/fl-snack-bar/fl-snack-bar.service';
+import {FlFormDialogInput} from '../../model/fl-form.class';
 
 /**
  * Abstract directive to structure form dialog component that support create and update mode

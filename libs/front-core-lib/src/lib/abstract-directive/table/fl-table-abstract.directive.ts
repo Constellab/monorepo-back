@@ -1,5 +1,5 @@
 import {Directive, Input} from '@angular/core';
-import {FlArrayObs} from '../model/datasource/fl-array-obs.class';
+import {FlArrayObs} from '../../model/datasource/fl-array-obs.class';
 
 export type FlTableColumn<T> = keyof T | string;
 

@@ -1,5 +1,5 @@
 import {Directive, Input} from '@angular/core';
-import {FlDatasourcePaginated} from '../model/datasource/fl-datasource-paginated.class';
+import {FlDatasourcePaginated} from '../../model/datasource/fl-datasource-paginated.class';
 import {FlTableAbstractDirective} from './fl-table-abstract.directive';
 
 

@@ -15,7 +15,7 @@ import {
 import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {Observable, Subscription} from 'rxjs';
 import {first} from 'rxjs/operators';
-import {FlFormFieldDirective} from '../../../../abstract-directive/fl-form-field.directive';
+import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 
 /**
  * Component to wrap around a custom form field to handle form error status like mat-form-field
