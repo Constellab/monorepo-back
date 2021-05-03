@@ -2,7 +2,7 @@ import {Inject, Injectable, Renderer2, RendererFactory2} from '@angular/core';
 import {FlPlatformService} from './fl-plateform.service';
 import {FlLocalStorageService} from './fl-local-storage.service';
 import {DOCUMENT} from '@angular/common';
-import {ClTheme, clThemeIsSupported} from '@monorepo/core-lib';
+import {clDefaultTheme, ClTheme, clThemeIsSupported} from '@monorepo/core-lib';
 import {FlThemeDetail, flThemeDetailDark, flThemeDetailLight} from './model/fl-theme-detail.class';
 
 /**
@@ -73,8 +73,11 @@ export class FlThemeService {
   // get the theme of the browser
   public getBrowserTheme(): ClTheme {
     // dark-mode media query matched or not
-    const matched: boolean = window?.matchMedia('(prefers-color-scheme: dark)')?.matches ?? true;
+    const matched: boolean = window?.matchMedia('(prefers-color-scheme: dark)')?.matches;
 
+    if(matched == null){
+      return clDefaultTheme;
+    }
     return matched ? ClTheme.DARK_THEME : ClTheme.LIGHT_THEME;
   }
 
