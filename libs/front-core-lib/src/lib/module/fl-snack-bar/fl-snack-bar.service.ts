@@ -23,7 +23,7 @@ export class FlSnackBarService {
    * @param duration the duration in millisecond of the snackbar
    * @param showCloseButton if true a close button is shown in the snackbar
    */
-  public openSuccessMessage(message: string, translate: boolean = false, duration: number = 300000000,
+  public openSuccessMessage(message: string, translate: boolean = false, duration: number = 3000,
                             showCloseButton: boolean = true)
     : MatSnackBarRef<FlSnackBarInfoComponent> {
     let msg: string;
