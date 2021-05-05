@@ -26,9 +26,9 @@
       <fl-text-icon iconPosition="end">
         <p>
           <span class="g-text-light">{{'url' | translate}} : </span>
-          <a [href]="labInstance.apiUrl" target="_blank" class="g-text-link"
+          <a [href]="labInstance.frontUrl" target="_blank" class="g-text-link"
              [matTooltip]="'open_lab_in_new_tab' | translate">
-            {{labInstance.apiUrl}}
+            {{labInstance.frontUrl}}
           </a>
         </p>
         <mat-icon class="g-icon-small">launch</mat-icon>
