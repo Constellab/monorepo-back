@@ -4,7 +4,7 @@ import {Project} from './project.entity';
 import {ProjectsService} from './projects.service';
 import {AcceptAuthorization} from '../core/security/accept.authorization';
 import {RefuseAuthorization} from '../core/security/refuse.authorization';
-import {OwnerAuthorization} from '../core/security/owner.authorization';
+import {CreatedByAuthorization} from '../core/security/created-by.authorization';
 import {ProjectStatus} from './project-status.enum';
 import {ProjectStatusHistory} from './project-status-history.entity';
 import {Page} from '../core/model/config/page.class';
@@ -25,11 +25,11 @@ export class ProjectsSecurityLayer extends AbstractSecurityLayer<Project> {
   }
 
   async isAuthorizedToFindOne(dbEntity: Project): Promise<boolean> {
-    return new OwnerAuthorization().isAuthorized(dbEntity);
+    return new CreatedByAuthorization().isAuthorized(dbEntity);
   }
 
   async isAuthorizedToUpdate(dbEntity: Project): Promise<boolean> {
-    return new OwnerAuthorization().isAuthorized(dbEntity);
+    return new CreatedByAuthorization().isAuthorized(dbEntity);
   }
 
   getCurrentProjects(page: number, size: number): Promise<Page<Project>> {

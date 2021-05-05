@@ -3,7 +3,7 @@ import {AbstractSecurityLayer} from '../core/class/abstract-security.layer';
 import {Study} from './study.entity';
 import {StudiesService} from './studies.service';
 import {RefuseAuthorization} from '../core/security/refuse.authorization';
-import {OwnerAuthorization} from '../core/security/owner.authorization';
+import {CreatedByAuthorization} from '../core/security/created-by.authorization';
 import {ProjectsSecurityLayer} from '../projects/projects-security.layer';
 import {StudyStatus} from './study-status.enum';
 import {StudyStatusHistory} from './study-status-history.entity';
@@ -26,11 +26,11 @@ export class StudiesSecurityLayer extends AbstractSecurityLayer<Study> {
   }
 
   async isAuthorizedToFindOne(dbEntity: Study): Promise<boolean> {
-    return new OwnerAuthorization().isAuthorized(dbEntity);
+    return new CreatedByAuthorization().isAuthorized(dbEntity);
   }
 
   async isAuthorizedToUpdate(dbEntity: Study): Promise<boolean> {
-    return new OwnerAuthorization().isAuthorized(dbEntity);
+    return new CreatedByAuthorization().isAuthorized(dbEntity);
   }
 
   async createStudy(study: Study, projectId: string): Promise<Study> {

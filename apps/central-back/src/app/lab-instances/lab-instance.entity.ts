@@ -8,13 +8,15 @@ import {ServerInfo} from '../servers-info/server-info.entity';
 import {LabServerInfo} from '../core/model/config/lab-server-info.class';
 import {LabInstanceStatus} from './lab-instance-status.enum';
 import {User} from '../users/user.entity';
-import crypto = require('crypto')
+import {EntityWithOwner} from '../core/model/entities/entity-with-owner.entity';
+import crypto = require('crypto');
 
 /**
  * A lab instance is a running lab
  */
 @Entity()
-export class LabInstance extends EntityWithStatus<LabInstanceStatusHistory> implements LabServerInfo {
+export class LabInstance extends EntityWithStatus<LabInstanceStatusHistory>
+  implements LabServerInfo, EntityWithOwner {
 
   @NotUpdatable()
   @Type(() => Lab)
@@ -68,4 +70,9 @@ export class LabInstance extends EntityWithStatus<LabInstanceStatusHistory> impl
   isRunning(): boolean {
     return this.currentStatus?.status === LabInstanceStatus.RUNNING ?? false;
   }
+
+  getOwner(): User {
+    return this.owner;
+  }
+
 }

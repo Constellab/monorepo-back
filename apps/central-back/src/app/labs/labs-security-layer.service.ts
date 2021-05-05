@@ -3,7 +3,7 @@ import {AbstractSecurityLayer} from '../core/class/abstract-security.layer';
 import {Lab} from './lab.entity';
 import {LabsService} from './labs.service';
 import {AdminAuthorization} from '../core/security/admin.authorization';
-import {OwnerAuthorization} from '../core/security/owner.authorization';
+import {CreatedByAuthorization} from '../core/security/created-by.authorization';
 import {AcceptAuthorization} from '../core/security/accept.authorization';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class LabsSecurityLayer extends AbstractSecurityLayer<Lab> {
   }
 
   async isAuthorizedToDelete(dbEntity: Lab): Promise<boolean> {
-    return new OwnerAuthorization().isAuthorized(dbEntity);
+    return new CreatedByAuthorization().isAuthorized(dbEntity);
   }
 
   async isAuthorizedToFindOne(): Promise<boolean> {
@@ -26,7 +26,7 @@ export class LabsSecurityLayer extends AbstractSecurityLayer<Lab> {
   }
 
   async isAuthorizedToUpdate(dbEntity: Lab): Promise<boolean> {
-    return new OwnerAuthorization().isAuthorized(dbEntity);
+    return new CreatedByAuthorization().isAuthorized(dbEntity);
   }
 
   getCurrentLabs(): Promise<Lab[]> {

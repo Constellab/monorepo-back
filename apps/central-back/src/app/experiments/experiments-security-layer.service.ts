@@ -4,7 +4,7 @@ import {Experiment} from './experiment.entity';
 import {AbstractCheckAuthorization} from '../core/security/abstract-check.authorization';
 import {ExperimentsService} from './experiments.service';
 import {RefuseAuthorization} from '../core/security/refuse.authorization';
-import {OwnerAuthorization} from '../core/security/owner.authorization';
+import {CreatedByAuthorization} from '../core/security/created-by.authorization';
 import {ExperimentStatus} from './experiment-status.enum';
 import {LabInstancesSecurityLayer} from '../lab-instances/lab-instances-security-layer.service';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
@@ -13,7 +13,7 @@ import {StudiesSecurityLayer} from '../studies/studies-security.layer';
 @Injectable()
 export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> {
 
-  private ownerAuthorization: AbstractCheckAuthorization = new OwnerAuthorization();
+  private ownerAuthorization: AbstractCheckAuthorization = new CreatedByAuthorization();
 
   constructor(private service: ExperimentsService,
               private studiesSecurityLayer: StudiesSecurityLayer,

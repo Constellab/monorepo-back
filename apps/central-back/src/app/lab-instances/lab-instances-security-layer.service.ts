@@ -2,7 +2,7 @@ import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/co
 import {AbstractSecurityLayer} from '../core/class/abstract-security.layer';
 import {LabInstance} from './lab-instance.entity';
 import {LabInstancesService} from './lab-instances.service';
-import {OwnerAuthorization} from '../core/security/owner.authorization';
+import {CreatedByAuthorization} from '../core/security/created-by.authorization';
 import {LabInstanceStatusHistory} from './lab-instance-status-history.entity';
 import {LabInstanceToken} from './lab-instance-token.class';
 import {ErrorText} from '../core/model/config/error-text.class';
@@ -10,6 +10,7 @@ import {Page} from '../core/model/config/page.class';
 import {User} from '../users/user.entity';
 import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
 import {AdminAuthorization} from '../core/security/admin.authorization';
+import {OwnerAuthorization} from '../core/security/owner.authorization';
 
 
 @Injectable()
@@ -36,7 +37,7 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
   }
 
   async isAuthorizedToUpdateStatus(dbEntity: LabInstance): Promise<boolean> {
-    return new OwnerAuthorization().isAuthorized(dbEntity);
+    return new CreatedByAuthorization().isAuthorized(dbEntity);
   }
 
   getCurrentLabInstances(page: number, size: number): Promise<Page<LabInstance>> {
