@@ -5,18 +5,18 @@ import {RequestContextHelper} from '../../modules/request-context/request-contex
 import {Type} from 'class-transformer';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {LuxonDateColumn} from '../../decorators/luxon-column.decorator';
+import {LuxonDateTimeColumn} from '../../decorators/luxon-column.decorator';
 
 export abstract class BaseEntity extends EntityWithId {
 
-  @LuxonDateColumn({nullable: false, update: false})
+  @LuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
   @Type(() => User)
   @ManyToOne(() => User, {eager: true, nullable: false})
   createdBy: User;
 
-  @LuxonDateColumn()
+  @LuxonDateTimeColumn()
   lastModifiedAt: DateTime;
 
   @Type(() => User)

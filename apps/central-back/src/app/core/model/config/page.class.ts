@@ -1,11 +1,8 @@
 /**
  * Generic for page requests
  */
-export interface Page<T> {
-  objects: T[];
-  first: boolean;
-  last: boolean;
-  totalElements: number;
-  currentPage: number;
-  pageSize: number;
+export class Page<T> {
+  constructor(public objects: T[], public first: boolean, public last: boolean,
+              public totalElements: number, public currentPage: number, public pageSize: number) {
+  }
 }

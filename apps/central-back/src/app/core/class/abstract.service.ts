@@ -104,14 +104,9 @@ export abstract class AbstractService<T extends EntityWithId> {
     // get the results limited by page
     const result: T[] = await manager.find(this.entityClass, pageOptions);
 
-    return {
-      objects: result,
-      first: safePage === 0,
-      last: ((safePage + 1) * safeSize) >= totalElements,
-      totalElements: totalElements,
-      currentPage: safePage,
-      pageSize: safeSize
-    };
+    return new Page<T>(result, safePage === 0,
+      ((safePage + 1) * safeSize) >= totalElements,
+      totalElements, safePage, safeSize);
   }
 
   // use to log persistence
