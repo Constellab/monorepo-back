@@ -4,6 +4,7 @@ import {AbstractService} from './abstract.service';
 import {EntityWithStatus} from '../model/entities/entity-with-status.entity';
 import {BadRequestException} from '@nestjs/common';
 import {ErrorText} from '../model/config/error-text.class';
+import {ClDateHelper} from '@monorepo/core-lib';
 
 /**
  * Service for {@link EntityWithStatus}
@@ -70,7 +71,7 @@ export abstract class AbstractWithStatusService<T extends EntityWithStatus<Statu
    */
   async updateCurrentStatusWithDbEntityTransaction(status: S, dbEntity: T, entityManager: EntityManager): Promise<T> {
     const oldStatus: StatusHistory<S> = dbEntity.currentStatus;
-    oldStatus.endDate = new Date();
+    oldStatus.endDate = ClDateHelper.getDate();
     await entityManager.save(oldStatus);
 
     return await this.createAndSetCurrentStatus(dbEntity, status, entityManager);

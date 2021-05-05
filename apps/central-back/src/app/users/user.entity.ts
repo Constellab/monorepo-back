@@ -1,11 +1,12 @@
-import {BeforeInsert, Column, CreateDateColumn, Entity, ManyToMany, OneToOne} from 'typeorm';
+import {BeforeInsert, Column, Entity, ManyToMany, OneToOne} from 'typeorm';
 import {EntityWithId} from '../core/model/entities/entity-with-id.entity';
 import {Exclude} from 'class-transformer';
 import {UserCategory} from './user-category.enum';
 import {GroupSingleUser, GroupUsers} from '../groups/group.entity';
 import * as argon2 from 'argon2';
-import {DateTransform} from '../core/decorators/date-transform.decorator';
-import {clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {LuxonDateTimeColumn} from '../core/decorators/luxon-column.decorator';
+import {DateTime} from 'luxon';
 
 
 @Entity()
@@ -15,31 +16,31 @@ export class User extends EntityWithId {
   firstname: string;
 
   @Column({nullable: false, length: 50})
-  lastname: string = null;
+  lastname: string;
 
   @Column({unique: true, nullable: false, update: false})
-  email: string = null;
+  email: string;
 
   @Exclude({toPlainOnly: true})
   @Column({nullable: false})
-  password: string = null;
+  password: string;
 
   @Column({nullable: false, type: 'enum', enum: UserCategory})
-  category: UserCategory = null;
+  category: UserCategory;
 
   @Column({nullable: false})
-  phone: string = null;
+  phone: string;
 
   @Column({nullable: true})
-  job: string = null;
+  job: string;
 
   @Exclude()
   @Column({nullable: false, default: 0})
-  failedLoginCount: number = null;
+  failedLoginCount: number;
 
   @Exclude()
-  @Column({nullable: true})
-  lastLoginAttempt: Date = null;
+  @LuxonDateTimeColumn({nullable: true})
+  lastLoginAttempt: DateTime;
 
   @Column({nullable: false, type: 'enum', enum: ClSupportedLanguage, default: clDefaultLang})
   lang: ClSupportedLanguage;
@@ -63,9 +64,8 @@ export class User extends EntityWithId {
   @Column({type: 'bool', default: false})
   adminActivated: boolean;
 
-  @DateTransform()
-  @CreateDateColumn({nullable: false, update: false})
-  createdAt: Date;
+  @LuxonDateTimeColumn({nullable: false, update: false})
+  createdAt: DateTime;
 
   //////////////////// TRANSIENT METHODS //////////////////
 
@@ -75,6 +75,7 @@ export class User extends EntityWithId {
     this.lastLoginAttempt = null;
     this.activated = false;
     this.adminActivated = false;
+    this.createdAt = ClDateHelper.getDate();
     // force the lang to en
     this.lang = clDefaultLang;
     this.theme = clDefaultTheme;

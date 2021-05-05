@@ -1,23 +1,23 @@
 import {EntityWithId} from './entity-with-id.entity';
-import {BeforeInsert, BeforeUpdate, CreateDateColumn, ManyToOne, UpdateDateColumn} from 'typeorm';
+import {BeforeInsert, BeforeUpdate, ManyToOne} from 'typeorm';
 import {User} from '../../../users/user.entity';
 import {RequestContextHelper} from '../../modules/request-context/request-context.helper';
 import {Type} from 'class-transformer';
-import {DateTransform} from '../../decorators/date-transform.decorator';
+import {ClDateHelper} from '@monorepo/core-lib';
+import {DateTime} from 'luxon';
+import {LuxonDateColumn} from '../../decorators/luxon-column.decorator';
 
 export abstract class BaseEntity extends EntityWithId {
 
-  @DateTransform()
-  @CreateDateColumn({nullable: false, update: false})
-  createdAt: Date;
+  @LuxonDateColumn({nullable: false, update: false})
+  createdAt: DateTime;
 
   @Type(() => User)
   @ManyToOne(() => User, {eager: true, nullable: false})
   createdBy: User;
 
-  @DateTransform()
-  @UpdateDateColumn()
-  lastModifiedAt: Date;
+  @LuxonDateColumn()
+  lastModifiedAt: DateTime;
 
   @Type(() => User)
   @ManyToOne(() => User, {eager: true})
@@ -26,12 +26,14 @@ export abstract class BaseEntity extends EntityWithId {
   @BeforeInsert()
   setCreatedByUser(): void {
     this.createdBy = RequestContextHelper.getAndCheckCurrentUser();
+    this.createdAt = ClDateHelper.getDate();
   }
 
   @BeforeInsert()
   @BeforeUpdate()
   setLastModifiedByUser(): void {
     this.lastModifiedBy = RequestContextHelper.getAndCheckCurrentUser();
+    this.lastModifiedAt = ClDateHelper.getDate();
   }
 
 }

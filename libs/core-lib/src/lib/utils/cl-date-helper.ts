@@ -1,5 +1,6 @@
 import {DateTime} from 'luxon';
 import {ClStringHelper} from './cl-string-helper';
+import {ClHelpService} from './cl-help-service';
 
 /**
  * Input for {@HelperService} function that support date input. It uses DateInput
@@ -155,5 +156,75 @@ export class ClDateHelper {
     }
 
     throw new Error('Wrong input for to create date');
+  }
+
+  /**
+   * Deserialize luxon Date from 'YYYY-MM-DD'
+   * If more characters are provided (like time and timezone), they are ignored
+   */
+  public static deserializeDate(date: string): DateTime {
+    if (ClHelpService.isNullOrEmpty(date)) {
+      return null;
+    }
+
+    if (typeof date !== 'string') {
+      console.error(`[ClDateHelper][DeserializeDate] The date ${date} has a wrong format`);
+      return null;
+    }
+
+    if (date.length < 10) {
+      console.error(`[ClDateHelper][DeserializeDate] The date ${date} is too short`);
+      return null;
+    }
+
+    return ClDateHelper.getDate(date.substr(0, 10));
+  }
+
+  /**
+   * Serializer luxon Date to 'YYYY-MM-DD' format
+   */
+  public static serializeDate(date: DateTime): string {
+    if (date == null) {
+      return null;
+    }
+
+    if (!(date instanceof DateTime)) {
+      console.error(`[ClDateHelper][SerializeDate] The date ${date} is not a DateTime`);
+      return null;
+    }
+
+    return date.toISODate();
+  }
+
+  /**
+   * Deserializer luxon DateTime from ISO format
+   */
+  public static deserializeDateTime(date: string): DateTime {
+    if (ClHelpService.isNullOrEmpty(date)) {
+      return null;
+    }
+
+    if (typeof date !== 'string') {
+      console.error(`[ClDateHelper][DeserializeDateTime] The date ${date} has a wrong format`);
+      return null;
+    }
+
+    return ClDateHelper.getDate(date);
+  }
+
+  /**
+   * Serializer luxon DateTime to ISO format
+   */
+  public static serializeDateTime(date: DateTime): string {
+    if (date == null) {
+      return null;
+    }
+
+    if (!(date instanceof DateTime)) {
+      console.error(`[ClDateHelper][SerializeDate] The date ${date} is not a DateTime`);
+      return null;
+    }
+
+    return date.toISO();
   }
 }

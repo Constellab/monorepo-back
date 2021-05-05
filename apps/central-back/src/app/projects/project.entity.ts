@@ -1,8 +1,9 @@
 import {Column, Entity, JoinColumn, OneToOne} from 'typeorm';
-import {DateTransform} from '../core/decorators/date-transform.decorator';
 import {Type} from 'class-transformer';
 import {ProjectStatusHistory} from './project-status-history.entity';
 import {EntityWithStatus} from '../core/model/entities/entity-with-status.entity';
+import {DateTime} from 'luxon';
+import {LuxonDateColumn} from '../core/decorators/luxon-column.decorator';
 
 /**
  * A project is a ensemble of experiments
@@ -19,12 +20,11 @@ export class Project extends EntityWithStatus<ProjectStatusHistory> {
   @Column({type: 'text', nullable: true})
   description: string;
 
-  @DateTransform()
-  @Column({nullable: false})
-  startingDate: Date;
+  @LuxonDateColumn({nullable: false})
+  startingDate: DateTime;
 
-  @Column({nullable: true})
-  endingDate: Date;
+  @LuxonDateColumn({nullable: true})
+  endingDate: DateTime;
 
   @Type(() => ProjectStatusHistory)
   @OneToOne(() => ProjectStatusHistory, {nullable: true, eager: true})

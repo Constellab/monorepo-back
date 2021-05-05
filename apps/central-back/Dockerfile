@@ -20,6 +20,10 @@ RUN npm run central-back:build
 FROM node:12-alpine
 WORKDIR /app
 
+# Set UTC timezone for the docker
+ENV TZ=UTC
+
+
 COPY --from=builder /app/package.json /app/package-lock.json ./
 
 # dependency are needed and there are not build in chunck

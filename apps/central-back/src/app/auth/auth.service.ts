@@ -9,6 +9,7 @@ import {ErrorText} from '../core/model/config/error-text.class';
 import {MailService} from '../core/services/mail/mail.service';
 import {TokenService} from '../core/services/token/token.service';
 import {UserAccountsService} from '../users/users-account/user-accounts.service';
+import {ClDateHelper} from '@monorepo/core-lib';
 
 @Injectable()
 export class AuthService {
@@ -79,7 +80,7 @@ export class AuthService {
    */
   private incrementFailedLoginCount(user: User): void {
     user.failedLoginCount++;
-    user.lastLoginAttempt = new Date();
+    user.lastLoginAttempt = ClDateHelper.getDate();
 
     this.usersService.update(user);
   }

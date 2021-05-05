@@ -2,6 +2,7 @@
  * Class containing data useful for tests
  */
 import {Project} from '../src/app/projects/project.entity';
+import {ClDateHelper} from '@monorepo/core-lib';
 
 export class TestData {
 
@@ -13,7 +14,7 @@ export class TestData {
     project.code = 'CODE';
     project.title = 'Title';
     project.description = 'New description';
-    project.startingDate = new Date();
+    project.startingDate = ClDateHelper.getDate();
 
     return project;
   }

@@ -1,16 +1,15 @@
 import {BaseEntity} from './base.entity';
-import {DateTransform} from '../../decorators/date-transform.decorator';
 import {EntityWithId} from './entity-with-id.entity';
-import {Column} from 'typeorm';
+import {LuxonDateTimeColumn} from '../../decorators/luxon-column.decorator';
+import {DateTime} from 'luxon';
 
 /**
  * Describe a status history table
  */
 export abstract class StatusHistory<S> extends BaseEntity {
 
-  @Column({nullable: true})
-  @DateTransform()
-  endDate: Date;
+  @LuxonDateTimeColumn({nullable: true})
+  endDate: DateTime;
 
   // status of this history
   status: S;
