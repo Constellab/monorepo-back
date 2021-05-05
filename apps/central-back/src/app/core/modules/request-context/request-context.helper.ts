@@ -77,12 +77,6 @@ export class RequestContextHelper {
     return this.getHeaderFromContext(clLangCookie);
   }
 
-
-  static get currentRequestId(): number | null {
-    const requestContext = this.getCurrentContext();
-    return (requestContext && requestContext.requestId) || null;
-  }
-
   static getCurrentRequest(): Request {
     return this.getCurrentContext()?.req || null;
   }

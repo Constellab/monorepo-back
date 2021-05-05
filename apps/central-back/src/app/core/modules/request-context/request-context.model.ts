@@ -12,14 +12,11 @@ export class RequestContext {
     return this.cls.getContext();
   }
 
-  readonly requestId: number;
-
   static setContext(requestContext: RequestContext): void {
     this.cls.setContext(requestContext);
   }
 
 
   constructor(public readonly req: Request, public readonly res: Response) {
-    this.requestId = Date.now();
   }
 }
