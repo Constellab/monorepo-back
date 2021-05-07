@@ -28,7 +28,7 @@ export class User extends EntityWithId {
   @Column({nullable: false, type: 'enum', enum: UserCategory})
   category: UserCategory;
 
-  @Column({nullable: false})
+  @Column({nullable: true})
   phone: string;
 
   @Column({nullable: true})
@@ -70,15 +70,20 @@ export class User extends EntityWithId {
   //////////////////// TRANSIENT METHODS //////////////////
 
   @BeforeInsert()
-  async initValues(): Promise<void> {
+  initValues(): void {
     this.failedLoginCount = 0;
     this.lastLoginAttempt = null;
     this.activated = false;
     this.adminActivated = false;
     this.createdAt = ClDateHelper.getDate();
+
     // force the lang to en
     this.lang = clDefaultLang;
     this.theme = clDefaultTheme;
+
+    // init the date of own group because the cascade insert doesn't trigger the BeforeInsert
+    this.ownGroup.createdAt = ClDateHelper.getDate();
+    this.ownGroup.lastModifiedAt = ClDateHelper.getDate();
   }
 
   async comparePassword(attempt: string): Promise<boolean> {

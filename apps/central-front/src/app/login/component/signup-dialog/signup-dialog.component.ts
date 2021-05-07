@@ -38,7 +38,6 @@ export class SignupDialogComponent implements OnInit {
       password: [null, [Validators.required, FlGlobalValidators.passwordValidator()]],
       repeatPassword: [null, [Validators.required,
         FlGlobalValidators.repeatPasswordValidator('password')]],
-      phone: [null, Validators.required],
       category: [null, Validators.required],
     });
   }
@@ -62,6 +61,11 @@ export class SignupDialogComponent implements OnInit {
 
     this.dialogRef.close();
     this.isLoading = false;
+  }
+
+  // update the repeat password validity on password change
+  updateRepeatPasswordValidity(): void{
+    this.formGp.get('repeatPassword').updateValueAndValidity();
   }
 
 }

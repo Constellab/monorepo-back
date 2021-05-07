@@ -13,7 +13,6 @@ export interface NewUser {
   firstname: string;
   lastname: string;
   email: string;
-  phone: string;
   category: UserCategory;
   password: string;
   repeatPassword: string;
