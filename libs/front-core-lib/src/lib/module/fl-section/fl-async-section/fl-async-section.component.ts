@@ -3,7 +3,7 @@ import {Observable, Subscription} from 'rxjs';
 import {FlSectionBodyDirective} from '../fl-section-body';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlViewContext} from '../../../model/fl-view-context.class';
-import {FlArrayObs} from '../../../model/datasource/fl-array-obs.class';
+import {FlDatasource} from '../../../model/datasource/fl-datasource.class';
 
 @Component({
   selector: 'fl-async-section',
@@ -20,8 +20,7 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
   @Input() set object(object: Observable<any> | any) {
     if (object && object instanceof Observable) {
       this.subscribeToObservable(object);
-    }
-    else{
+    } else {
       this.onSuccess(object);
     }
   }
@@ -29,11 +28,14 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
   /**
    * If an array obs is provided, it disconnect it on destroy
    */
-  @Input() set arrayObs(arrayObs: FlArrayObs) {
-    if (arrayObs && arrayObs instanceof FlArrayObs) {
+  @Input() set arrayObs(arrayObs: FlDatasource<any>) {
+    if (arrayObs) {
       this.subscribeToObservable(arrayObs.connect());
     }
+    this._arrayObs = arrayObs;
   }
+
+  private _arrayObs: FlDatasource<any>;
 
   @Input() emptyText: string = 'object_not_found';
 
@@ -95,7 +97,7 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
-    this.arrayObs?.disconnect();
+    this._arrayObs?.disconnect();
   }
 
 

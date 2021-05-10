@@ -12,7 +12,7 @@ export const environment: Environment = {
   apiUrl: `${apiBaseUrl}core-api/`,
   jupyterLabUrl: 'https://jlab.atom.gencovery.io/' +
     '?token=JSLaMCrFtncD66b4D9kr2Bfod5E5XAT4iaVgtHE3KeER4NPPeLDMVqjL7Qqi6XMDZR7uqGSMcDDXKcLX3b65kPUkdKsXXq24',
-  centralApiUrl: 'http://localhost:3000/'
+  centralApiUrl: 'http://localhost:3001/'
 };
 
 /*

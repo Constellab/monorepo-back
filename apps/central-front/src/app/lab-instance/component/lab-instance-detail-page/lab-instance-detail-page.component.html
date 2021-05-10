@@ -9,6 +9,8 @@
         <gen-server-info-card [serverInfo]="labInstance.serverInfo"
                               class="section"></gen-server-info-card>
 
+        <gen-lab-instance-users-list class="g-section" [labInstanceId]="labInstance.id"></gen-lab-instance-users-list>
+
 <!--        <gen-lab-instance-iframe [labUrl]="labInstance.url" fxFlex="grow"-->
 <!--                                 class="section"></gen-lab-instance-iframe>-->
       </div>

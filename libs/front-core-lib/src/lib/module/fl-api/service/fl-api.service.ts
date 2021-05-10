@@ -161,7 +161,7 @@ export class FlApiService {
    * Deserialize an object or array using json converter package if the input are not null
    * @param json json object
    * @param classReference class reference of object
-   * @param isPaginated if true the result is considered as a {@link FlPage}
+   * @param isPaginated if true the result is considered as a {@link ClPage}
    */
   public deserialize(json: any, classReference: ClDeserializationRef, isPaginated: boolean = false): any {
     if (json && classReference) {

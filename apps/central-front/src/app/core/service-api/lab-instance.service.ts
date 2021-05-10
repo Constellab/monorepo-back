@@ -1,7 +1,15 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {LabInstance, LabInstanceDatasource, LabInstanceStatusHistory, LabInstanceToken} from '../model/entities/lab-instance.class';
-import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
+import {
+  LabInstance,
+  LabInstanceDatasource,
+  LabInstanceStatusHistory,
+  LabInstanceToken,
+  LabInstanceUser,
+  LabInstanceUserForm
+} from '../model/entities/lab-instance.class';
+import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -39,8 +47,8 @@ export class LabInstanceService {
     return new FlEntityPaginatedDatasource(this.getCurrentLabInstanceMethod(), 4);
   }
 
-  private getCurrentLabInstanceMethod(): FlGetPageFunction<LabInstance> {
-    return (page: number, pageSize: number): Observable<FlPage<LabInstance>> => this.apiService.get(`${this.route}/current`, LabInstance,
+  private getCurrentLabInstanceMethod(): ClGetPageFunction<LabInstance> {
+    return (page: number, pageSize: number): Observable<ClPage<LabInstance>> => this.apiService.get(`${this.route}/current`, LabInstance,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
@@ -74,4 +82,17 @@ export class LabInstanceService {
   public getAll(): FlArrayObs<LabInstance> {
     return new FlEntityArrayObs(this.apiService.get(this.route, LabInstance));
   }
+
+  public getLabInstanceUsers(id: string): Observable<LabInstanceUser[]> {
+    return this.apiService.get(`${this.route}/${id}/users`, LabInstanceUser);
+  }
+
+  public addUserToLab(labId: string, labInstanceUserForm: LabInstanceUserForm): Observable<LabInstanceUser> {
+    const object = {
+      userId: labInstanceUserForm.user.id,
+      group: labInstanceUserForm.group
+    }
+    return this.apiService.post(`${this.route}/${labId}/add-user`, object, LabInstanceUser);
+  }
+
 }

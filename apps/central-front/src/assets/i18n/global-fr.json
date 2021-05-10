@@ -93,5 +93,6 @@
   "admin_account_activated": "Compte activé",
   "input_number_must_be_positive": "La valeur doit être un entier positif",
   "owner": "Propriétaire",
-  "language": "Langage"
+  "language": "Langage",
+  "user": "Utilisateur"
 }

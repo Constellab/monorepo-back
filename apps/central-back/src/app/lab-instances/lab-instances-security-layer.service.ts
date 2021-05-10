@@ -11,6 +11,8 @@ import {User} from '../users/user.entity';
 import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
 import {AdminAuthorization} from '../core/security/admin.authorization';
 import {OwnerAuthorization} from '../core/security/owner.authorization';
+import {CombinedAuthorization} from '../core/security/combined.authorization';
+import {ExternalLabUser, ExternalNewLabUser} from '../external-lab-api/external-lab-api.class';
 
 
 @Injectable()
@@ -29,7 +31,7 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
   }
 
   async isAuthorizedToFindOne(dbEntity: LabInstance): Promise<boolean> {
-    return new OwnerAuthorization().isAuthorized(dbEntity);
+    return new CombinedAuthorization('OR',  new AdminAuthorization(), new OwnerAuthorization()).isAuthorized(dbEntity);
   }
 
   async isAuthorizedToUpdate(): Promise<boolean> {
@@ -97,6 +99,20 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
     }
 
     return this.service.findAll();
+  }
+
+  async getLabUsers(labInstanceId: string): Promise<ExternalLabUser[]>{
+    // check that the user can get the lab
+    await this.getAndCheckAuthorizationToFindById(labInstanceId);
+
+    return this.service.getLabUsers(labInstanceId);
+  }
+
+  async addUser(labInstanceId: string, newUser: ExternalNewLabUser): Promise<ExternalLabUser>{
+    // check that the user can get the lab
+    await this.getAndCheckAuthorizationToFindById(labInstanceId);
+
+    return this.service.addUserToLab(labInstanceId, newUser);
   }
 
 

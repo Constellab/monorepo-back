@@ -13,7 +13,7 @@ import {StudiesSecurityLayer} from '../studies/studies-security.layer';
 @Injectable()
 export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> {
 
-  private ownerAuthorization: AbstractCheckAuthorization = new CreatedByAuthorization();
+  private createdByAuthorization: AbstractCheckAuthorization = new CreatedByAuthorization();
 
   constructor(private service: ExperimentsService,
               private studiesSecurityLayer: StudiesSecurityLayer,
@@ -30,11 +30,11 @@ export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> 
   }
 
   async isAuthorizedToFindOne(dbEntity: Experiment): Promise<boolean> {
-    return this.ownerAuthorization.isAuthorized(dbEntity);
+    return this.createdByAuthorization.isAuthorized(dbEntity);
   }
 
   async isAuthorizedToUpdate(dbEntity: Experiment): Promise<boolean> {
-    return this.ownerAuthorization.isAuthorized(dbEntity);
+    return this.createdByAuthorization.isAuthorized(dbEntity);
   }
 
 

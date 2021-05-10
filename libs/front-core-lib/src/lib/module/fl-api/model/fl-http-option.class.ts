@@ -28,7 +28,7 @@ export interface FlHttpOption extends FlHttpGetUrlOption{
   reportProgress?: boolean;
 
   /**
-   * if set to true the call supposed that the result is a {@link FlPage}
+   * if set to true the call supposed that the result is a {@link ClPage}
    * and if a class reference is provided to convert the result to class with json converter,
    * the Page.content will be convert to class reference array
    */

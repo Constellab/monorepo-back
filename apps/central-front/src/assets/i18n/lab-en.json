@@ -22,5 +22,10 @@
   "create_lab": "Create lab",
   "lab_created": "Lab created",
   "update_lab": "Update lab",
-  "lab_updated": "Lab updated"
+  "lab_updated": "Lab updated",
+  "lab_users": "Lab's users",
+  "lab_user_group": "User group",
+  "lab_user_is_active": "User is active",
+  "lab_user_create": "Add a user to lab",
+  "lab_user_created": "User added to lab"
 }

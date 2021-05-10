@@ -1,19 +1,27 @@
 /**
- * Basic response type of the Lab API
- * The request can return a 200 but still the status is false --> error
- */
-export interface ExternalLabApiResponse<T = any> {
-  status: boolean; // true if success, false if not
-  response: T;
-}
-
-
-/**
  * Response when logged in a user to the lab instance
  */
+
 export interface ExternalLabLoginResponse {
   access_token: string;
   token_type: string;
+}
+
+export type ExternalLabUserGroup = 'admin' | 'user';
+
+export interface ExternalLabUser {
+  uri: string;
+  email: string;
+  group: ExternalLabUserGroup;
+  is_active: boolean;
+  is_admin: boolean;
+  first_name: string;
+  last_name: string;
+}
+
+export interface ExternalNewLabUser {
+  userId: string;
+  group: ExternalLabUserGroup;
 }
 
 

@@ -1,7 +1,16 @@
 import {Directive, Input} from '@angular/core';
-import {FlArrayObs} from '../../model/datasource/fl-array-obs.class';
+import {FlDatasource} from '../../model/datasource/fl-datasource.class';
 
-export type FlTableColumn<T> = keyof T | string;
+export type FlTableColumnStatic<T> = Extract<keyof T, string> | string;
+export type FlTableColumn<T> = FlTableColumnStatic<T> | FlTableColumnDetail<T>;
+
+// column information with the name of the column to translate
+export interface FlTableColumnDetail<T> {
+  // attribute name of the object
+  accessor: Extract<keyof T, string>;
+  // column name that is translated
+  columnName: string;
+}
 
 /**
  * Abstract directive for the Table component
@@ -10,14 +19,17 @@ export type FlTableColumn<T> = keyof T | string;
 @Directive()
 export abstract class FlTableAbstractDirective<T> {
 
-  @Input() datasource: FlArrayObs<T>;
+  @Input() datasource: FlDatasource<T>;
 
   // tslint:disable-next-line:variable-name
-  _columns: FlTableColumn<T>[];
+  _columns: string[];
+
+  private columnsDetails: FlTableColumnDetail<T>[];
 
   // setter for columns to refresh the other columns attribute
   @Input() set columns(columns: FlTableColumn<T>[]) {
-    this._columns = columns;
+    this._columns = columns.map(column => this.extractColumnName(column));
+    this.columnsDetails = columns.map(column => this.convertToColumnDetail(column))
 
     // update other columns
     this.calculateDynamicColumns();
@@ -25,14 +37,14 @@ export abstract class FlTableAbstractDirective<T> {
 
   // contains the list of columns name that are not statically defined in the
   // table HTML under matColumnDef
-  dynamicColumns: FlTableColumn<T>[] = [];
+  dynamicColumns: FlTableColumnDetail<T>[] = [];
 
   /**
    * @param staticColumns list of columns name that are statically defined in the HTML in matColumnDef
    *                      all displayed columns not present in the static array will be referenced in the dynamic columns array
    *                      to generate dynamic column
    */
-  protected constructor(protected staticColumns?: FlTableColumn<T>[]) {
+  protected constructor(protected staticColumns?: FlTableColumnStatic<T>[]) {
     this.calculateDynamicColumns();
   }
 
@@ -41,15 +53,34 @@ export abstract class FlTableAbstractDirective<T> {
    */
   public calculateDynamicColumns(): void {
     if (this._columns && this.staticColumns) {
-      const otherColumns: FlTableColumn<T>[] = [];
-      for (const column of this._columns) {
+      const otherColumns: FlTableColumnDetail<T>[] = [];
+      for (const column of this.columnsDetails) {
         // if the column is not in the static list, add it to the dynamic list
-        if (this.staticColumns.indexOf(column) === -1) {
+        if (this.staticColumns.indexOf(column.accessor) === -1) {
           otherColumns.push(column);
         }
       }
 
       this.dynamicColumns = otherColumns;
+    }
+  }
+
+  private extractColumnName(column: FlTableColumn<T>): string {
+    if (typeof column === 'object') {
+      return column.accessor;
+    } else {
+      return column;
+    }
+  }
+
+  private convertToColumnDetail(column: FlTableColumn<T>): FlTableColumnDetail<T> {
+    if (typeof column === 'object') {
+      return column;
+    } else {
+      return {
+        accessor: column as any,
+        columnName: column
+      };
     }
   }
 

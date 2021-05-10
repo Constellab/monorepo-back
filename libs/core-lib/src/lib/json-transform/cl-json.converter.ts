@@ -1,5 +1,5 @@
 import {ClHelpService} from '../utils/cl-help-service';
-import {classToPlain, plainToClass} from 'class-transformer';
+import {classToPlain, plainToClass, serialize} from 'class-transformer';
 import {ClClassReference} from '../model/cl-class-reference.class';
 
 /**
@@ -74,9 +74,19 @@ export class ClCoreJsonConvert {
    *
    * @param data object or array of objects
    */
-  public static serialize<T>(data: T | T[]): any | any[] {
+  public static serialize<T>(data: T | T[]): string {
+    return serialize(data);
+  }
+
+  /**
+   * Tries to serialize a TypeScript object or array of objects to JSON.
+   *
+   * @param data object or array of objects
+   */
+  public static classToPlain<T>(data: T | T[]): any | any[] {
     return classToPlain(data);
   }
+
 
   /**
    * Deep clone a class object with class-transformer (doesn't work with cyclic object)

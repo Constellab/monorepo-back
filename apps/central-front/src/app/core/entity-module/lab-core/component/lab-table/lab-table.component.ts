@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Lab} from '../../../../model/entities/lab.class';
 import {LabFormDialogComponent} from '../lab-form-dialog/lab-form-dialog.component';
-import {FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
+import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-lab-table',
@@ -9,6 +9,8 @@ import {FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@mon
   styleUrls: ['./lab-table.component.scss']
 })
 export class LabTableComponent extends FlTableAbstractDirective<Lab> implements OnInit {
+
+  @Input() datasource: FlArrayObs<Lab>;
 
   constructor(private dialogService: FlDialogService) {
     super(['createdAt', 'lastModifiedAt', 'actions']);

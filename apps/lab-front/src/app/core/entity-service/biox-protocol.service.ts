@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
-import {FlApiWithCacheService, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
+import {FlApiWithCacheService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {createViewModel} from '../model/global/view-model.entity';
 import {ViewModelDatasourcePaginated} from '../utils/view-model.datasource';
 import {BioxProtocol, BioxProtocolDatasource, BioxProtocolVM} from '../model/entities/biox-processable.entity';
 import {map} from 'rxjs/operators';
-import {clRxjsDebug} from '@monorepo/core-lib';
+import {ClGetPageFunction, ClPage, clRxjsDebug} from '@monorepo/core-lib';
 import {BioxFlow} from '../model/global/biox-connection.class';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class BioxProtocolService {
   constructor(private apiService: FlApiWithCacheService) {
   }
 
-  public getProtocols(page: number, pageSize: number): Observable<FlPage<BioxProtocolVM>> {
+  public getProtocols(page: number, pageSize: number): Observable<ClPage<BioxProtocolVM>> {
     return this.apiService.get(`protocol/list`, createViewModel(BioxProtocol),
       {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
@@ -26,8 +26,8 @@ export class BioxProtocolService {
     return new ViewModelDatasourcePaginated(this.getProtocolsMethod(), 20, true);
   }
 
-  private getProtocolsMethod(): FlGetPageFunction<BioxProtocolVM> {
-    return (page: number, pageSize: number): Observable<FlPage<BioxProtocolVM>> => this.getProtocols(page, pageSize);
+  private getProtocolsMethod(): ClGetPageFunction<BioxProtocolVM> {
+    return (page: number, pageSize: number): Observable<ClPage<BioxProtocolVM>> => this.getProtocols(page, pageSize);
   }
 
   public getProtocol(protocolId: string): Observable<BioxProtocol> {

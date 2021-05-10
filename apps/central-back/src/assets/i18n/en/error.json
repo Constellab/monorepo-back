@@ -19,5 +19,7 @@
   "lab_auth_error": "Error during authentication in lab",
   "experiment_missing_protocol": "The experiment can't be launched because it doesn't have a protocol",
   "account_not_admin_activated": "Your account must be validated by an admin",
-  "language_not_supported": "The language is not supported"
+  "language_not_supported": "The language is not supported",
+  "user_already_exist_in_lab": "The user already exists in the lab",
+  "id_not_provided": "Can't search for object with empty id"
 }

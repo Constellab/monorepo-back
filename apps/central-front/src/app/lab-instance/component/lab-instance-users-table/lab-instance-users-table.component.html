@@ -1,0 +1,49 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+  <!-- Fullname -->
+  <ng-container matColumnDef="fullname">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'fullname' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labUser">
+      <span>{{labUser.firstname}} {{labUser.lastname}}</span>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Group -->
+  <ng-container matColumnDef="group">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'lab_user_group' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labUser">
+      <span>{{labUser.group}}</span>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Is Active -->
+  <ng-container matColumnDef="isActive">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'lab_user_is_active' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labUser">
+      <span>{{labUser.isActive | flYesNo}}</span>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      <p class="g-table-cell">{{column.columnName | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let user">
+      <div class="g-table-cell">
+        <span>{{user[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>
+

@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlEntityPaginatedDatasource, FlGetPageFunction, FlPage} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {BiotaData, BiotaDataDatasource} from '../model/biota-data.class';
 import {ViewModel} from '../../core/model/global/view-model.entity';
+import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class BiotaDatabaseService {
     );
   }
 
-  public getDatabaseData(type: string, page: number, pageSize: number): Observable<FlPage<BiotaData>> {
+  public getDatabaseData(type: string, page: number, pageSize: number): Observable<ClPage<BiotaData>> {
     return this.apiService.get(`view/${type}/all/`, ViewModel,
       {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
@@ -34,8 +35,8 @@ export class BiotaDatabaseService {
     return new FlEntityPaginatedDatasource<BiotaData>(this.getDatabasesMethod(type), 20, true);
   }
 
-  private getDatabasesMethod(type: string): FlGetPageFunction<BiotaData> {
-    return (page: number, pageSize: number): Observable<FlPage<BiotaData>> => this.getDatabaseData(type, page, pageSize);
+  private getDatabasesMethod(type: string): ClGetPageFunction<BiotaData> {
+    return (page: number, pageSize: number): Observable<ClPage<BiotaData>> => this.getDatabaseData(type, page, pageSize);
   }
 
 

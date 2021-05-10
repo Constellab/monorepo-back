@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ServerInfo} from '../../../../model/entities/server-info.class';
 import {ServerInfoFormDialogComponent} from '../server-info-form-dialog/server-info-form-dialog.component';
-import {FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
+import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-server-info-table',
@@ -10,6 +10,7 @@ import {FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@mon
 })
 export class ServerInfoTableComponent extends FlTableAbstractDirective<ServerInfo> implements OnInit {
 
+  @Input() datasource: FlArrayObs<ServerInfo>;
 
   constructor(private dialogService: FlDialogService) {
     super(['actions']);

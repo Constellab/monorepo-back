@@ -22,5 +22,7 @@ export enum ErrorText {
   LAB_AUTH_ERROR = 'error.lab_auth_error',
   EXPERIMENT_MISSING_PROTOCOL = 'error.experiment_missing_protocol',
   ACCOUNT_NOT_ADMIN_ACTIVATED = 'error.account_not_admin_activated',
-  LANGUAGE_NOT_SUPPORTED = 'error.language_not_supported'
+  LANGUAGE_NOT_SUPPORTED = 'error.language_not_supported',
+  USER_ALREADY_EXIST_IN_LAB = 'error.user_already_exist_in_lab',
+  ID_NOT_PROVIDED = 'error.id_not_provided',
 }

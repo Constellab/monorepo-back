@@ -5,13 +5,13 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatIconModule} from '@angular/material/icon';
 import {MAT_TOOLTIP_DEFAULT_OPTIONS, MatTooltipModule} from '@angular/material/tooltip';
 import {DateAdapter, MAT_DATE_FORMATS} from '@angular/material/core';
-import {FlLuxonDateAdapter, flLuxonDateFormat} from '@monorepo/front-core-lib';
+import {FlLuxonDateAdapter, flLuxonDateFormat, flMatFormFieldConfig, flTooltipConfig} from '@monorepo/front-core-lib';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatMenuModule} from '@angular/material/menu';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 
 /**
@@ -37,14 +37,11 @@ import {MatInputModule} from '@angular/material/input';
     FlexLayoutModule,
   ],
   providers: [
-    {
-      // tooltip default config
-      provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: {
-        showDelay: 0,
-        hideDelay: 0,
-        touchendHideDelay: 0,
-      },
-    },
+    // form field default config
+    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: flMatFormFieldConfig},
+
+    // tooltip default config
+    {provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: flTooltipConfig},
 
     // configure the date picker to work with luxon
     {provide: DateAdapter, useExisting: FlLuxonDateAdapter},

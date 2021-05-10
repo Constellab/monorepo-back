@@ -93,5 +93,6 @@
   "admin_account_activated": "Account activated",
   "input_number_must_be_positive": "The input must be a positive number",
   "owner": "Owner",
-  "language": "Language"
+  "language": "Language",
+  "user": "User"
 }

@@ -1,11 +1,11 @@
-import {FlDatasourcePaginated, FlGetPageFunction} from '@monorepo/front-core-lib';
-import {ClHelpService} from '@monorepo/core-lib';
+import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
+import {ClGetPageFunction, ClHelpService} from '@monorepo/core-lib';
 import {LabBaseEntity} from '../model/global/lab-entity.entity';
 import {ViewModel} from '../model/global/view-model.entity';
 
 export class ViewModelDatasourcePaginated<T extends LabBaseEntity> extends FlDatasourcePaginated<ViewModel<T>> {
 
-  constructor(getPageFunction: FlGetPageFunction<ViewModel<T>>, pageSize: number, initFirstPage: boolean = true) {
+  constructor(getPageFunction: ClGetPageFunction<ViewModel<T>>, pageSize: number, initFirstPage: boolean = true) {
     super(getPageFunction, pageSize, initFirstPage);
   }
 

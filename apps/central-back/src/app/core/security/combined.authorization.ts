@@ -7,11 +7,11 @@ export type CombinedCheckOperator = 'AND' | 'OR';
  * Class to allow combination of authorization
  * Support AND and OR operator for combination
  */
-export class CombinedAuthorization extends AbstractCheckAuthorization {
+export class CombinedAuthorization extends AbstractCheckAuthorization<any> {
   private readonly authorizations: AbstractCheckAuthorization[] = [];
   private readonly operator: CombinedCheckOperator;
 
-  constructor(operator: CombinedCheckOperator, ...authorizations: AbstractCheckAuthorization[]) {
+  constructor(operator: CombinedCheckOperator, ...authorizations: AbstractCheckAuthorization<any>[]) {
     super();
     this.authorizations = authorizations;
     this.operator = operator;

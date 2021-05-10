@@ -5,7 +5,7 @@
  */
 import {Observable} from 'rxjs';
 
-export interface FlPage<T> {
+export interface ClPage<T> {
   objects: T[];
   first: boolean;
   last: boolean;
@@ -15,8 +15,8 @@ export interface FlPage<T> {
 }
 
 /**
- * Function used by the {@link FlDatasourcePaginated} to retrieve element that are paginated
+ * Function used by  to retrieve element that are paginated
  * @param page number of the page to get
  * @param pageSize size of the page
  */
-export type FlGetPageFunction<T> = (page: number, pageSize: number) => Observable<FlPage<T>>;
+export type ClGetPageFunction<T> = (page: number, pageSize: number) => Observable<ClPage<T>>;

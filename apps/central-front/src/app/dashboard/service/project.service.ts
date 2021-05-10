@@ -7,8 +7,8 @@ import {
   FlArrayObs,
   FlEntityArrayObs,
   FlEntityPaginatedDatasource,
-  FlGetPageFunction
 } from '@monorepo/front-core-lib';
+import {ClGetPageFunction} from '@monorepo/core-lib';
 
 /**
  * Service to manage project entity
@@ -36,7 +36,7 @@ export class ProjectService extends FlApiCrudService<Project, Partial<Project>> 
     return new FlEntityPaginatedDatasource(this.getMyProjectsMethod(), 4);
   }
 
-  private getMyProjectsMethod(): FlGetPageFunction<Project> {
+  private getMyProjectsMethod(): ClGetPageFunction<Project> {
     return (page: number, pageSize: number) => this.apiService.get(`${this.route}/current`, Project,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }

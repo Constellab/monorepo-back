@@ -32,5 +32,5 @@ RUN npm install --only=production
 # copy dist
 COPY --from=builder /app/dist/apps/central-back ./dist
 
-EXPOSE 3000
+EXPOSE 3001
 CMD ["node", "dist/main"]

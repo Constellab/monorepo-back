@@ -7,6 +7,7 @@ import {CoreModule} from '../core/core.module';
 import {LabInstanceStatusHistory} from './lab-instance-status-history.entity';
 import {LabInstancesSecurityLayer} from './lab-instances-security-layer.service';
 import {ExternalLabApiModule} from '../external-lab-api/external-lab-api.module';
+import {UsersModule} from '../users/users.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import {ExternalLabApiModule} from '../external-lab-api/external-lab-api.module'
 
     CoreModule,
     ExternalLabApiModule,
+    UsersModule,
   ],
   providers: [LabInstancesService, LabInstancesSecurityLayer],
   controllers: [LabInstancesController],

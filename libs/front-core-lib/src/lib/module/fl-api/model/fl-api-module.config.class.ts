@@ -4,8 +4,7 @@ import {Observable} from 'rxjs';
 import {FlSnackBarService} from '../../fl-snack-bar/fl-snack-bar.service';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 import {FlServerError} from './fl-server-error.class';
-import {FlPage} from '../../../model/fl-page.class';
-import {ClDeserializationRef} from '@monorepo/core-lib';
+import {ClDeserializationRef, ClPage} from '@monorepo/core-lib';
 
 /**
  * ApiModule configuration
@@ -47,7 +46,7 @@ export interface FlApiModuleConfig {
      * @param json returned json form the api
      * @param classReference for deserialization
      */
-    deserializePage: (json: any, classReference: ClDeserializationRef) => FlPage<any>
+    deserializePage: (json: any, classReference: ClDeserializationRef) => ClPage<any>
   }
 
 }

@@ -9,6 +9,10 @@ import {ServerInfoCoreModule} from '../core/entity-module/server-info-core/serve
 import {LabInstanceIframeComponent} from './component/lab-instance-iframe/lab-instance-iframe.component';
 import {LabInstanceIframePageComponent} from './component/lab-instance-iframe-page/lab-instance-iframe-page.component';
 import {MyLabInstancesPageComponent} from './component/my-lab-instances-page/my-lab-instances-page.component';
+import { LabInstanceUsersListComponent } from './component/lab-instance-users-list/lab-instance-users-list.component';
+import { LabInstanceUsersTableComponent } from './component/lab-instance-users-table/lab-instance-users-table.component';
+import { LabInstanceUserFormDialogComponent } from './component/lab-instance-user-form-dialog/lab-instance-user-form-dialog.component';
+import {ReactiveFormsModule} from '@angular/forms';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -20,9 +24,13 @@ import {MyLabInstancesPageComponent} from './component/my-lab-instances-page/my-
     LabInstanceIframeComponent,
     LabInstanceIframePageComponent,
     MyLabInstancesPageComponent,
+    LabInstanceUsersListComponent,
+    LabInstanceUsersTableComponent,
+    LabInstanceUserFormDialogComponent,
   ],
   imports: [
     CommonModule,
+    ReactiveFormsModule,
 
     CoreModule,
     LabCoreModule,

@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LabInstance} from '../../../../model/entities/lab-instance.class';
 import {LabInstanceFormDialogComponent} from '../lab-instance-form-dialog/lab-instance-form-dialog.component';
-import {FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
+import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
+import {RouterService} from '../../../../service/router.service';
 
 
 @Component({
@@ -10,6 +11,8 @@ import {FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@mon
   styleUrls: ['./lab-instance-table.component.scss']
 })
 export class LabInstanceTableComponent extends FlTableAbstractDirective<LabInstance> implements OnInit {
+
+  @Input() datasource: FlArrayObs<LabInstance>;
 
   constructor(private dialogService: FlDialogService) {
     super(['lab', 'owner', 'createdBy', 'currentStatus', 'serverInfo', 'createdBy', 'actions']);
@@ -34,5 +37,10 @@ export class LabInstanceTableComponent extends FlTableAbstractDirective<LabInsta
       this.datasource.updateItem(labInstance);
     }
   }
+
+  getLabRoute(lab: LabInstance): string {
+    return RouterService.getLabInstanceDetailRoute(lab.id);
+  }
+
 
 }

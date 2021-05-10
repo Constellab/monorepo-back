@@ -8,17 +8,19 @@ import {LabInstanceStatus} from './lab-instance-status.enum';
 import {AbstractWithStatusService} from '../core/class/abstract-with-status.service';
 import {LabInstanceStatusHistory} from './lab-instance-status-history.entity';
 import {ExternalLabUserService} from '../external-lab-api/external-lab-user.service';
-import {ExternalLabLoginResponse} from '../external-lab-api/external-lab-api.class';
+import {ExternalLabLoginResponse, ExternalLabUser, ExternalNewLabUser} from '../external-lab-api/external-lab-api.class';
 import {LabInstanceToken} from './lab-instance-token.class';
 import {ErrorText} from '../core/model/config/error-text.class';
 import {Page} from '../core/model/config/page.class';
+import {UsersService} from '../users/users.service';
 
 @Injectable()
 export class LabInstancesService extends AbstractWithStatusService<LabInstance, LabInstanceStatus> {
 
   constructor(@InjectRepository(LabInstance) private repository: Repository<LabInstance>,
               @InjectRepository(LabInstanceStatusHistory) statusHistoRepo: Repository<LabInstanceStatusHistory>,
-              private externalLabUserService: ExternalLabUserService) {
+              private externalLabUserService: ExternalLabUserService,
+              private userService: UsersService) {
     super(repository, LabInstance, statusHistoRepo, LabInstanceStatusHistory);
   }
 
@@ -86,5 +88,18 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
         order: {lastModifiedAt: 'DESC'},
       },
     );
+  }
+
+  public async getLabUsers(labInstanceId: string): Promise<ExternalLabUser[]>{
+    const lab: LabInstance = await this.findByIdAndCheck(labInstanceId);
+
+    return this.externalLabUserService.getUsers(lab);
+  }
+
+  public async addUserToLab(labInstanceId: string, newUser: ExternalNewLabUser): Promise<ExternalLabUser>{
+    const lab: LabInstance = await this.findByIdAndCheck(labInstanceId);
+    const user: User = await this.userService.findByIdAndCheck(newUser.userId);
+
+    return this.externalLabUserService.addUser(lab, user, newUser.group);
   }
 }

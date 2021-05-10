@@ -1,11 +1,12 @@
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
 import {EntityWithId} from '../model/entities/entity-with-id.entity';
-import {NotFoundException} from '@nestjs/common';
+import {BadRequestException, NotFoundException} from '@nestjs/common';
 import {propertyIsNotUpdatable} from '../decorators/not-updatable.decorator';
 import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
 import {PersistenceAction, PersistenceLogger} from '../services/persistence-logger/persistence-logger';
 import {FindManyOptions} from 'typeorm/find-options/FindManyOptions';
 import {Page} from '../model/config/page.class';
+import {ErrorText} from '../model/config/error-text.class';
 
 export abstract class AbstractService<T extends EntityWithId> {
 
@@ -75,6 +76,10 @@ export abstract class AbstractService<T extends EntityWithId> {
   }
 
   findById(id: string, options?: FindOneOptions<T>, entityManager?: EntityManager): Promise<T | null> {
+    if (id == null) {
+      throw new BadRequestException(ErrorText.ID_NOT_PROVIDED);
+    }
+
     return this.getEntityManager(entityManager).findOne(this.entityClass, id, options);
   }
 

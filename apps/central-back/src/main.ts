@@ -16,7 +16,7 @@ async function bootstrap(): Promise<void> {
       'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,X-Forwarded-for,lang',
   });
 
-  await app.listen(3000);
+  await app.listen(3001);
 }
 
 bootstrap();

@@ -19,5 +19,7 @@
   "lab_auth_error": "Erreur pendant l'authentification au lab",
   "experiment_missing_protocol": "L'expérience ne peut pas être lancée car le protcole n'est pas défini",
   "account_not_admin_activated": "Votre compte doit être validé par un admin",
-  "language_not_supported": "La langue n'est pas supportée"
+  "language_not_supported": "La langue n'est pas supportée",
+  "user_already_exist_in_lab": "L'utilisateur est déjà présent dans le lab",
+  "id_not_provided": "L'object ne peut pas être recherché avec l'id vide"
 }

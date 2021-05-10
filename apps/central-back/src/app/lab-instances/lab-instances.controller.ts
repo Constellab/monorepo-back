@@ -5,6 +5,7 @@ import {LabInstanceStatusHistory} from './lab-instance-status-history.entity';
 import {LabInstanceToken} from './lab-instance-token.class';
 import {Page} from '../core/model/config/page.class';
 import {ParsePipe} from '../core/pipes/parse.pipe';
+import {ExternalLabUser, ExternalNewLabUser} from '../external-lab-api/external-lab-api.class';
 
 
 @Controller('lab-instances')
@@ -87,5 +88,21 @@ export class LabInstancesController {
     return this.securityLayer.getStatusHistory(id);
   }
 
+  /**
+   * Get the users in the lab
+   */
+  @Get(':id/users')
+  public getUsers(@Param('id', new ParseUUIDPipe()) id: string): Promise<ExternalLabUser[]> {
+    return this.securityLayer.getLabUsers(id);
+  }
+
+  /**
+   * Add a user to the lab
+   */
+  @Post(':id/add-user')
+  public addUser(@Param('id', new ParseUUIDPipe()) id: string,
+                 @Body() newUser: ExternalNewLabUser): Promise<ExternalLabUser> {
+    return this.securityLayer.addUser(id, newUser);
+  }
 
 }

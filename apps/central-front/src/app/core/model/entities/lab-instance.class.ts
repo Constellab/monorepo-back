@@ -3,8 +3,8 @@ import {Lab} from './lab.class';
 import {StatusHistory} from './status-history.class';
 import {ServerInfo} from './server-info.class';
 import {User} from './user.class';
-import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {Type} from 'class-transformer';
+import {FlEntity, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {Expose, Type} from 'class-transformer';
 
 export enum LabInstanceStatus {
   RUNNING = 'RUNNING',
@@ -90,4 +90,26 @@ export class LabInstanceToken {
   labInstance: LabInstance;
 
   token: string = null;
+}
+
+export class LabInstanceUser implements FlEntity {
+  @Expose({name: 'uri'})
+  id: string;
+
+  email: string;
+  group: 'admin' | 'user';
+
+  @Expose({name: 'is_active'})
+  isActive: boolean;
+
+  @Expose({name: 'first_name'})
+  firstname: string;
+
+  @Expose({name: 'last_name'})
+  lastname: string;
+}
+
+export class LabInstanceUserForm {
+  user: User;
+  group: 'admin' | 'user';
 }
