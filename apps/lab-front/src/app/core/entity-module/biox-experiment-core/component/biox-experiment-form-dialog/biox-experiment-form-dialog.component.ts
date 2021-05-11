@@ -6,6 +6,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 import {BioxExperimentService} from '../../../../entity-service/biox-experiment.service';
 import {Validators} from '@angular/forms';
+import {ViewModel} from '../../../../model/global/view-model.entity';
 
 /**
  * Dialog form to create or update an experiment
@@ -15,7 +16,7 @@ import {Validators} from '@angular/forms';
   templateUrl: './biox-experiment-form-dialog.component.html',
   styleUrls: ['./biox-experiment-form-dialog.component.scss']
 })
-export class BioxExperimentFormDialogComponent extends FlFormDialogAbstractDirective<Partial<BioxExperiment>, BioxExperiment>
+export class BioxExperimentFormDialogComponent extends FlFormDialogAbstractDirective<Partial<BioxExperiment>, ViewModel<BioxExperiment>>
   implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: FlFormDialogInput<BioxExperiment>,
@@ -37,11 +38,11 @@ export class BioxExperimentFormDialogComponent extends FlFormDialogAbstractDirec
     });
   }
 
-  create(formValue: Partial<BioxExperiment>): Observable<BioxExperiment> {
+  create(formValue: Partial<BioxExperiment>): Observable<ViewModel<BioxExperiment>> {
     return this.experimentService.create(formValue);
   }
 
-  update(formValue: Partial<BioxExperiment>): Observable<BioxExperiment> {
+  update(formValue: Partial<BioxExperiment>): Observable<ViewModel<BioxExperiment>> {
     return this.experimentService.update(formValue);
   }
 

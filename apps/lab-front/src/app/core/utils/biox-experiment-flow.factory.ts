@@ -1,6 +1,8 @@
 import {BioxExperiment} from '../model/entities/biox-experiment.entity';
-import {BioxProcessable, BioxProcessableBase, BioxProtocol} from '../model/entities/biox-processable.entity';
+import {BioxProcess, BioxProcessable, BioxProcessableBase, BioxProtocol} from '../model/entities/biox-processable.entity';
 import {BioxConfig} from '../model/entities/biox-config.entity';
+import {BioxProcessType} from '../model/entities/biox-process-type.entity';
+import {BioxSpec} from '../model/entities/biox-spec.entity';
 
 
 /**
@@ -35,7 +37,7 @@ export class BioxExperimentFlowFactory {
     }
 
     // init the connections and nodes
-    flow.data.initConnectionsAndNodes();
+    // flow.data.initConnectionsAndNodes();
 
     return flow;
   }
@@ -54,7 +56,7 @@ export class BioxExperimentFlowFactory {
     // flow.isRunning = experiment.isInProgress;
     // flow.isFinished = !experiment.isInProgress;
     // todo check type
-    flow.config = BioxConfig.empty();
+    // flow.config = BioxConfig.empty();
     // todo check if process without interface and outerface is ok
     // flow.process = process as any;
 
@@ -90,5 +92,25 @@ export class BioxExperimentFlowFactory {
   //   // flowJob.process = flowProcess;
   //   return flowJob;
   // }
+
+  public static processTypeToBioxProcess(processType: BioxProcessType): BioxProcessable {
+    const process: BioxProcess = new BioxProcess();
+    process.type = processType.type;
+    process.data = processType.data ?? {};
+
+    process.inputSpecs = BioxExperimentFlowFactory.specsToBioxSpecs(processType.inputSpecs);
+    process.outputSpecs = BioxExperimentFlowFactory.specsToBioxSpecs(processType.outputSpecs);
+
+    process.config = BioxConfig.fromSpecs(processType.configSpecs);
+    return process;
+  }
+
+  private static specsToBioxSpecs(specs: Record<string, string[]>): Record<string, BioxSpec> {
+    const bioxSpecs: Record<string, BioxSpec> = {};
+    for (const key of Object.keys(specs)) {
+      bioxSpecs[key] = {resource: {uri: ''}, specs: specs[key]};
+    }
+    return bioxSpecs;
+  }
 
 }

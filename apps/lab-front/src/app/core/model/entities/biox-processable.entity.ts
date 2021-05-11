@@ -1,60 +1,13 @@
 import {LabEntity} from '../global/lab-entity.entity';
 import {BioxConfig} from './biox-config.entity';
 import {ClCoreJsonConvert, ClDeserializeItem, ClRecordTransform} from '@monorepo/core-lib';
-import {BioxConnection, BioxConnectionPart, BioxFlowManager, BioxNode} from '../global/biox-connection.class';
+import {BioxConnection, BioxFlowManager, BioxNode} from '../global/biox-connection.class';
 import {Expose, Type} from 'class-transformer';
-import {BioxResourceVM} from './biox-resource.entity';
-import {FlLazyProperty} from '@monorepo/front-core-lib';
-import {BioxResourceService} from '../../entity-service/biox-resource.service';
-import {BioxProtocolInterface} from './biox-inteface.entity';
 import {BioxSpec} from './biox-spec.entity';
 import {ViewModel} from '../global/view-model.entity';
 import {ViewModelDatasourcePaginated} from '../../utils/view-model.datasource';
-import {FlLazyPropertyLabTransform} from '../../utils/lab-lazy-property.transform';
+import {BioxProtocolLink} from './biox-protocol-link.entity';
 
-/**
- * Part of a link between different processable in protocol
- */
-export class BioxProtocolLinkPart implements BioxConnectionPart {
-
-  @Expose({name: 'node'})
-  nodeName: string;
-
-  port: string;
-
-  node: BioxProcessableBase;
-
-  getNodeName(): string {
-    return this.nodeName;
-  }
-
-  getPort(): string {
-    return this.port;
-  }
-
-  getNode(): BioxProcessableBase {
-    return this.node;
-  }
-
-  setNode(node: BioxProcessableBase): void {
-    this.node = node;
-  }
-}
-
-/**
- * Object that contains the resources passed between process
- */
-export class BioxProtocolLink implements BioxConnection {
-
-  @Type(() => BioxProtocolLinkPart)
-  from: BioxProtocolLinkPart;
-
-  @Type(() => BioxProtocolLinkPart)
-  to: BioxProtocolLinkPart;
-
-  @FlLazyPropertyLabTransform(BioxResourceService)
-  resource: FlLazyProperty<BioxResourceVM>;
-}
 
 // const bioxFlowGraphDeserialization: ClDeserializeItem<BioxFlowGraph> = (item: any): BioxFlowGraph => {
 //   return ClCoreJsonConvert.deserializeObject(item, BioxFlowGraph);
@@ -85,12 +38,13 @@ export class BioxProcessableBase extends BioxNode {
   @Expose({name: 'instance_name'})
   name: string;
 
-  // todo rename input or inputs from BioxNode (parent)
+  @Expose({name: 'input'})
   @ClRecordTransform(BioxSpec)
-  input: Record<string, BioxSpec>;
+  inputSpecs: Record<string, BioxSpec>;
 
+  @Expose({name: 'output'})
   @ClRecordTransform(BioxSpec)
-  output: Record<string, BioxSpec>;
+  outputSpecs: Record<string, BioxSpec>;
 
   public isProtocol(): boolean {
     return this.data.graph != null;
@@ -109,11 +63,11 @@ export class BioxProtocolGraph extends LabEntity {
 
   title: string;
 
-  @ClRecordTransform(BioxProtocolInterface)
-  interfaces: Record<string, BioxProtocolInterface>;
+  @ClRecordTransform(BioxProtocolLink)
+  interfaces: Record<string, BioxProtocolLink>;
 
-  @ClRecordTransform(BioxProtocolInterface)
-  outerfaces: Record<string, BioxProtocolInterface>;
+  @ClRecordTransform(BioxProtocolLink)
+  outerfaces: Record<string, BioxProtocolLink>;
 
   @ClRecordTransform(BioxProcessableBase)
   nodes: Record<string, BioxProcessableBase>;
@@ -169,20 +123,20 @@ export class BioxProtocol extends BioxProcessableBase implements BioxFlowManager
     return this.data.graph.nodes;
   }
 
-  getInterfacesConnections(): Record<string, BioxProtocolInterface> {
+  getInterfacesConnections(): Record<string, BioxProtocolLink> {
     return this.data.graph.interfaces;
   }
 
-  getOuterfacesConnections(): Record<string, BioxProtocolInterface> {
+  getOuterfacesConnections(): Record<string, BioxProtocolLink> {
     return this.data.graph.outerfaces;
   }
 
   getInputSpecs(): Record<string, BioxSpec> {
-    return this.input;
+    return this.inputSpecs;
   }
 
   getOutputSpecs(): Record<string, BioxSpec> {
-    return this.output;
+    return this.outputSpecs;
   }
 
 

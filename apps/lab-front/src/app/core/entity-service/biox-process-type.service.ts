@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {BioxProcess} from '../model/entities/biox-processable.entity';
 import {BioxProcessType, BioxProcessTypeDatasource} from '../model/entities/biox-process-type.entity';
 import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
 
@@ -14,7 +13,7 @@ export class BioxProcessTypeService {
   }
 
   public getProcesses(page: number, pageSize: number): Observable<ClPage<BioxProcessType>> {
-    return this.apiService.get(`process-type/list`, BioxProcess,
+    return this.apiService.get(`process-type/list`, BioxProcessType,
       {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
 

@@ -6,12 +6,24 @@ import {BioxConfigSpecs, BioxConfigSpecTyped} from './biox-config-spec.entity';
 /**
  * Config object for a processable
  */
-export class BioxConfigData extends LabBaseEntity {
+export class BioxConfigData {
 
+  // object describing the type of the configs
   @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecTyped)
   specs: BioxConfigSpecs;
 
+  // actual values of the config
   params: Record<string, unknown>;
+
+  /**
+   * Create a BioxConfigData with defined specs and empty params
+   */
+  public static fromSpecs(specs: BioxConfigSpecs): BioxConfigData {
+    const config = new BioxConfigData();
+    config.specs = specs;
+    config.params = {};
+    return config;
+  }
 
   /**
    * Merge a config with the default to get the complete config
@@ -35,9 +47,10 @@ export class BioxConfig extends LabBaseEntity {
   @Type(() => BioxConfigData)
   data: BioxConfigData;
 
-  public static empty(): BioxConfig {
+  public static fromSpecs(specs: BioxConfigSpecs): BioxConfig {
     const config = new BioxConfig();
     config.type = 'gws.model.Config';
+    config.data = BioxConfigData.fromSpecs(specs);
     return config;
   }
 }

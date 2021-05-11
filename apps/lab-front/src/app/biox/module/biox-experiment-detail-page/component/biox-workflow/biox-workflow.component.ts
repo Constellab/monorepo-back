@@ -6,7 +6,6 @@ import {
   BioxProcessable,
   BioxProtocol,
   BioxProtocolDatasource,
-  BioxProtocolLink,
   BioxProtocolVM
 } from '../../../../../core/model/entities/biox-processable.entity';
 import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
@@ -17,7 +16,8 @@ import {WorkflowConnection} from '../../model/workflow-connection.class';
 import {Observable} from 'rxjs';
 import {BioxProcessType, BioxProcessTypeDatasource} from '../../../../../core/model/entities/biox-process-type.entity';
 import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
-import {BioxProtocolInterface} from '../../../../../core/model/entities/biox-inteface.entity';
+import {BioxProtocolLink} from '../../../../../core/model/entities/biox-protocol-link.entity';
+import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
 
 
 @Component({
@@ -39,7 +39,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   processes$: Observable<BioxProcessType[]>;
 
   // store the current dragged process
-  draggingProcessable: BioxProcessable;
+  draggingProcessable: BioxProcessable | BioxProcessType;
 
   flowIsLoading: boolean = false;
   error: boolean = false;
@@ -85,26 +85,34 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
     ev.preventDefault();
   }
 
-  get experimentIsUpdatable(): boolean{
-    return this.experiment.getStatusName() !== 'finished';
+  get experimentIsUpdatable(): boolean {
+    return this.experiment.getStatusName() !== 'archived';
   }
 
 
   addProcessable(ev: DragEvent): void {
-    this.workflowManagerService.addProcessableNode(this.draggingProcessable,
-      this.protocol.object.id, ev.offsetX, ev.offsetY);
+    let processable: BioxProcessable;
+
+    if(this.draggingProcessable instanceof BioxProcessType){
+      processable = BioxExperimentFlowFactory.processTypeToBioxProcess(this.draggingProcessable);
+    }
+    else{
+      processable = this.draggingProcessable;
+    }
+
+    this.workflowManagerService.addProcessableNode(processable, ev.offsetX, ev.offsetY);
     this.draggingProcessable = null;
   }
 
 
-  dragStart(processable: BioxProcessable): void {
+  dragStart(processable: BioxProcessable | BioxProcessType): void {
     this.draggingProcessable = processable;
   }
 
   onConnectionSelected(workflowConnection: WorkflowConnection): void {
     const connection: BioxConnection = workflowConnection.object;
 
-    if (connection instanceof BioxProtocolLink || connection instanceof BioxProtocolInterface) {
+    if (connection instanceof BioxProtocolLink) {
       const connectionHtmlElement: HTMLElement = workflowConnection.getHTMLElement();
 
       if (connectionHtmlElement == null) {
@@ -131,7 +139,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
     }
   }
 
-  private onError(): void{
+  private onError(): void {
     this.flowIsLoading = false;
     this.error = true;
   }

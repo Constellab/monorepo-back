@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {constBaseRoute, constBioxFullRoute} from '../utils/base-route';
+import {Router} from '@angular/router';
 
 /**
  * Class to get app route paths
@@ -9,7 +10,7 @@ import {constBaseRoute, constBioxFullRoute} from '../utils/base-route';
 })
 export class RouterService {
 
-  constructor() {
+  constructor(private router: Router) {
   }
 
   ////// Static function to get routes  //////
@@ -17,12 +18,16 @@ export class RouterService {
     return `/${constBaseRoute}`;
   }
 
-  // public
   public static getBioxExperimentDetailRoute(bioxExperimentId: string): string {
     return `${constBioxFullRoute}/experiment/${bioxExperimentId}`;
   }
 
   public static getBioxResourceDetailRoute(bioxResourceId: string): string {
     return `${constBioxFullRoute}/resource/${bioxResourceId}`;
+  }
+
+  /////////////////// NAVIGATE METHODS ///////////////////
+  public navigateToBioxExperimentDetail(bioxExperimentId: string): Promise<boolean>{
+    return this.router.navigate([RouterService.getBioxExperimentDetailRoute(bioxExperimentId)]);
   }
 }

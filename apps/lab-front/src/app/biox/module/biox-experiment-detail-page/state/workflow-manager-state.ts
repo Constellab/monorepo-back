@@ -94,14 +94,14 @@ export class WorkflowManagerState {
 
   //////////////////////// NODE ////////////////////////////
 
-  public addProcessableNode(bioxProcessable: BioxProcessableBase, parentJobId: string, coordX: number = 0, coordY: number = 0): void {
+  public addProcessableNode(bioxProcessable: BioxProcessableBase, coordX: number = 0, coordY: number = 0): void {
     const node: WorkflowNode<any> = this.createNodeFromProcessable(bioxProcessable, coordX, coordY);
     this.addNode(node);
   }
 
   private createNodeFromProcessable(processable: BioxProcessableBase, coordX: number = 0, coordY: number = 0): WorkflowNodeProcessable {
     if (processable.name == null) {
-      processable.name = this.workflow.generateNodeName();
+      processable.name = processable.type + '_' + Date.now().toString();
     }
 
     return new WorkflowNodeProcessable(processable, processable.name, coordX, coordY);

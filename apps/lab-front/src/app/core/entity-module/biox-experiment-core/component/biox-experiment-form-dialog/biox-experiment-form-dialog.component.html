@@ -6,28 +6,26 @@
   <form (ngSubmit)="submit()" id="biox-form" [formGroup]="formGp">
 
     <!--  title  -->
-    <div class="g-form-input">
-      <mat-form-field appearance="outline">
-        <mat-label>{{'title' | translate}}</mat-label>
-        <input matInput formControlName="title" required flInputMaxLength="50"
-               placeholder="{{'title' | translate}}">
-        <mat-error *ngIf="formGp.get('title').hasError('required')">
-          {{'title' | flErrorRequired}}
-        </mat-error>
-      </mat-form-field>
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'title' | translate}}</mat-label>
+      <input matInput formControlName="title" required flInputMaxLength="50"
+             placeholder="{{'title' | translate}}">
+      <mat-error *ngIf="formGp.get('title').hasError('required')">
+        {{'title' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
 
-      <!--    Description      -->
-      <fl-form-field class="g-form-input">
-        <mat-label>{{'description' | translate}}</mat-label>
-        <quill-editor formControlName="description" placeholder="{{'description' | translate}}"
-                      class="g-full" [styles]="{height: '8em'}">
-        </quill-editor>
-        <mat-error *ngIf="formGp.get('description').hasError('required')">
-          {{'description' | flErrorRequired}}
-        </mat-error>
-      </fl-form-field>
+    <!--    Description      -->
+    <fl-form-field class="g-form-input">
+      <mat-label>{{'description' | translate}}</mat-label>
+      <quill-editor formControlName="description" placeholder="{{'description' | translate}}"
+                    class="g-full" [styles]="{height: '8em'}">
+      </quill-editor>
+      <mat-error *ngIf="formGp.get('description').hasError('required')">
+        {{'description' | flErrorRequired}}
+      </mat-error>
+    </fl-form-field>
 
-    </div>
   </form>
 </mat-dialog-content>
 

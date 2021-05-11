@@ -4,19 +4,28 @@ import {FlLazyPropertyLabTransform} from '../../utils/lab-lazy-property.transfor
 import {BioxResourceService} from '../../entity-service/biox-resource.service';
 import {FlLazyProperty} from '@monorepo/front-core-lib';
 import {BioxResourceVM} from './biox-resource.entity';
+import {BioxSpec} from './biox-spec.entity';
 
-export class BioxProtocolInterfacePart implements BioxConnectionPart {
+/**
+ * Part of a link between different processable in protocol
+ */
+export class BioxProtocolLinkPart implements BioxConnectionPart {
 
   @Expose({name: 'node'})
   nodeName: string;
 
-  // node automatically set by the ConnectionManager
+  port: string;
+
   node: BioxNode;
 
-  port: string;
+  spec: BioxSpec;
 
   getNodeName(): string {
     return this.nodeName;
+  }
+
+  setNodeName(name: string): void {
+    this.nodeName = name;
   }
 
   getPort(): string {
@@ -32,15 +41,17 @@ export class BioxProtocolInterfacePart implements BioxConnectionPart {
   }
 }
 
-export class BioxProtocolInterface implements BioxConnection {
+/**
+ * Object that contains the resources passed between process
+ */
+export class BioxProtocolLink implements BioxConnection {
 
-  @Type(() => BioxProtocolInterfacePart)
-  from: BioxProtocolInterfacePart;
+  @Type(() => BioxProtocolLinkPart)
+  from: BioxProtocolLinkPart;
 
-  @Type(() => BioxProtocolInterfacePart)
-  to: BioxProtocolInterfacePart;
+  @Type(() => BioxProtocolLinkPart)
+  to: BioxProtocolLinkPart;
 
   @FlLazyPropertyLabTransform(BioxResourceService)
   resource: FlLazyProperty<BioxResourceVM>;
 }
-

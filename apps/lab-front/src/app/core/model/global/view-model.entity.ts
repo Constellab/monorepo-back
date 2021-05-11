@@ -6,6 +6,8 @@ export class ViewModel<T extends LabBaseEntity> extends LabBaseEntity {
   type: 'gws.model.ViewModel';
 
   model: T;
+
+  id: '';
 }
 
 export type ViewModelPage<T extends LabBaseEntity> = ClPage<ViewModel<T>>;

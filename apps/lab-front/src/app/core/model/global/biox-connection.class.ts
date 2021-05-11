@@ -1,10 +1,11 @@
 import {LabBaseEntity} from './lab-entity.entity';
-import {BioxProtocolInterface} from '../entities/biox-inteface.entity';
 import {BioxSpec} from '../entities/biox-spec.entity';
 
 export interface BioxConnectionPart {
 
   getNodeName(): string;
+
+  setNodeName(name: string): void;
 
   getPort(): string;
 
@@ -14,13 +15,6 @@ export interface BioxConnectionPart {
   setNode(node: BioxNode): void;
 }
 
-/**
- * Type of the connection
- * node --> connection between 2 nodes
- * interface --> representing an interface or an outerface of the manager
- * outerface --> representing an outerface of the manager
- */
-export type BioxConnectionType = 'node' | 'interface' | 'outerface';
 
 export interface BioxConnection {
   from: BioxConnectionPart;
@@ -28,7 +22,7 @@ export interface BioxConnection {
 }
 
 export abstract class BioxNode extends LabBaseEntity {
-  // todo rename input or inputs from BioxNode (parent)
+
   // inputs automatically set by the ConnectionManager
   inputs: Record<string, BioxConnectionPart> = {};
 
@@ -97,9 +91,9 @@ export interface BioxFlowManager {
 
   getOutputSpecs(): Record<string, BioxSpec>;
 
-  getInterfacesConnections(): Record<string, BioxProtocolInterface>;
+  getInterfacesConnections(): Record<string, BioxConnection>;
 
-  getOuterfacesConnections(): Record<string, BioxProtocolInterface>;
+  getOuterfacesConnections(): Record<string, BioxConnection>;
 
   // list of interface as nodes
   interfaceNodes: Record<string, BioxNode>;
@@ -140,9 +134,9 @@ export class BioxFlow<T extends BioxFlowManager> {
    * return the connections between nodes with interfaces and outerfaces connections
    */
   public getAllConnections(): BioxConnection[] {
-    const interfaces: Record<string, BioxProtocolInterface> = this.object.getInterfacesConnections();
+    const interfaces: Record<string, BioxConnection> = this.object.getInterfacesConnections();
     const interfacesConnections: BioxConnection[] = Object.keys(interfaces).map(key => interfaces[key]);
-    const outerfaces: Record<string, BioxProtocolInterface> = this.object.getOuterfacesConnections();
+    const outerfaces: Record<string, BioxConnection> = this.object.getOuterfacesConnections();
     const outerfacesConnections: BioxConnection[] = Object.keys(outerfaces).map(key => outerfaces[key]);
     return [...this.object.getConnections(), ...interfacesConnections, ...outerfacesConnections];
   }
@@ -229,8 +223,8 @@ export class BioxFlow<T extends BioxFlowManager> {
       this.object.interfaceNodes[interfaceNodeName] = node;
 
       // override the output node name to point to the interface node (using the generate node name)
-      const outputNode: BioxProtocolInterface = this.object.getInterfacesConnections()[interfacePortName];
-      outputNode.from.nodeName = interfaceNodeName;
+      const outputNode: BioxConnection = this.object.getInterfacesConnections()[interfacePortName];
+      outputNode.from.setNodeName(interfaceNodeName);
     }
   }
 
@@ -258,8 +252,8 @@ export class BioxFlow<T extends BioxFlowManager> {
       this.object.outerfaceNodes[outerfaceNodeName] = node;
 
       // override the input node name to point to the outerface node (using the generate node name)
-      const inputNode: BioxProtocolInterface = this.object.getOuterfacesConnections()[outerfacePortName];
-      inputNode.to.nodeName = outerfaceNodeName;
+      const inputNode: BioxConnection = this.object.getOuterfacesConnections()[outerfacePortName];
+      inputNode.to.setNodeName(outerfaceNodeName);
     }
   }
 

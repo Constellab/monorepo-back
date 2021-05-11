@@ -12,7 +12,7 @@ export class BioxExperimentData {
   description: string;
 }
 
-export type BioxExperimentStatus = 'running' | 'finished';
+export type BioxExperimentStatus = 'draft' | 'running' | 'success' | 'error' | 'archived';
 
 export class BioxExperiment extends LabBaseEntity implements FlStatus {
 
@@ -21,8 +21,6 @@ export class BioxExperiment extends LabBaseEntity implements FlStatus {
 
   score: any;
 
-  @Expose({name: 'is_in_progress'})
-  isInProgress: boolean;
 
   @Type(() => BioxExperimentData)
   data: BioxExperimentData;
@@ -30,16 +28,47 @@ export class BioxExperiment extends LabBaseEntity implements FlStatus {
   @Type(() => LabEntity)
   protocol: LabEntity;
 
+  @Expose({name: 'is_archived'})
+  is_archived: boolean;
+
+  @Expose({name: 'is_draft'})
+  is_draft: boolean;
+
+  @Expose({name: 'is_finished'})
+  is_finished: boolean;
+
+  @Expose({name: 'is_running'})
+  is_running: boolean;
+
+  @Expose({name: 'is_success'})
+  is_success: boolean;
+
+  @Expose({name: 'is_validated'})
+  is_validated: boolean;
+
   getStatusClassColor(mode: 'background' | 'text'): string {
-    return getBioxExperimentStatusColorClass(this.isInProgress, mode);
+    return getBioxExperimentStatusColorClass(this.getStatusName(), mode);
   }
 
   getStatusIcon(): string {
-    return getBioxExperimentStatusStatusIcon(this.isInProgress);
+    return getBioxExperimentStatusStatusIcon(this.getStatusName());
   }
 
   getStatusName(): BioxExperimentStatus {
-    return this.isInProgress ? 'running' : 'finished';
+    if (this.is_archived) {
+      return 'archived';
+    }
+    if (this.is_running) {
+      return 'running';
+    }
+    if (this.is_finished && this.is_success) {
+      return 'success';
+    }
+    if (this.is_finished && !this.is_success) {
+      return 'error';
+    }
+
+    return 'draft';
   }
 }
 
@@ -47,21 +76,27 @@ export type BioxExperimentVM = ViewModel<BioxExperiment>;
 
 export type BioxExperimentDatasource = FlEntityPaginatedDatasource<BioxExperiment>;
 
-const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: boolean,
+const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: BioxExperimentStatus,
                                                                           mode: 'background' | 'text' = 'background'): string => {
   // if is in progress
-  if (status) {
+  if (status !== 'archived') {
     return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
   } else {
     return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
   }
 };
 
-const getBioxExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: boolean): string => {
-  // if is in progress
-  if (status) {
-    return 'cached';
-  } else {
-    return 'done';
+const getBioxExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: BioxExperimentStatus): string => {
+  switch (status) {
+    case 'archived':
+      return 'inventory_2';
+    case 'draft':
+      return 'edit';
+    case 'error':
+      return 'error';
+    case 'success':
+      return 'done';
+    case 'running':
+      return 'cached';
   }
 };

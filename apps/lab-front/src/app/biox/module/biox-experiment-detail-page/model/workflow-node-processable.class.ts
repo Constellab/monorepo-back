@@ -3,6 +3,9 @@ import {WorkflowPort} from './workflow-port.class';
 import {BioxProcessableBase} from '../../../../core/model/entities/biox-processable.entity';
 import {BioxSpec} from '../../../../core/model/entities/biox-spec.entity';
 
+/**
+ * Representation of a processable (protocol or process)
+ */
 export class WorkflowNodeProcessable extends WorkflowNode<BioxProcessableBase> {
 
   constructor(processable: BioxProcessableBase,
@@ -13,8 +16,8 @@ export class WorkflowNodeProcessable extends WorkflowNode<BioxProcessableBase> {
   }
 
   protected initPorts(): void {
-    this.inputPorts = this.generatePorts(this.object.input, 'input');
-    this.outputPorts = this.generatePorts(this.object.output, 'output');
+    this.inputPorts = this.generatePorts(this.object.inputSpecs, 'input');
+    this.outputPorts = this.generatePorts(this.object.outputSpecs, 'output');
   }
 
   // generate ports base on input or output spec
