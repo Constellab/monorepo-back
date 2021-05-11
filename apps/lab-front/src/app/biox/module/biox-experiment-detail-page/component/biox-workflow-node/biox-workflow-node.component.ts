@@ -2,10 +2,7 @@ import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {WorkflowNode} from '../../model/workflow-node.class';
 import {FlDialogService, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
-import {
-  BioxConfigureSpecsDialogComponent,
-  BioxConfigureSpecsDialogInput
-} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
+import {BioxConfigureSpecsDialogComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
 import {ConnectedPosition} from '@angular/cdk/overlay';
 import {BioxShowConfigPortalComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-show-config-portal/biox-show-config-portal.component';
 import {BioxProcessableBase} from '../../../../../core/model/entities/biox-processable.entity';
@@ -60,13 +57,8 @@ export class BioxWorkflowNodeComponent implements OnInit {
 
   openConfig(): void {
     if (this.workflowManager.getMode() === 'edit') {
-      const input: BioxConfigureSpecsDialogInput = {
-        configSpecs: this.node.object.config.data.specs,
-        currentConfig: this.node.object.config.data,
-      };
-
       this.dialogService.openMediumDialog(BioxConfigureSpecsDialogComponent,
-        {data: input}).afterClosed().subscribe(
+        {data: this.node.object.config.data}).afterClosed().subscribe(
         config => this.onConfigDialogClosed(config)
       );
 
@@ -95,7 +87,8 @@ export class BioxWorkflowNodeComponent implements OnInit {
 
   private onConfigDialogClosed(config?: any): void {
     if (config != null) {
-      this.node.object.config.data = config;
+      // save the config into the value
+      this.node.object.config.data.params = config;
     }
   }
 

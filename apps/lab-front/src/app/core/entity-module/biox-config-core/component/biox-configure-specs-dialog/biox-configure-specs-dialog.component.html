@@ -4,7 +4,7 @@
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
-    <gen-biox-configure-specs [specs]="configSpecs" [currentConfig]="currentConfig"
+    <gen-biox-configure-specs [bioxConfigData]="bioxConfigData"
                               [formGp]="formGp"></gen-biox-configure-specs>
   </form>
 </mat-dialog-content>

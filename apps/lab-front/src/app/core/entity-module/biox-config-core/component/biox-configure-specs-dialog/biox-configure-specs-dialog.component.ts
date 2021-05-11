@@ -1,15 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {BioxConfigSpecs} from '../../../../model/entities/biox-config-spec.entity';
-
-// todo surement a changer pour passer l'object BioxConfig entier, c'est plus simple
-export interface BioxConfigureSpecsDialogInput {
-  // current config values
-  currentConfig?: any;
-
-  configSpecs: BioxConfigSpecs;
-}
+import {BioxConfigData} from '../../../../model/entities/biox-config.entity';
 
 
 /**
@@ -24,13 +16,11 @@ export class BioxConfigureSpecsDialogComponent implements OnInit {
 
   formGp: FormGroup;
 
-  configSpecs: BioxConfigSpecs;
-  currentConfig: any;
+  bioxConfigData: BioxConfigData;
 
-  constructor(@Inject(MAT_DIALOG_DATA) input: BioxConfigureSpecsDialogInput,
+  constructor(@Inject(MAT_DIALOG_DATA) input: BioxConfigData,
               private dialogRef: MatDialogRef<BioxConfigureSpecsDialogComponent>) {
-    this.configSpecs = input.configSpecs;
-    this.currentConfig = input.currentConfig;
+    this.bioxConfigData = input;
   }
 
   ngOnInit(): void {

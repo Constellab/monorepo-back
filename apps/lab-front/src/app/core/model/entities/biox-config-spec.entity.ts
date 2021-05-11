@@ -8,9 +8,9 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
   record: Record<string, BioxConfigSpec>;
 
   /**
-   * Methode to the BioxConfigSpec to a FlDynamicFormFieldConfig to create a form
+   * Method to convert the BioxConfigSpec to a FlDynamicFormFieldConfig to create a form
    */
-  public convertToFieldConfigs(currentConfig: any = {}): FlDynamicFormFieldConfig[] {
+  public convertToFieldConfigs(currentConfig: Record<string, unknown> = {}): FlDynamicFormFieldConfig[] {
     const configs: FlDynamicFormFieldConfig[] = [];
     for (const specName of Object.keys(this.record)) {
       configs.push(this.convertToFieldConfig(specName, currentConfig[specName] ?? undefined));

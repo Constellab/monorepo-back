@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
-import {BioxConfigSpecs} from '../../../../model/entities/biox-config-spec.entity';
+import {BioxConfigData} from '../../../../model/entities/biox-config.entity';
 
 
 /**
@@ -14,9 +14,7 @@ import {BioxConfigSpecs} from '../../../../model/entities/biox-config-spec.entit
 })
 export class BioxConfigureSpecsComponent implements OnInit {
 
-  @Input() specs: BioxConfigSpecs;
-
-  @Input() currentConfig: any;
+  @Input() bioxConfigData: BioxConfigData;
 
   @Input() formGp: FormGroup;
 
@@ -26,7 +24,7 @@ export class BioxConfigureSpecsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.configs = this.specs.convertToFieldConfigs(this.currentConfig);
+    this.configs = this.bioxConfigData.getDynamicFormFieldsConfig();
   }
 
 }

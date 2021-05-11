@@ -2,13 +2,14 @@ import {LabBaseEntity} from '../global/lab-entity.entity';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {Type} from 'class-transformer';
 import {BioxConfigSpecs, BioxConfigSpecTyped} from './biox-config-spec.entity';
+import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
 
 /**
  * Config object for a processable
  */
 export class BioxConfigData {
 
-  // object describing the type of the configs
+  // object describing the type of the configs and default values
   @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecTyped)
   specs: BioxConfigSpecs;
 
@@ -31,6 +32,13 @@ export class BioxConfigData {
    */
   public mergeConfigWithDefault(): any {
     return this.specs.mergeConfigWithDefault(this.params);
+  }
+
+  /**
+   * Get a FlDynamicFormFieldConfig based on config spec and params to create a form
+   */
+  public getDynamicFormFieldsConfig(): FlDynamicFormFieldConfig[] {
+    return this.specs.convertToFieldConfigs(this.params);
   }
 }
 
