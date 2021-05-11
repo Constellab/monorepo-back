@@ -16,7 +16,7 @@
         <!--        </mat-tab>-->
 
         <!--    Processes    -->
-        <mat-tab [label]="'processes' | translate">
+        <mat-tab [label]="'processes' | translate" class="tab">
           <fl-infinite-scroll [datasource]="availableProcesses">
             <gen-biox-process-type-card *ngFor="let process of processes$ | async"
                                         draggable="true" class="draggable-card"

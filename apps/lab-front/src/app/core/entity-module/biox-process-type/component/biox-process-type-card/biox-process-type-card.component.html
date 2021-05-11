@@ -1,13 +1,14 @@
-<fl-card>
-  <fl-card-header>
-    {{processType.ptype}}
-    <fl-card-actions>
-      <ng-content></ng-content>
-    </fl-card-actions>
-  </fl-card-header>
+<!--<fl-card>-->
+<!--  <fl-card-header>-->
+<!--    {{processType.ptype}}-->
+<!--    <fl-card-actions>-->
+<!--      {{processType.createdAt | flDate}}-->
+<!--      <ng-content></ng-content>-->
+<!--    </fl-card-actions>-->
+<!--  </fl-card-header>-->
+<!--</fl-card>-->
 
-  <fl-card-body>
-    <!--    {{process.type}}-->
-    {{processType.createdAt | flDate}}
-  </fl-card-body>
-</fl-card>
+<div fxLayout="row wrap" fxLayoutAlign="space-between" class="container">
+  <div>{{processType.ptype}}</div>
+  <div class="g-text-light g-text-small">{{processType.createdAt | flDate}}</div>
+</div>
