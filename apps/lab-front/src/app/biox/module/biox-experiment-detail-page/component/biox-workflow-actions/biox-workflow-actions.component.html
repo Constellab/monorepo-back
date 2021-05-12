@@ -8,11 +8,15 @@
   </button>
 
 
-  <button mat-icon-button type="button"
-          [matTooltip]="'save' | translate" matTooltipPosition="below"
+  <button mat-icon-button type="button" *ngIf="!saveIsLoading; else saveLoading"
+          [matTooltip]="'biox.experiment_save' | translate" matTooltipPosition="below"
           (click)="save()">
     <mat-icon>save</mat-icon>
   </button>
+
+  <ng-template #saveLoading>
+    <fl-loader [size]="40"></fl-loader>
+  </ng-template>
 
   <button mat-icon-button type="button"
           [matTooltip]="'biox.run_experiment' | translate" matTooltipPosition="below">

@@ -1,5 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
+import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
+import {BioxExperiment, ExperimentUpdate} from '../../../../../core/model/entities/biox-experiment.entity';
+import {BioxProtocolGraph} from '../../../../../core/model/entities/biox-processable.entity';
+import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
+import {ViewModel} from '../../../../../core/model/global/view-model.entity';
+import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {ClCoreJsonConvert} from '@monorepo/core-lib';
 
 /**
  * Actions button for the workflow
@@ -11,7 +18,11 @@ import {WorkflowManagerState} from '../../state/workflow-manager-state';
 })
 export class BioxWorkflowActionsComponent implements OnInit {
 
-  constructor(private workflowManager: WorkflowManagerState) {
+  saveIsLoading: boolean = false;
+
+  constructor(private workflowManager: WorkflowManagerState,
+              private bioxExperimentService: BioxExperimentService,
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {
@@ -25,7 +36,33 @@ export class BioxWorkflowActionsComponent implements OnInit {
     this.workflowManager.addOuterface();
   }
 
-  save(): void{
-    console.log(this.workflowManager.workflow);
+  save(): void {
+    const experiment: BioxExperiment = this.workflowManager.getExperiment();
+
+    // convert the workflow to a protocol
+    const graph: BioxProtocolGraph = BioxExperimentFlowFactory.convertWorkflowToProtocol(this.workflowManager.workflow);
+
+    // build update object
+    const experimentUpdate: ExperimentUpdate = {
+      title: experiment.data.title,
+      description: experiment.data.description,
+      graph: graph
+    };
+
+    console.log(experimentUpdate);
+    console.log(ClCoreJsonConvert.classToPlain(experimentUpdate));
+
+    this.saveIsLoading = true;
+    this.bioxExperimentService.update(experiment.id, experimentUpdate).subscribe(
+      newExp => this.onSaveSuccess(newExp),
+      () => this.saveIsLoading = false
+    );
   }
+
+  private onSaveSuccess(experiment: ViewModel<BioxExperiment>): void {
+    console.log(experiment);
+    this.snackBarService.openSuccessMessage('biox.experiment_saved', true);
+    this.saveIsLoading = false;
+  }
+
 }

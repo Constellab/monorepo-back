@@ -2,6 +2,7 @@ import {WorkflowNode} from './workflow-node.class';
 import {WorkflowConnection} from './workflow-connection.class';
 import {WorkflowPort} from './workflow-port.class';
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
+import {WorkflowNodeProcessable} from './workflow-node-processable.class';
 
 /**
  * One layer of the workflow, it contains the list of nodes
@@ -78,6 +79,9 @@ export class WorkflowLayer {
     }
   }
 
+  public getProcessableNodes(): WorkflowNodeProcessable[]{
+    return this.nodes.filter(node => node instanceof WorkflowNodeProcessable) as WorkflowNodeProcessable[];
+  }
 
   ///////////////////////////////// CONNECTION //////////////////////////////////////
 

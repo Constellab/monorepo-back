@@ -17,6 +17,15 @@ export interface FlHttpGetUrlOption{
   overrideApiUrl?: string;
 }
 
+/**
+ * Mode for the serialization
+ * ClassToPlain use class transformer to convert object
+ * Stringify use basic json stringify
+ *
+ * The default is classToPlain
+ */
+export type FlHttpOptionSerialization = 'classToPlain' | 'stringify';
+
 export interface FlHttpOption extends FlHttpGetUrlOption{
   headers?: HttpHeaders | {
     [header: string]: string | string[];
@@ -51,5 +60,9 @@ export interface FlHttpOption extends FlHttpGetUrlOption{
    */
   errorSnackBarDuration?: number;
 
+  /**
+   * Option for the serialization
+   */
+  serialization?: FlHttpOptionSerialization
 }
 

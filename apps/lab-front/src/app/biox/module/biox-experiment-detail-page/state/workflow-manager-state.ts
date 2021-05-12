@@ -46,7 +46,7 @@ export class WorkflowManagerState {
 
   public init(element: HTMLElement, flow: BioxFlow<BioxProtocol>, experiment: BioxExperiment): void {
     this.experiment = experiment;
-    this.workflow = new Workflow(element, 'edit');
+    this.workflow = new Workflow(element, experiment.data.title ?? 'Experiment','edit');
 
     this.workflow.start();
 
@@ -167,6 +167,9 @@ export class WorkflowManagerState {
   }
 
 
+  /**
+   * Add the nodes if there have ot already been added and call method on output nodes
+   */
   private addNodesRecursively(nodes: BioxNode[], posX: number, basePosY: number): number {
     let currentPosY: number = basePosY - 1;
     for (const node of nodes) {
@@ -181,12 +184,13 @@ export class WorkflowManagerState {
       this.addBioxNodeOnPosition(node, posX, currentPosY);
 
       for (const key of Object.keys(node.outputs)) {
-        const outputNodes: BioxNode[] = node.outputs[key].map(output => output.getNode());
+        const outputNodes: BioxNode[] = node.outputs[key].map(output => output.getBioxNode());
         currentPosY = this.addNodesRecursively(outputNodes, posX + 1, currentPosY);
       }
     }
 
-    return currentPosY;
+    // can't return an Y lower than the base Y
+    return Math.max(currentPosY, basePosY);
   }
 
   /**
@@ -231,6 +235,10 @@ export class WorkflowManagerState {
   }
 
   //////////////////////// OTHER ////////////////////////////
+
+  public getExperiment(): BioxExperiment{
+    return this.experiment;
+  }
 
   private generateId(prefix: string = ''): string {
     return prefix + this.idGenerator++;

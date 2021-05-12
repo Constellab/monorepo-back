@@ -1,8 +1,17 @@
 import {BioxExperiment} from '../model/entities/biox-experiment.entity';
-import {BioxProcess, BioxProcessable, BioxProcessableBase, BioxProtocol} from '../model/entities/biox-processable.entity';
+import {
+  BioxProcess,
+  BioxProcessable,
+  BioxProcessableBase,
+  BioxProtocol,
+  BioxProtocolGraph
+} from '../model/entities/biox-processable.entity';
 import {BioxConfig} from '../model/entities/biox-config.entity';
 import {BioxProcessType} from '../model/entities/biox-process-type.entity';
 import {BioxSpec} from '../model/entities/biox-spec.entity';
+import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/workflow.class';
+import {WorkflowLayer} from '../../biox/module/biox-experiment-detail-page/model/workflow-layer.class';
+import {BioxProtocolLink, BioxProtocolLinkPart} from '../model/entities/biox-protocol-link.entity';
 
 
 /**
@@ -93,9 +102,13 @@ export class BioxExperimentFlowFactory {
   //   return flowJob;
   // }
 
+  /**
+   * Convert a {link BioxProcessType} to a {@link BioxProcessable} to be use in the workflow
+   * @param processType
+   */
   public static processTypeToBioxProcess(processType: BioxProcessType): BioxProcessable {
     const process: BioxProcess = new BioxProcess();
-    process.type = processType.type;
+    process.type = processType.ptype;
     process.data = processType.data ?? {};
 
     process.inputSpecs = BioxExperimentFlowFactory.specsToBioxSpecs(processType.inputSpecs);
@@ -112,5 +125,44 @@ export class BioxExperimentFlowFactory {
     }
     return bioxSpecs;
   }
+
+  /**
+   * Convert a workflow to a protocol to be save in the lab
+   * @param workflow
+   */
+  public static convertWorkflowToProtocol(workflow: Workflow): BioxProtocolGraph {
+    const graph: BioxProtocolGraph = BioxProtocolGraph.empty();
+
+    // todo, handle deep protocols
+    const layer: WorkflowLayer = workflow.getRootLayer();
+
+    // get nodes
+    for (const node of layer.getProcessableNodes()) {
+      const processable: BioxProcessableBase = node.object;
+      graph.nodes[processable.name] = processable;
+    }
+
+    // get connections
+    for (const connection of layer.connections) {
+      const link: BioxProtocolLink = new BioxProtocolLink();
+
+      // handle from
+      const from: BioxProtocolLinkPart = new BioxProtocolLinkPart();
+      from.nodeName = connection.outputNode.nodeName;
+      from.port = connection.outputPort.name;
+      link.from = from;
+
+      // handle to
+      const to: BioxProtocolLinkPart = new BioxProtocolLinkPart();
+      to.nodeName = connection.inputNode.nodeName;
+      to.port = connection.inputPort.name;
+      link.to = to;
+
+      graph.links.push(link);
+    }
+
+    return graph;
+  }
+
 
 }

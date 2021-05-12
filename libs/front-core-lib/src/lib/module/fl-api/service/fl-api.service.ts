@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import {ClCoreJsonConvert, ClDeserializationRef} from '@monorepo/core-lib';
 import {FL_API_MODULE_CONFIG, FlApiErrorService, FlApiModuleConfig} from '../model/fl-api-module.config.class';
 import {FlFileService} from '../../../service/fl-file.service';
-import {FlHttpGetUrlOption, FlHttpOption} from '../model/fl-http-option.class';
+import {FlHttpGetUrlOption, FlHttpOption, FlHttpOptionSerialization} from '../model/fl-http-option.class';
 
 /**
  * Global service to call make Http request. This service formats input and output
@@ -62,7 +62,11 @@ export class FlApiService {
    */
   public put(route: string, body: any, classReference?: ClDeserializationRef,
              options: FlHttpOption = {}): Observable<any> {
-    return this.http.put(this.getUrl(route, options), body, options).pipe(
+    return this.http.put(
+      this.getUrl(route, options),
+      this.convertObjectToPlain(body, options.serialization),
+      options
+    ).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
     );
@@ -77,7 +81,11 @@ export class FlApiService {
    */
   public patch(route: string, body: any, classReference?: ClDeserializationRef,
                options: FlHttpOption = {}): Observable<any> {
-    return this.http.patch(this.getUrl(route, options), body, options).pipe(
+    return this.http.patch(
+      this.getUrl(route, options),
+      this.convertObjectToPlain(body, options.serialization),
+      options
+    ).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
     );
@@ -92,7 +100,11 @@ export class FlApiService {
    */
   public post(route: string, body: any, classReference?: ClDeserializationRef,
               options: FlHttpOption = {}): Observable<any> {
-    return this.http.post(this.getUrl(route, options), body, options).pipe(
+    return this.http.post(
+      this.getUrl(route, options),
+      this.convertObjectToPlain(body, options.serialization),
+      options
+    ).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
     );
@@ -151,7 +163,11 @@ export class FlApiService {
    */
   public downloadFilePost(route: string, body: any, filename ?: string,
                           directDownload: boolean = true): Observable<Blob> {
-    return this.http.post(this.getUrl(route), body, {responseType: 'blob'}).pipe(
+    return this.http.post(
+      this.getUrl(route),
+      this.convertObjectToPlain(body),
+      {responseType: 'blob'}
+    ).pipe(
       tap(file => this.downloadFileSuccess(file, filename, directDownload)),
       catchError(err => this.catchError(err)),
     ) as Observable<Blob>;
@@ -255,5 +271,22 @@ export class FlApiService {
   private catchError(error: HttpErrorResponse, httpOptions: FlHttpOption = {}): Observable<never> {
     return this.flErrorService.handleServerError(error, httpOptions.hideSnackBarError,
       httpOptions.errorSnackBarDuration, httpOptions.defaultError);
+  }
+
+  /**
+   * Convert the classes or object to plain json object
+   */
+  private convertObjectToPlain(object: any, serialization: FlHttpOptionSerialization = 'classToPlain'): any {
+    try {
+      if (serialization === 'classToPlain') {
+        return ClCoreJsonConvert.classToPlain(object);
+      } else {
+        return JSON.stringify(object);
+      }
+
+    } catch (e) {
+      console.error('Error while serializing object before api call', object);
+      throw e;
+    }
   }
 }

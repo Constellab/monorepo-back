@@ -17,7 +17,7 @@ export function ClRecordWrapperTransform<WRAPPER extends ClRecordWrapper<ITEM>, 
   recordItemReference: new() => ITEM): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
-    (recordWrapper: WRAPPER) => serializeRecordWrapper(recordWrapper, ClCoreJsonConvert.serialize),
+    (recordWrapper: WRAPPER) => serializeRecordWrapper(recordWrapper, ClCoreJsonConvert.classToPlain),
     {toPlainOnly: true});
 
   // create date from string
@@ -43,7 +43,7 @@ export function ClRecordWrapperTransform<WRAPPER extends ClRecordWrapper<ITEM>, 
  */
 export function ClRecordTransform<T>(recordItemReference: new() => T): PropertyDecorator {
   return ClRecordTransformOverride((value: any) => ClCoreJsonConvert.deserializeObject(value, recordItemReference),
-    ClCoreJsonConvert.serialize);
+    ClCoreJsonConvert.classToPlain);
 }
 
 /**
@@ -51,15 +51,15 @@ export function ClRecordTransform<T>(recordItemReference: new() => T): PropertyD
  * Deserialization --> create record of object from record
  * Serialization --> return record of any
  *
- * @param serializeItem optional method call for each record property to override serialize
+ * @param classToPlainItem optional method call for each record property to override serialize
  * @param deserializeItem optional method call for each record property to override deserialize
  * @constructor
  */
 export function ClRecordTransformOverride<T>(deserializeItem: ClDeserializeItem<T>,
-                                             serializeItem: ClSerializeItem<T> = ClCoreJsonConvert.serialize): PropertyDecorator {
+                                             classToPlainItem: ClSerializeItem<T> = ClCoreJsonConvert.classToPlain): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
-    (record: Record<string, T>) => serializeRecord(record, serializeItem),
+    (record: Record<string, T>) => classToPlainRecord(record, classToPlainItem),
     {toPlainOnly: true});
 
   // create date from string
@@ -73,15 +73,15 @@ export function ClRecordTransformOverride<T>(deserializeItem: ClDeserializeItem<
   };
 }
 
-function serializeRecord<T>(record: Record<string, T>,
-                            serializeItem: ClSerializeItem<T>): Record<string, any> {
+function classToPlainRecord<T>(record: Record<string, T>,
+                               classToPlainItem: ClSerializeItem<T>): Record<string, any> {
   if (record == null) {
     return null;
   }
 
   const result: Record<string, any> = {};
   for (const property of Object.keys(record)) {
-    result[property] = serializeItem(record[property]);
+    result[property] = classToPlainItem(record[property]);
   }
 
   return result;
@@ -110,7 +110,7 @@ function serializeRecordWrapper(recordWrapper: ClRecordWrapper<any>,
   }
 
   // serialize only the record
-  return serializeRecord(recordWrapper.record, serializeItem);
+  return classToPlainRecord(recordWrapper.record, serializeItem);
 }
 
 /**

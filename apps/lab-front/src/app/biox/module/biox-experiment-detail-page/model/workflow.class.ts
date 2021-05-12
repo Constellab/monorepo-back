@@ -28,7 +28,7 @@ export class Workflow {
   // if false there is no check when creating nodes or connections
   private checkOnCreate: boolean = true;
 
-  constructor(private element: HTMLElement, mode: WorkflowMode = 'edit') {
+  constructor(private element: HTMLElement, name: string, mode: WorkflowMode = 'edit') {
     this.editor = new Drawflow(element);
     this.editor.zoom_value = 0.1;
 
@@ -36,7 +36,7 @@ export class Workflow {
     this.setMode(mode);
 
     // init layers
-    const currentLayer: WorkflowLayer = new WorkflowLayer(this.editor, 'Home', 'Experiment', null);
+    const currentLayer: WorkflowLayer = new WorkflowLayer(this.editor, 'Home', name, null);
     this.layers = [currentLayer];
 
     // init subject
@@ -125,6 +125,10 @@ export class Workflow {
 
   private onConnectionCanceled(): void {
     this.currentLayer.resetPortColors();
+  }
+
+  public getRootLayer(): WorkflowLayer {
+    return this.layers[0];
   }
 
   ////////////////////// NODE ///////////////////////////

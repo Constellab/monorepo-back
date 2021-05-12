@@ -10,6 +10,8 @@
     "update_experiment": "Modifier l'expérience",
     "experiment_created": "Expérience créé",
     "experiment_updated": "Expérience modifié",
+    "experiment_save": "Sauvegarder l'expérience",
+    "experiment_saved": "Expérience modifié",
     "score": "Score",
     "resource_view_json": "Afficher au format json",
     "resource_view_spreadsheet": "Afficher dans une feuille de calcul",

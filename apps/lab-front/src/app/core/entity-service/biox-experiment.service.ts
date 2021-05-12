@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {BioxExperiment, BioxExperimentDatasource, BioxExperimentVM} from '../model/entities/biox-experiment.entity';
+import {BioxExperiment, BioxExperimentDatasource, BioxExperimentVM, ExperimentSimpleForm} from '../model/entities/biox-experiment.entity';
 import {createViewModel, ViewModel} from '../model/global/view-model.entity';
 import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
 
@@ -32,13 +32,12 @@ export class BioxExperimentService {
     return this.apiService.get(`view/gws.model.Experiment/${id}/`, createViewModel(BioxExperiment));
   }
 
-  public create(experiment: Partial<BioxExperiment>): Observable<ViewModel<BioxExperiment>> {
+  public create(experiment: ExperimentSimpleForm): Observable<ViewModel<BioxExperiment>> {
     return this.apiService.post('experiment', experiment, createViewModel(BioxExperiment));
   }
 
-  // todo route
-  public update(experiment: Partial<BioxExperiment>): Observable<ViewModel<BioxExperiment>> {
-    return this.apiService.put('', experiment, createViewModel(BioxExperiment));
+  // update the experiment and the protocol inside if provided
+  public update(experimentId: string, experiment: ExperimentSimpleForm): Observable<ViewModel<BioxExperiment>> {
+    return this.apiService.put(`experiment/${experimentId}`, experiment, createViewModel(BioxExperiment));
   }
 }
-

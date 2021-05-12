@@ -1,5 +1,6 @@
 import {LabBaseEntity} from './lab-entity.entity';
 import {BioxSpec} from '../entities/biox-spec.entity';
+import {Exclude} from 'class-transformer';
 
 export interface BioxConnectionPart {
 
@@ -9,10 +10,10 @@ export interface BioxConnectionPart {
 
   getPort(): string;
 
-  getNode(): BioxNode;
+  getBioxNode(): BioxNode;
 
   // called by the ConnectionManager to set the node
-  setNode(node: BioxNode): void;
+  setBioxNode(node: BioxNode): void;
 }
 
 
@@ -24,9 +25,11 @@ export interface BioxConnection {
 export abstract class BioxNode extends LabBaseEntity {
 
   // inputs automatically set by the ConnectionManager
+  @Exclude()
   inputs: Record<string, BioxConnectionPart> = {};
 
   // outputs automatically set by the ConnectionManager
+  @Exclude()
   outputs: Record<string, BioxConnectionPart[]> = {};
 
   // name automatically set by the ConnectionManager
@@ -83,6 +86,12 @@ export class BioxOuterfaceNode extends BioxNode {
 
 export interface BioxFlowManager {
 
+  // list of interface as nodes
+  interfaceNodes: Record<string, BioxNode>;
+
+  // list of outerface as nodes
+  outerfaceNodes: Record<string, BioxNode>;
+
   getConnections(): BioxConnection[];
 
   getNodes(): Record<string, BioxNode>;
@@ -95,11 +104,6 @@ export interface BioxFlowManager {
 
   getOuterfacesConnections(): Record<string, BioxConnection>;
 
-  // list of interface as nodes
-  interfaceNodes: Record<string, BioxNode>;
-
-  // list of outerface as nodes
-  outerfaceNodes: Record<string, BioxNode>;
 }
 
 export class BioxFlow<T extends BioxFlowManager> {
@@ -165,14 +169,14 @@ export class BioxFlow<T extends BioxFlowManager> {
         console.error(`Can't find from node with name ${connection.from.getNodeName()}. Connection : `, connection);
       }
 
-      connection.from.setNode(fromNode);
+      connection.from.setBioxNode(fromNode);
 
       // init to node
       const toNode: BioxNode = nodes[connection.to.getNodeName()];
       if (toNode == null) {
         console.error(`Can't find to node with name ${connection.to.getNodeName()}. Connection : `, connection);
       }
-      connection.to.setNode(toNode);
+      connection.to.setBioxNode(toNode);
     }
   }
 
@@ -181,10 +185,10 @@ export class BioxFlow<T extends BioxFlowManager> {
    */
   private initNodesInputsOutputs(): void {
     for (const connection of this.getAllConnections()) {
-      const from: BioxNode = connection.from.getNode();
+      const from: BioxNode = connection.from.getBioxNode();
       from.addOutput(connection.to);
 
-      const to: BioxNode = connection.to.getNode();
+      const to: BioxNode = connection.to.getBioxNode();
       to.setInput(connection.from);
     }
   }

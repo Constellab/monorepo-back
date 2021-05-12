@@ -2,6 +2,7 @@ import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
 import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {ViewModel} from '../global/view-model.entity';
+import {BioxProtocolGraph} from './biox-processable.entity';
 
 
 export class BioxExperimentData {
@@ -100,3 +101,15 @@ const getBioxExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: Biox
       return 'cached';
   }
 };
+
+
+// form object to create an experiment
+export interface ExperimentSimpleForm {
+  title: string;
+  description: string;
+}
+
+// object to update the experiment protocol
+export interface ExperimentUpdate extends ExperimentSimpleForm {
+  graph: BioxProtocolGraph;
+}

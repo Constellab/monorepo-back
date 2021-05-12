@@ -2,7 +2,7 @@ import {LabEntity} from '../global/lab-entity.entity';
 import {BioxConfig} from './biox-config.entity';
 import {ClCoreJsonConvert, ClDeserializeItem, ClRecordTransform} from '@monorepo/core-lib';
 import {BioxConnection, BioxFlowManager, BioxNode} from '../global/biox-connection.class';
-import {Expose, Type} from 'class-transformer';
+import {Exclude, Expose, Type} from 'class-transformer';
 import {BioxSpec} from './biox-spec.entity';
 import {ViewModel} from '../global/view-model.entity';
 import {ViewModelDatasourcePaginated} from '../../utils/view-model.datasource';
@@ -74,6 +74,16 @@ export class BioxProtocolGraph extends LabEntity {
 
   @Type(() => BioxProtocolLink)
   links: BioxProtocolLink[];
+
+  public static empty(): BioxProtocolGraph {
+    const graph: BioxProtocolGraph = new BioxProtocolGraph();
+    graph.interfaces = {};
+    graph.outerfaces = {};
+    graph.nodes = {};
+    graph.links = [];
+
+    return graph;
+  }
 }
 
 
@@ -83,6 +93,12 @@ export class BioxProtocolData {
 
   @Type(() => BioxProtocolGraph)
   graph: BioxProtocolGraph;
+
+  public static empty(): BioxProtocolData {
+    const data: BioxProtocolData = new BioxProtocolData();
+    data.graph = BioxProtocolGraph.empty();
+    return data;
+  }
 }
 
 export class BioxProcessData {
@@ -112,8 +128,19 @@ export class BioxProtocol extends BioxProcessableBase implements BioxFlowManager
   data: BioxProtocolData;
 
 
+  @Exclude()
   interfaceNodes: Record<string, BioxNode>;
+
+  @Exclude()
   outerfaceNodes: Record<string, BioxNode>;
+
+  public static empty(): BioxProtocol {
+    const protocol: BioxProtocol = new BioxProtocol();
+    protocol.inputSpecs = {};
+    protocol.outputSpecs = {};
+    protocol.data = BioxProtocolData.empty();
+    return protocol;
+  }
 
   getConnections(): BioxConnection[] {
     return this.data.graph.links;
@@ -163,4 +190,3 @@ export type BioxFlowData = BioxProtocolData | BioxProcessData;
 
 // create a union type to improve type checking
 export type BioxProcessable = BioxProtocol | BioxProcess;
-
