@@ -79,11 +79,13 @@ export type BioxExperimentDatasource = FlEntityPaginatedDatasource<BioxExperimen
 
 const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: BioxExperimentStatus,
                                                                           mode: 'background' | 'text' = 'background'): string => {
-  // if is in progress
-  if (status !== 'archived') {
-    return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
-  } else {
-    return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
+  switch (status) {
+    case 'error':
+      return mode === 'background' ? 'g-warn-background' : 'g-warn-text';
+    case 'archived':
+      return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
+    default:
+      return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
   }
 };
 
