@@ -175,11 +175,11 @@
 
   // grey color working for both theme
   .g-grey-background {
-    background-color: grey;
+    background-color: var(--grey-high-contrast);
     color: white;
   }
 
   .g-grey-text {
-    background-color: grey;
+    background-color:  var(--grey-high-contrast);
   }
 }

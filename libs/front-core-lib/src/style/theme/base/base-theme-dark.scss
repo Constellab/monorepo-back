@@ -43,6 +43,11 @@ $background-color: mat-color($background, background);
 :root {
   --light-color: rgba(255, 255, 255, .54);
   --card-border-color: #1d1d1d;
+
+  // different contrast of grey base on theme color (here black)
+  --grey-low-contrast: #464646;
+  --grey-contrast: #565656;
+  --grey-high-contrast: grey;
 }
 
 

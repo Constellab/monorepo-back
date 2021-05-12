@@ -45,6 +45,11 @@ $theme: mat-light-theme((
 :root{
   --light-color: rgba(0, 0, 0, .54);
   --card-border-color: #ddd;
+
+  // different contrast of grey base on theme color (here white)
+  --grey-low-contrast: #ddd;
+  --grey-contrast: #bbbbbb;
+  --grey-high-contrast: grey;
 }
 
 /**
