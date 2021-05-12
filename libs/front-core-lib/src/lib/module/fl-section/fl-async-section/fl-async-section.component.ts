@@ -4,6 +4,7 @@ import {FlSectionBodyDirective} from '../fl-section-body';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlViewContext} from '../../../model/fl-view-context.class';
 import {FlDatasource} from '../../../model/datasource/fl-datasource.class';
+import {delay} from 'rxjs/operators';
 
 @Component({
   selector: 'fl-async-section',
@@ -51,10 +52,10 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
   // when true, the body is lazy loaded
   showBody: boolean = false;
 
-  result: any;
+  private result: any;
   isLoading: boolean = false;
 
-  subscription: Subscription;
+  private subscription: Subscription;
 
   constructor(private cdr: ChangeDetectorRef) {
   }
@@ -68,7 +69,9 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
     // clear previous subscription if it exists
     this.subscription?.unsubscribe();
 
-    this.subscription = observable.subscribe(
+    // the delay is useful to init other input before call success or error method
+    // because this method is call before ngOnInit
+    this.subscription = observable.pipe(delay(0)).subscribe(
       result => this.onSuccess(result),
       () => this.onError()
     );
