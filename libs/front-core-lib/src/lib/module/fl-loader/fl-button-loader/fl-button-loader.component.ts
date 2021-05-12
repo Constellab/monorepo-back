@@ -16,8 +16,10 @@ export class FlButtonLoaderComponent implements OnInit, OnDestroy {
    * Position of the loader in the button
    * If override, the button text is hidden during loading,
    *    the button text need to be wrapped in a span
+   *
+   *  Default to right in button and override in icon buttons
    */
-  @Input() position: 'left' | 'right' | 'override' = 'right';
+  @Input() position: 'left' | 'right' | 'override';
 
   @Input() size: 'normal' | 'small' = 'normal';
 
@@ -31,6 +33,10 @@ export class FlButtonLoaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (this.position == null) {
+      this.position = this.defaultPosition;
+    }
+
     if (this.button && this.disabledButtonOnLoad) {
       this.button.disabled = true;
     }
@@ -38,6 +44,7 @@ export class FlButtonLoaderComponent implements OnInit, OnDestroy {
     if (this.position === 'override') {
       this.renderer2.addClass(this.elementRef.nativeElement.parentElement, this.hideTextClass);
     }
+
   }
 
   get loaderSize(): number {
@@ -50,6 +57,17 @@ export class FlButtonLoaderComponent implements OnInit, OnDestroy {
       return 20;
     }
   }
+
+  // return true if the button is an icon button
+  private isIconButton(): boolean {
+    return this.button?._elementRef.nativeElement.classList.contains('mat-icon-button') ?? false;
+  }
+
+  // default position
+  private get defaultPosition(): 'left' | 'right' | 'override' {
+    return this.isIconButton() ? 'override' : 'right';
+  }
+
 
   ngOnDestroy(): void {
     if (this.button) {
