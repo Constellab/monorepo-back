@@ -6,7 +6,7 @@ import {
   FlCorePipeModule,
   FlDialogModule,
   FlDynamicFieldModule, FlFormModule,
-  FlInfiniteScrollModule,
+  FlInfiniteScrollModule, FlInputFileModule,
   FlJsonEditorModule,
   FlLoaderModule,
   FlPortalModule,
@@ -46,6 +46,7 @@ import {
     FlFormModule,
     FlSpreadsheetModule,
     FlChartModule,
+    FlInputFileModule,
   ]
 })
 export class CustomLibraryModule {
