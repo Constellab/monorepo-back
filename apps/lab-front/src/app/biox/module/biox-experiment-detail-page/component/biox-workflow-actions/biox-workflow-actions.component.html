@@ -8,19 +8,18 @@
   </button>
 
 
-  <button mat-icon-button type="button" *ngIf="!saveIsLoading; else saveLoading"
+  <button mat-icon-button type="button" *ngIf="!saveIsLoading"
           [matTooltip]="'biox.experiment_save' | translate" matTooltipPosition="below"
-          (click)="save()">
+           (click)="save()" [disabled]="isLoading">
     <mat-icon>save</mat-icon>
+    <fl-button-loader *ngIf="saveIsLoading"></fl-button-loader>
   </button>
 
-  <ng-template #saveLoading>
-    <fl-loader [size]="40"></fl-loader>
-  </ng-template>
-
-  <button mat-icon-button type="button"
-          [matTooltip]="'biox.run_experiment' | translate" matTooltipPosition="below">
+  <button mat-icon-button type="button" (click)="start()"
+          [matTooltip]="'biox.experiment_start' | translate" matTooltipPosition="below"
+          [disabled]="isLoading">
     <mat-icon>play_arrow</mat-icon>
+    <fl-button-loader *ngIf="startIsLoading"></fl-button-loader>
   </button>
 </div>
 

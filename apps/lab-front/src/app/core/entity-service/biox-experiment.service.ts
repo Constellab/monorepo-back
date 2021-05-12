@@ -40,4 +40,9 @@ export class BioxExperimentService {
   public update(experimentId: string, experiment: ExperimentSimpleForm): Observable<ViewModel<BioxExperiment>> {
     return this.apiService.put(`experiment/${experimentId}`, experiment, createViewModel(BioxExperiment));
   }
+
+  // launch an experiment
+  public startExperiment(experimentId: string): Observable<ViewModel<BioxExperiment>> {
+    return this.apiService.post(`experiment/${experimentId}/start`, createViewModel(BioxExperiment));
+  }
 }

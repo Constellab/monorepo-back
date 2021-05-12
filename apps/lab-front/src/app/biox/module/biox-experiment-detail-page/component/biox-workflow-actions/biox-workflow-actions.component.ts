@@ -19,6 +19,7 @@ import {ClCoreJsonConvert} from '@monorepo/core-lib';
 export class BioxWorkflowActionsComponent implements OnInit {
 
   saveIsLoading: boolean = false;
+  startIsLoading: boolean = false;
 
   constructor(private workflowManager: WorkflowManagerState,
               private bioxExperimentService: BioxExperimentService,
@@ -26,6 +27,10 @@ export class BioxWorkflowActionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  get isLoading(): boolean {
+    return this.saveIsLoading || this.startIsLoading;
   }
 
   addInterface(): void {
@@ -63,6 +68,22 @@ export class BioxWorkflowActionsComponent implements OnInit {
     console.log(experiment);
     this.snackBarService.openSuccessMessage('biox.experiment_saved', true);
     this.saveIsLoading = false;
+  }
+
+  start(): void {
+    const experiment: BioxExperiment = this.workflowManager.getExperiment();
+
+    this.startIsLoading = true;
+    this.bioxExperimentService.startExperiment(experiment.id).subscribe(
+      result => this.onStartSuccess(result),
+      () => this.startIsLoading = false
+    )
+  }
+
+  private onStartSuccess(tes: ViewModel<BioxExperiment>): void {
+    console.log(tes);
+    this.snackBarService.openSuccessMessage('biox.experiment_started', true);
+    this.startIsLoading = false;
   }
 
 }
