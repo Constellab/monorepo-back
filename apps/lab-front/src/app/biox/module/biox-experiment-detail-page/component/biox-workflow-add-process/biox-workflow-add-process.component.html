@@ -1,0 +1,20 @@
+<mat-tab-group>
+  <!--        &lt;!&ndash;                    Protocols    &ndash;&gt;-->
+  <!--        <mat-tab [label]="'protocols' | translate">-->
+  <!--          <fl-infinite-scroll [datasource]="availableProtocols">-->
+  <!--            <gen-biox-protocol-card *ngFor="let protocol of protocols$ | async"-->
+  <!--                                    [protocol]="protocol.model"-->
+  <!--                                    draggable="true" class="draggable-card"-->
+  <!--                                    (dragstart)="dragStart(protocol.model)"></gen-biox-protocol-card>-->
+  <!--          </fl-infinite-scroll>-->
+  <!--        </mat-tab>-->
+
+  <!--    Processes    -->
+  <mat-tab [label]="'processes' | translate">
+    <fl-infinite-scroll [datasource]="availableProcesses">
+      <gen-biox-process-type-card *ngFor="let process of processes$ | async"
+                                  (dblclick)="addProcessable(process)"
+                                  [processType]="process"></gen-biox-process-type-card>
+    </fl-infinite-scroll>
+  </mat-tab>
+</mat-tab-group>

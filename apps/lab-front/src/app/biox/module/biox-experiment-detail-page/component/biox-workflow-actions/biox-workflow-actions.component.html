@@ -26,6 +26,10 @@
 
 <!-- Add object menu -->
 <mat-menu #addObject="matMenu">
+  <button mat-menu-item (click)="addProcess()" type="button">
+    <mat-icon>developer_board</mat-icon>
+    {{'biox.add_process' | translate}}
+  </button>
   <button mat-menu-item (click)="addInterface()" type="button">
     <mat-icon>login</mat-icon>
     {{'biox.interface' | translate}}

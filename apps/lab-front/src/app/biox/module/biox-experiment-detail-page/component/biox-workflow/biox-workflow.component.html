@@ -1,59 +1,26 @@
-<div fxLayout="row" class="g-full-height">
+<div fxLayout="column" class="g-full-height" *ngIf="!error; else showError">
 
+  <!--  Workflow header  -->
+  <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
+       *ngIf="!flowIsLoading">
 
-  <!--  Left section with available protocol and processes -->
-  <fl-card class="left-section" fxFlex="20%" *ngIf="experimentIsUpdatable">
-    <fl-card-body>
-      <mat-tab-group>
-        <!--        &lt;!&ndash;                    Protocols    &ndash;&gt;-->
-        <!--        <mat-tab [label]="'protocols' | translate">-->
-        <!--          <fl-infinite-scroll [datasource]="availableProtocols">-->
-        <!--            <gen-biox-protocol-card *ngFor="let protocol of protocols$ | async"-->
-        <!--                                    [protocol]="protocol.model"-->
-        <!--                                    draggable="true" class="draggable-card"-->
-        <!--                                    (dragstart)="dragStart(protocol.model)"></gen-biox-protocol-card>-->
-        <!--          </fl-infinite-scroll>-->
-        <!--        </mat-tab>-->
+    <gen-biox-workflow-layers-breadcrumb></gen-biox-workflow-layers-breadcrumb>
 
-        <!--    Processes    -->
-        <mat-tab [label]="'processes' | translate" class="tab">
-          <fl-infinite-scroll [datasource]="availableProcesses">
-            <gen-biox-process-type-card *ngFor="let process of processes$ | async"
-                                        draggable="true" class="draggable-card"
-                                        (dragstart)="dragStart(process)"
-                                        [processType]="process"></gen-biox-process-type-card>
-          </fl-infinite-scroll>
-        </mat-tab>
-      </mat-tab-group>
-
-
-    </fl-card-body>
-  </fl-card>
-
-  <!-- Right section with workflow -->
-  <div fxFlex="auto" fxLayout="column" *ngIf="!error; else showError">
-
-    <!--  Workflow header  -->
-    <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
-         *ngIf="!flowIsLoading">
-
-      <gen-biox-workflow-layers-breadcrumb></gen-biox-workflow-layers-breadcrumb>
-
-      <gen-biox-workflow-actions *ngIf="experimentIsUpdatable"></gen-biox-workflow-actions>
-    </div>
-    <div class="experiment-workflow" #workflow fxFlex="auto"
-         (dragover)="allowDrop($event)" (drop)="addProcessable($event)" flDragHover="drop-border">
-
-      <div class="g-text-centered" *ngIf="flowIsLoading">
-        <fl-loader></fl-loader>
-      </div>
-
-    </div>
+    <gen-biox-workflow-actions *ngIf="experimentIsUpdatable"></gen-biox-workflow-actions>
   </div>
 
-  <ng-template #showError>
-    <div class="g-text-centered g-full">
-      {{'biox.workflow_loading_error' | translate}}
+  <!--  Workflow zone  -->
+  <div class="experiment-workflow" #workflow fxFlex="auto">
+
+    <div class="g-text-centered" *ngIf="flowIsLoading">
+      <fl-loader></fl-loader>
     </div>
-  </ng-template>
+
+  </div>
 </div>
+
+<ng-template #showError>
+  <div class="g-text-centered g-full">
+    {{'biox.workflow_loading_error' | translate}}
+  </div>
+</ng-template>

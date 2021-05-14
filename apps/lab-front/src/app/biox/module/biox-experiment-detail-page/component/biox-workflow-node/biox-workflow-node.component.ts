@@ -1,12 +1,13 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
-import {WorkflowNode} from '../../model/workflow-node.class';
 import {FlDialogService, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {BioxConfigureSpecsDialogComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
 import {ConnectedPosition} from '@angular/cdk/overlay';
 import {BioxShowConfigPortalComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-show-config-portal/biox-show-config-portal.component';
-import {BioxProcessableBase} from '../../../../../core/model/entities/biox-processable.entity';
 import {Observable} from 'rxjs';
+import {ClHelpService} from '@monorepo/core-lib';
+import {WorkflowActionState} from '../../state/workflow-action-state.service';
+import {WorkflowNodeProcessable} from '../../model/workflow-node-processable.class';
 
 /**
  * Node of an experiment in the workflow
@@ -25,17 +26,18 @@ export class BioxWorkflowNodeComponent implements OnInit {
 
   @ViewChild('container', {static: true}) container: ElementRef<HTMLElement>;
 
-  node: WorkflowNode<BioxProcessableBase>;
+  node: WorkflowNodeProcessable;
 
   layerIsLoading$: Observable<boolean>;
 
   constructor(private workflowManager: WorkflowManagerState,
               private dialogService: FlDialogService,
-              private portalService: FlPortalService) {
+              private portalService: FlPortalService,
+              private drawerState: WorkflowActionState) {
   }
 
   ngOnInit(): void {
-    this.node = this.workflowManager.findNodeWithName(this.name);
+    this.node = this.workflowManager.findNodeWithName(this.name) as WorkflowNodeProcessable;
     if (this.node == null) {
       console.error('Couldn\'t find node with name : ' + this.name);
     }
@@ -55,7 +57,9 @@ export class BioxWorkflowNodeComponent implements OnInit {
     return this.node.object.hasConfig();
   }
 
-  openConfig(): void {
+  openConfig(event: MouseEvent): void {
+    ClHelpService.stopEventPropagation(event);
+
     if (this.workflowManager.getMode() === 'edit') {
       this.dialogService.openMediumDialog(BioxConfigureSpecsDialogComponent,
         {data: this.node.object.config.data}).afterClosed().subscribe(
@@ -82,7 +86,6 @@ export class BioxWorkflowNodeComponent implements OnInit {
       this.portalService.createPortal(BioxShowConfigPortalComponent, portalConfig,
         this.node.object.config.data.mergeConfigWithDefault());
     }
-
   }
 
   private onConfigDialogClosed(config?: any): void {
@@ -90,6 +93,13 @@ export class BioxWorkflowNodeComponent implements OnInit {
       // save the config into the value
       this.node.object.config.data.params = config;
     }
+  }
+
+  openNodeDetail(): void {
+    this.drawerState.newAction({
+      action: 'selectNode',
+      processableNode: this.node
+    });
   }
 
 }

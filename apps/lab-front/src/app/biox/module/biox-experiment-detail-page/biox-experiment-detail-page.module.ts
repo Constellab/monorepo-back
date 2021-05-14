@@ -12,9 +12,15 @@ import {BioxWorkflowLayersBreadcrumbComponent} from './component/biox-workflow-l
 import {BioxResourceCoreModule} from '../../../core/entity-module/biox-resource-core/biox-resource-core.module';
 import {BioxConfigCoreModule} from '../../../core/entity-module/biox-config-core/biox-config-core.module';
 import {BioxWorkflowNodeInterfaceComponent} from './component/biox-workflow-interface/biox-workflow-node-interface.component';
-import { BioxWorkflowActionsComponent } from './component/biox-workflow-actions/biox-workflow-actions.component';
+import {BioxWorkflowActionsComponent} from './component/biox-workflow-actions/biox-workflow-actions.component';
 import {WorkflowManagerState} from './state/workflow-manager-state';
 import {BioxProcessTypeModule} from '../../../core/entity-module/biox-process-type/biox-process-type.module';
+import {BioxWorkflowNodeDetailComponent} from './component/biox-workflow-node-detail/biox-workflow-node-detail.component';
+import {WorkflowActionState} from './state/workflow-action-state.service';
+import {BioxWorkflowDrawerComponent} from './component/biox-workflow-drawer/biox-workflow-drawer.component';
+import {BioxExperimentDetailPageState} from './state/biox-experiment-detail-page.state';
+import {BioxWorkflowDrawerActionComponent} from './component/biox-workflow-drawer-action/biox-workflow-drawer-action.component';
+import { BioxWorkflowAddProcessComponent } from './component/biox-workflow-add-process/biox-workflow-add-process.component';
 
 
 @NgModule({
@@ -25,6 +31,10 @@ import {BioxProcessTypeModule} from '../../../core/entity-module/biox-process-ty
     BioxWorkflowLayersBreadcrumbComponent,
     BioxWorkflowNodeInterfaceComponent,
     BioxWorkflowActionsComponent,
+    BioxWorkflowNodeDetailComponent,
+    BioxWorkflowDrawerComponent,
+    BioxWorkflowDrawerActionComponent,
+    BioxWorkflowAddProcessComponent,
   ],
   imports: [
     CommonModule,
@@ -37,7 +47,7 @@ import {BioxProcessTypeModule} from '../../../core/entity-module/biox-process-ty
     BioxConfigCoreModule,
     BioxProcessTypeModule,
   ],
-  providers: [WorkflowManagerState]
+  providers: [WorkflowManagerState, WorkflowActionState, BioxExperimentDetailPageState]
 })
 export class BioxExperimentDetailPageModule {
   constructor(injector: Injector) {

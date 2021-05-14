@@ -42,7 +42,8 @@ export class FileExplorerPageComponent implements OnInit {
     this.uploadFiles(event.files);
   }
 
-  uploadFiles(files: File[]): void {
+  uploadFiles(fileEvent: File | File[]): void {
+    const files: File[] = fileEvent as File[];
     if (files.length === 0) {
       return;
     }

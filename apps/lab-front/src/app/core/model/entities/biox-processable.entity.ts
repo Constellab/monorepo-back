@@ -91,6 +91,8 @@ export class BioxProtocolData {
 
   title: string;
 
+  description?: string;
+
   @Type(() => BioxProtocolGraph)
   graph: BioxProtocolGraph;
 

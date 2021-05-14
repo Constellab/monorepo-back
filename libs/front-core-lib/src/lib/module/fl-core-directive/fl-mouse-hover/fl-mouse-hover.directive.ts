@@ -6,7 +6,7 @@ import {ClHelpService} from '@monorepo/core-lib';
 /**
  * Event directive that trigger an {@link FlMouseHoverChange} event on hovering status change (enter or leave)
  *
- * A delay can be adding for the event enter event see LibMouseHoverDelay Input
+ * A delay can be adding for the event enter event see FlMouseHoverDelay Input
  *
  * Styles or classes can be set to be added during the hover (with the delay)
  */
@@ -22,12 +22,12 @@ export class FlMouseHoverDirective extends FlMouseHoverAbstractDirective {
    *
    * Input example : {'backgroundColor': 'red'}
    */
-  @Input() libMouseHoverStyle: { [key: string]: string };
+  @Input() flMouseHoverStyle: { [key: string]: string };
 
   /**
    * If filled the class or classes are added during hover (with the delay) and remove after.
    */
-  @Input() libMouseHoverClass: string | string[];
+  @Input() flMouseHoverClass: string | string[];
 
   constructor(elementRef: ElementRef, private renderer: Renderer2) {
     super(elementRef);
@@ -36,25 +36,25 @@ export class FlMouseHoverDirective extends FlMouseHoverAbstractDirective {
 
   onTriggerHoverEnter(): void {
     // set the style if filled
-    if (this.libMouseHoverStyle) {
-      this.setStyles(this.libMouseHoverStyle);
+    if (this.flMouseHoverStyle) {
+      this.setStyles(this.flMouseHoverStyle);
     }
 
     // set the classes if filled
-    if (this.libMouseHoverClass) {
-      this.setClasses(this.libMouseHoverClass);
+    if (this.flMouseHoverClass) {
+      this.setClasses(this.flMouseHoverClass);
     }
   }
 
   onTriggerHoverLeave(): void {
     // remove the style if exists
-    if (this.libMouseHoverStyle) {
-      this.removeStyles(this.libMouseHoverStyle);
+    if (this.flMouseHoverStyle) {
+      this.removeStyles(this.flMouseHoverStyle);
     }
 
     // remove the classes if exists
-    if (this.libMouseHoverClass) {
-      this.removeClasses(this.libMouseHoverClass);
+    if (this.flMouseHoverClass) {
+      this.removeClasses(this.flMouseHoverClass);
     }
   }
 

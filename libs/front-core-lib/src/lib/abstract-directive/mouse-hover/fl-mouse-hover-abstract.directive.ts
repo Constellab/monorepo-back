@@ -79,7 +79,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
   abstract onTriggerHoverLeave(event: MouseEvent): void;
 
   // set the hovering as true
-  private triggerHoverEnter(event: MouseEvent): void {
+  protected triggerHoverEnter(event: MouseEvent): void {
     this.emitHoverEvent(true, event);
     this.isHovering = true;
     this.clearTimer();

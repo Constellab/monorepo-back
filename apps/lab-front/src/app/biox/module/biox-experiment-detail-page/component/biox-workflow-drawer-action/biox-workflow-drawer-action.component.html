@@ -1,0 +1,22 @@
+
+<div>
+
+  <div fxLayout="row" fxLayoutAlign="end">
+    <button mat-icon-button type="button" flDrawerClose tabindex="-1"
+            [matTooltip]="'close' | translate">
+      <mat-icon>clear</mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="action$ | async as action" class="container">
+
+    <ng-container [ngSwitch]="action.action">
+
+      <gen-biox-workflow-node-detail *ngSwitchCase="'selectNode'" [node]="$any(action).processableNode"></gen-biox-workflow-node-detail>
+
+      <gen-biox-workflow-add-process *ngSwitchCase="'processSelection'"></gen-biox-workflow-add-process>
+
+    </ng-container>
+  </div>
+
+</div>

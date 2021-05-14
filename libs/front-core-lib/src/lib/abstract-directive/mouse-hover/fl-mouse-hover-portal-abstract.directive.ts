@@ -46,7 +46,7 @@ export abstract class FlMouseHoverPortalAbstractDirective extends FlMouseHoverAb
   }
 
   private openPortal(event: MouseEvent): void {
-    if (this.flDisableHover) {
+    if (this.flDisableHover || this.currentOverlay) {
       return;
     }
 

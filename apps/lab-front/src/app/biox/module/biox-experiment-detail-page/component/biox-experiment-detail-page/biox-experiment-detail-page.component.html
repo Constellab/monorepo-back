@@ -1,11 +1,12 @@
-<div class="g-page">
-  <fl-async-section [object]="getExperiment" fxFlex="auto">
+<div class="g-page page">
+  <fl-async-section [object]="experiment$" fxFlex="auto" class="section">
 
     <ng-container *flSectionBody="let experimentVM">
       <div fxLayout="column" class="g-full-height">
         <gen-biox-experiment-card [experiment]="experimentVM.model"></gen-biox-experiment-card>
 
-        <gen-biox-workflow [experiment]="experimentVM.model" fxFlex="auto" class="g-section"></gen-biox-workflow>
+        <!--        <gen-biox-workflow fxFlex="auto" class="g-section"></gen-biox-workflow>-->
+        <gen-biox-workflow-drawer fxFlex="auto"></gen-biox-workflow-drawer>
       </div>
     </ng-container>
 

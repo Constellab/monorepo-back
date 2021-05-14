@@ -1,4 +1,4 @@
-<div #container>
+<div #container (dblclick)="openNodeDetail()">
 
   <div fxLayout="row" fxLayoutAlign="space-between center">
 
@@ -17,7 +17,7 @@
 
       <button mat-icon-button type="button"
               *ngIf="showConfigButton"
-              (click)="openConfig()">
+              (click)="openConfig($event)">
         <mat-icon>settings</mat-icon>
       </button>
     </div>

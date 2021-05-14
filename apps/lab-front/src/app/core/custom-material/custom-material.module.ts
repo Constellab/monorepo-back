@@ -13,6 +13,7 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatMenuModule} from '@angular/material/menu';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
+import {MatSidenavModule} from '@angular/material/sidenav';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -32,6 +33,7 @@ import {MatInputModule} from '@angular/material/input';
     MatMenuModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSidenavModule,
 
 
     FlexLayoutModule,

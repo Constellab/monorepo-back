@@ -1,9 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import {BioxExperimentVM} from '../../../../../core/model/entities/biox-experiment.entity';
-import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
-import {clRxjsDebug} from '@monorepo/core-lib';
+import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
 
 /**
  * Page for the biox experiment detail with workflow view/edit
@@ -13,12 +12,12 @@ import {clRxjsDebug} from '@monorepo/core-lib';
   templateUrl: './biox-experiment-detail-page.component.html',
   styleUrls: ['./biox-experiment-detail-page.component.scss']
 })
-export class BioxExperimentDetailPageComponent implements OnInit {
+export class BioxExperimentDetailPageComponent implements OnInit, OnDestroy {
 
-  getExperiment: Observable<BioxExperimentVM>;
+  experiment$: Observable<BioxExperimentVM>;
 
   constructor(private route: ActivatedRoute,
-              private bioxExperimentService: BioxExperimentService) {
+              private experimentState: BioxExperimentDetailPageState) {
   }
 
   ngOnInit(): void {
@@ -28,7 +27,13 @@ export class BioxExperimentDetailPageComponent implements OnInit {
   }
 
   private init(experimentId: string): void {
-    this.getExperiment = this.bioxExperimentService.getExperiment(experimentId).pipe(clRxjsDebug());
+    this.experimentState.init(experimentId);
+    this.experiment$ = this.experimentState.getExperiment$();
   }
+
+  ngOnDestroy(): void {
+    this.experimentState.clear();
+  }
+
 
 }

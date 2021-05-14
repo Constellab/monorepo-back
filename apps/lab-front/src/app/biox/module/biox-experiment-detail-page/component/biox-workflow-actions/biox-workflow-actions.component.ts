@@ -7,6 +7,7 @@ import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experime
 import {ViewModel} from '../../../../../core/model/global/view-model.entity';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
+import {WorkflowActionState} from '../../state/workflow-action-state.service';
 
 /**
  * Actions button for the workflow
@@ -23,7 +24,8 @@ export class BioxWorkflowActionsComponent implements OnInit {
 
   constructor(private workflowManager: WorkflowManagerState,
               private bioxExperimentService: BioxExperimentService,
-              private snackBarService: FlSnackBarService) {
+              private snackBarService: FlSnackBarService,
+              private actionState: WorkflowActionState) {
   }
 
   ngOnInit(): void {
@@ -33,6 +35,12 @@ export class BioxWorkflowActionsComponent implements OnInit {
     return this.saveIsLoading || this.startIsLoading;
   }
 
+  addProcess(): void {
+    this.actionState.newAction({
+      action: 'processSelection'
+    });
+  }
+
   addInterface(): void {
     this.workflowManager.addInterface();
   }
@@ -40,6 +48,7 @@ export class BioxWorkflowActionsComponent implements OnInit {
   addOuterface(): void {
     this.workflowManager.addOuterface();
   }
+
 
   save(): void {
     const experiment: BioxExperiment = this.workflowManager.getExperiment();
@@ -77,7 +86,7 @@ export class BioxWorkflowActionsComponent implements OnInit {
     this.bioxExperimentService.startExperiment(experiment.id).subscribe(
       result => this.onStartSuccess(result),
       () => this.startIsLoading = false
-    )
+    );
   }
 
   private onStartSuccess(tes: ViewModel<BioxExperiment>): void {
