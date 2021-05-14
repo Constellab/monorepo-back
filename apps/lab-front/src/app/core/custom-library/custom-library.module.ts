@@ -8,7 +8,7 @@ import {
   FlDynamicFieldModule, FlFormModule,
   FlInfiniteScrollModule, FlInputFileModule,
   FlJsonEditorModule,
-  FlLoaderModule,
+  FlLoaderModule, FlPortalActionsModule,
   FlPortalModule,
   FlSectionModule,
   FlSnackBarModule,
@@ -47,6 +47,7 @@ import {
     FlSpreadsheetModule,
     FlChartModule,
     FlInputFileModule,
+    FlPortalActionsModule,
   ]
 })
 export class CustomLibraryModule {

@@ -35,7 +35,6 @@ export class FlPortalActionLineComponent implements OnInit {
   }
 
   private subscribe(): void {
-    console.log('Subscribe');
     this.action.status = 'loading';
     this.action.action.subscribe(
       result => this.onSuccess(result),

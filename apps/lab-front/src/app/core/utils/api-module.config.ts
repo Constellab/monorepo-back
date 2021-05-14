@@ -32,7 +32,7 @@ export const apiModuleConfig: FlApiModuleConfig = {
       // if the result if paginated (we supposed the json is type of ClPage)
       if (json.data != null && json.data instanceof Array) {
         return {
-          first: json.paginator.is_first_page,
+          first: json.paginator.page === 0,
           last: json.paginator.is_last_page,
           currentPage: json.paginator.page,
           pageSize: json.paginator.number_of_items_per_page,

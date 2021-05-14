@@ -1,4 +1,4 @@
-import {constBiotaFullRoute, constBioxFullRoute} from '../../core/utils/base-route';
+import {constBiotaFullRoute, constBioxFullRoute, constFileExplorerFullRoute} from '../../core/utils/base-route';
 import {technicalBricks} from './technical-brick.class';
 
 /**
@@ -21,6 +21,11 @@ export const mainMenuLinks: MainMenuLink[] = [
     label: technicalBricks.BIOTA.label,
     icon: technicalBricks.BIOTA.icon,
     route: constBiotaFullRoute
+  },
+  {
+    label: 'fe.file_explorer',
+    icon: 'folder',
+    route: constFileExplorerFullRoute
   },
   {
     label: 'add_brick',

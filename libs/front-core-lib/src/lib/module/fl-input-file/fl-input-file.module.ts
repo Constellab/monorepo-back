@@ -9,6 +9,8 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
+import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
+import {flFileInputI18n} from './i18n/fl-input-file.i18n';
 
 /**
  * Form input to manage file
@@ -36,4 +38,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
   ]
 })
 export class FlInputFileModule {
+  constructor(translateServie: FlTranslateService) {
+    translateServie.addModuleTranslation('FlInputFileModule', flFileInputI18n);
+  }
 }

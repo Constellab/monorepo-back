@@ -99,17 +99,18 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
   }
 
   // handle disable
-  setDisabledState(isDisabled: boolean): void {
-    super.setDisabledState(isDisabled);
-
-    if (isDisabled) {
-      // add disable class to the parent to style label
-      this.renderer.addClass(this.elementRef.nativeElement.parentElement,
-        'fl-input-file-container-disabled');
-    } else {
-      this.renderer.removeClass(this.elementRef.nativeElement.parentElement,
-        'fl-input-file-container-disabled');
-    }
+  onDisableChange(disable: boolean): void {
+    // use setTimeout to let time for the parent to be set
+    setTimeout(() => {
+      if (disable) {
+        // add disable class to the parent to style label
+        this.renderer.addClass(this.elementRef.nativeElement.parentElement,
+          'fl-input-file-container-disabled');
+      } else {
+        this.renderer.removeClass(this.elementRef.nativeElement.parentElement,
+          'fl-input-file-container-disabled');
+      }
+    }, 0);
   }
 
   // clear the input and send data back

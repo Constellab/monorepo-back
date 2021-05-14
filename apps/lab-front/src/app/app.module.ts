@@ -9,7 +9,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {
   FlApiModule,
-  FlDialogModule,
+  FlDialogModule, FlPortalActionsModule,
   FlPortalModule,
   FlQuillConfig,
   flSetRootInjector,
@@ -55,7 +55,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlTranslateModule.forRoot({
       defaultLang: ClSupportedLanguage.en,
       availableLang: [ClSupportedLanguage.en],
-      filenames: ['global-', 'biox-', 'biota-']
+      filenames: ['global-', 'biox-', 'biota-', 'file-explorer-']
     }),
     FlTranslateModule.forRoot2(),
 
@@ -68,6 +68,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlDialogModule.forRoot(),
     FlSnackBarModule.forRoot(),
     FlPortalModule.forRoot(),
+    FlPortalActionsModule.forRoot(),
 
     QuillModule.forRoot({
       modules: {

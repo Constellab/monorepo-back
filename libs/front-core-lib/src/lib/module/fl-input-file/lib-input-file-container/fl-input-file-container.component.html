@@ -1,5 +1,6 @@
 <div class="input-container lib-input-file-container"
      flDragHover="input-container-drop-hover"
+     [flDragHoverDisabled]="disableFileDrop"
      (flDrop)="onDropFile($event)">
 
   <ng-content select="input"></ng-content>
@@ -8,13 +9,11 @@
   <label class="input-file-trigger" tabindex="0">
     <div fxLayout="row" fxLayoutAlign="start center">
       <div class="placeholder">
-        <p>
-          {{placeholderText}}
-        </p>
+        {{placeholderText}}
       </div>
       <div>
         <button mat-icon-button *ngIf="hasValue" (click)="clearInput()" type="button"
-                matTooltip="{{'removeFiles' | translate}}">
+                matTooltip="{{'flFileInput.clear_input' | translate}}">
           <mat-icon>clear</mat-icon>
         </button>
       </div>

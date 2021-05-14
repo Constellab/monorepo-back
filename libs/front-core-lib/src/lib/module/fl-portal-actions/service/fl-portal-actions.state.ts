@@ -6,7 +6,7 @@ import {FlPortalAction, FlPortalActionDetail, FlPortalActionResult} from '../mod
 import {filter} from 'rxjs/operators';
 
 /**
- * Service to handle the state of the loaders
+ * Service to handle the state of the actions
  *
  * This state is internal to to FlPortalActionsModule, and should not be used outside
  */
@@ -22,31 +22,39 @@ export class FlPortalActionsState implements FlCleanableService {
     FlCleanerService.getInstance().registerService(this);
   }
 
-  public setLoaders(loaders: FlPortalAction | FlPortalAction[]): void {
-    this.actions$.next(this.toActionDetails(loaders));
+  /**
+   * Override current actions
+   * @param actions
+   */
+  public setActions(actions: FlPortalAction | FlPortalAction[]): void {
+    this.actions$.next(this.toActionDetails(actions));
   }
 
-  public appendLoaders(loaders: FlPortalAction | FlPortalAction[]): void {
-    // append new loaders to current loaders
-    const allLoader: FlPortalActionDetail[] = [...this.currentLoader, ...this.toActionDetails(loaders)];
+  /**
+   * Add actions to the current ones
+   * @param actions
+   */
+  public appendActions(actions: FlPortalAction | FlPortalAction[]): void {
+    // append new actions to current actions
+    const allActions: FlPortalActionDetail[] = [...this.currentActions, ...this.toActionDetails(actions)];
 
-    this.actions$.next(allLoader);
+    this.actions$.next(allActions);
   }
 
-  private get currentLoader(): FlPortalActionDetail[] {
+  private get currentActions(): FlPortalActionDetail[] {
     return this.actions$.value;
   }
 
-  public getLoaders$(): Observable<FlPortalActionDetail[]> {
+  public getActions$(): Observable<FlPortalActionDetail[]> {
     return this.actions$.asObservable();
   }
 
   // convert FlPortalAction to FlPortalActionDetail
-  private toActionDetails(loaders: FlPortalAction | FlPortalAction[]): FlPortalActionDetail[] {
-    const loadersArray: FlPortalAction[] = ClHelpService.convertObjectOrArrayToArray(loaders);
+  private toActionDetails(actions: FlPortalAction | FlPortalAction[]): FlPortalActionDetail[] {
+    const actionsArray: FlPortalAction[] = ClHelpService.convertObjectOrArrayToArray(actions);
 
-    return loadersArray.map(loader => {
-        return {...loader, status: 'ready', symbol: Symbol()};
+    return actionsArray.map(action => {
+        return {...action, status: 'ready', symbol: Symbol()};
       }
     );
   }

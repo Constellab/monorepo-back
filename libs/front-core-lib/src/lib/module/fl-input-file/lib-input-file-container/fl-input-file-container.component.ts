@@ -58,7 +58,12 @@ export class FlInputFileContainerComponent extends _FlInputFileContainerComponen
   /**
    * Default text displayed when no file selected
    */
-  @Input() placeholder: string = 'Select file';
+  @Input() placeholder: string;
+
+  /**
+   * If true, it no possible to drop a file on input
+   */
+  @Input() disableFileDrop: boolean = false;
 
   // retrieve the injected directive in the ng content
   @ContentChild(FlInputFileDirective, {static: true}) private inputFile: FlInputFileDirective;
@@ -119,7 +124,7 @@ export class FlInputFileContainerComponent extends _FlInputFileContainerComponen
         this.placeholderText = this.placeholderText = (files[0] as File).name;
       } else {
         this.hasValue = true;
-        this.placeholderText = length + ' ' + this.translateService.translate('files');
+        this.placeholderText = length + ' ' + this.translateService.translate('flFileInput.files');
       }
     } else {
 
@@ -142,7 +147,16 @@ export class FlInputFileContainerComponent extends _FlInputFileContainerComponen
   // display the input placeholder as a text
   private displayDefaultText(): void {
     this.hasValue = false;
-    this.placeholderText = this.placeholder;
+
+    if(this.placeholder != null){
+      this.placeholderText = this.placeholder;
+    }
+    else{
+      // use a default text
+      this.placeholderText = this.inputFile.multiple ?
+        this.translateService.translate('flFileInput.select_files') :
+        this.translateService.translate('flFileInput.select_file');
+    }
 
     if (this.isRequired) {
       this.placeholderText += ' *';

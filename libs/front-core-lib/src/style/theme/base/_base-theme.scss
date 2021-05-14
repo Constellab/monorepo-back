@@ -1,5 +1,8 @@
 @import 'node_modules/@angular/material/theming';
 @import "libs/front-core-lib/src/style/mixin-style";
+// Import input-file style
+@import "libs/front-core-lib/src/lib/module/fl-input-file/lib-input-file-container/fl-input-file-theme";
+
 
 /**
  * It apply the theme in parameter and define global css variable for theme
@@ -17,6 +20,9 @@
 
   // define the material theme
   @include angular-material-theme($mat-theme);
+
+  // call input file mixin
+  @include _file-input-color($mat-theme);
 
   :root {
     --card-background: #{mat-color($background, card)};

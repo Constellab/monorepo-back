@@ -4,9 +4,8 @@ import {Observable} from 'rxjs';
 import {FlPortalActionsState} from '../../service/fl-portal-actions.state';
 
 /**
- * Dialog that pop at the bottom right of the screen that takes
- * an observable or multiple observable as input and subscribe to them
- * with a loader for each
+ * Portal that pop at the bottom right of the screen that takes
+ * to show the current actions
  */
 @Component({
   selector: 'fl-portal-actions',
@@ -15,15 +14,16 @@ import {FlPortalActionsState} from '../../service/fl-portal-actions.state';
 })
 export class FlPortalActionsComponent implements OnInit {
 
-  loaders$: Observable<FlPortalActionDetail[]>;
+  actions$: Observable<FlPortalActionDetail[]>;
 
-  constructor(private loaderState: FlPortalActionsState) {
-    this.loaders$ = loaderState.getLoaders$();
+  constructor(private actionsState: FlPortalActionsState) {
+    this.actions$ = actionsState.getActions$();
   }
 
   ngOnInit(): void {
   }
 
+  // track the action with symboles
   trackBySymbole: TrackByFunction<FlPortalActionDetail> = (index: number, item: FlPortalActionDetail) => {
     return item.symbol;
   };

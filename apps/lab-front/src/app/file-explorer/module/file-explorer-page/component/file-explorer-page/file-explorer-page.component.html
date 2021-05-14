@@ -1,0 +1,24 @@
+<div class="g-page">
+
+  <fl-async-section [arrayObs]="datasource" emptyText="fe.no_file_resources"
+                    fxFlex="auto" class="drop-border"
+                    flDragHover="drop-zone-hover" (flDrop)="onFileDrop($event)">
+
+    <fl-section-header>
+      <fl-section-actions>
+        <fl-input-file-container color="primary" class="file-input" [disableFileDrop]="true"
+                                 [placeholder]="'fe.upload_file' | translate">
+          <input flInputFile multiple type="file" (fileChange)="uploadFiles($event)"
+                 [(ngModel)]="files">
+        </fl-input-file-container>
+      </fl-section-actions>
+    </fl-section-header>
+
+    <ng-container *flSectionBody>
+      <gen-file-resource-table [datasource]="datasource" [columns]="columns">
+      </gen-file-resource-table>
+    </ng-container>
+
+  </fl-async-section>
+
+</div>

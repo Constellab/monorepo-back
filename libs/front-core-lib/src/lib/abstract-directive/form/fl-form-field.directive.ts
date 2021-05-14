@@ -59,7 +59,8 @@ export abstract class FlFormFieldDirective<INNER, OUTER = INNER> implements Cont
    * Disabled the input
    */
   @Input() set disabled(isDisabled: boolean) {
-    this.setDisabledState(isDisabled);
+    this._disabled = ClHelpService.coerceBooleanOrEmptyProperty(isDisabled);
+    this.onDisableChange(this._disabled);
   }
 
   /**
@@ -120,9 +121,7 @@ export abstract class FlFormFieldDirective<INNER, OUTER = INNER> implements Cont
 
   abstract writeValue(obj: OUTER): void;
 
-  setDisabledState(isDisabled: boolean): void {
-    this._disabled = ClHelpService.coerceBooleanOrEmptyProperty(isDisabled);
-  }
+  abstract onDisableChange(disable: boolean): void;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   validate(control: AbstractControl<OUTER>): ValidationErrors | null {
