@@ -29,7 +29,7 @@ export class BioxExperimentService {
   }
 
   public getExperiment(id: string): Observable<BioxExperimentVM> {
-    return this.apiService.get(`view/gws.model.Experiment/${id}/`, createViewModel(BioxExperiment));
+    return this.apiService.get(`view/gws.model.Experiment/${id}`, createViewModel(BioxExperiment));
   }
 
   public create(experiment: ExperimentSimpleForm): Observable<ViewModel<BioxExperiment>> {
