@@ -1,0 +1,19 @@
+<div class="container">
+
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <div>{{'flPortalAction.actions' | translate}}</div>
+    <button flPortalClose type="button" mat-icon-button
+            [matTooltip]="'close' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+
+  <div fxLayout="column">
+    <div *ngFor="let loader of loaders$ | async; trackBy:trackBySymbole; let last=last">
+      <fl-portal-action-line [action]="loader"></fl-portal-action-line>
+
+      <mat-divider></mat-divider>
+    </div>
+  </div>
+</div>

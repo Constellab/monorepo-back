@@ -84,3 +84,13 @@ export const FL_PORTAL_DATA = new InjectionToken<any>('FL_PORTAL_DATA');
  * List of known portal default position to easily set position of the portal
  */
 export type FlPortalDefaultPosition = 'right' | 'left' | 'top' | 'bottom';
+
+/**
+ * Object to place portal based on absolute position in css position (px, em...)
+ */
+export interface PortalAbsolutePosition{
+  top?: string;
+  left?: string;
+  bottom?: string;
+  right?: string;
+}

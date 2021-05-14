@@ -1,0 +1,23 @@
+<div fxLayout="row" fxLayoutAlign="space-between center"
+     [matTooltip]="text" matTooltipShowDelay="1000" matTooltipPosition="above">
+
+  <div class="text">
+    {{text}}
+  </div>
+
+  <ng-container [ngSwitch]="action.status">
+    <ng-container *ngSwitchCase="'loading'">
+      <!--   loader the same size as the icons   -->
+      <fl-loader [size]="24"></fl-loader>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'success'">
+      <mat-icon class="g-text-success">check_circle</mat-icon>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'error'">
+      <mat-icon class="g-text-error">error</mat-icon>
+    </ng-container>
+  </ng-container>
+
+</div>

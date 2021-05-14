@@ -20,7 +20,8 @@ import {
   FlOverlayConfig,
   flPortalArrowOffset,
   FlPortalDefaultPosition,
-  FlRelativeOverlayConfig
+  FlRelativeOverlayConfig,
+  PortalAbsolutePosition
 } from '../model/fl-portal.class';
 import {FlOverlayRef} from '../model/fl-overlay-ref.class';
 import {FlPortalArrowComponent} from '../component/fl-portal-arrow/fl-portal-arrow.component';
@@ -95,25 +96,33 @@ export class FlPortalService {
    * This portal is not linked to an host element
    */
   public configureAbsolutePortalFromMouseEvent(mouseEvent: MouseEvent, configuration: FlOverlayConfig = {}): FlPortalConfig {
-    return this.configureAbsolutePortal(mouseEvent.pageY + 'px', mouseEvent.pageX + 'px', configuration);
+    return this.configureAbsolutePortal({top: mouseEvent.pageY + 'px', left: mouseEvent.pageX + 'px'}, configuration);
   }
 
   /**
    * Configure an absolute portal form top and left position
    * This portal is not linked to an host element
    */
-  public configureAbsolutePortal(top: string, left: string, configuration: FlOverlayConfig = {}): FlPortalConfig {
+  public configureAbsolutePortal(position: PortalAbsolutePosition, configuration: FlOverlayConfig = {}): FlPortalConfig {
     // save the element to the config
     const config: FlPortalConfig = new FlPortalConfig(configuration);
 
-    config.setPositionStrategy(this.getAbsolutePositionStrategy(top, left));
+    config.setPositionStrategy(this.getAbsolutePositionStrategy(position));
 
     return config;
   }
 
-  public getAbsolutePositionStrategy(top: string, left: string): GlobalPositionStrategy {
+  public getAbsolutePositionStrategy(position: PortalAbsolutePosition): GlobalPositionStrategy {
     // set the portal position relative to the element with a margin of 10 for the viewport
-    return this.overlay.position().global().top(top).left(left);
+    const globalPosition: GlobalPositionStrategy = this.overlay.position().global();
+
+    // set position if params are set
+    if (position.top != null) globalPosition.top(position.top);
+    if (position.left != null) globalPosition.left(position.left);
+    if (position.bottom != null) globalPosition.bottom(position.bottom);
+    if (position.right != null) globalPosition.right(position.right);
+
+    return globalPosition;
   }
 
   // configure the overlay offset if we need an arrow
