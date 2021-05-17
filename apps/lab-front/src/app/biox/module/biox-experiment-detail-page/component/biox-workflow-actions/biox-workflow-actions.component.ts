@@ -5,7 +5,7 @@ import {BioxExperiment, ExperimentUpdate} from '../../../../../core/model/entiti
 import {BioxProtocolGraph} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
 import {ViewModel} from '../../../../../core/model/global/view-model.entity';
-import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
 import {WorkflowActionState} from '../../state/workflow-action-state.service';
 
@@ -25,7 +25,8 @@ export class BioxWorkflowActionsComponent implements OnInit {
   constructor(private workflowManager: WorkflowManagerState,
               private bioxExperimentService: BioxExperimentService,
               private snackBarService: FlSnackBarService,
-              private actionState: WorkflowActionState) {
+              private actionState: WorkflowActionState,
+              private translateService: FlTranslateService) {
   }
 
   ngOnInit(): void {
@@ -37,7 +38,8 @@ export class BioxWorkflowActionsComponent implements OnInit {
 
   addProcess(): void {
     this.actionState.newAction({
-      action: 'processSelection'
+      action: 'processSelection',
+      title: this.translateService.translate('biox.add_process')
     });
   }
 

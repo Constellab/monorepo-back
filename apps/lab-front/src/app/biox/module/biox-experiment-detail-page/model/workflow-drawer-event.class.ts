@@ -6,10 +6,15 @@ import {WorkflowNodeOuterface} from './workflow-node-outerface.class';
 export type WorkflowActionEvent = WorkflowActionSelectNode | WorkflowActionSelectInterface | WorkflowActionSelectOuterface
   | WorkflowActionProcessSelection;
 
+export interface WorkflowActionBase{
+  action: string;
+  title: string;
+}
+
 /**
  * Action called when selecting a workflow node
  */
-export interface WorkflowActionSelectNode {
+export interface WorkflowActionSelectNode extends WorkflowActionBase{
   action: 'selectNode';
   processableNode: WorkflowNodeProcessable;
 }
@@ -17,7 +22,7 @@ export interface WorkflowActionSelectNode {
 /**
  * Action called when selecting a workflow interface
  */
-export interface WorkflowActionSelectInterface {
+export interface WorkflowActionSelectInterface extends WorkflowActionBase {
   action: 'selectInterface';
   interface: WorkflowNodeInterface;
 }
@@ -25,7 +30,7 @@ export interface WorkflowActionSelectInterface {
 /**
  * Action called when selecting a workflow outerface
  */
-export interface WorkflowActionSelectOuterface {
+export interface WorkflowActionSelectOuterface extends WorkflowActionBase {
   action: 'selectOuterface';
   node: WorkflowNodeOuterface;
 }
@@ -33,7 +38,7 @@ export interface WorkflowActionSelectOuterface {
 /**
  * Action called when selecting a workflow outerface
  */
-export interface WorkflowActionProcessSelection {
+export interface WorkflowActionProcessSelection extends WorkflowActionBase {
   action: 'processSelection';
 }
 

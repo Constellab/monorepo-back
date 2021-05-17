@@ -1,5 +1,56 @@
-
 <div>
-  <div>{{node.title}}</div>
-  <div *ngIf="node.object.data.description">{{node.object.data.description}}</div>
+  <div *ngIf="node.object.data.description" class="g-text-light">{{node.object.data.description}}</div>
+
+  <div class="g-section">
+    <!-- Inputs -->
+    <mat-expansion-panel *ngIf="node.hasInputs()" hideToggle [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="g-text-not-selectable">
+          <fl-text-icon>
+            <mat-icon>login</mat-icon>
+            {{'biox.node_inputs' | translate}}
+          </fl-text-icon>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <gen-biox-workflow-ports-list class="expansion-content" [ports]="node.inputPorts"></gen-biox-workflow-ports-list>
+    </mat-expansion-panel>
+
+    <mat-divider></mat-divider>
+
+    <!-- Outputs -->
+    <mat-expansion-panel *ngIf="node.hasOutputs()" hideToggle [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="g-text-not-selectable">
+          <fl-text-icon>
+            <mat-icon>logout</mat-icon>
+            {{'biox.node_outputs' | translate}}
+          </fl-text-icon>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <gen-biox-workflow-ports-list class="expansion-content" [ports]="node.outputPorts"></gen-biox-workflow-ports-list>
+    </mat-expansion-panel>
+
+    <mat-divider></mat-divider>
+
+    <!-- Config   -->
+    <mat-expansion-panel *ngIf="config" hideToggle [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
+          <fl-text-icon>
+            <mat-icon>settings</mat-icon>
+            {{'biox.configuration' | translate}}
+          </fl-text-icon>
+        </mat-panel-title>
+        <mat-panel-description fxLayout="row" fxLayoutAlign="end" *ngIf="isEditable">
+          <button mat-icon-button type="button"
+                  (click)="openConfig($event)">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <gen-biox-workflow-node-config class="expansion-content" [config]="config"></gen-biox-workflow-node-config>
+    </mat-expansion-panel>
+
+    <mat-divider></mat-divider>
+  </div>
 </div>

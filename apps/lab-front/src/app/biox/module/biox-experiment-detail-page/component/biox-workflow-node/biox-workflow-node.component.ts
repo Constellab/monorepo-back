@@ -1,11 +1,7 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
-import {FlDialogService, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
-import {BioxConfigureSpecsDialogComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
-import {ConnectedPosition} from '@angular/cdk/overlay';
-import {BioxShowConfigPortalComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-show-config-portal/biox-show-config-portal.component';
+import {FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {ClHelpService} from '@monorepo/core-lib';
 import {WorkflowActionState} from '../../state/workflow-action-state.service';
 import {WorkflowNodeProcessable} from '../../model/workflow-node-processable.class';
 
@@ -53,52 +49,11 @@ export class BioxWorkflowNodeComponent implements OnInit {
     return this.workflowManager.selectLayer(this.node.nodeId);
   }
 
-  get showConfigButton(): boolean {
-    return this.node.object.hasConfig();
-  }
-
-  openConfig(event: MouseEvent): void {
-    ClHelpService.stopEventPropagation(event);
-
-    if (this.workflowManager.getMode() === 'edit') {
-      this.dialogService.openMediumDialog(BioxConfigureSpecsDialogComponent,
-        {data: this.node.object.config.data}).afterClosed().subscribe(
-        config => this.onConfigDialogClosed(config)
-      );
-
-    } else {
-      const position: ConnectedPosition[] = [{
-        originX: 'center',
-        originY: 'top',
-        overlayX: 'center',
-        overlayY: 'bottom',
-        offsetY: -20
-      }];
-      const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(
-        this.container.nativeElement, position, {
-          panelClass: 'g-portal-panel',
-          elevation: true,
-          disposeOnNavigation: true,
-          size: 'small',
-          disposeOnOutsideClick: true,
-        }
-      );
-      this.portalService.createPortal(BioxShowConfigPortalComponent, portalConfig,
-        this.node.object.config.data.mergeConfigWithDefault());
-    }
-  }
-
-  private onConfigDialogClosed(config?: any): void {
-    if (config != null) {
-      // save the config into the value
-      this.node.object.config.data.params = config;
-    }
-  }
-
   openNodeDetail(): void {
     this.drawerState.newAction({
       action: 'selectNode',
-      processableNode: this.node
+      processableNode: this.node,
+      title: this.node.title
     });
   }
 

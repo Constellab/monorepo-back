@@ -4,9 +4,17 @@
   <ng-container *ngSwitchCase="'input'">
     <mat-form-field appearance="outline" class="g-full g-form-field-hint-include">
       <mat-label>{{inputConfig.placeholder}}</mat-label>
-      <input matInput [type]="inputConfig.inputType" [formControl]="formControl"
-             (ngModelChange)="emitValue($event)" [required]="required"
-             placeholder="{{inputConfig.placeholder}}">
+
+      <!--    Can't directly bind input type : https://github.com/angular/angular/issues/13243-->
+      <ng-container [ngSwitch]="inputConfig.inputType">
+        <input *ngSwitchCase="'text'" matInput type="text" [formControl]="formControl"
+               (ngModelChange)="emitValue($event)" [required]="required"
+               placeholder="{{inputConfig.placeholder}}">
+
+        <input *ngSwitchCase="'number'" matInput type="number" [formControl]="formControl"
+               (ngModelChange)="emitValue($event)" [required]="required"
+               placeholder="{{inputConfig.placeholder}}">
+      </ng-container>
 
       <span *ngIf="inputConfig.prefix" matPrefix>{{inputConfig.prefix}}</span>
       <span *ngIf="inputConfig.suffix" matSuffix>{{inputConfig.suffix}}</span>

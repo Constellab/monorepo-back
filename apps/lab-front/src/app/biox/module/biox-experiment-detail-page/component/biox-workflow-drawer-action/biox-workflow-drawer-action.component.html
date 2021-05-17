@@ -1,14 +1,18 @@
 
-<div>
+<div *ngIf="action$ | async as action">
 
-  <div fxLayout="row" fxLayoutAlign="end">
+  <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
+    <div>
+      {{action.title}}
+    </div>
+
     <button mat-icon-button type="button" flDrawerClose tabindex="-1"
             [matTooltip]="'close' | translate">
       <mat-icon>clear</mat-icon>
     </button>
   </div>
 
-  <div *ngIf="action$ | async as action" class="container">
+  <div class="container">
 
     <ng-container [ngSwitch]="action.action">
 

@@ -1,4 +1,4 @@
-<div #container (dblclick)="openNodeDetail()">
+<div #container>
 
   <div fxLayout="row" fxLayoutAlign="space-between center">
 
@@ -16,9 +16,8 @@
       </button>
 
       <button mat-icon-button type="button"
-              *ngIf="showConfigButton"
-              (click)="openConfig($event)">
-        <mat-icon>settings</mat-icon>
+              (click)="openNodeDetail()" [matTooltip]="'biox.open_node_detail' | translate">
+        <mat-icon>info</mat-icon>
       </button>
     </div>
   </div>

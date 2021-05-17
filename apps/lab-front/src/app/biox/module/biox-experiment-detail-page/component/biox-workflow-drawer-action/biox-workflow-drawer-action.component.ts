@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {WorkflowActionState} from '../../state/workflow-action-state.service';
 import {WorkflowActionEvent} from '../../model/workflow-drawer-event.class';
 import {Observable} from 'rxjs';
+import {clRxjsDebug} from '@monorepo/core-lib';
 
 /**
  * This component is the content of the drawer,
@@ -20,6 +21,6 @@ export class BioxWorkflowDrawerActionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.action$ = this.actionState.getAction$();
+    this.action$ = this.actionState.getAction$().pipe(clRxjsDebug());
   }
 }

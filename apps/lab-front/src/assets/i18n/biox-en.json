@@ -18,6 +18,9 @@
     "resource_view_spreadsheet": "View in spreadsheet",
     "resource_view_pathway": "Show the pathway",
     "workflow_loading_error": "Error while retrieving protocol",
-    "add_process": "Add a process"
+    "add_process": "Add a process",
+    "node_inputs": "Inputs",
+    "node_outputs": "Outputs",
+    "open_node_detail": "Detail"
   }
 }

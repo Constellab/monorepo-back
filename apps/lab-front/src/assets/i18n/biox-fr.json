@@ -18,6 +18,9 @@
     "resource_view_spreadsheet": "Afficher dans une feuille de calcul",
     "resource_view_pathway": "Afficher le pathway",
     "workflow_loading_error": "Erreur lors du chargement du protocol",
-    "add_process": "Ajouter un process"
+    "add_process": "Ajouter un process",
+    "node_inputs": "Inputs",
+    "node_outputs": "Outputs",
+    "open_node_detail": "Détail"
   }
 }

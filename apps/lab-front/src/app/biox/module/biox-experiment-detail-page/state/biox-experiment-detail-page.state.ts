@@ -41,4 +41,8 @@ export class BioxExperimentDetailPageState {
   public clear(): void {
     this.experiment$.complete();
   }
+
+  public isEditable(): boolean {
+    return this.currentExperiment.isEditable();
+  }
 }

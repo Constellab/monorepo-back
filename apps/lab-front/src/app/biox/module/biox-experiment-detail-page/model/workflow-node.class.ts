@@ -82,6 +82,10 @@ export abstract class WorkflowNode<T> {
     }
   }
 
+  public hasInputs(): boolean{
+    return this.countInputs() > 0;
+  }
+
   /////////////////////////////// OUTPUT //////////////////////////////
 
   public countOutputs(): number {
@@ -100,6 +104,10 @@ export abstract class WorkflowNode<T> {
     for (const port of this.outputPorts) {
       this.disabledPort(port);
     }
+  }
+
+  public hasOutputs(): boolean{
+    return this.countOutputs() > 0;
   }
 
   /////////////////////////////// OTHER //////////////////////////////

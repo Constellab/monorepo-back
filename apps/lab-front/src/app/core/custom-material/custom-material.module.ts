@@ -14,6 +14,8 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatDividerModule} from '@angular/material/divider';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -34,6 +36,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
     MatFormFieldModule,
     MatInputModule,
     MatSidenavModule,
+    MatExpansionModule,
+    MatDividerModule,
 
 
     FlexLayoutModule,

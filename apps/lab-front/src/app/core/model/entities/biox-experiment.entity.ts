@@ -71,6 +71,10 @@ export class BioxExperiment extends LabBaseEntity implements FlStatus {
 
     return 'draft';
   }
+
+  isEditable(): boolean{
+    return !this.is_archived;
+  }
 }
 
 export type BioxExperimentVM = ViewModel<BioxExperiment>;
