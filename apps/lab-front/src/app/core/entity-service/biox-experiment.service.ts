@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {BioxExperiment, BioxExperimentDatasource, BioxExperimentVM, ExperimentSimpleForm} from '../model/entities/biox-experiment.entity';
+import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm} from '../model/entities/biox-experiment.entity';
 import {createViewModel, ViewModel} from '../model/global/view-model.entity';
 import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
 
@@ -28,8 +28,8 @@ export class BioxExperimentService {
     return (page: number, pageSize: number): Observable<ClPage<BioxExperiment>> => this.getExperiments(page, pageSize);
   }
 
-  public getExperiment(id: string): Observable<BioxExperimentVM> {
-    return this.apiService.get(`view/gws.model.Experiment/${id}`, createViewModel(BioxExperiment));
+  public getExperiment(id: string): Observable<BioxExperiment> {
+    return this.apiService.get(`experiment/${id}`, BioxExperiment);
   }
 
   public create(experiment: ExperimentSimpleForm): Observable<ViewModel<BioxExperiment>> {

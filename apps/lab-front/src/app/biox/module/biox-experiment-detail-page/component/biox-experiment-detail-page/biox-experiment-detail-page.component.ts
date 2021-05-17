@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
-import {BioxExperimentVM} from '../../../../../core/model/entities/biox-experiment.entity';
+import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
 import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
 
 /**
@@ -14,7 +14,7 @@ import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-
 })
 export class BioxExperimentDetailPageComponent implements OnInit, OnDestroy {
 
-  experiment$: Observable<BioxExperimentVM>;
+  experiment$: Observable<BioxExperiment>;
 
   constructor(private route: ActivatedRoute,
               private experimentState: BioxExperimentDetailPageState) {
