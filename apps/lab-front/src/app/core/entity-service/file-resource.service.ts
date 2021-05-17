@@ -29,7 +29,7 @@ export class FileResourceService {
 
   public getAll(page: number, pageSize: number): Observable<ClPage<FileResource>> {
     return this.apiService.get(`view/gws.file.File/all`, FileResource,
-      {resultIsPaginated: true, page: page, pageSize: pageSize});
+      {resultIsPaginated: true, page: page + 1, pageSize: pageSize});
   }
 
   public getAllDatasource(): FileResourceDatasource {
