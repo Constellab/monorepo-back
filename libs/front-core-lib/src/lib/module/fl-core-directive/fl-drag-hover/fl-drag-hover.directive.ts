@@ -30,6 +30,14 @@ export class FlDragHoverDirective {
   @Input() flDragIsHovering: boolean = false;
 
   /**
+   * Mode, when to activate the drop zone
+   * File --> activate only in file drag
+   * Element --> activate on everything but file
+   * All activate on any drag
+   */
+  @Input() flDragHoverMode: 'file' | 'element' | 'all' = 'file';
+
+  /**
    * Input/Output data true if we are dragging over the host element
    */
   @Output() flDragIsHoveringChange: EventEmitter<boolean> = new EventEmitter();
@@ -48,10 +56,10 @@ export class FlDragHoverDirective {
    * @ignore
    * Drag enter event
    */
-  @HostListener('dragenter')
-  dragEnter(): void {
-    if (!this.flDragHoverDisabled) {
-      this.onDraflter();
+  @HostListener('dragenter', ['$event'])
+  dragEnter(event: DragEvent): void {
+    if (this.isDroppable(event)) {
+      this.onDragEnter();
     }
   }
 
@@ -59,9 +67,9 @@ export class FlDragHoverDirective {
    * @ignore
    * Drag leave event
    */
-  @HostListener('dragleave')
-  dragLeave(): void {
-    if (!this.flDragHoverDisabled) {
+  @HostListener('dragleave', ['$event'])
+  dragLeave(event: DragEvent): void {
+    if (this.isDroppable(event)) {
       this.onDragLeave();
     }
   }
@@ -72,7 +80,7 @@ export class FlDragHoverDirective {
    */
   @HostListener('drop', ['$event'])
   drop(event: DragEvent): void {
-    if (!this.flDragHoverDisabled) {
+    if (this.isDroppable(event)) {
 
       // stop event to avoid file opening in browser
       this.stopEvent(event);
@@ -93,7 +101,7 @@ export class FlDragHoverDirective {
    */
   @HostListener('dragover', ['$event'])
   dragOver(event: DragEvent): void {
-    if (!this.flDragHoverDisabled) {
+    if (this.isDroppable(event)) {
       // stop event to allow drop
       this.stopEvent(event);
     }
@@ -104,7 +112,7 @@ export class FlDragHoverDirective {
     this.emitDragover();
   }
 
-  private onDraflter(): void {
+  private onDragEnter(): void {
     this.dragoverCount++;
 
     // if we enter in the zone
@@ -138,6 +146,27 @@ export class FlDragHoverDirective {
   private emitDragover(): void {
     this.flDragIsHovering = this.dragoverCount > 0;
     this.flDragIsHoveringChange.emit(this.flDragIsHovering);
+  }
+
+  // return true if a file is dragged and the directive is not disable
+  // this is to prevent activated class
+  private isDroppable(event: DragEvent): boolean {
+    return !this.flDragHoverDisabled && this.checkDataTransferType(event.dataTransfer);
+  }
+
+  private checkDataTransferType(dataTransfer: DataTransfer): boolean {
+    if (dataTransfer == null) {
+      return false;
+    }
+
+    switch (this.flDragHoverMode) {
+      case 'file':
+        return dataTransfer.types.includes('Files');
+      case 'element':
+        return !dataTransfer.types.includes('Files');
+      case 'all':
+        return true;
+    }
   }
 
   private stopEvent(event: Event): void {
