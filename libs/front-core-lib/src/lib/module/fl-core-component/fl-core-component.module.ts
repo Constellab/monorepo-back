@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FlDateRangeComponent} from './component/fl-date-range/fl-date-range.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FlBreadcrumbComponent} from './component/fl-breadcrumb/fl-breadcrumb.component';
 import {RouterModule} from '@angular/router';
@@ -15,7 +14,7 @@ import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.modu
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
-import { FlSelectLanguageOptionsComponent } from './component/fl-select-language-options/fl-select-language-options.component';
+import {FlSelectLanguageOptionsComponent} from './component/fl-select-language-options/fl-select-language-options.component';
 import {MatOptionModule} from '@angular/material/core';
 
 /**
@@ -23,7 +22,6 @@ import {MatOptionModule} from '@angular/material/core';
  */
 @NgModule({
   declarations: [
-    FlDateRangeComponent,
     FlBreadcrumbComponent,
     FlLimitHeightComponent,
     FlNewWebsiteVersionComponent,
@@ -31,7 +29,6 @@ import {MatOptionModule} from '@angular/material/core';
     FlSelectLanguageOptionsComponent,
   ],
   exports: [
-    FlDateRangeComponent,
     FlBreadcrumbComponent,
     FlLimitHeightComponent,
     FlChipComponent,

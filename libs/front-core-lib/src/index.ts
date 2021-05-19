@@ -8,6 +8,7 @@ export * from './lib/module/fl-chart/public-api';
 export * from './lib/module/fl-core-component/public-api';
 export * from './lib/module/fl-core-directive/public-api';
 export * from './lib/module/fl-core-pipe/public-api';
+export * from './lib/module/fl-date/public-api';
 export * from './lib/module/fl-dialog/public-api';
 export * from './lib/module/fl-dynamic-field/public-api';
 export * from './lib/module/fl-form/public-api';

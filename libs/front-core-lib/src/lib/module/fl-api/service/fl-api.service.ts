@@ -277,6 +277,10 @@ export class FlApiService {
    * Convert the classes or object to plain json object
    */
   private convertObjectToPlain(object: any, serialization: FlHttpOptionSerialization = 'classToPlain'): any {
+    if (object instanceof FormData) {
+      return object;
+    }
+
     try {
       if (serialization === 'classToPlain') {
         return ClCoreJsonConvert.classToPlain(object);

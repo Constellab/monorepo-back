@@ -3,7 +3,7 @@ import {
   FlCardModule, FlChartModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
-  FlCorePipeModule,
+  FlCorePipeModule, FlDateModule,
   FlDialogModule,
   FlDynamicFieldModule, FlFormModule,
   FlInfiniteScrollModule, FlInputFileModule,
@@ -48,6 +48,7 @@ import {
     FlChartModule,
     FlInputFileModule,
     FlPortalActionsModule,
+    FlDateModule,
   ]
 })
 export class CustomLibraryModule {

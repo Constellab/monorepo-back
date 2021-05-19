@@ -4,7 +4,7 @@ import {
   FlCardModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
-  FlCorePipeModule,
+  FlCorePipeModule, FlDateModule,
   FlDialogModule,
   FlFormModule,
   FlImageModule,
@@ -46,6 +46,7 @@ import {
     FlJsonEditorModule,
     FlStatusModule,
     FlInfiniteScrollModule,
+    FlDateModule,
   ]
 })
 export class CustomLibraryModule {

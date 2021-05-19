@@ -1,19 +1,32 @@
-<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+<fl-infinite-scroll [datasource]="datasource" infiniteMode="body">
 
-  <!-- Dynamic columns -->
-  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
-    <mat-header-cell *matHeaderCellDef>
-      <p class="g-table-cell">{{column.columnName | translate}}</p>
-    </mat-header-cell>
-    <mat-cell *matCellDef="let user">
-      <div class="g-table-cell">
-        <span>{{user[column.accessor]}}</span>
-      </div>
-    </mat-cell>
-  </ng-container>
+  <mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+    <!-- Lab -->
+    <ng-container matColumnDef="createdAt">
+      <mat-header-cell *matHeaderCellDef>
+        <span> {{'created_at' | translate}}</span>
+      </mat-header-cell>
+      <mat-cell class="photo" *matCellDef="let resource">
+        <fl-from-now [date]="resource.createdAt"></fl-from-now>
+      </mat-cell>
+    </ng-container>
 
 
-  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
-</mat-table>
+    <!-- Dynamic columns -->
+    <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+      <mat-header-cell *matHeaderCellDef>
+        <p class="g-table-cell">{{column.columnName | translate}}</p>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let user">
+        <div class="g-table-cell">
+          <span>{{user[column.accessor]}}</span>
+        </div>
+      </mat-cell>
+    </ng-container>
 
+    <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+  </mat-table>
+
+</fl-infinite-scroll>

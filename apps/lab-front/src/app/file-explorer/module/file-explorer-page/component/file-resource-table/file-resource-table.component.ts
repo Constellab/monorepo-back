@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
-import {FileResource} from '../../../../../core/model/entities/file-resource.entity';
+import {FileResource, FileResourceDatasource} from '../../../../../core/model/entities/file-resource.entity';
 
 @Component({
   selector: 'gen-file-resource-table',
@@ -10,8 +10,10 @@ import {FileResource} from '../../../../../core/model/entities/file-resource.ent
 export class FileResourceTableComponent extends FlTableAbstractDirective<FileResource>
   implements OnInit {
 
+  @Input() datasource: FileResourceDatasource;
+
   constructor() {
-    super([])
+    super(['createdAt'])
   }
 
   ngOnInit(): void {

@@ -5,6 +5,8 @@ import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
 export class FileResource extends LabBaseEntity {
 
+  data: any;
+
   path: string;
 
   @Expose({name: 'file_store_uri'})

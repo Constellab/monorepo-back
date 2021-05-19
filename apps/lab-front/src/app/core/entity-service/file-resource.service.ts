@@ -20,7 +20,7 @@ export class FileResourceService {
       formData.append('files', file);
     }
 
-    return this.apiService.put(`${this.route}/upload`, formData);
+    return this.apiService.post(`${this.route}/upload`, formData, FileResource);
   }
 
   public downloadFile(id: string): Observable<Blob> {

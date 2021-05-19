@@ -1,8 +1,9 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {ClDateHelper, ClDateInput} from '@monorepo/core-lib';
 
+
 /**
- * Pipe to format dates
+ * Simple date pipe that supports luxon dates
  */
 @Pipe({
   name: 'flDate'

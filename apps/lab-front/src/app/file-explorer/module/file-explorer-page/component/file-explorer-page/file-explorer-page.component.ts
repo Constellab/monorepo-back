@@ -19,7 +19,7 @@ export class FileExplorerPageComponent implements OnInit {
 
   datasource: FileResourceDatasource;
 
-  columns: FlTableColumn<FileResource>[] = ['id', 'path'];
+  columns: FlTableColumn<FileResource>[] = ['id', 'path', 'createdAt'];
 
   files: File[];
   actionType: 'uploadFile';
@@ -64,9 +64,14 @@ export class FileExplorerPageComponent implements OnInit {
     this.files = [];
   }
 
-  private onFileUploadResult(result: FlPortalActionResult): void {
+  private onFileUploadResult(result: FlPortalActionResult<FileResource>): void {
     if (result.status === 'success') {
-      console.log(result.result);
+      if (result.result.data.length > 0) {
+        // todo when uploading multiple file the format is weird
+        console.error('TODO !');
+      } else {
+        this.datasource.addItem(result.result, () => true);
+      }
     }
   }
 }

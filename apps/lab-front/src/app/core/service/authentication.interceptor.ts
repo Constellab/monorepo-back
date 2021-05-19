@@ -18,13 +18,14 @@ export class AuthenticationInterceptor implements HttpInterceptor, FlCleanableSe
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 
     if (this.token) {
+      // append the Authorization header
+      const headers: HttpHeaders = request.headers.append('Authorization', this.token);
+
       request = request.clone({
         // set the credential to false because the token is in the header
         // otherwise we have a CORS error
         // withCredentials: false,
-        headers: new HttpHeaders({
-          Authorization: this.token,
-        })
+        headers: headers
       });
     }
     return next.handle(request);
