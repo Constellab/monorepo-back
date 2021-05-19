@@ -19,7 +19,7 @@ export class FileExplorerPageComponent implements OnInit {
 
   datasource: FileResourceDatasource;
 
-  columns: FlTableColumn<FileResource>[] = ['id', 'path', 'createdAt'];
+  columns: FlTableColumn<FileResource>[] = ['id', {columnName: 'fe.path', accessor: 'path'}, 'createdAt', 'download'];
 
   files: File[];
   actionType: 'uploadFile';

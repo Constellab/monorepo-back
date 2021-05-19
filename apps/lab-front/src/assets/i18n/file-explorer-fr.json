@@ -3,6 +3,8 @@
     "file_explorer": "Fichiers",
     "no_file_resources": "Aucun fichier",
     "upload_file": "Uploader des fichier",
-    "uploading_files": "Envoie de {{nbFiles}} fichiers"
+    "uploading_files": "Envoie de {{nbFiles}} fichiers",
+    "path": "Chemin",
+    "download_file": "Télécharger le fichier"
   }
 }

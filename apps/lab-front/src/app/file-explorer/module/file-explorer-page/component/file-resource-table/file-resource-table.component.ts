@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
 import {FileResource, FileResourceDatasource} from '../../../../../core/model/entities/file-resource.entity';
+import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
 
 @Component({
   selector: 'gen-file-resource-table',
@@ -12,11 +13,15 @@ export class FileResourceTableComponent extends FlTableAbstractDirective<FileRes
 
   @Input() datasource: FileResourceDatasource;
 
-  constructor() {
-    super(['createdAt'])
+  constructor(private fileService: FileResourceService) {
+    super(['createdAt', 'download'])
   }
 
   ngOnInit(): void {
+  }
+
+  downloadFile(file: FileResource): void{
+    this.fileService.downloadFile(file.type, file.id).subscribe();
   }
 
 }

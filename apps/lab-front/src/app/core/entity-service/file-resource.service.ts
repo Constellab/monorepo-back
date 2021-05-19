@@ -23,8 +23,8 @@ export class FileResourceService {
     return this.apiService.post(`${this.route}/upload`, formData, FileResource);
   }
 
-  public downloadFile(id: string): Observable<Blob> {
-    return this.apiService.downloadFile(`${this.route}/${id}/download`);
+  public downloadFile(type: string, id: string): Observable<Blob> {
+    return this.apiService.downloadFile(`${this.route}/${type}/${id}/download`);
   }
 
   public getAll(page: number, pageSize: number): Observable<ClPage<FileResource>> {

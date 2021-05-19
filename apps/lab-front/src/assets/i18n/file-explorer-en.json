@@ -3,6 +3,8 @@
     "file_explorer": "Files",
     "no_file_resources": "No file",
     "upload_file": "Upload files",
-    "uploading_files": "Uploading {{nbFiles}} files"
+    "uploading_files": "Uploading {{nbFiles}} files",
+    "path": "Path",
+    "download_file": "Download file"
   }
 }
