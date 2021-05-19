@@ -15,8 +15,11 @@
     </fl-section-header>
 
     <ng-container *flSectionBody>
-      <gen-file-resource-table [datasource]="datasource" [columns]="columns">
-      </gen-file-resource-table>
+      <fl-infinite-scroll [datasource]="datasource" infiniteMode="body">
+        <gen-file-resource-table [datasource]="datasource" [columns]="columns">
+        </gen-file-resource-table>
+      </fl-infinite-scroll>
+
     </ng-container>
 
   </fl-async-section>
