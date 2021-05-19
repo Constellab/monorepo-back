@@ -14,3 +14,4 @@ export class BioxResource extends LabBaseEntity {
 }
 
 export type BioxResourceVM = ViewModel<BioxResource>;
+

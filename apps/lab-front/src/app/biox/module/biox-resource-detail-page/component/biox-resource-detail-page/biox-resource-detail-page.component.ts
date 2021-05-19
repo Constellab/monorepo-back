@@ -36,7 +36,7 @@ export class BioxResourceDetailPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.pipe(first()).subscribe(
-      params => this.init(params.id)
+      params => this.init(params.type, params.id)
     );
 
     this.route.queryParams.subscribe(
@@ -44,9 +44,9 @@ export class BioxResourceDetailPageComponent implements OnInit {
     );
   }
 
-  private init(id: string): void {
+  private init(type: string, id: string): void {
     this.resourceId = id;
-    this.resource$ = this.resourceService.getById(id).pipe(
+    this.resource$ = this.resourceService.getByTypeAndId(type, id).pipe(
       tap(resource => this.initViews(resource))
     );
   }

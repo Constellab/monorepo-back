@@ -20,7 +20,7 @@ export class BioxResourceInfoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.resourceDetailUrl = RouterService.getBioxResourceDetailRoute(this.resource.id);
+    this.resourceDetailUrl = RouterService.getBioxResourceDetailRoute(this.resource.type, this.resource.id);
   }
 
 }

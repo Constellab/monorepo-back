@@ -1,8 +1,9 @@
 import {Type} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Transform} from 'class-transformer';
-import {flLazyPropertyTransformToClass} from '@monorepo/front-core-lib';
+import {FlLazyPropertyTransform, flLazyPropertyTransformToClass} from '@monorepo/front-core-lib';
 import {LabUnconvertedEntity} from '../model/global/lab-entity.entity';
+import {BioxResourceService} from '../entity-service/biox-resource.service';
 
 /**
  * Annotation to create a FlLazyProperty from a sub object of type {@link LabUnconvertedEntity}
@@ -23,4 +24,17 @@ export function FlLazyPropertyLabTransform<SERVICE, ENTITY>(serviceType: Type<an
   return (target: any, key: string): void => {
     transformToClass(target, key);
   };
+}
+
+interface UnconvertedResource extends LabUnconvertedEntity {
+  type: string;
+}
+
+/**
+ * Annotation to create a FlLazyProperty of a {@link BioxResource} from a {@link UnconvertedResource}
+ */
+export function ResourceLazyProperty(): PropertyDecorator {
+
+  return FlLazyPropertyTransform(BioxResourceService,
+    (service, resource: UnconvertedResource) => service.getByTypeAndId(resource.type, resource.uri));
 }

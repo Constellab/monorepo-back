@@ -22,8 +22,8 @@ export class RouterService {
     return `${constBioxFullRoute}/experiment/${bioxExperimentId}`;
   }
 
-  public static getBioxResourceDetailRoute(bioxResourceId: string): string {
-    return `${constBioxFullRoute}/resource/${bioxResourceId}`;
+  public static getBioxResourceDetailRoute(type: string, id: string): string {
+    return `${constBioxFullRoute}/resource/${type}/${id}`;
   }
 
   /////////////////// NAVIGATE METHODS ///////////////////

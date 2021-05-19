@@ -1,9 +1,8 @@
 import {BioxConnection, BioxConnectionPart, BioxNode} from '../global/biox-connection.class';
 import {Exclude, Expose, Type} from 'class-transformer';
-import {FlLazyPropertyLabTransform} from '../../utils/lab-lazy-property.transform';
-import {BioxResourceService} from '../../entity-service/biox-resource.service';
-import {FlLazyProperty} from '@monorepo/front-core-lib';
+import {FlLazyPropertyId} from '@monorepo/front-core-lib';
 import {BioxResourceVM} from './biox-resource.entity';
+import {ResourceLazyProperty} from '../../utils/lab-lazy-property.transform';
 
 /**
  * Part of a link between different processable in protocol
@@ -51,6 +50,6 @@ export class BioxProtocolLink implements BioxConnection {
   @Type(() => BioxProtocolLinkPart)
   to: BioxProtocolLinkPart;
 
-  @FlLazyPropertyLabTransform(BioxResourceService)
-  resource: FlLazyProperty<BioxResourceVM>;
+  @ResourceLazyProperty()
+  resource: FlLazyPropertyId<BioxResourceVM>;
 }
