@@ -12,7 +12,7 @@
 
       <fl-section-actions>
         <fl-input-file-container color="primary" class="file-input" [disableFileDrop]="true"
-                                 [placeholder]="'fe.upload_file' | translate">
+                                 [placeholder]="'fe.upload_file' | translate" icon="cloud_upload">
           <input flInputFile [multiple]="true" type="file" (fileChange)="uploadFiles($event)"
                  [(ngModel)]="files">
         </fl-input-file-container>

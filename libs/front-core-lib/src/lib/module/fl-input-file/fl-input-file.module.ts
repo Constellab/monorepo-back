@@ -11,6 +11,7 @@ import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.modu
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flFileInputI18n} from './i18n/fl-input-file.i18n';
+import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
 
 /**
  * Form input to manage file
@@ -35,6 +36,7 @@ import {flFileInputI18n} from './i18n/fl-input-file.i18n';
 
     FlCoreDirectiveModule,
     FlTranslateModule,
+    FlSvgIconModule,
   ]
 })
 export class FlInputFileModule {

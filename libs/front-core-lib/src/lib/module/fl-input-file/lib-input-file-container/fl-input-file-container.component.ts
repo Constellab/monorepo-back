@@ -61,6 +61,11 @@ export class FlInputFileContainerComponent extends _FlInputFileContainerComponen
   @Input() placeholder: string;
 
   /**
+   * Icon show before the text
+   */
+  @Input() icon: string;
+
+  /**
    * If true, it no possible to drop a file on input
    */
   @Input() disableFileDrop: boolean = false;
