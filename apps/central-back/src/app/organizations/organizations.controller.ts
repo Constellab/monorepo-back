@@ -1,9 +1,12 @@
 import {Controller} from '@nestjs/common';
-import {OrganizationsService} from './organizations.service';
+import {Organization} from './organization.entity';
+import {AbstractSecureController} from '../core/class/abstract-secure.controller';
+import {OrganizationSecurityLayer} from './organization-security.layer';
 
 @Controller('organizations')
-export class OrganizationsController {
+export class OrganizationsController extends AbstractSecureController<Organization> {
 
-  constructor(private service: OrganizationsService) {
+  constructor(private securityLayer: OrganizationSecurityLayer) {
+    super(securityLayer, Organization);
   }
 }

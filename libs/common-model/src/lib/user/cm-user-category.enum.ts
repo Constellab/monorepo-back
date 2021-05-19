@@ -1,7 +1,7 @@
 /**
  * Type of the user
  */
-export enum UserCategory {
+export enum CmUserCategory {
   ADMIN = 'ADMIN',
   STUDENT = 'STUDENT',
   PUBLIC_RESEARCH = 'PUBLIC_RESEARCH',

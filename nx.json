@@ -45,6 +45,9 @@
     },
     "core-lib": {
       "tags": ["ts-core"]
+    },
+    "common-model": {
+      "tags": ["ts-core"]
     }
   }
 }

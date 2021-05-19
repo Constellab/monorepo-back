@@ -3,6 +3,7 @@ import { OrganizationsController } from './organizations.controller';
 import { OrganizationsService } from './organizations.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {Organization} from './organization.entity';
+import {OrganizationSecurityLayer} from './organization-security.layer';
 
 /**
  * Module to manage organization
@@ -12,6 +13,6 @@ import {Organization} from './organization.entity';
     TypeOrmModule.forFeature([Organization])
   ],
   controllers: [OrganizationsController],
-  providers: [OrganizationsService]
+  providers: [OrganizationsService, OrganizationSecurityLayer]
 })
 export class OrganizationsModule {}

@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
-import {User, UserCategory} from '../model/entities/user.class';
+import {User} from '../model/entities/user.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 import {FlApiService, FlCleanableService, FlCleanerService, FlThemeService, FlTranslateService} from '@monorepo/front-core-lib';
 import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {CmUserCategory} from '@monorepo/common-model';
 
 /**
  * Service to handle the current authenticated user
@@ -103,7 +104,7 @@ export class AuthenticatedUserService implements FlCleanableService {
     return this.userAuthenticated?.isAdmin() ?? false;
   }
 
-  public isCategory(...categories: UserCategory[]): boolean {
+  public isCategory(...categories: CmUserCategory[]): boolean {
     return this.userAuthenticated?.isCategory(...categories) ?? false;
   }
 

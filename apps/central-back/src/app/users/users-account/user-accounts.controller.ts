@@ -6,7 +6,7 @@ import {User} from '../user.entity';
 import {UserAccountsService} from './user-accounts.service';
 import {FrontService} from '../../core/services/front/front.service';
 import {UserCategories} from '../../core/decorators/user-category.decorator';
-import {UserCategory} from '../user-category.enum';
+import {CmUserCategory} from '@monorepo/common-model';
 
 /**
  * Open routes to manage users' accounts
@@ -91,7 +91,7 @@ export class UserAccountsController {
    * Route to set the admin activate a user.
    * Only accessible by admins
    */
-  @UserCategories(UserCategory.ADMIN)
+  @UserCategories(CmUserCategory.ADMIN)
   @Post('adminActivation/:userId')
   async adminActivation(@Param('userId', ParseUUIDPipe) userId: string): Promise<User> {
     return this.userAccountsService.adminActivation(userId);
@@ -100,7 +100,7 @@ export class UserAccountsController {
   /**
    * Get the list of users to need to be activated by an admin
    */
-  @UserCategories(UserCategory.ADMIN)
+  @UserCategories(CmUserCategory.ADMIN)
   @Get('usersToAdminActivate')
   findUsersToAdminActivate(): Promise<User[]> {
     return this.userAccountsService.findUsersToAdminActivate();

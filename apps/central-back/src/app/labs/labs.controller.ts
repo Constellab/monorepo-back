@@ -1,9 +1,9 @@
 import {Controller, Get} from '@nestjs/common';
 import {Lab} from './lab.entity';
 import {UserCategories} from '../core/decorators/user-category.decorator';
-import {UserCategory} from '../users/user-category.enum';
 import {LabsSecurityLayer} from './labs-security-layer.service';
 import {AbstractSecureController} from '../core/class/abstract-secure.controller';
+import {CmUserCategory} from '@monorepo/common-model';
 
 @Controller('labs')
 export class LabsController extends AbstractSecureController<Lab> {
@@ -23,7 +23,7 @@ export class LabsController extends AbstractSecureController<Lab> {
   /**
    * return the list of all labs
    */
-  @UserCategories(UserCategory.ADMIN)
+  @UserCategories(CmUserCategory.ADMIN)
   @Get('')
   public findAll(): Promise<Lab[]> {
     return this.securityLayer.findAll();

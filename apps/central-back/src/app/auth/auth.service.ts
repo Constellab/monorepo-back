@@ -10,6 +10,7 @@ import {MailService} from '../core/services/mail/mail.service';
 import {TokenService} from '../core/services/token/token.service';
 import {UserAccountsService} from '../users/users-account/user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
+import {CmUserStatus} from '@monorepo/common-model';
 
 @Injectable()
 export class AuthService {
@@ -36,11 +37,11 @@ export class AuthService {
       throw new UnauthorizedException(ErrorText.WRONG_CREDENTIALS);
     }
 
-    if (!user.activated) {
+    if (user.status === CmUserStatus.WAITING_FOR_EMAIL) {
       throw new UnauthorizedException(ErrorText.ACCOUNT_NOT_ACTIVATED);
     }
 
-    if (!user.adminActivated) {
+    if (user.status === CmUserStatus.WAITING_FOR_ADMIN) {
       throw new UnauthorizedException(ErrorText.ACCOUNT_NOT_ADMIN_ACTIVATED);
     }
 

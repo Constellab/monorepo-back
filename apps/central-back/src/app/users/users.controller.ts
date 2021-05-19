@@ -2,9 +2,9 @@ import {Controller, Get, Param, Put} from '@nestjs/common';
 import {UsersService} from './users.service';
 import {User} from './user.entity';
 import {UserCategories} from '../core/decorators/user-category.decorator';
-import {UserCategory} from './user-category.enum';
 import {ParseEnumPipe} from '../core/pipes/parse-enum.pipe';
 import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {CmUserCategory} from '@monorepo/common-model';
 
 @Controller('users')
 export class UsersController {
@@ -28,7 +28,7 @@ export class UsersController {
   }
 
 
-  @UserCategories(UserCategory.ADMIN)
+  @UserCategories(CmUserCategory.ADMIN)
   @Get('')
   findAll(): Promise<User[]> {
     return this.usersService.findAll();

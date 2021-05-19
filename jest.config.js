@@ -5,5 +5,6 @@ module.exports = {
     '<rootDir>/libs/front-core-lib',
     '<rootDir>/apps/central-back',
     '<rootDir>/libs/core-lib',
+    '<rootDir>/libs/common-model',
   ],
 };

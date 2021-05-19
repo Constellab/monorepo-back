@@ -1,12 +1,12 @@
 import {BeforeInsert, Column, Entity, ManyToMany, OneToOne} from 'typeorm';
 import {EntityWithId} from '../core/model/entities/entity-with-id.entity';
 import {Exclude} from 'class-transformer';
-import {UserCategory} from './user-category.enum';
 import {GroupSingleUser, GroupUsers} from '../groups/group.entity';
 import * as argon2 from 'argon2';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {LuxonDateTimeColumn} from '../core/decorators/luxon-column.decorator';
 import {DateTime} from 'luxon';
+import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 
 
 @Entity()
@@ -25,8 +25,8 @@ export class User extends EntityWithId {
   @Column({nullable: false})
   password: string;
 
-  @Column({nullable: false, type: 'enum', enum: UserCategory})
-  category: UserCategory;
+  @Column({nullable: false, type: 'enum', enum: CmUserCategory})
+  category: CmUserCategory;
 
   @Column({nullable: true})
   phone: string;
@@ -56,13 +56,8 @@ export class User extends EntityWithId {
     {cascade: ['insert']})
   ownGroup: GroupSingleUser;
 
-  @Exclude()
-  @Column({type: 'bool', default: false})
-  activated: boolean;
-
-  @Exclude()
-  @Column({type: 'bool', default: false})
-  adminActivated: boolean;
+  @Column({nullable: false, type: 'enum', enum: CmUserStatus, default: CmUserStatus.WAITING_FOR_EMAIL})
+  status: CmUserStatus;
 
   @LuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
@@ -73,8 +68,7 @@ export class User extends EntityWithId {
   initValues(): void {
     this.failedLoginCount = 0;
     this.lastLoginAttempt = null;
-    this.activated = false;
-    this.adminActivated = false;
+    this.status = CmUserStatus.WAITING_FOR_EMAIL;
     this.createdAt = ClDateHelper.getDate();
 
     // force the lang to en
@@ -99,7 +93,7 @@ export class User extends EntityWithId {
   }
 
   isAdmin(): boolean {
-    return this.category === UserCategory.ADMIN;
+    return this.category === CmUserCategory.ADMIN;
   }
 
 }

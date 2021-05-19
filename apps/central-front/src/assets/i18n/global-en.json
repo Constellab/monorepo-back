@@ -94,5 +94,6 @@
   "input_number_must_be_positive": "The input must be a positive number",
   "owner": "Owner",
   "language": "Language",
-  "user": "User"
+  "user": "User",
+  "organization_name": "Organization's name"
 }

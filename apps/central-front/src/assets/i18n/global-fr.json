@@ -94,5 +94,6 @@
   "input_number_must_be_positive": "La valeur doit être un entier positif",
   "owner": "Propriétaire",
   "language": "Langage",
-  "user": "Utilisateur"
+  "user": "Utilisateur",
+  "organization_name": "Nom de l'organisation"
 }

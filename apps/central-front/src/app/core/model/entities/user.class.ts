@@ -1,19 +1,13 @@
 import {DateTime} from 'luxon';
 import {ClLuxonTransform, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {Entity} from './entity.entity';
-
-export enum UserCategory {
-  ADMIN = 'ADMIN',
-  STUDENT = 'STUDENT',
-  PUBLIC_RESEARCH = 'PUBLIC_RESEARCH',
-  PRIVATE_INDUSTRY = 'PRIVATE_INDUSTRY',
-}
+import {CmUserCategory} from '@monorepo/common-model';
 
 export interface NewUser {
   firstname: string;
   lastname: string;
   email: string;
-  category: UserCategory;
+  category: CmUserCategory;
   password: string;
   repeatPassword: string;
 }
@@ -25,7 +19,7 @@ export class User extends Entity {
 
   email: string;
 
-  category: UserCategory;
+  category: CmUserCategory;
 
   phone: string;
 
@@ -56,11 +50,11 @@ export class User extends Entity {
   }
 
   public isAdmin(): boolean {
-    return this.category === UserCategory.ADMIN;
+    return this.category === CmUserCategory.ADMIN;
   }
 
   // return true if the user is one of the listed category
-  public isCategory(...categories: UserCategory[]): boolean {
+  public isCategory(...categories: CmUserCategory[]): boolean {
     if (categories == null || categories.length === 0) {
       return true;
     }

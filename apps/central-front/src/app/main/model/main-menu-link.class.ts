@@ -10,13 +10,13 @@ import {
   constProtocolsRoute,
   constSettingsFullRoute
 } from '../../core/utils/base-route';
-import {UserCategory} from '../../core/model/entities/user.class';
+import {CmUserCategory} from '@monorepo/common-model';
 
 export interface MainMenuLink {
   route: string;
   label: string;
   icon: string;
-  authorizedCategories?: UserCategory[];
+  authorizedCategories?: CmUserCategory[];
 }
 
 // list of the main menu links buttons
@@ -50,7 +50,7 @@ export const mainMenuLinks: MainMenuLink[] = [
     label: 'admin_dashboard',
     icon: 'admin_panel_settings',
     route: constAdminRoute,
-    authorizedCategories: [UserCategory.ADMIN]
+    authorizedCategories: [CmUserCategory.ADMIN]
   },
   {
     label: 'settings',

@@ -3,7 +3,7 @@ import {MatSelect} from '@angular/material/select';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 
 /**
- * List of option for a {@link UserCategory}
+ * List of option for a {@link CmUserCategory}
  */
 @Component({
   selector: 'gen-select-user-category-option',

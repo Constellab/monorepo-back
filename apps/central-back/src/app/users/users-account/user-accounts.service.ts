@@ -8,12 +8,12 @@ import {CoreConfigService} from '../../core/modules/core-config/core-config.serv
 import {MailService} from '../../core/services/mail/mail.service';
 import {TokenService} from '../../core/services/token/token.service';
 import {UsersService} from '../users.service';
-import {UserCategory} from '../user-category.enum';
 import {ErrorText} from '../../core/model/config/error-text.class';
 import {GroupSingleUser} from '../../groups/group.entity';
 import {GroupType} from '../../groups/group-type.enum';
 import {TokenExpiredError} from 'jsonwebtoken';
 import * as argon2 from 'argon2';
+import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -35,7 +35,7 @@ export class UserAccountsService {
   async signup(user: User): Promise<User> {
     return await getManager().transaction(async entityManager => {
 
-      if (user.category === UserCategory.ADMIN) {
+      if (user.category === CmUserCategory.ADMIN) {
         throw new UnauthorizedException();
       }
 
@@ -78,11 +78,12 @@ export class UserAccountsService {
   async activateAccount(token: string): Promise<void> {
     const user: User = await this.decodeUserToken(token);
 
-    if (user.activated) {
+    if (user.status !== CmUserStatus.WAITING_FOR_EMAIL) {
       throw new BadRequestException(ErrorText.ACCOUNT_ALREADY_ACTIVATED);
     }
 
-    user.activated = true;
+    // update the user status
+    user.status = CmUserStatus.WAITING_FOR_ADMIN;
     await this.usersService.update(user);
   }
 
@@ -180,17 +181,17 @@ export class UserAccountsService {
   public async adminActivation(userId: string): Promise<User> {
     const user: User = await this.usersService.findByIdAndCheck(userId);
 
-    if (user.adminActivated) {
+    if (user.status !== CmUserStatus.WAITING_FOR_ADMIN) {
       throw new BadRequestException(ErrorText.ACCOUNT_ALREADY_ACTIVATED);
     }
 
-    user.adminActivated = true;
+    user.status = CmUserStatus.INCOMPLETE;
     return this.usersService.update(user);
   }
 
   findUsersToAdminActivate(): Promise<User[]> {
     return this.repository.find({
-      where: {adminActivated: false},
+      where: {status: CmUserStatus.WAITING_FOR_ADMIN},
       order: {createdAt: 'DESC'}
     });
   }
