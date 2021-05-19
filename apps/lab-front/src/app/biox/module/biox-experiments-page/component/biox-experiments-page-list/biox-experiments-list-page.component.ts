@@ -7,11 +7,11 @@ import {RouterService} from '../../../../../core/service/router.service';
 import {ViewModel} from '../../../../../core/model/global/view-model.entity';
 
 @Component({
-  selector: 'gen-biox-experiments-page',
-  templateUrl: './biox-experiments-page.component.html',
-  styleUrls: ['./biox-experiments-page.component.scss']
+  selector: 'gen-biox-experiments-page-list',
+  templateUrl: './biox-experiments-list-page.component.html',
+  styleUrls: ['./biox-experiments-list-page.component.scss']
 })
-export class BioxExperimentsPageComponent implements OnInit {
+export class BioxExperimentsListPageComponent implements OnInit {
 
   bioxExperiments: BioxExperimentDatasource;
 

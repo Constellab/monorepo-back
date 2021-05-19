@@ -1,64 +1,62 @@
-<fl-infinite-scroll [datasource]="datasource" infiniteMode="body">
-  <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
+<mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
 
-    <!-- Title -->
-    <ng-container matColumnDef="title">
-      <mat-header-cell *matHeaderCellDef>
-        <span>{{'title' | translate}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let bioxExperiment">
-        <a [routerLink]="getBioxExperimentRoute(bioxExperiment)" class="g-text-link">
-          <span>{{bioxExperiment.data.title}}</span>
-        </a>
-      </mat-cell>
-    </ng-container>
+  <!-- Title -->
+  <ng-container matColumnDef="title">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'title' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let bioxExperiment">
+      <a [routerLink]="getBioxExperimentRoute(bioxExperiment)" class="g-text-link">
+        <span>{{bioxExperiment.data.title}}</span>
+      </a>
+    </mat-cell>
+  </ng-container>
 
-    <!-- score -->
-    <ng-container matColumnDef="score">
-      <mat-header-cell *matHeaderCellDef>
-        <span>{{'biox.score' | translate}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let bioxExperiment">
-        <span>{{bioxExperiment.score}}</span>
-      </mat-cell>
-    </ng-container>
+  <!-- score -->
+  <ng-container matColumnDef="score">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'biox.score' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let bioxExperiment">
+      <span>{{bioxExperiment.score}}</span>
+    </mat-cell>
+  </ng-container>
 
-    <!-- Status -->
-    <ng-container matColumnDef="status">
-      <mat-header-cell *matHeaderCellDef>
-        <span>{{'status' | translate}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let bioxExperiment">
-        <fl-status-chip [status]="$any(bioxExperiment)" mode="iconText">
-        </fl-status-chip>
-      </mat-cell>
-    </ng-container>
+  <!-- Status -->
+  <ng-container matColumnDef="status">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'status' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let bioxExperiment">
+      <fl-status-chip [status]="$any(bioxExperiment)" mode="iconText">
+      </fl-status-chip>
+    </mat-cell>
+  </ng-container>
 
-    <!-- Datetime -->
-    <ng-container matColumnDef="createdAt">
-      <mat-header-cell *matHeaderCellDef>
-        <span>{{'datetime' | translate}}</span>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let bioxExperiment">
-        <span>{{bioxExperiment.createdAt | flDate}}</span>
-      </mat-cell>
-    </ng-container>
-
-
-    <!-- Dynamic columns -->
-    <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
-      <mat-header-cell *matHeaderCellDef>
-        <p class="g-table-cell">{{column.columnName | translate}}</p>
-      </mat-header-cell>
-      <mat-cell *matCellDef="let bioxExperiment">
-        <div class="g-table-cell">
-          <span>{{bioxExperiment[column.accessor]}}</span>
-        </div>
-      </mat-cell>
-    </ng-container>
+  <!-- Datetime -->
+  <ng-container matColumnDef="createdAt">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'datetime' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let bioxExperiment">
+      <span>{{bioxExperiment.createdAt | flDate}}</span>
+    </mat-cell>
+  </ng-container>
 
 
-    <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
-  </mat-table>
-</fl-infinite-scroll>
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      <p class="g-table-cell">{{column.columnName | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let bioxExperiment">
+      <div class="g-table-cell">
+        <span>{{bioxExperiment[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>

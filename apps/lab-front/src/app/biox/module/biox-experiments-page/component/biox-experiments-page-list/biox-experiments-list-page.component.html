@@ -19,8 +19,10 @@
     <ng-container *flSectionBody>
       <fl-card>
         <fl-card-body>
-          <gen-biox-experiment-table [datasource]="bioxExperiments" [columns]="displayedColumns">
-          </gen-biox-experiment-table>
+          <fl-infinite-scroll [datasource]="bioxExperiments" infiniteMode="body">
+            <gen-biox-experiment-table [datasource]="bioxExperiments" [columns]="displayedColumns">
+            </gen-biox-experiment-table>
+          </fl-infinite-scroll>
         </fl-card-body>
       </fl-card>
     </ng-container>

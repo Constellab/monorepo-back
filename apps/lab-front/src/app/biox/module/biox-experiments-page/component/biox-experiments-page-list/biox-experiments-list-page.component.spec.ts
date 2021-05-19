@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BioxExperimentsPageComponent } from './biox-experiments-page.component';
+import { BioxExperimentsListPageComponent } from './biox-experiments-list-page.component';
 
 describe('BioxExperimentsPageComponent', () => {
-  let component: BioxExperimentsPageComponent;
-  let fixture: ComponentFixture<BioxExperimentsPageComponent>;
+  let component: BioxExperimentsListPageComponent;
+  let fixture: ComponentFixture<BioxExperimentsListPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BioxExperimentsPageComponent ]
+      declarations: [ BioxExperimentsListPageComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BioxExperimentsPageComponent);
+    fixture = TestBed.createComponent(BioxExperimentsListPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
