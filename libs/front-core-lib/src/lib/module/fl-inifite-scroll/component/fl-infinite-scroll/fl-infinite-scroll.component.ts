@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlDatasourcePaginated} from '../../../../model/datasource/fl-datasource-paginated.class';
 
+
 /**
  * Infinite scroll container that works with {@link FlDatasourcePaginated}
  * It handle the getNextPage automatically and add a button to load more result
@@ -59,14 +60,24 @@ export class FlInfiniteScrollComponent implements OnInit {
     if (this.datasource == null) {
       console.error('[FlInfiniteScrollComponent] missing datasource');
     }
+
+    // this.datasource.getStatus$().pipe(clRxjsDebug()).subscribe();
   }
 
   getNextPage(): void {
     this.datasource.getNextPage();
   }
 
+  /**
+   * Disabled the infinite scroll if
+   * Input Disable is true
+   * The datasource is loading
+   * The user has reached the last page
+   * The datasource status is error
+   */
   get isInfiniteDisabled(): boolean {
-    return this.datasource.isLoading || (this.datasource?.page.last ?? false) || this.disabled;
+    return this.datasource.isLoading || (this.datasource?.page.last ?? false) || this.disabled
+      || this.datasource.status.status === 'error';
   }
 
 }

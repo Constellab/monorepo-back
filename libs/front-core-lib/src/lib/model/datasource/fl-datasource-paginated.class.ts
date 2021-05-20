@@ -82,7 +82,7 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
     this.isLoading = true;
     this.getPageFunction(this.pageNumber, this.pageSize).subscribe(
       result => this.onSuccess(result),
-      error => this.error(error)
+      error => this.onError(error)
     );
   }
 
@@ -101,13 +101,17 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
 
 
   // revert pageNumber and clear loaders
-  private error(error: any): void {
+  private onError(error: any): void {
     this.isReady = true;
+
+    const isFirstPage: boolean = this.pageNumber === 0;
     if (this.pageNumber > 0) {
       this.pageNumber--;
     }
     this.clearAfterCall();
-    this.emitError(error);
+    // emit the error status
+    // if the page is the first one, close the observable
+    this.error(error, isFirstPage);
   }
 
   // clear loadings and subscriptions

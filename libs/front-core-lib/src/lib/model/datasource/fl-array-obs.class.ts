@@ -1,7 +1,37 @@
 import {BehaviorSubject, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {FlDatasource} from './fl-datasource.class';
 import {ClHelpService} from '@monorepo/core-lib';
+
+/**
+ * Status of the {@link FlArrayObs}
+ */
+export type FlArrayObsStatus = FlArrayObsStatusWaiting | FlArrayObsStatusSuccess
+  | FlArrayObsStatusError | FlArrayObsStatusComplete;
+
+
+export interface FlArrayObsStatusWaiting {
+  status: 'waiting';
+}
+
+/**
+ * Success status containing the last emitted value
+ */
+export interface FlArrayObsStatusSuccess<T = any> {
+  status: 'success';
+  result: T[];
+}
+
+
+export interface FlArrayObsStatusError<T = any> {
+  status: 'error';
+  error: T;
+}
+
+export interface FlArrayObsStatusComplete {
+  status: 'complete';
+}
+
 
 /**
  * Simple class to simplify array management (add update or delete item)
@@ -10,19 +40,11 @@ import {ClHelpService} from '@monorepo/core-lib';
  */
 export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
 
-  private _array: T[] = [];
-
-  public get array(): T[] {
-    return this._array || [];
-  }
-
-  public set array(array: T[]) {
-    this._array = [...array];
-    this.arrayChange$.next(null);
-  }
-
   // emit when the array has changed
-  private arrayChange$: BehaviorSubject<null> = new BehaviorSubject(null);
+  private array$: BehaviorSubject<T[]> = new BehaviorSubject(null);
+
+  // last status of the array obs
+  private status$: BehaviorSubject<FlArrayObsStatus> = new BehaviorSubject({status: 'waiting'});
 
 
   protected constructor(data?: T[] | Observable<T[]>) {
@@ -35,7 +57,8 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
         this.array = data;
       } else if (data instanceof Observable) {
         data.subscribe(
-          array => this.array = array
+          array => this.array = array,
+          error => this.error(error)
         );
       }
     }
@@ -56,17 +79,21 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
   public addItem(item: T | T[], order ?: (a: T, b: T, index: number) => boolean): void {
     const items: T[] = this.convertObjectOrArrayToArray(item);
 
+    if (items.length === 0) {
+      return;
+    }
+
+    const array: T[] = this.array;
+
     if (!order) {
-      this.array.push(...items);
+      array.push(...items);
     } else {
       for (const it of items) {
-        ClHelpService.insertIntoOrderedArray(it, this.array, order);
+        ClHelpService.insertIntoOrderedArray(it, array, order);
       }
     }
 
-    if (items.length > 0) {
-      this.arrayChange$.next(null);
-    }
+    this.array = array;
   }
 
   /**
@@ -86,14 +113,17 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
   public updateItem(item: T | T[]): void {
     const items: T[] = this.convertObjectOrArrayToArray(item);
 
-    for (const it of items) {
-      const index = this.array.findIndex(v => this.equals(it, v));
-      this.updateIndex(it, index);
+    if (items.length === 0) {
+      return;
     }
 
-    if (items.length > 0) {
-      this.arrayChange$.next(null);
+    const array: T[] = this.array;
+    for (const item of items) {
+      const index = array.findIndex(v => this.equals(item, v));
+      array[index] = item;
     }
+
+    this.array = array;
   }
 
   /**
@@ -103,14 +133,11 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
    * @param index index of the item
    */
   public updateIndex(item: T, index: number): void {
-    this.updateIndexLocal(item, index);
+    const array: T[] = this.array;
+    if (index >= 0 && index < array.length) {
+      array[index] = item;
 
-    this.arrayChange$.next(null);
-  }
-
-  private updateIndexLocal(item: T, index: number): void {
-    if (index >= 0 && index < this.array.length) {
-      this.array[index] = item;
+      this.array = array;
     }
   }
 
@@ -124,12 +151,18 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
   public removeItem(item: T | T[]): void {
     const items: T[] = this.convertObjectOrArrayToArray(item);
 
-    for (const it of items) {
-      const index = this.array.findIndex(v => this.equals(it, v));
-      this.removeIndex(index);
+    if (items.length === 0) {
+      return;
     }
 
-    this.arrayChange$.next(null);
+    const array: T[] = this.array;
+
+    for (const item of items) {
+      const index = array.findIndex(v => this.equals(item, v));
+      array.splice(index, 1);
+    }
+
+    this.array = array;
   }
 
   /**
@@ -138,52 +171,25 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
    * @param index to remove
    */
   public removeIndex(index: number): void {
-    this.removeIndexLocal(index);
+    const array: T[] = this.array;
 
-    this.arrayChange$.next(null);
-  }
+    if (index >= 0 && index < array.length) {
+      array.splice(index, 1);
 
-  // remove the index without emitting
-  private removeIndexLocal(index: number): void {
-    if (index >= 0 && index < this.array.length) {
-      this.array.splice(index, 1);
+      this.array = array;
     }
   }
 
-  ////////////////// OTHER ////////////////////////
-  private convertObjectOrArrayToArray(object: T | T[]): T[] {
-    return ClHelpService.convertObjectOrArrayToArray(object);
+  /////////////////////// ARRAY ////////////////////////
+  // return a copy of the array
+  public get array(): T[] {
+    return this.array$.value?.slice() ?? [];
   }
 
-  /**
-   * Returns a simple (not deep) copy of array
-   */
-  public clone(): T[] {
-    return [...this.array];
-  }
-
-  /**
-   * Subscribe to array changes
-   */
-  public connect(): Observable<T[]> {
-    return this.arrayChange$.asObservable().pipe(
-      map(() => this._array)
-    );
-  }
-
-  /**
-   * Clear observable
-   */
-  public disconnect(): void {
-    this.arrayChange$.complete();
-  }
-
-  public isEmpty(): boolean {
-    return this._array == null || this._array.length === 0;
-  }
-
-  public emitError(error: any): void {
-    this.arrayChange$.error(error);
+  public set array(array: T[]) {
+    this.array$.next(array);
+    // update the status to success
+    this.status = {status: 'success', result: array};
   }
 
   /**
@@ -192,5 +198,64 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
   public clearArray(): void {
     this.array = [];
   }
+
+
+  ///////////////////////// STATUS ///////////////////////
+  // return a copy of the array
+  public get status(): FlArrayObsStatus {
+    return this.status$.value;
+  }
+
+  public set status(status: FlArrayObsStatus) {
+    this.status$.next(status);
+  }
+
+  /**
+   * set the status as error
+   * @param error
+   * @param throwErrorInArray if true the error is thrown in the main array observable  (this will close the array observable)
+   */
+  public error(error: any, throwErrorInArray: boolean = false): void {
+    this.status = {status: 'error', error: error};
+
+    if(throwErrorInArray){
+      this.array$.error(error);
+    }
+  }
+
+  public getStatus$(): Observable<FlArrayObsStatus> {
+    return this.status$.asObservable();
+  }
+
+  /////////////////////// OTHER ////////////////////////
+  private convertObjectOrArrayToArray(object: T | T[]): T[] {
+    return ClHelpService.convertObjectOrArrayToArray(object);
+  }
+
+
+  /**
+   * Subscribe to array changes
+   */
+  public connect(): Observable<T[]> {
+    return this.array$.asObservable().pipe(
+      filter(array => array != null),
+      // return a copy of the array
+      map(array => array.slice())
+    );
+  }
+
+  /**
+   * Clear observable
+   */
+  public disconnect(): void {
+    this.array$.complete();
+    this.status = {status: 'complete'};
+    this.status$.complete();
+  }
+
+  public isEmpty(): boolean {
+    return this.array == null || this.array.length === 0;
+  }
+
 
 }
