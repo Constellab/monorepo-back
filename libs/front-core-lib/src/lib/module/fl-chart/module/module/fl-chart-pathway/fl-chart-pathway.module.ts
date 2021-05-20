@@ -11,6 +11,9 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FlCoreDirectiveModule} from '../../../../fl-core-directive/fl-core-directive.module';
+import {FlChartPathwayNodeLinksComponent} from './component/fl-chart-pathway-node-links/fl-chart-pathway-node-links.component';
+import {MatListModule} from '@angular/material/list';
+import {FlCoreComponentModule} from '../../../../fl-core-component/fl-core-component.module';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -18,10 +21,11 @@ import {FlCoreDirectiveModule} from '../../../../fl-core-directive/fl-core-direc
 @NgModule({
   declarations: [
     FlChartPathwayComponent,
-    FlChartPathwayNodeDetailComponent
+    FlChartPathwayNodeDetailComponent,
+    FlChartPathwayNodeLinksComponent
   ],
   exports: [
-    FlChartPathwayComponent
+    FlChartPathwayComponent,
   ],
   imports: [
     CommonModule,
@@ -31,11 +35,13 @@ import {FlCoreDirectiveModule} from '../../../../fl-core-directive/fl-core-direc
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
+    MatListModule,
 
     FlChartCoreModule,
     FlTranslateModule,
     FlJsonEditorModule,
     FlCoreDirectiveModule,
+    FlCoreComponentModule,
   ],
 })
 export class FlChartPathwayModule {

@@ -1,3 +1,4 @@
+
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -16,6 +17,7 @@ import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlSelectLanguageOptionsComponent} from './component/fl-select-language-options/fl-select-language-options.component';
 import {MatOptionModule} from '@angular/material/core';
+import { FlExternalLinkComponent } from './component/fl-external-link/fl-external-link.component';
 
 /**
  * Core modules containing components
@@ -27,12 +29,14 @@ import {MatOptionModule} from '@angular/material/core';
     FlNewWebsiteVersionComponent,
     FlChipComponent,
     FlSelectLanguageOptionsComponent,
+    FlExternalLinkComponent,
   ],
   exports: [
     FlBreadcrumbComponent,
     FlLimitHeightComponent,
     FlChipComponent,
     FlSelectLanguageOptionsComponent,
+    FlExternalLinkComponent,
   ],
   imports: [
     CommonModule,
