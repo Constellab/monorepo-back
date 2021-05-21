@@ -4,11 +4,7 @@ import {FlColorHelper} from '../../../../../utils/fl-color-helper.class';
 export class FlChartPathwayFactory {
 
   public static convertPathwayToChartPathway(pathway: FlPathway, defaultColor: string): FlChartPathwayData {
-    const data: FlChartPathwayData = {
-      metabolites: [],
-      reactions: [],
-      links: []
-    };
+    const data: FlChartPathwayData = new FlChartPathwayData();
 
     // create the metabolites nodes
     for (const metabolite of pathway.metabolites) {

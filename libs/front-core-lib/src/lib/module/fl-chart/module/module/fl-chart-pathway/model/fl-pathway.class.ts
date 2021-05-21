@@ -31,10 +31,26 @@ export interface FlPathwayReactions {
 /**
  * Data used to construct to d3 pathway
  */
-export interface FlChartPathwayData {
-  metabolites: FlChartPathwayNode[];
-  reactions: FlChartPathwayNode[];
-  links: FlChartPathwayLink<FlChartPathwayNode>[];
+export class FlChartPathwayData {
+  metabolites: FlChartPathwayNode[] = [];
+  reactions: FlChartPathwayNode[] = [];
+  links: FlChartPathwayLink<FlChartPathwayNode>[] = [];
+
+  // return the min and max value of all links
+  public getLinksDomain(): [number, number] {
+    let min: number = 0;
+    let max: number = 0;
+
+    for (const link of this.links) {
+      if (link.value > max) {
+        max = link.value;
+      } else if (link.value < min) {
+        min = link.value;
+      }
+    }
+
+    return [min, max];
+  }
 }
 
 export type FlChartPathwayNodeType = 'metabolite' | 'reaction';
@@ -83,7 +99,7 @@ export class FlChartPathwayLink<Node extends FlChartPathwayNode>
 
   source: Node;
   target: Node;
-  value: number
+  value: number;
   absValue: number;
 
   constructor(source: string, target: string,

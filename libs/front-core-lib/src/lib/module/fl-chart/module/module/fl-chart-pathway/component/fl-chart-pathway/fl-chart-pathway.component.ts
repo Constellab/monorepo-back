@@ -8,6 +8,7 @@ import {ValueFn} from 'd3-selection';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlThemeService} from '../../../../../../../service/fl-theme.service';
 import {FlThemeDetail} from '../../../../../../../service/model/fl-theme-detail.class';
+import {ScaleLinear} from 'd3-scale';
 
 @Component({
   selector: 'fl-chart-pathway',
@@ -215,14 +216,22 @@ export class FlChartPathwayComponent implements OnInit {
   }
 
   private initLinks(): void {
+    const colorScale = this.getLinkColorScale();
+
     this.links = this.mainGroup.append('g')
-      .attr('stroke', this.grey)
-      .attr('stroke-opacity', 0.6)
       .selectAll('polyline')
       .data(this.chartData.links)
       .join('polyline')
+      .attr('stroke', (d: FlChartPathwayLink<FlChartPathwayNode>) => colorScale(d.value))
+      .attr('stroke-opacity', 0.9)
       .attr('stroke-width', (d: FlChartPathwayLink<FlChartPathwayNode>) => d.absValue)
       .attr('marker-mid', 'url(#mid_arrow)') as any;
+  }
+
+  private getLinkColorScale(): ScaleLinear<string, any, any> {
+    const linkDomain: [number, number] = this.chartData.getLinksDomain();
+    return d3.scaleLinear<string>().domain([linkDomain[0], 0, linkDomain[1]])
+      .range(['red', '#E8F5E9', 'green']);
   }
 
 
