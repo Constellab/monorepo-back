@@ -51,6 +51,19 @@ export class FlChartPathwayData {
 
     return [min, max];
   }
+
+  // return the min and max value of all links
+  public getLinksMaxAbsoluteValue(): number {
+    let max: number = 0;
+
+    for (const link of this.links) {
+      if (link.absValue > max) {
+        max = link.absValue;
+      }
+    }
+
+    return max;
+  }
 }
 
 export type FlChartPathwayNodeType = 'metabolite' | 'reaction';

@@ -14,6 +14,8 @@ import {FlCoreDirectiveModule} from '../../../../fl-core-directive/fl-core-direc
 import {FlChartPathwayNodeLinksComponent} from './component/fl-chart-pathway-node-links/fl-chart-pathway-node-links.component';
 import {MatListModule} from '@angular/material/list';
 import {FlCoreComponentModule} from '../../../../fl-core-component/fl-core-component.module';
+import {MatSliderModule} from '@angular/material/slider';
+import {FormsModule} from '@angular/forms';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -29,6 +31,7 @@ import {FlCoreComponentModule} from '../../../../fl-core-component/fl-core-compo
   ],
   imports: [
     CommonModule,
+    FormsModule,
 
     MatSidenavModule,
     FlexLayoutModule,
@@ -36,6 +39,8 @@ import {FlCoreComponentModule} from '../../../../fl-core-component/fl-core-compo
     MatButtonModule,
     MatTooltipModule,
     MatListModule,
+    MatSliderModule,
+
 
     FlChartCoreModule,
     FlTranslateModule,

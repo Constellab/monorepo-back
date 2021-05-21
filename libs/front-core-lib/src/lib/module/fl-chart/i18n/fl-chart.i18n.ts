@@ -7,13 +7,15 @@ import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
  */
 const flChartI18nFr: FlLangTranslation = {
   flChart: {
-    pathway_links: 'Lien externes'
+    pathway_links: 'Lien externes',
+    pathway_link_value_help: 'Slider pour cacher les lien d\'une valeur inférieur à'
   }
 };
 
 const flChartI18nEn: FlLangTranslation = {
   flChart: {
-    pathway_links: 'External links'
+    pathway_links: 'External links',
+    pathway_link_value_help: 'Slide to hide link with a value lower than'
   }
 };
 

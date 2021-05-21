@@ -2,7 +2,32 @@
 
   <!-- Main content with chart -->
   <mat-drawer-content>
-    <div #chart class="g-full g-full-height"></div>
+    <div class="container" fxLayout="column">
+
+      <div #chart fxFlex="auto"></div>
+
+      <!--    Action bar on the bottom  -->
+      <div fxLayout="row" class="action-bar">
+
+        <!--   Slider to hide link     -->
+        <div>
+          <p class="g-text-small g-text-light">{{'flChart.pathway_link_value_help' | translate}} : {{sliderValue}}</p>
+          <mat-slider class="slider"
+            [disabled]="drawerState"
+            [max]="linksMaxAbsValue"
+            [min]="0"
+            [step]="1"
+            [thumbLabel]="true"
+            tickInterval="auto"
+            [(ngModel)]="sliderValue"
+            (input)="hideLinkLowerThan($event)">
+          </mat-slider>
+        </div>
+      </div>
+
+    </div>
+
+
   </mat-drawer-content>
 
   <mat-drawer mode="over" position="end" [(opened)]="drawerState" (closed)="resetNodeAndLinkOpacity()">

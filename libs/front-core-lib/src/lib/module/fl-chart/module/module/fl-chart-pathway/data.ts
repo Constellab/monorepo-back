@@ -1441,11 +1441,11 @@ export const bigPathwayData: FlPathway = {
       metabolites: {
         water_c: -1.0,
         L_glutamate_1_c: -1.0,
-        NAD_1_c: -1.0,
+        NAD_1_c: -3.0,
         '2_oxoglutarate_2_c': 1.0,
         hydron_c: 1.0,
         NADH_2_c: 1.0,
-        ammonium_c: 1.0
+        ammonium_c: 2.0
       }
     },
     {

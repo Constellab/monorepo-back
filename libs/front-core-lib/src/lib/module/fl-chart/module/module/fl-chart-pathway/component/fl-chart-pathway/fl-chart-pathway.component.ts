@@ -1,21 +1,22 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 import {FlChartPathwayData, FlChartPathwayLink, FlChartPathwayNode, FlPathway} from '../../model/fl-pathway.class';
 import {FlCoord, FlD3SelectionSimple, FlD3ZoomEvent} from '../../../../../model/fl-d3.class';
 import {Simulation} from 'd3-force';
-import {FlChartPathwayFactory} from '../../fl-chart-pathway.factory';
 import {ValueFn} from 'd3-selection';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlThemeService} from '../../../../../../../service/fl-theme.service';
 import {FlThemeDetail} from '../../../../../../../service/model/fl-theme-detail.class';
 import {ScaleLinear} from 'd3-scale';
+import {FlChartPathwayFactory} from '../../fl-chart-pathway.factory';
+import {MatSliderChange} from '@angular/material/slider';
 
 @Component({
   selector: 'fl-chart-pathway',
   templateUrl: './fl-chart-pathway.component.html',
   styleUrls: ['./fl-chart-pathway.component.scss']
 })
-export class FlChartPathwayComponent implements OnInit {
+export class FlChartPathwayComponent implements OnInit, AfterViewInit {
 
   @Input() data: FlPathway;
 
@@ -40,6 +41,9 @@ export class FlChartPathwayComponent implements OnInit {
   drawerState: boolean = false;
   selectedNode: FlChartPathwayNode;
 
+  sliderValue: number = 0;
+  linksMaxAbsValue: number;
+
   ////////////// READONLY VARIABLE //////////////////
 
 
@@ -55,7 +59,7 @@ export class FlChartPathwayComponent implements OnInit {
   readonly backgroundColor: string;
   readonly selectNodeColor: string;
 
-  constructor(themeService: FlThemeService) {
+  constructor(themeService: FlThemeService, private cdr: ChangeDetectorRef) {
     const themeDetail: FlThemeDetail = themeService.getCurrentThemeDetail();
     this.textColor = themeDetail.foreground;
     this.backgroundColor = themeDetail.background;
@@ -67,6 +71,9 @@ export class FlChartPathwayComponent implements OnInit {
       console.error('[FlChartPathwayComponent] Data not provided');
     }
 
+  }
+
+  ngAfterViewInit(): void {
     this.initChartSize();
 
     this.chartData = FlChartPathwayFactory.convertPathwayToChartPathway(this.data, this.grey);
@@ -84,11 +91,16 @@ export class FlChartPathwayComponent implements OnInit {
     this.simulation.tick(1000);
 
     this.simulation.on('end', () => this.endSimulation());
+
+    // avoid change detection error as we are in AfterViewInit
+    this.cdr.detectChanges();
   }
+
 
   private initChartSize(): void {
     this.chartWidth = this.chartHtmlContainer.nativeElement.clientWidth;
-    this.chartHeight = this.chartHtmlContainer.nativeElement.clientHeight;
+    // set height minus 10 to avoid scrollbar
+    this.chartHeight = (this.chartHtmlContainer.nativeElement.clientHeight - 10);
   }
 
   private initSimulation(): void {
@@ -226,6 +238,8 @@ export class FlChartPathwayComponent implements OnInit {
       .attr('stroke-opacity', 0.9)
       .attr('stroke-width', (d: FlChartPathwayLink<FlChartPathwayNode>) => d.absValue)
       .attr('marker-mid', 'url(#mid_arrow)') as any;
+
+    this.linksMaxAbsValue = this.chartData.getLinksMaxAbsoluteValue();
   }
 
   private getLinkColorScale(): ScaleLinear<string, any, any> {
@@ -381,6 +395,9 @@ export class FlChartPathwayComponent implements OnInit {
 
     // update link opacity
     this.links.style('opacity', 1);
+
+    // also reset slider
+    this.sliderValue = 0;
   }
 
 
@@ -422,5 +439,11 @@ export class FlChartPathwayComponent implements OnInit {
             -1px 1px 0 ${this.backgroundColor}, 1px 1px 0 ${this.backgroundColor}`;
   }
 
+  // set opacity to 0.1 to link where abs value is lower than slider value
+  hideLinkLowerThan(change: MatSliderChange): void {
+    // update link opacity
+    this.links.style('opacity', (link: FlChartPathwayLink<FlChartPathwayNode>) =>
+      link.absValue >= change.value ? 1 : 0.1);
+  }
 
 }
