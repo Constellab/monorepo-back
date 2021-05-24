@@ -1,5 +1,9 @@
 <div>
-  <div *ngIf="node.object.data.description" class="g-text-light">{{node.object.data.description}}</div>
+
+  <div class="g-text-light">
+    <p>{{'biox.node_type' | translate}} : {{node.object.type}}</p>
+    <p *ngIf="node.object.data.description">{{node.object.data.description}}</p>
+  </div>
 
   <div class="g-section">
     <!-- Inputs -->
@@ -12,7 +16,7 @@
           </fl-text-icon>
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <gen-biox-workflow-ports-list class="expansion-content" [ports]="node.inputPorts"></gen-biox-workflow-ports-list>
+      <gen-biox-workflow-ports-list [ports]="node.inputPorts"></gen-biox-workflow-ports-list>
     </mat-expansion-panel>
 
     <mat-divider></mat-divider>
@@ -27,13 +31,13 @@
           </fl-text-icon>
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <gen-biox-workflow-ports-list class="expansion-content" [ports]="node.outputPorts"></gen-biox-workflow-ports-list>
+      <gen-biox-workflow-ports-list [ports]="node.outputPorts"></gen-biox-workflow-ports-list>
     </mat-expansion-panel>
 
     <mat-divider></mat-divider>
 
-    <!-- Config   -->
-    <mat-expansion-panel *ngIf="config" hideToggle [expanded]="true">
+    <!-- Config -->
+    <mat-expansion-panel *ngIf="config" hideToggle [expanded]="true" #configPanel>
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
           <fl-text-icon>
@@ -42,13 +46,35 @@
           </fl-text-icon>
         </mat-panel-title>
         <mat-panel-description fxLayout="row" fxLayoutAlign="end" *ngIf="isEditable">
-          <button mat-icon-button type="button"
-                  (click)="openConfig($event)">
+          <button mat-icon-button type="button" class="edit-button"
+                  (click)="openConfig($event, configPanel)">
             <mat-icon>edit</mat-icon>
           </button>
         </mat-panel-description>
       </mat-expansion-panel-header>
-      <gen-biox-workflow-node-config class="expansion-content" [config]="config"></gen-biox-workflow-node-config>
+      <gen-biox-workflow-node-config [config]="config"></gen-biox-workflow-node-config>
+    </mat-expansion-panel>
+
+    <mat-divider></mat-divider>
+
+    <!--  Progress -->
+    <mat-expansion-panel *ngIf="showProgress" hideToggle [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
+          <fl-text-icon>
+            <fl-status-chip [status]="node.object.progressBar"></fl-status-chip>
+          </fl-text-icon>
+        </mat-panel-title>
+
+        <!--    Show the progress if it's running    -->
+        <mat-panel-description>
+          <div *ngIf="node.object.progressBar.getStatusName() === 'running'">
+           {{node.object.progressBar.getProgress()}} %
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <gen-biox-workflow-node-progress [progressBar]="node.object.progressBar"></gen-biox-workflow-node-progress>
     </mat-expansion-panel>
 
     <mat-divider></mat-divider>

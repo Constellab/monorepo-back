@@ -3,8 +3,6 @@
 // This style need to be imported in order to user the library
 // It includes global style required for dialog, snackbar...
 
-@import "./mixin-style";
-
 
 /************************ Global override *************************/
 html {
@@ -127,18 +125,6 @@ ul, ol {
 
 .g-text-centered {
   text-align: center;
-}
-
-.g-text-success {
-  @include g-text-success;
-}
-
-.g-text-error {
-  @include g-text-error;
-}
-
-.g-text-warning {
-  @include g-text-warning;
 }
 
 .g-text-white {

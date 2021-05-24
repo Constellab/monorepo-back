@@ -1,11 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {WorkflowNode} from '../../model/workflow-node.class';
-import {BioxProcessableBase} from '../../../../../core/model/entities/biox-processable.entity';
+import {BioxProcessable, BioxProcessableBase} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxConfig} from '../../../../../core/model/entities/biox-config.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {BioxConfigureSpecsDialogComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
+import {MatExpansionPanel} from '@angular/material/expansion';
 
 @Component({
   selector: 'gen-biox-workflow-node-detail',
@@ -14,7 +15,7 @@ import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-
 })
 export class BioxWorkflowNodeDetailComponent implements OnInit {
 
-  @Input() node: WorkflowNode<any>;
+  @Input() node: WorkflowNode<BioxProcessable>;
 
   constructor(private dialogService: FlDialogService,
               private experimentState: BioxExperimentDetailPageState) {
@@ -35,7 +36,12 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
     return this.experimentState.isEditable();
   }
 
-  openConfig(event: MouseEvent): void {
+  // show the progress section if the progress bar has started
+  get showProgress(): boolean{
+    return this.node.object.progressBar.wasStarted();
+  }
+
+  openConfig(event: MouseEvent, panel: MatExpansionPanel): void {
     ClHelpService.stopEventPropagation(event);
 
     console.log(this.config.data.getDynamicFormFieldsConfig());
@@ -44,6 +50,8 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
       {data: this.config.data}).afterClosed().subscribe(
       config => this.onConfigDialogClosed(config)
     );
+
+    panel.open();
   }
 
   private onConfigDialogClosed(config?: any): void {

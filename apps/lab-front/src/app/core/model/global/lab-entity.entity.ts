@@ -25,6 +25,13 @@ export class LabBaseEntity extends LabEntity {
   @ClLuxonTransform()
   createdAt: DateTime;
 
+  @Expose({name: 'is_archived'})
+  isArchived: boolean;
+
+  @Expose({name: 'save_datetime'})
+  @ClLuxonTransform()
+  savedAt: DateTime;
+
 }
 
 

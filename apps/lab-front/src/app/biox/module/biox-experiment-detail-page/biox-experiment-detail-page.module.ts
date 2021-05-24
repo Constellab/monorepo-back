@@ -24,6 +24,7 @@ import { BioxWorkflowAddProcessComponent } from './component/biox-workflow-add-p
 import { BioxWorkflowPortsListComponent } from './component/biox-workflow-ports-list/biox-workflow-ports-list.component';
 import { BioxWorkflowPortComponent } from './component/biox-workflow-port/biox-workflow-port.component';
 import { BioxWorkflowNodeConfigComponent } from './component/biox-workflow-node-config/biox-workflow-node-config.component';
+import { BioxWorkflowNodeProgressComponent } from './component/biox-workflow-node-progress/biox-workflow-node-progress.component';
 
 
 @NgModule({
@@ -41,6 +42,7 @@ import { BioxWorkflowNodeConfigComponent } from './component/biox-workflow-node-
     BioxWorkflowPortsListComponent,
     BioxWorkflowPortComponent,
     BioxWorkflowNodeConfigComponent,
+    BioxWorkflowNodeProgressComponent,
   ],
   imports: [
     CommonModule,

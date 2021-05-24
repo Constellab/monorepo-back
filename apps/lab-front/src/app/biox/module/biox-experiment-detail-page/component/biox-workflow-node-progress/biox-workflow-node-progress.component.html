@@ -1,0 +1,11 @@
+
+
+
+<mat-list dense>
+  <mat-list-item *ngFor="let message of progressBar.data.messages">
+    <div fxLayout="row" fxLayoutAlign="space-between" class="g-full">
+      <div>{{message.text}}</div>
+      <div class="g-text-light date">{{message.datetime | flDate : 'HH:mm:ss'}}</div>
+    </div>
+  </mat-list-item>
+</mat-list>

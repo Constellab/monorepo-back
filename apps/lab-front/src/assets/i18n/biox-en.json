@@ -19,8 +19,11 @@
     "resource_view_pathway": "Show the pathway",
     "workflow_loading_error": "Error while retrieving protocol",
     "add_process": "Add a process",
+    "add_process_title": "Add a process (double clics)",
     "node_inputs": "Inputs",
     "node_outputs": "Outputs",
-    "open_node_detail": "Detail"
+    "open_node_detail": "Detail",
+    "node_type": "Type",
+    "node_progress": "Progress"
   }
 }

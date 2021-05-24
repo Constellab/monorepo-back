@@ -1,7 +1,7 @@
 @import 'node_modules/@angular/material/theming';
-@import "libs/front-core-lib/src/style/mixin-style";
 // Import input-file style
 @import "libs/front-core-lib/src/lib/module/fl-input-file/lib-input-file-container/fl-input-file-theme";
+
 
 
 /**
@@ -17,6 +17,10 @@
   $foreground-color: mat-color($foreground, text);
   $background-color: mat-color($background, background);
   $divider: mat-color($foreground, dividers);
+
+  $color-success: #22B252;
+  $color-warning: orange;
+  $color-error: mat-color($warn);
 
   // define the material theme
   @include angular-material-theme($mat-theme);
@@ -187,5 +191,32 @@
 
   .g-grey-text {
     background-color:  var(--grey-high-contrast);
+  }
+
+  .g-success-text {
+    color: $color-success;
+  }
+
+  .g-warning-text {
+    color: $color-warning;
+  }
+
+  .g-error-text {
+    color: $color-error;
+  }
+
+  .g-success-background{
+    background-color: $color-success;
+    color: white;
+  }
+
+  .g-warning-background{
+    background-color: $color-warning;
+    color: white;
+  }
+
+  .g-error-background{
+    background-color: $color-error;
+    color: white;
   }
 }

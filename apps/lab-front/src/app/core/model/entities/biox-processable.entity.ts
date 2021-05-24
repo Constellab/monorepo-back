@@ -7,6 +7,7 @@ import {BioxSpec} from './biox-spec.entity';
 import {ViewModel} from '../global/view-model.entity';
 import {ViewModelDatasourcePaginated} from '../../utils/view-model.datasource';
 import {BioxProtocolLink} from './biox-protocol-link.entity';
+import {BioxProgressBar} from './biox-progress-bar.entity';
 
 
 // const bioxFlowGraphDeserialization: ClDeserializeItem<BioxFlowGraph> = (item: any): BioxFlowGraph => {
@@ -45,6 +46,10 @@ export class BioxProcessableBase extends BioxNode {
   @Expose({name: 'output'})
   @ClRecordTransform(BioxSpec)
   outputSpecs: Record<string, BioxSpec>;
+
+  @Expose({name: 'progress_bar'})
+  @Type(() => BioxProgressBar)
+  progressBar: BioxProgressBar;
 
   public isProtocol(): boolean {
     return this.type === 'gws.model.Protocol';
