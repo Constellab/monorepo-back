@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BioxResourceVM} from '../../../../model/entities/biox-resource.entity';
+import {BioxResource} from '../../../../model/entities/biox-resource.entity';
 
 /**
  * Display the resource json
@@ -11,9 +11,10 @@ import {BioxResourceVM} from '../../../../model/entities/biox-resource.entity';
 })
 export class BioxResourceJsonComponent implements OnInit {
 
-  @Input() resource: BioxResourceVM;
+  @Input() resource: BioxResource;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

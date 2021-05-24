@@ -18,7 +18,7 @@ export class BioxProtocolService {
   }
 
   public getProtocols(page: number, pageSize: number): Observable<ClPage<BioxProtocolVM>> {
-    return this.apiService.get(`protocol/list`, createViewModel(BioxProtocol),
+    return this.apiService.get(`protocol`, createViewModel(BioxProtocol),
       {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
 
@@ -31,7 +31,7 @@ export class BioxProtocolService {
   }
 
   public getProtocol(protocolId: string): Observable<BioxProtocol> {
-    return this.apiService.get(`protocol/${protocolId}`, BioxProtocol);
+    return this.apiService.get(`protocol/${protocolId}/gws.model.Protocol`, BioxProtocol);
   }
 
   public getProtocolAsFlow(protocolId: string): Observable<BioxFlow<BioxProtocol>> {

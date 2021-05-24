@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {BioxResource, BioxResourceVM} from '../model/entities/biox-resource.entity';
-import {createViewModel} from '../model/global/view-model.entity';
+import {BioxResource} from '../model/entities/biox-resource.entity';
 
 
 @Injectable({
@@ -10,12 +9,13 @@ import {createViewModel} from '../model/global/view-model.entity';
 })
 export class BioxResourceService {
 
+  private readonly route: string = 'resource';
 
   constructor(private apiService: FlApiService) {
   }
 
-  public getByTypeAndId(type: string, id: string): Observable<BioxResourceVM> {
-    return this.apiService.get(`view/${type}/${id}`, createViewModel(BioxResource));
+  public getByTypeAndId(type: string, id: string): Observable<BioxResource> {
+    return this.apiService.get(`${this.route}/${type}/${id}`, BioxResource);
   }
 
 }

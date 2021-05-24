@@ -15,7 +15,7 @@ export class BiotaDatabaseService {
   }
 
   public countDatabaseEntries(databaseType: string): Observable<number> {
-    return this.apiService.get(`count/${databaseType}`).pipe(
+    return this.apiService.get(`model/${databaseType}/count`).pipe(
       map(value => {
         if (typeof value === 'number') {
           return value;

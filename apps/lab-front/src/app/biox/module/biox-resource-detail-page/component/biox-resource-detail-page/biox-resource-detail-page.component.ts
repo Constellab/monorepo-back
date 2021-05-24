@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {BioxResourceService} from '../../../../../core/entity-service/biox-resource.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
-import {BioxResourceVM} from '../../../../../core/model/entities/biox-resource.entity';
+import {BioxResource} from '../../../../../core/model/entities/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
 
 interface View {
@@ -24,7 +24,7 @@ const pathwayView: View = {route: 'pathway', icon: 'share', tooltip: 'biox.resou
 export class BioxResourceDetailPageComponent implements OnInit {
 
   resourceId: string;
-  resource$: Observable<BioxResourceVM>;
+  resource$: Observable<BioxResource>;
 
   availableViews: View[];
   currentView?: string;
@@ -51,12 +51,12 @@ export class BioxResourceDetailPageComponent implements OnInit {
     );
   }
 
-  private initViews(resource: BioxResourceVM): void {
+  private initViews(resource: BioxResource): void {
     this.availableViews = [jsonView, spreadsheetView];
     let defaultView: View = this.availableViews[0];
 
     // if the resource is a network, add the network view and set it by default
-    if (resource.model.type === 'gena.network.Network') {
+    if (resource.type === 'gena.network.Network') {
       this.availableViews.push(pathwayView);
       defaultView = pathwayView;
     }

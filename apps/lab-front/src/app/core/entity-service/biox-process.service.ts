@@ -16,7 +16,7 @@ export class BioxProcessService {
 
   // todo voir si c'est bien process-type et créer une class si oui
   public getProcesses(page: number, pageSize: number): Observable<ClPage<BioxProcessVM>> {
-    return this.apiService.get(`process-type/list`, createViewModel(BioxProcess),
+    return this.apiService.get(`process-type`, createViewModel(BioxProcess),
       {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
 
@@ -28,3 +28,6 @@ export class BioxProcessService {
     return (page: number, pageSize: number): Observable<ClPage<BioxProcessVM>> => this.getProcesses(page, pageSize);
   }
 }
+
+
+

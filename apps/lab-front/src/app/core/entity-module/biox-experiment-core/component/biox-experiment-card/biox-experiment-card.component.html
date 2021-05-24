@@ -11,8 +11,7 @@
   <fl-card-body>
     {{'datetime'| translate}} : {{experiment.createdAt | flDate}}
 
-    <div>
-      {{experiment.data.description}}
+    <div [innerHTML]="experiment.data.description">
     </div>
   </fl-card-body>
 </fl-card>

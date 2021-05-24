@@ -13,7 +13,7 @@ export class BioxProcessTypeService {
   }
 
   public getProcesses(page: number, pageSize: number): Observable<ClPage<BioxProcessType>> {
-    return this.apiService.get(`process-type/list`, BioxProcessType,
+    return this.apiService.get(`process-type`, BioxProcessType,
       {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
 

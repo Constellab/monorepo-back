@@ -76,8 +76,8 @@ export class FlInfiniteScrollComponent implements OnInit {
    * The datasource status is error
    */
   get isInfiniteDisabled(): boolean {
-    return this.datasource.isLoading || (this.datasource?.page.last ?? false) || this.disabled
-      || this.datasource.status.status === 'error';
+    return this.datasource.isLoading || this.disabled
+      || this.datasource.status.status === 'error' || (this.datasource?.page?.last ?? false);
   }
 
 }

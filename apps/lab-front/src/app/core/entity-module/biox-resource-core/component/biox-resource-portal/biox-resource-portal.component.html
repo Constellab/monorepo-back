@@ -1,6 +1,6 @@
 <fl-async-section [object]="resource" [nullOrEmptyIsValid]="true">
   <ng-container *flSectionBody="let resource">
-    <gen-biox-resource-info *ngIf="resource; else noResource" [resource]="resource.model"></gen-biox-resource-info>
+    <gen-biox-resource-info *ngIf="resource; else noResource" [resource]="resource"></gen-biox-resource-info>
 
     <ng-template #noResource>
       {{'resource_empty' | translate}}

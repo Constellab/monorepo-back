@@ -4,7 +4,6 @@ import {BioxExperimentService} from '../../../../../core/entity-service/biox-exp
 import {BioxExperiment, ExperimentUpdate} from '../../../../../core/model/entities/biox-experiment.entity';
 import {BioxProtocolGraph} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
-import {ViewModel} from '../../../../../core/model/global/view-model.entity';
 import {FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
 import {WorkflowActionState} from '../../state/workflow-action-state.service';
@@ -75,7 +74,7 @@ export class BioxWorkflowActionsComponent implements OnInit {
     );
   }
 
-  private onSaveSuccess(experiment: ViewModel<BioxExperiment>): void {
+  private onSaveSuccess(experiment: BioxExperiment): void {
     console.log(experiment);
     this.snackBarService.openSuccessMessage('biox.experiment_saved', true);
     this.saveIsLoading = false;
@@ -91,7 +90,7 @@ export class BioxWorkflowActionsComponent implements OnInit {
     );
   }
 
-  private onStartSuccess(tes: ViewModel<BioxExperiment>): void {
+  private onStartSuccess(tes: BioxExperiment): void {
     console.log(tes);
     this.snackBarService.openSuccessMessage('biox.experiment_started', true);
     this.startIsLoading = false;

@@ -28,7 +28,7 @@ export class FileResourceService {
   }
 
   public getAll(page: number, pageSize: number): Observable<ClPage<FileResource>> {
-    return this.apiService.get(`view/gws.file.File/all`, FileResource,
+    return this.apiService.get(`file/gws.file.File`, FileResource,
       {resultIsPaginated: true, page: page + 1, pageSize: pageSize});
   }
 

@@ -47,7 +47,7 @@ export class BioxProcessableBase extends BioxNode {
   outputSpecs: Record<string, BioxSpec>;
 
   public isProtocol(): boolean {
-    return this.data.graph != null;
+    return this.type === 'gws.model.Protocol';
   }
 
   public isProcess(): boolean {

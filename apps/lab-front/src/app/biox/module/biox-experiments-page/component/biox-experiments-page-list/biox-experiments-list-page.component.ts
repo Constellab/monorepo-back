@@ -4,7 +4,6 @@ import {BioxExperiment, BioxExperimentDatasource} from '../../../../../core/mode
 import {BioxExperimentFormDialogComponent} from '../../../../../core/entity-module/biox-experiment-core/component/biox-experiment-form-dialog/biox-experiment-form-dialog.component';
 import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
 import {RouterService} from '../../../../../core/service/router.service';
-import {ViewModel} from '../../../../../core/model/global/view-model.entity';
 
 @Component({
   selector: 'gen-biox-experiments-page-list',
@@ -34,10 +33,9 @@ export class BioxExperimentsListPageComponent implements OnInit {
     );
   }
 
-  // todo
-  private onCreateExperimentClosed(experiment?: ViewModel<BioxExperiment>): void {
+  private onCreateExperimentClosed(experiment?: BioxExperiment): void {
     if (experiment) {
-      this.routerService.navigateToBioxExperimentDetail(experiment.model.id);
+      this.routerService.navigateToBioxExperimentDetail(experiment.id);
     }
   }
 }

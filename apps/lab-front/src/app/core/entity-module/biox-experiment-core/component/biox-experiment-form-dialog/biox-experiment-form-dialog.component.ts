@@ -6,7 +6,6 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Observable} from 'rxjs';
 import {BioxExperimentService} from '../../../../entity-service/biox-experiment.service';
 import {Validators} from '@angular/forms';
-import {ViewModel} from '../../../../model/global/view-model.entity';
 
 /**
  * Dialog form to create or update an experiment
@@ -16,7 +15,7 @@ import {ViewModel} from '../../../../model/global/view-model.entity';
   templateUrl: './biox-experiment-form-dialog.component.html',
   styleUrls: ['./biox-experiment-form-dialog.component.scss']
 })
-export class BioxExperimentFormDialogComponent extends FlFormDialogAbstractDirective<ExperimentSimpleForm, ViewModel<BioxExperiment>>
+export class BioxExperimentFormDialogComponent extends FlFormDialogAbstractDirective<ExperimentSimpleForm, BioxExperiment>
   implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: FlFormDialogInput<ExperimentSimpleForm>,
@@ -37,12 +36,12 @@ export class BioxExperimentFormDialogComponent extends FlFormDialogAbstractDirec
     });
   }
 
-  create(formValue: ExperimentSimpleForm): Observable<ViewModel<BioxExperiment>> {
+  create(formValue: ExperimentSimpleForm): Observable<BioxExperiment> {
     return this.experimentService.create(formValue);
   }
 
-  update(formValue: ExperimentSimpleForm): Observable<ViewModel<BioxExperiment>> {
-    console.error('TODO')
+  update(formValue: ExperimentSimpleForm): Observable<BioxExperiment> {
+    console.error('TODO');
     return null;
     // return this.experimentService.updateSimple(formValue);
   }
