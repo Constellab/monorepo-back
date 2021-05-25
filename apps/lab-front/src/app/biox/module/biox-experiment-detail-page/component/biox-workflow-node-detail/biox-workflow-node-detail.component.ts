@@ -38,7 +38,7 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
 
   // show the progress section if the progress bar has started
   get showProgress(): boolean{
-    return this.node.object.progressBar.wasStarted();
+    return this.node.object.progressBar != null && this.node.object.progressBar.wasStarted();
   }
 
   openConfig(event: MouseEvent, panel: MatExpansionPanel): void {

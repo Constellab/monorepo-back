@@ -3,7 +3,6 @@
 @import "libs/front-core-lib/src/lib/module/fl-input-file/lib-input-file-container/fl-input-file-theme";
 
 
-
 /**
  * It apply the theme in parameter and define global css variable for theme
   This mixin must be call only once
@@ -183,6 +182,10 @@
     background-color: mat-color($background, card);
   }
 
+  .g-default-color-text {
+    color: $foreground-color;
+  }
+
   // grey color working for both theme
   .g-grey-background {
     background-color: var(--grey-high-contrast);
@@ -190,7 +193,7 @@
   }
 
   .g-grey-text {
-    background-color:  var(--grey-high-contrast);
+    background-color: var(--grey-high-contrast);
   }
 
   .g-success-text {
@@ -205,17 +208,17 @@
     color: $color-error;
   }
 
-  .g-success-background{
+  .g-success-background {
     background-color: $color-success;
     color: white;
   }
 
-  .g-warning-background{
+  .g-warning-background {
     background-color: $color-warning;
     color: white;
   }
 
-  .g-error-background{
+  .g-error-background {
     background-color: $color-error;
     color: white;
   }
