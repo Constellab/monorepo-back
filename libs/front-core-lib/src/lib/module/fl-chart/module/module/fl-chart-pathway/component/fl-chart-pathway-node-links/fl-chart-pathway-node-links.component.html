@@ -1,8 +1,8 @@
 <p>{{'flChart.pathway_links' | translate }}</p>
 
 <mat-nav-list dense>
-  <mat-list-item *ngFor="let link of links">
-    <a matLine [href]="link.link" target="_blank">{{ link.name }}</a>
+  <a mat-list-item *ngFor="let link of links" [href]="link.link" target="_blank">
+    <p matLine>{{ link.name }}</p>
     <mat-icon>open_in_new</mat-icon>
-  </mat-list-item>
+  </a>
 </mat-nav-list>

@@ -7,22 +7,28 @@
       <div #chart fxFlex="auto"></div>
 
       <!--    Action bar on the bottom  -->
-      <div fxLayout="row" class="action-bar">
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="action-bar"
+           *ngIf="!drawerState">
 
         <!--   Slider to hide link     -->
         <div>
           <p class="g-text-small g-text-light">{{'flChart.pathway_link_value_help' | translate}} : {{sliderValue}}</p>
-          <mat-slider class="slider"
-            [disabled]="drawerState"
-            [max]="linksMaxAbsValue"
-            [min]="0"
-            [step]="1"
-            [thumbLabel]="true"
-            tickInterval="auto"
-            [(ngModel)]="sliderValue"
-            (input)="hideLinkLowerThan($event)">
+          <mat-slider class="slider" color="primary"
+                      [disabled]="drawerState"
+                      [max]="linksMaxAbsValue"
+                      [min]="0"
+                      [step]="1"
+                      [thumbLabel]="true"
+                      tickInterval="auto"
+                      [(ngModel)]="sliderValue"
+                      (input)="hideLinkLowerThan($event)">
           </mat-slider>
+
         </div>
+
+        <mat-slide-toggle [(ngModel)]="slideLinkColorToggle" (change)="setLinksColors()" color="primary">
+          {{slideLinkColorToggleText | translate}}
+        </mat-slide-toggle>
       </div>
 
     </div>

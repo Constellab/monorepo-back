@@ -1,6 +1,15 @@
 import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
-import {FlChartPathwayData, FlChartPathwayLink, FlChartPathwayNode, FlPathway} from '../../model/fl-pathway.class';
+import {
+  FlChartPathwayData,
+  FlChartPathwayLink,
+  FlChartPathwayNode,
+  FlPathway,
+  flPathwayMetaboliteRadius,
+  flPathwayReactionHeight,
+  flPathwayReactionMaxValue,
+  flPathwayReactionWidth
+} from '../../model/fl-pathway.class';
 import {FlCoord, FlD3SelectionSimple, FlD3ZoomEvent} from '../../../../../model/fl-d3.class';
 import {Simulation} from 'd3-force';
 import {ValueFn} from 'd3-selection';
@@ -44,15 +53,10 @@ export class FlChartPathwayComponent implements OnInit, AfterViewInit {
   sliderValue: number = 0;
   linksMaxAbsValue: number;
 
+  // if true the link colors switch to logarithm
+  slideLinkColorToggle: boolean = false;
+
   ////////////// READONLY VARIABLE //////////////////
-
-
-  // size for the reaction rect
-  readonly reactionWidth: number = 45;
-  readonly reactionHeight: number = 12;
-
-  readonly metaboliteRadius: number = 7;
-
   readonly collideRadius: number = 25;
   readonly grey: string = '#999';
   readonly textColor: string;
@@ -172,7 +176,7 @@ export class FlChartPathwayComponent implements OnInit, AfterViewInit {
     this.metabolites
       .append('circle')
       .join('circle')
-      .attr('r', this.metaboliteRadius)
+      .attr('r', flPathwayMetaboliteRadius)
       .attr('stroke', (d: FlChartPathwayNode) => d.color)
       .attr('stroke-width', 1)
       .attr('fill', 'white')
@@ -183,7 +187,7 @@ export class FlChartPathwayComponent implements OnInit, AfterViewInit {
     // create the text for metabolite
     this.metabolites.append('text')
       .text((d: FlChartPathwayNode) => d.name.substr(0, 5))
-      .attr('y', this.metaboliteRadius)
+      .attr('y', flPathwayMetaboliteRadius)
       .attr('dy', '1em')
       .attr('text-anchor', 'middle')
       .attr('fill', this.textColor)
@@ -206,8 +210,8 @@ export class FlChartPathwayComponent implements OnInit, AfterViewInit {
     // create the rect of reaction
     this.reactions.append('rect')
       .join('rect')
-      .attr('width', this.reactionWidth)
-      .attr('height', this.reactionHeight)
+      .attr('width', flPathwayReactionWidth)
+      .attr('height', flPathwayReactionHeight)
       .attr('stroke', this.grey)
       .attr('stroke-width', 1)
       .attr('fill', 'white');
@@ -215,8 +219,8 @@ export class FlChartPathwayComponent implements OnInit, AfterViewInit {
     // create the text for reaction
     this.reactions.append('text')
       .text((d: FlChartPathwayNode) => d.name.substr(0, 10))
-      .attr('y', this.reactionHeight / 2) // center y
-      .attr('x', this.reactionWidth / 2) // center x
+      .attr('x', flPathwayReactionWidth / 2) // center x
+      .attr('y', flPathwayReactionHeight / 2) // center y
       .attr('dominant-baseline', 'middle')
       .attr('text-anchor', 'middle')
       .attr('fill', 'black')
@@ -228,24 +232,49 @@ export class FlChartPathwayComponent implements OnInit, AfterViewInit {
   }
 
   private initLinks(): void {
-    const colorScale = this.getLinkColorScale();
+
 
     this.links = this.mainGroup.append('g')
       .selectAll('polyline')
       .data(this.chartData.links)
       .join('polyline')
-      .attr('stroke', (d: FlChartPathwayLink<FlChartPathwayNode>) => colorScale(d.value))
       .attr('stroke-opacity', 0.9)
-      .attr('stroke-width', (d: FlChartPathwayLink<FlChartPathwayNode>) => d.absValue)
+      .attr('stroke-width', (d: FlChartPathwayLink<FlChartPathwayNode>) => d.absLog10Value)
       .attr('marker-mid', 'url(#mid_arrow)') as any;
 
+    this.setLinksColors();
     this.linksMaxAbsValue = this.chartData.getLinksMaxAbsoluteValue();
   }
 
+  setLinksColors(): void {
+    const colorScale = this.getLinkColorScale();
+    const colorTransform: (value: number) => number = this.getLinkColorTransformFunction();
+    this.links
+      .attr('stroke', (d: FlChartPathwayLink<FlChartPathwayNode>) => colorScale(colorTransform(d.value)));
+  }
+
   private getLinkColorScale(): ScaleLinear<string, any, any> {
-    const linkDomain: [number, number] = this.chartData.getLinksDomain();
-    return d3.scaleLinear<string>().domain([linkDomain[0], 0, linkDomain[1]])
-      .range(['red', '#E8F5E9', 'green']);
+    const range: [string, string, string] = ['red', '#E8F5E9', 'green'];
+    const colorTransform: (value: number) => number = this.getLinkColorTransformFunction();
+
+    return d3.scaleLinear<string>().domain(
+      [colorTransform(-flPathwayReactionMaxValue), 0, colorTransform(flPathwayReactionMaxValue)])
+      .range(range);
+  }
+
+  // return a function to apply on link value before calling the color scale
+  private getLinkColorTransformFunction(): (value: number) => number {
+    if (this.slideLinkColorToggle) {
+      return (value => {
+        // get the log 2 of absolute value
+        const absLog2 = Math.log2(Math.abs(value) + 1);
+        // return log 2 as positive or negative based on value
+        return value > 0 ? absLog2 : -absLog2;
+      });
+    } else {
+      return (value => value);
+
+    }
   }
 
 
@@ -289,34 +318,18 @@ export class FlChartPathwayComponent implements OnInit, AfterViewInit {
 
   // return points for the line with a point in middle to draw the arrow
   private getPolylinePoints(d: FlChartPathwayLink<FlChartPathwayNode>): string {
-    const lineCoord: [FlCoord, FlCoord] = this.getLineCoords(d);
+    const startCoord: FlCoord = d.source.getCenter();
+    const endCoord: FlCoord = d.target.getCenter();
 
     // calculate the middle point
     const midCoord: FlCoord = {
-      x: (lineCoord[0].x + lineCoord[1].x) / 2,
-      y: (lineCoord[0].y + lineCoord[1].y) / 2
+      x: (startCoord.x + endCoord.x) / 2,
+      y: (startCoord.y + endCoord.y) / 2
     };
 
-    return `${lineCoord[0].x},${lineCoord[0].y}
+    return `${startCoord.x},${startCoord.y}
             ${midCoord.x},${midCoord.y}
-            ${lineCoord[1].x},${lineCoord[1].y} `;
-  }
-
-  // returns the coord of the line
-  private getLineCoords(d: FlChartPathwayLink<FlChartPathwayNode>): [FlCoord, FlCoord] {
-    // attach it to the center
-    if (d.isPositive()) {
-      return [
-        {x: d.source.x + (this.reactionWidth / 2), y: d.source.y + (this.reactionHeight / 2)},
-        {x: d.target.x, y: d.target.y}
-      ];
-    } else {
-      // otherwise link it to the left of the rect
-      return [
-        {x: d.source.x, y: d.source.y},
-        {x: d.target.x + (this.reactionWidth / 2), y: d.target.y + (this.reactionHeight / 2)}
-      ];
-    }
+            ${endCoord.x},${endCoord.y} `;
   }
 
   // return all the directly connected node of the node
@@ -446,4 +459,7 @@ export class FlChartPathwayComponent implements OnInit, AfterViewInit {
       link.absValue >= change.value ? 1 : 0.1);
   }
 
+  get slideLinkColorToggleText(): string {
+    return this.slideLinkColorToggle ? 'flChart.pathway_link_color_log' : 'flChart.pathway_link_color_normal';
+  }
 }

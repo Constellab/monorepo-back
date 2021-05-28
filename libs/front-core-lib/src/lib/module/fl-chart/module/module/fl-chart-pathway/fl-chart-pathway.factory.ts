@@ -29,15 +29,15 @@ export class FlChartPathwayFactory {
     // create the links
     for (const reaction of pathway.reactions) {
       for (const metaboliteId of Object.keys(reaction.metabolites)) {
-        const reactionValue: number = reaction.metabolites[metaboliteId];
+        const reactionDirection: number = reaction.metabolites[metaboliteId] * reaction.estimate.value;
 
         // right side of the link
-        if (reactionValue > 0) {
-          data.links.push(new FlChartPathwayLink(reaction.id, metaboliteId, reactionValue));
+        if (reactionDirection > 0) {
+          data.links.push(new FlChartPathwayLink(reaction.id, metaboliteId, reaction.estimate));
         }
         // left side of the link
         else {
-          data.links.push(new FlChartPathwayLink(metaboliteId, reaction.id, reactionValue));
+          data.links.push(new FlChartPathwayLink(metaboliteId, reaction.id, reaction.estimate));
         }
       }
     }

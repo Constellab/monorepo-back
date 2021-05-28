@@ -16,6 +16,7 @@ import {MatListModule} from '@angular/material/list';
 import {FlCoreComponentModule} from '../../../../fl-core-component/fl-core-component.module';
 import {MatSliderModule} from '@angular/material/slider';
 import {FormsModule} from '@angular/forms';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -40,6 +41,7 @@ import {FormsModule} from '@angular/forms';
     MatTooltipModule,
     MatListModule,
     MatSliderModule,
+    MatSlideToggleModule,
 
 
     FlChartCoreModule,
