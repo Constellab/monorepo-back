@@ -1,4 +1,3 @@
-
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -17,8 +16,10 @@ import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlSelectLanguageOptionsComponent} from './component/fl-select-language-options/fl-select-language-options.component';
 import {MatOptionModule} from '@angular/material/core';
-import { FlExternalLinkComponent } from './component/fl-external-link/fl-external-link.component';
+import {FlExternalLinkComponent} from './component/fl-external-link/fl-external-link.component';
 import {FlSelectUserCategoryOptionComponent} from './component/fl-select-user-category-option/fl-select-user-category-option.component';
+import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
+import {flCoreComponentI18n} from './i18n/fl-core-component.i18n';
 
 /**
  * Core modules containing components
@@ -61,4 +62,8 @@ import {FlSelectUserCategoryOptionComponent} from './component/fl-select-user-ca
   ]
 })
 export class FlCoreComponentModule {
+
+  constructor(translateService: FlTranslateService) {
+    translateService.addModuleTranslation('FlCoreComponentModule', flCoreComponentI18n);
+  }
 }

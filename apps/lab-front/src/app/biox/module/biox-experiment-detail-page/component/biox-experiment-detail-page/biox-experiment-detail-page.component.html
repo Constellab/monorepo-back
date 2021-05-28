@@ -3,7 +3,13 @@
 
     <ng-container *flSectionBody="let experiment">
       <div fxLayout="column" class="g-full-height">
-        <gen-biox-experiment-card [experiment]="experiment"></gen-biox-experiment-card>
+        <gen-biox-experiment-card [experiment]="experiment">
+
+          <button mat-icon-button type="button" (click)="openUpdateDialog()"
+                  [matTooltip]="'biox.update_experiment' | translate">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </gen-biox-experiment-card>
 
         <!--        <gen-biox-workflow fxFlex="auto" class="g-section"></gen-biox-workflow>-->
         <gen-biox-workflow-drawer fxFlex="auto"></gen-biox-workflow-drawer>

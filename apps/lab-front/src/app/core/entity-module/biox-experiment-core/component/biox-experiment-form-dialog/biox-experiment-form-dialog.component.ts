@@ -7,6 +7,10 @@ import {Observable} from 'rxjs';
 import {BioxExperimentService} from '../../../../entity-service/biox-experiment.service';
 import {Validators} from '@angular/forms';
 
+export interface BioxExperimentFormDialogInput extends FlFormDialogInput<ExperimentSimpleForm> {
+  experimentId?: string;
+}
+
 /**
  * Dialog form to create or update an experiment
  */
@@ -18,7 +22,7 @@ import {Validators} from '@angular/forms';
 export class BioxExperimentFormDialogComponent extends FlFormDialogAbstractDirective<ExperimentSimpleForm, BioxExperiment>
   implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: FlFormDialogInput<ExperimentSimpleForm>,
+  constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: BioxExperimentFormDialogInput,
               private experimentService: BioxExperimentService,
               snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<BioxExperimentFormDialogComponent>) {
@@ -41,9 +45,7 @@ export class BioxExperimentFormDialogComponent extends FlFormDialogAbstractDirec
   }
 
   update(formValue: ExperimentSimpleForm): Observable<BioxExperiment> {
-    console.error('TODO');
-    return null;
-    // return this.experimentService.updateSimple(formValue);
+    return this.experimentService.update(this.dialogInput.experimentId, formValue);
   }
 
   get title(): string {

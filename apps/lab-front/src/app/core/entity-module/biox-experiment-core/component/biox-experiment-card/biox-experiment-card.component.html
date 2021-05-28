@@ -4,14 +4,19 @@
     <h1>{{experiment.data.title}}</h1>
 
     <fl-card-actions>
-      <fl-status-chip [status]="experiment" mode="iconText"></fl-status-chip>
+      <ng-content></ng-content>
+
+      <fl-status-chip [status]="experiment" mode="iconText"
+                      class="status"></fl-status-chip>
     </fl-card-actions>
   </fl-card-header>
 
   <fl-card-body>
     {{'datetime'| translate}} : {{experiment.createdAt | flDate}}
 
-    <div [innerHTML]="experiment.data.description">
-    </div>
+    <fl-limit-height [maxHeight]="100">
+      <div [innerHTML]="experiment.data.description">
+      </div>
+    </fl-limit-height>
   </fl-card-body>
 </fl-card>

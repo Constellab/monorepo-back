@@ -33,12 +33,12 @@ export class BioxExperimentService {
   }
 
   public create(experiment: ExperimentSimpleForm): Observable<BioxExperiment> {
-    return this.apiService.post('experiment', experiment, createViewModel(BioxExperiment));
+    return this.apiService.post('experiment', experiment, BioxExperiment);
   }
 
   // update the experiment and the protocol inside if provided
   public update(experimentId: string, experiment: ExperimentSimpleForm): Observable<BioxExperiment> {
-    return this.apiService.put(`experiment/${experimentId}`, experiment, createViewModel(BioxExperiment));
+    return this.apiService.put(`experiment/${experimentId}`, experiment, BioxExperiment);
   }
 
   // launch an experiment

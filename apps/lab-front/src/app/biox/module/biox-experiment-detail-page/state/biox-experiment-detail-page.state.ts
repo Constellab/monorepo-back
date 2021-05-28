@@ -46,4 +46,8 @@ export class BioxExperimentDetailPageState {
   public isEditable(): boolean {
     return this.currentExperiment.isEditable();
   }
+
+  public updateExperiment(experiment: BioxExperiment): void{
+    this.experiment$.next(experiment);
+  }
 }
