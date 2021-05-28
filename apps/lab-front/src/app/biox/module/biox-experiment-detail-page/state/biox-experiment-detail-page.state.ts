@@ -7,15 +7,16 @@ import {filter} from 'rxjs/operators';
 @Injectable()
 export class BioxExperimentDetailPageState {
 
-  experiment$: BehaviorSubject<BioxExperiment>;
+  private experiment$: BehaviorSubject<BioxExperiment>;
 
   // does not emit experiment until ready is true
-  ready: boolean = false;
+  private ready: boolean = false;
 
   constructor(private bioxExperimentService: BioxExperimentService) {
   }
 
   public init(experimentId: string): void {
+    this.ready = false;
     this.experiment$ = new BehaviorSubject<BioxExperiment>(null);
     this.bioxExperimentService.getExperiment(experimentId).subscribe(
       experiment => this.getExperimentSuccess(experiment),
