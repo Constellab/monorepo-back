@@ -20,7 +20,9 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
     FlDialogTitleComponent
   ],
   exports: [
-    FlDialogTitleComponent
+    FlDialogTitleComponent,
+
+    MatDialogModule,
   ],
   imports: [
     CommonModule,

@@ -1,28 +1,29 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {NewUser} from '../../../core/model/entities/user.class';
 import {Validators} from '@angular/forms';
-import {FlGlobalValidators, FlSnackBarService} from '@monorepo/front-core-lib';
 import {MatDialogRef} from '@angular/material/dialog';
-import {UserAccountsService} from '../../../core/service-api/user-accounts.service';
+import {FlSignUpUser} from '../../model/fl-sign-up-user.class';
+import {FlUserAccountService} from '../../service/fl-user-account.service';
+import {FlSnackBarService} from '../../../fl-snack-bar/fl-snack-bar.service';
+import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
 
 /**
  * Signup dialog to create a new user
  */
 @Component({
-  selector: 'gen-signup-dialog',
-  templateUrl: './signup-dialog.component.html',
-  styleUrls: ['./signup-dialog.component.scss']
+  selector: 'fl-signup-dialog',
+  templateUrl: './fl-signup-dialog.component.html',
+  styleUrls: ['./fl-signup-dialog.component.scss']
 })
-export class SignupDialogComponent implements OnInit {
+export class FlSignupDialogComponent implements OnInit {
 
-  formGp: FormGroup<NewUser>;
+  formGp: FormGroup<FlSignUpUser>;
 
   isLoading: boolean = false;
 
-  constructor(private userAccountService: UserAccountsService,
+  constructor(private userAccountService: FlUserAccountService,
               private snackBarService: FlSnackBarService,
-              private dialogRef: MatDialogRef<SignupDialogComponent>) {
+              private dialogRef: MatDialogRef<FlSignupDialogComponent>) {
   }
 
   ngOnInit(): void {
@@ -48,7 +49,7 @@ export class SignupDialogComponent implements OnInit {
     }
   }
 
-  private signupUser(user: NewUser): void {
+  private signupUser(user: FlSignUpUser): void {
     this.isLoading = true;
     this.userAccountService.signup(user).subscribe(
       () => this.onSignupSuccess(),
@@ -57,7 +58,7 @@ export class SignupDialogComponent implements OnInit {
   }
 
   private onSignupSuccess(): void {
-    this.snackBarService.openSuccessMessage('account_created', true, 10000);
+    this.snackBarService.openSuccessMessage('flAuth.account_created', true, 10000);
 
     this.dialogRef.close();
     this.isLoading = false;

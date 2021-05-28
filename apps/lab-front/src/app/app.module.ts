@@ -9,7 +9,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {
   FlApiModule,
-  FlDialogModule, FlPortalActionsModule,
+  FlAuthModule,
+  FlDialogModule,
+  FlPortalActionsModule,
   FlPortalModule,
   FlQuillConfig,
   flSetRootInjector,
@@ -22,10 +24,11 @@ import {svgIcons} from './core/utils/svg-icon-config';
 import {apiModuleConfig} from './core/utils/api-module.config';
 import {QuillModule} from 'ngx-quill';
 import {AuthenticationInterceptor} from './core/service/authentication.interceptor';
-import {AuthenticatedUserService} from './core/service/authenticated-user.service';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
+import {LoginModule} from './login/login.module';
+import {AuthenticationService} from './login/service/authentication.service';
 
-function loadTokenFromLocalStorage(authenticationService: AuthenticatedUserService): () => void {
+function loadTokenFromLocalStorage(authenticationService: AuthenticationService): () => void {
   return (): void => authenticationService.loadTokenFromLocalStorage();
 }
 
@@ -44,6 +47,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
 
     // other app modules
     MainModule,
+    LoginModule,
 
     // Core module
     CoreModule,
@@ -69,6 +73,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlSnackBarModule.forRoot(),
     FlPortalModule.forRoot(),
     FlPortalActionsModule.forRoot(),
+    FlAuthModule.forRoot(AuthenticationService),
 
     QuillModule.forRoot({
       modules: {
@@ -80,7 +85,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     {provide: HTTP_INTERCEPTORS, useExisting: AuthenticationInterceptor, multi: true},
     {
       provide: APP_INITIALIZER, useFactory: loadTokenFromLocalStorage,
-      deps: [AuthenticatedUserService, AuthenticationInterceptor],
+      deps: [AuthenticationService, AuthenticationInterceptor],
       multi: true
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},

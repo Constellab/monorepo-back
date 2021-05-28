@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Credentials} from '../../core/model/global/credentials.class';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {FlApiService, flAuthExpiredCookie, FlCleanerService, FlCookieService} from '@monorepo/front-core-lib';
+import {FlApiService, flAuthExpiredCookie, FlAuthService, FlCleanerService, FlCookieService} from '@monorepo/front-core-lib';
+import {CmCredentials} from '@monorepo/common-model';
 
 /**
  * Service to handle login and logout and store cookie to check if user is connected
@@ -10,11 +10,12 @@ import {FlApiService, flAuthExpiredCookie, FlCleanerService, FlCookieService} fr
 @Injectable({
   providedIn: 'root'
 })
-export class AuthenticationService {
+export class AuthenticationService extends FlAuthService {
 
   private readonly route: string = 'auth';
 
   constructor(private apiService: FlApiService, private cookieService: FlCookieService) {
+    super();
   }
 
   /**
@@ -22,7 +23,7 @@ export class AuthenticationService {
    * The JWT is returned in a HTTPOnly cookie and is not accessible from JS
    * @param credentials username and password
    */
-  public login(credentials: Credentials): Observable<{ expiresIn: number }> {
+  public login(credentials: CmCredentials): Observable<{ expiresIn: number }> {
     return this.apiService.post(this.route + '/login', credentials).pipe(
       tap(expiresIn => this.setAuthExpirationCookie(expiresIn))
     );

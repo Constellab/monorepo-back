@@ -1,27 +1,27 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl} from '@ngneat/reactive-forms';
 import {MatDialogRef} from '@angular/material/dialog';
-import {UserAccountsService} from '../../../core/service-api/user-accounts.service';
 import {Validators} from '@angular/forms';
-import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {FlUserAccountService} from '../../service/fl-user-account.service';
+import {FlSnackBarService} from '../../../fl-snack-bar/fl-snack-bar.service';
 
 /**
  * Dialog with a simple form where the user enter his email to receive the
  * password forgotten email
  */
 @Component({
-  selector: 'gen-password-forgotten',
-  templateUrl: './password-forgotten.component.html',
-  styleUrls: ['./password-forgotten.component.scss']
+  selector: 'fl-password-forgotten',
+  templateUrl: './fl-password-forgotten.component.html',
+  styleUrls: ['./fl-password-forgotten.component.scss']
 })
-export class PasswordForgottenComponent implements OnInit {
+export class FlPasswordForgottenComponent implements OnInit {
 
   formControl: FormControl<string>;
 
   isLoading: boolean = false;
 
-  constructor(private dialogRef: MatDialogRef<PasswordForgottenComponent>,
-              private userAccountsService: UserAccountsService,
+  constructor(private dialogRef: MatDialogRef<FlPasswordForgottenComponent>,
+              private userAccountsService: FlUserAccountService,
               private snackBarService: FlSnackBarService) {
   }
 
@@ -44,7 +44,7 @@ export class PasswordForgottenComponent implements OnInit {
   }
 
   private onSuccess(): void {
-    this.snackBarService.openSuccessMessage('password_forgotten_mail_sent', true, 7000);
+    this.snackBarService.openSuccessMessage('flAuth.password_forgotten_mail_sent', true, 7000);
 
     this.dialogRef.close();
   }

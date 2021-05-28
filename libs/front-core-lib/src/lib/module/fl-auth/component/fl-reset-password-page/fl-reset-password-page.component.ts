@@ -1,30 +1,31 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {UserAccountsService} from '../../../core/service-api/user-accounts.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {first} from 'rxjs/operators';
 import {Validators} from '@angular/forms';
-import {FlGlobalValidators, FlSnackBarService} from '@monorepo/front-core-lib';
+import {FlUserAccountService} from '../../service/fl-user-account.service';
+import {FlSnackBarService} from '../../../fl-snack-bar/fl-snack-bar.service';
+import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
 
-interface ResetPasswordForm {
+interface FlResetPasswordForm {
   password: string;
   repeatPassword: string;
 }
 
 
 @Component({
-  selector: 'gen-reset-password-page',
-  templateUrl: './reset-password-page.component.html',
-  styleUrls: ['./reset-password-page.component.scss']
+  selector: 'fl-reset-password-page',
+  templateUrl: './fl-reset-password-page.component.html',
+  styleUrls: ['./fl-reset-password-page.component.scss']
 })
-export class ResetPasswordPageComponent implements OnInit {
+export class FlResetPasswordPageComponent implements OnInit {
 
-  formGp: FormGroup<ResetPasswordForm>;
+  formGp: FormGroup<FlResetPasswordForm>;
 
   isLoading: boolean = false;
 
   constructor(private route: ActivatedRoute,
-              private userAccountService: UserAccountsService,
+              private userAccountService: FlUserAccountService,
               private snackBarService: FlSnackBarService,
               private router: Router) {
   }
@@ -62,7 +63,7 @@ export class ResetPasswordPageComponent implements OnInit {
   }
 
   private resetSuccess(): void {
-    this.snackBarService.openSuccessMessage('password_changed', true);
+    this.snackBarService.openSuccessMessage('flAuth.password_changed', true);
 
     this.isLoading = false;
     this.router.navigate(['/']);

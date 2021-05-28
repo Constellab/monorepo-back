@@ -13,11 +13,13 @@ import {QuillModule} from 'ngx-quill';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {
   FlApiModule,
+  FlAuthModule,
   FlDialogModule,
   FlHttpInterceptorService,
   FlPortalModule,
   FlQuillConfig,
-  FlServiceWorkerService, flSetRootInjector,
+  FlServiceWorkerService,
+  flSetRootInjector,
   FlSnackBarModule,
   FlSvgIconModule,
   FlThemeService,
@@ -26,6 +28,8 @@ import {
 import {svgIcons} from './core/model/config/svg-icon-config';
 import {apiModuleConfig} from './core/model/config/api-module.config';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
+import {AuthenticationService} from './login/service/authentication.service';
+import {UserAccountsService} from './core/service-api/user-accounts.service';
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -71,6 +75,7 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     FlDialogModule.forRoot(),
     FlSnackBarModule.forRoot(),
     FlPortalModule.forRoot(),
+    FlAuthModule.forRoot(AuthenticationService, UserAccountsService),
 
     QuillModule.forRoot({
       modules: {

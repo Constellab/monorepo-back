@@ -1,6 +1,6 @@
 <form [formGroup]="formGp" (ngSubmit)="login()" class="form">
 
-  <img src="assets/images/logo.png" alt="Gencovery logo" class="logo"/>
+  <img src="assets/logo/logo.png" alt="Gencovery logo" class="logo"/>
 
   <!--  Email  -->
   <mat-form-field class="g-form-input" appearance="outline">
@@ -17,28 +17,28 @@
 
   <!--  Password -->
   <mat-form-field class="g-form-input" appearance="outline">
-    <mat-label>{{'password' | translate}}</mat-label>
+    <mat-label>{{'flAuth.password' | translate}}</mat-label>
     <input matInput type="password" formControlName="password" required
-           placeholder="{{'password' | translate}}" autocomplete="current-password">
+           placeholder="{{'flAuth.password' | translate}}" autocomplete="current-password">
     <mat-error *ngIf="formGp.get('password').hasError('required')">
-      {{'password' | flErrorRequired}}
+      {{'flAuth.password' | flErrorRequired}}
     </mat-error>
   </mat-form-field>
 
 
   <button mat-raised-button color="accent" type="submit"
           [disabled]="isLoading" class="connection-button g-button-big">
-    {{'sign_in' | translate}}
+    {{'flAuth.sign_in' | translate}}
     <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 
 
-  <div class="footer" fxLayout="row wrap" fxLayoutAlign="space-between">
+  <div class="footer" fxLayout="row wrap" fxLayoutAlign="space-between" *ngIf="!diableFooter">
     <span class="g-text-light g-text-small g-text-link" (click)="openPasswordForgotten()">
-      {{'forgot_password' | translate}}
+      {{'flAuth.forgot_password' | translate}}
     </span>
     <span class="g-primary-text g-text-small g-text-link" (click)="openSignupDialog()">
-      {{'signup_link' | translate}}
+      {{'flAuth.signup_link' | translate}}
     </span>
   </div>
 </form>

@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {
-  FlApiModule,
+  FlApiModule, FlAuthModule,
   FlCardModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
@@ -47,6 +47,7 @@ import {
     FlStatusModule,
     FlInfiniteScrollModule,
     FlDateModule,
+    FlAuthModule,
   ]
 })
 export class CustomLibraryModule {

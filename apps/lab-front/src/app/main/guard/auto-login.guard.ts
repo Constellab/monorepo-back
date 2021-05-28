@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs';
 import {constBaseRoute} from '../../core/utils/base-route';
-import {AuthenticatedUserService} from '../../core/service/authenticated-user.service';
 import {FlLabRoute} from '@monorepo/front-core-lib';
+import {AuthenticationService} from '../../login/service/authentication.service';
 
 /**
  * Guard to get the token from the query param named 'token', store it locally
@@ -15,7 +15,7 @@ import {FlLabRoute} from '@monorepo/front-core-lib';
 })
 export class AutoLoginGuard implements CanActivate {
 
-  constructor(private router: Router, private authenticatedUserService: AuthenticatedUserService) {
+  constructor(private router: Router, private authenticatedService: AuthenticationService) {
   }
 
   canActivate(
@@ -25,7 +25,7 @@ export class AutoLoginGuard implements CanActivate {
 
     if (token) {
       // store the token in the
-      this.authenticatedUserService.storeUserJWT(token);
+      this.authenticatedService.storeUserJWT(token);
     }
 
     return this.router.parseUrl('/' + constBaseRoute);

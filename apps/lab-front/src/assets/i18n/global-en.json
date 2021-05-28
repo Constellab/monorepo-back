@@ -35,5 +35,7 @@
   "resource_empty": "Empty resource",
   "name": "Name",
   "id": "Id",
-  "type": "Type"
+  "type": "Type",
+  "email": "Email address",
+  "email_invalid": "The email address is not valid"
 }

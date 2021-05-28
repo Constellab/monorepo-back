@@ -8,3 +8,4 @@ export * from './component/fl-external-link/fl-external-link.component';
 export * from './component/fl-limit-height/fl-limit-height.component';
 export * from './component/fl-new-website-version/fl-new-website-version.component';
 export * from './component/fl-select-language-options/fl-select-language-options.component';
+export * from './component/fl-select-user-category-option/fl-select-user-category-option.component';

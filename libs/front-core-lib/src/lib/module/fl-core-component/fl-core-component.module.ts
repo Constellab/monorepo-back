@@ -18,6 +18,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlSelectLanguageOptionsComponent} from './component/fl-select-language-options/fl-select-language-options.component';
 import {MatOptionModule} from '@angular/material/core';
 import { FlExternalLinkComponent } from './component/fl-external-link/fl-external-link.component';
+import {FlSelectUserCategoryOptionComponent} from './component/fl-select-user-category-option/fl-select-user-category-option.component';
 
 /**
  * Core modules containing components
@@ -30,6 +31,7 @@ import { FlExternalLinkComponent } from './component/fl-external-link/fl-externa
     FlChipComponent,
     FlSelectLanguageOptionsComponent,
     FlExternalLinkComponent,
+    FlSelectUserCategoryOptionComponent,
   ],
   exports: [
     FlBreadcrumbComponent,
@@ -37,6 +39,7 @@ import { FlExternalLinkComponent } from './component/fl-external-link/fl-externa
     FlChipComponent,
     FlSelectLanguageOptionsComponent,
     FlExternalLinkComponent,
+    FlSelectUserCategoryOptionComponent,
   ],
   imports: [
     CommonModule,

@@ -25,6 +25,11 @@
                 "output": "assets/mat-icons"
               },
               {
+                "glob": "**/*",
+                "input": "libs/front-core-lib/src/assets/logo",
+                "output": "assets/logo"
+              },
+              {
                 "glob": "favicon.ico",
                 "input": "libs/front-core-lib/src/",
                 "output": "./"
@@ -213,6 +218,11 @@
                 "glob": "**/*",
                 "input": "libs/front-core-lib/src/assets/mat-icons",
                 "output": "assets/mat-icons"
+              },
+              {
+                "glob": "**/*",
+                "input": "libs/front-core-lib/src/assets/logo",
+                "output": "assets/logo"
               },
               {
                 "glob": "favicon.ico",

@@ -1,5 +1,6 @@
 import {NgModule} from '@angular/core';
 import {
+  FlAuthModule,
   FlCardModule, FlChartModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
@@ -49,6 +50,7 @@ import {
     FlInputFileModule,
     FlPortalActionsModule,
     FlDateModule,
+    FlAuthModule,
   ]
 })
 export class CustomLibraryModule {
