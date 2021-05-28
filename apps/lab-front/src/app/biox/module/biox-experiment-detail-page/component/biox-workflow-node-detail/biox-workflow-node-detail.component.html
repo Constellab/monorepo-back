@@ -68,7 +68,7 @@
 
         <!--    Show the progress if it's running    -->
         <mat-panel-description>
-          <div *ngIf="node.object.progressBar.getStatusName() === 'running'">
+          <div *ngIf="node.object.getStatusName() === 'running'">
            {{node.object.progressBar.getProgress()}} %
           </div>
         </mat-panel-description>

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {Workflow, WorkflowMode} from '../model/workflow.class';
 import {WorkflowNodeProcessable} from '../model/workflow-node-processable.class';
 import {BioxProcessableBase, BioxProtocol} from '../../../../core/model/entities/biox-processable.entity';
@@ -40,13 +40,15 @@ export class WorkflowManagerState {
   // emit to true when loading
   private _layerIsLoading$: Subject<boolean> = new BehaviorSubject(false);
 
-  constructor(private bioxProtocolService: BioxProtocolService) {
+  constructor(private bioxProtocolService: BioxProtocolService,
+              private ngZone: NgZone) {
     console.log('New workflow manager');
   }
 
   public init(element: HTMLElement, flow: BioxFlow<BioxProtocol>, experiment: BioxExperiment): void {
     this.experiment = experiment;
-    this.workflow = new Workflow(element, experiment.data.title ?? 'Experiment','edit');
+
+    this.workflow = new Workflow(element, experiment.data.title ?? 'Experiment', 'edit', this.ngZone);
 
     this.workflow.start();
 
@@ -236,7 +238,7 @@ export class WorkflowManagerState {
 
   //////////////////////// OTHER ////////////////////////////
 
-  public getExperiment(): BioxExperiment{
+  public getExperiment(): BioxExperiment {
     return this.experiment;
   }
 

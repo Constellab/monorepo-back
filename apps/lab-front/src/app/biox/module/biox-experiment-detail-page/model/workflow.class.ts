@@ -5,6 +5,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {WorkflowPort} from './workflow-port.class';
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
+import {NgZone} from '@angular/core';
 
 export type WorkflowMode = 'edit' | 'readOnly';
 
@@ -28,8 +29,11 @@ export class Workflow {
   // if false there is no check when creating nodes or connections
   private checkOnCreate: boolean = true;
 
-  constructor(private element: HTMLElement, name: string, mode: WorkflowMode = 'edit') {
+  constructor(private element: HTMLElement, name: string, mode: WorkflowMode = 'edit',
+              private ngZone: NgZone) {
+
     this.editor = new Drawflow(element);
+
     this.editor.zoom_value = 0.1;
 
     // set edit or readonly mode
@@ -43,26 +47,29 @@ export class Workflow {
     this.currentLayer$ = new BehaviorSubject<WorkflowLayer>(currentLayer);
 
     this.editor.on('connectionCreated',
-      (connection) => this.onConnectionCreated(connection));
+      (connection) => this.ngZone.run(() => this.onConnectionCreated(connection)));
 
     this.editor.on('connectionRemoved',
-      (connection) => this.onConnectionRemoved(connection));
+      (connection) => this.ngZone.run(() => this.onConnectionRemoved(connection)));
 
-    this.editor.on('nodeRemoved', node => this.onNodeRemoved(node));
+    this.editor.on('nodeRemoved', node => this.ngZone.run(() => this.onNodeRemoved(node)));
 
     this.editor.on('connectionSelected',
-      event => this.emitConnectionSelected(event));
+      event => this.ngZone.run(() => this.emitConnectionSelected(event)));
 
     this.editor.on('connectionStart',
-      event => this.onConnectionStarted(event));
+      event => this.ngZone.run(() => this.onConnectionStarted(event)));
 
     this.editor.on('connectionCancel',
-      () => this.onConnectionCanceled());
+      () => this.ngZone.run(() => this.onConnectionCanceled()));
   }
 
 
   public start(): void {
-    this.editor.start();
+    // run the start outside angular to prevent all drawflow event from triggering change detection
+    this.ngZone.runOutsideAngular(() => {
+      this.editor.start();
+    });
   }
 
   public setData(data: any): void {

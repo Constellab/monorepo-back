@@ -7,14 +7,15 @@ import {BioxSpec} from './biox-spec.entity';
 import {ViewModel} from '../global/view-model.entity';
 import {ViewModelDatasourcePaginated} from '../../utils/view-model.datasource';
 import {BioxProtocolLink} from './biox-protocol-link.entity';
-import {BioxProgressBar} from './biox-progress-bar.entity';
+import {BioxProgressBar, BioxProgressBarStatus} from './biox-progress-bar.entity';
+import {FlStatus} from '@monorepo/front-core-lib';
 
 
 // const bioxFlowGraphDeserialization: ClDeserializeItem<BioxFlowGraph> = (item: any): BioxFlowGraph => {
 //   return ClCoreJsonConvert.deserializeObject(item, BioxFlowGraph);
 // };
 
-export class BioxProcessableBase extends BioxNode {
+export class BioxProcessableBase extends BioxNode implements FlStatus {
 
   // @ClRecordTransformOverride(bioxFlowBaseDeserialization)
   data: BioxFlowData;
@@ -62,6 +63,24 @@ export class BioxProcessableBase extends BioxNode {
   public hasConfig(): boolean {
     return this.config.data.specs.hasProperties();
   }
+
+  getStatusClassColor(mode: 'background' | 'text'): string {
+    if(this.progressBar == null){
+      return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
+    }
+
+    return this.progressBar.getStatusClassColor(mode);
+  }
+
+  getStatusIcon(): string {
+    return this.progressBar?.getStatusIcon() ?? 'edit';
+  }
+
+  getStatusName(): BioxProgressBarStatus {
+    return this.progressBar?.getStatusName() ?? 'draft';
+  }
+
+
 }
 
 export class BioxProtocolGraph extends LabEntity {
