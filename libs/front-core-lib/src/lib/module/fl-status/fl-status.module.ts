@@ -6,6 +6,7 @@ import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.modu
 import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
 import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
     FlTranslateModule,
 
     MatIconModule,
+    MatTooltipModule,
 
   ]
 })

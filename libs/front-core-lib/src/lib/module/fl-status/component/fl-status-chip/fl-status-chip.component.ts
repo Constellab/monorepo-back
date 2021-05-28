@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlStatus} from '../../model/fl-status.class';
+import {TooltipPosition} from '@angular/material/tooltip';
 
 export type FlStatusChipMode = 'iconText' | 'iconOnly' | 'textOnly';
 
@@ -25,6 +26,14 @@ export class FlStatusChipComponent implements OnInit {
    */
   @Input() mode: FlStatusChipMode = 'iconText';
 
+  @Input() tooltipPosition: TooltipPosition = 'below';
+
+  /**
+   * If true the tooltip is disabled
+   * By default tooltip is disable in iconText and textOnly mode and enable in iconOnly mode
+   */
+  @Input() tooltipDisabled: boolean;
+
   icon: string;
 
   statusColorClass: string;
@@ -47,6 +56,11 @@ export class FlStatusChipComponent implements OnInit {
 
   get gap(): string {
     return this.mode === 'iconText' ? '5px' : '0';
+  }
+
+  // get tooltip value, take input value if provided, otherwise disable if text is shown
+  get tooltipDisabledBool(): boolean {
+    return this.tooltipDisabled != null ? this.tooltipDisabled : this.showText;
   }
 
 }

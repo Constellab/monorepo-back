@@ -1,14 +1,15 @@
-<div #container>
+<div #container class="container">
 
-  <div fxLayout="row" fxLayoutAlign="space-between center">
+  <div fxLayout="column" fxLayoutAlign="space-between center">
 
     <!-- Title   -->
     <div class="name">
       {{name}}
     </div>
 
+
     <!--  actions -->
-    <div fxLayout="row" fxLayoutGap="0.5em">
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
       <!--   Only for protocol, possibility to zoom in   -->
       <button *ngIf="nodeIsProtocol()" (click)="zoomInProtocol()"
               mat-icon-button type="button" [disabled]="layerIsLoading$ | async">
@@ -19,6 +20,8 @@
               (click)="openNodeDetail()" [matTooltip]="'biox.open_node_detail' | translate">
         <mat-icon>info</mat-icon>
       </button>
+
+      <fl-status-chip mode="iconOnly" [status]="this.node.object"></fl-status-chip>
     </div>
   </div>
 

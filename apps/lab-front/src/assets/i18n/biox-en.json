@@ -24,6 +24,7 @@
     "node_outputs": "Outputs",
     "open_node_detail": "Detail",
     "node_type": "Type",
-    "node_progress": "Progress"
+    "node_progress": "Progress",
+    "node_process_name": "Process"
   }
 }

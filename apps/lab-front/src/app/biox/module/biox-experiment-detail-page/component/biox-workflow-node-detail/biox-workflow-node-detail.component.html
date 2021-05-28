@@ -1,11 +1,34 @@
 <div>
 
   <div class="g-text-light">
+    <p>{{'biox.node_process_name' | translate}} : {{node.object.name}}</p>
     <p>{{'biox.node_type' | translate}} : {{node.object.type}}</p>
     <p *ngIf="node.object.data.description">{{node.object.data.description}}</p>
   </div>
 
   <div class="g-section">
+    <!--  Progress -->
+    <mat-expansion-panel *ngIf="showProgress" hideToggle [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
+          <fl-text-icon>
+            <fl-status-chip [status]="node.object.progressBar"></fl-status-chip>
+          </fl-text-icon>
+        </mat-panel-title>
+
+        <!--    Show the progress if it's running    -->
+        <mat-panel-description>
+          <div *ngIf="node.object.getStatusName() === 'running'">
+            {{node.object.progressBar.getProgress()}} %
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <gen-biox-workflow-node-progress [progressBar]="node.object.progressBar"></gen-biox-workflow-node-progress>
+    </mat-expansion-panel>
+
+    <mat-divider></mat-divider>
+
     <!-- Inputs -->
     <mat-expansion-panel *ngIf="node.hasInputs()" hideToggle [expanded]="true">
       <mat-expansion-panel-header>
@@ -55,27 +78,6 @@
       <gen-biox-workflow-node-config [config]="config"></gen-biox-workflow-node-config>
     </mat-expansion-panel>
 
-    <mat-divider></mat-divider>
-
-    <!--  Progress -->
-    <mat-expansion-panel *ngIf="showProgress" hideToggle [expanded]="true">
-      <mat-expansion-panel-header>
-        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
-          <fl-text-icon>
-            <fl-status-chip [status]="node.object.progressBar"></fl-status-chip>
-          </fl-text-icon>
-        </mat-panel-title>
-
-        <!--    Show the progress if it's running    -->
-        <mat-panel-description>
-          <div *ngIf="node.object.getStatusName() === 'running'">
-           {{node.object.progressBar.getProgress()}} %
-          </div>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-
-      <gen-biox-workflow-node-progress [progressBar]="node.object.progressBar"></gen-biox-workflow-node-progress>
-    </mat-expansion-panel>
 
     <mat-divider></mat-divider>
   </div>
