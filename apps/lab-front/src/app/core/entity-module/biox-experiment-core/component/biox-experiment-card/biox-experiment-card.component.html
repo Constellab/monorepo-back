@@ -4,6 +4,11 @@
     <h1>{{experiment.data.title}}</h1>
 
     <fl-card-actions>
+
+      <button mat-icon-button type="button" (click)="toggleDetail()">
+        <mat-icon>{{expandIcon}}</mat-icon>
+      </button>
+
       <ng-content></ng-content>
 
       <fl-status-chip [status]="experiment" mode="iconText"
@@ -11,7 +16,7 @@
     </fl-card-actions>
   </fl-card-header>
 
-  <fl-card-body>
+  <fl-card-body *ngIf="showDetail">
     {{'datetime'| translate}} : {{experiment.createdAt | flDate}}
 
     <fl-limit-height [maxHeight]="100">
