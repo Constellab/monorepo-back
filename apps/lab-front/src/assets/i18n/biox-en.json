@@ -18,6 +18,7 @@
     "resource_view_spreadsheet": "View in spreadsheet",
     "resource_view_pathway": "Show the pathway",
     "resource_view_text": "View as text",
+    "resource_view_image": "View as image",
     "workflow_loading_error": "Error while retrieving protocol",
     "add_process": "Add a process",
     "add_process_title": "Add a process (double clics)",

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
-import {FileResource, FileResourceDatasource} from '../../../../../core/model/entities/file-resource.entity';
+import {FileResourcePreview, FileResourceDatasource} from '../../../../../core/model/entities/file-resource.entity';
 import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
 import {RouterService} from '../../../../../core/service/router.service';
 
@@ -9,7 +9,7 @@ import {RouterService} from '../../../../../core/service/router.service';
   templateUrl: './file-resource-table.component.html',
   styleUrls: ['./file-resource-table.component.scss']
 })
-export class FileResourceTableComponent extends FlTableAbstractDirective<FileResource>
+export class FileResourceTableComponent extends FlTableAbstractDirective<FileResourcePreview>
   implements OnInit {
 
   @Input() datasource: FileResourceDatasource;
@@ -21,11 +21,11 @@ export class FileResourceTableComponent extends FlTableAbstractDirective<FileRes
   ngOnInit(): void {
   }
 
-  downloadFile(file: FileResource): void {
+  downloadFile(file: FileResourcePreview): void {
     this.fileService.downloadFile(file.type, file.id, file.getFileName()).subscribe();
   }
 
-  resourceFileRoute(file: FileResource): string {
+  resourceFileRoute(file: FileResourcePreview): string {
     return RouterService.getBioxResourceDetailRoute(file.type, file.id);
   }
 

@@ -21,17 +21,22 @@
       <ng-container [ngSwitch]="currentView">
 
         <!--    Json view    -->
-        <div class="page-padding g-full-height" *ngSwitchCase="'json'">
+        <div class="page-padding" *ngSwitchCase="'json'">
           <gen-biox-resource-json [resource]="resource"></gen-biox-resource-json>
         </div>
 
         <!--    Spreadsheet view    -->
-        <div class="page-padding g-full-height" *ngSwitchCase="'spreadsheet'">
+        <div class="page-padding" *ngSwitchCase="'spreadsheet'">
           <gen-biox-resource-spreadsheet [resource]="resource"></gen-biox-resource-spreadsheet>
         </div>
 
+        <!--    Image view    -->
+        <div class="page-padding" *ngSwitchCase="'image'">
+          <gen-biox-resource-image [resource]="resource"></gen-biox-resource-image>
+        </div>
+
         <!--    Text view    -->
-        <div class="page-padding g-full-height" *ngSwitchCase="'text'">
+        <div class="page-padding" *ngSwitchCase="'text'">
           <gen-biox-resource-text [resource]="resource"></gen-biox-resource-text>
         </div>
 

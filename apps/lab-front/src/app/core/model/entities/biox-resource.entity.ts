@@ -7,10 +7,6 @@ export type BioxResource = BioxBasicResource | FileResource;
 export class BioxBasicResource extends LabBaseEntity {
 
   data: Record<string, any>;
-
-  isFile(): boolean {
-    return this.type === 'gws.file.File';
-  }
 }
 
 export type BioxResourceVM = ViewModel<BioxResource>;

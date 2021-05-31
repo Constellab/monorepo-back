@@ -3,24 +3,37 @@ import {Expose} from 'class-transformer';
 import {FlEntityPaginatedDatasource, FlFileService} from '@monorepo/front-core-lib';
 
 
-export class FileResource extends LabBaseEntity {
+export class FileResourcePreview extends LabBaseEntity {
 
   type: 'gws.file.File';
-
-  data: any;
 
   path: string;
 
   @Expose({name: 'file_store_uri'})
   fileStoreUri: string;
 
-  getFileName(): string{
+  getFileName(): string {
     return FlFileService.extractFilenameFromFullPath(this.path);
   }
 
-  getExtension(): string{
+  getExtension(): string {
     return FlFileService.getFileExtension(this.path);
+  }
+
+  isImage(): boolean {
+    return FlFileService.extensionIsImage(this.getExtension());
   }
 }
 
-export type FileResourceDatasource = FlEntityPaginatedDatasource<FileResource>;
+/**
+ * FileResource containing the actual file and content
+ */
+export class FileResource extends FileResourcePreview {
+
+  // content of the file
+  data: any;
+
+  file: Blob;
+}
+
+export type FileResourceDatasource = FlEntityPaginatedDatasource<FileResourcePreview>;

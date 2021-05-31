@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FileResource, FileResourceDatasource} from '../../../../../core/model/entities/file-resource.entity';
+import {FileResourcePreview, FileResourceDatasource} from '../../../../../core/model/entities/file-resource.entity';
 import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
 import {
   FlDropFileEvent,
@@ -19,7 +19,7 @@ export class FileExplorerPageComponent implements OnInit {
 
   datasource: FileResourceDatasource;
 
-  columns: FlTableColumn<FileResource>[] = ['id', {columnName: 'fe.path', accessor: 'path'}, 'createdAt', 'action'];
+  columns: FlTableColumn<FileResourcePreview>[] = ['id', {columnName: 'fe.path', accessor: 'path'}, 'createdAt', 'action'];
 
   files: File[];
   actionType: 'uploadFile';
@@ -64,9 +64,9 @@ export class FileExplorerPageComponent implements OnInit {
     this.files = [];
   }
 
-  private onFileUploadResult(result: FlPortalActionResult<FileResource>): void {
+  private onFileUploadResult(result: FlPortalActionResult<FileResourcePreview>): void {
     if (result.status === 'success') {
-      if (result.result.data.length > 0) {
+      if ((result.result as any).data.length > 0) {
         // todo when uploading multiple file the format is weird
         console.error('TODO !');
       } else {

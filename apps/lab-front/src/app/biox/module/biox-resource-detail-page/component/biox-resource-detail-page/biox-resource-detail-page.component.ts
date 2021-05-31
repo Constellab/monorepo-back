@@ -4,6 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {BioxResource} from '../../../../../core/model/entities/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
+import {FileResourcePreview} from '../../../../../core/model/entities/file-resource.entity';
 
 interface View {
   route: string;
@@ -16,6 +17,7 @@ const jsonView: View = {route: 'json', text: '{ }', tooltip: 'biox.resource_view
 const plainTextView: View = {route: 'text', icon: 'text_snippet', tooltip: 'biox.resource_view_text'};
 const spreadsheetView: View = {route: 'spreadsheet', icon: 'calendar_view_month', tooltip: 'biox.resource_view_spreadsheet'};
 const pathwayView: View = {route: 'pathway', icon: 'share', tooltip: 'biox.resource_view_pathway'};
+const imageView: View = {route: 'image', icon: 'insert_photo', tooltip: 'biox.resource_view_image'};
 
 @Component({
   selector: 'gen-biox-resource-detail-page',
@@ -60,6 +62,9 @@ export class BioxResourceDetailPageComponent implements OnInit {
     if (resource.type === 'gena.network.Network') {
       this.availableViews.push(pathwayView);
       defaultView = pathwayView;
+    } else if (resource instanceof FileResourcePreview && resource.isImage()) {
+      this.availableViews = [imageView, plainTextView];
+      defaultView = imageView;
     } else if (typeof resource.data === 'string') {
       this.availableViews = [plainTextView];
       defaultView = plainTextView;

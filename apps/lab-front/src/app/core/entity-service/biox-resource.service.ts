@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
 import {BioxBasicResource, BioxResource} from '../model/entities/biox-resource.entity';
-import {FileResourceService} from './file-resource.service';
+import {FileResourceService, FileWithContent} from './file-resource.service';
 import {ClClassReference} from '@monorepo/core-lib';
 import {FileResource} from '../model/entities/file-resource.entity';
 import {map, mergeMap} from 'rxjs/operators';
@@ -49,8 +49,9 @@ export class BioxResourceService {
    */
   private loadFileResourceContent(file: FileResource): Observable<FileResource> {
     return this.fileResourceService.readFileFromResource(file).pipe(
-      map(fileContent => {
-        file.data = fileContent;
+      map((fileContent: FileWithContent) => {
+        file.file = fileContent.file;
+        file.data = fileContent.content;
         return file;
       })
     );

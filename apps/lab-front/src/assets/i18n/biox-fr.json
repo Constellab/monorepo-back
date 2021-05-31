@@ -18,6 +18,7 @@
     "resource_view_spreadsheet": "Afficher dans une feuille de calcul",
     "resource_view_pathway": "Afficher le pathway",
     "resource_view_text": "Afficher au format text",
+    "resource_view_image": "Afficher comme image",
     "workflow_loading_error": "Erreur lors du chargement du protocol",
     "add_process": "Ajouter un process",
     "add_process_title": "Ajouter un process (double cliques)",

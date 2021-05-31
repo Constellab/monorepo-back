@@ -7,6 +7,7 @@ import { BioxResourceSpreadsheetComponent } from './component/biox-resource-spre
 import {RouterModule} from '@angular/router';
 import { BioxResourceJsonComponent } from './component/biox-resource-json/biox-resource-json.component';
 import {BioxResourceTextComponent} from './component/biox-resource-text/biox-resource-text.component';
+import { BioxResourceImageComponent } from './component/biox-resource-image/biox-resource-image.component';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import {BioxResourceTextComponent} from './component/biox-resource-text/biox-res
     BioxResourceSpreadsheetComponent,
     BioxResourceJsonComponent,
     BioxResourceTextComponent,
+    BioxResourceImageComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
@@ -23,6 +25,7 @@ import {BioxResourceTextComponent} from './component/biox-resource-text/biox-res
     BioxResourceSpreadsheetComponent,
     BioxResourceJsonComponent,
     BioxResourceTextComponent,
+    BioxResourceImageComponent,
   ],
   imports: [
     CommonModule,
