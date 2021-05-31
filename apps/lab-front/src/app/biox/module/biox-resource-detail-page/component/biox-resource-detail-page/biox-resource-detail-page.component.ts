@@ -55,19 +55,24 @@ export class BioxResourceDetailPageComponent implements OnInit {
   }
 
   private initViews(resource: BioxResource): void {
-    this.availableViews = [jsonView, spreadsheetView, plainTextView];
-    let defaultView: View = this.availableViews[0];
+    let defaultView: View;
 
     // if the resource is a network, add the network view and set it by default
     if (resource.type === 'gena.network.Network') {
-      this.availableViews.push(pathwayView);
+      this.availableViews = [pathwayView, jsonView, spreadsheetView, plainTextView];
       defaultView = pathwayView;
     } else if (resource instanceof FileResourcePreview && resource.isImage()) {
-      this.availableViews = [imageView, plainTextView];
+      this.availableViews = [imageView, spreadsheetView, plainTextView];
       defaultView = imageView;
+    } else if (resource instanceof FileResourcePreview && resource.getExtension() === 'csv') {
+      this.availableViews = [jsonView, spreadsheetView, plainTextView];
+      defaultView = spreadsheetView;
     } else if (typeof resource.data === 'string') {
-      this.availableViews = [plainTextView];
+      this.availableViews = [jsonView, spreadsheetView, plainTextView];
       defaultView = plainTextView;
+    } else {
+      this.availableViews = [jsonView, spreadsheetView, plainTextView];
+      defaultView = jsonView;
     }
 
 

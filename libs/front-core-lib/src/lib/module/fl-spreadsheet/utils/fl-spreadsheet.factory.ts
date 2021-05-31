@@ -1,5 +1,6 @@
 import {FlSheet} from '../model/fl-sheet.class';
 import {FlSpreadsheet} from '../model/fl-spreadsheet.class';
+import {ClCSVDelimiter, clCSVDelimiters, ClCSVHelper, clCSVLineSeparator} from '@monorepo/core-lib';
 
 
 /**
@@ -11,11 +12,18 @@ export class FlSpreadsheetFactory {
    * Create a spreadsheet from any object
    */
   public static fromAny(values: any, defaultSheetName: string): FlSpreadsheet {
+    let array: any[][];
+
+
     if (Array.isArray(values)) {
-      return FlSpreadsheetFactory.fromArray(values, defaultSheetName);
+      array = values;
+    } else if (typeof values === 'string') {
+      array = FlSpreadsheetFactory.convertStringToArray(values);
     } else {
-      return FlSpreadsheetFactory.fromObject(values, defaultSheetName);
+      array = FlSpreadsheetFactory.convertObjectToArray(values);
     }
+
+    return FlSpreadsheetFactory.fromArray(array, defaultSheetName);
   }
 
   /**
@@ -43,12 +51,38 @@ export class FlSpreadsheetFactory {
   }
 
   /**
-   * Create a spreadsheet from a basic json object
-   * It uses the each attribute as column
-   * @param object
-   * @param defaultSheetName
+   * Create a spreadsheet from a CSV string
+   * If no separator provided, detect it automatically
    */
-  public static fromObject(object: Record<string, any>, defaultSheetName: string): FlSpreadsheet {
+  public static fromCSV(csv: string, defaultSheetName: string, separator?: string): FlSpreadsheet {
+    const values: any[][] = [];
+    const lines: string[] = csv.split(clCSVLineSeparator);
+
+    if (separator == null) {
+      const delimiter: ClCSVDelimiter = ClCSVHelper.detectDelimiter(csv) ?? clCSVDelimiters[0];
+      separator = delimiter.delimiter;
+    }
+
+    for (const line of lines) {
+      values.push(line.split(separator));
+    }
+    return FlSpreadsheetFactory.fromArray(values, defaultSheetName);
+  }
+
+  /**
+   * Convert a string to an array of array for spreadsheet a spreadsheet from a string
+   */
+  public static convertStringToArray(str: string): any[][] {
+    const lines: string[] = str.split('\n');
+    return lines.map(line => [line]);
+  }
+
+
+  /**
+   * Convert a basic json object to an array of array for spreadsheet
+   * It uses the each attribute as column
+   */
+  public static convertObjectToArray(object: Record<string, any>): any[][] {
     const values: any[][] = [];
 
     const header: string[] = [];
@@ -65,6 +99,6 @@ export class FlSpreadsheetFactory {
     // add line to values
     values.push(header, line);
 
-    return FlSpreadsheetFactory.fromArray(values, defaultSheetName);
+    return values;
   }
 }

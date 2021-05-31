@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BioxResource} from '../../../../model/entities/biox-resource.entity';
 import {FlSpreadsheet, FlSpreadsheetFactory} from '@monorepo/front-core-lib';
+import {FileResourcePreview} from '../../../../model/entities/file-resource.entity';
 
 const data: any[][] = [
   ['Item', 2012, 2013, 2014, 2015, null, null, null, null, null],
@@ -28,7 +29,13 @@ export class BioxResourceSpreadsheetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.spreadSheet = FlSpreadsheetFactory.fromAny(this.resource.data, 'Sheet');
+
+    // if the resource is a csv file
+    if (this.resource instanceof FileResourcePreview && this.resource.getExtension() === 'csv') {
+      this.spreadSheet = FlSpreadsheetFactory.fromCSV(this.resource.data,  'Sheet');
+    } else {
+      this.spreadSheet = FlSpreadsheetFactory.fromAny(this.resource.data, 'Sheet');
+    }
 
     // const columnCount = 5;
     // const rowCount = 5;

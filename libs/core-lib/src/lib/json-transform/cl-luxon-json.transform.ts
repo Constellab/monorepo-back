@@ -1,5 +1,5 @@
 import {DateTime} from 'luxon';
-import {ClDateHelper} from '../utils/cl-date-helper';
+import {ClDateHelper} from '../utils/cl-date.helper';
 import {Transform} from 'class-transformer';
 
 

@@ -1,6 +1,6 @@
 import {DateTime} from 'luxon';
-import {ClStringHelper} from './cl-string-helper';
-import {ClHelpService} from './cl-help-service';
+import {ClStringHelper} from './cl-string.helper';
+import {ClHelpService} from './cl-help.service';
 
 /**
  * Input for {@HelperService} function that support date input. It uses DateInput

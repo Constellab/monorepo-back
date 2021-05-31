@@ -1,4 +1,4 @@
-import {ClHelpService} from '../utils/cl-help-service';
+import {ClHelpService} from '../utils/cl-help.service';
 import {classToPlain, plainToClass, serialize} from 'class-transformer';
 import {ClClassReference} from '../model/cl-class-reference.class';
 

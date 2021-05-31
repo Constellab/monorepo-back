@@ -10,6 +10,8 @@ import {MatTreeModule} from '@angular/material/tree';
 import {MatIconModule} from '@angular/material/icon';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
+import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
+import {flJsonEditorI18n} from './i18n/fl-json-editor.i18n';
 
 /**
  * Module containing a component to edit json in html
@@ -37,4 +39,8 @@ import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
   ]
 })
 export class FlJsonEditorModule {
+
+  constructor(translateService: FlTranslateService) {
+    translateService.addModuleTranslation('FlJsonEditorModule', flJsonEditorI18n);
+  }
 }

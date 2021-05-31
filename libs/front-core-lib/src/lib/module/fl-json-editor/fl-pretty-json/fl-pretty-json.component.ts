@@ -59,6 +59,8 @@ export class FlPrettyJsonComponent implements OnInit {
 
   componentIsInitiated: boolean = false;
 
+  error: boolean = false;
+
   private _transformer = (node: ObjectNode, level: number): ObjectFlatNode => {
     return {
       expandable: !!node.children && node.children.length > 0,
@@ -89,21 +91,29 @@ export class FlPrettyJsonComponent implements OnInit {
       return;
     }
 
-    this.startChar = this.getStartChar(object);
-    this.endChar = this.getEndChar(object);
+    try {
+      // prepare the object
+      const convertedObject: any = this.initObject(object);
 
-    const data = this.buildFileTree(object, 0);
+      this.startChar = this.getStartChar(convertedObject);
+      this.endChar = this.getEndChar(convertedObject);
 
-    this.treeControl = new FlatTreeControl<ObjectFlatNode>(
-      node => node.level, node => node.expandable);
+      const data = this.buildFileTree(convertedObject, 0);
 
-    // object to flatten tree
-    this.treeFlattener = new MatTreeFlattener(
-      this._transformer, node => node.level, node => node.expandable, node => node.children);
+      this.treeControl = new FlatTreeControl<ObjectFlatNode>(
+        node => node.level, node => node.expandable);
 
-    // create the datasource and set data
-    this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
-    this.dataSource.data = data;
+      // object to flatten tree
+      this.treeFlattener = new MatTreeFlattener(
+        this._transformer, node => node.level, node => node.expandable, node => node.children);
+
+      // create the datasource and set data
+      this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+      this.dataSource.data = data;
+      this.error = false;
+    } catch (e) {
+      this.error = true;
+    }
   }
 
   /**
@@ -215,15 +225,27 @@ export class FlPrettyJsonComponent implements OnInit {
     return preview;
   }
 
+  private initObject(object: any): any {
+    // if the object is an array of an object, don't change it
+    if (Array.isArray(object) || typeof object === 'object') {
+      return object;
+      // if this is a string,
+    } else if (typeof object === 'string') {
+      return object.split('\n');
+    } else {
+      console.error('Wrong object format ', object);
+      throw new Error();
+    }
+  }
+
   private getStartChar(object: any): string {
     if (Array.isArray(object)) {
       return '[';
     } else if (typeof object === 'object') {
       return '{';
-    } else {
-      console.error('Wrong object ', object);
-      return '';
     }
+
+    return '';
   }
 
   private getEndChar(object: any): string {
@@ -231,10 +253,9 @@ export class FlPrettyJsonComponent implements OnInit {
       return ']';
     } else if (typeof object === 'object') {
       return '}';
-    } else {
-      console.error('Wrong object ', object);
-      return '';
     }
+
+    return '';
   }
 
 }
