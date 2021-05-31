@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlPlatformService} from './fl-plateform.service';
+import {Observable} from 'rxjs';
 
 /**
  * Service to manage files, like download a file
@@ -105,6 +106,37 @@ export class FlFileService {
 
   public static createBlob(blobParts?: BlobPart[], options?: BlobPropertyBag): Blob {
     return new Blob(blobParts, options);
+  }
+
+  /**
+   * Read the content of a blob file
+   * @param file
+   * @param parseResultToJson if true parse the result to json
+   */
+  public static readBlobContent(file: Blob, parseResultToJson: boolean = false): Observable<string | any> {
+    return new Observable(subscriber => {
+      const reader = new FileReader();
+
+      // This fires after the blob has been read/loaded.
+      reader.addEventListener('loadend', (e) => {
+        const result: string = e.target.result as any;
+        if (parseResultToJson) {
+          try {
+            subscriber.next(JSON.parse(result));
+          } catch (e) {
+            subscriber.error(e);
+            return;
+          }
+        } else {
+          subscriber.next(result);
+        }
+
+        subscriber.complete();
+      });
+
+      // Start reading the blob as text.
+      reader.readAsText(file);
+    });
   }
 
 

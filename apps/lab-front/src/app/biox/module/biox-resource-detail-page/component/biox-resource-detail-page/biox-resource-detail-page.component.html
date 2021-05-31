@@ -22,14 +22,17 @@
 
         <!--    Json view    -->
         <div class="page-padding g-full-height" *ngSwitchCase="'json'">
-          <gen-biox-resource-json class="page-padding"
-                                  [resource]="resource"></gen-biox-resource-json>
+          <gen-biox-resource-json [resource]="resource"></gen-biox-resource-json>
         </div>
 
         <!--    Spreadsheet view    -->
         <div class="page-padding g-full-height" *ngSwitchCase="'spreadsheet'">
-          <gen-biox-resource-spreadsheet class="page-padding"
-                                         [resource]="resource"></gen-biox-resource-spreadsheet>
+          <gen-biox-resource-spreadsheet [resource]="resource"></gen-biox-resource-spreadsheet>
+        </div>
+
+        <!--    Text view    -->
+        <div class="page-padding g-full-height" *ngSwitchCase="'text'">
+          <gen-biox-resource-text [resource]="resource"></gen-biox-resource-text>
         </div>
 
         <!--    Pathway view    -->

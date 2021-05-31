@@ -17,6 +17,7 @@
     "resource_view_json": "Afficher au format json",
     "resource_view_spreadsheet": "Afficher dans une feuille de calcul",
     "resource_view_pathway": "Afficher le pathway",
+    "resource_view_text": "Afficher au format text",
     "workflow_loading_error": "Erreur lors du chargement du protocol",
     "add_process": "Ajouter un process",
     "add_process_title": "Ajouter un process (double cliques)",
@@ -25,6 +26,9 @@
     "open_node_detail": "Détail",
     "node_type": "Type",
     "node_progress": "Avancement",
-    "node_process_name": "Processus"
+    "node_process_name": "Processus",
+    "file_resource_download": "Télécharger",
+    "file_resource_open": "Ouvrir le contenu du fichier",
+    "resource_text_load": "Charger plus de text"
   }
 }

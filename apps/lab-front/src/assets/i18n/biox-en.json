@@ -17,6 +17,7 @@
     "resource_view_json": "View as json",
     "resource_view_spreadsheet": "View in spreadsheet",
     "resource_view_pathway": "Show the pathway",
+    "resource_view_text": "View as text",
     "workflow_loading_error": "Error while retrieving protocol",
     "add_process": "Add a process",
     "add_process_title": "Add a process (double clics)",
@@ -25,6 +26,9 @@
     "open_node_detail": "Detail",
     "node_type": "Type",
     "node_progress": "Progress",
-    "node_process_name": "Process"
+    "node_process_name": "Process",
+    "file_resource_download": "Download",
+    "file_resource_open": "View file content",
+    "resource_text_load": "Load more text"
   }
 }

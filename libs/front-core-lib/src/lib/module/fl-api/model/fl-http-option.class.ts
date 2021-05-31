@@ -31,6 +31,7 @@ export interface FlHttpOption extends FlHttpGetUrlOption{
     [header: string]: string | string[];
   };
   observe?: any;
+  responseType?: 'blob' | 'arraybuffer' | 'text' | any;
   params?: HttpParams | {
     [param: string]: string | string[];
   };

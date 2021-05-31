@@ -1,5 +1,7 @@
 import {AfterViewInit, Directive, ElementRef, EventEmitter, HostListener, Input, Output} from '@angular/core';
 
+export type FlInfiniteScrollMode = 'container' | 'body';
+
 /**
  * Directive to be placed on a scrollable container and it emits an event when
  * the user has scroll and reach 'flTriggerDistance' pixel before the bottom of the container
@@ -43,7 +45,7 @@ export class FlInfiniteScrollDirective implements AfterViewInit {
    *
    * If body it listens to the windows scroll event and check the scroll on the body
    */
-  @Input() flInfiniteMode: 'container' | 'body' = 'container';
+  @Input() flInfiniteMode: FlInfiniteScrollMode = 'container';
 
   /**
    * Number of millisecond to wait after emitting an event.

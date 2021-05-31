@@ -6,6 +6,7 @@ import { BioxResourcePortalComponent } from './component/biox-resource-portal/bi
 import { BioxResourceSpreadsheetComponent } from './component/biox-resource-spreadsheet/biox-resource-spreadsheet.component';
 import {RouterModule} from '@angular/router';
 import { BioxResourceJsonComponent } from './component/biox-resource-json/biox-resource-json.component';
+import {BioxResourceTextComponent} from './component/biox-resource-text/biox-resource-text.component';
 
 
 @NgModule({
@@ -14,12 +15,14 @@ import { BioxResourceJsonComponent } from './component/biox-resource-json/biox-r
     BioxResourcePortalComponent,
     BioxResourceSpreadsheetComponent,
     BioxResourceJsonComponent,
+    BioxResourceTextComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
     BioxResourcePortalComponent,
     BioxResourceSpreadsheetComponent,
     BioxResourceJsonComponent,
+    BioxResourceTextComponent,
   ],
   imports: [
     CommonModule,

@@ -13,6 +13,7 @@ interface View {
 }
 
 const jsonView: View = {route: 'json', text: '{ }', tooltip: 'biox.resource_view_json'};
+const plainTextView: View = {route: 'text', icon: 'text_snippet', tooltip: 'biox.resource_view_text'};
 const spreadsheetView: View = {route: 'spreadsheet', icon: 'calendar_view_month', tooltip: 'biox.resource_view_spreadsheet'};
 const pathwayView: View = {route: 'pathway', icon: 'share', tooltip: 'biox.resource_view_pathway'};
 
@@ -52,13 +53,16 @@ export class BioxResourceDetailPageComponent implements OnInit {
   }
 
   private initViews(resource: BioxResource): void {
-    this.availableViews = [jsonView, spreadsheetView];
+    this.availableViews = [jsonView, spreadsheetView, plainTextView];
     let defaultView: View = this.availableViews[0];
 
     // if the resource is a network, add the network view and set it by default
     if (resource.type === 'gena.network.Network') {
       this.availableViews.push(pathwayView);
       defaultView = pathwayView;
+    } else if (typeof resource.data === 'string') {
+      this.availableViews = [plainTextView];
+      defaultView = plainTextView;
     }
 
 

@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
 import {FileResource, FileResourceDatasource} from '../../../../../core/model/entities/file-resource.entity';
 import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
+import {RouterService} from '../../../../../core/service/router.service';
 
 @Component({
   selector: 'gen-file-resource-table',
@@ -14,14 +15,18 @@ export class FileResourceTableComponent extends FlTableAbstractDirective<FileRes
   @Input() datasource: FileResourceDatasource;
 
   constructor(private fileService: FileResourceService) {
-    super(['createdAt', 'download'])
+    super(['createdAt', 'action']);
   }
 
   ngOnInit(): void {
   }
 
-  downloadFile(file: FileResource): void{
-    this.fileService.downloadFile(file.type, file.id).subscribe();
+  downloadFile(file: FileResource): void {
+    this.fileService.downloadFile(file.type, file.id, file.getFileName()).subscribe();
+  }
+
+  resourceFileRoute(file: FileResource): string {
+    return RouterService.getBioxResourceDetailRoute(file.type, file.id);
   }
 
 }

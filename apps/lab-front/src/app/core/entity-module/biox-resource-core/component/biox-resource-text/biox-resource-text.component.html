@@ -1,0 +1,11 @@
+<div (flInfiniteScroll)="loadMoreText()" [flInfiniteMode]="infiniteScrollMode"
+     class="container">
+  {{displayedText}}
+</div>
+
+<div class="g-text-centered button" *ngIf="!textFullyLoaded">
+  <button mat-flat-button color="primary" type="button"
+          (click)="loadMoreText()">
+    {{'biox.resource_text_load' | translate}}
+  </button>
+</div>
