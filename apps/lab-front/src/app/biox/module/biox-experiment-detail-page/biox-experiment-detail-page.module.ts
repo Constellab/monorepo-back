@@ -17,14 +17,13 @@ import {WorkflowManagerState} from './state/workflow-manager-state';
 import {BioxProcessTypeModule} from '../../../core/entity-module/biox-process-type/biox-process-type.module';
 import {BioxWorkflowNodeDetailComponent} from './component/biox-workflow-node-detail/biox-workflow-node-detail.component';
 import {WorkflowActionState} from './state/workflow-action-state.service';
-import {BioxWorkflowDrawerComponent} from './component/biox-workflow-drawer/biox-workflow-drawer.component';
 import {BioxExperimentDetailPageState} from './state/biox-experiment-detail-page.state';
 import {BioxWorkflowDrawerActionComponent} from './component/biox-workflow-drawer-action/biox-workflow-drawer-action.component';
-import { BioxWorkflowAddProcessComponent } from './component/biox-workflow-add-process/biox-workflow-add-process.component';
-import { BioxWorkflowPortsListComponent } from './component/biox-workflow-ports-list/biox-workflow-ports-list.component';
-import { BioxWorkflowPortComponent } from './component/biox-workflow-port/biox-workflow-port.component';
-import { BioxWorkflowNodeConfigComponent } from './component/biox-workflow-node-config/biox-workflow-node-config.component';
-import { BioxWorkflowNodeProgressComponent } from './component/biox-workflow-node-progress/biox-workflow-node-progress.component';
+import {BioxWorkflowAddProcessComponent} from './component/biox-workflow-add-process/biox-workflow-add-process.component';
+import {BioxWorkflowPortsListComponent} from './component/biox-workflow-ports-list/biox-workflow-ports-list.component';
+import {BioxWorkflowPortComponent} from './component/biox-workflow-port/biox-workflow-port.component';
+import {BioxWorkflowNodeConfigComponent} from './component/biox-workflow-node-config/biox-workflow-node-config.component';
+import {BioxWorkflowNodeProgressComponent} from './component/biox-workflow-node-progress/biox-workflow-node-progress.component';
 
 
 @NgModule({
@@ -36,7 +35,6 @@ import { BioxWorkflowNodeProgressComponent } from './component/biox-workflow-nod
     BioxWorkflowNodeInterfaceComponent,
     BioxWorkflowActionsComponent,
     BioxWorkflowNodeDetailComponent,
-    BioxWorkflowDrawerComponent,
     BioxWorkflowDrawerActionComponent,
     BioxWorkflowAddProcessComponent,
     BioxWorkflowPortsListComponent,

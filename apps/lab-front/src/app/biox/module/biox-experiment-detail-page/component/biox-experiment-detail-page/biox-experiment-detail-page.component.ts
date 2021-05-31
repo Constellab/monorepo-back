@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
@@ -8,6 +8,8 @@ import {
   BioxExperimentFormDialogComponent,
   BioxExperimentFormDialogInput
 } from '../../../../../core/entity-module/biox-experiment-core/component/biox-experiment-form-dialog/biox-experiment-form-dialog.component';
+import {MatDrawer} from '@angular/material/sidenav';
+import {WorkflowActionState} from '../../state/workflow-action-state.service';
 
 /**
  * Page for the biox experiment detail with workflow view/edit
@@ -19,17 +21,23 @@ import {
 })
 export class BioxExperimentDetailPageComponent implements OnInit, OnDestroy {
 
+  @ViewChild(MatDrawer, {static: true}) drawer: MatDrawer;
+
+
   experiment$: Observable<BioxExperiment>;
 
   constructor(private route: ActivatedRoute,
               private experimentState: BioxExperimentDetailPageState,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private actionState: WorkflowActionState) {
   }
 
   ngOnInit(): void {
     this.route.params.subscribe(
       params => this.init(params.id)
     );
+
+    this.actionState.init(this.drawer);
   }
 
   private init(experimentId: string): void {
@@ -59,6 +67,7 @@ export class BioxExperimentDetailPageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.experimentState.clear();
+    this.actionState.clear();
   }
 
 
