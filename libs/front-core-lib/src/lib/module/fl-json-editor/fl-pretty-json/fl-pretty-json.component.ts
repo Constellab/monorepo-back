@@ -231,6 +231,18 @@ export class FlPrettyJsonComponent implements OnInit {
       return object;
       // if this is a string,
     } else if (typeof object === 'string') {
+
+      // check if the string is parsable
+      const firstCarac: string = object[0];
+      const lastCarac: string = object[object.length - 1];
+      if ((firstCarac === '{' || firstCarac === '[') &&
+        (lastCarac === '}' || lastCarac === ']')) {
+        try {
+          return JSON.parse(object);
+        } catch (e) {
+        }
+      }
+
       return object.split('\n');
     } else {
       console.error('Wrong object format ', object);
