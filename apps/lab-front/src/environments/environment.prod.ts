@@ -1,11 +1,15 @@
 import {Environment} from './environment.class';
 
-const apiBaseUrl: string = 'https://lab.benj.gencovery.io/';
+/**
+ * This file is just to define the skeleton for prod environment and set production to True
+ * The content is overwritten on app load by {@link loadEnvironmentFromAssets} that uses a json file
+ * in the assets
+ */
 export const environment: Environment = {
   production: true,
-  apiBaseUrl: apiBaseUrl,
-  apiUrl: `${apiBaseUrl}core-api/`,
-  jupyterLabUrl: 'https://jlab.benj.gencovery.io/' +
-    '?token=JSLaMCrFtncD66b4D9kr2Bfod5E5XAT4iaVgtHE3KeER4NPPeLDMVqjL7Qqi6XMDZR7uqGSMcDDXKcLX3b65kPUkdKsXXq24',
-  centralApiUrl: 'https://prod-back.gws.gencovery.com/'
+  settings: {
+    apiBaseUrl: '',
+    apiUrl: '',
+    codeServerUrl: ''
+  }
 };

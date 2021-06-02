@@ -27,8 +27,11 @@ import {AuthenticationInterceptor} from './core/service/authentication.intercept
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {LoginModule} from './login/login.module';
 import {AuthenticationService} from './login/service/authentication.service';
+import {ApiErrorService} from './core/service/api-error.service';
+
 
 function loadTokenFromLocalStorage(authenticationService: AuthenticationService): () => void {
+  console.log('Factory called');
   return (): void => authenticationService.loadTokenFromLocalStorage();
 }
 
@@ -52,7 +55,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     // Core module
     CoreModule,
 
-    FlApiModule.forRoot(apiModuleConfig),
+    FlApiModule.forRoot(apiModuleConfig, ApiErrorService),
 
     // Fl setup modules
     // Setup translate module
@@ -89,6 +92,8 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
       multi: true
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},
+    // {provide: FL_API_MODULE_CONFIG, useValue: apiModuleConfig()},
+    // {provide: FL_API_MODULE_CONFIG, useFactory: testFactory},
   ],
   bootstrap: [AppComponent],
 })
@@ -96,5 +101,6 @@ export class AppModule {
   constructor(injector: Injector) {
     // set the root injector in a variable
     flSetRootInjector(injector);
+    console.log('APP MODULE');
   }
 }

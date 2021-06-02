@@ -30,6 +30,7 @@ import {apiModuleConfig} from './core/model/config/api-module.config';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {AuthenticationService} from './login/service/authentication.service';
 import {UserAccountsService} from './core/service-api/user-accounts.service';
+import {ErrorService} from './core/service/error.service';
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -57,7 +58,7 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     // Core Modules
     CoreModule,
 
-    FlApiModule.forRoot(apiModuleConfig),
+    FlApiModule.forRoot(() => apiModuleConfig(), ErrorService),
 
     // Setup translate module
     FlTranslateModule.forRoot({

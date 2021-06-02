@@ -14,7 +14,7 @@ export class MainAppComponent implements OnInit {
 
   documentationBricks: DocumentationBrick[] = documentationBricks;
 
-  juptyterLabUrl: string = environment.jupyterLabUrl;
+  codeServerUrl: string = environment.settings.codeServerUrl;
 
   constructor() {
   }

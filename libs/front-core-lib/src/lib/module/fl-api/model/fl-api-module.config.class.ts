@@ -1,4 +1,4 @@
-import {InjectionToken, Type} from '@angular/core';
+import {InjectionToken} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {FlSnackBarService} from '../../fl-snack-bar/fl-snack-bar.service';
@@ -21,11 +21,6 @@ export interface FlApiModuleConfig {
    * If not provided, default is 5000 milliseconds
    */
   defaultApiErrorDuration?: number;
-
-  /**
-   * Class for the error service
-   */
-  errorApiService: Type<FlApiErrorService>;
 
   /**
    * Configuration of the pagination
