@@ -1,12 +1,14 @@
 <div fxLayout="column" class="g-full-height" *ngIf="!error; else showError">
 
   <!--  Workflow header  -->
-  <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
-       *ngIf="!flowIsLoading">
+  <div class="header" fxLayout="row" fxLayoutAlign="start center"
+       fxLayoutGap="1em" *ngIf="!flowIsLoading">
+    <gen-biox-workflow-actions *ngIf="experimentIsUpdatable"></gen-biox-workflow-actions>
+
+    <div class="divider"></div>
 
     <gen-biox-workflow-layers-breadcrumb></gen-biox-workflow-layers-breadcrumb>
 
-    <gen-biox-workflow-actions *ngIf="experimentIsUpdatable"></gen-biox-workflow-actions>
   </div>
 
   <!--  Workflow zone  -->
