@@ -1,0 +1,43 @@
+image: docker:latest
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay
+  GIT_DEPTH: 0
+  SERVICE: lab-front
+
+
+stages:
+  - build-lab
+  - deploy-lab
+
+# Build lab front an create an artifact with dist folder
+build-lab:
+  image: node:14-alpine
+  stage: build-lab
+  script:
+    - npm ci
+    - npm run lab-front:build-prod
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - dist/apps/lab-front/
+  only:
+    - master
+
+# Push lab-front image to the docker registry using Dockerfile of the lab-front
+deploy-lab:
+  stage: deploy-lab
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    # Build the docker image from Dockerfile with a latest tag and a tag for the commit
+    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest . -f apps/lab-front/Dockerfile
+    # Push both image in the registry
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    - master
+
+

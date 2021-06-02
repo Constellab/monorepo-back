@@ -12,5 +12,3 @@ e2e
 # Ignore the current node modules
 node_modules
 
-# Ignore the built
-dist

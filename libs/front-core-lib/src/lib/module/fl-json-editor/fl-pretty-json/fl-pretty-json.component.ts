@@ -87,7 +87,6 @@ export class FlPrettyJsonComponent implements OnInit {
   ngOnInit(): void {
     this.initJson(this.object);
     this.componentIsInitiated = true;
-    console.log(this.dense);
   }
 
   private initJson(object: any): void {
