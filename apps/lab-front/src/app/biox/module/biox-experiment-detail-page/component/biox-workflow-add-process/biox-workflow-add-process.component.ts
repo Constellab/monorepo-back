@@ -1,11 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {BioxProcessable, BioxProtocolDatasource, BioxProtocolVM} from '../../../../../core/model/entities/biox-processable.entity';
+import {BioxProcessable} from '../../../../../core/model/entities/biox-processable.entity';
 import {Observable} from 'rxjs';
-import {BioxProcessType, BioxProcessTypeDatasource} from '../../../../../core/model/entities/biox-process-type.entity';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
 import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
 import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
+import {BioxProcessType, BioxProcessTypeTree} from '../../../../../core/model/entities/biox-process-type.entity';
+
 
 /**
  * Component that show the list of process type and protocol type
@@ -18,10 +19,12 @@ import {WorkflowManagerState} from '../../state/workflow-manager-state';
 })
 export class BioxWorkflowAddProcessComponent implements OnInit {
 
-  availableProtocols: BioxProtocolDatasource;
-  protocols$: Observable<BioxProtocolVM[]>;
-  availableProcesses: BioxProcessTypeDatasource;
-  processes$: Observable<BioxProcessType[]>;
+  // availableProtocols: BioxProtocolDatasource;
+  // protocols$: Observable<BioxProtocolVM[]>;
+  processes$: Observable<BioxProcessTypeTree[]>;
+
+  selectedProcess: BioxProcessType;
+
 
   constructor(private workflowManagerService: WorkflowManagerState,
               private bioxProtocolService: BioxProtocolService,
@@ -35,8 +38,7 @@ export class BioxWorkflowAddProcessComponent implements OnInit {
     // this.protocols$ = this.availableProtocols.connect();
 
     // get process
-    this.availableProcesses = this.bioxProcessTypeService.getProcessesDatasource();
-    this.processes$ = this.availableProcesses.connect();
+    this.processes$ = this.bioxProcessTypeService.getProcessTypesGrouped();
   }
 
   addProcessable(object: BioxProcessType): void {
@@ -49,6 +51,15 @@ export class BioxWorkflowAddProcessComponent implements OnInit {
     }
 
     this.workflowManagerService.addProcessableNode(processable, 0, 0);
+  }
+
+  selectProcess(process: BioxProcessType): void {
+    this.selectedProcess = process;
+  }
+
+  selectAndAddProcess(process: BioxProcessType): void {
+    this.selectProcess(process);
+    this.addProcessable(process);
   }
 
 }

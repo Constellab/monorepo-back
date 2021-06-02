@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
+import {ClCoerceBooleanDecorator, ClOnChange} from '@monorepo/core-lib';
 
 class ObjectNode {
   children?: ObjectNode[];
@@ -29,14 +30,13 @@ class ObjectFlatNode {
 })
 export class FlPrettyJsonComponent implements OnInit {
 
-  @Input() set object(object: any) {
-    if (this.componentIsInitiated) {
-      this.initJson(object);
-    }
-    this._object = object;
-  }
 
-  _object: any;
+  @ClOnChange(function (this: FlPrettyJsonComponent, value: any) {
+    if (this.componentIsInitiated) {
+      this.initJson(value);
+    }
+  })
+  @Input() object: any;
 
   /**
    * Number max of character in the json object preview
@@ -48,12 +48,17 @@ export class FlPrettyJsonComponent implements OnInit {
    */
   @Input() previewMaxObjectShowed: number = 3;
 
+  /**
+   * In dense mode, the text size and indent padding are smaller
+   */
+  @ClCoerceBooleanDecorator()
+  @Input() dense: boolean | string;
+
   startChar: string;
   endChar: string;
 
   treeControl: FlatTreeControl<ObjectFlatNode>;
 
-  treeFlattener: MatTreeFlattener<ObjectNode, ObjectFlatNode>;
 
   dataSource: MatTreeFlatDataSource<ObjectNode, ObjectFlatNode>;
 
@@ -80,8 +85,9 @@ export class FlPrettyJsonComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initJson(this._object);
+    this.initJson(this.object);
     this.componentIsInitiated = true;
+    console.log(this.dense);
   }
 
   private initJson(object: any): void {
@@ -104,11 +110,11 @@ export class FlPrettyJsonComponent implements OnInit {
         node => node.level, node => node.expandable);
 
       // object to flatten tree
-      this.treeFlattener = new MatTreeFlattener(
+      const treeFlattener: MatTreeFlattener<ObjectNode, ObjectFlatNode> = new MatTreeFlattener(
         this._transformer, node => node.level, node => node.expandable, node => node.children);
 
       // create the datasource and set data
-      this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+      this.dataSource = new MatTreeFlatDataSource(this.treeControl, treeFlattener);
       this.dataSource.data = data;
       this.error = false;
     } catch (e) {
@@ -270,4 +276,11 @@ export class FlPrettyJsonComponent implements OnInit {
     return '';
   }
 
+  get paddingIndent(): number {
+    return this.dense ? 10 : 20;
+  }
+
+  get denseClass(): string {
+    return this.dense ? 'dense' : 'normal';
+  }
 }

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BioxConfigureSpecsComponent } from './biox-configure-specs.component';
+import { BioxConfigureSpecsFormComponent } from './biox-configure-specs-form.component';
 
 describe('BioxConfigureSpecComponent', () => {
-  let component: BioxConfigureSpecsComponent;
-  let fixture: ComponentFixture<BioxConfigureSpecsComponent>;
+  let component: BioxConfigureSpecsFormComponent;
+  let fixture: ComponentFixture<BioxConfigureSpecsFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BioxConfigureSpecsComponent ]
+      declarations: [ BioxConfigureSpecsFormComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BioxConfigureSpecsComponent);
+    fixture = TestBed.createComponent(BioxConfigureSpecsFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

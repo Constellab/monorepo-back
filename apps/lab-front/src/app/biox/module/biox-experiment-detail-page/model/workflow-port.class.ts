@@ -1,4 +1,4 @@
-import {FlColorHelper} from '@monorepo/front-core-lib';
+import {getBioxProcessPortColor} from '../../../../core/entity-module/biox-process-type/utils/biox-process-port-color';
 
 export class WorkflowPort {
 
@@ -7,7 +7,7 @@ export class WorkflowPort {
 
   constructor(public name: string,
               public drawFlowName: string,
-              public type: string[]) {
+              public types: string[]) {
   }
 
   /**
@@ -33,12 +33,12 @@ export class WorkflowPort {
    */
   public isCompatible(port: WorkflowPort): boolean {
     // todo check what to do when null
-    if(this.type == null || port.type == null){
+    if (this.types == null || port.types == null) {
       return true;
     }
 
-    for (const type of port.type) {
-      if (this.type.includes(type)) {
+    for (const type of port.types) {
+      if (this.types.includes(type)) {
         return true;
       }
     }
@@ -49,10 +49,6 @@ export class WorkflowPort {
    * return the port color base on first type
    */
   public getColor(): string {
-    if (this.type == null || this.type.length === 0) {
-      return '#ffffff';
-    } else {
-      return FlColorHelper.stringToRGBColor(this.type[0]);
-    }
+    return getBioxProcessPortColor(this.types);
   }
 }

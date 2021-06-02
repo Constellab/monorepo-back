@@ -1,4 +1,4 @@
 
 <div *ngFor="let port of ports">
-  <gen-biox-workflow-port [port]="port"></gen-biox-workflow-port>
+  <gen-biox-process-port [name]="port.name" [types]="port.types"></gen-biox-process-port>
 </div>

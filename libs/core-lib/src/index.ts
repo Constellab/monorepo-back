@@ -4,6 +4,9 @@ export * from './lib/cl-rxjs/public-api';
 // Export the config
 export * from './lib/config/public-api';
 
+// Export decorators
+export * from './lib/decorator/public-api';
+
 // Export the json convert
 export * from './lib/json-transform/public-api';
 

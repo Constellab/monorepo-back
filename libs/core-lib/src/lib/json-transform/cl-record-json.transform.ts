@@ -1,5 +1,5 @@
 import {Transform} from 'class-transformer';
-import {ClCoreJsonConvert, ClDeserializeItem, ClSerializeItem} from './cl-json.converter';
+import {ClCoreJsonConvert, ClDeserializationRef, ClDeserializeItem, ClSerializeItem} from './cl-json.converter';
 import {ClRecordWrapper} from '../model/cl-record-wrapper.class';
 
 
@@ -41,7 +41,7 @@ export function ClRecordWrapperTransform<WRAPPER extends ClRecordWrapper<ITEM>, 
  * @param recordItemReference class reference for deserialization of an item
  * @constructor
  */
-export function ClRecordTransform<T>(recordItemReference: new() => T): PropertyDecorator {
+export function ClRecordTransform<T>(recordItemReference: ClDeserializationRef<T>): PropertyDecorator {
   return ClRecordTransformOverride((value: any) => ClCoreJsonConvert.deserializeObject(value, recordItemReference),
     ClCoreJsonConvert.classToPlain);
 }

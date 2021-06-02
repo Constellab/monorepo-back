@@ -1,1 +1,1 @@
-<fl-pretty-json [object]="configValue"></fl-pretty-json>
+<fl-pretty-json [object]="config.data | flCallMethod:config.data.mergeConfigWithDefault"></fl-pretty-json>

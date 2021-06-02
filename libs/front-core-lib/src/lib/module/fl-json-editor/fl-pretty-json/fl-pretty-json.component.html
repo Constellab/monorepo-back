@@ -1,9 +1,9 @@
-<div class="g-list-padding" *ngIf="!error; else showError">
+<div class="g-list-padding" [ngClass]="denseClass" *ngIf="!error; else showError">
   {{startChar}}
-  <mat-tree *ngIf="_object != null" [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree *ngIf="object != null" [dataSource]="dataSource" [treeControl]="treeControl">
 
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle class="tree-node" matTreeNodePadding
-                   [matTreeNodePaddingIndent]="20">
+                   [matTreeNodePaddingIndent]="paddingIndent">
       <span class="key-color key">{{node.key}}</span>&nbsp;:
 
       <span class="value">
@@ -20,7 +20,8 @@
 
 
     <!-- This is the tree node template for expandable nodes -->
-    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding [matTreeNodePaddingIndent]="20"
+    <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
+                   [matTreeNodePaddingIndent]="paddingIndent"
                    class="tree-node-preview">
       <div matTreeNodeToggle class="clickable" fxLayout="row" fxLayoutAlign="start center">
         <div>

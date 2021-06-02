@@ -77,6 +77,10 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
     }
     return Object.assign(this.getDefaultConfig(), config);
   }
+
+  public hasConfigs(): boolean{
+    return this.record != null && Object.keys(this.record).length > 0;
+  }
 }
 
 /**

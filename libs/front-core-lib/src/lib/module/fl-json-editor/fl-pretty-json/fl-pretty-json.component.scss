@@ -1,47 +1,75 @@
-.tree-node{
+.tree-node {
   align-items: initial;
 }
 
-.children{
+.children {
   padding-left: 25px;
 }
 
-mat-tree-node{
+.normal {
+  font-size: 1rem;
+  .mat-tree-node, .mat-nested-tree-node {
+    font-size: 1rem;
+  }
+
+  .key {
+    padding-left: 17px;
+  }
+
+  .value {
+    padding-left: 10px;
+  }
+
+  .icon {
+    font-size: 17px;
+    height: 17px;
+    width: 17px;
+  }
+}
+
+.dense {
+  font-size: 0.8rem;
+  .mat-tree-node, .mat-nested-tree-node {
+    font-size: 0.8rem;
+  }
+
+  .key {
+    padding-left: 10px;
+  }
+
+  .value {
+    padding-left: 5px;
+  }
+
+  .icon {
+    font-size: 10px;
+    height: 10px;
+    width: 10px;
+  }
+}
+
+mat-tree-node {
   min-height: 0;
 }
 
-.clickable{
+.clickable {
   cursor: pointer;
 }
 
-.boolean{
+.boolean {
   color: #569cd6;
 }
 
-.number{
+.number {
   color: #a0d982;
 }
 
-.string{
+.string {
   color: #ce9178;
 }
 
-.key{
-  padding-left: 17px;
-}
 
-.value{
-  padding-left: 10px;
-
-}
-
-.icon{
-  font-size: 17px;
-  height: 17px;
-  width: 17px;
-}
-
-.tree-node-preview{
+.tree-node-preview {
   box-sizing: border-box;
   max-width: 100%;
   overflow: hidden;

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BioxWorkflowPortComponent } from './biox-workflow-port.component';
+import { BioxProcessPortComponent } from './biox-process-port.component';
 
-describe('BioxWorkflowPortComponent', () => {
-  let component: BioxWorkflowPortComponent;
-  let fixture: ComponentFixture<BioxWorkflowPortComponent>;
+describe('BioxProcessPortComponent', () => {
+  let component: BioxProcessPortComponent;
+  let fixture: ComponentFixture<BioxProcessPortComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BioxWorkflowPortComponent ]
+      declarations: [ BioxProcessPortComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BioxWorkflowPortComponent);
+    fixture = TestBed.createComponent(BioxProcessPortComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

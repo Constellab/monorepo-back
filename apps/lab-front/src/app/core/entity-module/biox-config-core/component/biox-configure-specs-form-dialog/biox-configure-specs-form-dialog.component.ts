@@ -8,18 +8,18 @@ import {BioxConfigData} from '../../../../model/entities/biox-config.entity';
  * Dialog to create a config based on a config spec
  */
 @Component({
-  selector: 'gen-biox-configure-specs-dialog',
-  templateUrl: './biox-configure-specs-dialog.component.html',
-  styleUrls: ['./biox-configure-specs-dialog.component.scss']
+  selector: 'gen-biox-configure-specs-form-dialog',
+  templateUrl: './biox-configure-specs-form-dialog.component.html',
+  styleUrls: ['./biox-configure-specs-form-dialog.component.scss']
 })
-export class BioxConfigureSpecsDialogComponent implements OnInit {
+export class BioxConfigureSpecsFormDialogComponent implements OnInit {
 
   formGp: FormGroup;
 
   bioxConfigData: BioxConfigData;
 
   constructor(@Inject(MAT_DIALOG_DATA) input: BioxConfigData,
-              private dialogRef: MatDialogRef<BioxConfigureSpecsDialogComponent>) {
+              private dialogRef: MatDialogRef<BioxConfigureSpecsFormDialogComponent>) {
     this.bioxConfigData = input;
   }
 

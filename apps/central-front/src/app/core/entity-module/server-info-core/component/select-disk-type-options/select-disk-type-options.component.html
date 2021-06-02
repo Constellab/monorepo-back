@@ -1,3 +1,3 @@
-<mat-option *ngFor="let disk of diskTypes | flEnumToArray" [value]="disk">
+<mat-option *ngFor="let disk of diskTypes | flObjectKeys" [value]="disk">
   {{disk}}
 </mat-option>

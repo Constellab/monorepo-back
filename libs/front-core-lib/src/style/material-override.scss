@@ -6,7 +6,7 @@
 //////////////////////////////////// FORM FIELD //////////////////////////////////
 
 // class to make the mat-hint relative so the form-field includes it even if it is big
-.g-form-field-hint-include .mat-form-field-subscript-wrapper{
+.g-form-field-hint-include .mat-form-field-subscript-wrapper {
   position: relative;
 }
 
@@ -51,7 +51,6 @@
 .g-button-action {
   margin-left: 0.5em !important;
 }
-
 
 
 /***************************** Table *****************************/
@@ -126,7 +125,7 @@
 }
 
 /******************************* MAT TREE ***************************/
-mat-tree{
+mat-tree {
   background-color: transparent !important;
 }
 
@@ -134,5 +133,12 @@ mat-tree{
 /******************************* SIDENAV & DRAWER ***************************/
 // class to hide the backdrop of a drawer
 .g-sidenav-hide-backdrop .mat-drawer-backdrop.mat-drawer-shown {
-   background-color: transparent;
+  background-color: transparent;
+}
+
+/********************************* EXPANSION PANEL *****************************/
+// disable left and right padding of expansion panel body
+.g-expansion-disable-side-padding .mat-expansion-panel-body {
+  padding-left: 0;
+  padding-right: 0;
 }

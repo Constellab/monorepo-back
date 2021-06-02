@@ -38,7 +38,7 @@ export class BioxWorkflowActionsComponent implements OnInit {
   addProcess(): void {
     this.actionState.newAction({
       action: 'processSelection',
-      title: this.translateService.translate('biox.add_process_title')
+      title: this.translateService.translate('biox.add_process')
     });
   }
 

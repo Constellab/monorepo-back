@@ -3,7 +3,7 @@ import {WorkflowNode} from '../../model/workflow-node.class';
 import {BioxProcessable, BioxProcessableBase} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxConfig} from '../../../../../core/model/entities/biox-config.entity';
 import {ClHelpService} from '@monorepo/core-lib';
-import {BioxConfigureSpecsDialogComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
+import {BioxConfigureSpecsFormDialogComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-form-dialog/biox-configure-specs-form-dialog.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
 import {MatExpansionPanel} from '@angular/material/expansion';
@@ -46,7 +46,7 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
 
     console.log(this.config.data.getDynamicFormFieldsConfig());
 
-    this.dialogService.openMediumDialog(BioxConfigureSpecsDialogComponent,
+    this.dialogService.openMediumDialog(BioxConfigureSpecsFormDialogComponent,
       {data: this.config.data}).afterClosed().subscribe(
       config => this.onConfigDialogClosed(config)
     );

@@ -1,14 +1,14 @@
 <div fxLayout="row" fxLayoutAlign="start center">
   <div class="color-container">
-    <div [style.backgroundColor]="port.getColor()" class="color-round"></div>
+    <div [style.backgroundColor]="types | bioxProcessPortColor" class="color-round"></div>
   </div>
 
   <div fxFlex="30%">
-    {{port.name}}
+    {{name}}
   </div>
 
   <div fxFlex="auto" class="g-text-light">
-    <div *ngFor="let type of port.type">
+    <div *ngFor="let type of types">
       {{type}}
     </div>
   </div>

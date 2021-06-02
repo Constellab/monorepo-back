@@ -1,3 +1,5 @@
 <span [matTooltip]="date | flDate:tooltipFormat"
       [matTooltipPosition]="tooltipPosition"
-      [matTooltipDisabled]="disabledTooltip">{{date | flFromNow}}</span>
+      [matTooltipDisabled]="disabledTooltip">
+ {{prefix}} {{date | flFromNow}}
+</span>

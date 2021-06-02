@@ -21,7 +21,7 @@
     "resource_view_image": "View as image",
     "workflow_loading_error": "Error while retrieving protocol",
     "add_process": "Add a process",
-    "add_process_title": "Add a process (double clics)",
+    "add_selected_process": "Add process",
     "node_inputs": "Inputs",
     "node_outputs": "Outputs",
     "open_node_detail": "Detail",

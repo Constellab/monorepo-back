@@ -17,6 +17,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
+import {MatTreeModule} from '@angular/material/tree';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -40,6 +41,7 @@ import {MatListModule} from '@angular/material/list';
     MatExpansionModule,
     MatDividerModule,
     MatListModule,
+    MatTreeModule,
 
 
     FlexLayoutModule,

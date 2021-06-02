@@ -13,13 +13,13 @@ export class BioxWorkflowNodeConfigComponent implements OnInit {
 
   @Input() config: BioxConfig;
 
-  constructor() { }
+  configValue: any;
 
-  ngOnInit(): void {
+  constructor() {
   }
 
-  get configValue(): any{
-    return this.config.data.mergeConfigWithDefault()
+  ngOnInit(): void {
+    this.configValue = this.config.data.mergeConfigWithDefault();
   }
 
 }

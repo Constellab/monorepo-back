@@ -14,6 +14,8 @@ export class FlFromNowComponent implements OnInit {
 
   @Input() date: ClDateInput;
 
+  @Input() prefix: string;
+
   @Input() tooltipFormat: string = 'D HH:mm'
 
   @Input() tooltipPosition: TooltipPosition = 'above';

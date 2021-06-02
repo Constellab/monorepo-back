@@ -10,7 +10,7 @@
       <mat-label>{{'status' | translate}}</mat-label>
       <mat-select [formControl]="formControl" placeholder="{{'status' | translate}}"
                   required>
-        <mat-option *ngFor="let status of enum | flEnumToArray" [value]="status">
+        <mat-option *ngFor="let status of enum | flObjectKeys" [value]="status">
           {{status | translate}}
         </mat-option>
       </mat-select>

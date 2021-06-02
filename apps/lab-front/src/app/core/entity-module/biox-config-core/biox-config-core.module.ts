@@ -1,17 +1,18 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {CoreModule} from '../../core.module';
-import { BioxConfigureSpecsComponent } from './component/biox-configure-specs/biox-configure-specs.component';
-import { BioxConfigureSpecsDialogComponent } from './component/biox-configure-specs-dialog/biox-configure-specs-dialog.component';
+import {BioxConfigureSpecsFormComponent} from './component/biox-configure-specs-form/biox-configure-specs-form.component';
+import {BioxConfigureSpecsFormDialogComponent} from './component/biox-configure-specs-form-dialog/biox-configure-specs-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { BioxShowConfigPortalComponent } from './component/biox-show-config-portal/biox-show-config-portal.component';
 
 
 @NgModule({
   declarations: [
-    BioxConfigureSpecsComponent,
-    BioxConfigureSpecsDialogComponent,
-    BioxShowConfigPortalComponent
+    BioxConfigureSpecsFormComponent,
+    BioxConfigureSpecsFormDialogComponent,
+  ],
+  exports: [
+    BioxConfigureSpecsFormComponent,
   ],
   imports: [
     CommonModule,
@@ -20,6 +21,6 @@ import { BioxShowConfigPortalComponent } from './component/biox-show-config-port
 
     CoreModule,
   ],
-  exports: [BioxConfigureSpecsComponent, BioxShowConfigPortalComponent]
 })
-export class BioxConfigCoreModule { }
+export class BioxConfigCoreModule {
+}

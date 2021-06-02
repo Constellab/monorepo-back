@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BioxConfigureSpecsDialogComponent } from './biox-configure-specs-dialog.component';
+import { BioxConfigureSpecsFormDialogComponent } from './biox-configure-specs-form-dialog.component';
 
 describe('BioxConfigureSpecDialogComponent', () => {
-  let component: BioxConfigureSpecsDialogComponent;
-  let fixture: ComponentFixture<BioxConfigureSpecsDialogComponent>;
+  let component: BioxConfigureSpecsFormDialogComponent;
+  let fixture: ComponentFixture<BioxConfigureSpecsFormDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BioxConfigureSpecsDialogComponent ]
+      declarations: [ BioxConfigureSpecsFormDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BioxConfigureSpecsDialogComponent);
+    fixture = TestBed.createComponent(BioxConfigureSpecsFormDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
