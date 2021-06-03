@@ -36,8 +36,8 @@ deploy-lab:
     # Build the docker image from Dockerfile with a latest tag and a tag for the commit
     - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest . -f apps/lab-front/Dockerfile
     # Push both image in the registry
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - docker push $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest
   only:
     - develop
 
