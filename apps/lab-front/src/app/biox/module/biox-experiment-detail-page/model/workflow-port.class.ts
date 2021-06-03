@@ -37,12 +37,14 @@ export class WorkflowPort {
       return true;
     }
 
-    for (const type of port.types) {
-      if (this.types.includes(type)) {
-        return true;
-      }
-    }
-    return false;
+    // todo re-enable a smarter check
+    return true;
+    // for (const type of port.types) {
+    //   if (this.types.includes(type)) {
+    //     return true;
+    //   }
+    // }
+    // return false;
   }
 
   /**

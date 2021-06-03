@@ -19,7 +19,6 @@ export class FlApiService {
               @Inject(FL_API_MODULE_CONFIG) private config: FlApiModuleConfig,
               private fileService: FlFileService,
               private flErrorService: FlApiErrorService) {
-    console.log('Fle api Service', config)
     // get the api url from the config
     this.apiUrl = config.apiUrl;
   }

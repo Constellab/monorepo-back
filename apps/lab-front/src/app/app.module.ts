@@ -31,7 +31,6 @@ import {ApiErrorService} from './core/service/api-error.service';
 
 
 function loadTokenFromLocalStorage(authenticationService: AuthenticationService): () => void {
-  console.log('Factory called');
   return (): void => authenticationService.loadTokenFromLocalStorage();
 }
 
@@ -101,6 +100,5 @@ export class AppModule {
   constructor(injector: Injector) {
     // set the root injector in a variable
     flSetRootInjector(injector);
-    console.log('APP MODULE');
   }
 }
