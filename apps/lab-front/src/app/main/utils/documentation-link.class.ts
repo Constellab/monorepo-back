@@ -1,5 +1,5 @@
 import {technicalBricks} from './technical-brick.class';
-import {environment} from '../../../environments/environment';
+import {EnvironmentHelper} from '../../core/utils/environment.helper';
 
 /**
  * Object to get the documentation of a brick
@@ -10,26 +10,28 @@ export interface DocumentationBrick {
   url: string;
 }
 
-const docUrlPrefix = environment.settings.apiBaseUrl + 'docs';
-const docUrlSuffix = 'index.html';
 
 /**
  * List the documentation bricks
  */
-export const documentationBricks: DocumentationBrick[] = [
-  {
-    label: technicalBricks.GWS.label,
-    icon: technicalBricks.GWS.icon,
-    url: `${docUrlPrefix}/gws/${docUrlSuffix}`
-  },
-  {
-    label: technicalBricks.BIOX.label,
-    icon: technicalBricks.BIOX.icon,
-    url: `${docUrlPrefix}/biox/${docUrlSuffix}`
-  },
-  {
-    label: technicalBricks.BIOTA.label,
-    icon: technicalBricks.BIOTA.icon,
-    url: `${docUrlPrefix}/biota/${docUrlSuffix}`
-  },
-];
+export function getDocumentationBricks(): DocumentationBrick[] {
+  const docUrlPrefix = EnvironmentHelper.getBaseApiUrl() + 'docs';
+  const docUrlSuffix = 'index.html';
+  return [
+    {
+      label: technicalBricks.GWS.label,
+      icon: technicalBricks.GWS.icon,
+      url: `${docUrlPrefix}/gws/${docUrlSuffix}`
+    },
+    {
+      label: technicalBricks.BIOX.label,
+      icon: technicalBricks.BIOX.icon,
+      url: `${docUrlPrefix}/biox/${docUrlSuffix}`
+    },
+    {
+      label: technicalBricks.BIOTA.label,
+      icon: technicalBricks.BIOTA.icon,
+      url: `${docUrlPrefix}/biota/${docUrlSuffix}`
+    },
+  ];
+}

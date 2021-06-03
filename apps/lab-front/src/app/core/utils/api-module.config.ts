@@ -1,6 +1,6 @@
 import {FlApiModuleConfig} from '@monorepo/front-core-lib';
-import {environment} from '../../../environments/environment';
 import {ClCoreJsonConvert, ClDeserializationRef, ClPage} from '@monorepo/core-lib';
+import {EnvironmentHelper} from './environment.helper';
 
 /**
  * Format of the paginated result
@@ -22,7 +22,7 @@ interface PaginatedResponse {
 
 export function apiModuleConfig(): FlApiModuleConfig {
   return {
-    apiUrl: environment.settings.apiUrl,
+    apiUrl: EnvironmentHelper.getCoreApiUrl(),
     defaultApiErrorDuration: 3000,
     pagination: {
       pageQueryParam: 'page',

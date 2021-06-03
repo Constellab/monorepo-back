@@ -16,7 +16,6 @@ if (environment.production) {
     // set the environment setting from the json file
     environment.settings = env;
 
-    console.log('Call bootstrap');
     platformBrowserDynamic()
       .bootstrapModule(AppModule)
       .catch((err) => console.error(err));

@@ -5,7 +5,6 @@ export interface Environment {
   // true if the app is compiled in prod mode
   production: boolean;
 
-
   settings: EnvironmentSettings;
 }
 
@@ -16,9 +15,6 @@ export interface Environment {
 export interface EnvironmentSettings {
   // base url for the api
   apiBaseUrl: string;
-
-  // full url for the api
-  apiUrl: string;
 
   // url for the jupyter lab
   codeServerUrl: string;

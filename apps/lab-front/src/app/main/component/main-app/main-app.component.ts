@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {MainMenuLink, mainMenuLinks} from '../../utils/main-menu-link.class';
-import {DocumentationBrick, documentationBricks} from '../../utils/documentation-link.class';
-import {environment} from '../../../../environments/environment';
+import {DocumentationBrick, getDocumentationBricks} from '../../utils/documentation-link.class';
+import {EnvironmentHelper} from '../../../core/utils/environment.helper';
 
 @Component({
   selector: 'gen-main-app',
@@ -12,14 +12,16 @@ export class MainAppComponent implements OnInit {
 
   accessibleLinks: MainMenuLink[] = mainMenuLinks;
 
-  documentationBricks: DocumentationBrick[] = documentationBricks;
+  documentationBricks: DocumentationBrick[];
 
-  codeServerUrl: string = environment.settings.codeServerUrl;
+  codeServerUrl: string;
 
   constructor() {
   }
 
   ngOnInit(): void {
+    this.documentationBricks = getDocumentationBricks();
+    this.codeServerUrl = EnvironmentHelper.getCodeServerUrl();
   }
 
 }
