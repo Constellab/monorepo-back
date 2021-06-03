@@ -24,7 +24,7 @@ build-lab:
     paths:
       - dist/apps/lab-front/
   only:
-    - develop
+    - master
 
 # Push lab-front image to the docker registry using Dockerfile of the lab-front
 deploy-lab:
@@ -38,6 +38,6 @@ deploy-lab:
     - docker push $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:$CI_COMMIT_SHA
     - docker push $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest
   only:
-    - develop
+    - master
 
 

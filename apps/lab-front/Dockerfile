@@ -1,39 +1,16 @@
-## Build step
-#FROM node:12-alpine as buildContainer
-#
-## Ebnvironement profile for the build 'dev', 'pre-prod' or 'prod'
-#ARG ENVIRONMENT_PROFILE=${ENVIRONMENT_PROFILE}
-#WORKDIR /app
-#
-## Copy package.json
-#COPY /package.json /package-lock.json ./
-#
-##COPY ./nginx.conf /app/
-#
-## Install dependencies
-#RUN npm ci
-#
-## Copy the workspace and build the app
-#COPY / .
-#
-#RUN npm run lab-front:build-$ENVIRONMENT_PROFILE
-#
-## Run step
-#FROM nginx:alpine
-#
-#WORKDIR /app
-#
-#
-## Get build result
-#COPY --from=buildContainer /app/dist/apps/lab-front /usr/share/nginx/html
-#
-## Copy the default nginx.conf
-#COPY /apps/lab-front/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Use this following config if the dist folder already exists and you want to create the front image with it
+# Dockerfile used by the gitlab ci
 FROM nginx:alpine
 # Copy the dist front-pegase-manager
 COPY dist/apps/lab-front /usr/share/nginx/html
 
 # Copy the default nginx.conf
 COPY apps/lab-front/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy the entry point
+COPY apps/lab-front/entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["nginx","-g","daemon off;"]
+
