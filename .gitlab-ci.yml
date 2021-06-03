@@ -5,7 +5,7 @@ services:
 variables:
   DOCKER_DRIVER: overlay
   GIT_DEPTH: 0
-  SERVICE: lab-front
+  LAB_FRONT_IMAGE: lab-front
 
 
 stages:
@@ -24,7 +24,7 @@ build-lab:
     paths:
       - dist/apps/lab-front/
   only:
-    - master
+    - develop
 
 # Push lab-front image to the docker registry using Dockerfile of the lab-front
 deploy-lab:
@@ -32,12 +32,13 @@ deploy-lab:
   before_script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
+    - echo $LAB_FRONT_IMAGE
     # Build the docker image from Dockerfile with a latest tag and a tag for the commit
-    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest . -f apps/lab-front/Dockerfile
+    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest . -f apps/lab-front/Dockerfile
     # Push both image in the registry
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - docker push $CI_REGISTRY_IMAGE:latest
   only:
-    - master
+    - develop
 
 
