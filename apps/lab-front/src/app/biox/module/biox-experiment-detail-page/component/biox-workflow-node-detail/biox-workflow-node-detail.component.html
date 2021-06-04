@@ -27,7 +27,6 @@
       <gen-biox-workflow-node-progress [progressBar]="node.object.progressBar"></gen-biox-workflow-node-progress>
     </mat-expansion-panel>
 
-    <mat-divider></mat-divider>
 
     <!-- Inputs -->
     <mat-expansion-panel *ngIf="node.hasInputs()" hideToggle [expanded]="true">
@@ -42,7 +41,6 @@
       <gen-biox-workflow-ports-list [ports]="node.inputPorts"></gen-biox-workflow-ports-list>
     </mat-expansion-panel>
 
-    <mat-divider></mat-divider>
 
     <!-- Outputs -->
     <mat-expansion-panel *ngIf="node.hasOutputs()" hideToggle [expanded]="true">
@@ -57,7 +55,6 @@
       <gen-biox-workflow-ports-list [ports]="node.outputPorts"></gen-biox-workflow-ports-list>
     </mat-expansion-panel>
 
-    <mat-divider></mat-divider>
 
     <!-- Config -->
     <mat-expansion-panel *ngIf="config" hideToggle [expanded]="true" #configPanel>
