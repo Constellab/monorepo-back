@@ -16,8 +16,7 @@
 
     <ng-container [ngSwitch]="action.action">
 
-      <gen-biox-workflow-node-detail *ngSwitchCase="'selectNode'"
-                                     [node]="$any(action).processableNode"></gen-biox-workflow-node-detail>
+      <gen-biox-workflow-node-detail *ngSwitchCase="'selectNode'"></gen-biox-workflow-node-detail>
 
       <gen-biox-workflow-add-process *ngSwitchCase="'processSelection'"></gen-biox-workflow-add-process>
 

@@ -1,19 +1,20 @@
-<form [formGroup]="formGp">
+<div [formGroup]="formGp">
 
-  <mat-form-field>
+  <mat-form-field class="g-full">
     <mat-label>{{'biox.resource_type_select' | translate}}</mat-label>
-    <mat-select formControlName="resourceType"
+    <mat-select formControlName="resource_type"
                 (selectionChange)="onResourceTypeChange()">
       <gen-biox-resource-type-select-options></gen-biox-resource-type-select-options>
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field>
+  <mat-form-field class="g-full">
     <mat-label>{{'biox.resource_select' | translate}}</mat-label>
-    <mat-select formControlName="resource"
+    <mat-select formControlName="resource_uri"
                 (selectionChange)="onResourceChange()">
-      <gen-biox-resource-select-options [ressourceType]="selectedType"></gen-biox-resource-select-options>
+      <gen-biox-resource-select-options [ressourceType]="selectedType"
+                                        valueMode="id"></gen-biox-resource-select-options>
     </mat-select>
   </mat-form-field>
 
-</form>
+</div>

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {WorkflowNode} from '../../model/workflow-node.class';
 import {BioxProcessable, BioxProcessableBase} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxConfig} from '../../../../../core/model/entities/biox-config.entity';
@@ -7,6 +7,7 @@ import {BioxConfigureSpecsFormDialogComponent} from '../../../../../core/entity-
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
 import {MatExpansionPanel} from '@angular/material/expansion';
+import {BioxWorkflowNodeDetailState} from '../../state/biox-workflow-node-detail.state';
 
 @Component({
   selector: 'gen-biox-workflow-node-detail',
@@ -15,18 +16,26 @@ import {MatExpansionPanel} from '@angular/material/expansion';
 })
 export class BioxWorkflowNodeDetailComponent implements OnInit {
 
-  @Input() node: WorkflowNode<BioxProcessable>;
+  node: WorkflowNode<BioxProcessable>;
 
   constructor(private dialogService: FlDialogService,
-              private experimentState: BioxExperimentDetailPageState) {
+              private experimentState: BioxExperimentDetailPageState,
+              private nodeDetailState: BioxWorkflowNodeDetailState) {
   }
 
   ngOnInit(): void {
+    this.nodeDetailState.getNode$().subscribe(
+      node => this.node = node
+    );
   }
 
   get config(): BioxConfig | null {
-    const object: any = this.node.object;
+    const object: BioxProcessable = this.node.object;
 
+    // don't show config for source
+    if (object.isPlugSource()) {
+      return null;
+    }
     // the config is only for processable node
     return object instanceof BioxProcessableBase && object.hasConfig() ?
       object.config : null;
@@ -37,7 +46,7 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
   }
 
   // show the progress section if the progress bar has started
-  get showProgress(): boolean{
+  get showProgress(): boolean {
     return this.node.object.progressBar != null && this.node.object.progressBar.wasStarted();
   }
 
@@ -54,10 +63,14 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
     panel.open();
   }
 
+  get isSource(): boolean {
+    return this.node.object.isPlugSource();
+  }
+
   private onConfigDialogClosed(config?: any): void {
     if (config != null) {
       // save the config into the value
-      this.config.data.params = config;
+      this.nodeDetailState.updateConfig(config);
     }
   }
 }

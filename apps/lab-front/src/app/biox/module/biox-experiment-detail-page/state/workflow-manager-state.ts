@@ -1,7 +1,7 @@
 import {Injectable, NgZone} from '@angular/core';
 import {Workflow, WorkflowMode} from '../model/workflow.class';
 import {WorkflowNodeProcessable} from '../model/workflow-node-processable.class';
-import {BioxProcessableBase, BioxProtocol} from '../../../../core/model/entities/biox-processable.entity';
+import {BioxProcessable, BioxProcessableBase, BioxProtocol} from '../../../../core/model/entities/biox-processable.entity';
 import {
   BioxConnection,
   BioxFlow,
@@ -96,12 +96,12 @@ export class WorkflowManagerState {
 
   //////////////////////// NODE ////////////////////////////
 
-  public addProcessableNode(bioxProcessable: BioxProcessableBase, coordX: number = 0, coordY: number = 0): void {
+  public addProcessableNode(bioxProcessable: BioxProcessable, coordX: number = 0, coordY: number = 0): void {
     const node: WorkflowNode<any> = this.createNodeFromProcessable(bioxProcessable, coordX, coordY);
     this.addNode(node);
   }
 
-  private createNodeFromProcessable(processable: BioxProcessableBase, coordX: number = 0, coordY: number = 0): WorkflowNodeProcessable {
+  private createNodeFromProcessable(processable: BioxProcessable, coordX: number = 0, coordY: number = 0): WorkflowNodeProcessable {
     if (processable.name == null) {
       processable.name = processable.type + '_' + Date.now().toString();
     }
@@ -208,7 +208,7 @@ export class WorkflowManagerState {
 
     let workflowNode: WorkflowNode<any>;
     if (node instanceof BioxProcessableBase) {
-      workflowNode = new WorkflowNodeProcessable(node, node.name, coordX, coordY);
+      workflowNode = new WorkflowNodeProcessable(node as BioxProcessable, node.name, coordX, coordY);
     } else if (node instanceof BioxInterfaceNode) {
       workflowNode = new WorkflowNodeInterface(node, coordX, coordY);
     } else if (node instanceof BioxOuterfaceNode) {

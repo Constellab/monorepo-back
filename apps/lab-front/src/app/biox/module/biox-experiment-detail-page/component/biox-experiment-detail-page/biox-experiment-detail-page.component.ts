@@ -9,7 +9,7 @@ import {
   BioxExperimentFormDialogInput
 } from '../../../../../core/entity-module/biox-experiment-core/component/biox-experiment-form-dialog/biox-experiment-form-dialog.component';
 import {MatDrawer} from '@angular/material/sidenav';
-import {WorkflowActionState} from '../../state/workflow-action-state.service';
+import {WorkflowActionState} from '../../state/workflow-action-state';
 
 /**
  * Page for the biox experiment detail with workflow view/edit

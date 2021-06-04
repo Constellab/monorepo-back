@@ -1,5 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {BioxConfig} from '../../../../../core/model/entities/biox-config.entity';
+import {Component, OnInit} from '@angular/core';
+import {BioxWorkflowNodeDetailState} from '../../state/biox-workflow-node-detail.state';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 /**
  * Show the config current values as json
@@ -11,15 +13,15 @@ import {BioxConfig} from '../../../../../core/model/entities/biox-config.entity'
 })
 export class BioxWorkflowNodeConfigComponent implements OnInit {
 
-  @Input() config: BioxConfig;
+  configValue$: Observable<any>;
 
-  configValue: any;
-
-  constructor() {
+  constructor(private nodeDetailState: BioxWorkflowNodeDetailState) {
   }
 
   ngOnInit(): void {
-    this.configValue = this.config.data.mergeConfigWithDefault();
+    this.configValue$ = this.nodeDetailState.getProcess$().pipe(
+      map(process => process.config.data.mergeConfigWithDefault())
+    );
   }
 
 }

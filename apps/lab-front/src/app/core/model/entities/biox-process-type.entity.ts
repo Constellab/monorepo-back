@@ -6,6 +6,9 @@ import {BioxConfigSpecs, BioxConfigSpecTyped} from './biox-config-spec.entity';
 import {LabBaseEntity} from '../global/lab-entity.entity';
 import {TypedTree} from '../global/tree-by-type.class';
 
+// specific know type for process source
+export const bioxProcessSourceType: string = 'gws.plug.Source';
+
 export class BioxProcessTypeData {
   title: string;
 
@@ -50,6 +53,11 @@ export class BioxProcessType extends LabBaseEntity {
 
   hasDocumentation(): boolean {
     return this.data.doc != null;
+  }
+
+  // return true if the process is a Source
+  isPlugSource(): boolean {
+    return this.ptype === bioxProcessSourceType;
   }
 }
 

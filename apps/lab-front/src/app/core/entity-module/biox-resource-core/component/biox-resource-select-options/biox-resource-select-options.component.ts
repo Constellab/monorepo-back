@@ -23,6 +23,11 @@ export class BioxResourceSelectOptionsComponent extends FlEmbeddedOptionsAbstrac
   })
   @Input() ressourceType: string;
 
+  /**
+   * If value mode is object the mat-option returns an object otherwise only the id
+   */
+  @Input() valueMode: 'object' | 'id' = 'object';
+
   datasource: BioxResourceDatasource;
 
   resources$: Observable<LabBaseEntity[]>;
@@ -33,12 +38,13 @@ export class BioxResourceSelectOptionsComponent extends FlEmbeddedOptionsAbstrac
   }
 
   ngOnInit(): void {
-    this.overrideCompareWithOnIds(this.select);
+    if (this.valueMode === 'object') {
+      this.overrideCompareWithOnIds(this.select);
+    }
 
   }
 
   private loadResources(type: string): void {
-    console.log('New type', type)
     // disconnect if a previous datasource existed
     this.datasource?.disconnect();
 
@@ -52,6 +58,10 @@ export class BioxResourceSelectOptionsComponent extends FlEmbeddedOptionsAbstrac
 
     this.datasource = datasource;
     this.resources$ = datasource.connect();
+  }
+
+  getValue(resource: LabBaseEntity): LabBaseEntity | string {
+    return this.valueMode === 'object' ? resource : resource.id;
   }
 
   ngAfterViewInit(): void {

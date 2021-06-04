@@ -7,7 +7,7 @@
   </div>
 
   <div class="g-section">
-    <!--  Progress -->
+    <!----------------------------  Progress ---------------------------->
     <mat-expansion-panel *ngIf="showProgress" hideToggle [expanded]="true">
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
@@ -28,7 +28,7 @@
     </mat-expansion-panel>
 
 
-    <!-- Inputs -->
+    <!---------------------------- Inputs ---------------------------->
     <mat-expansion-panel *ngIf="node.hasInputs()" hideToggle [expanded]="true">
       <mat-expansion-panel-header>
         <mat-panel-title class="g-text-not-selectable">
@@ -42,13 +42,13 @@
     </mat-expansion-panel>
 
 
-    <!-- Outputs -->
+    <!---------------------------- Outputs ---------------------------->
     <mat-expansion-panel *ngIf="node.hasOutputs()" hideToggle [expanded]="true">
       <mat-expansion-panel-header>
         <mat-panel-title class="g-text-not-selectable">
           <fl-text-icon>
             <mat-icon>logout</mat-icon>
-            {{'biox.node_outputs' | translate}}
+             {{'biox.node_outputs' | translate}}
           </fl-text-icon>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -56,7 +56,7 @@
     </mat-expansion-panel>
 
 
-    <!-- Config -->
+    <!---------------------------- Config ---------------------------->
     <mat-expansion-panel *ngIf="config" hideToggle [expanded]="true" #configPanel>
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
@@ -72,7 +72,20 @@
           </button>
         </mat-panel-description>
       </mat-expansion-panel-header>
-      <gen-biox-workflow-node-config [config]="config"></gen-biox-workflow-node-config>
+      <gen-biox-workflow-node-config></gen-biox-workflow-node-config>
+    </mat-expansion-panel>
+
+    <!-------------------------- Specific to Source ---------------------------->
+    <mat-expansion-panel *ngIf="isSource" hideToggle [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
+          <fl-text-icon>
+            <mat-icon>login</mat-icon>
+            {{'biox.resource_select' | translate}}
+          </fl-text-icon>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <gen-biox-process-source-config></gen-biox-process-source-config>
     </mat-expansion-panel>
 
 

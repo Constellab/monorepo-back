@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {WorkflowActionState} from '../../state/workflow-action-state.service';
+import {WorkflowActionState} from '../../state/workflow-action-state';
 import {WorkflowActionEvent} from '../../model/workflow-drawer-event.class';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';

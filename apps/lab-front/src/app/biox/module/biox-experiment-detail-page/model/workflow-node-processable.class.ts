@@ -1,14 +1,14 @@
 import {WorkflowNode} from './workflow-node.class';
 import {WorkflowPort} from './workflow-port.class';
-import {BioxProcessableBase} from '../../../../core/model/entities/biox-processable.entity';
+import {BioxProcessable} from '../../../../core/model/entities/biox-processable.entity';
 import {BioxSpec} from '../../../../core/model/entities/biox-spec.entity';
 
 /**
  * Representation of a processable (protocol or process)
  */
-export class WorkflowNodeProcessable extends WorkflowNode<BioxProcessableBase> {
+export class WorkflowNodeProcessable extends WorkflowNode<BioxProcessable> {
 
-  constructor(processable: BioxProcessableBase,
+  constructor(processable: BioxProcessable,
               processableName: string,
               initialCoordX: number = 0, initialCoordY: number = 0) {
     super(processableName, processable.data.title, processable, 'node-processable', initialCoordX, initialCoordY);

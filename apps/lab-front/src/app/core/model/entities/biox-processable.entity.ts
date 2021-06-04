@@ -9,6 +9,7 @@ import {ViewModelDatasourcePaginated} from '../../utils/view-model.datasource';
 import {BioxProtocolLink} from './biox-protocol-link.entity';
 import {BioxProgressBar, BioxProgressBarStatus} from './biox-progress-bar.entity';
 import {FlStatus} from '@monorepo/front-core-lib';
+import {bioxProcessSourceType} from './biox-process-type.entity';
 
 
 // const bioxFlowGraphDeserialization: ClDeserializeItem<BioxFlowGraph> = (item: any): BioxFlowGraph => {
@@ -80,7 +81,10 @@ export class BioxProcessableBase extends BioxNode implements FlStatus {
     return this.progressBar?.getStatusName() ?? 'draft';
   }
 
-
+// return true if the process is a Source
+  isPlugSource(): boolean {
+    return this.type === bioxProcessSourceType;
+  }
 }
 
 export class BioxProtocolGraph extends LabEntity {

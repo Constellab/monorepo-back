@@ -1,81 +1,81 @@
-import {Component, EventEmitter, OnInit, Optional, Output, Self} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Optional, Output, Self} from '@angular/core';
 import {FlFormFieldDirective} from '@monorepo/front-core-lib';
-import {LabBaseEntity} from '../../../../model/global/lab-entity.entity';
 import {NgControl} from '@angular/forms';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 
-interface BioxResourceSelectInner {
-  resourceType: string;
-  resource: LabBaseEntity;
+export interface BioxResourceSelect {
+  resource_type: string;
+  resource_uri: string;
 }
 
+/**
+ * NgModel component that allow user to select a resource form the database
+ */
 @Component({
   selector: 'gen-biox-resource-select',
   templateUrl: './biox-resource-select.component.html',
   styleUrls: ['./biox-resource-select.component.scss']
 })
-export class BioxResourceSelectComponent extends FlFormFieldDirective<BioxResourceSelectInner, LabBaseEntity>
+export class BioxResourceSelectComponent extends FlFormFieldDirective<BioxResourceSelect>
   implements OnInit {
 
-  @Output() resourceChange: EventEmitter<LabBaseEntity> = new EventEmitter();
+  // if true, it disabled the resource type input
+  @Input() disableResourceType: boolean = false;
 
-  formGp: FormGroup<BioxResourceSelectInner>;
+  @Output() resourceChange: EventEmitter<BioxResourceSelect> = new EventEmitter();
+
+  formGp: FormGroup<BioxResourceSelect>;
 
   constructor(@Optional() @Self() ngControl: NgControl) {
     super(ngControl);
+    // init form in constructor because writeValue can be called before ngOnInit
+    this.initForm();
   }
 
   ngOnInit(): void {
-    this.initForm();
     this.toggleResourceDisable();
+
+    if (this.disableResourceType) {
+      this.formGp.get('resource_type').disable();
+    }
   }
 
   private initForm(): void {
     this.formGp = new FormBuilder().group({
-      resourceType: [null],
-      resource: [null]
+      resource_type: [null],
+      resource_uri: [null]
     });
   }
 
-  callChangeEvent(value: LabBaseEntity): void {
+  callChangeEvent(value: BioxResourceSelect): void {
     this.resourceChange.emit(value);
   }
 
   onDisableChange(disable: boolean): void {
-    if(disable){
+    if (disable) {
       this.formGp.disable();
-    }
-    else{
+    } else {
       this.formGp.enable();
     }
   }
 
-  writeValue(obj: LabBaseEntity): void {
-    this.value = this.convertOuterToInner(obj);
+  writeValue(obj: BioxResourceSelect): void {
+    this.value = obj ?? {resource_type: null, resource_uri: null};
     this.formGp.patchValue(this.value);
-  }
-
-
-  protected convertOuterToInner(outerValue: LabBaseEntity): BioxResourceSelectInner {
-    return outerValue == null ? {resourceType: null, resource: null}
-      : {resourceType: outerValue.type, resource: outerValue};
-  }
-
-  protected convertInnerToOuter(innerValue: BioxResourceSelectInner): LabBaseEntity {
-    return innerValue == null || innerValue.resource == null ? null :
-      innerValue.resource;
-  }
-
-  onResourceTypeChange(): void{
     this.toggleResourceDisable();
-    this.formGp.get('resource').patchValue(null);
+  }
+
+
+  onResourceTypeChange(): void {
+    this.toggleResourceDisable();
+    this.formGp.get('resource_uri').patchValue(null);
   }
 
   toggleResourceDisable(): void {
     if (this.selectedType == null) {
-      this.formGp.get('resource').disable();
+      this.formGp.get('resource_uri').disable();
     } else {
-      this.formGp.get('resource').enable();
+      this.formGp.get('resource_uri').enable();
     }
   }
 
@@ -84,6 +84,6 @@ export class BioxResourceSelectComponent extends FlFormFieldDirective<BioxResour
   }
 
   get selectedType(): string {
-    return this.formGp.getRawValue().resourceType;
+    return this.formGp.getRawValue().resource_type;
   }
 }

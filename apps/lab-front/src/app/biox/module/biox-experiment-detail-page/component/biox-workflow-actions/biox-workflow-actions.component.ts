@@ -6,7 +6,7 @@ import {BioxProtocolGraph} from '../../../../../core/model/entities/biox-process
 import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
 import {FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
-import {WorkflowActionState} from '../../state/workflow-action-state.service';
+import {WorkflowActionState} from '../../state/workflow-action-state';
 
 /**
  * Actions button for the workflow

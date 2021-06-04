@@ -2,7 +2,7 @@ import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {WorkflowActionState} from '../../state/workflow-action-state.service';
+import {WorkflowActionState} from '../../state/workflow-action-state';
 import {WorkflowNodeProcessable} from '../../model/workflow-node-processable.class';
 
 /**
