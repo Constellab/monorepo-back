@@ -1,6 +1,6 @@
 <div class="g-list-padding" [ngClass]="denseClass" *ngIf="!error; else showError">
   {{startChar}}
-  <mat-tree *ngIf="object != null" [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree *ngIf="dataSource != null" [dataSource]="dataSource" [treeControl]="treeControl">
 
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle class="tree-node" matTreeNodePadding
                    [matTreeNodePaddingIndent]="paddingIndent">

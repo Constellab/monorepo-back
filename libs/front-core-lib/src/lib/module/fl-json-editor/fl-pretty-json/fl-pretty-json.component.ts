@@ -1,7 +1,8 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {ClCoerceBooleanDecorator, ClOnChange} from '@monorepo/core-lib';
+import {Observable, Subscription} from 'rxjs';
 
 class ObjectNode {
   children?: ObjectNode[];
@@ -28,12 +29,15 @@ class ObjectFlatNode {
   styleUrls: ['./fl-pretty-json.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlPrettyJsonComponent implements OnInit {
+export class FlPrettyJsonComponent implements OnInit, OnDestroy {
 
 
-  @ClOnChange(function (this: FlPrettyJsonComponent, value: any) {
+  /**
+   * Json object to show, support observable
+   */
+  @ClOnChange(function (this: FlPrettyJsonComponent, value: any | Observable<any>) {
     if (this.componentIsInitiated) {
-      this.initJson(value);
+      this.init(value);
     }
   })
   @Input() object: any;
@@ -59,12 +63,13 @@ export class FlPrettyJsonComponent implements OnInit {
 
   treeControl: FlatTreeControl<ObjectFlatNode>;
 
-
   dataSource: MatTreeFlatDataSource<ObjectNode, ObjectFlatNode>;
 
-  componentIsInitiated: boolean = false;
 
   error: boolean = false;
+
+  private componentIsInitiated: boolean = false;
+  private subscription: Subscription;
 
   private _transformer = (node: ObjectNode, level: number): ObjectFlatNode => {
     return {
@@ -81,12 +86,24 @@ export class FlPrettyJsonComponent implements OnInit {
   hasChild = (_: number, node: ObjectFlatNode): boolean => node.expandable;
 
 
-  constructor() {
+  constructor(private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-    this.initJson(this.object);
+    this.init(this.object);
     this.componentIsInitiated = true;
+  }
+
+  private init(object: any | Observable<any>): void {
+    // unsubscribe previous subscription if it exists
+    this.subscription?.unsubscribe();
+    if (object instanceof Observable) {
+      object.subscribe(
+        json => this.initJson(json)
+      );
+    } else {
+      this.initJson(object);
+    }
   }
 
   private initJson(object: any): void {
@@ -119,6 +136,8 @@ export class FlPrettyJsonComponent implements OnInit {
     } catch (e) {
       this.error = true;
     }
+
+    this.cdr.markForCheck();
   }
 
   /**
@@ -282,4 +301,10 @@ export class FlPrettyJsonComponent implements OnInit {
   get denseClass(): string {
     return this.dense ? 'dense' : 'normal';
   }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
+
+
 }
