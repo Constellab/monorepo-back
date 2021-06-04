@@ -30,6 +30,9 @@
     "node_process_name": "Process",
     "file_resource_download": "Download",
     "file_resource_open": "View file content",
-    "resource_text_load": "Load more text"
+    "resource_text_load": "Load more text",
+    "resource_type_select": "Select a resource type",
+    "resource_select": "Select a resource",
+    "process_type_type": "Type"
   }
 }

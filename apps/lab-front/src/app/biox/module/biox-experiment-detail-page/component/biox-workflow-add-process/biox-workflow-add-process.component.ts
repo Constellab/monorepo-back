@@ -5,7 +5,7 @@ import {BioxProtocolService} from '../../../../../core/entity-service/biox-proto
 import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
 import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
-import {BioxProcessType, BioxProcessTypeTree} from '../../../../../core/model/entities/biox-process-type.entity';
+import {BioxProcessType, BioxProcessTypedTree} from '../../../../../core/model/entities/biox-process-type.entity';
 
 
 /**
@@ -21,7 +21,7 @@ export class BioxWorkflowAddProcessComponent implements OnInit {
 
   // availableProtocols: BioxProtocolDatasource;
   // protocols$: Observable<BioxProtocolVM[]>;
-  processes$: Observable<BioxProcessTypeTree[]>;
+  processes$: Observable<BioxProcessTypedTree[]>;
 
   selectedProcess: BioxProcessType;
 

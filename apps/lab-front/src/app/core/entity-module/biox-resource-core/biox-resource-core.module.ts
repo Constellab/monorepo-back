@@ -1,13 +1,17 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { BioxResourceInfoComponent } from './component/biox-resource-info/biox-resource-info.component';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {BioxResourceInfoComponent} from './component/biox-resource-info/biox-resource-info.component';
 import {CoreModule} from '../../core.module';
-import { BioxResourcePortalComponent } from './component/biox-resource-portal/biox-resource-portal.component';
-import { BioxResourceSpreadsheetComponent } from './component/biox-resource-spreadsheet/biox-resource-spreadsheet.component';
+import {BioxResourcePortalComponent} from './component/biox-resource-portal/biox-resource-portal.component';
+import {BioxResourceSpreadsheetComponent} from './component/biox-resource-spreadsheet/biox-resource-spreadsheet.component';
 import {RouterModule} from '@angular/router';
-import { BioxResourceJsonComponent } from './component/biox-resource-json/biox-resource-json.component';
+import {BioxResourceJsonComponent} from './component/biox-resource-json/biox-resource-json.component';
 import {BioxResourceTextComponent} from './component/biox-resource-text/biox-resource-text.component';
-import { BioxResourceImageComponent } from './component/biox-resource-image/biox-resource-image.component';
+import {BioxResourceImageComponent} from './component/biox-resource-image/biox-resource-image.component';
+import {BioxResourceSelectComponent} from './component/biox-resource-select/biox-resource-select.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {BioxResourceTypeSelectOptionsComponent} from './component/biox-resource-type-select-options/biox-resource-type-select-options.component';
+import {BioxResourceSelectOptionsComponent} from './component/biox-resource-select-options/biox-resource-select-options.component';
 
 
 @NgModule({
@@ -18,6 +22,9 @@ import { BioxResourceImageComponent } from './component/biox-resource-image/biox
     BioxResourceJsonComponent,
     BioxResourceTextComponent,
     BioxResourceImageComponent,
+    BioxResourceSelectComponent,
+    BioxResourceTypeSelectOptionsComponent,
+    BioxResourceSelectOptionsComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
@@ -26,10 +33,15 @@ import { BioxResourceImageComponent } from './component/biox-resource-image/biox
     BioxResourceJsonComponent,
     BioxResourceTextComponent,
     BioxResourceImageComponent,
+    BioxResourceSelectComponent,
+    BioxResourceTypeSelectOptionsComponent,
+    BioxResourceSelectOptionsComponent,
   ],
   imports: [
     CommonModule,
     RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
 
     CoreModule,
   ],

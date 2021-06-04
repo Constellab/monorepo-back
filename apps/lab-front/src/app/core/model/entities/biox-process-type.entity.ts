@@ -4,6 +4,16 @@ import {Expose, Type} from 'class-transformer';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {BioxConfigSpecs, BioxConfigSpecTyped} from './biox-config-spec.entity';
 import {LabBaseEntity} from '../global/lab-entity.entity';
+import {TypedTree} from '../global/tree-by-type.class';
+
+export class BioxProcessTypeData {
+  title: string;
+
+  description?: string;
+
+  doc?: string;
+}
+
 
 export class BioxProcessType extends LabBaseEntity {
 
@@ -23,7 +33,8 @@ export class BioxProcessType extends LabBaseEntity {
   @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecTyped)
   configSpecs: BioxConfigSpecs;
 
-  data: any;
+  @Type(() => BioxProcessTypeData)
+  data: BioxProcessTypeData;
 
   hasInputs(): boolean {
     return this.inputSpecs != null && Object.keys(this.inputSpecs).length > 0;
@@ -36,31 +47,16 @@ export class BioxProcessType extends LabBaseEntity {
   hasConfigs(): boolean {
     return this.configSpecs.hasConfigs();
   }
+
+  hasDocumentation(): boolean {
+    return this.data.doc != null;
+  }
 }
 
 /**
  * Tree that group the process type by ptype module
  */
-export class BioxProcessTypeTree {
-  @Expose({name: 'ptype_part'})
-  ptypePart: string;
-
-  @Expose({name: 'sub_modules'})
-  @Type(() => BioxProcessTypeTree)
-  subModules?: BioxProcessTypeTree[];
-
-  @Expose({name: 'process_type'})
-  @Type(() => BioxProcessType)
-  processType?: BioxProcessType;
-
-  hasChildren(): boolean {
-    return this.subModules?.length > 0;
-  }
-
-  isLeaf(): boolean {
-    return this.processType != null;
-  }
-}
+export type BioxProcessTypedTree = TypedTree<BioxProcessType>;
 
 export type BioxProcessTypeVM = ViewModel<BioxProcessType>;
 

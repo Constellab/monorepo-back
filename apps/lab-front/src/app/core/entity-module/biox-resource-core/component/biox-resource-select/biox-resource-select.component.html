@@ -1,0 +1,19 @@
+<form [formGroup]="formGp">
+
+  <mat-form-field>
+    <mat-label>{{'biox.resource_type_select' | translate}}</mat-label>
+    <mat-select formControlName="resourceType"
+                (selectionChange)="onResourceTypeChange()">
+      <gen-biox-resource-type-select-options></gen-biox-resource-type-select-options>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>{{'biox.resource_select' | translate}}</mat-label>
+    <mat-select formControlName="resource"
+                (selectionChange)="onResourceChange()">
+      <gen-biox-resource-select-options [ressourceType]="selectedType"></gen-biox-resource-select-options>
+    </mat-select>
+  </mat-form-field>
+
+</form>

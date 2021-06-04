@@ -18,4 +18,8 @@ export class BioxProcessTypeCardComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  get title(): string{
+    return this.processType.data.title ?? this.processType.ptype;
+  }
+
 }

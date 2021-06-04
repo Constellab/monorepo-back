@@ -109,7 +109,8 @@ export class BioxExperimentFlowFactory {
   public static processTypeToBioxProcess(processType: BioxProcessType): BioxProcessable {
     const process: BioxProcess = new BioxProcess();
     process.type = processType.ptype;
-    process.data = processType.data ?? {};
+    // todo check process data to see how to pass it
+    process.data = processType.data as any ?? {};
 
     process.inputSpecs = BioxExperimentFlowFactory.specsToBioxSpecs(processType.inputSpecs);
     process.outputSpecs = BioxExperimentFlowFactory.specsToBioxSpecs(processType.outputSpecs);

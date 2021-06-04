@@ -18,6 +18,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import {MatTreeModule} from '@angular/material/tree';
+import {MatSelectModule} from '@angular/material/select';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -42,6 +43,7 @@ import {MatTreeModule} from '@angular/material/tree';
     MatDividerModule,
     MatListModule,
     MatTreeModule,
+    MatSelectModule,
 
 
     FlexLayoutModule,

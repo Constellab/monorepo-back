@@ -1,0 +1,7 @@
+<fl-infinite-scroll [datasource]="datasource">
+
+  <mat-option *ngFor="let resource of resources$ | async" [value]="resource">
+    {{resource.id}}
+  </mat-option>
+
+</fl-infinite-scroll>

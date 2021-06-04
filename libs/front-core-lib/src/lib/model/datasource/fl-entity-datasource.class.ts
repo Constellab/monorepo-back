@@ -1,6 +1,7 @@
 import {FlDatasourcePaginated} from './fl-datasource-paginated.class';
-import {ClGetPageFunction, ClHelpService} from '@monorepo/core-lib';
+import {clGetEmptyPage, ClGetPageFunction, ClHelpService} from '@monorepo/core-lib';
 import {FlEntity} from '../fl-entity.class';
+import {of} from 'rxjs';
 
 
 export class FlEntityPaginatedDatasource<T extends FlEntity> extends FlDatasourcePaginated<T> {
@@ -14,4 +15,11 @@ export class FlEntityPaginatedDatasource<T extends FlEntity> extends FlDatasourc
   }
 
 
+}
+
+/**
+ * Return an empty paginated datasource
+ */
+export function flGetEmptyPaginatedDatasource(): FlEntityPaginatedDatasource<any> {
+  return new FlEntityPaginatedDatasource<any>(() => of(clGetEmptyPage()), 0);
 }

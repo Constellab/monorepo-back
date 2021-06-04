@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {BioxProcessType, BioxProcessTypeTree} from '../../../../model/entities/biox-process-type.entity';
+import {BioxProcessType, BioxProcessTypedTree} from '../../../../model/entities/biox-process-type.entity';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 
@@ -20,21 +20,21 @@ interface BioxProcessTypeTreeFlat {
 })
 export class BioxProcessTypesTreeComponent implements OnInit {
 
-  @Input() processTypesTree: BioxProcessTypeTree[];
+  @Input() processTypesTree: BioxProcessTypedTree[];
 
   @Output() processTypesClick: EventEmitter<BioxProcessType> = new EventEmitter();
   @Output() processTypesDblClick: EventEmitter<BioxProcessType> = new EventEmitter();
 
   treeControl: FlatTreeControl<BioxProcessTypeTreeFlat>;
-  dataSource: MatTreeFlatDataSource<BioxProcessTypeTree, BioxProcessTypeTreeFlat>;
+  dataSource: MatTreeFlatDataSource<BioxProcessTypedTree, BioxProcessTypeTreeFlat>;
 
 
-  private _transformer = (node: BioxProcessTypeTree, level: number): BioxProcessTypeTreeFlat => {
+  private _transformer = (node: BioxProcessTypedTree, level: number): BioxProcessTypeTreeFlat => {
     return {
       expandable: node.hasChildren(),
       level: level,
-      ptypePart: node.ptypePart,
-      processType: node.hasChildren() ? null : node.processType
+      ptypePart: node.typePart,
+      processType: node.hasChildren() ? null : node.object
     };
   };
 
@@ -52,9 +52,9 @@ export class BioxProcessTypesTreeComponent implements OnInit {
       node => node.level, node => node.expandable);
 
     // object to flatten tree
-    const treeFlattener: MatTreeFlattener<BioxProcessTypeTree, BioxProcessTypeTreeFlat> = new MatTreeFlattener(
+    const treeFlattener: MatTreeFlattener<BioxProcessTypedTree, BioxProcessTypeTreeFlat> = new MatTreeFlattener(
       this._transformer, node => node.level, node => node.expandable,
-      node => node.subModules);
+      node => node.subTrees);
 
     // create the datasource and set data
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, treeFlattener);

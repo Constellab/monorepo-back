@@ -1,11 +1,18 @@
 import {Injectable} from '@angular/core';
-import {FlApiService} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
-import {BioxBasicResource, BioxResource} from '../model/entities/biox-resource.entity';
+import {
+  BioxBasicResource,
+  BioxResource,
+  BioxResourceDatasource,
+  BioxResourceType,
+  BioxResourceTypeDatasource
+} from '../model/entities/biox-resource.entity';
 import {FileResourceService, FileWithContent} from './file-resource.service';
-import {ClClassReference} from '@monorepo/core-lib';
+import {ClClassReference, ClPage} from '@monorepo/core-lib';
 import {FileResource} from '../model/entities/file-resource.entity';
 import {map, mergeMap} from 'rxjs/operators';
+import {LabBaseEntity} from '../model/global/lab-entity.entity';
 
 
 @Injectable({
@@ -14,6 +21,7 @@ import {map, mergeMap} from 'rxjs/operators';
 export class BioxResourceService {
 
   private readonly route: string = 'resource';
+  private readonly resourceTypeRoute: string = 'resource-type';
 
   constructor(private apiService: FlApiService,
               private fileResourceService: FileResourceService) {
@@ -57,5 +65,28 @@ export class BioxResourceService {
     );
   }
 
+  public getResourcesByType(type: string, page: number, pageSize: number): Observable<ClPage<LabBaseEntity>> {
+    return this.apiService.get(`${this.route}/${type}`, LabBaseEntity,
+      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
+  }
 
+  public getResourcesByTypeDatasource(type: string): BioxResourceDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page: number, pageSize: number) => this.getResourcesByType(type, page, pageSize),
+      20, true);
+
+  }
+
+  // get the list of resource types
+  public getResourceTypes(page: number, pageSize: number): Observable<ClPage<BioxResourceType>> {
+    return this.apiService.get(this.resourceTypeRoute, BioxResourceType,
+      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
+  }
+
+  public getResourceTypesDatasource(): BioxResourceTypeDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page: number, pageSize: number) => this.getResourceTypes(page, pageSize),
+      20, true);
+
+  }
 }
