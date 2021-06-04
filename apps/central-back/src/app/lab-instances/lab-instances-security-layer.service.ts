@@ -53,24 +53,15 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
   }
 
   async startInstance(id: string): Promise<LabInstance> {
-    await this.checkAuthorizationUpdateStatus(id);
+    await this.getAndCheckAuthorizationToUpdateById(id);
 
     return this.service.startInstance(id);
   }
 
   async stopInstance(id: string): Promise<LabInstance> {
-    await this.checkAuthorizationUpdateStatus(id);
+    await this.getAndCheckAuthorizationToUpdateById(id);
 
     return this.service.stopInstance(id);
-  }
-
-  async checkAuthorizationUpdateStatus(id: string): Promise<void> {
-    const entity: LabInstance = await this.getDbEntityForCheckUpdate(id);
-
-    if (!await this.isAuthorizedToUpdateStatus(entity)) {
-      throw new UnauthorizedException();
-    }
-
   }
 
   async login(id: string): Promise<LabInstanceToken> {
