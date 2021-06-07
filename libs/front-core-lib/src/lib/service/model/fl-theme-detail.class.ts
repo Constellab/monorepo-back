@@ -11,6 +11,9 @@ export interface FlThemeDetail {
   primaryContrast: string;
   accentContrast: string;
   warnContrast: string;
+
+  primary100: string;
+  primary100Contrast: string;
 }
 
 /**
@@ -25,7 +28,10 @@ export const flThemeDetailLight: FlThemeDetail = {
 
   primaryContrast: 'white',
   accentContrast: 'black',
-  warnContrast: 'white'
+  warnContrast: 'white',
+
+  primary100: '#a3bdbd',
+  primary100Contrast: 'black'
 };
 
 /**
@@ -40,5 +46,8 @@ export const flThemeDetailDark: FlThemeDetail = {
 
   primaryContrast: 'white',
   accentContrast: 'black',
-  warnContrast: 'white'
+  warnContrast: 'white',
+
+  primary100: '#043e3e',
+  primary100Contrast: 'white'
 };

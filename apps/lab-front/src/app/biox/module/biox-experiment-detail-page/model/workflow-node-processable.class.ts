@@ -11,7 +11,9 @@ export class WorkflowNodeProcessable extends WorkflowNode<BioxProcessable> {
   constructor(processable: BioxProcessable,
               processableName: string,
               initialCoordX: number = 0, initialCoordY: number = 0) {
-    super(processableName, processable.data.title, processable, 'node-processable', initialCoordX, initialCoordY);
+    super(processableName, processable.data.title, processable,
+      processable.isPlugSource() ? 'process-source' : 'node-processable',
+      initialCoordX, initialCoordY);
     this.html = `<biox-workflow-node name="${this.nodeName}"></biox-workflow-node>`;
   }
 
