@@ -23,3 +23,5 @@ export class BioxResourceType extends LabBaseEntity {
 }
 
 export type BioxResourceTypeDatasource = FlEntityPaginatedDatasource<BioxResourceType>
+
+export const bioxResourceNetworkType: string = 'gena.network.Network';

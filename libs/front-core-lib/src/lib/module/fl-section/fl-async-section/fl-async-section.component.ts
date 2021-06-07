@@ -73,7 +73,7 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
     // because this method is call before ngOnInit
     this.subscription = observable.pipe(delay(0)).subscribe(
       result => this.onSuccess(result),
-      () => this.onError()
+      error => this.onError(error)
     );
   }
 
@@ -87,9 +87,10 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  private onError(): void {
+  private onError(error: any): void {
     this.isLoading = false;
     this.showBody = false;
+    console.error(error);
     this.cdr.detectChanges();
   }
 

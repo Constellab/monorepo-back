@@ -41,7 +41,7 @@
         </div>
 
         <!--    Pathway view    -->
-        <fl-chart-pathway *ngSwitchCase="'pathway'" [data]="resource.model.data.network"></fl-chart-pathway>
+        <gen-biox-resource-network *ngSwitchCase="'pathway'" [resource]="resource"></gen-biox-resource-network>
 
       </ng-container>
     </ng-container>

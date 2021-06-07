@@ -12,6 +12,7 @@ import {BioxResourceSelectComponent} from './component/biox-resource-select/biox
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BioxResourceTypeSelectOptionsComponent} from './component/biox-resource-type-select-options/biox-resource-type-select-options.component';
 import {BioxResourceSelectOptionsComponent} from './component/biox-resource-select-options/biox-resource-select-options.component';
+import {BioxResourceNetworkComponent} from './component/biox-resource-network/biox-resource-network.component';
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import {BioxResourceSelectOptionsComponent} from './component/biox-resource-sele
     BioxResourceSelectComponent,
     BioxResourceTypeSelectOptionsComponent,
     BioxResourceSelectOptionsComponent,
+    BioxResourceNetworkComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
@@ -36,6 +38,7 @@ import {BioxResourceSelectOptionsComponent} from './component/biox-resource-sele
     BioxResourceSelectComponent,
     BioxResourceTypeSelectOptionsComponent,
     BioxResourceSelectOptionsComponent,
+    BioxResourceNetworkComponent,
   ],
   imports: [
     CommonModule,

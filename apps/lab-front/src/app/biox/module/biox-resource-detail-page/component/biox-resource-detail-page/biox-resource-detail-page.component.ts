@@ -2,9 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {BioxResourceService} from '../../../../../core/entity-service/biox-resource.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
-import {BioxResource} from '../../../../../core/model/entities/biox-resource.entity';
+import {BioxResource, bioxResourceNetworkType} from '../../../../../core/model/entities/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
 import {FileResourcePreview} from '../../../../../core/model/entities/file-resource.entity';
+import {FlPathway} from '@monorepo/front-core-lib';
 
 interface View {
   route: string;
@@ -56,9 +57,10 @@ export class BioxResourceDetailPageComponent implements OnInit {
 
   private initViews(resource: BioxResource): void {
     let defaultView: View;
+    console.log(resource.data);
 
     // if the resource is a network, add the network view and set it by default
-    if (resource.type === 'gena.network.Network') {
+    if (this.resourceIsNetwork(resource)) {
       this.availableViews = [pathwayView, jsonView, spreadsheetView, plainTextView];
       defaultView = pathwayView;
     } else if (resource instanceof FileResourcePreview && resource.isImage()) {
@@ -84,6 +86,18 @@ export class BioxResourceDetailPageComponent implements OnInit {
         replaceUrl: true
       });
     }
+  }
+
+  private resourceIsNetwork(resource: BioxResource): boolean {
+    if (resource.type === bioxResourceNetworkType) {
+      return true;
+    }
+
+    const data: FlPathway = resource.data;
+
+    // check the attribute as if the resource is a pathway
+    return data != null && typeof data === 'object' && Array.isArray(data.metabolites)
+      && Array.isArray(data.reactions) && typeof data.compartments === 'object';
   }
 
   getQueryParam(view: View): { view: string } {
