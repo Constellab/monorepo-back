@@ -239,7 +239,7 @@ export class FlApiService {
    * @param id the id of the object to get or delete
    * @param overrideApiUrl if provided it overrides the base url
    */
-  protected getUrlForId(route: string, id: string, overrideApiUrl?: string): string {
+  public getUrlForId(route: string, id: string, overrideApiUrl?: string): string {
     const fullRoute = this.getBaseRouteUrl(route, overrideApiUrl);
     // is the route contain {id} we replace it with the id
     if (fullRoute.search('{id}') !== -1) {
@@ -257,7 +257,7 @@ export class FlApiService {
    * @param overrideApiUrl
    * @private
    */
-  private getBaseRouteUrl(route: string, overrideApiUrl?: string): string {
+  public getBaseRouteUrl(route: string, overrideApiUrl?: string): string {
     return (overrideApiUrl == null ? this.apiUrl : overrideApiUrl) + route;
   }
 

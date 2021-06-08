@@ -57,7 +57,6 @@ export class BioxResourceDetailPageComponent implements OnInit {
 
   private initViews(resource: BioxResource): void {
     let defaultView: View;
-    console.log(resource.data);
 
     // if the resource is a network, add the network view and set it by default
     if (this.resourceIsNetwork(resource)) {

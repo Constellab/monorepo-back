@@ -29,6 +29,10 @@ export class FileResourceService {
     return this.apiService.post(`${this.route}/upload`, formData, FileResourcePreview);
   }
 
+  public downloadFileUrl(type: string, id: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/${type}/${id}/download`);
+  }
+
   public downloadFile(type: string, id: string, filename: string): Observable<Blob> {
     return this.apiService.downloadFile(`${this.route}/${type}/${id}/download`, filename);
   }

@@ -1,6 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BioxResource} from '../../../../model/entities/biox-resource.entity';
 import {FileResourcePreview} from '../../../../model/entities/file-resource.entity';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
+import {FileResourceService} from '../../../../entity-service/file-resource.service';
 
 /**
  * Component to view resource as image
@@ -14,11 +16,15 @@ export class BioxResourceImageComponent implements OnInit {
 
   @Input() resource: BioxResource;
 
-  image: Blob;
+  downloadLink: string;
+
+  // todo improve svg support to use it directly in src attribute
+  svg: SafeHtml;
 
   alt: string;
 
-  constructor() {
+  constructor(private sanitizer: DomSanitizer,
+              private resourceFileService: FileResourceService) {
   }
 
   ngOnInit(): void {
@@ -27,8 +33,12 @@ export class BioxResourceImageComponent implements OnInit {
 
   private initImage(): void {
     if (this.resource instanceof FileResourcePreview && this.resource.isImage()) {
-      this.image = this.resource.file;
-      this.alt = this.resource.getFileName();
+
+      if (this.resource.getExtension() === 'svg') {
+        this.svg = this.sanitizer.bypassSecurityTrustHtml(this.resource.data);
+      } else {
+        this.downloadLink = this.resourceFileService.downloadFileUrl(this.resource.type, this.resource.id);
+      }
     }
   }
 
