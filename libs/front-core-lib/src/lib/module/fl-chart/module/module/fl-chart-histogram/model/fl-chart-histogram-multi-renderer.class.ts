@@ -3,6 +3,7 @@ import {Numeric, select} from 'd3';
 import {FlChart2dMultipleSerie, FlChartDataWithSerie} from '../../../../model/fl-chart-2d-serie.class';
 import {FlChart2dDatum} from '../../../../model/fl-chart-2d-data.class';
 import {FlChartAxisScale, FlChartAxisScaleBand} from '../../../../model/fl-chart-scale.class';
+import {FlChartDataWithSeriePortalHandler} from '../../../../model/fl-chart-data-with-serie-portal-handler.class';
 
 
 export class FlChartHistogramMultiRenderer
@@ -10,6 +11,7 @@ export class FlChartHistogramMultiRenderer
 
   private readonly groupClassName: string = 'serie';
 
+  private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
 
   initData(input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatum>>): void {
 
@@ -38,6 +40,8 @@ export class FlChartHistogramMultiRenderer
       .data(data)
       .enter()
       .append('rect')
+      .on('mouseover', (event, d) => this.onMouseHover(event, d))
+      .on('mouseout', () => this.onMouseOut())
       .style('fill', (d) => this.colorScale.scale(d.serieKey))
       .each((d, index, nodes: SVGRectElement[]) =>
         this.drawBar(nodes[index], barWidth, input.chartHeight, input.yScale, index));
@@ -80,5 +84,14 @@ export class FlChartHistogramMultiRenderer
       .attr('width', barWidth - 1) // - 1 to let space between bars
       .attr('height', (d: FlChartDataWithSerie) => chartHeight - yScale.scale(d.data.getY()));
   }
+
+  private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie): void {
+    this.portalHandler.openPortal(event.target as any, d, this.colorScale);
+  }
+
+  private onMouseOut(): void {
+    this.portalHandler.closePortal();
+  }
+
 
 }

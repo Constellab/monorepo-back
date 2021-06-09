@@ -327,36 +327,49 @@ export class FlPortalService {
       return position;
     }
 
+    return [FlPortalService.getDefaultPosition(position)];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  public static getDefaultPosition(position: FlPortalDefaultPosition, offsetX: number = 0, offsetY: number = 0): ConnectedPosition {
     // manage default position
     switch (position) {
       case 'right':
-        return [{
+        return {
           originX: 'end',
           originY: 'center',
           overlayX: 'start',
           overlayY: 'center',
-        }];
+          offsetX: offsetX,
+          offsetY: offsetY
+        };
       case 'left':
-        return [{
+        return {
           originX: 'start',
           originY: 'center',
           overlayX: 'end',
           overlayY: 'center',
-        }];
+          offsetX: offsetX,
+          offsetY: offsetY
+        };
       case 'top':
-        return [{
+        return {
           originX: 'center',
           originY: 'top',
           overlayX: 'center',
           overlayY: 'bottom',
-        }];
+          offsetX: offsetX,
+          offsetY: offsetY
+        };
       case 'bottom':
-        return [{
+        return {
           originX: 'center',
           originY: 'bottom',
           overlayX: 'center',
           overlayY: 'top',
-        }];
+          offsetX: offsetX,
+          offsetY: offsetY
+        };
     }
   }
 }

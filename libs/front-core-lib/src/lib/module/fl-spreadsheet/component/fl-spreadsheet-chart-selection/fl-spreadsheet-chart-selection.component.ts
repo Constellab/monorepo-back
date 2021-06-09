@@ -61,7 +61,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
 
     // todo to test remove after
     this.formGp.patchValue({
-        chartType: FlChartComponentType.HISTOGRAM,
+        chartType: FlChartComponentType.SCATTER_PLOT,
         seriesData: 'D1:D20',
         seriesNames: null,
         xLabels: null

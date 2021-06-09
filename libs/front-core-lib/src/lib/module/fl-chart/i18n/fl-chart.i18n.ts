@@ -12,8 +12,8 @@ const flChartI18nFr: FlLangTranslation = {
     pathway_link_color_normal: 'Couleurs linéaires',
     pathway_link_color_log: 'Couleurs logarithmes',
     export_chart: 'Exporter le graphique au format SVG',
-    reset_zoom: 'Réinitialiser le zoom (double clique)'
-
+    reset_zoom: 'Réinitialiser le zoom (double clique)',
+    serie: 'Série'
   }
 };
 
@@ -24,7 +24,8 @@ const flChartI18nEn: FlLangTranslation = {
     pathway_link_color_normal: 'Linears colors',
     pathway_link_color_log: 'Logarithm colors',
     export_chart: 'Export chart as SVG file',
-    reset_zoom: 'Reset zoom (double click)'
+    reset_zoom: 'Reset zoom (double click)',
+    serie: 'Serie'
   }
 };
 

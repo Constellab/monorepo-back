@@ -41,7 +41,7 @@ export class FlChartFactory {
 
     const renderer = new FlChartScatterPlotRendererMulti(seriesColorScale);
 
-    return this.buildLinear2dMultiContainer(chartSVG, dataContainer, renderer);
+    return this.buildLinear2dMultiContainer(chartSVG, dataContainer, [renderer]);
   }
 
   /**
@@ -52,7 +52,11 @@ export class FlChartFactory {
     : FlChartContainer2d<FlChart2dMultipleSerie<any>> {
     const renderer = new FlChartRendererLineMulti(seriesColorScale);
 
-    return this.buildLinear2dMultiContainer(chartSVG, dataContainer, renderer);
+    // also use a scatter plot renderer to show point on the line
+    const scatterPlot = new FlChartScatterPlotRendererMulti(seriesColorScale);
+
+
+    return this.buildLinear2dMultiContainer(chartSVG, dataContainer, [renderer, scatterPlot]);
   }
 
   /**
@@ -77,14 +81,15 @@ export class FlChartFactory {
       .range(chartContainer.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
+    // Activate brush only on X axis before the data init so the brush doesn't prevent hover events
+    new FlChart2dBrushX(chartContainer);
+
     chartContainer
       .initXAxis(xAxis)
       .initAxisY(yAxis)
       .addRenderer(new FlChartHistogramMultiRenderer(seriesColorScale))
       .initData(dataContainer);
 
-    // Activate brush only on X axis
-    new FlChart2dBrushX(chartContainer);
 
     return chartContainer;
   }
@@ -93,7 +98,7 @@ export class FlChartFactory {
    * Build a linear multi chart container such as ScatterPlot Multi of Line Multi
    */
   private static buildLinear2dMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultipleSerie<any>,
-                                             renderer: FlChart2dRendererMultiple<FlChart2dMultipleSerie<any>>):
+                                             renderers: FlChart2dRendererMultiple<FlChart2dMultipleSerie<any>>[]):
     FlChartContainer2d<FlChart2dMultipleSerie<any>> {
     const chartContainer: FlChartContainer2d<FlChart2dMultipleSerie<any>> = this.getChartContainer2d(chartSVG);
 
@@ -110,14 +115,15 @@ export class FlChartFactory {
       .range(chartContainer.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
+    // activate brush before the data init so the brush doesn't prevent hover events
+    new FlChart2dBrush(chartContainer);
+
     chartContainer
       .initXAxis(xAxis)
       .initAxisY(yAxis)
-      .addRenderer(renderer)
+      .addRenderer(renderers)
       .initData(dataContainer);
 
-    // activate brush
-    new FlChart2dBrush(chartContainer);
 
     return chartContainer;
   }

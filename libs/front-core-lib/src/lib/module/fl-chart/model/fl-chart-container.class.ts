@@ -2,6 +2,7 @@ import {Selection} from 'd3-selection';
 import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
 import {FlChart2dDataContainerI} from './fl-chart-2d-data.class';
 import {FlChartAxis} from './fl-chart-axis.class';
+import {ClHelpService} from '@monorepo/core-lib';
 
 /**
  * Chart container, it can contains multiple renderer
@@ -38,8 +39,9 @@ export abstract class FlChartContainer<Data> {
     return this;
   }
 
-  public addRenderer(renderer: FlChart2dRenderer<Data>): this {
-    this.renderers.push(renderer);
+  public addRenderer(renderers: FlChart2dRenderer<Data> | FlChart2dRenderer<Data>[]): this {
+    const array: FlChart2dRenderer<Data>[] = ClHelpService.convertObjectOrArrayToArray(renderers);
+    this.renderers.push(...array);
     return this;
   }
 
