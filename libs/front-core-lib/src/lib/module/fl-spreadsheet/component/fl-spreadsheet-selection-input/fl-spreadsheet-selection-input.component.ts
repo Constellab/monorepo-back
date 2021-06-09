@@ -101,7 +101,7 @@ export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
       return selection.toString();
     } else {
       // convert to multiple selection, one for each row
-      const selections: FlSheetMultiSelection = new FlSheetMultiSelection(selection.splitToRowSelections());
+      const selections: FlSheetMultiSelection = new FlSheetMultiSelection(selection.splitToColumnSelections());
       return selections.toString();
     }
   }

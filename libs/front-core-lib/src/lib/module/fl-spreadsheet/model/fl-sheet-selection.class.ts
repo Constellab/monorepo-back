@@ -145,6 +145,26 @@ export class FlSheetSelection extends FlSheetSelectionRange {
     return selections;
   }
 
+  /**
+   * return a list of selection, one for each column
+   */
+  public splitToColumnSelections(): FlSheetSelection[] {
+    const selections: FlSheetSelection[] = [];
+    const from: FlCellCoord = this.from;
+    const to: FlCellCoord = this.to;
+
+    // if there is only one row selection, we return only one row
+    if (from.row === to.row) {
+      return [FlSheetSelectionFull.Multiple(this.sheet, from.row, from.column, to.row, to.column)];
+    }
+
+    for (let i = from.column; i <= to.column; i++) {
+      selections.push(FlSheetSelectionFull.Multiple(this.sheet, from.row, i, to.row, i));
+    }
+
+    return selections;
+  }
+
   // public getDifference(newSelection: FlSheetSelectionChange): FlSheetSelectionDifference {
   //   // the difference only work if both selection have the same start
   //   if (newSelection.startRow !== this.startRow || newSelection.startColumn !== this.startColumn) {
