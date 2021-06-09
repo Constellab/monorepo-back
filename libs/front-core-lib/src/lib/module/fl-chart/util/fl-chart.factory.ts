@@ -5,11 +5,11 @@ import {FlChartContainer2d} from '../model/fl-chart-container.class';
 import {FlChartAxisScale, FlChartAxisScaleBand, FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
 import {FlChartAxis} from '../model/fl-chart-axis.class';
-import {FlChartScatterPlotRendererMulti} from '../module/module/fl-chart-scatter-plot/model/fl-chart-scatter-plot-renderer-multi.class';
+import {FlChartScatterPlotRendererMulti} from '../renderer/fl-chart-scatter-plot-renderer-multi.class';
 import {FlChartScaleColor, FlChartScaleColorMulti} from '../model/fl-chart-scale-color.class';
-import {FlChartRendererLineMulti} from '../module/module/fl-chart-line/model/fl-chart-renderer-line-multi.class';
+import {FlChartRendererLineMulti} from '../renderer/fl-chart-renderer-line-multi.class';
 import {FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
-import {FlChartHistogramMultiRenderer} from '../module/module/fl-chart-histogram/model/fl-chart-histogram-multi-renderer.class';
+import {FlChartHistogramMultiRenderer} from '../renderer/fl-chart-histogram-multi-renderer.class';
 import {FlChart2dBrush, FlChart2dBrushX} from '../model/fl-chart-2d-brush.class';
 
 export class FlChartFactory {

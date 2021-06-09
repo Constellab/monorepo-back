@@ -12,11 +12,7 @@ export * from './service/fl-chart-portal.service';
 // Export charts modules
 export * from './module/module/fl-chart-core/public-api';
 export * from './module/module/fl-chart-heat-map/public-api';
-export * from './module/module/fl-chart-histogram/public-api';
-export * from './module/module/fl-chart-line/public-api';
 export * from './module/module/fl-chart-pathway/public-api';
-export * from './module/module/fl-chart-pie/public-api';
-export * from './module/module/fl-chart-scatter-plot/public-api';
 
 // Export the models
 export * from './model/fl-chart-2d-brush.class';
@@ -36,3 +32,8 @@ export * from './model/fl-d3.class';
 
 // Utils
 export * from './util/fl-chart.factory';
+
+// Renderer
+export * from './renderer/fl-chart-histogram-multi-renderer.class';
+export * from './renderer/fl-chart-renderer-line-multi.class';
+export * from './renderer/fl-chart-scatter-plot-renderer-multi.class';

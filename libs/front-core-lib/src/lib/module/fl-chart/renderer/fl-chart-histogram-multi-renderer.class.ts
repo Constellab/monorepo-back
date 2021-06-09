@@ -1,9 +1,9 @@
-import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../../../../model/fl-chart-2d-renderer.class';
+import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
 import {Numeric, select} from 'd3';
-import {FlChart2dMultipleSerie, FlChartDataWithSerie} from '../../../../model/fl-chart-2d-serie.class';
-import {FlChart2dDatum} from '../../../../model/fl-chart-2d-data.class';
-import {FlChartAxisScale, FlChartAxisScaleBand} from '../../../../model/fl-chart-scale.class';
-import {FlChartDataWithSeriePortalHandler} from '../../../../model/fl-chart-data-with-serie-portal-handler.class';
+import {FlChart2dMultipleSerie, FlChartDataWithSerie} from '../model/fl-chart-2d-serie.class';
+import {FlChart2dDatum} from '../model/fl-chart-2d-data.class';
+import {FlChartAxisScale, FlChartAxisScaleBand} from '../model/fl-chart-scale.class';
+import {FlChartDataWithSeriePortalHandler} from '../model/fl-chart-data-with-serie-portal-handler.class';
 
 
 export class FlChartHistogramMultiRenderer
