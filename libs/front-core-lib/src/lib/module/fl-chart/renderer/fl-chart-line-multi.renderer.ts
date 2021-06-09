@@ -10,7 +10,7 @@ import {FlChart2dMultipleSerie, FlChart2dSerie} from '../model/fl-chart-2d-serie
 /**
  * Class to manage line chart with multiple series
  */
-export class FlChartRendererLineMulti
+export class FlChartLineMultiRenderer
   extends FlChart2dRendererMultiple<FlChart2dMultipleSerie<FlChart2dDatum>> {
 
   private readonly serieClassName: string = 'serie';

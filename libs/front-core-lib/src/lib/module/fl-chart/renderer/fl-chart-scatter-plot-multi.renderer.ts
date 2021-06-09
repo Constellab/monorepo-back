@@ -3,7 +3,7 @@ import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../model/fl-cha
 import {FlChart2dMultipleSerie, FlChartDataWithSerie} from '../model/fl-chart-2d-serie.class';
 import {FlChartDataWithSeriePortalHandler} from '../model/fl-chart-data-with-serie-portal-handler.class';
 
-export class FlChartScatterPlotRendererMulti
+export class FlChartScatterPlotMultiRenderer
   extends FlChart2dRendererMultiple<FlChart2dMultipleSerie<FlChart2dDatum>> {
 
   private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();

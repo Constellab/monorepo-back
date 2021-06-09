@@ -5,11 +5,11 @@ import {FlChartContainer2d} from '../model/fl-chart-container.class';
 import {FlChartAxisScale, FlChartAxisScaleBand, FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
 import {FlChartAxis} from '../model/fl-chart-axis.class';
-import {FlChartScatterPlotRendererMulti} from '../renderer/fl-chart-scatter-plot-renderer-multi.class';
+import {FlChartScatterPlotMultiRenderer} from '../renderer/fl-chart-scatter-plot-multi.renderer';
 import {FlChartScaleColor, FlChartScaleColorMulti} from '../model/fl-chart-scale-color.class';
-import {FlChartRendererLineMulti} from '../renderer/fl-chart-renderer-line-multi.class';
+import {FlChartLineMultiRenderer} from '../renderer/fl-chart-line-multi.renderer';
 import {FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
-import {FlChartHistogramMultiRenderer} from '../renderer/fl-chart-histogram-multi-renderer.class';
+import {FlChartHistogramMultiRenderer} from '../renderer/fl-chart-histogram-multi.renderer';
 import {FlChart2dBrush, FlChart2dBrushX} from '../model/fl-chart-2d-brush.class';
 
 export class FlChartFactory {
@@ -39,7 +39,7 @@ export class FlChartFactory {
                                                 seriesColorScale: FlChartScaleColor)
     : FlChartContainer2d<FlChart2dMultipleSerie<any>> {
 
-    const renderer = new FlChartScatterPlotRendererMulti(seriesColorScale);
+    const renderer = new FlChartScatterPlotMultiRenderer(seriesColorScale);
 
     return this.buildLinear2dMultiContainer(chartSVG, dataContainer, [renderer]);
   }
@@ -50,10 +50,10 @@ export class FlChartFactory {
   private static buildLineMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultipleSerie<any>,
                                          seriesColorScale: FlChartScaleColor)
     : FlChartContainer2d<FlChart2dMultipleSerie<any>> {
-    const renderer = new FlChartRendererLineMulti(seriesColorScale);
+    const renderer = new FlChartLineMultiRenderer(seriesColorScale);
 
     // also use a scatter plot renderer to show point on the line
-    const scatterPlot = new FlChartScatterPlotRendererMulti(seriesColorScale);
+    const scatterPlot = new FlChartScatterPlotMultiRenderer(seriesColorScale);
 
 
     return this.buildLinear2dMultiContainer(chartSVG, dataContainer, [renderer, scatterPlot]);
