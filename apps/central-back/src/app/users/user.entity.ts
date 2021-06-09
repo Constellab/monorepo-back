@@ -29,9 +29,6 @@ export class User extends EntityWithId {
   category: CmUserCategory;
 
   @Column({nullable: true})
-  phone: string;
-
-  @Column({nullable: true})
   job: string;
 
   @Exclude()
