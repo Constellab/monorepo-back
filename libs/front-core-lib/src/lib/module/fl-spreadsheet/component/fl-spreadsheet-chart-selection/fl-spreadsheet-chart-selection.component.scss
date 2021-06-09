@@ -1,14 +1,18 @@
+:host {
+  display: block;
+  width: 30em;
+}
 
-.header{
+.header {
   padding: 1em 0.5em;
   width: 100%;
   cursor: move;
 }
 
-.title{
+.title {
   margin-right: 2em;
 }
 
-.body{
+.body {
   padding: 1em;
 }
