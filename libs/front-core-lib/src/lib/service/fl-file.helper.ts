@@ -1,16 +1,11 @@
-import {Injectable} from '@angular/core';
-import {FlPlatformService} from './fl-plateform.service';
 import {Observable} from 'rxjs';
 
 /**
- * Service to manage files, like download a file
+ * Helper to manage files, like download a file
  */
-@Injectable({
-  providedIn: 'root'
-})
-export class FlFileService {
+export class FlFileHelper {
 
-  constructor(private platformService: FlPlatformService) {
+  constructor() {
   }
 
   /**
@@ -18,7 +13,7 @@ export class FlFileService {
    * @return return the filename name of a file without the extension
    */
   public static getFilenameWithoutExtension(file: string): string {
-    return FlFileService.extractFilenameFromFullPath(file)
+    return FlFileHelper.extractFilenameFromFullPath(file)
       .split('.')
       .slice(0, -1)
       .join('.');
@@ -29,7 +24,7 @@ export class FlFileService {
    * @return the file extension without the .
    */
   public static getFileExtension(file: string): string {
-    return FlFileService.extractFilenameFromFullPath(file)
+    return FlFileHelper.extractFilenameFromFullPath(file)
       .split('.')
       .slice(-1)
       .join('.');
@@ -72,19 +67,19 @@ export class FlFileService {
   }
 
   public static isPDF(file: string): boolean {
-    return FlFileService.extensionIsPDF(FlFileService.getFileExtension(file));
+    return FlFileHelper.extensionIsPDF(FlFileHelper.getFileExtension(file));
   }
 
   public static isWord(file: string): boolean {
-    return FlFileService.extensionIsWord(FlFileService.getFileExtension(file));
+    return FlFileHelper.extensionIsWord(FlFileHelper.getFileExtension(file));
   }
 
   public static isExcel(file: string): boolean {
-    return FlFileService.extensionIsExcel(FlFileService.getFileExtension(file));
+    return FlFileHelper.extensionIsExcel(FlFileHelper.getFileExtension(file));
   }
 
   public static isImage(file: string): boolean {
-    return FlFileService.extensionIsImage(FlFileService.getFileExtension(file));
+    return FlFileHelper.extensionIsImage(FlFileHelper.getFileExtension(file));
   }
 
   public static extensionIsPDF(extension: string): boolean {
@@ -155,31 +150,28 @@ export class FlFileService {
    * @param file the blob file to download
    * @param filename the complete name of the file
    */
-  public downloadBlob(file: Blob, filename: string): void {
-    // block if this is an SSR rendering
-    if (this.platformService.isBrowserPlatform()) {
+  public static downloadBlob(file: Blob, filename: string): void {
+    if (window.navigator.msSaveOrOpenBlob) { // IE10+
+      window.navigator.msSaveOrOpenBlob(file, filename);
+    } else { // Others
+      // create an <a> tag to download the file
+      const a = document.createElement('a');
+      const url = URL.createObjectURL(file);
 
-      if (window.navigator.msSaveOrOpenBlob) { // IE10+
-        window.navigator.msSaveOrOpenBlob(file, filename);
-      } else { // Others
-        // create an <a> tag to download the file
-        const a = document.createElement('a');
-        const url = URL.createObjectURL(file);
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
 
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
+      // trigger a click event on the tag
+      a.click();
 
-        // trigger a click event on the tag
-        a.click();
-
-        // clear elements
-        setTimeout(() => {
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-        }, 0);
-      }
+      // clear elements
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 0);
     }
+
   }
 
   /**
@@ -188,9 +180,9 @@ export class FlFileService {
    * @param filename the complete name of the file
    * @param contentType content type of the blob
    */
-  public downloadBase64File(b64Data: string, filename: string, contentType = 'application/json'): void {
+  public static downloadBase64File(b64Data: string, filename: string, contentType = 'application/json'): void {
     // convert to base 64
-    const blob: Blob = FlFileService.convertBase64ToBlob(b64Data, contentType);
+    const blob: Blob = FlFileHelper.convertBase64ToBlob(b64Data, contentType);
 
     // download the file
     this.downloadBlob(blob, filename);

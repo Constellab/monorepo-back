@@ -4,8 +4,8 @@ import {catchError, map, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {ClCoreJsonConvert, ClDeserializationRef} from '@monorepo/core-lib';
 import {FL_API_MODULE_CONFIG, FlApiErrorService, FlApiModuleConfig} from '../model/fl-api-module.config.class';
-import {FlFileService} from '../../../service/fl-file.service';
 import {FlHttpGetUrlOption, FlHttpOption, FlHttpOptionSerialization} from '../model/fl-http-option.class';
+import {FlFileHelper} from '../../../service/fl-file.helper';
 
 /**
  * Global service to call make Http request. This service formats input and output
@@ -17,7 +17,6 @@ export class FlApiService {
 
   constructor(protected http: HttpClient,
               @Inject(FL_API_MODULE_CONFIG) private config: FlApiModuleConfig,
-              private fileService: FlFileService,
               private flErrorService: FlApiErrorService) {
     // get the api url from the config
     this.apiUrl = config.apiUrl;
@@ -264,7 +263,7 @@ export class FlApiService {
   // download the file to the user's computer is direct download is set to true
   private downloadFileSuccess(file: Blob, filename: string, directDownload: boolean): void {
     if (directDownload) {
-      this.fileService.downloadBlob(file, filename);
+      FlFileHelper.downloadBlob(file, filename);
     }
   }
 

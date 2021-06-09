@@ -3,12 +3,16 @@ import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.
 import {FlChart2dDataContainerI} from './fl-chart-2d-data.class';
 import {FlChartAxis} from './fl-chart-axis.class';
 
+/**
+ * Chart container, it can contains multiple renderer
+ * to be able to show multi chart type in same container
+ */
 export abstract class FlChartContainer<Data> {
 
   public group: Selection<any, null, null, null>;
   public chartContainer: Selection<SVGElement, null, null, null>;
 
-  protected dataContainer: Data;
+  public dataContainer: Data;
 
   protected readonly groupWidth: number;
   protected readonly groupHeight: number;
@@ -60,14 +64,6 @@ export abstract class FlChartContainer<Data> {
   }
 
 
-  public getRangeX(): [number, number] {
-    return [0, this.chartWidth];
-  }
-
-  public getRangeY(): [number, number] {
-    return [this.chartHeight, 0];
-  }
-
 
   public get chartWidth(): number {
     return this.groupWidth - this.margin.left - this.margin.right;
@@ -78,6 +74,9 @@ export abstract class FlChartContainer<Data> {
   }
 }
 
+/**
+ * Chart container for 2d chart with 2 axis
+ */
 export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> extends FlChartContainer<Data> {
 
   public xAxis: FlChartAxis;
@@ -189,5 +188,15 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
 
   private resetAxisY(): void {
     this.yAxis.resetZoom(this.dataContainer.getDomainY());
+  }
+
+  ///////////////////////////////////////// OTHER //////////////////////////////////
+
+  public getRangeX(): [number, number] {
+    return [0, this.chartWidth];
+  }
+
+  public getRangeY(): [number, number] {
+    return [this.chartHeight, 0];
   }
 }

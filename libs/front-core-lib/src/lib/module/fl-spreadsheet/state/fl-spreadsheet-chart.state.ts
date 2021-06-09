@@ -45,7 +45,7 @@ export class FlSpreadsheetChartState {
     if (chartSelection) {
       const chartConfig: FlChartDynamicConfig = {
         data: chartSelection.exportToSeries(),
-        component: chartSelection.chartType
+        chartType: chartSelection.chartType
       };
 
 

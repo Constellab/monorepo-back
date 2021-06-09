@@ -20,6 +20,7 @@ import {FlChartPathwayModule} from './module/module/fl-chart-pathway/fl-chart-pa
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flChartI18n} from './i18n/fl-chart.i18n';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 /**
  * Main module exporting all the chart modules
@@ -47,6 +48,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
   imports: [
     CommonModule,
 
+    FlChartCoreModule,
     FlPortalModule,
     FlSvgIconModule,
     FlTranslateModule,
@@ -56,6 +58,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
     MatIconModule,
     FlexLayoutModule,
     MatOptionModule,
+    MatTooltipModule,
   ],
   providers: [
     FlChartPortalService

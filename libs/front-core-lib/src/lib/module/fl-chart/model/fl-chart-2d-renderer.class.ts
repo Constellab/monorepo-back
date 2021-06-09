@@ -1,7 +1,6 @@
 import {Selection} from 'd3-selection';
 import {Numeric} from 'd3';
 import {FlChartAxisScale} from './fl-chart-scale.class';
-import {FlChart2dDatum} from './fl-chart-2d-data.class';
 import {FlChartScaleColor} from './fl-chart-scale-color.class';
 import {FlChart2dMultipleSerie} from './fl-chart-2d-serie.class';
 
@@ -22,6 +21,9 @@ export interface FlChart2dRendererInput<Data> {
  */
 export interface FlChart2dRenderer<Data> {
 
+
+  colorScale: FlChartScaleColor;
+
   initData(input: FlChart2dRendererInput<Data>): void;
 
   refreshData(input: FlChart2dRendererInput<Data>): void;
@@ -33,14 +35,11 @@ export interface FlChart2dRenderer<Data> {
 export abstract class FlChart2dRendererMultiple<Data extends FlChart2dMultipleSerie<any>>
   implements FlChart2dRenderer<Data> {
 
-  public colorScale: FlChartScaleColor;
+
+  constructor(public colorScale: FlChartScaleColor) {
+  }
 
   abstract initData(input: FlChart2dRendererInput<Data>): void;
 
   abstract refreshData(input: FlChart2dRendererInput<Data>): void;
-
-  protected initColor(series: FlChart2dMultipleSerie<FlChart2dDatum>): this {
-    this.colorScale = new FlChartScaleColor().domain(series.series.map(d => d.key));
-    return this;
-  }
 }

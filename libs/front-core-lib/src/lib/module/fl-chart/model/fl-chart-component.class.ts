@@ -1,9 +1,3 @@
-import {ComponentType} from '@angular/cdk/overlay';
-import {FlChartLineMultipleComponent} from '../module/module/fl-chart-line/component/fl-chart-line-multiple/fl-chart-line-multiple.component';
-import {FlChartScatterPlotMultipleComponent} from '../module/module/fl-chart-scatter-plot/component/fl-chart-scatter-plot-multiple/fl-chart-scatter-plot-multiple.component';
-import {FlChartHistogramMultipleComponent} from '../module/module/fl-chart-histogram/component/fl-chart-histogram-multiple/fl-chart-histogram-multiple.component';
-
-
 export interface FlChartComponent {
   data: any;
 }
@@ -11,7 +5,7 @@ export interface FlChartComponent {
 export interface FlChartDynamicConfig {
   data: any;
 
-  component: ComponentType<FlChartComponent> | FlChartComponentType;
+  chartType: FlChartComponentType;
 }
 
 
@@ -41,24 +35,3 @@ export const flChartComponentTypeSelectOptions: FlChartComponentTypeSelectOption
     icon: 'bar_chart'
   }
 ];
-
-
-/**
- * Function to convert ComponentType | FlChartComponentAvailable to ComponentType
- * @param component
- */
-export function flChartComponentTypeFactory(component: ComponentType<FlChartComponent> | FlChartComponentType):
-  ComponentType<FlChartComponent> {
-  if (typeof component === 'string') {
-    switch (component) {
-      case FlChartComponentType.LINE:
-        return FlChartLineMultipleComponent;
-      case FlChartComponentType.SCATTER_PLOT:
-        return FlChartScatterPlotMultipleComponent;
-      case FlChartComponentType.HISTOGRAM:
-        return FlChartHistogramMultipleComponent;
-    }
-  } else {
-    return component;
-  }
-}

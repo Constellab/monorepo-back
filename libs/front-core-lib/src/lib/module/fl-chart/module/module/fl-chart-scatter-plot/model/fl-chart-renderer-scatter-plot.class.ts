@@ -1,9 +1,15 @@
 import {FlChart2dDataContainerI, FlChart2dDatum} from '../../../../model/fl-chart-2d-data.class';
 import {FlChart2dRenderer, FlChart2dRendererInput} from '../../../../model/fl-chart-2d-renderer.class';
+import {FlChartScaleColorSimple} from '../../../../model/fl-chart-scale-color.class';
 
 export class FlChartRendererScatterPlot
   implements FlChart2dRenderer<FlChart2dDataContainerI<FlChart2dDatum>> {
 
+  colorScale: FlChartScaleColorSimple;
+
+  constructor() {
+    this.colorScale = new FlChartScaleColorSimple('steelblue');
+  }
 
   initData(input: FlChart2dRendererInput<FlChart2dDataContainerI<FlChart2dDatum>>): void {
     // Add dots
@@ -13,7 +19,7 @@ export class FlChartRendererScatterPlot
       .enter()
       .append('circle')
       .attr('r', 1.5)
-      .style('fill', '#69b3a2')
+      .style('fill', () => this.colorScale.scale())
       .attr('cx', (d: FlChart2dDatum) => input.xScale.scale(d.getX()))
       .attr('cy', (d: FlChart2dDatum) => input.yScale.scale(d.getY()));
   }

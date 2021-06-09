@@ -7,7 +7,6 @@ export class FlChartScatterPlotRendererMulti
 
 
   initData(input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatum>>): void {
-    this.initColor(input.data);
     // Add dots
     input.container
       // generate groups for the series

@@ -12,7 +12,6 @@ export class FlChartHistogramMultiRenderer
 
 
   initData(input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatum>>): void {
-    this.initColor(input.data);
 
     const data: FlChartDataWithSerie[][] = input.data.invert();
 

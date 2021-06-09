@@ -1,12 +1,28 @@
 import * as d3 from 'd3';
 import {ScaleOrdinal} from 'd3';
 
-export class FlChartScaleColor {
+/**
+ * Specific scale to return a color based on a value
+ */
+export interface FlChartScaleColor {
+
+  /**
+   * return a color base on a value
+   * @param value
+   */
+  scale(value: number): string;
+}
+
+/**
+ * Color scale contains a list of colors and return one color based on domain
+ */
+export class FlChartScaleColorMulti implements FlChartScaleColor {
 
   public readonly d3Scale: ScaleOrdinal<string, string>;
 
-  constructor() {
+  constructor(domain: number[]) {
     this.d3Scale = this.initScale();
+    this.d3Scale.domain(domain.map(d => d.toString()));
   }
 
   private initScale(): ScaleOrdinal<string, string> {
@@ -15,12 +31,20 @@ export class FlChartScaleColor {
       '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999']);
   }
 
-  public domain(domain: number[]): this {
-    this.d3Scale.domain(domain.map(d => d.toString()));
-    return this;
-  }
-
   public scale(value: number): string {
     return this.d3Scale(value.toString());
+  }
+}
+
+/**
+ * Color scale that return only one color
+ */
+export class FlChartScaleColorSimple implements FlChartScaleColor {
+
+  constructor(private color: string) {
+  }
+
+  public scale(): string {
+    return this.color;
   }
 }

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlEntityPaginatedDatasource, FlFileService} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {FileResourceDatasource, FileResourcePreview} from '../model/entities/file-resource.entity';
 import {ClPage} from '@monorepo/core-lib';
@@ -44,7 +44,7 @@ export class FileResourceService {
   }
 
   private readBlobContent(file: Blob, parseResultToJson: boolean): Observable<FileWithContent> {
-    return FlFileService.readBlobContent(file, parseResultToJson).pipe(
+    return FlFileHelper.readBlobContent(file, parseResultToJson).pipe(
       map(content => {
         return {file: file, content: content};
       })

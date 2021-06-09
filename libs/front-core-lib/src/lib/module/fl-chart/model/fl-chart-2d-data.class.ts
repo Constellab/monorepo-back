@@ -8,7 +8,10 @@ export type FlChartAxisTickFormat = (domainValue: Numeric, index: number) => str
  *
  */
 export interface FlChart2dDataContainerI<Data> {
-  axisXFormat: FlChartAxisTickFormat | null;
+  /**
+   * Function to format the x axis labels
+   */
+  axisXLabelFormat: FlChartAxisTickFormat | null;
 
   getData(): Data[];
 
@@ -37,7 +40,7 @@ export abstract class FlChart2dDataContainer<Data extends FlChart2dDatum>
 
   domainX: FlChartDomain;
 
-  axisXFormat: FlChartAxisTickFormat | null;
+  axisXLabelFormat: FlChartAxisTickFormat | null;
 
   protected constructor(data: Data[], domainX: FlChartDomain) {
     this.data = data;

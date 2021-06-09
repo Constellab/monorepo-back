@@ -55,7 +55,7 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlCh
 
   series: FlChart2dSerie<Data>[];
 
-  axisXFormat: FlChartAxisTickFormat | null;
+  axisXLabelFormat: FlChartAxisTickFormat | null;
 
   domainX: FlChartDomain;
 

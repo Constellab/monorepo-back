@@ -32,7 +32,7 @@ export class FlSheetChartSelection {
         this.getSerieNameAtIndex(i)));
     }
 
-    series.axisXFormat = this.getXAxisFormat();
+    series.axisXLabelFormat = this.getXAxisFormat();
 
     return series;
   }
@@ -64,7 +64,7 @@ export class FlSheetChartSelection {
         this.getSerieNameAtIndex(i)));
     }
 
-    series.axisXFormat = this.getXAxisFormat();
+    series.axisXLabelFormat = this.getXAxisFormat();
 
     return series;
   }

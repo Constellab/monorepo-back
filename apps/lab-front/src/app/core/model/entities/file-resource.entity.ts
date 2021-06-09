@@ -1,6 +1,6 @@
 import {LabBaseEntity} from '../global/lab-entity.entity';
 import {Expose} from 'class-transformer';
-import {FlEntityPaginatedDatasource, FlFileService} from '@monorepo/front-core-lib';
+import {FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 
 
 export class FileResourcePreview extends LabBaseEntity {
@@ -13,15 +13,15 @@ export class FileResourcePreview extends LabBaseEntity {
   fileStoreUri: string;
 
   getFileName(): string {
-    return FlFileService.extractFilenameFromFullPath(this.path);
+    return FlFileHelper.extractFilenameFromFullPath(this.path);
   }
 
   getExtension(): string {
-    return FlFileService.getFileExtension(this.path);
+    return FlFileHelper.getFileExtension(this.path);
   }
 
   isImage(): boolean {
-    return FlFileService.extensionIsImage(this.getExtension());
+    return FlFileHelper.extensionIsImage(this.getExtension());
   }
 }
 

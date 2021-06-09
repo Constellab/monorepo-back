@@ -1,4 +1,4 @@
-import {extent, Numeric, min, max} from 'd3';
+import {extent, max, min, Numeric} from 'd3';
 import {FlChart2dDataContainerLinearI, FlChartAxisTickFormat} from '../../../../model/fl-chart-2d-data.class';
 
 export interface FlChart2dHistogramDatum {
@@ -15,7 +15,7 @@ export class FlChart2dHistoDataContainer<Data extends FlChart2dHistogramDatum>
 
   data: Data[];
 
-  axisXFormat: FlChartAxisTickFormat | null;
+  axisXLabelFormat: FlChartAxisTickFormat | null;
 
   constructor(data: Data[]) {
     this.data = data;

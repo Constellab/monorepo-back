@@ -32,3 +32,6 @@ export * from './model/fl-chart-scale.class';
 export * from './model/fl-chart-scale-color.class';
 export * from './model/fl-chart-svg.class';
 export * from './model/fl-d3.class';
+
+// Utils
+export * from './util/fl-chart.factory';

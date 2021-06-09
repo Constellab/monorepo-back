@@ -17,8 +17,6 @@ export class FlChartRendererLineMulti
 
 
   initData(input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatum>>): void {
-    this.initColor(input.data);
-
     input.container
       .selectAll()
       .data(input.data.series)

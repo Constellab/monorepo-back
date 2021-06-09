@@ -5,7 +5,6 @@ import {Observable} from 'rxjs';
 import {FlApiService} from './fl-api.service';
 import {FlCleanableService, FlCleanerService} from '../../../utils/fl-cleanable-service';
 import {FL_API_MODULE_CONFIG, FlApiErrorService, FlApiModuleConfig} from '../model/fl-api-module.config.class';
-import {FlFileService} from '../../../service/fl-file.service';
 import {FlHttpOption} from '../model/fl-http-option.class';
 import {ClCachedObservable, ClDeserializationRef} from '@monorepo/core-lib';
 
@@ -25,9 +24,8 @@ export class FlApiWithCacheService extends FlApiService implements FlCleanableSe
 
   constructor(http: HttpClient,
               @Inject(FL_API_MODULE_CONFIG) config: FlApiModuleConfig,
-              fileService: FlFileService,
               errorService: FlApiErrorService) {
-    super(http, config, fileService, errorService);
+    super(http, config, errorService);
     FlCleanerService.getInstance().registerService(this);
   }
 
