@@ -18,7 +18,11 @@ const flChartI18nFr: FlLangTranslation = {
     quartile_3: 'Q3',
     median: 'Médiane',
     min: 'Min',
-    max: 'Max'
+    max: 'Max',
+    LINE: 'Courbe',
+    SCATTER_PLOT: 'Nuage de point',
+    HISTOGRAM: 'Histogramme',
+    BOX_PLOT: 'Boîte à moustache',
   }
 };
 
@@ -35,7 +39,11 @@ const flChartI18nEn: FlLangTranslation = {
     quartile_3: 'Q3',
     median: 'Median',
     min: 'Min',
-    max: 'Max'
+    max: 'Max',
+    LINE: 'Line',
+    SCATTER_PLOT: 'Scatter plot',
+    HISTOGRAM: 'Histogram',
+    BOX_PLOT: 'Box plot',
   }
 };
 

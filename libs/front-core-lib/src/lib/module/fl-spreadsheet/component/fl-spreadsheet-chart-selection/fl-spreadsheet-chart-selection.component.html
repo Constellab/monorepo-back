@@ -22,7 +22,7 @@
         <mat-select formControlName="chartType" required
                     placeholder="{{'flSpreadsheet.create_chart' | translate}}">
           <mat-select-trigger>
-            {{formGp.value.chartType}}
+            {{'flChart.' + formGp.value.chartType | translate}}
           </mat-select-trigger>
           <fl-chart-component-select-options></fl-chart-component-select-options>
         </mat-select>
