@@ -196,6 +196,10 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     return null;
   }
 
+  public hasSelection(): boolean{
+    return this.currentSelection != null;
+  }
+
   ngOnDestroy(): void {
     this.currentSelection$.complete();
   }

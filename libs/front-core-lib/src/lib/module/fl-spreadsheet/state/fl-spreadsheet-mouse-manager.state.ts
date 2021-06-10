@@ -74,14 +74,10 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
       return;
     }
 
-    if (cellEvent.type === 'cell') {
-      this.selectionState.selectUniqueCell(cellEvent.coord);
+    if (event.shiftKey && this.selectionState.hasSelection()) {
+      this.expandSelection(cellEvent);
     } else {
-      if (cellEvent.headerType === 'row') {
-        this.selectionState.selectUniqueRow(cellEvent.index);
-      } else {
-        this.selectionState.selectUniqueColumn(cellEvent.index);
-      }
+      this.selectUnique(cellEvent);
     }
 
     this.clearMouseMoveListener();
@@ -96,6 +92,24 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
       return;
     }
 
+    this.expandSelection(cellEvent);
+  }
+
+  // reset the selection
+  private selectUnique(cellEvent: MouseEventCell): void {
+    if (cellEvent.type === 'cell') {
+      this.selectionState.selectUniqueCell(cellEvent.coord);
+    } else {
+      if (cellEvent.headerType === 'row') {
+        this.selectionState.selectUniqueRow(cellEvent.index);
+      } else {
+        this.selectionState.selectUniqueColumn(cellEvent.index);
+      }
+    }
+  }
+
+  // expand the current selection base on cellEvent
+  private expandSelection(cellEvent: MouseEventCell): void {
     if (cellEvent.type === 'cell') {
       this.selectionState.expandSelection(cellEvent.coord);
     } else {
