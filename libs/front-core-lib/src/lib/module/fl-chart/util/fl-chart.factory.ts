@@ -110,7 +110,7 @@ export class FlChartFactory {
     // build the x axis and scale based on ScaleBand
     // the x domain is an array of the number of series with index of the serie
     const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleBand()
-      .setInitialDomain(dataContainer.getSeriesIndexes())
+      .setInitialDomain(dataContainer.getSeriesKeys())
       .range(chartContainer.getRangeX())
       .paddingOuter(0.3);
     const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)

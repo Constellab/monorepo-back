@@ -17,7 +17,7 @@ export class FlChart2dSerie<Data extends FlChart2dDatum> extends FlChart2dDataCo
 
   private static key: number = 0;
 
-  readonly key: number;
+  key: number;
 
   name: string;
 
@@ -82,6 +82,8 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlCh
   }
 
   public addSerie(serie: FlChart2dSerie<Data>): void {
+    // override the key of the serie with the index
+    serie.key = this.series.length;
     this.series.push(serie);
   }
 
@@ -118,9 +120,9 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlCh
     return data;
   }
 
-  // return an array of series indexes, [0,1,2...]
-  public getSeriesIndexes(): number[] {
-    return this.series.map((v, index) => index);
+  // return an array of series keys
+  public getSeriesKeys(): number[] {
+    return this.series.map((v) => v.key);
   }
 
 }

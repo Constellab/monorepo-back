@@ -15,6 +15,10 @@ export * from './module/module/fl-chart-heat-map/public-api';
 export * from './module/module/fl-chart-pathway/public-api';
 
 // Export the models
+// Portal-handler
+export * from './model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
+export * from './model/portal-handler/fl-chart-portal-handler.class';
+
 export * from './model/fl-chart-2d-brush.class';
 export * from './model/fl-chart-2d-data.class';
 export * from './model/fl-chart-2d-hover.class';
@@ -23,7 +27,6 @@ export * from './model/fl-chart-2d-serie.class';
 export * from './model/fl-chart-axis.class';
 export * from './model/fl-chart-component.class';
 export * from './model/fl-chart-container.class';
-export * from './model/fl-chart-data-with-serie-portal-handler.class';
 export * from './model/fl-chart-domain.class';
 export * from './model/fl-chart-scale.class';
 export * from './model/fl-chart-scale-color.class';

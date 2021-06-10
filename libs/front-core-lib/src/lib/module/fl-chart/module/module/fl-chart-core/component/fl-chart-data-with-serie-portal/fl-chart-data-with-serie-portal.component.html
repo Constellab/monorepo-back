@@ -1,9 +1,8 @@
 <div>
   <div>x : {{data.data.getX()}}</div>
   <div>y : {{data.data.getY()}}</div>
-  <div class="serie" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
-    <div class="serie-color" [style.backgroundColor]="color"></div>
-    <div>{{'flChart.serie' | translate}} : {{data.serieName}}</div>
-  </div>
+
+  <fl-chart-serie-inline class="serie" [color]="data.serieKey | flChartScale:seriesColorScale" [serieName]="data.serieName">
+  </fl-chart-serie-inline>
 </div>
 

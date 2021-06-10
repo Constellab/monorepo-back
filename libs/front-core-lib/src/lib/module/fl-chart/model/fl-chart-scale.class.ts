@@ -31,8 +31,12 @@ export interface FlD3AxisScaleLinear<Value extends Numeric> extends FlD3AxisScal
   // tickValues(values: Value[]): this;
 }
 
+export interface FlChartScale{
+  scale(value: any): any
+}
 
-export abstract class FlChartAxisScale<Value> {
+
+export abstract class FlChartAxisScale<Value> implements FlChartScale{
 
   public readonly d3Scale: FlD3AxisScale<Value>;
 

@@ -13,7 +13,12 @@ const flChartI18nFr: FlLangTranslation = {
     pathway_link_color_log: 'Couleurs logarithmes',
     export_chart: 'Exporter le graphique au format SVG',
     reset_zoom: 'Réinitialiser le zoom (double clique)',
-    serie: 'Série'
+    serie: 'Série',
+    quartile_1: 'Q1',
+    quartile_3: 'Q3',
+    median: 'Médiane',
+    min: 'Min',
+    max: 'Max'
   }
 };
 
@@ -25,7 +30,12 @@ const flChartI18nEn: FlLangTranslation = {
     pathway_link_color_log: 'Logarithm colors',
     export_chart: 'Export chart as SVG file',
     reset_zoom: 'Reset zoom (double click)',
-    serie: 'Serie'
+    serie: 'Serie',
+    quartile_1: 'Q1',
+    quartile_3: 'Q3',
+    median: 'Median',
+    min: 'Min',
+    max: 'Max'
   }
 };
 

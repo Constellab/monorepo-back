@@ -16,11 +16,11 @@ export interface FlChartDataWithSeriePortalInput {
 export class FlChartDataWithSeriePortalComponent implements OnInit {
 
   data: FlChartDataWithSerie;
-  color: string;
+  seriesColorScale: FlChartScaleColor;
 
   constructor(@Inject(FL_PORTAL_DATA) input: FlChartDataWithSeriePortalInput) {
     this.data = input.data;
-    this.color = input.seriesColorScale.scale(input.data.serieKey);
+    this.seriesColorScale = input.seriesColorScale;
   }
 
   ngOnInit(): void {
