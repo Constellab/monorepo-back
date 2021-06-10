@@ -5,6 +5,7 @@ import {FlCellCoord, FlSheetSelection} from '../model/fl-sheet-selection.class';
 import {FlSpreadsheetClipboardState} from './fl-spreadsheet-clipboard.state';
 import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 import {FlSpreadsheetActionStore} from './fl-spreadsheet-action.store';
+import {FlSpreadsheetScrollState} from './fl-spreadsheet-scroll.state';
 
 /**
  * Unique state shared across the spreadsheet to handle spreadsheet keyboard events
@@ -18,7 +19,8 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
               private renderer: Renderer2, private ngZone: NgZone,
               private clipboardState: FlSpreadsheetClipboardState,
               private actionState: FlSpreadsheetActions,
-              private actionStore: FlSpreadsheetActionStore) {
+              private actionStore: FlSpreadsheetActionStore,
+              private scrollState: FlSpreadsheetScrollState) {
   }
 
   public init(): void {
@@ -64,6 +66,10 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
       this.handleSimpleArrow(0, -1);
     } else if (event.key === FlKeyboardKey.ARROW_RIGHT) {
       this.handleSimpleArrow(0, 1);
+    } else if (event.key === FlKeyboardKey.PAGE_UP) {
+      this.scrollState.scrollOnePage('up');
+    } else if (event.key === FlKeyboardKey.PAGE_DOWN) {
+      this.scrollState.scrollOnePage('down');
     }
   }
 

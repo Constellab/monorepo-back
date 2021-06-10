@@ -1,4 +1,14 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  TrackByFunction,
+  ViewChild
+} from '@angular/core';
 import {FlSpreadsheet} from '../../model/fl-spreadsheet.class';
 import {FlCell} from '../../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
@@ -12,6 +22,9 @@ import {FlSpreadsheetActionStore} from '../../state/fl-spreadsheet-action.store'
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
 import {FlSpreadsheetChartState} from '../../state/fl-spreadsheet-chart.state';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
+import {FlSpreadsheetScrollState} from '../../state/fl-spreadsheet-scroll.state';
+import {Observable} from 'rxjs';
+import {FlSheetRow} from '../../model/fl-sheet-row.class';
 
 @Component({
   selector: 'fl-spreadsheet',
@@ -27,6 +40,7 @@ import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
     FlSpreadsheetActionStore,
     FlSpreadsheetActions,
     FlSpreadsheetChartState,
+    FlSpreadsheetScrollState,
     FlPortalService, // providers to access the state in portal
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -35,8 +49,13 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
   @Input() spreadsheet: FlSpreadsheet;
 
+  @ViewChild('tableContainer', {static: true}) tableContainer: ElementRef<HTMLElement>;
+  @ViewChild('scroller', {static: true}) scroller: ElementRef<HTMLElement>;
+  @ViewChild('heightSimulator', {static: true}) heightSimulator: ElementRef<HTMLElement>;
+
   headerColumns: FlCell[];
-  cells: FlCell[][];
+
+  rows$: Observable<FlSheetRow[]>;
 
 
   subscription: ClSubscriptionHandler = new ClSubscriptionHandler();
@@ -45,6 +64,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
               private selectionState: FlSpreadsheetSelectionState,
               private keyboardState: FlSpreadsheetKeyboardManagerState,
               private mouseState: FlSpreadsheetMouseManagerState,
+              private scrollState: FlSpreadsheetScrollState,
               private cdr: ChangeDetectorRef) {
   }
 
@@ -52,8 +72,11 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
     this.state.init(this.spreadsheet);
     this.keyboardState.init();
     this.mouseState.init();
+    this.scrollState.init(this.tableContainer, this.scroller, this.heightSimulator);
     this.subscribeToHeader();
-    this.subscribeToCells();
+
+    // this.rows$ = this.spreadsheet.currentSheet.getRows$();
+    this.rows$ = this.scrollState.getRowsToDisplay$();
   }
 
   private subscribeToHeader(): void {
@@ -67,22 +90,10 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  private subscribeToCells(): void {
-    this.subscription.add(this.spreadsheet.currentSheet.getCells().subscribe(
-      cells => this.onNewCells(cells)
-    ));
-  }
-
-  private onNewCells(cells: FlCell[][]): void {
-    //create a new instance of the cells array for the virtual scroll
-    this.cells = [...cells];
-    this.cdr.detectChanges();
-  }
+  trackByRowsId: TrackByFunction<FlSheetRow> = (index: number, row: FlSheetRow) => row.rowId;
 
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }
-
-
 }

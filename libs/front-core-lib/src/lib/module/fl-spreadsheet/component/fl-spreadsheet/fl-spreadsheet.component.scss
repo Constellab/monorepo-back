@@ -1,7 +1,8 @@
 .table-container {
   height: 100%;
   width: 100%;
-  overflow: auto;
+  position: relative;
+  overflow: hidden;
 }
 
 .table {
@@ -13,7 +14,9 @@
 
 .table fl-spreadsheet-header-cell,
 .table fl-spreadsheet-cell {
-  border: 1px solid #949494; // todo do light mode
+  border: 1px solid var(--grey-high-contrast);
+  height: 24px;
+  box-sizing: border-box;
 }
 
 
@@ -37,6 +40,27 @@
   width: 80px;
 }
 
+
+
+//Scrolling bar on the right
+.scroll-container{
+  width: 17px;
+  height: 100%;
+  overflow: auto;
+  position: relative;
+}
+
+.scroller{
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1px;
+  width: 1px;
+  transform-origin: 0 0;
+}
+
+
+// OTHER
 //.column-header {
 //  position: -webkit-sticky;
 //  position: sticky;

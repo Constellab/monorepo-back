@@ -2,6 +2,7 @@ import {FlBasicCell, FlCell, FlColumnHeaderCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
 import {FlCellCoord, FlSheetSelectionRange} from './fl-sheet-selection.class';
+import {FlSheetRow} from './fl-sheet-row.class';
 
 export class FlSheet {
 
@@ -153,6 +154,17 @@ export class FlSheet {
     );
   }
 
+  public getRows$(): Observable<FlSheetRow[]> {
+    return this.getCells().pipe(
+      map(cells => cells.map((row, index) => {
+        return {
+          rowId: index,
+          cells: row
+        };
+      }))
+    );
+  }
+
   public getColumnHeaderCells(): Observable<FlCell[]> {
     return this.cellsChanged.asObservable().pipe(
       debounceTime(50),
@@ -199,13 +211,30 @@ export class FlSheet {
   }
 
   public getCellsFromRange(range: FlSheetSelectionRange): FlCell[][] {
+    return this.getCellsFromCoords(range.from, range.to);
+  }
+
+  public getCellsFromCoords(from: FlCellCoord, to: FlCellCoord): FlCell[][] {
     const cells: FlCell[][] = [];
 
-    for (let row = range.from.row; row <= range.to.row; row++) {
-      cells.push(this.cells[row].slice(range.from.column, range.to.column + 1));
+    for (let row = from.row; row <= to.row; row++) {
+      cells.push(this.cells[row].slice(from.column, to.column + 1));
     }
 
     return cells;
+  }
+
+  public getRows(fromRow: number, toRow: number): FlSheetRow[] {
+    const rows: FlSheetRow[] = [];
+
+    for (let row = fromRow; row <= toRow; row++) {
+      rows.push({
+        rowId: row,
+        cells: this.cells[row]
+      });
+    }
+
+    return rows;
   }
 
   public setValuesFromCoord(values: any[][], from: FlCellCoord): void {

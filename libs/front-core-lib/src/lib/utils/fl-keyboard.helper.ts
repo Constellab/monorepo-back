@@ -5,7 +5,9 @@ export enum FlKeyboardKey {
   ARROW_LEFT = 'ArrowLeft',
   ARROW_RIGHT = 'ArrowRight',
   ARROW_DOWN = 'ArrowDown',
-  ARROW_UP = 'ArrowUp'
+  ARROW_UP = 'ArrowUp',
+  PAGE_DOWN = 'PageDown',
+  PAGE_UP = 'PageUp'
 }
 
 

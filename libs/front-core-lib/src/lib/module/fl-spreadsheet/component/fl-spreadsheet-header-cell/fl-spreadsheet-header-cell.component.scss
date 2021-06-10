@@ -7,12 +7,17 @@ $cell-selected-border-color: #058989;
   vertical-align: inherit;
   background-color: var(--grey-low-contrast);
 
-  &.column-selected, &.row-selected {
+  &.column-selected {
     border-bottom-color: $cell-selected-border-color !important;
     background-color: var(--grey-contrast);
   }
 
-  &div{
+  &.row-selected {
+    border-right-color: $cell-selected-border-color !important;
+    background-color: var(--grey-contrast);
+  }
+
+  &div {
     resize: horizontal;
     overflow: auto;
   }

@@ -31,6 +31,7 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
 
   @Input() cell: FlCell;
 
+  // theses attributes are used to retrieve the cell coords from html element
   @HostBinding('attr.' + columnIdAttributeName)
   @Input() column: number;
 

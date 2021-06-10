@@ -24,6 +24,7 @@ export * from './state/fl-spreadsheet-clipboard.state';
 export * from './state/fl-spreadsheet-context-menu.state';
 export * from './state/fl-spreadsheet-keyboard-manager.state';
 export * from './state/fl-spreadsheet-mouse-manager.state';
+export * from './state/fl-spreadsheet-scroll.state';
 export * from './state/fl-spreadsheet-selection.state';
 
 // Export the models
@@ -31,6 +32,7 @@ export * from './model/fl-cell.class';
 export * from './model/fl-sheet.class';
 export * from './model/fl-sheet-chart-selection.class';
 export * from './model/fl-sheet-multi-selection.class';
+export * from './model/fl-sheet-row.class';
 export * from './model/fl-sheet-selection.class';
 export * from './model/fl-spreadsheet.class';
 

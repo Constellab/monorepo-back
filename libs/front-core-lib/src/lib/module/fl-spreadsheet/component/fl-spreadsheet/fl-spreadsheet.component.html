@@ -1,30 +1,29 @@
-<!--<div class="table-container">-->
-  <cdk-virtual-scroll-viewport itemSize="24" class="table-container">
-  <table class="table">
+<div class="table-container" fxLayout="row" #tableContainer>
+  <table class="table" fxFlex="auto">
     <thead>
     <tr>
       <fl-spreadsheet-header-cell class="column-header" *ngFor="let column of headerColumns; let index = index"
                                   [index]="index - 1" type="column"></fl-spreadsheet-header-cell>
     </tr>
     </thead>
-
     <tbody>
-
-    <!--    <cdk-virtual-scroll-viewport itemSize="24" class="body-group">-->
-    <tr *cdkVirtualFor="let rows of cells; let rowIndex = index">
-
+    <tr *ngFor="let row of rows$ | async; trackBy: trackByRowsId">
       <!--  Row header cells  -->
-      <fl-spreadsheet-header-cell class="row-header" [index]="rowIndex" type="row"></fl-spreadsheet-header-cell>
-
-
-      <fl-spreadsheet-cell *flForById="let cell of rows; let columnIndex = index" [cell]="cell"
-                           [row]="rowIndex" [column]="columnIndex"></fl-spreadsheet-cell>
+      <fl-spreadsheet-header-cell class="row-header" [index]="row.rowId" type="row"></fl-spreadsheet-header-cell>
+      <fl-spreadsheet-cell *ngFor="let cell of row.cells; let columnIndex = index" [cell]="cell"
+                           [row]="row.rowId" [column]="columnIndex"></fl-spreadsheet-cell>
 
     </tr>
-    <!--    </cdk-virtual-scroll-viewport>-->
     </tbody>
 
   </table>
-<!--</div>-->
-</cdk-virtual-scroll-viewport>
+
+
+  <!-- Manage the scroll -->
+  <div class="scroll-container" #scroller>
+    <div class="scroller" #heightSimulator></div>
+  </div>
+
+
+</div>
 
