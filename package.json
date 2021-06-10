@@ -38,7 +38,6 @@
     "central-front:lint": "nx run central-front:lint",
     "lab-front:serve": "nx serve lab-front",
     "lab-front:build-prod": "nx build lab-front --prod",
-    "lab-front:build-pre-prod": "nx build lab-front --configuration=preprod",
     "lab-front:build-dev": "nx build lab-front --configuration=dev",
     "lab-front:caprover-deploy-preprod": "caprover deploy --host https://captain.gws.gencovery.com --appName pre-prod-lab-front --branch master",
     "lab-front:build-stats": "nx build lab-front --prod --stats-json && npm run lab-front:view-stats",
