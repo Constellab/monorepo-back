@@ -6,6 +6,7 @@ import {FlChart2dMultipleSerie} from '../../model/fl-chart-2d-serie.class';
 import {MultiSerieData} from '../../model/data';
 import {FlChartFactory} from '../../util/fl-chart.factory';
 import {FlChartScaleColorMulti} from '../../model/fl-chart-scale-color.class';
+import {FlThemeService} from '../../../../service/fl-theme.service';
 
 @Component({
   selector: 'fl-chart-dynamic',
@@ -25,7 +26,7 @@ export class FlChartDynamicComponent implements OnInit {
   private chartSVG: FlChartSvg;
   private chartContainer: FlChartContainer2d<FlChart2dMultipleSerie<MultiSerieData>>;
 
-  constructor() {
+  constructor(private themeService: FlThemeService) {
   }
 
   ngOnInit(): void {
@@ -39,7 +40,7 @@ export class FlChartDynamicComponent implements OnInit {
   }
 
   downloadSVG(): void {
-    this.chartSVG.downloadSVG();
+    this.chartSVG.downloadSVG(this.themeService.isDarkTheme());
   }
 
   resetZoom(): void {

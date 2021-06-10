@@ -12,7 +12,8 @@ export interface FlChartDynamicConfig {
 export enum FlChartComponentType {
   LINE = 'LINE',
   SCATTER_PLOT = 'SCATTER_PLOT',
-  HISTOGRAM = 'HISTOGRAM'
+  HISTOGRAM = 'HISTOGRAM',
+  BOX_PLOT = 'BOX_PLOT'
 }
 
 export interface FlChartComponentTypeSelectOption {
@@ -33,5 +34,9 @@ export const flChartComponentTypeSelectOptions: FlChartComponentTypeSelectOption
   {
     component: FlChartComponentType.HISTOGRAM,
     icon: 'bar_chart'
+  },
+  {
+    component: FlChartComponentType.BOX_PLOT,
+    icon: 'multiline_chart'
   }
 ];

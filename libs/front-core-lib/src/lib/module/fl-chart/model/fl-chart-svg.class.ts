@@ -41,10 +41,17 @@ export class FlChartSvg {
 
   /**
    * Download the SVG as file
+   * @invertColors if true invert the #000000 colors with #fffff. It is useful for the dark theme
    */
-  public downloadSVG(): void {
+  public downloadSVG(invertColors: boolean = false): void {
     // construct the svg and add the xmlns attribute
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg">${this.getSVGHTMLContent()}</svg>`
+    let svg: string = `<svg xmlns="http://www.w3.org/2000/svg">${this.getSVGHTMLContent()}</svg>`;
+
+    if (invertColors) {
+      svg = svg.replace(/#000000/g, '_tempUnique_');
+      svg = svg.replace(/#ffffff/g, '#000000');
+      svg = svg.replace(/_tempUnique_/g, '#ffffff');
+    }
     const blob: Blob = new Blob([svg]);
     FlFileHelper.downloadBlob(blob, 'chart.svg');
   }

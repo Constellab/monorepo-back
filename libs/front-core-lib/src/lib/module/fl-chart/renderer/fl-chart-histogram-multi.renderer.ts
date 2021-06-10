@@ -71,7 +71,7 @@ export class FlChartHistogramMultiRenderer
   // return the position of the group
   private getGroupTranslate(xScale: FlChartAxisScale<Numeric>, chartWidth: number, index: number): string {
     // if the scale return null set the the group outside chart
-    return 'translate(' + (xScale.scale(index) == null ? chartWidth : xScale.scale(index)) + ',0)';
+    return 'translate(' + (xScale.scale(index) == null ? (chartWidth + 10) : xScale.scale(index)) + ',0)';
   }
 
   // draw one bar

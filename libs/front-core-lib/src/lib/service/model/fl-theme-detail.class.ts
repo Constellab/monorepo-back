@@ -24,14 +24,14 @@ export const flThemeDetailLight: FlThemeDetail = {
   accent: '#e0e0e0',
   warn: '#c62828',
   background: '#fafafa',
-  foreground: 'black',
+  foreground: '#000000',
 
-  primaryContrast: 'white',
-  accentContrast: 'black',
-  warnContrast: 'white',
+  primaryContrast: '#ffffff',
+  accentContrast: '#000000',
+  warnContrast: '#ffffff',
 
   primary100: '#a3bdbd',
-  primary100Contrast: 'black'
+  primary100Contrast: '#000000'
 };
 
 /**
@@ -42,12 +42,12 @@ export const flThemeDetailDark: FlThemeDetail = {
   accent: '#e0e0e0',
   warn: '#c62828',
   background: '#303030',
-  foreground: 'white',
+  foreground: '#ffffff',
 
-  primaryContrast: 'white',
-  accentContrast: 'black',
-  warnContrast: 'white',
+  primaryContrast: '#ffffff',
+  accentContrast: '#000000',
+  warnContrast: '#ffffff',
 
   primary100: '#043e3e',
-  primary100Contrast: 'white'
+  primary100Contrast: '#ffffff'
 };

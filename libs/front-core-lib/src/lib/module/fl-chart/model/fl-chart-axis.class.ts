@@ -96,7 +96,7 @@ export class FlChartAxis {
   ///////////////////////////////// ZOOM ////////////////////////////////
 
   public zoom(from: number, to: number): void {
-    if (from == null || to == null) {
+    if (from == null || to == null || isNaN(from) || isNaN(to)) {
       return;
     }
 
@@ -107,9 +107,10 @@ export class FlChartAxis {
     this.axisContainer.transition().duration(this.zoomDuration).call(this.createAxis());
   }
 
-  public resetZoom(domain: Numeric[]): void {
+  public resetZoom(): void {
     // reset the scale
-    this.scale.domain(domain).nice();
+    this.scale.resetZoom();
+    this.scale.nice();
     // recreate the axis
     this.axisContainer.transition().call(this.createAxis());
   }

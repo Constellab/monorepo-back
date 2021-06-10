@@ -34,6 +34,7 @@ export * from './model/fl-d3.class';
 export * from './util/fl-chart.factory';
 
 // Renderer
+export * from './renderer/fl-chart-box-plot-multi.renderer';
 export * from './renderer/fl-chart-histogram-multi.renderer';
 export * from './renderer/fl-chart-line-multi.renderer';
 export * from './renderer/fl-chart-scatter-plot-multi.renderer';

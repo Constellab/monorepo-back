@@ -166,7 +166,7 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
   }
 
   private resetAxisX(): void {
-    this.xAxis.resetZoom(this.dataContainer.getDomainX());
+    this.xAxis.resetZoom();
   }
 
   ///////////////////////////////////////// ZOOM Y //////////////////////////////////
@@ -189,7 +189,7 @@ export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> exten
   }
 
   private resetAxisY(): void {
-    this.yAxis.resetZoom(this.dataContainer.getDomainY());
+    this.yAxis.resetZoom();
   }
 
   ///////////////////////////////////////// OTHER //////////////////////////////////

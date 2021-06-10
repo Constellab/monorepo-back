@@ -36,6 +36,9 @@ export abstract class FlChartAxisScale<Value> {
 
   public readonly d3Scale: FlD3AxisScale<Value>;
 
+  // save the last set domain to be able to reset the domain
+  private initialDomain: Value[];
+
   protected constructor() {
     this.d3Scale = this.initScale();
   }
@@ -49,6 +52,13 @@ export abstract class FlChartAxisScale<Value> {
    * @protected
    */
   public abstract zoom(from: number, to: number): void;
+
+  /**
+   * Reset the zoom by resetting the domain to the initial domain
+   */
+  public resetZoom(): void {
+    this.setD3Domain(this.initialDomain);
+  }
 
   /**
    * Function to extends slightly the domain so all the values are in the graph
@@ -69,14 +79,18 @@ export abstract class FlChartAxisScale<Value> {
     return this.d3Scale.range() as [number, number];
   }
 
-  public domain(domain: Value[]): this {
-    this.d3Scale.domain(domain);
-    return this;
+  /**
+   * Init the domain and save the value as initial domain
+   * @param domain
+   */
+  public setInitialDomain(domain: Value[]): this {
+    this.initialDomain = [...domain];
+    return this.setD3Domain(domain);
   }
 
-
-  public simpleDomain(from: Value, to: Value): this {
-    return this.domain([from, to]);
+  protected setD3Domain(domain: Value[]): this {
+    this.d3Scale.domain(domain);
+    return this;
   }
 
   /////////////////////// GET METHODS ///////////////////////
@@ -160,7 +174,7 @@ export class FlChartAxisScaleBand extends FlChartAxisScale<Numeric> {
 
   protected initScale(): ScaleBand<Numeric> {
     const band: ScaleBand<Numeric> = d3.scaleBand();
-    band.padding(0.1);
+    band.paddingInner(0.1);
     return band;
   }
 
@@ -169,22 +183,69 @@ export class FlChartAxisScaleBand extends FlChartAxisScale<Numeric> {
   }
 
   public zoom(from: number, to: number): void {
-    const fromDomain: number = this.invertPos(from);
-    const toDomain: number = this.invertPos(to);
+    const fromDomain: number = this.invertPos(from, true);
+    const toDomain: number = this.invertPos(to, false);
 
-    this.domain(this.getDomain().slice(fromDomain, toDomain + 1));
+    this.setD3Domain(this.getDomain().slice(fromDomain, toDomain + 1));
   }
 
-  private invertPos(rangeValue: number): number {
-    return Math.trunc(rangeValue / this.bandwidth());
+  public paddingOuter(padding: number): this {
+    this.d3Scale.paddingOuter(padding);
+    return this;
+  }
+
+  /**
+   * Invert a range value
+   * @param rangeValue
+   * @param roundToNext if true, if the value is in a padding, it is rounded to the next value
+   * @private
+   */
+  private invertPos(rangeValue: number, roundToNext: boolean): number {
+    // exclude the outer padding in calcul
+    rangeValue = rangeValue - this.outerPaddingWidth;
+    const innerPaddingWidth: number = this.innerPaddingWidth;
+    const bandWidth: number = this.bandwidth();
+
+    let index: number = 0;
+    // IsNan is to prevent infinite loop
+    while (!isNaN(rangeValue)) {
+      rangeValue -= bandWidth;
+
+      if (rangeValue < 0) {
+        return index;
+      }
+
+      rangeValue -= innerPaddingWidth;
+      // if we match in a padding
+      if (rangeValue < 0) {
+        return roundToNext ? index + 1 : index;
+      }
+
+      index++;
+    }
+
+    return index;
+  }
+
+  private get outerPaddingWidth(): number {
+    // the pos of the first group, indicate the outerpadding
+    return this.scale(this.getDomain()[0]) ?? 0;
+  }
+
+  private get innerPaddingWidth(): number {
+    const domain: Numeric[] = this.getDomain();
+
+    if (domain.length < 2) {
+      return 0;
+    }
+    // compare the position of the first and second group and remove bandwidth to get inner padding width
+    return (this.scale(this.getDomain()[1]) - this.scale(this.getDomain()[0]) - this.bandwidth()) ?? 0;
   }
 
   // do nothing on band, because the domain is already good
   nice(): this {
     return this;
   }
-
-
 
 
 }

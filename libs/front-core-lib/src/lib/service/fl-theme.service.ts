@@ -41,6 +41,10 @@ export class FlThemeService {
     return theme;
   }
 
+  public isDarkTheme(): boolean {
+    return this.getCurrentTheme() === ClTheme.DARK_THEME;
+  }
+
   /**
    * change the current app theme and save it in the local storage
    */
@@ -75,7 +79,7 @@ export class FlThemeService {
     // dark-mode media query matched or not
     const matched: boolean = window?.matchMedia('(prefers-color-scheme: dark)')?.matches;
 
-    if(matched == null){
+    if (matched == null) {
       return clDefaultTheme;
     }
     return matched ? ClTheme.DARK_THEME : ClTheme.LIGHT_THEME;

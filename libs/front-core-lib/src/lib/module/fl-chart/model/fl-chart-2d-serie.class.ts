@@ -96,6 +96,11 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlCh
       .countData();
   }
 
+  /**
+   * return an array of data with serie
+   * The first array contains all the series first value,
+   * the second array all the series second value ...
+   */
   public invert(): FlChartDataWithSerie[][] {
     const max: number = this.maxSerieDataCount();
 
@@ -111,6 +116,11 @@ export class FlChart2dMultipleSerie<Data extends FlChart2dDatum> implements FlCh
     }
 
     return data;
+  }
+
+  // return an array of series indexes, [0,1,2...]
+  public getSeriesIndexes(): number[] {
+    return this.series.map((v, index) => index);
   }
 
 }
