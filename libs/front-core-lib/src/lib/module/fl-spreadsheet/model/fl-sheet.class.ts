@@ -13,7 +13,10 @@ export class FlSheet {
 
   // the main array represent rows, cells[0] is the first row
   private readonly cells: FlCell[][];
+
+  // todo clear subjects
   private readonly cellsChanged: BehaviorSubject<void>;
+  private readonly rowsChanged: BehaviorSubject<number>;
 
   private rowsCount: number = 0;
   private columnsCount: number = 0;
@@ -24,6 +27,7 @@ export class FlSheet {
     this.id = FlSheet.idGenerator++;
     this.cells = [];
     this.cellsChanged = new BehaviorSubject(null);
+    this.rowsChanged = new BehaviorSubject(0);
   }
 
   ////////////////////////////// COLUMN ///////////////////////////////
@@ -91,6 +95,7 @@ export class FlSheet {
     }
 
     this.emitCellChange();
+    this.emitRowsChange();
   }
 
   public insertMultipleRows(from: number, to: number): void {
@@ -98,6 +103,7 @@ export class FlSheet {
       this.createRow(i);
     }
     this.emitCellChange();
+    this.emitRowsChange();
   }
 
 
@@ -108,6 +114,7 @@ export class FlSheet {
 
     this.createRow(position);
     this.emitCellChange();
+    this.emitRowsChange();
   }
 
   // create an empty column without emitting
@@ -138,6 +145,17 @@ export class FlSheet {
     }
 
     this.emitCellChange();
+    this.emitRowsChange();
+  }
+
+  private emitRowsChange(): void {
+    this.rowsChanged.next(this.rowsCount);
+  }
+
+  public getRowCount$(): Observable<number> {
+    return this.rowsChanged.asObservable().pipe(
+      debounceTime(50)
+    );
   }
 
   ////////////////////////////// CELL ///////////////////////////////

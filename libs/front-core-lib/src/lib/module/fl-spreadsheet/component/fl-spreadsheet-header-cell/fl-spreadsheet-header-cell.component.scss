@@ -2,9 +2,13 @@ $cell-selected-border-color: #058989;
 
 
 :host {
-  // make the host as td element
-  display: table-cell;
-  vertical-align: inherit;
+  // center text vertically
+  flex-direction: column;
+  box-sizing: border-box;
+  display: flex;
+  place-content: stretch center;
+  align-items: stretch;
+
   background-color: var(--grey-low-contrast);
 
   &.column-selected {
@@ -15,10 +19,5 @@ $cell-selected-border-color: #058989;
   &.row-selected {
     border-right-color: $cell-selected-border-color !important;
     background-color: var(--grey-contrast);
-  }
-
-  &div {
-    resize: horizontal;
-    overflow: auto;
   }
 }

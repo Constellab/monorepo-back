@@ -5,21 +5,17 @@ import {Subscription} from 'rxjs';
  */
 export class ClSubscriptionHandler {
 
-  subscriptions: Subscription[];
+  private subscriptions: Subscription[];
 
-  constructor(subscription?: Subscription);
-  constructor(subscription?: Subscription[]);
-  constructor(...subscription: Subscription[]);
-  constructor(...subscription: any) {
+  constructor(subscription?: Subscription | Subscription[]) {
     this.subscriptions = [];
-    this.add(subscription);
+
+    if (subscription) {
+      this.add(subscription);
+    }
   }
 
-
-  public add(subscription: Subscription): void;
-  public add(subscription: Subscription[]): void;
-  public add(...subscription: Subscription[]): void;
-  public add(...subscription: any): void {
+  public add(subscription: Subscription | Subscription[]): void {
     if (subscription == null) {
       return;
     }
@@ -36,5 +32,7 @@ export class ClSubscriptionHandler {
     for (const subscription of this.subscriptions) {
       subscription?.unsubscribe();
     }
+    this.subscriptions = [];
   }
+
 }

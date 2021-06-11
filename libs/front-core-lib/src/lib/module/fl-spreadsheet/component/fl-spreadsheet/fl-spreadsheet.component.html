@@ -1,22 +1,23 @@
 <div class="table-container" fxLayout="row" #tableContainer>
-  <table class="table" fxFlex="auto">
-    <thead>
-    <tr>
-      <fl-spreadsheet-header-cell class="column-header" *ngFor="let column of headerColumns; let index = index"
-                                  [index]="index - 1" type="column"></fl-spreadsheet-header-cell>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let row of rows$ | async; trackBy: trackByRowsId">
-      <!--  Row header cells  -->
-      <fl-spreadsheet-header-cell class="row-header" [index]="row.rowId" type="row"></fl-spreadsheet-header-cell>
-      <fl-spreadsheet-cell *ngFor="let cell of row.cells; let columnIndex = index" [cell]="cell"
-                           [row]="row.rowId" [column]="columnIndex"></fl-spreadsheet-cell>
+  <div class="table" fxFlex="auto">
+    <!--    <thead>-->
+    <div fxLayout="row" class="g-full">
+      <fl-spreadsheet-header-cell *ngFor="let column of headerColumns; let index = index"
+                                  [index]="index - 1" type="column"
+                                  class="column-header-cell"></fl-spreadsheet-header-cell>
+    </div>
+    <!--    </thead>-->
+    <div fxLayout="column" class="g-full">
+      <div *ngFor="let row of rows$ | async; trackBy: trackByRowsId" fxLayout="row" class="g-full">
+        <!--  Row header cells  -->
+        <fl-spreadsheet-header-cell [index]="row.rowId" type="row" class="header-cell"></fl-spreadsheet-header-cell>
+        <fl-spreadsheet-cell *ngFor="let cell of row.cells; let columnIndex = index" [cell]="cell"
+                             [row]="row.rowId" [column]="columnIndex" class="cell"></fl-spreadsheet-cell>
 
-    </tr>
-    </tbody>
+      </div>
+    </div>
 
-  </table>
+  </div>
 
 
   <!-- Manage the scroll -->

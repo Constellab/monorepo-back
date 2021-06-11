@@ -20,37 +20,24 @@
 }
 
 
-// make the column horizontally resizable
-.table fl-spreadsheet-header-cell:not(:first-of-type) {
-  resize: horizontal;
-  overflow: auto;
-}
-
-.table tr{
-  height: 24px;
-}
-
-// set width of the first column
-.table tr fl-spreadsheet-header-cell:first-child {
-  width: 40px;
-}
-
-// set the default column width to 80
-.table tr fl-spreadsheet-header-cell:not(:first-of-type) {
+.cell, .column-header-cell{
   width: 80px;
 }
 
+.header-cell, .column-header-cell:first-child{
+  width: 40px;
+}
 
 
 //Scrolling bar on the right
-.scroll-container{
+.scroll-container {
   width: 17px;
   height: 100%;
   overflow: auto;
   position: relative;
 }
 
-.scroller{
+.scroller {
   position: absolute;
   top: 0;
   left: 0;
@@ -58,19 +45,4 @@
   width: 1px;
   transform-origin: 0 0;
 }
-
-
-// OTHER
-//.column-header {
-//  position: -webkit-sticky;
-//  position: sticky;
-//  top: 0;
-//}
-//
-//.row-header {
-//  position: -webkit-sticky;
-//  position: sticky;
-//  left: 0;
-//}
-
 

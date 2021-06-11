@@ -1,10 +1,11 @@
 import {ElementRef, Injectable, NgZone, Renderer2} from '@angular/core';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {FlSheet} from '../model/fl-sheet.class';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {filter} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {debounceTime, filter, startWith} from 'rxjs/operators';
 import {FlSheetRow} from '../model/fl-sheet-row.class';
-import {clRxjsEnterZone} from '@monorepo/core-lib';
+import {clRxjsEnterZone, ClSubscriptionHandler} from '@monorepo/core-lib';
+import {FlRendererListenerObs} from '../../../model/fl-renderer-listener-obs.class';
 
 /**
  * State to handle scroll of spreadsheet
@@ -27,7 +28,11 @@ export class FlSpreadsheetScrollState {
   private readonly cellHeight: number = 24;
 
   private wheelListener: () => void;
-  private scrollListener: () => void;
+  // private wheelListener: () => void;
+  private scrollListener: FlRendererListenerObs;
+  private windowsResizeListener: FlRendererListenerObs;
+
+  private subscriptions: ClSubscriptionHandler = new ClSubscriptionHandler();
 
   constructor(private renderer: Renderer2,
               private state: FlSpreadsheetState,
@@ -39,31 +44,28 @@ export class FlSpreadsheetScrollState {
     this.tableContainer = tableContainer.nativeElement;
     this.scroller = scroller.nativeElement;
     this.heightSimulator = heightSimulator.nativeElement;
-    this.onNewSheet(this.state.currentSheet);
     this.listenToScroll();
   }
 
-  public onNewSheet(sheet: FlSheet): void {
-    // define the height of the spreadsheet
-    this.renderer.setStyle(this.heightSimulator, 'height',
-      (this.cellHeight * sheet.getRowsCount() + 1) + 'px');
-  }
 
   private listenToScroll(): void {
-    // clear previous listener if exists
-    if (this.scrollListener) {
-      this.scrollListener();
-    }
-    if (this.wheelListener) {
-      this.wheelListener();
-    }
+    this.clearSubscription();
 
     this.ngZone.runOutsideAngular(() => {
+      // listen to wheel event on spreadsheet to trigger a scroll event on scroller
       this.wheelListener = this.renderer.listen(this.tableContainer, 'wheel',
         (event: WheelEvent) => this.triggerScroll(event.deltaY));
-      this.scrollListener = this.renderer.listen(this.scroller, 'scroll',
-        () => this.onScroll());
-      this.onScroll();
+
+      this.scrollListener = new FlRendererListenerObs(this.renderer, this.scroller, 'scroll');
+      this.windowsResizeListener = new FlRendererListenerObs(this.renderer, 'window', 'resize');
+
+      this.subscriptions.add(combineLatest([
+        this.state.currentSheet.getRowCount$(),
+        this.scrollListener.onEvent$().pipe(startWith('')),
+        this.windowsResizeListener.onEvent$().pipe(startWith(''), debounceTime(100))
+      ]).subscribe(
+        ([number]) => this.refreshRowsToDisplay(number)
+      ));
     });
   }
 
@@ -71,7 +73,17 @@ export class FlSpreadsheetScrollState {
     this.scroller.scrollTo(0, y + this.scroller.scrollTop);
   }
 
-  private onScroll(): void {
+  /**
+   * Function that recalculate the scroller height and then return the row to display
+   * @param totalRowCount
+   * @private
+   */
+  private refreshRowsToDisplay(totalRowCount: number): void {
+    // refresh scroller height
+    this.recalculateScrollerHeight(totalRowCount);
+
+
+    // calculate the fist and last row to display
     const scrollerHeight: number = this.scroller.offsetHeight;
     const numberOfCell: number = Math.trunc(scrollerHeight / this.cellHeight) + 1;
 
@@ -83,6 +95,17 @@ export class FlSpreadsheetScrollState {
     const rows: FlSheetRow[] = sheet.getRows(firstCell, lastCell);
 
     this.rowsToDisplay$.next(rows);
+  }
+
+  /**
+   * Reset the size of the height simulator for the scroll
+   * @param rowCount
+   * @private
+   */
+  private recalculateScrollerHeight(rowCount: number): void {
+    // define the height of the spreadsheet
+    this.renderer.setStyle(this.heightSimulator, 'height',
+      (this.cellHeight * rowCount + 2) + 'px');
   }
 
   public getRowsToDisplay$(): Observable<FlSheetRow[]> {
@@ -97,5 +120,21 @@ export class FlSpreadsheetScrollState {
     const factor: number = direction === 'up' ? -1 : 1;
 
     this.triggerScroll(this.tableContainer.offsetHeight * factor);
+  }
+
+  // clear the subscription
+  private clearSubscription(): void {
+    // clear previous listener if exists
+    if (this.wheelListener) {
+      this.wheelListener();
+    }
+    this.scrollListener?.complete();
+    this.windowsResizeListener?.complete();
+    this.subscriptions.unsubscribe();
+  }
+
+  public clear(): void {
+    this.rowsToDisplay$?.complete();
+    this.clearSubscription();
   }
 }

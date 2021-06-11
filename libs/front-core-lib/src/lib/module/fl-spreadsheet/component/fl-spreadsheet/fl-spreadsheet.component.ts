@@ -58,7 +58,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
   rows$: Observable<FlSheetRow[]>;
 
 
-  subscription: ClSubscriptionHandler = new ClSubscriptionHandler();
+  private subscription: ClSubscriptionHandler = new ClSubscriptionHandler();
 
   constructor(private state: FlSpreadsheetState,
               private selectionState: FlSpreadsheetSelectionState,
@@ -75,7 +75,6 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
     this.scrollState.init(this.tableContainer, this.scroller, this.heightSimulator);
     this.subscribeToHeader();
 
-    // this.rows$ = this.spreadsheet.currentSheet.getRows$();
     this.rows$ = this.scrollState.getRowsToDisplay$();
   }
 
@@ -95,5 +94,6 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
+    this.scrollState.clear();
   }
 }

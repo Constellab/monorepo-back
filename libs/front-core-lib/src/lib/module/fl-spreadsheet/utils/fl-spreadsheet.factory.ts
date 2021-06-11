@@ -42,7 +42,8 @@ export class FlSpreadsheetFactory {
     sheet.appendMultipleColumns(maxColumnsLength);
 
     // create the rows and set value
-    sheet.appendMultipleRows(values.length);
+    // we add one row to improve scroll experience
+    sheet.appendMultipleRows(values.length + 1);
 
     // set the cell values
     sheet.setValuesFromCoord(values, {row: 0, column: 0});
