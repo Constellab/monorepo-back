@@ -245,6 +245,9 @@ export class FlSheet {
   public getRows(fromRow: number, toRow: number): FlSheetRow[] {
     const rows: FlSheetRow[] = [];
 
+    // prevent from returning rows outside the sheet
+    toRow = Math.min(toRow, this.rowsCount - 1);
+
     for (let row = fromRow; row <= toRow; row++) {
       rows.push({
         rowId: row,

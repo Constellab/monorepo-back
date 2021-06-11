@@ -17,9 +17,10 @@
 .table {
   border-spacing: 0;
   border-collapse: collapse;
-  height: 100%;
+  max-height: 100%;
   table-layout: fixed;
   max-width: none;
+
 
   // define a fit-content supported by chrome, mozilla
   // it allow the table to overflow it's parent on cell resize
