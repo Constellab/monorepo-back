@@ -7,6 +7,8 @@ $cell-selected-border-color: #058989;
   vertical-align: inherit;
   background-color: var(--grey-low-contrast);
 
+
+
   &.column-selected {
     border-bottom-color: $cell-selected-border-color !important;
     background-color: var(--grey-contrast);
@@ -15,5 +17,13 @@ $cell-selected-border-color: #058989;
   &.row-selected {
     border-right-color: $cell-selected-border-color !important;
     background-color: var(--grey-contrast);
+  }
+}
+
+@supports (-moz-appearance:none) {
+  :host {
+    // useful for firefox, otherwise, the background is over the border
+    // https://stackoverflow.com/questions/7517127/borders-not-shown-in-firefox-with-border-collapse-on-table-position-relative-o
+    background-clip: padding-box;
   }
 }

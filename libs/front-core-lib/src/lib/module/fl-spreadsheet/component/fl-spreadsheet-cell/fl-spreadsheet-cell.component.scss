@@ -36,7 +36,11 @@ $cell-selected-border-color: #058989;
 
 .view-content {
   max-height: 1.2em;
+
+  // mandatory to be able to resize the cells smaller than their content
   overflow: hidden;
+  white-space: initial;
+  word-break: break-all;
 }
 
 .input {

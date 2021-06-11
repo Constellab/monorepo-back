@@ -4,9 +4,9 @@
       <thead>
       <tr>
         <fl-spreadsheet-header-cell *ngFor="let column of headerColumns; let index = index"
-                                    [index]="index - 1" type="column"
-                                    class="header-cell"
-                                    flResize="width"></fl-spreadsheet-header-cell>
+                                    [index]="index - 1" type="column" class="header-cell"
+                                    flResize="width"
+        ></fl-spreadsheet-header-cell>
       </tr>
       </thead>
       <tbody>
