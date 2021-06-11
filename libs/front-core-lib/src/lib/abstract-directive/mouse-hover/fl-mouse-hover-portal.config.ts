@@ -18,7 +18,7 @@ export interface FlMouseHoverPortalConfig {
   /**
    * Position for the portal
    */
-  position: ConnectedPosition[] | FlPortalDefaultPosition;
+  position: ConnectedPosition[] | FlPortalDefaultPosition[];
 
   /**
    * Config for the overlay. If not provided, use an adapted config for hover portal

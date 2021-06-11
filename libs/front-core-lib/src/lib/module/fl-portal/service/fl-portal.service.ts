@@ -19,6 +19,7 @@ import {
   FL_PORTAL_DATA,
   FlOverlayConfig,
   flPortalArrowOffset,
+  FlPortalConnectedPosition,
   FlPortalDefaultPosition,
   FlRelativeOverlayConfig,
   PortalAbsolutePosition
@@ -56,7 +57,7 @@ export class FlPortalService {
    * @param configuration configuration for the overlay
    */
   public configureRelativePortal(element: Element | ElementRef,
-                                 position: ConnectedPosition[] | FlPortalDefaultPosition,
+                                 position: FlPortalConnectedPosition[],
                                  configuration: FlRelativeOverlayConfig = {}): FlPortalConfig {
 
     // save the element to the config
@@ -322,12 +323,18 @@ export class FlPortalService {
     }
   }
 
-  private convertPositionToConnectedPosition(position: ConnectedPosition[] | FlPortalDefaultPosition): ConnectedPosition[] {
-    if (position instanceof Array) {
-      return position;
+  private convertPositionToConnectedPosition(positions: FlPortalConnectedPosition[]): ConnectedPosition[] {
+    const connectedPosition: ConnectedPosition[] = [];
+
+    for (const position of positions) {
+      if (typeof position === 'string') {
+        connectedPosition.push(FlPortalService.getDefaultPosition(position));
+      } else {
+        connectedPosition.push(position);
+      }
     }
 
-    return [FlPortalService.getDefaultPosition(position)];
+    return connectedPosition;
   }
 
   // eslint-disable-next-line @typescript-eslint/member-ordering

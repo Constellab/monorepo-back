@@ -8,6 +8,7 @@ import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
 import {FlSpreadsheetContextMenuComponent} from '../component/fl-spreadsheet-context-menu/fl-spreadsheet-context-menu.component';
 import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 import {FlSpreadsheetChartState} from './fl-spreadsheet-chart.state';
+import {FlPortalConnectedPosition} from '../../fl-portal/model/fl-portal.class';
 
 export interface FlContextMenuConfig {
   buttons: FlContextMenuButton[];
@@ -54,7 +55,9 @@ export class FlSpreadsheetContextMenu {
   }
 
   private getMenuPortalConfig(mouseEvent: MouseEvent): FlPortalConfig {
-    return this.portalService.configureAbsolutePortalFromMouseEvent(mouseEvent, {
+    const positions: FlPortalConnectedPosition[] = ['right', 'top', 'left', 'bottom'];
+
+    return this.portalService.configureRelativePortal(mouseEvent.target as any, positions, {
       panelClass: 'g-portal-background',
       elevation: true,
       disposeOnNavigation: true,

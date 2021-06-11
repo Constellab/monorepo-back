@@ -1,9 +1,8 @@
 import {ElementRef, Injectable, OnDestroy} from '@angular/core';
-import {ConnectedPosition} from '@angular/cdk/overlay';
 import {BehaviorSubject, Subject} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 import {FlPortalService} from './fl-portal.service';
-import {FlOverlayConfig, FlPortalDefaultPosition} from '../model/fl-portal.class';
+import {FlOverlayConfig, FlPortalConnectedPosition} from '../model/fl-portal.class';
 import {FlOverlayRef} from '../model/fl-overlay-ref.class';
 import {FlPortalConfig} from '../model/fl-portal-config.class';
 import {FlTooltipComponent} from '../component/fl-tooltip/fl-tooltip.component';
@@ -37,7 +36,7 @@ export class FlTooltipService implements OnDestroy {
    */
   public openTooltip(element: Element | ElementRef,
                      message: string,
-                     position: ConnectedPosition[] | FlPortalDefaultPosition,
+                     position: FlPortalConnectedPosition[],
                      uniqueId: string,
                      duration: number = 3000): FlOverlayRef {
     // check if the overlay already exists
@@ -89,7 +88,7 @@ export class FlTooltipService implements OnDestroy {
    */
   public openTooltipWithTranslate(element: Element | ElementRef,
                                   message: string,
-                                  position: ConnectedPosition[] | FlPortalDefaultPosition,
+                                  position: FlPortalConnectedPosition[],
                                   uniqueId: string,
                                   duration: number = 3000,
                                   translateParams: FlTranslateParam = {}): FlOverlayRef {

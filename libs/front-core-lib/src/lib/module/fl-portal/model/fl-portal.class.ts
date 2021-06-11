@@ -1,4 +1,4 @@
-import {OverlayConfig} from '@angular/cdk/overlay';
+import {ConnectedPosition, OverlayConfig} from '@angular/cdk/overlay';
 import {InjectionToken, StaticProvider} from '@angular/core';
 
 /**
@@ -84,6 +84,11 @@ export const FL_PORTAL_DATA = new InjectionToken<any>('FL_PORTAL_DATA');
  * List of known portal default position to easily set position of the portal
  */
 export type FlPortalDefaultPosition = 'right' | 'left' | 'top' | 'bottom';
+
+/**
+ * Custom connected positions that support default positions
+ */
+export type FlPortalConnectedPosition = ConnectedPosition | FlPortalDefaultPosition;
 
 /**
  * Object to place portal based on absolute position in css position (px, em...)
