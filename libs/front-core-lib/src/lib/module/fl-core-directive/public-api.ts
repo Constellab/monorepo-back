@@ -9,6 +9,7 @@ export * from './fl-input-max-length/fl-input-max-length.directive';
 export * from './fl-mouse-hover/fl-mouse-hover.directive';
 export * from './fl-quill-config/fl-quill-config.directive';
 export * from './fl-quill-sanitizer/fl-quill-sanitizer.directive';
+export * from './fl-resize/fl-resize.directive';
 
 // Export the models
 export * from './fl-quill-config/fl-quill-config';

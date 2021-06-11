@@ -8,6 +8,7 @@ import {FlForByIdOfDirective} from './fl-for-by-id-of/fl-for-by-id-of.directive'
 import {FlDrawerCloseDirective} from './fl-drawer-close/fl-drawer-close.directive';
 import {FlMouseHoverDirective} from './fl-mouse-hover/fl-mouse-hover.directive';
 import {FlQuillSanitizerDirective} from './fl-quill-sanitizer/fl-quill-sanitizer.directive';
+import {FlResizeDirective} from './fl-resize/fl-resize.directive';
 
 
 /**
@@ -22,6 +23,7 @@ import {FlQuillSanitizerDirective} from './fl-quill-sanitizer/fl-quill-sanitizer
     FlDrawerCloseDirective,
     FlMouseHoverDirective,
     FlQuillSanitizerDirective,
+    FlResizeDirective,
   ],
   exports: [
     FlInputMaxLengthDirective,
@@ -31,6 +33,7 @@ import {FlQuillSanitizerDirective} from './fl-quill-sanitizer/fl-quill-sanitizer
     FlDrawerCloseDirective,
     FlMouseHoverDirective,
     FlQuillSanitizerDirective,
+    FlResizeDirective,
   ],
   imports: [
     CommonModule,

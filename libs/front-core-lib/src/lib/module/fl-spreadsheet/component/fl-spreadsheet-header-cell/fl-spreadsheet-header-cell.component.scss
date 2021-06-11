@@ -2,13 +2,9 @@ $cell-selected-border-color: #058989;
 
 
 :host {
-  // center text vertically
-  flex-direction: column;
-  box-sizing: border-box;
-  display: flex;
-  place-content: stretch center;
-  align-items: stretch;
-
+  // make the host as td element
+  display: table-cell;
+  vertical-align: inherit;
   background-color: var(--grey-low-contrast);
 
   &.column-selected {

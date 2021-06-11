@@ -5,11 +5,21 @@
   overflow: hidden;
 }
 
+.horizontal-scroll {
+  height: 100%;
+  // full width without scroll-container size
+  width: calc(100% - 17px);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 .table {
   border-spacing: 0;
   border-collapse: collapse;
   height: 100%;
-  width: 100%;
+  table-layout: fixed;
+  max-width: none;
+  width: fit-content;
 }
 
 .table fl-spreadsheet-header-cell,
@@ -20,11 +30,11 @@
 }
 
 
-.cell, .column-header-cell{
+.header-cell{
   width: 80px;
 }
 
-.header-cell, .column-header-cell:first-child{
+.header-cell:first-child{
   width: 40px;
 }
 
