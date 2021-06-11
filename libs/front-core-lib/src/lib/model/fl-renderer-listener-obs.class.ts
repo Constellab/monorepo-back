@@ -10,11 +10,11 @@ export class FlRendererListenerObs {
 
   private subject: Subject<any> = new Subject();
 
-  private listener: () => void;
+  private readonly listener: () => void;
 
   constructor(renderer: Renderer2, target: 'window' | 'document' | 'body' | any,
               eventName: string) {
-    renderer.listen(target, eventName, (event) => this.onEvent(event));
+    this.listener = renderer.listen(target, eventName, (event) => this.onEvent(event));
   }
 
   private onEvent(event: any): void {
