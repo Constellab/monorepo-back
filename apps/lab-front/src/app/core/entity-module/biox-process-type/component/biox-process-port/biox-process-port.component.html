@@ -3,11 +3,11 @@
     <div [style.backgroundColor]="types | bioxProcessPortColor" class="color-round"></div>
   </div>
 
-  <div fxFlex="30%">
+  <div fxFlex="35%" class="text">
     {{name}}
   </div>
 
-  <div fxFlex="auto" class="g-text-light">
+  <div fxFlex="auto" class="g-text-light g-text-small text">
     <div *ngFor="let type of types">
       {{type}}
     </div>
