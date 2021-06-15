@@ -3,8 +3,8 @@ import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {ViewModelDatasourcePaginated} from '../utils/view-model.datasource';
 import {createViewModel} from '../model/global/view-model.entity';
-import {BioxProcess, BioxProcessDatasource, BioxProcessVM} from '../model/entities/biox-processable.entity';
 import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
+import {BioxProcess, BioxProcessDatasource, BioxProcessVM} from '../model/entities/proccesable/biox-process.entity';
 
 @Injectable({
   providedIn: 'root'

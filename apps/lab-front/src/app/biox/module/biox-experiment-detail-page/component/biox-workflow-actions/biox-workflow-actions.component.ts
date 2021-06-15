@@ -2,11 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
 import {BioxExperiment, ExperimentUpdate} from '../../../../../core/model/entities/biox-experiment.entity';
-import {BioxProtocolGraph} from '../../../../../core/model/entities/biox-processable.entity';
 import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
 import {FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
 import {WorkflowActionState} from '../../state/workflow-action-state';
+import {BioxProtocolGraph} from '../../../../../core/model/entities/proccesable/biox-protocol.entity';
 
 /**
  * Actions button for the workflow

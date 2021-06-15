@@ -1,7 +1,7 @@
 import {WorkflowNode} from './workflow-node.class';
 import {WorkflowPort} from './workflow-port.class';
-import {BioxProcessable} from '../../../../core/model/entities/biox-processable.entity';
-import {BioxSpec} from '../../../../core/model/entities/biox-spec.entity';
+import {BioxProcessable} from '../../../../core/model/entities/proccesable/biox-processable.entity';
+import {BioxInput} from '../../../../core/model/entities/biox-input.entity';
 
 /**
  * Representation of a processable (protocol or process)
@@ -11,19 +11,20 @@ export class WorkflowNodeProcessable extends WorkflowNode<BioxProcessable> {
   constructor(processable: BioxProcessable,
               processableName: string,
               initialCoordX: number = 0, initialCoordY: number = 0) {
-    super(processableName, processable.data.title, processable,
+    // todo check the name once is stable
+    super(processableName, processable.data.title ?? processable.name, processable,
       processable.isPlugSource() ? 'process-source' : 'node-processable',
       initialCoordX, initialCoordY);
     this.html = `<biox-workflow-node name="${this.nodeName}"></biox-workflow-node>`;
   }
 
   protected initPorts(): void {
-    this.inputPorts = this.generatePorts(this.object.inputSpecs, 'input');
-    this.outputPorts = this.generatePorts(this.object.outputSpecs, 'output');
+    this.inputPorts = this.generatePorts(this.object.inputs, 'input');
+    this.outputPorts = this.generatePorts(this.object.outputs, 'output');
   }
 
   // generate ports base on input or output spec
-  private generatePorts(specs: Record<string, BioxSpec>, type: 'input' | 'output'): WorkflowPort[] {
+  private generatePorts(specs: Record<string, BioxInput>, type: 'input' | 'output'): WorkflowPort[] {
     const ports: WorkflowPort[] = [];
     let i = 1;
     for (const property of Object.keys(specs)) {

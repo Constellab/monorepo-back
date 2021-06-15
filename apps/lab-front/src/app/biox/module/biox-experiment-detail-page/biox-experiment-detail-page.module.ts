@@ -7,14 +7,12 @@ import {BioxWorkflowNodeComponent} from './component/biox-workflow-node/biox-wor
 import {BioxWorkflowComponent} from './component/biox-workflow/biox-workflow.component';
 import {createCustomElement} from '@angular/elements';
 import {BioxProtocolCoreModule} from '../../../core/entity-module/biox-protocol-core/biox-protocol-core.module';
-import {BioxProcessCoreModule} from '../../../core/entity-module/biox-process-core/biox-process-core.module';
 import {BioxWorkflowLayersBreadcrumbComponent} from './component/biox-workflow-layers-breadcrumb/biox-workflow-layers-breadcrumb.component';
 import {BioxResourceCoreModule} from '../../../core/entity-module/biox-resource-core/biox-resource-core.module';
 import {BioxConfigCoreModule} from '../../../core/entity-module/biox-config-core/biox-config-core.module';
 import {BioxWorkflowNodeInterfaceComponent} from './component/biox-workflow-interface/biox-workflow-node-interface.component';
 import {BioxWorkflowActionsComponent} from './component/biox-workflow-actions/biox-workflow-actions.component';
 import {WorkflowManagerState} from './state/workflow-manager-state';
-import {BioxProcessTypeModule} from '../../../core/entity-module/biox-process-type/biox-process-type.module';
 import {BioxWorkflowNodeDetailComponent} from './component/biox-workflow-node-detail/biox-workflow-node-detail.component';
 import {WorkflowActionState} from './state/workflow-action-state';
 import {BioxExperimentDetailPageState} from './state/biox-experiment-detail-page.state';
@@ -26,6 +24,7 @@ import {BioxWorkflowNodeProgressComponent} from './component/biox-workflow-node-
 import {BioxProcessSourceConfigComponent} from './component/biox-process-source-config/biox-process-source-config.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BioxWorkflowNodeDetailState} from './state/biox-workflow-node-detail.state';
+import {BioxProcessableCoreModule} from '../../../core/entity-module/biox-processable-core/biox-processable-core.module';
 
 
 @NgModule({
@@ -51,10 +50,9 @@ import {BioxWorkflowNodeDetailState} from './state/biox-workflow-node-detail.sta
     CoreModule,
     BioxExperimentCoreModule,
     BioxProtocolCoreModule,
-    BioxProcessCoreModule,
     BioxResourceCoreModule,
     BioxConfigCoreModule,
-    BioxProcessTypeModule,
+    BioxProcessableCoreModule,
   ],
   providers: [
     WorkflowManagerState,

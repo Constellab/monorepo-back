@@ -1,7 +1,7 @@
 import {Injectable, NgZone} from '@angular/core';
 import {Workflow, WorkflowMode} from '../model/workflow.class';
 import {WorkflowNodeProcessable} from '../model/workflow-node-processable.class';
-import {BioxProcessable, BioxProcessableBase, BioxProtocol} from '../../../../core/model/entities/biox-processable.entity';
+import {BioxProcessable} from '../../../../core/model/entities/proccesable/biox-processable.entity';
 import {
   BioxConnection,
   BioxFlow,
@@ -18,6 +18,7 @@ import {WorkflowNode} from '../model/workflow-node.class';
 import {WorkflowNodeInterface} from '../model/workflow-node-interface.class';
 import {WorkflowNodeOuterface} from '../model/workflow-node-outerface.class';
 import {WorkflowPort} from '../model/workflow-port.class';
+import {BioxProtocol} from '../../../../core/model/entities/proccesable/biox-protocol.entity';
 
 /**
  * State for the workflow, it is created for the module and can only manage on state a the time
@@ -85,7 +86,8 @@ export class WorkflowManagerState {
    * Create a new layer and init it with the protocol information
    */
   private addProtocolLayer(flow: BioxFlow<BioxProtocol>, nodeId: string): void {
-    this.workflow.createSubLayerIfNotExists(nodeId, flow.object.data.title);
+    // todo check the name once is stable
+    this.workflow.createSubLayerIfNotExists(nodeId, flow.object.data.title ?? flow.object.name);
     this.initFlow(flow);
   }
 
@@ -185,8 +187,8 @@ export class WorkflowManagerState {
       // and the node and mark it as added
       this.addBioxNodeOnPosition(node, posX, currentPosY);
 
-      for (const key of Object.keys(node.outputs)) {
-        const outputNodes: BioxNode[] = node.outputs[key].map(output => output.getBioxNode());
+      for (const key of Object.keys(node.outputConnections)) {
+        const outputNodes: BioxNode[] = node.outputConnections[key].map(output => output.getBioxNode());
         currentPosY = this.addNodesRecursively(outputNodes, posX + 1, currentPosY);
       }
     }
@@ -207,7 +209,7 @@ export class WorkflowManagerState {
     const coordY = ((this.htmlNodeHeight + this.htmlDefaultNodeSpace) * posY) + this.htmlOffsetY;
 
     let workflowNode: WorkflowNode<any>;
-    if (node instanceof BioxProcessableBase) {
+    if (node instanceof BioxProcessable) {
       workflowNode = new WorkflowNodeProcessable(node as BioxProcessable, node.name, coordX, coordY);
     } else if (node instanceof BioxInterfaceNode) {
       workflowNode = new WorkflowNodeInterface(node, coordX, coordY);

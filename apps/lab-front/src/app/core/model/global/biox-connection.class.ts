@@ -1,5 +1,5 @@
 import {LabBaseEntity} from './lab-entity.entity';
-import {BioxSpec} from '../entities/biox-spec.entity';
+import {BioxInput} from '../entities/biox-input.entity';
 import {Exclude} from 'class-transformer';
 
 export interface BioxConnectionPart {
@@ -24,38 +24,38 @@ export interface BioxConnection {
 
 export abstract class BioxNode extends LabBaseEntity {
 
-  // inputs automatically set by the ConnectionManager
+  // inputConnections automatically set by the ConnectionManager
   @Exclude()
-  inputs: Record<string, BioxConnectionPart> = {};
+  inputConnections: Record<string, BioxConnectionPart> = {};
 
-  // outputs automatically set by the ConnectionManager
+  // outputConnections automatically set by the ConnectionManager
   @Exclude()
-  outputs: Record<string, BioxConnectionPart[]> = {};
+  outputConnections: Record<string, BioxConnectionPart[]> = {};
 
   // name automatically set by the ConnectionManager
   name: string;
 
   setInput(connectionPart: BioxConnectionPart): void {
-    if (this.inputs == null) {
-      this.inputs = {};
+    if (this.inputConnections == null) {
+      this.inputConnections = {};
     }
-    this.inputs[connectionPart.getPort()] = connectionPart;
+    this.inputConnections[connectionPart.getPort()] = connectionPart;
   }
 
   addOutput(connectionPart: BioxConnectionPart): void {
-    if (this.outputs == null) {
-      this.outputs = {};
+    if (this.outputConnections == null) {
+      this.outputConnections = {};
     }
 
-    if (this.outputs[connectionPart.getPort()] == null) {
-      this.outputs[connectionPart.getPort()] = [];
+    if (this.outputConnections[connectionPart.getPort()] == null) {
+      this.outputConnections[connectionPart.getPort()] = [];
     }
 
-    this.outputs[connectionPart.getPort()].push(connectionPart);
+    this.outputConnections[connectionPart.getPort()].push(connectionPart);
   }
 
   public getInputsCount(): number {
-    return (Object.keys(this.inputs).length);
+    return (Object.keys(this.inputConnections).length);
   }
 }
 
@@ -96,9 +96,9 @@ export interface BioxFlowManager {
 
   getNodes(): Record<string, BioxNode>;
 
-  getInputSpecs(): Record<string, BioxSpec>;
+  getInputSpecs(): Record<string, BioxInput>;
 
-  getOutputSpecs(): Record<string, BioxSpec>;
+  getOutputSpecs(): Record<string, BioxInput>;
 
   getInterfacesConnections(): Record<string, BioxConnection>;
 
@@ -206,7 +206,7 @@ export class BioxFlow<T extends BioxFlowManager> {
    */
   private initInterfaceNodes(): void {
     this.object.interfaceNodes = {};
-    const specs: Record<string, BioxSpec> = this.object.getInputSpecs();
+    const specs: Record<string, BioxInput> = this.object.getInputSpecs();
     if (specs == null) {
       return;
     }
@@ -237,7 +237,7 @@ export class BioxFlow<T extends BioxFlowManager> {
    */
   private initOuterfaceNodes(): void {
     this.object.outerfaceNodes = {};
-    const specs: Record<string, BioxSpec> = this.object.getOutputSpecs();
+    const specs: Record<string, BioxInput> = this.object.getOutputSpecs();
     if (specs == null) {
       return;
     }

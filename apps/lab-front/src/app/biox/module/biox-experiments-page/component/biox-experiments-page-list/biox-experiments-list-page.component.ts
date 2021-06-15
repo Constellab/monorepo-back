@@ -4,6 +4,7 @@ import {BioxExperiment, BioxExperimentDatasource} from '../../../../../core/mode
 import {BioxExperimentFormDialogComponent} from '../../../../../core/entity-module/biox-experiment-core/component/biox-experiment-form-dialog/biox-experiment-form-dialog.component';
 import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
 import {RouterService} from '../../../../../core/service/router.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'gen-biox-experiments-page-list',
@@ -13,6 +14,7 @@ import {RouterService} from '../../../../../core/service/router.service';
 export class BioxExperimentsListPageComponent implements OnInit {
 
   bioxExperiments: BioxExperimentDatasource;
+  test: Observable<number>;
 
   displayedColumns: FlTableColumn<BioxExperiment>[] = ['title', 'description', 'status', 'createdAt'];
 

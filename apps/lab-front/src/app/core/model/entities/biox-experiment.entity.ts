@@ -2,7 +2,7 @@ import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
 import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {ViewModel} from '../global/view-model.entity';
-import {BioxProtocolGraph} from './biox-processable.entity';
+import {BioxProtocolGraph} from './proccesable/biox-protocol.entity';
 
 
 export class BioxExperimentData {

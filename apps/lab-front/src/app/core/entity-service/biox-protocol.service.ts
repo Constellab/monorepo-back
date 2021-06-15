@@ -1,12 +1,11 @@
 import {Injectable} from '@angular/core';
-import {FlApiWithCacheService} from '@monorepo/front-core-lib';
+import {FlApiWithCacheService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {createViewModel} from '../model/global/view-model.entity';
-import {ViewModelDatasourcePaginated} from '../utils/view-model.datasource';
-import {BioxProtocol, BioxProtocolDatasource, BioxProtocolVM} from '../model/entities/biox-processable.entity';
 import {map} from 'rxjs/operators';
-import {ClGetPageFunction, ClPage, clRxjsDebug} from '@monorepo/core-lib';
+import {ClPage, clRxjsDebug} from '@monorepo/core-lib';
 import {BioxFlow} from '../model/global/biox-connection.class';
+import {BioxProtocolSpec, BioxProtocolSpecDatasource} from '../model/entities/processable-spec/biox-protocol-spec.entity';
+import {BioxProtocol} from '../model/entities/proccesable/biox-protocol.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -17,22 +16,22 @@ export class BioxProtocolService {
   constructor(private apiService: FlApiWithCacheService) {
   }
 
-  public getProtocols(page: number, pageSize: number): Observable<ClPage<BioxProtocolVM>> {
-    return this.apiService.get(`protocol`, createViewModel(BioxProtocol),
+  public getProtocolSpecs(page: number, pageSize: number): Observable<ClPage<BioxProtocolSpec>> {
+    return this.apiService.get(`protocol-type`, BioxProtocolSpec,
       {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
 
-  public getProtocolsDatasource(): BioxProtocolDatasource {
-    return new ViewModelDatasourcePaginated(this.getProtocolsMethod(), 20, true);
+  public getProtocolSpecsDatasource(): BioxProtocolSpecDatasource {
+    return new FlEntityPaginatedDatasource(
+      (page: number, pageSize: number): Observable<ClPage<BioxProtocolSpec>> => this.getProtocolSpecs(page, pageSize),
+      20, true);
   }
 
-  private getProtocolsMethod(): ClGetPageFunction<BioxProtocolVM> {
-    return (page: number, pageSize: number): Observable<ClPage<BioxProtocolVM>> => this.getProtocols(page, pageSize);
-  }
 
   public getProtocol(protocolId: string): Observable<BioxProtocol> {
     return this.apiService.get(`protocol/${protocolId}/gws.model.Protocol`, BioxProtocol);
   }
+
 
   public getProtocolAsFlow(protocolId: string): Observable<BioxFlow<BioxProtocol>> {
     return this.getProtocol(protocolId).pipe(

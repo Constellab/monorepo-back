@@ -14,27 +14,44 @@
 
 <div fxLayout="row" class="g-full-height">
 
-  <!-- Left section with process selection -->
-  <fl-async-section [object]="processes$" class="left-section">
+  <!-- Left section with process or protocol selection -->
+  <div class="left-section">
+    <mat-tab-group class="g-mat-tab-flex">
+      <mat-tab [label]="'processes' | translate">
+        <fl-async-section [object]="processes$">
 
-    <ng-container *flSectionBody="let processes">
-      <gen-biox-process-types-tree [processTypesTree]="processes"
-                                   (processTypesClick)="selectProcess($event)"
-                                   (processTypesDblClick)="selectAndAddProcess($event)"
-      ></gen-biox-process-types-tree>
-    </ng-container>
-  </fl-async-section>
+          <ng-container *flSectionBody="let processes">
+            <gen-biox-processable-specs-tree [processableSpecsTree]="processes"
+                                             (processableSpecClick)="selectProcessable($event)"
+                                             (processableSpecDblClick)="selectAndAddProcessable($event)"></gen-biox-processable-specs-tree>
+          </ng-container>
+        </fl-async-section>
+
+      </mat-tab>
+
+      <mat-tab [label]="'protocols' | translate">
+        <fl-async-section [object]="protocols$">
+          <ng-container *flSectionBody="let protocols">
+            <gen-biox-protocol-type-list [protocolTypes]="protocols"
+                                         (protocolTypeClick)="selectProcessable($event)"
+                                         (protocolTypeDblClick)="selectAndAddProcessable($event)"></gen-biox-protocol-type-list>
+          </ng-container>
+        </fl-async-section>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
 
   <!-- Right section with process detail information -->
   <div class="right-section">
-    <gen-biox-process-type-card *ngIf="selectedProcess" [processType]="selectedProcess"
-                                class="card">
+<!--   todo processable card -->
+    <gen-biox-processable-spec-card *ngIf="selectedProcess" [processableSpec]="selectedProcess"
+                                    class="card">
       <button mat-icon-button color="primary" type="button"
               (click)="addProcessable(selectedProcess)"
               [matTooltip]="'biox.add_selected_process' | translate">
         <mat-icon>add</mat-icon>
       </button>
-    </gen-biox-process-type-card>
+    </gen-biox-processable-spec-card>
   </div>
 </div>
 <!--  </mat-tab>-->

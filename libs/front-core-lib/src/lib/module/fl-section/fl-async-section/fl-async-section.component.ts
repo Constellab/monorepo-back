@@ -12,13 +12,13 @@ import {delay} from 'rxjs/operators';
   styleUrls: ['./fl-async-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlAsyncSectionComponent implements OnInit, OnDestroy {
+export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
 
   /**
    * Provide an observable or a simple object (directly resolved)
    * @param object
    */
-  @Input() set object(object: Observable<any> | any) {
+  @Input() set object(object: Observable<T> | Observable<T[]> | T) {
     if (object && object instanceof Observable) {
       this.subscribeToObservable(object);
     } else {
@@ -29,7 +29,7 @@ export class FlAsyncSectionComponent implements OnInit, OnDestroy {
   /**
    * If an array obs is provided, it disconnect it on destroy
    */
-  @Input() set arrayObs(arrayObs: FlDatasource<any>) {
+  @Input() set arrayObs(arrayObs: FlDatasource<T>) {
     if (arrayObs) {
       this.subscribeToObservable(arrayObs.connect());
     }

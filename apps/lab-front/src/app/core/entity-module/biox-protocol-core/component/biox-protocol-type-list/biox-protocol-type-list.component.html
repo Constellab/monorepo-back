@@ -1,0 +1,8 @@
+<div>
+  <div *ngFor="let protocol of protocolTypes">
+    <p class="g-clickable" (click)="protocolClick(protocol)"
+       (dblclick)="protocolDblClick(protocol)">
+      {{protocol.modelType}}
+    </p>
+  </div>
+</div>

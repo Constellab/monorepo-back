@@ -23,7 +23,7 @@ export function FlLazyPropertyTransform<SERVICE, ENTITY>(serviceType: Type<any>,
                                                          getObs?: (service: SERVICE, unconvertedObject: any) => Observable<ENTITY>
 ): PropertyDecorator {
 
-  let transformToClass: any;
+  let transformToClass: (target: any, key: string) => void;
   if (typeof (serviceType as any).getById === 'function') {
     // create a lazy property from an id
     transformToClass = Transform(
@@ -42,9 +42,16 @@ export function FlLazyPropertyTransform<SERVICE, ENTITY>(serviceType: Type<any>,
     throw new Error('[FlLazyPropertyTransform] Wrong inputs');
   }
 
+  // convert the lazy property back to object on serialization
+  const transformToPlain = Transform(
+    (lazyProperty: FlLazyProperty<any>) => lazyProperty.object,
+    {toPlainOnly: true}
+  );
+
 
   return (target: any, key: string): void => {
     transformToClass(target, key);
+    transformToPlain(target, key);
   };
 }
 

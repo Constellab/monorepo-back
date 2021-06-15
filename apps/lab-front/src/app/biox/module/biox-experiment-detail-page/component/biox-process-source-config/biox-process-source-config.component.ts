@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {BioxResourceSelect} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-select/biox-resource-select.component';
 import {FormControl} from '@ngneat/reactive-forms';
-import {BioxProcessable} from '../../../../../core/model/entities/biox-processable.entity';
-import {bioxProcessSourceType} from '../../../../../core/model/entities/biox-process-type.entity';
+import {BioxProcessable} from '../../../../../core/model/entities/proccesable/biox-processable.entity';
 import {BioxWorkflowNodeDetailState} from '../../state/biox-workflow-node-detail.state';
+import {bioxProcessSourceType} from '../../../../../core/model/entities/biox-process-special-type';
 
 /**
  * Specific component to configure a process of type gws.plug.Source

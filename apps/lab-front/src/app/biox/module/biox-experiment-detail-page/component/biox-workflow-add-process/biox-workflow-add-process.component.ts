@@ -1,11 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {BioxProcessable} from '../../../../../core/model/entities/biox-processable.entity';
+import {BioxProcessable} from '../../../../../core/model/entities/proccesable/biox-processable.entity';
 import {Observable} from 'rxjs';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
-import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
+import {BioxProcessSpecService} from '../../../../../core/entity-service/biox-process-spec.service';
 import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
-import {BioxProcessType, BioxProcessTypedTree} from '../../../../../core/model/entities/biox-process-type.entity';
+import {BioxProcessSpecTree} from '../../../../../core/model/entities/processable-spec/biox-process-spec.entity';
+import {BioxProtocolSpec} from '../../../../../core/model/entities/processable-spec/biox-protocol-spec.entity';
+import {BioxProcessableSpec} from '../../../../../core/model/entities/processable-spec/biox-processable-spec.entity';
+import {clRxjsDebug} from '@monorepo/core-lib';
 
 
 /**
@@ -19,46 +22,38 @@ import {BioxProcessType, BioxProcessTypedTree} from '../../../../../core/model/e
 })
 export class BioxWorkflowAddProcessComponent implements OnInit {
 
-  // availableProtocols: BioxProtocolDatasource;
-  // protocols$: Observable<BioxProtocolVM[]>;
-  processes$: Observable<BioxProcessTypedTree[]>;
+  protocols$: Observable<BioxProtocolSpec[]>;
+  processes$: Observable<BioxProcessSpecTree[]>;
 
-  selectedProcess: BioxProcessType;
+  selectedProcess: BioxProcessableSpec;
 
 
   constructor(private workflowManagerService: WorkflowManagerState,
               private bioxProtocolService: BioxProtocolService,
-              private bioxProcessTypeService: BioxProcessTypeService) {
+              private bioxProcessTypeService: BioxProcessSpecService) {
   }
 
   ngOnInit(): void {
+    // get process
+    this.processes$ = this.bioxProcessTypeService.getProcessTypesTree();
 
     // get protocols
-    // this.availableProtocols = this.bioxProtocolService.getProtocolsDatasource();
-    // this.protocols$ = this.availableProtocols.connect();
-
-    // get process
-    this.processes$ = this.bioxProcessTypeService.getProcessTypesGrouped();
+    // todo replace with a tree of protocol like the processes
+    this.protocols$ = this.bioxProtocolService.getProtocolSpecsDatasource().connect().pipe(clRxjsDebug());
   }
 
-  addProcessable(object: BioxProcessType): void {
-    let processable: BioxProcessable;
-
-    if (object instanceof BioxProcessType) {
-      processable = BioxExperimentFlowFactory.processTypeToBioxProcess(object);
-    } else {
-      processable = object;
-    }
+  addProcessable(object: BioxProcessableSpec): void {
+    const processable: BioxProcessable = BioxExperimentFlowFactory.processableFromProcessableSpec(object);
 
     this.workflowManagerService.addProcessableNode(processable, 0, 0);
   }
 
-  selectProcess(process: BioxProcessType): void {
+  selectProcessable(process: BioxProcessableSpec): void {
     this.selectedProcess = process;
   }
 
-  selectAndAddProcess(process: BioxProcessType): void {
-    this.selectProcess(process);
+  selectAndAddProcessable(process: BioxProcessableSpec): void {
+    this.selectProcessable(process);
     this.addProcessable(process);
   }
 

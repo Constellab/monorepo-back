@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BioxProtocol} from '../../../../model/entities/biox-processable.entity';
+import {BioxProtocol} from '../../../../model/entities/proccesable/biox-protocol.entity';
 
 @Component({
   selector: 'gen-biox-protocol-card',

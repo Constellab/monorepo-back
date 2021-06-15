@@ -142,3 +142,12 @@ mat-tree {
   padding-left: 0;
   padding-right: 0;
 }
+
+/************************************* MAT TAB ***********************************/
+
+// Set all the mat-tab as flex 1 to take all the groupe space without wrap on horizontal scroll
+.g-mat-tab-flex .mat-tab-label{
+  padding: 0;
+  min-width: 0;
+  flex: 1;
+}

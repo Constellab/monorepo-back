@@ -1,4 +1,4 @@
-import {getBioxProcessPortColor} from '../../../../core/entity-module/biox-process-type/utils/biox-process-port-color';
+import {getBioxProcessPortColor} from '../../../../core/entity-module/biox-processable-core/utils/biox-process-port-color';
 
 export class WorkflowPort {
 

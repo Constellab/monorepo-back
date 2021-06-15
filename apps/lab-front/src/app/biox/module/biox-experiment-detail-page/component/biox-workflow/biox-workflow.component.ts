@@ -1,15 +1,15 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
-import {BioxProtocol} from '../../../../../core/model/entities/biox-processable.entity';
 import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {BioxConnection, BioxFlow} from '../../../../../core/model/global/biox-connection.class';
 import {BioxResourcePortalComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-portal/biox-resource-portal.component';
 import {ConnectedPosition} from '@angular/cdk/overlay';
 import {WorkflowConnection} from '../../model/workflow-connection.class';
-import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
+import {BioxProcessSpecService} from '../../../../../core/entity-service/biox-process-spec.service';
 import {BioxProtocolLink} from '../../../../../core/model/entities/biox-protocol-link.entity';
 import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
+import {BioxProtocol} from '../../../../../core/model/entities/proccesable/biox-protocol.entity';
 
 
 @Component({
@@ -29,7 +29,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   constructor(private workflowManagerService: WorkflowManagerState,
               private bioxProtocolService: BioxProtocolService,
-              private bioxProcessTypeService: BioxProcessTypeService,
+              private bioxProcessTypeService: BioxProcessSpecService,
               private portalService: FlPortalService,
               private experimentState: BioxExperimentDetailPageState) {
   }

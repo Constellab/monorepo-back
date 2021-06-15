@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {WorkflowNode} from '../../model/workflow-node.class';
-import {BioxProcessable, BioxProcessableBase} from '../../../../../core/model/entities/biox-processable.entity';
+import {BioxProcessable} from '../../../../../core/model/entities/proccesable/biox-processable.entity';
 import {BioxConfig} from '../../../../../core/model/entities/biox-config.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {BioxConfigureSpecsFormDialogComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-form-dialog/biox-configure-specs-form-dialog.component';
@@ -37,7 +37,7 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
       return null;
     }
     // the config is only for processable node
-    return object instanceof BioxProcessableBase && object.hasConfig() ?
+    return object instanceof BioxProcessable && object.hasConfig() ?
       object.config : null;
   }
 

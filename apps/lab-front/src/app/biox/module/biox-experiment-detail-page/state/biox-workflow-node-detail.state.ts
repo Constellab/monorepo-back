@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {WorkflowNode} from '../model/workflow-node.class';
-import {BioxProcessable} from '../../../../core/model/entities/biox-processable.entity';
+import {BioxProcessable} from '../../../../core/model/entities/proccesable/biox-processable.entity';
 import {map} from 'rxjs/operators';
 
 
