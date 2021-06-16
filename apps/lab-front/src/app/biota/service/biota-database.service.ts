@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {BiotaData, BiotaDataDatasource} from '../model/biota-data.class';
 import {ViewModel} from '../../core/model/global/view-model.entity';
-import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
+import {ClPage} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -27,17 +27,14 @@ export class BiotaDatabaseService {
   }
 
   public getDatabaseData(type: string, page: number, pageSize: number): Observable<ClPage<BiotaData>> {
-    return this.apiService.get(`view/${type}/all/`, ViewModel,
+    return this.apiService.get(`resource/${type}/`, ViewModel,
       {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
   }
 
   public getDatabaseDatasource(type: string): BiotaDataDatasource {
-    return new FlEntityPaginatedDatasource<BiotaData>(this.getDatabasesMethod(type), 20, true);
+    return new FlEntityPaginatedDatasource<BiotaData>(
+      (page: number, pageSize: number): Observable<ClPage<BiotaData>> => this.getDatabaseData(type, page, pageSize),
+      20, true);
   }
-
-  private getDatabasesMethod(type: string): ClGetPageFunction<BiotaData> {
-    return (page: number, pageSize: number): Observable<ClPage<BiotaData>> => this.getDatabaseData(type, page, pageSize);
-  }
-
 
 }
