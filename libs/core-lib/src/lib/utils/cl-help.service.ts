@@ -57,8 +57,8 @@ export class ClHelpService {
    * @param array array
    * @param order function to compare elements. Inserted when order returns true
    */
-  public static insertIntoOrderedArray(item: any, array: any[],
-                                       order: (a: any, b: any, index: number) => boolean): void {
+  public static insertIntoOrderedArray<T>(item: T, array: T[],
+                                       order: (a: T, b: T, index: number) => boolean): void {
     // true if the element has been added in the loop
     let added: boolean = false;
 

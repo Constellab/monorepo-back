@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {BioxResource, bioxResourceNetworkType} from '../../../../../core/model/entities/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
-import {FileResourcePreview} from '../../../../../core/model/entities/file-resource.entity';
+import {FileResource, FileResourcePreview} from '../../../../../core/model/entities/file-resource.entity';
 import {FlPathway} from '@monorepo/front-core-lib';
 
 interface View {
@@ -87,17 +87,27 @@ export class BioxResourceDetailPageComponent implements OnInit {
     }
   }
 
+  /**
+   * return true if the resource is a network
+   */
   private resourceIsNetwork(resource: BioxResource): boolean {
     if (resource.type === bioxResourceNetworkType) {
       return true;
     }
 
-    const data: FlPathway = resource.data;
+    // if the resource is a file containing a network resource
+    if (resource instanceof FileResource && resource.dataIsLabEntity() &&
+      resource.data.type === bioxResourceNetworkType){
+      return true;
+    }
+
+      const data: FlPathway = resource.data;
 
     // check the attribute as if the resource is a pathway
     return data != null && typeof data === 'object' && Array.isArray(data.metabolites)
       && Array.isArray(data.reactions) && typeof data.compartments === 'object';
   }
+
 
   getQueryParam(view: View): { view: string } {
     return {view: view.route};

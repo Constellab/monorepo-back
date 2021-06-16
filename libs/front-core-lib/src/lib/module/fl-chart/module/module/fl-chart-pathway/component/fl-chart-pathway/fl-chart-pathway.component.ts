@@ -1,73 +1,42 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import * as d3 from 'd3';
-import {
-  FlChartPathwayData,
-  FlChartPathwayLink,
-  FlChartPathwayNode,
-  FlPathway,
-  flPathwayMetaboliteRadius,
-  flPathwayReactionHeight,
-  flPathwayReactionMaxValue,
-  flPathwayReactionWidth
-} from '../../model/fl-pathway.class';
-import {FlCoord, FlD3SelectionSimple, FlD3ZoomEvent} from '../../../../../model/fl-d3.class';
-import {Simulation} from 'd3-force';
-import {ValueFn} from 'd3-selection';
-import {ClHelpService} from '@monorepo/core-lib';
-import {FlThemeService} from '../../../../../../../service/fl-theme.service';
-import {FlThemeDetail} from '../../../../../../../service/model/fl-theme-detail.class';
-import {ScaleLinear} from 'd3-scale';
-import {FlChartPathwayFactory} from '../../fl-chart-pathway.factory';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {FlPathway} from '../../model/fl-pathway.class';
 import {MatSliderChange} from '@angular/material/slider';
+import {FLPathwayDrawerChanged, FlPathwayDrawerState} from '../../state/fl-pathway-drawer.state';
+import {MatDrawer} from '@angular/material/sidenav';
+import {FlPathwayRendererState} from '../../state/fl-pathway-renderer.state';
+import {FlPathwayState} from '../../state/fl-pathway.state';
+import {FlChartPathwayData} from '../../model/fl-chart-pathway.class';
 
 @Component({
   selector: 'fl-chart-pathway',
   templateUrl: './fl-chart-pathway.component.html',
-  styleUrls: ['./fl-chart-pathway.component.scss']
+  styleUrls: ['./fl-chart-pathway.component.scss'],
+  providers: [
+    FlPathwayState,
+    FlPathwayRendererState,
+    FlPathwayDrawerState
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlChartPathwayComponent implements OnInit, AfterViewInit {
 
   @Input() data: FlPathway;
 
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
+  @ViewChild(MatDrawer, {static: true}) drawer: MatDrawer;
 
-  chartHeight: number;
-  chartWidth: number;
-
-  chartData: FlChartPathwayData;
-
-  simulation: Simulation<FlChartPathwayNode, any>;
-
-  svg: FlD3SelectionSimple;
-  mainGroup: FlD3SelectionSimple;
-
-  metabolites: FlD3SelectionSimple<FlChartPathwayNode>;
-  reactions: FlD3SelectionSimple<FlChartPathwayNode>;
-  links: FlD3SelectionSimple<FlChartPathwayLink<FlChartPathwayNode>>;
-
-  simulationEnded: boolean = false;
-
-  drawerState: boolean = false;
-  selectedNode: FlChartPathwayNode;
-
+  disableSlider: boolean = false;
   sliderValue: number = 0;
   linksMaxAbsValue: number;
 
   // if true the link colors switch to logarithm
   slideLinkColorToggle: boolean = false;
 
-  ////////////// READONLY VARIABLE //////////////////
-  readonly collideRadius: number = 25;
-  readonly grey: string = '#999';
-  readonly textColor: string;
-  readonly backgroundColor: string;
-  readonly selectNodeColor: string;
 
-  constructor(themeService: FlThemeService, private cdr: ChangeDetectorRef) {
-    const themeDetail: FlThemeDetail = themeService.getCurrentThemeDetail();
-    this.textColor = themeDetail.foreground;
-    this.backgroundColor = themeDetail.background;
-    this.selectNodeColor = themeDetail.warn;
+  constructor(private cdr: ChangeDetectorRef,
+              private state: FlPathwayState,
+              private drawerState: FlPathwayDrawerState,
+              private rendererState: FlPathwayRendererState) {
   }
 
   ngOnInit(): void {
@@ -75,391 +44,76 @@ export class FlChartPathwayComponent implements OnInit, AfterViewInit {
       console.error('[FlChartPathwayComponent] Data not provided');
     }
 
+    // init the pathway state
+    this.state.init(this.data);
+    // init the drawer state
+    this.drawerState.init(this.drawer);
+    this.listenToDrawer();
+
+
+    // open config on start
+    this.openConfig();
   }
 
   ngAfterViewInit(): void {
-    this.initChartSize();
+    this.rendererState.init(this.chartHtmlContainer.nativeElement);
 
-    this.chartData = FlChartPathwayFactory.convertPathwayToChartPathway(this.data, this.grey);
-
-    this.initSVG();
-    this.initSimulation();
-    this.initLinks();
-    this.initMetabolites();
-    this.initReactions();
-    this.defineArrowMarker();
-    this.enableZoom();
-    this.launchSimulation();
-
-    // speed up the simulation to quickly end it
-    this.simulation.tick(1000);
-
-    this.simulation.on('end', () => this.endSimulation());
+    this.state.getChartData$().subscribe(
+      chartData => this.onNewData(chartData)
+    );
 
     // avoid change detection error as we are in AfterViewInit
     this.cdr.detectChanges();
   }
 
-
-  private initChartSize(): void {
-    this.chartWidth = this.chartHtmlContainer.nativeElement.clientWidth;
-    // set height minus 10 to avoid scrollbar
-    this.chartHeight = (this.chartHtmlContainer.nativeElement.clientHeight - 10);
-  }
-
-  private initSimulation(): void {
-    this.simulation = d3.forceSimulation([...this.chartData.metabolites, ...this.chartData.reactions])
-      .force('link',
-        d3.forceLink(this.chartData.links).distance(100)
-          .id((d: FlChartPathwayNode) => d.id)
-        // .strength((d: FlChartPathwayLink<FlChartPathwayNode>) => d.absValue)
-      )
-      .force('charge', d3.forceManyBody().strength(-40))
-      .force('center', d3.forceCenter(this.chartWidth / 2, this.chartHeight / 2))
-      .force('collide', d3.forceCollide().radius(this.collideRadius));
-  }
-
-  // disable all force so the user can move the node independently
-  private endSimulation(): void {
-    if (!this.simulationEnded) {
-      // clear all forces, so the user can drag easily
-      this.simulation.force('link', null);
-      this.simulation.force('charge', null);
-      this.simulation.force('center', null);
-      this.simulation.force('collide', null);
-      this.simulationEnded = true;
+  private onNewData(chartData: FlChartPathwayData): void {
+    if (chartData) {
+      this.linksMaxAbsValue = chartData.getLinksMaxAbsoluteValue();
+    } else {
+      this.linksMaxAbsValue = 0;
     }
+
+    // todo move from here
+    this.rendererState.drawPathway(chartData, this.slideLinkColorToggle);
+
+    this.cdr.markForCheck();
   }
 
-  private initSVG(): void {
-    this.svg = d3.select(this.chartHtmlContainer.nativeElement)
-      .append('svg')
-      .attr('width', this.chartWidth)
-      .attr('height', this.chartHeight)
-      .on('click', () => this.resetNodeAndLinkOpacity()); // reset the opacity of node and link when clicking on svg
-
-    //add encompassing group for the zoom
-    this.mainGroup = this.svg.append('g')
-      .attr('class', 'everything');
-  }
-
-  private launchSimulation(): void {
-    this.simulation.on('tick', () => {
-
-      // refresh link points
-      this.links.attr('points', (d: FlChartPathwayLink<FlChartPathwayNode>) => this.getPolylinePoints(d));
-
-      // refresh metabolites positions
-      this.metabolites.attr('transform',
-        (d: FlChartPathwayNode) => 'translate(' + d.x + ',' + d.y + ')'
-      );
-
-      // refresh reaction positions
-      this.reactions
-        .attr('transform',
-          (d: FlChartPathwayNode) => 'translate(' + d.x + ',' + d.y + ')'
-        );
-    });
-
-    // todo voir ce que c'est a appeler au onDestroy?
-    // invalidation.then(() => simulation.stop());
-  }
-
-  private initMetabolites(): void {
-    this.metabolites = this.mainGroup.append('g')
-      .selectAll('g')
-      .data(this.chartData.metabolites)
-      .join('g')
-      .call(this.drag(this.simulation));
-
-    // create the circles
-    this.metabolites
-      .append('circle')
-      .join('circle')
-      .attr('r', flPathwayMetaboliteRadius)
-      .attr('stroke', (d: FlChartPathwayNode) => d.color)
-      .attr('stroke-width', 1)
-      .attr('fill', 'white')
-      .style('cursor', 'pointer')
-      .on('click', this.onNodeClicked(0.1));
-
-
-    // create the text for metabolite
-    this.metabolites.append('text')
-      .text((d: FlChartPathwayNode) => d.name.substr(0, 5))
-      .attr('y', flPathwayMetaboliteRadius)
-      .attr('dy', '1em')
-      .attr('text-anchor', 'middle')
-      .attr('fill', this.textColor)
-      .style('text-shadow', this.getTextShadow())
-      .style('font-size', '0.5em');
-
-    this.metabolites.append('title')
-      .text((d: FlChartPathwayNode) => d.name);
-  }
-
-  private initReactions(): void {
-    this.reactions = this.mainGroup.append('g')
-      .selectAll('g')
-      .data(this.chartData.reactions)
-      .join('g')
-      .call(this.drag(this.simulation))
-      .style('cursor', 'pointer')
-      .on('click', this.onNodeClicked(0.1));
-
-    // create the rect of reaction
-    this.reactions.append('rect')
-      .join('rect')
-      .attr('width', flPathwayReactionWidth)
-      .attr('height', flPathwayReactionHeight)
-      .attr('stroke', this.grey)
-      .attr('stroke-width', 1)
-      .attr('fill', 'white');
-
-    // create the text for reaction
-    this.reactions.append('text')
-      .text((d: FlChartPathwayNode) => d.name.substr(0, 10))
-      .attr('x', flPathwayReactionWidth / 2) // center x
-      .attr('y', flPathwayReactionHeight / 2) // center y
-      .attr('dominant-baseline', 'middle')
-      .attr('text-anchor', 'middle')
-      .attr('fill', 'black')
-      .style('font-size', '0.5em');
-    //text-shadow:;
-
-    this.reactions.append('title')
-      .text((d: FlChartPathwayNode) => d.name);
-  }
-
-  private initLinks(): void {
-
-
-    this.links = this.mainGroup.append('g')
-      .selectAll('polyline')
-      .data(this.chartData.links)
-      .join('polyline')
-      .attr('stroke-opacity', 0.9)
-      .attr('stroke-width', (d: FlChartPathwayLink<FlChartPathwayNode>) => d.absLog10Value)
-      .attr('marker-mid', 'url(#mid_arrow)') as any;
-
-    this.setLinksColors();
-    this.linksMaxAbsValue = this.chartData.getLinksMaxAbsoluteValue();
-  }
 
   setLinksColors(): void {
-    const colorScale = this.getLinkColorScale();
-    const colorTransform: (value: number) => number = this.getLinkColorTransformFunction();
-    this.links
-      .attr('stroke', (d: FlChartPathwayLink<FlChartPathwayNode>) => colorScale(colorTransform(d.value)));
-  }
-
-  private getLinkColorScale(): ScaleLinear<string, any, any> {
-    const range: [string, string, string] = ['red', '#E8F5E9', 'green'];
-    const colorTransform: (value: number) => number = this.getLinkColorTransformFunction();
-
-    return d3.scaleLinear<string>().domain(
-      [colorTransform(-flPathwayReactionMaxValue), 0, colorTransform(flPathwayReactionMaxValue)])
-      .range(range);
-  }
-
-  // return a function to apply on link value before calling the color scale
-  private getLinkColorTransformFunction(): (value: number) => number {
-    if (this.slideLinkColorToggle) {
-      return (value => {
-        // get the log 2 of absolute value
-        const absLog2 = Math.log2(Math.abs(value) + 1);
-        // return log 2 as positive or negative based on value
-        return value > 0 ? absLog2 : -absLog2;
-      });
-    } else {
-      return (value => value);
-
-    }
-  }
-
-
-  drag = (simulation: any): any => {
-
-    function dragStarted(event: any): void {
-      if (!event.active) simulation.alphaTarget(0.3).restart();
-      event.subject.fx = event.subject.x;
-      event.subject.fy = event.subject.y;
-    }
-
-    function dragged(event: any): void {
-      event.subject.fx = event.x;
-      event.subject.fy = event.y;
-    }
-
-    function dragEnded(event: any): void {
-      if (!event.active) simulation.alphaTarget(0);
-      event.subject.fx = null;
-      event.subject.fy = null;
-    }
-
-    return d3.drag()
-      .on('start', dragStarted)
-      .on('drag', dragged)
-      .on('end', dragEnded);
-  };
-
-  private enableZoom(): void {
-    //add zoom capabilities
-    const zoom_handler = d3.zoom()
-      .on('zoom', (event) => this.zoom_actions(event));
-
-    zoom_handler(this.svg);
-  }
-
-  //Zoom functions
-  private zoom_actions(event: FlD3ZoomEvent): void {
-    this.mainGroup.attr('transform', event.transform.toString());
-  }
-
-  // return points for the line with a point in middle to draw the arrow
-  private getPolylinePoints(d: FlChartPathwayLink<FlChartPathwayNode>): string {
-    const startCoord: FlCoord = d.source.getCenter();
-    const endCoord: FlCoord = d.target.getCenter();
-
-    // calculate the middle point
-    const midCoord: FlCoord = {
-      x: (startCoord.x + endCoord.x) / 2,
-      y: (startCoord.y + endCoord.y) / 2
-    };
-
-    return `${startCoord.x},${startCoord.y}
-            ${midCoord.x},${midCoord.y}
-            ${endCoord.x},${endCoord.y} `;
-  }
-
-  // return all the directly connected node of the node
-  private getConnectedNodes(nodeIndex: number): FlChartPathwayNode[] {
-    return this.chartData.links
-      // filter the link directly connected
-      .filter(link => link.target.index === nodeIndex || link.source.index === nodeIndex)
-      // get the connected node (the one not with different index)
-      .map(link => link.target.index === nodeIndex ? link.source : link.target);
-  }
-
-  /**
-   * Update the opacity of node and link not connected to clicked node
-   * to the opacity provided
-   * @param opacity
-   * @private
-   */
-  private onNodeClicked(opacity: number): any {
-    return (mouseEvent: MouseEvent, clickedNode: FlChartPathwayNode) => {
-      // stop the event propagation do prevent click event on svg that reset the opacity
-      ClHelpService.stopEventPropagation(mouseEvent);
-
-      // retrieve connected node
-      const connectedNodes: FlChartPathwayNode[] = this.getConnectedNodes(clickedNode.index);
-
-      // update opacity of metabolites and reaction
-      this.metabolites.style('opacity', this.updateNodeOpacity(opacity, clickedNode, connectedNodes));
-      this.reactions.style('opacity', this.updateNodeOpacity(opacity, clickedNode, connectedNodes));
-
-      // update link opacity
-      this.links.style('opacity', this.updateLinkOpacity(opacity, clickedNode));
-
-      // set a specific color to the selected node
-      this.metabolites.selectAll('circle')
-        .attr('stroke', (d: FlChartPathwayNode) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
-      this.reactions.selectAll('rect')
-        .attr('stroke', (d: FlChartPathwayNode) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
-
-      // open the drawer with detail
-      this.openDrawer(clickedNode);
-    };
-  }
-
-  // set the current node and open the drawer
-  private openDrawer(node: FlChartPathwayNode): void {
-    this.selectedNode = node;
-    this.drawerState = true;
-  }
-
-  // update the opacity of node that are not the clickedNode or in connected node
-  private updateNodeOpacity(opacity: number, clickedNode: FlChartPathwayNode, connectedNodes: FlChartPathwayNode[])
-    : ValueFn<any, any, number> {
-    return (other: FlChartPathwayNode) => {
-      return clickedNode.index === other.index ||
-      connectedNodes.findIndex((connected) => connected.index === other.index) >= 0 ? 1 : opacity;
-    };
-  }
-
-  // update the opacity to opacity on link that are not connected to node
-  private updateLinkOpacity(opacity: number, clickedNode: FlChartPathwayNode): ValueFn<any, any, number> {
-    return (other: FlChartPathwayLink<FlChartPathwayNode>) => {
-      return other.source.index === clickedNode.index || other.target.index === clickedNode.index ? 1 : opacity;
-    };
-  }
-
-  resetNodeAndLinkOpacity(): any {
-    // update opacity of metabolites and reaction
-    this.metabolites.style('opacity', 1);
-    this.reactions.style('opacity', 1);
-
-    // set a specific color to the selected node
-    this.metabolites.selectAll('circle')
-      .attr('stroke', (d: FlChartPathwayNode) => d.color);
-    this.reactions.selectAll('rect')
-      .attr('stroke', (d: FlChartPathwayNode) => d.color);
-
-    // update link opacity
-    this.links.style('opacity', 1);
-
-    // also reset slider
-    this.sliderValue = 0;
-  }
-
-
-  // link to rect x
-  // if value is positive, link to the right of the rect
-  // if (d.isPositive()) {
-  //   return [
-  //     {x: d.source.x + this.reactionWidth, y: d.source.y + (this.reactionHeight / 2)},
-  //     {x: d.target.x, y: d.target.y}
-  //   ];
-  // } else {
-  //   // otherwise link it to the left of the rect
-  //   return [
-  //     {x: d.source.x, y: d.source.y},
-  //     {x: d.target.x, y: d.target.y + (this.reactionHeight / 2)}
-  //   ];
-  // }
-
-  // define the arrow marker to use it in lines
-  private defineArrowMarker(): void {
-    // define a marker for tha arrow
-    this.svg.append('defs').append('marker')
-      .attr('id', 'mid_arrow')
-      .attr('viewBox', '-0 -5 10 10')
-      .attr('refX', 10)
-      .attr('refY', 0)
-      .attr('orient', 'auto')
-      .attr('markerWidth', 3)
-      .attr('markerHeight', 3)
-      .attr('xoverflow', 'visible')
-      .append('svg:path')
-      .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-      .attr('fill', this.grey)
-      .style('stroke', 'none');
-  }
-
-  private getTextShadow(): string {
-    return `-1px -1px 0 ${this.backgroundColor}, 1px -1px 0 ${this.backgroundColor},
-            -1px 1px 0 ${this.backgroundColor}, 1px 1px 0 ${this.backgroundColor}`;
+    this.rendererState.setLinksColors(this.slideLinkColorToggle);
   }
 
   // set opacity to 0.1 to link where abs value is lower than slider value
   hideLinkLowerThan(change: MatSliderChange): void {
-    // update link opacity
-    this.links.style('opacity', (link: FlChartPathwayLink<FlChartPathwayNode>) =>
-      link.absValue >= change.value ? 1 : 0.1);
+    this.rendererState.hideLinkLowerThan(change.value);
   }
 
   get slideLinkColorToggleText(): string {
     return this.slideLinkColorToggle ? 'flChart.pathway_link_color_log' : 'flChart.pathway_link_color_normal';
+  }
+
+  private listenToDrawer(): void {
+    this.drawerState.openChange$().subscribe(
+      change => this.onDrawerOpenChanged(change)
+    );
+  }
+
+  private onDrawerOpenChanged(change: FLPathwayDrawerChanged): void {
+    // disable the slider when the node detail drawer is open
+    this.disableSlider = change.open && change.action?.action === 'nodeDetail';
+
+    // if the action select node was closed
+    if (!change.open && change.action?.action === 'nodeDetail') {
+      this.rendererState.resetNodeAndLinkOpacity();
+      // also reset slider
+      this.sliderValue = 0;
+    }
+
+    this.cdr.markForCheck();
+  }
+
+  openConfig(): void {
+    this.drawerState.newAction({title: 'Config', action: 'config', data: null});
   }
 }

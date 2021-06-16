@@ -34,6 +34,15 @@ export class FileResource extends FileResourcePreview {
   data: any;
 
   file: Blob;
+
+  /**
+   * return true if the resource data is a json object representing a LabEntity (contains an uri, type and data)
+   */
+  dataIsLabEntity(): boolean{
+    return this.data && typeof this.data.uri === 'string' && typeof this.data.type === 'string'
+      && typeof this.data.data === 'object';
+  }
 }
+
 
 export type FileResourceDatasource = FlEntityPaginatedDatasource<FileResourcePreview>;

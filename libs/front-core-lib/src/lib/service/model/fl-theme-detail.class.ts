@@ -14,6 +14,10 @@ export interface FlThemeDetail {
 
   primary100: string;
   primary100Contrast: string;
+
+  greyLowContrast: string;
+  greyContrast: string;
+  greyHighContrast: string;
 }
 
 /**
@@ -31,7 +35,11 @@ export const flThemeDetailLight: FlThemeDetail = {
   warnContrast: '#ffffff',
 
   primary100: '#a3bdbd',
-  primary100Contrast: '#000000'
+  primary100Contrast: '#000000',
+
+  greyLowContrast: '#ddd',
+  greyContrast: '#bbbbbb',
+  greyHighContrast: 'grey',
 };
 
 /**
@@ -49,5 +57,9 @@ export const flThemeDetailDark: FlThemeDetail = {
   warnContrast: '#ffffff',
 
   primary100: '#043e3e',
-  primary100Contrast: '#ffffff'
+  primary100Contrast: '#ffffff',
+
+  greyLowContrast: '#545454',
+  greyContrast: '#6c6c6c',
+  greyHighContrast: 'grey',
 };

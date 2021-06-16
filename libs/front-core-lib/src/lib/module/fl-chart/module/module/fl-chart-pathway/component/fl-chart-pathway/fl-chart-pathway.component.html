@@ -7,14 +7,12 @@
       <div #chart fxFlex="auto"></div>
 
       <!--    Action bar on the bottom  -->
-      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="action-bar"
-           *ngIf="!drawerState">
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="action-bar">
 
         <!--   Slider to hide link     -->
         <div>
           <p class="g-text-small g-text-light">{{'flChart.pathway_link_value_help' | translate}} : {{sliderValue}}</p>
           <mat-slider class="slider" color="primary"
-                      [disabled]="drawerState"
                       [max]="linksMaxAbsValue"
                       [min]="0"
                       [step]="1"
@@ -29,6 +27,11 @@
         <mat-slide-toggle [(ngModel)]="slideLinkColorToggle" (change)="setLinksColors()" color="primary">
           {{slideLinkColorToggleText | translate}}
         </mat-slide-toggle>
+
+        <button mat-icon-button type="button" (click)="openConfig()"
+                [matTooltip]="'flChart.pathway_open_config' | translate">
+          <mat-icon>settings</mat-icon>
+        </button>
       </div>
 
     </div>
@@ -36,7 +39,7 @@
 
   </mat-drawer-content>
 
-  <mat-drawer mode="over" position="end" [(opened)]="drawerState" (closed)="resetNodeAndLinkOpacity()">
-    <fl-chart-pathway-node-detail *ngIf="selectedNode" [node]="selectedNode"></fl-chart-pathway-node-detail>
+  <mat-drawer mode="over" position="end">
+    <fl-pathway-drawer-action></fl-pathway-drawer-action>
   </mat-drawer>
 </mat-drawer-container>

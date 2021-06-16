@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FlChartPathwayNode} from '../../model/fl-pathway.class';
+import {FlChartPathwayNode} from '../../model/fl-chart-pathway.class';
 
 @Component({
   selector: 'fl-chart-pathway-node-detail',

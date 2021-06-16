@@ -1,14 +1,4 @@
-<div class="container">
-
-  <div fxLayout="row" fxLayoutAlign="space-between center">
-    <p>{{node.name}}</p>
-
-    <button mat-icon-button type="button" flDrawerClose tabindex="-1"
-            [matTooltip]="'close' | translate">
-      <mat-icon>clear</mat-icon>
-    </button>
-  </div>
-
+<div>
   <fl-pretty-json class="g-section" [object]="node.data" [previewMaxTextLength]="30"></fl-pretty-json>
 
   <fl-chart-pathway-node-links class="g-section" [node]="node"></fl-chart-pathway-node-links>

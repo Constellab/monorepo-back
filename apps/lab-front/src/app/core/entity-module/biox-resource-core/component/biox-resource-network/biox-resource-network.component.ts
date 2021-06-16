@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BioxResource, bioxResourceNetworkType} from '../../../../model/entities/biox-resource.entity';
 import {FlPathway} from '@monorepo/front-core-lib';
-import {FileResourcePreview} from '../../../../model/entities/file-resource.entity';
+import {FileResource} from '../../../../model/entities/file-resource.entity';
 
 /**
  * Display the resource as a network pathway
@@ -21,13 +21,19 @@ export class BioxResourceNetworkComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.resource instanceof FileResourcePreview) {
-      this.network = this.resource.data;
+    if (this.resource instanceof FileResource) {
+      // if the resource is a resource file containing a network
+      if (this.resource.dataIsLabEntity()) {
+        this.network = this.resource.data.data.network;
+      } else {
+        // if the resource is a file containing directly the network json
+        this.network = this.resource.data;
+      }
+      // if the resource is a network
     } else if (this.resource.type === bioxResourceNetworkType) {
       this.network = this.resource.data.network;
     } else {
       console.error('The resource is not a network');
     }
   }
-
 }

@@ -1,0 +1,14 @@
+<div>
+
+  <p>{{'flChart.pathway_select_sub_pathway' | translate}}</p>
+
+  <div fxLayout="column" fxLayoutGap="0.3em">
+    <mat-checkbox *ngFor="let subPathway of subPathways"
+                  (click)="$event.stopPropagation()"
+                  (change)="$event ? selection.toggle(subPathway.id) : null"
+                  [checked]="selection.isSelected(subPathway.id)">
+        <div class="g-text-small">{{subPathway.name}} ({{subPathway.id}})</div>
+    </mat-checkbox>
+  </div>
+
+</div>

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FlChartPathwayNode} from '../../model/fl-pathway.class';
 import {FlExternalLinkService} from '../../../../../../../service/fl-external-link.service';
+import {FlChartPathwayNode} from '../../model/fl-chart-pathway.class';
 
 interface Link {
   link: string;
