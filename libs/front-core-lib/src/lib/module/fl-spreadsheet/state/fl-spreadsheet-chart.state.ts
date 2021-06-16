@@ -6,6 +6,7 @@ import {FlOverlayRef} from '../../fl-portal/model/fl-overlay-ref.class';
 import {FlSheetChartSelection} from '../model/fl-sheet-chart-selection.class';
 import {FlChartPortalService} from '../../fl-chart/service/fl-chart-portal.service';
 import {FlChartDynamicConfig} from '../../fl-chart/model/fl-chart-component.class';
+import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 
 
 @Injectable()
@@ -15,7 +16,8 @@ export class FlSpreadsheetChartState {
 
 
   constructor(private portalService: FlPortalService,
-              private chartPortalService: FlChartPortalService) {
+              private chartPortalService: FlChartPortalService,
+              private selectionState: FlSpreadsheetSelectionState) {
   }
 
   public openChartSelectionDialog(mouseEvent: MouseEvent): void {
@@ -32,7 +34,7 @@ export class FlSpreadsheetChartState {
       });
 
     this.overlayRef =
-      this.portalService.createPortal(FlSpreadsheetChartSelectionComponent, portalConfig);
+      this.portalService.createPortal(FlSpreadsheetChartSelectionComponent, portalConfig, this.selectionState.currentSelection);
 
     this.overlayRef.detachments().subscribe(
       (chartSelection) => this.onDispose(mouseEvent, chartSelection)

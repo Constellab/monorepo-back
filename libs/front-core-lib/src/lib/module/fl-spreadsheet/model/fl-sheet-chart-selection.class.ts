@@ -6,6 +6,7 @@ import {Numeric} from 'd3';
 import {FlChart2dMultipleSerie, FlChart2dSerie} from '../../fl-chart/model/fl-chart-2d-serie.class';
 import {FlChartComponentType} from '../../fl-chart/model/fl-chart-component.class';
 import {FlChartDomain, FlChartDomainComplete, FlChartDomainLinear} from '../../fl-chart/model/fl-chart-domain.class';
+import {ClNumberHelper} from '@monorepo/core-lib';
 
 /**
  * Class to store a selection for a basic chart
@@ -34,6 +35,7 @@ export class FlSheetChartSelection {
 
     series.axisXLabelFormat = this.getXAxisFormat();
 
+    console.log(series);
     return series;
   }
 
@@ -42,10 +44,9 @@ export class FlSheetChartSelection {
 
     // create a chart datum for each values
     // take index as x and cell value as Y if it's a number (0 otherwise)
-    // todo check if we set 0 in case of NAN
-    return values.map((value, index) => new FlSheetChartDatum(index, isNaN(value) ? 0 : parseFloat(value)));
+    return values.map((value, index) => new FlSheetChartDatum(index, ClNumberHelper.fromString(value)))
+      .filter(value => value.getY() != null); // exclude null values
   }
-
 
   // TODO to improve the methods 2
   // elle servent a utiliser des données comme X au lieu de Y (voir excel salaire/voiture
@@ -76,8 +77,8 @@ export class FlSheetChartSelection {
     // take index as x and cell value as Y if it's a number (0 otherwise)
     // todo check if we set 0 in case of NAN
     return values.map((value, index) => new FlSheetChartDatum(
-      isNaN(xData[index]) ? 0 : parseFloat(xData[index]),
-      isNaN(value) ? 0 : parseFloat(value)
+      ClNumberHelper.fromString(xData[index]),
+      ClNumberHelper.fromString(value)
     ));
   }
 

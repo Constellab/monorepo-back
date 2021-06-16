@@ -34,7 +34,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
 
   constructor(private selectionState: FlSpreadsheetSelectionState,
               private state: FlSpreadsheetState,
-              @Inject(FL_PORTAL_DATA) data: any,
+              @Inject(FL_PORTAL_DATA) private currentSelection: FlSheetSelection,
               private overlayRef: FlOverlayRef) {
   }
 
@@ -59,14 +59,19 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit {
       ]],
     });
 
-    // todo to test remove after
-    this.formGp.patchValue({
-        chartType: FlChartComponentType.BOX_PLOT,
-        seriesData: 'D1:D20,D21:D40',
-        seriesNames: null,
-        xLabels: null
-      }
-    );
+    if (this.currentSelection) {
+      // convert to multiple selection, one for each row
+      const selections: FlSheetMultiSelection = new FlSheetMultiSelection(this.currentSelection.splitToColumnSelections());
+      this.formGp.get('seriesData').patchValue(selections.toString());
+    }
+    // // todo to test remove after
+    // this.formGp.patchValue({
+    //     chartType: FlChartComponentType.BOX_PLOT,
+    //     seriesData: 'D1:D20,D21:D40',
+    //     seriesNames: null,
+    //     xLabels: null
+    //   }
+    // );
 
     // if there is a multiple selection
     const currentSelection: FlSheetSelection = this.selectionState.currentSelection;
