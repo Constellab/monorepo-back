@@ -12,7 +12,7 @@
 
           <span [ngClass]="node.type">
             <ng-container *ngIf="node.type === 'string'">"</ng-container>
-            <span class="string-value">{{node.value}}</span>
+            <span>{{node.value}}</span>
             <ng-container *ngIf="node.type === 'string'">"</ng-container>
           </span>
         </span>
@@ -30,16 +30,13 @@
               <ng-container *ngIf="treeControl.isExpanded(node) ; else noExp">arrow_drop_down</ng-container>
               <ng-template #noExp>arrow_right</ng-template>
             </mat-icon>
-            <span class="key-color">{{node.key}}</span> :
+            <span class="key-color">{{node.key}}</span>
           </fl-text-icon>
         </div>
 
-        <div [ngClass]="{'g-text-light': !treeControl.isExpanded(node)}">
-          &nbsp;{{node.information}}
-        </div>
 
-        <div *ngIf="!treeControl.isExpanded(node)">
-          &nbsp;<span class="g-text-light">{{node.preview}}</span>
+        <div *ngIf="!treeControl.isExpanded(node) && node.preview">
+          &nbsp;: <span class="g-text-light">{{node.preview}}</span>
         </div>
       </div>
     </mat-tree-node>
