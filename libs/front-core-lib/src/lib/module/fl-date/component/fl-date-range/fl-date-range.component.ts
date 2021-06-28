@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {DateTime} from 'luxon';
+import {ClOnChange} from '@monorepo/core-lib';
 
 /**
  * Display a date range with text,
@@ -12,8 +13,14 @@ import {DateTime} from 'luxon';
 })
 export class FlDateRangeComponent implements OnInit {
 
+  @ClOnChange(function (this: FlDateRangeComponent) {
+    this.initMode();
+  })
   @Input() startingDate?: DateTime;
 
+  @ClOnChange(function (this: FlDateRangeComponent) {
+    this.initMode();
+  })
   @Input() endingDate?: DateTime;
 
   @Input() dateFormat: string = 'D';
@@ -24,6 +31,10 @@ export class FlDateRangeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.initMode();
+  }
+
+  private initMode(): void {
     if (this.startingDate != null && this.endingDate != null) {
       this.mode = 'between';
     } else if (this.startingDate == null) {
@@ -31,7 +42,7 @@ export class FlDateRangeComponent implements OnInit {
     } else if (this.endingDate == null) {
       this.mode = 'from';
     } else {
-      console.error('[DateRangeComponent] starting date and ending date are null');
+      this.mode = null;
     }
   }
 
