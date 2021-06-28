@@ -1,10 +1,12 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {FlatTreeControl} from '@angular/cdk/tree';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, TrackByFunction} from '@angular/core';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
-import {ClCoerceBooleanDecorator, ClOnChange} from '@monorepo/core-lib';
+import {ClCoerceBooleanDecorator, ClHelpService, ClOnChange} from '@monorepo/core-lib';
 import {Observable, Subscription} from 'rxjs';
+import {FlKeyboardKey} from '../../../utils/fl-keyboard.helper';
+import {FlFlatTreeControl} from '../../../model/fl-flat-tree-control.class';
 
 class ObjectNode {
+  id: number;
   children?: ObjectNode[];
   key: string;
   value?: any;
@@ -12,13 +14,14 @@ class ObjectNode {
   preview ?: string;
 }
 
-class ObjectFlatNode {
+interface ObjectFlatNode {
+  id: number;
   expandable: boolean;
   level: number;
   key: string;
   value?: any;
   type: string;
-  preview ?: string;
+  preview?: string;
 }
 
 @Component({
@@ -64,18 +67,24 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   startChar: string;
   endChar: string;
 
-  treeControl: FlatTreeControl<ObjectFlatNode>;
+  treeControl: FlFlatTreeControl<ObjectFlatNode>;
 
   dataSource: MatTreeFlatDataSource<ObjectNode, ObjectFlatNode>;
 
-
   error: boolean = false;
+
+  selectedNode: ObjectFlatNode;
 
   private componentIsInitiated: boolean = false;
   private subscription: Subscription;
 
+  private id: number = 0;
+
+  trackBy: TrackByFunction<{ id: any }> = ClHelpService.trackByIdFunction;
+
   private _transformer = (node: ObjectNode, level: number): ObjectFlatNode => {
     return {
+      id: node.id,
       expandable: !!node.children && node.children.length > 0,
       level: level,
       key: node.key,
@@ -94,8 +103,6 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.init(this.object);
     this.componentIsInitiated = true;
-
-
   }
 
   private init(object: any | Observable<any>): void {
@@ -127,7 +134,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
       const data = this.buildFileTree(convertedObject, 0);
       console.log(this.object);
 
-      this.treeControl = new FlatTreeControl<ObjectFlatNode>(
+      this.treeControl = new FlFlatTreeControl<ObjectFlatNode>(
         node => node.level, node => node.expandable);
 
       // object to flatten tree
@@ -166,6 +173,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
 
         // define node and node properties
         const node = new ObjectNode();
+        node.id = this.id++;
         node.key = `[${i}...${max}]`;
         node.type = 'object';
         node.preview = null;
@@ -185,6 +193,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
       const value: any = obj[key] instanceof Map ? this.mapToJson(obj[key]) : obj[key];
 
       const node = new ObjectNode();
+      node.id = this.id++;
 
       // set the node key, if there is an key offset, add it to the key
       node.key = keyOffset > 0 ? (parseInt(key) + keyOffset).toString() : key;
@@ -308,15 +317,94 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     return this.dense ? 'dense' : 'normal';
   }
 
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
-  }
 
   // convert a map to a json object
   private mapToJson(map: Map<any, any>): any {
     const object: any = {};
     map.forEach((value, key) => object[key.toString()] = value);
     return object;
+  }
+
+
+  ////////////////////////////// NODE SELECTION & KEY LISTENERS //////////////////////////
+  onKeyDown(event: KeyboardEvent): void {
+    ClHelpService.stopEventPropagation(event);
+    const selectedNode: ObjectFlatNode = this.selectedNode ?? this.treeControl.dataNodes[0];
+
+    switch (event.key) {
+      case FlKeyboardKey.ARROW_DOWN:
+        this.selectNextNode(selectedNode);
+        break;
+      case FlKeyboardKey.ARROW_UP:
+        this.selectPreviousNode(selectedNode);
+        break;
+      case FlKeyboardKey.ARROW_LEFT:
+        this.handleLeftArrow(selectedNode);
+        break;
+      case FlKeyboardKey.ARROW_RIGHT:
+        this.handleRightArrow(selectedNode);
+        break;
+    }
+    return;
+  }
+
+
+  private selectPreviousNode(node: ObjectFlatNode): void {
+    const previousNode: ObjectFlatNode | null = this.treeControl.getPreviousVisibleNode(node);
+
+    if (previousNode) {
+      this.selectNode(previousNode);
+    }
+  }
+
+  private selectNextNode(node: ObjectFlatNode): void {
+    const nextNode: ObjectFlatNode | null = this.treeControl.getNextVisibleNode(node);
+
+    if (nextNode) {
+      this.selectNode(nextNode);
+    }
+  }
+
+  // if the node is expandable and expanded, we collapse it, otherwise we select the parent
+  private handleLeftArrow(node: ObjectFlatNode): void {
+    if (node.expandable && this.treeControl.isExpanded(node)) {
+      // collapse the node
+      this.treeControl.collapse(node);
+    }
+    // select the parent
+    else {
+      this.selectParentNode(node);
+    }
+  }
+
+  // if the node is expandable and collapse, expand it, otherwise go to next node
+  private handleRightArrow(node: ObjectFlatNode): void {
+    if (node.expandable && !this.treeControl.isExpanded(node)) {
+      // expand the node
+      this.treeControl.expand(node);
+    }
+    // select next node
+    else {
+      this.selectNextNode(node);
+    }
+  }
+
+
+  private selectParentNode(node: ObjectFlatNode): void {
+    const parent: ObjectFlatNode = this.treeControl.getAncestor(node);
+    if (parent) {
+      this.selectedNode = parent;
+      this.cdr.markForCheck();
+    }
+  }
+
+  selectNode(node: ObjectFlatNode): void {
+    this.selectedNode = node;
+  }
+
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 }
 

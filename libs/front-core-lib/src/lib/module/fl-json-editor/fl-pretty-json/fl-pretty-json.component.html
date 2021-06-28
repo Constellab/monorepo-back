@@ -1,12 +1,15 @@
-<div class="g-list-padding" [ngClass]="denseClass" *ngIf="!error; else showError">
+<div class="g-list-padding container" [ngClass]="denseClass" *ngIf="!error; else showError" tabindex="0"
+     (keydown)="onKeyDown($event)">
   {{startChar}}
-  <mat-tree *ngIf="dataSource != null" [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree *ngIf="dataSource != null" [dataSource]="dataSource" [treeControl]="treeControl" [trackBy]="trackBy">
 
-    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle class="tree-node" matTreeNodePadding
+    <mat-tree-node *matTreeNodeDef="let node" class="tree-node" matTreeNodePadding
                    [matTreeNodePaddingIndent]="paddingIndent">
-      <span class="key-color key">{{node.key}}</span>&nbsp;:
+      <div [ngClass]="{'selected-node' : selectedNode === node }" (click)="selectNode(node)"
+           class="leaf-container node-selectable">
+        <span>{{node.key}}</span>&nbsp;:
 
-      <span class="value">
+        <span class="value">
           <span class="g-text-light" *ngIf="node.value == null">null</span>
 
 
@@ -16,6 +19,7 @@
             <ng-container *ngIf="node.type === 'string'">"</ng-container>
           </span>
         </span>
+      </div>
     </mat-tree-node>
 
 
@@ -23,21 +27,21 @@
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
                    [matTreeNodePaddingIndent]="paddingIndent"
                    class="tree-node-preview">
-      <div matTreeNodeToggle class="clickable" fxLayout="row" fxLayoutAlign="start center">
-        <div>
+      <div matTreeNodeToggle class="clickable tree-container node-selectable" fxLayout="row" fxLayoutAlign="start center"
+           [ngClass]="{'selected-node' : selectedNode === node }" (click)="selectNode(node)">
           <fl-text-icon [gap]="'0px'">
-            <mat-icon class="icon">
-              <ng-container *ngIf="treeControl.isExpanded(node) ; else noExp">arrow_drop_down</ng-container>
-              <ng-template #noExp>arrow_right</ng-template>
-            </mat-icon>
-            <span class="key-color">{{node.key}}</span>
+            <!--      Arrow icon      -->
+            <mat-icon class="icon">{{treeControl.isExpanded(node) ? 'arrow_drop_down' : 'arrow_right'}}</mat-icon>
+
+            <!--     Key       -->
+            <span>{{node.key}}</span>
+
+            <!--     Preview       -->
+            <span *ngIf="!treeControl.isExpanded(node) && node.preview">
+              &nbsp;: <span class="g-text-light">{{node.preview}}</span>
+            </span>
           </fl-text-icon>
-        </div>
 
-
-        <div *ngIf="!treeControl.isExpanded(node) && node.preview">
-          &nbsp;: <span class="g-text-light">{{node.preview}}</span>
-        </div>
       </div>
     </mat-tree-node>
   </mat-tree>
