@@ -402,6 +402,10 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     this.selectedNode = node;
   }
 
+  unselectNode(): void {
+    this.selectedNode = null;
+  }
+
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
