@@ -1,6 +1,7 @@
 import {DateTime} from 'luxon';
 import {ClDateHelper} from '../utils/cl-date.helper';
 import {Transform} from 'class-transformer';
+import {ClTransformFnParams} from './cl-json.converter';
 
 
 /**
@@ -11,12 +12,12 @@ import {Transform} from 'class-transformer';
 export function ClLuxonTransform(): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
-    (date: DateTime) => date?.valueOf() ?? null,
+    (params: ClTransformFnParams<DateTime>) => params.value?.valueOf() ?? null,
     {toPlainOnly: true});
 
   // create date from string
   const transformToClass = Transform(
-    (date: string | null) => date == null ? null : ClDateHelper.getDate(date),
+    (params: ClTransformFnParams<string | null>) => params.value == null ? null : ClDateHelper.getDate(params.value),
     {toClassOnly: true});
 
   return (target: any, key: string): void => {
@@ -33,12 +34,12 @@ export function ClLuxonTransform(): PropertyDecorator {
 export function ClLuxonDateTransform(): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
-    (param: DateTime): string => ClDateHelper.serializeDate(param),
+    (params: ClTransformFnParams<DateTime>): string => ClDateHelper.serializeDate(params.value),
     {toPlainOnly: true});
 
   // convert 'YYYY-MM-DD' to Date
   const transformToClass = Transform(
-    (param: string): DateTime => ClDateHelper.deserializeDate(param),
+    (params: ClTransformFnParams<string>): DateTime => ClDateHelper.deserializeDate(params.value),
     {toClassOnly: true});
 
   return (target: any, key: string): void => {
@@ -55,12 +56,12 @@ export function ClLuxonDateTransform(): PropertyDecorator {
 export function ClLuxonDateTimeTransform(): PropertyDecorator {
   // convert dateTime to ISI
   const transformToPlain = Transform(
-    (param: DateTime): string => ClDateHelper.serializeDateTime(param),
+    (params: ClTransformFnParams<DateTime>): string => ClDateHelper.serializeDateTime(params.value),
     {toPlainOnly: true});
 
   // convert ISO to DateTime
   const transformToClass = Transform(
-    (param: string): DateTime => ClDateHelper.deserializeDateTime(param),
+    (params: ClTransformFnParams<string>): DateTime => ClDateHelper.deserializeDateTime(params.value),
     {toClassOnly: true});
 
   return (target: any, key: string): void => {

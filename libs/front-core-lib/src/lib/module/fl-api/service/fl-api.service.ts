@@ -275,13 +275,16 @@ export class FlApiService {
   /**
    * Convert the classes or object to plain json object
    */
-  private convertObjectToPlain(object: any, serialization: FlHttpOptionSerialization = 'classToPlain'): any {
-    if (object instanceof FormData) {
+  private convertObjectToPlain(object: any, serializationOption: FlHttpOptionSerialization = 'classToPlain'): any {
+    if (object instanceof FormData || serializationOption === 'none') {
       return object;
     }
 
     try {
-      if (serialization === 'classToPlain') {
+      // if a class was provided for the serialization
+      if (typeof serializationOption === 'function') {
+        return ClCoreJsonConvert.classToPlain(object, serializationOption);
+      } else if (serializationOption === 'classToPlain') {
         return ClCoreJsonConvert.classToPlain(object);
       } else {
         return JSON.stringify(object);

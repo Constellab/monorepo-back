@@ -5,6 +5,7 @@ import {FlLazyPropertyTransform, flLazyPropertyTransformToClass} from '@monorepo
 import {LabUnconvertedEntity} from '../model/global/lab-entity.entity';
 import {BioxResourceService} from '../entity-service/biox-resource.service';
 import {UnconvertedResource} from '../model/entities/biox-resource.entity';
+import {ClTransformFnParams} from '@monorepo/core-lib';
 
 /**
  * Annotation to create a FlLazyProperty from a sub object of type {@link LabUnconvertedEntity}
@@ -17,8 +18,8 @@ export function FlLazyPropertyLabTransform<SERVICE, ENTITY>(serviceType: Type<an
                                                               => Observable<ENTITY>): PropertyDecorator {
   // create date from string
   const transformToClass = Transform(
-    (object: LabUnconvertedEntity) => {
-      return flLazyPropertyTransformToClass(object.uri, serviceType, getObs);
+    (params: ClTransformFnParams<LabUnconvertedEntity>) => {
+      return flLazyPropertyTransformToClass(params.value.uri, serviceType, getObs);
     },
     {toClassOnly: true});
 

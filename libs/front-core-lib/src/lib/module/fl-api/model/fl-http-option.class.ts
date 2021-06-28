@@ -1,4 +1,5 @@
 import {HttpHeaders, HttpParams} from '@angular/common/http';
+import {ClClassReference} from '@monorepo/core-lib';
 
 export interface FlHttpGetUrlOption{
   /**
@@ -19,12 +20,15 @@ export interface FlHttpGetUrlOption{
 
 /**
  * Mode for the serialization
- * ClassToPlain use class transformer to convert object
+ * ClassToPlain use class transformer to convert to string
  * Stringify use basic json stringify
+ * None, does not modify the object
+ * If a class reference is provided, the object is converted to this class before
+ * calling the serialization, it is useful when receiving serializing plain object and not classes
  *
- * The default is classToPlain
+ * The default is serialisation
  */
-export type FlHttpOptionSerialization = 'classToPlain' | 'stringify';
+export type FlHttpOptionSerialization = 'classToPlain' | 'stringify' | 'none' | ClClassReference;
 
 export interface FlHttpOption extends FlHttpGetUrlOption{
   headers?: HttpHeaders | {

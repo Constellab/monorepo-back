@@ -1,5 +1,5 @@
 import {Transform} from 'class-transformer';
-import {ClCoreJsonConvert, ClDeserializationRef, ClDeserializeItem, ClSerializeItem} from './cl-json.converter';
+import {ClCoreJsonConvert, ClDeserializationRef, ClDeserializeItem, ClSerializeItem, ClTransformFnParams} from './cl-json.converter';
 import {ClRecordWrapper} from '../model/cl-record-wrapper.class';
 
 
@@ -17,12 +17,12 @@ export function ClRecordWrapperTransform<WRAPPER extends ClRecordWrapper<ITEM>, 
   recordItemReference: new() => ITEM): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
-    (recordWrapper: WRAPPER) => serializeRecordWrapper(recordWrapper, ClCoreJsonConvert.classToPlain),
+    (params: ClTransformFnParams<WRAPPER>) => serializeRecordWrapper(params.value, ClCoreJsonConvert.classToPlain),
     {toPlainOnly: true});
 
   // create date from string
   const transformToClass = Transform(
-    (record: Record<string, any>) => deserializeRecordWrapper(wrapperReference, record,
+    (params: ClTransformFnParams<Record<string, any>>) => deserializeRecordWrapper(wrapperReference, params.value,
       (value: any) => ClCoreJsonConvert.deserializeObject(value, recordItemReference)),
     {toClassOnly: true});
 
@@ -59,12 +59,12 @@ export function ClRecordTransformOverride<T>(deserializeItem: ClDeserializeItem<
                                              classToPlainItem: ClSerializeItem<T> = ClCoreJsonConvert.classToPlain): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
-    (record: Record<string, T>) => classToPlainRecord(record, classToPlainItem),
+    (params: ClTransformFnParams<Record<string, T>>) => classToPlainRecord(params.value, classToPlainItem),
     {toPlainOnly: true});
 
   // create date from string
   const transformToClass = Transform(
-    (record: Record<string, any>) => deserializeRecord(record, deserializeItem),
+    (params: ClTransformFnParams<Record<string, any>>) => deserializeRecord(params.value, deserializeItem),
     {toClassOnly: true});
 
   return (target: any, key: string): void => {

@@ -1,5 +1,5 @@
 import {Transform} from 'class-transformer';
-import {ClCachedObservable, ClHelpService} from '@monorepo/core-lib';
+import {ClCachedObservable, ClHelpService, ClTransformFnParams} from '@monorepo/core-lib';
 import {Type} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {FlGetById} from '../module/fl-api/model/fl-service.class';
@@ -27,15 +27,15 @@ export function FlLazyPropertyTransform<SERVICE, ENTITY>(serviceType: Type<any>,
   if (typeof (serviceType as any).getById === 'function') {
     // create a lazy property from an id
     transformToClass = Transform(
-      (id: string) => {
-        return flLazyPropertyTransformIdToClass(id, serviceType);
+      (params: ClTransformFnParams<string>) => {
+        return flLazyPropertyTransformIdToClass(params.value, serviceType);
       },
       {toClassOnly: true});
   } else if (typeof getObs === 'function') {
     // create a lazy property from an object
     transformToClass = Transform(
-      (unconvertedObject: string) => {
-        return flLazyPropertyTransformToClass(unconvertedObject, serviceType, getObs);
+      (params: ClTransformFnParams<string>) => {
+        return flLazyPropertyTransformToClass(params.value, serviceType, getObs);
       },
       {toClassOnly: true});
   } else {
@@ -44,7 +44,7 @@ export function FlLazyPropertyTransform<SERVICE, ENTITY>(serviceType: Type<any>,
 
   // convert the lazy property back to object on serialization
   const transformToPlain = Transform(
-    (lazyProperty: FlLazyProperty<any>) => lazyProperty.object,
+    (params: ClTransformFnParams<FlLazyProperty<any>>) => params.value.object,
     {toPlainOnly: true}
   );
 

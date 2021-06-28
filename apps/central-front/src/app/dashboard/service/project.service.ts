@@ -1,13 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Project, ProjectDatasource, ProjectStatus, ProjectStatusHistory} from '../../core/model/entities/project.class';
 import {Observable} from 'rxjs';
-import {
-  FlApiCrudService,
-  FlApiService,
-  FlArrayObs,
-  FlEntityArrayObs,
-  FlEntityPaginatedDatasource,
-} from '@monorepo/front-core-lib';
+import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource,} from '@monorepo/front-core-lib';
 import {ClGetPageFunction} from '@monorepo/core-lib';
 
 /**
@@ -16,10 +10,36 @@ import {ClGetPageFunction} from '@monorepo/core-lib';
 @Injectable({
   providedIn: 'root'
 })
-export class ProjectService extends FlApiCrudService<Project, Partial<Project>> {
+export class ProjectService {
 
-  constructor(apiService: FlApiService) {
-    super('projects', Project, apiService);
+  private readonly route: string = 'projects';
+
+  constructor(private apiService: FlApiService) {
+  }
+
+  /**
+   * Call http create
+   * @param object json object
+   */
+  public create(object: Partial<Project>): Observable<Project> {
+    return this.apiService.post(this.route, object, Project, {serialization: Project});
+  }
+
+
+  /**
+   * Call http update
+   * @param object json object
+   */
+  public update(object: Partial<Project>): Observable<Project> {
+    return this.apiService.put(this.route, object, Project, {serialization: Project});
+  }
+
+  /**
+   * Call a http get one by id
+   * @param id id of the entity
+   */
+  public getById(id: string): Observable<Project> {
+    return this.apiService.getById(this.route, id, Project);
   }
 
   /**

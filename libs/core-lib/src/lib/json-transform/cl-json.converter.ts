@@ -1,5 +1,5 @@
 import {ClHelpService} from '../utils/cl-help.service';
-import {classToPlain, plainToClass, serialize} from 'class-transformer';
+import {classToPlain, ClassTransformOptions, plainToClass, serialize, TransformationType} from 'class-transformer';
 import {ClClassReference} from '../model/cl-class-reference.class';
 
 /**
@@ -8,15 +8,15 @@ import {ClClassReference} from '../model/cl-class-reference.class';
  */
 
 /**
- * PAram of the transform methods, use form class-transformer v 0.4
+ * Param of the transform methods
  */
-// export interface FlTransformFnParams<T = any> {
-//   value: T;
-//   key: string;
-//   obj: any;
-//   type: TransformationType;
-//   options: ClassTransformOptions;
-// }
+export interface ClTransformFnParams<T = any> {
+  value: T;
+  key: string;
+  obj: any;
+  type: TransformationType;
+  options: ClassTransformOptions;
+}
 
 
 // type of method to serialize item
@@ -73,18 +73,31 @@ export class ClCoreJsonConvert {
    * Tries to serialize a TypeScript object or array of objects to JSON.
    *
    * @param data object or array of objects
+   * @param useClass if a class is provided, the class object is created and data assign to it before serialization
    */
-  public static serialize<T>(data: T | T[]): string {
-    return serialize(data);
+  public static serialize<T>(data: T | T[], useClass?: ClClassReference): string {
+    return serialize(ClCoreJsonConvert.getObject(data, useClass));
   }
 
   /**
    * Tries to serialize a TypeScript object or array of objects to JSON.
    *
    * @param data object or array of objects
+   * @param useClass if a class is provided, the class object is created and data assign to it before class to plain
    */
-  public static classToPlain<T>(data: T | T[]): any | any[] {
-    return classToPlain(data);
+  public static classToPlain<T>(data: T | T[], useClass?: ClClassReference): any | any[] {
+    return classToPlain(ClCoreJsonConvert.getObject(data, useClass));
+  }
+
+  // for serialization and classToPlain, it creates the class and assign property to if if a class reference is provided
+  private static getObject(data: any, useClass?: ClClassReference): any {
+    // if we need to use a class for serialization
+    if (useClass) {
+      // create the class and assign object property to it
+      return Object.assign(new useClass(), data);
+    } else {
+      return data;
+    }
   }
 
 

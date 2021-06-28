@@ -1,7 +1,7 @@
 import {BaseEntity} from './base-entity.class';
 import {StatusHistory} from './status-history.class';
 import {DateTime} from 'luxon';
-import {ClLuxonTransform} from '@monorepo/core-lib';
+import {ClLuxonDateTransform} from '@monorepo/core-lib';
 import {
   FlEntityPaginatedDatasource,
   FlGetStatusClassColorFunction,
@@ -37,10 +37,10 @@ export class Project extends BaseEntity {
   @FlSanitizeTransform(SecurityContext.HTML)
   description: string;
 
-  @ClLuxonTransform()
+  @ClLuxonDateTransform()
   startingDate: DateTime;
 
-  @ClLuxonTransform()
+  @ClLuxonDateTransform()
   endingDate: DateTime;
 
   @Type(() => ProjectStatusHistory)
