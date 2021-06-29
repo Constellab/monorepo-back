@@ -1,12 +1,10 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
-import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
 import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {BioxConnection, BioxFlow} from '../../../../../core/model/global/biox-connection.class';
 import {BioxResourcePortalComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-portal/biox-resource-portal.component';
 import {ConnectedPosition} from '@angular/cdk/overlay';
 import {WorkflowConnection} from '../../model/workflow-connection.class';
-import {BioxProcessSpecService} from '../../../../../core/entity-service/biox-process-spec.service';
 import {BioxProtocolLink} from '../../../../../core/model/entities/biox-protocol-link.entity';
 import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
 import {BioxProtocol} from '../../../../../core/model/entities/proccesable/biox-protocol.entity';
@@ -21,15 +19,10 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   @ViewChild('workflow', {static: false}) container: ElementRef<HTMLElement>;
 
-  protocol: BioxFlow<BioxProtocol>;
-
-
   flowIsLoading: boolean = false;
   error: boolean = false;
 
   constructor(private workflowManagerService: WorkflowManagerState,
-              private bioxProtocolService: BioxProtocolService,
-              private bioxProcessTypeService: BioxProcessSpecService,
               private portalService: FlPortalService,
               private experimentState: BioxExperimentDetailPageState) {
   }
@@ -42,7 +35,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   private loadExperimentFlow(): void {
     this.flowIsLoading = true;
-    this.bioxProtocolService.getProtocolAsFlow(this.experimentState.currentExperiment.protocol.id).subscribe(
+    this.experimentState.getFlow$().subscribe(
       flow => this.loadExperimentFlowSuccess(flow),
       () => this.onError()
     );
@@ -50,7 +43,6 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
   private loadExperimentFlowSuccess(flow: BioxFlow<BioxProtocol>): void {
     this.workflowManagerService.init(this.container.nativeElement, flow, this.experimentState.currentExperiment);
-    this.protocol = flow;
     this.flowIsLoading = false;
 
     this.workflowManagerService.onConnectionSelected().subscribe(

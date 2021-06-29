@@ -1,20 +1,13 @@
 <mat-drawer-container class="g-page page" [hasBackdrop]="false">
 
-
+  l
   <!-- content of the page -->
   <mat-drawer-content fxFlex="auto">
     <fl-async-section [object]="experiment$" fxFlex="auto" class="section">
 
       <ng-container *flSectionBody="let experiment">
         <div fxLayout="column" class="g-full-height">
-          <gen-biox-experiment-card [experiment]="experiment">
-
-            <button mat-icon-button type="button" (click)="openUpdateDialog()"
-                    [matTooltip]="'biox.update_experiment' | translate">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </gen-biox-experiment-card>
-
+          <gen-biox-experiment-detail-card></gen-biox-experiment-detail-card>
 
           <!--    Workflow of experiment      -->
           <gen-biox-workflow fxFlex="auto"></gen-biox-workflow>

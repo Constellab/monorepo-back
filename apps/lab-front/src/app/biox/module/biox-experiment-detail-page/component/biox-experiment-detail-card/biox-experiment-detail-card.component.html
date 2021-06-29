@@ -1,0 +1,35 @@
+<fl-card *ngIf="experiment$ | async as experiment">
+
+  <fl-card-header>
+    <h1>{{experiment.data.title}}</h1>
+
+    <fl-card-actions>
+
+      <button mat-icon-button type="button" (click)="toggleDetail()">
+        <mat-icon>{{expandIcon}}</mat-icon>
+      </button>
+
+      <button mat-icon-button type="button" (click)="openUpdateDialog()"
+              [matTooltip]="'biox.update_experiment' | translate">
+        <mat-icon>edit</mat-icon>
+      </button>
+
+      <fl-status-chip [status]="experiment" mode="iconText"
+                      class="status" (click)="openProgressInformation()"
+                      [ngClass]="{'g-clickable': experiment.getStatusName() !== 'draft'}"></fl-status-chip>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body *ngIf="showDetail">
+
+    <fl-limit-height [maxHeight]="100">
+      <div [innerHTML]="experiment.data.description"></div>
+    </fl-limit-height>
+  </fl-card-body>
+
+  <fl-card-footer>
+    <p class="g-text-small g-text-light">
+      {{'last_modified_the'| translate}} {{experiment.savedAt | flDate}}
+    </p>
+  </fl-card-footer>
+</fl-card>

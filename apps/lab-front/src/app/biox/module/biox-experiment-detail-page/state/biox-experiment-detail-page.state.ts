@@ -3,21 +3,29 @@ import {BioxExperimentService} from '../../../../core/entity-service/biox-experi
 import {BehaviorSubject, Observable} from 'rxjs';
 import {BioxExperiment} from '../../../../core/model/entities/biox-experiment.entity';
 import {filter} from 'rxjs/operators';
+import {BioxFlow} from '../../../../core/model/global/biox-connection.class';
+import {BioxProtocol} from '../../../../core/model/entities/proccesable/biox-protocol.entity';
+import {BioxProtocolService} from '../../../../core/entity-service/biox-protocol.service';
 
 @Injectable()
 export class BioxExperimentDetailPageState {
 
   private experiment$: BehaviorSubject<BioxExperiment>;
 
+  // flow of the experiment
+  private flow$: BehaviorSubject<BioxFlow<BioxProtocol>>;
+
   // does not emit experiment until ready is true
   private ready: boolean = false;
 
-  constructor(private bioxExperimentService: BioxExperimentService) {
+  constructor(private bioxExperimentService: BioxExperimentService,
+              private bioxProtocolService: BioxProtocolService) {
   }
 
   public init(experimentId: string): void {
     this.ready = false;
-    this.experiment$ = new BehaviorSubject<BioxExperiment>(null);
+    this.experiment$ = new BehaviorSubject(null);
+    this.flow$ = new BehaviorSubject(null);
     this.bioxExperimentService.getExperiment(experimentId).subscribe(
       experiment => this.getExperimentSuccess(experiment),
       error => this.experiment$.error(error)
@@ -27,6 +35,9 @@ export class BioxExperimentDetailPageState {
   private getExperimentSuccess(experiment: BioxExperiment): void {
     this.ready = true;
     this.experiment$.next(experiment);
+
+    // load flow
+    this.loadFlow(experiment.protocol.id);
   }
 
   public getExperiment$(): Observable<BioxExperiment> {
@@ -39,15 +50,42 @@ export class BioxExperimentDetailPageState {
     return this.experiment$.value;
   }
 
-  public clear(): void {
-    this.experiment$.complete();
-  }
 
   public isEditable(): boolean {
     return this.currentExperiment.isEditable();
   }
 
-  public updateExperiment(experiment: BioxExperiment): void{
+  public updateExperiment(experiment: BioxExperiment): void {
     this.experiment$.next(experiment);
+  }
+
+
+  /////////////////////////////////// FLOW ////////////////////////////////////
+
+  private loadFlow(protocolId: string): void {
+    this.bioxProtocolService.getProtocolAsFlow(protocolId).subscribe(
+      flow => this.loadFlowSuccess(flow)
+    );
+  }
+
+  private loadFlowSuccess(flow: BioxFlow<BioxProtocol>): void {
+    this.flow$.next(flow);
+  }
+
+
+  public getFlow$(): Observable<BioxFlow<BioxProtocol>> {
+    return this.flow$.asObservable().pipe(
+      filter(flow => flow != null)
+    );
+  }
+
+  public getFlowPromise(): Promise<BioxFlow<BioxProtocol>> {
+    return this.getFlow$().toPromise();
+  }
+
+  ////////////////////// OTHER ///////////////////////
+  public clear(): void {
+    this.experiment$.complete();
+    this.flow$.complete();
   }
 }

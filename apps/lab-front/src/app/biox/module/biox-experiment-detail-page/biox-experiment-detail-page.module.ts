@@ -20,11 +20,13 @@ import {BioxWorkflowDrawerActionComponent} from './component/biox-workflow-drawe
 import {BioxWorkflowAddProcessComponent} from './component/biox-workflow-add-process/biox-workflow-add-process.component';
 import {BioxWorkflowPortsListComponent} from './component/biox-workflow-ports-list/biox-workflow-ports-list.component';
 import {BioxWorkflowNodeConfigComponent} from './component/biox-workflow-node-config/biox-workflow-node-config.component';
-import {BioxWorkflowNodeProgressComponent} from './component/biox-workflow-node-progress/biox-workflow-node-progress.component';
+import {BioxProgressBarInfoComponent} from './component/biox-progress-bar-info/biox-progress-bar-info.component';
 import {BioxProcessSourceConfigComponent} from './component/biox-process-source-config/biox-process-source-config.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BioxWorkflowNodeDetailState} from './state/biox-workflow-node-detail.state';
 import {BioxProcessableCoreModule} from '../../../core/entity-module/biox-processable-core/biox-processable-core.module';
+import {BioxExperimentDetailCardComponent} from './component/biox-experiment-detail-card/biox-experiment-detail-card.component';
+import {BioxProgressBarInfoDialogComponent} from './component/biox-progress-bar-info-dialog/biox-progress-bar-info-dialog.component';
 
 
 @NgModule({
@@ -40,8 +42,10 @@ import {BioxProcessableCoreModule} from '../../../core/entity-module/biox-proces
     BioxWorkflowAddProcessComponent,
     BioxWorkflowPortsListComponent,
     BioxWorkflowNodeConfigComponent,
-    BioxWorkflowNodeProgressComponent,
+    BioxProgressBarInfoComponent,
     BioxProcessSourceConfigComponent,
+    BioxExperimentDetailCardComponent,
+    BioxProgressBarInfoDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -55,6 +59,7 @@ import {BioxProcessableCoreModule} from '../../../core/entity-module/biox-proces
     BioxProcessableCoreModule,
   ],
   providers: [
+    // declare the state here otherwise the angular element can't access them
     WorkflowManagerState,
     WorkflowActionState,
     BioxExperimentDetailPageState,

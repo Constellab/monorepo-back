@@ -33,6 +33,7 @@
     "resource_text_load": "Load more text",
     "resource_type_select": "Select a resource type",
     "resource_select": "Select a resource",
-    "process_type_type": "Type"
+    "process_type_type": "Type",
+    "execution_time": "Execution time"
   }
 }
