@@ -23,8 +23,8 @@ export class BioxProgressBarData extends LabBaseEntity {
   @Expose({name: 'average_speed'})
   averageSpeed: number;
 
+  // time when the execution ended
   @Expose({name: 'current_time'})
-    // @ClLuxonDateTimeTransform()
   currentTime: number;
 
   // duration of the process in second
@@ -42,8 +42,8 @@ export class BioxProgressBarData extends LabBaseEntity {
   @Expose({name: 'remaining_time'})
   remainingTime: number;
 
+  // time when the execution started
   @Expose({name: 'start_time'})
-    // @ClLuxonDateTimeTransform()
   startTime: number;
 
   value: number;

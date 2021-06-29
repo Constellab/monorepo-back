@@ -151,8 +151,7 @@ export class ClDateHelper {
     } else if (typeof date === 'number') {
       return DateTime.fromMillis(date);
     } else if (typeof date === 'string') {
-      // todo enlever le replace lorque l'api python renverra une bonne date
-      return DateTime.fromISO(date.replace(' ', 'T'));
+      return DateTime.fromISO(date);
     }
 
     throw new Error('Wrong input for to create date');
