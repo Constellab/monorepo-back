@@ -1,12 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
-import {BioxExperiment, ExperimentUpdate} from '../../../../../core/model/entities/biox-experiment.entity';
-import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
+import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
 import {FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
-import {ClCoreJsonConvert} from '@monorepo/core-lib';
 import {WorkflowActionState} from '../../state/workflow-action-state';
-import {BioxProtocolGraph} from '../../../../../core/model/entities/proccesable/biox-protocol.entity';
 
 /**
  * Actions button for the workflow
@@ -53,26 +50,13 @@ export class BioxWorkflowActionsComponent implements OnInit {
 
   save(): void {
     const experiment: BioxExperiment = this.workflowManager.getExperiment();
-
-    // convert the workflow to a protocol
-    const graph: BioxProtocolGraph = BioxExperimentFlowFactory.convertWorkflowToProtocol(this.workflowManager.workflow);
-
-    // build update object
-    const experimentUpdate: ExperimentUpdate = {
-      title: experiment.data.title,
-      description: experiment.data.description,
-      graph: graph
-    };
-
-    console.log(experimentUpdate);
-    console.log(ClCoreJsonConvert.classToPlain(experimentUpdate));
-
     this.saveIsLoading = true;
-    this.bioxExperimentService.update(experiment.id, experimentUpdate).subscribe(
+    this.bioxExperimentService.updateExperimentProtocol(experiment, this.workflowManager.workflow).subscribe(
       newExp => this.onSaveSuccess(newExp),
       () => this.saveIsLoading = false
     );
   }
+
 
   private onSaveSuccess(experiment: BioxExperiment): void {
     console.log(experiment);
@@ -84,7 +68,7 @@ export class BioxWorkflowActionsComponent implements OnInit {
     const experiment: BioxExperiment = this.workflowManager.getExperiment();
 
     this.startIsLoading = true;
-    this.bioxExperimentService.startExperiment(experiment.id).subscribe(
+    this.bioxExperimentService.saveAndStartExperiment(experiment, this.workflowManager.workflow).subscribe(
       result => this.onStartSuccess(result),
       () => this.startIsLoading = false
     );

@@ -1,9 +1,13 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm} from '../model/entities/biox-experiment.entity';
+import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm, ExperimentUpdate} from '../model/entities/biox-experiment.entity';
 import {createViewModel} from '../model/global/view-model.entity';
 import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
+import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/workflow.class';
+import {BioxProtocolGraph} from '../model/entities/proccesable/biox-protocol.entity';
+import {BioxExperimentFlowFactory} from '../utils/biox-experiment-flow.factory';
+import {mergeMap} from 'rxjs/operators';
 
 
 @Injectable({
@@ -41,8 +45,28 @@ export class BioxExperimentService {
     return this.apiService.put(`experiment/${experimentId}`, experiment, BioxExperiment);
   }
 
+  public updateExperimentProtocol(experiment: BioxExperiment, workflow: Workflow): Observable<BioxExperiment> {
+    // convert the workflow to a protocol
+    const graph: BioxProtocolGraph = BioxExperimentFlowFactory.convertWorkflowToProtocol(workflow);
+
+    // build update object
+    const experimentUpdate: ExperimentUpdate = {
+      title: experiment.data.title,
+      description: experiment.data.description,
+      graph: graph
+    };
+
+    return this.update(experiment.id, experimentUpdate);
+  }
+
   // launch an experiment
   public startExperiment(experimentId: string): Observable<BioxExperiment> {
     return this.apiService.post(`experiment/${experimentId}/start`, createViewModel(BioxExperiment));
+  }
+
+  public saveAndStartExperiment(experiment: BioxExperiment, workflow: Workflow): Observable<BioxExperiment> {
+    return this.updateExperimentProtocol(experiment, workflow).pipe(
+      mergeMap(() => this.startExperiment(experiment.id))
+    );
   }
 }
