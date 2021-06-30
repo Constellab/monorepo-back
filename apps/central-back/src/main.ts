@@ -13,7 +13,7 @@ async function bootstrap(): Promise<void> {
     optionsSuccessStatus: 204,
     credentials: true,
     allowedHeaders:
-      'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,X-Forwarded-for,lang',
+      'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,X-Forwarded-for,lang,If-None-Match',
   });
 
   await app.listen(3001);
