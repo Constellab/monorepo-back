@@ -12,6 +12,7 @@ async function bootstrap(): Promise<void> {
     preflightContinue: false,
     optionsSuccessStatus: 204,
     credentials: true,
+    // header If-None-Match useful for Safari with service workers
     allowedHeaders:
       'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,X-Forwarded-for,lang,If-None-Match',
   });
