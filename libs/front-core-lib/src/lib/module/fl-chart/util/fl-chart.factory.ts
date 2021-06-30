@@ -11,7 +11,7 @@ import {FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
 import {FlChartHistogramMultiRenderer} from '../renderer/fl-chart-histogram-multi.renderer';
 import {FlChart2dBrush, FlChart2dBrushX} from '../model/fl-chart-2d-brush.class';
 import {FlChartBoxPlotMultiRenderer} from '../renderer/fl-chart-box-plot-multi.renderer';
-import {FlChart2dMultiSerie} from '../model/fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from '../model/data/fl-chart-2d-multi-serie.class';
 
 export class FlChartFactory {
 
@@ -26,7 +26,8 @@ export class FlChartFactory {
       case FlChartComponentType.SCATTER_PLOT:
         return this.buildScatterPlotMultiContainer(chartSVG, data, seriesColorScale);
       case FlChartComponentType.BAR_PLOT:
-        return this.buildHistogramMultiContainer(chartSVG, data, seriesColorScale);
+      case FlChartComponentType.HISTOGRAM:
+        return this.buildBarPlotMultiContainer(chartSVG, data, seriesColorScale);
       case FlChartComponentType.BOX_PLOT:
         return this.buildBoxPlotMultiContainer(chartSVG, data, seriesColorScale);
     }
@@ -44,7 +45,7 @@ export class FlChartFactory {
 
     const renderer = new FlChartScatterPlotMultiRenderer(seriesColorScale);
 
-    return this.buildLinear2dMultiContainer(chartSVG, dataContainer, [renderer]);
+    return this.buildLinear2dMultiContainer(chartSVG, dataContainer, [renderer], 0.5);
   }
 
   /**
@@ -63,9 +64,9 @@ export class FlChartFactory {
   }
 
   /**
-   * Build a Histogram multi container
+   * Build a Bar plot multi container
    */
-  private static buildHistogramMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
+  private static buildBarPlotMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
                                               seriesColorScale: FlChartScaleColor)
     : FlChartContainer2d<FlChart2dMultiSerie<any>> {
 
@@ -73,14 +74,14 @@ export class FlChartFactory {
 
     // build the x axis and scale based on ScaleBand
     const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleBand()
-      .setInitialDomain(dataContainer.getDomainX())
+      .setInitialDomain(dataContainer.getDomainXComplete())
       .range(chartContainer.getRangeX());
     const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
       .setTickFormat(dataContainer.axisXLabelFormat);
 
     // build the y axis and scale linear
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
-      .setInitialDomain([0, dataContainer.getDomainY()[1]])
+      .setInitialDomain([0, dataContainer.getDomainYLinear()[1]])
       .range(chartContainer.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
@@ -96,6 +97,7 @@ export class FlChartFactory {
 
     return chartContainer;
   }
+
 
   /**
    * Build a Box plot multi container
@@ -117,7 +119,7 @@ export class FlChartFactory {
 
     // build the y axis and scale linear
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
-      .setInitialDomain(dataContainer.getDomainY())
+      .setInitialDomain(dataContainer.getDomainYLinear())
       .range(chartContainer.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
@@ -137,20 +139,21 @@ export class FlChartFactory {
    * Build a linear multi chart container such as ScatterPlot Multi of Line Multi
    */
   private static buildLinear2dMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                             renderers: FlChart2dRendererMultiple<FlChart2dMultiSerie<any>>[]):
+                                             renderers: FlChart2dRendererMultiple<FlChart2dMultiSerie<any>>[],
+                                             extendXDomain: number = 0):
     FlChartContainer2d<FlChart2dMultiSerie<any>> {
     const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
 
     // Build X axis
     const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
-      .setInitialDomain(dataContainer.getDomainX())
+      .setInitialDomain(dataContainer.getDomainXLinear(extendXDomain))
       .range(chartContainer.getRangeX());
     const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
       .setTickFormat(dataContainer.axisXLabelFormat);
 
     // Build Y axis
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
-      .setInitialDomain(dataContainer.getDomainY())
+      .setInitialDomain(dataContainer.getDomainYLinear())
       .range(chartContainer.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 

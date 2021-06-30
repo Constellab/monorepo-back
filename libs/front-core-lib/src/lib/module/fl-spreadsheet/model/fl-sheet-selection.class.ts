@@ -100,20 +100,20 @@ export class FlSheetSelection extends FlSheetSelectionRange {
   }
 
 
-  public getSelectedCellsFlat(): FlCell[] {
+  public getCellsFlat(): FlCell[] {
     return this.sheet.getCellsFromRangeFlat(this);
   }
 
-  public getSelectedCells(): FlCell[][] {
+  public getCells(): FlCell[][] {
     return this.sheet.getCellsFromRange(this);
   }
 
-  public getSelectedCellsValues(): any[][] {
-    return this.getSelectedCells().map(rows => rows.map(cell => cell.value));
+  public getCellsValues(): any[][] {
+    return this.getCells().map(rows => rows.map(cell => cell.value));
   }
 
-  public getSelectedCellsValuesFlat(): any[] {
-    return this.getSelectedCellsFlat().map(cell => cell.value);
+  public getCellsValuesFlat(): any[] {
+    return this.getCellsFlat().map(cell => cell.value);
   }
 
   /**

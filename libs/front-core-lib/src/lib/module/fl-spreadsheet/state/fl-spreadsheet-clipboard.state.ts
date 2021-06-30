@@ -29,7 +29,7 @@ export class FlSpreadsheetClipboardState {
     const selection = this.selectionState.currentSelection;
 
     if (selection) {
-      const cellsValues: string[][] = selection.getSelectedCellsValues().map(rows =>
+      const cellsValues: string[][] = selection.getCellsValues().map(rows =>
         rows.map(value => value?.toString() ?? null));
 
       this.clipboard.copy(this.convertCellsValuesToText(cellsValues));

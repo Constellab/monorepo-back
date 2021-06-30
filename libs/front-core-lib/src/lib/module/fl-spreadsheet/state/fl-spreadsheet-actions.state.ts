@@ -37,7 +37,7 @@ export class FlSpreadsheetActions {
     const sheet: FlSheet = this.state.currentSheet;
 
     const action: FlSheetAction = new FlUpdateCellsAction(sheet.id,
-      selection.exportToRange(), newValues, selection.getSelectedCellsValues());
+      selection.exportToRange(), newValues, selection.getCellsValues());
     this.actionStore.executeNewAction(action);
   }
 
@@ -72,7 +72,7 @@ export class FlSpreadsheetActions {
     const selection: FlSheetSelection = this.selectionState.currentSelection;
 
     const action: FlSheetAction = new FlDeleteColumnAction(sheet.id,
-      selection.exportToRange(), selection.getSelectedCellsValues());
+      selection.exportToRange(), selection.getCellsValues());
 
     // clear selection after to avoid weird selection
     // before the execution, otherwise the current selection is not correct
@@ -86,7 +86,7 @@ export class FlSpreadsheetActions {
     const selection: FlSheetSelection = this.selectionState.currentSelection;
 
     const action: FlSheetAction = new FlDeleteRowAction(sheet.id,
-      selection.exportToRange(), selection.getSelectedCellsValues());
+      selection.exportToRange(), selection.getCellsValues());
 
     // clear selection after to avoid weird selection
     // before the execution, otherwise the current selection is not correct

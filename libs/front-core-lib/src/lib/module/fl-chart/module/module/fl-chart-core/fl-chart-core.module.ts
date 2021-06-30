@@ -7,6 +7,7 @@ import {FlTranslateModule} from '../../../../fl-translate/fl-translate.module';
 import {FlChartBoxPlotDataPortalComponent} from './component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
 import {FlChartSerieInlineComponent} from './component/fl-chart-serie-inline/fl-chart-serie-inline.component';
 import {FlChartScalePipe} from './pipe/fl-chart-scale.pipe';
+import {FlChartBinDataPortalComponent} from './component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
 
 
 /**
@@ -18,13 +19,15 @@ import {FlChartScalePipe} from './pipe/fl-chart-scale.pipe';
     FlChartDataWithSeriePortalComponent,
     FlChartBoxPlotDataPortalComponent,
     FlChartSerieInlineComponent,
-    FlChartScalePipe
+    FlChartScalePipe,
+    FlChartBinDataPortalComponent
   ],
   exports: [
     FlChartLegendComponent,
     FlChartDataWithSeriePortalComponent,
     FlChartBoxPlotDataPortalComponent,
-    FlChartScalePipe
+    FlChartScalePipe,
+    FlChartBinDataPortalComponent
   ],
   imports: [
     CommonModule,

@@ -1,7 +1,6 @@
-import {FlChartHeatMapDatum} from '../../../../model/fl-chart-2d-data.class';
 import {FlChartAxisScaleBand} from '../../../../model/fl-chart-scale.class';
 
-export class FlChartHeatMap<Datum extends FlChartHeatMapDatum> {
+export class FlChartHeatMap<Datum extends any> {
 
 
   public xScale: FlChartAxisScaleBand;

@@ -1,6 +1,6 @@
 import {Selection} from 'd3-selection';
 import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
-import {FlChart2dDataContainerI} from './fl-chart-2d-data.class';
+import {FlChart2dDataContainerI} from './data/fl-chart-2d-data.class';
 import {FlChartAxis} from './fl-chart-axis.class';
 import {ClHelpService} from '@monorepo/core-lib';
 

@@ -84,7 +84,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   }
 
   private selectCellsFromSelection(selection: FlSheetSelection): void {
-    const cells: FlCell[] = selection.getSelectedCellsFlat();
+    const cells: FlCell[] = selection.getCellsFlat();
 
     for (const cell of cells) {
       cell.select(selection);
@@ -92,7 +92,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   }
 
   private unSelectCellsFromSelection(selection: FlSheetSelection): void {
-    const cells: FlCell[] = selection.getSelectedCellsFlat();
+    const cells: FlCell[] = selection.getCellsFlat();
 
     for (const cell of cells) {
       cell.unselect();

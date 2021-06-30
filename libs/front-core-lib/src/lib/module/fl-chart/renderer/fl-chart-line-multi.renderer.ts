@@ -1,11 +1,11 @@
-import {FlChart2dDatum} from '../model/fl-chart-2d-data.class';
+import {FlChart2dDatum} from '../model/data/fl-chart-2d-data.class';
 import * as d3 from 'd3';
 import {Numeric} from 'd3';
 import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
 import {FlChartAxisScale} from '../model/fl-chart-scale.class';
 import {ValueFn} from 'd3-selection';
-import {FlChart2dSerie} from '../model/fl-chart-2d-serie.class';
-import {FlChart2dMultiSerie} from '../model/fl-chart-2d-multi-serie.class';
+import {FlChart2dSerie} from '../model/data/fl-chart-2d-serie.class';
+import {FlChart2dMultiSerie} from '../model/data/fl-chart-2d-multi-serie.class';
 
 
 /**

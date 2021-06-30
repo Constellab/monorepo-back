@@ -1,8 +1,7 @@
-import * as d3 from 'd3';
 import {Numeric} from 'd3';
 import {FlChart2dDataContainerI, FlChart2dDatum, FlChartAxisTickFormat} from './fl-chart-2d-data.class';
 import {FlChart2dSerie, FlChartDataWithSerie} from './fl-chart-2d-serie.class';
-import {FlChartDomain} from './fl-chart-domain.class';
+import {FlChartDomain} from '../fl-chart-domain.class';
 
 export class FlChart2dMultiSerie<Data extends FlChart2dDatum> implements FlChart2dDataContainerI<Data> {
 
@@ -10,11 +9,8 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> implements FlChart
 
   axisXLabelFormat: FlChartAxisTickFormat | null;
 
-  domainX: FlChartDomain;
 
-
-  constructor(domainX: FlChartDomain, series: FlChart2dSerie<Data>[] = []) {
-    this.domainX = domainX;
+  constructor(series: FlChart2dSerie<Data>[] = []) {
     this.series = series;
   }
 
@@ -25,13 +21,16 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> implements FlChart
     return data;
   }
 
-
-  getDomainX(): Numeric[] {
-    return this.domainX.getDomain(this.getData(), (data) => data.getX());
+  getDomainXLinear(extendDomain: number = 0): [Numeric, Numeric] {
+    return FlChartDomain.getLinearDomain(this.getData().map(data => data.getX().valueOf()), extendDomain);
   }
 
-  getDomainY(): [Numeric, Numeric] {
-    return d3.extent(this.getData(), (data: Data) => data.getY());
+  getDomainXComplete(): Numeric[] {
+    return FlChartDomain.getCompleteDomain(this.getData().map(data => data.getX().valueOf()));
+  }
+
+  getDomainYLinear(extendDomain: number = 0): [Numeric, Numeric] {
+    return FlChartDomain.getLinearDomain(this.getData().map(data => data.getY().valueOf()), extendDomain);
   }
 
   public addSerie(serie: FlChart2dSerie<Data>): void {

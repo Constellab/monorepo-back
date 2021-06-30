@@ -1,5 +1,4 @@
 import {FlChart2dDataContainer, FlChart2dDatum} from './fl-chart-2d-data.class';
-import {FlChartDomain} from './fl-chart-domain.class';
 
 /**
  * Key to distingue a serie form another
@@ -19,8 +18,8 @@ export class FlChart2dSerie<Data extends FlChart2dDatum> extends FlChart2dDataCo
 
   name: string;
 
-  constructor(data: Data[], domainX: FlChartDomain, serieName: string) {
-    super(data, domainX);
+  constructor(data: Data[], serieName: string) {
+    super(data);
     this.key = FlChart2dSerie.key++;
     this.name = serieName;
   }

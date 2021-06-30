@@ -107,7 +107,7 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
 
     if (selection != null) {
       // construct an array of null values the same size as the selection
-      const cellsValues: void[][] = selection.getSelectedCells().map(rows =>
+      const cellsValues: void[][] = selection.getCells().map(rows =>
         rows.map(() => null));
       this.actionState.updateCellsValues(cellsValues, selection);
     }

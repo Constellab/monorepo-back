@@ -36,10 +36,10 @@ export const flChartComponentTypeSelectOptions: FlChartComponentTypeSelectOption
     component: FlChartComponentType.BAR_PLOT,
     icon: 'bar_chart'
   },
-  // {
-  //   component: FlChartComponentType.HISTOGRAM,
-  //   icon: 'bar_chart'
-  // },
+  {
+    component: FlChartComponentType.HISTOGRAM,
+    icon: 'bar_chart'
+  },
   {
     component: FlChartComponentType.BOX_PLOT,
     icon: 'multiline_chart'

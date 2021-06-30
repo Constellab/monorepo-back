@@ -19,12 +19,16 @@ export * from './module/module/fl-chart-pathway/public-api';
 export * from './model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
 export * from './model/portal-handler/fl-chart-portal-handler.class';
 
+// Data
+export * from './model/data/fl-chart-2d-data.class';
+export * from './model/data/fl-chart-2d-multi-serie.class';
+export * from './model/data/fl-chart-2d-serie.class';
+export * from './model/data/fl-chart-box-plot-data.class';
+export * from './model/data/fl-chart-data-bin.class';
+
 export * from './model/fl-chart-2d-brush.class';
-export * from './model/fl-chart-2d-data.class';
 export * from './model/fl-chart-2d-hover.class';
-export * from './model/fl-chart-2d-multi-serie.class';
 export * from './model/fl-chart-2d-renderer.class';
-export * from './model/fl-chart-2d-serie.class';
 export * from './model/fl-chart-axis.class';
 export * from './model/fl-chart-component.class';
 export * from './model/fl-chart-container.class';

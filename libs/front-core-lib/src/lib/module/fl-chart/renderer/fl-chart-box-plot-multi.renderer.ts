@@ -1,18 +1,18 @@
 import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
 import {Numeric, select} from 'd3';
-import {FlChart2dSerie} from '../model/fl-chart-2d-serie.class';
-import {FlChart2dDatum} from '../model/fl-chart-2d-data.class';
+import {FlChart2dSerie} from '../model/data/fl-chart-2d-serie.class';
+import {FlChart2dDatum} from '../model/data/fl-chart-2d-data.class';
 import {FlChartAxisScale, FlChartAxisScaleBand} from '../model/fl-chart-scale.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {flRootInjector} from '../../../utils/fl-root-injector';
 import {FlThemeService} from '../../../service/fl-theme.service';
-import {FlChartBoxPlotData, flChartGetBoxPlotData} from '../model/fl-chart-box-plot-data.class';
+import {FlChartBoxPlotData, flChartGetBoxPlotData} from '../model/data/fl-chart-box-plot-data.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
 import {
   FlChartBoxPlotDataPortalComponent,
   FlChartBoxPlotDataPortalInput
 } from '../module/module/fl-chart-core/component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
-import {FlChart2dMultiSerie} from '../model/fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from '../model/data/fl-chart-2d-multi-serie.class';
 
 
 export class FlChartBoxPlotMultiRenderer

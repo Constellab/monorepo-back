@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FlChartBoxPlotData, flChartGetBoxPlotData} from '../../../../../model/fl-chart-box-plot-data.class';
-import {FlChart2dSerie} from '../../../../../model/fl-chart-2d-serie.class';
-import {FlChart2dDatum} from '../../../../../model/fl-chart-2d-data.class';
+import {FlChartBoxPlotData, flChartGetBoxPlotData} from '../../../../../model/data/fl-chart-box-plot-data.class';
+import {FlChart2dSerie} from '../../../../../model/data/fl-chart-2d-serie.class';
+import {FlChart2dDatum} from '../../../../../model/data/fl-chart-2d-data.class';
 import {FlChartScaleColor} from '../../../../../model/fl-chart-scale-color.class';
 import {FL_PORTAL_DATA} from '../../../../../../fl-portal/model/fl-portal.class';
 

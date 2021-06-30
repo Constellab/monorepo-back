@@ -2,7 +2,7 @@ import {Selection} from 'd3-selection';
 import {Numeric} from 'd3';
 import {FlChartAxisScale} from './fl-chart-scale.class';
 import {FlChartScaleColor} from './fl-chart-scale-color.class';
-import {FlChart2dMultiSerie} from './fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from './data/fl-chart-2d-multi-serie.class';
 
 /**
  * Object needed by the renderer to renderer the chart

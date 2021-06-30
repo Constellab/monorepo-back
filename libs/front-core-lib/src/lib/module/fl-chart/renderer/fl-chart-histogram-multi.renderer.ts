@@ -1,10 +1,19 @@
 import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
 import {Numeric, select} from 'd3';
-import {FlChartDataWithSerie} from '../model/fl-chart-2d-serie.class';
-import {FlChart2dDatum} from '../model/fl-chart-2d-data.class';
+import {FlChartDataWithSerie} from '../model/data/fl-chart-2d-serie.class';
+import {FlChart2dDatum} from '../model/data/fl-chart-2d-data.class';
 import {FlChartAxisScale, FlChartAxisScaleBand} from '../model/fl-chart-scale.class';
-import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
-import {FlChart2dMultiSerie} from '../model/fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from '../model/data/fl-chart-2d-multi-serie.class';
+import {FlChartDataBin} from '../model/data/fl-chart-data-bin.class';
+import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
+import {
+  FlChartDataWithSeriePortalComponent,
+  FlChartDataWithSeriePortalInput
+} from '../module/module/fl-chart-core/component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
+import {
+  FlChartBinDataPortalComponent,
+  FlChartBinDataPortalInput
+} from '../module/module/fl-chart-core/component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
 
 
 export class FlChartHistogramMultiRenderer
@@ -12,7 +21,7 @@ export class FlChartHistogramMultiRenderer
 
   private readonly groupClassName: string = 'serie';
 
-  private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
+  private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
   initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
 
@@ -90,7 +99,24 @@ export class FlChartHistogramMultiRenderer
   }
 
   private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie): void {
-    this.portalHandler.openPortal(event.target as any, d, this.colorScale);
+    // handle the FlChartDataBin portal
+    if (d.data instanceof FlChartDataBin) {
+      const data: FlChartBinDataPortalInput = {
+        data: d,
+        seriesColorScale: this.colorScale
+      };
+      // create the portal
+      this.portalHandler.openPortal(event.target as any, FlChartBinDataPortalComponent, data);
+
+      // basic portal
+    } else {
+      const data: FlChartDataWithSeriePortalInput = {
+        data: d,
+        seriesColorScale: this.colorScale
+      };
+      // create the portal
+      this.portalHandler.openPortal(event.target as any, FlChartDataWithSeriePortalComponent, data);
+    }
   }
 
   private onMouseOut(): void {

@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FlChart2dDatum} from '../../../../../model/fl-chart-2d-data.class';
+import {FlChart2dDatum} from '../../../../../model/data/fl-chart-2d-data.class';
 import {FlChartScaleColorMulti} from '../../../../../model/fl-chart-scale-color.class';
-import {FlChart2dMultiSerie} from '../../../../../model/fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from '../../../../../model/data/fl-chart-2d-multi-serie.class';
 
 interface Legend {
 

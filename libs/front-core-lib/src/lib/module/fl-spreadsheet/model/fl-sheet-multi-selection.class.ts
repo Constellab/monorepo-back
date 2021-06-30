@@ -36,12 +36,16 @@ export class FlSheetMultiSelection {
   }
 
 
-  public getSelectedCell(): FlCell[] {
+  public getCells(): FlCell[] {
     const cells: FlCell[] = [];
     for (const selection of this.selections) {
-      cells.push(...selection.getSelectedCellsFlat());
+      cells.push(...selection.getCellsFlat());
     }
     return cells;
+  }
+
+  public getCellsValuesFlat(): any[] {
+    return this.getCells().map(cell => cell.value);
   }
 
   // return all selection as text like B2:G5,B5:T4 (separated by ',')
