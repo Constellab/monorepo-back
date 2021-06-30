@@ -49,41 +49,6 @@ export class FlSheetChartSelection {
       .filter(value => value.getY() != null); // exclude null values
   }
 
-  // TODO to improve the methods 2
-  // elle servent a utiliser des données comme X au lieu de Y (voir excel salaire/voiture
-  public exportToSeries2(): FlChart2dMultiSerie<any> {
-    const domainX: FlChartDomain = this.getDomainX();
-    const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie(domainX);
-
-    const seriesSelections: FlSheetSelection[] = this.seriesData.selections;
-
-    const xData: any[] = seriesSelections[0].getSelectedCellsValuesFlat();
-
-    for (let i = 1; i < seriesSelections.length; i++) {
-      series.addSerie(new FlChart2dSerie<any>(
-        this.getSerieData2(xData, seriesSelections[i]),
-        domainX,
-        this.getSerieNameAtIndex(i)));
-    }
-
-    series.axisXLabelFormat = this.getXAxisFormat();
-
-    return series;
-  }
-
-  private getSerieData2(xData: any[], selection: FlSheetSelection): FlChart2dDatum[] {
-    const values: any[] = selection.getSelectedCellsValuesFlat();
-
-    // create a chart datum for each values
-    // take index as x and cell value as Y if it's a number (0 otherwise)
-    // todo check if we set 0 in case of NAN
-    return values.map((value, index) => new FlSheetChartDatum(
-      ClNumberHelper.fromString(xData[index]),
-      ClNumberHelper.fromString(value)
-    ));
-  }
-
-
   // retrieve the serie name from the series labels selection at a specific index
   private getSerieNameAtIndex(index: number): string {
     if (this.seriesLabels == null) {

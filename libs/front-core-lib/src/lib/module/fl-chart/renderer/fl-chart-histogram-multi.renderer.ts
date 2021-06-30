@@ -45,7 +45,7 @@ export class FlChartHistogramMultiRenderer
       .on('mouseout', () => this.onMouseOut())
       .style('fill', (d) => this.colorScale.scale(d.serieKey))
       .each((d, index, nodes: SVGRectElement[]) =>
-        this.drawBar(nodes[index], barWidth, input.chartHeight, input.yScale, index));
+        this.drawBar(d, nodes[index], barWidth, input.chartHeight, input.yScale, index));
   }
 
   refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
@@ -65,8 +65,8 @@ export class FlChartHistogramMultiRenderer
 
     select(group)
       .selectAll('rect')
-      .each((d, index, nodes: SVGRectElement[]) =>
-        this.drawBar(nodes[index], barWidth, input.chartHeight, input.yScale, index));
+      .each((d: FlChartDataWithSerie, index, nodes: SVGRectElement[]) =>
+        this.drawBar(d, nodes[index], barWidth, input.chartHeight, input.yScale, index));
   }
 
   // return the position of the group
@@ -76,8 +76,11 @@ export class FlChartHistogramMultiRenderer
   }
 
   // draw one bar
-  private drawBar(element: SVGRectElement, barWidth: number, chartHeight: number,
+  private drawBar(d: FlChartDataWithSerie, element: SVGRectElement, barWidth: number, chartHeight: number,
                   yScale: FlChartAxisScale<Numeric>, index: number): void {
+    if (d.data == null) {
+      return;
+    }
     select(element)
       .attr('transform',
         (d: FlChartDataWithSerie) => 'translate(' + barWidth * index + ',' + yScale.scale(d.data.getY()) + ')'

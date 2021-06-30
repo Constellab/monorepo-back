@@ -47,7 +47,7 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> implements FlChart
   // return the biggest number of data for a serie
   public maxSerieDataCount(): number {
     return this.series.reduce(
-      (p, c) => c.countData() > p?.countData() ?? 0 ? p : c)
+      (p, c) => c.countData() > p?.countData() ?? 0 ? c : p)
       .countData();
   }
 
