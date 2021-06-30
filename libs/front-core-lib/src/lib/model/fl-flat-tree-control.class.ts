@@ -49,7 +49,14 @@ export class FlFlatTreeControl<T, K = T> extends FlatTreeControl<T, K> {
         return node;
       }
 
-      index++;
+      // if the node is not visible, its siblings are not visible too
+      // so, count the number of sibling and sub sibling by using the parent
+      // and add it so we don't check siblings and sub siblings
+      const parent: T = this.getAncestor(node);
+      if (parent == null) {
+        return null;
+      }
+      index += this.getDescendants(parent).length;
     }
 
     return null;
@@ -88,8 +95,8 @@ export class FlFlatTreeControl<T, K = T> extends FlatTreeControl<T, K> {
     let parent: T | null = this.getAncestor(dataNode);
 
     // to be visible, all its parent must be expanded
-    while (parent != null){
-      if(!this.isExpanded(parent)){
+    while (parent != null) {
+      if (!this.isExpanded(parent)) {
         return false;
       }
       parent = this.getAncestor(parent);
