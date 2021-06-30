@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Numeric} from 'd3';
-import {FlChartDataWithSerie} from '../../../../../model/data/fl-chart-2d-serie.class';
+import {FlChartDataWithSerie} from '../../../../../model/data/fl-chart-serie.class';
 import {FlChartScaleColor} from '../../../../../model/fl-chart-scale-color.class';
 import {FL_PORTAL_DATA} from '../../../../../../fl-portal/model/fl-portal.class';
 import {FlChartDataBin} from '../../../../../model/data/fl-chart-data-bin.class';
 
 export interface FlChartBinDataPortalInput {
-  data: FlChartDataWithSerie;
+  data: FlChartDataWithSerie<FlChartDataBin>;
   seriesColorScale: FlChartScaleColor;
 }
 
@@ -30,7 +30,7 @@ export class FlChartBinDataPortalComponent implements OnInit {
   seriesColorScale: FlChartScaleColor;
 
   constructor(@Inject(FL_PORTAL_DATA) private input: FlChartBinDataPortalInput) {
-    const bin = input.data.data as FlChartDataBin;
+    const bin = input.data.data;
     this.y = bin.getY();
     this.intervalText = bin.getIntervalText();
     this.data = bin.getSortedData();

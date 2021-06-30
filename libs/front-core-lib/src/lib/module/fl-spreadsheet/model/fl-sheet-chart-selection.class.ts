@@ -1,11 +1,11 @@
 import {FlSheetMultiSelection} from './fl-sheet-multi-selection.class';
 import {FlSheetSelection} from './fl-sheet-selection.class';
-import {FlChart2dDatum, FlChart2dDatumNumber, FlChartAxisTickFormat} from '../../fl-chart/model/data/fl-chart-2d-data.class';
+import {FlChart2dDatum, FlChart2dDatumNumber, FlChartAxisTickFormat} from '../../fl-chart/model/data/fl-chart-data.class';
 import {FlCell} from './fl-cell.class';
-import {FlChart2dSerie} from '../../fl-chart/model/data/fl-chart-2d-serie.class';
+import {FlChartSerie} from '../../fl-chart/model/data/fl-chart-serie.class';
 import {FlChartComponentType} from '../../fl-chart/model/fl-chart-component.class';
 import {ClNumberHelper} from '@monorepo/core-lib';
-import {FlChart2dMultiSerie} from '../../fl-chart/model/data/fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from '../../fl-chart/model/data/fl-chart-multi-serie.class';
 import {FlChartDataBin, flChartGetDataBins} from '../../fl-chart/model/data/fl-chart-data-bin.class';
 
 /**
@@ -32,7 +32,7 @@ export class FlSheetChartSelection {
         .filter(value => value != null);
 
       // create the serie with bin data
-      const serie: FlChart2dSerie<any> = new FlChart2dSerie<any>(flChartGetDataBins(data), this.getSerieNameAtIndex(0));
+      const serie: FlChartSerie<any> = new FlChartSerie<any>(flChartGetDataBins(data), this.getSerieNameAtIndex(0));
 
       // define the axisXLabelFormat
       series.axisXLabelFormat = (index: number) => {
@@ -44,7 +44,7 @@ export class FlSheetChartSelection {
 
       const seriesSelections: FlSheetSelection[] = this.seriesData.selections;
       for (let i = 0; i < seriesSelections.length; i++) {
-        series.addSerie(new FlChart2dSerie<any>(
+        series.addSerie(new FlChartSerie<any>(
           this.getSerieData(seriesSelections[i]),
           this.getSerieNameAtIndex(i)));
       }

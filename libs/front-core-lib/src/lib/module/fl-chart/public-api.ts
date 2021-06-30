@@ -20,11 +20,11 @@ export * from './model/portal-handler/fl-chart-data-with-serie-portal-handler.cl
 export * from './model/portal-handler/fl-chart-portal-handler.class';
 
 // Data
-export * from './model/data/fl-chart-2d-data.class';
-export * from './model/data/fl-chart-2d-multi-serie.class';
-export * from './model/data/fl-chart-2d-serie.class';
 export * from './model/data/fl-chart-box-plot-data.class';
+export * from './model/data/fl-chart-data.class';
 export * from './model/data/fl-chart-data-bin.class';
+export * from './model/data/fl-chart-multi-serie.class';
+export * from './model/data/fl-chart-serie.class';
 
 export * from './model/fl-chart-2d-brush.class';
 export * from './model/fl-chart-2d-hover.class';

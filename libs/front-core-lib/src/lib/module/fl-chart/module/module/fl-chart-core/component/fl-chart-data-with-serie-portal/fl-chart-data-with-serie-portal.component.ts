@@ -1,10 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FL_PORTAL_DATA} from '../../../../../../fl-portal/model/fl-portal.class';
-import {FlChartDataWithSerie} from '../../../../../model/data/fl-chart-2d-serie.class';
+import {FlChartDataWithSerie} from '../../../../../model/data/fl-chart-serie.class';
 import {FlChartScaleColor} from '../../../../../model/fl-chart-scale-color.class';
+import {FlChart2dDatum} from '../../../../../model/data/fl-chart-data.class';
 
 export interface FlChartDataWithSeriePortalInput {
-  data: FlChartDataWithSerie;
+  data: FlChartDataWithSerie<FlChart2dDatum>;
   seriesColorScale: FlChartScaleColor;
 }
 
@@ -15,7 +16,7 @@ export interface FlChartDataWithSeriePortalInput {
 })
 export class FlChartDataWithSeriePortalComponent implements OnInit {
 
-  data: FlChartDataWithSerie;
+  data: FlChartDataWithSerie<FlChart2dDatum>;
   seriesColorScale: FlChartScaleColor;
 
   constructor(@Inject(FL_PORTAL_DATA) input: FlChartDataWithSeriePortalInput) {

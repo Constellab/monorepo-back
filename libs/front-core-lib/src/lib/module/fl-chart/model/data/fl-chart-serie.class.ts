@@ -1,30 +1,32 @@
-import {FlChart2dDataContainer, FlChart2dDatum} from './fl-chart-2d-data.class';
+import {FlChartDataContainer} from './fl-chart-data.class';
 
 /**
  * Key to distingue a serie form another
  */
-export interface FlChartDataWithSerie {
-  data: FlChart2dDatum;
+export interface FlChartDataWithSerie<T> {
+  data: T;
   serieKey: number;
   serieName: string;
 }
 
 
-export class FlChart2dSerie<Data extends FlChart2dDatum> extends FlChart2dDataContainer<Data> {
+export class FlChartSerie<Data> implements FlChartDataContainer<Data> {
 
   private static key: number = 0;
+
+  data: Data[];
 
   key: number;
 
   name: string;
 
   constructor(data: Data[], serieName: string) {
-    super(data);
-    this.key = FlChart2dSerie.key++;
+    this.data = data;
+    this.key = FlChartSerie.key++;
     this.name = serieName;
   }
 
-  public getDataWithSerie(): FlChartDataWithSerie[] {
+  public getDataWithSerie(): FlChartDataWithSerie<Data>[] {
     return this.getData().map(data => {
       return {
         data: data,
@@ -34,7 +36,7 @@ export class FlChart2dSerie<Data extends FlChart2dDatum> extends FlChart2dDataCo
     });
   }
 
-  public getDataWithSerieAt(index: number): FlChartDataWithSerie {
+  public getDataWithSerieAt(index: number): FlChartDataWithSerie<Data> {
     return {
       data: this.getData()[index] ?? null,
       serieKey: this.key,
@@ -46,4 +48,7 @@ export class FlChart2dSerie<Data extends FlChart2dDatum> extends FlChart2dDataCo
     return this.data.length;
   }
 
+  public getData(): Data[] {
+    return this.data;
+  }
 }

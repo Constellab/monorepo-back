@@ -1,7 +1,7 @@
-import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
+import {FlChart2dRenderer, FlChart2dRendererInput} from '../model/fl-chart-2d-renderer.class';
 import {Numeric, select} from 'd3';
-import {FlChart2dSerie} from '../model/data/fl-chart-2d-serie.class';
-import {FlChart2dDatum} from '../model/data/fl-chart-2d-data.class';
+import {FlChartSerie} from '../model/data/fl-chart-serie.class';
+import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
 import {FlChartAxisScale, FlChartAxisScaleBand} from '../model/fl-chart-scale.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {flRootInjector} from '../../../utils/fl-root-injector';
@@ -12,11 +12,12 @@ import {
   FlChartBoxPlotDataPortalComponent,
   FlChartBoxPlotDataPortalInput
 } from '../module/module/fl-chart-core/component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
-import {FlChart2dMultiSerie} from '../model/data/fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
+import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
 
 
 export class FlChartBoxPlotMultiRenderer
-  extends FlChart2dRendererMultiple<FlChart2dMultiSerie<FlChart2dDatum>> {
+  implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly groupClassName: string = 'serie';
   private readonly verticalLineClassName: string = 'vertical-line';
@@ -25,6 +26,9 @@ export class FlChartBoxPlotMultiRenderer
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
   private theme: FlThemeDetail;
+
+  constructor(public colorScale: FlChartScaleColor) {
+  }
 
   initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     this.initTheme();
@@ -45,7 +49,7 @@ export class FlChartBoxPlotMultiRenderer
         this.drawSerie(nodes[index], data, (input.xScale as unknown as FlChartAxisScaleBand).bandwidth(), input));
   }
 
-  private drawSerie(group: SVGElement, serie: FlChart2dSerie<FlChart2dDatum>,
+  private drawSerie(group: SVGElement, serie: FlChartSerie<FlChart2dDatum>,
                     groupWidth: number, input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     // Show the main vertical line
     select(group)
@@ -69,13 +73,13 @@ export class FlChartBoxPlotMultiRenderer
     input.container
       // generate a group for each serie
       .selectAll(`.${this.groupClassName}`)
-      .attr('transform', ((d: FlChart2dSerie<FlChart2dDatum>) => this.getGroupTranslate(input.xScale, input.chartWidth, d.key)))
+      .attr('transform', ((d: FlChartSerie<FlChart2dDatum>) => this.getGroupTranslate(input.xScale, input.chartWidth, d.key)))
       // for each group generate the values
-      .each((data: FlChart2dSerie<FlChart2dDatum>, index, nodes: SVGElement[]) =>
+      .each((data: FlChartSerie<FlChart2dDatum>, index, nodes: SVGElement[]) =>
         this.drawBoxPlot(nodes[index], data, (input.xScale as unknown as FlChartAxisScaleBand).bandwidth(), input));
   }
 
-  private drawBoxPlot(group: SVGElement, serie: FlChart2dSerie<FlChart2dDatum>,
+  private drawBoxPlot(group: SVGElement, serie: FlChartSerie<FlChart2dDatum>,
                       groupWidth: number, input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     const boxData: FlChartBoxPlotData = flChartGetBoxPlotData(serie.getData().map(d => d.getY().valueOf()));
 
@@ -121,7 +125,7 @@ export class FlChartBoxPlotMultiRenderer
     this.theme = flRootInjector.get(FlThemeService).getCurrentThemeDetail();
   }
 
-  private onMouseHover(event: MouseEvent, serie: FlChart2dSerie<FlChart2dDatum>): void {
+  private onMouseHover(event: MouseEvent, serie: FlChartSerie<FlChart2dDatum>): void {
     const data: FlChartBoxPlotDataPortalInput = {
       serie: serie,
       seriesColorScale: this.colorScale

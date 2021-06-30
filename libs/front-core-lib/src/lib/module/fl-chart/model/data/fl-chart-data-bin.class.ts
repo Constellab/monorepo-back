@@ -1,6 +1,6 @@
 // data holder for the histogram
 import {Numeric} from 'd3';
-import {FlChart2dDatum} from './fl-chart-2d-data.class';
+import {FlChart2dDatum} from './fl-chart-data.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
 
 /**

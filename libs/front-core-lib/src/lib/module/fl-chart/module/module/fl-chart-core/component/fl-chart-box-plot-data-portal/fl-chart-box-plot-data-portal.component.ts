@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FlChartBoxPlotData, flChartGetBoxPlotData} from '../../../../../model/data/fl-chart-box-plot-data.class';
-import {FlChart2dSerie} from '../../../../../model/data/fl-chart-2d-serie.class';
-import {FlChart2dDatum} from '../../../../../model/data/fl-chart-2d-data.class';
+import {FlChartSerie} from '../../../../../model/data/fl-chart-serie.class';
+import {FlChart2dDatum} from '../../../../../model/data/fl-chart-data.class';
 import {FlChartScaleColor} from '../../../../../model/fl-chart-scale-color.class';
 import {FL_PORTAL_DATA} from '../../../../../../fl-portal/model/fl-portal.class';
 
 export interface FlChartBoxPlotDataPortalInput {
-  serie: FlChart2dSerie<FlChart2dDatum>;
+  serie: FlChartSerie<FlChart2dDatum>;
   seriesColorScale: FlChartScaleColor;
 }
 
@@ -20,7 +20,7 @@ export interface FlChartBoxPlotDataPortalInput {
 })
 export class FlChartBoxPlotDataPortalComponent implements OnInit {
 
-  serie: FlChart2dSerie<FlChart2dDatum>;
+  serie: FlChartSerie<FlChart2dDatum>;
   seriesColorScale: FlChartScaleColor;
 
   boxPlotData: FlChartBoxPlotData;

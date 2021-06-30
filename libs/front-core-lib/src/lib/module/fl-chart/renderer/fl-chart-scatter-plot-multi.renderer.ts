@@ -1,13 +1,17 @@
-import {FlChart2dDatum} from '../model/data/fl-chart-2d-data.class';
-import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
-import {FlChartDataWithSerie} from '../model/data/fl-chart-2d-serie.class';
+import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
+import {FlChart2dRenderer, FlChart2dRendererInput} from '../model/fl-chart-2d-renderer.class';
+import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
-import {FlChart2dMultiSerie} from '../model/data/fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
+import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
 
 export class FlChartScatterPlotMultiRenderer
-  extends FlChart2dRendererMultiple<FlChart2dMultiSerie<FlChart2dDatum>> {
+  implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
+
+  constructor(public colorScale: FlChartScaleColor) {
+  }
 
   initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     // Add dots
@@ -24,9 +28,9 @@ export class FlChartScatterPlotMultiRenderer
       .enter()
       .append('circle')
       .attr('r', 3)
-      .style('fill', (d: FlChartDataWithSerie) => this.colorScale.scale(d.serieKey))
-      .attr('cx', (d: FlChartDataWithSerie) => input.xScale.scale(d.data.getX()))
-      .attr('cy', (d: FlChartDataWithSerie) => input.yScale.scale(d.data.getY()))
+      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.colorScale.scale(d.serieKey))
+      .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => input.xScale.scale(d.data.getX()))
+      .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => input.yScale.scale(d.data.getY()))
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut());
   }
@@ -35,11 +39,11 @@ export class FlChartScatterPlotMultiRenderer
     input.container
       .selectAll(`circle`)
       .transition()
-      .attr('cx', (d: FlChartDataWithSerie) => input.xScale.scale(d.data.getX()))
-      .attr('cy', (d: FlChartDataWithSerie) => input.yScale.scale(d.data.getY()));
+      .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => input.xScale.scale(d.data.getX()))
+      .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => input.yScale.scale(d.data.getY()));
   }
 
-  private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie): void {
+  private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {
     this.portalHandler.openPortal(event.target as any, d, this.colorScale);
   }
 

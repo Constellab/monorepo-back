@@ -7,11 +7,11 @@ import {FlChartAxis} from '../model/fl-chart-axis.class';
 import {FlChartScatterPlotMultiRenderer} from '../renderer/fl-chart-scatter-plot-multi.renderer';
 import {FlChartScaleColor, FlChartScaleColorMulti} from '../model/fl-chart-scale-color.class';
 import {FlChartLineMultiRenderer} from '../renderer/fl-chart-line-multi.renderer';
-import {FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
 import {FlChartHistogramMultiRenderer} from '../renderer/fl-chart-histogram-multi.renderer';
 import {FlChart2dBrush, FlChart2dBrushX} from '../model/fl-chart-2d-brush.class';
 import {FlChartBoxPlotMultiRenderer} from '../renderer/fl-chart-box-plot-multi.renderer';
-import {FlChart2dMultiSerie} from '../model/data/fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
+import {FlChart2dRenderer} from '../model/fl-chart-2d-renderer.class';
 
 export class FlChartFactory {
 
@@ -139,7 +139,7 @@ export class FlChartFactory {
    * Build a linear multi chart container such as ScatterPlot Multi of Line Multi
    */
   private static buildLinear2dMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                             renderers: FlChart2dRendererMultiple<FlChart2dMultiSerie<any>>[],
+                                             renderers: FlChart2dRenderer<FlChart2dMultiSerie<any>>[],
                                              extendXDomain: number = 0):
     FlChartContainer2d<FlChart2dMultiSerie<any>> {
     const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);

@@ -1,6 +1,6 @@
 import {Selection} from 'd3-selection';
 import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
-import {FlChart2dDataContainerI} from './data/fl-chart-2d-data.class';
+import {FlChartDataContainer} from './data/fl-chart-data.class';
 import {FlChartAxis} from './fl-chart-axis.class';
 import {ClHelpService} from '@monorepo/core-lib';
 
@@ -79,7 +79,7 @@ export abstract class FlChartContainer<Data> {
 /**
  * Chart container for 2d chart with 2 axis
  */
-export class FlChartContainer2d<Data extends FlChart2dDataContainerI<any>> extends FlChartContainer<Data> {
+export class FlChartContainer2d<Data extends FlChartDataContainer<any>> extends FlChartContainer<Data> {
 
   public xAxis: FlChartAxis;
 

@@ -1,9 +1,9 @@
-import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
+import {FlChart2dRenderer, FlChart2dRendererInput} from '../model/fl-chart-2d-renderer.class';
 import {Numeric, select} from 'd3';
-import {FlChartDataWithSerie} from '../model/data/fl-chart-2d-serie.class';
-import {FlChart2dDatum} from '../model/data/fl-chart-2d-data.class';
+import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
+import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
 import {FlChartAxisScale, FlChartAxisScaleBand} from '../model/fl-chart-scale.class';
-import {FlChart2dMultiSerie} from '../model/data/fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartDataBin} from '../model/data/fl-chart-data-bin.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
 import {
@@ -14,18 +14,22 @@ import {
   FlChartBinDataPortalComponent,
   FlChartBinDataPortalInput
 } from '../module/module/fl-chart-core/component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
+import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
 
 
 export class FlChartHistogramMultiRenderer
-  extends FlChart2dRendererMultiple<FlChart2dMultiSerie<FlChart2dDatum>> {
+  implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly groupClassName: string = 'serie';
 
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
+  constructor(public colorScale: FlChartScaleColor) {
+  }
+
   initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
 
-    const data: FlChartDataWithSerie[][] = input.data.invert();
+    const data: FlChartDataWithSerie<FlChart2dDatum>[][] = input.data.invert();
 
     input.container
       // generate a group for each serie
@@ -41,7 +45,7 @@ export class FlChartHistogramMultiRenderer
         this.drawSerie(nodes[index], data, (input.xScale as unknown as FlChartAxisScaleBand).bandwidth(), input));
   }
 
-  private drawSerie(group: SVGElement, data: FlChartDataWithSerie[],
+  private drawSerie(group: SVGElement, data: FlChartDataWithSerie<FlChart2dDatum>[],
                     groupWidth: number, input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
 
     const barWidth: number = groupWidth / data.length;
@@ -63,18 +67,18 @@ export class FlChartHistogramMultiRenderer
       .selectAll(`.${this.groupClassName}`)
       .attr('transform', (d, index) => this.getGroupTranslate(input.xScale, input.chartWidth, index))
       // for each group generate the values
-      .each((data: FlChartDataWithSerie[], index, nodes: SVGElement[]) =>
+      .each((data: FlChartDataWithSerie<FlChart2dDatum>[], index, nodes: SVGElement[]) =>
         this.refreshSerie(nodes[index], data, (input.xScale as unknown as FlChartAxisScaleBand).bandwidth(), input));
   }
 
-  private refreshSerie(group: SVGElement, data: FlChartDataWithSerie[],
+  private refreshSerie(group: SVGElement, data: FlChartDataWithSerie<FlChart2dDatum>[],
                        groupWidth: number, input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
 
     const barWidth: number = groupWidth / data.length;
 
     select(group)
       .selectAll('rect')
-      .each((d: FlChartDataWithSerie, index, nodes: SVGRectElement[]) =>
+      .each((d: FlChartDataWithSerie<FlChart2dDatum>, index, nodes: SVGRectElement[]) =>
         this.drawBar(d, nodes[index], barWidth, input.chartHeight, input.yScale, index));
   }
 
@@ -85,24 +89,24 @@ export class FlChartHistogramMultiRenderer
   }
 
   // draw one bar
-  private drawBar(d: FlChartDataWithSerie, element: SVGRectElement, barWidth: number, chartHeight: number,
+  private drawBar(d: FlChartDataWithSerie<FlChart2dDatum>, element: SVGRectElement, barWidth: number, chartHeight: number,
                   yScale: FlChartAxisScale<Numeric>, index: number): void {
     if (d.data == null) {
       return;
     }
     select(element)
       .attr('transform',
-        (d: FlChartDataWithSerie) => 'translate(' + barWidth * index + ',' + yScale.scale(d.data.getY()) + ')'
+        (d: FlChartDataWithSerie<FlChart2dDatum>) => 'translate(' + barWidth * index + ',' + yScale.scale(d.data.getY()) + ')'
       )
       .attr('width', barWidth - 1) // - 1 to let space between bars
-      .attr('height', (d: FlChartDataWithSerie) => chartHeight - yScale.scale(d.data.getY()));
+      .attr('height', (d: FlChartDataWithSerie<FlChart2dDatum>) => chartHeight - yScale.scale(d.data.getY()));
   }
 
-  private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie): void {
+  private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {
     // handle the FlChartDataBin portal
     if (d.data instanceof FlChartDataBin) {
       const data: FlChartBinDataPortalInput = {
-        data: d,
+        data: d as any,
         seriesColorScale: this.colorScale
       };
       // create the portal

@@ -5,7 +5,7 @@ import {FlChartContainer2d} from '../../model/fl-chart-container.class';
 import {FlChartFactory} from '../../util/fl-chart.factory';
 import {FlChartScaleColorMulti} from '../../model/fl-chart-scale-color.class';
 import {FlThemeService} from '../../../../service/fl-theme.service';
-import {FlChart2dMultiSerie} from '../../model/data/fl-chart-2d-multi-serie.class';
+import {FlChart2dMultiSerie} from '../../model/data/fl-chart-multi-serie.class';
 
 @Component({
   selector: 'fl-chart-dynamic',
