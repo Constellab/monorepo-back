@@ -1,6 +1,6 @@
 import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
 import {Numeric, select} from 'd3';
-import {FlChart2dMultipleSerie, FlChart2dSerie} from '../model/fl-chart-2d-serie.class';
+import {FlChart2dSerie} from '../model/fl-chart-2d-serie.class';
 import {FlChart2dDatum} from '../model/fl-chart-2d-data.class';
 import {FlChartAxisScale, FlChartAxisScaleBand} from '../model/fl-chart-scale.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
@@ -12,10 +12,11 @@ import {
   FlChartBoxPlotDataPortalComponent,
   FlChartBoxPlotDataPortalInput
 } from '../module/module/fl-chart-core/component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
+import {FlChart2dMultiSerie} from '../model/fl-chart-2d-multi-serie.class';
 
 
 export class FlChartBoxPlotMultiRenderer
-  extends FlChart2dRendererMultiple<FlChart2dMultipleSerie<FlChart2dDatum>> {
+  extends FlChart2dRendererMultiple<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly groupClassName: string = 'serie';
   private readonly verticalLineClassName: string = 'vertical-line';
@@ -25,7 +26,7 @@ export class FlChartBoxPlotMultiRenderer
 
   private theme: FlThemeDetail;
 
-  initData(input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatum>>): void {
+  initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     this.initTheme();
 
     input.container
@@ -45,7 +46,7 @@ export class FlChartBoxPlotMultiRenderer
   }
 
   private drawSerie(group: SVGElement, serie: FlChart2dSerie<FlChart2dDatum>,
-                    groupWidth: number, input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatum>>): void {
+                    groupWidth: number, input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     // Show the main vertical line
     select(group)
       .append('line')
@@ -64,7 +65,7 @@ export class FlChartBoxPlotMultiRenderer
     this.drawBoxPlot(group, serie, groupWidth, input);
   }
 
-  refreshData(input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatum>>): void {
+  refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     input.container
       // generate a group for each serie
       .selectAll(`.${this.groupClassName}`)
@@ -75,7 +76,7 @@ export class FlChartBoxPlotMultiRenderer
   }
 
   private drawBoxPlot(group: SVGElement, serie: FlChart2dSerie<FlChart2dDatum>,
-                      groupWidth: number, input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatum>>): void {
+                      groupWidth: number, input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     const boxData: FlChartBoxPlotData = flChartGetBoxPlotData(serie.getData().map(d => d.getY().valueOf()));
 
     const xCenter = groupWidth / 2;

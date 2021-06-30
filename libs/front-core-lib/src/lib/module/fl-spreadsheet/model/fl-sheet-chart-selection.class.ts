@@ -3,10 +3,11 @@ import {FlSheetSelection} from './fl-sheet-selection.class';
 import {FlChart2dDatum, FlChartAxisTickFormat} from '../../fl-chart/model/fl-chart-2d-data.class';
 import {FlCell} from './fl-cell.class';
 import {Numeric} from 'd3';
-import {FlChart2dMultipleSerie, FlChart2dSerie} from '../../fl-chart/model/fl-chart-2d-serie.class';
+import {FlChart2dSerie} from '../../fl-chart/model/fl-chart-2d-serie.class';
 import {FlChartComponentType} from '../../fl-chart/model/fl-chart-component.class';
 import {FlChartDomain, FlChartDomainComplete, FlChartDomainLinear} from '../../fl-chart/model/fl-chart-domain.class';
 import {ClNumberHelper} from '@monorepo/core-lib';
+import {FlChart2dMultiSerie} from '../../fl-chart/model/fl-chart-2d-multi-serie.class';
 
 /**
  * Class to store a selection for a basic chart
@@ -21,9 +22,9 @@ export class FlSheetChartSelection {
 
   }
 
-  public exportToSeries(): FlChart2dMultipleSerie<any> {
+  public exportToSeries(): FlChart2dMultiSerie<any> {
     const domainX: FlChartDomain = this.getDomainX();
-    const series: FlChart2dMultipleSerie<any> = new FlChart2dMultipleSerie(domainX);
+    const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie(domainX);
 
     const seriesSelections: FlSheetSelection[] = this.seriesData.selections;
     for (let i = 0; i < seriesSelections.length; i++) {
@@ -50,9 +51,9 @@ export class FlSheetChartSelection {
 
   // TODO to improve the methods 2
   // elle servent a utiliser des données comme X au lieu de Y (voir excel salaire/voiture
-  public exportToSeries2(): FlChart2dMultipleSerie<any> {
+  public exportToSeries2(): FlChart2dMultiSerie<any> {
     const domainX: FlChartDomain = this.getDomainX();
-    const series: FlChart2dMultipleSerie<any> = new FlChart2dMultipleSerie(domainX);
+    const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie(domainX);
 
     const seriesSelections: FlSheetSelection[] = this.seriesData.selections;
 
@@ -119,7 +120,7 @@ export class FlSheetChartSelection {
    */
   private getDomainX(): FlChartDomain {
     switch (this.chartType) {
-      case FlChartComponentType.HISTOGRAM:
+      case FlChartComponentType.BAR_PLOT:
         return new FlChartDomainComplete();
       case FlChartComponentType.SCATTER_PLOT:
         return new FlChartDomainLinear(0.5);

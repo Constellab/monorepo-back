@@ -1,14 +1,15 @@
 import {FlChart2dDatum} from '../model/fl-chart-2d-data.class';
 import {FlChart2dRendererInput, FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
-import {FlChart2dMultipleSerie, FlChartDataWithSerie} from '../model/fl-chart-2d-serie.class';
+import {FlChartDataWithSerie} from '../model/fl-chart-2d-serie.class';
 import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
+import {FlChart2dMultiSerie} from '../model/fl-chart-2d-multi-serie.class';
 
 export class FlChartScatterPlotMultiRenderer
-  extends FlChart2dRendererMultiple<FlChart2dMultipleSerie<FlChart2dDatum>> {
+  extends FlChart2dRendererMultiple<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
 
-  initData(input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatum>>): void {
+  initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     // Add dots
     input.container
       // generate groups for the series
@@ -30,7 +31,7 @@ export class FlChartScatterPlotMultiRenderer
       .on('mouseout', () => this.onMouseOut());
   }
 
-  refreshData(input: FlChart2dRendererInput<FlChart2dMultipleSerie<FlChart2dDatum>>): void {
+  refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     input.container
       .selectAll(`circle`)
       .transition()

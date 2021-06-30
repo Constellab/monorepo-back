@@ -1,5 +1,4 @@
 import {FlChartSvg} from '../model/fl-chart-svg.class';
-import {FlChart2dMultipleSerie} from '../model/fl-chart-2d-serie.class';
 import {FlChartComponentType} from '../model/fl-chart-component.class';
 import {FlChartContainer2d} from '../model/fl-chart-container.class';
 import {FlChartAxisScale, FlChartAxisScaleBand, FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../model/fl-chart-scale.class';
@@ -12,20 +11,21 @@ import {FlChart2dRendererMultiple} from '../model/fl-chart-2d-renderer.class';
 import {FlChartHistogramMultiRenderer} from '../renderer/fl-chart-histogram-multi.renderer';
 import {FlChart2dBrush, FlChart2dBrushX} from '../model/fl-chart-2d-brush.class';
 import {FlChartBoxPlotMultiRenderer} from '../renderer/fl-chart-box-plot-multi.renderer';
+import {FlChart2dMultiSerie} from '../model/fl-chart-2d-multi-serie.class';
 
 export class FlChartFactory {
 
 
-  public static buildChart2dContainer(chartSVG: FlChartSvg, data: FlChart2dMultipleSerie<any>,
+  public static buildChart2dContainer(chartSVG: FlChartSvg, data: FlChart2dMultiSerie<any>,
                                       chartType: FlChartComponentType, seriesColorScale: FlChartScaleColor)
-    : FlChartContainer2d<FlChart2dMultipleSerie<any>> {
+    : FlChartContainer2d<FlChart2dMultiSerie<any>> {
 
     switch (chartType) {
       case FlChartComponentType.LINE:
         return this.buildLineMultiContainer(chartSVG, data, seriesColorScale);
       case FlChartComponentType.SCATTER_PLOT:
         return this.buildScatterPlotMultiContainer(chartSVG, data, seriesColorScale);
-      case FlChartComponentType.HISTOGRAM:
+      case FlChartComponentType.BAR_PLOT:
         return this.buildHistogramMultiContainer(chartSVG, data, seriesColorScale);
       case FlChartComponentType.BOX_PLOT:
         return this.buildBoxPlotMultiContainer(chartSVG, data, seriesColorScale);
@@ -38,9 +38,9 @@ export class FlChartFactory {
   /**
    * Build a Scatter Plot multi container
    */
-  private static buildScatterPlotMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultipleSerie<any>,
+  private static buildScatterPlotMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
                                                 seriesColorScale: FlChartScaleColor)
-    : FlChartContainer2d<FlChart2dMultipleSerie<any>> {
+    : FlChartContainer2d<FlChart2dMultiSerie<any>> {
 
     const renderer = new FlChartScatterPlotMultiRenderer(seriesColorScale);
 
@@ -50,9 +50,9 @@ export class FlChartFactory {
   /**
    * Build a Line multi container
    */
-  private static buildLineMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultipleSerie<any>,
+  private static buildLineMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
                                          seriesColorScale: FlChartScaleColor)
-    : FlChartContainer2d<FlChart2dMultipleSerie<any>> {
+    : FlChartContainer2d<FlChart2dMultiSerie<any>> {
     const renderer = new FlChartLineMultiRenderer(seriesColorScale);
 
     // also use a scatter plot renderer to show point on the line
@@ -65,14 +65,13 @@ export class FlChartFactory {
   /**
    * Build a Histogram multi container
    */
-  private static buildHistogramMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultipleSerie<any>,
+  private static buildHistogramMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
                                               seriesColorScale: FlChartScaleColor)
-    : FlChartContainer2d<FlChart2dMultipleSerie<any>> {
+    : FlChartContainer2d<FlChart2dMultiSerie<any>> {
 
-    const chartContainer: FlChartContainer2d<FlChart2dMultipleSerie<any>> = this.getChartContainer2d(chartSVG);
+    const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
 
     // build the x axis and scale based on ScaleBand
-    console.log(dataContainer.getDomainX());
     const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleBand()
       .setInitialDomain(dataContainer.getDomainX())
       .range(chartContainer.getRangeX());
@@ -101,11 +100,11 @@ export class FlChartFactory {
   /**
    * Build a Box plot multi container
    */
-  private static buildBoxPlotMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultipleSerie<any>,
+  private static buildBoxPlotMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
                                             seriesColorScale: FlChartScaleColor)
-    : FlChartContainer2d<FlChart2dMultipleSerie<any>> {
+    : FlChartContainer2d<FlChart2dMultiSerie<any>> {
 
-    const chartContainer: FlChartContainer2d<FlChart2dMultipleSerie<any>> = this.getChartContainer2d(chartSVG);
+    const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
 
     // build the x axis and scale based on ScaleBand
     // the x domain is an array of the number of series with index of the serie
@@ -131,16 +130,16 @@ export class FlChartFactory {
       .addRenderer(new FlChartBoxPlotMultiRenderer(seriesColorScale))
       .initData(dataContainer);
 
-    return chartContainer
+    return chartContainer;
   }
 
   /**
    * Build a linear multi chart container such as ScatterPlot Multi of Line Multi
    */
-  private static buildLinear2dMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultipleSerie<any>,
-                                             renderers: FlChart2dRendererMultiple<FlChart2dMultipleSerie<any>>[]):
-    FlChartContainer2d<FlChart2dMultipleSerie<any>> {
-    const chartContainer: FlChartContainer2d<FlChart2dMultipleSerie<any>> = this.getChartContainer2d(chartSVG);
+  private static buildLinear2dMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
+                                             renderers: FlChart2dRendererMultiple<FlChart2dMultiSerie<any>>[]):
+    FlChartContainer2d<FlChart2dMultiSerie<any>> {
+    const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
 
     // Build X axis
     const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
@@ -176,7 +175,7 @@ export class FlChartFactory {
   /**
    * Build a basic color scale for series based on data
    */
-  public static getSeriesColorScale(dataContainer: FlChart2dMultipleSerie<any>): FlChartScaleColorMulti {
+  public static getSeriesColorScale(dataContainer: FlChart2dMultiSerie<any>): FlChartScaleColorMulti {
     return new FlChartScaleColorMulti(dataContainer.series.map(d => d.key));
   }
 }

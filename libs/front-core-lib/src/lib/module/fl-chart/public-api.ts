@@ -22,6 +22,7 @@ export * from './model/portal-handler/fl-chart-portal-handler.class';
 export * from './model/fl-chart-2d-brush.class';
 export * from './model/fl-chart-2d-data.class';
 export * from './model/fl-chart-2d-hover.class';
+export * from './model/fl-chart-2d-multi-serie.class';
 export * from './model/fl-chart-2d-renderer.class';
 export * from './model/fl-chart-2d-serie.class';
 export * from './model/fl-chart-axis.class';

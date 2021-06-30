@@ -2,11 +2,11 @@ import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FlChartComponentType} from '../../model/fl-chart-component.class';
 import {FlChartSvg} from '../../model/fl-chart-svg.class';
 import {FlChartContainer2d} from '../../model/fl-chart-container.class';
-import {FlChart2dMultipleSerie} from '../../model/fl-chart-2d-serie.class';
 import {MultiSerieData} from '../../model/data';
 import {FlChartFactory} from '../../util/fl-chart.factory';
 import {FlChartScaleColorMulti} from '../../model/fl-chart-scale-color.class';
 import {FlThemeService} from '../../../../service/fl-theme.service';
+import {FlChart2dMultiSerie} from '../../model/fl-chart-2d-multi-serie.class';
 
 @Component({
   selector: 'fl-chart-dynamic',
@@ -17,14 +17,14 @@ export class FlChartDynamicComponent implements OnInit {
 
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
 
-  @Input() data: FlChart2dMultipleSerie<any>;
+  @Input() data: FlChart2dMultiSerie<any>;
 
   @Input() chartType: FlChartComponentType;
 
   seriesColorScale: FlChartScaleColorMulti;
 
   private chartSVG: FlChartSvg;
-  private chartContainer: FlChartContainer2d<FlChart2dMultipleSerie<MultiSerieData>>;
+  private chartContainer: FlChartContainer2d<FlChart2dMultiSerie<MultiSerieData>>;
 
   constructor(private themeService: FlThemeService) {
   }

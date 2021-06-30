@@ -17,6 +17,7 @@ const flChartI18nFr: FlLangTranslation = {
     max: 'Max',
     LINE: 'Courbe',
     SCATTER_PLOT: 'Nuage de point',
+    BAR_PLOT: 'Barres',
     HISTOGRAM: 'Histogramme',
     BOX_PLOT: 'Boîte à moustache',
     // Pathway
@@ -41,6 +42,7 @@ const flChartI18nEn: FlLangTranslation = {
     max: 'Max',
     LINE: 'Line',
     SCATTER_PLOT: 'Scatter plot',
+    BAR_PLOT: 'Bar plot',
     HISTOGRAM: 'Histogram',
     BOX_PLOT: 'Box plot',
     // Pathway
