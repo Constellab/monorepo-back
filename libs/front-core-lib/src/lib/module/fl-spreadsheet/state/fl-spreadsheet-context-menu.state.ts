@@ -9,6 +9,7 @@ import {FlSpreadsheetContextMenuComponent} from '../component/fl-spreadsheet-con
 import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 import {FlSpreadsheetChartState} from './fl-spreadsheet-chart.state';
 import {FlPortalConnectedPosition} from '../../fl-portal/model/fl-portal.class';
+import {FlSpreadsheetClipboardState} from './fl-spreadsheet-clipboard.state';
 
 export interface FlContextMenuConfig {
   buttons: FlContextMenuButton[];
@@ -25,7 +26,6 @@ export interface FlContextMenuButton {
 
 /**
  * State to handle context menu
- * todo : change to service instead of state ?
  */
 @Injectable()
 export class FlSpreadsheetContextMenu {
@@ -33,7 +33,8 @@ export class FlSpreadsheetContextMenu {
   constructor(private selectionState: FlSpreadsheetSelectionState,
               private portalService: FlPortalService,
               private action: FlSpreadsheetActions,
-              private chartState: FlSpreadsheetChartState) {
+              private chartState: FlSpreadsheetChartState,
+              private clipboardState: FlSpreadsheetClipboardState) {
   }
 
   public openCellContextMenu(mouseEvent: MouseEvent): void {
@@ -72,6 +73,7 @@ export class FlSpreadsheetContextMenu {
 
     return {
       buttons: [
+        ...this.getCopyPasteConfig(),
         // button to create a column
         {
           text: 'flSpreadsheet.add',
@@ -95,6 +97,7 @@ export class FlSpreadsheetContextMenu {
   public getConfigForHeaderRow(mouseEvent: MouseEvent): FlContextMenuConfig {
     return {
       buttons: [
+        ...this.getCopyPasteConfig(),
         // button to create a row
         {
           text: 'flSpreadsheet.add',
@@ -117,7 +120,10 @@ export class FlSpreadsheetContextMenu {
    */
   public getCellConfig(mouseEvent: MouseEvent): FlContextMenuConfig {
     return {
-      buttons: [this.getCreateChartConfig(mouseEvent)]
+      buttons: [
+        ...this.getCopyPasteConfig(),
+        this.getCreateChartConfig(mouseEvent)
+      ]
     };
   }
 
@@ -127,6 +133,22 @@ export class FlSpreadsheetContextMenu {
       icon: 'addchart',
       onClick: () => this.chartState.openChartSelectionDialog(mouseEvent)
     };
+  }
+
+  private getCopyPasteConfig(): FlContextMenuButton[] {
+    return [
+      {
+        text: 'flSpreadsheet.copy',
+        icon: 'content_copy',
+        onClick: () => this.clipboardState.copyCurrentSelectionToClipboard()
+      },
+      {
+        text: 'flSpreadsheet.paste',
+        icon: 'content_paste',
+        onClick: () => this.clipboardState.pasteClipboardValueToSelection()
+      },
+
+    ];
   }
 
 

@@ -19,6 +19,8 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     single_serie_data_wrong_format: 'Format incorrect. Exemple: A1:B2',
     selection_out_of_bound: 'La sélection dépasse la taille du tableau',
     chart_data_selection_tooltip: 'Cliquez pour sélection les cellules',
+    copy: 'Copier',
+    paste: 'Coller'
   }
 };
 
@@ -36,6 +38,8 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     single_serie_data_wrong_format: 'Incorrect format. Exemple: A1:B2',
     selection_out_of_bound: 'The selection is out of sheet bound',
     chart_data_selection_tooltip: 'Clic to select the cells',
+    copy: 'Copy',
+    paste: 'Paste'
   }
 };
 

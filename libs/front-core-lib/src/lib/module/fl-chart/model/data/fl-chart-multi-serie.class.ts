@@ -27,7 +27,7 @@ export class FlChartMultiSerie<Data> implements FlChartDataContainer<Data> {
     this.series.push(serie);
   }
 
-  public countSerie(): number {
+  public countSeries(): number {
     return this.series.length;
   }
 
