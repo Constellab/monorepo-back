@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {Observable} from 'rxjs';
+import {FlApiService, FlEntityPaginatedDatasource, FlSnackBarService} from '@monorepo/front-core-lib';
+import {Observable, throwError} from 'rxjs';
 import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm, ExperimentUpdate} from '../model/entities/biox-experiment.entity';
 import {createViewModel} from '../model/global/view-model.entity';
 import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
@@ -15,7 +15,8 @@ import {mergeMap} from 'rxjs/operators';
 })
 export class BioxExperimentService {
 
-  constructor(private apiService: FlApiService) {
+  constructor(private apiService: FlApiService,
+              private snackBarService: FlSnackBarService) {
   }
 
   public getExperiments(page: number, pageSize: number): Observable<ClPage<BioxExperiment>> {
@@ -48,6 +49,11 @@ export class BioxExperimentService {
   public updateExperimentProtocol(experiment: BioxExperiment, workflow: Workflow): Observable<BioxExperiment> {
     // convert the workflow to a protocol
     const graph: BioxProtocolGraph = BioxExperimentFlowFactory.convertWorkflowToProtocol(workflow);
+
+    if (graph == null || Object.keys(graph.nodes).length === 0) {
+      this.snackBarService.openErrorMessage('biox.error_empty_experience', true);
+      return throwError('biox.error_empty_experience');
+    }
 
     // build update object
     const experimentUpdate: ExperimentUpdate = {

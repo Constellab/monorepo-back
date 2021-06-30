@@ -34,6 +34,7 @@
     "resource_type_select": "Sélectionner un type de ressource",
     "resource_select": "Sélectionner une ressource",
     "process_type_type": "Type",
-    "execution_time": "Temps d'exécution"
+    "execution_time": "Temps d'exécution",
+    "error_empty_experience": "L'expérience est vide"
   }
 }
