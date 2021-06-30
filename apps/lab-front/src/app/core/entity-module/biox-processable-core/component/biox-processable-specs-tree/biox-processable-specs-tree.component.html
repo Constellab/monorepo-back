@@ -2,7 +2,7 @@
 
   <!-- This is the tree node template for leaf -->
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding
-                 [matTreeNodePaddingIndent]="10" class="g-text-link g-text-not-selectable"
+                 [matTreeNodePaddingIndent]="10" class="g-text-link g-not-selectable"
                  (click)="clickProcessable(node)" (dblclick)="dblClickProcessable(node)">
     <div class="leaf">{{node.typePart}}</div>
   </mat-tree-node>

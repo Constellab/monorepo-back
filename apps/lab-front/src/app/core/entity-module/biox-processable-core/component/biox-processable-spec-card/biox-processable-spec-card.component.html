@@ -18,7 +18,7 @@
       <mat-expansion-panel *ngIf="processableSpec.hasInputSpecs()" hideToggle [expanded]="true"
                            class="g-expansion-disable-side-padding">
         <mat-expansion-panel-header>
-          <mat-panel-title class="g-text-not-selectable">
+          <mat-panel-title class="g-not-selectable">
             <fl-text-icon>
               <mat-icon>login</mat-icon>
               {{'biox.node_inputs' | translate}}
@@ -34,7 +34,7 @@
       <mat-expansion-panel *ngIf="processableSpec.hasOutputSpecs()" hideToggle [expanded]="true"
                            class="g-expansion-disable-side-padding">
         <mat-expansion-panel-header>
-          <mat-panel-title class="g-text-not-selectable">
+          <mat-panel-title class="g-not-selectable">
             <fl-text-icon>
               <mat-icon>logout</mat-icon>
               {{'biox.node_outputs' | translate}}
@@ -50,7 +50,7 @@
       <mat-expansion-panel *ngIf="processableSpec.hasConfigSpecs()" hideToggle [expanded]="true"
                            class="g-expansion-disable-side-padding">
         <mat-expansion-panel-header>
-          <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
+          <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
             <fl-text-icon>
               <mat-icon>settings</mat-icon>
               {{'biox.configuration' | translate}}
@@ -66,7 +66,7 @@
       <mat-expansion-panel *ngIf="processableSpec.hasDocumentation()" hideToggle [expanded]="false"
                            class="g-expansion-disable-side-padding">
         <mat-expansion-panel-header>
-          <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
+          <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
             <fl-text-icon>
               <mat-icon>description</mat-icon>
               {{'documentation' | translate}}

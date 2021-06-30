@@ -10,7 +10,7 @@
     <!----------------------------  Progress ---------------------------->
     <mat-expansion-panel *ngIf="showProgress" hideToggle [expanded]="true">
       <mat-expansion-panel-header>
-        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
+        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
             <fl-status-chip [status]="node.object.progressBar"></fl-status-chip>
           </fl-text-icon>
@@ -31,7 +31,7 @@
     <!---------------------------- Inputs ---------------------------->
     <mat-expansion-panel *ngIf="node.hasInputs()" hideToggle [expanded]="true">
       <mat-expansion-panel-header>
-        <mat-panel-title class="g-text-not-selectable">
+        <mat-panel-title class="g-not-selectable">
           <fl-text-icon>
             <mat-icon>login</mat-icon>
             {{'biox.node_inputs' | translate}}
@@ -45,7 +45,7 @@
     <!---------------------------- Outputs ---------------------------->
     <mat-expansion-panel *ngIf="node.hasOutputs()" hideToggle [expanded]="true">
       <mat-expansion-panel-header>
-        <mat-panel-title class="g-text-not-selectable">
+        <mat-panel-title class="g-not-selectable">
           <fl-text-icon>
             <mat-icon>logout</mat-icon>
              {{'biox.node_outputs' | translate}}
@@ -59,7 +59,7 @@
     <!---------------------------- Config ---------------------------->
     <mat-expansion-panel *ngIf="config" hideToggle [expanded]="true" #configPanel>
       <mat-expansion-panel-header>
-        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
+        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
             <mat-icon>settings</mat-icon>
             {{'biox.configuration' | translate}}
@@ -78,7 +78,7 @@
     <!-------------------------- Specific to Source ---------------------------->
     <mat-expansion-panel *ngIf="isSource" hideToggle [expanded]="true">
       <mat-expansion-panel-header>
-        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-text-not-selectable">
+        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
             <mat-icon>login</mat-icon>
             {{'biox.resource_select' | translate}}

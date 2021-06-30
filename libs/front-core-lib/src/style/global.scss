@@ -104,6 +104,14 @@ ul, ol {
   background: #c4c4c4;
 }
 
+// use to prevent use selection for text or div
+.g-not-selectable {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
+}
 
 /**************************** Text *****************************/
 
@@ -123,13 +131,7 @@ ul, ol {
   font-size: 1.4rem;
 }
 
-.g-text-not-selectable {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
-}
+
 
 .g-text-centered {
   text-align: center;

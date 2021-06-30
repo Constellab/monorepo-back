@@ -4,7 +4,7 @@
       <thead>
       <tr>
         <fl-spreadsheet-header-cell *ngFor="let column of headerColumns; let index = index"
-                                    [index]="index - 1" type="column" class="header-cell"
+                                    [index]="index - 1" type="column" class="header-cell g-not-selectable"
                                     flResize="width"
         ></fl-spreadsheet-header-cell>
       </tr>
@@ -12,9 +12,9 @@
       <tbody>
       <tr *ngFor="let row of rows$ | async; trackBy: trackByRowsId">
         <!--  Row header cells  -->
-        <fl-spreadsheet-header-cell [index]="row.rowId" type="row"></fl-spreadsheet-header-cell>
+        <fl-spreadsheet-header-cell [index]="row.rowId" type="row" class="g-not-selectable"></fl-spreadsheet-header-cell>
         <fl-spreadsheet-cell *ngFor="let cell of row.cells; let columnIndex = index" [cell]="cell"
-                             [row]="row.rowId" [column]="columnIndex"></fl-spreadsheet-cell>
+                             [row]="row.rowId" [column]="columnIndex" class="g-not-selectable"></fl-spreadsheet-cell>
 
       </tr>
       </tbody>
