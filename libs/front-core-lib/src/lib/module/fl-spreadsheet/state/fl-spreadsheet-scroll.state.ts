@@ -1,11 +1,17 @@
 import {ElementRef, Injectable, NgZone, Renderer2} from '@angular/core';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {FlSheet} from '../model/fl-sheet.class';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {debounceTime, filter, startWith} from 'rxjs/operators';
 import {FlSheetRow} from '../model/fl-sheet-row.class';
 import {clRxjsEnterZone, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {FlRendererListenerObs} from '../../../model/fl-renderer-listener-obs.class';
+import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
+
+export interface Interval {
+  from: number;
+  to: number;
+}
 
 /**
  * State to handle scroll of spreadsheet
@@ -16,7 +22,7 @@ import {FlRendererListenerObs} from '../../../model/fl-renderer-listener-obs.cla
 @Injectable()
 export class FlSpreadsheetScrollState {
 
-  private rowsToDisplay$: Subject<FlSheetRow[]> = new BehaviorSubject(null);
+  private rowsToDisplay$: BehaviorSubject<FlSheetRow[]> = new BehaviorSubject(null);
 
   // parent of the heightSimulator that scroll
   private tableContainer: HTMLElement;
@@ -36,7 +42,8 @@ export class FlSpreadsheetScrollState {
 
   constructor(private renderer: Renderer2,
               private state: FlSpreadsheetState,
-              private ngZone: NgZone) {
+              private ngZone: NgZone,
+              private selectionState: FlSpreadsheetSelectionState) {
   }
 
 
@@ -45,6 +52,14 @@ export class FlSpreadsheetScrollState {
     this.scroller = scroller.nativeElement;
     this.heightSimulator = heightSimulator.nativeElement;
     this.listenToScroll();
+
+    // listen to the selection event to scroll to last selection rows if not visible
+    this.selectionState.getSelection$()
+      // don't scroll on empty, rows or columns selection
+      .pipe(filter(selection => selection != null && selection.type !== 'rows' && selection.type !== 'columns'))
+      .subscribe(
+        selection => this.scrollToRow(selection.endRow)
+      );
   }
 
 
@@ -85,11 +100,13 @@ export class FlSpreadsheetScrollState {
 
     // calculate the fist and last row to display
     const scrollerHeight: number = this.scroller.offsetHeight;
-    const numberOfCell: number = Math.trunc(scrollerHeight / this.cellHeight) + 1;
+    const numberOfCell: number = Math.trunc(scrollerHeight / this.cellHeight);
+    console.log(scrollerHeight, numberOfCell)
 
     const scrollTop: number = this.scroller.scrollTop;
     const firstCell: number = Math.trunc(scrollTop / this.cellHeight);
-    const lastCell: number = firstCell + numberOfCell;
+    // -1 because the number of cell include the first and last cells
+    const lastCell: number = firstCell + numberOfCell - 1;
 
     const sheet: FlSheet = this.state.currentSheet;
     const rows: FlSheetRow[] = sheet.getRows(firstCell, lastCell);
@@ -122,6 +139,32 @@ export class FlSpreadsheetScrollState {
     this.triggerScroll(this.tableContainer.offsetHeight * factor);
   }
 
+  // scroll to the rowId if it's not visible
+  public scrollToRow(rowId: number): void {
+    // if the rows is already visible
+    if (this.rowIsVisible(rowId)) {
+      return;
+    }
+
+    const interval: Interval = this.getVisibleInterval();
+    // if we have to scroll to the top
+    if (rowId < interval.from) {
+      this.triggerScroll(-this.cellHeight * (interval.from - rowId));
+    }
+    // if we have to scroll to the bottom
+    else {
+      this.triggerScroll(this.cellHeight * (rowId - interval.to));
+    }
+
+  }
+
+  public rowIsVisible(rowId: number): boolean {
+    const interval: Interval = this.getVisibleInterval();
+
+    // if the rows is already visible
+    return rowId >= interval.from && rowId <= interval.to;
+  }
+
   // clear the subscription
   private clearSubscription(): void {
     // clear previous listener if exists
@@ -136,5 +179,20 @@ export class FlSpreadsheetScrollState {
   public clear(): void {
     this.rowsToDisplay$?.complete();
     this.clearSubscription();
+  }
+
+  private get rowsToDisplay(): FlSheetRow[] {
+    return this.rowsToDisplay$.value;
+  }
+
+  private getVisibleInterval(): Interval {
+    const rows: FlSheetRow[] = this.rowsToDisplay;
+
+    return {
+      from: rows[0].rowId,
+      // we consider the last row as not visible because it is often cut
+      // so we do a - 1
+      to: rows[rows.length - 1].rowId - 1
+    };
   }
 }

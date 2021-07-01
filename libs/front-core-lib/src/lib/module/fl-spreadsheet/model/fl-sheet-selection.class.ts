@@ -35,21 +35,9 @@ export class FlSheetSelectionRange {
   }
 
   public getFirstSelectedCellCoord(): FlCellCoord {
-    if (this.type === 'columns') {
-      return {
-        row: 0,
-        column: this.startColumn
-      };
-    } else if (this.type === 'rows') {
-      return {
-        row: this.startRow,
-        column: 0
-      };
-    } else {
-      return {
-        row: this.startRow,
-        column: this.startColumn
-      };
+    return {
+      row: this.startRow,
+      column: this.startColumn
     }
   }
 

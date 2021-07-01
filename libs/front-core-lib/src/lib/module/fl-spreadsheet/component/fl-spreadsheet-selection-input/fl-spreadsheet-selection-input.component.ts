@@ -78,7 +78,7 @@ export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
 
   private enableSelection(): void {
     this.selected = true;
-    this.subscription = this.selectionState.getSelection().subscribe(
+    this.subscription = this.selectionState.getSelection$().subscribe(
       selection => this.onNewSelection(selection)
     );
 

@@ -163,17 +163,19 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     this.currentSelection$.next(newSelection);
   }
 
-  public getSelection(): Observable<FlSheetSelection> {
+  public getSelection$(): Observable<FlSheetSelection> {
     return this.currentSelection$.asObservable();
   }
 
 
-  public moveCurrentSelection(rowShift: number, columnShift: number): void {
+  public moveCurrentSelection(rowShift: number, columnShift: number): FlSheetSelection | null {
     const newCoord: FlCellCoord = this.shiftCurrentSelection(rowShift, columnShift);
 
     if (newCoord) {
-      this.selectUniqueCell(newCoord);
+      return this.selectUniqueCell(newCoord);
     }
+
+    return null;
   }
 
   // shit the current selection coord
@@ -196,7 +198,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     return null;
   }
 
-  public hasSelection(): boolean{
+  public hasSelection(): boolean {
     return this.currentSelection != null;
   }
 

@@ -31,7 +31,7 @@ export class FlSpreadsheetHeaderCellComponent implements OnInit, OnDestroy {
   }
 
   private subscribeToSelection(): void {
-    this.subscription = this.state.getSelection().subscribe(
+    this.subscription = this.state.getSelection$().subscribe(
       selection => this.onSelectionChange(selection)
     );
   }
