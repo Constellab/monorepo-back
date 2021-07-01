@@ -30,6 +30,12 @@
     <span class="value">{{boxPlotData.max | number:'1.0-2'}}</span>
   </div>
 
+  <!-- Max -->
+  <div fxLayout="row">
+    <span class="text g-text-light">{{'flChart.number_of_data' | translate}}</span>
+    <span class="value">{{boxPlotData.nbOfData}}</span>
+  </div>
+
 
   <fl-chart-serie-inline class="serie" [serieName]="serie.name" [color]="serie.key | flChartScale:seriesColorScale">
   </fl-chart-serie-inline>

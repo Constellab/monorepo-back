@@ -1,4 +1,5 @@
 import {ascending, quantile} from 'd3';
+import {FlChartSerie} from './fl-chart-serie.class';
 
 export interface FlChartBoxPlotData {
   q1: number;
@@ -6,6 +7,22 @@ export interface FlChartBoxPlotData {
   q3: number;
   min: number;
   max: number;
+  nbOfData: number;
+}
+
+/**
+ * Specific serie type for the box plot
+ */
+export class FlChartBoxPlotSerie extends FlChartSerie<number> {
+
+  constructor(public boxPlotData: FlChartBoxPlotData, serieName: string) {
+    // we set an array of number as data to have a correct domain
+    super([boxPlotData.q1, boxPlotData.median, boxPlotData.q3, boxPlotData.min, boxPlotData.max],
+      serieName
+    );
+  }
+
+
 }
 
 /**
@@ -27,8 +44,8 @@ export function flChartGetBoxPlotData(data: number[]): FlChartBoxPlotData {
     median: median,
     q3: q3,
     min: min,
-    max: max
+    max: max,
+    nbOfData: data.length
   };
 }
-
 

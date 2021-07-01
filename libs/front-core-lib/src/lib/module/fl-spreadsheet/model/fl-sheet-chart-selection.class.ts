@@ -5,8 +5,9 @@ import {FlCell} from './fl-cell.class';
 import {FlChartSerie} from '../../fl-chart/model/data/fl-chart-serie.class';
 import {FlChartComponentType} from '../../fl-chart/model/fl-chart-component.class';
 import {ClNumberHelper} from '@monorepo/core-lib';
-import {FlChart2dMultiSerie} from '../../fl-chart/model/data/fl-chart-multi-serie.class';
+import {FlChart2dMultiSerie, FlChartMultiSerie} from '../../fl-chart/model/data/fl-chart-multi-serie.class';
 import {FlChartDataBin, flChartGetDataBins} from '../../fl-chart/model/data/fl-chart-data-bin.class';
+import {FlChartBoxPlotSerie, flChartGetBoxPlotData} from '../../fl-chart/model/data/fl-chart-box-plot-data.class';
 
 /**
  * Class to store a selection for a basic chart
@@ -21,11 +22,10 @@ export class FlSheetChartSelection {
 
   }
 
-  public exportToSeries(): FlChart2dMultiSerie<any> {
-    const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
-
+  public exportToSeries(): FlChartMultiSerie<any> {
     // todo check if this is the right place
     if (this.chartType === FlChartComponentType.HISTOGRAM) {
+      const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
       // convert all the data to numbers
       const data: number[] = this.seriesData.getCellsValuesFlat().map(
         cellValue => ClNumberHelper.fromString(cellValue))
@@ -40,29 +40,52 @@ export class FlSheetChartSelection {
         return dataHisto.getIntervalText();
       };
       series.addSerie(serie);
-    } else {
+      return series;
 
+
+    } else if (this.chartType === FlChartComponentType.BOX_PLOT) {
+      const series: FlChartMultiSerie<any> = new FlChartMultiSerie();
+      const seriesSelections: FlSheetSelection[] = this.seriesData.selections;
+
+      for (let i = 0; i < seriesSelections.length; i++) {
+        const values: number[] = this.getSelectionValues(seriesSelections[i]);
+
+        series.addSerie(new FlChartBoxPlotSerie(flChartGetBoxPlotData(values), this.getSerieNameAtIndex(i)));
+      }
+      return series;
+
+    } else {
+      const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
       const seriesSelections: FlSheetSelection[] = this.seriesData.selections;
       for (let i = 0; i < seriesSelections.length; i++) {
         series.addSerie(new FlChartSerie<any>(
-          this.getSerieData(seriesSelections[i]),
+          this.convertSelectionTo2dDatum(seriesSelections[i]),
           this.getSerieNameAtIndex(i)));
       }
 
       series.axisXLabelFormat = this.getXAxisFormat();
+      return series;
     }
 
-    console.log(series);
-    return series;
   }
 
-  private getSerieData(selection: FlSheetSelection): FlChart2dDatum[] {
+  /**
+   * Convert the selections values to 2d datum with x = index of the value and y = value as number
+   * @param selection
+   * @private
+   */
+  private convertSelectionTo2dDatum(selection: FlSheetSelection): FlChart2dDatum[] {
+    // create a chart datum for each values
+    return this.getSelectionValues(selection).map((value, index) => new FlChart2dDatumNumber(index, value));
+  }
+
+  // return the selection values as numbers, it exclude the value that are not numbers
+  private getSelectionValues(selection: FlSheetSelection): number[] {
     const values: any[] = selection.getCellsValuesFlat();
 
-    // create a chart datum for each values
-    // take index as x and cell value as Y if it's a number (0 otherwise)
-    return values.map((value, index) => new FlChart2dDatumNumber(index, ClNumberHelper.fromString(value)))
-      .filter(value => value.getY() != null); // exclude null values
+    // convert the values to number if possible
+    return values.map(value => ClNumberHelper.fromString(value))
+      .filter(value => value != null); // exclude null values
   }
 
   // retrieve the serie name from the series labels selection at a specific index
