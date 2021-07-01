@@ -101,11 +101,11 @@ export class FlSpreadsheetScrollState {
     // calculate the fist and last row to display
     const scrollerHeight: number = this.scroller.offsetHeight;
     const numberOfCell: number = Math.trunc(scrollerHeight / this.cellHeight);
-    console.log(scrollerHeight, numberOfCell)
 
     const scrollTop: number = this.scroller.scrollTop;
     const firstCell: number = Math.trunc(scrollTop / this.cellHeight);
     // -1 because the number of cell include the first and last cells
+    // we are still 1 more cell because of the header cells
     const lastCell: number = firstCell + numberOfCell - 1;
 
     const sheet: FlSheet = this.state.currentSheet;
