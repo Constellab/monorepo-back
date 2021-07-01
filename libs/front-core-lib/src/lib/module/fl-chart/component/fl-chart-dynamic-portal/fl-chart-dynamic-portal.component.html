@@ -2,9 +2,10 @@
 
   <div fxLayout="row" fxLayoutAlign="end center"
        cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
-       cdkDragBoundary="body">
+       cdkDragBoundary="body" class="draggable">
 
-    <button mat-icon-button type="button" flPortalClose>
+    <button mat-icon-button type="button" flPortalClose
+            [matTooltip]="'close' | translate">
       <mat-icon>close</mat-icon>
     </button>
   </div>
