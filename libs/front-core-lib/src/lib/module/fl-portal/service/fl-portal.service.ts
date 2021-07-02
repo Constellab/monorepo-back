@@ -123,6 +123,9 @@ export class FlPortalService {
     if (position.bottom != null) globalPosition.bottom(position.bottom);
     if (position.right != null) globalPosition.right(position.right);
 
+    if (position.centerHorizontally != null) globalPosition.centerHorizontally(position.centerHorizontally);
+    if (position.centerVertically != null) globalPosition.centerHorizontally(position.centerVertically);
+
     return globalPosition;
   }
 

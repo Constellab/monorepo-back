@@ -3,8 +3,8 @@ import {ThemePalette} from '@angular/material/core/common-behaviors/color';
 import {Subscription} from 'rxjs';
 import {AbstractControl} from '@angular/forms';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
-import {FlSheetSelection} from '../../model/fl-sheet-selection.class';
-import {FlSheetMultiSelection} from '../../model/fl-sheet-multi-selection.class';
+import {FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
+import {FlSheetMultiSelection} from '../../model/selection/fl-sheet-multi-selection.class';
 import {FlSpreadsheetSelectionInputGroupDirective} from '../../directive/fl-spreadsheet-selection-input-group.directive';
 import {filter} from 'rxjs/operators';
 
@@ -88,7 +88,7 @@ export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
     }
   }
 
-  private onNewSelection(selection: FlSheetSelection): void {
+  private onNewSelection(selection: FlSheetSingleSelection): void {
     if (selection) {
       this.inputFormControl.patchValue(this.convertSelectionToString(selection));
     } else {
@@ -96,7 +96,7 @@ export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
     }
   }
 
-  private convertSelectionToString(selection: FlSheetSelection): string {
+  private convertSelectionToString(selection: FlSheetSingleSelection): string {
     if (this.mode === 'normal') {
       return selection.toString();
     } else {

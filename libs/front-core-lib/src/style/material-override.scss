@@ -43,6 +43,20 @@
   line-height: 2.5em !important;
 }
 
+.g-button-icon-small.mat-icon-button {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+
+  mat-icon {
+    height: 18px;
+    width: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+
+}
+
 .g-button-hide-text span, .g-button-hide-text mat-icon {
   display: none;
 }
@@ -146,7 +160,7 @@ mat-tree {
 /************************************* MAT TAB ***********************************/
 
 // Set all the mat-tab as flex 1 to take all the groupe space without wrap on horizontal scroll
-.g-mat-tab-flex .mat-tab-label{
+.g-mat-tab-flex .mat-tab-label {
   padding: 0;
   min-width: 0;
   flex: 1;

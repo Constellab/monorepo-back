@@ -2,7 +2,7 @@ import {ElementRef, Injectable, NgZone, OnDestroy, Renderer2} from '@angular/cor
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {columnIdAttributeName, FlCell, headerIndexAttributeName, headerTypeAttributeName, rowIdAttributeName} from '../model/fl-cell.class';
-import {FlCellCoord, FlHeaderCellType, FlSheetSelection} from '../model/fl-sheet-selection.class';
+import {FlCellCoord, FlHeaderCellType, FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetContextMenu} from './fl-spreadsheet-context-menu.state';
 import {FlMouseButton} from '../../../utils/fl-keyboard.helper';
 
@@ -146,7 +146,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
 
     event.preventDefault();
 
-    const selection: FlSheetSelection = this.selectionState.currentSelection;
+    const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
     if (cellEvent.type === 'header') {
       if (cellEvent.headerType === 'row') {

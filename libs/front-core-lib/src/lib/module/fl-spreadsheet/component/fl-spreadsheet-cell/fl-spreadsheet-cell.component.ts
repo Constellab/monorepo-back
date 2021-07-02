@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import {columnIdAttributeName, FlCell, FlCellEditChange, FlCellSelectionChange, rowIdAttributeName} from '../../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
-import {FlCellCoord, FlCellWithCoord, FlSheetSelectionRange} from '../../model/fl-sheet-selection.class';
+import {FlCellCoord, FlCellWithCoord, FlSheetSingleSelectionRange} from '../../model/selection/fl-sheet-single-selection.class';
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
 import {FlSpreadsheetActions} from '../../state/fl-spreadsheet-actions.state';
 import {FlKeyboardHelper, FlKeyboardKey} from '../../../../utils/fl-keyboard.helper';
@@ -103,7 +103,7 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
     }
   }
 
-  private selectCell(range: FlSheetSelectionRange): void {
+  private selectCell(range: FlSheetSingleSelectionRange): void {
     if (!this.selected) {
       this.renderer.addClass(this.elementRef.nativeElement, 'cell-selected');
       this.selected = true;
@@ -210,7 +210,7 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
   }
 
   // return the list of border classes to apply based on selected range
-  private getBorderClassesForSelectedRange(range: FlSheetSelectionRange): string[] {
+  private getBorderClassesForSelectedRange(range: FlSheetSingleSelectionRange): string[] {
     const classes: string[] = [];
     if (range.from.row === this.row) {
       classes.push('selected-border-top');

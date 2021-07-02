@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {Subscription} from 'rxjs';
-import {FlHeaderCellType, FlSheetSelection} from '../../model/fl-sheet-selection.class';
+import {FlHeaderCellType, FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
 import {headerIndexAttributeName, headerTypeAttributeName} from '../../model/fl-cell.class';
 
 @Component({
@@ -36,7 +36,7 @@ export class FlSpreadsheetHeaderCellComponent implements OnInit, OnDestroy {
     );
   }
 
-  private onSelectionChange(selection: FlSheetSelection): void {
+  private onSelectionChange(selection: FlSheetSingleSelection): void {
     if (selection == null) {
       this.renderer.removeClass(this.elementRef.nativeElement, this.getSelectedClass());
     } else {
@@ -49,7 +49,7 @@ export class FlSpreadsheetHeaderCellComponent implements OnInit, OnDestroy {
   }
 
   // return true is the current row or column is selected based on a selection event
-  private isSelected(selection: FlSheetSelection): boolean {
+  private isSelected(selection: FlSheetSingleSelection): boolean {
     if (this.type === 'column') {
       return this.index >= selection.from.column && this.index <= selection.to.column;
     } else {

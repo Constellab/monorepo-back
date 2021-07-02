@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
-import {FlCellCoord} from '../model/fl-sheet-selection.class';
+import {FlCellCoord} from '../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {FlClipboardService} from '../../../service/fl-clipboard.service';
 import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';

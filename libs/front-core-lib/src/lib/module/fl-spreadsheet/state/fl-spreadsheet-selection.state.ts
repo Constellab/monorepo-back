@@ -1,5 +1,10 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {FlCellCoord, FlSheetSelection, FlSheetSelectionFull, FlSheetSelectionRange} from '../model/fl-sheet-selection.class';
+import {
+  FlCellCoord,
+  FlSheetSingleSelection,
+  FlSheetSingleSelectionFull,
+  FlSheetSingleSelectionRange
+} from '../model/selection/fl-sheet-single-selection.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {FlSheet} from '../model/fl-sheet.class';
@@ -11,8 +16,8 @@ import {FlCell} from '../model/fl-cell.class';
 @Injectable()
 export class FlSpreadsheetSelectionState implements OnDestroy {
 
-  private currentSelection$: BehaviorSubject<FlSheetSelectionFull> =
-    new BehaviorSubject<FlSheetSelectionFull>(null);
+  private currentSelection$: BehaviorSubject<FlSheetSingleSelectionFull> =
+    new BehaviorSubject<FlSheetSingleSelectionFull>(null);
 
   constructor(private spreadsheetState: FlSpreadsheetState) {
   }
@@ -26,46 +31,46 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
    * Return a simple FlSheetSelection without the edit method because
    * the outside must not edit the selection
    */
-  public get currentSelection(): FlSheetSelection {
+  public get currentSelection(): FlSheetSingleSelection {
     return this.currentSelection$.value;
   }
 
-  private get currentSelectionFull(): FlSheetSelectionFull {
+  private get currentSelectionFull(): FlSheetSingleSelectionFull {
     return this.currentSelection$.value;
   }
 
-  public selectUniqueCell(coord: FlCellCoord): FlSheetSelection {
-    const selection: FlSheetSelectionFull = FlSheetSelectionFull.Single(this.currentSheet, coord.row, coord.column);
+  public selectUniqueCell(coord: FlCellCoord): FlSheetSingleSelection {
+    const selection: FlSheetSingleSelectionFull = FlSheetSingleSelectionFull.Single(this.currentSheet, coord.row, coord.column);
     this.newSelection(selection);
     return selection;
   }
 
-  public selectMultipleCell(from: FlCellCoord, to: FlCellCoord): FlSheetSelection {
-    const selection: FlSheetSelectionFull = FlSheetSelectionFull.Multiple(this.currentSheet,
+  public selectMultipleCell(from: FlCellCoord, to: FlCellCoord): FlSheetSingleSelection {
+    const selection: FlSheetSingleSelectionFull = FlSheetSingleSelectionFull.Multiple(this.currentSheet,
       from.row, from.column, to.row, to.column);
     this.newSelection(selection);
     return selection;
   }
 
-  public selectUniqueRow(rowIndex: number): FlSheetSelection {
-    const selection: FlSheetSelectionFull = FlSheetSelectionFull.Rows(this.currentSheet, rowIndex, rowIndex);
+  public selectUniqueRow(rowIndex: number): FlSheetSingleSelection {
+    const selection: FlSheetSingleSelectionFull = FlSheetSingleSelectionFull.Rows(this.currentSheet, rowIndex, rowIndex);
     this.newSelection(selection);
     return selection;
   }
 
-  public selectUniqueColumn(columnIndex: number): FlSheetSelection {
-    const selection: FlSheetSelectionFull = FlSheetSelectionFull.Columns(this.currentSheet, columnIndex, columnIndex);
+  public selectUniqueColumn(columnIndex: number): FlSheetSingleSelection {
+    const selection: FlSheetSingleSelectionFull = FlSheetSingleSelectionFull.Columns(this.currentSheet, columnIndex, columnIndex);
     this.newSelection(selection);
     return selection;
   }
 
-  public setSelection(sheet: FlSheet, range: FlSheetSelectionRange): FlSheetSelection {
-    const selection: FlSheetSelectionFull = FlSheetSelectionFull.FromRange(sheet, range);
+  public setSelection(sheet: FlSheet, range: FlSheetSingleSelectionRange): FlSheetSingleSelection {
+    const selection: FlSheetSingleSelectionFull = FlSheetSingleSelectionFull.FromRange(sheet, range);
     this.newSelection(selection);
     return selection;
   }
 
-  private newSelection(selection: FlSheetSelectionFull): void {
+  private newSelection(selection: FlSheetSingleSelectionFull): void {
     this.unselectCurrentSelection();
     this.selectCellsFromSelection(selection);
     this.currentSelection$.next(selection);
@@ -83,7 +88,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     }
   }
 
-  private selectCellsFromSelection(selection: FlSheetSelection): void {
+  private selectCellsFromSelection(selection: FlSheetSingleSelection): void {
     const cells: FlCell[] = selection.getCellsFlat();
 
     for (const cell of cells) {
@@ -91,7 +96,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     }
   }
 
-  private unSelectCellsFromSelection(selection: FlSheetSelection): void {
+  private unSelectCellsFromSelection(selection: FlSheetSingleSelection): void {
     const cells: FlCell[] = selection.getCellsFlat();
 
     for (const cell of cells) {
@@ -117,7 +122,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
       return;
     }
 
-    const currentSelectionFull: FlSheetSelectionFull = this.currentSelectionFull;
+    const currentSelectionFull: FlSheetSingleSelectionFull = this.currentSelectionFull;
 
     // check if the current selection is valid to expand
     if (currentSelectionFull == null ||
@@ -131,7 +136,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
       return;
     }
 
-    const newSelection: FlSheetSelectionFull = currentSelectionFull.expandSelection(coord.row, coord.column);
+    const newSelection: FlSheetSingleSelectionFull = currentSelectionFull.expandSelection(coord.row, coord.column);
     // todo use difference between selection instead of clear
     this.unselectCurrentSelection();
     this.selectCellsFromSelection(newSelection);
@@ -145,7 +150,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     }
 
     this.unselectCurrentSelection();
-    const newSelection: FlSheetSelectionFull = this.currentSelectionFull.expandRowsSelection(rowIndex);
+    const newSelection: FlSheetSingleSelectionFull = this.currentSelectionFull.expandRowsSelection(rowIndex);
     this.selectCellsFromSelection(newSelection);
 
     this.currentSelection$.next(newSelection);
@@ -157,18 +162,18 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     }
 
     this.unselectCurrentSelection();
-    const newSelection: FlSheetSelectionFull = this.currentSelectionFull.expandColumnsSelection(rowIndex);
+    const newSelection: FlSheetSingleSelectionFull = this.currentSelectionFull.expandColumnsSelection(rowIndex);
     this.selectCellsFromSelection(newSelection);
 
     this.currentSelection$.next(newSelection);
   }
 
-  public getSelection$(): Observable<FlSheetSelection> {
+  public getSelection$(): Observable<FlSheetSingleSelection> {
     return this.currentSelection$.asObservable();
   }
 
 
-  public moveCurrentSelection(rowShift: number, columnShift: number): FlSheetSelection | null {
+  public moveCurrentSelection(rowShift: number, columnShift: number): FlSheetSingleSelection | null {
     const newCoord: FlCellCoord = this.shiftCurrentSelection(rowShift, columnShift);
 
     if (newCoord) {
@@ -181,7 +186,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   // shit the current selection coord
   // return null if the new coord is not valid
   private shiftCurrentSelection(rowShift: number, columnShift: number): FlCellCoord | null {
-    const selection: FlSheetSelection = this.currentSelection;
+    const selection: FlSheetSingleSelection = this.currentSelection;
 
     if (selection != null) {
 

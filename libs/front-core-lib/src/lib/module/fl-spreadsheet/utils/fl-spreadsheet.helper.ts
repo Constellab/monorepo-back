@@ -1,4 +1,4 @@
-import {FlCellCoord} from '../model/fl-sheet-selection.class';
+import {FlCellCoord} from '../model/selection/fl-sheet-single-selection.class';
 
 const columnNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
   'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];

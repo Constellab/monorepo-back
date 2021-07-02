@@ -1,4 +1,4 @@
-import {FlSheetSelectionRange} from '../fl-sheet-selection.class';
+import {FlSheetSingleSelectionRange} from '../selection/fl-sheet-single-selection.class';
 import {FlSheet} from '../fl-sheet.class';
 import {FlSheetAction} from './fl-sheet.action';
 
@@ -7,7 +7,7 @@ import {FlSheetAction} from './fl-sheet.action';
  */
 export class FlUpdateCellsAction extends FlSheetAction {
 
-  constructor(sheetId: number, range: FlSheetSelectionRange,
+  constructor(sheetId: number, range: FlSheetSingleSelectionRange,
               private newValues: any[][], private previousValues: any[][]) {
     super(sheetId, range);
   }
@@ -28,7 +28,7 @@ export class FlUpdateCellsAction extends FlSheetAction {
  */
 export class FlSingleUpdateCellAction extends FlUpdateCellsAction {
 
-  constructor(sheetId: number, range: FlSheetSelectionRange, newValue: any, previousValue: any,) {
+  constructor(sheetId: number, range: FlSheetSingleSelectionRange, newValue: any, previousValue: any,) {
     super(sheetId, range, [[newValue]], [[previousValue]]);
   }
 }

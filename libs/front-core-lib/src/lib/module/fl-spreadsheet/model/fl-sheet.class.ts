@@ -1,7 +1,7 @@
 import {FlBasicCell, FlCell, FlColumnHeaderCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
-import {FlCellCoord, FlSheetSelectionRange} from './fl-sheet-selection.class';
+import {FlCellCoord, FlSheetSingleSelectionRange} from './selection/fl-sheet-single-selection.class';
 import {FlSheetRow} from './fl-sheet-row.class';
 
 export class FlSheet {
@@ -218,7 +218,7 @@ export class FlSheet {
    * Array is flatten by rows
    * @param range
    */
-  public getCellsFromRangeFlat(range: FlSheetSelectionRange): FlCell[] {
+  public getCellsFromRangeFlat(range: FlSheetSingleSelectionRange): FlCell[] {
     const cells: FlCell[] = [];
 
     for (let row = range.from.row; row <= range.to.row; row++) {
@@ -228,7 +228,7 @@ export class FlSheet {
     return cells;
   }
 
-  public getCellsFromRange(range: FlSheetSelectionRange): FlCell[][] {
+  public getCellsFromRange(range: FlSheetSingleSelectionRange): FlCell[][] {
     return this.getCellsFromCoords(range.from, range.to);
   }
 
@@ -294,7 +294,7 @@ export class FlSheet {
   /**
    * return true if the range is within the sheet size
    */
-  public rangeIsValid(range: FlSheetSelectionRange): boolean {
+  public rangeIsValid(range: FlSheetSingleSelectionRange): boolean {
     return this.coordIsValid(range.from) && this.coordIsValid(range.to);
   }
 
@@ -304,7 +304,7 @@ export class FlSheet {
    * Otherwise it return the coord that is wrong
    * @param range
    */
-  public checkRangeValidity(range: FlSheetSelectionRange): FlCellCoord | null {
+  public checkRangeValidity(range: FlSheetSingleSelectionRange): FlCellCoord | null {
     if (!this.coordIsValid(range.from)) {
       return range.from;
     }

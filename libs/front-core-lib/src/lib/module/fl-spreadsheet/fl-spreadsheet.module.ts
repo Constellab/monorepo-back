@@ -26,6 +26,8 @@ import {MatSelectModule} from '@angular/material/select';
 import {FlChartModule} from '../fl-chart/fl-chart.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flSpreadSheetI18n} from './i18n/fl-spreadsheet.i18n';
+import {FlSpreadsheetChartSerieSelectionComponent} from './component/fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
+import {MatDividerModule} from '@angular/material/divider';
 
 
 @NgModule({
@@ -38,6 +40,7 @@ import {flSpreadSheetI18n} from './i18n/fl-spreadsheet.i18n';
     FlSpreadsheetChartSelectionComponent,
     FlSpreadsheetSelectionInputComponent,
     FlSpreadsheetSelectionInputGroupDirective,
+    FlSpreadsheetChartSerieSelectionComponent,
   ],
   exports: [
     FlSpreadsheetComponent,
@@ -63,6 +66,7 @@ import {flSpreadSheetI18n} from './i18n/fl-spreadsheet.i18n';
     MatButtonModule,
     MatInputModule,
     MatSelectModule,
+    MatDividerModule,
   ],
 })
 export class FlSpreadsheetModule {

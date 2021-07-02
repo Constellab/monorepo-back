@@ -1,7 +1,7 @@
 import {Injectable, NgZone, OnDestroy, Renderer2} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlKeyboardHelper, FlKeyboardKey} from '../../../utils/fl-keyboard.helper';
-import {FlCellCoord, FlSheetSelection} from '../model/fl-sheet-selection.class';
+import {FlCellCoord, FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetClipboardState} from './fl-spreadsheet-clipboard.state';
 import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 import {FlSpreadsheetActionStore} from './fl-spreadsheet-action.store';
@@ -103,7 +103,7 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
 
   // Handler for the DELETE key
   private handleDeleteKey(): void {
-    const selection: FlSheetSelection = this.selectionState.currentSelection;
+    const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
     if (selection != null) {
       // construct an array of null values the same size as the selection
@@ -116,7 +116,7 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
   // Handler for printable keys
   // we pass the selected cell to the edit mode if not already
   private handlePrintableKeys(key: string): void {
-    const selection: FlSheetSelection = this.selectionState.currentSelection;
+    const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
     if (selection != null) {
       const cell = selection.getFirstSelectedCell();
@@ -145,7 +145,7 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
   }
 
   private handleShiftArrow(rowShift: number, columnShift: number): void {
-    const selection: FlSheetSelection = this.selectionState.currentSelection;
+    const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
     if (selection != null) {
       const coord: FlCellCoord = {

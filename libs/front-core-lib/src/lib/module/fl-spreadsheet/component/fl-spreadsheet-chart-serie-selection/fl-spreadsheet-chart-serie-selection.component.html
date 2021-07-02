@@ -1,0 +1,91 @@
+<div>
+
+  <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
+       cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
+       cdkDragBoundary="body">
+    <h2>{{'flSpreadsheet.chart_serie_selection' | translate}}</h2>
+
+    <button mat-icon-button type="button"
+            [matTooltip]="'close' | translate"
+            flPortalClose tabindex="-1">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+
+  <form [formGroup]="formGp" (ngSubmit)="submit()" flSpreadsheetSelectionInputGroup
+        class="form">
+
+    <!--   Serie's name   -->
+    <mat-form-field class="g-form-input" appearance="outline">
+      <mat-label>{{'flSpreadsheet.serie_name' | translate}}</mat-label>
+      <input matInput formControlName="name" required
+             placeholder="{{'flSpreadsheet.serie_name' | translate}}">
+      <mat-error *ngIf="formGp.get('name').hasError('required')">
+        {{'flSpreadsheet.serie_name' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--   X values selection   -->
+    <mat-form-field class="g-form-input" appearance="outline" *ngIf="formGp.get('x')">
+      <mat-label>{{'flSpreadsheet.chart_serie_selection_x' | translate}}</mat-label>
+      <input matInput formControlName="x"
+             placeholder="{{'flSpreadsheet.chart_serie_selection_x' | translate}}">
+      <fl-spreadsheet-selection-input matSuffix mode="splitRows"
+                                      [inputFormControl]="formGp.get('x')"></fl-spreadsheet-selection-input>
+
+      <mat-error *ngIf="formGp.get('x').hasError('invalidFormat')">
+        {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
+      </mat-error>
+      <mat-error *ngIf="formGp.get('x').hasError('selectionOutOfBound')">
+        {{'flSpreadsheet.selection_out_of_bound' | translate}}
+        : {{formGp.get('x').getError('selectionOutOfBound')}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--   Y values selection   -->
+    <mat-form-field class="g-form-input" appearance="outline">
+      <mat-label>{{'flSpreadsheet.chart_serie_selection_y' | translate}}</mat-label>
+      <input matInput formControlName="y" required
+             placeholder="{{'flSpreadsheet.chart_serie_selection_y' | translate}}">
+      <fl-spreadsheet-selection-input matSuffix mode="splitRows"
+                                      [inputFormControl]="formGp.get('y')"></fl-spreadsheet-selection-input>
+      <mat-error *ngIf="formGp.get('y').hasError('required')">
+        {{'flSpreadsheet.chart_serie_selection_y' | flErrorRequired}}
+      </mat-error>
+      <mat-error *ngIf="formGp.get('y').hasError('invalidFormat')">
+        {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
+      </mat-error>
+      <mat-error *ngIf="formGp.get('y').hasError('selectionOutOfBound')">
+        {{'flSpreadsheet.selection_out_of_bound' | translate}}
+        : {{formGp.get('y').getError('selectionOutOfBound')}}
+      </mat-error>
+    </mat-form-field>
+
+
+    <button mat-raised-button color="primary" type="submit">
+      {{'flSpreadsheet.create_chart_validate' | translate}}
+    </button>
+  </form>
+
+</div>
+
+
+<!--    -->
+
+<!--      &lt;!&ndash;   X Labels    &ndash;&gt;-->
+<!--      <mat-form-field class="g-form-input" appearance="outline">-->
+<!--        <mat-label>{{'flSpreadsheet.x_labels' | translate}}</mat-label>-->
+<!--        <input matInput formControlName="xLabels"-->
+<!--               placeholder="{{'flSpreadsheet.x_labels' | translate}}">-->
+<!--        <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('xLabels')">-->
+<!--        </fl-spreadsheet-selection-input>-->
+
+<!--        <mat-error *ngIf="formGp.get('xLabels').hasError('invalidFormat')">-->
+<!--          {{'flSpreadsheet.single_serie_data_wrong_format' | translate}}-->
+<!--        </mat-error>-->
+<!--        <mat-error *ngIf="formGp.get('xLabels').hasError('selectionOutOfBound')">-->
+<!--          {{'flSpreadsheet.selection_out_of_bound' | translate}} :-->
+<!--          : {{formGp.get('xLabels').getError('selectionOutOfBound')}}-->
+<!--        </mat-error>-->
+<!--      </mat-form-field>-->

@@ -98,4 +98,20 @@ export interface PortalAbsolutePosition{
   left?: string;
   bottom?: string;
   right?: string;
+
+  /**
+   * Centers the overlay horizontally with an optional offset.
+   * Clears any previously set horizontal position.
+   *
+   * @param offset Overlay offset from the horizontal center.
+   */
+
+  centerHorizontally?: string;
+  /**
+   * Centers the overlay vertically with an optional offset.
+   * Clears any previously set vertical position.
+   *
+   * @param offset Overlay offset from the vertical center.
+   */
+  centerVertically?: string;
 }

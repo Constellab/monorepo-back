@@ -3,7 +3,7 @@
   <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
        cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
        cdkDragBoundary="body">
-    <div class="title">{{'flSpreadsheet.create_chart' | translate}}</div>
+    <h1 class="title">{{'flSpreadsheet.create_chart' | translate}}</h1>
 
     <button mat-icon-button type="button"
             [matTooltip]="'close' | translate"
@@ -13,75 +13,95 @@
   </div>
 
 
-  <div class="body">
+  <div class="form">
+
     <form [formGroup]="formGp" (ngSubmit)="submit()" flSpreadsheetSelectionInputGroup>
 
-      <!--   Chart type selection   -->
-      <mat-form-field class="g-form-input" appearance="outline">
-        <mat-label>{{'flSpreadsheet.create_chart' | translate}}</mat-label>
-        <mat-select formControlName="chartType" required
-                    placeholder="{{'flSpreadsheet.create_chart' | translate}}">
-          <mat-select-trigger>
-            {{'flChart.' + formGp.value.chartType | translate}}
-          </mat-select-trigger>
-          <fl-chart-component-select-options></fl-chart-component-select-options>
-        </mat-select>
 
-        <mat-error *ngIf="formGp.get('chartType').hasError('required')">
-          {{'flSpreadsheet.create_chart' | flErrorRequired}}
-        </mat-error>
-      </mat-form-field>
+      <div class="form-first-part">
+        <!--   Chart type selection   -->
+        <mat-form-field class="g-form-input" appearance="outline">
+          <mat-label>{{'flSpreadsheet.chart_type' | translate}}</mat-label>
+          <mat-select formControlName="chartType" required
+                      placeholder="{{'flSpreadsheet.chart_type' | translate}}"
+                      (selectionChange)="onChartTypeChange($event)">
+            <mat-select-trigger>
+              {{'flChart.' + formGp.value.chartType | translate}}
+            </mat-select-trigger>
+            <fl-chart-component-select-options></fl-chart-component-select-options>
+          </mat-select>
 
-      <!--   Serie selection   -->
-      <mat-form-field class="g-form-input" appearance="outline">
-        <mat-label>{{'flSpreadsheet.series_data_selection' | translate}}</mat-label>
-        <input matInput formControlName="seriesData" required
-               placeholder="{{'flSpreadsheet.series_data_selection' | translate}}">
-        <fl-spreadsheet-selection-input matSuffix mode="splitRows"
-                                        [inputFormControl]="formGp.get('seriesData')"></fl-spreadsheet-selection-input>
-        <mat-error *ngIf="formGp.get('seriesData').hasError('required')">
-          {{'flSpreadsheet.series_data_selection' | flErrorRequired}}
-        </mat-error>
-        <mat-error *ngIf="formGp.get('seriesData').hasError('invalidFormat')">
-         {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
-        </mat-error>
-        <mat-error *ngIf="formGp.get('seriesData').hasError('selectionOutOfBound')">
-          {{'flSpreadsheet.selection_out_of_bound' | translate}} : {{formGp.get('seriesData').getError('selectionOutOfBound')}}
-        </mat-error>
-      </mat-form-field>
+          <mat-error *ngIf="formGp.get('chartType').hasError('required')">
+            {{'flSpreadsheet.create_chart' | flErrorRequired}}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Chart data range-->
+        <mat-form-field appearance="outline" class="g-full">
+          <mat-label>{{'flSpreadsheet.chart_data_range' | translate}}</mat-label>
+          <input matInput formControlName="dataRange" placeholder="{{'flSpreadsheet.chart_data_range' | translate}}">
+          <fl-spreadsheet-selection-input matSuffix mode="splitRows"
+                                          [inputFormControl]="formGp.get('dataRange')"></fl-spreadsheet-selection-input>
+          <mat-error *ngIf="formGp.get('dataRange').hasError('invalidFormat')">
+            {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
+          </mat-error>
+          <mat-error *ngIf="formGp.get('dataRange').hasError('selectionOutOfBound')">
+            {{'flSpreadsheet.selection_out_of_bound' | translate}}
+            : {{formGp.get('dataRange').getError('selectionOutOfBound')}}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Series name range-->
+        <mat-form-field appearance="outline" class="g-full">
+          <mat-label>{{'flSpreadsheet.series_name' | translate}}</mat-label>
+          <input matInput formControlName="seriesNameRange"
+                 placeholder="{{'flSpreadsheet.series_name' | translate}}">
+          <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('seriesNameRange')">
+          </fl-spreadsheet-selection-input>
+
+          <mat-error *ngIf="formGp.get('seriesNameRange').hasError('invalidFormat')">
+            {{'flSpreadsheet.single_serie_data_wrong_format' | translate}}
+          </mat-error>
+          <mat-error *ngIf="formGp.get('seriesNameRange').hasError('selectionOutOfBound')">
+            {{'flSpreadsheet.selection_out_of_bound' | translate}} :
+            : {{formGp.get('seriesNameRange').getError('selectionOutOfBound')}}
+          </mat-error>
+        </mat-form-field>
+
+      </div>
 
 
-      <!--   Name of the series    -->
-      <mat-form-field class="g-form-input" appearance="outline">
-        <mat-label>{{'flSpreadsheet.series_name' | translate}}</mat-label>
-        <input matInput formControlName="seriesNames"
-               placeholder="{{'series_name' | translate}}">
-        <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('seriesNames')">
-        </fl-spreadsheet-selection-input>
+      <!--    List of series    -->
+      <div class="series" *ngIf="chartType">
+        <mat-divider class="divider"></mat-divider>
 
-        <mat-error *ngIf="formGp.get('seriesNames').hasError('invalidFormat')">
-          {{'flSpreadsheet.single_serie_data_wrong_format' | translate}}
-        </mat-error>
-        <mat-error *ngIf="formGp.get('seriesNames').hasError('selectionOutOfBound')">
-          {{'flSpreadsheet.selection_out_of_bound' | translate}} : : {{formGp.get('seriesNames').getError('selectionOutOfBound')}}
-        </mat-error>
-      </mat-form-field>
 
-      <!--   X Labels    -->
-      <mat-form-field class="g-form-input" appearance="outline">
-        <mat-label>{{'flSpreadsheet.x_labels' | translate}}</mat-label>
-        <input matInput formControlName="xLabels"
-               placeholder="{{'flSpreadsheet.x_labels' | translate}}">
-        <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('xLabels')">
-        </fl-spreadsheet-selection-input>
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+          <h2>{{'flSpreadsheet.chart_series' | translate}}</h2>
 
-        <mat-error *ngIf="formGp.get('xLabels').hasError('invalidFormat')">
-          {{'flSpreadsheet.single_serie_data_wrong_format' | translate}}
-        </mat-error>
-        <mat-error *ngIf="formGp.get('xLabels').hasError('selectionOutOfBound')">
-          {{'flSpreadsheet.selection_out_of_bound' | translate}} : : {{formGp.get('xLabels').getError('selectionOutOfBound')}}
-        </mat-error>
-      </mat-form-field>
+          <button mat-icon-button type="button" (click)="addSerie()"
+                  [matTooltip]="'flSpreadsheet.chart_add_serie' | translate"
+                  [disabled]="series.length >= ngMaxOfSeries">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+
+        <div *ngFor="let serie of series; let i = index" fxLayout="row" fxLayoutAlign="space-between center">
+          <div>{{serie.name}}</div>
+          <div>
+            <button mat-icon-button type="button" class="g-button-icon-small"
+                    (click)="updateSerie(serie, i)"
+                    [matTooltip]="'flSpreadsheet.chart_update_serie' | translate">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button type="button" color="warn" class="g-button-icon-small"
+                    (click)="deleteSerie(i)"
+                    [matTooltip]="'flSpreadsheet.chart_delete_serie' | translate">
+              <mat-icon>clear</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
 
 
       <button mat-raised-button color="primary" type="submit">

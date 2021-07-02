@@ -3,10 +3,10 @@ import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
 import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
 import {FlSpreadsheetChartSelectionComponent} from '../component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-selection.component';
 import {FlOverlayRef} from '../../fl-portal/model/fl-overlay-ref.class';
-import {FlSheetChartSelection} from '../model/fl-sheet-chart-selection.class';
 import {FlChartPortalService} from '../../fl-chart/service/fl-chart-portal.service';
 import {FlChartDynamicConfig} from '../../fl-chart/model/fl-chart-component.class';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
+import {FlSheetChartSelection} from '../model/chart/fl-sheet-chart-selection.class';
 
 
 @Injectable()

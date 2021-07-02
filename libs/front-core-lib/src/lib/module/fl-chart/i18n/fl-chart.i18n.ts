@@ -20,6 +20,8 @@ const flChartI18nFr: FlLangTranslation = {
     BAR_PLOT: 'Barres',
     HISTOGRAM: 'Histogramme',
     BOX_PLOT: 'Boîte à moustache',
+    number_of_data: 'Nb de données',
+    interval: 'Interval',
     // Pathway
     pathway_links: 'Lien externes',
     pathway_link_value_help: 'Slider pour cacher les lien d\'une valeur inférieur à',
@@ -27,8 +29,6 @@ const flChartI18nFr: FlLangTranslation = {
     pathway_link_color_log: 'Couleurs logarithmes',
     pathway_select_sub_pathway: 'Sélectionner un pathway',
     pathway_open_config: 'Ouvrir les paramètres',
-    number_of_data: 'Nb de données',
-    interval: 'Interval',
   }
 };
 
@@ -47,6 +47,8 @@ const flChartI18nEn: FlLangTranslation = {
     BAR_PLOT: 'Bar plot',
     HISTOGRAM: 'Histogram',
     BOX_PLOT: 'Box plot',
+    number_of_data: 'Nb of data',
+    interval: 'Interval',
     // Pathway
     pathway_links: 'External links',
     pathway_link_value_help: 'Slide to hide link with a value lower than',
@@ -54,8 +56,6 @@ const flChartI18nEn: FlLangTranslation = {
     pathway_link_color_log: 'Logarithm colors',
     pathway_select_sub_pathway: 'Select a pathway',
     pathway_open_config: 'Open config',
-    number_of_data: 'Nb of data',
-    interval: 'Interval',
   }
 };
 

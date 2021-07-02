@@ -1,14 +1,15 @@
-import {FlSpreadsheetHelper} from '../utils/fl-spreadsheet.helper';
-import {FlSheet} from './fl-sheet.class';
-import {FlCell} from './fl-cell.class';
+import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
+import {FlSheet} from '../fl-sheet.class';
+import {FlCell} from '../fl-cell.class';
+import {FlSheetSelection} from './fl-sheet-selection.class';
 
-export type FlSheetSelectionType = 'single' | 'multiple' | 'columns' | 'rows';
+export type FlSheetSingleSelectionType = 'single' | 'multiple' | 'columns' | 'rows';
 
 
-export class FlSheetSelectionRange {
+export class FlSheetSingleSelectionRange {
 
   protected constructor(
-    public type: FlSheetSelectionType,
+    public type: FlSheetSingleSelectionType,
     public startRow: number,
     public startColumn: number,
     public endRow: number,
@@ -65,7 +66,7 @@ export class FlSheetSelectionRange {
       FlSpreadsheetHelper.coordToString(this.to);
   }
 
-  public equals(range: FlSheetSelectionRange): boolean {
+  public equals(range: FlSheetSingleSelectionRange): boolean {
     return range.from.row === this.from.row && range.from.column === this.from.column
       && range.to.row === range.to.row && range.to.column === range.to.column;
   }
@@ -75,11 +76,11 @@ export class FlSheetSelectionRange {
  * Class containing the selection of a spreadsheet with only read method
  * This object is immutable
  */
-export class FlSheetSelection extends FlSheetSelectionRange {
+export class FlSheetSingleSelection extends FlSheetSingleSelectionRange implements FlSheetSelection {
 
   protected constructor(
     public sheet: FlSheet,
-    type: FlSheetSelectionType,
+    type: FlSheetSingleSelectionType,
     startRow: number,
     startColumn: number,
     endRow: number,
@@ -114,20 +115,20 @@ export class FlSheetSelection extends FlSheetSelectionRange {
   }
 
 
-  public exportToRange(): FlSheetSelectionRange {
-    return new FlSheetSelectionRange(this.type, this.startRow, this.startColumn, this.endRow, this.endColumn);
+  public exportToRange(): FlSheetSingleSelectionRange {
+    return new FlSheetSingleSelectionRange(this.type, this.startRow, this.startColumn, this.endRow, this.endColumn);
   }
 
   /**
    * return a list of selection, one for each row
    */
-  public splitToRowSelections(): FlSheetSelection[] {
-    const selections: FlSheetSelection[] = [];
+  public splitToRowSelections(): FlSheetSingleSelection[] {
+    const selections: FlSheetSingleSelection[] = [];
     const from: FlCellCoord = this.from;
     const to: FlCellCoord = this.to;
 
     for (let i = from.row; i <= to.row; i++) {
-      selections.push(FlSheetSelectionFull.Multiple(this.sheet, i, from.column, i, to.column));
+      selections.push(FlSheetSingleSelectionFull.Multiple(this.sheet, i, from.column, i, to.column));
     }
 
     return selections;
@@ -136,18 +137,18 @@ export class FlSheetSelection extends FlSheetSelectionRange {
   /**
    * return a list of selection, one for each column
    */
-  public splitToColumnSelections(): FlSheetSelection[] {
-    const selections: FlSheetSelection[] = [];
+  public splitToColumnSelections(): FlSheetSingleSelection[] {
+    const selections: FlSheetSingleSelection[] = [];
     const from: FlCellCoord = this.from;
     const to: FlCellCoord = this.to;
 
     // if there is only one row selection, we return only one row
     if (from.row === to.row) {
-      return [FlSheetSelectionFull.Multiple(this.sheet, from.row, from.column, to.row, to.column)];
+      return [FlSheetSingleSelectionFull.Multiple(this.sheet, from.row, from.column, to.row, to.column)];
     }
 
     for (let i = from.column; i <= to.column; i++) {
-      selections.push(FlSheetSelectionFull.Multiple(this.sheet, from.row, i, to.row, i));
+      selections.push(FlSheetSingleSelectionFull.Multiple(this.sheet, from.row, i, to.row, i));
     }
 
     return selections;
@@ -173,10 +174,10 @@ export class FlSheetSelection extends FlSheetSelectionRange {
  * Class containing the selection of a spreadsheet with only also update method method
  * This object is immutable
  */
-export class FlSheetSelectionFull extends FlSheetSelection {
+export class FlSheetSingleSelectionFull extends FlSheetSingleSelection {
   constructor(
     public sheet: FlSheet,
-    type: FlSheetSelectionType,
+    type: FlSheetSingleSelectionType,
     startRow: number,
     startColumn: number,
     endRow: number,
@@ -184,26 +185,26 @@ export class FlSheetSelectionFull extends FlSheetSelection {
     super(sheet, type, startRow, startColumn, endRow, endColumn);
   }
 
-  public static Single(sheet: FlSheet, row: number, column: number): FlSheetSelectionFull {
-    return new FlSheetSelectionFull(sheet, 'single', row, column, row, column);
+  public static Single(sheet: FlSheet, row: number, column: number): FlSheetSingleSelectionFull {
+    return new FlSheetSingleSelectionFull(sheet, 'single', row, column, row, column);
   }
 
   public static Multiple(sheet: FlSheet,
                          startRow: number, startColumn: number,
-                         endRow: number, endColumn: number): FlSheetSelectionFull {
-    return new FlSheetSelectionFull(sheet, 'multiple', startRow, startColumn, endRow, endColumn);
+                         endRow: number, endColumn: number): FlSheetSingleSelectionFull {
+    return new FlSheetSingleSelectionFull(sheet, 'multiple', startRow, startColumn, endRow, endColumn);
   }
 
-  public static Columns(sheet: FlSheet, from: number, to: number): FlSheetSelectionFull {
-    return new FlSheetSelectionFull(sheet, 'columns', 0, from, sheet.getRowsCount() - 1, to);
+  public static Columns(sheet: FlSheet, from: number, to: number): FlSheetSingleSelectionFull {
+    return new FlSheetSingleSelectionFull(sheet, 'columns', 0, from, sheet.getRowsCount() - 1, to);
   }
 
-  public static Rows(sheet: FlSheet, from: number, to: number): FlSheetSelectionFull {
-    return new FlSheetSelectionFull(sheet, 'rows', from, 0, to, sheet.getColumnsCount() - 1);
+  public static Rows(sheet: FlSheet, from: number, to: number): FlSheetSingleSelectionFull {
+    return new FlSheetSingleSelectionFull(sheet, 'rows', from, 0, to, sheet.getColumnsCount() - 1);
   }
 
-  public static FromRange(sheet: FlSheet, range: FlSheetSelectionRange): FlSheetSelectionFull {
-    return new FlSheetSelectionFull(sheet, range.type, range.startRow, range.startColumn,
+  public static FromRange(sheet: FlSheet, range: FlSheetSingleSelectionRange): FlSheetSingleSelectionFull {
+    return new FlSheetSingleSelectionFull(sheet, range.type, range.startRow, range.startColumn,
       range.endRow, range.endColumn);
   }
 
@@ -213,28 +214,28 @@ export class FlSheetSelectionFull extends FlSheetSelection {
    * @param selection
    * @constructor
    */
-  public static fromString(sheet: FlSheet, selection: string): FlSheetSelectionFull {
+  public static fromString(sheet: FlSheet, selection: string): FlSheetSingleSelectionFull {
     const coords: string[] = selection.split(FlSpreadsheetHelper.coordSplitter);
     const from: FlCellCoord = FlSpreadsheetHelper.coordFromString(coords[0]);
     const to: FlCellCoord = FlSpreadsheetHelper.coordFromString(coords[1]);
     // todo a voir pour le type multiple
-    return new FlSheetSelectionFull(sheet, 'multiple', from.row, from.column,
+    return new FlSheetSingleSelectionFull(sheet, 'multiple', from.row, from.column,
       to.row, to.column);
   }
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
-  public expandSelection(row: number, column: number): FlSheetSelectionFull {
-    return FlSheetSelectionFull.Multiple(this.sheet, this.startRow, this.startColumn, row, column);
+  public expandSelection(row: number, column: number): FlSheetSingleSelectionFull {
+    return FlSheetSingleSelectionFull.Multiple(this.sheet, this.startRow, this.startColumn, row, column);
   }
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
-  public expandRowsSelection(row: number): FlSheetSelectionFull {
-    return FlSheetSelectionFull.Rows(this.sheet, this.startRow, row);
+  public expandRowsSelection(row: number): FlSheetSingleSelectionFull {
+    return FlSheetSingleSelectionFull.Rows(this.sheet, this.startRow, row);
   }
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
-  public expandColumnsSelection(column: number): FlSheetSelectionFull {
-    return FlSheetSelectionFull.Columns(this.sheet, this.startColumn, column);
+  public expandColumnsSelection(column: number): FlSheetSingleSelectionFull {
+    return FlSheetSingleSelectionFull.Columns(this.sheet, this.startColumn, column);
   }
 
   public getEndCoord(): FlCellCoord {

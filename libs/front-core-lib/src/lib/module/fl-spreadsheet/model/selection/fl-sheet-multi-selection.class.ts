@@ -1,42 +1,43 @@
-import {FlSheetSelection, FlSheetSelectionFull} from './fl-sheet-selection.class';
-import {FlCell} from './fl-cell.class';
-import {FlSheet} from './fl-sheet.class';
-import {FlSpreadsheetHelper} from '../utils/fl-spreadsheet.helper';
+import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from './fl-sheet-single-selection.class';
+import {FlCell} from '../fl-cell.class';
+import {FlSheet} from '../fl-sheet.class';
+import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
+import {FlSheetSelection} from './fl-sheet-selection.class';
 
 /**
  * Object to manager multiple selections
  */
-export class FlSheetMultiSelection {
+export class FlSheetMultiSelection implements FlSheetSelection {
 
-  selections: FlSheetSelection[];
+  selections: FlSheetSingleSelection[];
 
-  constructor(selections: FlSheetSelection[] = []) {
+  constructor(selections: FlSheetSingleSelection[] = []) {
     this.selections = selections;
   }
 
   // generate a multi selection from a string like B2:G5,B5:T4 (separated by ',')
   public static fromString(sheet: FlSheet, selection: string): FlSheetMultiSelection {
-    const selections: FlSheetSelection[] = [];
+    const selections: FlSheetSingleSelection[] = [];
 
     const rows: string[] = selection.split(FlSpreadsheetHelper.selectionsSplitter);
     for (const row of rows) {
-      selections.push(FlSheetSelectionFull.fromString(sheet, row));
+      selections.push(FlSheetSingleSelectionFull.fromString(sheet, row));
     }
 
     return new FlSheetMultiSelection(selections);
   }
 
 
-  public addSelection(selection: FlSheetSelection): void {
+  public addSelection(selection: FlSheetSingleSelection): void {
     this.selections.push(selection);
   }
 
-  public addSelections(selections: FlSheetSelection[]): void {
+  public addSelections(selections: FlSheetSingleSelection[]): void {
     this.selections.push(...selections);
   }
 
 
-  public getCells(): FlCell[] {
+  public getCellsFlat(): FlCell[] {
     const cells: FlCell[] = [];
     for (const selection of this.selections) {
       cells.push(...selection.getCellsFlat());
@@ -45,7 +46,7 @@ export class FlSheetMultiSelection {
   }
 
   public getCellsValuesFlat(): any[] {
-    return this.getCells().map(cell => cell.value);
+    return this.getCellsFlat().map(cell => cell.value);
   }
 
   // return all selection as text like B2:G5,B5:T4 (separated by ',')

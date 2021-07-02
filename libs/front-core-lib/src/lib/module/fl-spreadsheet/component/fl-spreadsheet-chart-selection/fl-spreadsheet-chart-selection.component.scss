@@ -10,9 +10,17 @@
 }
 
 .title {
-  margin-right: 2em;
+  margin-right: 2rem;
 }
 
-.body {
+.form {
   padding: 1em;
+}
+
+.series {
+  min-height: 10em;
+}
+
+.divider {
+  margin-bottom: 0.5em;
 }
