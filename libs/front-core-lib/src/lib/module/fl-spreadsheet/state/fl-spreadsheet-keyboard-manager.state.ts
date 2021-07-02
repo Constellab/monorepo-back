@@ -1,11 +1,12 @@
 import {Injectable, NgZone, OnDestroy, Renderer2} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlKeyboardHelper, FlKeyboardKey} from '../../../utils/fl-keyboard.helper';
-import {FlCellCoord, FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetClipboardState} from './fl-spreadsheet-clipboard.state';
 import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 import {FlSpreadsheetActionStore} from './fl-spreadsheet-action.store';
 import {FlSpreadsheetScrollState} from './fl-spreadsheet-scroll.state';
+import {FlDeviceHelper} from '../../../utils/fl-device.helper';
+import {FlCellCoord, FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
 
 /**
  * Unique state shared across the spreadsheet to handle spreadsheet keyboard events
@@ -44,7 +45,8 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
       return;
     }
 
-    if (event.ctrlKey) {
+    // ctrl key or mac command key
+    if (event.ctrlKey || (event.metaKey && FlDeviceHelper.isMac())) {
       this.handleCtrlKeys(event);
     } else if (event.shiftKey) {
       this.handleShiftKeys(event);
@@ -107,8 +109,8 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
 
     if (selection != null) {
       // construct an array of null values the same size as the selection
-      const cellsValues: void[][] = selection.getCells().map(rows =>
-        rows.map(() => null));
+      const cellsValues: void[][] = selection.getCells()
+        .map((rows) => rows.map(() => null));
       this.actionState.updateCellsValues(cellsValues, selection);
     }
   }

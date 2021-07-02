@@ -1,5 +1,6 @@
 export * from './fl-cleanable-service';
 export * from './fl-color-helper.class';
+export * from './fl-device.helper';
 export * from './fl-global.validators';
 export * from './fl-keyboard.helper';
 export * from './fl-lazy-property';
