@@ -29,7 +29,9 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     chart_delete_serie: 'Supprimer la série',
     chart_serie_selection: 'Sélection de la série',
     chart_serie: 'Série',
-    chart_series: 'Séries'
+    chart_series: 'Séries',
+    chart_nb_of_bins: 'Nombres de classes',
+    chart_nb_of_bins_error: 'Le nombre de classes doit être un entier supérieur à 1'
   }
 };
 
@@ -57,7 +59,9 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     chart_delete_serie: 'Delete serie',
     chart_serie_selection: 'Serie\'s selection',
     chart_serie: 'Serie',
-    chart_series: 'Séries'
+    chart_series: 'Séries',
+    chart_nb_of_bins: 'Number of classes',
+    chart_nb_of_bins_error: 'The number of classes must be an integer higher than 1'
 
   }
 };

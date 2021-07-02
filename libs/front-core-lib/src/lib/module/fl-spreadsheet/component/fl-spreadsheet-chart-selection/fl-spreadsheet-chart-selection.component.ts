@@ -11,7 +11,11 @@ import {FlSheetMultiSelection} from '../../model/selection/fl-sheet-multi-select
 import {FlSheet} from '../../model/fl-sheet.class';
 import {FlChartComponentType} from '../../../fl-chart/model/fl-chart-component.class';
 import {MatSelectChange} from '@angular/material/select';
-import {FlSheetChart2dSerieSelectionForm, FlSheetChartSelectionForm} from '../../model/chart/fl-sheet-chart-selection-form.class';
+import {
+  FlSheetChart2dSerieSelectionForm,
+  FlSheetChartSelectionForm,
+  FlSheetChartSerieSelectionForm
+} from '../../model/chart/fl-sheet-chart-selection-form.class';
 import {FlPortalConfig} from '../../../fl-portal/model/fl-portal-config.class';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {
@@ -24,6 +28,8 @@ import {debounceTime} from 'rxjs/operators';
 import {merge} from 'rxjs';
 import {FlSpreadsheetChartSelectionFactory} from '../../utils/fl-spreadsheet-chart-selection.factory';
 import {FlSheetChartSelection} from '../../model/chart/fl-sheet-chart-selection.class';
+import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
+import {flChartGetDefaultNumberOfBins} from '../../../fl-chart/model/data/fl-chart-data-bin.class';
 
 
 /**
@@ -74,6 +80,14 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
         () => this.setSeriesNames()
       )
     );
+
+    // subscribe to serie change to refresh data based on series
+    this.subscriptions.add(
+      this.formGp.get('series').valueChanges
+        .pipe().subscribe(
+        () => this.refreshFormOnSeriesChange()
+      )
+    );
   }
 
   private initForm(): void {
@@ -88,8 +102,9 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
         this.singleSelectionValidator(),
       ]],
       series: [[], Validators.required],
-    });
+      nbOfBins: [null, [Validators.min(1), FlGlobalValidators.isInteger()]],
 
+    });
     if (this.currentSelection) {
       // convert to multiple selection, one for each row
       const selections: FlSheetMultiSelection = new FlSheetMultiSelection(this.currentSelection.splitToColumnSelections());
@@ -123,6 +138,10 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
   get chartType(): FlChartComponentType {
     return this.formGp.get('chartType').value;
+  }
+
+  get showNbOfBins(): boolean {
+    return this.chartType === FlChartComponentType.HISTOGRAM;
   }
 
   addSerie(): void {
@@ -206,7 +225,6 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
       return;
     }
 
-
     const dataSelection: FlSheetMultiSelection = this.getMultiSelectionFromString(dataRange);
     const serieNames: string[] = this.getSerieNameSelectionValues();
     const series: FlSheetChart2dSerieSelectionForm[] =
@@ -214,6 +232,23 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
     this.formGp.get('series').patchValue(series);
     this.cdr.markForCheck();
+  }
+
+  // method call when the series a changes, it refresh the form information
+  private refreshFormOnSeriesChange(): void {
+    if (this.chartType === FlChartComponentType.HISTOGRAM) {
+      this.initNbOfBins();
+    }
+  }
+
+  // for the histogram, it set the number of bins based on nb of values
+  private initNbOfBins(): void {
+    const serie: FlSheetChartSerieSelectionForm = this.series[0];
+    const selection = this.getMultiSelectionFromString(serie.y);
+
+    if (selection) {
+      this.formGp.get('nbOfBins').patchValue(flChartGetDefaultNumberOfBins(selection.getCellsValuesFlat().length));
+    }
   }
 
   // set the name for all the current series bases on series' name range

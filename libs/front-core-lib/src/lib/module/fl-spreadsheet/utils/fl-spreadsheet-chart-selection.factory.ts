@@ -97,7 +97,7 @@ export class FlSpreadsheetChartSelectionFactory {
           formValue.series);
       case FlChartComponentType.HISTOGRAM:
         return new FlSheetChartSelectionHistogram(sheet, formValue.chartType, formValue.dataRange, formValue.seriesNameRange,
-          formValue.series[0]);
+          formValue.series[0], formValue.nbOfBins);
       case FlChartComponentType.BOX_PLOT:
         return new FlSheetChartSelectionBoxPlot(sheet, formValue.chartType, formValue.dataRange, formValue.seriesNameRange,
           formValue.series);

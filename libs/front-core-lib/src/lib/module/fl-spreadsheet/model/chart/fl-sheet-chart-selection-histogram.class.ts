@@ -13,7 +13,8 @@ export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
   public chartType: FlChartComponentType.HISTOGRAM;
 
   constructor(sheet: FlSheet, chartType: FlChartComponentType, dataRange: string,
-              seriesNameRange: string, protected serie: FlSheetChartSerieSelectionForm) {
+              seriesNameRange: string, protected serie: FlSheetChartSerieSelectionForm,
+              protected nbOfBins: number) {
     super(sheet, chartType, dataRange, seriesNameRange);
   }
 
@@ -27,7 +28,8 @@ export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
       .filter(value => value != null);
 
     // create the serie with bin data
-    const serie: FlChartSerie<any> = new FlChartSerie<any>(flChartGetDataBins(data), this.serie.name);
+    const serie: FlChartSerie<any> = new FlChartSerie<any>(flChartGetDataBins(data, this.nbOfBins),
+      this.serie.name);
 
     // define the axisXLabelFormat
     series.axisXLabelFormat = (index: number) => {

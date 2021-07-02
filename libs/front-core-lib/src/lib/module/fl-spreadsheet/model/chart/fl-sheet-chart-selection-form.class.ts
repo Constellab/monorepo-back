@@ -15,6 +15,9 @@ export interface FlSheetChartSelectionForm {
 
   // list of series
   series: FlSheetChart2dSerieSelectionForm[];
+
+  // for the Histogram
+  nbOfBins?: number;
 }
 
 

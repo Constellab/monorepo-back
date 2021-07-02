@@ -68,6 +68,15 @@
           </mat-error>
         </mat-form-field>
 
+        <!-- NB of bins -->
+        <mat-form-field appearance="outline" class="g-full">
+          <mat-label>{{'flSpreadsheet.chart_nb_of_bins' | translate}}</mat-label>
+          <input matInput formControlName="nbOfBins" [min]="1"
+                 placeholder="{{'flSpreadsheet.chart_nb_of_bins' | translate}}" type="number">
+          <mat-error *ngIf="formGp.get('nbOfBins').invalid">
+            {{'flSpreadsheet.chart_nb_of_bins_error' | translate}}
+          </mat-error>
+        </mat-form-field>
       </div>
 
 

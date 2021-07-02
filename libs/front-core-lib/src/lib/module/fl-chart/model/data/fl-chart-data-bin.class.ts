@@ -40,16 +40,10 @@ export class FlChartDataBin implements FlChart2dDatum {
  * @param data
  * @param numberOfBins
  */
-// todo change default number of bin default value
-export function flChartGetDataBins(data: number[], numberOfBins: number = null): FlChartDataBin[] {
-
+export function flChartGetDataBins(data: number[], numberOfBins: number): FlChartDataBin[] {
   const domain: [number, number] = FlChartDomain.getLinearDomain(data);
 
   const bins: FlChartDataBin[] = [];
-
-  if (numberOfBins == null) {
-    numberOfBins = flChartGetDefaultNumberOfBins(data.length);
-  }
 
   // size of the bins
   const thresholds: number = (domain[1] - domain[0]) / numberOfBins;

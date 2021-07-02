@@ -81,5 +81,23 @@ export class FlGlobalValidators {
     };
   }
 
+  /**
+   * Verify that the value is a integer
+   * return error notInteger
+   */
+  public static isInteger(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } => {
+      const value = control.value;
+      if (value !== 0 && !value) {
+        return null;
+      }
+
+      if (!Number.isInteger(value)) {
+        return {notInteger: true};
+      }
+      return null;
+    };
+  }
+
 
 }
