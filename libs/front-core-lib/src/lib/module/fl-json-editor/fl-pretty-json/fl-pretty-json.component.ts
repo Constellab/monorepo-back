@@ -148,6 +148,8 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     ClHelpService.stopEventPropagation(event);
     const selectedNode: ObjectFlatNode = this.selectedNode ?? this.treeControl.dataNodes[0];
 
+    console.log(event.target);
+
     switch (event.key) {
       case FlKeyboardKey.ARROW_DOWN:
         this.selectNextNode(selectedNode);

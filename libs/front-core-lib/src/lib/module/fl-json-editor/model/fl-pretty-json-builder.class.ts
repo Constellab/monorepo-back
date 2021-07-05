@@ -5,7 +5,7 @@ import {ObjectNode} from './fl-pretty-json.class';
  */
 export class FlPrettyJsonBuilder {
 
-  private jsonObject: any;
+  private readonly jsonObject: any;
 
   private id: number = 0;
 
