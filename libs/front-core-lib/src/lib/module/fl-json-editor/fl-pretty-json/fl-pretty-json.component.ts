@@ -4,25 +4,9 @@ import {ClCoerceBooleanDecorator, ClHelpService, ClOnChange} from '@monorepo/cor
 import {Observable, Subscription} from 'rxjs';
 import {FlKeyboardKey} from '../../../utils/fl-keyboard.helper';
 import {FlFlatTreeControl} from '../../../model/fl-flat-tree-control.class';
+import {ObjectFlatNode, ObjectNode} from '../model/fl-pretty-json.class';
+import {FlPrettyJsonBuilder} from '../model/fl-pretty-json-builder.class';
 
-class ObjectNode {
-  id: number;
-  children?: ObjectNode[];
-  key: string;
-  value?: any;
-  type: string;
-  preview ?: string;
-}
-
-interface ObjectFlatNode {
-  id: number;
-  expandable: boolean;
-  level: number;
-  key: string;
-  value?: any;
-  type: string;
-  preview?: string;
-}
 
 @Component({
   selector: 'fl-pretty-json',
@@ -78,8 +62,6 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   private componentIsInitiated: boolean = false;
   private subscription: Subscription;
 
-  private id: number = 0;
-
   trackBy: TrackByFunction<{ id: any }> = ClHelpService.trackByIdFunction;
 
   private _transformer = (node: ObjectNode, level: number): ObjectFlatNode => {
@@ -126,13 +108,13 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
 
     try {
       // prepare the object
-      const convertedObject: any = this.initObject(object);
+      const builder: FlPrettyJsonBuilder = new FlPrettyJsonBuilder(this.object, this.previewMaxTextLength, this.previewMaxObjectShowed,
+        this.maxSubObjectView);
 
-      this.startChar = this.getStartChar(convertedObject);
-      this.endChar = this.getEndChar(convertedObject);
+      this.startChar = builder.getObjectStartChart();
+      this.endChar = builder.getObjectEndChart();
 
-      const data = this.buildFileTree(convertedObject, 0);
-      console.log(this.object);
+      const data: ObjectNode[] = builder.buildObjectNodes();
 
       this.treeControl = new FlFlatTreeControl<ObjectFlatNode>(
         node => node.level, node => node.expandable);
@@ -152,162 +134,6 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  /**
-   * Build the file structure tree. The `value` is the Json object, or a sub-tree of a Json object.
-   * The return value is the list of `ObjectNode`.
-   * @param obj object to convert to ObjectNode
-   * @param level level of the hierarchy
-   * @param keyOffset used when object is an array to set an offset for the array index (use for big array split)
-   * @private
-   */
-  private buildFileTree(obj: any, level: number, keyOffset: number = 0): ObjectNode[] {
-    const nodes: ObjectNode[] = [];
-
-
-    // case for the array that are bigger than the maxSubObjectView
-    if (Array.isArray(obj) && obj.length > this.maxSubObjectView) {
-      let i = 0;
-      // use to split the array in multiple section of maxSubObjectView size
-      while (i < obj.length) {
-        const max = Math.min(i + this.maxSubObjectView - 1, obj.length - 1);
-
-        // define node and node properties
-        const node = new ObjectNode();
-        node.id = this.id++;
-        node.key = `[${i}...${max}]`;
-        node.type = 'object';
-        node.preview = null;
-
-        // build the sub array section
-        node.children = this.buildFileTree(obj.slice(i, max + 1), level + 1, i);
-
-        nodes.push(node);
-        i += this.maxSubObjectView;
-      }
-
-      return nodes;
-    }
-
-    // for small arrays, or simple json object
-    for (const key of Object.keys(obj)) {
-      const value: any = obj[key] instanceof Map ? this.mapToJson(obj[key]) : obj[key];
-
-      const node = new ObjectNode();
-      node.id = this.id++;
-
-      // set the node key, if there is an key offset, add it to the key
-      node.key = keyOffset > 0 ? (parseInt(key) + keyOffset).toString() : key;
-
-      if (value != null) {
-        node.type = typeof value;
-        if (node.type === 'object') {
-          node.preview = this.getPreview(value);
-
-          // build the sub objects
-          node.children = this.buildFileTree(value, level + 1);
-        } else {
-          node.value = value;
-        }
-      }
-
-      nodes.push(node);
-    }
-
-    return nodes;
-  }
-
-  // get the preview text of complexe object (json object or array)
-  private getPreview(object: any): string {
-    let preview: string = this.getStartChar(object);
-    let count = 0;
-    const keys: string[] = Object.keys(object);
-
-    for (const key of keys) {
-      const value: any = object[key];
-
-
-      if (count > 0) {
-        preview += ', ';
-      }
-
-      if (count < this.previewMaxObjectShowed) {
-
-        // if the object is an array, don't show the key
-        if (!Array.isArray(object)) {
-          preview += key + ': ';
-        }
-
-        if (typeof value === 'object') {
-          preview += '{...}';
-        } else {
-          preview += value;
-        }
-      } else {
-        preview += '...';
-        break;
-      }
-
-      count++;
-    }
-
-    if (preview.length > this.previewMaxTextLength) {
-      preview = preview.substr(0, this.previewMaxTextLength) + '...';
-    }
-
-    preview += this.getEndChar(object);
-
-    return preview;
-  }
-
-  // prepare and convert the object to json
-  private initObject(object: any): any {
-    // if the object is a map
-    if (object instanceof Map) {
-      return this.mapToJson(object);
-    }
-    // if the object is an array of an object, don't change it
-    if (Array.isArray(object) || typeof object === 'object') {
-      return object;
-      // if this is a string,
-    } else if (typeof object === 'string') {
-
-      // check if the string is parsable
-      const firstCarac: string = object[0];
-      const lastCarac: string = object[object.length - 1];
-      if ((firstCarac === '{' || firstCarac === '[') &&
-        (lastCarac === '}' || lastCarac === ']')) {
-        try {
-          return JSON.parse(object);
-        } catch (e) {
-        }
-      }
-
-      return object.split('\n');
-    } else {
-      console.error('Wrong object format ', object);
-      throw new Error();
-    }
-  }
-
-  private getStartChar(object: any): string {
-    if (Array.isArray(object)) {
-      return '[';
-    } else if (typeof object === 'object') {
-      return '{';
-    }
-
-    return '';
-  }
-
-  private getEndChar(object: any): string {
-    if (Array.isArray(object)) {
-      return ']';
-    } else if (typeof object === 'object') {
-      return '}';
-    }
-
-    return '';
-  }
 
   get paddingIndent(): number {
     return this.dense ? 10 : 20;
@@ -316,15 +142,6 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   get denseClass(): string {
     return this.dense ? 'dense' : 'normal';
   }
-
-
-  // convert a map to a json object
-  private mapToJson(map: Map<any, any>): any {
-    const object: any = {};
-    map.forEach((value, key) => object[key.toString()] = value);
-    return object;
-  }
-
 
   ////////////////////////////// NODE SELECTION & KEY LISTENERS //////////////////////////
   onKeyDown(event: KeyboardEvent): void {
@@ -376,7 +193,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     else {
       const parentSelected = this.selectParentNode(node);
       // if there is no parent node, select the previous
-      if(!parentSelected){
+      if (!parentSelected) {
         this.selectPreviousNode(node);
       }
     }
