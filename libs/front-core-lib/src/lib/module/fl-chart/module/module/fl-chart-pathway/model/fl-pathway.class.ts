@@ -37,6 +37,8 @@ export interface FlPathwayReactionEnzyme {
 // list of database ref for a pathway
 export type FlPathwayDatabase = keyof FlPathwayReactionPathway;
 
+export const flPathwayDatabases: FlPathwayDatabase[] = ['kegg', 'branda', 'metacyc'];
+
 // info of which pathway the reaction is
 // It define the pathway name based for known DB (EU, US, Japan)
 export interface FlPathwayReactionPathway {
@@ -46,6 +48,7 @@ export interface FlPathwayReactionPathway {
 }
 
 export const flPathwayReactionPathwayIdSeparator: string = '; ';
+
 export interface FlPathwayReactionPathwayDetail {
   // list of ids of the pathways separated by the separator
   id: string;

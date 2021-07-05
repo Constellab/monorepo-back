@@ -20,6 +20,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {FlPathwayDrawerActionComponent} from './component/fl-pathway-drawer-action/fl-pathway-drawer-action.component';
 import {FlPathwayConfigComponent} from './component/fl-pathway-config/fl-pathway-config.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatSelectModule} from '@angular/material/select';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -48,6 +50,8 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     MatSliderModule,
     MatSlideToggleModule,
     MatCheckboxModule,
+    MatFormFieldModule,
+    MatSelectModule,
 
 
     FlChartCoreModule,

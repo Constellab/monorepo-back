@@ -1,13 +1,29 @@
 <div>
 
-  <p>{{'flChart.pathway_select_sub_pathway' | translate}}</p>
-
   <div fxLayout="column" fxLayoutGap="0.3em">
-    <mat-checkbox *ngFor="let subPathway of subPathways"
+
+    <!--  Select the database  -->
+    <mat-form-field>
+      <mat-label>{{'flChart.pathway_select_db' | translate}}</mat-label>
+      <mat-select placeholder="{{'flChart.pathway_select_db' | translate}}"
+                  [(ngModel)]="database" (selectionChange)="onDatabaseChange($event)">
+        <mat-option *ngFor="let db of pathwayDatabases" [value]="db">
+          <div class="g-text-capitalize-first">{{db}}</div>
+        </mat-option>
+        <mat-select-trigger>
+          <div class="g-text-capitalize-first">{{database}}</div>
+        </mat-select-trigger>
+      </mat-select>
+    </mat-form-field>
+
+
+    <!--  Select the pathway  -->
+    <p>{{'flChart.pathway_select_sub_pathway' | translate}}</p>
+    <mat-checkbox *ngFor="let subPathway of subPathways | async"
                   (click)="$event.stopPropagation()"
                   (change)="$event ? selection.toggle(subPathway.id) : null"
                   [checked]="selection.isSelected(subPathway.id)">
-        <div class="g-text-small">{{subPathway.name}} ({{subPathway.id}})</div>
+      <div class="g-text-small">{{subPathway.name}} ({{subPathway.id}})</div>
     </mat-checkbox>
   </div>
 

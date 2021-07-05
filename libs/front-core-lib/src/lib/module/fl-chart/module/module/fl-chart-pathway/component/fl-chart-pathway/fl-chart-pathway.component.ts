@@ -45,7 +45,7 @@ export class FlChartPathwayComponent implements OnInit, AfterViewInit {
     }
 
     // init the pathway state
-    this.state.init(this.data);
+    this.state.init(this.data, 'kegg');
     // init the drawer state
     this.drawerState.init(this.drawer);
     this.listenToDrawer();

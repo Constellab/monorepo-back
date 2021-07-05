@@ -29,6 +29,7 @@ const flChartI18nFr: FlLangTranslation = {
     pathway_link_color_log: 'Couleurs logarithmes',
     pathway_select_sub_pathway: 'Sélectionner un pathway',
     pathway_open_config: 'Ouvrir les paramètres',
+    pathway_select_db: 'Sélectionner une base de données'
   }
 };
 
@@ -56,6 +57,7 @@ const flChartI18nEn: FlLangTranslation = {
     pathway_link_color_log: 'Logarithm colors',
     pathway_select_sub_pathway: 'Select a pathway',
     pathway_open_config: 'Open config',
+    pathway_select_db: 'Select a database'
   }
 };
 
