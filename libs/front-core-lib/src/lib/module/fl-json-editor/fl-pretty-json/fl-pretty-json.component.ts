@@ -365,7 +365,8 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     }
   }
 
-  // if the node is expandable and expanded, we collapse it, otherwise we select the parent
+  // if the node is expandable and expended, collapse it
+  // otherwise go to parent node or previous node if no parent
   private handleLeftArrow(node: ObjectFlatNode): void {
     if (node.expandable && this.treeControl.isExpanded(node)) {
       // collapse the node
@@ -373,7 +374,11 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     }
     // select the parent
     else {
-      this.selectParentNode(node);
+      const parentSelected = this.selectParentNode(node);
+      // if there is no parent node, select the previous
+      if(!parentSelected){
+        this.selectPreviousNode(node);
+      }
     }
   }
 
@@ -390,12 +395,14 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   }
 
 
-  private selectParentNode(node: ObjectFlatNode): void {
+  private selectParentNode(node: ObjectFlatNode): boolean {
     const parent: ObjectFlatNode = this.treeControl.getAncestor(node);
     if (parent) {
       this.selectedNode = parent;
       this.cdr.markForCheck();
+      return true;
     }
+    return false;
   }
 
   selectNode(node: ObjectFlatNode): void {
