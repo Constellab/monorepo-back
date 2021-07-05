@@ -12,7 +12,6 @@ export * from './service/fl-chart-portal.service';
 // Export charts modules
 export * from './module/module/fl-chart-core/public-api';
 export * from './module/module/fl-chart-heat-map/public-api';
-export * from './module/module/fl-chart-pathway/public-api';
 
 // Export the models
 // Portal-handler

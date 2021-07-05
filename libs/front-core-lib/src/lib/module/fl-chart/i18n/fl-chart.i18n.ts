@@ -22,16 +22,6 @@ const flChartI18nFr: FlLangTranslation = {
     BOX_PLOT: 'Boîte à moustache',
     number_of_data: 'Nb de données',
     interval: 'Interval',
-    // Pathway
-    pathway_links: 'Lien externes',
-    pathway_link_value_help: 'Slider pour cacher les lien d\'une valeur inférieur à',
-    pathway_link_color_normal: 'Couleurs linéaires',
-    pathway_link_color_log: 'Couleurs logarithmes',
-    pathway_select_sub_pathway: 'Sélectionner un pathway',
-    pathway_open_config: 'Ouvrir les paramètres',
-    pathway_select_db: 'Sélectionner une base de données',
-    pathway_select_network: 'Sélectionner un réseau',
-    pathway_network: 'Réseau',
   }
 };
 
@@ -52,16 +42,6 @@ const flChartI18nEn: FlLangTranslation = {
     BOX_PLOT: 'Box plot',
     number_of_data: 'Nb of data',
     interval: 'Interval',
-    // Pathway
-    pathway_links: 'External links',
-    pathway_link_value_help: 'Slide to hide link with a value lower than',
-    pathway_link_color_normal: 'Linears colors',
-    pathway_link_color_log: 'Logarithm colors',
-    pathway_select_sub_pathway: 'Select a pathway',
-    pathway_open_config: 'Open config',
-    pathway_select_db: 'Select a database',
-    pathway_select_network: 'Select a network',
-    pathway_network: 'Network',
   }
 };
 

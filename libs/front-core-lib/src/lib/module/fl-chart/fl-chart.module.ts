@@ -12,7 +12,6 @@ import {FlChartComponentSelectOptionsComponent} from './component/fl-chart-compo
 import {MatOptionModule} from '@angular/material/core';
 import {CommonModule} from '@angular/common';
 import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
-import {FlChartPathwayModule} from './module/module/fl-chart-pathway/fl-chart-pathway.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flChartI18n} from './i18n/fl-chart.i18n';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
@@ -30,7 +29,6 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     FlChartComponentSelectOptionsComponent,
 
     FlChartCoreModule,
-    FlChartPathwayModule,
   ],
   declarations: [
     FlChartDynamicComponent,

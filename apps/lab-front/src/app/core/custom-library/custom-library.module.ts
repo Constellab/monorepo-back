@@ -1,15 +1,21 @@
 import {NgModule} from '@angular/core';
 import {
   FlAuthModule,
-  FlCardModule, FlChartModule,
+  FlBioNetworkModule,
+  FlCardModule,
+  FlChartModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
-  FlCorePipeModule, FlDateModule,
+  FlCorePipeModule,
+  FlDateModule,
   FlDialogModule,
-  FlDynamicFieldModule, FlFormModule,
-  FlInfiniteScrollModule, FlInputFileModule,
+  FlDynamicFieldModule,
+  FlFormModule,
+  FlInfiniteScrollModule,
+  FlInputFileModule,
   FlJsonEditorModule,
-  FlLoaderModule, FlPortalActionsModule,
+  FlLoaderModule,
+  FlPortalActionsModule,
   FlPortalModule,
   FlSectionModule,
   FlSnackBarModule,
@@ -51,6 +57,7 @@ import {
     FlPortalActionsModule,
     FlDateModule,
     FlAuthModule,
+    FlBioNetworkModule,
   ]
 })
 export class CustomLibraryModule {

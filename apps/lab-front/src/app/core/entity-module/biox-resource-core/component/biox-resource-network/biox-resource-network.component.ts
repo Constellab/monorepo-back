@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
-import {FlPathway} from '@monorepo/front-core-lib';
+import {FlBioNetwork} from '@monorepo/front-core-lib';
 import {BioxNetworkHelper} from '../../../../model/entities/resource/biox-network.helper';
 
 /**
@@ -15,7 +15,7 @@ export class BioxResourceNetworkComponent implements OnInit {
 
   @Input() resource: BioxResource;
 
-  networks: FlPathway | FlPathway[];
+  networks: FlBioNetwork | FlBioNetwork[];
 
   constructor() {
   }

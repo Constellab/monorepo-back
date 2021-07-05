@@ -1,0 +1,41 @@
+<div>
+
+  <div fxLayout="column" fxLayoutGap="0.3em">
+
+    <!--  Select the network  -->
+    <mat-form-field *ngIf="networks">
+      <mat-label>{{'flBioNetwork.select_network' | translate}}</mat-label>
+      <mat-select placeholder="{{'flBioNetwork.select_network' | translate}}"
+                  [(ngModel)]="networkName" (selectionChange)="onNetworkChange($event)"
+                  class="g-mat-select-capitalize">
+        <mat-option *ngFor="let network of networks" [value]="network.name">
+          <div class="g-text-capitalize-first">{{network.name}}</div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!--  Select the database  -->
+    <mat-form-field>
+      <mat-label>{{'flBioNetwork.select_db' | translate}}</mat-label>
+      <mat-select placeholder="{{'flBioNetwork.select_db' | translate}}"
+                  [(ngModel)]="database" (selectionChange)="onDatabaseChange($event)"
+                  class="g-mat-select-capitalize">
+        <mat-option *ngFor="let db of pathwayDatabases" [value]="db">
+          <div class="g-text-capitalize-first">{{db}}</div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+
+    <!--  Select the pathway  -->
+    <p>{{'flBioNetwork.select_sub_pathway' | translate}}</p>
+    <mat-checkbox *ngFor="let subPathway of pathways | async"
+                  (click)="$event.stopPropagation()"
+                  (change)="$event ? selection.toggle(subPathway.id) : null"
+                  [checked]="selection.isSelected(subPathway.id)"
+                  class="g-mat-checkbox-wrap-text">
+      <div class="g-text-small g-text-capitalize-first">{{subPathway.name}} ({{subPathway.id}})</div>
+    </mat-checkbox>
+  </div>
+
+</div>

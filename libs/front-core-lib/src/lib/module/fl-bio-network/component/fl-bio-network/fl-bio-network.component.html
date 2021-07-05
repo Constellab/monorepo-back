@@ -1,0 +1,45 @@
+<mat-drawer-container class="g-full-height" [hasBackdrop]="false">
+
+  <!-- Main content with chart -->
+  <mat-drawer-content>
+    <div class="container" fxLayout="column">
+
+      <div #chart fxFlex="auto"></div>
+
+      <!--    Action bar on the bottom  -->
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="action-bar">
+
+        <!--   Slider to hide link     -->
+        <div>
+          <p class="g-text-small g-text-light">{{'flBioNetwork.link_value_help' | translate}} : {{sliderValue}}</p>
+          <mat-slider class="slider" color="primary"
+                      [max]="linksMaxAbsValue"
+                      [min]="0"
+                      [step]="1"
+                      [thumbLabel]="true"
+                      tickInterval="auto"
+                      [(ngModel)]="sliderValue"
+                      (input)="hideLinkLowerThan($event)">
+          </mat-slider>
+
+        </div>
+
+        <mat-slide-toggle [(ngModel)]="slideLinkColorToggle" (change)="setLinksColors()" color="primary">
+          {{slideLinkColorToggleText | translate}}
+        </mat-slide-toggle>
+
+        <button mat-icon-button type="button" (click)="openConfig()"
+                [matTooltip]="'flBioNetwork.open_config' | translate">
+          <mat-icon>settings</mat-icon>
+        </button>
+      </div>
+
+    </div>
+
+
+  </mat-drawer-content>
+
+  <mat-drawer mode="over" position="end">
+    <fl-bio-network-drawer-action></fl-bio-network-drawer-action>
+  </mat-drawer>
+</mat-drawer-container>

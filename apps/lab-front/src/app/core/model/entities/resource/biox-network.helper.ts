@@ -1,7 +1,7 @@
 import {BioxResource} from './biox-resource.entity';
 import {BioxNetwork, bioxResourceNetworkType} from './biox-network.class';
 import {FileResource} from './file-resource.entity';
-import {FlPathway} from '@monorepo/front-core-lib';
+import {FlBioNetwork} from '@monorepo/front-core-lib';
 import {BioModel, bioxResourceBioModelType} from './bio-model.class';
 
 /**
@@ -24,7 +24,7 @@ export class BioxNetworkHelper {
     }
 
     // check if the resource is a network without explicite type
-    const data: FlPathway = resource.data;
+    const data: FlBioNetwork = resource.data;
     // check the attribute as if the resource is a pathway
     return data != null && typeof data === 'object' && Array.isArray(data.metabolites)
       && Array.isArray(data.reactions) && typeof data.compartments === 'object';
@@ -33,7 +33,7 @@ export class BioxNetworkHelper {
   /**
    * retrieve the network object form the network resource
    */
-  public static getNetworksFromResource(resource: BioxResource): FlPathway | FlPathway[] {
+  public static getNetworksFromResource(resource: BioxResource): FlBioNetwork | FlBioNetwork[] {
     if (resource instanceof FileResource) {
       // if the resource file containing a network resource
       if (resource.dataIsLabEntity()) {
