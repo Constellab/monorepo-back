@@ -2,10 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {BioxResourceService} from '../../../../../core/entity-service/biox-resource.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
-import {BioxResource, bioxResourceNetworkType} from '../../../../../core/model/entities/biox-resource.entity';
+import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
-import {FileResource, FileResourcePreview} from '../../../../../core/model/entities/file-resource.entity';
-import {FlPathway} from '@monorepo/front-core-lib';
+import {FileResourcePreview} from '../../../../../core/model/entities/resource/file-resource.entity';
+import {BioxNetworkHelper} from '../../../../../core/model/entities/resource/biox-network.helper';
 
 interface View {
   route: string;
@@ -17,7 +17,7 @@ interface View {
 const jsonView: View = {route: 'json', text: '{ }', tooltip: 'biox.resource_view_json'};
 const plainTextView: View = {route: 'text', icon: 'text_snippet', tooltip: 'biox.resource_view_text'};
 const spreadsheetView: View = {route: 'spreadsheet', icon: 'calendar_view_month', tooltip: 'biox.resource_view_spreadsheet'};
-const pathwayView: View = {route: 'pathway', icon: 'share', tooltip: 'biox.resource_view_pathway'};
+const networkView: View = {route: 'network', icon: 'share', tooltip: 'biox.resource_view_pathway'};
 const imageView: View = {route: 'image', icon: 'insert_photo', tooltip: 'biox.resource_view_image'};
 
 @Component({
@@ -59,9 +59,9 @@ export class BioxResourceDetailPageComponent implements OnInit {
     let defaultView: View;
 
     // if the resource is a network, add the network view and set it by default
-    if (this.resourceIsNetwork(resource)) {
-      this.availableViews = [pathwayView, jsonView, spreadsheetView, plainTextView];
-      defaultView = pathwayView;
+    if (BioxNetworkHelper.resourceIsNetwork(resource)) {
+      this.availableViews = [networkView, jsonView, spreadsheetView, plainTextView];
+      defaultView = networkView;
     } else if (resource instanceof FileResourcePreview && resource.isImage()) {
       this.availableViews = [imageView, spreadsheetView, plainTextView];
       defaultView = imageView;
@@ -85,27 +85,6 @@ export class BioxResourceDetailPageComponent implements OnInit {
         replaceUrl: true
       });
     }
-  }
-
-  /**
-   * return true if the resource is a network
-   */
-  private resourceIsNetwork(resource: BioxResource): boolean {
-    if (resource.type === bioxResourceNetworkType) {
-      return true;
-    }
-
-    // if the resource is a file containing a network resource
-    if (resource instanceof FileResource && resource.dataIsLabEntity() &&
-      resource.data.type === bioxResourceNetworkType){
-      return true;
-    }
-
-      const data: FlPathway = resource.data;
-
-    // check the attribute as if the resource is a pathway
-    return data != null && typeof data === 'object' && Array.isArray(data.metabolites)
-      && Array.isArray(data.reactions) && typeof data.compartments === 'object';
   }
 
 
