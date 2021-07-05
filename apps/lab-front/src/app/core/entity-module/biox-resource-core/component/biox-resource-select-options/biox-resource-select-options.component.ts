@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Host, Input, OnDestroy, OnInit, Optional} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective, flGetEmptyPaginatedDatasource} from '@monorepo/front-core-lib';
-import {BioxResourceDatasource} from '../../../../model/entities/biox-resource.entity';
+import {BioxResourceDatasource} from '../../../../model/entities/resource/biox-resource.entity';
 import {Observable} from 'rxjs';
 import {MatSelect} from '@angular/material/select';
 import {BioxResourceService} from '../../../../entity-service/biox-resource.service';

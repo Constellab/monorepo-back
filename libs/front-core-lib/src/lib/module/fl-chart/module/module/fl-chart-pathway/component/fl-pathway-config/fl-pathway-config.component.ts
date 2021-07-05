@@ -1,8 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FlPathwayState} from '../../state/fl-pathway.state';
 import {SelectionModel} from '@angular/cdk/collections';
-import {FlPathwayDatabase, flPathwayDatabases, FlPathwayReactionPathwayDetail} from '../../model/fl-pathway.class';
-import {debounceTime} from 'rxjs/operators';
+import {FlPathway, FlPathwayDatabase, flPathwayDatabases, FlPathwayReactionPathwayDetail} from '../../model/fl-pathway.class';
 import {Observable} from 'rxjs';
 import {MatSelectChange} from '@angular/material/select';
 
@@ -17,6 +16,9 @@ import {MatSelectChange} from '@angular/material/select';
 })
 export class FlPathwayConfigComponent implements OnInit {
 
+  networks: FlPathway[] | null;
+
+  networkName: string;
   database: FlPathwayDatabase;
 
   subPathways: Observable<FlPathwayReactionPathwayDetail[]>;
@@ -30,25 +32,22 @@ export class FlPathwayConfigComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.database = this.state.getDatabase();
-    this.subPathways = this.state.getPathwayList$();
-    // init the selection with current selected pathway
-    this.selection = new SelectionModel(true, this.state.getSelectedPathwayIds());
+    // if there is multiple network we set the list to add a mat-select
+    if (this.state.networks.length > 1) {
+      this.networks = this.state.networks;
+    }
 
-    this.selection.changed.pipe(
-      // use a debounce time to prevent rebuilding the graph to much
-      debounceTime(500)
-    ).subscribe(
-      () => this.onSelectionChange()
-    );
+    this.networkName = this.state.getSelectedNetwork().name;
+    this.database = this.state.getDatabase();
+    this.selection = this.state.selectedPathways;
+    this.subPathways = this.state.getPathwayList$();
+  }
+
+  onNetworkChange(change: MatSelectChange): void {
+    this.state.selectNetwork(change.value);
   }
 
   onDatabaseChange(change: MatSelectChange): void {
     this.state.selectDatabase(change.value);
   }
-
-  private onSelectionChange(): void {
-    this.state.selectPathways(this.selection.selected);
-  }
-
 }

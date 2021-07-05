@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
-import {FileResourcePreview, FileResourceDatasource} from '../../../../../core/model/entities/file-resource.entity';
+import {FileResourceDatasource, FileResourcePreview} from '../../../../../core/model/entities/resource/file-resource.entity';
 import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
 import {RouterService} from '../../../../../core/service/router.service';
 

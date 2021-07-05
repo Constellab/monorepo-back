@@ -165,3 +165,24 @@ mat-tree {
   min-width: 0;
   flex: 1;
 }
+
+/************************************* MAT SELECT ***********************************/
+// capitalize selected value
+.g-mat-select-capitalize .mat-select-value-text {
+  span {
+    display: inline-block; // to make the capitalize works
+  }
+
+  span::first-letter {
+    text-transform: uppercase;
+  }
+}
+
+/************************************* MAT CHECKBOX ***********************************/
+// allow the checkbox text to wrap
+.g-mat-checkbox-wrap-text{
+  .mat-checkbox-layout .mat-checkbox-label {
+    line-height: normal;
+    white-space: initial;
+  }
+}

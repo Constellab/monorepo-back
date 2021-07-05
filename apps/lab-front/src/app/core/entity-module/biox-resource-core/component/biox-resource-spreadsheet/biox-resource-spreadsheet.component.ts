@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BioxResource} from '../../../../model/entities/biox-resource.entity';
+import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {FlSpreadsheet, FlSpreadsheetFactory} from '@monorepo/front-core-lib';
-import {FileResourcePreview} from '../../../../model/entities/file-resource.entity';
+import {FileResourcePreview} from '../../../../model/entities/resource/file-resource.entity';
 
 const data: any[][] = [
   ['Item', 2012, 2013, 2014, 2015, null, null, null, null, null],

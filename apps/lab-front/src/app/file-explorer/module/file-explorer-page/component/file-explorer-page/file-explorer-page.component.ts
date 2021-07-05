@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FileResourcePreview, FileResourceDatasource} from '../../../../../core/model/entities/file-resource.entity';
+import {FileResourceDatasource, FileResourcePreview} from '../../../../../core/model/entities/resource/file-resource.entity';
 import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
 import {
   FlDropFileEvent,

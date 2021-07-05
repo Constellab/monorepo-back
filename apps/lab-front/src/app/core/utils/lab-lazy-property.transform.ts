@@ -4,7 +4,7 @@ import {Transform} from 'class-transformer';
 import {FlLazyPropertyTransform, flLazyPropertyTransformToClass} from '@monorepo/front-core-lib';
 import {LabUnconvertedEntity} from '../model/global/lab-entity.entity';
 import {BioxResourceService} from '../entity-service/biox-resource.service';
-import {UnconvertedResource} from '../model/entities/biox-resource.entity';
+import {UnconvertedResource} from '../model/entities/resource/biox-resource.entity';
 import {ClTransformFnParams} from '@monorepo/core-lib';
 
 /**

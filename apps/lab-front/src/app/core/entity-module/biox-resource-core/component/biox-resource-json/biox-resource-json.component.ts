@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BioxResource} from '../../../../model/entities/biox-resource.entity';
+import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
 
 /**
  * Display the resource json

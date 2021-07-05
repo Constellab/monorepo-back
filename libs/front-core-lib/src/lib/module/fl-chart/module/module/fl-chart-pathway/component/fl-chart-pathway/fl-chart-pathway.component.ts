@@ -20,7 +20,7 @@ import {FlChartPathwayData} from '../../model/fl-chart-pathway.class';
 })
 export class FlChartPathwayComponent implements OnInit, AfterViewInit {
 
-  @Input() data: FlPathway;
+  @Input() data: FlPathway | FlPathway[];
 
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
   @ViewChild(MatDrawer, {static: true}) drawer: MatDrawer;

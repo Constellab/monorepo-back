@@ -1,4 +1,4 @@
-import {UnconvertedResource} from './biox-resource.entity';
+import {UnconvertedResource} from './resource/biox-resource.entity';
 
 /**
  * Spec for the input or output of a process

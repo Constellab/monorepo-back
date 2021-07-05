@@ -1,4 +1,4 @@
-import {LabBaseEntity} from '../global/lab-entity.entity';
+import {LabBaseEntity} from '../../global/lab-entity.entity';
 import {Expose} from 'class-transformer';
 import {FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 

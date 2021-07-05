@@ -7,10 +7,10 @@ import {
   BioxResourceDatasource,
   BioxResourceType,
   BioxResourceTypeDatasource
-} from '../model/entities/biox-resource.entity';
+} from '../model/entities/resource/biox-resource.entity';
 import {FileResourceService, FileWithContent} from './file-resource.service';
 import {ClClassReference, ClPage} from '@monorepo/core-lib';
-import {FileResource} from '../model/entities/file-resource.entity';
+import {FileResource} from '../model/entities/resource/file-resource.entity';
 import {map, mergeMap} from 'rxjs/operators';
 import {LabBaseEntity} from '../model/global/lab-entity.entity';
 

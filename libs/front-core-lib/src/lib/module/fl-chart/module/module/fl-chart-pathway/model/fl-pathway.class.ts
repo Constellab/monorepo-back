@@ -2,6 +2,7 @@
  * Complete Structured data of a pathway
  */
 export interface FlPathway {
+  name?: string;
   metabolites: FlPathwayMetabolite[];
   reactions: FlPathwayReaction[];
   compartments: Record<string, string>;

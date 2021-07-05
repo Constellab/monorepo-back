@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Host, OnDestroy, OnInit, Optional} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {MatSelect} from '@angular/material/select';
-import {BioxResourceType, BioxResourceTypeDatasource} from '../../../../model/entities/biox-resource.entity';
+import {BioxResourceType, BioxResourceTypeDatasource} from '../../../../model/entities/resource/biox-resource.entity';
 import {BioxResourceService} from '../../../../entity-service/biox-resource.service';
 import {Observable} from 'rxjs';
 

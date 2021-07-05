@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {FileResourceDatasource, FileResourcePreview} from '../model/entities/file-resource.entity';
+import {FileResourceDatasource, FileResourcePreview} from '../model/entities/resource/file-resource.entity';
 import {ClPage} from '@monorepo/core-lib';
 import {map, mergeMap} from 'rxjs/operators';
 

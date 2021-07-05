@@ -1,7 +1,7 @@
 import {BioxConnection, BioxConnectionPart, BioxNode} from '../global/biox-connection.class';
 import {Exclude, Expose, Type} from 'class-transformer';
 import {FlLazyPropertyId} from '@monorepo/front-core-lib';
-import {BioxResource} from './biox-resource.entity';
+import {BioxResource} from './resource/biox-resource.entity';
 import {ResourceLazyProperty} from '../../utils/lab-lazy-property.transform';
 
 /**

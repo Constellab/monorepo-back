@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BioxResource} from '../../../../model/entities/biox-resource.entity';
-import {FileResourcePreview} from '../../../../model/entities/file-resource.entity';
+import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
+import {FileResourcePreview} from '../../../../model/entities/resource/file-resource.entity';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {FileResourceService} from '../../../../entity-service/file-resource.service';
 

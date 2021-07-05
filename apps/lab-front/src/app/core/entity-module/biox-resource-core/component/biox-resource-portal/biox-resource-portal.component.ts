@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {BioxResource} from '../../../../model/entities/biox-resource.entity';
+import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {Observable} from 'rxjs';
 import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
 
