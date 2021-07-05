@@ -14,7 +14,6 @@ export class FlSheet {
   // the main array represent rows, cells[0] is the first row
   private readonly cells: FlCell[][];
 
-  // todo clear subjects
   private readonly cellsChanged: BehaviorSubject<void>;
   private readonly rowsChanged: BehaviorSubject<number>;
 
@@ -273,8 +272,18 @@ export class FlSheet {
     }
   }
 
+  private getCellsFlat(): FlCell[] {
+    const cells: FlCell[] = [];
 
-  ////////////////////////////// CELL ///////////////////////////////
+    for (const row of this.cells) {
+      cells.push(...row);
+    }
+
+    return cells;
+  }
+
+
+  ////////////////////////////// Other ///////////////////////////////
   public getColumnsCount(): number {
     return this.columnsCount;
   }
@@ -314,5 +323,11 @@ export class FlSheet {
     }
 
     return null;
+  }
+
+  public destroy(): void {
+    this.rowsChanged.complete();
+    this.cellsChanged.complete();
+    this.getCellsFlat().forEach(cell => cell.destroy());
   }
 }

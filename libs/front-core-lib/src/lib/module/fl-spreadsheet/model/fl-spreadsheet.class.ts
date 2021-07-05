@@ -35,4 +35,9 @@ export class FlSpreadsheet {
   public getSheet(id: number): FlSheet {
     return this.sheets.find(sheet => sheet.id === id);
   }
+
+  public destroy(): void {
+    this.currentSheet$.complete();
+    this.sheets.forEach(sheet => sheet.destroy());
+  }
 }

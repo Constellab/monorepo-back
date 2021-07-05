@@ -14,9 +14,7 @@ export abstract class FlCell {
   private _value$: BehaviorSubject<any>;
   private _edit$: BehaviorSubject<FlCellEditChange> = new BehaviorSubject<FlCellEditChange>({edit: false, value: null});
 
-  // todo destroy
   private selected$: BehaviorSubject<FlCellSelectionChange> = new BehaviorSubject<FlCellSelectionChange>(false);
-
 
   protected constructor(value: any = null) {
     this.id = FlCell.idGenerator++;
@@ -76,6 +74,11 @@ export abstract class FlCell {
     }
   }
 
+  public destroy(): void {
+    this._value$.complete();
+    this._edit$.complete();
+    this.selected$.complete();
+  }
 
 }
 

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {FlSpreadsheet} from '../model/fl-spreadsheet.class';
 import {FlSheet} from '../model/fl-sheet.class';
 
@@ -6,7 +6,7 @@ import {FlSheet} from '../model/fl-sheet.class';
  * Unique state shared across the spreadsheet to store the current spreadsheet
  */
 @Injectable()
-export class FlSpreadsheetState {
+export class FlSpreadsheetState implements OnDestroy {
 
   private spreadsheet: FlSpreadsheet;
 
@@ -21,4 +21,10 @@ export class FlSpreadsheetState {
   public getSheet(id: number): FlSheet {
     return this.spreadsheet.getSheet(id);
   }
+
+  ngOnDestroy(): void {
+    this.spreadsheet.destroy();
+  }
+
+
 }
