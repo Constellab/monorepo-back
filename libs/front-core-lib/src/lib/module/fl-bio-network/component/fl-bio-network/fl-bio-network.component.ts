@@ -56,7 +56,7 @@ export class FlBioNetworkComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.rendererState.init(this.chartHtmlContainer.nativeElement);
+    this.rendererState.init(this.chartHtmlContainer.nativeElement, this.slideLinkColorToggle);
 
     this.state.getChartData$().subscribe(
       chartData => this.onNewData(chartData)
@@ -72,9 +72,6 @@ export class FlBioNetworkComponent implements OnInit, AfterViewInit {
     } else {
       this.linksMaxAbsValue = 0;
     }
-
-    // todo move from here
-    this.rendererState.drawNetwork(chartData, this.slideLinkColorToggle);
 
     this.cdr.markForCheck();
   }

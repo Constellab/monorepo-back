@@ -17,6 +17,7 @@ import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {Injectable} from '@angular/core';
+import {FlBioNetworkState} from './fl-bio-network.state';
 
 /**
  * State to manager the drawing of bio network using d3
@@ -40,6 +41,9 @@ export class FlBioNetworkRendererState {
   private simulation: Simulation<FlBioNetworkD3Node, any>;
   private simulationEnded: boolean = false;
 
+  // if true the link colors switch to logarithm
+  private linkColorLogarithm: boolean;
+
   ////////////// READONLY VARIABLE //////////////////
   private readonly collideRadius: number = 25;
   public readonly grey: string = '#999';
@@ -47,7 +51,8 @@ export class FlBioNetworkRendererState {
   private readonly backgroundColor: string;
   private readonly selectNodeColor: string;
 
-  constructor(themeService: FlThemeService, private drawerState: FlBioNetworkDrawerState) {
+  constructor(themeService: FlThemeService, private drawerState: FlBioNetworkDrawerState,
+              private state: FlBioNetworkState) {
     const themeDetail: FlThemeDetail = themeService.getCurrentThemeDetail();
     this.textColor = themeDetail.foreground;
     this.backgroundColor = themeDetail.background;
@@ -55,14 +60,19 @@ export class FlBioNetworkRendererState {
     this.grey = themeDetail.greyHighContrast;
   }
 
-  public init(htmlContainer: HTMLElement): void {
+  public init(htmlContainer: HTMLElement, slideLinkColorToggle: boolean): void {
     this.htmlContainer = htmlContainer;
     this.chartWidth = htmlContainer.clientWidth;
     // set height minus 10 to avoid scrollbar
     this.chartHeight = htmlContainer.clientHeight - 10;
+    this.linkColorLogarithm = slideLinkColorToggle;
+
+    this.state.getChartData$().subscribe(
+      chartData => this.drawNetwork(chartData)
+    );
   }
 
-  public drawNetwork(chartData: FlBioxNetworkD3, linkLogarithmColor: boolean): void {
+  public drawNetwork(chartData: FlBioxNetworkD3): void {
     if (this.svg != null) {
       this.clearNetwork();
     }
@@ -72,7 +82,7 @@ export class FlBioNetworkRendererState {
     if (chartData) {
       this.initSVG();
       this.initSimulation();
-      this.initLinks(linkLogarithmColor);
+      this.initLinks(this.linkColorLogarithm);
       this.initMetabolites();
       this.initReactions();
       this.defineArrowMarker();
@@ -340,10 +350,11 @@ export class FlBioNetworkRendererState {
 
   /**
    * Set the color of the links
-   * @param logarithmColor if true the colors are base on logarithm scale, and linear otherwise
+   * @param linkColorLogarithm if true the colors are base on logarithm scale, and linear otherwise
    */
-  public setLinksColors(logarithmColor: boolean): void {
-    const colorTransform: (value: number) => number = this.getLinkColorTransformFunction(logarithmColor);
+  public setLinksColors(linkColorLogarithm: boolean): void {
+    this.linkColorLogarithm = linkColorLogarithm;
+    const colorTransform: (value: number) => number = this.getLinkColorTransformFunction(linkColorLogarithm);
     const colorScale = this.getLinkColorScale(colorTransform);
     this.links
       .attr('stroke', (d: FlBioNetworkD3Link<FlBioNetworkD3Node>) => colorScale(colorTransform(d.value)));

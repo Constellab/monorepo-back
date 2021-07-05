@@ -8,6 +8,7 @@ import {FlPathwayHelper} from '../utils/fl-pathway.helper';
 import {debounceTime, map} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
+import {FlThemeService} from '../../../service/fl-theme.service';
 
 
 /**
@@ -26,7 +27,7 @@ export class FlBioNetworkState implements OnDestroy {
   // used to cache the list of pathway
   private pathwayListCache: Record<FlPathwayDatabase | string, FlBioNetworkPathwayDetail[]>;
 
-  constructor(private translateService: FlTranslateService) {
+  constructor(private translateService: FlTranslateService, private themeService: FlThemeService) {
   }
 
 
@@ -70,9 +71,8 @@ export class FlBioNetworkState implements OnDestroy {
       this.chartData$.next(null);
       return;
     }
-    // todo check the color
     const chartData: FlBioxNetworkD3 = FlChartPathwayFactory.convertPathwayToChartPathway(this.getSelectedNetwork(), pathwayIds,
-      this.getDatabase(), 'grey');
+      this.getDatabase(), this.themeService.getCurrentThemeDetail().greyHighContrast);
 
     this.chartData$.next(chartData);
   }
