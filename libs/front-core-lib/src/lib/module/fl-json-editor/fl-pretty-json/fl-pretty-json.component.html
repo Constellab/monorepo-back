@@ -1,10 +1,10 @@
 <div class="g-list-padding container" [ngClass]="denseClass" *ngIf="!error; else showError" tabindex="0"
-     (keydown)="onKeyDown($event)" (flOutsideClick)="unselectNode()">
+     (keydown)="onKeyDown($event)" (flOutsideClick)="unselectNode()" #container>
   {{startChar}}
   <mat-tree *ngIf="dataSource != null" [dataSource]="dataSource" [treeControl]="treeControl" [trackBy]="trackBy">
 
     <mat-tree-node *matTreeNodeDef="let node" class="tree-node" matTreeNodePadding
-                   [matTreeNodePaddingIndent]="paddingIndent">
+                   [matTreeNodePaddingIndent]="paddingIndent" [ngClass]="getNodeUniqueClass(node.id)">
       <div [ngClass]="{'selected-node' : selectedNode === node }" (click)="selectNode(node)"
            class="leaf-container node-selectable">
         <span>{{node.key}}</span>&nbsp;:
@@ -26,7 +26,7 @@
     <!-- This is the tree node template for expandable nodes -->
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
                    [matTreeNodePaddingIndent]="paddingIndent"
-                   class="tree-node-preview">
+                   class="tree-node-preview" [ngClass]="getNodeUniqueClass(node.id)">
       <div matTreeNodeToggle class="clickable tree-container node-selectable" fxLayout="row"
            fxLayoutAlign="start center"
            [ngClass]="{'selected-node' : selectedNode === node }" (click)="selectNode(node)">

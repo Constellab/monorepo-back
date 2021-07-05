@@ -1,11 +1,22 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, TrackByFunction} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  TrackByFunction,
+  ViewChild
+} from '@angular/core';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {ClCoerceBooleanDecorator, ClHelpService, ClOnChange} from '@monorepo/core-lib';
 import {Observable, Subscription} from 'rxjs';
-import {FlKeyboardKey} from '../../../utils/fl-keyboard.helper';
+import {FlKeyboardHelper, FlKeyboardKey} from '../../../utils/fl-keyboard.helper';
 import {FlFlatTreeControl} from '../../../model/fl-flat-tree-control.class';
 import {ObjectFlatNode, ObjectNode} from '../model/fl-pretty-json.class';
 import {FlPrettyJsonBuilder} from '../model/fl-pretty-json-builder.class';
+import {FlHtmlService} from '../../../service/fl-html.service';
 
 
 @Component({
@@ -48,6 +59,8 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   @ClCoerceBooleanDecorator()
   @Input() dense: boolean | string;
 
+  @ViewChild('container', {static: false}) container: ElementRef<HTMLElement>;
+
   startChar: string;
   endChar: string;
 
@@ -79,7 +92,8 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   hasChild = (_: number, node: ObjectFlatNode): boolean => node.expandable;
 
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor(private cdr: ChangeDetectorRef,
+              private htmlService: FlHtmlService) {
   }
 
   ngOnInit(): void {
@@ -143,12 +157,15 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     return this.dense ? 'dense' : 'normal';
   }
 
-  ////////////////////////////// NODE SELECTION & KEY LISTENERS //////////////////////////
+  ////////////////////////////// KEY LISTENERS //////////////////////////
   onKeyDown(event: KeyboardEvent): void {
+    if (!FlKeyboardHelper.keyIsArrow(event.key)) {
+      return;
+    }
+
     ClHelpService.stopEventPropagation(event);
     const selectedNode: ObjectFlatNode = this.selectedNode ?? this.treeControl.dataNodes[0];
 
-    console.log(event.target);
 
     switch (event.key) {
       case FlKeyboardKey.ARROW_DOWN:
@@ -164,9 +181,9 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
         this.handleRightArrow(selectedNode);
         break;
     }
+
     return;
   }
-
 
   private selectPreviousNode(node: ObjectFlatNode): void {
     const previousNode: ObjectFlatNode | null = this.treeControl.getPreviousVisibleNode(node);
@@ -213,11 +230,13 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     }
   }
 
+  ////////////////////////////// OTHERS //////////////////////////
+
 
   private selectParentNode(node: ObjectFlatNode): boolean {
     const parent: ObjectFlatNode = this.treeControl.getAncestor(node);
     if (parent) {
-      this.selectedNode = parent;
+      this.selectNode(parent);
       this.cdr.markForCheck();
       return true;
     }
@@ -226,10 +245,25 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
 
   selectNode(node: ObjectFlatNode): void {
     this.selectedNode = node;
+
+    // get the node and check if it's in viewport, if note, scroll to element
+    const nodeElement: HTMLElement = this.getNodeHtmlElement(node.id);
+    if (nodeElement) {
+      this.htmlService.scrollToElementIfNotVisible(nodeElement);
+    }
   }
 
   unselectNode(): void {
     this.selectedNode = null;
+  }
+
+  getNodeUniqueClass(nodeId: number): string {
+    return `node-${nodeId}`;
+  }
+
+  // retrieve the html element of a node
+  private getNodeHtmlElement(nodeId: number): HTMLElement {
+    return this.container.nativeElement.querySelector('.' + this.getNodeUniqueClass(nodeId));
   }
 
 
