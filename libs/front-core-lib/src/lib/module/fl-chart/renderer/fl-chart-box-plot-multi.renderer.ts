@@ -89,8 +89,8 @@ export class FlChartBoxPlotMultiRenderer
       .selectAll(`.${this.verticalLineClassName}`)
       .attr('x1', xCenter)
       .attr('x2', xCenter)
-      .attr('y1', input.yScale.scale(boxData.min))
-      .attr('y2', input.yScale.scale(boxData.max))
+      .attr('y1', input.yScale.scale(boxData.lowerWhisker))
+      .attr('y2', input.yScale.scale(boxData.upperWhisker))
       .attr('stroke', this.theme.foreground);
 
     // Show the box
@@ -106,7 +106,7 @@ export class FlChartBoxPlotMultiRenderer
     // show median, min and max horizontal lines
     select(group)
       .selectAll(`.${this.horizontalLineClassName}`)
-      .data([boxData.min, boxData.median, boxData.max])
+      .data([boxData.lowerWhisker, boxData.median, boxData.upperWhisker])
       .attr('x1', xCenter - groupWidth / 2)
       .attr('x2', xCenter + groupWidth / 2)
       .attr('y1', (d) => input.yScale.scale(d))

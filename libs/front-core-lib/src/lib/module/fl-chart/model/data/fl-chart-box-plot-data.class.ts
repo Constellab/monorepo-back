@@ -19,7 +19,7 @@ export class FlChartBoxPlotSerie extends FlChartSerie<number> {
 
   constructor(public boxPlotData: FlChartBoxPlotData, serieName: string) {
     // we set an array of number as data to have a correct domain
-    super([boxPlotData.q1, boxPlotData.median, boxPlotData.q3, boxPlotData.min, boxPlotData.max],
+    super([boxPlotData.q1, boxPlotData.median, boxPlotData.q3, boxPlotData.lowerWhisker, boxPlotData.upperWhisker],
       serieName
     );
   }
