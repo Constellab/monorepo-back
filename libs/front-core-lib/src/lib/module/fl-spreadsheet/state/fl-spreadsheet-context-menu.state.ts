@@ -40,19 +40,19 @@ export class FlSpreadsheetContextMenu {
   public openCellContextMenu(mouseEvent: MouseEvent): void {
     const portalConfig: FlPortalConfig = this.getMenuPortalConfig(mouseEvent);
     this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
-      this.getCellConfig(mouseEvent));
+      this.getCellConfig());
   }
 
   public openHeaderColumnContextMenu(mouseEvent: MouseEvent): void {
     const portalConfig: FlPortalConfig = this.getMenuPortalConfig(mouseEvent);
     this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
-      this.getConfigForHeaderColumn(mouseEvent));
+      this.getConfigForHeaderColumn());
   }
 
   public openHeaderRowContextMenu(mouseEvent: MouseEvent): void {
     const portalConfig: FlPortalConfig = this.getMenuPortalConfig(mouseEvent);
     this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
-      this.getConfigForHeaderRow(mouseEvent));
+      this.getConfigForHeaderRow());
   }
 
   private getMenuPortalConfig(mouseEvent: MouseEvent): FlPortalConfig {
@@ -69,7 +69,7 @@ export class FlSpreadsheetContextMenu {
   /**
    * Get config for the header column based on a selection
    */
-  public getConfigForHeaderColumn(mouseEvent: MouseEvent): FlContextMenuConfig {
+  public getConfigForHeaderColumn(): FlContextMenuConfig {
 
     return {
       buttons: [
@@ -86,7 +86,7 @@ export class FlSpreadsheetContextMenu {
           icon: 'delete',
           onClick: () => this.action.deleteColumns()
         },
-        this.getCreateChartConfig(mouseEvent)
+        this.getCreateChartConfig()
       ]
     };
   }
@@ -94,7 +94,7 @@ export class FlSpreadsheetContextMenu {
   /**
    * Get config for the header row based on a selection
    */
-  public getConfigForHeaderRow(mouseEvent: MouseEvent): FlContextMenuConfig {
+  public getConfigForHeaderRow(): FlContextMenuConfig {
     return {
       buttons: [
         ...this.getCopyPasteConfig(),
@@ -110,7 +110,7 @@ export class FlSpreadsheetContextMenu {
           icon: 'delete',
           onClick: () => this.action.deleteRows()
         },
-        this.getCreateChartConfig(mouseEvent)
+        this.getCreateChartConfig()
       ]
     };
   }
@@ -118,20 +118,20 @@ export class FlSpreadsheetContextMenu {
   /**
    * Get config for the header row based on a selection
    */
-  public getCellConfig(mouseEvent: MouseEvent): FlContextMenuConfig {
+  public getCellConfig(): FlContextMenuConfig {
     return {
       buttons: [
         ...this.getCopyPasteConfig(),
-        this.getCreateChartConfig(mouseEvent)
+        this.getCreateChartConfig()
       ]
     };
   }
 
-  private getCreateChartConfig(mouseEvent: MouseEvent): FlContextMenuButton {
+  private getCreateChartConfig(): FlContextMenuButton {
     return {
       text: 'flSpreadsheet.create_chart',
       icon: 'addchart',
-      onClick: () => this.chartState.openChartSelectionPortal(mouseEvent)
+      onClick: () => this.chartState.openChartSelectionPortal()
     };
   }
 

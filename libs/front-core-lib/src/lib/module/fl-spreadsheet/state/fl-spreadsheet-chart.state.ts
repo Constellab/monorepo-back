@@ -32,18 +32,18 @@ export class FlSpreadsheetChartState {
               private selectionState: FlSpreadsheetSelectionState) {
   }
 
-  public openChartSelectionPortal(mouseEvent: MouseEvent, selection?: FlSheetChartSelection): void {
+  public openChartSelectionPortal(selection?: FlSheetChartSelection): void {
     // if the overlay is already open, do nothing
     if (this.overlayRef != null) {
       return;
     }
 
-    const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortalFromMouseEvent(mouseEvent,
+    const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
+      {centerHorizontally: '0', top: '0'},
       {
         panelClass: 'g-portal-background',
         elevation: true,
         disposeOnNavigation: true,
-
       });
 
     let data: FlSpreadsheetChartSelectionInput;
@@ -63,25 +63,24 @@ export class FlSpreadsheetChartState {
     this.overlayRef = this.portalService.createPortal(FlSpreadsheetChartSelectionComponent, portalConfig, data);
 
     this.overlayRef.detachments().subscribe(
-      (chartSelection) => this.openChartPortal(mouseEvent, chartSelection, selection?.id ?? null)
+      (chartSelection) => this.openChartPortal( chartSelection, selection?.id ?? null)
     );
   }
 
-  private openUpdateChartSelectionPortal(mouseEvent: MouseEvent, selectionId: number): void {
+  private openUpdateChartSelectionPortal(selectionId: number): void {
     const selection: SelectionWithOverlay = this.currentSelections.get(selectionId);
     if (selection) {
-      this.openChartSelectionPortal(mouseEvent, selection.selection);
+      this.openChartSelectionPortal(selection.selection);
     }
   }
 
   /**
    * Open the chart portal after chart selection
-   * @param mouseEvent
    * @param result
    * @param fromSelectionId if provided and result.mode === 'update', the chart corresponding to the selection is deleted
    * @private
    */
-  private openChartPortal(mouseEvent: MouseEvent, result ?: FlSheetChartSelectionResult, fromSelectionId?: number): void {
+  private openChartPortal(result ?: FlSheetChartSelectionResult, fromSelectionId?: number): void {
     this.overlayRef = null;
 
     if (result) {
@@ -95,7 +94,8 @@ export class FlSpreadsheetChartState {
       };
 
 
-      const portalConfig: FlPortalConfig = this.chartPortalService.configureAbsolutePortalFromMouseEvent(mouseEvent,
+      const portalConfig: FlPortalConfig = this.chartPortalService.configureAbsolutePortal(
+        {centerHorizontally: '0', top: '0'},
         {
           panelClass: 'g-portal-background',
           elevation: true,
@@ -139,7 +139,7 @@ export class FlSpreadsheetChartState {
       {
         name: 'flSpreadsheet.chart_update',
         icon: 'edit',
-        onClick: (event: MouseEvent) => this.openUpdateChartSelectionPortal(event, selectionId)
+        onClick: () => this.openUpdateChartSelectionPortal(selectionId)
       }
     ];
   }
