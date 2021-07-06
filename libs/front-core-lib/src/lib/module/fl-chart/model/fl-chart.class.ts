@@ -1,8 +1,11 @@
+import {FlMenuDynamic} from '../../fl-menu-dynamic/model/fl-menu-dynamic.class';
 
-export interface FlChartDynamicConfig {
+export interface FlChartPortalConfig {
   data: any;
 
   chartType: FlChartType;
+
+  contextMenuItems?: FlMenuDynamic[]
 }
 
 

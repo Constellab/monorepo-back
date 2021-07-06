@@ -131,7 +131,7 @@ export class FlSpreadsheetContextMenu {
     return {
       text: 'flSpreadsheet.create_chart',
       icon: 'addchart',
-      onClick: () => this.chartState.openChartSelectionDialog(mouseEvent)
+      onClick: () => this.chartState.openChartSelectionPortal(mouseEvent)
     };
   }
 

@@ -15,6 +15,12 @@ export class FlChartContainerComponent implements OnInit {
 
   @Input() data: FlChartMultiSerie<any>;
 
+
+  /**
+   * If provided, it append the item to the context menu
+   */
+  @Input() contextMenuItems: FlMenuDynamic[];
+
   @HostListener('contextmenu', ['$event'])
   contextMenu(event: MouseEvent): void {
     ClHelpService.stopEventPropagation(event);
@@ -42,8 +48,12 @@ export class FlChartContainerComponent implements OnInit {
         name: 'flChart.reset_zoom',
         icon: 'search',
         onClick: () => this.state.resetZoom()
-      }
+      },
     ];
+
+    if (this.contextMenuItems?.length > 0) {
+      menu.push(...this.contextMenuItems);
+    }
 
     this.menuService.openDynamicMenuFromMouseEvent(menu, mouseEvent);
   }

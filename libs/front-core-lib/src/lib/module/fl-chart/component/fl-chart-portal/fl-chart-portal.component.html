@@ -10,7 +10,7 @@
     </button>
   </div>
 
-  <fl-chart-container [data]="config.data">
+  <fl-chart-container [data]="config.data" [contextMenuItems]="config.contextMenuItems">
     <fl-chart [chartType]="config.chartType"></fl-chart>
     <fl-chart-legend></fl-chart-legend>
   </fl-chart-container>

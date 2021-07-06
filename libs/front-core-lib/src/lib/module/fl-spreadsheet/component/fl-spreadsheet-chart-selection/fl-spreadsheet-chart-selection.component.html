@@ -3,7 +3,7 @@
   <div class="header" fxLayout="row" fxLayoutAlign="space-between center"
        cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
        cdkDragBoundary="body">
-    <h1 class="title">{{'flSpreadsheet.create_chart' | translate}}</h1>
+    <h1 class="title">{{'flSpreadsheet.chart_selection_title' | translate}}</h1>
 
     <button mat-icon-button type="button"
             [matTooltip]="'close' | translate"
@@ -23,8 +23,7 @@
         <mat-form-field class="g-form-input" appearance="outline">
           <mat-label>{{'flSpreadsheet.chart_type' | translate}}</mat-label>
           <mat-select formControlName="chartType" required
-                      placeholder="{{'flSpreadsheet.chart_type' | translate}}"
-                      (selectionChange)="onChartTypeChange($event)">
+                      placeholder="{{'flSpreadsheet.chart_type' | translate}}">
             <mat-select-trigger>
               {{'flChart.' + formGp.value.chartType | translate}}
             </mat-select-trigger>
@@ -112,11 +111,17 @@
         </div>
       </div>
 
+      <div fxLayout="row" fxLayoutAlign="space-evenly">
+        <button mat-raised-button color="primary" type="submit">
+          {{submitTextButton | translate}}
+        </button>
 
-      <button mat-raised-button color="primary" type="submit">
-        {{'flSpreadsheet.create_chart_validate' | translate}}
-      </button>
-
+        <!--   On update mode this button is used to create a new chart   -->
+        <button *ngIf="input.mode === 'update'" mat-stroked-button color="primary" type="button"
+                (click)="createNewChart()">
+          {{'flSpreadsheet.create_new_chart' | translate}}
+        </button>
+      </div>
     </form>
   </div>
 </div>

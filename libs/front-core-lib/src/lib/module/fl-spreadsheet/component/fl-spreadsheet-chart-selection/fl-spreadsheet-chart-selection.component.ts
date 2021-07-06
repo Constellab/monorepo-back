@@ -10,11 +10,14 @@ import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
 import {FlSheetMultiSelection} from '../../model/selection/fl-sheet-multi-selection.class';
 import {FlSheet} from '../../model/fl-sheet.class';
 import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
-import {MatSelectChange} from '@angular/material/select';
 import {
   FlSheetChart2dSerieSelectionForm,
   FlSheetChartSelectionForm,
-  FlSheetChartSerieSelectionForm
+  FlSheetChartSelectionResult,
+  FlSheetChartSerieSelectionForm,
+  FlSpreadsheetChartSelectionInput,
+  FlSpreadsheetChartSelectionInputCreate,
+  FlSpreadsheetChartSelectionInputUpdate
 } from '../../model/chart/fl-sheet-chart-selection-form.class';
 import {FlPortalConfig} from '../../../fl-portal/model/fl-portal-config.class';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
@@ -23,11 +26,10 @@ import {
   FlSpreadsheetChartSerieSelectionInput
 } from '../fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
-import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
+import {ClHelpService, clRxjsDebug, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {debounceTime} from 'rxjs/operators';
 import {merge} from 'rxjs';
 import {FlSpreadsheetChartSelectionFactory} from '../../utils/fl-spreadsheet-chart-selection.factory';
-import {FlSheetChartSelection} from '../../model/chart/fl-sheet-chart-selection.class';
 import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
 import {flChartGetDefaultNumberOfBins} from '../../../fl-chart/model/data/fl-chart-data-bin.class';
 
@@ -45,8 +47,11 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
   formGp: FormGroup<FlSheetChartSelectionForm>;
 
+  input: FlSpreadsheetChartSelectionInput;
+
   // nb max of series supported
   ngMaxOfSeries: number = Infinity;
+
 
   private readonly hideElementClass: string = 'g-hide-element';
 
@@ -54,40 +59,23 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
   constructor(private selectionState: FlSpreadsheetSelectionState,
               private state: FlSpreadsheetState,
-              @Inject(FL_PORTAL_DATA) private currentSelection: FlSheetSingleSelection,
+              @Inject(FL_PORTAL_DATA) input: FlSpreadsheetChartSelectionInput,
               private portalService: FlPortalService,
               private overlayRef: FlOverlayRef,
               private translate: FlTranslateService,
               private cdr: ChangeDetectorRef) {
+    this.input = input;
   }
 
   ngOnInit(): void {
     this.initForm();
 
-    // subscribe to chart type and data range change to create series based on data range
-    this.subscriptions.add(
-      merge(this.formGp.get('chartType').valueChanges, this.formGp.get('dataRange').valueChanges).pipe(
-        debounceTime(100)
-      ).subscribe(
-        () => this.createSerieFromDataRange()
-      )
-    );
 
-    // subscribe to serie name range change to update series' names
-    this.subscriptions.add(
-      this.formGp.get('seriesNameRange').valueChanges
-        .pipe(debounceTime(100)).subscribe(
-        () => this.setSeriesNames()
-      )
-    );
-
-    // subscribe to serie change to refresh data based on series
-    this.subscriptions.add(
-      this.formGp.get('series').valueChanges
-        .pipe().subscribe(
-        () => this.refreshFormOnSeriesChange()
-      )
-    );
+    // add a timeout before the listen to prevent event from being fired
+    // on patch during init
+    setTimeout(() => {
+      this.listenToChanges();
+    }, 0);
   }
 
   private initForm(): void {
@@ -105,26 +93,85 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
       nbOfBins: [null, [Validators.min(1), FlGlobalValidators.isInteger()]],
 
     });
-    if (this.currentSelection) {
+
+    if (this.input.mode === 'create') {
+      this.initCreate(this.input);
+    } else {
+      this.initUpdate(this.input);
+    }
+  }
+
+  private initCreate(input: FlSpreadsheetChartSelectionInputCreate): void {
+    if (input.currentSelection) {
       // convert to multiple selection, one for each row
-      const selections: FlSheetMultiSelection = new FlSheetMultiSelection(this.currentSelection.splitToColumnSelections());
+      const selections: FlSheetMultiSelection = new FlSheetMultiSelection(input.currentSelection.splitToColumnSelections());
       this.formGp.get('dataRange').patchValue(selections.toString());
     }
   }
 
+  private initUpdate(input: FlSpreadsheetChartSelectionInputUpdate): void {
+    this.formGp.patchValue(input.selection);
+  }
+
+  private listenToChanges(): void {
+    // subscribe to chart type
+    this.subscriptions.add(
+      this.formGp.get('chartType').valueChanges.subscribe(
+        (chartType) => this.onChartTypeChange(chartType)
+      )
+    );
+
+    // subscribe to chart type and data range change to create series based on data range
+    this.subscriptions.add(
+      merge(this.formGp.get('chartType').valueChanges, this.formGp.get('dataRange').valueChanges).pipe(
+        debounceTime(100), clRxjsDebug('dataRange')
+      ).subscribe(
+        () => this.createSerieFromDataRange()
+      )
+    );
+
+    // subscribe to serie name range change to update series' names
+    this.subscriptions.add(
+      this.formGp.get('seriesNameRange').valueChanges
+        .pipe(debounceTime(100), clRxjsDebug('Name'))
+        .subscribe(
+          () => this.setSeriesNames()
+        )
+    );
+
+    // subscribe to serie change to refresh data based on series
+    this.subscriptions.add(
+      this.formGp.get('series').valueChanges
+        .pipe(clRxjsDebug('Serie')).subscribe(
+        () => this.refreshFormOnSeriesChange()
+      )
+    );
+  }
+
+
   submit(): void {
+    this.validateForm(this.input.mode);
+  }
+
+  createNewChart(): void {
+    this.validateForm('create');
+  }
+
+
+  private validateForm(mode: 'create' | 'update'): void {
     if (this.formGp.valid) {
       const value: FlSheetChartSelectionForm = this.formGp.value;
 
-      const flSheetChartSelection: FlSheetChartSelection
-        = FlSpreadsheetChartSelectionFactory.convertFormGpValueToSelectionChart(value, this.state.currentSheet);
-
-      this.overlayRef.dispose(flSheetChartSelection);
+      const result: FlSheetChartSelectionResult = {
+        selection: value,
+        mode: mode
+      };
+      this.overlayRef.dispose(result);
     }
   }
 
-  onChartTypeChange(valueChange: MatSelectChange): void {
-    this.ngMaxOfSeries = valueChange.value === FlChartType.HISTOGRAM ? 1 : Infinity;
+  private onChartTypeChange(chartType: FlChartType): void {
+    this.ngMaxOfSeries = chartType === FlChartType.HISTOGRAM ? 1 : Infinity;
 
     // limit the size of the series
     if (this.series.length >= this.ngMaxOfSeries) {
@@ -354,6 +401,10 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
       return null;
 
     };
+  }
+
+  get submitTextButton(): string {
+    return this.input.mode === 'create' ? 'flSpreadsheet.create_chart' : 'flSpreadsheet.update_chart';
   }
 
 

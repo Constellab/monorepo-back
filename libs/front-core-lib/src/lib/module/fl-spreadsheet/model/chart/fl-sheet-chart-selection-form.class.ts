@@ -1,4 +1,27 @@
 import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
+import {FlSheetSingleSelection} from '../selection/fl-sheet-single-selection.class';
+
+
+export type FlSpreadsheetChartSelectionInput = FlSpreadsheetChartSelectionInputCreate | FlSpreadsheetChartSelectionInputUpdate;
+
+// data for when selecting data for a new chart
+export interface FlSpreadsheetChartSelectionInputCreate {
+  mode: 'create';
+  currentSelection: FlSheetSingleSelection;
+}
+
+// data for when re-selecting data for an existing chart chart
+// it contain the complete selection object
+export interface FlSpreadsheetChartSelectionInputUpdate {
+  mode: 'update';
+  selection: FlSheetChartSelectionForm;
+}
+
+export interface FlSheetChartSelectionResult {
+  mode: 'create' | 'update';
+  selection: FlSheetChartSelectionForm;
+}
+
 
 /**
  * Type used in the form of {@link FlSpreadsheetChartSelectionComponent}

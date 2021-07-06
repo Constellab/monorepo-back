@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
-import {FlChartDynamicConfig} from '../../model/fl-chart.class';
+import {FlChartPortalConfig} from '../../model/fl-chart.class';
 
 @Component({
   selector: 'fl-chart-portal',
@@ -9,9 +9,9 @@ import {FlChartDynamicConfig} from '../../model/fl-chart.class';
 })
 export class FlChartPortalComponent implements OnInit {
 
-  config: FlChartDynamicConfig;
+  config: FlChartPortalConfig;
 
-  constructor(@Inject(FL_PORTAL_DATA) config: FlChartDynamicConfig) {
+  constructor(@Inject(FL_PORTAL_DATA) config: FlChartPortalConfig) {
     this.config = config;
   }
 

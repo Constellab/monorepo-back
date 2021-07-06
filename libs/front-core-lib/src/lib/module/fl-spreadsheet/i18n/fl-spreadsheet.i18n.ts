@@ -11,8 +11,11 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     delete: 'Delete',
     copy: 'Copier',
     paste: 'Coller',
-    create_chart: 'Créer un graphique',
     create_chart_validate: 'Valider',
+    chart_selection_title: 'Sélectionner les données',
+    create_chart: 'Créer le graphique',
+    update_chart: 'Modifier le graphique',
+    create_new_chart: 'Créer un nouveau graphique',
     chart_type: 'Graphique',
     chart_serie_selection_x: 'Valeurs de la série des abscisses X',
     chart_serie_selection_y: 'Valeurs de la série des ordonnées Y',
@@ -31,7 +34,8 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     chart_serie: 'Série',
     chart_series: 'Séries',
     chart_nb_of_bins: 'Nombres de classes',
-    chart_nb_of_bins_error: 'Le nombre de classes doit être un entier supérieur à 1'
+    chart_nb_of_bins_error: 'Le nombre de classes doit être un entier supérieur à 1',
+    chart_update: 'Modifier les données'
   }
 };
 
@@ -41,8 +45,11 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     delete: 'Delete',
     copy: 'Copy',
     paste: 'Paste',
-    create_chart: 'Create a chart',
     create_chart_validate: 'Validate',
+    chart_selection_title: 'Select data',
+    create_chart: 'Create chart',
+    update_chart: 'Update chart',
+    create_new_chart: 'Create new chart',
     chart_type: 'Chart',
     chart_serie_selection_x: 'X abscissa values of the serie',
     chart_serie_selection_y: 'Y ordinate values of the serie',
@@ -61,7 +68,8 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     chart_serie: 'Serie',
     chart_series: 'Séries',
     chart_nb_of_bins: 'Number of classes',
-    chart_nb_of_bins_error: 'The number of classes must be an integer higher than 1'
+    chart_nb_of_bins_error: 'The number of classes must be an integer higher than 1',
+    chart_update: 'Update data'
 
   }
 };

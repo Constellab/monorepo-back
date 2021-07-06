@@ -1,6 +1,5 @@
 import {FlSheetChartSelection} from './fl-sheet-chart-selection.class';
 import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
-import {FlSheet} from '../fl-sheet.class';
 import {FlSheetChartSerieSelectionForm} from './fl-sheet-chart-selection-form.class';
 import {FlChart2dMultiSerie, FlChartMultiSerie} from '../../../fl-chart/model/data/fl-chart-multi-serie.class';
 import {FlSheetSelection} from '../selection/fl-sheet-selection.class';
@@ -12,12 +11,6 @@ export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
 
   public chartType: FlChartType.HISTOGRAM;
 
-  constructor(sheet: FlSheet, chartType: FlChartType, dataRange: string,
-              seriesNameRange: string, protected serie: FlSheetChartSerieSelectionForm,
-              protected nbOfBins: number) {
-    super(sheet, chartType, dataRange, seriesNameRange);
-  }
-
   exportToSeries(): FlChartMultiSerie<any> {
     const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
 
@@ -28,7 +21,7 @@ export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
       .filter(value => value != null);
 
     // create the serie with bin data
-    const serie: FlChartSerie<any> = new FlChartSerie<any>(flChartGetDataBins(data, this.nbOfBins),
+    const serie: FlChartSerie<any> = new FlChartSerie<any>(flChartGetDataBins(data, this.selectionForm.nbOfBins),
       this.serie.name);
 
     // define the axisXLabelFormat
@@ -38,6 +31,10 @@ export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
     };
     series.addSerie(serie);
     return series;
+  }
+
+  get serie(): FlSheetChartSerieSelectionForm {
+    return this.selectionForm.series[0];
   }
 
 

@@ -93,17 +93,13 @@ export class FlSpreadsheetChartSelectionFactory {
     switch (formValue.chartType) {
       case FlChartType.SCATTER_PLOT:
       case FlChartType.LINE:
-        return new FlSheetChartSelectionBasic(sheet, formValue.chartType, formValue.dataRange, formValue.seriesNameRange,
-          formValue.series);
+        return new FlSheetChartSelectionBasic(sheet, formValue);
       case FlChartType.HISTOGRAM:
-        return new FlSheetChartSelectionHistogram(sheet, formValue.chartType, formValue.dataRange, formValue.seriesNameRange,
-          formValue.series[0], formValue.nbOfBins);
+        return new FlSheetChartSelectionHistogram(sheet, formValue);
       case FlChartType.BOX_PLOT:
-        return new FlSheetChartSelectionBoxPlot(sheet, formValue.chartType, formValue.dataRange, formValue.seriesNameRange,
-          formValue.series);
+        return new FlSheetChartSelectionBoxPlot(sheet, formValue);
       case FlChartType.BAR_PLOT:
-        return new FlSheetChartSelectionBarPlot(sheet, formValue.chartType, formValue.dataRange, formValue.seriesNameRange,
-          formValue.series);
+        return new FlSheetChartSelectionBarPlot(sheet, formValue);
     }
   }
 

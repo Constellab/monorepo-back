@@ -6,21 +6,28 @@ import {FlSheetMultiSelection} from '../selection/fl-sheet-multi-selection.class
 import {FlSheetSelection} from '../selection/fl-sheet-selection.class';
 import {FlChart2dDatum, FlChart2dDatumNumber} from '../../../fl-chart/model/data/fl-chart-data.class';
 import {ClHelpService, ClNumberHelper} from '@monorepo/core-lib';
+import {FlSheetChartSelectionForm} from './fl-sheet-chart-selection-form.class';
 
 /**
  * Object to store the chart selection and contain a method to export the selection to series
  */
 export abstract class FlSheetChartSelection {
+  private static id: number = 0;
 
+  public chartType: FlChartType;
 
-  protected constructor(protected sheet: FlSheet, public chartType: FlChartType, protected dataRange: string | null,
-                        protected seriesNameRange: string | null) {
+  public id: number;
+
+  public constructor(protected sheet: FlSheet, public readonly selectionForm: FlSheetChartSelectionForm) {
+    this.chartType = selectionForm.chartType;
+    this.id = FlSheetChartSelection.id++;
   }
 
   /**
    * Method to convert the selection to a multiple series
    */
   public abstract exportToSeries(): FlChartMultiSerie<any>;
+
 
   /**
    * Convert a selection string to a Selection
