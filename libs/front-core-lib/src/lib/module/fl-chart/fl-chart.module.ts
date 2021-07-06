@@ -23,6 +23,7 @@ import {FlChartScalePipe} from './pipe/fl-chart-scale.pipe';
 import {FlChartBinDataPortalComponent} from './component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
 import {FlChartContainerComponent} from './component/fl-chart-container/fl-chart-container.component';
 import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
+import {MatDividerModule} from '@angular/material/divider';
 
 /**
  * Main module exporting all the chart modules
@@ -72,6 +73,7 @@ import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
     FlexLayoutModule,
     MatOptionModule,
     MatTooltipModule,
+    MatDividerModule,
   ],
   providers: [
     FlChartPortalService

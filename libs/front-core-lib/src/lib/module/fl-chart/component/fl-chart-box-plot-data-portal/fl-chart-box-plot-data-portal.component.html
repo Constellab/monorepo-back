@@ -1,5 +1,11 @@
 <div>
 
+  <!-- Lower Whisker -->
+  <div fxLayout="row">
+    <span class="text g-text-light">{{'flChart.lower_whisker' | translate}}</span>
+    <span class="value">{{boxPlotData.lowerWhisker | number:'1.0-2'}}</span>
+  </div>
+
   <!-- Q1 -->
   <div fxLayout="row">
     <span class="text g-text-light">{{'flChart.quartile_1' | translate}}</span>
@@ -17,6 +23,15 @@
     <span class="text g-text-light">{{'flChart.quartile_3' | translate}}</span>
     <span class="value">{{boxPlotData.q3 | number:'1.0-2'}}</span>
   </div>
+
+
+  <!-- Upper Whisker -->
+  <div fxLayout="row">
+    <span class="text g-text-light">{{'flChart.upper_whisker' | translate}}</span>
+    <span class="value">{{boxPlotData.upperWhisker | number:'1.0-2'}}</span>
+  </div>
+
+  <mat-divider class="divider"></mat-divider>
 
   <!-- Min -->
   <div fxLayout="row">
@@ -36,7 +51,8 @@
     <span class="value">{{boxPlotData.nbOfData}}</span>
   </div>
 
+  <mat-divider class="divider"></mat-divider>
 
-  <fl-chart-serie-inline class="serie" [serieName]="serie.name" [color]="serie.key | flChartScale:seriesColorScale">
+  <fl-chart-serie-inline [serieName]="serie.name" [color]="serie.key | flChartScale:seriesColorScale">
   </fl-chart-serie-inline>
 </div>

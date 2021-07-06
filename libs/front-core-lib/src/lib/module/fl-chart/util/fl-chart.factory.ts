@@ -115,7 +115,9 @@ export class FlChartFactory {
       .setInitialDomain(dataContainer.getSeriesKeys())
       .range(chartContainer.getRangeX())
       .paddingOuter(0.3);
-    const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale);
+    const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
+      .setTickFormat(() => ''); // no info in x abscissa
+
 
     // build the y axis and scale linear
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()

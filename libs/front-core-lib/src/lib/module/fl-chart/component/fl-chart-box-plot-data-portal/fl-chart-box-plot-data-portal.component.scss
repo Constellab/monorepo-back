@@ -1,6 +1,6 @@
 :host{
   display: block;
-  min-width: 10em;
+  min-width: 13em;
 }
 
 .text {
@@ -12,6 +12,7 @@
   text-align: right;
 }
 
-.serie{
-  margin-top: 0.5em;
+.divider{
+  width: 60%;
+  margin: 0.5em auto;
 }
