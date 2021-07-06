@@ -17,10 +17,18 @@ export class BioxResourceNetworkComponent implements OnInit {
 
   networks: FlBioNetwork | FlBioNetwork[];
 
+  error: boolean;
+
   constructor() {
   }
 
   ngOnInit(): void {
-    this.networks = BioxNetworkHelper.getNetworksFromResource(this.resource);
+    if (BioxNetworkHelper.resourceIsNetwork(this.resource)) {
+      this.networks = BioxNetworkHelper.getNetworksFromResource(this.resource);
+      this.error = false;
+    } else {
+      this.error = true;
+    }
+
   }
 }
