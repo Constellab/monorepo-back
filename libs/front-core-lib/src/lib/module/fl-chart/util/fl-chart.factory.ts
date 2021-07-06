@@ -142,20 +142,20 @@ export class FlChartFactory {
    */
   private static buildLinear2dMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
                                              renderers: FlChart2dRenderer<FlChart2dMultiSerie<any>>[],
-                                             extendXDomain: number = 0):
+                                             extendDomain: number = 0):
     FlChartContainer2d<FlChart2dMultiSerie<any>> {
     const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
 
     // Build X axis
     const xScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
-      .setInitialDomain(dataContainer.getDomainXLinear(extendXDomain))
+      .setInitialDomain(dataContainer.getDomainXLinear(extendDomain))
       .range(chartContainer.getRangeX());
     const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
       .setTickFormat(dataContainer.axisXLabelFormat);
 
     // Build Y axis
     const yScale: FlChartAxisScaleLinear<Numeric> = new FlChartAxisScaleNumber()
-      .setInitialDomain(dataContainer.getDomainYLinear())
+      .setInitialDomain(dataContainer.getDomainYLinear(extendDomain))
       .range(chartContainer.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
