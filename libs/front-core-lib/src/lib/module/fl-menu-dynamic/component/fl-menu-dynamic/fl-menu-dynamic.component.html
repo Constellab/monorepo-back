@@ -2,7 +2,7 @@
   <ng-container *ngFor="let item of menuItems">
     <!-- Handle branch node menu items -->
     <span *ngIf="item.children?.length > 0 ; else leaf">
-      <button mat-menu-item [matMenuTriggerFor]="subMenu.menu" >
+      <button mat-menu-item [matMenuTriggerFor]="subMenu.menu" (click)="callItem(item, $event)">
         <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
         <ng-container *ngIf="translateMenu(item); else noTranslate">{{item.name | translate}}</ng-container>
         <ng-template #noTranslate>{{item.name}}</ng-template>
@@ -13,7 +13,7 @@
     <!-- Handle leaf node menu items -->
     <ng-template #leaf>
     <span>
-      <button mat-menu-item >
+      <button mat-menu-item (click)="callItem(item, $event)">
         <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
         <ng-container *ngIf="translateMenu(item); else noTranslate">{{item.name | translate}}</ng-container>
         <ng-template #noTranslate>{{item.name}}</ng-template>
@@ -22,4 +22,3 @@
     </ng-template>
   </ng-container>
 </mat-menu>
-
