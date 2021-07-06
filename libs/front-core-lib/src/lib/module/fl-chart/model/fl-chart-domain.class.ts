@@ -13,6 +13,10 @@ export class FlChartDomain {
   public static getLinearDomain(data: number[], extendDomain: number = 0): [number, number] {
     const domain: [number, number] = extent(data, (data) => data);
 
+    if (domain[1] == null) {
+      domain[1] = domain[0];
+    }
+
     if (extendDomain !== 0) {
       return [domain[0] - extendDomain, domain[1] + extendDomain];
     }

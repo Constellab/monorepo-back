@@ -45,8 +45,8 @@ export function flChartGetDataBins(data: number[], numberOfBins: number): FlChar
 
   const bins: FlChartDataBin[] = [];
 
-  // size of the bins
-  const thresholds: number = (domain[1] - domain[0]) / numberOfBins;
+  // size of the bins (set to 1 if result is 0)
+  const thresholds: number = (domain[1] - domain[0]) / numberOfBins || 1;
 
   // create all the bins
   for (let i = 0; i < numberOfBins; i++) {
