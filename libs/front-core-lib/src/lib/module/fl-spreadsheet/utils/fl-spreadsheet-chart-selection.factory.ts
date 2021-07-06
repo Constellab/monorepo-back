@@ -25,12 +25,12 @@ export class FlSpreadsheetChartSelectionFactory {
 
     switch (chartType) {
       case FlChartType.SCATTER_PLOT:
-      case FlChartType.LINE:
         series = FlSpreadsheetChartSelectionFactory.createMultipleSeriesForXAndY(dataSelection);
         break;
       case FlChartType.HISTOGRAM:
         series = FlSpreadsheetChartSelectionFactory.createSingleSerieForY(dataSelection);
         break;
+      case FlChartType.LINE:
       case FlChartType.BAR_PLOT:
       case FlChartType.BOX_PLOT:
         series = FlSpreadsheetChartSelectionFactory.createMultiplesSeriesForY(dataSelection);
