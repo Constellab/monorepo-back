@@ -10,7 +10,7 @@ import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-hand
 import {
   FlChartBoxPlotDataPortalComponent,
   FlChartBoxPlotDataPortalInput
-} from '../module/module/fl-chart-core/component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
+} from '../component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
 import {FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
 

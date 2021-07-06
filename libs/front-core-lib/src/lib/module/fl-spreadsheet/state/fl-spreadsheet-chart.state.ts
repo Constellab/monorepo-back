@@ -4,7 +4,7 @@ import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
 import {FlSpreadsheetChartSelectionComponent} from '../component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-selection.component';
 import {FlOverlayRef} from '../../fl-portal/model/fl-overlay-ref.class';
 import {FlChartPortalService} from '../../fl-chart/service/fl-chart-portal.service';
-import {FlChartDynamicConfig} from '../../fl-chart/model/fl-chart-component.class';
+import {FlChartDynamicConfig} from '../../fl-chart/model/fl-chart.class';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlSheetChartSelection} from '../model/chart/fl-sheet-chart-selection.class';
 
@@ -30,18 +30,19 @@ export class FlSpreadsheetChartState {
       {
         panelClass: 'g-portal-background',
         elevation: true,
-        disposeOnNavigation: true
+        disposeOnNavigation: true,
+
       });
 
     this.overlayRef =
       this.portalService.createPortal(FlSpreadsheetChartSelectionComponent, portalConfig, this.selectionState.currentSelection);
 
     this.overlayRef.detachments().subscribe(
-      (chartSelection) => this.onDispose(mouseEvent, chartSelection)
+      (chartSelection) => this.openChartPortal(mouseEvent, chartSelection)
     );
   }
 
-  private onDispose(mouseEvent: MouseEvent, chartSelection?: FlSheetChartSelection): void {
+  private openChartPortal(mouseEvent: MouseEvent, chartSelection?: FlSheetChartSelection): void {
     this.overlayRef = null;
 
     if (chartSelection) {

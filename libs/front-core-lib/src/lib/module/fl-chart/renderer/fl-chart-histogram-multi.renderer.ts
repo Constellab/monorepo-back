@@ -9,11 +9,11 @@ import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-hand
 import {
   FlChartDataWithSeriePortalComponent,
   FlChartDataWithSeriePortalInput
-} from '../module/module/fl-chart-core/component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
+} from '../component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 import {
   FlChartBinDataPortalComponent,
   FlChartBinDataPortalInput
-} from '../module/module/fl-chart-core/component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
+} from '../component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
 import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
 
 

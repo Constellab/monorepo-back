@@ -2,16 +2,22 @@
 export * from './fl-chart.module';
 
 // Export the component
-export * from './component/fl-chart-component-select-options/fl-chart-component-select-options.component';
-export * from './component/fl-chart-dynamic/fl-chart-dynamic.component';
-export * from './component/fl-chart-dynamic-portal/fl-chart-dynamic-portal.component';
+export * from './component/fl-chart/fl-chart.component';
+export * from './component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
+export * from './component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
+export * from './component/fl-chart-container/fl-chart-container.component';
+export * from './component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
+export * from './component/fl-chart-legend/fl-chart-legend.component';
+export * from './component/fl-chart-portal/fl-chart-portal.component';
+export * from './component/fl-chart-serie-inline/fl-chart-serie-inline.component';
+export * from './component/fl-chart-type-select-options/fl-chart-type-select-options.component';
 
 // Export the service
 export * from './service/fl-chart-portal.service';
 
-// Export charts modules
-export * from './module/module/fl-chart-core/public-api';
-export * from './module/module/fl-chart-heat-map/public-api';
+
+// States
+export * from './state/fl-chart.state';
 
 // Export the models
 // Portal-handler
@@ -29,7 +35,7 @@ export * from './model/fl-chart-2d-brush.class';
 export * from './model/fl-chart-2d-hover.class';
 export * from './model/fl-chart-2d-renderer.class';
 export * from './model/fl-chart-axis.class';
-export * from './model/fl-chart-component.class';
+export * from './model/fl-chart.class';
 export * from './model/fl-chart-container.class';
 export * from './model/fl-chart-domain.class';
 export * from './model/fl-chart-scale.class';

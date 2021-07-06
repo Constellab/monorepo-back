@@ -19,6 +19,7 @@ export * from './lib/module/fl-inifite-scroll/public-api';
 export * from './lib/module/fl-input-file/public-api';
 export * from './lib/module/fl-json-editor/public-api';
 export * from './lib/module/fl-loader/public-api';
+export * from './lib/module/fl-menu-dynamic/public-api';
 export * from './lib/module/fl-portal/public-api';
 export * from './lib/module/fl-portal-actions/public-api';
 export * from './lib/module/fl-section/public-api';

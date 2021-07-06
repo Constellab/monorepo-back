@@ -1,0 +1,25 @@
+<mat-menu [overlapTrigger]="true">
+  <ng-container *ngFor="let item of menuItems">
+    <!-- Handle branch node menu items -->
+    <span *ngIf="item.children?.length > 0 ; else leaf">
+      <button mat-menu-item [matMenuTriggerFor]="subMenu.menu" >
+        <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
+        <ng-container *ngIf="translateMenu(item); else noTranslate">{{item.name | translate}}</ng-container>
+        <ng-template #noTranslate>{{item.name}}</ng-template>
+      </button>
+      <fl-menu-dynamic #subMenu [menuItems]="item.children"></fl-menu-dynamic>
+    </span>
+
+    <!-- Handle leaf node menu items -->
+    <ng-template #leaf>
+    <span>
+      <button mat-menu-item >
+        <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
+        <ng-container *ngIf="translateMenu(item); else noTranslate">{{item.name | translate}}</ng-container>
+        <ng-template #noTranslate>{{item.name}}</ng-template>
+      </button>
+    </span>
+    </ng-template>
+  </ng-container>
+</mat-menu>
+

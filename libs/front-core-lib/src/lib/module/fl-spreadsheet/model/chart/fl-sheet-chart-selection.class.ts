@@ -1,6 +1,6 @@
 import {FlChartMultiSerie} from '../../../fl-chart/model/data/fl-chart-multi-serie.class';
 import {FlSheet} from '../fl-sheet.class';
-import {FlChartComponentType} from '../../../fl-chart/model/fl-chart-component.class';
+import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../selection/fl-sheet-single-selection.class';
 import {FlSheetMultiSelection} from '../selection/fl-sheet-multi-selection.class';
 import {FlSheetSelection} from '../selection/fl-sheet-selection.class';
@@ -13,7 +13,7 @@ import {ClHelpService, ClNumberHelper} from '@monorepo/core-lib';
 export abstract class FlSheetChartSelection {
 
 
-  protected constructor(protected sheet: FlSheet, public chartType: FlChartComponentType, protected dataRange: string | null,
+  protected constructor(protected sheet: FlSheet, public chartType: FlChartType, protected dataRange: string | null,
                         protected seriesNameRange: string | null) {
   }
 

@@ -1,11 +1,11 @@
-import {FlChartComponentType} from '../../../fl-chart/model/fl-chart-component.class';
+import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 
 /**
  * Type used in the form of {@link FlSpreadsheetChartSelectionComponent}
  */
 export interface FlSheetChartSelectionForm {
   // type of the chart
-  chartType: FlChartComponentType;
+  chartType: FlChartType;
 
   // global data range form a multiple selection
   dataRange?: string;

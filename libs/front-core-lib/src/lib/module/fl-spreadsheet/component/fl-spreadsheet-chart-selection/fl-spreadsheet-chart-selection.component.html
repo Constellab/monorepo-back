@@ -28,7 +28,7 @@
             <mat-select-trigger>
               {{'flChart.' + formGp.value.chartType | translate}}
             </mat-select-trigger>
-            <fl-chart-component-select-options></fl-chart-component-select-options>
+            <fl-chart-type-select-options></fl-chart-type-select-options>
           </mat-select>
 
           <mat-error *ngIf="formGp.get('chartType').hasError('required')">
@@ -69,7 +69,7 @@
         </mat-form-field>
 
         <!-- NB of bins -->
-        <mat-form-field appearance="outline" class="g-full">
+        <mat-form-field appearance="outline" class="g-full" *ngIf="showNbOfBins">
           <mat-label>{{'flSpreadsheet.chart_nb_of_bins' | translate}}</mat-label>
           <input matInput formControlName="nbOfBins" [min]="1"
                  placeholder="{{'flSpreadsheet.chart_nb_of_bins' | translate}}" type="number">
@@ -116,6 +116,7 @@
       <button mat-raised-button color="primary" type="submit">
         {{'flSpreadsheet.create_chart_validate' | translate}}
       </button>
+
     </form>
   </div>
 </div>

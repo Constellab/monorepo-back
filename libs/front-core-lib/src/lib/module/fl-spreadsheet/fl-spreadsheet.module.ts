@@ -28,6 +28,7 @@ import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flSpreadSheetI18n} from './i18n/fl-spreadsheet.i18n';
 import {FlSpreadsheetChartSerieSelectionComponent} from './component/fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
 import {MatDividerModule} from '@angular/material/divider';
+import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
 
 
 @NgModule({
@@ -56,6 +57,7 @@ import {MatDividerModule} from '@angular/material/divider';
     FlCorePipeModule,
     FlTranslateModule,
     FlChartModule,
+    FlMenuDynamicModule,
 
     ScrollingModule,
     MatMenuModule,
@@ -67,6 +69,7 @@ import {MatDividerModule} from '@angular/material/divider';
     MatInputModule,
     MatSelectModule,
     MatDividerModule,
+    MatMenuModule,
   ],
 })
 export class FlSpreadsheetModule {

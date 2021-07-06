@@ -9,7 +9,7 @@ import {Environment} from './environment.class';
  * NEVER IMPORT ENVIRONMENT DIRECTLY FORM HERE, USE ENVIRONMENT HELPER INSTEAD
  */
 // const apiBaseUrl: string = 'http://localhost:3000/';
-const apiBaseUrl: string = 'https://lab.atom.gencovery.io/';
+const apiBaseUrl: string = 'https://glab-prod.atom.gencovery.io/';
 export const environment: Environment = {
   production: false,
   settings: {

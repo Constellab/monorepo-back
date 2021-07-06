@@ -1,6 +1,6 @@
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 import {FlSheetChart2dSerieSelectionForm, FlSheetChartSelectionForm} from '../model/chart/fl-sheet-chart-selection-form.class';
-import {FlChartComponentType} from '../../fl-chart/model/fl-chart-component.class';
+import {FlChartType} from '../../fl-chart/model/fl-chart.class';
 import {FlSheetMultiSelection} from '../model/selection/fl-sheet-multi-selection.class';
 import {FlSheet} from '../model/fl-sheet.class';
 import {FlSheetChartSelectionBasic} from '../model/chart/fl-sheet-chart-selection-basic.class';
@@ -19,20 +19,20 @@ export class FlSpreadsheetChartSelectionFactory {
   /**
    * Create the series based on chart type and data selection
    */
-  public static createSerieFromDataRange(chartType: FlChartComponentType, dataSelection: FlSheetMultiSelection,
+  public static createSerieFromDataRange(chartType: FlChartType, dataSelection: FlSheetMultiSelection,
                                          serieNames: string[]): FlSheetChart2dSerieSelectionForm[] {
     let series: FlSheetChart2dSerieSelectionForm[];
 
     switch (chartType) {
-      case FlChartComponentType.SCATTER_PLOT:
-      case FlChartComponentType.LINE:
+      case FlChartType.SCATTER_PLOT:
+      case FlChartType.LINE:
         series = FlSpreadsheetChartSelectionFactory.createMultipleSeriesForXAndY(dataSelection);
         break;
-      case FlChartComponentType.HISTOGRAM:
+      case FlChartType.HISTOGRAM:
         series = FlSpreadsheetChartSelectionFactory.createSingleSerieForY(dataSelection);
         break;
-      case FlChartComponentType.BAR_PLOT:
-      case FlChartComponentType.BOX_PLOT:
+      case FlChartType.BAR_PLOT:
+      case FlChartType.BOX_PLOT:
         series = FlSpreadsheetChartSelectionFactory.createMultiplesSeriesForY(dataSelection);
         break;
     }
@@ -91,17 +91,17 @@ export class FlSpreadsheetChartSelectionFactory {
   public static convertFormGpValueToSelectionChart(formValue: FlSheetChartSelectionForm, sheet: FlSheet)
     : FlSheetChartSelection {
     switch (formValue.chartType) {
-      case FlChartComponentType.SCATTER_PLOT:
-      case FlChartComponentType.LINE:
+      case FlChartType.SCATTER_PLOT:
+      case FlChartType.LINE:
         return new FlSheetChartSelectionBasic(sheet, formValue.chartType, formValue.dataRange, formValue.seriesNameRange,
           formValue.series);
-      case FlChartComponentType.HISTOGRAM:
+      case FlChartType.HISTOGRAM:
         return new FlSheetChartSelectionHistogram(sheet, formValue.chartType, formValue.dataRange, formValue.seriesNameRange,
           formValue.series[0], formValue.nbOfBins);
-      case FlChartComponentType.BOX_PLOT:
+      case FlChartType.BOX_PLOT:
         return new FlSheetChartSelectionBoxPlot(sheet, formValue.chartType, formValue.dataRange, formValue.seriesNameRange,
           formValue.series);
-      case FlChartComponentType.BAR_PLOT:
+      case FlChartType.BAR_PLOT:
         return new FlSheetChartSelectionBarPlot(sheet, formValue.chartType, formValue.dataRange, formValue.seriesNameRange,
           formValue.series);
     }
@@ -112,16 +112,16 @@ export class FlSpreadsheetChartSelectionFactory {
    * based on chart Type (on which chart can we select x values? )
    * @param chartType
    */
-  public static getSelectSerieMode(chartType: FlChartComponentType): FlSpreadsheetSelectSerieMode {
+  public static getSelectSerieMode(chartType: FlChartType): FlSpreadsheetSelectSerieMode {
     switch (chartType) {
       // charts where the x values can be selected
-      case FlChartComponentType.SCATTER_PLOT:
-      case FlChartComponentType.LINE:
+      case FlChartType.SCATTER_PLOT:
+      case FlChartType.LINE:
         return 'full';
       // charts where only the y values can be selected
-      case FlChartComponentType.HISTOGRAM:
-      case FlChartComponentType.BOX_PLOT:
-      case FlChartComponentType.BAR_PLOT:
+      case FlChartType.HISTOGRAM:
+      case FlChartType.BOX_PLOT:
+      case FlChartType.BAR_PLOT:
         return 'onlyY';
     }
   }

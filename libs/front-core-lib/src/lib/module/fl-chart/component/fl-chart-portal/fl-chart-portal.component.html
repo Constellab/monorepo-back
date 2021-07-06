@@ -1,0 +1,17 @@
+<div class="container">
+
+  <div fxLayout="row" fxLayoutAlign="end center"
+       cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
+       cdkDragBoundary="body" class="header">
+
+    <button mat-icon-button type="button" flPortalClose
+            [matTooltip]="'close' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <fl-chart-container [data]="config.data">
+    <fl-chart [chartType]="config.chartType"></fl-chart>
+    <fl-chart-legend></fl-chart-legend>
+  </fl-chart-container>
+</div>

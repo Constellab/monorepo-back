@@ -9,7 +9,7 @@ import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
 import {FlSheetMultiSelection} from '../../model/selection/fl-sheet-multi-selection.class';
 import {FlSheet} from '../../model/fl-sheet.class';
-import {FlChartComponentType} from '../../../fl-chart/model/fl-chart-component.class';
+import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {MatSelectChange} from '@angular/material/select';
 import {
   FlSheetChart2dSerieSelectionForm,
@@ -124,7 +124,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
   }
 
   onChartTypeChange(valueChange: MatSelectChange): void {
-    this.ngMaxOfSeries = valueChange.value === FlChartComponentType.HISTOGRAM ? 1 : Infinity;
+    this.ngMaxOfSeries = valueChange.value === FlChartType.HISTOGRAM ? 1 : Infinity;
 
     // limit the size of the series
     if (this.series.length >= this.ngMaxOfSeries) {
@@ -136,12 +136,12 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     return this.formGp.get('series').value;
   }
 
-  get chartType(): FlChartComponentType {
+  get chartType(): FlChartType {
     return this.formGp.get('chartType').value;
   }
 
   get showNbOfBins(): boolean {
-    return this.chartType === FlChartComponentType.HISTOGRAM;
+    return this.chartType === FlChartType.HISTOGRAM;
   }
 
   addSerie(): void {
@@ -218,7 +218,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
   // create the series base on main data selection
   private createSerieFromDataRange(): void {
-    const chartType: FlChartComponentType = this.formGp.get('chartType').value;
+    const chartType: FlChartType = this.formGp.get('chartType').value;
     const dataRange: string = this.formGp.get('dataRange').value;
 
     if (ClHelpService.isNullOrEmpty(chartType) || ClHelpService.isNullOrEmpty(dataRange)) {
@@ -236,7 +236,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
   // method call when the series a changes, it refresh the form information
   private refreshFormOnSeriesChange(): void {
-    if (this.chartType === FlChartComponentType.HISTOGRAM) {
+    if (this.chartType === FlChartType.HISTOGRAM) {
       this.initNbOfBins();
     }
   }
@@ -355,6 +355,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
     };
   }
+
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

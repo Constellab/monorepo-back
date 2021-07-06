@@ -1,5 +1,5 @@
 import {FlChartSvg} from '../model/fl-chart-svg.class';
-import {FlChartComponentType} from '../model/fl-chart-component.class';
+import {FlChartType} from '../model/fl-chart.class';
 import {FlChartContainer2d} from '../model/fl-chart-container.class';
 import {FlChartAxisScale, FlChartAxisScaleBand, FlChartAxisScaleLinear, FlChartAxisScaleNumber} from '../model/fl-chart-scale.class';
 import {Numeric} from 'd3';
@@ -18,18 +18,18 @@ export class FlChartFactory {
 
 
   public static buildChart2dContainer(chartSVG: FlChartSvg, data: FlChartMultiSerie<any>,
-                                      chartType: FlChartComponentType, seriesColorScale: FlChartScaleColor)
+                                      chartType: FlChartType, seriesColorScale: FlChartScaleColor)
     : FlChartContainer2d<FlChartMultiSerie<any>> {
 
     switch (chartType) {
-      case FlChartComponentType.LINE:
+      case FlChartType.LINE:
         return this.buildLineMultiContainer(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
-      case FlChartComponentType.SCATTER_PLOT:
+      case FlChartType.SCATTER_PLOT:
         return this.buildScatterPlotMultiContainer(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
-      case FlChartComponentType.BAR_PLOT:
-      case FlChartComponentType.HISTOGRAM:
+      case FlChartType.BAR_PLOT:
+      case FlChartType.HISTOGRAM:
         return this.buildBarPlotMultiContainer(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
-      case FlChartComponentType.BOX_PLOT:
+      case FlChartType.BOX_PLOT:
         return this.buildBoxPlotMultiContainer(chartSVG, data, seriesColorScale);
     }
 

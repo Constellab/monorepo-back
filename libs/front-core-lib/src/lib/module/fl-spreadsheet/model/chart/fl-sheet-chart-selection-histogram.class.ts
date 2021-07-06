@@ -1,5 +1,5 @@
 import {FlSheetChartSelection} from './fl-sheet-chart-selection.class';
-import {FlChartComponentType} from '../../../fl-chart/model/fl-chart-component.class';
+import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {FlSheet} from '../fl-sheet.class';
 import {FlSheetChartSerieSelectionForm} from './fl-sheet-chart-selection-form.class';
 import {FlChart2dMultiSerie, FlChartMultiSerie} from '../../../fl-chart/model/data/fl-chart-multi-serie.class';
@@ -10,9 +10,9 @@ import {FlChartDataBin, flChartGetDataBins} from '../../../fl-chart/model/data/f
 
 export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
 
-  public chartType: FlChartComponentType.HISTOGRAM;
+  public chartType: FlChartType.HISTOGRAM;
 
-  constructor(sheet: FlSheet, chartType: FlChartComponentType, dataRange: string,
+  constructor(sheet: FlSheet, chartType: FlChartType, dataRange: string,
               seriesNameRange: string, protected serie: FlSheetChartSerieSelectionForm,
               protected nbOfBins: number) {
     super(sheet, chartType, dataRange, seriesNameRange);
