@@ -43,8 +43,10 @@ export * from './model/chart/fl-sheet-chart-selection-form.class';
 export * from './model/chart/fl-sheet-chart-selection-histogram.class';
 
 // Selection
-export * from './model/selection/fl-sheet-single-selection.class';
 export * from './model/selection/fl-sheet-multi-selection.class';
+export * from './model/selection/fl-sheet-range.class';
+export * from './model/selection/fl-sheet-selection.class';
+export * from './model/selection/fl-sheet-single-selection.class';
 
 export * from './model/fl-cell.class';
 export * from './model/fl-sheet.class';

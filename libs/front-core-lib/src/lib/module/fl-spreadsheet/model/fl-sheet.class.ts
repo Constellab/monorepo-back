@@ -1,9 +1,13 @@
 import {FlBasicCell, FlCell, FlColumnHeaderCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
-import {FlCellCoord, FlSheetSingleSelectionRange} from './selection/fl-sheet-single-selection.class';
+import {FlCellCoord} from './selection/fl-sheet-single-selection.class';
 import {FlSheetRow} from './fl-sheet-row.class';
 
+/**
+ * Class to manage one sheet of a spreadsheet
+ * It contains and manage all the cells of the sheet
+ */
 export class FlSheet {
 
   private static idGenerator: number = 0;
@@ -157,6 +161,34 @@ export class FlSheet {
     );
   }
 
+  public getRows(fromRow: number, toRow: number): FlSheetRow[] {
+    const rows: FlSheetRow[] = [];
+
+    // prevent from returning rows outside the sheet
+    fromRow = Math.max(fromRow, 0);
+    toRow = Math.min(toRow, this.rowsCount - 1);
+
+    for (let row = fromRow; row <= toRow; row++) {
+      rows.push({
+        rowId: row,
+        cells: this.cells[row]
+      });
+    }
+
+    return rows;
+  }
+
+  public getRows$(): Observable<FlSheetRow[]> {
+    return this.getCells().pipe(
+      map(cells => cells.map((row, index) => {
+        return {
+          rowId: index,
+          cells: row
+        };
+      }))
+    );
+  }
+
   ////////////////////////////// CELL ///////////////////////////////
 
 
@@ -171,16 +203,6 @@ export class FlSheet {
     );
   }
 
-  public getRows$(): Observable<FlSheetRow[]> {
-    return this.getCells().pipe(
-      map(cells => cells.map((row, index) => {
-        return {
-          rowId: index,
-          cells: row
-        };
-      }))
-    );
-  }
 
   public getColumnHeaderCells(): Observable<FlCell[]> {
     return this.cellsChanged.asObservable().pipe(
@@ -212,23 +234,14 @@ export class FlSheet {
     return this.cells[row][column];
   }
 
-  /**
-   * Get the selection cell from a range in a simple array
-   * Array is flatten by rows
-   * @param range
-   */
-  public getCellsFromRangeFlat(range: FlSheetSingleSelectionRange): FlCell[] {
-    const cells: FlCell[] = [];
+  public getCellsFromCoordsFlat(from: FlCellCoord, to: FlCellCoord): FlCell[] {
+    const cells: FlCell[][] = this.getCellsFromCoords(from, to);
+    const flatCells: FlCell[] = [];
 
-    for (let row = range.from.row; row <= range.to.row; row++) {
-      cells.push(...this.cells[row].slice(range.from.column, range.to.column + 1));
-    }
+    cells.forEach(row => flatCells.push(...row));
 
-    return cells;
-  }
+    return flatCells;
 
-  public getCellsFromRange(range: FlSheetSingleSelectionRange): FlCell[][] {
-    return this.getCellsFromCoords(range.from, range.to);
   }
 
   public getCellsFromCoords(from: FlCellCoord, to: FlCellCoord): FlCell[][] {
@@ -241,21 +254,6 @@ export class FlSheet {
     return cells;
   }
 
-  public getRows(fromRow: number, toRow: number): FlSheetRow[] {
-    const rows: FlSheetRow[] = [];
-
-    // prevent from returning rows outside the sheet
-    toRow = Math.min(toRow, this.rowsCount - 1);
-
-    for (let row = fromRow; row <= toRow; row++) {
-      rows.push({
-        rowId: row,
-        cells: this.cells[row]
-      });
-    }
-
-    return rows;
-  }
 
   public setValuesFromCoord(values: any[][], from: FlCellCoord): void {
     for (let i = 0; i < values.length; i++) {
@@ -298,31 +296,6 @@ export class FlSheet {
   public coordIsValid(coord: FlCellCoord): boolean {
     return coord.row >= 0 && coord.row < this.rowsCount &&
       coord.column >= 0 && coord.column < this.columnsCount;
-  }
-
-  /**
-   * return true if the range is within the sheet size
-   */
-  public rangeIsValid(range: FlSheetSingleSelectionRange): boolean {
-    return this.coordIsValid(range.from) && this.coordIsValid(range.to);
-  }
-
-  /**
-   * Check if the range is within the sheet size
-   * If range is valid, returns null
-   * Otherwise it return the coord that is wrong
-   * @param range
-   */
-  public checkRangeValidity(range: FlSheetSingleSelectionRange): FlCellCoord | null {
-    if (!this.coordIsValid(range.from)) {
-      return range.from;
-    }
-
-    if (!this.coordIsValid(range.to)) {
-      return range.to;
-    }
-
-    return null;
   }
 
   public destroy(): void {

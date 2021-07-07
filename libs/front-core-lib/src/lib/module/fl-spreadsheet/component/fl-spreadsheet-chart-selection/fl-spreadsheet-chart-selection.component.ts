@@ -4,7 +4,7 @@ import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {AbstractControl, ValidatorFn, Validators} from '@angular/forms';
-import {FlCellCoord, FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../../model/selection/fl-sheet-single-selection.class';
+import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
 import {FlSheetMultiSelection} from '../../model/selection/fl-sheet-multi-selection.class';
@@ -360,13 +360,16 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
       const selection: FlSheetSingleSelection = FlSheetSingleSelectionFull.fromString(sheet, control.value);
 
-      const outBoundCoord: FlCellCoord | null = sheet.checkRangeValidity(selection);
-      if (outBoundCoord != null) {
-        console.log(selection, outBoundCoord, FlSpreadsheetHelper.coordToString(outBoundCoord));
-        return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(outBoundCoord)};
-      } else {
-        return null;
+      if (!sheet.coordIsValid(selection.from)) {
+        return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.from)};
       }
+
+      if (!sheet.coordIsValid(selection.to)) {
+        return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.to)};
+      }
+
+      return null;
+
     };
   }
 
@@ -392,9 +395,12 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
       const selections: FlSheetMultiSelection = FlSheetMultiSelection.fromString(sheet, control.value);
 
       for (const selection of selections.selections) {
-        const outBoundCoord: FlCellCoord | null = sheet.checkRangeValidity(selection);
-        if (outBoundCoord != null) {
-          return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(outBoundCoord)};
+        if (!sheet.coordIsValid(selection.from)) {
+          return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.from)};
+        }
+
+        if (!sheet.coordIsValid(selection.to)) {
+          return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.to)};
         }
       }
 

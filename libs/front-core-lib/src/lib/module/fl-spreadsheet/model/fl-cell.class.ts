@@ -1,7 +1,7 @@
 import {BehaviorSubject, Observable} from 'rxjs';
-import {FlSheetSingleSelectionRange} from './selection/fl-sheet-single-selection.class';
+import {FlSheetRange} from './selection/fl-sheet-range.class';
 
-export type FlCellSelectionChange = false | FlSheetSingleSelectionRange;
+export type FlCellSelectionChange = false | FlSheetRange;
 
 export type FlCellEditChange = { edit: false, value: void } | { edit: true, value: string };
 

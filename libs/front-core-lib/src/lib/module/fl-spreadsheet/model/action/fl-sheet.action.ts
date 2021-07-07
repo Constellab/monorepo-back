@@ -1,12 +1,12 @@
 import {FlSheet} from '../fl-sheet.class';
-import {FlSheetSingleSelectionRange} from '../selection/fl-sheet-single-selection.class';
+import {FlSheetRange} from '../selection/fl-sheet-range.class';
 
 export abstract class FlSheetAction {
 
   // if true the selection is not reset after action undo/redo
   public disabledSelectionAfterAction: boolean = false;
 
-  protected constructor(public sheetId: number, public range: FlSheetSingleSelectionRange) {
+  protected constructor(public sheetId: number, public range: FlSheetRange) {
   }
 
   abstract execute(sheet: FlSheet): boolean;

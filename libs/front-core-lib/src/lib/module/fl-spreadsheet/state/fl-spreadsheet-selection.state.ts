@@ -1,14 +1,10 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {
-  FlCellCoord,
-  FlSheetSingleSelection,
-  FlSheetSingleSelectionFull,
-  FlSheetSingleSelectionRange
-} from '../model/selection/fl-sheet-single-selection.class';
+import {FlCellCoord, FlSheetSingleSelection, FlSheetSingleSelectionFull,} from '../model/selection/fl-sheet-single-selection.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {FlSheet} from '../model/fl-sheet.class';
 import {FlCell} from '../model/fl-cell.class';
+import {FlSheetRange} from '../model/selection/fl-sheet-range.class';
 
 /**
  * Unique state shared across the spreadsheet to manage the selection
@@ -64,7 +60,7 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     return selection;
   }
 
-  public setSelection(sheet: FlSheet, range: FlSheetSingleSelectionRange): FlSheetSingleSelection {
+  public setSelection(sheet: FlSheet, range: FlSheetRange): FlSheetSingleSelection {
     const selection: FlSheetSingleSelectionFull = FlSheetSingleSelectionFull.FromRange(sheet, range);
     this.newSelection(selection);
     return selection;
