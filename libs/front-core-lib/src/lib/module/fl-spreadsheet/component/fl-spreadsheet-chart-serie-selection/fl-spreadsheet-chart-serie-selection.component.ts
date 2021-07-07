@@ -4,13 +4,12 @@ import {FormBuilder, FormControl, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
+import {
+  FlSpreadsheetChartSelectionFactory,
+  FlSpreadsheetChartSerieSelectionInput
+} from '../../utils/fl-spreadsheet-chart-selection.factory';
+import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 
-export type FlSpreadsheetSelectSerieMode = 'full' | 'onlyY'; // on onlyY mode, there is no input to select X abscisse data
-
-export interface FlSpreadsheetChartSerieSelectionInput {
-  mode: FlSpreadsheetSelectSerieMode;
-  serie: FlSheetChart2dSerieSelectionForm;
-}
 
 /**
  * Portal to select one serie during chart selection
@@ -27,7 +26,8 @@ export class FlSpreadsheetChartSerieSelectionComponent implements OnInit {
   input: FlSpreadsheetChartSerieSelectionInput;
 
   constructor(@Inject(FL_PORTAL_DATA) input: FlSpreadsheetChartSerieSelectionInput,
-              private overlayRef: FlOverlayRef) {
+              private overlayRef: FlOverlayRef,
+              private state: FlSpreadsheetState) {
     this.input = input;
   }
 
@@ -42,11 +42,20 @@ export class FlSpreadsheetChartSerieSelectionComponent implements OnInit {
   private initForm(): void {
     this.formGp = new FormBuilder().group({
       name: [null, Validators.required],
-      y: [null, Validators.required],
+      y: [null,
+        [
+          Validators.required,
+          FlSpreadsheetChartSelectionFactory.getSelectionValidator(this.input.ySelectionMode, this.state.spreadsheet)
+        ]
+      ],
     });
 
     if (this.input.mode === 'full') {
-      this.formGp.addControl('x', new FormControl(null));
+      this.formGp.addControl('x',
+        new FormControl(null,
+          [FlSpreadsheetChartSelectionFactory.getSelectionValidator(this.input.xSelectionMode, this.state.spreadsheet)]
+        )
+      );
     }
   }
 
@@ -57,4 +66,5 @@ export class FlSpreadsheetChartSerieSelectionComponent implements OnInit {
       this.overlayRef.dispose(value);
     }
   }
+
 }

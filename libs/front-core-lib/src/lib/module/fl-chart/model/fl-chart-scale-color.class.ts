@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
-import {ScaleOrdinal} from 'd3';
+import {scaleLinear, ScaleOrdinal} from 'd3';
 import {FlChartScale} from './fl-chart-scale.class';
+import {ScaleLinear} from 'd3-scale';
 
 /**
  * Specific scale to return a color based on a value
@@ -36,6 +37,31 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
     return this.d3Scale(value.toString());
   }
 }
+
+/**
+ * Color scale to make a gradient color scale
+ */
+export class FlChartScaleColorLinear implements FlChartScaleColor {
+
+  public readonly d3Scale: ScaleLinear<string, string>;
+
+  constructor(domain: number[]) {
+    this.d3Scale = this.initScale();
+    this.d3Scale.domain(domain);
+  }
+
+  private initScale(): ScaleLinear<string, string> {
+    // the range contains all available colors
+    return scaleLinear<string>()
+      .range(['white', '#69b3a2']);
+  }
+
+  public scale(value: number): string {
+    if (value == null) return '';
+    return this.d3Scale(value);
+  }
+}
+
 
 /**
  * Color scale that return only one color

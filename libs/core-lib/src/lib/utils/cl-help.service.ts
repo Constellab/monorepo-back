@@ -58,7 +58,7 @@ export class ClHelpService {
    * @param order function to compare elements. Inserted when order returns true
    */
   public static insertIntoOrderedArray<T>(item: T, array: T[],
-                                       order: (a: T, b: T, index: number) => boolean): void {
+                                          order: (a: T, b: T, index: number) => boolean): void {
     // true if the element has been added in the loop
     let added: boolean = false;
 
@@ -243,6 +243,15 @@ export class ClHelpService {
   public static stopEventPropagation(ev: Event): void {
     ev.stopImmediatePropagation();
     ev.preventDefault();
+  }
+
+  /**
+   * Method to flatten an array
+   */
+  public static flatArray<T>(array2d: T[][]): T[] {
+    const flatArray: T[] = [];
+    array2d.forEach(subArray => flatArray.push(...subArray));
+    return flatArray;
   }
 
 }

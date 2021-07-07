@@ -31,8 +31,7 @@
       <mat-label>{{'flSpreadsheet.chart_serie_selection_x' | translate}}</mat-label>
       <input matInput formControlName="x"
              placeholder="{{'flSpreadsheet.chart_serie_selection_x' | translate}}">
-      <fl-spreadsheet-selection-input matSuffix mode="splitRows"
-                                      [inputFormControl]="formGp.get('x')"></fl-spreadsheet-selection-input>
+      <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('x')"></fl-spreadsheet-selection-input>
 
       <mat-error *ngIf="formGp.get('x').hasError('invalidFormat')">
         {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
@@ -48,8 +47,7 @@
       <mat-label>{{'flSpreadsheet.chart_serie_selection_y' | translate}}</mat-label>
       <input matInput formControlName="y" required
              placeholder="{{'flSpreadsheet.chart_serie_selection_y' | translate}}">
-      <fl-spreadsheet-selection-input matSuffix mode="splitRows"
-                                      [inputFormControl]="formGp.get('y')"></fl-spreadsheet-selection-input>
+      <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('y')"></fl-spreadsheet-selection-input>
       <mat-error *ngIf="formGp.get('y').hasError('required')">
         {{'flSpreadsheet.chart_serie_selection_y' | flErrorRequired}}
       </mat-error>

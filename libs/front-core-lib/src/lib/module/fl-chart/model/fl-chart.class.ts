@@ -14,7 +14,8 @@ export enum FlChartType {
   SCATTER_PLOT = 'SCATTER_PLOT',
   BAR_PLOT = 'BAR_PLOT',
   HISTOGRAM = 'HISTOGRAM',
-  BOX_PLOT = 'BOX_PLOT'
+  BOX_PLOT = 'BOX_PLOT',
+  HEAT_MAP = 'HEAT_MAP',
 }
 
 export interface FlChartTypeSelectOption {
@@ -42,6 +43,10 @@ export const flChartTypeSelectOptions: FlChartTypeSelectOption[] = [
   },
   {
     component: FlChartType.BOX_PLOT,
+    icon: 'multiline_chart'
+  },
+  {
+    component: FlChartType.HEAT_MAP,
     icon: 'multiline_chart'
   }
 ];

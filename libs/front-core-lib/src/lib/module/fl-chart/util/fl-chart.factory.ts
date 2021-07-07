@@ -5,7 +5,7 @@ import {FlChartAxisScale, FlChartAxisScaleBand, FlChartAxisScaleLinear, FlChartA
 import {Numeric} from 'd3';
 import {FlChartAxis} from '../model/fl-chart-axis.class';
 import {FlChartScatterPlotMultiRenderer} from '../renderer/fl-chart-scatter-plot-multi.renderer';
-import {FlChartScaleColor, FlChartScaleColorMulti} from '../model/fl-chart-scale-color.class';
+import {FlChartScaleColor, FlChartScaleColorLinear, FlChartScaleColorMulti} from '../model/fl-chart-scale-color.class';
 import {FlChartLineMultiRenderer} from '../renderer/fl-chart-line-multi.renderer';
 import {FlChartHistogramMultiRenderer} from '../renderer/fl-chart-histogram-multi.renderer';
 import {FlChart2dBrush, FlChart2dBrushX} from '../model/fl-chart-2d-brush.class';
@@ -13,6 +13,8 @@ import {FlChartBoxPlotMultiRenderer} from '../renderer/fl-chart-box-plot-multi.r
 import {FlChart2dMultiSerie, FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChart2dRenderer} from '../model/fl-chart-2d-renderer.class';
 import {FlChartDomain} from '../model/fl-chart-domain.class';
+import {FlChartHeatMapRenderer} from '../renderer/fl-chart-heat-map.renderer';
+import {FlChart3dDatum} from '../model/data/fl-chart-data.class';
 
 export class FlChartFactory {
 
@@ -31,6 +33,8 @@ export class FlChartFactory {
         return this.buildBarPlotMultiContainer(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
       case FlChartType.BOX_PLOT:
         return this.buildBoxPlotMultiContainer(chartSVG, data, seriesColorScale);
+      case FlChartType.HEAT_MAP:
+        return this.buildHeatMapContainer(chartSVG, data as FlChart2dMultiSerie<any>);
     }
 
     throw new Error('Unsupported chart type ' + chartType);
@@ -166,6 +170,44 @@ export class FlChartFactory {
       .initXAxis(xAxis)
       .initAxisY(yAxis)
       .addRenderer(renderers)
+      .initData(dataContainer);
+
+
+    return chartContainer;
+  }
+
+  /**
+   * Build a heat map container
+   */
+  private static buildHeatMapContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<FlChart3dDatum>):
+    FlChartContainer2d<FlChart2dMultiSerie<FlChart3dDatum>> {
+
+    const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<FlChart3dDatum>> = this.getChartContainer2d(chartSVG);
+
+    // Build X axis
+    const xScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleBand()
+      .setInitialDomain(dataContainer.getDomainXComplete())
+      .range(chartContainer.getRangeX())
+      .padding(0.01);
+    const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale);
+
+    // Build Y axis
+    const yScale: FlChartAxisScale<Numeric> = new FlChartAxisScaleBand()
+      .setInitialDomain(dataContainer.getDomainYComplete())
+      .range(chartContainer.getRangeY())
+      .padding(0.01);
+    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
+
+    // build color scale
+    const zValues: number[] = dataContainer.getData().map(data => data.getZ()?.valueOf() ?? null)
+      .filter(data => data != null);
+    const domain: [number, number] = FlChartDomain.getLinearDomain(zValues);
+    const colorScale: FlChartScaleColor = new FlChartScaleColorLinear(domain)
+
+    chartContainer
+      .initXAxis(xAxis)
+      .initAxisY(yAxis)
+      .addRenderer(new FlChartHeatMapRenderer(colorScale))
       .initData(dataContainer);
 
 

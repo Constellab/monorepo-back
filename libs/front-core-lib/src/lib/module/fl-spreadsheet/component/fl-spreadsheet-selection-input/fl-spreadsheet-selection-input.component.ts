@@ -24,10 +24,10 @@ export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
 
   /**
    * Mode for the selection
-   * Normal, it generate a string based on current selection
-   * SplitRows, split the selection by rows separated with ,
+   * Single, it generate a string based on current single selection (like A1:C3)
+   * SplitRows, it generate a multi selection string split by columns (like A1:A3,B1:B3,C1:C3)
    */
-  @Input() mode: 'normal' | 'splitRows' = 'normal';
+  @Input() selectionMode: 'single' | 'splitRows' = 'single';
 
   selected: boolean = false;
 
@@ -97,7 +97,7 @@ export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
   }
 
   private convertSelectionToString(selection: FlSheetSingleSelection): string {
-    if (this.mode === 'normal') {
+    if (this.selectionMode === 'single') {
       return selection.toString();
     } else {
       // convert to multiple selection, one for each row

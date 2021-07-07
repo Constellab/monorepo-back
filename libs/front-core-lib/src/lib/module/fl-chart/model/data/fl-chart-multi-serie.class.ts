@@ -90,5 +90,7 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> extends FlChartMul
     return FlChartDomain.getLinearDomain(this.getData().map(data => data.getY().valueOf()), extendDomain);
   }
 
-
+  getDomainYComplete(): Numeric[] {
+    return FlChartDomain.getCompleteDomain(this.getData().map(data => data.getY().valueOf()));
+  }
 }

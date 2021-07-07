@@ -31,12 +31,12 @@ export interface FlD3AxisScaleLinear<Value extends Numeric> extends FlD3AxisScal
   // tickValues(values: Value[]): this;
 }
 
-export interface FlChartScale{
+export interface FlChartScale {
   scale(value: any): any
 }
 
 
-export abstract class FlChartAxisScale<Value> implements FlChartScale{
+export abstract class FlChartAxisScale<Value> implements FlChartScale {
 
   public readonly d3Scale: FlD3AxisScale<Value>;
 
@@ -195,6 +195,11 @@ export class FlChartAxisScaleBand extends FlChartAxisScale<Numeric> {
 
   public paddingOuter(padding: number): this {
     this.d3Scale.paddingOuter(padding);
+    return this;
+  }
+
+  public padding(padding: number): this {
+    this.d3Scale.padding(padding);
     return this;
   }
 

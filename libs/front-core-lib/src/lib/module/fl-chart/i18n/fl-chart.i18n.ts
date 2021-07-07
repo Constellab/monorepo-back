@@ -22,8 +22,10 @@ const flChartI18nFr: FlLangTranslation = {
     BAR_PLOT: 'Barres',
     HISTOGRAM: 'Histogramme',
     BOX_PLOT: 'Boîte à moustache',
+    HEAT_MAP: 'Heat map',
     number_of_data: 'Nb de données',
     interval: 'Interval',
+    value: 'Valeur'
   }
 };
 
@@ -44,8 +46,10 @@ const flChartI18nEn: FlLangTranslation = {
     BAR_PLOT: 'Bar plot',
     HISTOGRAM: 'Histogram',
     BOX_PLOT: 'Box plot',
+    HEAT_MAP: 'Heat map',
     number_of_data: 'Nb of data',
     interval: 'Interval',
+    value: 'Value'
   }
 };
 

@@ -25,6 +25,6 @@ export class FlChartDomain {
 
   public static getCompleteDomain(data: number[]): number[] {
     // return all the data without duplicate
-    return [...new Set(data)];
+    return [...new Set(data)].sort();
   }
 }

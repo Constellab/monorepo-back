@@ -7,6 +7,7 @@ export * from './component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.com
 export * from './component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
 export * from './component/fl-chart-container/fl-chart-container.component';
 export * from './component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
+export * from './component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
 export * from './component/fl-chart-legend/fl-chart-legend.component';
 export * from './component/fl-chart-portal/fl-chart-portal.component';
 export * from './component/fl-chart-serie-inline/fl-chart-serie-inline.component';
@@ -48,6 +49,7 @@ export * from './util/fl-chart.factory';
 
 // Renderer
 export * from './renderer/fl-chart-box-plot-multi.renderer';
+export * from './renderer/fl-chart-heat-map.renderer';
 export * from './renderer/fl-chart-histogram-multi.renderer';
 export * from './renderer/fl-chart-line-multi.renderer';
 export * from './renderer/fl-chart-scatter-plot-multi.renderer';

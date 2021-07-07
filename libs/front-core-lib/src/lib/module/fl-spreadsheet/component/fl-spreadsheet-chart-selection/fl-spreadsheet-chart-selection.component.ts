@@ -3,12 +3,10 @@ import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.
 import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {AbstractControl, ValidatorFn, Validators} from '@angular/forms';
+import {Validators} from '@angular/forms';
 import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
-import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
 import {FlSheetMultiSelection} from '../../model/selection/fl-sheet-multi-selection.class';
-import {FlSheet} from '../../model/fl-sheet.class';
 import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {
   FlSheetChart2dSerieSelectionForm,
@@ -21,15 +19,15 @@ import {
 } from '../../model/chart/fl-sheet-chart-selection-form.class';
 import {FlPortalConfig} from '../../../fl-portal/model/fl-portal-config.class';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
-import {
-  FlSpreadsheetChartSerieSelectionComponent,
-  FlSpreadsheetChartSerieSelectionInput
-} from '../fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
+import {FlSpreadsheetChartSerieSelectionComponent,} from '../fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
 import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {debounceTime, skip} from 'rxjs/operators';
 import {merge} from 'rxjs';
-import {FlSpreadsheetChartSelectionFactory} from '../../utils/fl-spreadsheet-chart-selection.factory';
+import {
+  FlSpreadsheetChartSelectionFactory,
+  FlSpreadsheetChartSerieSelectionInput
+} from '../../utils/fl-spreadsheet-chart-selection.factory';
 import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
 import {flChartGetDefaultNumberOfBins} from '../../../fl-chart/model/data/fl-chart-data-bin.class';
 
@@ -93,10 +91,10 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
         Validators.required,
       ]],
       dataRange: [null, [
-        this.multipleSelectionValidator(),
+        FlSpreadsheetChartSelectionFactory.multipleSelectionValidator(this.state.spreadsheet),
       ]],
       seriesNameRange: [null, [
-        this.singleSelectionValidator(),
+        FlSpreadsheetChartSelectionFactory.singleSelectionValidator(this.state.spreadsheet),
       ]],
       series: [[], Validators.required],
       nbOfBins: [null, [Validators.min(1), FlGlobalValidators.isInteger()]],
@@ -112,9 +110,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
   private initCreate(input: FlSpreadsheetChartSelectionInputCreate): void {
     if (input.currentSelection) {
-      // convert to multiple selection, one for each row
-      const selections: FlSheetMultiSelection = new FlSheetMultiSelection(input.currentSelection.splitToColumnSelections());
-      this.formGp.get('dataRange').patchValue(selections.toString());
+      this.formGp.get('dataRange').patchValue(input.currentSelection.toString());
     }
   }
 
@@ -180,7 +176,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
   }
 
   private onChartTypeChange(chartType: FlChartType): void {
-    this.ngMaxOfSeries = chartType === FlChartType.HISTOGRAM ? 1 : Infinity;
+    this.ngMaxOfSeries = FlSpreadsheetChartSelectionFactory.getNbMaxOfSeries(chartType);
 
     // limit the size of the series
     if (this.series.length >= this.ngMaxOfSeries) {
@@ -223,10 +219,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
   }
 
   private openSerieSelection(serie: FlSheetChart2dSerieSelectionForm, index?: number): void {
-    const data: FlSpreadsheetChartSerieSelectionInput = {
-      mode: FlSpreadsheetChartSelectionFactory.getSelectSerieMode(this.chartType),
-      serie: serie
-    };
+    const data: FlSpreadsheetChartSerieSelectionInput = FlSpreadsheetChartSelectionFactory.getSelectSerieConfig(this.chartType, serie);
 
     // use the top 0 to make the portal appear on top (otherwise it take all the height)
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal({centerHorizontally: '0', top: '0'},
@@ -354,74 +347,6 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
       series: []
     });
     this.ngMaxOfSeries = Infinity;
-  }
-
-  /**
-   * Validator to check single selection
-   * Error invalidFormat if string format is invalid
-   * Error selectionOutOfBound is selection is out of bound (pass the name of the coord problem)
-   * @private
-   */
-  private singleSelectionValidator(): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } => {
-      if (!control.value) {
-        return null;
-      }
-
-      if (!FlSpreadsheetHelper.getRegexForSingleSelection().test(control.value)) {
-        return {invalidFormat: true};
-      }
-
-      const sheet: FlSheet = this.state.currentSheet;
-
-      const selection: FlSheetSingleSelection = FlSheetSingleSelectionFull.fromString(sheet, control.value);
-
-      if (!sheet.coordIsValid(selection.from)) {
-        return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.from)};
-      }
-
-      if (!sheet.coordIsValid(selection.to)) {
-        return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.to)};
-      }
-
-      return null;
-
-    };
-  }
-
-
-  /**
-   * Validator to check multiple selection
-   * Error invalidFormat if string format is invalid
-   * Error selectionOutOfBound is selection is out of bound
-   * @private
-   */
-  private multipleSelectionValidator(): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } => {
-      if (!control.value) {
-        return null;
-      }
-
-      if (!FlSpreadsheetHelper.getRegexForMultipleSelection().test(control.value)) {
-        return {invalidFormat: true};
-      }
-
-      const sheet: FlSheet = this.state.currentSheet;
-
-      const selections: FlSheetMultiSelection = FlSheetMultiSelection.fromString(sheet, control.value);
-
-      for (const selection of selections.selections) {
-        if (!sheet.coordIsValid(selection.from)) {
-          return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.from)};
-        }
-
-        if (!sheet.coordIsValid(selection.to)) {
-          return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.to)};
-        }
-      }
-
-      return null;
-    };
   }
 
   get submitTextButton(): string {

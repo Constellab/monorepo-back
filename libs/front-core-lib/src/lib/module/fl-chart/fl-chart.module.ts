@@ -24,6 +24,7 @@ import {FlChartBinDataPortalComponent} from './component/fl-chart-bin-data-porta
 import {FlChartContainerComponent} from './component/fl-chart-container/fl-chart-container.component';
 import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
 import {MatDividerModule} from '@angular/material/divider';
+import {FlChartHeatMapDataPortalComponent} from './component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
 
 /**
  * Main module exporting all the chart modules
@@ -45,6 +46,8 @@ import {MatDividerModule} from '@angular/material/divider';
     FlChartScalePipe,
 
     FlChartContainerComponent,
+
+    FlChartHeatMapDataPortalComponent,
   ],
   exports: [
     // Component

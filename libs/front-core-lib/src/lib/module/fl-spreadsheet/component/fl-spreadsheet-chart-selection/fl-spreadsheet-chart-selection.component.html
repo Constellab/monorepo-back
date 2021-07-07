@@ -39,8 +39,7 @@
         <mat-form-field appearance="outline" class="g-full">
           <mat-label>{{'flSpreadsheet.chart_data_range' | translate}}</mat-label>
           <input matInput formControlName="dataRange" placeholder="{{'flSpreadsheet.chart_data_range' | translate}}">
-          <fl-spreadsheet-selection-input matSuffix mode="splitRows"
-                                          [inputFormControl]="formGp.get('dataRange')"></fl-spreadsheet-selection-input>
+          <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('dataRange')"></fl-spreadsheet-selection-input>
           <mat-error *ngIf="formGp.get('dataRange').hasError('invalidFormat')">
             {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
           </mat-error>
