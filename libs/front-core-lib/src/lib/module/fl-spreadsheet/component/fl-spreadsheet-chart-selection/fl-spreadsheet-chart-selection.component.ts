@@ -50,6 +50,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
   // nb max of series supported
   ngMaxOfSeries: number = Infinity;
 
+  submitted: boolean = false;
 
   private readonly hideElementClass: string = 'g-hide-element';
 
@@ -164,6 +165,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
 
   private validateForm(mode: 'create' | 'update'): void {
+    this.submitted = true;
     if (this.formGp.valid) {
       const value: FlSheetChartSelectionForm = this.formGp.value;
 
