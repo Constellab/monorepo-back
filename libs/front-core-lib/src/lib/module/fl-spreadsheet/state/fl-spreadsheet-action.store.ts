@@ -70,6 +70,9 @@ export class FlSpreadsheetActionStore {
     action.rollback(sheet);
     this.currentAction++;
 
+    // show the correct sheet
+    this.state.spreadsheet.selectSheet(sheet.id);
+
     if (!action.disabledSelectionAfterAction) {
       this.selectionState.setSelection(sheet, action.range);
     }
