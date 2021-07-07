@@ -29,6 +29,8 @@ import {flSpreadSheetI18n} from './i18n/fl-spreadsheet.i18n';
 import {FlSpreadsheetChartSerieSelectionComponent} from './component/fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
 import {MatDividerModule} from '@angular/material/divider';
 import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
+import {FlSpreadsheetSheetSelectionComponent} from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 
 
 @NgModule({
@@ -42,6 +44,7 @@ import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
     FlSpreadsheetSelectionInputComponent,
     FlSpreadsheetSelectionInputGroupDirective,
     FlSpreadsheetChartSerieSelectionComponent,
+    FlSpreadsheetSheetSelectionComponent,
   ],
   exports: [
     FlSpreadsheetComponent,
@@ -70,6 +73,7 @@ import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
     MatSelectModule,
     MatDividerModule,
     MatMenuModule,
+    MatButtonToggleModule,
   ],
 })
 export class FlSpreadsheetModule {

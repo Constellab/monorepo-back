@@ -9,6 +9,7 @@ export * from './component/fl-spreadsheet-chart-serie-selection/fl-spreadsheet-c
 export * from './component/fl-spreadsheet-context-menu/fl-spreadsheet-context-menu.component';
 export * from './component/fl-spreadsheet-header-cell/fl-spreadsheet-header-cell.component';
 export * from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
+export * from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
 
 // Export the directives
 export * from './directive/fl-spreadsheet-selection-input-group.directive';

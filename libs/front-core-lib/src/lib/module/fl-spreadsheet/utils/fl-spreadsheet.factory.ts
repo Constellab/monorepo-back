@@ -1,5 +1,4 @@
 import {FlSheet} from '../model/fl-sheet.class';
-import {FlSpreadsheet} from '../model/fl-spreadsheet.class';
 import {ClCSVDelimiter, clCSVDelimiters, ClCSVHelper, clCSVLineSeparator} from '@monorepo/core-lib';
 
 
@@ -11,7 +10,7 @@ export class FlSpreadsheetFactory {
   /**
    * Create a spreadsheet from any object
    */
-  public static fromAny(values: any, defaultSheetName: string): FlSpreadsheet {
+  public static fromAny(values: any, sheetName: string): FlSheet {
     let array: any[][];
 
 
@@ -23,17 +22,16 @@ export class FlSpreadsheetFactory {
       array = FlSpreadsheetFactory.convertObjectToArray(values);
     }
 
-    return FlSpreadsheetFactory.fromArray(array, defaultSheetName);
+    return FlSpreadsheetFactory.fromArray(array, sheetName);
   }
 
   /**
    * Create a spreadsheet with a single sheet, initiated with the values
    * @param values
-   * @param defaultSheetName
+   * @param sheetName
    */
-  public static fromArray(values: any[][], defaultSheetName: string): FlSpreadsheet {
-    const spreadSheet: FlSpreadsheet = new FlSpreadsheet(defaultSheetName);
-    const sheet: FlSheet = spreadSheet.currentSheet;
+  public static fromArray(values: any[][], sheetName: string): FlSheet {
+    const sheet: FlSheet = new FlSheet(sheetName);
 
     // get the maximum number of columns from the values
     const maxColumnsLength: number = values.reduce((m, x) => m.length > x.length ? m : x, []).length;
@@ -48,14 +46,14 @@ export class FlSpreadsheetFactory {
     // set the cell values
     sheet.setValuesFromCoord(values, {row: 0, column: 0});
 
-    return spreadSheet;
+    return sheet;
   }
 
   /**
    * Create a spreadsheet from a CSV string
    * If no separator provided, detect it automatically
    */
-  public static fromCSV(csv: string, defaultSheetName: string, separator?: string): FlSpreadsheet {
+  public static fromCSV(csv: string, sheetName: string, separator?: string): FlSheet {
     const values: any[][] = [];
     const lines: string[] = csv.split(clCSVLineSeparator);
 
@@ -67,7 +65,7 @@ export class FlSpreadsheetFactory {
     for (const line of lines) {
       values.push(line.split(separator));
     }
-    return FlSpreadsheetFactory.fromArray(values, defaultSheetName);
+    return FlSpreadsheetFactory.fromArray(values, sheetName);
   }
 
   /**

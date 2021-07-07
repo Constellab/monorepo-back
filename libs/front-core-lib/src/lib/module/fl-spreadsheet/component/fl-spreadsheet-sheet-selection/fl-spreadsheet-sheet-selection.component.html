@@ -1,0 +1,6 @@
+<div class="container">
+  <mat-button-toggle-group [formControl]="formControl" class="g-mat-button-toggle-small"
+                           (change)="selectSpreadsheet($event)">
+    <mat-button-toggle *ngFor="let sheet of sheets$ | async" [value]="sheet.id">{{sheet.name}}</mat-button-toggle>
+  </mat-button-toggle-group>
+</div>

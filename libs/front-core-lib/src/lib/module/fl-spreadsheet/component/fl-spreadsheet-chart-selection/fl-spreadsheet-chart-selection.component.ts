@@ -26,8 +26,8 @@ import {
   FlSpreadsheetChartSerieSelectionInput
 } from '../fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
-import {ClHelpService, clRxjsDebug, ClSubscriptionHandler} from '@monorepo/core-lib';
-import {debounceTime} from 'rxjs/operators';
+import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
+import {debounceTime, skip} from 'rxjs/operators';
 import {merge} from 'rxjs';
 import {FlSpreadsheetChartSelectionFactory} from '../../utils/fl-spreadsheet-chart-selection.factory';
 import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
@@ -68,6 +68,15 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // subscribe to sheet change and clear the form on change to secure data
+    // because selection does not support multi sheet
+    this.subscriptions.add(
+      this.state.currentSheet$
+        .pipe(skip(1)).subscribe(
+        () => this.resetForm()
+      )
+    );
+
     this.initForm();
 
 
@@ -124,7 +133,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     // subscribe to chart type and data range change to create series based on data range
     this.subscriptions.add(
       merge(this.formGp.get('chartType').valueChanges, this.formGp.get('dataRange').valueChanges).pipe(
-        debounceTime(100), clRxjsDebug('dataRange')
+        debounceTime(100)
       ).subscribe(
         () => this.createSerieFromDataRange()
       )
@@ -133,7 +142,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     // subscribe to serie name range change to update series' names
     this.subscriptions.add(
       this.formGp.get('seriesNameRange').valueChanges
-        .pipe(debounceTime(100), clRxjsDebug('Name'))
+        .pipe(debounceTime(100))
         .subscribe(
           () => this.setSeriesNames()
         )
@@ -142,7 +151,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     // subscribe to serie change to refresh data based on series
     this.subscriptions.add(
       this.formGp.get('series').valueChanges
-        .pipe(clRxjsDebug('Serie')).subscribe(
+        .pipe().subscribe(
         () => this.refreshFormOnSeriesChange()
       )
     );
@@ -340,6 +349,13 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     return !ClHelpService.isNullOrEmpty(selection) ? FlSheetMultiSelection.fromString(this.state.currentSheet, selection) : null;
   }
 
+  private resetForm(): void {
+    this.formGp?.reset({
+      series: []
+    });
+    this.ngMaxOfSeries = Infinity;
+  }
+
   /**
    * Validator to check single selection
    * Error invalidFormat if string format is invalid
@@ -405,7 +421,6 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
       }
 
       return null;
-
     };
   }
 

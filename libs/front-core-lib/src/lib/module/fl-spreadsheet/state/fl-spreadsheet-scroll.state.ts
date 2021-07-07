@@ -56,12 +56,11 @@ export class FlSpreadsheetScrollState {
     // listen to the selection event to scroll to last selection rows if not visible
     this.selectionState.getSelection$()
       // don't scroll on empty, rows or columns selection
-      .pipe(filter(selection => selection != null && selection.type !== 'rows' && selection.type !== 'columns'))
+      .pipe(filter(selection => selection != null && selection.type !== 'columns'))
       .subscribe(
         selection => this.scrollToRow(selection.endRow)
       );
   }
-
 
   private listenToScroll(): void {
     this.clearSubscription();
@@ -75,7 +74,7 @@ export class FlSpreadsheetScrollState {
       this.windowsResizeListener = new FlRendererListenerObs(this.renderer, 'window', 'resize');
 
       this.subscriptions.add(combineLatest([
-        this.state.currentSheet.getRowCount$(),
+        this.state.getCurrentSheetRowsCount(),
         this.scrollListener.onEvent$().pipe(startWith('')),
         this.windowsResizeListener.onEvent$().pipe(startWith(''), debounceTime(100))
       ]).subscribe(
@@ -96,7 +95,6 @@ export class FlSpreadsheetScrollState {
   private refreshRowsToDisplay(totalRowCount: number): void {
     // refresh scroller height
     this.recalculateScrollerHeight(totalRowCount);
-
 
     // calculate the fist and last row to display
     const scrollerHeight: number = this.scroller.offsetHeight;
@@ -121,8 +119,10 @@ export class FlSpreadsheetScrollState {
    */
   private recalculateScrollerHeight(rowCount: number): void {
     // define the height of the spreadsheet
+    // + 1 is to include to header row
+    // + 3 is to have little margin the fully display the last row
     this.renderer.setStyle(this.heightSimulator, 'height',
-      (this.cellHeight * rowCount + 2) + 'px');
+      (this.cellHeight * (rowCount + 1)) + 3 + 'px');
   }
 
   public getRowsToDisplay$(): Observable<FlSheetRow[]> {

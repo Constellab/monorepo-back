@@ -15,12 +15,24 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
   private currentSelection$: BehaviorSubject<FlSheetSingleSelectionFull> =
     new BehaviorSubject<FlSheetSingleSelectionFull>(null);
 
-  constructor(private spreadsheetState: FlSpreadsheetState) {
+  constructor(private state: FlSpreadsheetState) {
+
   }
 
+  public init(): void {
+    this.clearSelectionOnNewSheet();
+  }
 
+  // listen to the sheet change and clear selection when we changed the sheet
+  private clearSelectionOnNewSheet(): void {
+    this.state.currentSheet$.subscribe(
+      () => this.clearCurrentSelection()
+    );
+  }
+
+  // todo to change with current sheet
   private get currentSheet(): FlSheet {
-    return this.spreadsheetState.currentSheet;
+    return this.state.currentSheet;
   }
 
   /**
@@ -173,7 +185,16 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     const newCoord: FlCellCoord = this.shiftCurrentSelection(rowShift, columnShift);
 
     if (newCoord) {
-      return this.selectUniqueCell(newCoord);
+
+      switch (this.currentSelection.type) {
+        case 'rows':
+          return this.selectUniqueRow(newCoord.row);
+        case 'columns':
+          return this.selectUniqueColumn(newCoord.column);
+        default:
+          return this.selectUniqueCell(newCoord);
+
+      }
     }
 
     return null;

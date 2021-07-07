@@ -3,31 +3,37 @@ import {FlSheet} from './fl-sheet.class';
 
 export class FlSpreadsheet {
 
-  private readonly sheets: FlSheet[] = [];
-  private currentSheet$: BehaviorSubject<FlSheet> = new BehaviorSubject<FlSheet>(null);
+  private readonly sheets$: BehaviorSubject<FlSheet[]> = new BehaviorSubject([]);
+  private readonly currentSheet$: BehaviorSubject<FlSheet> = new BehaviorSubject(null);
 
-  constructor(defaultSheetName: string) {
-    this.sheets = [];
-    this.addSheet(defaultSheetName);
+  constructor() {
   }
 
   ///////////////////////////// SHEET //////////////////////////////
-  get currentSheet(): FlSheet {
+  public get currentSheet(): FlSheet {
     return this.currentSheet$.value;
   }
 
-  getCurrentSheet$(): Observable<FlSheet> {
+  public getCurrentSheet$(): Observable<FlSheet> {
     return this.currentSheet$.asObservable();
   }
 
-  public addSheet(name: string): FlSheet {
-    const sheet: FlSheet = new FlSheet(name);
-    this.sheets.push(sheet);
+  public getSheets$(): Observable<FlSheet[]> {
+    return this.sheets$.asObservable();
+  }
+
+  public addSheet(sheet: FlSheet): FlSheet {
+    // add the sheet
+    const sheets: FlSheet[] = this.sheets;
+    sheets.push(sheet);
+    this.sheets$.next(sheets);
+
+    // select the sheet
     this.selectSheet(sheet.id);
     return sheet;
   }
 
-  private selectSheet(id: number): void {
+  public selectSheet(id: number): void {
     const sheet: FlSheet = this.getSheet(id);
     this.currentSheet$.next(sheet);
   }
@@ -36,7 +42,13 @@ export class FlSpreadsheet {
     return this.sheets.find(sheet => sheet.id === id);
   }
 
+  private get sheets(): FlSheet[] {
+    return this.sheets$.value;
+  }
+
+
   public destroy(): void {
+    this.sheets$.complete();
     this.currentSheet$.complete();
     this.sheets.forEach(sheet => sheet.destroy());
   }

@@ -1,4 +1,4 @@
-import {FlBasicCell, FlCell, FlColumnHeaderCell} from './fl-cell.class';
+import {FlBasicCell, FlCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
 import {FlCellCoord} from './selection/fl-sheet-single-selection.class';
@@ -20,6 +20,7 @@ export class FlSheet {
 
   private readonly cellsChanged: BehaviorSubject<void>;
   private readonly rowsChanged: BehaviorSubject<number>;
+  private readonly columnsChanged: BehaviorSubject<number>;
 
   private rowsCount: number = 0;
   private columnsCount: number = 0;
@@ -31,6 +32,7 @@ export class FlSheet {
     this.cells = [];
     this.cellsChanged = new BehaviorSubject(null);
     this.rowsChanged = new BehaviorSubject(0);
+    this.columnsChanged = new BehaviorSubject(0);
   }
 
   ////////////////////////////// COLUMN ///////////////////////////////
@@ -40,6 +42,7 @@ export class FlSheet {
     }
 
     this.emitCellChange();
+    this.emitColumnsChange();
   }
 
 
@@ -48,6 +51,7 @@ export class FlSheet {
       this.createColumn(i);
     }
     this.emitCellChange();
+    this.emitColumnsChange();
   }
 
 
@@ -59,6 +63,7 @@ export class FlSheet {
     this.createColumn(position);
 
     this.emitCellChange();
+    this.emitColumnsChange();
   }
 
   // create an empty column without emitting
@@ -88,6 +93,17 @@ export class FlSheet {
     }
 
     this.emitCellChange();
+    this.emitColumnsChange();
+  }
+
+  private emitColumnsChange(): void {
+    this.columnsChanged.next(this.columnsCount);
+  }
+
+  public getColumnsCount$(): Observable<number> {
+    return this.columnsChanged.asObservable().pipe(
+      debounceTime(50)
+    );
   }
 
 
@@ -155,7 +171,7 @@ export class FlSheet {
     this.rowsChanged.next(this.rowsCount);
   }
 
-  public getRowCount$(): Observable<number> {
+  public getRowsCount$(): Observable<number> {
     return this.rowsChanged.asObservable().pipe(
       debounceTime(50)
     );
@@ -201,18 +217,6 @@ export class FlSheet {
       debounceTime(50),
       map(() => this.cells)
     );
-  }
-
-
-  public getColumnHeaderCells(): Observable<FlCell[]> {
-    return this.cellsChanged.asObservable().pipe(
-      debounceTime(50),
-      map(() => this.generateColumnHeaderCells())
-    );
-  }
-
-  private generateColumnHeaderCells(): FlCell[] {
-    return Array(this.columnsCount + 1).fill(null).map((value: null, index: number) => new FlColumnHeaderCell(index));
   }
 
 
@@ -300,6 +304,7 @@ export class FlSheet {
 
   public destroy(): void {
     this.rowsChanged.complete();
+    this.columnsChanged.complete();
     this.cellsChanged.complete();
     this.getCellsFlat().forEach(cell => cell.destroy());
   }

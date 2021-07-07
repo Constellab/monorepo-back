@@ -10,7 +10,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {FlSpreadsheet} from '../../model/fl-spreadsheet.class';
-import {FlCell} from '../../model/fl-cell.class';
+import {FlCell, FlColumnHeaderCell} from '../../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlSpreadsheetContextMenu} from '../../state/fl-spreadsheet-context-menu.state';
@@ -58,7 +58,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
   rows$: Observable<FlSheetRow[]>;
 
 
-  private subscription: ClSubscriptionHandler = new ClSubscriptionHandler();
+  private subscriptions: ClSubscriptionHandler = new ClSubscriptionHandler();
 
   constructor(private state: FlSpreadsheetState,
               private selectionState: FlSpreadsheetSelectionState,
@@ -70,6 +70,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.state.init(this.spreadsheet);
+    this.selectionState.init();
     this.keyboardState.init();
     this.mouseState.init();
     this.scrollState.init(this.tableContainer, this.scroller, this.heightSimulator);
@@ -79,21 +80,25 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
   }
 
   private subscribeToHeader(): void {
-    this.subscription.add(this.spreadsheet.currentSheet.getColumnHeaderCells().subscribe(
-      cells => this.onNewHeader(cells)
+    this.subscriptions.add(this.state.getCurrentSheetColumnsCount().subscribe(
+      columnsCount => this.onNewHeader(columnsCount)
     ));
   }
 
-  private onNewHeader(headers: FlCell[]): void {
-    this.headerColumns = headers;
+  private onNewHeader(columnsCounts: number): void {
+    this.headerColumns = this.generateColumnHeaderCells(columnsCounts);
     this.cdr.detectChanges();
+  }
+
+  private generateColumnHeaderCells(columnsCount: number): FlCell[] {
+    return Array(columnsCount + 1).fill(null).map((value: null, index: number) => new FlColumnHeaderCell(index));
   }
 
   trackByRowsId: TrackByFunction<FlSheetRow> = (index: number, row: FlSheetRow) => row.rowId;
 
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    this.subscriptions?.unsubscribe();
     this.scrollState.clear();
   }
 }

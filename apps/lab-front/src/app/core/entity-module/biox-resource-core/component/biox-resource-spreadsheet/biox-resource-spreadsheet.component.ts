@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
-import {FlSpreadsheet, FlSpreadsheetFactory} from '@monorepo/front-core-lib';
+import {FlSheet, FlSpreadsheet, FlSpreadsheetFactory} from '@monorepo/front-core-lib';
 import {FileResourcePreview} from '../../../../model/entities/resource/file-resource.entity';
 
 const data: any[][] = [
@@ -30,25 +30,19 @@ export class BioxResourceSpreadsheetComponent implements OnInit {
 
   ngOnInit(): void {
 
+    const spreadSheet: FlSpreadsheet = new FlSpreadsheet();
     // if the resource is a csv file
+    let sheet: FlSheet;
     if (this.resource instanceof FileResourcePreview && this.resource.getExtension() === 'csv') {
-      this.spreadSheet = FlSpreadsheetFactory.fromCSV(this.resource.data,  'Sheet');
+      sheet = FlSpreadsheetFactory.fromCSV(this.resource.data, 'Sheet 1');
     } else {
-      this.spreadSheet = FlSpreadsheetFactory.fromAny(this.resource.data, 'Sheet');
+      sheet = FlSpreadsheetFactory.fromAny(this.resource.data, 'Sheet 1');
     }
+    spreadSheet.addSheet(sheet);
 
-    // const columnCount = 5;
-    // const rowCount = 5;
-    //
-    // for (let i = 0; i < columnCount; i++) {
-    //   this.spreadSheet.currentSheet.insertColumn();
-    // }
-    //
-    // for (let i = 0; i < rowCount; i++) {
-    //   this.spreadSheet.currentSheet.insertRow();
-    // }
+    // spreadSheet.addSheet(FlSpreadsheetFactory.fromArray(data, 'Sheet 2'));
 
-    console.log(this.spreadSheet);
+    this.spreadSheet = spreadSheet;
   }
 
 }
