@@ -31,6 +31,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
 import {FlSpreadsheetSheetSelectionComponent} from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
 
 
 @NgModule({
@@ -61,6 +62,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     FlTranslateModule,
     FlChartModule,
     FlMenuDynamicModule,
+    FlTextIconModule,
 
     ScrollingModule,
     MatMenuModule,

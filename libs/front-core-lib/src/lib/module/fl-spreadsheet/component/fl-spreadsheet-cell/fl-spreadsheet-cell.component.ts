@@ -18,6 +18,7 @@ import {ClSubscriptionHandler} from '@monorepo/core-lib';
 import {FlSpreadsheetActions} from '../../state/fl-spreadsheet-actions.state';
 import {FlKeyboardHelper, FlKeyboardKey} from '../../../../utils/fl-keyboard.helper';
 import {FlSheetRange} from '../../model/selection/fl-sheet-range.class';
+import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 
 @Component({
   selector: 'fl-spreadsheet-cell',
@@ -27,8 +28,10 @@ import {FlSheetRange} from '../../model/selection/fl-sheet-range.class';
 })
 export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
 
-  static id: number = 0;
-  id: number;
+  // use to check change detection
+  // todo to remove
+  private static id: number = 0;
+  private id: number;
 
   @Input() cell: FlCell;
 
@@ -44,24 +47,27 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
 
   cellValue: any;
   inputValue: any;
+  cellValueIsObject: boolean;
 
-  selected: boolean = false;
   edit: boolean = false;
 
+  private selected: boolean = false;
 
-  selectedBorderClasses: string[] = [];
+  private selectedBorderClasses: string[] = [];
 
-  subscription: ClSubscriptionHandler = new ClSubscriptionHandler();
+  private subscription: ClSubscriptionHandler = new ClSubscriptionHandler();
 
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef<HTMLElement>,
-              private state: FlSpreadsheetSelectionState,
+              private state: FlSpreadsheetState,
+              private selectionState: FlSpreadsheetSelectionState,
               private actionState: FlSpreadsheetActions,
               private cdr: ChangeDetectorRef) {
     this.id = FlSpreadsheetCellComponent.id++;
   }
 
   ngOnInit(): void {
+    this.cellValueIsObject = this.cell.valueIsObject();
     this.subscribeToValue();
     this.subscribeToEdit();
     this.subscribeToSelection();
@@ -172,11 +178,10 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
     this.edit = false;
   }
 
-  onInputKeyup(event: KeyboardEvent): void{
-    if(event.key === FlKeyboardKey.ESCAPE){
+  onInputKeyup(event: KeyboardEvent): void {
+    if (event.key === FlKeyboardKey.ESCAPE) {
       this.cancelEditMode();
-    }
-    else if(event.key === FlKeyboardKey.ENTER || FlKeyboardHelper.keyIsArrow(event.key)){
+    } else if (event.key === FlKeyboardKey.ENTER || FlKeyboardHelper.keyIsArrow(event.key)) {
       this.saveValueAndDisableEdit();
     }
   }
@@ -239,6 +244,10 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
     for (const className of classes) {
       this.renderer.removeClass(this.elementRef.nativeElement, className);
     }
+  }
+
+  openCellValueIsNewSheet(): void{
+    this.state.openCellInNewSheet(this.cell);
   }
 
   ngOnDestroy(): void {

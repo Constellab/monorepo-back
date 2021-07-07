@@ -35,7 +35,10 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     chart_series: 'Séries',
     chart_nb_of_bins: 'Nombres de classes',
     chart_nb_of_bins_error: 'Le nombre de classes doit être un entier supérieur à 1',
-    chart_update: 'Modifier les données'
+    chart_update: 'Modifier les données',
+    cell_value_object: 'Objet',
+    open_cell_object_in_sheet: 'Ouvrir dans une feuille',
+    sheet: 'Feuille'
   }
 };
 
@@ -69,7 +72,10 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     chart_series: 'Séries',
     chart_nb_of_bins: 'Number of classes',
     chart_nb_of_bins_error: 'The number of classes must be an integer higher than 1',
-    chart_update: 'Update data'
+    chart_update: 'Update data',
+    cell_value_object: 'Object',
+    open_cell_object_in_sheet: 'Open in a sheet',
+    sheet: 'Sheet'
 
   }
 };

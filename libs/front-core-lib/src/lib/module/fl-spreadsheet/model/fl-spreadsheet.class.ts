@@ -34,15 +34,19 @@ export class FlSpreadsheet {
   }
 
   public selectSheet(id: number): void {
+    if (id === this.currentSheet?.id) return;
     const sheet: FlSheet = this.getSheet(id);
-    this.currentSheet$.next(sheet);
+
+    if (sheet) {
+      this.currentSheet$.next(sheet);
+    }
   }
 
   public getSheet(id: number): FlSheet {
     return this.sheets.find(sheet => sheet.id === id);
   }
 
-  private get sheets(): FlSheet[] {
+  public get sheets(): FlSheet[] {
     return this.sheets$.value;
   }
 

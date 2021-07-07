@@ -45,6 +45,8 @@ export abstract class FlCell {
   setEdit(edit: true, value?: string): void;
   setEdit(edit: false): void;
   setEdit(edit: boolean, value?: string): void {
+    if (!this.isEditable()) return;
+
     if (edit !== this.getEdit()) {
       this._edit$.next({edit: edit, value: value} as any);
     }
@@ -72,6 +74,14 @@ export abstract class FlCell {
     if (this.selected !== false) {
       this.selected$.next(false);
     }
+  }
+
+  public isEditable(): boolean {
+    return !this.valueIsObject();
+  }
+
+  public valueIsObject(): boolean {
+    return this.value != null && typeof this.value === 'object';
   }
 
   public destroy(): void {

@@ -1,5 +1,6 @@
 import {FlSheet} from '../model/fl-sheet.class';
 import {ClCSVDelimiter, clCSVDelimiters, ClCSVHelper, clCSVLineSeparator} from '@monorepo/core-lib';
+import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 
 
 /**
@@ -15,7 +16,7 @@ export class FlSpreadsheetFactory {
 
 
     if (Array.isArray(values)) {
-      array = values;
+      array = FlSpreadsheetFactory.arrayToArray2d(values);
     } else if (typeof values === 'string') {
       array = FlSpreadsheetFactory.convertStringToArray(values);
     } else {
@@ -99,5 +100,40 @@ export class FlSpreadsheetFactory {
     values.push(header, line);
 
     return values;
+  }
+
+  /**
+   * Convert a simple array to 2d array
+   * If this is an array of objects, it create an array with object values for each object
+   * @param array
+   * @private
+   */
+  private static arrayToArray2d(array: any[]): any[][] {
+    const array2d: any[][] = [];
+    for (const value of array) {
+      if (value == null) continue;
+
+      if (Array.isArray(value)) {
+        array2d.push(array2d);
+        continue;
+      }
+
+      if (typeof value === 'object') {
+        const subArray: any[] = [];
+        for (const key of Object.keys(value)) {
+          subArray.push(value[key]);
+        }
+        array2d.push(subArray);
+        continue;
+      }
+
+      array2d.push([value]);
+    }
+
+    return array2d;
+  }
+
+  public static getSheetNameFromId(id: number): string {
+    return FlTranslateService.getInstance().translate('flSpreadsheet.sheet') + ' ' + id;
   }
 }

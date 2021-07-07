@@ -3,6 +3,8 @@ import {FlSpreadsheet} from '../model/fl-spreadsheet.class';
 import {FlSheet} from '../model/fl-sheet.class';
 import {Observable} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
+import {FlSpreadsheetFactory} from '../utils/fl-spreadsheet.factory';
+import {FlCell} from '../model/fl-cell.class';
 
 /**
  * Unique state shared across the spreadsheet to store the current spreadsheet
@@ -12,8 +14,14 @@ export class FlSpreadsheetState implements OnDestroy {
 
   private _spreadsheet: FlSpreadsheet;
 
+  private lastSheetId: number = 0;
+
+  // list of sheet of cell objects
+  private cellObjectSheets: Map<number, FlSheet> = new Map();
+
   public init(spreadsheet: FlSpreadsheet): void {
     this._spreadsheet = spreadsheet;
+    this.lastSheetId = spreadsheet.sheets.length;
   }
 
   public get spreadsheet(): FlSpreadsheet {
@@ -25,7 +33,8 @@ export class FlSpreadsheetState implements OnDestroy {
     return this._spreadsheet.getSheet(id);
   }
 
-  //////////////////////////////////////// CURRENT SHEET /////////////////////////
+
+  ///////////////////////// CURRENT SHEET /////////////////////////
   public get currentSheet(): FlSheet {
     return this._spreadsheet.currentSheet;
   }
@@ -50,6 +59,24 @@ export class FlSpreadsheetState implements OnDestroy {
     return this.currentSheet$.pipe(
       mergeMap(sheet => sheet.getRowsCount$())
     );
+  }
+
+  /**
+   * For cell object, this open the cell value in a new sheet
+   */
+  public openCellInNewSheet(cell: FlCell): void {
+    // check if the sheet for this cell already exists
+    const sheet: FlSheet = this.cellObjectSheets.get(cell.id);
+    if (sheet != null) {
+      this._spreadsheet.selectSheet(sheet.id);
+      return;
+    }
+
+    // if this is a new sheet
+    const sheetName: string = FlSpreadsheetFactory.getSheetNameFromId(++this.lastSheetId);
+    const newSheet = FlSpreadsheetFactory.fromAny(cell.value, sheetName);
+    this.cellObjectSheets.set(cell.id, newSheet);
+    this._spreadsheet.addSheet(newSheet);
   }
 
 

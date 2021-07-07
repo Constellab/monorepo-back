@@ -1,6 +1,16 @@
 <div class="container" tabindex="-1">
+
   <div class="view-content g-not-selectable" *ngIf="!edit; else editMode">
-    {{cellValue}}
+    <ng-container *ngIf="!cellValueIsObject; else isObject">{{cellValue}}</ng-container>
+    <ng-template #isObject>
+      <fl-text-icon iconPosition="end">
+        <div>{{'flSpreadsheet.cell_value_object' | translate}}</div>
+        <mat-icon class="g-icon-tiny open-icon"
+                  (click)="openCellValueIsNewSheet()"
+                  [matTooltip]="'flSpreadsheet.open_cell_object_in_sheet' | translate">open_in_full
+        </mat-icon>
+      </fl-text-icon>
+    </ng-template>
   </div>
 
   <ng-template #editMode>
