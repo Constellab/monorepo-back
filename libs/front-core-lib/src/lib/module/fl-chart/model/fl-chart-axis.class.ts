@@ -1,4 +1,4 @@
-import {FlChartAxisScale} from './fl-chart-scale.class';
+import {FlChartScale, FlChartScaleBand} from './fl-chart-scale.class';
 import {axisBottom, axisLeft, axisRight, axisTop, Numeric} from 'd3';
 import {Selection} from 'd3-selection';
 import {Axis, AxisScale} from 'd3-axis';
@@ -12,27 +12,28 @@ export type FlChartAxisType = 'left' | 'bottom' | 'right' | 'top';
 
 export class FlChartAxis {
 
-  public scale: FlChartAxisScale<Numeric>;
+  public scale: FlChartScale<Numeric>;
 
   public axisContainer: Selection<any, void, null, undefined>;
 
-  private tickFormat: FlChartAxisTickFormat | null;
+  protected tickFormat: FlChartAxisTickFormat | null;
 
-  private readonly type: FlChartAxisType;
+  protected readonly type: FlChartAxisType;
 
-  private zoomDuration: number = 250;
+  protected zoomDuration: number = 250;
 
   constructor(type: FlChartAxisType) {
     this.type = type;
   }
 
-  public setScale(scale: FlChartAxisScale<Numeric>): this {
+  public setScale(scale: FlChartScale<Numeric>): this {
     this.scale = scale.nice();
     return this;
   }
 
   public setTickFormat(tickFormat: FlChartAxisTickFormat): this {
     this.tickFormat = tickFormat;
+
     return this;
   }
 
@@ -105,6 +106,8 @@ export class FlChartAxis {
 
     // Update axis
     this.axisContainer.transition().duration(this.zoomDuration).call(this.createAxis());
+
+
   }
 
   public resetZoom(): void {
@@ -113,6 +116,50 @@ export class FlChartAxis {
     this.scale.nice();
     // recreate the axis
     this.axisContainer.transition().call(this.createAxis());
+  }
+}
+
+/**
+ * Specific axis manager for the axis that use a scale band
+ */
+export class FlChartAxisBand extends FlChartAxis {
+
+  // readonly info for the tick
+  public static readonly tickTextHeight: number = 12;
+  // width of 1 character in tick
+  public static readonly tickCharacterWidth: number = 5;
+
+
+  public scale: FlChartScaleBand;
+
+
+  public setScale(scale: FlChartScaleBand): this {
+    return super.setScale(scale);
+  }
+
+  /**
+   * Configure a smart tick format, it prevent the tick text to get on top of each other
+   * It check the bandwidth and compare it with the tick size to decide which tick text to show
+   *
+   * @param tickSize average size of the tick in px
+   * @param tickFormat tick format function
+   */
+  public setSmartTickFormat(tickSize: number, tickFormat?: FlChartAxisTickFormat): this {
+
+    if (tickFormat == null) {
+      tickFormat = (d) => d?.valueOf()?.toString() ?? null;
+    }
+
+    this.tickFormat = (d, index) => {
+      const bandWidth: number = this.scale.bandwidth();
+
+      // calculate the tick interval
+      const tickInterval: number = Math.ceil(tickSize / bandWidth);
+
+      // for each tick interval modulo, display the tick, otherwise show an empty string
+      return index % tickInterval === 0 ? tickFormat(d, index) : null;
+    };
+    return this;
   }
 
 

@@ -1,12 +1,12 @@
 import * as d3 from 'd3';
 import {scaleLinear, ScaleOrdinal} from 'd3';
-import {FlChartScale} from './fl-chart-scale.class';
+import {FlChartScaleI} from './fl-chart-scale.class';
 import {ScaleLinear} from 'd3-scale';
 
 /**
  * Specific scale to return a color based on a value
  */
-export interface FlChartScaleColor extends FlChartScale {
+export interface FlChartScaleColor extends FlChartScaleI {
 
   /**
    * return a color base on a value

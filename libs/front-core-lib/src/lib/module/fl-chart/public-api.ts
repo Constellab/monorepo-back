@@ -13,6 +13,9 @@ export * from './component/fl-chart-portal/fl-chart-portal.component';
 export * from './component/fl-chart-serie-inline/fl-chart-serie-inline.component';
 export * from './component/fl-chart-type-select-options/fl-chart-type-select-options.component';
 
+// Pipes
+export * from './pipe/fl-chart-scale.pipe';
+
 // Export the service
 export * from './service/fl-chart-portal.service';
 
@@ -50,6 +53,6 @@ export * from './util/fl-chart.factory';
 // Renderer
 export * from './renderer/fl-chart-box-plot-multi.renderer';
 export * from './renderer/fl-chart-heat-map.renderer';
-export * from './renderer/fl-chart-histogram-multi.renderer';
+export * from './renderer/fl-chart-bar-plot-multi.renderer';
 export * from './renderer/fl-chart-line-multi.renderer';
 export * from './renderer/fl-chart-scatter-plot-multi.renderer';

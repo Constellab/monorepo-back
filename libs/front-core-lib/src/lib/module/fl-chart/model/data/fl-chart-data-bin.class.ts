@@ -31,7 +31,7 @@ export class FlChartDataBin implements FlChart2dDatum {
   }
 
   public getIntervalText(): string {
-    return `[${this.min.toFixed(2)} , ${this.max.toFixed(2)}]`;
+    return `[${this.min.toFixed(2)},${this.max.toFixed(2)}]`;
   }
 }
 

@@ -1,6 +1,6 @@
 import {Selection} from 'd3-selection';
 import {Numeric} from 'd3';
-import {FlChartAxisScale} from './fl-chart-scale.class';
+import {FlChartScale} from './fl-chart-scale.class';
 
 /**
  * Object needed by the renderer to renderer the chart
@@ -8,8 +8,8 @@ import {FlChartAxisScale} from './fl-chart-scale.class';
 export interface FlChart2dRendererInput<Data> {
   container: Selection<Element, null, null, null>;
   data: Data;
-  xScale: FlChartAxisScale<Numeric>;
-  yScale: FlChartAxisScale<Numeric>;
+  xScale: FlChartScale<Numeric>;
+  yScale: FlChartScale<Numeric>;
   chartHeight: number;
   chartWidth: number;
 }

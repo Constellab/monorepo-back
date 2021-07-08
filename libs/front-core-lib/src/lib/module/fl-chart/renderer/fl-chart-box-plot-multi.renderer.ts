@@ -1,7 +1,7 @@
 import {FlChart2dRenderer, FlChart2dRendererInput} from '../model/fl-chart-2d-renderer.class';
 import {Numeric, select} from 'd3';
 import {FlChartSerie} from '../model/data/fl-chart-serie.class';
-import {FlChartAxisScale, FlChartAxisScaleBand} from '../model/fl-chart-scale.class';
+import {FlChartScale, FlChartScaleBand} from '../model/fl-chart-scale.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {flRootInjector} from '../../../utils/fl-root-injector';
 import {FlThemeService} from '../../../service/fl-theme.service';
@@ -45,7 +45,7 @@ export class FlChartBoxPlotMultiRenderer
 
       // for each group generate the values
       .each((data, index, nodes) =>
-        this.drawSerie(nodes[index], data, (input.xScale as unknown as FlChartAxisScaleBand).bandwidth(), input));
+        this.drawSerie(nodes[index], data, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
   }
 
   private drawSerie(group: SVGElement, serie: FlChartSerie<number>,
@@ -75,7 +75,7 @@ export class FlChartBoxPlotMultiRenderer
       .attr('transform', ((d: FlChartSerie<number>) => this.getGroupTranslate(input.xScale, input.chartWidth, d.key)))
       // for each group generate the values
       .each((data: FlChartSerie<number>, index, nodes: SVGElement[]) =>
-        this.drawBoxPlot(nodes[index], data as FlChartBoxPlotSerie, (input.xScale as unknown as FlChartAxisScaleBand).bandwidth(), input));
+        this.drawBoxPlot(nodes[index], data as FlChartBoxPlotSerie, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
   }
 
   private drawBoxPlot(group: SVGElement, serie: FlChartBoxPlotSerie,
@@ -115,7 +115,7 @@ export class FlChartBoxPlotMultiRenderer
   }
 
   // return the position of the group
-  private getGroupTranslate(xScale: FlChartAxisScale<Numeric>, chartWidth: number, serieKey: number): string {
+  private getGroupTranslate(xScale: FlChartScale<Numeric>, chartWidth: number, serieKey: number): string {
     // if the scale return null set the the group outside chart
     return 'translate(' + (xScale.scale(serieKey) == null ? (chartWidth + 10) : xScale.scale(serieKey)) + ',0)';
   }

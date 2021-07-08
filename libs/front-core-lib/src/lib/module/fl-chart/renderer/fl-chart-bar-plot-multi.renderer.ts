@@ -2,7 +2,7 @@ import {FlChart2dRenderer, FlChart2dRendererInput} from '../model/fl-chart-2d-re
 import {Numeric, select} from 'd3';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
-import {FlChartAxisScale, FlChartAxisScaleBand} from '../model/fl-chart-scale.class';
+import {FlChartScale, FlChartScaleBand} from '../model/fl-chart-scale.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartDataBin} from '../model/data/fl-chart-data-bin.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
@@ -17,7 +17,10 @@ import {
 import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
 
 
-export class FlChartHistogramMultiRenderer
+/**
+ * Renderer for bar plot or histogram
+ */
+export class FlChartBarPlotMultiRenderer
   implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly groupClassName: string = 'serie';
@@ -42,7 +45,7 @@ export class FlChartHistogramMultiRenderer
 
       // for each group generate the values
       .each((data, index, nodes) =>
-        this.drawSerie(nodes[index], data, (input.xScale as unknown as FlChartAxisScaleBand).bandwidth(), input));
+        this.drawSerie(nodes[index], data, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
   }
 
   private drawSerie(group: SVGElement, data: FlChartDataWithSerie<FlChart2dDatum>[],
@@ -68,7 +71,7 @@ export class FlChartHistogramMultiRenderer
       .attr('transform', (d, index) => this.getGroupTranslate(input.xScale, input.chartWidth, index))
       // for each group generate the values
       .each((data: FlChartDataWithSerie<FlChart2dDatum>[], index, nodes: SVGElement[]) =>
-        this.refreshSerie(nodes[index], data, (input.xScale as unknown as FlChartAxisScaleBand).bandwidth(), input));
+        this.refreshSerie(nodes[index], data, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
   }
 
   private refreshSerie(group: SVGElement, data: FlChartDataWithSerie<FlChart2dDatum>[],
@@ -83,22 +86,26 @@ export class FlChartHistogramMultiRenderer
   }
 
   // return the position of the group
-  private getGroupTranslate(xScale: FlChartAxisScale<Numeric>, chartWidth: number, index: number): string {
+  private getGroupTranslate(xScale: FlChartScale<Numeric>, chartWidth: number, index: number): string {
     // if the scale return null set the the group outside chart
     return 'translate(' + (xScale.scale(index) == null ? (chartWidth + 10) : xScale.scale(index)) + ',0)';
   }
 
   // draw one bar
   private drawBar(d: FlChartDataWithSerie<FlChart2dDatum>, element: SVGRectElement, barWidth: number, chartHeight: number,
-                  yScale: FlChartAxisScale<Numeric>, index: number): void {
+                  yScale: FlChartScale<Numeric>, index: number): void {
     if (d.data == null) {
       return;
     }
+
+    // prevent bar width form being smaller than 1
+    barWidth = Math.max(barWidth, 1);
+
     select(element)
       .attr('transform',
         (d: FlChartDataWithSerie<FlChart2dDatum>) => 'translate(' + barWidth * index + ',' + yScale.scale(d.data.getY()) + ')'
       )
-      .attr('width', barWidth - 1) // - 1 to let space between bars
+      .attr('width', barWidth - 0.5) // - 1 to let space between bars
       .attr('height', (d: FlChartDataWithSerie<FlChart2dDatum>) => chartHeight - yScale.scale(d.data.getY()));
   }
 

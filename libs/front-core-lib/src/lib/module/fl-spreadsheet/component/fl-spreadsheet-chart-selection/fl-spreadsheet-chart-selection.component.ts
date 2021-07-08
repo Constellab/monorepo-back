@@ -272,7 +272,8 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     const chartType: FlChartType = this.formGp.get('chartType').value;
     const dataRange: string = this.formGp.get('dataRange').value;
 
-    if (ClHelpService.isNullOrEmpty(chartType) || ClHelpService.isNullOrEmpty(dataRange)) {
+    if (ClHelpService.isNullOrEmpty(chartType) || ClHelpService.isNullOrEmpty(dataRange)
+      || this.formGp.get('dataRange').invalid) {
       return;
     }
 
