@@ -8,4 +8,5 @@ export class FlChartConfig {
 
   chartContainer: FlChartContainer<any>;
   legend?: FlChartLegend;
+  zoomEnabled: boolean;
 }

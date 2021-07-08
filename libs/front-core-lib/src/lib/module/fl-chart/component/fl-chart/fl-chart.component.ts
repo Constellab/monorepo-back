@@ -64,7 +64,7 @@ export class FlChartComponent implements OnInit, AfterViewInit {
         onClick: () => this.state.downloadSVG()
       }];
 
-    if (this.state.isZoomable()) {
+    if (this.state.zoomEnabled) {
       menu.push(
         // Reset zoom
         {

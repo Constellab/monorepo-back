@@ -111,7 +111,8 @@ export class FlChartFactory {
     return {
       chartContainer: chartContainer,
       legend: showLegend ? new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
-        dataContainer, seriesColorScale) : null
+        dataContainer, seriesColorScale) : null,
+      zoomEnabled: true
     };
   }
 
@@ -153,7 +154,8 @@ export class FlChartFactory {
     return {
       chartContainer: chartContainer,
       legend: new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
-        dataContainer, seriesColorScale)
+        dataContainer, seriesColorScale),
+      zoomEnabled: true
     };
   }
 
@@ -193,7 +195,8 @@ export class FlChartFactory {
     return {
       chartContainer: chartContainer,
       legend: new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
-        dataContainer, seriesColorScale)
+        dataContainer, seriesColorScale),
+      zoomEnabled: true
     };
   }
 
@@ -240,7 +243,8 @@ export class FlChartFactory {
 
     return {
       chartContainer: chartContainer,
-      legend: legend
+      legend: legend,
+      zoomEnabled: false
     };
   }
 

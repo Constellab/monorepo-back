@@ -24,6 +24,8 @@ export class FlChartState {
 
   public chartType: FlChartType;
 
+  public zoomEnabled: boolean;
+
   constructor(private themeService: FlThemeService) {
   }
 
@@ -38,6 +40,7 @@ export class FlChartState {
     const config: FlChartConfig = FlChartFactory.getChartConfig(this.chartSVG, this.dataContainer, this.chartType, this.seriesColorScale);
     this.chartContainer = config.chartContainer;
     this.legend = config.legend;
+    this.zoomEnabled = config.zoomEnabled;
 
     this.renderChart();
   }
@@ -53,13 +56,9 @@ export class FlChartState {
   }
 
   public resetZoom(): void {
-    if (this.isZoomable()) {
+    if (this.zoomEnabled) {
       (this.chartContainer as FlChartContainer2d<any>).resetZoom() ;
     }
-  }
-
-  public isZoomable(): boolean {
-    return this.chartContainer instanceof FlChartContainer2d;
   }
 
   public getSerieColor(serieKey: number): string {
