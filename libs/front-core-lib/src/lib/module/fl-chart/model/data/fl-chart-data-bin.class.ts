@@ -27,7 +27,7 @@ export class FlChartDataBin implements FlChart2dDatum {
   }
 
   public getSortedData(): number[] {
-    return this.data.sort();
+    return this.data.sort((a, b) => a - b);
   }
 
   public getIntervalText(): string {
