@@ -1,6 +1,6 @@
 import {Selection} from 'd3-selection';
-import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
-import {FlChartDataContainer} from './data/fl-chart-data.class';
+import {FlChart2dRenderer, FlChart2dRendererInput} from '../../renderer/fl-chart-2d-renderer.class';
+import {FlChartDataContainer} from '../data/fl-chart-data.class';
 import {FlChartAxis} from './fl-chart-axis.class';
 import {ClHelpService} from '@monorepo/core-lib';
 
@@ -31,11 +31,10 @@ export abstract class FlChartContainer<Data> {
     this.initChart(parent);
   }
 
-  protected abstract firstChartRendering(): void
+  public abstract firstChartRendering(): void
 
   public initData(data: Data): this {
     this.dataContainer = data;
-    this.firstChartRendering();
     return this;
   }
 
@@ -106,7 +105,7 @@ export class FlChartContainer2d<Data extends FlChartDataContainer<any>> extends 
 
   ///////////////////////////////// RENDERING ////////////////////////////
 
-  protected firstChartRendering(): void {
+  public firstChartRendering(): void {
     this.renderers.forEach(renderer => renderer.initData(this.getRendererInput()));
   }
 

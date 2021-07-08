@@ -3,7 +3,7 @@ import {
   FlChartDataWithSeriePortalInput
 } from '../../component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 import {FlChartDataWithSerie} from '../data/fl-chart-serie.class';
-import {FlChartScaleColor} from '../fl-chart-scale-color.class';
+import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
 import {FlChartPortalHandler} from './fl-chart-portal-handler.class';
 import {FlChart2dDatum} from '../data/fl-chart-data.class';
 

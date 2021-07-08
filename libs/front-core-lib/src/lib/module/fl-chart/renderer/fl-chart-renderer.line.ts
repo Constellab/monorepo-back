@@ -1,18 +1,18 @@
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
 import * as d3 from 'd3';
 import {Numeric} from 'd3';
-import {FlChart2dRenderer, FlChart2dRendererInput} from '../model/fl-chart-2d-renderer.class';
-import {FlChartScale} from '../model/fl-chart-scale.class';
+import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
+import {FlChartScale} from '../model/scale/fl-chart-scale.class';
 import {ValueFn} from 'd3-selection';
 import {FlChartSerie} from '../model/data/fl-chart-serie.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
-import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
+import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
 
 /**
  * Class to manage line chart with multiple series
  */
-export class FlChartLineMultiRenderer
+export class FlChartRendererLine
   implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly serieClassName: string = 'serie';

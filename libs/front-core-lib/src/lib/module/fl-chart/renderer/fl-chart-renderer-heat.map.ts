@@ -1,12 +1,12 @@
-import {FlChart2dRenderer, FlChart2dRendererInput} from '../model/fl-chart-2d-renderer.class';
+import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
 import {FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
-import {FlChartScaleBand} from '../model/fl-chart-scale.class';
+import {FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
 import {FlChart3dDatum} from '../model/data/fl-chart-data.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
 import {FlChartHeatMapDataPortalComponent} from '../component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
-import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
+import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
-export class FlChartHeatMapRenderer
+export class FlChartRendererHeatMap
   implements FlChart2dRenderer<FlChartMultiSerie<FlChart3dDatum>> {
 
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();

@@ -15,13 +15,11 @@ import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flChartI18n} from './i18n/fl-chart.i18n';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {FlChartLegendComponent} from './component/fl-chart-legend/fl-chart-legend.component';
 import {FlChartDataWithSeriePortalComponent} from './component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 import {FlChartBoxPlotDataPortalComponent} from './component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
 import {FlChartSerieInlineComponent} from './component/fl-chart-serie-inline/fl-chart-serie-inline.component';
 import {FlChartScalePipe} from './pipe/fl-chart-scale.pipe';
 import {FlChartBinDataPortalComponent} from './component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
-import {FlChartContainerComponent} from './component/fl-chart-container/fl-chart-container.component';
 import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
 import {MatDividerModule} from '@angular/material/divider';
 import {FlChartHeatMapDataPortalComponent} from './component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
@@ -33,34 +31,26 @@ import {FlChartHeatMapDataPortalComponent} from './component/fl-chart-heat-map-d
   declarations: [
     // Component
     FlChartComponent,
-    FlChartComponent,
     FlChartPortalComponent,
     FlChartTypeSelectOptionsComponent,
-    FlChartLegendComponent,
     FlChartDataWithSeriePortalComponent,
     FlChartBoxPlotDataPortalComponent,
     FlChartSerieInlineComponent,
     FlChartBinDataPortalComponent,
+    FlChartHeatMapDataPortalComponent,
 
     // Pipe
     FlChartScalePipe,
 
-    FlChartContainerComponent,
-
-    FlChartHeatMapDataPortalComponent,
   ],
   exports: [
     // Component
     FlChartComponent,
-    FlChartComponent,
     FlChartPortalComponent,
     FlChartTypeSelectOptionsComponent,
-    FlChartLegendComponent,
 
     // Pipe
     FlChartScalePipe,
-
-    FlChartContainerComponent,
   ],
   imports: [
     CommonModule,

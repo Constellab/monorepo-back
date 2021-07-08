@@ -12,7 +12,6 @@ export abstract class FlChartBrush {
 
   public brushContainer: Selection<any, any, null, null>;
 
-  // todo replace with chart zoomable
   protected constructor(brush: BrushBehavior<any>,
                         chart: FlChartContainer2d<any>) {
     this.brush = brush;

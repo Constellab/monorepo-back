@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {FlChartScaleI} from '../model/fl-chart-scale.class';
+import {FlChartScaleI} from '../model/scale/fl-chart-scale.class';
 
 /**
  * Simple pipe to apply a scale on a value

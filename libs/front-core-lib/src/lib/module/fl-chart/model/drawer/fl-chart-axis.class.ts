@@ -1,8 +1,8 @@
-import {FlChartScale, FlChartScaleBand} from './fl-chart-scale.class';
+import {FlChartScale, FlChartScaleBand} from '../scale/fl-chart-scale.class';
 import {axisBottom, axisLeft, axisRight, axisTop, Numeric} from 'd3';
 import {Selection} from 'd3-selection';
 import {Axis, AxisScale} from 'd3-axis';
-import {FlChartAxisTickFormat} from './data/fl-chart-data.class';
+import {FlChartAxisTickFormat} from '../data/fl-chart-data.class';
 
 
 /**

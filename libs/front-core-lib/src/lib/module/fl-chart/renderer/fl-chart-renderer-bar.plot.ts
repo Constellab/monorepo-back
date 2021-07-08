@@ -1,8 +1,8 @@
-import {FlChart2dRenderer, FlChart2dRendererInput} from '../model/fl-chart-2d-renderer.class';
+import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
 import {Numeric, select} from 'd3';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
-import {FlChartScale, FlChartScaleBand} from '../model/fl-chart-scale.class';
+import {FlChartScale, FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartDataBin} from '../model/data/fl-chart-data-bin.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
@@ -14,13 +14,13 @@ import {
   FlChartBinDataPortalComponent,
   FlChartBinDataPortalInput
 } from '../component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
-import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
+import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
 
 /**
  * Renderer for bar plot or histogram
  */
-export class FlChartBarPlotMultiRenderer
+export class FlChartRendererBarPlot
   implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly groupClassName: string = 'serie';

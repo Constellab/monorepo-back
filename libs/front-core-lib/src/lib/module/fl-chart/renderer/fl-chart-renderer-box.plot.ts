@@ -1,7 +1,7 @@
-import {FlChart2dRenderer, FlChart2dRendererInput} from '../model/fl-chart-2d-renderer.class';
+import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
 import {Numeric, select} from 'd3';
 import {FlChartSerie} from '../model/data/fl-chart-serie.class';
-import {FlChartScale, FlChartScaleBand} from '../model/fl-chart-scale.class';
+import {FlChartScale, FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {flRootInjector} from '../../../utils/fl-root-injector';
 import {FlThemeService} from '../../../service/fl-theme.service';
@@ -12,10 +12,10 @@ import {
   FlChartBoxPlotDataPortalInput
 } from '../component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
 import {FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
-import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
+import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
 
-export class FlChartBoxPlotMultiRenderer
+export class FlChartRendererBoxPlot
   implements FlChart2dRenderer<FlChartMultiSerie<number>> {
 
   private readonly groupClassName: string = 'serie';

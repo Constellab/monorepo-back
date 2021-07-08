@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Numeric} from 'd3';
 import {FlChartDataWithSerie} from '../../model/data/fl-chart-serie.class';
-import {FlChartScaleColor} from '../../model/fl-chart-scale-color.class';
+import {FlChartScaleColor} from '../../model/scale/fl-chart-scale-color.class';
 import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 import {FlChartDataBin} from '../../model/data/fl-chart-data-bin.class';
 

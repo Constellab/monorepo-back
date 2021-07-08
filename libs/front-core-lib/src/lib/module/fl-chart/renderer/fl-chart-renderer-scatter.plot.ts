@@ -1,11 +1,11 @@
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
-import {FlChart2dRenderer, FlChart2dRendererInput} from '../model/fl-chart-2d-renderer.class';
+import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
-import {FlChartScaleColor} from '../model/fl-chart-scale-color.class';
+import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
-export class FlChartScatterPlotMultiRenderer
+export class FlChartRendererScatterPlot
   implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
