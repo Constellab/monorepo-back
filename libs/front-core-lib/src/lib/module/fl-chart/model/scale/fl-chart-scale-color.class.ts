@@ -57,7 +57,7 @@ export class FlChartScaleColorLinear implements FlChartScaleColor {
   }
 
   public scale(value: number): string {
-    if (value == null) return '';
+    if (value == null) return 'white';
     return this.d3Scale(value);
   }
 }

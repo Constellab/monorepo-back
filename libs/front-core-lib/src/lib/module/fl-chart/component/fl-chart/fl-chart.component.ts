@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, Input, OnInit} from '@angular/core';
 import {FlThemeService} from '../../../../service/fl-theme.service';
 import {FlChartState} from '../../state/fl-chart.state';
 import {FlChartMultiSerie} from '../../model/data/fl-chart-multi-serie.class';
@@ -18,7 +18,7 @@ import {FlMenuDynamicService} from '../../../fl-menu-dynamic/fl-menu-dynamic.ser
   styleUrls: ['./fl-chart.component.scss'],
   providers: [FlChartState]
 })
-export class FlChartComponent implements OnInit {
+export class FlChartComponent implements OnInit, AfterViewInit {
 
   @Input() data: FlChartMultiSerie<any>;
 
@@ -30,7 +30,7 @@ export class FlChartComponent implements OnInit {
    */
   @Input() contextMenuItems: FlMenuDynamic[];
 
-  @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
+  // @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
 
   @HostListener('contextmenu', ['$event'])
   contextMenu(event: MouseEvent): void {
@@ -40,13 +40,20 @@ export class FlChartComponent implements OnInit {
 
   constructor(private themeService: FlThemeService,
               private state: FlChartState,
-              private menuService: FlMenuDynamicService) {
+              private menuService: FlMenuDynamicService,
+              private elementRef: ElementRef<HTMLElement>) {
   }
 
   ngOnInit(): void {
-    this.state.initData(this.data, this.chartType);
-    this.state.initChart(460, 400, this.chartHtmlContainer.nativeElement);
   }
+
+  ngAfterViewInit(): void {
+    this.state.initData(this.data, this.chartType);
+    this.state.initChart(this.elementRef.nativeElement.clientWidth, this.elementRef.nativeElement.clientHeight,
+      this.elementRef.nativeElement);
+  }
+
+
 
   private openContextMenu(mouseEvent: MouseEvent): void {
     const menu: FlMenuDynamic[] = [
