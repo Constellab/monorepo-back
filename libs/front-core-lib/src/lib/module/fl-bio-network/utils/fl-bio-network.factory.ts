@@ -14,22 +14,22 @@ import {
   FlBioxNetworkD3
 } from '../model/fl-bio-network-d3.class';
 import {ClHelpService} from '@monorepo/core-lib';
-import {FlPathwayHelper} from './fl-pathway.helper';
+import {FlBioNetworkHelper} from './fl-bio-network.helper';
 
-export class FlChartPathwayFactory {
+export class FlBioNetworkFactory {
 
-  public static convertPathwayToChartPathway(pathway: FlBioNetwork, filterPathway: string[], pathwayDatabase: FlPathwayDatabase,
+  public static convertPathwayToChartPathway(network: FlBioNetwork, selectedPathways: string[], pathwayDatabase: FlPathwayDatabase,
                                              defaultColor: string): FlBioxNetworkD3 {
     const data: FlBioxNetworkD3 = new FlBioxNetworkD3();
 
     // set the reactions
-    data.reactions = FlChartPathwayFactory.getReactionNodes(pathway.reactions, filterPathway, pathwayDatabase, defaultColor);
+    data.reactions = FlBioNetworkFactory.getReactionNodes(network.reactions, selectedPathways, pathwayDatabase, defaultColor);
 
     // create the metabolites nodes form the reactions
-    data.metabolites = FlChartPathwayFactory.getMetabolitesNodes(pathway.metabolites, data.reactions, defaultColor);
+    data.metabolites = FlBioNetworkFactory.getMetabolitesNodes(network.metabolites, data.reactions, defaultColor);
 
     // create the links from the reactions
-    data.links = FlChartPathwayFactory.getLinks(data.reactions);
+    data.links = FlBioNetworkFactory.getLinks(data.reactions);
 
 
     return data;
@@ -38,16 +38,16 @@ export class FlChartPathwayFactory {
   /**
    * return the reactions nodes from the filterPathway using a specific database
    */
-  private static getReactionNodes(reactions: FlBioNetworkReaction[], filterPathway: string[],
+  private static getReactionNodes(reactions: FlBioNetworkReaction[], selectedPathways: string[],
                                   pathwayDatabase: FlPathwayDatabase, defaultColor: string)
     : FlBioNetworkD3Reaction[] {
     const reactionNodes: FlBioNetworkD3Reaction[] = [];
 
     for (const reaction of reactions) {
       // if there is no filter, return all the reaction
-      if (ClHelpService.isNullOrEmpty(filterPathway) ||
+      if (ClHelpService.isNullOrEmpty(selectedPathways) ||
         // or the reaction is in one of the filter pathway
-        FlPathwayHelper.reactionIsInAnyPathway(reaction, filterPathway, pathwayDatabase)) {
+        FlBioNetworkHelper.reactionIsInAnyPathway(reaction, selectedPathways, pathwayDatabase)) {
         // add the reaction
         reactionNodes.push(new FlBioNetworkD3Reaction(reaction.id,
           reaction.name ? reaction.name : reaction.id,
@@ -106,7 +106,7 @@ export class FlChartPathwayFactory {
       const reaction: FlBioNetworkReaction = reactionNode.data;
       for (const metaboliteId of Object.keys(reaction.metabolites)) {
         // get the estimate with a default value if it doesn't exists
-        const estimate: FlBioNetworkReactionEstimate = FlPathwayHelper.getReactionEstimate(reaction);
+        const estimate: FlBioNetworkReactionEstimate = FlBioNetworkHelper.getReactionEstimate(reaction);
         const reactionDirection: number = reaction.metabolites[metaboliteId] * estimate.value;
 
         // right side of the link

@@ -18,5 +18,5 @@ export * from './state/fl-bio-network-drawer.state';
 export * from './state/fl-bio-network-renderer.state';
 
 // Utils
-export * from './utils/fl-chart-pathway.factory';
-export * from './utils/fl-pathway.helper';
+export * from './utils/fl-bio-network.factory';
+export * from './utils/fl-bio-network.helper';

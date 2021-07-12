@@ -2,9 +2,9 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {FlBioNetwork, FlBioNetworkPathwayDetail, FlPathwayDatabase} from '../model/fl-bio-network.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
-import {FlChartPathwayFactory} from '../utils/fl-chart-pathway.factory';
+import {FlBioNetworkFactory} from '../utils/fl-bio-network.factory';
 import {ClHelpService} from '@monorepo/core-lib';
-import {FlPathwayHelper} from '../utils/fl-pathway.helper';
+import {FlBioNetworkHelper} from '../utils/fl-bio-network.helper';
 import {debounceTime, map} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
@@ -71,7 +71,7 @@ export class FlBioNetworkState implements OnDestroy {
       this.chartData$.next(null);
       return;
     }
-    const chartData: FlBioxNetworkD3 = FlChartPathwayFactory.convertPathwayToChartPathway(this.getSelectedNetwork(), pathwayIds,
+    const chartData: FlBioxNetworkD3 = FlBioNetworkFactory.convertPathwayToChartPathway(this.getSelectedNetwork(), pathwayIds,
       this.getDatabase(), this.themeService.getCurrentThemeDetail().greyHighContrast);
 
     this.chartData$.next(chartData);
@@ -95,7 +95,7 @@ export class FlBioNetworkState implements OnDestroy {
     }
 
     if (this.pathwayListCache[database] == null) {
-      this.pathwayListCache[database] = FlPathwayHelper.getSubPathwayList(this.getSelectedNetwork(), database);
+      this.pathwayListCache[database] = FlBioNetworkHelper.getPathwaysList(this.getSelectedNetwork(), database);
     }
 
     return this.pathwayListCache[database];

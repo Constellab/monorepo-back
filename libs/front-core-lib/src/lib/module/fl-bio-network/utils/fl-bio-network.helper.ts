@@ -13,7 +13,7 @@ import {
 /**
  * Helper class to manipulate {@link FlBioNetwork}
  */
-export class FlPathwayHelper {
+export class FlBioNetworkHelper {
 
 
   /**
@@ -21,13 +21,13 @@ export class FlPathwayHelper {
    * @param pathway
    * @param database
    */
-  public static getSubPathwayList(pathway: FlBioNetwork, database: FlPathwayDatabase): FlBioNetworkPathwayDetail[] {
+  public static getPathwaysList(pathway: FlBioNetwork, database: FlPathwayDatabase): FlBioNetworkPathwayDetail[] {
     const subPathways: FlBioNetworkPathwayDetail[] = [];
 
     for (const reaction of pathway.reactions) {
       // retrieve the sub pathway information
       // if it does not exists, use a default pathway
-      const subPathway: FlBioNetworkPathwayDetail = FlPathwayHelper.getReactionPathway(reaction, database);
+      const subPathway: FlBioNetworkPathwayDetail = FlBioNetworkHelper.getReactionPathway(reaction, database);
 
       // split the pathway to get all the pathways of this reaction
       const splitPathways: FlBioNetworkPathwayDetail[] = this.splitReactionPathway(subPathway);
@@ -86,7 +86,7 @@ export class FlPathwayHelper {
   // check if a reaction is in a pathway (of a specific database)
   public static reactionIsInAnyPathway(reaction: FlBioNetworkReaction, pathwayIds: string[],
                                        database: FlPathwayDatabase): boolean {
-    const reactionPathway: FlBioNetworkPathwayDetail = FlPathwayHelper.getReactionPathway(reaction, database);
+    const reactionPathway: FlBioNetworkPathwayDetail = FlBioNetworkHelper.getReactionPathway(reaction, database);
 
     // create an regex with all the ids separated with OR
     const regex: RegExp = new RegExp(pathwayIds.join('|'));
