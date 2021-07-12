@@ -161,13 +161,13 @@ export class FlBioNetworkRendererState {
 
     // create the text for metabolite
     this.metabolites.append('text')
-      .text((d: FlBioNetworkD3Node) => d.name.substr(0, 5))
+      .text((d: FlBioNetworkD3Node) => d.name.substr(0, 20))
       .attr('y', flBioNetworkMetaboliteRadius)
       .attr('dy', '1em')
       .attr('text-anchor', 'middle')
       .attr('fill', this.textColor)
       .style('text-shadow', this.getTextShadow())
-      .style('font-size', '0.5em');
+      .style('font-size', '0.3em');
 
     this.metabolites.append('title')
       .text((d: FlBioNetworkD3Node) => d.name);
