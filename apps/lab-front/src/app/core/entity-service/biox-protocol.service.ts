@@ -29,7 +29,7 @@ export class BioxProtocolService {
 
 
   public getProtocol(protocolId: string): Observable<BioxProtocol> {
-    return this.apiService.get(`protocol/${protocolId}/gws.model.Protocol`, BioxProtocol);
+    return this.apiService.get(`protocol/${protocolId}/gws.protocol.Protocol`, BioxProtocol);
   }
 
 
