@@ -15,9 +15,12 @@ export const flBioNetworkReactionMaxValue: number = 1000;
  * Data used to construct to d3 network
  */
 export class FlBioxNetworkD3 {
-  metabolites: FlBioNetworkD3Metabolite[] = [];
-  reactions: FlBioNetworkD3Reaction[] = [];
-  links: FlBioNetworkD3Link<FlBioNetworkD3Node>[] = [];
+
+  constructor(public metabolites: FlBioNetworkD3Metabolite[],
+              public reactions: FlBioNetworkD3Reaction[],
+              public links: FlBioNetworkD3Link<FlBioNetworkD3Node>[]) {
+  }
+
 
   // return the min and max value of all links
   public getLinksDomain(): [number, number] {
@@ -73,22 +76,9 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
                         public data: FlBioNetworkMetabolite | FlBioNetworkReaction) {
   }
 
-  getCenter(): FlCoord {
-    if (this.type === 'reaction') {
-      // get the center of the reaction rect
-      return {
-        x: this.x + (flBioNetworkReactionWidth / 2),
-        y: this.y + (flBioNetworkMetaboliteRadius / 2)
-      };
-    } else {
-      // get the center of the metabolite round
-      return {
-        x: this.x,
-        y: this.y
-      };
-    }
-  }
+  public abstract getCenter(): FlCoord;
 }
+
 
 export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
 
@@ -98,6 +88,16 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
   constructor(id: string, name: string, color: string, data: FlBioNetworkMetabolite) {
     super(id, name, 'metabolite', color, data);
   }
+
+  getCenter(): FlCoord {
+    // get the center of the metabolite round
+    return {
+      x: this.x,
+      y: this.y
+    };
+  }
+
+
 }
 
 export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
@@ -107,6 +107,14 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
 
   constructor(id: string, name: string, color: string, data: FlBioNetworkReaction) {
     super(id, name, 'reaction', color, data);
+  }
+
+  getCenter(): FlCoord {
+    // get the center of the reaction rect
+    return {
+      x: this.x + (flBioNetworkReactionWidth / 2),
+      y: this.y + (flBioNetworkMetaboliteRadius / 2)
+    };
   }
 }
 

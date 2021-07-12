@@ -71,9 +71,10 @@ export class FlBioNetworkState implements OnDestroy {
       this.chartData$.next(null);
       return;
     }
-    const chartData: FlBioxNetworkD3 = FlBioNetworkFactory.convertPathwayToChartPathway(this.getSelectedNetwork(), pathwayIds,
-      this.getDatabase(), this.themeService.getCurrentThemeDetail().greyHighContrast);
+    const chartData: FlBioxNetworkD3 = new FlBioNetworkFactory(this.themeService.getCurrentThemeDetail().greyHighContrast)
+      .convertPathwayToChartPathway(this.getSelectedNetwork(), pathwayIds, this.getDatabase());
 
+    console.log(chartData);
     this.chartData$.next(chartData);
   }
 
