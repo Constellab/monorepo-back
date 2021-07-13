@@ -60,8 +60,13 @@ export function flChartGetDataBins(data: number[], numberOfBins: number): FlChar
   for (const d of data) {
     let index: number = (d - domain[0]) / thresholds;
 
+    // specific condition to prevent index from being
+    // outside of array
+    if (index >= bins.length) {
+      index = bins.length - 1;
+    }
     // if the result is an integer, set in previous index to exclude max values from bins
-    if (Number.isInteger(index) && index > 0) {
+    else if (Number.isInteger(index) && index > 0) {
       index--;
     } else {
       index = Math.trunc(index);
