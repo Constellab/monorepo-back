@@ -25,11 +25,16 @@ export class FlChartPortalHandler {
       panelClass: 'g-portal-panel',
     };
 
-    const position: ConnectedPosition = FlPortalService.getDefaultPosition('top', 0, -10);
+    const positions: ConnectedPosition[] = [
+      FlPortalService.getDefaultPosition('top', 0, -10),
+      FlPortalService.getDefaultPosition('right', 10, 0),
+      FlPortalService.getDefaultPosition('left', -10, 0),
+      FlPortalService.getDefaultPosition('bottom', 0, 10),
+    ];
 
     // configure the portal position
     const portalConfig: FlPortalConfig =
-      portalService.configureRelativePortal(element, [position], overlayConfig);
+      portalService.configureRelativePortal(element, positions, overlayConfig);
 
     // create the portal
     this.currentHoverOverlay = portalService.createPortal(component, portalConfig, data);
