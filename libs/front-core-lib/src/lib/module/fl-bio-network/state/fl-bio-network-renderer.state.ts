@@ -362,7 +362,7 @@ export class FlBioNetworkRendererState {
 
   // create a color scale for link
   private getLinkColorScale(colorTransform: (value: number) => number): ScaleLinear<string, any, any> {
-    const range: [string, string, string] = ['red', '#E8F5E9', 'green'];
+    const range: [string, string, string] = ['red', this.grey, 'green'];
 
     return d3.scaleLinear<string>().domain(
       [colorTransform(-flBioNetworkReactionMaxValue), 0, colorTransform(flBioNetworkReactionMaxValue)])
