@@ -15,7 +15,7 @@ export class FileResourceTableComponent extends FlTableAbstractDirective<FileRes
   @Input() datasource: FileResourceDatasource;
 
   constructor(private fileService: FileResourceService) {
-    super(['createdAt', 'action']);
+    super(['createdAt', 'action', 'filename']);
   }
 
   ngOnInit(): void {

@@ -10,6 +10,16 @@
     </mat-cell>
   </ng-container>
 
+  <!-- CreatedAt -->
+  <ng-container matColumnDef="filename">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'biox.filename' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let resource">
+      {{resource.getFileName()}}
+    </mat-cell>
+  </ng-container>
+
   <!-- Action -->
   <ng-container matColumnDef="action">
     <mat-header-cell *matHeaderCellDef class="download-column">

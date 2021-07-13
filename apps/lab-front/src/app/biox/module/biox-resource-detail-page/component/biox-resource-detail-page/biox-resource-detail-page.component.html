@@ -2,7 +2,10 @@
   <fl-async-section fxFlex [object]="resource$" class="section">
 
     <fl-section-header class="page-padding">
-      <h2>{{'resource' | translate}} : {{resourceId}}</h2>
+      <h2>
+        {{'resource' | translate}} : {{resourceId}}
+        <span *ngIf="filename" class="g-text-light g-text-normal filename">({{filename}})</span>
+      </h2>
       <fl-section-actions *ngIf="availableViews">
         <a *ngFor="let view of availableViews"
            mat-icon-button type="button"

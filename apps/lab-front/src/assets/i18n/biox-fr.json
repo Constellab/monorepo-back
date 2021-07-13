@@ -36,6 +36,7 @@
     "process_type_type": "Type",
     "execution_time": "Temps d'exécution",
     "error_empty_experience": "L'expérience est vide",
-    "resource_is_not_a_network": "La ressource n'est pas un réseau"
+    "resource_is_not_a_network": "La ressource n'est pas un réseau",
+    "filename": "Fichier"
   }
 }

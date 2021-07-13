@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
-import {FileResourcePreview} from '../../../../../core/model/entities/resource/file-resource.entity';
+import {FileResource, FileResourcePreview} from '../../../../../core/model/entities/resource/file-resource.entity';
 import {BioxNetworkHelper} from '../../../../../core/model/entities/resource/biox-network.helper';
 
 interface View {
@@ -33,6 +33,8 @@ export class BioxResourceDetailPageComponent implements OnInit {
   availableViews: View[];
   currentView?: string;
 
+  filename: string;
+
   constructor(private resourceService: BioxResourceService,
               private route: ActivatedRoute,
               private router: Router) {
@@ -51,7 +53,8 @@ export class BioxResourceDetailPageComponent implements OnInit {
   private init(type: string, id: string): void {
     this.resourceId = id;
     this.resource$ = this.resourceService.getByTypeAndId(type, id).pipe(
-      tap(resource => this.initViews(resource))
+      tap(resource => this.initViews(resource)),
+      tap(resource => this.initFilename(resource))
     );
   }
 
@@ -87,6 +90,11 @@ export class BioxResourceDetailPageComponent implements OnInit {
     }
   }
 
+  private initFilename(resource: BioxResource): void {
+    if (resource instanceof FileResource) {
+      this.filename = resource.getFileName();
+    }
+  }
 
   getQueryParam(view: View): { view: string } {
     return {view: view.route};

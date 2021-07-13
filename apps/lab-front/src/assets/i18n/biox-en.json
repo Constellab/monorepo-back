@@ -36,6 +36,7 @@
     "process_type_type": "Type",
     "execution_time": "Execution time",
     "error_empty_experience": "The experiment is empty",
-    "resource_is_not_a_network": "The resource is not a network"
+    "resource_is_not_a_network": "The resource is not a network",
+    "filename": "Filename"
   }
 }
