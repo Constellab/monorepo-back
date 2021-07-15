@@ -10,7 +10,6 @@ import {
   FlBioNetworkD3Cofactor,
   FlBioNetworkD3Link,
   FlBioNetworkD3Metabolite,
-  FlBioNetworkD3Node,
   FlBioNetworkD3Reaction,
   FlBioxNetworkD3
 } from '../model/fl-bio-network-d3.class';
@@ -28,9 +27,9 @@ export class FlBioNetworkFactory {
   private reactions: FlBioNetworkD3Reaction[] = [];
   private metabolites: FlBioNetworkD3Metabolite[] = [];
   private cofactors: FlBioNetworkD3Cofactor[] = [];
-  private links: FlBioNetworkD3Link<FlBioNetworkD3Node>[] = [];
+  private links: FlBioNetworkD3Link[] = [];
 
-  constructor(private defaultColor: string) {
+  constructor(private grey: string) {
   }
 
 
@@ -65,7 +64,7 @@ export class FlBioNetworkFactory {
         // add the reaction
         reactionNodes.push(new FlBioNetworkD3Reaction(reaction.id,
           reaction.name ? reaction.name : reaction.id,
-          this.defaultColor, ClHelpService.deepClone(reaction)
+          this.grey, ClHelpService.deepClone(reaction)
         ));
       }
     }
@@ -131,7 +130,7 @@ export class FlBioNetworkFactory {
   // create the pathway link from list of reaction nodes
   private initLinks(): void {
 
-    const links: FlBioNetworkD3Link<FlBioNetworkD3Node>[] = [];
+    const links: FlBioNetworkD3Link[] = [];
     for (const reactionNode of this.reactions) {
       const reaction: FlBioNetworkReaction = reactionNode.data;
       for (const metaboliteId of Object.keys(reaction.metabolites)) {
@@ -159,7 +158,7 @@ export class FlBioNetworkFactory {
       // as the compartment is a single letter, we duplicate it to have really different colors
       FlColorHelper.stringToRGBColor(metabolite.compartment + metabolite.compartment +
         metabolite.compartment + metabolite.compartment) :
-      this.defaultColor;
+      this.grey;
   }
 
   private isCofactor(chebiId: string): boolean {

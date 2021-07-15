@@ -20,7 +20,11 @@ export const flBioNetworkCofactorSize: number = 5;
 // maximum value of a reaction in a pathway
 export const flBioNetworkReactionMaxValue: number = 1000;
 
+// class for all node the bio network
 export const flBioNetworkNodeClass: string = 'node';
+
+// id for the arrow mid marker
+export const flBioNetworkArrowMarkerId: string = 'mid_arrow';
 
 /**
  * Data used to construct to d3 network
@@ -30,7 +34,7 @@ export class FlBioxNetworkD3 {
   constructor(public metabolites: FlBioNetworkD3Metabolite[],
               public reactions: FlBioNetworkD3Reaction[],
               public cofactors: FlBioNetworkD3Cofactor[],
-              public links: FlBioNetworkD3Link<FlBioNetworkD3Node>[]) {
+              public links: FlBioNetworkD3Link[]) {
   }
 
   /**
@@ -252,19 +256,17 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
 
 }
 
-export class FlBioNetworkD3Link<Node extends FlBioNetworkD3Node>
+export class FlBioNetworkD3Link
   implements SimulationLinkDatum<FlBioNetworkD3Node> {
 
-  source: Node;
-  target: Node;
-  estimate: FlBioNetworkReactionEstimate;
+  source: FlBioNetworkD3Node;
+  target: FlBioNetworkD3Node;
 
   constructor(source: string, target: string,
-              estimate: FlBioNetworkReactionEstimate) {
+              public estimate: FlBioNetworkReactionEstimate) {
     // the source and target ids, will be replace by node by d3 on init
     this.source = source as any;
     this.target = target as any;
-    this.estimate = estimate ?? {value: 1, lower_bound: 1, upper_bound: 1};
   }
 
   get value(): number {
@@ -287,5 +289,23 @@ export class FlBioNetworkD3Link<Node extends FlBioNetworkD3Node>
   get absLog10Value(): number {
     return Math.log10(this.absValue + 1.5);
   }
+
+  // return points for the line with a point in middle to draw the arrow
+  public getPolylinePoints(): string {
+    const startCoord: FlCoord = this.source.getCenter();
+    const endCoord: FlCoord = this.target.getCenter();
+
+    // calculate the middle point
+    const midCoord: FlCoord = {
+      x: (startCoord.x + endCoord.x) / 2,
+      y: (startCoord.y + endCoord.y) / 2
+    };
+
+    return `${startCoord.x},${startCoord.y}
+            ${midCoord.x},${midCoord.y}
+            ${endCoord.x},${endCoord.y} `;
+  }
+
+
 }
 

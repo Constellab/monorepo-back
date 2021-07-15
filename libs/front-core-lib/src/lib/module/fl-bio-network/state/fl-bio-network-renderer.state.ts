@@ -10,7 +10,7 @@ import {
   flBioNetworkReactionMaxValue,
   FlBioxNetworkD3
 } from '../model/fl-bio-network-d3.class';
-import {FlCoord, FlD3SelectionSimple, FlD3ZoomEvent} from '../../fl-chart/model/fl-d3.class';
+import {FlD3SelectionSimple, FlD3ZoomEvent} from '../../fl-chart/model/fl-d3.class';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
@@ -34,7 +34,7 @@ export class FlBioNetworkRendererState {
   private mainGroup: FlD3SelectionSimple;
 
   private nodesContainer: FlD3SelectionSimple<FlBioNetworkD3Node>;
-  private links: FlD3SelectionSimple<FlBioNetworkD3Link<FlBioNetworkD3Node>>;
+  private links: FlD3SelectionSimple<FlBioNetworkD3Link>;
 
   private simulation: Simulation<FlBioNetworkD3Node, any>;
   private simulationEnded: boolean = false;
@@ -44,7 +44,7 @@ export class FlBioNetworkRendererState {
 
   ////////////// READONLY VARIABLE //////////////////
   private readonly collideRadius: number = 25;
-  public readonly grey: string = '#999';
+  public readonly grey: string;
   private readonly textColor: string;
   private readonly backgroundColor: string;
   private readonly selectNodeColor: string;
@@ -119,7 +119,7 @@ export class FlBioNetworkRendererState {
     this.simulation.on('tick', () => {
 
       // refresh link points
-      this.links.attr('points', (d: FlBioNetworkD3Link<FlBioNetworkD3Node>) => this.getPolylinePoints(d));
+      this.links.attr('points', (d: FlBioNetworkD3Link) => d.getPolylinePoints());
 
       // refresh nodes positions
       this.nodesContainer.attr('transform',
@@ -155,7 +155,7 @@ export class FlBioNetworkRendererState {
       .data(this.data.links)
       .join('polyline')
       .attr('stroke-opacity', 0.9)
-      .attr('stroke-width', (d: FlBioNetworkD3Link<FlBioNetworkD3Node>) => d.absLog10Value + 1)
+      .attr('stroke-width', (d: FlBioNetworkD3Link) => d.absLog10Value + 1)
       .attr('marker-mid', 'url(#mid_arrow)') as any;
 
     this.setLinksColors(logarithmColor);
@@ -206,21 +206,6 @@ export class FlBioNetworkRendererState {
     this.state.zoomTransform = transform;
   }
 
-  // return points for the line with a point in middle to draw the arrow
-  private getPolylinePoints(d: FlBioNetworkD3Link<FlBioNetworkD3Node>): string {
-    const startCoord: FlCoord = d.source.getCenter();
-    const endCoord: FlCoord = d.target.getCenter();
-
-    // calculate the middle point
-    const midCoord: FlCoord = {
-      x: (startCoord.x + endCoord.x) / 2,
-      y: (startCoord.y + endCoord.y) / 2
-    };
-
-    return `${startCoord.x},${startCoord.y}
-            ${midCoord.x},${midCoord.y}
-            ${endCoord.x},${endCoord.y} `;
-  }
 
   // return all the directly connected node of the node
   private getConnectedNodes(nodeIndex: number): FlBioNetworkD3Node[] {
@@ -253,8 +238,6 @@ export class FlBioNetworkRendererState {
 
       // set a specific color to the selected node
       this.nodes.attr('stroke', (d: FlBioNetworkD3Node) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
-      // this.reactions.selectAll('rect')
-      //   .attr('stroke', (d: FlBioNetworkD3Node) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
 
       // open the drawer with detail
       this.drawerState.newAction({
@@ -276,7 +259,7 @@ export class FlBioNetworkRendererState {
 
   // update the opacity to opacity on link that are not connected to node
   private updateLinkOpacity(opacity: number, clickedNode: FlBioNetworkD3Node): ValueFn<any, any, number> {
-    return (other: FlBioNetworkD3Link<FlBioNetworkD3Node>) => {
+    return (other: FlBioNetworkD3Link) => {
       return other.source.index === clickedNode.index || other.target.index === clickedNode.index ? 1 : opacity;
     };
   }
@@ -299,7 +282,7 @@ export class FlBioNetworkRendererState {
     const colorTransform: (value: number) => number = this.getLinkColorTransformFunction(linkColorLogarithm);
     const colorScale = this.getLinkColorScale(colorTransform);
     this.links
-      .attr('stroke', (d: FlBioNetworkD3Link<FlBioNetworkD3Node>) => colorScale(colorTransform(d.value)));
+      .attr('stroke', (d: FlBioNetworkD3Link) => colorScale(colorTransform(d.value)));
   }
 
   // create a color scale for link
@@ -322,14 +305,13 @@ export class FlBioNetworkRendererState {
       });
     } else {
       return (value => value);
-
     }
   }
 
   // set opacity to 0.1 to link where abs value is lower than slider value
   public hideLinkLowerThan(value: number): void {
     // update link opacity
-    this.links.style('opacity', (link: FlBioNetworkD3Link<FlBioNetworkD3Node>) =>
+    this.links.style('opacity', (link: FlBioNetworkD3Link) =>
       link.absValue >= value ? 1 : 0.1);
   }
 
