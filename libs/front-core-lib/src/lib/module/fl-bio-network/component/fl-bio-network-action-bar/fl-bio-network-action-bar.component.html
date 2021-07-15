@@ -1,0 +1,23 @@
+<!--    Action bar on the bottom  -->
+<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="action-bar">
+
+  <!--   Slider to hide link     -->
+  <div>
+    <p class="g-text-small g-text-light">{{'flBioNetwork.link_value_help' | translate}} : {{sliderValue}}</p>
+    <mat-slider class="slider" color="primary"
+                [max]="linksMaxAbsValue"
+                [min]="0"
+                [step]="1"
+                [thumbLabel]="true"
+                tickInterval="auto"
+                [(ngModel)]="sliderValue"
+                (input)="hideLinkLowerThan($event)">
+    </mat-slider>
+
+  </div>
+
+  <mat-slide-toggle [(ngModel)]="slideLinkColorToggle" (change)="setLinksColors()" color="primary">
+    {{slideLinkColorToggleText | translate}}
+  </mat-slide-toggle>
+
+</div>

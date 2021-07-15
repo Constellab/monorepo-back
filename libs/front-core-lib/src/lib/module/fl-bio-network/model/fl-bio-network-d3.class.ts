@@ -1,11 +1,8 @@
 import {select, SimulationLinkDatum, SimulationNodeDatum} from 'd3';
-import {
-  FlBioNetworkMetabolite,
-  FlBioNetworkReaction,
-  FlBioNetworkReactionEstimate,
-  FlCoord,
-  FlD3SelectionSimple,
-} from '@monorepo/front-core-lib';
+import {FlBioNetworkMetabolite, FlBioNetworkReaction, FlBioNetworkReactionEstimate} from './fl-bio-network.class';
+import {FlCoord, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
+import {FlColorHelper} from '../../../utils/fl-color-helper.class';
+
 
 // size for the reaction rect
 export const flBioNetworkReactionWidth: number = 45;
@@ -306,6 +303,11 @@ export class FlBioNetworkD3Link
             ${endCoord.x},${endCoord.y} `;
   }
 
-
 }
 
+export function flBioNetworkGetCompartmentColor(compartment: string, defaultColor: string): string{
+  return compartment ?
+    // as the compartment is a single letter, we duplicate it to have really different colors
+    FlColorHelper.stringToRGBColor(compartment + compartment + compartment + compartment) :
+    defaultColor;
+}

@@ -5,12 +5,12 @@ import {
   FlBioNetworkReactionEstimate,
   FlPathwayDatabase
 } from '../model/fl-bio-network.class';
-import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {
   FlBioNetworkD3Cofactor,
   FlBioNetworkD3Link,
   FlBioNetworkD3Metabolite,
   FlBioNetworkD3Reaction,
+  flBioNetworkGetCompartmentColor,
   FlBioxNetworkD3
 } from '../model/fl-bio-network-d3.class';
 import {ClHelpService} from '@monorepo/core-lib';
@@ -154,11 +154,7 @@ export class FlBioNetworkFactory {
 
 
   private getMetaboliteColor(metabolite: FlBioNetworkMetabolite): string {
-    return metabolite.compartment ?
-      // as the compartment is a single letter, we duplicate it to have really different colors
-      FlColorHelper.stringToRGBColor(metabolite.compartment + metabolite.compartment +
-        metabolite.compartment + metabolite.compartment) :
-      this.grey;
+    return flBioNetworkGetCompartmentColor(metabolite.compartment, this.grey);
   }
 
   private isCofactor(chebiId: string): boolean {

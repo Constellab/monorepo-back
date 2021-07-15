@@ -70,6 +70,11 @@ export class FlBioNetworkRendererState implements OnDestroy {
     this.subscriptions.add(this.state.getChartData$().subscribe(
       chartData => this.drawNetwork(chartData)
     ));
+
+    // reset the node and link on drawer closed
+    this.subscriptions.add(this.drawerState.drawerClosed$().subscribe(
+      () => this.resetNodeAndLinkOpacity()
+    ));
   }
 
   private drawNetwork(chartData: FlBioxNetworkD3): void {
