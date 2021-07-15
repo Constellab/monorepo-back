@@ -1,5 +1,11 @@
-import {SimulationLinkDatum, SimulationNodeDatum} from 'd3';
-import {FlBioNetworkMetabolite, FlBioNetworkReaction, FlBioNetworkReactionEstimate, FlCoord,} from '@monorepo/front-core-lib';
+import {select, SimulationLinkDatum, SimulationNodeDatum} from 'd3';
+import {
+  FlBioNetworkMetabolite,
+  FlBioNetworkReaction,
+  FlBioNetworkReactionEstimate,
+  FlCoord,
+  FlD3SelectionSimple,
+} from '@monorepo/front-core-lib';
 
 // size for the reaction rect
 export const flBioNetworkReactionWidth: number = 45;
@@ -8,8 +14,13 @@ export const flBioNetworkReactionHeight: number = 12;
 // radius of the metabolite round
 export const flBioNetworkMetaboliteRadius: number = 7;
 
+// size for the cofactor losange
+export const flBioNetworkCofactorSize: number = 5;
+
 // maximum value of a reaction in a pathway
 export const flBioNetworkReactionMaxValue: number = 1000;
+
+export const flBioNetworkNodeClass: string = 'node';
 
 /**
  * Data used to construct to d3 network
@@ -18,7 +29,15 @@ export class FlBioxNetworkD3 {
 
   constructor(public metabolites: FlBioNetworkD3Metabolite[],
               public reactions: FlBioNetworkD3Reaction[],
+              public cofactors: FlBioNetworkD3Cofactor[],
               public links: FlBioNetworkD3Link<FlBioNetworkD3Node>[]) {
+  }
+
+  /**
+   * return all the nodes
+   */
+  public getAllNodes(): FlBioNetworkD3Node[] {
+    return [...this.metabolites, ...this.cofactors, ...this.reactions];
   }
 
 
@@ -52,7 +71,7 @@ export class FlBioxNetworkD3 {
   }
 }
 
-export type FlBioNetworkD3NodeType = 'metabolite' | 'reaction';
+export type FlBioNetworkD3NodeType = 'metabolite' | 'reaction' | 'cofactor';
 
 export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
 
@@ -76,7 +95,45 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
                         public data: FlBioNetworkMetabolite | FlBioNetworkReaction) {
   }
 
+  public drawNodeAndText(container: SVGElement, textColor: string, backgroundColor: string): void {
+    // draw the node and add the class 'node' to each node so we can retrieve them
+    this.drawNode(container)
+      .attr('class', flBioNetworkNodeClass);
+
+    this.drawNodeText(container, textColor, backgroundColor);
+    this.setNodeTitle(container);
+  }
+
+  // draw the node element using d3 js
+  public abstract drawNode(container: SVGElement): FlD3SelectionSimple<FlBioNetworkD3Node>;
+
+  // get the center of the node
   public abstract getCenter(): FlCoord;
+
+  protected abstract drawNodeText(container: SVGElement, textColor: string, backgroundColor: string): void;
+
+  protected setNodeTitle(container: SVGElement): void {
+    select(container).append('title')
+      .text((d: FlBioNetworkD3Node) => d.name);
+  }
+
+  protected drawTextUnder(element: SVGElement, textColor: string, backgroundColor: string, y: number): void {
+    // create the text for metabolite
+    select(element).append('text')
+      .text((d: FlBioNetworkD3Node) => d.name.substr(0, 20))
+      .attr('y', y)
+      .attr('dy', '1em')
+      .attr('text-anchor', 'middle')
+      .attr('fill', textColor)
+      .style('text-shadow', this.getTextShadow(backgroundColor))
+      .style('font-size', '0.3em');
+  }
+
+  protected getTextShadow(backgroundColor: string): string {
+    return `-1px -1px 0 ${backgroundColor}, 1px -1px 0 ${backgroundColor},
+            -1px 1px 0 ${backgroundColor}, 1px 1px 0 ${backgroundColor}`;
+  }
+
 }
 
 
@@ -89,6 +146,22 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
     super(id, name, 'metabolite', color, data);
   }
 
+
+  drawNode(element: SVGElement): FlD3SelectionSimple<FlBioNetworkD3Node> {
+    return select(element)
+      .append('circle')
+      .join('circle')
+      .attr('r', flBioNetworkMetaboliteRadius)
+      .attr('stroke', (d: FlBioNetworkD3Node) => d.color)
+      .attr('stroke-width', 1)
+      .attr('fill', 'white') as FlD3SelectionSimple<FlBioNetworkD3Node>;
+  }
+
+  protected drawNodeText(element: SVGElement, textColor: string, backgroundColor: string): void {
+    this.drawTextUnder(element, textColor, backgroundColor, flBioNetworkMetaboliteRadius);
+  }
+
+
   getCenter(): FlCoord {
     // get the center of the metabolite round
     return {
@@ -96,8 +169,6 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
       y: this.y
     };
   }
-
-
 }
 
 export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
@@ -109,15 +180,77 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
     super(id, name, 'reaction', color, data);
   }
 
+
+  drawNode(element: SVGElement): FlD3SelectionSimple<FlBioNetworkD3Node> {
+    // create the rect of reaction
+    return select(element)
+      .append('rect')
+      .join('rect')
+      .attr('class', flBioNetworkNodeClass)
+      .attr('width', flBioNetworkReactionWidth)
+      .attr('height', flBioNetworkReactionHeight)
+      .attr('rx', 3) // round corner
+      .attr('ry', 3)
+      .attr('stroke', this.color)
+      .attr('stroke-width', 1)
+      .attr('fill', 'white') as FlD3SelectionSimple<FlBioNetworkD3Node>;
+  }
+
+  // draw the text for reaction inside the rect
+  protected drawNodeText(element: SVGElement): void {
+    // create the text for reaction
+    select(element).append('text')
+      .text((d: FlBioNetworkD3Node) => d.name.substr(0, 10))
+      .attr('x', flBioNetworkReactionWidth / 2) // center x
+      .attr('y', flBioNetworkReactionHeight / 2) // center y
+      .attr('dominant-baseline', 'middle')
+      .attr('text-anchor', 'middle')
+      .attr('fill', 'black')
+      .style('font-size', '0.5em');
+  }
+
+
   getCenter(): FlCoord {
     // get the center of the reaction rect
     return {
       x: this.x + (flBioNetworkReactionWidth / 2),
-      y: this.y + (flBioNetworkMetaboliteRadius / 2)
+      y: this.y + (flBioNetworkReactionHeight / 2)
     };
   }
 }
 
+export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
+  constructor(id: string, name: string, data: FlBioNetworkMetabolite) {
+    super(id, name, 'cofactor', '#ffaa33', data);
+  }
+
+  drawNode(container: SVGElement): FlD3SelectionSimple<FlBioNetworkD3Node> {
+    return select(container)
+      .append('rect')
+      .attr('width', flBioNetworkCofactorSize)
+      .attr('height', flBioNetworkCofactorSize)
+      .attr('rx', 1) // round corner
+      .attr('ry', 1)
+      .attr('transform', 'translate(2.5, -1) rotate(45)')
+      .attr('stroke', (d: FlBioNetworkD3Node) => d.color)
+      .attr('stroke-width', 1)
+      .attr('fill', 'white') as FlD3SelectionSimple<FlBioNetworkD3Node>;
+  }
+
+  protected drawNodeText(container: SVGElement, textColor: string, backgroundColor: string): void {
+    this.drawTextUnder(container, textColor, backgroundColor, flBioNetworkCofactorSize);
+  }
+
+  getCenter(): FlCoord {
+    // get the center of the cofactor rect
+    return {
+      x: this.x + (flBioNetworkCofactorSize / 2),
+      y: this.y + (flBioNetworkCofactorSize / 2)
+    };
+  }
+
+
+}
 
 export class FlBioNetworkD3Link<Node extends FlBioNetworkD3Node>
   implements SimulationLinkDatum<FlBioNetworkD3Node> {

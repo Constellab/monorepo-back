@@ -6,10 +6,8 @@ import {ScaleLinear} from 'd3-scale';
 import {
   FlBioNetworkD3Link,
   FlBioNetworkD3Node,
-  flBioNetworkMetaboliteRadius,
-  flBioNetworkReactionHeight,
+  flBioNetworkNodeClass,
   flBioNetworkReactionMaxValue,
-  flBioNetworkReactionWidth,
   FlBioxNetworkD3
 } from '../model/fl-bio-network-d3.class';
 import {FlCoord, FlD3SelectionSimple, FlD3ZoomEvent} from '../../fl-chart/model/fl-d3.class';
@@ -35,8 +33,7 @@ export class FlBioNetworkRendererState {
   private svg: FlD3SelectionSimple;
   private mainGroup: FlD3SelectionSimple;
 
-  private metabolites: FlD3SelectionSimple<FlBioNetworkD3Node>;
-  private reactions: FlD3SelectionSimple<FlBioNetworkD3Node>;
+  private nodesContainer: FlD3SelectionSimple<FlBioNetworkD3Node>;
   private links: FlD3SelectionSimple<FlBioNetworkD3Link<FlBioNetworkD3Node>>;
 
   private simulation: Simulation<FlBioNetworkD3Node, any>;
@@ -84,8 +81,7 @@ export class FlBioNetworkRendererState {
       this.initSVG();
       this.initSimulation();
       this.initLinks(this.linkColorLogarithm);
-      this.initMetabolites();
-      this.initReactions();
+      this.initNodes();
       this.defineArrowMarker();
       this.enableZoom(this.state.zoomTransform);
       this.launchSimulation();
@@ -109,7 +105,7 @@ export class FlBioNetworkRendererState {
   }
 
   private initSimulation(): void {
-    this.simulation = d3.forceSimulation([...this.data.metabolites, ...this.data.reactions])
+    this.simulation = d3.forceSimulation(this.data.getAllNodes())
       .force('link',
         d3.forceLink(this.data.links).distance(100)
           .id((d: FlBioNetworkD3Node) => d.id)
@@ -125,89 +121,33 @@ export class FlBioNetworkRendererState {
       // refresh link points
       this.links.attr('points', (d: FlBioNetworkD3Link<FlBioNetworkD3Node>) => this.getPolylinePoints(d));
 
-      // refresh metabolites positions
-      this.metabolites.attr('transform',
+      // refresh nodes positions
+      this.nodesContainer.attr('transform',
         (d: FlBioNetworkD3Node) => 'translate(' + d.x + ',' + d.y + ')'
       );
-
-      // refresh reaction positions
-      this.reactions
-        .attr('transform',
-          (d: FlBioNetworkD3Node) => 'translate(' + d.x + ',' + d.y + ')'
-        );
     });
 
     // todo voir ce que c'est a appeler au onDestroy?
     // invalidation.then(() => simulation.stop());
   }
 
-  private initMetabolites(): void {
-    this.metabolites = this.mainGroup.append('g')
+  private initNodes(): void {
+    this.nodesContainer = this.mainGroup.append('g')
       .selectAll('g')
-      .data(this.data.metabolites)
-      .join('g')
-      .call(this.drag(this.simulation));
-
-    // create the circles
-    this.metabolites
-      .append('circle')
-      .join('circle')
-      .attr('r', (d) => d.id.indexOf(':') !== -1 ? 3 : flBioNetworkMetaboliteRadius)
-      .attr('stroke', (d: FlBioNetworkD3Node) => d.color)
-      .attr('stroke-width', 1)
-      .attr('fill', 'white')
-      .style('cursor', 'pointer')
-      .on('click', this.onNodeClicked(0.1));
-
-
-    // create the text for metabolite
-    this.metabolites.append('text')
-      .text((d: FlBioNetworkD3Node) => d.name.substr(0, 20))
-      .attr('y', flBioNetworkMetaboliteRadius)
-      .attr('dy', '1em')
-      .attr('text-anchor', 'middle')
-      .attr('fill', this.textColor)
-      .style('text-shadow', this.getTextShadow())
-      .style('font-size', '0.3em');
-
-    this.metabolites.append('title')
-      .text((d: FlBioNetworkD3Node) => d.name);
-  }
-
-  private initReactions(): void {
-    this.reactions = this.mainGroup.append('g')
-      .selectAll('g')
-      .data(this.data.reactions)
+      .data(this.data.getAllNodes())
       .join('g')
       .call(this.drag(this.simulation))
       .style('cursor', 'pointer')
       .on('click', this.onNodeClicked(0.1));
 
-    // create the rect of reaction
-    this.reactions.append('rect')
-      .join('rect')
-      .attr('width', flBioNetworkReactionWidth)
-      .attr('height', flBioNetworkReactionHeight)
-      .attr('rx', 3) // round corner
-      .attr('ry', 3)
-      .attr('stroke', this.grey)
-      .attr('stroke-width', 1)
-      .attr('fill', 'white');
 
-    // create the text for reaction
-    this.reactions.append('text')
-      .text((d: FlBioNetworkD3Node) => d.name.substr(0, 10))
-      .attr('x', flBioNetworkReactionWidth / 2) // center x
-      .attr('y', flBioNetworkReactionHeight / 2) // center y
-      .attr('dominant-baseline', 'middle')
-      .attr('text-anchor', 'middle')
-      .attr('fill', 'black')
-      .style('font-size', '0.5em');
-    //text-shadow:;
-
-    this.reactions.append('title')
-      .text((d: FlBioNetworkD3Node) => d.name);
+    const textColor: string = this.textColor;
+    const backgroundColor: string = this.backgroundColor;
+    this.nodesContainer.each(function (this: SVGElement, d) {
+      d.drawNodeAndText(this, textColor, backgroundColor);
+    });
   }
+
 
   private initLinks(logarithmColor: boolean): void {
     this.links = this.mainGroup.append('g')
@@ -305,18 +245,16 @@ export class FlBioNetworkRendererState {
       // retrieve connected node
       const connectedNodes: FlBioNetworkD3Node[] = this.getConnectedNodes(clickedNode.index);
 
-      // update opacity of metabolites and reaction
-      this.metabolites.style('opacity', this.updateNodeOpacity(opacity, clickedNode, connectedNodes));
-      this.reactions.style('opacity', this.updateNodeOpacity(opacity, clickedNode, connectedNodes));
+      // update opacity of nodes
+      this.nodesContainer.style('opacity', this.updateNodeOpacity(opacity, clickedNode, connectedNodes));
 
       // update link opacity
       this.links.style('opacity', this.updateLinkOpacity(opacity, clickedNode));
 
       // set a specific color to the selected node
-      this.metabolites.selectAll('circle')
-        .attr('stroke', (d: FlBioNetworkD3Node) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
-      this.reactions.selectAll('rect')
-        .attr('stroke', (d: FlBioNetworkD3Node) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
+      this.nodes.attr('stroke', (d: FlBioNetworkD3Node) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
+      // this.reactions.selectAll('rect')
+      //   .attr('stroke', (d: FlBioNetworkD3Node) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
 
       // open the drawer with detail
       this.drawerState.newAction({
@@ -344,15 +282,9 @@ export class FlBioNetworkRendererState {
   }
 
   public resetNodeAndLinkOpacity(): any {
-    // update opacity of metabolites and reaction
-    this.metabolites.style('opacity', 1);
-    this.reactions.style('opacity', 1);
-
-    // set a specific color to the selected node
-    this.metabolites.selectAll('circle')
-      .attr('stroke', (d: FlBioNetworkD3Node) => d.color);
-    this.reactions.selectAll('rect')
-      .attr('stroke', (d: FlBioNetworkD3Node) => d.color);
+    // update opacity of nodes
+    this.nodesContainer.style('opacity', 1);
+    this.nodes.attr('stroke', (d: FlBioNetworkD3Node) => d.color);
 
     // update link opacity
     this.links.style('opacity', 1);
@@ -420,10 +352,11 @@ export class FlBioNetworkRendererState {
       .style('stroke', 'none');
   }
 
-  private getTextShadow(): string {
-    return `-1px -1px 0 ${this.backgroundColor}, 1px -1px 0 ${this.backgroundColor},
-            -1px 1px 0 ${this.backgroundColor}, 1px 1px 0 ${this.backgroundColor}`;
+  // get the selection of the nodes objects (not container)
+  private get nodes(): FlD3SelectionSimple<FlBioNetworkD3Node> {
+    return this.nodesContainer.selectAll(`.${flBioNetworkNodeClass}`);
   }
+
 
   // disable all force so the user can move the node independently
   private endSimulation(): void {
@@ -443,9 +376,8 @@ export class FlBioNetworkRendererState {
     this.svg.remove();
     this.svg = null;
     this.mainGroup = null;
-    this.metabolites = null;
-    this.reactions = null;
     this.links = null;
+    this.nodesContainer = null;
     this.simulationEnded = false;
   }
 

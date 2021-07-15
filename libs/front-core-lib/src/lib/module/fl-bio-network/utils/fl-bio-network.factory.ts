@@ -7,6 +7,7 @@ import {
 } from '../model/fl-bio-network.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {
+  FlBioNetworkD3Cofactor,
   FlBioNetworkD3Link,
   FlBioNetworkD3Metabolite,
   FlBioNetworkD3Node,
@@ -26,6 +27,7 @@ export class FlBioNetworkFactory {
 
   private reactions: FlBioNetworkD3Reaction[] = [];
   private metabolites: FlBioNetworkD3Metabolite[] = [];
+  private cofactors: FlBioNetworkD3Cofactor[] = [];
   private links: FlBioNetworkD3Link<FlBioNetworkD3Node>[] = [];
 
   constructor(private defaultColor: string) {
@@ -44,7 +46,7 @@ export class FlBioNetworkFactory {
     // create the links from the reactions
     this.initLinks();
 
-    return new FlBioxNetworkD3(this.metabolites, this.reactions, this.links);
+    return new FlBioxNetworkD3(this.metabolites, this.reactions, this.cofactors, this.links);
   }
 
   /**
@@ -106,26 +108,24 @@ export class FlBioNetworkFactory {
 
           // create a new object with the new created id
           const newMetabolite = Object.assign(ClHelpService.deepClone(metabolite), {id: newId});
-          this.createMetaboliteD3(newMetabolite);
+          this.cofactors.push(new FlBioNetworkD3Cofactor(newMetabolite.id,
+            newMetabolite.name ? newMetabolite.name : newMetabolite.id,
+            newMetabolite
+          ));
           continue;
         }
 
 
         // add the metabolites to the list if it is not already added
         if (this.metabolites.findIndex(node => node.id === metaboliteId) === -1) {
-          this.createMetaboliteD3(metabolite);
+          this.metabolites.push(new FlBioNetworkD3Metabolite(metabolite.id,
+            metabolite.name ? metabolite.name : metabolite.id,
+            this.getMetaboliteColor(metabolite),
+            metabolite
+          ));
         }
       }
     }
-  }
-
-  private createMetaboliteD3(metabolite: FlBioNetworkMetabolite): void {
-    // create a node and add it
-    this.metabolites.push(new FlBioNetworkD3Metabolite(metabolite.id,
-      metabolite.name ? metabolite.name : metabolite.id,
-      this.getMetaboliteColor(metabolite),
-      metabolite
-    ));
   }
 
   // create the pathway link from list of reaction nodes
