@@ -68,7 +68,7 @@ export const flDefaultPathwayReactionValue: FlBioNetworkReactionEstimate = {
 };
 
 export const flDefaultPathway: FlBioNetworkPathwayDetail = {
-  id: 'Default',
-  name: 'Default'
+  id: 'None',
+  name: 'None'
 };
 

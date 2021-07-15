@@ -1,6 +1,7 @@
 // use to redefined some d3 global objects
 
 import {Selection} from 'd3-selection';
+import {ZoomTransform} from 'd3-zoom';
 
 /**
  * Event type for zooming in d3 with : d3.zoom()
@@ -8,7 +9,7 @@ import {Selection} from 'd3-selection';
 export interface FlD3ZoomEvent {
   sourceEvent: WheelEvent;
   target: any;
-  transform: FlD3Transform;
+  transform: ZoomTransform;
   type: 'zoom';
 }
 

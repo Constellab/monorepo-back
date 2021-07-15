@@ -18,6 +18,7 @@ import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {Injectable} from '@angular/core';
 import {FlBioNetworkState} from './fl-bio-network.state';
+import {ZoomTransform} from 'd3-zoom';
 
 /**
  * State to manager the drawing of bio network using d3
@@ -72,7 +73,7 @@ export class FlBioNetworkRendererState {
     );
   }
 
-  public drawNetwork(chartData: FlBioxNetworkD3): void {
+  private drawNetwork(chartData: FlBioxNetworkD3): void {
     if (this.svg != null) {
       this.clearNetwork();
     }
@@ -86,7 +87,7 @@ export class FlBioNetworkRendererState {
       this.initMetabolites();
       this.initReactions();
       this.defineArrowMarker();
-      this.enableZoom();
+      this.enableZoom(this.state.zoomTransform);
       this.launchSimulation();
 
       // speed up the simulation to quickly end it
@@ -151,7 +152,7 @@ export class FlBioNetworkRendererState {
     this.metabolites
       .append('circle')
       .join('circle')
-      .attr('r', flBioNetworkMetaboliteRadius)
+      .attr('r', (d) => d.id.indexOf(':') !== -1 ? 3 : flBioNetworkMetaboliteRadius)
       .attr('stroke', (d: FlBioNetworkD3Node) => d.color)
       .attr('stroke-width', 1)
       .attr('fill', 'white')
@@ -187,6 +188,8 @@ export class FlBioNetworkRendererState {
       .join('rect')
       .attr('width', flBioNetworkReactionWidth)
       .attr('height', flBioNetworkReactionHeight)
+      .attr('rx', 3) // round corner
+      .attr('ry', 3)
       .attr('stroke', this.grey)
       .attr('stroke-width', 1)
       .attr('fill', 'white');
@@ -243,17 +246,24 @@ export class FlBioNetworkRendererState {
       .on('end', dragEnded);
   };
 
-  private enableZoom(): void {
+  private enableZoom(transform?: ZoomTransform): void {
     //add zoom capabilities
-    const zoom_handler = d3.zoom()
-      .on('zoom', (event) => this.zoom_actions(event));
+    const zoomHandler = d3.zoom()
+      .on('zoom', (event: FlD3ZoomEvent) => this.onZoom(event.transform));
 
-    zoom_handler(this.svg);
+    // init the zoom with a value if
+    if (transform) {
+      zoomHandler.transform(this.svg, transform);
+    }
+
+    zoomHandler(this.svg);
   }
 
   //Zoom functions
-  private zoom_actions(event: FlD3ZoomEvent): void {
-    this.mainGroup.attr('transform', event.transform.toString());
+  private onZoom(transform: ZoomTransform): void {
+    this.mainGroup.attr('transform', transform.toString());
+    // save the zoom transform
+    this.state.zoomTransform = transform;
   }
 
   // return points for the line with a point in middle to draw the arrow
