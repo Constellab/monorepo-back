@@ -23,6 +23,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flBioNetworkI18n} from './i18n/fl-bio-network.i18n';
 import {FlBioNetworkComponent} from './component/fl-bio-network/fl-bio-network.component';
+import {MatTabsModule} from '@angular/material/tabs';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -53,6 +54,7 @@ import {FlBioNetworkComponent} from './component/fl-bio-network/fl-bio-network.c
     MatCheckboxModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatTabsModule,
 
 
     FlTranslateModule,

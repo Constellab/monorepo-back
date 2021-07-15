@@ -50,8 +50,11 @@ $theme: mat-light-theme((
 
   // different contrast of grey base on theme color (here white)
   --grey-low-contrast: #ddd;
+  --grey-low-contrast-text: #000000;
   --grey-contrast: #bbbbbb;
-  --grey-high-contrast: grey;
+  --grey-contrast-text: #000000;
+  --grey-high-contrast: #808080;
+  --grey-high-contrast-text: #ffffff;
 }
 
 /**

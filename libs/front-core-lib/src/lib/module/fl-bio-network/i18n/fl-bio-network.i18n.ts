@@ -13,9 +13,12 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     link_color_log: 'Couleurs logarithmes',
     select_sub_pathway: 'Sélectionner un pathway',
     open_config: 'Ouvrir les paramètres',
+    config: 'Config',
+    node: 'Node',
     select_db: 'Sélectionner une base de données',
     select_network: 'Sélectionner un réseau',
     network: 'Réseau',
+    select_node_help_text: 'Sélectionner un node pour voir le détail ici'
   }
 };
 
@@ -26,10 +29,13 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     link_color_normal: 'Linears colors',
     link_color_log: 'Logarithm colors',
     select_sub_pathway: 'Select a pathway',
+    config: 'Config',
+    node: 'Node',
     open_config: 'Open config',
     select_db: 'Select a database',
     select_network: 'Select a network',
     network: 'Network',
+    select_node_help_text: 'Select a node to view detail here'
   }
 };
 

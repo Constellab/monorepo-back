@@ -1,7 +1,8 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {FlBioNetworkDrawerAction} from '../../model/fl-bio-network-drawer-action.class';
-import {Observable} from 'rxjs';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Subscription} from 'rxjs';
 import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
+import {FlBioNetworkDrawerActionName} from '../../model/fl-bio-network-drawer-action.class';
+import {MatTabGroup} from '@angular/material/tabs';
 
 @Component({
   selector: 'fl-bio-network-drawer-action',
@@ -9,15 +10,43 @@ import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
   styleUrls: ['./fl-bio-network-drawer-action.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlBioNetworkDrawerActionComponent implements OnInit {
+export class FlBioNetworkDrawerActionComponent implements OnInit, OnDestroy {
 
-  action$: Observable<FlBioNetworkDrawerAction>;
+  @ViewChild(MatTabGroup, {static: true}) tab: MatTabGroup;
 
-  constructor(private drawerState: FlBioNetworkDrawerState) {
+  subscription: Subscription;
+
+  tabIndex: number;
+
+  constructor(private drawerState: FlBioNetworkDrawerState,
+              private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-    this.action$ = this.drawerState.getAction$();
+    this.drawerState.getState$().subscribe(
+      state => this.changeTab(state.action)
+    );
   }
+
+  private changeTab(action: FlBioNetworkDrawerActionName): void {
+    switch (action) {
+      case 'config':
+        this.tabIndex = 0;
+        break;
+      case 'nodeDetail':
+        this.tabIndex = 1;
+        break;
+    }
+    this.cdr.detectChanges();
+  }
+
+  closeDrawer(): void {
+    this.drawerState.closeDrawer();
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
 
 }

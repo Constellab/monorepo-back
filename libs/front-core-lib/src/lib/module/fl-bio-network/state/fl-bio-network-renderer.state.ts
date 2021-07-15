@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {Simulation} from 'd3-force';
-import {ClHelpService} from '@monorepo/core-lib';
+import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {ValueFn} from 'd3-selection';
 import {ScaleLinear} from 'd3-scale';
 import {
@@ -14,7 +14,7 @@ import {FlD3SelectionSimple, FlD3ZoomEvent} from '../../fl-chart/model/fl-d3.cla
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {FlBioNetworkState} from './fl-bio-network.state';
 import {ZoomTransform} from 'd3-zoom';
 
@@ -22,7 +22,7 @@ import {ZoomTransform} from 'd3-zoom';
  * State to manager the drawing of bio network using d3
  */
 @Injectable()
-export class FlBioNetworkRendererState {
+export class FlBioNetworkRendererState implements OnDestroy {
 
   private htmlContainer: HTMLElement;
   private chartHeight: number;
@@ -41,6 +41,8 @@ export class FlBioNetworkRendererState {
 
   // if true the link colors switch to logarithm
   private linkColorLogarithm: boolean;
+
+  private readonly subscriptions = new ClSubscriptionHandler();
 
   ////////////// READONLY VARIABLE //////////////////
   private readonly collideRadius: number = 25;
@@ -62,12 +64,12 @@ export class FlBioNetworkRendererState {
     this.htmlContainer = htmlContainer;
     this.chartWidth = htmlContainer.clientWidth;
     // set height minus 10 to avoid scrollbar
-    this.chartHeight = htmlContainer.clientHeight - 10;
+    this.chartHeight = htmlContainer.clientHeight;
     this.linkColorLogarithm = slideLinkColorToggle;
 
-    this.state.getChartData$().subscribe(
+    this.subscriptions.add(this.state.getChartData$().subscribe(
       chartData => this.drawNetwork(chartData)
-    );
+    ));
   }
 
   private drawNetwork(chartData: FlBioxNetworkD3): void {
@@ -96,8 +98,7 @@ export class FlBioNetworkRendererState {
     this.svg = d3.select(this.htmlContainer)
       .append('svg')
       .attr('width', this.chartWidth)
-      .attr('height', this.chartHeight)
-      .on('click', () => this.resetNodeAndLinkOpacity()); // reset the opacity of node and link when clicking on svg
+      .attr('height', this.chartHeight); // reset the opacity of node and link when clicking on svg
 
     //add encompassing group for the zoom
     this.mainGroup = this.svg.append('g')
@@ -242,8 +243,7 @@ export class FlBioNetworkRendererState {
       // open the drawer with detail
       this.drawerState.newAction({
         action: 'nodeDetail',
-        title: clickedNode.name,
-        data: clickedNode
+        selectedNode: clickedNode
       });
     };
   }
@@ -265,12 +265,14 @@ export class FlBioNetworkRendererState {
   }
 
   public resetNodeAndLinkOpacity(): any {
-    // update opacity of nodes
-    this.nodesContainer.style('opacity', 1);
-    this.nodes.attr('stroke', (d: FlBioNetworkD3Node) => d.color);
+    if (this.nodesContainer && this.links) {
+      // update opacity of nodes
+      this.nodesContainer.style('opacity', 1);
+      this.nodes.attr('stroke', (d: FlBioNetworkD3Node) => d.color);
 
-    // update link opacity
-    this.links.style('opacity', 1);
+      // update link opacity
+      this.links.style('opacity', 1);
+    }
   }
 
   /**
@@ -362,5 +364,10 @@ export class FlBioNetworkRendererState {
     this.nodesContainer = null;
     this.simulationEnded = false;
   }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
 
 }

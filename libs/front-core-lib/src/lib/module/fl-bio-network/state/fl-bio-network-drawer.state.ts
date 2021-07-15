@@ -1,7 +1,8 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {MatDrawer} from '@angular/material/sidenav';
-import {FlBioNetworkDrawerAction} from '../model/fl-bio-network-drawer-action.class';
+import {FlBioNetworkDrawerAction, FlBioNetworkDrawerStateValue} from '../model/fl-bio-network-drawer-action.class';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {ClHelpService} from '@monorepo/core-lib';
 import {filter, map} from 'rxjs/operators';
 
 /**
@@ -20,35 +21,47 @@ export interface FLBioNetworkDrawerChanged {
 export class FlBioNetworkDrawerState implements OnDestroy {
 
   private drawer: MatDrawer;
-  private action$: BehaviorSubject<FlBioNetworkDrawerAction>;
+  private state$: BehaviorSubject<FlBioNetworkDrawerStateValue>;
 
   public init(drawer: MatDrawer): void {
     this.drawer = drawer;
-    this.action$ = new BehaviorSubject<FlBioNetworkDrawerAction>(null);
+    this.state$ = new BehaviorSubject<FlBioNetworkDrawerStateValue>({
+      action: 'config', selectedNode: null
+    });
+    this.openDrawer();
   }
+
 
   public newAction(action: FlBioNetworkDrawerAction): void {
+    this.openDrawer();
+
+    const previousState: FlBioNetworkDrawerStateValue = ClHelpService.deepClone(this.state$.value);
+    this.state$.next(Object.assign(previousState, action));
+  }
+
+  public getState$(): Observable<FlBioNetworkDrawerStateValue> {
+    return this.state$.asObservable();
+  }
+
+  public openDrawer(): void {
     this.drawer.open();
-    this.action$.next(action);
   }
 
-  public getAction$(): Observable<FlBioNetworkDrawerAction> {
-    return this.action$.asObservable().pipe(filter(action => action != null));
+  public closeDrawer(): void {
+    this.drawer.close();
   }
 
-  public openChange$(): Observable<FLBioNetworkDrawerChanged> {
+  public drawerClosed$(): Observable<void> {
     return this.drawer.openedChange.pipe(
-      map(open => {
-        return {
-          open: open,
-          action: this.action$.value
-        };
+      filter(open => !open),
+      map(() => {
       })
     );
   }
 
+
   ngOnDestroy(): void {
-    this.action$.complete();
+    this.state$.complete();
     console.log('Destroy');
   }
 }

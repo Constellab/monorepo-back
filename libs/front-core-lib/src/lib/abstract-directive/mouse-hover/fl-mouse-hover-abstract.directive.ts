@@ -10,13 +10,27 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
   /**
    * Event emitted on Hover status change (enter or leave)
    */
-  @Output() flMouseHoverChange: EventEmitter<FlMouseHoverChange> = new EventEmitter<FlMouseHoverChange>();
+  @Output() flMouseHoverChange: EventEmitter<FlMouseHoverChange> = new EventEmitter();
+
+  /**
+   * Event emitted on mouse enter (including the delay)
+   */
+  @Output() flMouseEnter: EventEmitter<MouseEvent> = new EventEmitter();
+
+  /**
+   * Event emitted on mouse leave (including the delay)
+   */
+  @Output() flMouseLeave: EventEmitter<MouseEvent> = new EventEmitter();
 
   /**
    * Time (in millisecond) the user need to stay hovering the host element before triggering the enter event
    */
-  @Input() flMouseHoverDelay: number = 0;
+  @Input() flMouseEnterDelay: number = 0;
 
+  /**
+   * Time (in millisecond) the user need after the user left the element before triggering the leav event
+   */
+  @Input() flMouseLeaveDelay: number = 0;
 
   /**
    * @ignore
@@ -26,7 +40,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
 
   /**
    * @ignore
-   * timer to handle the delay
+   * timer to handle the enter delay
    */
   protected timer: any;
 
@@ -43,10 +57,10 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
     }
 
     // if the delay is 0, don't use timeout
-    if (this.flMouseHoverDelay === 0) {
+    if (this.flMouseEnterDelay === 0) {
       this.triggerHoverEnter(event);
     } else {
-      this.timer = setTimeout(() => this.triggerHoverEnter(event), this.flMouseHoverDelay);
+      this.timer = setTimeout(() => this.triggerHoverEnter(event), this.flMouseEnterDelay);
     }
 
   }
@@ -62,7 +76,12 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
       return;
     }
 
-    this.triggerHoverLeave(event);
+    // if the delay is 0, don't use timeout
+    if (this.flMouseLeaveDelay === 0) {
+      this.triggerHoverLeave(event);
+    } else {
+      this.timer = setTimeout(() => this.triggerHoverLeave(event), this.flMouseLeaveDelay);
+    }
   }
 
   protected constructor(protected elementRef: ElementRef) {
@@ -82,7 +101,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
   protected triggerHoverEnter(event: MouseEvent): void {
     this.emitHoverEvent(true, event);
     this.isHovering = true;
-    this.clearTimer();
+    this.flMouseEnter.next(event);
 
     this.onTriggerHoverEnter(event);
   }
@@ -91,7 +110,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
   protected triggerHoverLeave(event: MouseEvent): void {
     this.emitHoverEvent(false, event);
     this.isHovering = false;
-    this.clearTimer();
+    this.flMouseLeave.next(event);
 
     this.onTriggerHoverLeave(event);
   }

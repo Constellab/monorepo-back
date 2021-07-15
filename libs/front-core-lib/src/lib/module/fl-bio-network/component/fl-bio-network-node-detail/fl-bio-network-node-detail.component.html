@@ -1,6 +1,12 @@
-<div>
+<div *ngIf="node$ | async as node; else noNode">
   <fl-pretty-json class="g-section" [object]="node.data" [previewMaxTextLength]="30"></fl-pretty-json>
 
   <fl-bio-network-node-links class="g-section" [node]="node"></fl-bio-network-node-links>
 </div>
 
+<ng-template #noNode>
+  <div class="g-text-light g-text-centered">
+    <div>{{'flBioNetwork.select_node_help_text' | translate}}</div>
+    <mat-icon>block</mat-icon>
+  </div>
+</ng-template>

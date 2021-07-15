@@ -1,13 +1,14 @@
-.drawer{
+.container {
   width: 30em;
-  padding: 1em;
+  //padding: 1em;
   height: 100%;
 }
 
-.header{
-  padding-left: 0.5em;
+.tab-body {
+  display: block;
+  padding: 1em 1em 0 1em;
 }
 
-.container{
-  padding: 0.5em;
+.header {
+  padding-left: 0.5em;
 }

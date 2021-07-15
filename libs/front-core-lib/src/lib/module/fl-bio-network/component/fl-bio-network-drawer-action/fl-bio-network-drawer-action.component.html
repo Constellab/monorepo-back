@@ -1,18 +1,11 @@
-<div class="drawer" *ngIf="action$ | async as action"
-     fxLayout="column">
+<mat-tab-group [(selectedIndex)]="tabIndex" class="container" animationDuration="0"
+               flMouseHover (flMouseLeave)="closeDrawer()" [flMouseLeaveDelay]="300">
+  <mat-tab [label]="'flBioNetwork.config' | translate">
+    <fl-bio-network-config class="tab-body"></fl-bio-network-config>
+  </mat-tab>
 
-  <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
-    <p>{{action.title}}</p>
-
-    <button mat-icon-button type="button" flDrawerClose tabindex="-1"
-            [matTooltip]="'close' | translate">
-      <mat-icon>clear</mat-icon>
-    </button>
-  </div>
-
-  <div class="container" fxFlex="auto" [ngSwitch]="action.action">
-    <fl-bio-network-config *ngSwitchCase="'config'"></fl-bio-network-config>
-    <fl-bio-network-node-detail *ngSwitchCase="'nodeDetail'" [node]="$any(action.data)"></fl-bio-network-node-detail>
-  </div>
-</div>
+  <mat-tab [label]="'flBioNetwork.node' | translate">
+    <fl-bio-network-node-detail class="tab-body"></fl-bio-network-node-detail>
+  </mat-tab>
+</mat-tab-group>
 

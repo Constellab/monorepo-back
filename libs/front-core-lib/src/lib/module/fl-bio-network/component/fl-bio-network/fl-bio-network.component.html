@@ -1,45 +1,52 @@
-<mat-drawer-container class="g-full-height" [hasBackdrop]="false">
+<mat-sidenav-container class="g-full-height" [hasBackdrop]="false">
 
   <!-- Main content with chart -->
-  <mat-drawer-content>
-    <div class="container" fxLayout="column">
+  <mat-sidenav-content>
+    <div class="container" fxLayout="row">
 
-      <div #chart fxFlex="auto"></div>
 
-      <!--    Action bar on the bottom  -->
-      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="action-bar">
+      <div class="g-full-height" fxFlex="auto" fxLayout="column">
+        <div #chart fxFlex="auto" class="svg-container" (click)="closeDrawer()"></div>
 
-        <!--   Slider to hide link     -->
-        <div>
-          <p class="g-text-small g-text-light">{{'flBioNetwork.link_value_help' | translate}} : {{sliderValue}}</p>
-          <mat-slider class="slider" color="primary"
-                      [max]="linksMaxAbsValue"
-                      [min]="0"
-                      [step]="1"
-                      [thumbLabel]="true"
-                      tickInterval="auto"
-                      [(ngModel)]="sliderValue"
-                      (input)="hideLinkLowerThan($event)">
-          </mat-slider>
+        <!--    Action bar on the bottom  -->
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="action-bar">
+
+          <!--   Slider to hide link     -->
+          <div>
+            <p class="g-text-small g-text-light">{{'flBioNetwork.link_value_help' | translate}} : {{sliderValue}}</p>
+            <mat-slider class="slider" color="primary"
+                        [max]="linksMaxAbsValue"
+                        [min]="0"
+                        [step]="1"
+                        [thumbLabel]="true"
+                        tickInterval="auto"
+                        [(ngModel)]="sliderValue"
+                        (input)="hideLinkLowerThan($event)">
+            </mat-slider>
+
+          </div>
+
+          <mat-slide-toggle [(ngModel)]="slideLinkColorToggle" (change)="setLinksColors()" color="primary">
+            {{slideLinkColorToggleText | translate}}
+          </mat-slide-toggle>
 
         </div>
 
-        <mat-slide-toggle [(ngModel)]="slideLinkColorToggle" (change)="setLinksColors()" color="primary">
-          {{slideLinkColorToggleText | translate}}
-        </mat-slide-toggle>
+      </div>
 
-        <button mat-icon-button type="button" (click)="openConfig()"
-                [matTooltip]="'flBioNetwork.open_config' | translate">
-          <mat-icon>settings</mat-icon>
-        </button>
+      <!--   Drawer opener   -->
+      <div class="drawer-opener" (mouseenter)="openDrawer()"
+           fxLayout="column" fxLayoutAlign="center start">
+        <div class="drawer-opener-icon" fxLayout="column" fxLayoutAlign="center center">
+          <mat-icon>arrow_back_ios</mat-icon>
+        </div>
       </div>
 
     </div>
 
+  </mat-sidenav-content>
 
-  </mat-drawer-content>
-
-  <mat-drawer mode="over" position="end">
+  <mat-sidenav mode="over" position="end" [fixedInViewport]="true">
     <fl-bio-network-drawer-action></fl-bio-network-drawer-action>
-  </mat-drawer>
-</mat-drawer-container>
+  </mat-sidenav>
+</mat-sidenav-container>
