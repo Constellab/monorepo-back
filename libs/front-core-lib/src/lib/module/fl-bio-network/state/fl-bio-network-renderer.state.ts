@@ -215,7 +215,7 @@ export class FlBioNetworkRendererState {
       .data(this.data.links)
       .join('polyline')
       .attr('stroke-opacity', 0.9)
-      .attr('stroke-width', (d: FlBioNetworkD3Link<FlBioNetworkD3Node>) => d.absLog10Value)
+      .attr('stroke-width', (d: FlBioNetworkD3Link<FlBioNetworkD3Node>) => d.absLog10Value + 1)
       .attr('marker-mid', 'url(#mid_arrow)') as any;
 
     this.setLinksColors(logarithmColor);
@@ -411,8 +411,8 @@ export class FlBioNetworkRendererState {
       .attr('refX', 10)
       .attr('refY', 0)
       .attr('orient', 'auto')
-      .attr('markerWidth', 3)
-      .attr('markerHeight', 3)
+      .attr('markerWidth', 5)
+      .attr('markerHeight', 5)
       .attr('xoverflow', 'visible')
       .append('svg:path')
       .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
