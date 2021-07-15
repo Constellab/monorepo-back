@@ -38,12 +38,12 @@ export interface FlBioNetworkEnzyme {
 // list of database ref for a pathway
 export type FlPathwayDatabase = keyof FlBioNetworkPathways;
 
-export const flPathwayDatabases: FlPathwayDatabase[] = ['kegg', 'branda', 'metacyc'];
+export const flPathwayDatabases: FlPathwayDatabase[] = ['kegg', 'brenda', 'metacyc'];
 
 // info of which pathway the reaction is
 // It define the pathway name based for known DB (EU, US, Japan)
 export interface FlBioNetworkPathways {
-  branda?: FlBioNetworkPathwayDetail;
+  brenda?: FlBioNetworkPathwayDetail;
   kegg?: FlBioNetworkPathwayDetail;
   metacyc?: FlBioNetworkPathwayDetail;
 }

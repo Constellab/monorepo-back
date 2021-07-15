@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
 import {FileResource, FileResourcePreview} from '../../../../../core/model/entities/resource/file-resource.entity';
-import {BioxNetworkHelper} from '../../../../../core/model/entities/resource/biox-network.helper';
+import {BioxResourceNetworkHelper} from '../../../../../core/model/entities/resource/biox-resource-network.helper';
 
 interface View {
   route: string;
@@ -62,7 +62,7 @@ export class BioxResourceDetailPageComponent implements OnInit {
     let defaultView: View;
 
     // if the resource is a network, add the network view and set it by default
-    if (BioxNetworkHelper.resourceIsNetwork(resource)) {
+    if (BioxResourceNetworkHelper.resourceIsNetwork(resource)) {
       this.availableViews = [networkView, jsonView, spreadsheetView, plainTextView];
       defaultView = networkView;
     } else if (resource instanceof FileResourcePreview && resource.isImage()) {

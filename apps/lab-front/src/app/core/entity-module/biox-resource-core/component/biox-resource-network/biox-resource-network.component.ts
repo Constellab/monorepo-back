@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {FlBioNetwork} from '@monorepo/front-core-lib';
-import {BioxNetworkHelper} from '../../../../model/entities/resource/biox-network.helper';
+import {BioxResourceNetworkHelper} from '../../../../model/entities/resource/biox-resource-network.helper';
 
 /**
  * Display the resource as a network pathway
@@ -23,8 +23,8 @@ export class BioxResourceNetworkComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (BioxNetworkHelper.resourceIsNetwork(this.resource)) {
-      this.networks = BioxNetworkHelper.getNetworksFromResource(this.resource);
+    if (BioxResourceNetworkHelper.resourceIsNetwork(this.resource)) {
+      this.networks = BioxResourceNetworkHelper.getNetworksFromResource(this.resource);
       this.error = false;
     } else {
       this.error = true;

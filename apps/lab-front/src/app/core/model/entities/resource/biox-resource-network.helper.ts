@@ -7,7 +7,7 @@ import {BioModel, bioxResourceBioModelType} from './bio-model.class';
 /**
  * Helper to manage network resource and retrieve networks form it
  */
-export class BioxNetworkHelper {
+export class BioxResourceNetworkHelper {
 
   /**
    * return true if the resource is a network
@@ -38,7 +38,7 @@ export class BioxNetworkHelper {
       // if the resource file containing a network resource
       if (resource.dataIsLabEntity()) {
         // call the method with the BioxResource inside the file resource
-        return BioxNetworkHelper.getNetworksFromResource(resource.data as BioxResource);
+        return BioxResourceNetworkHelper.getNetworksFromResource(resource.data as BioxResource);
       } else {
         // if the resource is a file containing directly the network json
         return resource.data;
