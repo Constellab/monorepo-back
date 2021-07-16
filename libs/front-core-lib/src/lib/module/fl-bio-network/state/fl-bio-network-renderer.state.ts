@@ -223,7 +223,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
     };
   }
 
-
   /**
    * Set the color of the links
    * @param linkColorLogarithm if true the colors are base on logarithm scale, and linear otherwise

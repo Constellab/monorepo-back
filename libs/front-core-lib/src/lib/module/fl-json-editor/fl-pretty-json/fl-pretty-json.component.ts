@@ -16,7 +16,7 @@ import {FlKeyboardHelper, FlKeyboardKey} from '../../../utils/fl-keyboard.helper
 import {FlFlatTreeControl} from '../../../model/fl-flat-tree-control.class';
 import {ObjectFlatNode, ObjectNode} from '../model/fl-pretty-json.class';
 import {FlPrettyJsonBuilder} from '../model/fl-pretty-json-builder.class';
-import {FlHtmlService} from '../../../service/fl-html.service';
+import {FlHtmlHelper} from '../../../utils/fl-html.helper';
 
 
 @Component({
@@ -92,8 +92,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   hasChild = (_: number, node: ObjectFlatNode): boolean => node.expandable;
 
 
-  constructor(private cdr: ChangeDetectorRef,
-              private htmlService: FlHtmlService) {
+  constructor(private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -249,7 +248,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     // get the node and check if it's in viewport, if note, scroll to element
     const nodeElement: HTMLElement = this.getNodeHtmlElement(node.id);
     if (nodeElement) {
-      this.htmlService.scrollToElementIfNotVisible(nodeElement);
+      FlHtmlHelper.scrollToElementIfNotVisible(nodeElement);
     }
   }
 

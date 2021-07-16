@@ -3,7 +3,6 @@ export * from './fl-clipboard.service';
 export * from './fl-cookie.service';
 export * from './fl-external-link.service';
 export * from './fl-file.helper';
-export * from './fl-html.service';
 export * from './fl-http-interceptor.service';
 export * from './fl-local-storage.service';
 export * from './fl-luxon-date-adapter.service';

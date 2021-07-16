@@ -1,5 +1,6 @@
 <mat-tab-group [(selectedIndex)]="tabIndex" class="container" animationDuration="0"
-               flMouseHover (flMouseLeave)="closeDrawer()" [flMouseLeaveDelay]="300">
+               flMouseHover (flMouseLeave)="closeDrawer()" [flMouseLeaveDelay]="300"
+               [excludeElement]="cdkContainerClass">
   <mat-tab [label]="'flBioNetwork.config' | translate">
     <fl-bio-network-config class="tab-body"></fl-bio-network-config>
   </mat-tab>

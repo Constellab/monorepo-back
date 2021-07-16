@@ -1,5 +1,7 @@
 import {Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output} from '@angular/core';
 import {FlMouseHoverChange} from './fl-mouse-hover-change.class';
+import {ClOnChange} from '@monorepo/core-lib';
+import {FlHtmlHelper} from '../../utils/fl-html.helper';
 
 /**
  * Abstract directive to be extended to handle a MouseHover enter (with delay)
@@ -33,6 +35,22 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
   @Input() flMouseLeaveDelay: number = 0;
 
   /**
+   * If true the timer are cleared and the events not fired
+   */
+  @ClOnChange(function (this: FlMouseHoverAbstractDirective, value: boolean) {
+    if (value) {
+      this.clearTimer();
+    }
+  })
+  @Input() disabled: boolean;
+
+  /**
+   * When provided the event are ignore if the mouse enter from the element or leave to the element
+   * If a string it provided, it check the classes of the element
+   */
+  @Input() excludeElement: HTMLElement | string;
+
+  /**
    * @ignore
    * local variable to know the status of the hover
    */
@@ -50,11 +68,18 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
    * Method called on mouse enter event on host element
    */
   @HostListener('mouseenter', ['$event']) onMouseEnter(event: MouseEvent): void {
+    if (this.disabled) return;
+
     this.clearTimer();
 
-    if (this.isHovering) {
+    if (this.isHovering) return;
+
+    // if an excluded element is provided, ignore if the mouse enters from the ecxluded element
+    const fromElement: HTMLElement = (event as any).fromElement;
+    if (this.excludeElement && fromElement && FlHtmlHelper.isChildOf(fromElement, this.excludeElement)) {
       return;
     }
+
 
     // if the delay is 0, don't use timeout
     if (this.flMouseEnterDelay === 0) {
@@ -70,11 +95,18 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
    * Method called on mouse leave event on host element
    */
   @HostListener('mouseleave', ['$event']) onMouseLeave(event: MouseEvent): void {
+    if (this.disabled) return;
+
     this.clearTimer();
 
-    if (!this.isHovering) {
+    if (!this.isHovering) return;
+
+    // if an excluded element is provided, ignore if the mouse leaves to the excluded element
+    const toElement: HTMLElement = (event as any).toElement;
+    if (this.excludeElement && toElement && FlHtmlHelper.isChildOf(toElement, this.excludeElement)) {
       return;
     }
+
 
     // if the delay is 0, don't use timeout
     if (this.flMouseLeaveDelay === 0) {

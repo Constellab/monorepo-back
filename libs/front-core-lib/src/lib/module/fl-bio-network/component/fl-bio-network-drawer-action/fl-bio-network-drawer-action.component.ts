@@ -3,6 +3,7 @@ import {Subscription} from 'rxjs';
 import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
 import {FlBioNetworkDrawerActionName} from '../../model/fl-bio-network-drawer-action.class';
 import {MatTabGroup} from '@angular/material/tabs';
+import {flCdkOverlayContainerClass} from '../../../../utils/fl-material.config';
 
 @Component({
   selector: 'fl-bio-network-drawer-action',
@@ -17,6 +18,9 @@ export class FlBioNetworkDrawerActionComponent implements OnInit, OnDestroy {
   subscription: Subscription;
 
   tabIndex: number;
+
+  // use to ignore the mouse event on the CDK to keep the drawer open if an overlay is opened
+  cdkContainerClass: string = flCdkOverlayContainerClass;
 
   constructor(private drawerState: FlBioNetworkDrawerState,
               private cdr: ChangeDetectorRef) {

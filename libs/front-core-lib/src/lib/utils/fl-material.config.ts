@@ -18,3 +18,8 @@ export const flTooltipConfig: MatTooltipDefaultOptions = {
   hideDelay: 0,
   touchendHideDelay: 0
 };
+
+/**
+ * Higher class of an cdk overlay
+ */
+export const flCdkOverlayContainerClass = 'cdk-overlay-container';
