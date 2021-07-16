@@ -14,7 +14,7 @@ import {ClCoerceBooleanDecorator, ClHelpService, ClOnChange} from '@monorepo/cor
 import {Observable, Subscription} from 'rxjs';
 import {FlKeyboardHelper, FlKeyboardKey} from '../../../utils/fl-keyboard.helper';
 import {FlFlatTreeControl} from '../../../model/fl-flat-tree-control.class';
-import {ObjectFlatNode, ObjectNode} from '../model/fl-pretty-json.class';
+import {FlObjectFlatNode, FlObjectNode} from '../model/fl-pretty-json.class';
 import {FlPrettyJsonBuilder} from '../model/fl-pretty-json-builder.class';
 import {FlHtmlHelper} from '../../../utils/fl-html.helper';
 
@@ -64,32 +64,33 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   startChar: string;
   endChar: string;
 
-  treeControl: FlFlatTreeControl<ObjectFlatNode>;
+  treeControl: FlFlatTreeControl<FlObjectFlatNode>;
 
-  dataSource: MatTreeFlatDataSource<ObjectNode, ObjectFlatNode>;
+  dataSource: MatTreeFlatDataSource<FlObjectNode, FlObjectFlatNode>;
 
   error: boolean = false;
 
-  selectedNode: ObjectFlatNode;
+  selectedNode: FlObjectFlatNode;
 
   private componentIsInitiated: boolean = false;
   private subscription: Subscription;
 
-  trackBy: TrackByFunction<{ id: any }> = ClHelpService.trackByIdFunction;
+  trackBy: TrackByFunction<{ id: any }> = ClHelpService.trackByIdFunction();
 
-  private _transformer = (node: ObjectNode, level: number): ObjectFlatNode => {
+  private _transformer = (node: FlObjectNode, level: number): FlObjectFlatNode => {
     return {
       id: node.id,
       expandable: !!node.children && node.children.length > 0,
       level: level,
       key: node.key,
-      value: node.value,
+      value: node.type === 'string' ? `"${node.value}"` : node.value,
       preview: node.preview,
-      type: node.type
+      type: node.type,
+      className: this.getNodeUniqueClass(node.id)
     };
   };
 
-  hasChild = (_: number, node: ObjectFlatNode): boolean => node.expandable;
+  hasChild = (_: number, node: FlObjectFlatNode): boolean => node.expandable;
 
 
   constructor(private cdr: ChangeDetectorRef) {
@@ -127,13 +128,13 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
       this.startChar = builder.getObjectStartChart();
       this.endChar = builder.getObjectEndChart();
 
-      const data: ObjectNode[] = builder.buildObjectNodes();
+      const data: FlObjectNode[] = builder.buildObjectNodes();
 
-      this.treeControl = new FlFlatTreeControl<ObjectFlatNode>(
+      this.treeControl = new FlFlatTreeControl<FlObjectFlatNode>(
         node => node.level, node => node.expandable);
 
       // object to flatten tree
-      const treeFlattener: MatTreeFlattener<ObjectNode, ObjectFlatNode> = new MatTreeFlattener(
+      const treeFlattener: MatTreeFlattener<FlObjectNode, FlObjectFlatNode> = new MatTreeFlattener(
         this._transformer, node => node.level, node => node.expandable, node => node.children);
 
       // create the datasource and set data
@@ -163,7 +164,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     }
 
     ClHelpService.stopEventPropagation(event);
-    const selectedNode: ObjectFlatNode = this.selectedNode ?? this.treeControl.dataNodes[0];
+    const selectedNode: FlObjectFlatNode = this.selectedNode ?? this.treeControl.dataNodes[0];
 
 
     switch (event.key) {
@@ -184,16 +185,16 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     return;
   }
 
-  private selectPreviousNode(node: ObjectFlatNode): void {
-    const previousNode: ObjectFlatNode | null = this.treeControl.getPreviousVisibleNode(node);
+  private selectPreviousNode(node: FlObjectFlatNode): void {
+    const previousNode: FlObjectFlatNode | null = this.treeControl.getPreviousVisibleNode(node);
 
     if (previousNode) {
       this.selectNode(previousNode);
     }
   }
 
-  private selectNextNode(node: ObjectFlatNode): void {
-    const nextNode: ObjectFlatNode | null = this.treeControl.getNextVisibleNode(node);
+  private selectNextNode(node: FlObjectFlatNode): void {
+    const nextNode: FlObjectFlatNode | null = this.treeControl.getNextVisibleNode(node);
 
     if (nextNode) {
       this.selectNode(nextNode);
@@ -202,7 +203,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
 
   // if the node is expandable and expended, collapse it
   // otherwise go to parent node or previous node if no parent
-  private handleLeftArrow(node: ObjectFlatNode): void {
+  private handleLeftArrow(node: FlObjectFlatNode): void {
     if (node.expandable && this.treeControl.isExpanded(node)) {
       // collapse the node
       this.treeControl.collapse(node);
@@ -218,7 +219,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   }
 
   // if the node is expandable and collapse, expand it, otherwise go to next node
-  private handleRightArrow(node: ObjectFlatNode): void {
+  private handleRightArrow(node: FlObjectFlatNode): void {
     if (node.expandable && !this.treeControl.isExpanded(node)) {
       // expand the node
       this.treeControl.expand(node);
@@ -232,8 +233,8 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
   ////////////////////////////// OTHERS //////////////////////////
 
 
-  private selectParentNode(node: ObjectFlatNode): boolean {
-    const parent: ObjectFlatNode = this.treeControl.getAncestor(node);
+  private selectParentNode(node: FlObjectFlatNode): boolean {
+    const parent: FlObjectFlatNode = this.treeControl.getAncestor(node);
     if (parent) {
       this.selectNode(parent);
       this.cdr.markForCheck();
@@ -242,7 +243,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  selectNode(node: ObjectFlatNode): void {
+  selectNode(node: FlObjectFlatNode): void {
     this.selectedNode = node;
 
     // get the node and check if it's in viewport, if note, scroll to element

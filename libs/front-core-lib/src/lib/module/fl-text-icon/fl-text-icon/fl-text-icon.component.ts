@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 
 /**
  * Component to display and icon along with a text.
@@ -11,7 +11,8 @@ import {Component, Input, OnInit} from '@angular/core';
 @Component({
   selector: 'fl-text-icon',
   templateUrl: './fl-text-icon.component.html',
-  styleUrls: ['./fl-text-icon.component.scss']
+  styleUrls: ['./fl-text-icon.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlTextIconComponent implements OnInit {
 

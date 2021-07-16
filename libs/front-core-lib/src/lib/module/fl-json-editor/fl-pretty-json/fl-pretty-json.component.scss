@@ -1,4 +1,4 @@
-.container{
+.container {
   outline: none;
 }
 
@@ -6,12 +6,9 @@
   align-items: initial;
 }
 
-.children {
-  padding-left: 25px;
-}
-
 .normal {
   font-size: 1rem;
+
   .mat-tree-node, .mat-nested-tree-node {
     font-size: 1rem;
   }
@@ -20,10 +17,6 @@
     margin-left: 12px;
     padding-left: 5px;
     padding-right: 5px;
-  }
-
-  .value {
-    padding-left: 10px;
   }
 
   .icon {
@@ -35,6 +28,7 @@
 
 .dense {
   font-size: 0.8rem;
+
   .mat-tree-node, .mat-nested-tree-node {
     font-size: 0.8rem;
   }
@@ -45,10 +39,6 @@
     padding-right: 5px;
   }
 
-  .value {
-    padding-left: 5px;
-  }
-
   .icon {
     font-size: 10px;
     height: 10px;
@@ -56,8 +46,8 @@
   }
 }
 
-.tree-container{
-    padding-right: 5px;
+.tree-container {
+  padding-right: 5px;
 }
 
 mat-tree-node {
@@ -80,6 +70,10 @@ mat-tree-node {
   color: #ce9178;
 }
 
+.null {
+  color: var(--light-color);
+}
+
 
 .tree-node-preview {
   box-sizing: border-box;
@@ -89,11 +83,19 @@ mat-tree-node {
 }
 
 
-
-.node-selectable{
+.node-selectable {
   border-radius: 3px;
 }
 
-.selected-node{
+.selected-node {
   background-color: var(--grey-low-contrast);
+}
+
+// use css to improve a bit the performance
+.text-icon {
+  flex-direction: row;
+  box-sizing: border-box;
+  display: flex;
+  place-content: center flex-start;
+  align-items: center;
 }

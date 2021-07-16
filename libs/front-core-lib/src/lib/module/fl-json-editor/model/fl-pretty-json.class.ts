@@ -1,20 +1,21 @@
+export type FlObjectNodeType = 'null' | 'object' | 'array' | 'boolean' | 'number' | 'string';
 
-
-export interface ObjectNode {
+export interface FlObjectNode {
   id: number;
-  children?: ObjectNode[];
+  children?: FlObjectNode[];
   key: string;
   value?: any;
-  type: string;
-  preview ?: string;
+  type: FlObjectNodeType;
+  preview?: string;
 }
 
-export interface ObjectFlatNode {
+export interface FlObjectFlatNode {
   id: number;
   expandable: boolean;
   level: number;
   key: string;
   value?: any;
-  type: string;
+  type: FlObjectNodeType;
   preview?: string;
+  className:string;
 }
