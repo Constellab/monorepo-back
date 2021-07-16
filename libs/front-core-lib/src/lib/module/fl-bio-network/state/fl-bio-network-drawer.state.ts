@@ -5,14 +5,6 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {ClHelpService} from '@monorepo/core-lib';
 import {filter, map} from 'rxjs/operators';
 
-/**
- * Event trigger when the open property of the drawer changed
- * It also return the action of the drawer
- */
-export interface FLBioNetworkDrawerChanged {
-  open: boolean;
-  action: FlBioNetworkDrawerAction;
-}
 
 /**
  * State to manage the drawer and it's content in the pathway

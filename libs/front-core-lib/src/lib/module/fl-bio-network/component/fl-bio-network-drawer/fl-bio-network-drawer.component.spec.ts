@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FlBioNetworkDrawerActionComponent} from './fl-bio-network-drawer-action.component';
+import {FlBioNetworkDrawerComponent} from './fl-bio-network-drawer.component';
 
 describe('FlPathwayDrawerActionComponent', () => {
-  let component: FlBioNetworkDrawerActionComponent;
-  let fixture: ComponentFixture<FlBioNetworkDrawerActionComponent>;
+  let component: FlBioNetworkDrawerComponent;
+  let fixture: ComponentFixture<FlBioNetworkDrawerComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FlBioNetworkDrawerActionComponent ]
+      declarations: [ FlBioNetworkDrawerComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FlBioNetworkDrawerActionComponent);
+    fixture = TestBed.createComponent(FlBioNetworkDrawerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

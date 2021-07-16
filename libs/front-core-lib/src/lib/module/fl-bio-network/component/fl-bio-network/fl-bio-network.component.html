@@ -13,7 +13,7 @@
       </div>
 
       <!--   Drawer opener   -->
-      <div class="drawer-opener" (mouseenter)="openDrawer()"
+      <div class="drawer-opener" (mouseenter)="openDrawer()" (click)="openDrawer()"
            fxLayout="column" fxLayoutAlign="center start">
         <div class="drawer-opener-icon" fxLayout="column" fxLayoutAlign="center center">
           <mat-icon>arrow_back_ios</mat-icon>
@@ -25,6 +25,6 @@
   </mat-sidenav-content>
 
   <mat-sidenav mode="over" position="end" [fixedInViewport]="true">
-    <fl-bio-network-drawer-action></fl-bio-network-drawer-action>
+    <fl-bio-network-drawer></fl-bio-network-drawer>
   </mat-sidenav>
 </mat-sidenav-container>

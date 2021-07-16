@@ -15,7 +15,7 @@ import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.modu
 import {MatSliderModule} from '@angular/material/slider';
 import {FormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import {FlBioNetworkDrawerActionComponent} from './component/fl-bio-network-drawer-action/fl-bio-network-drawer-action.component';
+import {FlBioNetworkDrawerComponent} from './component/fl-bio-network-drawer/fl-bio-network-drawer.component';
 import {FlBioNetworkConfigComponent} from './component/fl-bio-network-config/fl-bio-network-config.component';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -37,7 +37,7 @@ import {FlBioNetworkSelectionInfoComponent} from './component/fl-bio-network-sel
     FlBioNetworkComponent,
     FlBioNetworkNodeDetailComponent,
     FlBioNetworkNodeLinksComponent,
-    FlBioNetworkDrawerActionComponent,
+    FlBioNetworkDrawerComponent,
     FlBioNetworkConfigComponent,
     FlBioNetworkActionBarComponent,
     FlBioNetworkCompartmentsComponent,

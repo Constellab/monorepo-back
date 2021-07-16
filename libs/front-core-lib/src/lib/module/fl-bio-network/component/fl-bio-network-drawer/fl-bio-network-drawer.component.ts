@@ -6,12 +6,12 @@ import {MatTabGroup} from '@angular/material/tabs';
 import {flCdkOverlayContainerClass} from '../../../../utils/fl-material.config';
 
 @Component({
-  selector: 'fl-bio-network-drawer-action',
-  templateUrl: './fl-bio-network-drawer-action.component.html',
-  styleUrls: ['./fl-bio-network-drawer-action.component.scss'],
+  selector: 'fl-bio-network-drawer',
+  templateUrl: './fl-bio-network-drawer.component.html',
+  styleUrls: ['./fl-bio-network-drawer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlBioNetworkDrawerActionComponent implements OnInit, OnDestroy {
+export class FlBioNetworkDrawerComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatTabGroup, {static: true}) tab: MatTabGroup;
 
