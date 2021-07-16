@@ -42,13 +42,13 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
       this.clearTimer();
     }
   })
-  @Input() disabled: boolean;
+  @Input() flDisabled: boolean;
 
   /**
    * When provided the event are ignore if the mouse enter from the element or leave to the element
    * If a string it provided, it check the classes of the element
    */
-  @Input() excludeElement: HTMLElement | string;
+  @Input() flExcludeElement: HTMLElement | string;
 
   /**
    * @ignore
@@ -68,7 +68,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
    * Method called on mouse enter event on host element
    */
   @HostListener('mouseenter', ['$event']) onMouseEnter(event: MouseEvent): void {
-    if (this.disabled) return;
+    if (this.flDisabled) return;
 
     this.clearTimer();
 
@@ -76,7 +76,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
 
     // if an excluded element is provided, ignore if the mouse enters from the ecxluded element
     const fromElement: HTMLElement = (event as any).fromElement;
-    if (this.excludeElement && fromElement && FlHtmlHelper.isChildOf(fromElement, this.excludeElement)) {
+    if (this.flExcludeElement && fromElement && FlHtmlHelper.isChildOf(fromElement, this.flExcludeElement)) {
       return;
     }
 
@@ -95,7 +95,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
    * Method called on mouse leave event on host element
    */
   @HostListener('mouseleave', ['$event']) onMouseLeave(event: MouseEvent): void {
-    if (this.disabled) return;
+    if (this.flDisabled) return;
 
     this.clearTimer();
 
@@ -103,7 +103,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
 
     // if an excluded element is provided, ignore if the mouse leaves to the excluded element
     const toElement: HTMLElement = (event as any).toElement;
-    if (this.excludeElement && toElement && FlHtmlHelper.isChildOf(toElement, this.excludeElement)) {
+    if (this.flExcludeElement && toElement && FlHtmlHelper.isChildOf(toElement, this.flExcludeElement)) {
       return;
     }
 

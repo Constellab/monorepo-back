@@ -19,6 +19,8 @@ export class FlBioNetworkDrawerActionComponent implements OnInit, OnDestroy {
 
   tabIndex: number;
 
+  pinnedDrawer: boolean = false;
+
   // use to ignore the mouse event on the CDK to keep the drawer open if an overlay is opened
   cdkContainerClass: string = flCdkOverlayContainerClass;
 
@@ -46,6 +48,18 @@ export class FlBioNetworkDrawerActionComponent implements OnInit, OnDestroy {
 
   closeDrawer(): void {
     this.drawerState.closeDrawer();
+  }
+
+  togglePin(): void {
+    this.pinnedDrawer = !this.pinnedDrawer;
+  }
+
+  get pinToggleText(): string {
+    return this.pinnedDrawer ? 'flBioNetwork.unpin_drawer' : 'flBioNetwork.pin_drawer';
+  }
+
+  get pinToggleIcon(): string {
+    return this.pinnedDrawer ? 'material-icons' : 'material-icons-outlined';
   }
 
   ngOnDestroy(): void {

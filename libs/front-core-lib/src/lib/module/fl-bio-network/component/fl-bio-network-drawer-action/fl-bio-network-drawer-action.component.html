@@ -1,12 +1,25 @@
-<mat-tab-group [(selectedIndex)]="tabIndex" class="container" animationDuration="0"
-               flMouseHover (flMouseLeave)="closeDrawer()" [flMouseLeaveDelay]="300"
-               [excludeElement]="cdkContainerClass">
-  <mat-tab [label]="'flBioNetwork.config' | translate">
-    <fl-bio-network-config class="tab-body"></fl-bio-network-config>
-  </mat-tab>
+<div class="container"
+     flMouseHover (flMouseLeave)="closeDrawer()" [flMouseLeaveDelay]="300"
+     [flExcludeElement]="cdkContainerClass" [flDisabled]="pinnedDrawer">
+  <mat-tab-group [(selectedIndex)]="tabIndex" animationDuration="0" class="tab-group">
+    <mat-tab [label]="'flBioNetwork.config' | translate">
+      <fl-bio-network-config class="tab-body"></fl-bio-network-config>
+    </mat-tab>
 
-  <mat-tab [label]="'flBioNetwork.node' | translate">
-    <fl-bio-network-node-detail class="tab-body"></fl-bio-network-node-detail>
-  </mat-tab>
-</mat-tab-group>
+    <mat-tab [label]="'flBioNetwork.node' | translate">
+      <fl-bio-network-node-detail class="tab-body"></fl-bio-network-node-detail>
+    </mat-tab>
+  </mat-tab-group>
 
+  <div fxLayout="row" fxLayoutAlign="end center" class="buttons">
+    <button mat-icon-button type="button" class="g-button-icon-small"
+            (click)="togglePin()" [matTooltip]="pinToggleText | translate">
+      <mat-icon [fontSet]="pinToggleIcon">push_pin</mat-icon>
+    </button>
+
+    <button mat-icon-button type="button" tabindex="-1" (click)="closeDrawer()"
+            [matTooltip]="'close' | translate" class="g-button-icon-small">
+      <mat-icon>clear</mat-icon>
+    </button>
+  </div>
+</div>

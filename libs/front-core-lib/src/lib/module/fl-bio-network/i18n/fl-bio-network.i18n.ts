@@ -19,7 +19,9 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     select_network: 'Sélectionner un réseau',
     network: 'Réseau',
     select_node_help_text: 'Sélectionner un node pour voir le détail ici',
-    compartments: 'Compartiments'
+    compartments: 'Compartiments',
+    pin_drawer: 'Épingler',
+    unpin_drawer: 'Désépingler',
   }
 };
 
@@ -37,7 +39,9 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     select_network: 'Select a network',
     network: 'Network',
     select_node_help_text: 'Select a node to view detail here',
-    compartments: 'Compartments'
+    compartments: 'Compartments',
+    pin_drawer: 'Pin',
+    unpin_drawer: 'Unpin',
   }
 };
 
