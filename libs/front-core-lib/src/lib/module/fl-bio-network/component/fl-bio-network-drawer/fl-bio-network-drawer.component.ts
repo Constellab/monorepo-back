@@ -15,8 +15,6 @@ export class FlBioNetworkDrawerComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatTabGroup, {static: true}) tab: MatTabGroup;
 
-  subscription: Subscription;
-
   tabIndex: number;
 
   pinnedDrawer: boolean = false;
@@ -24,12 +22,14 @@ export class FlBioNetworkDrawerComponent implements OnInit, OnDestroy {
   // use to ignore the mouse event on the CDK to keep the drawer open if an overlay is opened
   cdkContainerClass: string = flCdkOverlayContainerClass;
 
+  private subscription: Subscription;
+
   constructor(private drawerState: FlBioNetworkDrawerState,
               private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-    this.drawerState.getState$().subscribe(
+    this.subscription = this.drawerState.getState$().subscribe(
       state => this.changeTab(state.action)
     );
   }
@@ -63,7 +63,7 @@ export class FlBioNetworkDrawerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.subscription?.unsubscribe();
   }
 
 
