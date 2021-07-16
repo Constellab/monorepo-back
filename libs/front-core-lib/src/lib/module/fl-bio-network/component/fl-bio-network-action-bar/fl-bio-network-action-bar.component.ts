@@ -37,7 +37,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
     // clear the slider every time the selection is not a linkByValue
     this.selectionState.getSelectionMode$().pipe(
-      filter(mode => mode !== 'linkByValue')).subscribe(
+      filter(selection => selection.mode !== 'linkByValue')).subscribe(
       () => this.resetSlider()
     );
   }

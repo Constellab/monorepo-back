@@ -38,7 +38,7 @@ export class FlBioNetworkCompartmentsComponent implements OnInit {
 
     // reset the selected compartments on new selection
     this.selectionState.getSelectionMode$().pipe(
-      filter(mode => mode !== 'nodesByCompartments')
+      filter(selection => selection.mode !== 'nodesByCompartments')
     ).subscribe(
       () => this.resetSelection()
     );

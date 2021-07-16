@@ -22,6 +22,10 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     compartments: 'Compartiments',
     pin_drawer: 'Épingler',
     unpin_drawer: 'Désépingler',
+    metabolites_count : '{{count}} métabolites',
+    cofactors_count : '{{count}} cofacteurs',
+    reactions_count : '{{count}} réactions',
+    links_count : '{{count}} liens',
   }
 };
 
@@ -42,6 +46,10 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     compartments: 'Compartments',
     pin_drawer: 'Pin',
     unpin_drawer: 'Unpin',
+    metabolites_count : '{{count}} metabolites',
+    cofactors_count : '{{count}} cofactors',
+    reactions_count : '{{count}} reactions',
+    links_count : '{{count}} links',
   }
 };
 

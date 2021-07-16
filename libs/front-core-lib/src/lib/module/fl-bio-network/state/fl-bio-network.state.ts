@@ -81,6 +81,9 @@ export class FlBioNetworkState implements OnDestroy {
     return this.chartData$.asObservable();
   }
 
+  public getCurrentChartData(): FlBioxNetworkD3 | null {
+    return this.chartData$.value;
+  }
 
   // return he list of reactions' pathways
   public getPathwayList$(): Observable<FlBioNetworkPathwayDetail[]> {
