@@ -123,6 +123,12 @@ export class FlBioNetworkState implements OnDestroy {
     return this.selectedNetwork$.value;
   }
 
+  public getCompartments$(): Observable<Record<string, string>> {
+    return this.selectedNetwork$.pipe(
+      map(network => network.compartments)
+    );
+  }
+
   private initNetworks(networks: FlBioNetwork | FlBioNetwork[]): void {
     const networksArray: FlBioNetwork[] = ClHelpService.convertObjectOrArrayToArray(networks);
 

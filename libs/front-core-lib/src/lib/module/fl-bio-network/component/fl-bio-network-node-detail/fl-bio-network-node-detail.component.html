@@ -1,5 +1,5 @@
 <div *ngIf="node$ | async as node; else noNode">
-  <fl-pretty-json class="g-section" [object]="node.data" [previewMaxTextLength]="30"></fl-pretty-json>
+  <fl-pretty-json class="g-section json" [object]="node.data" [previewMaxTextLength]="30"></fl-pretty-json>
 
   <fl-bio-network-node-links class="g-section" [node]="node"></fl-bio-network-node-links>
 </div>

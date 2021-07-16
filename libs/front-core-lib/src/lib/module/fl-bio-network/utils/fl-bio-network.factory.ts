@@ -154,7 +154,7 @@ export class FlBioNetworkFactory {
 
 
   private getMetaboliteColor(metabolite: FlBioNetworkMetabolite): string {
-    return flBioNetworkGetCompartmentColor(metabolite.compartment, this.grey);
+    return flBioNetworkGetCompartmentColor(metabolite.compartment);
   }
 
   private isCofactor(chebiId: string): boolean {

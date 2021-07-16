@@ -4,6 +4,7 @@ import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
 import {MatDrawer, MatSidenav} from '@angular/material/sidenav';
 import {FlBioNetworkRendererState} from '../../state/fl-bio-network-renderer.state';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
+import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 
 @Component({
   selector: 'fl-bio-network',
@@ -12,7 +13,8 @@ import {FlBioNetworkState} from '../../state/fl-bio-network.state';
   providers: [
     FlBioNetworkState,
     FlBioNetworkRendererState,
-    FlBioNetworkDrawerState
+    FlBioNetworkDrawerState,
+    FlBioNetworkSelectionState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

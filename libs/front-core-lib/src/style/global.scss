@@ -81,7 +81,7 @@ ul, ol {
   cursor: pointer;
 }
 
-.g-hide-element{
+.g-hide-element {
   display: none;
 }
 
@@ -109,7 +109,7 @@ ul, ol {
 }
 
 // use to prevent use selection for text or div
-.g-not-selectable {
+.g-not-selectable, .g-text-not-selectable {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Old versions of Firefox */
@@ -134,7 +134,6 @@ ul, ol {
 .g-text-big {
   font-size: 1.4rem;
 }
-
 
 
 .g-text-centered {

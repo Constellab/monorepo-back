@@ -38,7 +38,14 @@ export class FlBioxNetworkD3 {
    * return all the nodes
    */
   public getAllNodes(): FlBioNetworkD3Node[] {
-    return [...this.metabolites, ...this.cofactors, ...this.reactions];
+    return [...this.getMetabolitesNodes(), ...this.reactions];
+  }
+
+  /**
+   * return all the metabolites nodes
+   */
+  public getMetabolitesNodes(): (FlBioNetworkD3Metabolite | FlBioNetworkD3Cofactor)[] {
+    return [...this.metabolites, ...this.cofactors];
   }
 
 
@@ -256,6 +263,9 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
 export class FlBioNetworkD3Link
   implements SimulationLinkDatum<FlBioNetworkD3Node> {
 
+  // provided by d3
+  index: number;
+
   source: FlBioNetworkD3Node;
   target: FlBioNetworkD3Node;
 
@@ -303,11 +313,15 @@ export class FlBioNetworkD3Link
             ${endCoord.x},${endCoord.y} `;
   }
 
+  isLinkedToNode(nodeIndex: number): boolean {
+    return this.source.index === nodeIndex || this.target.index === nodeIndex;
+  }
+
 }
 
-export function flBioNetworkGetCompartmentColor(compartment: string, defaultColor: string): string{
-  return compartment ?
-    // as the compartment is a single letter, we duplicate it to have really different colors
-    FlColorHelper.stringToRGBColor(compartment + compartment + compartment + compartment) :
-    defaultColor;
+export function flBioNetworkGetCompartmentColor(compartment: string): string {
+  // as the compartment is a single letter, we duplicate it to have really different colors
+  return FlColorHelper.stringToRGBColor(compartment + compartment + compartment
+    + compartment + compartment + compartment + compartment + compartment + compartment);
 }
+

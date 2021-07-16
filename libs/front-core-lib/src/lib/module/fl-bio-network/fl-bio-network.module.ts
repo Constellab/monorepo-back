@@ -25,6 +25,7 @@ import {flBioNetworkI18n} from './i18n/fl-bio-network.i18n';
 import {FlBioNetworkComponent} from './component/fl-bio-network/fl-bio-network.component';
 import {MatTabsModule} from '@angular/material/tabs';
 import {FlBioNetworkActionBarComponent} from './component/fl-bio-network-action-bar/fl-bio-network-action-bar.component';
+import {FlBioNetworkCompartmentsComponent} from './component/fl-bio-network-compartments/fl-bio-network-compartments.component';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -36,7 +37,8 @@ import {FlBioNetworkActionBarComponent} from './component/fl-bio-network-action-
     FlBioNetworkNodeLinksComponent,
     FlBioNetworkDrawerActionComponent,
     FlBioNetworkConfigComponent,
-    FlBioNetworkActionBarComponent
+    FlBioNetworkActionBarComponent,
+    FlBioNetworkCompartmentsComponent
   ],
   exports: [
     FlBioNetworkComponent,

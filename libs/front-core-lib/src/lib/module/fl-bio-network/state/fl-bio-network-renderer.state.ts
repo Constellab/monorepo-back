@@ -1,15 +1,8 @@
 import * as d3 from 'd3';
 import {Simulation} from 'd3-force';
 import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
-import {ValueFn} from 'd3-selection';
 import {ScaleLinear} from 'd3-scale';
-import {
-  FlBioNetworkD3Link,
-  FlBioNetworkD3Node,
-  flBioNetworkNodeClass,
-  flBioNetworkReactionMaxValue,
-  FlBioxNetworkD3
-} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3Link, FlBioNetworkD3Node, flBioNetworkReactionMaxValue, FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlD3SelectionSimple, FlD3ZoomEvent} from '../../fl-chart/model/fl-d3.class';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
@@ -17,6 +10,7 @@ import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {Injectable, OnDestroy} from '@angular/core';
 import {FlBioNetworkState} from './fl-bio-network.state';
 import {ZoomTransform} from 'd3-zoom';
+import {FlBioNetworkSelectionState} from './fl-bio-network-selection.state';
 
 /**
  * State to manager the drawing of bio network using d3
@@ -49,14 +43,12 @@ export class FlBioNetworkRendererState implements OnDestroy {
   public readonly grey: string;
   private readonly textColor: string;
   private readonly backgroundColor: string;
-  private readonly selectNodeColor: string;
 
   constructor(themeService: FlThemeService, private drawerState: FlBioNetworkDrawerState,
-              private state: FlBioNetworkState) {
+              private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState) {
     const themeDetail: FlThemeDetail = themeService.getCurrentThemeDetail();
     this.textColor = themeDetail.foreground;
     this.backgroundColor = themeDetail.background;
-    this.selectNodeColor = themeDetail.warn;
     this.grey = themeDetail.greyHighContrast;
   }
 
@@ -69,11 +61,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
     this.subscriptions.add(this.state.getChartData$().subscribe(
       chartData => this.drawNetwork(chartData)
-    ));
-
-    // reset the node and link on drawer closed
-    this.subscriptions.add(this.drawerState.drawerClosed$().subscribe(
-      () => this.resetNodeAndLinkOpacity()
     ));
   }
 
@@ -96,6 +83,9 @@ export class FlBioNetworkRendererState implements OnDestroy {
       // speed up the simulation to quickly end it
       this.simulation.tick(1000);
       this.simulation.on('end', () => this.endSimulation());
+
+      // init the selection state
+      this.selectionState.init(chartData, this.nodesContainer, this.links);
     }
   }
 
@@ -144,7 +134,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .join('g')
       .call(this.drag(this.simulation))
       .style('cursor', 'pointer')
-      .on('click', this.onNodeClicked(0.1));
+      .on('click', this.onNodeClicked());
 
 
     const textColor: string = this.textColor;
@@ -212,38 +202,18 @@ export class FlBioNetworkRendererState implements OnDestroy {
     this.state.zoomTransform = transform;
   }
 
-
-  // return all the directly connected node of the node
-  private getConnectedNodes(nodeIndex: number): FlBioNetworkD3Node[] {
-    return this.data.links
-      // filter the link directly connected
-      .filter(link => link.target.index === nodeIndex || link.source.index === nodeIndex)
-      // get the connected node (the one not with different index)
-      .map(link => link.target.index === nodeIndex ? link.source : link.target);
-  }
-
   /**
    * Update the opacity of node and link not connected to clicked node
    * to the opacity provided
-   * @param opacity
    * @private
    */
-  private onNodeClicked(opacity: number): any {
+  private onNodeClicked(): any {
     return (mouseEvent: MouseEvent, clickedNode: FlBioNetworkD3Node) => {
       // stop the event propagation do prevent click event on svg that reset the opacity
       ClHelpService.stopEventPropagation(mouseEvent);
 
-      // retrieve connected node
-      const connectedNodes: FlBioNetworkD3Node[] = this.getConnectedNodes(clickedNode.index);
-
-      // update opacity of nodes
-      this.nodesContainer.style('opacity', this.updateNodeOpacity(opacity, clickedNode, connectedNodes));
-
-      // update link opacity
-      this.links.style('opacity', this.updateLinkOpacity(opacity, clickedNode));
-
-      // set a specific color to the selected node
-      this.nodes.attr('stroke', (d: FlBioNetworkD3Node) => d.index === clickedNode.index ? this.selectNodeColor : d.color);
+      // select the nodes and its connections
+      this.selectionState.selectNodeAndDirectLinks(clickedNode.index);
 
       // open the drawer with detail
       this.drawerState.newAction({
@@ -253,32 +223,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
     };
   }
 
-  // update the opacity of node that are not the clickedNode or in connected node
-  private updateNodeOpacity(opacity: number, clickedNode: FlBioNetworkD3Node, connectedNodes: FlBioNetworkD3Node[])
-    : ValueFn<any, any, number> {
-    return (other: FlBioNetworkD3Node) => {
-      return clickedNode.index === other.index ||
-      connectedNodes.findIndex((connected) => connected.index === other.index) >= 0 ? 1 : opacity;
-    };
-  }
-
-  // update the opacity to opacity on link that are not connected to node
-  private updateLinkOpacity(opacity: number, clickedNode: FlBioNetworkD3Node): ValueFn<any, any, number> {
-    return (other: FlBioNetworkD3Link) => {
-      return other.source.index === clickedNode.index || other.target.index === clickedNode.index ? 1 : opacity;
-    };
-  }
-
-  public resetNodeAndLinkOpacity(): any {
-    if (this.nodesContainer && this.links) {
-      // update opacity of nodes
-      this.nodesContainer.style('opacity', 1);
-      this.nodes.attr('stroke', (d: FlBioNetworkD3Node) => d.color);
-
-      // update link opacity
-      this.links.style('opacity', 1);
-    }
-  }
 
   /**
    * Set the color of the links
@@ -315,13 +259,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
     }
   }
 
-  // set opacity to 0.1 to link where abs value is lower than slider value
-  public hideLinkLowerThan(value: number): void {
-    // update link opacity
-    this.links.style('opacity', (link: FlBioNetworkD3Link) =>
-      link.absValue >= value ? 1 : 0.1);
-  }
-
 
   // define the arrow marker to use it in lines
   private defineArrowMarker(): void {
@@ -340,12 +277,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .attr('fill', this.grey)
       .style('stroke', 'none');
   }
-
-  // get the selection of the nodes objects (not container)
-  private get nodes(): FlD3SelectionSimple<FlBioNetworkD3Node> {
-    return this.nodesContainer.selectAll(`.${flBioNetworkNodeClass}`);
-  }
-
 
   // disable all force so the user can move the node independently
   private endSimulation(): void {

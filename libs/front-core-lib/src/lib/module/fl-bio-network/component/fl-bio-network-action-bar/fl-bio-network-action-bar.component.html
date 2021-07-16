@@ -1,5 +1,6 @@
 <!--    Action bar on the bottom  -->
-<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="action-bar">
+<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="action-bar"
+     *ngIf="isReady">
 
   <!--   Slider to hide link     -->
   <div>
@@ -15,6 +16,8 @@
     </mat-slider>
 
   </div>
+
+  <fl-bio-network-compartments></fl-bio-network-compartments>
 
   <mat-slide-toggle [(ngModel)]="slideLinkColorToggle" (change)="setLinksColors()" color="primary">
     {{slideLinkColorToggleText | translate}}

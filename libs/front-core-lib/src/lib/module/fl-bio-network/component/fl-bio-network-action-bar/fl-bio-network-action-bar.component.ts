@@ -1,9 +1,10 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
 import {FlBioNetworkRendererState} from '../../state/fl-bio-network-renderer.state';
 import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3.class';
 import {MatSliderChange} from '@angular/material/slider';
+import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
+import {filter} from 'rxjs/operators';
 
 /**
  * Component inside the {@link FlBioNetworkComponent} to show the quick actions
@@ -15,6 +16,8 @@ import {MatSliderChange} from '@angular/material/slider';
 })
 export class FlBioNetworkActionBarComponent implements OnInit {
 
+  isReady: boolean = false;
+
   sliderValue: number = 0;
   linksMaxAbsValue: number;
 
@@ -23,7 +26,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   constructor(private cdr: ChangeDetectorRef,
               private state: FlBioNetworkState,
-              private drawerState: FlBioNetworkDrawerState,
+              private selectionState: FlBioNetworkSelectionState,
               private rendererState: FlBioNetworkRendererState) {
   }
 
@@ -32,7 +35,9 @@ export class FlBioNetworkActionBarComponent implements OnInit {
       chartData => this.onNewData(chartData)
     );
 
-    this.drawerState.drawerClosed$().subscribe(
+    // clear the slider every time the selection is not a linkByValue
+    this.selectionState.getSelectionMode$().pipe(
+      filter(mode => mode !== 'linkByValue')).subscribe(
       () => this.resetSlider()
     );
   }
@@ -40,8 +45,11 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   private onNewData(chartData: FlBioxNetworkD3): void {
     if (chartData) {
       this.linksMaxAbsValue = chartData.getLinksMaxAbsoluteValue();
+      this.isReady = true;
     } else {
       this.linksMaxAbsValue = 0;
+      this.isReady = false;
+
     }
 
     this.cdr.markForCheck();
@@ -54,7 +62,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   // set opacity to 0.1 to link where abs value is lower than slider value
   hideLinkLowerThan(change: MatSliderChange): void {
-    this.rendererState.hideLinkLowerThan(change.value);
+    this.selectionState.hideLinkLowerThan(change.value);
   }
 
   private resetSlider(): void {
