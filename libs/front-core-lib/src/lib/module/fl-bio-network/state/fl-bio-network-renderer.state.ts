@@ -3,14 +3,14 @@ import {Simulation} from 'd3-force';
 import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {ScaleLinear} from 'd3-scale';
 import {FlBioNetworkD3Link, FlBioNetworkD3Node, flBioNetworkReactionMaxValue, FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
-import {FlD3SelectionSimple, FlD3ZoomEvent} from '../../fl-chart/model/fl-d3.class';
+import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {Injectable, OnDestroy} from '@angular/core';
 import {FlBioNetworkState} from './fl-bio-network.state';
-import {ZoomTransform} from 'd3-zoom';
 import {FlBioNetworkSelectionState} from './fl-bio-network-selection.state';
+import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
 
 /**
  * State to manager the drawing of bio network using d3
@@ -45,7 +45,8 @@ export class FlBioNetworkRendererState implements OnDestroy {
   private readonly backgroundColor: string;
 
   constructor(themeService: FlThemeService, private drawerState: FlBioNetworkDrawerState,
-              private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState) {
+              private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState,
+              private zoomState: FlBioNetworkZoomState) {
     const themeDetail: FlThemeDetail = themeService.getCurrentThemeDetail();
     this.textColor = themeDetail.foreground;
     this.backgroundColor = themeDetail.background;
@@ -77,7 +78,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       this.initLinks(this.linkColorLogarithm);
       this.initNodes();
       this.defineArrowMarker();
-      this.enableZoom(this.state.zoomTransform);
+      this.zoomState.enableZoom(this.svg, this.mainGroup);
       this.launchSimulation();
 
       // speed up the simulation to quickly end it
@@ -181,26 +182,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .on('drag', dragged)
       .on('end', dragEnded);
   };
-
-  private enableZoom(transform?: ZoomTransform): void {
-    //add zoom capabilities
-    const zoomHandler = d3.zoom()
-      .on('zoom', (event: FlD3ZoomEvent) => this.onZoom(event.transform));
-
-    // init the zoom with a value if
-    if (transform) {
-      zoomHandler.transform(this.svg, transform);
-    }
-
-    zoomHandler(this.svg);
-  }
-
-  //Zoom functions
-  private onZoom(transform: ZoomTransform): void {
-    this.mainGroup.attr('transform', transform.toString());
-    // save the zoom transform
-    this.state.zoomTransform = transform;
-  }
 
   /**
    * Update the opacity of node and link not connected to clicked node

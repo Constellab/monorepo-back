@@ -9,7 +9,6 @@ import {debounceTime, map} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 import {FlThemeService} from '../../../service/fl-theme.service';
-import {ZoomTransform} from 'd3-zoom';
 
 
 /**
@@ -27,9 +26,6 @@ export class FlBioNetworkState implements OnDestroy {
 
   // used to cache the list of pathway
   private pathwayListCache: Record<FlPathwayDatabase | string, FlBioNetworkPathwayDetail[]>;
-
-  // use to save the zoom information between 2 drawings
-  public zoomTransform: ZoomTransform;
 
   constructor(private translateService: FlTranslateService, private themeService: FlThemeService) {
   }
