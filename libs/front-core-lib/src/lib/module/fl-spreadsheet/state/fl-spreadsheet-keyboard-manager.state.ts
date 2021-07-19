@@ -6,7 +6,7 @@ import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 import {FlSpreadsheetActionStore} from './fl-spreadsheet-action.store';
 import {FlSpreadsheetScrollState} from './fl-spreadsheet-scroll.state';
 import {FlDeviceHelper} from '../../../utils/fl-device.helper';
-import {FlCellCoord, FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
+import {FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
 
 /**
  * Unique state shared across the spreadsheet to handle spreadsheet keyboard events
@@ -147,15 +147,7 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
   }
 
   private handleShiftArrow(rowShift: number, columnShift: number): void {
-    const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
-
-    if (selection != null) {
-      const coord: FlCellCoord = {
-        column: selection.endColumn + columnShift,
-        row: selection.endRow + rowShift
-      };
-      this.selectionState.expandSelection(coord);
-    }
+    this.selectionState.expandSelectionWithShift(rowShift, columnShift);
   }
 
   ngOnDestroy(): void {

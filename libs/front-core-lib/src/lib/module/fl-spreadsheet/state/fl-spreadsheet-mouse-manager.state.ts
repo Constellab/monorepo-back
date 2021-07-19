@@ -5,16 +5,17 @@ import {columnIdAttributeName, FlCell, headerIndexAttributeName, headerTypeAttri
 import {FlCellCoord, FlHeaderCellType, FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetContextMenu} from './fl-spreadsheet-context-menu.state';
 import {FlMouseButton} from '../../../utils/fl-keyboard.helper';
+import {FlSpreadsheetScrollState} from './fl-spreadsheet-scroll.state';
 
-type MouseEventCell = Cell | HeaderCell;
+type MouseEventCell = CellEvent | HeaderCellEvent;
 
-interface Cell {
+interface CellEvent {
   type: 'cell';
   coord: FlCellCoord;
   cell: FlCell;
 }
 
-interface HeaderCell {
+interface HeaderCellEvent {
   type: 'header';
   headerType: FlHeaderCellType;
   index: number;
@@ -32,10 +33,15 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
   private dblClickListener: () => void;
   private contextMenuListener: () => void;
 
+  private readonly expandAutoScrollZoneHeight: number = 24;
+  private expandSelectionScrollInterval: any;
+  private expandSelectionScrollIntervalDuration: number = 100;
+
   constructor(private state: FlSpreadsheetState,
               private selectionState: FlSpreadsheetSelectionState,
               private contextMenuState: FlSpreadsheetContextMenu,
-              private renderer: Renderer2, private elementRef: ElementRef,
+              private scrollState: FlSpreadsheetScrollState,
+              private renderer: Renderer2, private elementRef: ElementRef<HTMLElement>,
               private ngZone: NgZone) {
   }
 
@@ -86,14 +92,37 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
   }
 
   private onMouseMove(event: MouseEvent): void {
-    const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
 
+    const shift: number = this.getScrollZoneFromMouseEvent(event);
+
+    // if we are in the scroll zone
+    if (shift !== 0) {
+
+      // if an interval is already running, do nothing the interval will trigger the scroll
+      if (!this.expandSelectionScrollInterval) {
+
+        // create an interval to trigger a scroll each x ms (while the user's mouse in the the scroll zone)
+        this.expandSelectionScrollInterval = setInterval(() => {
+          this.selectionState.expandSelectionWithShift(shift, 0);
+        }, this.expandSelectionScrollIntervalDuration);
+      }
+
+    } else {
+      // use to clear the interval is the mouse left the scrolling zone
+      this.clearMouseMoveInterval();
+    }
+
+    // retrieve the cell form the mouse event to expand the selection
+    const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
     if (cellEvent == null) {
       return;
     }
 
-    this.expandSelection(cellEvent);
+    // if the mouse is in the scroll zone, we lock the row selection because it is automatically done by the scroll zone
+    const lockRow = shift !== 0;
+    this.expandSelection(cellEvent, lockRow);
   }
+
 
   // reset the selection
   private selectUnique(cellEvent: MouseEventCell): void {
@@ -108,16 +137,53 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     }
   }
 
-  // expand the current selection base on cellEvent
-  private expandSelection(cellEvent: MouseEventCell): void {
+  /**
+   * expand the current selection base on cellEvent
+   * @param cellEvent
+   * @param lockRow if true, the row is not changed
+   * @private
+   */
+  private expandSelection(cellEvent: MouseEventCell, lockRow: boolean = false): void {
+    const currentSelection: FlSheetSingleSelection = this.selectionState.currentSelection;
+
+    if (currentSelection == null) return;
+
+    const coord: FlCellCoord = this.mouseEventCellToCoord(cellEvent, currentSelection);
+
+    // prevent row change if set
+    if(lockRow){
+      coord.row = currentSelection.endRow;
+    }
+
+    switch (currentSelection.type) {
+      case 'rows':
+        this.selectionState.expandRowsSelection(coord.row);
+        break;
+      case 'columns':
+        this.selectionState.expandColumnsSelection(coord.column);
+        break;
+      default:
+        this.selectionState.expandSelection(coord);
+        break;
+    }
+  }
+
+  // retrieve cell cord from MouseEventCell and current selection
+  private mouseEventCellToCoord(cellEvent: MouseEventCell, currentSelection: FlSheetSingleSelection): FlCellCoord {
     if (cellEvent.type === 'cell') {
-      this.selectionState.expandSelection(cellEvent.coord);
+      return cellEvent.coord;
+    }
+
+    if (cellEvent.headerType === 'row') {
+      return {
+        row: cellEvent.index,
+        column: currentSelection.endColumn // use the last column selection to prevent changing column when hovering a row
+      };
     } else {
-      if (cellEvent.headerType === 'row') {
-        this.selectionState.expandRowsSelection(cellEvent.index);
-      } else {
-        this.selectionState.expandColumnsSelection(cellEvent.index);
-      }
+      return {
+        row: currentSelection.endRow, // use the last row selection to prevent changing row when hovering a column
+        column: cellEvent.index
+      };
     }
   }
 
@@ -183,17 +249,17 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
       }
 
       if (target.tagName === 'FL-SPREADSHEET-CELL') {
-        return this.getCellFromTarget(target);
+        return this.getCellFromHTMLElement(target);
       } else if (target.tagName === 'FL-SPREADSHEET-HEADER-CELL') {
-        return this.getHeaderCellFromTarget(target);
+        return this.getHeaderCellFromHTMLElement(target);
       }
     }
 
     return null;
   }
 
-  // returns cell based on a target element : FL-SPREADSHEET-CELL
-  private getCellFromTarget(element: Element): Cell {
+  // returns cell based on a html element : FL-SPREADSHEET-CELL
+  private getCellFromHTMLElement(element: Element): CellEvent {
     const row: number = parseInt(element.getAttribute(rowIdAttributeName));
     const column: number = parseInt(element.getAttribute(columnIdAttributeName));
 
@@ -207,15 +273,15 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     };
   }
 
-  // returns header cell info based on a target element : FL-SPREADSHEET-HEADER-CELL
-  private getHeaderCellFromTarget(element: Element): HeaderCell {
+  // returns header cell info based on a html element : FL-SPREADSHEET-HEADER-CELL
+  private getHeaderCellFromHTMLElement(element: Element): HeaderCellEvent {
     const index: number = parseInt(element.getAttribute(headerIndexAttributeName));
     const type: FlHeaderCellType = element.getAttribute(headerTypeAttributeName) as FlHeaderCellType;
 
     return {
       type: 'header',
       headerType: type,
-      index: index
+      index: index,
     };
   }
 
@@ -224,8 +290,31 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
       this.mouseMoveListener();
       this.mouseMoveListener = null;
     }
+    this.clearMouseMoveInterval();
   }
 
+  private clearMouseMoveInterval(): void {
+    if (this.expandSelectionScrollInterval) {
+      clearInterval(this.expandSelectionScrollInterval);
+      this.expandSelectionScrollInterval = null;
+    }
+  }
+
+
+  // return -1 if the mouse event is in the upper scroll zone
+  // 1 if the mouse event is in the lower scroll zone
+  // 0 if the mouse event is not in the scroll zone
+  private getScrollZoneFromMouseEvent(mouseEvent: MouseEvent): number {
+    const rect: DOMRect = this.elementRef.nativeElement.getBoundingClientRect();
+    const relativePosition: number = mouseEvent.clientY - rect.top;
+    if (relativePosition < this.expandAutoScrollZoneHeight) {
+      return -1;
+    } else if (relativePosition > (rect.height - this.expandAutoScrollZoneHeight)) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 
   ngOnDestroy(): void {
     this.mouseDownListener();

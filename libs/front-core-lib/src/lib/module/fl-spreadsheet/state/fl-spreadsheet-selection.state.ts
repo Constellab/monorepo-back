@@ -112,18 +112,6 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     }
   }
 
-  /**
-   * Expand current selection with a shift from the current coord
-   * @param rowShift
-   * @param columnShift
-   */
-  public expandSelectionWithShift(rowShift: number, columnShift: number): void {
-    const newCoord: FlCellCoord = this.shiftCurrentSelection(rowShift, columnShift);
-
-    if (newCoord) {
-      this.expandSelection(newCoord);
-    }
-  }
 
   public expandSelection(coord: FlCellCoord): void {
     if (!this.currentSheet.coordIsValid(coord)) {
@@ -164,13 +152,13 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     this.currentSelection$.next(newSelection);
   }
 
-  public expandColumnsSelection(rowIndex: number): void {
+  public expandColumnsSelection(columnIndex: number): void {
     if (this.currentSelectionFull == null || this.currentSelectionFull.type !== 'columns') {
       return;
     }
 
     this.unselectCurrentSelection();
-    const newSelection: FlSheetSingleSelectionFull = this.currentSelectionFull.expandColumnsSelection(rowIndex);
+    const newSelection: FlSheetSingleSelectionFull = this.currentSelectionFull.expandColumnsSelection(columnIndex);
     this.selectCellsFromSelection(newSelection);
 
     this.currentSelection$.next(newSelection);
@@ -178,6 +166,29 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
 
   public getSelection$(): Observable<FlSheetSingleSelection> {
     return this.currentSelection$.asObservable();
+  }
+
+  /**
+   * Expand current selection with a shift from the current coord
+   * @param rowShift
+   * @param columnShift
+   */
+  public expandSelectionWithShift(rowShift: number, columnShift: number): void {
+    const newCoord: FlCellCoord = this.shiftCurrentSelection(rowShift, columnShift);
+
+    if (newCoord) {
+      switch (this.currentSelection.type) {
+        case 'rows':
+          this.expandRowsSelection(newCoord.row);
+          break;
+        case 'columns':
+          this.expandColumnsSelection(newCoord.column);
+          break;
+        default:
+          this.expandSelection(newCoord);
+          break;
+      }
+    }
   }
 
 
@@ -208,8 +219,8 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     if (selection != null) {
 
       const coord: FlCellCoord = {
-        row: selection.getFirstSelectedCellCoord().row + rowShift,
-        column: selection.getFirstSelectedCellCoord().column + columnShift,
+        row: selection.endRow + rowShift,
+        column: selection.endColumn + columnShift,
       };
 
       if (this.currentSheet.coordIsValid(coord)) {
