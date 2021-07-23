@@ -25,4 +25,6 @@ export enum ErrorText {
   LANGUAGE_NOT_SUPPORTED = 'error.language_not_supported',
   USER_ALREADY_EXIST_IN_LAB = 'error.user_already_exist_in_lab',
   ID_NOT_PROVIDED = 'error.id_not_provided',
+  LAB_USER_NOT_ACTIVATED = 'error.lab_user_not_activated',
+  LAB_USER_NOT_FOUND = 'error.lab_user_not_found'
 }

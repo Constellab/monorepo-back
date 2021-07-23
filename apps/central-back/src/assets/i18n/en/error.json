@@ -21,5 +21,7 @@
   "account_not_admin_activated": "Your account must be validated by an admin",
   "language_not_supported": "The language is not supported",
   "user_already_exist_in_lab": "The user already exists in the lab",
-  "id_not_provided": "Can't search for object with empty id"
+  "id_not_provided": "Can't search for object with empty id",
+  "lab_user_not_activated": "The lab user is not activated",
+  "lab_user_not_found": "You user does not exists in the lab, please request the administrator to add your user to the lab"
 }

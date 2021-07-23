@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {LabInstance} from './lab-instance.entity';
 import {ObjectLiteral, Repository} from 'typeorm';
@@ -13,6 +13,8 @@ import {LabInstanceToken} from './lab-instance-token.class';
 import {ErrorText} from '../core/model/config/error-text.class';
 import {Page} from '../core/model/config/page.class';
 import {UsersService} from '../users/users.service';
+import {ExternalLabError} from '../external-lab-api/external-lab-error.class';
+import {AxiosResponse} from 'axios';
 
 @Injectable()
 export class LabInstancesService extends AbstractWithStatusService<LabInstance, LabInstanceStatus> {
@@ -63,13 +65,19 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
       const labAuth: ExternalLabLoginResponse =
         await this.externalLabUserService.login(labInstance, RequestContextHelper.getAndCheckCurrentUser());
 
-      return {
-        labInstance: labInstance,
-        token: 'Bearer ' + labAuth.access_token
-      };
-    } catch (e) {
-      console.log(e);
+      return new LabInstanceToken(labInstance, 'Bearer ' + labAuth.access_token);
+    } catch (e: any) {
+      const error: ExternalLabError = (e.response as AxiosResponse)?.data ?? '';
+
+      switch (error.code){
+        case 'gws.WRONG_CREDENTIALS_USER_NOT_ACTIVATED' :
+          throw new UnauthorizedException(ErrorText.LAB_USER_NOT_ACTIVATED);
+        case 'gws.WRONG_CREDENTIALS_USER_NOT_FOUND' :
+          throw new UnauthorizedException(ErrorText.LAB_USER_NOT_FOUND);
+        default:
       throw new BadRequestException(ErrorText.LAB_AUTH_ERROR);
+
+      }
     }
   }
 
