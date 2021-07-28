@@ -28,6 +28,7 @@ import {ReportsModule} from './app/reports/reports.module';
 import {PersistenceLogger} from './app/core/services/persistence-logger/persistence-logger';
 import {RequestContextMiddleware} from './app/core/modules/request-context/request-context.middleware';
 import {clDefaultLang} from '@monorepo/core-lib';
+import {FrontErrorsModule} from './app/front-errors/front-errors.module';
 
 function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
   const dbConfig: DatabaseConfig = configService.getDatabaseConfig();
@@ -86,6 +87,7 @@ function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
     ServersInfoModule,
     StudiesModule,
     ReportsModule,
+    FrontErrorsModule,
   ],
   controllers: [],
   providers: [

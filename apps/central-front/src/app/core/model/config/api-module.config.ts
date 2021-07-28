@@ -19,6 +19,7 @@ export function apiModuleConfig(): FlApiModuleConfig {
           throw 'Response object not paginated';
         }
       }
-    }
+    },
+    // logErrorApiRoute: 'front-errors'
   };
 }

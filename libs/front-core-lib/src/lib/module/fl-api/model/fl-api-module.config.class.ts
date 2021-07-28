@@ -44,6 +44,13 @@ export interface FlApiModuleConfig {
     deserializePage: (json: any, classReference: ClDeserializationRef) => ClPage<any>
   }
 
+  /**
+   * If this string is provided, the FlErrorHandlerApiService is activated and registered as a
+   * ErrorHandler.
+   * TS error will be catch by this class, logged to the console and send to the API in POST request
+   */
+  logErrorApiRoute?: string;
+
 }
 
 /**
