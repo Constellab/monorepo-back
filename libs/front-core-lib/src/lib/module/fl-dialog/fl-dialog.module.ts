@@ -10,6 +10,7 @@ import {FlConfirmDialogComponent} from './component/fl-confirm-dialog/fl-confirm
 import {FlDialogService} from './fl-dialog.service';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
+import {FlSnackBarModule} from '../fl-snack-bar/fl-snack-bar.module';
 
 /**
  * Core modules containing components
@@ -29,6 +30,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 
     FlLoaderModule,
     FlTranslateModule,
+    FlSnackBarModule,
 
     // Material
     FlexLayoutModule,

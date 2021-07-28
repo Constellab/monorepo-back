@@ -7,6 +7,11 @@
     </div>
   </div>
 
+  <button *ngIf="showDetailButton" class="button"
+          mat-button type="button" (click)="openDetailDialog($event)">
+    {{'detail' | translate}}
+  </button>
+
   <button *ngIf="showCloseButton" class="button"
           mat-button type="button" (click)="closeSnackBar()">
         {{'ok' | translate}}

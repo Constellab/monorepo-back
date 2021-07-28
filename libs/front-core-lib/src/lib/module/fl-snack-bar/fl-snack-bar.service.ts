@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {MatSnackBar, MatSnackBarConfig, MatSnackBarRef} from '@angular/material/snack-bar';
 import {ComponentType} from '@angular/cdk/overlay';
-import {FlSnackBarInfoInput} from './model/fl-snack-bar.class';
+import {FlSnackBarAdditionalConfig, flSnackBarAdditionalConfigDefault, FlSnackBarInfoInput} from './model/fl-snack-bar.class';
 import {FlSnackBarInfoComponent} from './component/fl-snack-bar-info/fl-snack-bar-info.component';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 
@@ -21,10 +21,10 @@ export class FlSnackBarService {
    * @param message the message to display (supports HTML)
    * @param translate if true the text is translated
    * @param duration the duration in millisecond of the snackbar
-   * @param showCloseButton if true a close button is shown in the snackbar
+   * @param additionalConfig additional config
    */
   public openSuccessMessage(message: string, translate: boolean = false, duration: number = 3000,
-                            showCloseButton: boolean = true)
+                            additionalConfig: FlSnackBarAdditionalConfig = flSnackBarAdditionalConfigDefault)
     : MatSnackBarRef<FlSnackBarInfoComponent> {
     let msg: string;
     if (translate) {
@@ -36,7 +36,7 @@ export class FlSnackBarService {
     return this.openSnackBarInfo({
       mode: 'success',
       text: msg,
-      showCloseButton: showCloseButton,
+      additionalConfig: additionalConfig,
     }, 'g-primary-background', duration);
   }
 
@@ -45,10 +45,10 @@ export class FlSnackBarService {
    * @param message the message to display (supports HTML)
    * @param translate if true the text is translated
    * @param duration the duration in millisecond of the snackbar
-   * @param showCloseButton if true, a close button is shown in the snackbar
+   * @param additionalConfig additional config
    */
   public openErrorMessage(message: string, translate: boolean = false, duration: number = 3000,
-                          showCloseButton: boolean = true)
+                          additionalConfig: FlSnackBarAdditionalConfig = flSnackBarAdditionalConfigDefault)
     : MatSnackBarRef<FlSnackBarInfoComponent> {
     let msg: string;
     if (translate) {
@@ -60,7 +60,7 @@ export class FlSnackBarService {
     return this.openSnackBarInfo({
         mode: 'error',
         text: msg,
-        showCloseButton: showCloseButton,
+        additionalConfig: additionalConfig,
       },
       'g-warn-background',
       duration

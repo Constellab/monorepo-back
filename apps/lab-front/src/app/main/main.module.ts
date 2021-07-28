@@ -6,10 +6,15 @@ import {MainAppComponent} from './component/main-app/main-app.component';
 import {CoreModule} from '../core/core.module';
 import {RouterModule} from '@angular/router';
 import {LabEnvironmentToggleComponent} from './component/lab-environment-toggle/lab-environment-toggle.component';
+import {ErrorDetailComponent} from './component/error-detail/error-detail.component';
 
 
 @NgModule({
-  declarations: [MainAppComponent, LabEnvironmentToggleComponent],
+  declarations: [
+    MainAppComponent,
+    LabEnvironmentToggleComponent,
+    ErrorDetailComponent
+  ],
   imports: [
     CommonModule,
     RouterModule,

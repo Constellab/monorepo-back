@@ -16,8 +16,9 @@ export class FlSnackBarInfoComponent implements OnInit {
   mode: FlSnackBarMode;
   text: string;
   showCloseButton: boolean;
+  showDetailButton: boolean;
 
-  constructor(@Inject(MAT_SNACK_BAR_DATA) data: FlSnackBarInfoInput,
+  constructor(@Inject(MAT_SNACK_BAR_DATA) private data: FlSnackBarInfoInput,
               private snackBarRef: MatSnackBarRef<FlSnackBarInfoComponent>) {
     if (data.mode == null) {
       console.error('The mode input is missing in the snack bar info');
@@ -28,7 +29,8 @@ export class FlSnackBarInfoComponent implements OnInit {
 
     this.mode = data.mode;
     this.text = data.text;
-    this.showCloseButton = data.showCloseButton;
+    this.showCloseButton = data.additionalConfig.showCloseButton;
+    this.showDetailButton = data.additionalConfig.detailButton != null;
   }
 
   ngOnInit(): void {
@@ -36,6 +38,11 @@ export class FlSnackBarInfoComponent implements OnInit {
 
   closeSnackBar(): void {
     this.snackBarRef.dismiss();
+  }
+
+  openDetailDialog(event: MouseEvent): void {
+    this.data.additionalConfig.detailButton(event);
+    this.closeSnackBar();
   }
 
 }

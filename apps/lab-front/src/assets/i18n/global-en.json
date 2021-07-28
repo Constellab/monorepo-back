@@ -2,6 +2,7 @@
   "yes": "Yes",
   "no": "No",
   "ok": "Ok",
+  "detail": "Detail",
   "connection_lost": "The connection has been lost",
   "description": "Description",
   "title": "Title",
@@ -45,6 +46,7 @@
   "email_invalid": "The email address is not valid",
   "vlab_link": "VLAB",
   "dev_env_toggle": "Dev environment",
-  "dev_env_not_available": "The development environment is shutdown. To start it, open the VLAB and launch the application"
-
+  "dev_env_not_available": "The development environment is shutdown. To start it, open the VLAB and launch the application",
+  "error_code": "Code",
+  "http_status": "HTTP status"
 }

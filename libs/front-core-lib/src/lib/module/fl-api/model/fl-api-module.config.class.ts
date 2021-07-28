@@ -119,13 +119,19 @@ export abstract class FlApiErrorService {
    * Open an error snackbar with the text
    * @param message message to display
    * @param duration snackbar duration
+   * @param detailButton if provided, a detail button is displayed and this method is trigger on click
+   * The snack bar is closed on click
    */
-  public showError(message: string, duration?: number): void {
+  protected showError(message: string, duration?: number,
+                      detailButton?: (event: MouseEvent) => void): void {
     if (duration == null) {
       duration = this.config.defaultApiErrorDuration;
     }
 
-    this.snackBarService.openErrorMessage(message, false, duration, true);
+    this.snackBarService.openErrorMessage(message, false, duration,
+      {
+        showCloseButton: true, detailButton: detailButton
+      });
   }
 
 }

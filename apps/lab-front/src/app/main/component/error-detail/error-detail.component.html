@@ -1,0 +1,26 @@
+<div>
+
+  <!-- Error code -->
+  <div fxLayout="row">
+    <span class="text g-text-light">{{'error_code' | translate}} :&nbsp;</span>
+    <span class="value"> {{error.code}}</span>
+  </div>
+
+  <!-- Detail -->
+  <div fxLayout="row">
+    <span class="text g-text-light">{{'detail' | translate}} :&nbsp;</span>
+    <span class="value"> {{error.detail}}</span>
+  </div>
+
+  <!-- HTTP Status -->
+  <div fxLayout="row">
+    <span class="text g-text-light">{{'http_status' | translate}} :&nbsp;</span>
+    <span class="value"> {{error.status}}</span>
+  </div>
+
+  <!-- Error code -->
+  <div fxLayout="row">
+    <span class="text g-text-light">InstanceId :&nbsp;</span>
+    <span class="value"> {{error.instance_id}}</span>
+  </div>
+</div>

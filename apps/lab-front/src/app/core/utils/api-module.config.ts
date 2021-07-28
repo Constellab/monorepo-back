@@ -23,7 +23,7 @@ interface PaginatedResponse {
 export function apiModuleConfig(): FlApiModuleConfig {
   return {
     apiUrl: EnvironmentHelper.getCoreApiUrl(),
-    defaultApiErrorDuration: 3000,
+    defaultApiErrorDuration: 5000,
     pagination: {
       pageQueryParam: 'page',
       pageSizeQueryParam: 'number_of_items_per_page',

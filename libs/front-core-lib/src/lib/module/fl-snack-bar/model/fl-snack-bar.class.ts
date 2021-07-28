@@ -1,4 +1,3 @@
-
 /**
  * Input for the snack bar info
  */
@@ -14,10 +13,9 @@ export interface FlSnackBarInfoInput {
   text: string;
 
   /**
-   * If true a close button is shown
+   * additional config
    */
-  showCloseButton: boolean;
-
+  additionalConfig: FlSnackBarAdditionalConfig;
 }
 
 /**
@@ -28,3 +26,21 @@ export interface FlSnackBarInfoInput {
  * If the mode is 'error' the snackbar background is the warn color
  */
 export type FlSnackBarMode = 'success' | 'error';
+
+export interface FlSnackBarAdditionalConfig {
+  /**
+   * if true a close button is shown in the snackbar
+   * default to true
+   */
+  showCloseButton?: boolean;
+
+  /**
+   * if provided, a detail button is displayed and this method is trigger on click
+   * The snack bar is closed on click
+   */
+  detailButton?: (event: MouseEvent) => void;
+}
+
+export const flSnackBarAdditionalConfigDefault: FlSnackBarAdditionalConfig = {
+  showCloseButton: true
+};

@@ -2,6 +2,7 @@
   "yes": "Oui",
   "no": "Non",
   "ok": "Ok",
+  "detail": "Détail",
   "connection_lost": "La connexion a été perdue",
   "description": "Description",
   "title": "Titre",
@@ -45,5 +46,7 @@
   "email_invalid": "L'adresse email n'est pas valide",
   "vlab_link": "VLAB",
   "dev_env_toggle": "Environment de dev",
-  "dev_env_not_available": "L'environnement de développement est éteint. Pour le démarrer il faut ouvrir le VLAB et lancer l'application"
+  "dev_env_not_available": "L'environnement de développement est éteint. Pour le démarrer il faut ouvrir le VLAB et lancer l'application",
+  "error_code": "Code",
+  "http_status": "Status HTTP"
 }
