@@ -67,9 +67,9 @@
 
     <!--  Repeat Password -->
     <mat-form-field appearance="outline" fxFlex="49%">
-      <mat-label>{{'repeat_password' | translate}}</mat-label>
+      <mat-label>{{'flAuth.repeat_password' | translate}}</mat-label>
       <input matInput type="password" formControlName="repeatPassword" required
-             placeholder="{{'repeat_password' | translate}}" autocomplete="off">
+             placeholder="{{'flAuth.repeat_password' | translate}}" autocomplete="off">
       <mat-error *ngIf="formGp.get('repeatPassword').hasError('required')">
         {{'flAuth.repeat_password' | flErrorRequired}}
       </mat-error>
