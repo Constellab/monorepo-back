@@ -16,6 +16,9 @@ export interface EnvironmentSettings {
   // base url for the api
   apiBaseUrl: string;
 
+  // base url for the api in dev environment
+  devApiBaseUrl: string;
+
   // url for the jupyter lab
   codeServerUrl: string;
 

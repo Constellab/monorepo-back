@@ -1,6 +1,7 @@
 <div class="page">
 
-  <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="mat-elevation-z1 toolbar" color="primary">
+  <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="mat-elevation-z1 toolbar"
+               [color]="toolbarColor | async">
     <div fxLayout="row" fxLayoutGap="2em">
       <div *ngFor="let link of accessibleLinks">
         <a mat-button [routerLink]="link.route"
@@ -12,21 +13,34 @@
     </div>
 
     <div>
-      <a mat-icon-button type="button" matTooltip="VS Code" matTooltipPosition="before"
-         [href]="codeServerUrl" target="_blank">
-        <mat-icon flIcon="code"></mat-icon>
-      </a>
 
-      <button mat-icon-button type="button" [matTooltip]="'documentation' | translate" matTooltipPosition="before"
-              [matMenuTriggerFor]="menu">
-        <mat-icon>help</mat-icon>
+      <!--  Settings button    -->
+      <button mat-icon-button type="button" [matMenuTriggerFor]="menu">
+        <mat-icon>settings</mat-icon>
       </button>
+
+
+      <!--   Menu for settings   -->
       <mat-menu #menu="matMenu">
-        <a mat-menu-item *ngFor="let documentation of documentationBricks"
-           target="_blank" [href]="documentation.url">
-          <mat-icon [flIcon]="documentation.icon"></mat-icon>
-          <span>{{documentation.label | translate}}</span>
-        </a>
+        <ng-template matMenuContent>
+          <a mat-menu-item [href]="codeServerUrl" target="_blank">
+            <mat-icon flIcon="code"></mat-icon>
+            <span>{{'vlab_link' | translate}}</span>
+          </a>
+
+          <gen-lab-environment-toggle class="env-toggle"></gen-lab-environment-toggle>
+
+          <mat-divider></mat-divider>
+
+          <div class="documentation">{{'documentations_links' | translate}}</div>
+
+          <a mat-menu-item *ngFor="let documentation of documentationBricks"
+             target="_blank" [href]="documentation.url">
+            <mat-icon [flIcon]="documentation.icon"></mat-icon>
+            <span>{{documentation.label | translate}}</span>
+          </a>
+
+        </ng-template>
       </mat-menu>
     </div>
   </mat-toolbar>

@@ -2,6 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {MainMenuLink, mainMenuLinks} from '../../utils/main-menu-link.class';
 import {DocumentationBrick, getDocumentationBricks} from '../../utils/documentation-link.class';
 import {EnvironmentHelper} from '../../../core/utils/environment.helper';
+import {Observable} from 'rxjs';
+import {ThemePalette} from '@angular/material/core';
+import {LabEnvironmentService} from '../../../core/service/lab-environment.service';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'gen-main-app',
@@ -16,7 +20,7 @@ export class MainAppComponent implements OnInit {
 
   codeServerUrl: string;
 
-  constructor() {
+  constructor(private labEnvironmentService: LabEnvironmentService) {
   }
 
   ngOnInit(): void {
@@ -24,4 +28,9 @@ export class MainAppComponent implements OnInit {
     this.codeServerUrl = EnvironmentHelper.getCodeServerUrl();
   }
 
+  get toolbarColor(): Observable<ThemePalette>{
+    return this.labEnvironmentService.getLabEnvironment$().pipe(
+      map(env => env === 'prod' ? 'primary': 'accent')
+    )
+  }
 }

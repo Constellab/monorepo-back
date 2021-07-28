@@ -19,6 +19,7 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import {MatTreeModule} from '@angular/material/tree';
 import {MatSelectModule} from '@angular/material/select';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -44,6 +45,7 @@ import {MatSelectModule} from '@angular/material/select';
     MatListModule,
     MatTreeModule,
     MatSelectModule,
+    MatSlideToggleModule,
 
 
     FlexLayoutModule,

@@ -13,7 +13,7 @@ import {FlFileHelper} from '../../../service/fl-file.helper';
  */
 @Injectable()
 export class FlApiService {
-  private readonly apiUrl: string;
+  private apiUrl: string;
 
   constructor(protected http: HttpClient,
               @Inject(FL_API_MODULE_CONFIG) private config: FlApiModuleConfig,
@@ -294,5 +294,9 @@ export class FlApiService {
       console.error('Error while serializing object before api call', object);
       throw e;
     }
+  }
+
+  public setApiUrl(apiUrl: string): void{
+    this.apiUrl = apiUrl;
   }
 }

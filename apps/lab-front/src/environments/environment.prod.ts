@@ -11,6 +11,7 @@ export const environment: Environment = {
   production: true,
   settings: {
     apiBaseUrl: '',
+    devApiBaseUrl: '',
     codeServerUrl: ''
   }
 };

@@ -32,6 +32,7 @@
   "error_required": "The field '{{field}}' is mandatory",
   "add_brick": "Add brick",
   "documentation": "Documentation",
+  "documentations_links": "Documentations' links",
   "gws": "Web services",
   "input_max_length": "Max length {{count}}",
   "open_resource_detail": "Open detail",
@@ -41,5 +42,9 @@
   "id": "Id",
   "type": "Type",
   "email": "Email address",
-  "email_invalid": "The email address is not valid"
+  "email_invalid": "The email address is not valid",
+  "vlab_link": "VLAB",
+  "dev_env_toggle": "Dev environment",
+  "dev_env_not_available": "The development environment is shutdown. To start it, open the VLAB and launch the application"
+
 }

@@ -1,14 +1,15 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
-import { MainRoutingModule } from './main-routing.module';
-import { MainAppComponent } from './component/main-app/main-app.component';
+import {MainRoutingModule} from './main-routing.module';
+import {MainAppComponent} from './component/main-app/main-app.component';
 import {CoreModule} from '../core/core.module';
 import {RouterModule} from '@angular/router';
+import {LabEnvironmentToggleComponent} from './component/lab-environment-toggle/lab-environment-toggle.component';
 
 
 @NgModule({
-  declarations: [MainAppComponent],
+  declarations: [MainAppComponent, LabEnvironmentToggleComponent],
   imports: [
     CommonModule,
     RouterModule,

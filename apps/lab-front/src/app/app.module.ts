@@ -91,8 +91,6 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
       multi: true
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},
-    // {provide: FL_API_MODULE_CONFIG, useValue: apiModuleConfig()},
-    // {provide: FL_API_MODULE_CONFIG, useFactory: testFactory},
   ],
   bootstrap: [AppComponent],
 })

@@ -4,6 +4,7 @@ import {constBaseRoute, constBiotaRoute, constBioxRoute, constFileExplorerRoute}
 import {MainAppComponent} from './component/main-app/main-app.component';
 import {AutoLoginGuard} from './guard/auto-login.guard';
 import {FlLabRoute} from '@monorepo/front-core-lib';
+import {LoadLabEnvironmentGuard} from './guard/load-lab-environment.guard';
 
 const routes: Routes = [
   {
@@ -15,7 +16,7 @@ const routes: Routes = [
     path: FlLabRoute.autoLogin.route, canActivate: [AutoLoginGuard], children: [],
   },
   {
-    path: constBaseRoute, component: MainAppComponent, canActivate: [],
+    path: constBaseRoute, component: MainAppComponent, canActivate: [LoadLabEnvironmentGuard],
     children: [
       {
         path: '', redirectTo: constBioxRoute, pathMatch: 'full'

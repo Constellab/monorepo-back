@@ -1,11 +1,11 @@
+import {environment} from '../../../environments/environment';
+import {Environment} from '../../../environments/environment.class';
+
 /**
  * Static class to access environment
  *
  * The environment variable must always be access from here
  */
-import {environment} from '../../../environments/environment';
-import {Environment} from '../../../environments/environment.class';
-
 export class EnvironmentHelper {
 
   public static readonly coreApiRoute: string = 'core-api';
@@ -20,6 +20,10 @@ export class EnvironmentHelper {
 
   public static getBaseApiUrl(): string {
     return EnvironmentHelper.getEnv().settings.apiBaseUrl;
+  }
+
+  public static getDevBaseApiUrl(): string {
+    return EnvironmentHelper.getEnv().settings.devApiBaseUrl;
   }
 
   public static getEnv(): Environment {
