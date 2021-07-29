@@ -26,12 +26,13 @@ import {QuillModule} from 'ngx-quill';
 import {AuthenticationInterceptor} from './core/service/authentication.interceptor';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {LoginModule} from './login/login.module';
-import {AuthenticationService} from './login/service/authentication.service';
+import {AuthenticationService} from './core/service/authentication.service';
 import {ApiErrorService} from './core/service/api-error.service';
+import {JwtManagerService} from './core/service/jwt-manager.service';
 
 
-function loadTokenFromLocalStorage(authenticationService: AuthenticationService): () => void {
-  return (): void => authenticationService.loadTokenFromLocalStorage();
+function loadTokenFromLocalStorage(jwtManager: JwtManagerService): () => void {
+  return (): void => jwtManager.loadTokenFromLocalStorage();
 }
 
 
@@ -87,7 +88,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     {provide: HTTP_INTERCEPTORS, useExisting: AuthenticationInterceptor, multi: true},
     {
       provide: APP_INITIALIZER, useFactory: loadTokenFromLocalStorage,
-      deps: [AuthenticationService, AuthenticationInterceptor],
+      deps: [JwtManagerService, AuthenticationInterceptor],
       multi: true
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},

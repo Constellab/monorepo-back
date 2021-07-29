@@ -3,7 +3,7 @@ import {ActivatedRouteSnapshot, CanActivate, Router, UrlTree} from '@angular/rou
 import {Observable} from 'rxjs';
 import {constBaseRoute} from '../../core/utils/base-route';
 import {FlLabRoute} from '@monorepo/front-core-lib';
-import {AuthenticationService} from '../../login/service/authentication.service';
+import {JwtManagerService} from '../../core/service/jwt-manager.service';
 
 /**
  * Guard to get the token from the query param named 'token', store it locally
@@ -15,7 +15,7 @@ import {AuthenticationService} from '../../login/service/authentication.service'
 })
 export class AutoLoginGuard implements CanActivate {
 
-  constructor(private router: Router, private authenticatedService: AuthenticationService) {
+  constructor(private router: Router, private jwtManager: JwtManagerService) {
   }
 
   canActivate(
@@ -25,7 +25,7 @@ export class AutoLoginGuard implements CanActivate {
 
     if (token) {
       // store the token in the
-      this.authenticatedService.storeUserJWT(token);
+      this.jwtManager.storeUserJWT(token);
     }
 
     return this.router.parseUrl('/' + constBaseRoute);
