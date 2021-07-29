@@ -6,15 +6,9 @@ import {ErrorText} from '../model/config/error-text.class';
 import {Request, Response} from 'express';
 import {RequestContextHelper} from '../modules/request-context/request-context.helper';
 import {TranslateOptions} from '../modules/translate/translate-options.class';
+import {ClStringHelper} from '@monorepo/core-lib';
+import {CmNestApiError} from '@monorepo/common-model';
 
-/**
- * Format of the response Error
- */
-interface ResponseError {
-  statusCode: HttpStatus;
-  error: string;
-  message?: string;
-}
 
 /**
  * Class to catch all exception and translate it if possible
@@ -31,24 +25,26 @@ export class CustomExceptionHandlerFilter implements ExceptionFilter {
   async catch(exception: unknown, host: ArgumentsHost): Promise<void> {
     const response: Response = host.switchToHttp().getResponse();
     try {
-      const error: ResponseError = await this.handleError(exception as any);
+      const error: CmNestApiError = await this.handleError(exception as any);
 
-      response.status(error.statusCode).json(error);
+      response.status(error.status).json(error);
     } catch (e) {
+      const instanceId: string = ClStringHelper.generateUUID();
       // use catch error if an error is raised in handleError method
       // because it would break the app
-      this.logger.error('Unexpected error thrown in CustomExceptionHandlerFilter');
-      const error: ResponseError = {
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Server error',
-        error: 'server_error'
+      this.logger.error('Unexpected error thrown in CustomExceptionHandlerFilter | InstanceId ' + instanceId);
+      const error: CmNestApiError = {
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        detail: 'Server error',
+        code: 'error.server_error',
+        instanceId: instanceId
       };
-      response.status(error.statusCode).json(error);
+      response.status(error.status).json(error);
     }
   }
 
 
-  private async handleError(error: Error): Promise<ResponseError> {
+  private async handleError(error: Error): Promise<CmNestApiError> {
     if (error instanceof HttpException) {
 
       // translate the error message and throw the exception with error code and message
@@ -57,8 +53,10 @@ export class CustomExceptionHandlerFilter implements ExceptionFilter {
       return this.handleDataTooLongError(error);
     }
 
+    const instanceId: string = ClStringHelper.generateUUID();
+
     // log the error
-    this.logError(error);
+    this.logError(error, instanceId);
 
 
     // in prod env, send a server error exception to hide detail for the user
@@ -67,23 +65,24 @@ export class CustomExceptionHandlerFilter implements ExceptionFilter {
       return this.convertToNestError(ErrorText.SERVER_ERROR, HttpStatus.BAD_REQUEST);
     } else {
       return {
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: error.message,
-        error: error.stack
+        status: HttpStatus.BAD_REQUEST,
+        code: ErrorText.SERVER_ERROR,
+        detail: error.message,
+        instanceId: instanceId
       };
     }
   }
 
   // method to log the error in the console with context info
-  private logError(error: Error): void {
+  private logError(error: Error, instanceId: string): void {
     const request: Request = RequestContextHelper.getCurrentRequest();
     const userString = RequestContextHelper.getCurrentUser()?.getUserInfo() ?? 'No user';
-    this.logger.error(`Error during request ${request.url} | Method ${request.method} | User : ${userString}`);
+    this.logger.error(`Error during request ${request.url} | Method ${request.method} | User : ${userString} | InstanceId ${instanceId}`);
     this.logger.error(error.stack);
   }
 
   // handle ER_DATA_TOO_LONG error when inserting in DB
-  private handleDataTooLongError(error: QueryFailedError): Promise<ResponseError> {
+  private handleDataTooLongError(error: QueryFailedError): Promise<CmNestApiError> {
     // split message on ' character
     // example of message: ER_DATA_TOO_LONG: Data too long for column 'title' at row 1
     const splitMessage: string[] = error.message.split('\'');
@@ -100,14 +99,15 @@ export class CustomExceptionHandlerFilter implements ExceptionFilter {
   /**
    * Translate the message and return an error observable with status
    */
-  private async convertToNestError(errorCode: string, status: HttpStatus, options: TranslateOptions = {}): Promise<ResponseError> {
+  private async convertToNestError(errorCode: string, status: HttpStatus, options: TranslateOptions = {}): Promise<CmNestApiError> {
     // translate the error message and throw the exception with error code and message
     const translatedMessage: string = await this.translateService.translate(errorCode, options);
 
     return {
-      statusCode: status,
-      message: translatedMessage,
-      error: errorCode
+      status: status,
+      code: errorCode,
+      detail: translatedMessage,
+      instanceId: ClStringHelper.generateUUID()
     };
   }
 

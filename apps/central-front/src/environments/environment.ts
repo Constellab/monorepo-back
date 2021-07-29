@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  // apiUrl: 'http://localhost:3001/',
-  apiUrl: 'https://pre-prod-back.gws.gencovery.com/',
+  apiUrl: 'http://localhost:3001/',
+  // apiUrl: 'https://pre-prod-back.gws.gencovery.com/',
 };
 
 /*

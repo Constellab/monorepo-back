@@ -134,4 +134,14 @@ export class ClStringHelper {
     const regex = new RegExp(/[-/\\^$*+?.()|[\]{}]/g);
     return str.replace(regex, '\\$&');
   }
+
+  /**
+   * Generate an UUID v4, it is not a simple uuid ID and must not used for encryption
+   */
+  public static generateUUID(): string{
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 }

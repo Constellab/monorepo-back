@@ -2,7 +2,6 @@ import {Inject, Injectable} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {Router} from '@angular/router';
-import {NestError} from '../model/global/server-error.class';
 import {
   FL_API_MODULE_CONFIG,
   FlApiErrorService,
@@ -15,6 +14,7 @@ import {
   FlTranslateService
 } from '@monorepo/front-core-lib';
 import {constLoginRoute} from '../utils/base-route';
+import {CmNestApiError} from '@monorepo/common-model';
 
 
 /**
@@ -22,7 +22,7 @@ import {constLoginRoute} from '../utils/base-route';
  * The errors opens a snackbar
  */
 @Injectable()
-export class ErrorService extends FlApiErrorService {
+export class ApiErrorService extends FlApiErrorService {
   constructor(snackBarService: FlSnackBarService,
               translateService: FlTranslateService,
               @Inject(FL_API_MODULE_CONFIG) config: FlApiModuleConfig,
@@ -55,10 +55,10 @@ export class ErrorService extends FlApiErrorService {
       serverError.logDetail.message = this.translateService.translate('connection_lost');
     } else {
 
-      const nestError: NestError = error.error;
+      const nestError: CmNestApiError = error.error;
 
       // handle session expired specifically
-      if (nestError.error === 'error.wrong_token') {
+      if (nestError.code === 'error.wrong_token') {
         return this.sessionExpired(serverError, snackBarDuration);
       }
 
@@ -107,8 +107,8 @@ export class ErrorService extends FlApiErrorService {
   /**
    * Handle the error message for the not specific errors
    */
-  private getErrorMessage(error: NestError, defaultError: string): string {
-    return error.message || defaultError;
+  private getErrorMessage(error: CmNestApiError, defaultError: string): string {
+    return error.detail || defaultError;
   }
 }
 

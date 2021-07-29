@@ -8,7 +8,7 @@ export interface LabApiError {
   // http status
   status: number;
 
-  // message of the error
+  // mess  // unique id of this error instanceage of the error
   detail: string;
 
   // unique id of this error instance
