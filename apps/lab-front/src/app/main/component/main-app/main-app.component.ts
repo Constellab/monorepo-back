@@ -6,6 +6,9 @@ import {Observable} from 'rxjs';
 import {ThemePalette} from '@angular/material/core';
 import {LabEnvironmentService} from '../../../core/service/lab-environment.service';
 import {map} from 'rxjs/operators';
+import {AuthenticationService} from '../../../core/service/authentication.service';
+import {Router} from '@angular/router';
+import {constLoginRoute} from '../../../core/utils/base-route';
 
 @Component({
   selector: 'gen-main-app',
@@ -20,7 +23,9 @@ export class MainAppComponent implements OnInit {
 
   codeServerUrl: string;
 
-  constructor(private labEnvironmentService: LabEnvironmentService) {
+  constructor(private labEnvironmentService: LabEnvironmentService,
+              private authenticationService: AuthenticationService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -28,9 +33,15 @@ export class MainAppComponent implements OnInit {
     this.codeServerUrl = EnvironmentHelper.getCodeServerUrl();
   }
 
-  get toolbarColor(): Observable<ThemePalette>{
+  get toolbarColor(): Observable<ThemePalette> {
     return this.labEnvironmentService.getLabEnvironment$().pipe(
-      map(env => env === 'prod' ? 'primary': 'accent')
-    )
+      map(env => env === 'prod' ? 'primary' : 'accent')
+    );
+  }
+
+  logout(): void {
+    this.authenticationService.logout().subscribe(
+      () => this.router.navigate([constLoginRoute])
+    );
   }
 }

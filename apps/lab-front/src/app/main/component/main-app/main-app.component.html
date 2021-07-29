@@ -40,6 +40,12 @@
             <span>{{documentation.label | translate}}</span>
           </a>
 
+          <mat-divider></mat-divider>
+
+          <button mat-menu-item type="button" (click)="logout()">
+            <mat-icon color="warn">logout</mat-icon>
+            <span class="g-warn-text">{{'flAuth.logout' | translate}}</span>
+          </button>
         </ng-template>
       </mat-menu>
     </div>

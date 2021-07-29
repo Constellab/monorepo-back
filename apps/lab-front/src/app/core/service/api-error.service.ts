@@ -78,8 +78,7 @@ export class ApiErrorService extends FlApiErrorService {
    */
   private handleWrongCredentialsError(): void {
     // save the current url for rerouting after login
-    const currentRoute = this.router.routerState.snapshot.url;
-    console.log(currentRoute, this.router.url);
+    const currentRoute = this.router.url;
 
     // save the url if it's different
     if (currentRoute !== constLoginRoute) {

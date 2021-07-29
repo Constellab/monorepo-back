@@ -17,7 +17,7 @@ const flAuthI18nFr: FlLangTranslation = {
     reset_password: 'Réinitialiser votre mot de passe',
     password_changed: 'Mot de passe modifié',
     sign_in: 'Se connecter',
-    logout: 'Déconnexion',
+    logout: 'Se déconnecter',
     signup: 'Inscription',
     password_weak_error: 'Le mot de passe doit contenir au moins 8 caractères, 1 lettre et 1 nombre',
     repeat_password_error: 'Le mot de passe répété dest différent',

@@ -1,9 +1,9 @@
 
-.page{
+.page {
   min-height: 100vh;
 }
 
-.toolbar{
+.toolbar {
   height: var(--menu-toolbar-height);
 }
 
@@ -20,16 +20,22 @@
   opacity: 1;
 }
 
-.page-content{
+.page-content {
   min-height: calc(100vh - var(--menu-toolbar-height));
 }
 
-.env-toggle{
+.env-toggle {
   // padding to match the menu button
-  padding: 10px 16px;
+  padding: 10px 16px 0 16px;
   display: block;
 }
 
-.documentation{
-  padding: 10px 16px;
+.documentation {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+mat-divider {
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
