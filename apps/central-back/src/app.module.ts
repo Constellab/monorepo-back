@@ -29,6 +29,9 @@ import {PersistenceLogger} from './app/core/services/persistence-logger/persiste
 import {RequestContextMiddleware} from './app/core/modules/request-context/request-context.middleware';
 import {clDefaultLang} from '@monorepo/core-lib';
 import {FrontErrorsModule} from './app/front-errors/front-errors.module';
+import {WinstonModule} from 'nest-winston';
+import {configureLogger} from './app/core/logger/logger.config.class';
+
 
 function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
   const dbConfig: DatabaseConfig = configService.getDatabaseConfig();
@@ -72,6 +75,13 @@ function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
 
     // Custom module
     CoreModule,
+
+    // setup the loggin module
+    WinstonModule.forRootAsync({
+      imports: [CoreModule],
+      useFactory: configureLogger,
+      inject: [CoreConfigService],
+    }),
 
     // Entities module
     UsersModule,

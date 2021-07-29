@@ -1,5 +1,6 @@
 import {NestFactory} from '@nestjs/core';
 import {AppModule} from './app.module';
+import {WINSTON_MODULE_NEST_PROVIDER} from 'nest-winston';
 
 async function bootstrap(): Promise<void> {
 
@@ -16,6 +17,9 @@ async function bootstrap(): Promise<void> {
     allowedHeaders:
       'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,X-Forwarded-for,lang,If-None-Match',
   });
+
+  // enable custom logger using winston
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   await app.listen(3001);
 }
