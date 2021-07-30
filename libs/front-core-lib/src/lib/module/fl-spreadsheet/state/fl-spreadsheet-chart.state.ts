@@ -63,16 +63,10 @@ export class FlSpreadsheetChartState {
     this.overlayRef = this.portalService.createPortal(FlSpreadsheetChartSelectionComponent, portalConfig, data);
 
     this.overlayRef.detachments().subscribe(
-      (chartSelection) => this.openChartPortal( chartSelection, selection?.id ?? null)
+      (chartSelection) => this.openChartPortal(chartSelection, selection?.id ?? null)
     );
   }
 
-  private openUpdateChartSelectionPortal(selectionId: number): void {
-    const selection: SelectionWithOverlay = this.currentSelections.get(selectionId);
-    if (selection) {
-      this.openChartSelectionPortal(selection.selection);
-    }
-  }
 
   /**
    * Open the chart portal after chart selection
@@ -122,6 +116,33 @@ export class FlSpreadsheetChartState {
     }
   }
 
+  /**
+   * Open the chart selection portal in update mode
+   * @param selectionId
+   * @private
+   */
+  private openUpdateChartSelectionPortal(selectionId: number): void {
+    const selection: SelectionWithOverlay = this.currentSelections.get(selectionId);
+    if (selection) {
+      this.openChartSelectionPortal(selection.selection);
+    }
+  }
+
+  /**
+   * Refresh the chart
+   * @param selectionId
+   * @private
+   */
+  private refreshChart(selectionId: number): void {
+    const selection: SelectionWithOverlay = this.currentSelections.get(selectionId);
+    if (selection) {
+      this.openChartPortal({
+        mode: 'update',
+        selection: selection.selection.selectionForm
+      }, selectionId);
+    }
+  }
+
   private closeChartOverlay(selectionId: number): void {
     this.currentSelections.get(selectionId)?.overlayRef.dispose();
   }
@@ -135,6 +156,12 @@ export class FlSpreadsheetChartState {
    */
   private getContextMenuItem(selectionId: number): FlMenuDynamic[] {
     return [
+      // button refresh the chart data
+      {
+        name: 'flSpreadsheet.chart_refresh',
+        icon: 'refresh',
+        onClick: () => this.refreshChart(selectionId)
+      },
       // button to edit the chart and reopen data selection
       {
         name: 'flSpreadsheet.chart_update',
