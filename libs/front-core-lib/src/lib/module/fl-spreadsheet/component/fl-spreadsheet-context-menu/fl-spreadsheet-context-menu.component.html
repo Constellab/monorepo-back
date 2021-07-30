@@ -1,5 +1,8 @@
-<button *ngFor="let button of config.buttons" mat-menu-item
-        (click)="selectOption(button)">
-  <mat-icon [flIcon]="button.icon"></mat-icon>
-  <span>{{button.text | translate}}</span>
-</button>
+<ng-container *ngFor="let button of config.buttons">
+  <mat-divider *ngIf="button.divider"></mat-divider>
+  <button mat-menu-item
+          (click)="selectOption(button)">
+    <mat-icon [flIcon]="button.icon"></mat-icon>
+    <span>{{button.text | translate}}</span>
+  </button>
+</ng-container>

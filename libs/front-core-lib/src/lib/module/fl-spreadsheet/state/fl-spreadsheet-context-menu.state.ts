@@ -22,6 +22,7 @@ export interface FlContextMenuButton {
   text: string;
   icon: string;
   onClick: () => any;
+  divider?: boolean; // if true, it a a divider before the button
 }
 
 /**
@@ -102,7 +103,8 @@ export class FlSpreadsheetContextMenu {
         {
           text: 'flSpreadsheet.add',
           icon: 'add',
-          onClick: () => this.action.addRow()
+          onClick: () => this.action.addRow(),
+          divider: true,
         },
         // button to delete rows
         {
@@ -131,7 +133,8 @@ export class FlSpreadsheetContextMenu {
     return {
       text: 'flSpreadsheet.create_chart',
       icon: 'addchart',
-      onClick: () => this.chartState.openChartSelectionPortal()
+      onClick: () => this.chartState.openChartSelectionPortal(),
+      divider: true
     };
   }
 
@@ -140,7 +143,7 @@ export class FlSpreadsheetContextMenu {
       {
         text: 'flSpreadsheet.copy',
         icon: 'content_copy',
-        onClick: () => this.clipboardState.copyCurrentSelectionToClipboard()
+        onClick: () => this.clipboardState.copyCurrentSelectionToClipboard(),
       },
       {
         text: 'flSpreadsheet.paste',
