@@ -1,11 +1,9 @@
-import {Inject, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {
-  FL_API_MODULE_CONFIG,
   FlApiErrorService,
-  FlApiModuleConfig,
   flAuthExpiredCookie,
   FlCookieService,
   FlLoginSavedRoute,
@@ -25,10 +23,13 @@ import {CmNestApiError} from '@monorepo/common-model';
 export class ApiErrorService extends FlApiErrorService {
   constructor(snackBarService: FlSnackBarService,
               translateService: FlTranslateService,
-              @Inject(FL_API_MODULE_CONFIG) config: FlApiModuleConfig,
               private router: Router,
               private cookieService: FlCookieService) {
-    super(config, snackBarService, translateService);
+    super(snackBarService, translateService);
+  }
+
+  get defaultApiErrorDuration(): number {
+    return 5000;
   }
 
   /**
@@ -73,6 +74,8 @@ export class ApiErrorService extends FlApiErrorService {
 
     // throw the error to propagate it
     return throwError(serverError);
+
+
   }
 
 

@@ -1,66 +1,9 @@
-import {InjectionToken} from '@angular/core';
-import {HttpErrorResponse} from '@angular/common/http';
-import {Observable} from 'rxjs';
 import {FlSnackBarService} from '../../fl-snack-bar/fl-snack-bar.service';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
-import {FlServerError} from './fl-server-error.class';
-import {ClDeserializationRef, ClPage} from '@monorepo/core-lib';
-
-/**
- * ApiModule configuration
- */
-export interface FlApiModuleConfig {
-  /**
-   * The api url used by the app. Every call will use this URL
-   */
-  apiUrl: string;
-
-  /**
-   * Default duration (in milliseconds) for the snackbar when showing an API error
-   *
-   * If not provided, default is 5000 milliseconds
-   */
-  defaultApiErrorDuration?: number;
-
-  /**
-   * Configuration of the pagination
-   */
-  pagination: {
-    /**
-     * Name of the query param page for the page number
-     */
-    pageQueryParam: string;
-
-    /**
-     * Name of the query param for the page size
-     */
-    pageSizeQueryParam: string;
-
-    /**
-     * Method to deserialize page
-     * @param json returned json form the api
-     * @param classReference for deserialization
-     */
-    deserializePage: (json: any, classReference: ClDeserializationRef) => ClPage<any>
-  }
-
-  /**
-   * If this string is provided, the FlErrorHandlerApiService is activated and registered as a
-   * ErrorHandler.
-   * TS error will be catch by this class, logged to the console and send to the API in POST request
-   */
-  logErrorApiRoute?: string;
-
-}
-
-/**
- * @internal
- * Use to inject the configuration of the module
- *
- * Use '@Inject(FL_APP_CONFIG)' to inject it in component or service
- */
-export const FL_API_MODULE_CONFIG =
-  new InjectionToken<FlApiModuleConfig>('FL_API_MODULE_CONFIG');
+import {HttpErrorResponse} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {ClDeserializationRef} from '@monorepo/core-lib';
+import {FlServerError} from '../model/fl-server-error.class';
 
 /**
  * Service to provide to handle error of the {@link FlApiService}
@@ -68,7 +11,6 @@ export const FL_API_MODULE_CONFIG =
 export abstract class FlApiErrorService {
 
   protected constructor(
-    protected config: FlApiModuleConfig,
     protected snackBarService: FlSnackBarService,
     protected translateService: FlTranslateService
   ) {
@@ -84,6 +26,13 @@ export abstract class FlApiErrorService {
    */
   public abstract handleServerError(error: HttpErrorResponse, hideError: boolean,
                                     snackBarDuration?: number, defaultError?: string): Observable<never>;
+
+  /**
+   * Default duration (in milliseconds) for the snackbar when showing an API error
+   *
+   * If not provided, default is 5000 milliseconds
+   */
+  public abstract get defaultApiErrorDuration(): number;
 
   /**
    * Handle an error during deserialization of the API response
@@ -125,7 +74,7 @@ export abstract class FlApiErrorService {
   protected showError(message: string, duration?: number,
                       detailButton?: (event: MouseEvent) => void): void {
     if (duration == null) {
-      duration = this.config.defaultApiErrorDuration;
+      duration = this.defaultApiErrorDuration ?? 5000;
     }
 
     this.snackBarService.openErrorMessage(message, false, duration,

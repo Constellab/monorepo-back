@@ -1,5 +1,6 @@
 import {environment} from '../../../environments/environment';
 import {Environment} from '../../../environments/environment.class';
+import {LabEnvironment} from '../model/global/lab-environment.class';
 
 /**
  * Static class to access environment
@@ -32,5 +33,18 @@ export class EnvironmentHelper {
 
   public static isProd(): boolean {
     return EnvironmentHelper.getEnv().production;
+  }
+
+  /**
+   * Return the lab environment of an URL
+   * @param url
+   */
+  public static getLabEnvFromUrl(url :string): LabEnvironment | null {
+    if (url.startsWith(EnvironmentHelper.getBaseApiUrl())) {
+      return 'prod';
+    } else if (url.startsWith(EnvironmentHelper.getDevBaseApiUrl())) {
+      return 'dev';
+    }
+    return null;
   }
 }

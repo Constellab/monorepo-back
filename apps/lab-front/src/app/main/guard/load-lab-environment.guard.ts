@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {CanActivate, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs';
-import {LabEnvironmentService} from '../../core/service/lab-environment.service';
+import {DevLabEnvironmentService} from '../../core/service/dev-lab-environment.service';
 import {map} from 'rxjs/operators';
 
 /**
@@ -13,7 +13,7 @@ import {map} from 'rxjs/operators';
 })
 export class LoadLabEnvironmentGuard implements CanActivate {
 
-  constructor(private labEnvService: LabEnvironmentService) {
+  constructor(private labEnvService: DevLabEnvironmentService) {
   }
 
   canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {

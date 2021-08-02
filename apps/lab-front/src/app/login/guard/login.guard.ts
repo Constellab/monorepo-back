@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {CanActivate, Router, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs';
 import {RouterService} from '../../core/service/router.service';
-import {JwtManagerService} from '../../core/service/jwt-manager.service';
+import {LabEnvStore} from '../../core/service/lab-env.store';
 
 /**
  * Login page guard to redirect to app pages if a token exists
@@ -11,7 +11,7 @@ import {JwtManagerService} from '../../core/service/jwt-manager.service';
   providedIn: 'root'
 })
 export class LoginGuard implements CanActivate {
-  constructor(private jwtManager: JwtManagerService, private router: Router) {
+  constructor(private jwtManager: LabEnvStore, private router: Router) {
   }
 
   canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {

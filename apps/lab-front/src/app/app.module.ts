@@ -6,7 +6,7 @@ import {RouterModule} from '@angular/router';
 import {MainModule} from './main/main.module';
 import {CoreModule} from './core/core.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {HttpClientModule} from '@angular/common/http';
 import {
   FlApiModule,
   FlAuthModule,
@@ -21,17 +21,16 @@ import {
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {svgIcons} from './core/utils/svg-icon-config';
-import {apiModuleConfig} from './core/utils/api-module.config';
 import {QuillModule} from 'ngx-quill';
-import {AuthenticationInterceptor} from './core/service/authentication.interceptor';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {LoginModule} from './login/login.module';
 import {AuthenticationService} from './core/service/authentication.service';
 import {ApiErrorService} from './core/service/api-error.service';
-import {JwtManagerService} from './core/service/jwt-manager.service';
+import {LabEnvStore} from './core/service/lab-env.store';
+import {ApiServiceConfig} from './core/service/api-module.config';
 
 
-function loadTokenFromLocalStorage(jwtManager: JwtManagerService): () => void {
+function loadTokenFromLocalStorage(jwtManager: LabEnvStore): () => void {
   return (): void => jwtManager.loadTokenFromLocalStorage();
 }
 
@@ -55,7 +54,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     // Core module
     CoreModule,
 
-    FlApiModule.forRoot(apiModuleConfig, ApiErrorService),
+    FlApiModule.forRoot(ApiServiceConfig, ApiErrorService),
 
     // Fl setup modules
     // Setup translate module
@@ -85,10 +84,9 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     }),
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useExisting: AuthenticationInterceptor, multi: true},
     {
       provide: APP_INITIALIZER, useFactory: loadTokenFromLocalStorage,
-      deps: [JwtManagerService, AuthenticationInterceptor],
+      deps: [LabEnvStore],
       multi: true
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},

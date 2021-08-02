@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {FlApiService, FlAuthService} from '@monorepo/front-core-lib';
+import {FlApiService, FlAuthService, FlCleanerService} from '@monorepo/front-core-lib';
 import {CmCredentials} from '@monorepo/common-model';
 import {tap} from 'rxjs/operators';
-import {JwtManagerService} from './jwt-manager.service';
+import {LabEnvStore} from './lab-env.store';
 
 interface LoginResponse {
   access_token: string,
@@ -20,7 +20,7 @@ export class AuthenticationService extends FlAuthService {
 
 
   constructor(private apiService: FlApiService,
-              private jwtManager: JwtManagerService) {
+              private jwtManager: LabEnvStore) {
     super();
   }
 
@@ -40,7 +40,8 @@ export class AuthenticationService extends FlAuthService {
    * Remove the JWT from the memory and localstorage, clear the user data
    */
   public logout(): Observable<void> {
-    this.jwtManager.clearUserJWTAndData();
+    // clear all the services
+    FlCleanerService.getInstance().cleanServices();
     return of(null);
   }
 }

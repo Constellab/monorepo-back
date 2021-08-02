@@ -1,13 +1,15 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatSlideToggleChange} from '@angular/material/slide-toggle';
-import {LabEnvironmentService} from '../../../core/service/lab-environment.service';
+import {DevLabEnvironmentService} from '../../../core/service/dev-lab-environment.service';
+import {Subscription} from 'rxjs';
+import {LabEnvStore} from '../../../core/service/lab-env.store';
 
 @Component({
   selector: 'gen-lab-environment-toggle',
   templateUrl: './lab-environment-toggle.component.html',
   styleUrls: ['./lab-environment-toggle.component.scss']
 })
-export class LabEnvironmentToggleComponent implements OnInit {
+export class LabEnvironmentToggleComponent implements OnInit, OnDestroy {
 
   checked: boolean;
 
@@ -15,12 +17,16 @@ export class LabEnvironmentToggleComponent implements OnInit {
 
   ready: boolean = false;
 
-  constructor(private labEnvService: LabEnvironmentService) {
+  private subscription: Subscription;
+
+  constructor(private labEnvStore: LabEnvStore,
+              private labEnvService: DevLabEnvironmentService) {
   }
 
   ngOnInit(): void {
-    this.checked = this.labEnvService.getLabEnvironment() === 'dev';
-
+    this.subscription = this.labEnvStore.getLabEnvironment$().subscribe(
+      (env) => this.checked = env === 'dev'
+    );
     this.checkDevApi();
   }
 
@@ -35,13 +41,25 @@ export class LabEnvironmentToggleComponent implements OnInit {
   }
 
   toggleChange(change: MatSlideToggleChange): void {
-    console.log(change);
-    this.labEnvService.setLabEnvironment(change.checked ? 'dev' : 'prod');
+    if (change.checked) {
+      this.labEnvService.activateDevEnvironment().subscribe(
+        result => this.onActivateDevEnvironment(result)
+      );
+    } else {
+      this.labEnvStore.setLabEnvironment('prod');
+    }
+  }
+
+  // if there was a problem with the activation, uncheck the checkbox
+  private onActivateDevEnvironment(activate: boolean): void {
+    if (!activate) {
+      this.checked = false;
+    }
   }
 
   get disabled(): boolean {
     // only disable the toggle if it is not check and the dev api is not running
-    return !this.checked && !this.devApiRunning
+    return !this.checked && !this.devApiRunning && false;
   }
 
   get showHelpMessage(): boolean {
@@ -53,4 +71,10 @@ export class LabEnvironmentToggleComponent implements OnInit {
   stopEventPropagation(event: MouseEvent): void {
     event.stopPropagation();
   }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
+
+
 }

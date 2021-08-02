@@ -4,11 +4,11 @@ import {DocumentationBrick, getDocumentationBricks} from '../../utils/documentat
 import {EnvironmentHelper} from '../../../core/utils/environment.helper';
 import {Observable} from 'rxjs';
 import {ThemePalette} from '@angular/material/core';
-import {LabEnvironmentService} from '../../../core/service/lab-environment.service';
 import {map} from 'rxjs/operators';
 import {AuthenticationService} from '../../../core/service/authentication.service';
 import {Router} from '@angular/router';
 import {constLoginRoute} from '../../../core/utils/base-route';
+import {LabEnvStore} from '../../../core/service/lab-env.store';
 
 @Component({
   selector: 'gen-main-app',
@@ -23,7 +23,7 @@ export class MainAppComponent implements OnInit {
 
   codeServerUrl: string;
 
-  constructor(private labEnvironmentService: LabEnvironmentService,
+  constructor(private labEnvManager: LabEnvStore,
               private authenticationService: AuthenticationService,
               private router: Router) {
   }
@@ -34,7 +34,7 @@ export class MainAppComponent implements OnInit {
   }
 
   get toolbarColor(): Observable<ThemePalette> {
-    return this.labEnvironmentService.getLabEnvironment$().pipe(
+    return this.labEnvManager.getLabEnvironment$().pipe(
       map(env => env === 'prod' ? 'primary' : 'accent')
     );
   }

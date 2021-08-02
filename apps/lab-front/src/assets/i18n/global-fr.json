@@ -48,5 +48,6 @@
   "dev_env_toggle": "Environment de dev",
   "dev_env_not_available": "L'environnement de développement est éteint. Pour le démarrer il faut ouvrir le VLAB et lancer l'application",
   "error_code": "Code",
-  "http_status": "Status HTTP"
+  "http_status": "Status HTTP",
+  "auto_dev_login_failed": "La connexion automatique à l'environnement de dev a échouée, veuillez vous connecter manuellement"
 }

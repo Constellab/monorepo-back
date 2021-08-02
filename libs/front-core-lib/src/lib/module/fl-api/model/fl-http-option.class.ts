@@ -31,9 +31,7 @@ export interface FlHttpGetUrlOption{
 export type FlHttpOptionSerialization = 'classToPlain' | 'stringify' | 'none' | ClClassReference;
 
 export interface FlHttpOption extends FlHttpGetUrlOption{
-  headers?: HttpHeaders | {
-    [header: string]: string | string[];
-  };
+  headers?: HttpHeaders;
   observe?: any;
   responseType?: 'blob' | 'arraybuffer' | 'text' | any;
   params?: HttpParams | {

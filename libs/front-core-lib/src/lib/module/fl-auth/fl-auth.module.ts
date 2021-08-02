@@ -24,6 +24,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {MatSelectModule} from '@angular/material/select';
 import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
+import {FlLoginDialogComponent} from './component/fl-login-dialog/fl-login-dialog.component';
 
 /**
  * Module containing component for authentication, sign up, password reset
@@ -34,12 +35,14 @@ import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.modu
     FlPasswordForgottenComponent,
     FlResetPasswordPageComponent,
     FlSignupDialogComponent,
+    FlLoginDialogComponent,
   ],
   exports: [
     FlLoginComponent,
     FlPasswordForgottenComponent,
     FlResetPasswordPageComponent,
     FlSignupDialogComponent,
+    FlLoginDialogComponent,
   ],
   imports: [
     CommonModule,

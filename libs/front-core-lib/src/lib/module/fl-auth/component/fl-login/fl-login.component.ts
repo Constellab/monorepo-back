@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {FlDialogService} from '../../../fl-dialog/fl-dialog.service';
 import {Router} from '@angular/router';
@@ -20,14 +20,16 @@ import {FlPasswordForgottenComponent} from '../fl-password-forgotten/fl-password
 export class FlLoginComponent implements OnInit {
 
   /**
-   * Redirection route after the login is successful
+   * Redirection route after the login is successful, do nothing if not provided
    */
-  @Input() appRoute: string;
+  @Input() appRoute?: string;
 
   /**
    * If true the password reset link and signup link are hidden
    */
   @Input() diableFooter: boolean = false;
+
+  @Output() loginSuccess: EventEmitter<any> = new EventEmitter<any>();
 
   formGp: FormGroup<CmCredentials>;
   isLoading = false;
@@ -53,22 +55,27 @@ export class FlLoginComponent implements OnInit {
     if (this.formGp.valid) {
       this.isLoading = true;
       this.loginService.login(this.formGp.getRawValue()).subscribe(
-        () => this.onLoginSuccess(),
+        response => this.onLoginSuccess(response),
         () => this.error()
       );
     }
   }
 
-  private onLoginSuccess(): void {
+  private onLoginSuccess(response: any): void {
     this.isLoading = false;
-    // redirect to the app
-    // if a route has been saved, redirect to this route
-    if (FlLoginSavedRoute.hasRoute()) {
-      this.router.navigate([FlLoginSavedRoute.getRoutePath()], {queryParams: FlLoginSavedRoute.getRouteQueryParams()});
-      FlLoginSavedRoute.clearRoute();
-    } else {
-      this.router.navigate([this.appRoute]);
+
+    if (this.appRoute) {
+      // redirect to the app
+      // if a route has been saved, redirect to this route
+      if (FlLoginSavedRoute.hasRoute()) {
+        this.router.navigate([FlLoginSavedRoute.getRoutePath()], {queryParams: FlLoginSavedRoute.getRouteQueryParams()});
+        FlLoginSavedRoute.clearRoute();
+      } else {
+        this.router.navigate([this.appRoute]);
+      }
     }
+
+    this.loginSuccess.next(response);
   }
 
   private error(): void {

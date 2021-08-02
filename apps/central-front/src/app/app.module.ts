@@ -26,7 +26,7 @@ import {
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {svgIcons} from './core/model/config/svg-icon-config';
-import {apiModuleConfig} from './core/model/config/api-module.config';
+import {ApiServiceConfig} from './core/model/config/api-module.config';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {AuthenticationService} from './login/service/authentication.service';
 import {UserAccountsService} from './core/service-api/user-accounts.service';
@@ -58,7 +58,7 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     // Core Modules
     CoreModule,
 
-    FlApiModule.forRoot(() => apiModuleConfig(), ApiErrorService),
+    FlApiModule.forRoot(ApiServiceConfig, ApiErrorService, 'front-errors'),
 
     // Setup translate module
     FlTranslateModule.forRoot({

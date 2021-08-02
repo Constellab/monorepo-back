@@ -1,11 +1,12 @@
-import {Inject, Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {catchError, map, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {ClCoreJsonConvert, ClDeserializationRef} from '@monorepo/core-lib';
-import {FL_API_MODULE_CONFIG, FlApiErrorService, FlApiModuleConfig} from '../model/fl-api-module.config.class';
 import {FlHttpGetUrlOption, FlHttpOption, FlHttpOptionSerialization} from '../model/fl-http-option.class';
 import {FlFileHelper} from '../../../service/fl-file.helper';
+import {FlApiServiceConfig} from './fl-api-service.config';
+import {FlApiErrorService} from './fl-api-error.service';
 
 /**
  * Global service to call make Http request. This service formats input and output
@@ -13,13 +14,10 @@ import {FlFileHelper} from '../../../service/fl-file.helper';
  */
 @Injectable()
 export class FlApiService {
-  private apiUrl: string;
 
   constructor(protected http: HttpClient,
-              @Inject(FL_API_MODULE_CONFIG) private config: FlApiModuleConfig,
+              private configService: FlApiServiceConfig,
               private flErrorService: FlApiErrorService) {
-    // get the api url from the config
-    this.apiUrl = config.apiUrl;
   }
 
   /**
@@ -32,6 +30,8 @@ export class FlApiService {
    */
   public getById(route: string, id: string, classReference?: ClDeserializationRef,
                  options: FlHttpOption = {}): Observable<any> {
+
+    options.headers = this.mergeHeader(options.headers);
     return this.http.get(this.getUrlForId(route, id, options.overrideApiUrl), options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -46,6 +46,7 @@ export class FlApiService {
    */
   public get(route: string, classReference?: ClDeserializationRef,
              options: FlHttpOption = {}): Observable<any> {
+    options.headers = this.mergeHeader(options.headers);
     return this.http.get(this.getUrl(route, options), options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -61,6 +62,7 @@ export class FlApiService {
    */
   public put(route: string, body: any, classReference?: ClDeserializationRef,
              options: FlHttpOption = {}): Observable<any> {
+    options.headers = this.mergeHeader(options.headers);
     return this.http.put(
       this.getUrl(route, options),
       this.convertObjectToPlain(body, options.serialization),
@@ -80,6 +82,7 @@ export class FlApiService {
    */
   public patch(route: string, body: any, classReference?: ClDeserializationRef,
                options: FlHttpOption = {}): Observable<any> {
+    options.headers = this.mergeHeader(options.headers);
     return this.http.patch(
       this.getUrl(route, options),
       this.convertObjectToPlain(body, options.serialization),
@@ -99,6 +102,7 @@ export class FlApiService {
    */
   public post(route: string, body: any, classReference?: ClDeserializationRef,
               options: FlHttpOption = {}): Observable<any> {
+    options.headers = this.mergeHeader(options.headers);
     return this.http.post(
       this.getUrl(route, options),
       this.convertObjectToPlain(body, options.serialization),
@@ -119,6 +123,7 @@ export class FlApiService {
    */
   public deleteById(route: string, id: string, classReference?: ClDeserializationRef,
                     options: FlHttpOption = {}): Observable<any> {
+    options.headers = this.mergeHeader(options.headers);
     return this.http.delete(this.getUrlForId(route, id, options.overrideApiUrl), options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -133,6 +138,7 @@ export class FlApiService {
    */
   public delete(route: string, classReference?: ClDeserializationRef,
                 options: FlHttpOption = {}): Observable<any> {
+    options.headers = this.mergeHeader(options.headers);
     return this.http.delete(this.getUrl(route, options), options).pipe(
       catchError(err => this.catchError(err, options)),
       map(result => this.deserialize(result, classReference, options.resultIsPaginated))
@@ -184,7 +190,7 @@ export class FlApiService {
       try {
         if (isPaginated) {
           // deserialize page
-          return this.config.pagination.deserializePage(json, classReference);
+          return this.configService.deserializePage(json, classReference);
         } else {
           return ClCoreJsonConvert.deserialize(json, classReference);
         }
@@ -217,12 +223,12 @@ export class FlApiService {
 
       // add the page parameter
       if (options.page != null) {
-        fullRoute += `${firstCharacter}${this.config.pagination.pageQueryParam}=${options.page}`;
+        fullRoute += `${firstCharacter}${this.configService.pageQueryParam}=${options.page}`;
         firstCharacter = '&';
       }
       // add the size parameter
       if (options.pageSize != null) {
-        fullRoute += `${firstCharacter}${this.config.pagination.pageSizeQueryParam}=${options.pageSize}`;
+        fullRoute += `${firstCharacter}${this.configService.pageSizeQueryParam}=${options.pageSize}`;
       }
 
     }
@@ -257,7 +263,7 @@ export class FlApiService {
    * @private
    */
   public getBaseRouteUrl(route: string, overrideApiUrl?: string): string {
-    return (overrideApiUrl == null ? this.apiUrl : overrideApiUrl) + route;
+    return (overrideApiUrl == null ? this.configService.getApiUrl() : overrideApiUrl) + route;
   }
 
   // download the file to the user's computer is direct download is set to true
@@ -265,6 +271,20 @@ export class FlApiService {
     if (directDownload) {
       FlFileHelper.downloadBlob(file, filename);
     }
+  }
+
+  // Merge the header of the request with the header of the config
+  private mergeHeader(headers: HttpHeaders): HttpHeaders | null {
+    const headerObject: Record<string, string> = this.configService.getHeaders() ?? {};
+
+    if (headers != null) {
+      // append the header of the request
+      headers.keys().map(key => headers[key] = headers.get(key));
+    }
+
+    if (Object.keys(headerObject).length === 0) return null;
+
+    return new HttpHeaders(headerObject);
   }
 
   private catchError(error: HttpErrorResponse, httpOptions: FlHttpOption = {}): Observable<never> {
@@ -294,9 +314,5 @@ export class FlApiService {
       console.error('Error while serializing object before api call', object);
       throw e;
     }
-  }
-
-  public setApiUrl(apiUrl: string): void{
-    this.apiUrl = apiUrl;
   }
 }

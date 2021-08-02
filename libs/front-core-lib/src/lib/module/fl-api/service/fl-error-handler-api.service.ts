@@ -1,10 +1,17 @@
-import {ErrorHandler, Inject, Injectable} from '@angular/core';
+import {ErrorHandler, Inject, Injectable, InjectionToken} from '@angular/core';
 import {Router} from '@angular/router';
 import {FlApiService} from './fl-api.service';
-import {FL_API_MODULE_CONFIG, FlApiModuleConfig} from '../model/fl-api-module.config.class';
 import {DateTime} from 'luxon';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {FlErrorLogBody} from '../model/fl-error-log-body.class';
+
+
+/**
+ * @internal
+ * Use to inject the configuration of the FlErrorHandlerApiService
+ */
+export const FL_ERROR_HANDLER_API =
+  new InjectionToken<string>('FL_ERROR_HANDLER_API');
 
 
 @Injectable()
@@ -18,7 +25,7 @@ export class FlErrorHandlerApiService implements ErrorHandler {
 
   constructor(private apiService: FlApiService,
               private router: Router,
-              @Inject(FL_API_MODULE_CONFIG) private config: FlApiModuleConfig) {
+              @Inject(FL_ERROR_HANDLER_API) private errorApiUrl: string) {
   }
 
   handleError(error: Error): void {
@@ -51,7 +58,7 @@ export class FlErrorHandlerApiService implements ErrorHandler {
       route: this.router.url
     };
 
-    this.apiService.post(this.config.logErrorApiRoute, body, null, {hideSnackBarError: true}).subscribe(
+    this.apiService.post(this.errorApiUrl, body, null, {hideSnackBarError: true}).subscribe(
       () => {
       },
       (error) => console.error('Error while logging the error to the api', error)

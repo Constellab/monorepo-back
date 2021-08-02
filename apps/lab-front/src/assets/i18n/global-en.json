@@ -48,5 +48,6 @@
   "dev_env_toggle": "Dev environment",
   "dev_env_not_available": "The development environment is shutdown. To start it, open the VLAB and launch the application",
   "error_code": "Code",
-  "http_status": "HTTP status"
+  "http_status": "HTTP status",
+  "auto_dev_login_failed": "The automatic connexion to the development environment failed, please lo on manually"
 }
