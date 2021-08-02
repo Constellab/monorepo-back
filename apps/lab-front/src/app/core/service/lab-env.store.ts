@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {FlCleanableService, FlCleanerService, FlLocalStorageService} from '@monorepo/front-core-lib';
 import {LabEnvironment} from '../model/global/lab-environment.class';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {EnvironmentHelper} from '../utils/environment.helper';
 
 /**
  * Class to manage the env and jwt, store it and clean it
@@ -129,18 +128,15 @@ export class LabEnvStore implements FlCleanableService {
     return value;
   }
 
-  public getApiUrl(): string {
-    if (this.getLabEnvironment() === 'dev') {
-      return EnvironmentHelper.getDevBaseApiUrl();
-    }
-    return EnvironmentHelper.getBaseApiUrl();
+  public clearLabEnvironmentStorage(): void{
+    this.localStorage.removeItem(this.labEnvironmentStorageKey);
   }
+
 
   clean(): void {
     this.clearUserJWTAndData('all');
     this.setLabEnvironment('prod');
-    this.localStorage.removeItem(this.labEnvironmentStorageKey);
+    this.clearLabEnvironmentStorage();
   }
-
 
 }

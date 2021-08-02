@@ -59,7 +59,7 @@ export class LabEnvironmentToggleComponent implements OnInit, OnDestroy {
 
   get disabled(): boolean {
     // only disable the toggle if it is not check and the dev api is not running
-    return !this.checked && !this.devApiRunning && false;
+    return !this.checked && !this.devApiRunning;
   }
 
   get showHelpMessage(): boolean {

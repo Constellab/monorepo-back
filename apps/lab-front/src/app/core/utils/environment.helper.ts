@@ -27,6 +27,10 @@ export class EnvironmentHelper {
     return EnvironmentHelper.getEnv().settings.devApiBaseUrl;
   }
 
+  public static getDevCoreApiUrl(): string {
+    return `${EnvironmentHelper.getDevBaseApiUrl()}${EnvironmentHelper.coreApiRoute}/`;
+  }
+
   public static getEnv(): Environment {
     return environment;
   }

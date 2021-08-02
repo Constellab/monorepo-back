@@ -40,6 +40,7 @@ export class DevLabEnvironmentService {
             this.labEnvManager.setLabEnvironment('dev');
           } else {
             this.labEnvManager.clearUserJWTAndData('onlyDev');
+            this.labEnvManager.clearLabEnvironmentStorage();
           }
           return;
         })
@@ -51,7 +52,7 @@ export class DevLabEnvironmentService {
 
   // return true if the dev API is running
   public devApiIsRunning(): Observable<boolean> {
-    return this.httpClient.get(EnvironmentHelper.getDevBaseApiUrl() + 'health-check').pipe(
+    return this.httpClient.get(EnvironmentHelper.getDevCoreApiUrl() + 'health-check').pipe(
       map(() => true),
       catchError(() => of(false)),
     );
@@ -63,7 +64,7 @@ export class DevLabEnvironmentService {
 
     if (devToken == null) return of(false);
 
-    return this.httpClient.get(EnvironmentHelper.getDevBaseApiUrl() + 'check-token').pipe(
+    return this.httpClient.get(EnvironmentHelper.getDevCoreApiUrl() + 'check-token').pipe(
       map(() => true),
       catchError(() => {
         this.labEnvManager.clearUserJWTAndData('onlyDev');
@@ -100,7 +101,7 @@ export class DevLabEnvironmentService {
       Authorization: this.labEnvManager.getToken('prod'),
     });
 
-    return this.httpClient.get(EnvironmentHelper.getDevBaseApiUrl() + 'dev-login', {headers: header}).pipe(
+    return this.httpClient.get(EnvironmentHelper.getDevCoreApiUrl() + 'dev-login', {headers: header}).pipe(
       tap((token: string) => this.devLoginSuccess(token)),
       map(() => true),
       catchError(() => this.openDevLoginDialog()),

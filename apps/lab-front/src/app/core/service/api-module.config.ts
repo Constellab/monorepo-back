@@ -2,6 +2,8 @@ import {FlApiServiceConfig} from '@monorepo/front-core-lib';
 import {ClCoreJsonConvert, ClDeserializationRef, ClPage} from '@monorepo/core-lib';
 import {Injectable} from '@angular/core';
 import {LabEnvStore} from './lab-env.store';
+import {LabEnvironment} from '../model/global/lab-environment.class';
+import {EnvironmentHelper} from '../utils/environment.helper';
 
 /**
  * Format of the paginated result
@@ -29,7 +31,7 @@ interface PaginatedResponse {
 })
 export class ApiServiceConfig extends FlApiServiceConfig {
 
-  constructor(private labEnvManagerService: LabEnvStore) {
+  constructor(private labEnvStore: LabEnvStore) {
     super();
   }
 
@@ -51,14 +53,19 @@ export class ApiServiceConfig extends FlApiServiceConfig {
   }
 
   getApiUrl(): string {
-    return this.labEnvManagerService.getApiUrl();
+    const env: LabEnvironment = this.labEnvStore.getLabEnvironment();
+    if(env === 'dev'){
+      return EnvironmentHelper.getDevCoreApiUrl();
+    }
+
+    return EnvironmentHelper.getCoreApiUrl();
   }
 
   getHeaders(): Record<string, string> {
-    const token = this.labEnvManagerService.getToken();
+    const token = this.labEnvStore.getToken();
 
     if (token) {
-      return {Authorization: this.labEnvManagerService.getToken()};
+      return {Authorization: this.labEnvStore.getToken()};
     }
 
     return {};
