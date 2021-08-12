@@ -11,8 +11,6 @@ import {BioxProcessableSpec} from './biox-processable-spec.entity';
  */
 export class BioxProcessSpec extends BioxProcessableSpec {
 
-  type: 'gws.typing.ProcessType';
-
   @Expose({name: 'input_specs'})
   inputSpecs: Record<string, string[]>;
 

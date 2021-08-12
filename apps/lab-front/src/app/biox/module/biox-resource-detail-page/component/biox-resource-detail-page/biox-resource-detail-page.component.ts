@@ -52,7 +52,7 @@ export class BioxResourceDetailPageComponent implements OnInit {
 
   private init(type: string, id: string): void {
     this.resourceId = id;
-    this.resource$ = this.resourceService.getByTypeAndId(type, id).pipe(
+    this.resource$ = this.resourceService.getByTypingNameAndId(type, id).pipe(
       tap(resource => this.initViews(resource)),
       tap(resource => this.initFilename(resource))
     );

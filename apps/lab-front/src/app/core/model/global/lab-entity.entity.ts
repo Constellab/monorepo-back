@@ -18,9 +18,6 @@ export class LabEntity implements FlEntity {
  */
 export class LabBaseEntity extends LabEntity {
 
-  // python class link
-  type: string;
-
   @Expose({name: 'creation_datetime'})
   @ClLuxonTransform()
   createdAt: DateTime;

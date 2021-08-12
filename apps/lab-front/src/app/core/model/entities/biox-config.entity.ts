@@ -48,16 +48,12 @@ export class BioxConfigData {
  */
 export class BioxConfig extends LabBaseEntity {
 
-  // python class link
-  type: 'gws.model.Config';
-
   // object containing the current configuration values
   @Type(() => BioxConfigData)
   data: BioxConfigData;
 
   public static fromSpecs(specs: BioxConfigSpecs): BioxConfig {
     const config = new BioxConfig();
-    config.type = 'gws.model.Config';
     config.data = BioxConfigData.fromSpecs(specs);
     return config;
   }

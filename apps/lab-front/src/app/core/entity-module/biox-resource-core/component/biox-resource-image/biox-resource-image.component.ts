@@ -37,7 +37,7 @@ export class BioxResourceImageComponent implements OnInit {
       if (this.resource.getExtension() === 'svg') {
         this.svg = this.sanitizer.bypassSecurityTrustHtml(this.resource.data);
       } else {
-        this.downloadLink = this.resourceFileService.downloadFileUrl(this.resource.type, this.resource.id);
+        this.downloadLink = this.resourceFileService.downloadFileUrl(this.resource.typingName, this.resource.id);
       }
     }
   }

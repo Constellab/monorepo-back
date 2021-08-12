@@ -105,7 +105,7 @@ export class WorkflowManagerState {
 
   private createNodeFromProcessable(processable: BioxProcessable, coordX: number = 0, coordY: number = 0): WorkflowNodeProcessable {
     if (processable.name == null) {
-      processable.name = processable.type + '_' + Date.now().toString();
+      processable.name = processable.typingName + '_' + Date.now().toString();
     }
 
     return new WorkflowNodeProcessable(processable, processable.name, coordX, coordY);

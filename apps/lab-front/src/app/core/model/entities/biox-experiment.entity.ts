@@ -13,7 +13,8 @@ export class BioxExperimentData {
   description: string;
 }
 
-export type BioxExperimentStatus = 'draft' | 'running' | 'success' | 'error' | 'archived';
+export type BioxExperimentStatus = 'DRAFT' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
+
 
 export class BioxExperiment extends LabBaseEntity implements FlStatus {
 
@@ -30,22 +31,13 @@ export class BioxExperiment extends LabBaseEntity implements FlStatus {
   protocol: LabEntity;
 
   @Expose({name: 'is_archived'})
-  is_archived: boolean;
+  isArchived: boolean;
 
-  @Expose({name: 'is_draft'})
-  is_draft: boolean;
-
-  @Expose({name: 'is_finished'})
-  is_finished: boolean;
-
-  @Expose({name: 'is_running'})
-  is_running: boolean;
-
-  @Expose({name: 'is_success'})
-  is_success: boolean;
+  @Expose({name: 'status'})
+  status: BioxExperimentStatus;
 
   @Expose({name: 'is_validated'})
-  is_validated: boolean;
+  isValidated: boolean;
 
   getStatusClassColor(mode: 'background' | 'text'): string {
     return getBioxExperimentStatusColorClass(this.getStatusName(), mode);
@@ -56,24 +48,11 @@ export class BioxExperiment extends LabBaseEntity implements FlStatus {
   }
 
   getStatusName(): BioxExperimentStatus {
-    if (this.is_archived) {
-      return 'archived';
-    }
-    if (this.is_running) {
-      return 'running';
-    }
-    if (this.is_finished && this.is_success) {
-      return 'success';
-    }
-    if (this.is_finished && !this.is_success) {
-      return 'error';
-    }
-
-    return 'draft';
+   return this.status;
   }
 
   isEditable(): boolean{
-    return !this.is_archived;
+    return !this.isArchived && !this.isValidated;
   }
 }
 
@@ -84,10 +63,8 @@ export type BioxExperimentDatasource = FlEntityPaginatedDatasource<BioxExperimen
 const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: BioxExperimentStatus,
                                                                           mode: 'background' | 'text' = 'background'): string => {
   switch (status) {
-    case 'error':
+    case 'ERROR':
       return mode === 'background' ? 'g-warn-background' : 'g-warn-text';
-    case 'archived':
-      return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
     default:
       return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
   }
@@ -95,15 +72,14 @@ const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status
 
 const getBioxExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: BioxExperimentStatus): string => {
   switch (status) {
-    case 'archived':
-      return 'inventory_2';
-    case 'draft':
+    case 'DRAFT':
       return 'edit';
-    case 'error':
+    case 'ERROR':
       return 'error';
-    case 'success':
+    case 'SUCCESS':
       return 'done';
-    case 'running':
+    case 'RUNNING':
+    case 'WAITING_FOR_CLI_PROCESS':
       return 'cached';
   }
 };

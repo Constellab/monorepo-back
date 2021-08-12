@@ -13,13 +13,13 @@ export class BioxResourceNetworkHelper {
    * return true if the resource is a network
    */
   public static resourceIsNetwork(resource: BioxResource): boolean {
-    if (resource.type === bioxResourceNetworkType || resource.type === bioxResourceBioModelType) {
+    if (resource.typingName === bioxResourceNetworkType || resource.typingName === bioxResourceBioModelType) {
       return true;
     }
 
     // if the resource is a file containing a network resource
     if (resource instanceof FileResource && resource.dataIsLabEntity() &&
-      resource.data.type === bioxResourceNetworkType) {
+      resource.data.typingName === bioxResourceNetworkType) {
       return true;
     }
 
@@ -44,9 +44,9 @@ export class BioxResourceNetworkHelper {
         return resource.data;
       }
       // if the resource is a network
-    } else if (resource.type === bioxResourceNetworkType) {
+    } else if (resource.typingName === bioxResourceNetworkType) {
       return (resource as BioxNetwork).data.network;
-    } else if (resource.type === bioxResourceBioModelType) {
+    } else if (resource.typingName === bioxResourceBioModelType) {
       return (resource as BioModel).data.biomodel.networks.map(networkResource => networkResource.data.network);
     } else {
       throw new Error('The resource is not a network');

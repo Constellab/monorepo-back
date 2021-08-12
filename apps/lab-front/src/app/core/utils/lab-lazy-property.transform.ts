@@ -34,7 +34,12 @@ export function FlLazyPropertyLabTransform<SERVICE, ENTITY>(serviceType: Type<an
 export function ResourceLazyProperty(): PropertyDecorator {
 
   const property: PropertyDecorator = FlLazyPropertyTransform(BioxResourceService,
-    (service, resource: UnconvertedResource) => service.getByTypeAndId(resource.type, resource.uri));
+    (service, resource: UnconvertedResource) => {
+
+      return service.getByTypingNameAndId(resource.typing_name, resource.uri);
+    }
+  );
+
 
   return (target: any, key: string): void => {
     property(target, key);

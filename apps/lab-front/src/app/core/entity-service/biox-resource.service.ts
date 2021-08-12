@@ -27,15 +27,16 @@ export class BioxResourceService {
               private fileResourceService: FileResourceService) {
   }
 
-  public getByTypeAndId(type: string, id: string): Observable<BioxResource> {
-    if (!type || !id) {
+  public getByTypingNameAndId(typingName: string, id: string): Observable<BioxResource> {
+    if (!typingName || !id) {
       return of(null);
     }
 
-    if (type === 'gws.file.File') {
-      return this.getFileResource(type, id);
+    // todo ne fonctionne pas si class fille de File
+    if (typingName === 'RESOURCE.gws_core.File') {
+      return this.getFileResource(typingName, id);
     } else {
-      return this.getResource(type, id, BioxBasicResource);
+      return this.getResource(typingName, id, BioxBasicResource);
     }
   }
 

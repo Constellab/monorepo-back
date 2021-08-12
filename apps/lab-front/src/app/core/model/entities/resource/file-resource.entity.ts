@@ -5,7 +5,8 @@ import {FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-li
 
 export class FileResourcePreview extends LabBaseEntity {
 
-  type: 'gws.file.File';
+  @Expose({name: 'typing_name'})
+  typingName: string
 
   path: string;
 
@@ -30,6 +31,8 @@ export class FileResourcePreview extends LabBaseEntity {
  */
 export class FileResource extends FileResourcePreview {
 
+
+
   // content of the file
   data: any;
 
@@ -39,7 +42,7 @@ export class FileResource extends FileResourcePreview {
    * return true if the resource data is a json object representing a LabEntity (contains an uri, type and data)
    */
   dataIsLabEntity(): boolean{
-    return this.data && typeof this.data.uri === 'string' && typeof this.data.type === 'string'
+    return this.data && typeof this.data.uri === 'string' && typeof this.data.typingName === 'string'
       && typeof this.data.data === 'object';
   }
 }

@@ -22,11 +22,11 @@ export class FileResourceTableComponent extends FlTableAbstractDirective<FileRes
   }
 
   downloadFile(file: FileResourcePreview): void {
-    this.fileService.downloadFile(file.type, file.id, file.getFileName()).subscribe();
+    this.fileService.downloadFile(file.typingName, file.id, file.getFileName()).subscribe();
   }
 
   resourceFileRoute(file: FileResourcePreview): string {
-    return RouterService.getBioxResourceDetailRoute(file.type, file.id);
+    return RouterService.getBioxResourceDetailRoute(file.typingName, file.id);
   }
 
 }

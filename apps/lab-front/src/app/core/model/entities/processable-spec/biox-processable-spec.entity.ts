@@ -1,7 +1,7 @@
 import {LabBaseEntity} from '../../global/lab-entity.entity';
 import {Expose} from 'class-transformer';
 import {BioxProcessableData} from '../proccesable/biox-processable.entity';
-import {bioxProcessSourceType} from '../biox-process-special-type';
+import {bioxProcessSourceTypingName} from '../biox-process-special-type';
 import {BioxConfigSpecs} from '../biox-config-spec.entity';
 
 
@@ -18,7 +18,7 @@ export abstract class BioxProcessableSpec extends LabBaseEntity {
 
   // return true if the process is a Source
   isPlugSource(): boolean {
-    return this.modelType === bioxProcessSourceType;
+    return this.modelType === bioxProcessSourceTypingName;
   }
 
   hasInputSpecs(): boolean {

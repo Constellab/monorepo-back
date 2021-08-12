@@ -12,7 +12,7 @@ export class BioxInput {
   public static fromSpecs(specs: string[]): BioxInput{
     const input: BioxInput = new BioxInput();
     input.specs = specs;
-    input.resource = {uri: '', type: ''};
+    input.resource = {uri: '', typing_name: ''};
     return input;
   }
 }

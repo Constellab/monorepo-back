@@ -52,7 +52,7 @@ export class FileResourceService {
   }
 
   public readFileFromResource(file: FileResourcePreview): Observable<FileWithContent> {
-    return this.readFile(file.type, file.id, file.getExtension());
+    return this.readFile(file.typingName, file.id, file.getExtension());
   }
 
   public getAll(page: number, pageSize: number): Observable<ClPage<FileResourcePreview>> {

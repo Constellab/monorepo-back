@@ -2,5 +2,5 @@
  * List specific type of process or protocol
  */
 
-// specific type for process source
-export const bioxProcessSourceType: string = 'gws.plug.Source';
+// specific typing name for process source
+export const bioxProcessSourceTypingName: string = 'PROCESS.gws_core.Source';

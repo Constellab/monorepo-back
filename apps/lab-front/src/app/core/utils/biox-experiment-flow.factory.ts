@@ -31,7 +31,8 @@ export class BioxExperimentFlowFactory {
    */
   public static processFromProcessSpec(processType: BioxProcessSpec): BioxProcess {
     const process: BioxProcess = new BioxProcess();
-    process.type = processType.modelType;
+    // todo check le typing name s'il est correct
+    process.typingName = processType.modelType;
     // todo check process data to see how to pass it
     process.data = processType.data as any ?? {};
 
@@ -44,7 +45,7 @@ export class BioxExperimentFlowFactory {
 
   public static protocolFromProtocolSpec(protocolSpec: BioxProtocolSpec): BioxProcessable {
     const protocol: BioxProtocol = new BioxProtocol();
-    protocol.type = protocolSpec.modelType;
+    protocol.typingName = protocolSpec.modelType;
     protocol.data = protocolSpec.data;
 
     // todo check out to do

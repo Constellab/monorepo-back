@@ -52,7 +52,7 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
 
 
   get experimentIsUpdatable(): boolean {
-    return this.experimentState.currentExperiment.getStatusName() !== 'archived';
+    return this.experimentState.currentExperiment.isEditable();
   }
 
 
