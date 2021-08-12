@@ -1,14 +1,13 @@
 import {Expose, Type} from 'class-transformer';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {BioxProtocolData} from '../proccesable/biox-protocol.entity';
-import {BioxProcessableSpec} from './biox-processable-spec.entity';
+import {BioxProcessableType} from './biox-processable-spec.entity';
 import {BioxConfigSpecs} from '../biox-config-spec.entity';
 import {BioxProtocolLink, BioxProtocolLinkPart} from '../biox-protocol-link.entity';
+import {TypedTree} from '../../global/tree-by-type.class';
 
 
-export class BioxProtocolSpec extends BioxProcessableSpec {
-
-  type: 'gws.typing.ProtocolType';
+export class BioxProtocolType extends BioxProcessableType {
 
   @Expose({name: 'model_type'})
   modelType: string;
@@ -26,7 +25,7 @@ export class BioxProtocolSpec extends BioxProcessableSpec {
     // we construct the input spec from the interface
     const interfaces: Record<string, BioxProtocolLink> = this.data.graph.interfaces ?? {};
 
-    for(const key of Object.keys(interfaces)){
+    for (const key of Object.keys(interfaces)) {
       // to retrieve the specs, we have to check the node
       // we access the info of which no the interface is connected to
       const part: BioxProtocolLinkPart = interfaces[key].to;
@@ -42,7 +41,7 @@ export class BioxProtocolSpec extends BioxProcessableSpec {
     // we construct the input spec from the interface
     const outerfaces: Record<string, BioxProtocolLink> = this.data.graph.outerfaces ?? {};
 
-    for(const key of Object.keys(outerfaces)){
+    for (const key of Object.keys(outerfaces)) {
       // to retrieve the specs, we have to check the node
       // we access the info of which no the interface is connected to
       const part: BioxProtocolLinkPart = outerfaces[key].from;
@@ -53,8 +52,11 @@ export class BioxProtocolSpec extends BioxProcessableSpec {
 
     return outputSpecs;
   }
-
-
 }
 
-export type BioxProtocolSpecDatasource = FlEntityPaginatedDatasource<BioxProtocolSpec>;
+/**
+ * Tree that group the process type by model types
+ */
+export type BioxProtocolTypeTree = TypedTree<BioxProtocolType>;
+
+export type BioxProtocolTypeDatasource = FlEntityPaginatedDatasource<BioxProtocolType>;

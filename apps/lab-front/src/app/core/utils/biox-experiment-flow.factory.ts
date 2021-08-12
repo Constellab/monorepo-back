@@ -1,14 +1,14 @@
 import {BioxProcessable} from '../model/entities/proccesable/biox-processable.entity';
 import {BioxConfig} from '../model/entities/biox-config.entity';
-import {BioxProcessSpec} from '../model/entities/processable-spec/biox-process-spec.entity';
+import {BioxProcessType} from '../model/entities/processable-spec/biox-process-type.entity';
 import {BioxInput} from '../model/entities/biox-input.entity';
 import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/workflow.class';
 import {WorkflowLayer} from '../../biox/module/biox-experiment-detail-page/model/workflow-layer.class';
 import {BioxProtocolLink, BioxProtocolLinkPart} from '../model/entities/biox-protocol-link.entity';
 import {BioxProcess} from '../model/entities/proccesable/biox-process.entity';
 import {BioxProtocol, BioxProtocolGraph} from '../model/entities/proccesable/biox-protocol.entity';
-import {BioxProcessableSpec} from '../model/entities/processable-spec/biox-processable-spec.entity';
-import {BioxProtocolSpec} from '../model/entities/processable-spec/biox-protocol-spec.entity';
+import {BioxProcessableType} from '../model/entities/processable-spec/biox-processable-spec.entity';
+import {BioxProtocolType} from '../model/entities/processable-spec/biox-protocol-type.entity';
 
 
 /**
@@ -16,10 +16,10 @@ import {BioxProtocolSpec} from '../model/entities/processable-spec/biox-protocol
  */
 export class BioxExperimentFlowFactory {
 
-  public static processableFromProcessableSpec(processableSpec: BioxProcessableSpec): BioxProcessable {
-    if (processableSpec instanceof BioxProcessSpec) {
+  public static processableFromProcessableSpec(processableSpec: BioxProcessableType): BioxProcessable {
+    if (processableSpec instanceof BioxProcessType) {
       return BioxExperimentFlowFactory.processFromProcessSpec(processableSpec);
-    } else if (processableSpec instanceof BioxProtocolSpec) {
+    } else if (processableSpec instanceof BioxProtocolType) {
       return BioxExperimentFlowFactory.protocolFromProtocolSpec(processableSpec);
     }
     return null;
@@ -29,10 +29,9 @@ export class BioxExperimentFlowFactory {
    * Convert a {link BioxProcessType} to a {@link BioxProcessable} to be use in the workflow
    * @param processType
    */
-  public static processFromProcessSpec(processType: BioxProcessSpec): BioxProcess {
+  public static processFromProcessSpec(processType: BioxProcessType): BioxProcess {
     const process: BioxProcess = new BioxProcess();
-    // todo check le typing name s'il est correct
-    process.typingName = processType.modelType;
+    process.typingName = processType.typingName;
     // todo check process data to see how to pass it
     process.data = processType.data as any ?? {};
 
@@ -43,9 +42,9 @@ export class BioxExperimentFlowFactory {
     return process;
   }
 
-  public static protocolFromProtocolSpec(protocolSpec: BioxProtocolSpec): BioxProcessable {
+  public static protocolFromProtocolSpec(protocolSpec: BioxProtocolType): BioxProcessable {
     const protocol: BioxProtocol = new BioxProtocol();
-    protocol.typingName = protocolSpec.modelType;
+    protocol.typingName = protocolSpec.typingName;
     protocol.data = protocolSpec.data;
 
     // todo check out to do

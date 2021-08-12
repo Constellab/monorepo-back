@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {BioxProcessableSpecCardComponent} from './biox-processable-spec-card.component';
+import {BioxProcessableTypeCardComponent} from './biox-processable-type-card.component';
 
 describe('BioxProcessTypeCardComponent', () => {
-  let component: BioxProcessableSpecCardComponent;
-  let fixture: ComponentFixture<BioxProcessableSpecCardComponent>;
+  let component: BioxProcessableTypeCardComponent;
+  let fixture: ComponentFixture<BioxProcessableTypeCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BioxProcessableSpecCardComponent ]
+      declarations: [ BioxProcessableTypeCardComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BioxProcessableSpecCardComponent);
+    fixture = TestBed.createComponent(BioxProcessableTypeCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

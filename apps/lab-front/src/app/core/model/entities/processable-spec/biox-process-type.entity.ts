@@ -4,12 +4,12 @@ import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {BioxConfigSpecs, BioxConfigSpecTyped} from '../biox-config-spec.entity';
 import {TypedTree} from '../../global/tree-by-type.class';
 import {BioxProcessData} from '../proccesable/biox-process.entity';
-import {BioxProcessableSpec} from './biox-processable-spec.entity';
+import {BioxProcessableType} from './biox-processable-spec.entity';
 
 /**
  * Define the spec of process
  */
-export class BioxProcessSpec extends BioxProcessableSpec {
+export class BioxProcessType extends BioxProcessableType {
 
   @Expose({name: 'input_specs'})
   inputSpecs: Record<string, string[]>;
@@ -42,7 +42,7 @@ export class BioxProcessSpec extends BioxProcessableSpec {
 /**
  * Tree that group the process type by model types
  */
-export type BioxProcessSpecTree = TypedTree<BioxProcessSpec>;
+export type BioxProcessTypeTree = TypedTree<BioxProcessType>;
 
 
-export type BioxProcessSpecDatasource = FlEntityPaginatedDatasource<BioxProcessSpec>;
+export type BioxProcessTypeDatasource = FlEntityPaginatedDatasource<BioxProcessType>;

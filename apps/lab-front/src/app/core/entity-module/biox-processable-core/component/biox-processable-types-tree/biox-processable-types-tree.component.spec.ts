@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {BioxProcessableSpecsTreeComponent} from './biox-processable-specs-tree.component';
+import {BioxProcessableTypesTreeComponent} from './biox-processable-types-tree.component';
 
 describe('BioxProcessableTypesTreeComponent', () => {
-  let component: BioxProcessableSpecsTreeComponent;
-  let fixture: ComponentFixture<BioxProcessableSpecsTreeComponent>;
+  let component: BioxProcessableTypesTreeComponent;
+  let fixture: ComponentFixture<BioxProcessableTypesTreeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BioxProcessableSpecsTreeComponent ]
+      declarations: [ BioxProcessableTypesTreeComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BioxProcessableSpecsTreeComponent);
+    fixture = TestBed.createComponent(BioxProcessableTypesTreeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

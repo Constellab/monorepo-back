@@ -5,10 +5,13 @@ import {bioxProcessSourceTypingName} from '../biox-process-special-type';
 import {BioxConfigSpecs} from '../biox-config-spec.entity';
 
 
-export abstract class BioxProcessableSpec extends LabBaseEntity {
+export abstract class BioxProcessableType extends LabBaseEntity {
 
-  @Expose({name: 'model_type'})
-  modelType: string;
+  @Expose({name: 'typing_name'})
+  typingName: string;
+
+  @Expose({name: 'model_name'})
+  modelName: string;
 
   data: BioxProcessableData;
 
@@ -18,7 +21,7 @@ export abstract class BioxProcessableSpec extends LabBaseEntity {
 
   // return true if the process is a Source
   isPlugSource(): boolean {
-    return this.modelType === bioxProcessSourceTypingName;
+    return this.typingName === bioxProcessSourceTypingName;
   }
 
   hasInputSpecs(): boolean {

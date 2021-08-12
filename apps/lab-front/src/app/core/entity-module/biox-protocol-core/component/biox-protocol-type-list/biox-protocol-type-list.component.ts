@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {BioxProtocolSpec} from '../../../../model/entities/processable-spec/biox-protocol-spec.entity';
+import {BioxProtocolType} from '../../../../model/entities/processable-spec/biox-protocol-type.entity';
 
 @Component({
   selector: 'gen-biox-protocol-type-list',
@@ -8,24 +8,23 @@ import {BioxProtocolSpec} from '../../../../model/entities/processable-spec/biox
 })
 export class BioxProtocolTypeListComponent implements OnInit {
 
-  @Input() protocolTypes: BioxProtocolSpec[];
+  @Input() protocolTypes: BioxProtocolType[];
 
-  @Output() protocolTypeClick: EventEmitter<BioxProtocolSpec> = new EventEmitter();
-  @Output() protocolTypeDblClick: EventEmitter<BioxProtocolSpec> = new EventEmitter();
+  @Output() protocolTypeClick: EventEmitter<BioxProtocolType> = new EventEmitter();
+  @Output() protocolTypeDblClick: EventEmitter<BioxProtocolType> = new EventEmitter();
 
   constructor() {
   }
 
   ngOnInit(): void {
-    console.log('init');
   }
 
-  protocolClick(protocol: BioxProtocolSpec): void {
+  protocolClick(protocol: BioxProtocolType): void {
     this.protocolTypeClick.emit(protocol);
 
   }
 
-  protocolDblClick(protocol: BioxProtocolSpec): void {
+  protocolDblClick(protocol: BioxProtocolType): void {
     this.protocolTypeDblClick.emit(protocol);
   }
 }

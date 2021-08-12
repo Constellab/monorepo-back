@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {BioxProcessableSpec} from '../../../../model/entities/processable-spec/biox-processable-spec.entity';
+import {BioxProcessableType} from '../../../../model/entities/processable-spec/biox-processable-spec.entity';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {TypedTree} from '../../../../model/global/tree-by-type.class';
@@ -8,29 +8,29 @@ interface BioxProcessableSpecTreeFlat {
   expandable: boolean;
   level: number;
   typePart: string;
-  processable?: BioxProcessableSpec;
+  processable?: BioxProcessableType;
 }
 
 /**
  * Show the processable specs in a tree based on the team and possibility to select it
  */
 @Component({
-  selector: 'gen-biox-processable-specs-tree',
-  templateUrl: './biox-processable-specs-tree.component.html',
-  styleUrls: ['./biox-processable-specs-tree.component.scss']
+  selector: 'gen-biox-processable-types-tree',
+  templateUrl: './biox-processable-types-tree.component.html',
+  styleUrls: ['./biox-processable-types-tree.component.scss']
 })
-export class BioxProcessableSpecsTreeComponent implements OnInit {
+export class BioxProcessableTypesTreeComponent implements OnInit {
 
-  @Input() processableSpecsTree: TypedTree<BioxProcessableSpec>[];
+  @Input() processableSpecsTree: TypedTree<BioxProcessableType>[];
 
-  @Output() processableSpecClick: EventEmitter<BioxProcessableSpec> = new EventEmitter();
-  @Output() processableSpecDblClick: EventEmitter<BioxProcessableSpec> = new EventEmitter();
+  @Output() processableSpecClick: EventEmitter<BioxProcessableType> = new EventEmitter();
+  @Output() processableSpecDblClick: EventEmitter<BioxProcessableType> = new EventEmitter();
 
   treeControl: FlatTreeControl<BioxProcessableSpecTreeFlat>;
-  dataSource: MatTreeFlatDataSource<TypedTree<BioxProcessableSpec>, BioxProcessableSpecTreeFlat>;
+  dataSource: MatTreeFlatDataSource<TypedTree<BioxProcessableType>, BioxProcessableSpecTreeFlat>;
 
 
-  private _transformer = (node: TypedTree<BioxProcessableSpec>, level: number): BioxProcessableSpecTreeFlat => {
+  private _transformer = (node: TypedTree<BioxProcessableType>, level: number): BioxProcessableSpecTreeFlat => {
     return {
       expandable: node.hasChildren(),
       level: level,
@@ -53,7 +53,7 @@ export class BioxProcessableSpecsTreeComponent implements OnInit {
       node => node.level, node => node.expandable);
 
     // object to flatten tree
-    const treeFlattener: MatTreeFlattener<TypedTree<BioxProcessableSpec>, BioxProcessableSpecTreeFlat> = new MatTreeFlattener(
+    const treeFlattener: MatTreeFlattener<TypedTree<BioxProcessableType>, BioxProcessableSpecTreeFlat> = new MatTreeFlattener(
       this._transformer, node => node.level, node => node.expandable,
       node => node.subTrees);
 

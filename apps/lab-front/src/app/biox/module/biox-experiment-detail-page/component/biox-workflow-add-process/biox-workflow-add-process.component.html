@@ -21,9 +21,9 @@
         <fl-async-section [object]="processes$">
 
           <ng-container *flSectionBody="let processes">
-            <gen-biox-processable-specs-tree [processableSpecsTree]="processes"
+            <gen-biox-processable-types-tree [processableSpecsTree]="processes"
                                              (processableSpecClick)="selectProcessable($event)"
-                                             (processableSpecDblClick)="selectAndAddProcessable($event)"></gen-biox-processable-specs-tree>
+                                             (processableSpecDblClick)="selectAndAddProcessable($event)"></gen-biox-processable-types-tree>
           </ng-container>
         </fl-async-section>
 
@@ -32,9 +32,9 @@
       <mat-tab [label]="'protocols' | translate">
         <fl-async-section [object]="protocols$">
           <ng-container *flSectionBody="let protocols">
-            <gen-biox-protocol-type-list [protocolTypes]="protocols"
-                                         (protocolTypeClick)="selectProcessable($event)"
-                                         (protocolTypeDblClick)="selectAndAddProcessable($event)"></gen-biox-protocol-type-list>
+            <gen-biox-processable-types-tree [processableSpecsTree]="protocols"
+                                             (processableSpecClick)="selectProcessable($event)"
+                                             (processableSpecDblClick)="selectAndAddProcessable($event)"></gen-biox-processable-types-tree>
           </ng-container>
         </fl-async-section>
       </mat-tab>
@@ -43,15 +43,14 @@
 
   <!-- Right section with process detail information -->
   <div class="right-section">
-<!--   todo processable card -->
-    <gen-biox-processable-spec-card *ngIf="selectedProcess" [processableSpec]="selectedProcess"
+    <gen-biox-processable-type-card *ngIf="selectedProcess" [processableType]="selectedProcess"
                                     class="card">
       <button mat-icon-button color="primary" type="button"
               (click)="addProcessable(selectedProcess)"
               [matTooltip]="'biox.add_selected_process' | translate">
         <mat-icon>add</mat-icon>
       </button>
-    </gen-biox-processable-spec-card>
+    </gen-biox-processable-type-card>
   </div>
 </div>
 <!--  </mat-tab>-->
