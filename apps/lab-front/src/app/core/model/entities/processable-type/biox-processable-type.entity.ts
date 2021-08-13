@@ -13,6 +13,12 @@ export abstract class BioxProcessableType extends LabBaseEntity {
   @Expose({name: 'model_name'})
   modelName: string;
 
+  @Expose({name: 'human_name'})
+  humanName?: string;
+
+  @Expose({name: 'short_description'})
+  shortDescription?: string;
+
   data: BioxProcessableData;
 
   hasDocumentation(): boolean {
@@ -39,6 +45,10 @@ export abstract class BioxProcessableType extends LabBaseEntity {
   hasConfigSpecs(): boolean {
     const config: BioxConfigSpecs = this.getConfigSpecs();
     return config != null && config.hasConfigs();
+  }
+
+  get name(): string{
+    return this.humanName || this.modelName;
   }
 
   abstract getInputSpecs(): Record<string, string[]>;

@@ -18,10 +18,6 @@ export class BioxProcessableTypeCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(this.processableType)
   }
-
-  get title(): string {
-    return this.processableType.data.title ?? this.processableType.modelName;
-  }
-
 }

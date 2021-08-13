@@ -41,7 +41,7 @@ export class BioxWorkflowAddProcessComponent implements OnInit {
   }
 
   addProcessable(object: BioxProcessableType): void {
-    const processable: BioxProcessable = BioxExperimentFlowFactory.processableFromProcessableSpec(object);
+    const processable: BioxProcessable = BioxExperimentFlowFactory.processableFromProcessableType(object);
 
     this.workflowManagerService.addProcessableNode(processable, 0, 0);
   }

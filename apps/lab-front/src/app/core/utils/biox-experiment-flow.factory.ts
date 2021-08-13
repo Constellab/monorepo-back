@@ -16,11 +16,11 @@ import {BioxProtocolType} from '../model/entities/processable-type/biox-protocol
  */
 export class BioxExperimentFlowFactory {
 
-  public static processableFromProcessableSpec(processableSpec: BioxProcessableType): BioxProcessable {
+  public static processableFromProcessableType(processableSpec: BioxProcessableType): BioxProcessable {
     if (processableSpec instanceof BioxProcessType) {
-      return BioxExperimentFlowFactory.processFromProcessSpec(processableSpec);
+      return BioxExperimentFlowFactory.processFromProcessType(processableSpec);
     } else if (processableSpec instanceof BioxProtocolType) {
-      return BioxExperimentFlowFactory.protocolFromProtocolSpec(processableSpec);
+      return BioxExperimentFlowFactory.protocolFromProtocolType(processableSpec);
     }
     return null;
   }
@@ -29,11 +29,12 @@ export class BioxExperimentFlowFactory {
    * Convert a {link BioxProcessType} to a {@link BioxProcessable} to be use in the workflow
    * @param processType
    */
-  public static processFromProcessSpec(processType: BioxProcessType): BioxProcess {
+  public static processFromProcessType(processType: BioxProcessType): BioxProcess {
     const process: BioxProcess = new BioxProcess();
     process.typingName = processType.typingName;
     // todo check process data to see how to pass it
     process.data = processType.data as any ?? {};
+    process.data.title = processType.name
 
     process.inputs = BioxExperimentFlowFactory.bioxInputFromSpecs(processType.inputSpecs);
     process.outputs = BioxExperimentFlowFactory.bioxInputFromSpecs(processType.outputSpecs);
@@ -42,14 +43,15 @@ export class BioxExperimentFlowFactory {
     return process;
   }
 
-  public static protocolFromProtocolSpec(protocolSpec: BioxProtocolType): BioxProcessable {
+  public static protocolFromProtocolType(protocolType: BioxProtocolType): BioxProcessable {
     const protocol: BioxProtocol = new BioxProtocol();
-    protocol.typingName = protocolSpec.typingName;
-    protocol.data = protocolSpec.data;
+    protocol.typingName = protocolType.typingName;
+    protocol.data = protocolType.data ?? ({} as any);
+    protocol.data.title = protocolType.name
 
     // todo check out to do
-    protocol.inputs = BioxExperimentFlowFactory.bioxInputFromSpecs(protocolSpec.getInputSpecs());
-    protocol.outputs = BioxExperimentFlowFactory.bioxInputFromSpecs(protocolSpec.getOutputSpecs());
+    protocol.inputs = BioxExperimentFlowFactory.bioxInputFromSpecs(protocolType.getInputSpecs());
+    protocol.outputs = BioxExperimentFlowFactory.bioxInputFromSpecs(protocolType.getOutputSpecs());
 
     return protocol;
   }
