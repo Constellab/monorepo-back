@@ -122,7 +122,7 @@ export class FlPrettyJsonComponent implements OnInit, OnDestroy {
 
     try {
       // prepare the object
-      const builder: FlPrettyJsonBuilder = new FlPrettyJsonBuilder(this.object, this.previewMaxTextLength, this.previewMaxObjectShowed,
+      const builder: FlPrettyJsonBuilder = new FlPrettyJsonBuilder(object, this.previewMaxTextLength, this.previewMaxObjectShowed,
         this.maxSubObjectView);
 
       this.startChar = builder.getObjectStartChart();
