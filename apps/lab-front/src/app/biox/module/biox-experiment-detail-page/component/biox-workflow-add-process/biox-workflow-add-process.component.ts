@@ -4,9 +4,9 @@ import {Observable} from 'rxjs';
 import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
 import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
-import {BioxProcessTypeTree} from '../../../../../core/model/entities/processable-spec/biox-process-type.entity';
-import {BioxProtocolTypeTree} from '../../../../../core/model/entities/processable-spec/biox-protocol-type.entity';
-import {BioxProcessableType} from '../../../../../core/model/entities/processable-spec/biox-processable-spec.entity';
+import {BioxProcessTypeTree} from '../../../../../core/model/entities/processable-type/biox-process-type.entity';
+import {BioxProtocolTypeTree} from '../../../../../core/model/entities/processable-type/biox-protocol-type.entity';
+import {BioxProcessableType} from '../../../../../core/model/entities/processable-type/biox-processable-type.entity';
 import {BioxProtocolTypeService} from '../../../../../core/entity-service/biox-protocol-type.service';
 
 

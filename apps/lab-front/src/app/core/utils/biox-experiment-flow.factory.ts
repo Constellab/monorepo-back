@@ -1,14 +1,14 @@
 import {BioxProcessable} from '../model/entities/proccesable/biox-processable.entity';
 import {BioxConfig} from '../model/entities/biox-config.entity';
-import {BioxProcessType} from '../model/entities/processable-spec/biox-process-type.entity';
+import {BioxProcessType} from '../model/entities/processable-type/biox-process-type.entity';
 import {BioxInput} from '../model/entities/biox-input.entity';
 import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/workflow.class';
 import {WorkflowLayer} from '../../biox/module/biox-experiment-detail-page/model/workflow-layer.class';
 import {BioxProtocolLink, BioxProtocolLinkPart} from '../model/entities/biox-protocol-link.entity';
 import {BioxProcess} from '../model/entities/proccesable/biox-process.entity';
 import {BioxProtocol, BioxProtocolGraph} from '../model/entities/proccesable/biox-protocol.entity';
-import {BioxProcessableType} from '../model/entities/processable-spec/biox-processable-spec.entity';
-import {BioxProtocolType} from '../model/entities/processable-spec/biox-protocol-type.entity';
+import {BioxProcessableType} from '../model/entities/processable-type/biox-processable-type.entity';
+import {BioxProtocolType} from '../model/entities/processable-type/biox-protocol-type.entity';
 
 
 /**

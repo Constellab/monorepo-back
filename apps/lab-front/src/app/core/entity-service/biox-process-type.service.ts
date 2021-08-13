@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {BioxProcessType, BioxProcessTypeDatasource, BioxProcessTypeTree} from '../model/entities/processable-spec/biox-process-type.entity';
+import {BioxProcessType, BioxProcessTypeDatasource, BioxProcessTypeTree} from '../model/entities/processable-type/biox-process-type.entity';
 import {ClPage} from '@monorepo/core-lib';
-import {createTypedTree} from '../model/global/tree-by-type.class';
+import {createTypedTree} from '../model/global/typed-tree.class';
 
 @Injectable({
   providedIn: 'root'

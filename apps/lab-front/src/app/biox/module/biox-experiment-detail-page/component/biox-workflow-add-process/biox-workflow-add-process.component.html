@@ -21,9 +21,9 @@
         <fl-async-section [object]="processes$">
 
           <ng-container *flSectionBody="let processes">
-            <gen-biox-processable-types-tree [processableSpecsTree]="processes"
-                                             (processableSpecClick)="selectProcessable($event)"
-                                             (processableSpecDblClick)="selectAndAddProcessable($event)"></gen-biox-processable-types-tree>
+            <gen-biox-processable-types-tree [processableTypesTree]="processes"
+                                             (processableTypeClick)="selectProcessable($event)"
+                                             (processableTypeDblClick)="selectAndAddProcessable($event)"></gen-biox-processable-types-tree>
           </ng-container>
         </fl-async-section>
 
@@ -32,9 +32,9 @@
       <mat-tab [label]="'protocols' | translate">
         <fl-async-section [object]="protocols$">
           <ng-container *flSectionBody="let protocols">
-            <gen-biox-processable-types-tree [processableSpecsTree]="protocols"
-                                             (processableSpecClick)="selectProcessable($event)"
-                                             (processableSpecDblClick)="selectAndAddProcessable($event)"></gen-biox-processable-types-tree>
+            <gen-biox-processable-types-tree [processableTypesTree]="protocols"
+                                             (processableTypeClick)="selectProcessable($event)"
+                                             (processableTypeDblClick)="selectAndAddProcessable($event)"></gen-biox-processable-types-tree>
           </ng-container>
         </fl-async-section>
       </mat-tab>

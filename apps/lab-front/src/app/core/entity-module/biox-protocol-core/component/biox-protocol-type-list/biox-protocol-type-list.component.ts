@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {BioxProtocolType} from '../../../../model/entities/processable-spec/biox-protocol-type.entity';
+import {BioxProtocolType} from '../../../../model/entities/processable-type/biox-protocol-type.entity';
 
 @Component({
   selector: 'gen-biox-protocol-type-list',

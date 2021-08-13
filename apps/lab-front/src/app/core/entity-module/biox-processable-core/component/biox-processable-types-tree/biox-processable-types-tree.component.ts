@@ -1,10 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {BioxProcessableType} from '../../../../model/entities/processable-spec/biox-processable-spec.entity';
+import {BioxProcessableType} from '../../../../model/entities/processable-type/biox-processable-type.entity';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
-import {TypedTree} from '../../../../model/global/tree-by-type.class';
+import {TypedTree} from '../../../../model/global/typed-tree.class';
 
-interface BioxProcessableSpecTreeFlat {
+interface BioxProcessableTypeTreeFlat {
   expandable: boolean;
   level: number;
   typePart: string;
@@ -12,7 +12,7 @@ interface BioxProcessableSpecTreeFlat {
 }
 
 /**
- * Show the processable specs in a tree based on the team and possibility to select it
+ * Show the processable types in a tree based on the team and possibility to select it
  */
 @Component({
   selector: 'gen-biox-processable-types-tree',
@@ -21,16 +21,17 @@ interface BioxProcessableSpecTreeFlat {
 })
 export class BioxProcessableTypesTreeComponent implements OnInit {
 
-  @Input() processableSpecsTree: TypedTree<BioxProcessableType>[];
+  @Input() processableTypesTree: TypedTree<BioxProcessableType>[];
 
-  @Output() processableSpecClick: EventEmitter<BioxProcessableType> = new EventEmitter();
-  @Output() processableSpecDblClick: EventEmitter<BioxProcessableType> = new EventEmitter();
+  @Output() processableTypeClick: EventEmitter<BioxProcessableType> = new EventEmitter();
+  @Output() processableTypeDblClick: EventEmitter<BioxProcessableType> = new EventEmitter();
 
-  treeControl: FlatTreeControl<BioxProcessableSpecTreeFlat>;
-  dataSource: MatTreeFlatDataSource<TypedTree<BioxProcessableType>, BioxProcessableSpecTreeFlat>;
+  treeControl: FlatTreeControl<BioxProcessableTypeTreeFlat>;
+  dataSource: MatTreeFlatDataSource<TypedTree<BioxProcessableType>, BioxProcessableTypeTreeFlat>;
 
 
-  private _transformer = (node: TypedTree<BioxProcessableType>, level: number): BioxProcessableSpecTreeFlat => {
+  private _transformer = (node: TypedTree<BioxProcessableType>, level: number): BioxProcessableTypeTreeFlat => {
+
     return {
       expandable: node.hasChildren(),
       level: level,
@@ -39,7 +40,7 @@ export class BioxProcessableTypesTreeComponent implements OnInit {
     };
   };
 
-  hasChild = (_: number, node: BioxProcessableSpecTreeFlat): boolean => node.expandable;
+  hasChild = (_: number, node: BioxProcessableTypeTreeFlat): boolean => node.expandable;
 
   constructor() {
   }
@@ -49,32 +50,35 @@ export class BioxProcessableTypesTreeComponent implements OnInit {
   }
 
   private initTree(): void {
-    this.treeControl = new FlatTreeControl<BioxProcessableSpecTreeFlat>(
+    const reducedTree: TypedTree<BioxProcessableType>[]
+      = this.processableTypesTree.map(processableType => processableType.reduceHierarchy());
+
+    this.treeControl = new FlatTreeControl<BioxProcessableTypeTreeFlat>(
       node => node.level, node => node.expandable);
 
     // object to flatten tree
-    const treeFlattener: MatTreeFlattener<TypedTree<BioxProcessableType>, BioxProcessableSpecTreeFlat> = new MatTreeFlattener(
+    const treeFlattener: MatTreeFlattener<TypedTree<BioxProcessableType>, BioxProcessableTypeTreeFlat> = new MatTreeFlattener(
       this._transformer, node => node.level, node => node.expandable,
       node => node.subTrees);
 
     // create the datasource and set data
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, treeFlattener);
-    this.dataSource.data = this.processableSpecsTree;
+    this.dataSource.data = reducedTree;
 
     // if there is only one main module
-    if (this.processableSpecsTree.length === 1) {
+    if (reducedTree.length === 1) {
       // expand it
       this.treeControl.expand(this.treeControl.dataNodes[0]);
     }
   }
 
-  clickProcessable(node: BioxProcessableSpecTreeFlat): void {
-    this.processableSpecClick.emit(node.processable);
+  clickProcessable(node: BioxProcessableTypeTreeFlat): void {
+    this.processableTypeClick.emit(node.processable);
   }
 
 
-  dblClickProcessable(node: BioxProcessableSpecTreeFlat): void {
-    this.processableSpecDblClick.emit(node.processable);
+  dblClickProcessable(node: BioxProcessableTypeTreeFlat): void {
+    this.processableTypeDblClick.emit(node.processable);
   }
 
 }

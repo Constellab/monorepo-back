@@ -2,12 +2,12 @@ import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {ClPage} from '@monorepo/core-lib';
-import {createTypedTree} from '../model/global/tree-by-type.class';
+import {createTypedTree} from '../model/global/typed-tree.class';
 import {
   BioxProtocolType,
   BioxProtocolTypeDatasource,
   BioxProtocolTypeTree
-} from '../model/entities/processable-spec/biox-protocol-type.entity';
+} from '../model/entities/processable-type/biox-protocol-type.entity';
 
 @Injectable({
   providedIn: 'root'

@@ -26,6 +26,42 @@ export class TypedTree<T> {
   isLeaf(): boolean {
     return this.object != null;
   }
+
+  /**
+   * return true if we can 'merge' this type with its child, because this tree only contain on child that
+   * is not a leaf
+   */
+  isReducable(): boolean {
+    return !this.isLeaf() && this.subTrees?.length === 1 && !this.subTrees[0].isLeaf();
+  }
+
+  /**
+   * Recursive method to create a tree where the node that are reducable are merge
+   * It reduces the hierarchy by merging node (folder) that are not useful
+   */
+  reduceHierarchy(): TypedTree<T> {
+    const current: TypedTree<T> = new TypedTree<T>();
+    current.typePart = this.typePart;
+    current.subTrees = [];
+    current.object = this.object;
+
+    // if the node is reducable, we merge it with its child
+    if (this.isReducable()) {
+      const child = this.subTrees[0].reduceHierarchy();
+      current.typePart += ' / ' + child.typePart; // merge names
+      current.subTrees = child.subTrees; // get child sub trees
+      current.object = child.object; // get child object
+    } else if (this.hasChildren()) {
+      // reduce the children
+      for (const child of this.subTrees) {
+        current.subTrees.push(child.reduceHierarchy());
+      }
+    }
+
+    return current;
+  }
+
+
 }
 
 /**
