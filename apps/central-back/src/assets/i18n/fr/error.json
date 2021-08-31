@@ -1,6 +1,6 @@
 {
   "server_error": "Erreur serveur",
-  "wrong_credentials": "Mauvais identifiant ou mot de passe",
+  "wrong_credentials": "Mauvais email ou mot de passe",
   "user_locked": "Utilisateur bloqué",
   "column_too_long": "Champ '{field}' trop long",
   "email_already_exist": "Un compte avec la même adresse email existe déjà",

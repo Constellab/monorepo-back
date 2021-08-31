@@ -1,6 +1,6 @@
 {
   "server_error": "Server error",
-  "wrong_credentials": "Wrong user or password",
+  "wrong_credentials": "Wrong email or password",
   "user_locked": "User locked",
   "column_too_long": "Field '{field}' too long",
   "email_already_exist": "An account with the same email address already exists",

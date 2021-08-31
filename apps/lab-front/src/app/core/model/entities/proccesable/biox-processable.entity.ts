@@ -35,11 +35,6 @@ export class BioxProcessable extends BioxNode implements FlStatus {
     uri: string;
   };
 
-  @Expose({name: 'is_archived'})
-  isArchived: boolean;
-
-  @Expose({name: 'is_deleted'})
-  isDeleted: boolean;
 
   @Type(() => BioxConfig)
   config: BioxConfig;
@@ -59,13 +54,15 @@ export class BioxProcessable extends BioxNode implements FlStatus {
   @Type(() => BioxProgressBar)
   progressBar: BioxProgressBar;
 
-  public isProtocol(): boolean {
-    return this.data?.graph != null ?? false;
-  }
+  @Expose({name: 'is_archived'})
+  isArchived: boolean;
 
-  public isProcess(): boolean {
-    return !this.isProtocol();
-  }
+  @Expose({name: 'is_deleted'})
+  isDeleted: boolean;
+
+  @Expose({name: 'is_protocol'})
+  isProtocol: boolean
+
 
   public hasConfig(): boolean {
     return this.config?.data.specs.hasProperties() ?? false;
@@ -90,5 +87,9 @@ export class BioxProcessable extends BioxNode implements FlStatus {
 // return true if the process is a Source
   isPlugSource(): boolean {
     return this.typingName === bioxProcessSourceTypingName;
+  }
+
+  get title(): string{
+    return this.data.title || this.name
   }
 }

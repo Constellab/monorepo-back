@@ -86,8 +86,7 @@ export class WorkflowManagerState {
    * Create a new layer and init it with the protocol information
    */
   private addProtocolLayer(flow: BioxFlow<BioxProtocol>, nodeId: string): void {
-    // todo check the name once is stable
-    this.workflow.createSubLayerIfNotExists(nodeId, flow.object.data.title ?? flow.object.name);
+    this.workflow.createSubLayerIfNotExists(nodeId, flow.object.name, flow.object.title);
     this.initFlow(flow);
   }
 

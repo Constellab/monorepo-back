@@ -41,7 +41,7 @@ export abstract class FlApiErrorService {
    */
   public handleDeserializationError(error: any, classReference: ClDeserializationRef): never {
     // get the predefine error message
-    const errorMessage = this.translateService.translate('error_deserialize', {
+    const errorMessage = this.translateService.translate('flApi.error_deserialize', {
       param: {className: classReference.name}
     });
 

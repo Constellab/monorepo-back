@@ -1,6 +1,8 @@
 import {WorkflowNode} from './workflow-node.class';
 import {BioxConnection, BioxNode} from '../../../../core/model/global/biox-connection.class';
 import {WorkflowPort} from './workflow-port.class';
+import {WorkflowNodeInterface} from './workflow-node-interface.class';
+import {WorkflowNodeOuterface} from './workflow-node-outerface.class';
 
 export class WorkflowConnection {
 
@@ -29,6 +31,18 @@ export class WorkflowConnection {
     }
 
     return element.children[0] as HTMLElement;
+  }
+
+  public isInterfaceConnection(): boolean {
+    return this.outputNode instanceof WorkflowNodeInterface;
+  }
+
+  public isOuterfaceConnection(): boolean {
+    return this.inputNode instanceof WorkflowNodeOuterface;
+  }
+
+  public isIOFaceConnection(): boolean {
+    return this.isInterfaceConnection() || this.isOuterfaceConnection();
   }
 
 }

@@ -9,18 +9,16 @@ import {EnvironmentHelper} from '../utils/environment.helper';
  * Format of the paginated result
  */
 interface PaginatedResponse {
-  data: any[];
-  paginator: {
-    page: number;
-    prev_page: number,
-    next_page: number,
-    last_page: number,
-    number_of_items: number,
-    total_number_of_pages: number,
-    number_of_items_per_page: number,
-    is_first_page: boolean,
-    is_last_page: boolean
-  };
+  objects: any[];
+  page: number;
+  prev_page: number,
+  next_page: number,
+  last_page: number,
+  total_number_of_items: number,
+  total_number_of_pages: number,
+  number_of_items_per_page: number,
+  is_first_page: boolean,
+  is_last_page: boolean
 }
 
 /**
@@ -37,14 +35,14 @@ export class ApiServiceConfig extends FlApiServiceConfig {
 
   deserializePage(json: PaginatedResponse, classReference: ClDeserializationRef): ClPage<any> {
     // if the result if paginated (we supposed the json is type of ClPage)
-    if (json.data != null && json.data instanceof Array) {
+    if (json.objects != null && json.objects instanceof Array) {
       return {
-        first: json.paginator.page === 1,
-        last: json.paginator.is_last_page,
-        currentPage: json.paginator.page,
-        pageSize: json.paginator.number_of_items_per_page,
-        totalElements: json.paginator.number_of_items,
-        objects: ClCoreJsonConvert.deserialize(json.data, classReference),
+        first: json.page === 0,
+        last: json.is_last_page,
+        currentPage: json.page,
+        pageSize: json.number_of_items_per_page,
+        totalElements: json.total_number_of_items,
+        objects: ClCoreJsonConvert.deserialize(json.objects, classReference),
       };
     } else {
       console.error('Response object not paginated');
@@ -54,7 +52,7 @@ export class ApiServiceConfig extends FlApiServiceConfig {
 
   getApiUrl(): string {
     const env: LabEnvironment = this.labEnvStore.getLabEnvironment();
-    if(env === 'dev'){
+    if (env === 'dev') {
       return EnvironmentHelper.getDevCoreApiUrl();
     }
 

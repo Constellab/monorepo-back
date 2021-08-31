@@ -1,10 +1,8 @@
 import {Expose, Type} from 'class-transformer';
-import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {BioxProtocolData} from '../proccesable/biox-protocol.entity';
 import {BioxProcessableType} from './biox-processable-type.entity';
 import {BioxConfigSpecs} from '../biox-config-spec.entity';
 import {BioxProtocolLink, BioxProtocolLinkPart} from '../biox-protocol-link.entity';
-import {TypedTree} from '../../global/typed-tree.class';
 
 
 export class BioxProtocolType extends BioxProcessableType {
@@ -54,9 +52,5 @@ export class BioxProtocolType extends BioxProcessableType {
   }
 }
 
-/**
- * Tree that group the process type by model types
- */
-export type BioxProtocolTypeTree = TypedTree<BioxProtocolType>;
 
-export type BioxProtocolTypeDatasource = FlEntityPaginatedDatasource<BioxProtocolType>;
+

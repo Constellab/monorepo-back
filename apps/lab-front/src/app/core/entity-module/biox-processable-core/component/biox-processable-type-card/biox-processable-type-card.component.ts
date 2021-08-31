@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {BioxProcessableType} from '../../../../model/entities/processable-type/biox-processable-type.entity';
+import {BioxProcessableType} from '../../../../model/entities/lab-type/biox-processable-type.entity';
 
 /**
  * Card showing process type information with an ng-content for card actions
@@ -18,6 +18,5 @@ export class BioxProcessableTypeCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.processableType)
   }
 }

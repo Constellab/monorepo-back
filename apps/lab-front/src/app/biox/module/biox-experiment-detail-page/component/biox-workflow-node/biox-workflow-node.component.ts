@@ -42,7 +42,7 @@ export class BioxWorkflowNodeComponent implements OnInit {
   }
 
   nodeIsProtocol(): boolean {
-    return this.node.object.isProtocol();
+    return this.node.object.isProtocol;
   }
 
   zoomInProtocol(): void {

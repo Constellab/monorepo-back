@@ -1,14 +1,14 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {BioxProcessableType} from '../../../../model/entities/processable-type/biox-processable-type.entity';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {TypedTree} from '../../../../model/global/typed-tree.class';
+import {BioxLabTypeEntity, BioxLabTypeEntityTree} from '../../../../model/entities/lab-type/biox-lab-type.entity';
 
 interface BioxProcessableTypeTreeFlat {
   expandable: boolean;
   level: number;
   typePart: string;
-  processable?: BioxProcessableType;
+  processable?: BioxLabTypeEntity;
 }
 
 /**
@@ -21,16 +21,16 @@ interface BioxProcessableTypeTreeFlat {
 })
 export class BioxProcessableTypesTreeComponent implements OnInit {
 
-  @Input() processableTypesTree: TypedTree<BioxProcessableType>[];
+  @Input() processableTypesTree: BioxLabTypeEntityTree[];
 
-  @Output() processableTypeClick: EventEmitter<BioxProcessableType> = new EventEmitter();
-  @Output() processableTypeDblClick: EventEmitter<BioxProcessableType> = new EventEmitter();
+  @Output() processableTypeClick: EventEmitter<BioxLabTypeEntity> = new EventEmitter();
+  @Output() processableTypeDblClick: EventEmitter<BioxLabTypeEntity> = new EventEmitter();
 
   treeControl: FlatTreeControl<BioxProcessableTypeTreeFlat>;
-  dataSource: MatTreeFlatDataSource<TypedTree<BioxProcessableType>, BioxProcessableTypeTreeFlat>;
+  dataSource: MatTreeFlatDataSource<TypedTree<BioxLabTypeEntity>, BioxProcessableTypeTreeFlat>;
 
 
-  private _transformer = (node: TypedTree<BioxProcessableType>, level: number): BioxProcessableTypeTreeFlat => {
+  private _transformer = (node: TypedTree<BioxLabTypeEntity>, level: number): BioxProcessableTypeTreeFlat => {
 
     return {
       expandable: node.hasChildren(),
@@ -50,14 +50,14 @@ export class BioxProcessableTypesTreeComponent implements OnInit {
   }
 
   private initTree(): void {
-    const reducedTree: TypedTree<BioxProcessableType>[]
+    const reducedTree: TypedTree<BioxLabTypeEntity>[]
       = this.processableTypesTree.map(processableType => processableType.reduceHierarchy());
 
     this.treeControl = new FlatTreeControl<BioxProcessableTypeTreeFlat>(
       node => node.level, node => node.expandable);
 
     // object to flatten tree
-    const treeFlattener: MatTreeFlattener<TypedTree<BioxProcessableType>, BioxProcessableTypeTreeFlat> = new MatTreeFlattener(
+    const treeFlattener: MatTreeFlattener<BioxLabTypeEntityTree, BioxProcessableTypeTreeFlat> = new MatTreeFlattener(
       this._transformer, node => node.level, node => node.expandable,
       node => node.subTrees);
 

@@ -1,17 +1,3 @@
-<!--<mat-tab-group>-->
-<!--        &lt;!&ndash;                    Protocols    &ndash;&gt;-->
-<!--        <mat-tab [label]="'protocols' | translate">-->
-<!--          <fl-infinite-scroll [datasource]="availableProtocols">-->
-<!--            <gen-biox-protocol-card *ngFor="let protocol of protocols$ | async"-->
-<!--                                    [protocol]="protocol.model"-->
-<!--                                    draggable="true" class="draggable-card"-->
-<!--                                    (dragstart)="dragStart(protocol.model)"></gen-biox-protocol-card>-->
-<!--          </fl-infinite-scroll>-->
-<!--        </mat-tab>-->
-
-<!--    Processes    -->
-<!--  <mat-tab [label]="'processes' | translate">-->
-
 <div fxLayout="row" class="g-full-height">
 
   <!-- Left section with process or protocol selection -->
@@ -22,8 +8,8 @@
 
           <ng-container *flSectionBody="let processes">
             <gen-biox-processable-types-tree [processableTypesTree]="processes"
-                                             (processableTypeClick)="selectProcessable($event)"
-                                             (processableTypeDblClick)="selectAndAddProcessable($event)"></gen-biox-processable-types-tree>
+                                             (processableTypeClick)="selectProcess($event)"
+                                             (processableTypeDblClick)="selectAndAddProcess($event)"></gen-biox-processable-types-tree>
           </ng-container>
         </fl-async-section>
 
@@ -33,8 +19,8 @@
         <fl-async-section [object]="protocols$">
           <ng-container *flSectionBody="let protocols">
             <gen-biox-processable-types-tree [processableTypesTree]="protocols"
-                                             (processableTypeClick)="selectProcessable($event)"
-                                             (processableTypeDblClick)="selectAndAddProcessable($event)"></gen-biox-processable-types-tree>
+                                             (processableTypeClick)="selectProtocol($event)"
+                                             (processableTypeDblClick)="selectAndAddProtocol($event)"></gen-biox-processable-types-tree>
           </ng-container>
         </fl-async-section>
       </mat-tab>
@@ -43,15 +29,19 @@
 
   <!-- Right section with process detail information -->
   <div class="right-section">
-    <gen-biox-processable-type-card *ngIf="selectedProcess" [processableType]="selectedProcess"
-                                    class="card">
-      <button mat-icon-button color="primary" type="button"
-              (click)="addProcessable(selectedProcess)"
-              [matTooltip]="'biox.add_selected_process' | translate">
-        <mat-icon>add</mat-icon>
-      </button>
-    </gen-biox-processable-type-card>
+    <fl-async-section [object]="processableType$">
+
+      <ng-container *flSectionBody="let processableType">
+        <gen-biox-processable-type-card [processableType]="processableType"
+                                        class="card">
+          <button mat-icon-button color="primary" type="button"
+                  (click)="addProcessable(processableType)"
+                  [matTooltip]="'biox.add_selected_process' | translate">
+            <mat-icon>add</mat-icon>
+          </button>
+        </gen-biox-processable-type-card>
+      </ng-container>
+    </fl-async-section>
   </div>
 </div>
-<!--  </mat-tab>-->
-<!--</mat-tab-group>-->
+

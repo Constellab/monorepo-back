@@ -57,7 +57,7 @@ export class FileResourceService {
 
   public getAll(page: number, pageSize: number): Observable<ClPage<FileResourcePreview>> {
     return this.apiService.get(`file/gws.file.File`, FileResourcePreview,
-      {resultIsPaginated: true, page: page + 1, pageSize: pageSize});
+      {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
   public getAllDatasource(): FileResourceDatasource {

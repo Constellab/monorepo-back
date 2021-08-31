@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
-import {FlApiWithCacheService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {FlApiWithCacheService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ClPage, clRxjsDebug} from '@monorepo/core-lib';
+import {clRxjsDebug} from '@monorepo/core-lib';
 import {BioxFlow} from '../model/global/biox-connection.class';
-import {BioxProtocolType, BioxProtocolTypeDatasource} from '../model/entities/processable-type/biox-protocol-type.entity';
 import {BioxProtocol} from '../model/entities/proccesable/biox-protocol.entity';
 
 @Injectable({
@@ -15,18 +14,6 @@ export class BioxProtocolService {
 
   constructor(private apiService: FlApiWithCacheService) {
   }
-
-  public getProtocolSpecs(page: number, pageSize: number): Observable<ClPage<BioxProtocolType>> {
-    return this.apiService.get(`protocol-type`, BioxProtocolType,
-      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
-  }
-
-  public getProtocolSpecsDatasource(): BioxProtocolTypeDatasource {
-    return new FlEntityPaginatedDatasource(
-      (page: number, pageSize: number): Observable<ClPage<BioxProtocolType>> => this.getProtocolSpecs(page, pageSize),
-      20, true);
-  }
-
 
   public getProtocol(protocolId: string): Observable<BioxProtocol> {
     return this.apiService.get(`protocol/${protocolId}`, BioxProtocol);

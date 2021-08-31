@@ -28,7 +28,7 @@ export class BiotaDatabaseService {
 
   public getDatabaseData(type: string, page: number, pageSize: number): Observable<ClPage<BiotaData>> {
     return this.apiService.get(`resource/${type}/`, ViewModel,
-      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
+      {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
   public getDatabaseDatasource(type: string): BiotaDataDatasource {

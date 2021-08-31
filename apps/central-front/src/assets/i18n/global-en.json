@@ -15,7 +15,6 @@
   "not_authorized": "Not authorized",
   "connection_lost": "The connection has been lost",
   "session_expired": "Session expired",
-  "error_deserialize": "Error during the response conversion to {{className}}",
   "dashboard": "Dashboard",
   "settings": "Settings",
   "theme": "Theme",

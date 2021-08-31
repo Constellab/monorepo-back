@@ -53,3 +53,11 @@ export class BioxProtocolLink implements BioxConnection {
   @ResourceLazyProperty()
   resource: FlLazyPropertyId<BioxResource>;
 }
+
+/**
+ * Object that represent the protocol interface and outerface
+ */
+export class BioxProtocolIOFace extends BioxProtocolLink {
+  // name of the interface or outerface
+  name: string;
+}

@@ -69,6 +69,7 @@ export class BioxInterfaceNode extends BioxNode {
 
   // types supported by the port
   portType: string[];
+
 }
 
 /**

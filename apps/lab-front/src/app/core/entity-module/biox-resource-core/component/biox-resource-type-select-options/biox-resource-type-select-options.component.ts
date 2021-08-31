@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, Host, OnDestroy, OnInit, Optional} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {MatSelect} from '@angular/material/select';
-import {BioxResourceType, BioxResourceTypeDatasource} from '../../../../model/entities/resource/biox-resource.entity';
 import {BioxResourceService} from '../../../../entity-service/biox-resource.service';
 import {Observable} from 'rxjs';
+import {BioxLabTypeEntity, BioxLabTypeEntityDatasource} from '../../../../model/entities/lab-type/biox-lab-type.entity';
 
 /**
  * Component to place under a mat-select to show the list of resource type
@@ -16,9 +16,9 @@ import {Observable} from 'rxjs';
 export class BioxResourceTypeSelectOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit, OnDestroy {
 
-  datasource: BioxResourceTypeDatasource;
+  datasource: BioxLabTypeEntityDatasource;
 
-  resourceTypes$: Observable<BioxResourceType[]>;
+  resourceTypes$: Observable<BioxLabTypeEntity[]>;
 
   constructor(@Host() @Optional() public select: MatSelect,
               private bioxResourceService: BioxResourceService) {

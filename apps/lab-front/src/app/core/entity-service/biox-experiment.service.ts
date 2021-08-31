@@ -21,7 +21,7 @@ export class BioxExperimentService {
 
   public getExperiments(page: number, pageSize: number): Observable<ClPage<BioxExperiment>> {
     return this.apiService.get(`experiment`, BioxExperiment,
-      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
+      {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
 

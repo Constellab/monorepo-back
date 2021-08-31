@@ -1,13 +1,9 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {FlApiWithCacheService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {ClPage} from '@monorepo/core-lib';
 import {createTypedTree} from '../model/global/typed-tree.class';
-import {
-  BioxProtocolType,
-  BioxProtocolTypeDatasource,
-  BioxProtocolTypeTree
-} from '../model/entities/processable-type/biox-protocol-type.entity';
+import {BioxProtocolType} from '../model/entities/lab-type/biox-protocol-type.entity';
+import {BioxLabTypeEntity, BioxLabTypeEntityTree} from '../model/entities/lab-type/biox-lab-type.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -16,21 +12,15 @@ export class BioxProtocolTypeService {
 
   private readonly route: string = 'protocol-type';
 
-  constructor(private apiService: FlApiService) {
+  constructor(private apiService: FlApiWithCacheService) {
   }
 
-  public getProtocols(page: number, pageSize: number): Observable<ClPage<BioxProtocolType>> {
-    return this.apiService.get(this.route, BioxProtocolType,
-      {resultIsPaginated: true, page: (page + 1), pageSize: pageSize});
+
+  public getProtocolTypesTree(): Observable<BioxLabTypeEntityTree[]> {
+    return this.apiService.get(`${this.route}/tree`, createTypedTree(BioxLabTypeEntity));
   }
 
-  public getProtocolsDatasource(): BioxProtocolTypeDatasource {
-    return new FlEntityPaginatedDatasource(
-      (page: number, pageSize: number): Observable<ClPage<BioxProtocolType>> => this.getProtocols(page, pageSize),
-      20, true);
-  }
-
-  public getProtocolTypesTree(): Observable<BioxProtocolTypeTree[]> {
-    return this.apiService.get(`${this.route}/typedTree`, createTypedTree(BioxProtocolType));
+  public getProtocolType(id: string): Observable<BioxProtocolType> {
+    return this.apiService.getByIdWithCache(`${this.route}`, id, BioxProtocolType);
   }
 }

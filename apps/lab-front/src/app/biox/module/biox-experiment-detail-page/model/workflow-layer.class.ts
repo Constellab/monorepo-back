@@ -9,6 +9,8 @@ import {WorkflowNodeProcessable} from './workflow-node-processable.class';
  */
 export class WorkflowLayer {
 
+  public readonly children: Record<string, WorkflowLayer> = {};
+
   public readonly nodes: WorkflowNode<any>[] = [];
 
   public readonly connections: WorkflowConnection[] = [];
@@ -79,7 +81,7 @@ export class WorkflowLayer {
     }
   }
 
-  public getProcessableNodes(): WorkflowNodeProcessable[]{
+  public getProcessableNodes(): WorkflowNodeProcessable[] {
     return this.nodes.filter(node => node instanceof WorkflowNodeProcessable) as WorkflowNodeProcessable[];
   }
 
@@ -126,8 +128,13 @@ export class WorkflowLayer {
       c.outputPort.drawFlowName === connectionEvent.output_class && c.inputPort.drawFlowName === connectionEvent.input_class);
   }
 
-
   ///////////////////////// OTHER //////////////////////////
+
+  public createSubLayer(layerId: string, name: string, title: string): WorkflowLayer {
+    const subLayer: WorkflowLayer = new WorkflowLayer(this.editor, layerId, title, this);
+    this.children[name] = subLayer;
+    return subLayer;
+  }
 
   public getLayerHierarchy(): WorkflowLayer[] {
     const layers: WorkflowLayer[] = [this];

@@ -1,34 +1,22 @@
-import {LabBaseEntity} from '../../global/lab-entity.entity';
-import {Expose} from 'class-transformer';
 import {BioxProcessableData} from '../proccesable/biox-processable.entity';
 import {bioxProcessSourceTypingName} from '../biox-process-special-type';
 import {BioxConfigSpecs} from '../biox-config-spec.entity';
+import {BioxLabTypeEntity} from './biox-lab-type.entity';
 
 
-export abstract class BioxProcessableType extends LabBaseEntity {
-
-  @Expose({name: 'typing_name'})
-  typingName: string;
-
-  @Expose({name: 'model_name'})
-  modelName: string;
-
-  @Expose({name: 'human_name'})
-  humanName?: string;
-
-  @Expose({name: 'short_description'})
-  shortDescription?: string;
+export abstract class BioxProcessableType extends BioxLabTypeEntity {
 
   data: BioxProcessableData;
-
-  hasDocumentation(): boolean {
-    return this.data.doc != null;
-  }
 
   // return true if the process is a Source
   isPlugSource(): boolean {
     return this.typingName === bioxProcessSourceTypingName;
   }
+
+  hasDocumentation(): boolean {
+    return this.data.doc != null;
+  }
+
 
   hasInputSpecs(): boolean {
     const inputSpecs: Record<string, string[]> = this.getInputSpecs();
@@ -45,10 +33,6 @@ export abstract class BioxProcessableType extends LabBaseEntity {
   hasConfigSpecs(): boolean {
     const config: BioxConfigSpecs = this.getConfigSpecs();
     return config != null && config.hasConfigs();
-  }
-
-  get name(): string{
-    return this.humanName || this.modelName;
   }
 
   abstract getInputSpecs(): Record<string, string[]>;

@@ -100,10 +100,10 @@ export class Workflow {
     layer.selectLayer();
   }
 
-  public createSubLayerIfNotExists(layerId: string, name: string): void {
+  public createSubLayerIfNotExists(layerId: string, name: string, title: string): void {
     if (this.findLayerWithId(layerId) == null) {
       this.editor.addModule(layerId);
-      this.layers.push(new WorkflowLayer(this.editor, layerId, name, this.currentLayer));
+      this.layers.push(this.currentLayer.createSubLayer(layerId, name, title))
     }
 
     this.selectLayer(layerId);
