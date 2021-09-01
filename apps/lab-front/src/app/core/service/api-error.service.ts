@@ -53,7 +53,7 @@ export class ApiErrorService extends FlApiErrorService {
     }
 
     // specific management for the INVALID_TOKEN
-    if (apiError.code === 'gws.INVALID_TOKEN') {
+    if (apiError.code === 'gws_core.INVALID_TOKEN') {
       this.logoutUser();
     }
 
