@@ -3,6 +3,7 @@ import {WorkflowConnection} from './workflow-connection.class';
 import {WorkflowPort} from './workflow-port.class';
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 import {WorkflowNodeProcessable} from './workflow-node-processable.class';
+import {BioxFlowManager} from '../../../../core/model/global/biox-connection.class';
 
 /**
  * One layer of the workflow, it contains the list of nodes
@@ -16,8 +17,11 @@ export class WorkflowLayer {
   public readonly connections: WorkflowConnection[] = [];
 
   constructor(private readonly editor: Drawflow,
+              // generated unique id of the layer
               public readonly id: string,
               public readonly name: string,
+              // Flow object corresponding to this layer
+              public readonly object: BioxFlowManager,
               public readonly parentLayer: WorkflowLayer) {
   }
 
@@ -130,8 +134,8 @@ export class WorkflowLayer {
 
   ///////////////////////// OTHER //////////////////////////
 
-  public createSubLayer(layerId: string, name: string, title: string): WorkflowLayer {
-    const subLayer: WorkflowLayer = new WorkflowLayer(this.editor, layerId, title, this);
+  public createSubLayer(layerId: string, name: string, title: string, object: BioxFlowManager): WorkflowLayer {
+    const subLayer: WorkflowLayer = new WorkflowLayer(this.editor, layerId, title, object, this);
     this.children[name] = subLayer;
     return subLayer;
   }

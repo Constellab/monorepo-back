@@ -2,21 +2,25 @@ import {Injectable} from '@angular/core';
 import {FlApiWithCacheService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {clRxjsDebug} from '@monorepo/core-lib';
+import {ClConstructorFunction, ClCoreJsonConvert, clRxjsDebug} from '@monorepo/core-lib';
 import {BioxFlow} from '../model/global/biox-connection.class';
 import {BioxProtocol} from '../model/entities/proccesable/biox-protocol.entity';
+import {BioxProcessable} from '../model/entities/proccesable/biox-processable.entity';
+import {BioxProcess} from '../model/entities/proccesable/biox-process.entity';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BioxProtocolService {
 
+  private readonly baseRoute: string = 'protocol';
+
 
   constructor(private apiService: FlApiWithCacheService) {
   }
 
   public getProtocol(protocolId: string): Observable<BioxProtocol> {
-    return this.apiService.get(`protocol/${protocolId}`, BioxProtocol);
+    return this.apiService.get(`${this.baseRoute}/${protocolId}`, BioxProtocol);
   }
 
 
@@ -26,6 +30,29 @@ export class BioxProtocolService {
       clRxjsDebug(),
     );
   }
+
+  /**
+   * Route to add a processable (from type) to an existing protocol (can be a sub protocol)
+   * @param protocolId
+   * @param processable_typing_name
+   */
+  public addProcessableToProtocol(protocolId: string, processable_typing_name: string): Observable<BioxProcessable> {
+    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-processable/${processable_typing_name}`, null,
+      this.instantiateProcessable);
+  }
+
+  /**
+   * Method to instantiate the correct processable object when getting it from DB
+   * @param json
+   */
+  private instantiateProcessable: ClConstructorFunction<BioxProcessable> = (json: any): BioxProcessable => {
+    // if this is a resource file
+    if (json.is_protocol) {
+      return ClCoreJsonConvert.deserializeObject(json, BioxProtocol);
+    } else {
+      return ClCoreJsonConvert.deserializeObject(json, BioxProcess);
+    }
+  };
 
   private initProtocolFlow(protocol: BioxProtocol): BioxFlow<BioxProtocol> {
     console.log(protocol);

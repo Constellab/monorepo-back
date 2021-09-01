@@ -19,6 +19,7 @@ import {WorkflowNodeInterface} from '../model/workflow-node-interface.class';
 import {WorkflowNodeOuterface} from '../model/workflow-node-outerface.class';
 import {WorkflowPort} from '../model/workflow-port.class';
 import {BioxProtocol} from '../../../../core/model/entities/proccesable/biox-protocol.entity';
+import {map} from 'rxjs/operators';
 
 /**
  * State for the workflow, it is created for the module and can only manage on state a the time
@@ -49,7 +50,7 @@ export class WorkflowManagerState {
   public init(element: HTMLElement, flow: BioxFlow<BioxProtocol>, experiment: BioxExperiment): void {
     this.experiment = experiment;
 
-    this.workflow = new Workflow(element, experiment.data.title ?? 'Experiment', 'edit', this.ngZone);
+    this.workflow = new Workflow(element, experiment.data.title ?? 'Experiment', flow.object, 'edit', this.ngZone);
 
     this.workflow.start();
 
@@ -86,7 +87,7 @@ export class WorkflowManagerState {
    * Create a new layer and init it with the protocol information
    */
   private addProtocolLayer(flow: BioxFlow<BioxProtocol>, nodeId: string): void {
-    this.workflow.createSubLayerIfNotExists(nodeId, flow.object.name, flow.object.title);
+    this.workflow.createSubLayerIfNotExists(nodeId, flow.object.name, flow.object.title, flow.object);
     this.initFlow(flow);
   }
 
@@ -97,17 +98,21 @@ export class WorkflowManagerState {
 
   //////////////////////// NODE ////////////////////////////
 
-  public addProcessableNode(bioxProcessable: BioxProcessable, coordX: number = 0, coordY: number = 0): void {
-    const node: WorkflowNode<any> = this.createNodeFromProcessable(bioxProcessable, coordX, coordY);
-    this.addNode(node);
+  public addProcessableNode(processable_typing_name: string): void {
+    // retrieve the protocol of the layer
+    const currentProtocol: BioxProtocol = this.workflow.currentLayer.object as BioxProtocol;
+
+    // add create the processable in the API and get th processable
+    this.bioxProtocolService.addProcessableToProtocol(currentProtocol.id, processable_typing_name).pipe(
+      map(processable => this.createNodeFromProcessable(processable)) // convert it to a Node
+    ).subscribe(
+      // add the node to the workflow
+        node => this.addNode(node)
+      );
   }
 
-  private createNodeFromProcessable(processable: BioxProcessable, coordX: number = 0, coordY: number = 0): WorkflowNodeProcessable {
-    if (processable.name == null) {
-      processable.name = processable.typingName + '_' + Date.now().toString();
-    }
-
-    return new WorkflowNodeProcessable(processable, processable.name, coordX, coordY);
+  private createNodeFromProcessable(processable: BioxProcessable): WorkflowNodeProcessable {
+    return new WorkflowNodeProcessable(processable, processable.name, 0, 0);
   }
 
   public addInterface(): void {

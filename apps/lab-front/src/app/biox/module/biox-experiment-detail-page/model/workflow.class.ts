@@ -6,6 +6,7 @@ import {map} from 'rxjs/operators';
 import {WorkflowPort} from './workflow-port.class';
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 import {NgZone} from '@angular/core';
+import {BioxFlowManager} from '../../../../core/model/global/biox-connection.class';
 
 export type WorkflowMode = 'edit' | 'readOnly';
 
@@ -29,7 +30,10 @@ export class Workflow {
   // if false there is no check when creating nodes or connections
   private checkOnCreate: boolean = true;
 
-  constructor(private element: HTMLElement, name: string, mode: WorkflowMode = 'edit',
+  constructor(private element: HTMLElement,
+              name: string,
+              object: BioxFlowManager,
+              mode: WorkflowMode = 'edit',
               private ngZone: NgZone) {
 
     this.editor = new Drawflow(element);
@@ -40,7 +44,7 @@ export class Workflow {
     this.setMode(mode);
 
     // init layers
-    const currentLayer: WorkflowLayer = new WorkflowLayer(this.editor, 'Home', name, null);
+    const currentLayer: WorkflowLayer = new WorkflowLayer(this.editor, 'Home', name, object, null);
     this.layers = [currentLayer];
 
     // init subject
@@ -100,10 +104,10 @@ export class Workflow {
     layer.selectLayer();
   }
 
-  public createSubLayerIfNotExists(layerId: string, name: string, title: string): void {
+  public createSubLayerIfNotExists(layerId: string, name: string, title: string, object: BioxFlowManager): void {
     if (this.findLayerWithId(layerId) == null) {
       this.editor.addModule(layerId);
-      this.layers.push(this.currentLayer.createSubLayer(layerId, name, title))
+      this.layers.push(this.currentLayer.createSubLayer(layerId, name, title, object))
     }
 
     this.selectLayer(layerId);

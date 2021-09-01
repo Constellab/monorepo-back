@@ -29,7 +29,7 @@ export class BioxProcessSourceConfigComponent implements OnInit {
   }
 
   private setNode(process: BioxProcessable): void {
-    if (process.typingName !== bioxProcessSourceTypingName) {
+    if (process.processableTypingName !== bioxProcessSourceTypingName) {
       console.error('[BioxProcessSourceConfigComponent] The process is not of type Source');
       return;
     }

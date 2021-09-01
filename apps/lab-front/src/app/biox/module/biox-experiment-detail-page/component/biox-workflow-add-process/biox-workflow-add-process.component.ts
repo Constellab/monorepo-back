@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {BioxProcessable} from '../../../../../core/model/entities/proccesable/biox-processable.entity';
 import {Observable} from 'rxjs';
 import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
-import {BioxExperimentFlowFactory} from '../../../../../core/utils/biox-experiment-flow.factory';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {BioxProcessableType} from '../../../../../core/model/entities/lab-type/biox-processable-type.entity';
 import {BioxProtocolTypeService} from '../../../../../core/entity-service/biox-protocol-type.service';
@@ -38,10 +36,12 @@ export class BioxWorkflowAddProcessComponent implements OnInit {
     this.protocols$ = this.bioxProtocolTypeService.getProtocolTypesTree();
   }
 
-  addProcessable(object: BioxProcessableType): void {
-    const processable: BioxProcessable = BioxExperimentFlowFactory.processableFromProcessableType(object);
+  addProcessable(processableType: BioxProcessableType): void {
+    this.addProcessableFromTypingName(processableType.typingName)
+  }
 
-    this.workflowManagerService.addProcessableNode(processable, 0, 0);
+  private addProcessableFromTypingName(processableTypingName: string): void{
+    this.workflowManagerService.addProcessableNode(processableTypingName);
   }
 
   selectProcess(process: BioxLabTypeEntity): void {
@@ -54,18 +54,13 @@ export class BioxWorkflowAddProcessComponent implements OnInit {
 
   selectAndAddProcess(process: BioxLabTypeEntity): void {
     this.selectProcess(process);
-    this.addSelectedProcessable();
+    this.addProcessableFromTypingName(process.typingName);
   }
 
   selectAndAddProtocol(protocol: BioxLabTypeEntity): void {
     this.selectProtocol(protocol);
-    this.addSelectedProcessable();
+    this.addProcessableFromTypingName(protocol.typingName);
   }
 
-  private addSelectedProcessable(): void {
-    this.processableType$.subscribe(
-      processable => this.addProcessable(processable)
-    );
-  }
 
 }

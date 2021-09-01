@@ -22,8 +22,8 @@ export interface BioxProcessableData {
  */
 export class BioxProcessable extends BioxNode implements FlStatus {
 
-  @Expose({name: 'typing_name'})
-  typingName: string
+  @Expose({name: 'processable_typing_name'})
+  processableTypingName: string
 
   data: BioxProcessableData;
 
@@ -86,7 +86,7 @@ export class BioxProcessable extends BioxNode implements FlStatus {
 
 // return true if the process is a Source
   isPlugSource(): boolean {
-    return this.typingName === bioxProcessSourceTypingName;
+    return this.processableTypingName === bioxProcessSourceTypingName;
   }
 
   get title(): string{

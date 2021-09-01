@@ -48,7 +48,7 @@ export class BioxExperimentService {
 
   public updateExperimentProtocol(experiment: BioxExperiment, workflow: Workflow): Observable<BioxExperiment> {
     // convert the workflow to a protocol
-    const graph: BioxProtocolGraph = BioxExperimentFlowFactory.convertWorkflowToProtocol(workflow);
+    const graph: BioxProtocolGraph = BioxExperimentFlowFactory.convertWorkflowToProtocolGraph(workflow);
 
     if (graph == null || Object.keys(graph.nodes).length === 0) {
       this.snackBarService.openErrorMessage('biox.error_empty_experience', true);
