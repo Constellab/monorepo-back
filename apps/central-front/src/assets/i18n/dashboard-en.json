@@ -6,6 +6,7 @@
   "IN_PROGRESS": "In progress",
   "ARCHIVED": "Archived",
   "RUNNING": "Running",
+  "WAITING_FOR_CLI_PROCESS": "Running",
   "STOPPED": "Stopped",
   "project": "Project",
   "new_project": "New project",

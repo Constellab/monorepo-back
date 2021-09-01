@@ -19,7 +19,6 @@
                       [ngClass]="{'g-clickable': experiment.status !== 'DRAFT'}"></fl-status-chip>
     </fl-card-actions>
   </fl-card-header>
-
   <fl-card-body *ngIf="showDetail">
 
     <fl-limit-height [maxHeight]="100">
@@ -27,7 +26,7 @@
     </fl-limit-height>
   </fl-card-body>
 
-  <fl-card-footer>
+  <fl-card-footer *ngIf="showDetail">
     <p class="g-text-small g-text-light">
       {{'last_modified_the'| translate}} {{experiment.savedAt | flDate}}
     </p>
