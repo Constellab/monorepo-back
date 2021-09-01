@@ -92,7 +92,7 @@ export class BioxResourceDetailPageComponent implements OnInit {
 
   private initFilename(resource: BioxResource): void {
     if (resource instanceof FileResource) {
-      this.filename = resource.getFileName();
+      this.filename = resource.filename;
     }
   }
 

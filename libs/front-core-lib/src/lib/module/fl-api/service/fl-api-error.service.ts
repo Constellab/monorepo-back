@@ -18,13 +18,13 @@ export abstract class FlApiErrorService {
 
   /**
    * Method called when an error during an http call occurred
-   * @param error error return by the server
+   * @param errorResponse error return by the server
    * @param hideError if true the snackbar is shown
    * @param snackBarDuration duration for the snackbar error
    * @param defaultError the default error if the api does not return an explicit error
    * @return throw a formatted error
    */
-  public abstract handleServerError(error: HttpErrorResponse, hideError: boolean,
+  public abstract handleServerError(errorResponse: HttpErrorResponse, hideError: boolean,
                                     snackBarDuration?: number, defaultError?: string): Observable<never>;
 
   /**

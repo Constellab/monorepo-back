@@ -3,7 +3,7 @@ import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-li
 import {Observable, of} from 'rxjs';
 import {BioxBasicResource, BioxResource, BioxResourceDatasource} from '../model/entities/resource/biox-resource.entity';
 import {FileResourceService, FileWithContent} from './file-resource.service';
-import {ClClassReference, ClPage} from '@monorepo/core-lib';
+import {ClConstructorFunction, ClCoreJsonConvert, ClPage} from '@monorepo/core-lib';
 import {FileResource} from '../model/entities/resource/file-resource.entity';
 import {map, mergeMap} from 'rxjs/operators';
 import {LabBaseEntity} from '../model/global/lab-entity.entity';
@@ -27,26 +27,37 @@ export class BioxResourceService {
       return of(null);
     }
 
-    // todo ne fonctionne pas si class fille de File
-    if (typingName === 'RESOURCE.gws_core.File') {
-      return this.getFileResource(typingName, id);
-    } else {
-      return this.getResource(typingName, id, BioxBasicResource);
-    }
+    // get the resource in the correct type
+    return this.getResource(typingName, id).pipe(
+      mergeMap(resource => {
+        // if the resource is a file, get the file content
+        if (resource instanceof FileResource) {
+          return this.loadFileResourceContent(resource);
+        } else {
+          // otherwise return the basic resource
+          return of(resource);
+        }
+      })
+    );
   }
 
-  private getResource(type: string, id: string, classReference: ClClassReference): Observable<any> {
-    return this.apiService.get(`${this.route}/${type}/${id}`, classReference);
+  private getResource(type: string, id: string): Observable<any> {
+    return this.apiService.get(`${this.route}/${type}/${id}`, this.instantiateResource);
   }
 
   /**
-   * Load FileResource and load file content
+   * Method to instantiate the correct resource when getting it from the DB
+   * @param json
    */
-  private getFileResource(type: string, id: string): Observable<FileResource> {
-    return this.getResource(type, id, FileResource).pipe(
-      mergeMap((fileResource: FileResource) => this.loadFileResourceContent(fileResource))
-    );
-  }
+  private instantiateResource: ClConstructorFunction<BioxResource> = (json: any): BioxResource => {
+    // if this is a resource file
+    if (json.is_file) {
+      return ClCoreJsonConvert.deserializeObject(json, FileResource);
+    } else {
+      return ClCoreJsonConvert.deserializeObject(json, BioxBasicResource);
+    }
+  };
+
 
   /**
    * Load the content of a FileResource and set the result in data attribute

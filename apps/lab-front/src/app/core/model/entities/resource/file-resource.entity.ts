@@ -1,24 +1,19 @@
-import {LabBaseEntity} from '../../global/lab-entity.entity';
 import {Expose} from 'class-transformer';
 import {FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
+import {BioxResource} from './biox-resource.entity';
 
 
-export class FileResourcePreview extends LabBaseEntity {
-
-  @Expose({name: 'typing_name'})
-  typingName: string
+export class FileResourcePreview extends BioxResource {
 
   path: string;
 
   @Expose({name: 'file_store_uri'})
   fileStoreUri: string;
 
-  getFileName(): string {
-    return FlFileHelper.extractFilenameFromFullPath(this.path);
-  }
+  filename: string;
 
   getExtension(): string {
-    return FlFileHelper.getFileExtension(this.path);
+    return FlFileHelper.getFileExtension(this.filename);
   }
 
   isImage(): boolean {
@@ -26,12 +21,11 @@ export class FileResourcePreview extends LabBaseEntity {
   }
 }
 
+
 /**
  * FileResource containing the actual file and content
  */
 export class FileResource extends FileResourcePreview {
-
-
 
   // content of the file
   data: any;
@@ -41,7 +35,7 @@ export class FileResource extends FileResourcePreview {
   /**
    * return true if the resource data is a json object representing a LabEntity (contains an uri, type and data)
    */
-  dataIsLabEntity(): boolean{
+  dataIsLabEntity(): boolean {
     return this.data && typeof this.data.uri === 'string' && typeof this.data.typingName === 'string'
       && typeof this.data.data === 'object';
   }

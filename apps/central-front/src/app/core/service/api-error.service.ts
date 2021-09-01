@@ -34,16 +34,16 @@ export class ApiErrorService extends FlApiErrorService {
 
   /**
    * Handle an server error
-   * @param error error return by the server
+   * @param errorResponse error return by the server
    * @param hideError if true the snackbar is shown
    * @param snackBarDuration duration for the snackbar error
    * @param defaultError the default error if the api does not return an explicit error
    * @return throw a formatted error
    */
-  public handleServerError(error: HttpErrorResponse, hideError: boolean = false,
+  public handleServerError(errorResponse: HttpErrorResponse, hideError: boolean = false,
                            snackBarDuration?: number, defaultError: string = 'Server error'): Observable<never> {
     const serverError: FlServerError = {
-      response: error,
+      response: errorResponse,
       logDetail: {
         message: '',
         timestamp: new Date()
@@ -51,12 +51,12 @@ export class ApiErrorService extends FlApiErrorService {
     };
 
     // specific handling or connection error because it is not thrown by the API
-    if (error.status === 0 || error.status === 504) {
+    if (errorResponse.status === 0 || errorResponse.status === 504) {
       // connection lost error
       serverError.logDetail.message = this.translateService.translate('connection_lost');
     } else {
 
-      const nestError: CmNestApiError = error.error;
+      const nestError: CmNestApiError = errorResponse.error;
 
       // handle session expired specifically
       if (nestError.code === 'error.wrong_token') {

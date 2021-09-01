@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {ClCoreJsonConvert, ClDeserializationRef} from '@monorepo/core-lib';
 import {FlHttpGetUrlOption, FlHttpOption, FlHttpOptionSerialization} from '../model/fl-http-option.class';
@@ -150,14 +150,22 @@ export class FlApiService {
    * @param route the route for the api call
    * @param filename name of the file of direct download is true
    * @param directDownload if true, the file is directly downloaded on users' computer
+   * @param options custom http options
    */
   public downloadFile(route: string, filename ?: string,
-                      directDownload: boolean = true): Observable<Blob> {
-    return this.http.get(this.getUrl(route), {responseType: 'blob'}).pipe(
-      tap(file => this.downloadFileSuccess(file, filename, directDownload)),
-      catchError(err => this.catchError(err)),
+                      directDownload: boolean = true,
+                      options: FlHttpOption = {}): Observable<Blob> {
+    options.headers = this.mergeHeader(options.headers);
+    options.responseType = 'blob';
+    return this.http.get(
+      this.getUrl(route),
+      options
+    ).pipe(
+      tap(file => this.downloadFileSuccess(file as Blob, filename, directDownload)),
+      catchError(err => this.catchError(err, options)),
     ) as Observable<Blob>;
   }
+
 
   /**
    * Call HTTP Post request that returns a file.
@@ -165,16 +173,20 @@ export class FlApiService {
    * @param body object to post
    * @param filename name of the file of direct download is true
    * @param directDownload if true, the file is directly downloaded on users' computer
+   * @param options custom http options
    */
   public downloadFilePost(route: string, body: any, filename ?: string,
-                          directDownload: boolean = true): Observable<Blob> {
+                          directDownload: boolean = true,
+                          options: FlHttpOption = {}): Observable<Blob> {
+    options.headers = this.mergeHeader(options.headers);
+    options.responseType = 'blob';
     return this.http.post(
       this.getUrl(route),
       this.convertObjectToPlain(body),
-      {responseType: 'blob'}
+      options
     ).pipe(
-      tap(file => this.downloadFileSuccess(file, filename, directDownload)),
-      catchError(err => this.catchError(err)),
+      tap(file => this.downloadFileSuccess(file as Blob, filename, directDownload)),
+      catchError(err => this.catchError(err, options)),
     ) as Observable<Blob>;
   }
 
@@ -266,6 +278,7 @@ export class FlApiService {
     return (overrideApiUrl == null ? this.configService.getApiUrl() : overrideApiUrl) + route;
   }
 
+
   // download the file to the user's computer is direct download is set to true
   private downloadFileSuccess(file: Blob, filename: string, directDownload: boolean): void {
     if (directDownload) {
@@ -275,7 +288,7 @@ export class FlApiService {
 
   // Merge the header of the request with the header of the config
   private mergeHeader(headers: HttpHeaders): HttpHeaders | null {
-    const headerObject: Record<string, string> = this.configService.getHeaders() ?? {};
+    const headerObject: Record<string, string> = this.getConfigHeader();
 
     if (headers != null) {
       // append the header of the request
@@ -287,8 +300,31 @@ export class FlApiService {
     return new HttpHeaders(headerObject);
   }
 
-  private catchError(error: HttpErrorResponse, httpOptions: FlHttpOption = {}): Observable<never> {
-    return this.flErrorService.handleServerError(error, httpOptions.hideSnackBarError,
+  private getConfigHeader(): Record<string, string> {
+    return this.configService.getHeaders() ?? {};
+  }
+
+  private catchError(errorResponse: HttpErrorResponse, httpOptions: FlHttpOption = {}): Observable<never> {
+    if (httpOptions.responseType === 'blob') {
+      return this.catchBlobError(errorResponse, httpOptions);
+    } else {
+      return this.callHandleServerError(errorResponse, httpOptions);
+    }
+  }
+
+  /**
+   * Method to handle blob error. We need a specific method because the error object of the response if also a blob
+   */
+  private catchBlobError(response: HttpErrorResponse, options: FlHttpOption): Observable<never> {
+    // read the error from the blob response
+    return FlFileHelper.readBlobContent(response.error, true).pipe(
+      // create an new HttpErrorResponse object with the error from the blob
+      mergeMap((error: any) => this.callHandleServerError(Object.assign({}, response, {error: error}), options))
+    );
+  }
+
+  private callHandleServerError(errorResponse: HttpErrorResponse, httpOptions: FlHttpOption = {}): Observable<never> {
+    return this.flErrorService.handleServerError(errorResponse, httpOptions.hideSnackBarError,
       httpOptions.errorSnackBarDuration, httpOptions.defaultError);
   }
 

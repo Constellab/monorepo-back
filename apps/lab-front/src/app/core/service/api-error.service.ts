@@ -31,20 +31,20 @@ export class ApiErrorService extends FlApiErrorService {
     return 5000;
   }
 
-  handleServerError(error: HttpErrorResponse, hideError: boolean,
+  handleServerError(errorResponse: HttpErrorResponse, hideError: boolean,
                     snackBarDuration?: number, defaultError?: string): Observable<never> {
-    console.log(error);
+    console.log(errorResponse);
     const serverError: FlServerError = {
-      response: error,
+      response: errorResponse,
       logDetail: {
         message: '',
         timestamp: new Date()
       },
     };
 
-    const apiError: LabApiError = error.error;
+    const apiError: LabApiError = errorResponse.error;
     // specific handling or connection error because it is not thrown by the API
-    if (error.status === 0 || error.status === 504) {
+    if (errorResponse.status === 0 || errorResponse.status === 504) {
       // connection lost error
       serverError.logDetail.message = this.translateService.translate('connection_lost');
     } else {

@@ -22,7 +22,7 @@ export class FileResourceTableComponent extends FlTableAbstractDirective<FileRes
   }
 
   downloadFile(file: FileResourcePreview): void {
-    this.fileService.downloadFile(file.typingName, file.id, file.getFileName()).subscribe();
+    this.fileService.downloadFile(file.typingName, file.id, file.filename).subscribe();
   }
 
   resourceFileRoute(file: FileResourcePreview): string {
