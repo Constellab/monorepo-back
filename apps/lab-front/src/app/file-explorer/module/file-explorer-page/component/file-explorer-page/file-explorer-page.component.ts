@@ -58,20 +58,16 @@ export class FileExplorerPageComponent implements OnInit {
       action: this.labFileService.uploadFiles(files),
     };
 
-    this.actionsService.addAction(action);
+    this.actionsService.addAction(action, true);
 
     // clear the list of files
     this.files = [];
   }
 
-  private onFileUploadResult(result: FlPortalActionResult<FileResourcePreview>): void {
+  private onFileUploadResult(result: FlPortalActionResult<FileResourcePreview | FileResourcePreview[]>): void {
     if (result.status === 'success') {
-      if ((result.result as any).data.length > 0) {
-        // todo when uploading multiple file the format is weird
-        console.error('TODO !');
-      } else {
-        this.datasource.addItem(result.result, () => true);
-      }
+      // if multiple file were uploaded
+      this.datasource.addItem(result.result, () => true);
     }
   }
 }

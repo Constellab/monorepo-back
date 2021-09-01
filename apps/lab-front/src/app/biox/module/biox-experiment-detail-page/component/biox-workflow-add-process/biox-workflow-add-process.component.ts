@@ -36,12 +36,8 @@ export class BioxWorkflowAddProcessComponent implements OnInit {
     this.protocols$ = this.bioxProtocolTypeService.getProtocolTypesTree();
   }
 
-  addProcessable(processableType: BioxProcessableType): void {
-    this.addProcessableFromTypingName(processableType.typingName)
-  }
-
-  private addProcessableFromTypingName(processableTypingName: string): void{
-    this.workflowManagerService.addProcessableNode(processableTypingName);
+  addProcessable(processableType: BioxLabTypeEntity): void {
+    this.workflowManagerService.addProcessableNode(processableType.typingName, processableType.name);
   }
 
   selectProcess(process: BioxLabTypeEntity): void {
@@ -54,12 +50,12 @@ export class BioxWorkflowAddProcessComponent implements OnInit {
 
   selectAndAddProcess(process: BioxLabTypeEntity): void {
     this.selectProcess(process);
-    this.addProcessableFromTypingName(process.typingName);
+    this.addProcessable(process);
   }
 
   selectAndAddProtocol(protocol: BioxLabTypeEntity): void {
     this.selectProtocol(protocol);
-    this.addProcessableFromTypingName(protocol.typingName);
+    this.addProcessable(protocol);
   }
 
 

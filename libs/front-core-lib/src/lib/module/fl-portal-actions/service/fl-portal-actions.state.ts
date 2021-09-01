@@ -18,6 +18,7 @@ export class FlPortalActionsState implements FlCleanableService {
   // each time an action success or error, it is emitting in this subject
   private results$: Subject<FlPortalActionResult> = new Subject<FlPortalActionResult>();
 
+
   constructor() {
     FlCleanerService.getInstance().registerService(this);
   }
@@ -63,6 +64,10 @@ export class FlPortalActionsState implements FlCleanableService {
     this.results$.next(result);
   }
 
+  public allActionFinished(): boolean {
+    return this.actions$.value.every(action => action.status === 'success' || action.status === 'error');
+  }
+
   /**
    * Subscribe to the result
    * @param type, if provided, only emit result for actions of type
@@ -72,6 +77,7 @@ export class FlPortalActionsState implements FlCleanableService {
       filter(result => type == null || result.action.type === type)
     );
   }
+
 
   clean(): void {
     this.actions$.next([]);

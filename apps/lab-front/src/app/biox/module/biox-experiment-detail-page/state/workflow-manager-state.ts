@@ -10,7 +10,7 @@ import {
   BioxOuterfaceNode
 } from '../../../../core/model/global/biox-connection.class';
 import {WorkflowLayer} from '../model/workflow-layer.class';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
 import {WorkflowConnection} from '../model/workflow-connection.class';
 import {BioxExperiment} from '../../../../core/model/entities/biox-experiment.entity';
 import {BioxProtocolService} from '../../../../core/entity-service/biox-protocol.service';
@@ -19,7 +19,7 @@ import {WorkflowNodeInterface} from '../model/workflow-node-interface.class';
 import {WorkflowNodeOuterface} from '../model/workflow-node-outerface.class';
 import {WorkflowPort} from '../model/workflow-port.class';
 import {BioxProtocol} from '../../../../core/model/entities/proccesable/biox-protocol.entity';
-import {map} from 'rxjs/operators';
+import {FlPortalAction, FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
 
 /**
  * State for the workflow, it is created for the module and can only manage on state a the time
@@ -41,8 +41,13 @@ export class WorkflowManagerState {
 
   // emit to true when loading
   private _layerIsLoading$: Subject<boolean> = new BehaviorSubject(false);
+  private subscription: Subscription;
+
+  //  Name of the action to add a processable for the ActionService
+  private readonly addProcessableActionName: string = 'add-processable';
 
   constructor(private bioxProtocolService: BioxProtocolService,
+              private actionsService: FlPortalActionsService,
               private ngZone: NgZone) {
     console.log('New workflow manager');
   }
@@ -56,6 +61,11 @@ export class WorkflowManagerState {
 
     // init the nodes with the job list
     this.initFlow(flow);
+
+    // listen to the new Processable actions
+    this.subscription = this.actionsService.getResult$(this.addProcessableActionName).subscribe(
+      result => this.onNewProcessable(result)
+    );
   }
 
 
@@ -98,17 +108,30 @@ export class WorkflowManagerState {
 
   //////////////////////// NODE ////////////////////////////
 
-  public addProcessableNode(processable_typing_name: string): void {
+  public addProcessableNode(processableTypingName: string, processableName: string): void {
     // retrieve the protocol of the layer
     const currentProtocol: BioxProtocol = this.workflow.currentLayer.object as BioxProtocol;
 
-    // add create the processable in the API and get th processable
-    this.bioxProtocolService.addProcessableToProtocol(currentProtocol.id, processable_typing_name).pipe(
-      map(processable => this.createNodeFromProcessable(processable)) // convert it to a Node
-    ).subscribe(
-      // add the node to the workflow
-        node => this.addNode(node)
-      );
+    // create an action to add this processable
+    const action: FlPortalAction = {
+      text: 'biox.adding_processable',
+      type: this.addProcessableActionName,
+      // create the processable in the API and get the processable
+      action: this.bioxProtocolService.addProcessableToProtocol(currentProtocol.id, processableTypingName),
+      translateText: true,
+      translateParam: {param: {processableName: processableName}}
+    };
+
+    this.actionsService.addAction(action, true);
+  }
+
+  private onNewProcessable(actionResult: FlPortalActionResult<BioxProcessable>): void {
+    if (actionResult.status === 'error') return;
+
+    // convert to node
+    const node: WorkflowNodeProcessable = this.createNodeFromProcessable(actionResult.result);
+    // add the node to the workflow
+    this.addNode(node);
   }
 
   private createNodeFromProcessable(processable: BioxProcessable): WorkflowNodeProcessable {
@@ -258,6 +281,7 @@ export class WorkflowManagerState {
     this.workflow = null;
     this.workflow?.destroy();
     this._layerIsLoading$.complete();
+    this.subscription.unsubscribe();
   }
 
 }

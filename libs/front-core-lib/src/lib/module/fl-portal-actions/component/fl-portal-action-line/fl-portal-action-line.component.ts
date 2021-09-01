@@ -24,7 +24,7 @@ export class FlPortalActionLineComponent implements OnInit {
 
   ngOnInit(): void {
     // translate the text if necessary
-    this.text = this.action.translateText ? this.translateService.translate(this.action.text) :
+    this.text = this.action.translateText ? this.translateService.translate(this.action.text, this.action.translateParam) :
       this.action.text;
 
     // only subscribe if the loader is ready

@@ -1,4 +1,5 @@
 import {Observable} from 'rxjs';
+import {FlTranslateParam} from '../../fl-translate/model/fl-translate-param';
 
 /**
  * Action to be shown in the screen
@@ -25,6 +26,11 @@ export class FlPortalAction {
    * If true the text is translated
    */
   translateText?: boolean;
+
+  /**
+   * Param for the translation
+   */
+  translateParam?: FlTranslateParam;
 
 }
 

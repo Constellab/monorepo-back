@@ -5,6 +5,7 @@ import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
 import {FlPortalActionsComponent} from '../component/fl-portal-actions/fl-portal-actions.component';
 import {FlPortalActionsState} from './fl-portal-actions.state';
 import {Observable} from 'rxjs';
+import {FlOverlayRef} from '../../fl-portal/model/fl-overlay-ref.class';
 
 /**
  * Singleton to manager the portal actions
@@ -13,20 +14,37 @@ import {Observable} from 'rxjs';
 export class FlPortalActionsService {
 
 
-  // true if the portal actions is currently opened
-  private isOpened: boolean = false;
+  //provided if a portal is currently opened
+  private currentOverlay: FlOverlayRef = null;
+
+  private autoClose: boolean = false;
+  private autoCloseDelay: number = 3000;
+  private autoCloseTimer: number = null;
+
 
   constructor(private portalService: FlPortalService,
               private actionsState: FlPortalActionsState) {
+    actionsState.getResult$().subscribe(
+      () => this.onResult()
+    );
   }
 
   /**
    * A an action or multiple actions to the action portal
    * If portal is closed, it opens it
    * @param actions
+   * @param autoClose if true, the portal is close after all the action finished (with a small delay)
    */
-  public addAction(actions: FlPortalAction | FlPortalAction[]): void {
-    if (this.isOpened) {
+  public addAction(actions: FlPortalAction | FlPortalAction[], autoClose?: boolean): void {
+    // clear the auto close timer if it exists
+    this.clearAutoCloseTimer();
+
+    // update the auto close value
+    if (autoClose != null) {
+      this.autoClose = autoClose;
+    }
+
+    if (this.currentOverlay != null) {
       this.actionsState.appendActions(actions);
     } else {
       this.openPortal(actions);
@@ -47,16 +65,19 @@ export class FlPortalActionsService {
       });
 
     // open portal
-    this.portalService.createPortal(FlPortalActionsComponent, portalConfig).detachments().subscribe(
+    this.currentOverlay = this.portalService.createPortal(FlPortalActionsComponent, portalConfig);
+
+    this.currentOverlay.detachments().subscribe(
       () => this.onPortalClosed()
     );
-
-    // mark as open
-    this.isOpened = true;
   }
 
   private onPortalClosed(): void {
-    this.isOpened = false;
+    this.currentOverlay = null;
+  }
+
+  private closeOverlay(): void {
+    this.currentOverlay.dispose();
   }
 
   /**
@@ -65,5 +86,26 @@ export class FlPortalActionsService {
    */
   public getResult$(type?: string): Observable<FlPortalActionResult> {
     return this.actionsState.getResult$(type);
+  }
+
+  // each time a result is emitted, check if auto close is set and if all action are finished
+  private onResult(): void {
+    if (this.autoClose && this.actionsState.allActionFinished()) {
+      // call close with a delay
+      this.autoCloseTimer = setTimeout(() => this.checkAndAutoClose(), this.autoCloseDelay);
+    }
+  }
+
+  // called after a delay, check if all actions are still finished and close if yes
+  private checkAndAutoClose(): void {
+    if (this.actionsState.allActionFinished()) {
+      this.closeOverlay();
+    }
+  }
+
+  private clearAutoCloseTimer(): void {
+    if (this.autoCloseTimer != null) {
+      clearTimeout(this.autoCloseTimer);
+    }
   }
 }
