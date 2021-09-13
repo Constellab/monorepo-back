@@ -24,7 +24,7 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
 
     const formFieldConfig: FlDynamicFormFieldConfig = {
       controlName: fieldName,
-      initValue: currentConfig !== undefined ? currentConfig : spec.default,
+      initValue: currentConfig !== undefined ? currentConfig : spec.default_value,
       fieldConfig: null,
       required: !spec.hasDefaultValue() // required if there is no default value
     };
@@ -61,7 +61,7 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
     for (const specName of Object.keys(this.record)) {
       const spec: BioxConfigSpec = this.record[specName];
       if (spec.hasDefaultValue()) {
-        defaultConfig[specName] = spec.default;
+        defaultConfig[specName] = spec.default_value;
       }
     }
     return defaultConfig;
@@ -103,7 +103,7 @@ export class BioxConfigSpecTyped<T extends BioxConfigSpecType, H> {
    * Default value
    * If not provided, the config is mandatory
    */
-  default?: H;
+  default_value?: H;
 
   /**
    * If present, the value must be in the array
@@ -118,6 +118,6 @@ export class BioxConfigSpecTyped<T extends BioxConfigSpecType, H> {
   unit?: string;
 
   public hasDefaultValue(): boolean {
-    return this.default !== undefined;
+    return this.default_value !== undefined;
   }
 }

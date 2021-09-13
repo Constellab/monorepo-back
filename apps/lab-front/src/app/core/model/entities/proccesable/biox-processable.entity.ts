@@ -42,11 +42,9 @@ export class BioxProcessable extends BioxNode implements FlStatus {
   @Expose({name: 'instance_name'})
   name: string;
 
-  @Expose({name: 'input'})
   @ClRecordTransform(BioxInput)
   inputs: Record<string, BioxInput>;
 
-  @Expose({name: 'output'})
   @ClRecordTransform(BioxInput)
   outputs: Record<string, BioxInput>;
 

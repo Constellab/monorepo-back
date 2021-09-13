@@ -35,7 +35,7 @@ export class BioxWorkflowNodeDetailState {
   }
 
   public updateConfig(config: any): void{
-    this.node$.value.object.config.data.params = config;
+    this.node$.value.object.config.data.values = config;
     this.emitCurrentNode();
   }
 

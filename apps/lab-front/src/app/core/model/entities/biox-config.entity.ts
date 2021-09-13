@@ -14,7 +14,7 @@ export class BioxConfigData {
   specs: BioxConfigSpecs;
 
   // actual values of the config
-  params: Record<string, unknown>;
+  values: Record<string, unknown>;
 
   /**
    * Create a BioxConfigData with defined specs and empty params
@@ -22,7 +22,7 @@ export class BioxConfigData {
   public static fromSpecs(specs: BioxConfigSpecs): BioxConfigData {
     const config = new BioxConfigData();
     config.specs = specs;
-    config.params = {};
+    config.values = {};
     return config;
   }
 
@@ -31,14 +31,14 @@ export class BioxConfigData {
    * if not all the field are provided
    */
   public mergeConfigWithDefault(): any {
-    return this.specs.mergeConfigWithDefault(this.params);
+    return this.specs.mergeConfigWithDefault(this.values);
   }
 
   /**
    * Get a FlDynamicFormFieldConfig based on config spec and params to create a form
    */
   public getDynamicFormFieldsConfig(): FlDynamicFormFieldConfig[] {
-    return this.specs.convertToFieldConfigs(this.params);
+    return this.specs.convertToFieldConfigs(this.values);
   }
 }
 

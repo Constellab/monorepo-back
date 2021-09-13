@@ -34,7 +34,7 @@ export class BioxProcessSourceConfigComponent implements OnInit {
       return;
     }
 
-    this.formControl = new FormControl(process.config.data.params as any);
+    this.formControl = new FormControl(process.config.data.values as any);
   }
 
   onResourceChange(resource: BioxResourceSelect): void {
