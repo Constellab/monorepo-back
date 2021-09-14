@@ -37,7 +37,7 @@ export class BioxProtocolService {
    * @param processable_typing_name
    */
   public addProcessableToProtocol(protocolId: string, processable_typing_name: string): Observable<BioxProcessable> {
-    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-processable/${processable_typing_name}`, null,
+    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-process/${processable_typing_name}`, null,
       this.instantiateProcessable);
   }
 

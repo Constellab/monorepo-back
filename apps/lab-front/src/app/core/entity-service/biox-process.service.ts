@@ -14,9 +14,8 @@ export class BioxProcessService {
   constructor(private apiService: FlApiService) {
   }
 
-  // todo voir si c'est bien process-type et créer une class si oui
   public getProcesses(page: number, pageSize: number): Observable<ClPage<BioxProcessVM>> {
-    return this.apiService.get(`process-type`, createViewModel(BioxProcess),
+    return this.apiService.get(`task-type`, createViewModel(BioxProcess),
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 

@@ -10,7 +10,7 @@ import {BioxLabTypeEntity, BioxLabTypeEntityTree} from '../model/entities/lab-ty
 })
 export class BioxProcessTypeService {
 
-  private readonly route: string = 'process-type';
+  private readonly route: string = 'task-type';
 
   constructor(private apiService: FlApiWithCacheService) {
   }
