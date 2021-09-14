@@ -1,6 +1,5 @@
 import {Injectable} from '@nestjs/common';
 import {ClDeserializationRef} from '@monorepo/core-lib';
-import {FlServerError} from '@monorepo/front-core-lib';
 
 @Injectable()
 export class ExternalApiErrorService {
@@ -21,7 +20,7 @@ export class ExternalApiErrorService {
 
     // throw the exception
     // noinspection UnnecessaryLocalVariableJS
-    const returnError: FlServerError = {
+    const returnError: any = {
       response: null,
       logDetail: {
         message: errorMessage,
