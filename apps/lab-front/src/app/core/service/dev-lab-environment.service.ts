@@ -101,7 +101,7 @@ export class DevLabEnvironmentService {
       Authorization: this.labEnvManager.getToken('prod'),
     });
 
-    return this.httpClient.get(EnvironmentHelper.getDevCoreApiUrl() + 'dev-login', {headers: header}).pipe(
+    return this.httpClient.post(EnvironmentHelper.getDevCoreApiUrl() + 'dev-login', {headers: header}).pipe(
       tap((token: string) => this.devLoginSuccess(token)),
       map(() => true),
       catchError(() => this.openDevLoginDialog()),
