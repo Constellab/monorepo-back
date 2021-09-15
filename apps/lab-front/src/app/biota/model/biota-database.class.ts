@@ -71,8 +71,8 @@ const biotaMolecularDbGroup: BiotaDatabaseGroup = {
       typingName: base_type + '.EnzymeClass '
     },
     {
-      name: 'biota.enzo',
-      typingName: base_type + '.Enzo'
+      name: 'biota.enzyme_ortholog',
+      typingName: base_type + '.EnzymeOrtholog'
     },
     {
       name: 'biota.reaction',

@@ -12,7 +12,7 @@
     "compound": "Metabolic compounds",
     "enzyme": "Enzymes",
     "enzyme_class": "Enzyme Classification",
-    "enzo": "Enzyme Orthologs",
+    "enzyme_ortholog": "Enzyme Orthologs",
     "reaction": "Metabolic Reactions",
     "protein": "Proteins",
     "pathway": "Pathway",
