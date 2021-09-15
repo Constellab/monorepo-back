@@ -21,8 +21,8 @@
     <mat-form-field class="g-form-input">
       <mat-label>{{'lab_user_group' | translate}}</mat-label>
       <mat-select placeholder="{{'lab_user_group' | translate}}" formControlName="group">
-        <mat-option [value]="'user'">User</mat-option>
-        <mat-option [value]="'admin'">Admin</mat-option>
+        <mat-option [value]="'USER'">User</mat-option>
+        <mat-option [value]="'ADMIN'">Admin</mat-option>
       </mat-select>
       <mat-error *ngIf="formGp.get('group').hasError('required')">
         {{'lab_user_group' | flErrorRequired}}

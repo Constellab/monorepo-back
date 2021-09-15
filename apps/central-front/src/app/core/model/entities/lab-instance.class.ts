@@ -97,7 +97,7 @@ export class LabInstanceUser implements FlEntity {
   id: string;
 
   email: string;
-  group: 'admin' | 'user';
+  group: 'ADMIN' | 'USER';
 
   @Expose({name: 'is_active'})
   isActive: boolean;
@@ -111,5 +111,5 @@ export class LabInstanceUser implements FlEntity {
 
 export class LabInstanceUserForm {
   user: User;
-  group: 'admin' | 'user';
+  group: 'ADMIN' | 'USER';
 }

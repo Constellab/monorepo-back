@@ -7,7 +7,7 @@ export interface ExternalLabLoginResponse {
   token_type: string;
 }
 
-export type ExternalLabUserGroup = 'admin' | 'user';
+export type ExternalLabUserGroup = 'ADMIN' | 'USER';
 
 export interface ExternalLabUser {
   uri: string;
