@@ -11,6 +11,7 @@ import {Observable, of} from 'rxjs';
 import {EnvironmentHelper} from '../utils/environment.helper';
 import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {LabEnvStore} from './lab-env.store';
+import {LabLoginResponse} from '../model/global/lab-login-response.class';
 
 /**
  * Service to manage the DEV environment
@@ -64,7 +65,10 @@ export class DevLabEnvironmentService {
 
     if (devToken == null) return of(false);
 
-    return this.httpClient.get(EnvironmentHelper.getDevCoreApiUrl() + 'check-token').pipe(
+    const header: HttpHeaders = new HttpHeaders({
+      Authorization: this.labEnvManager.getToken('prod'),
+    });
+    return this.httpClient.get(EnvironmentHelper.getDevCoreApiUrl() + 'check-token', {headers: header}).pipe(
       map(() => true),
       catchError(() => {
         this.labEnvManager.clearUserJWTAndData('onlyDev');
@@ -102,7 +106,7 @@ export class DevLabEnvironmentService {
     });
 
     return this.httpClient.post(EnvironmentHelper.getDevCoreApiUrl() + 'dev-login', null, {headers: header}).pipe(
-      tap((token: string) => this.devLoginSuccess(token)),
+      tap((token: LabLoginResponse) => this.devLoginSuccess(token)),
       map(() => true),
       catchError(() => this.openDevLoginDialog()),
     );
@@ -133,9 +137,9 @@ export class DevLabEnvironmentService {
   }
 
   // store the dev token and switch env to dev
-  private devLoginSuccess(token: string): void {
+  private devLoginSuccess(token: LabLoginResponse): void {
     this.labEnvManager.setLabEnvironment('dev');
-    this.labEnvManager.storeUserJWT(`Bearer ${token}`);
+    this.labEnvManager.storeUserJWT(`Bearer ${token.access_token}`);
   }
 
 

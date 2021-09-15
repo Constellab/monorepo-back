@@ -4,11 +4,7 @@ import {FlApiService, FlAuthService, FlCleanerService} from '@monorepo/front-cor
 import {CmCredentials} from '@monorepo/common-model';
 import {tap} from 'rxjs/operators';
 import {LabEnvStore} from './lab-env.store';
-
-interface LoginResponse {
-  access_token: string,
-  token_type: string
-}
+import {LabLoginResponse} from '../model/global/lab-login-response.class';
 
 /**
  * Service to handle login and logout and store cookie to check if user is connected
@@ -29,9 +25,9 @@ export class AuthenticationService extends FlAuthService {
    * The JWT is returned in a HTTPOnly cookie and is not accessible from JS
    * @param credentials username and password
    */
-  public login(credentials: CmCredentials): Observable<LoginResponse> {
+  public login(credentials: CmCredentials): Observable<LabLoginResponse> {
     return this.apiService.post('login', credentials).pipe(
-      tap((response: LoginResponse) => this.jwtManager.storeUserJWT(`Bearer ${response.access_token}`))
+      tap((response: LabLoginResponse) => this.jwtManager.storeUserJWT(`Bearer ${response.access_token}`))
     );
   }
 
