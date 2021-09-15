@@ -5,7 +5,7 @@ import {BiotaDatabaseDetailPageComponent} from './module/biota-database-detail/c
 
 const routes: Routes = [
   {path: '', component: BiotaDatabasesComponent},
-  {path: 'database/:type', component: BiotaDatabaseDetailPageComponent},
+  {path: 'database/:typingName', component: BiotaDatabaseDetailPageComponent},
 ];
 
 @NgModule({

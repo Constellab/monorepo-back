@@ -11,9 +11,11 @@
     "molecular_base": "Molecular base",
     "compound": "Metabolic compounds",
     "enzyme": "Enzymes",
+    "enzyme_class": "Enzyme Classification",
     "enzo": "Enzyme Orthologs",
     "reaction": "Metabolic Reaction",
     "protein": "Protein",
+    "pathway": "Pathway",
     "entries": "entrées",
     "no_entry": "Aucune entrée",
     "definition": "Définition"

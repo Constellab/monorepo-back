@@ -10,7 +10,7 @@
     </div>
 
     <div fxLayout="row wrap" fxLayoutGap="2em">
-      <a class="database-card" *ngFor="let database of group.databases" [routerLink]="'database/' + database.type">
+      <a class="database-card" *ngFor="let database of group.databases" [routerLink]="'database/' + database.typingName">
         <gen-biota-database-card [database]="database">
         </gen-biota-database-card>
       </a>

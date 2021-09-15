@@ -8,9 +8,6 @@ import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
  */
 export class BiotaData extends LabBaseEntity {
 
-  // todo to check if it still exists
-  type: string
-
   name: string;
 
   sbo_id: string;

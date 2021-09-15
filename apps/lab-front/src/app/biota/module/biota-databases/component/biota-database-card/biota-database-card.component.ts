@@ -24,7 +24,7 @@ export class BiotaDatabaseCardComponent implements OnInit {
   }
 
   private getEntries(): void {
-    this.biotaDatabaseService.countDatabaseEntries(this.database.type).subscribe(
+    this.biotaDatabaseService.countDatabaseEntries(this.database.typingName).subscribe(
       entries => this.databasesEntries = entries,
       () => this.databasesEntries = 0
     );

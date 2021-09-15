@@ -18,7 +18,7 @@ export class BiotaDatabaseDetailPageComponent implements OnInit {
 
   datasource: BiotaDataDatasource;
 
-  columns: string[] = ['id', 'name', 'type'];
+  columns: string[] = ['id', 'name'];
 
   constructor(private biotaDatabaseService: BiotaDatabaseService,
               private route: ActivatedRoute) {
@@ -26,19 +26,19 @@ export class BiotaDatabaseDetailPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(
-      params => this.init(params.type)
+      params => this.init(params.typingName)
     );
   }
 
-  private init(type: string): void {
-    this.database = this.findDBFromType(type);
-    this.datasource = this.biotaDatabaseService.getDatabaseDatasource(type);
+  private init(typingName: string): void {
+    this.database = this.findDBFromType(typingName);
+    this.datasource = this.biotaDatabaseService.getDatabaseDatasource(typingName);
   }
 
   // find the DB with the type
   private findDBFromType(type: string): BiotaDatabase {
     for (const group of biotaDatabaseGroups) {
-      const database: BiotaDatabase = group.databases.find(d => d.type === type);
+      const database: BiotaDatabase = group.databases.find(d => d.typingName === type);
       if (database != null) {
         return database;
       }

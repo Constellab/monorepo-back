@@ -12,8 +12,10 @@ export interface BiotaDatabaseGroup {
  */
 export interface BiotaDatabase {
   name: string;
-  type: string;
+  typingName: string;
 }
+
+const base_type: string = 'MODEL.gws_biota';
 
 // List of Ontology databases
 const biotaOntologyDbGroup: BiotaDatabaseGroup = {
@@ -22,23 +24,27 @@ const biotaOntologyDbGroup: BiotaDatabaseGroup = {
   databases: [
     {
       name: 'biota.go',
-      type: 'biota.go.GO'
+      typingName: base_type + '.GO'
     },
     {
       name: 'biota.sbo',
-      type: 'biota.sbo.SBO'
+      typingName: base_type + '.SBO'
     },
     {
       name: 'biota.eco',
-      type: 'biota.eco.ECO'
+      typingName: base_type + '.ECO'
     },
     {
       name: 'biota.bto',
-      type: 'biota.bto.BTO'
+      typingName: base_type + '.BTO'
     },
     {
       name: 'biota.taxonomy',
-      type: 'biota.taxonomy.Taxonomy'
+      typingName: base_type + '.Taxonomy'
+    },
+    {
+      name: 'biota.pathway',
+      typingName: base_type + '.Pathway'
     },
     // {
     //   name: 'biota.pwo',
@@ -54,23 +60,27 @@ const biotaMolecularDbGroup: BiotaDatabaseGroup = {
   databases: [
     {
       name: 'biota.compound',
-      type: 'biota.compound.Compound'
+      typingName: base_type + '.Compound'
     },
     {
       name: 'biota.enzyme',
-      type: 'biota.enzyme.Enzyme'
+      typingName: base_type + '.Enzyme'
+    },
+    {
+      name: 'biota.enzyme_class',
+      typingName: base_type + '.EnzymeClass '
     },
     {
       name: 'biota.enzo',
-      type: 'biota.enzyme.Enzo'
+      typingName: base_type + '.Enzo'
     },
     {
       name: 'biota.reaction',
-      type: 'biota.reaction.Reaction'
+      typingName: base_type + '.Reaction'
     },
     {
       name: 'biota.protein',
-      type: 'biota.protein.Protein'
+      typingName: base_type + '.Protein'
     },
   ]
 };
