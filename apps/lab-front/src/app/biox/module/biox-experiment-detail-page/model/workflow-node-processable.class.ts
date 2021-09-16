@@ -4,7 +4,7 @@ import {BioxProcessable} from '../../../../core/model/entities/proccesable/biox-
 import {BioxInput} from '../../../../core/model/entities/biox-input.entity';
 
 /**
- * Representation of a processable (protocol or process)
+ * Representation of a processable (protocol or task)
  */
 export class WorkflowNodeProcessable extends WorkflowNode<BioxProcessable> {
 
@@ -12,7 +12,7 @@ export class WorkflowNodeProcessable extends WorkflowNode<BioxProcessable> {
               processableName: string,
               initialCoordX: number = 0, initialCoordY: number = 0) {
     super(processableName, processable.title, processable,
-      processable.isPlugSource() ? 'process-source' : 'node-processable',
+      processable.isPlugSource() ? 'task-source' : 'node-processable',
       initialCoordX, initialCoordY);
     this.html = `<biox-workflow-node name="${this.nodeName}"></biox-workflow-node>`;
   }

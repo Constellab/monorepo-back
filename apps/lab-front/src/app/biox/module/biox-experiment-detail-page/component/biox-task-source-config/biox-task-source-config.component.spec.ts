@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {BioxProcessSourceConfigComponent} from './biox-process-source-config.component';
+import {BioxTaskSourceConfigComponent} from './biox-task-source-config.component';
 
 describe('BioxProcessSourceConfigComponent', () => {
-  let component: BioxProcessSourceConfigComponent;
-  let fixture: ComponentFixture<BioxProcessSourceConfigComponent>;
+  let component: BioxTaskSourceConfigComponent;
+  let fixture: ComponentFixture<BioxTaskSourceConfigComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BioxProcessSourceConfigComponent ]
+      declarations: [ BioxTaskSourceConfigComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BioxProcessSourceConfigComponent);
+    fixture = TestBed.createComponent(BioxTaskSourceConfigComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

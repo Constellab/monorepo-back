@@ -1,5 +1,5 @@
 import {BioxProcessableData} from '../proccesable/biox-processable.entity';
-import {bioxProcessSourceTypingName} from '../biox-process-special-type';
+import {bioxTaskSourceTypingName} from '../biox-process-special-type';
 import {BioxConfigSpecs} from '../biox-config-spec.entity';
 import {BioxLabTypeEntity} from './biox-lab-type.entity';
 
@@ -10,7 +10,7 @@ export abstract class BioxProcessableType extends BioxLabTypeEntity {
 
   // return true if the process is a Source
   isPlugSource(): boolean {
-    return this.typingName === bioxProcessSourceTypingName;
+    return this.typingName === bioxTaskSourceTypingName;
   }
 
   hasDocumentation(): boolean {

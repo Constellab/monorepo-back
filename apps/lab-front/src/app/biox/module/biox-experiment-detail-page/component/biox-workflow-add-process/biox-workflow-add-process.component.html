@@ -1,15 +1,15 @@
 <div fxLayout="row" class="g-full-height">
 
-  <!-- Left section with process or protocol selection -->
+  <!-- Left section with task or protocol selection -->
   <div class="left-section">
     <mat-tab-group class="g-mat-tab-flex">
-      <mat-tab [label]="'processes' | translate">
-        <fl-async-section [object]="processes$">
+      <mat-tab [label]="'tasks' | translate">
+        <fl-async-section [object]="tasks$">
 
-          <ng-container *flSectionBody="let processes">
-            <gen-biox-processable-types-tree [processableTypesTree]="processes"
-                                             (processableTypeClick)="selectProcess($event)"
-                                             (processableTypeDblClick)="selectAndAddProcess($event)"></gen-biox-processable-types-tree>
+          <ng-container *flSectionBody="let taskTypes">
+            <gen-biox-processable-types-tree [processableTypesTree]="taskTypes"
+                                             (processableTypeClick)="selectTask($event)"
+                                             (processableTypeDblClick)="selectAndAddTask($event)"></gen-biox-processable-types-tree>
           </ng-container>
         </fl-async-section>
 

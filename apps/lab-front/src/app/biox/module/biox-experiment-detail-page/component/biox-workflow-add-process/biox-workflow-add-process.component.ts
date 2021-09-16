@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {BioxProcessTypeService} from '../../../../../core/entity-service/biox-process-type.service';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {BioxProcessableType} from '../../../../../core/model/entities/lab-type/biox-processable-type.entity';
-import {BioxProtocolTypeService} from '../../../../../core/entity-service/biox-protocol-type.service';
 import {BioxLabTypeEntity, BioxLabTypeEntityTree} from '../../../../../core/model/entities/lab-type/biox-lab-type.entity';
+import {BioxTaskService} from '../../../../../core/entity-service/biox-task.service';
+import {BioxProtocolService} from '../../../../../core/entity-service/biox-protocol.service';
 
 
 /**
@@ -19,18 +19,18 @@ import {BioxLabTypeEntity, BioxLabTypeEntityTree} from '../../../../../core/mode
 export class BioxWorkflowAddProcessComponent implements OnInit {
 
   protocols$: Observable<BioxLabTypeEntityTree[]>;
-  processes$: Observable<BioxLabTypeEntityTree[]>;
+  tasks$: Observable<BioxLabTypeEntityTree[]>;
 
   processableType$: Observable<BioxProcessableType>;
 
   constructor(private workflowManagerService: WorkflowManagerState,
-              private bioxProtocolTypeService: BioxProtocolTypeService,
-              private bioxProcessTypeService: BioxProcessTypeService) {
+              private bioxProtocolTypeService: BioxProtocolService,
+              private bioxTaskService: BioxTaskService) {
   }
 
   ngOnInit(): void {
-    // get process
-    this.processes$ = this.bioxProcessTypeService.getProcessTypesTree();
+    // get tasks
+    this.tasks$ = this.bioxTaskService.getTaskTypesTree();
 
     // get protocols
     this.protocols$ = this.bioxProtocolTypeService.getProtocolTypesTree();
@@ -40,17 +40,17 @@ export class BioxWorkflowAddProcessComponent implements OnInit {
     this.workflowManagerService.addProcessableNode(processableType.typingName, processableType.name);
   }
 
-  selectProcess(process: BioxLabTypeEntity): void {
-    this.processableType$ = this.bioxProcessTypeService.getProcessType(process.id);
+  selectTask(task: BioxLabTypeEntity): void {
+    this.processableType$ = this.bioxTaskService.getTaskType(task.id);
   }
 
   selectProtocol(protocol: BioxLabTypeEntity): void {
     this.processableType$ = this.bioxProtocolTypeService.getProtocolType(protocol.id);
   }
 
-  selectAndAddProcess(process: BioxLabTypeEntity): void {
-    this.selectProcess(process);
-    this.addProcessable(process);
+  selectAndAddTask(task: BioxLabTypeEntity): void {
+    this.selectTask(task);
+    this.addProcessable(task);
   }
 
   selectAndAddProtocol(protocol: BioxLabTypeEntity): void {

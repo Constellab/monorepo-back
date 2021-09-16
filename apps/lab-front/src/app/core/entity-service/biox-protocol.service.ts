@@ -6,7 +6,10 @@ import {ClConstructorFunction, ClCoreJsonConvert, clRxjsDebug} from '@monorepo/c
 import {BioxFlow} from '../model/global/biox-connection.class';
 import {BioxProtocol} from '../model/entities/proccesable/biox-protocol.entity';
 import {BioxProcessable} from '../model/entities/proccesable/biox-processable.entity';
-import {BioxProcess} from '../model/entities/proccesable/biox-process.entity';
+import {BioxTask} from '../model/entities/proccesable/biox-task.entity';
+import {BioxLabTypeEntity, BioxLabTypeEntityTree} from '../model/entities/lab-type/biox-lab-type.entity';
+import {createTypedTree} from '../model/global/typed-tree.class';
+import {BioxProtocolType} from '../model/entities/lab-type/biox-protocol-type.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +17,7 @@ import {BioxProcess} from '../model/entities/proccesable/biox-process.entity';
 export class BioxProtocolService {
 
   private readonly baseRoute: string = 'protocol';
+  private readonly typeRoute: string = 'protocol-type';
 
 
   constructor(private apiService: FlApiWithCacheService) {
@@ -50,12 +54,23 @@ export class BioxProtocolService {
     if (json.is_protocol) {
       return ClCoreJsonConvert.deserializeObject(json, BioxProtocol);
     } else {
-      return ClCoreJsonConvert.deserializeObject(json, BioxProcess);
+      return ClCoreJsonConvert.deserializeObject(json, BioxTask);
     }
   };
 
   private initProtocolFlow(protocol: BioxProtocol): BioxFlow<BioxProtocol> {
     console.log(protocol);
     return new BioxFlow<BioxProtocol>(protocol);
+  }
+
+
+  //////////////////////////////////// TYPE ////////////////////////////
+
+  public getProtocolTypesTree(): Observable<BioxLabTypeEntityTree[]> {
+    return this.apiService.get(`${this.typeRoute}/tree`, createTypedTree(BioxLabTypeEntity));
+  }
+
+  public getProtocolType(id: string): Observable<BioxProtocolType> {
+    return this.apiService.getByIdWithCache(`${this.typeRoute}`, id, BioxProtocolType);
   }
 }

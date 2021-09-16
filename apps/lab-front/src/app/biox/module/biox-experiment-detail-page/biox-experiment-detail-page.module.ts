@@ -21,7 +21,7 @@ import {BioxWorkflowAddProcessComponent} from './component/biox-workflow-add-pro
 import {BioxWorkflowPortsListComponent} from './component/biox-workflow-ports-list/biox-workflow-ports-list.component';
 import {BioxWorkflowNodeConfigComponent} from './component/biox-workflow-node-config/biox-workflow-node-config.component';
 import {BioxProgressBarInfoComponent} from './component/biox-progress-bar-info/biox-progress-bar-info.component';
-import {BioxProcessSourceConfigComponent} from './component/biox-process-source-config/biox-process-source-config.component';
+import {BioxTaskSourceConfigComponent} from './component/biox-task-source-config/biox-task-source-config.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BioxWorkflowNodeDetailState} from './state/biox-workflow-node-detail.state';
 import {BioxProcessableCoreModule} from '../../../core/entity-module/biox-processable-core/biox-processable-core.module';
@@ -43,7 +43,7 @@ import {BioxProgressBarInfoDialogComponent} from './component/biox-progress-bar-
     BioxWorkflowPortsListComponent,
     BioxWorkflowNodeConfigComponent,
     BioxProgressBarInfoComponent,
-    BioxProcessSourceConfigComponent,
+    BioxTaskSourceConfigComponent,
     BioxExperimentDetailCardComponent,
     BioxProgressBarInfoDialogComponent,
   ],
