@@ -1,13 +1,13 @@
-import {BioxProcessable} from '../model/entities/proccesable/biox-processable.entity';
+import {BioxProcess} from '../model/entities/process/biox-process.entity';
 import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/workflow.class';
 import {WorkflowLayer} from '../../biox/module/biox-experiment-detail-page/model/workflow-layer.class';
 import {BioxProtocolIOFace, BioxProtocolLink, BioxProtocolLinkPart} from '../model/entities/biox-protocol-link.entity';
-import {BioxProtocolGraph} from '../model/entities/proccesable/biox-protocol.entity';
+import {BioxProtocolGraph} from '../model/entities/process/biox-protocol.entity';
 import {WorkflowConnection} from '../../biox/module/biox-experiment-detail-page/model/workflow-connection.class';
 
 
 /**
- * Factory to create experiment flow object from processable
+ * Factory to create experiment flow object from process
  */
 export class BioxExperimentFlowFactory {
 
@@ -23,14 +23,14 @@ export class BioxExperimentFlowFactory {
     const graph: BioxProtocolGraph = BioxProtocolGraph.empty();
 
     // get nodes
-    for (const node of layer.getProcessableNodes()) {
-      const processable: BioxProcessable = node.object;
+    for (const node of layer.getProcessNodes()) {
+      const process: BioxProcess = node.object;
 
-      if (layer.children[processable.name] != null) {
-        processable.data.graph = BioxExperimentFlowFactory.convertWorkflowToProtocolGraphRecur(layer.children[processable.name]);
+      if (layer.children[process.name] != null) {
+        process.data.graph = BioxExperimentFlowFactory.convertWorkflowToProtocolGraphRecur(layer.children[process.name]);
       }
 
-      graph.nodes[processable.name] = processable;
+      graph.nodes[process.name] = process;
     }
 
     // get connections

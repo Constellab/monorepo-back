@@ -2,7 +2,7 @@ import {LabEntity} from '../../global/lab-entity.entity';
 import {ClRecordTransform} from '@monorepo/core-lib';
 import {BioxProtocolIOFace, BioxProtocolLink} from '../biox-protocol-link.entity';
 import {Exclude, Expose, Type} from 'class-transformer';
-import {BioxProcessable, BioxProcessableData} from './biox-processable.entity';
+import {BioxProcess, BioxProcessData} from './biox-process.entity';
 import {BioxConnection, BioxFlowManager, BioxNode} from '../../global/biox-connection.class';
 import {BioxInput} from '../biox-input.entity';
 import {ViewModel} from '../../global/view-model.entity';
@@ -18,8 +18,8 @@ export class BioxProtocolGraph extends LabEntity {
   @ClRecordTransform(BioxProtocolIOFace)
   outerfaces: Record<string, BioxProtocolIOFace>;
 
-  @ClRecordTransform(BioxProcessable)
-  nodes: Record<string, BioxProcessable>;
+  @ClRecordTransform(BioxProcess)
+  nodes: Record<string, BioxProcess>;
 
   @Type(() => BioxProtocolLink)
   links: BioxProtocolLink[];
@@ -36,7 +36,7 @@ export class BioxProtocolGraph extends LabEntity {
 }
 
 
-export class BioxProtocolData implements BioxProcessableData {
+export class BioxProtocolData implements BioxProcessData {
 
   title: string;
 
@@ -52,7 +52,7 @@ export class BioxProtocolData implements BioxProcessableData {
   }
 }
 
-export class BioxProtocol extends BioxProcessable implements BioxFlowManager {
+export class BioxProtocol extends BioxProcess implements BioxFlowManager {
 
   @Type(() => BioxProtocolData)
   data: BioxProtocolData;

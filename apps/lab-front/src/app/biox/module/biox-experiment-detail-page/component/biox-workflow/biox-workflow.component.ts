@@ -7,7 +7,7 @@ import {ConnectedPosition} from '@angular/cdk/overlay';
 import {WorkflowConnection} from '../../model/workflow-connection.class';
 import {BioxProtocolLink} from '../../../../../core/model/entities/biox-protocol-link.entity';
 import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
-import {BioxProtocol} from '../../../../../core/model/entities/proccesable/biox-protocol.entity';
+import {BioxProtocol} from '../../../../../core/model/entities/process/biox-protocol.entity';
 
 
 @Component({

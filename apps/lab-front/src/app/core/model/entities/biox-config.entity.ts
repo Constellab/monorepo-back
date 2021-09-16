@@ -5,7 +5,7 @@ import {BioxConfigSpecs, BioxConfigSpecTyped} from './biox-config-spec.entity';
 import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
 
 /**
- * Config object for a processable
+ * Config object for a process
  */
 export class BioxConfigData {
 
@@ -44,7 +44,7 @@ export class BioxConfigData {
 
 
 /**
- * Config object for a processable
+ * Config object for a process
  */
 export class BioxConfig extends LabBaseEntity {
 

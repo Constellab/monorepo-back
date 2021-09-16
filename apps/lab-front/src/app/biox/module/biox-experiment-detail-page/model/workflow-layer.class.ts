@@ -2,7 +2,7 @@ import {WorkflowNode} from './workflow-node.class';
 import {WorkflowConnection} from './workflow-connection.class';
 import {WorkflowPort} from './workflow-port.class';
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
-import {WorkflowNodeProcessable} from './workflow-node-processable.class';
+import {WorkflowNodeProcess} from './workflow-node-process.class';
 import {BioxFlowManager} from '../../../../core/model/global/biox-connection.class';
 
 /**
@@ -85,8 +85,8 @@ export class WorkflowLayer {
     }
   }
 
-  public getProcessableNodes(): WorkflowNodeProcessable[] {
-    return this.nodes.filter(node => node instanceof WorkflowNodeProcessable) as WorkflowNodeProcessable[];
+  public getProcessNodes(): WorkflowNodeProcess[] {
+    return this.nodes.filter(node => node instanceof WorkflowNodeProcess) as WorkflowNodeProcess[];
   }
 
   ///////////////////////////////// CONNECTION //////////////////////////////////////

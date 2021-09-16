@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {BioxProcessableDocComponent} from './biox-processable-doc.component';
+import {BioxProcessDocComponent} from './biox-process-doc.component';
 
 describe('BioxProcessTypeDocComponent', () => {
-  let component: BioxProcessableDocComponent;
-  let fixture: ComponentFixture<BioxProcessableDocComponent>;
+  let component: BioxProcessDocComponent;
+  let fixture: ComponentFixture<BioxProcessDocComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BioxProcessableDocComponent ]
+      declarations: [ BioxProcessDocComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BioxProcessableDocComponent);
+    fixture = TestBed.createComponent(BioxProcessDocComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -28,7 +28,7 @@ export class WorkflowActionState {
     this.action$.next(action);
 
     if (action.action === 'selectNode') {
-      this.nodeDetailState.setNode(action.processableNode);
+      this.nodeDetailState.setNode(action.processNode);
     }
   }
 

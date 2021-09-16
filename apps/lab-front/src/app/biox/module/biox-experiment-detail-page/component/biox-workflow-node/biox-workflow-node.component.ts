@@ -3,7 +3,7 @@ import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {WorkflowActionState} from '../../state/workflow-action-state';
-import {WorkflowNodeProcessable} from '../../model/workflow-node-processable.class';
+import {WorkflowNodeProcess} from '../../model/workflow-node-process.class';
 
 /**
  * Node of an experiment in the workflow
@@ -22,7 +22,7 @@ export class BioxWorkflowNodeComponent implements OnInit {
 
   @ViewChild('container', {static: true}) container: ElementRef<HTMLElement>;
 
-  node: WorkflowNodeProcessable;
+  node: WorkflowNodeProcess;
 
   layerIsLoading$: Observable<boolean>;
 
@@ -33,7 +33,7 @@ export class BioxWorkflowNodeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.node = this.workflowManager.findNodeWithName(this.name) as WorkflowNodeProcessable;
+    this.node = this.workflowManager.findNodeWithName(this.name) as WorkflowNodeProcess;
     if (this.node == null) {
       console.error('Couldn\'t find node with name : ' + this.name);
     }
@@ -52,7 +52,7 @@ export class BioxWorkflowNodeComponent implements OnInit {
   openNodeDetail(): void {
     this.drawerState.newAction({
       action: 'selectNode',
-      processableNode: this.node,
+      processNode: this.node,
       title: this.node.title
     });
   }

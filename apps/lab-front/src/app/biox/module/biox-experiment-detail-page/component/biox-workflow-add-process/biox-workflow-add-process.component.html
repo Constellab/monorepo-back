@@ -7,9 +7,9 @@
         <fl-async-section [object]="tasks$">
 
           <ng-container *flSectionBody="let taskTypes">
-            <gen-biox-processable-types-tree [processableTypesTree]="taskTypes"
-                                             (processableTypeClick)="selectTask($event)"
-                                             (processableTypeDblClick)="selectAndAddTask($event)"></gen-biox-processable-types-tree>
+            <gen-biox-process-types-tree [processTypesTree]="taskTypes"
+                                         (processTypeClick)="selectTask($event)"
+                                         (processTypeDblClick)="selectAndAddTask($event)"></gen-biox-process-types-tree>
           </ng-container>
         </fl-async-section>
 
@@ -18,9 +18,9 @@
       <mat-tab [label]="'protocols' | translate">
         <fl-async-section [object]="protocols$">
           <ng-container *flSectionBody="let protocols">
-            <gen-biox-processable-types-tree [processableTypesTree]="protocols"
-                                             (processableTypeClick)="selectProtocol($event)"
-                                             (processableTypeDblClick)="selectAndAddProtocol($event)"></gen-biox-processable-types-tree>
+            <gen-biox-process-types-tree [processTypesTree]="protocols"
+                                         (processTypeClick)="selectProtocol($event)"
+                                         (processTypeDblClick)="selectAndAddProtocol($event)"></gen-biox-process-types-tree>
           </ng-container>
         </fl-async-section>
       </mat-tab>
@@ -29,17 +29,17 @@
 
   <!-- Right section with process detail information -->
   <div class="right-section">
-    <fl-async-section [object]="processableType$">
+    <fl-async-section [object]="processType$">
 
-      <ng-container *flSectionBody="let processableType">
-        <gen-biox-processable-type-card [processableType]="processableType"
-                                        class="card">
+      <ng-container *flSectionBody="let processType">
+        <gen-biox-process-type-card [processType]="processType"
+                                    class="card">
           <button mat-icon-button color="primary" type="button"
-                  (click)="addProcessable(processableType)"
+                  (click)="addProcess(processType)"
                   [matTooltip]="'biox.add_selected_process' | translate">
             <mat-icon>add</mat-icon>
           </button>
-        </gen-biox-processable-type-card>
+        </gen-biox-process-type-card>
       </ng-container>
     </fl-async-section>
   </div>

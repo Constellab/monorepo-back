@@ -1,7 +1,7 @@
 import {Expose, Type} from 'class-transformer';
-import {BioxProcessable, BioxProcessableData} from './biox-processable.entity';
+import {BioxProcess, BioxProcessData} from './biox-process.entity';
 
-export class BioxTaskData implements BioxProcessableData {
+export class BioxTaskData implements BioxProcessData {
   title: string;
 
   description?: string;
@@ -12,7 +12,7 @@ export class BioxTaskData implements BioxProcessableData {
 }
 
 
-export class BioxTask extends BioxProcessable {
+export class BioxTask extends BioxProcess {
 
   @Type(() => BioxTaskData)
   data: BioxTaskData;

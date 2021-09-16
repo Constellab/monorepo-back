@@ -1,6 +1,6 @@
 <fl-card>
   <fl-card-header>
-    {{processableType.name}}
+    {{processType.name}}
 
     <fl-card-actions>
       <ng-content></ng-content>
@@ -9,13 +9,13 @@
 
   <fl-card-body>
     <div class="g-text-light base-info">
-      <p>{{'biox.process_type_type' | translate}} : {{processableType.modelName}}</p>
-      <p *ngIf="processableType.data.description">{{processableType.data.description}}</p>
+      <p>{{'biox.process_type_type' | translate}} : {{processType.modelName}}</p>
+      <p *ngIf="processType.data.description">{{processType.data.description}}</p>
     </div>
 
     <div class="panel-container">
       <!-- Inputs -->
-      <mat-expansion-panel *ngIf="processableType.hasInputSpecs()" hideToggle [expanded]="true"
+      <mat-expansion-panel *ngIf="processType.hasInputSpecs()" hideToggle [expanded]="true"
                            class="g-expansion-disable-side-padding">
         <mat-expansion-panel-header>
           <mat-panel-title class="g-not-selectable">
@@ -25,13 +25,13 @@
             </fl-text-icon>
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <gen-biox-processable-ports-list [ports]="processableType.getInputSpecs()"
-                                         class="panel-padding"></gen-biox-processable-ports-list>
+        <gen-biox-process-ports-list [ports]="processType.getInputSpecs()"
+                                     class="panel-padding"></gen-biox-process-ports-list>
       </mat-expansion-panel>
 
 
       <!-- Outputs -->
-      <mat-expansion-panel *ngIf="processableType.hasOutputSpecs()" hideToggle [expanded]="true"
+      <mat-expansion-panel *ngIf="processType.hasOutputSpecs()" hideToggle [expanded]="true"
                            class="g-expansion-disable-side-padding">
         <mat-expansion-panel-header>
           <mat-panel-title class="g-not-selectable">
@@ -41,13 +41,13 @@
             </fl-text-icon>
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <gen-biox-processable-ports-list [ports]="processableType.getOutputSpecs()"
-                                         class="panel-padding"></gen-biox-processable-ports-list>
+        <gen-biox-process-ports-list [ports]="processType.getOutputSpecs()"
+                                     class="panel-padding"></gen-biox-process-ports-list>
       </mat-expansion-panel>
 
 
       <!-- Config -->
-      <mat-expansion-panel *ngIf="processableType.hasConfigSpecs()" hideToggle [expanded]="true"
+      <mat-expansion-panel *ngIf="processType.hasConfigSpecs()" hideToggle [expanded]="true"
                            class="g-expansion-disable-side-padding">
         <mat-expansion-panel-header>
           <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
@@ -57,13 +57,13 @@
             </fl-text-icon>
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <fl-pretty-json [object]="processableType.getConfigSpecs().record" dense
+        <fl-pretty-json [object]="processType.getConfigSpecs().record" dense
                         [previewMaxTextLength]="30" class="panel-padding"></fl-pretty-json>
       </mat-expansion-panel>
 
 
       <!-- Documentation -->
-      <mat-expansion-panel *ngIf="processableType.hasDocumentation()" hideToggle [expanded]="false"
+      <mat-expansion-panel *ngIf="processType.hasDocumentation()" hideToggle [expanded]="false"
                            class="g-expansion-disable-side-padding">
         <mat-expansion-panel-header>
           <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
@@ -73,8 +73,8 @@
             </fl-text-icon>
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <gen-biox-processable-doc [doc]="processableType.data.doc" class="panel-padding">
-        </gen-biox-processable-doc>
+        <gen-biox-process-doc [doc]="processType.data.doc" class="panel-padding">
+        </gen-biox-process-doc>
       </mat-expansion-panel>
 
     </div>
@@ -83,6 +83,6 @@
   </fl-card-body>
 
   <fl-card-footer class="g-text-light g-text-small">
-    <fl-from-now [date]="processableType.createdAt" [prefix]="'created' | translate"></fl-from-now>
+    <fl-from-now [date]="processType.createdAt" [prefix]="'created' | translate"></fl-from-now>
   </fl-card-footer>
 </fl-card>

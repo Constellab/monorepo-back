@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {BioxResourceSelect} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-select/biox-resource-select.component';
 import {FormControl} from '@ngneat/reactive-forms';
-import {BioxProcessable} from '../../../../../core/model/entities/proccesable/biox-processable.entity';
+import {BioxProcess} from '../../../../../core/model/entities/process/biox-process.entity';
 import {BioxWorkflowNodeDetailState} from '../../state/biox-workflow-node-detail.state';
 import {bioxTaskSourceTypingName} from '../../../../../core/model/entities/biox-process-special-type';
 
@@ -28,8 +28,8 @@ export class BioxTaskSourceConfigComponent implements OnInit {
     );
   }
 
-  private setNode(process: BioxProcessable): void {
-    if (process.processableTypingName !== bioxTaskSourceTypingName) {
+  private setNode(process: BioxProcess): void {
+    if (process.processTypingName !== bioxTaskSourceTypingName) {
       console.error('[BioxProcessSourceConfigComponent] The process is not of type Source');
       return;
     }

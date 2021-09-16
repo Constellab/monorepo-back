@@ -4,9 +4,9 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ClConstructorFunction, ClCoreJsonConvert, clRxjsDebug} from '@monorepo/core-lib';
 import {BioxFlow} from '../model/global/biox-connection.class';
-import {BioxProtocol} from '../model/entities/proccesable/biox-protocol.entity';
-import {BioxProcessable} from '../model/entities/proccesable/biox-processable.entity';
-import {BioxTask} from '../model/entities/proccesable/biox-task.entity';
+import {BioxProtocol} from '../model/entities/process/biox-protocol.entity';
+import {BioxProcess} from '../model/entities/process/biox-process.entity';
+import {BioxTask} from '../model/entities/process/biox-task.entity';
 import {BioxLabTypeEntity, BioxLabTypeEntityTree} from '../model/entities/lab-type/biox-lab-type.entity';
 import {createTypedTree} from '../model/global/typed-tree.class';
 import {BioxProtocolType} from '../model/entities/lab-type/biox-protocol-type.entity';
@@ -36,20 +36,20 @@ export class BioxProtocolService {
   }
 
   /**
-   * Route to add a processable (from type) to an existing protocol (can be a sub protocol)
+   * Route to add a process (from type) to an existing protocol (can be a sub protocol)
    * @param protocolId
-   * @param processable_typing_name
+   * @param process_typing_name
    */
-  public addProcessableToProtocol(protocolId: string, processable_typing_name: string): Observable<BioxProcessable> {
-    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-process/${processable_typing_name}`, null,
-      this.instantiateProcessable);
+  public addProcessToProtocol(protocolId: string, process_typing_name: string): Observable<BioxProcess> {
+    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-process/${process_typing_name}`, null,
+      this.instantiateProcess);
   }
 
   /**
-   * Method to instantiate the correct processable object when getting it from DB
+   * Method to instantiate the correct process object when getting it from DB
    * @param json
    */
-  private instantiateProcessable: ClConstructorFunction<BioxProcessable> = (json: any): BioxProcessable => {
+  private instantiateProcess: ClConstructorFunction<BioxProcess> = (json: any): BioxProcess => {
     // if this is a resource file
     if (json.is_protocol) {
       return ClCoreJsonConvert.deserializeObject(json, BioxProtocol);

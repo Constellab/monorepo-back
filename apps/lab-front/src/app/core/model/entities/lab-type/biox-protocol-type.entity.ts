@@ -1,11 +1,11 @@
 import {Expose, Type} from 'class-transformer';
-import {BioxProtocolData} from '../proccesable/biox-protocol.entity';
-import {BioxProcessableType} from './biox-processable-type.entity';
+import {BioxProtocolData} from '../process/biox-protocol.entity';
+import {BioxProcessType} from './biox-process-type.entity';
 import {BioxConfigSpecs} from '../biox-config-spec.entity';
 import {BioxProtocolLink, BioxProtocolLinkPart} from '../biox-protocol-link.entity';
 
 
-export class BioxProtocolType extends BioxProcessableType {
+export class BioxProtocolType extends BioxProcessType {
 
   @Expose({name: 'model_type'})
   modelType: string;

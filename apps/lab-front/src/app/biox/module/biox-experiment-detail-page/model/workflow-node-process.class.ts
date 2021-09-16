@@ -1,18 +1,18 @@
 import {WorkflowNode} from './workflow-node.class';
 import {WorkflowPort} from './workflow-port.class';
-import {BioxProcessable} from '../../../../core/model/entities/proccesable/biox-processable.entity';
+import {BioxProcess} from '../../../../core/model/entities/process/biox-process.entity';
 import {BioxInput} from '../../../../core/model/entities/biox-input.entity';
 
 /**
- * Representation of a processable (protocol or task)
+ * Representation of a process (protocol or task)
  */
-export class WorkflowNodeProcessable extends WorkflowNode<BioxProcessable> {
+export class WorkflowNodeProcess extends WorkflowNode<BioxProcess> {
 
-  constructor(processable: BioxProcessable,
-              processableName: string,
+  constructor(process: BioxProcess,
+              processName: string,
               initialCoordX: number = 0, initialCoordY: number = 0) {
-    super(processableName, processable.title, processable,
-      processable.isPlugSource() ? 'task-source' : 'node-processable',
+    super(processName, process.title, process,
+      process.isPlugSource() ? 'task-source' : 'node-process',
       initialCoordX, initialCoordY);
     this.html = `<biox-workflow-node name="${this.nodeName}"></biox-workflow-node>`;
   }

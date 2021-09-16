@@ -38,6 +38,6 @@
     "error_empty_experience": "The experiment is empty",
     "resource_is_not_a_network": "The resource is not a network",
     "filename": "Filename",
-    "adding_processable": "Adding '{{processableName}}'"
+    "adding_process": "Adding '{{processName}}'"
   }
 }

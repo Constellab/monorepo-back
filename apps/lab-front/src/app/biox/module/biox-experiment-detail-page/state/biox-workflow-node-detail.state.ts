@@ -1,32 +1,32 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {WorkflowNode} from '../model/workflow-node.class';
-import {BioxProcessable} from '../../../../core/model/entities/proccesable/biox-processable.entity';
+import {BioxProcess} from '../../../../core/model/entities/process/biox-process.entity';
 import {map} from 'rxjs/operators';
 
 
 @Injectable()
 export class BioxWorkflowNodeDetailState {
 
-  private node$: BehaviorSubject<WorkflowNode<BioxProcessable>>;
+  private node$: BehaviorSubject<WorkflowNode<BioxProcess>>;
 
   constructor() {
   }
 
   public init(): void {
-    this.node$ = new BehaviorSubject<WorkflowNode<BioxProcessable>>(null);
+    this.node$ = new BehaviorSubject<WorkflowNode<BioxProcess>>(null);
   }
 
 
-  public setNode(node: WorkflowNode<BioxProcessable>): void {
+  public setNode(node: WorkflowNode<BioxProcess>): void {
     this.node$.next(node);
   }
 
-  public getNode$(): Observable<WorkflowNode<BioxProcessable>> {
+  public getNode$(): Observable<WorkflowNode<BioxProcess>> {
     return this.node$.asObservable();
   }
 
-  public getProcess$(): Observable<BioxProcessable> {
+  public getProcess$(): Observable<BioxProcess> {
     return this.getNode$().pipe(map(n => n.object));
   }
 

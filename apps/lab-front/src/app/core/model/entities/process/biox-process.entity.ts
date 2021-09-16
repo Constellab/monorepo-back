@@ -7,7 +7,7 @@ import {BioxProgressBar, BioxProgressBarStatus} from '../biox-progress-bar.entit
 import {FlStatus} from '@monorepo/front-core-lib';
 import {bioxTaskSourceTypingName} from '../biox-process-special-type';
 
-export interface BioxProcessableData {
+export interface BioxProcessData {
   title: string;
 
   description?: string;
@@ -20,12 +20,12 @@ export interface BioxProcessableData {
 /**
  * Task or protocol inside a flow
  */
-export class BioxProcessable extends BioxNode implements FlStatus {
+export class BioxProcess extends BioxNode implements FlStatus {
 
-  @Expose({name: 'processable_typing_name'})
-  processableTypingName: string
+  @Expose({name: 'process_typing_name'})
+  processTypingName: string
 
-  data: BioxProcessableData;
+  data: BioxProcessData;
 
   experiment: {
     uri: string;
@@ -84,7 +84,7 @@ export class BioxProcessable extends BioxNode implements FlStatus {
 
 // return true if the process is a Source
   isPlugSource(): boolean {
-    return this.processableTypingName === bioxTaskSourceTypingName;
+    return this.processTypingName === bioxTaskSourceTypingName;
   }
 
   get title(): string{

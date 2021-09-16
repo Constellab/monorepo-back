@@ -5,7 +5,7 @@ import {BioxResource} from './resource/biox-resource.entity';
 import {ResourceLazyProperty} from '../../utils/lab-lazy-property.transform';
 
 /**
- * Part of a link between different processable in protocol
+ * Part of a link between different process in protocol
  */
 export class BioxProtocolLinkPart implements BioxConnectionPart {
 

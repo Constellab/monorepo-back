@@ -4,7 +4,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {BioxExperiment} from '../../../../core/model/entities/biox-experiment.entity';
 import {filter} from 'rxjs/operators';
 import {BioxFlow} from '../../../../core/model/global/biox-connection.class';
-import {BioxProtocol} from '../../../../core/model/entities/proccesable/biox-protocol.entity';
+import {BioxProtocol} from '../../../../core/model/entities/process/biox-protocol.entity';
 import {BioxProtocolService} from '../../../../core/entity-service/biox-protocol.service';
 
 @Injectable()

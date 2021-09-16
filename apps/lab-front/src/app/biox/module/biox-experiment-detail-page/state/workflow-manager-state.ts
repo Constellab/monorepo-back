@@ -1,7 +1,7 @@
 import {Injectable, NgZone} from '@angular/core';
 import {Workflow, WorkflowMode} from '../model/workflow.class';
-import {WorkflowNodeProcessable} from '../model/workflow-node-processable.class';
-import {BioxProcessable} from '../../../../core/model/entities/proccesable/biox-processable.entity';
+import {WorkflowNodeProcess} from '../model/workflow-node-process.class';
+import {BioxProcess} from '../../../../core/model/entities/process/biox-process.entity';
 import {
   BioxConnection,
   BioxFlow,
@@ -18,7 +18,7 @@ import {WorkflowNode} from '../model/workflow-node.class';
 import {WorkflowNodeInterface} from '../model/workflow-node-interface.class';
 import {WorkflowNodeOuterface} from '../model/workflow-node-outerface.class';
 import {WorkflowPort} from '../model/workflow-port.class';
-import {BioxProtocol} from '../../../../core/model/entities/proccesable/biox-protocol.entity';
+import {BioxProtocol} from '../../../../core/model/entities/process/biox-protocol.entity';
 import {FlPortalAction, FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
 
 /**
@@ -43,8 +43,8 @@ export class WorkflowManagerState {
   private _layerIsLoading$: Subject<boolean> = new BehaviorSubject(false);
   private subscription: Subscription;
 
-  //  Name of the action to add a processable for the ActionService
-  private readonly addProcessableActionName: string = 'add-processable';
+  //  Name of the action to add a process for the ActionService
+  private readonly addProcessActionName: string = 'add-process';
 
   constructor(private bioxProtocolService: BioxProtocolService,
               private actionsService: FlPortalActionsService,
@@ -62,9 +62,9 @@ export class WorkflowManagerState {
     // init the nodes with the job list
     this.initFlow(flow);
 
-    // listen to the new Processable actions
-    this.subscription = this.actionsService.getResult$(this.addProcessableActionName).subscribe(
-      result => this.onNewProcessable(result)
+    // listen to the new Process actions
+    this.subscription = this.actionsService.getResult$(this.addProcessActionName).subscribe(
+      result => this.onNewProcess(result)
     );
   }
 
@@ -108,34 +108,34 @@ export class WorkflowManagerState {
 
   //////////////////////// NODE ////////////////////////////
 
-  public addProcessableNode(processableTypingName: string, processableName: string): void {
+  public addProcessNode(processTypingName: string, processName: string): void {
     // retrieve the protocol of the layer
     const currentProtocol: BioxProtocol = this.workflow.currentLayer.object as BioxProtocol;
 
-    // create an action to add this processable
+    // create an action to add this process
     const action: FlPortalAction = {
-      text: 'biox.adding_processable',
-      type: this.addProcessableActionName,
-      // create the processable in the API and get the processable
-      action: this.bioxProtocolService.addProcessableToProtocol(currentProtocol.id, processableTypingName),
+      text: 'biox.adding_process',
+      type: this.addProcessActionName,
+      // create the process in the API and get the process
+      action: this.bioxProtocolService.addProcessToProtocol(currentProtocol.id, processTypingName),
       translateText: true,
-      translateParam: {param: {processableName: processableName}}
+      translateParam: {param: {processName: processName}}
     };
 
     this.actionsService.addAction(action, true);
   }
 
-  private onNewProcessable(actionResult: FlPortalActionResult<BioxProcessable>): void {
+  private onNewProcess(actionResult: FlPortalActionResult<BioxProcess>): void {
     if (actionResult.status === 'error') return;
 
     // convert to node
-    const node: WorkflowNodeProcessable = this.createNodeFromProcessable(actionResult.result);
+    const node: WorkflowNodeProcess = this.createNodeFromProcess(actionResult.result);
     // add the node to the workflow
     this.addNode(node);
   }
 
-  private createNodeFromProcessable(processable: BioxProcessable): WorkflowNodeProcessable {
-    return new WorkflowNodeProcessable(processable, processable.name, 0, 0);
+  private createNodeFromProcess(process: BioxProcess): WorkflowNodeProcess {
+    return new WorkflowNodeProcess(process, process.name, 0, 0);
   }
 
   public addInterface(): void {
@@ -236,8 +236,8 @@ export class WorkflowManagerState {
     const coordY = ((this.htmlNodeHeight + this.htmlDefaultNodeSpace) * posY) + this.htmlOffsetY;
 
     let workflowNode: WorkflowNode<any>;
-    if (node instanceof BioxProcessable) {
-      workflowNode = new WorkflowNodeProcessable(node as BioxProcessable, node.name, coordX, coordY);
+    if (node instanceof BioxProcess) {
+      workflowNode = new WorkflowNodeProcess(node as BioxProcess, node.name, coordX, coordY);
     } else if (node instanceof BioxInterfaceNode) {
       workflowNode = new WorkflowNodeInterface(node, coordX, coordY);
     } else if (node instanceof BioxOuterfaceNode) {

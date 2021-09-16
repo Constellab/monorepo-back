@@ -1,4 +1,4 @@
-import {WorkflowNodeProcessable} from './workflow-node-processable.class';
+import {WorkflowNodeProcess} from './workflow-node-process.class';
 import {WorkflowNodeInterface} from './workflow-node-interface.class';
 import {WorkflowNodeOuterface} from './workflow-node-outerface.class';
 
@@ -16,7 +16,7 @@ export interface WorkflowActionBase{
  */
 export interface WorkflowActionSelectNode extends WorkflowActionBase{
   action: 'selectNode';
-  processableNode: WorkflowNodeProcessable;
+  processNode: WorkflowNodeProcess;
 }
 
 /**

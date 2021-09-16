@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {WorkflowNode} from '../../model/workflow-node.class';
-import {BioxProcessable} from '../../../../../core/model/entities/proccesable/biox-processable.entity';
+import {BioxProcess} from '../../../../../core/model/entities/process/biox-process.entity';
 import {BioxConfig} from '../../../../../core/model/entities/biox-config.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {BioxConfigureSpecsFormDialogComponent} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-form-dialog/biox-configure-specs-form-dialog.component';
@@ -16,7 +16,7 @@ import {BioxWorkflowNodeDetailState} from '../../state/biox-workflow-node-detail
 })
 export class BioxWorkflowNodeDetailComponent implements OnInit {
 
-  node: WorkflowNode<BioxProcessable>;
+  node: WorkflowNode<BioxProcess>;
 
   constructor(private dialogService: FlDialogService,
               private experimentState: BioxExperimentDetailPageState,
@@ -30,14 +30,14 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
   }
 
   get config(): BioxConfig | null {
-    const object: BioxProcessable = this.node.object;
+    const object: BioxProcess = this.node.object;
 
     // don't show config for source
     if (object.isPlugSource()) {
       return null;
     }
-    // the config is only for processable node
-    return object instanceof BioxProcessable && object.hasConfig() ?
+    // the config is only for process node
+    return object instanceof BioxProcess && object.hasConfig() ?
       object.config : null;
   }
 

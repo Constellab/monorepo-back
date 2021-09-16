@@ -24,7 +24,7 @@ import {BioxProgressBarInfoComponent} from './component/biox-progress-bar-info/b
 import {BioxTaskSourceConfigComponent} from './component/biox-task-source-config/biox-task-source-config.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BioxWorkflowNodeDetailState} from './state/biox-workflow-node-detail.state';
-import {BioxProcessableCoreModule} from '../../../core/entity-module/biox-processable-core/biox-processable-core.module';
+import {BioxProcessCoreModule} from '../../../core/entity-module/biox-process-core/biox-process-core.module';
 import {BioxExperimentDetailCardComponent} from './component/biox-experiment-detail-card/biox-experiment-detail-card.component';
 import {BioxProgressBarInfoDialogComponent} from './component/biox-progress-bar-info-dialog/biox-progress-bar-info-dialog.component';
 
@@ -56,7 +56,7 @@ import {BioxProgressBarInfoDialogComponent} from './component/biox-progress-bar-
     BioxProtocolCoreModule,
     BioxResourceCoreModule,
     BioxConfigCoreModule,
-    BioxProcessableCoreModule,
+    BioxProcessCoreModule,
   ],
   providers: [
     // declare the state here otherwise the angular element can't access them

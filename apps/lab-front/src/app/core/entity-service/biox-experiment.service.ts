@@ -5,7 +5,7 @@ import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm, Experime
 import {createViewModel} from '../model/global/view-model.entity';
 import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
 import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/workflow.class';
-import {BioxProtocolGraph} from '../model/entities/proccesable/biox-protocol.entity';
+import {BioxProtocolGraph} from '../model/entities/process/biox-protocol.entity';
 import {BioxExperimentFlowFactory} from '../utils/biox-experiment-flow.factory';
 import {mergeMap} from 'rxjs/operators';
 
