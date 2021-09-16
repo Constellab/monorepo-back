@@ -1,5 +1,7 @@
 {
     "typescript.preferences.importModuleSpecifier": "relative",
     "javascript.preferences.quoteStyle": "single",
-    "typescript.preferences.quoteStyle": "single"
+    "typescript.preferences.quoteStyle": "single",
+    "javascript.preferences.importModuleSpecifier": "relative",
+    "angular.enable-strict-mode-prompt": false
 }
