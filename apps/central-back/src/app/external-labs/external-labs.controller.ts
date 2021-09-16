@@ -1,4 +1,4 @@
-import {Controller, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
+import {Controller, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
 import {ParseEnumPipe} from '../core/pipes/parse-enum.pipe';
 import {LabInstanceStatus} from '../lab-instances/lab-instance-status.enum';
 import {LabInstance} from '../lab-instances/lab-instance.entity';
@@ -7,6 +7,8 @@ import {RequestContextHelper} from '../core/modules/request-context/request-cont
 import {LabGuard} from '../core/decorators/lab-guard.decorator';
 import {ReportsSecurityLayer} from '../reports/reports-security.layer';
 import {Report} from '../reports/report.entity';
+import {StudiesSecurityLayer} from '../studies/studies-security.layer';
+import {Study} from '../studies/study.entity';
 
 /**
  * Specific controller for route called by the lab servers. Theses route are not called by a user
@@ -16,7 +18,14 @@ import {Report} from '../reports/report.entity';
 export class ExternalLabsController {
 
   constructor(private labInstanceService: LabInstancesService,
-              private reportSecurityLayer: ReportsSecurityLayer) {
+              private reportSecurityLayer: ReportsSecurityLayer,
+              private studiesSecurityLayer: StudiesSecurityLayer) {
+  }
+
+  @Get('/user/:userId/studies')
+  getStudiesOfUser(
+    @Param('userId', new ParseUUIDPipe()) userId: string): Promise<Study[]> {
+    return this.studiesSecurityLayer.getStudiesOfUser(userId);
   }
 
   @Put('/lab-instance/status/:status')

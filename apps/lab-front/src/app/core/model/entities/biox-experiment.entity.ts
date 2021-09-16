@@ -2,7 +2,7 @@ import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
 import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {ViewModel} from '../global/view-model.entity';
-import {BioxProtocolGraph} from './process/biox-protocol.entity';
+import {BioxStudy} from './biox-study.class';
 
 
 export class BioxExperimentData {
@@ -39,6 +39,9 @@ export class BioxExperiment extends LabBaseEntity implements FlStatus {
   @Expose({name: 'is_validated'})
   isValidated: boolean;
 
+  @Type(() => BioxStudy)
+  study: BioxStudy;
+
   getStatusClassColor(mode: 'background' | 'text'): string {
     return getBioxExperimentStatusColorClass(this.getStatusName(), mode);
   }
@@ -48,10 +51,10 @@ export class BioxExperiment extends LabBaseEntity implements FlStatus {
   }
 
   getStatusName(): BioxExperimentStatus {
-   return this.status;
+    return this.status;
   }
 
-  isEditable(): boolean{
+  isEditable(): boolean {
     return !this.isArchived && !this.isValidated;
   }
 }
@@ -89,9 +92,5 @@ const getBioxExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: Biox
 export interface ExperimentSimpleForm {
   title: string;
   description: string;
-}
-
-// object to update the experiment protocol
-export interface ExperimentUpdate extends ExperimentSimpleForm {
-  graph: BioxProtocolGraph;
+  study: BioxStudy;
 }

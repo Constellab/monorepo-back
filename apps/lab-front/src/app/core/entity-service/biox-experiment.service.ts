@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlSnackBarService} from '@monorepo/front-core-lib';
 import {Observable, throwError} from 'rxjs';
-import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm, ExperimentUpdate} from '../model/entities/biox-experiment.entity';
+import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm} from '../model/entities/biox-experiment.entity';
 import {createViewModel} from '../model/global/view-model.entity';
 import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
 import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/workflow.class';
@@ -46,7 +46,7 @@ export class BioxExperimentService {
     return this.apiService.put(`experiment/${experimentId}`, experiment, BioxExperiment);
   }
 
-  public updateExperimentProtocol(experiment: BioxExperiment, workflow: Workflow): Observable<BioxExperiment> {
+  public updateExperimentProtocol(experimentId: string, workflow: Workflow): Observable<BioxExperiment> {
     // convert the workflow to a protocol
     const graph: BioxProtocolGraph = BioxExperimentFlowFactory.convertWorkflowToProtocolGraph(workflow);
 
@@ -55,14 +55,7 @@ export class BioxExperimentService {
       return throwError('biox.error_empty_experience');
     }
 
-    // build update object
-    const experimentUpdate: ExperimentUpdate = {
-      title: experiment.data.title,
-      description: experiment.data.description,
-      graph: graph
-    };
-
-    return this.update(experiment.id, experimentUpdate);
+    return this.apiService.put(`experiment/${experimentId}/protocol`, graph, BioxExperiment);
   }
 
   // launch an experiment
@@ -70,9 +63,9 @@ export class BioxExperimentService {
     return this.apiService.post(`experiment/${experimentId}/start`, createViewModel(BioxExperiment));
   }
 
-  public saveAndStartExperiment(experiment: BioxExperiment, workflow: Workflow): Observable<BioxExperiment> {
-    return this.updateExperimentProtocol(experiment, workflow).pipe(
-      mergeMap(() => this.startExperiment(experiment.id))
+  public saveAndStartExperiment(experimentId: string, workflow: Workflow): Observable<BioxExperiment> {
+    return this.updateExperimentProtocol(experimentId, workflow).pipe(
+      mergeMap(() => this.startExperiment(experimentId))
     );
   }
 }

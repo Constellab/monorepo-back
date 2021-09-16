@@ -51,7 +51,7 @@ export class BioxWorkflowActionsComponent implements OnInit {
   save(): void {
     const experiment: BioxExperiment = this.workflowManager.getExperiment();
     this.saveIsLoading = true;
-    this.bioxExperimentService.updateExperimentProtocol(experiment, this.workflowManager.workflow).subscribe(
+    this.bioxExperimentService.updateExperimentProtocol(experiment.id, this.workflowManager.workflow).subscribe(
       newExp => this.onSaveSuccess(newExp),
       () => this.saveIsLoading = false
     );
@@ -68,7 +68,7 @@ export class BioxWorkflowActionsComponent implements OnInit {
     const experiment: BioxExperiment = this.workflowManager.getExperiment();
 
     this.startIsLoading = true;
-    this.bioxExperimentService.saveAndStartExperiment(experiment, this.workflowManager.workflow).subscribe(
+    this.bioxExperimentService.saveAndStartExperiment(experiment.id, this.workflowManager.workflow).subscribe(
       result => this.onStartSuccess(result),
       () => this.startIsLoading = false
     );

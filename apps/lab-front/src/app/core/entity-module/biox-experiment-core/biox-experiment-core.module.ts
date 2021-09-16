@@ -6,6 +6,7 @@ import {RouterModule} from '@angular/router';
 import {BioxExperimentCardComponent} from './component/biox-experiment-card/biox-experiment-card.component';
 import {BioxExperimentFormDialogComponent} from './component/biox-experiment-form-dialog/biox-experiment-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {BioxStudyCoreModule} from '../biox-study-core/biox-study-core.module';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     ReactiveFormsModule,
 
     CoreModule,
+    BioxStudyCoreModule,
   ]
 })
 export class BioxExperimentCoreModule {

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment.entity';
+import {BioxExperiment, ExperimentSimpleForm} from '../../../../../core/model/entities/biox-experiment.entity';
 import {
   BioxExperimentFormDialogComponent,
   BioxExperimentFormDialogInput
@@ -34,8 +34,14 @@ export class BioxExperimentDetailCardComponent implements OnInit {
 
   openUpdateDialog(): void {
     const experiment: BioxExperiment = this.experimentState.currentExperiment;
+
+    const experimentForm: ExperimentSimpleForm = {
+      title: experiment.data.title,
+      description: experiment.data.description,
+      study: experiment.study
+    }
     const input: BioxExperimentFormDialogInput = {
-      object: experiment.data,
+      object: experimentForm,
       mode: 'update',
       experimentId: experiment.id
     };

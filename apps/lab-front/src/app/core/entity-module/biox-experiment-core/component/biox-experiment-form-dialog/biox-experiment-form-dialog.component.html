@@ -26,6 +26,14 @@
       </mat-error>
     </fl-form-field>
 
+    <!--    Study      -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'biox.study' | translate}}</mat-label>
+      <mat-select formControlName="study">
+        <gen-biox-study-select-options></gen-biox-study-select-options>
+      </mat-select>
+    </mat-form-field>
+
   </form>
 </mat-dialog-content>
 

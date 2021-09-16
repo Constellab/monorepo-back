@@ -22,4 +22,13 @@ export class StudiesService extends AbstractWithStatusService<Study, StudyStatus
       order: {lastModifiedAt: 'DESC'}
     });
   }
+
+  getStudiesOfUser(userId: string): Promise<Study[]> {
+    return this.repository.find({
+      where: {
+        createdBy: {id: userId}
+      },
+      order: {lastModifiedAt: 'DESC'}
+    });
+  }
 }
