@@ -1,5 +1,3 @@
-
-
 export class Documentation {
     id: string;
 

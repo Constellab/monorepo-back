@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FlApiService } from "@monorepo/front-core-lib"
 import { Observable } from "rxjs";
-import { Documentation } from "../model/entities/da-documentation.class";
+import { Documentation } from "../da-model/da-entities/da-documentation.class";
 
 /**
  * Service to manage documentation entity
@@ -21,7 +21,7 @@ export class DaDocumentationService {
    * @param object json object
    */
     public create(object: Partial<Documentation>): Observable<Documentation> {
-        return this.apiService.post(this.route, object, Documentation, {serialization: Documentation});
+        return this.apiService.post(this.route, object, Documentation);
     }
 
     /**
@@ -35,7 +35,7 @@ export class DaDocumentationService {
     /**
    * Call http get
    */
-     public get(): Observable<Documentation> {
+     public get(): Observable<Documentation[]> {
         return this.apiService.get(this.route, Documentation);
     }
 
@@ -44,7 +44,7 @@ export class DaDocumentationService {
    * @param object json object
    */
      public update(object: Partial<Documentation>): Observable<Documentation> {
-        return this.apiService.put(this.route, object, Documentation, {serialization: Documentation});
+        return this.apiService.put(this.route, object, Documentation);
     }
 
     /**
