@@ -571,7 +571,7 @@
       "projectType": "application",
       "root": "apps/da-documentation",
       "sourceRoot": "apps/da-documentation/src",
-      "prefix": "monorepo",
+      "prefix": "da",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",

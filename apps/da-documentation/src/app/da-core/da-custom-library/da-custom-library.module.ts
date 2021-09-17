@@ -1,7 +1,7 @@
-import { NgModule } from "@angular/core";
-import { FlCorePipeModule, FlFormModule } from "@monorepo/front-core-lib";
+import { NgModule } from '@angular/core';
+import { FlCorePipeModule, FlFormModule, FlLoaderModule } from '@monorepo/front-core-lib';
 
 @NgModule({
-    exports: [FlCorePipeModule, FlFormModule]
+    exports: [FlCorePipeModule, FlFormModule, FlLoaderModule]
 })
 export class DaCustomLibraryModule{}
