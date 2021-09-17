@@ -49,7 +49,9 @@
               }
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": ["class-transformer"]
+            "allowedCommonJsDependencies": [
+              "class-transformer"
+            ]
           },
           "configurations": {
             "dev": {
@@ -163,7 +165,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/central-front"],
+          "outputs": [
+            "coverage/apps/central-front"
+          ],
           "options": {
             "jestConfig": "apps/central-front/jest.config.js",
             "passWithNoTests": true
@@ -192,7 +196,9 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/central-front-e2e/**/*.{js,ts}"]
+            "lintFilePatterns": [
+              "apps/central-front-e2e/**/*.{js,ts}"
+            ]
           }
         }
       }
@@ -244,7 +250,9 @@
               }
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": ["class-transformer"]
+            "allowedCommonJsDependencies": [
+              "class-transformer"
+            ]
           },
           "configurations": {
             "dev": {
@@ -325,7 +333,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/lab-front"],
+          "outputs": [
+            "coverage/apps/lab-front"
+          ],
           "options": {
             "jestConfig": "apps/lab-front/jest.config.js",
             "passWithNoTests": true
@@ -354,7 +364,9 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/lab-front-e2e/**/*.{js,ts}"]
+            "lintFilePatterns": [
+              "apps/lab-front-e2e/**/*.{js,ts}"
+            ]
           }
         }
       }
@@ -376,7 +388,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/front-core-lib"],
+          "outputs": [
+            "coverage/libs/front-core-lib"
+          ],
           "options": {
             "jestConfig": "libs/front-core-lib/jest.config.js",
             "passWithNoTests": true
@@ -392,7 +406,9 @@
       "architect": {
         "build": {
           "builder": "@nrwl/node:build",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "outputPath": "dist/apps/central-back",
             "main": "apps/central-back/src/main.ts",
@@ -425,12 +441,16 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/central-back/**/*.ts"]
+            "lintFilePatterns": [
+              "apps/central-back/**/*.ts"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/central-back"],
+          "outputs": [
+            "coverage/apps/central-back"
+          ],
           "options": {
             "jestConfig": "apps/central-back/jest.config.js",
             "passWithNoTests": true
@@ -446,12 +466,16 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/core-lib/**/*.ts"]
+            "lintFilePatterns": [
+              "libs/core-lib/**/*.ts"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/core-lib"],
+          "outputs": [
+            "coverage/libs/core-lib"
+          ],
           "options": {
             "jestConfig": "libs/core-lib/jest.config.js",
             "passWithNoTests": true
@@ -467,12 +491,16 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/common-model/**/*.ts"]
+            "lintFilePatterns": [
+              "libs/common-model/**/*.ts"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/common-model"],
+          "outputs": [
+            "coverage/libs/common-model"
+          ],
           "options": {
             "jestConfig": "libs/common-model/jest.config.js",
             "passWithNoTests": true
@@ -488,12 +516,16 @@
       "architect": {
         "build": {
           "builder": "@nrwl/node:build",
-          "outputs": ["{options.outputPath}"],
+          "outputs": [
+            "{options.outputPath}"
+          ],
           "options": {
             "outputPath": "dist/apps/dn-documentation",
             "main": "apps/dn-documentation/src/main.ts",
             "tsConfig": "apps/dn-documentation/tsconfig.app.json",
-            "assets": ["apps/dn-documentation/src/assets"]
+            "assets": [
+              "apps/dn-documentation/src/assets"
+            ]
           },
           "configurations": {
             "production": {
@@ -518,12 +550,16 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/dn-documentation/**/*.ts"]
+            "lintFilePatterns": [
+              "apps/dn-documentation/**/*.ts"
+            ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/dn-documentation"],
+          "outputs": [
+            "coverage/apps/dn-documentation"
+          ],
           "options": {
             "jestConfig": "apps/dn-documentation/jest.config.js",
             "passWithNoTests": true
@@ -550,7 +586,19 @@
               "apps/da-documentation/src/favicon.ico",
               "apps/da-documentation/src/assets"
             ],
-            "styles": ["apps/da-documentation/src/styles.scss"],
+            "styles": [
+              "apps/da-documentation/src/styles.scss",
+              {
+                "input": "apps/central-front/src/theme/light-theme.scss",
+                "bundleName": "light-theme",
+                "inject": false
+              },
+              {
+                "input": "apps/central-front/src/theme/dark-theme.scss",
+                "bundleName": "dark-theme",
+                "inject": false
+              }
+            ],
             "scripts": []
           },
           "configurations": {
@@ -611,7 +659,9 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/da-documentation"],
+          "outputs": [
+            "coverage/apps/da-documentation"
+          ],
           "options": {
             "jestConfig": "apps/da-documentation/jest.config.js",
             "passWithNoTests": true
@@ -640,7 +690,9 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/da-documentation-e2e/**/*.{js,ts}"]
+            "lintFilePatterns": [
+              "apps/da-documentation-e2e/**/*.{js,ts}"
+            ]
           }
         }
       }
