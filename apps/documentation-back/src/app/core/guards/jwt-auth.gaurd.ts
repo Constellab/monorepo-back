@@ -1,0 +1,59 @@
+import {ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common';
+import {AuthGuard} from '@nestjs/passport';
+import {Reflector} from '@nestjs/core';
+import {ReflectorHelper} from '../utils/reflector.helper';
+import {ErrorText} from '../model/config/error-text.class';
+
+/**
+ * Guard to check if the user has a authentication token
+ * Methods and classes annotated with @Public decorator
+ * don't need to check if authentication token exists
+ *
+ * Methods and classes annotated with @LabAuth are manager by the {@link LabAuthGuard}
+ *
+ * Others uses JWT authentication with {@link JwtStrategy}
+ */
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  constructor(private reflector: Reflector) {
+    super();
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    // Check if the route is annotated with @Public
+    // if yes, don't check the authorization
+    if (this.contextIsPublic(context)) {
+      return true;
+    }
+
+    // if the method or class is annotated with @LabGuard
+    // authentication is manage by {@link LabAuthGuard}
+    if (this.contextIsLabAuth(context)) {
+      return true;
+    }
+
+    // jwt authentication
+    try {
+      return await (super.canActivate(context) as Promise<boolean>);
+    } catch (error) {
+      throw new UnauthorizedException(ErrorText.WRONG_TOKEN);
+    }
+  }
+
+  /**
+   * Return true if the context method or class is annotated with the @Public decorator
+   */
+  private contextIsPublic(context: ExecutionContext): boolean {
+    // Check if the route is annotated with @Public
+    return ReflectorHelper.isDecoratedWithPublic(this.reflector, context);
+  }
+
+  /**
+   * Return true if the context method or class is annotated with the @LabAuth decorator
+   */
+  private contextIsLabAuth(context: ExecutionContext): boolean {
+    // Check if the route is annotated with @LabAuth
+    return ReflectorHelper.isDecoratedWithLabAuth(this.reflector, context);
+  }
+
+}

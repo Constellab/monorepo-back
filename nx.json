@@ -49,6 +49,9 @@
     "common-model": {
       "tags": ["ts-core"]
     },
+    "documentation-back": {
+      "tags": []
+    },
     "back-core-lib": {
       "tags": ["back"]
     }
