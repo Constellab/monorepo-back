@@ -278,8 +278,8 @@ export class WorkflowManagerState {
   public clear(): void {
     this.idGenerator = 0;
     this.experiment = null;
-    this.workflow = null;
     this.workflow?.destroy();
+    this.workflow = null;
     this._layerIsLoading$.complete();
     this.subscription.unsubscribe();
   }

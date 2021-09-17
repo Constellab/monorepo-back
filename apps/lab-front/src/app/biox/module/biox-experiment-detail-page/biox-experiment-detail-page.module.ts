@@ -60,9 +60,9 @@ import {BioxProgressBarInfoDialogComponent} from './component/biox-progress-bar-
   ],
   providers: [
     // declare the state here otherwise the angular element can't access them
+    BioxExperimentDetailPageState,
     WorkflowManagerState,
     WorkflowActionState,
-    BioxExperimentDetailPageState,
     BioxWorkflowNodeDetailState,
   ]
 })

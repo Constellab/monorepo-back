@@ -4,7 +4,9 @@ import {WorkflowNode} from '../model/workflow-node.class';
 import {BioxProcess} from '../../../../core/model/entities/process/biox-process.entity';
 import {map} from 'rxjs/operators';
 
-
+/**
+ * State to manage the selected node to show it in the drawer
+ */
 @Injectable()
 export class BioxWorkflowNodeDetailState {
 
