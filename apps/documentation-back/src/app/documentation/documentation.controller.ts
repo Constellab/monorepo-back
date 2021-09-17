@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
-import {ParsePipe} from '../core/pipes/parse.pipe';
+import { ParsePipe } from '../core/pipes/parse.pipe';
 import { Documentation } from './documentation.entity';
 import { DocumentationService } from './documentation.service';
 
