@@ -6,6 +6,7 @@ module.exports = {
     '<rootDir>/apps/central-back',
     '<rootDir>/libs/core-lib',
     '<rootDir>/libs/common-model',
+    '<rootDir>/apps/dn-documentation',
     '<rootDir>/apps/documentation-back',
     '<rootDir>/libs/back-core-lib',
   ],
