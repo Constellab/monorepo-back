@@ -39,6 +39,9 @@
     "resource_is_not_a_network": "La ressource n'est pas un réseau",
     "filename": "Fichier",
     "adding_process": "Ajout de '{{processName}}'",
-    "study": "Étude"
+    "study": "Étude",
+    "validate_experiment": "Valider l'expérience",
+    "validate_experiment_help_text": "Une fois l'expérience validée, elle ne peut plus être modifiée ou supprimée. L'expérience doit être rattachée à une étude",
+    "experiment_validated": "Expérience validée"
   }
 }

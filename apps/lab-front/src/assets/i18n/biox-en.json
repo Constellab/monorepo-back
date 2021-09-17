@@ -39,6 +39,9 @@
     "resource_is_not_a_network": "The resource is not a network",
     "filename": "Filename",
     "adding_process": "Adding '{{processName}}'",
-    "study": "Study"
+    "study": "Study",
+    "validate_experiment": "Validate the experiment",
+    "validate_experiment_help_text": "Once the experiment is validated, it can't be updated or deleted. The experiment must be linked to a study",
+    "experiment_validated": "Experiment validated"
   }
 }

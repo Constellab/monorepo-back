@@ -9,6 +9,10 @@ import {FlDialogService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {BioxProgressBarInfoDialogComponent} from '../biox-progress-bar-info-dialog/biox-progress-bar-info-dialog.component';
 import {map} from 'rxjs/operators';
+import {
+  BioxExperimentValidationDialogComponent,
+  BioxExperimentValidationDialogInput
+} from '../biox-experiment-validation-dialog/biox-experiment-validation-dialog.component';
 
 /**
  * Experiment card info for the experiment detail page
@@ -39,7 +43,7 @@ export class BioxExperimentDetailCardComponent implements OnInit {
       title: experiment.data.title,
       description: experiment.data.description,
       study: experiment.study
-    }
+    };
     const input: BioxExperimentFormDialogInput = {
       object: experimentForm,
       mode: 'update',
@@ -47,6 +51,19 @@ export class BioxExperimentDetailCardComponent implements OnInit {
     };
 
     this.dialogService.openSmallDialog(BioxExperimentFormDialogComponent, {data: input})
+      .afterClosed().subscribe(
+      result => this.onExperimentUpdate(result)
+    );
+  }
+
+  openValidationDialog(): void {
+    const experiment: BioxExperiment = this.experimentState.currentExperiment;
+
+    const input: BioxExperimentValidationDialogInput = {
+      experimentId: experiment.id, study: experiment.study
+    };
+
+    this.dialogService.openSmallDialog(BioxExperimentValidationDialogComponent, {data: input})
       .afterClosed().subscribe(
       result => this.onExperimentUpdate(result)
     );
