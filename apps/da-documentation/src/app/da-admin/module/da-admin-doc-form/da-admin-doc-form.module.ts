@@ -1,9 +1,18 @@
+import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
+import { ReactiveFormsModule } from "@angular/forms";
+import { DaCoreModule } from "../../../da-core/da-core.module";
 import { DaAdminCoreModule } from "../da-admin-core/da-admin-core.module";
 import { DaAdminDocFormComponent } from "./component/da-admin-doc-form.component";
 
+
 @NgModule({
     declarations: [DaAdminDocFormComponent],
-    imports: [DaAdminCoreModule]
+    imports: [
+        DaAdminCoreModule, 
+        ReactiveFormsModule, 
+        CommonModule,
+        DaCoreModule
+    ]
 })
 export class DaAdminDocFormModule{}
