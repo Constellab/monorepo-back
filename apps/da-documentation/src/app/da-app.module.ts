@@ -5,16 +5,19 @@ import {AppComponent} from './da-app.component';
 import {RouterModule} from '@angular/router';
 import {DaAdminModule} from './da-admin/da-admin.module';
 import {CoreModule} from '@angular/flex-layout';
-import {FlApiModule, FlTranslateModule} from '@monorepo/front-core-lib';
+import {FlApiModule, FlTranslateModule, FlSnackBarModule} from '@monorepo/front-core-lib';
 import {DaApiServiceConfig} from './da-core/da-model/da-config/da-api-module.config';
 import {DaApiErrorService} from './da-core/da-model/da-config/da-api-error.service';
-import {ClSupportedLanguage} from '@monorepo/core-lib';
+import { ClSupportedLanguage } from '@monorepo/core-lib';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
     RouterModule.forRoot([], { initialNavigation: 'enabled' }),
+    HttpClientModule,
+
     DaAdminModule,
 
     // Core Modules
@@ -28,6 +31,9 @@ import {ClSupportedLanguage} from '@monorepo/core-lib';
       availableLang: [ClSupportedLanguage.en],
       filenames: ['global-']
     }),
+    FlTranslateModule.forRoot2(),
+
+    FlSnackBarModule.forRoot(),
 
   ],
   providers: [],
