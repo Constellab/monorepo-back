@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { DaCoreModule } from "../../../da-core/da-core.module";
 import { DaAdminCoreModule } from "../da-admin-core/da-admin-core.module";
 import { DaAdminDocFormComponent } from "./component/da-admin-doc-form.component";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 @NgModule({
@@ -12,7 +13,8 @@ import { DaAdminDocFormComponent } from "./component/da-admin-doc-form.component
         DaAdminCoreModule, 
         ReactiveFormsModule, 
         CommonModule,
-        DaCoreModule
+        DaCoreModule,
+        BrowserAnimationsModule
     ]
 })
 export class DaAdminDocFormModule{}
