@@ -479,6 +479,57 @@
           }
         }
       }
+    },
+    "documentation-back": {
+      "root": "apps/documentation-back",
+      "sourceRoot": "apps/documentation-back/src",
+      "projectType": "application",
+      "prefix": "documentation-back",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/documentation-back",
+            "main": "apps/documentation-back/src/main.ts",
+            "tsConfig": "apps/documentation-back/tsconfig.app.json",
+            "assets": ["apps/documentation-back/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/documentation-back/src/environments/environment.ts",
+                  "with": "apps/documentation-back/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "documentation-back:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/documentation-back/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/documentation-back"],
+          "options": {
+            "jestConfig": "apps/documentation-back/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {
