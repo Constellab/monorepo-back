@@ -11,13 +11,16 @@
 
 
     <!--    content      -->
-    <mat-form-field class="g-form-input" appearance="fill">
+    <fl-form-field class="g-form-input">
         <mat-label>Content</mat-label>
-        <textarea matInput formControlName="content"></textarea>
+        <quill-editor formControlName="content" placeholder="Content"
+                      class="g-full" [styles]="{height: '8em'}">
+        </quill-editor>
         <mat-error *ngIf="formGp.get('content').hasError('required')">
-            {{'content' | flErrorRequired}}
+          {{'content' | flErrorRequired}}
         </mat-error>
-    </mat-form-field>
+    </fl-form-field>
+  
 
     <button mat-raised-button color="primary" type="submit" form="documentation-form" class="g-centered-forced">
         Save
