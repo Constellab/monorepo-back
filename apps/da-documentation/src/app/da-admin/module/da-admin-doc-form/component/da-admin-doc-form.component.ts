@@ -25,12 +25,7 @@ implements OnInit {
     ngOnInit(): void{
         this.buildForm();
         this.activatedRoute.params.subscribe(params => {
-            if(params['id']) {
-                this.getById(params['id']).subscribe(doc => {
-                    this.formGp.setValue(doc);
-                    this.isUpdate = true;
-                })
-            }   
+            if(params['id']) this.setFormGroupValue(params['id']);
         });
     }
 
@@ -57,7 +52,14 @@ implements OnInit {
         return this.daDocumentationService.update(formValue);
     }
 
-    getById(id: string): Observable<DaDocumentation> {
+    private getById(id: string): Observable<DaDocumentation> {
         return this.daDocumentationService.getById(id);
+    }
+
+    private setFormGroupValue(id: string): void{
+        this.getById(id).subscribe(doc => {
+            this.formGp.patchValue(doc);
+            this.isUpdate = true;
+        })
     }
 }

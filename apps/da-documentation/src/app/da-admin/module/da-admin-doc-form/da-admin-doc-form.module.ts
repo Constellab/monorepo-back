@@ -5,6 +5,7 @@ import { DaCoreModule } from "../../../da-core/da-core.module";
 import { DaAdminCoreModule } from "../da-admin-core/da-admin-core.module";
 import { DaAdminDocFormComponent } from "./component/da-admin-doc-form.component";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { QuillModule } from "ngx-quill";
 
 
 @NgModule({
@@ -14,7 +15,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         ReactiveFormsModule, 
         CommonModule,
         DaCoreModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
+
+        QuillModule.forRoot()
     ]
 })
 export class DaAdminDocFormModule{}
