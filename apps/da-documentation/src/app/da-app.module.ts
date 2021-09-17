@@ -3,18 +3,22 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './da-app.component';
 import { RouterModule } from '@angular/router';
-import { DaCoreModule } from './da-core/da-core.module';
 import { DaAdminModule } from './da-admin/da-admin.module';
-import { DaAppRoutingModule } from './da-app-routing-module';
+import { CoreModule } from '@angular/flex-layout';
+import { FlApiModule } from '../../../../libs/front-core-lib/src';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
     RouterModule.forRoot([], { initialNavigation: 'enabled' }),
-    DaCoreModule,
     DaAdminModule,
-    DaAppRoutingModule
+    
+    // Core Modules
+    CoreModule,
+
+    FlApiModule.forRoot(ApiServiceConfig, ApiErrorService, 'front-errors'),
+
   ],
   providers: [],
   bootstrap: [AppComponent],

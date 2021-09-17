@@ -5,7 +5,7 @@ import { DaCustomMaterialModule } from "./da-custom-material/da-custom-material.
 @NgModule({
     exports: [
         DaCustomLibraryModule,
-        DaCustomMaterialModule
+        DaCustomMaterialModule,
     ]
 })
 export class DaCoreModule{}
