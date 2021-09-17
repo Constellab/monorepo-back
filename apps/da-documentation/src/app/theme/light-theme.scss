@@ -1,0 +1,6 @@
+@import "libs/front-core-lib/src/style/theme/base/base-light-theme";
+@import "libs/front-core-lib/src/style/theme/quill/quill-theme-light";
+
+
+// include dark theme for quill
+@include _quill-theme-light($theme);
