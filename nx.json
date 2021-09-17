@@ -51,6 +51,13 @@
     },
     "dn-documentation": {
       "tags": []
+    },
+    "da-documentation": {
+      "tags": []
+    },
+    "da-documentation-e2e": {
+      "tags": [],
+      "implicitDependencies": ["da-documentation"]
     }
   }
 }

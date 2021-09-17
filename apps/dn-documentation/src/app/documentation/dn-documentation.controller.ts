@@ -22,9 +22,9 @@ export class DocumentationController {
     return this.documentationService.findOne(id);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body(new ParsePipe(Documentation)) updateDocumentation: Documentation) {
-    return this.documentationService.update(id, updateDocumentation);
+  @Put()
+  update(@Body(new ParsePipe(Documentation)) updateDocumentation: Documentation) {
+    return this.documentationService.update(updateDocumentation);
   }
 
   @Delete(':id')

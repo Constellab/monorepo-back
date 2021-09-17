@@ -23,8 +23,7 @@ export class DocumentationService {
     return this.documentationsRepository.findOne(id);
   }
 
-  update(id: string, updateDocumentation: Documentation): Promise<Documentation> {
-    updateDocumentation.id = id;
+  update(updateDocumentation: Documentation): Promise<Documentation> {
     return this.documentationsRepository.save(updateDocumentation);
   }
 
