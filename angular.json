@@ -531,6 +531,120 @@
         }
       }
     },
+    "da-documentation": {
+      "projectType": "application",
+      "root": "apps/da-documentation",
+      "sourceRoot": "apps/da-documentation/src",
+      "prefix": "monorepo",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/da-documentation",
+            "index": "apps/da-documentation/src/index.html",
+            "main": "apps/da-documentation/src/main.ts",
+            "polyfills": "apps/da-documentation/src/polyfills.ts",
+            "tsConfig": "apps/da-documentation/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/da-documentation/src/favicon.ico",
+              "apps/da-documentation/src/assets"
+            ],
+            "styles": ["apps/da-documentation/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/da-documentation/src/environments/environment.ts",
+                  "with": "apps/da-documentation/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "da-documentation:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "da-documentation:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "da-documentation:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/da-documentation/src/**/*.ts",
+              "apps/da-documentation/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/da-documentation"],
+          "options": {
+            "jestConfig": "apps/da-documentation/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "da-documentation-e2e": {
+      "root": "apps/da-documentation-e2e",
+      "sourceRoot": "apps/da-documentation-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/da-documentation-e2e/cypress.json",
+            "tsConfig": "apps/da-documentation-e2e/tsconfig.e2e.json",
+            "devServerTarget": "da-documentation:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "da-documentation:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/da-documentation-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    },
     "back-core-lib": {
       "root": "libs/back-core-lib",
       "sourceRoot": "libs/back-core-lib/src",

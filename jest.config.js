@@ -7,6 +7,7 @@ module.exports = {
     '<rootDir>/libs/core-lib',
     '<rootDir>/libs/common-model',
     '<rootDir>/apps/dn-documentation',
+    '<rootDir>/apps/da-documentation',
     '<rootDir>/apps/documentation-back',
     '<rootDir>/libs/back-core-lib',
   ],
