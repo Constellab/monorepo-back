@@ -1,11 +1,14 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
 
-import { AppComponent } from './da-app.component';
-import { RouterModule } from '@angular/router';
-import { DaAdminModule } from './da-admin/da-admin.module';
-import { CoreModule } from '@angular/flex-layout';
-import { FlApiModule } from '../../../../libs/front-core-lib/src';
+import {AppComponent} from './da-app.component';
+import {RouterModule} from '@angular/router';
+import {DaAdminModule} from './da-admin/da-admin.module';
+import {CoreModule} from '@angular/flex-layout';
+import {FlApiModule, FlTranslateModule} from '@monorepo/front-core-lib';
+import {DaApiServiceConfig} from './da-core/da-model/da-config/da-api-module.config';
+import {DaApiErrorService} from './da-core/da-model/da-config/da-api-error.service';
+import {ClSupportedLanguage} from '@monorepo/core-lib';
 
 @NgModule({
   declarations: [AppComponent],
@@ -13,11 +16,18 @@ import { FlApiModule } from '../../../../libs/front-core-lib/src';
     BrowserModule,
     RouterModule.forRoot([], { initialNavigation: 'enabled' }),
     DaAdminModule,
-    
+
     // Core Modules
     CoreModule,
 
-    FlApiModule.forRoot(ApiServiceConfig, ApiErrorService, 'front-errors'),
+    FlApiModule.forRoot(DaApiServiceConfig, DaApiErrorService),
+
+    // Setup translate module
+    FlTranslateModule.forRoot({
+      defaultLang: ClSupportedLanguage.en,
+      availableLang: [ClSupportedLanguage.en],
+      filenames: ['global-']
+    }),
 
   ],
   providers: [],
