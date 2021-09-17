@@ -1,15 +1,15 @@
-import { NgModule } from "@angular/core";
-import { Route, RouterModule } from "@angular/router";
-import { DaAdminDocFormComponent } from "./module/da-admin-doc-form/component/da-admin-doc-form.component";
+import { NgModule } from '@angular/core';
+import { Route, RouterModule } from '@angular/router';
+import { DaAdminDocFormPageComponent } from './module/da-admin-doc-form/da-admin-doc-form-page/da-admin-doc-form-page.component';
 
 const routes: Route[] = [
     {
         path: '', 
-        component: DaAdminDocFormComponent
+        component: DaAdminDocFormPageComponent
     },
     {
         path: ':id',
-        component: DaAdminDocFormComponent
+        component: DaAdminDocFormPageComponent
     }
 ];
 
