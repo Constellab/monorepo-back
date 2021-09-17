@@ -49,7 +49,7 @@
     "common-model": {
       "tags": ["ts-core"]
     },
-    "documentation-back": {
+    "dn-documentation": {
       "tags": []
     }
   }

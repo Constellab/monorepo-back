@@ -480,20 +480,20 @@
         }
       }
     },
-    "documentation-back": {
-      "root": "apps/documentation-back",
-      "sourceRoot": "apps/documentation-back/src",
+    "dn-documentation": {
+      "root": "apps/dn-documentation",
+      "sourceRoot": "apps/dn-documentation/src",
       "projectType": "application",
-      "prefix": "documentation-back",
+      "prefix": "dn-documentation",
       "architect": {
         "build": {
           "builder": "@nrwl/node:build",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/apps/documentation-back",
-            "main": "apps/documentation-back/src/main.ts",
-            "tsConfig": "apps/documentation-back/tsconfig.app.json",
-            "assets": ["apps/documentation-back/src/assets"]
+            "outputPath": "dist/apps/dn-documentation",
+            "main": "apps/dn-documentation/src/main.ts",
+            "tsConfig": "apps/dn-documentation/tsconfig.app.json",
+            "assets": ["apps/dn-documentation/src/assets"]
           },
           "configurations": {
             "production": {
@@ -502,8 +502,8 @@
               "inspect": false,
               "fileReplacements": [
                 {
-                  "replace": "apps/documentation-back/src/environments/environment.ts",
-                  "with": "apps/documentation-back/src/environments/environment.prod.ts"
+                  "replace": "apps/dn-documentation/src/environments/environment.ts",
+                  "with": "apps/dn-documentation/src/environments/environment.prod.ts"
                 }
               ]
             }
@@ -512,20 +512,20 @@
         "serve": {
           "builder": "@nrwl/node:execute",
           "options": {
-            "buildTarget": "documentation-back:build"
+            "buildTarget": "dn-documentation:build"
           }
         },
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/documentation-back/**/*.ts"]
+            "lintFilePatterns": ["apps/dn-documentation/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/documentation-back"],
+          "outputs": ["coverage/apps/dn-documentation"],
           "options": {
-            "jestConfig": "apps/documentation-back/jest.config.js",
+            "jestConfig": "apps/dn-documentation/jest.config.js",
             "passWithNoTests": true
           }
         }
