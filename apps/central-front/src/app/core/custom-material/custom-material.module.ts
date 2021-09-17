@@ -46,7 +46,7 @@ import {FlLuxonDateAdapter, flLuxonDateFormat, flMatFormFieldConfig, flTooltipCo
     FlexLayoutModule,
   ],
   providers: [
-// form field default config
+    // form field default config
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: flMatFormFieldConfig},
 
     // tooltip default config
