@@ -6,7 +6,3 @@ export class DaDocumentation {
     content: string;
 }
 
-export class DaDocumentationForm {
-    title: string;
-    content: string;
-}

@@ -6,6 +6,10 @@ const routes: Route[] = [
     {
         path: '', 
         component: DaAdminDocFormComponent
+    },
+    {
+        path: ':id',
+        component: DaAdminDocFormComponent
     }
 ];
 

@@ -35,6 +35,8 @@ import { HttpClientModule } from '@angular/common/http';
 
     FlSnackBarModule.forRoot(),
 
+    
+
   ],
   providers: [],
   bootstrap: [AppComponent],
