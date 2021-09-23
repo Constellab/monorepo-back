@@ -4,13 +4,13 @@ import {Exclude} from 'class-transformer';
 import {GroupSingleUser, GroupUsers} from '../groups/group.entity';
 import * as argon2 from 'argon2';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
-import {LuxonDateTimeColumn} from '../core/decorators/luxon-column.decorator';
 import {DateTime} from 'luxon';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
+import {BlLuxonDateTimeColumn, BlUser} from '@monorepo/back-core-lib';
 
 
 @Entity()
-export class User extends EntityWithId {
+export class User extends EntityWithId implements BlUser{
 
   @Column({nullable: false, length: 50})
   firstname: string;
@@ -36,7 +36,7 @@ export class User extends EntityWithId {
   failedLoginCount: number;
 
   @Exclude()
-  @LuxonDateTimeColumn({nullable: true})
+  @BlLuxonDateTimeColumn({nullable: true})
   lastLoginAttempt: DateTime;
 
   @Column({nullable: false, type: 'enum', enum: ClSupportedLanguage, default: clDefaultLang})
@@ -56,7 +56,7 @@ export class User extends EntityWithId {
   @Column({nullable: false, type: 'enum', enum: CmUserStatus, default: CmUserStatus.WAITING_FOR_EMAIL})
   status: CmUserStatus;
 
-  @LuxonDateTimeColumn({nullable: false, update: false})
+  @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
   //////////////////// TRANSIENT METHODS //////////////////

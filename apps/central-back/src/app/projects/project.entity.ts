@@ -3,7 +3,7 @@ import {Type} from 'class-transformer';
 import {ProjectStatusHistory} from './project-status-history.entity';
 import {EntityWithStatus} from '../core/model/entities/entity-with-status.entity';
 import {DateTime} from 'luxon';
-import {LuxonDateColumn} from '../core/decorators/luxon-column.decorator';
+import {BlLuxonDateColumn} from '@monorepo/back-core-lib';
 
 /**
  * A project is a ensemble of experiments
@@ -20,10 +20,10 @@ export class Project extends EntityWithStatus<ProjectStatusHistory> {
   @Column({type: 'text', nullable: true})
   description: string;
 
-  @LuxonDateColumn({nullable: false})
+  @BlLuxonDateColumn({nullable: false})
   startingDate: DateTime;
 
-  @LuxonDateColumn({nullable: true})
+  @BlLuxonDateColumn({nullable: true})
   endingDate: DateTime;
 
   @Type(() => ProjectStatusHistory)

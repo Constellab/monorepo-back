@@ -1,18 +1,18 @@
 import {EntityWithId} from '../model/entities/entity-with-id.entity';
-import {ParsePipe} from '../pipes/parse.pipe';
 import {Body, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
 import {AbstractSecurityLayer} from './abstract-security.layer';
+import {BlParsePipe} from '@monorepo/back-core-lib';
 
 /**
  * Abstract CRUD controller that call the security layer
  */
 export abstract class AbstractSecureController<T extends EntityWithId> {
 
-  private readonly parsePipe: ParsePipe<T>;
+  private readonly parsePipe: BlParsePipe<T>;
 
   protected constructor(private secuLayer: AbstractSecurityLayer<T>,
                         private classReference: new() => T) {
-    this.parsePipe = new ParsePipe<T>(classReference);
+    this.parsePipe = new BlParsePipe<T>(classReference);
   }
 
   @Post()

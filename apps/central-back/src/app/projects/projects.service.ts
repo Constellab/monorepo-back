@@ -3,11 +3,11 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {Project} from './project.entity';
 import {User} from '../users/user.entity';
-import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
 import {AbstractWithStatusService} from '../core/class/abstract-with-status.service';
 import {ProjectStatus} from './project-status.enum';
 import {ProjectStatusHistory} from './project-status-history.entity';
-import {Page} from '../core/model/config/page.class';
+import {ClPage} from '@monorepo/core-lib';
+import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 @Injectable()
 export class ProjectsService extends AbstractWithStatusService<Project, ProjectStatus> {
@@ -23,8 +23,8 @@ export class ProjectsService extends AbstractWithStatusService<Project, ProjectS
     return super.createWithStatus(entity, ProjectStatus.ACTIVE);
   }
 
-  public async getCurrentProjects(page: number, size: number): Promise<Page<Project>> {
-    const user: User = RequestContextHelper.getAndCheckCurrentUser();
+  public async getCurrentProjects(page: number, size: number): Promise<ClPage<Project>> {
+    const user: User = CurrentUserHelper.getAndCheckCurrentUser();
 
     return this.findPaginated(page, size, {
       where: {

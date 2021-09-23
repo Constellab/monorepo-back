@@ -1,8 +1,9 @@
 import {ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
 import {Reflector} from '@nestjs/core';
-import {ReflectorHelper} from '../utils/reflector.helper';
 import {ErrorText} from '../model/config/error-text.class';
+import {isDecoratedWithLabAuth} from '../decorators/lab-guard.decorator';
+import {blIsDecoratedWithPublic} from '@monorepo/back-core-lib';
 
 /**
  * Guard to check if the user has a authentication token
@@ -11,7 +12,7 @@ import {ErrorText} from '../model/config/error-text.class';
  *
  * Methods and classes annotated with @LabAuth are manager by the {@link LabAuthGuard}
  *
- * Others uses JWT authentication with {@link JwtStrategy}
+ * Others uses JWT authentication with {@link BlJwtStrategy}
  */
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -45,7 +46,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    */
   private contextIsPublic(context: ExecutionContext): boolean {
     // Check if the route is annotated with @Public
-    return ReflectorHelper.isDecoratedWithPublic(this.reflector, context);
+    return blIsDecoratedWithPublic(this.reflector, context);
   }
 
   /**
@@ -53,7 +54,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    */
   private contextIsLabAuth(context: ExecutionContext): boolean {
     // Check if the route is annotated with @LabAuth
-    return ReflectorHelper.isDecoratedWithLabAuth(this.reflector, context);
+    return isDecoratedWithLabAuth(this.reflector, context);
   }
 
 }

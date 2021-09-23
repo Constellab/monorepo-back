@@ -1,13 +1,12 @@
 import {ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger} from '@nestjs/common';
 import {CoreConfigService} from '../modules/core-config/core-config.service';
-import {TranslateService} from '../modules/translate/translate.service';
 import {QueryFailedError} from 'typeorm';
 import {ErrorText} from '../model/config/error-text.class';
 import {Request, Response} from 'express';
-import {RequestContextHelper} from '../modules/request-context/request-context.helper';
-import {TranslateOptions} from '../modules/translate/translate-options.class';
 import {ClStringHelper} from '@monorepo/core-lib';
 import {CmNestApiError} from '@monorepo/common-model';
+import {CurrentUserHelper} from '../utils/current-user.helper';
+import {BlTranslateOptions, BlTranslateService} from '@monorepo/back-core-lib';
 
 
 /**
@@ -19,7 +18,7 @@ export class CustomExceptionHandlerFilter implements ExceptionFilter {
   private readonly logger = new Logger(CustomExceptionHandlerFilter.name);
 
   constructor(protected coreConfigService: CoreConfigService,
-              private readonly translateService: TranslateService) {
+              private readonly translateService: BlTranslateService) {
   }
 
   async catch(exception: unknown, host: ArgumentsHost): Promise<void> {
@@ -75,8 +74,8 @@ export class CustomExceptionHandlerFilter implements ExceptionFilter {
 
   // method to log the error in the console with context info
   private logError(error: Error, instanceId: string): void {
-    const request: Request = RequestContextHelper.getCurrentRequest();
-    const userString = RequestContextHelper.getCurrentUser()?.getUserInfo() ?? 'No user';
+    const request: Request = CurrentUserHelper.getCurrentRequest();
+    const userString = CurrentUserHelper.getCurrentUser()?.getUserInfo() ?? 'No user';
     this.logger.error(`Error during request ${request.url} | Method ${request.method} | User : ${userString} | InstanceId ${instanceId}`);
     this.logger.error(error.stack);
   }
@@ -99,7 +98,7 @@ export class CustomExceptionHandlerFilter implements ExceptionFilter {
   /**
    * Translate the message and return an error observable with status
    */
-  private async convertToNestError(errorCode: string, status: HttpStatus, options: TranslateOptions = {}): Promise<CmNestApiError> {
+  private async convertToNestError(errorCode: string, status: HttpStatus, options: BlTranslateOptions = {}): Promise<CmNestApiError> {
     // translate the error message and throw the exception with error code and message
     const translatedMessage: string = await this.translateService.translate(errorCode, options);
 

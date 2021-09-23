@@ -2,9 +2,9 @@ import {Controller, Get, Param, Put} from '@nestjs/common';
 import {UsersService} from './users.service';
 import {User} from './user.entity';
 import {UserCategories} from '../core/decorators/user-category.decorator';
-import {ParseEnumPipe} from '../core/pipes/parse-enum.pipe';
 import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CmUserCategory} from '@monorepo/common-model';
+import {BlParseEnumPipe} from '@monorepo/back-core-lib';
 
 @Controller('users')
 export class UsersController {
@@ -18,12 +18,12 @@ export class UsersController {
   }
 
   @Put('/language/:lang')
-  updateLanguage(@Param('lang', new ParseEnumPipe(ClSupportedLanguage)) lang: ClSupportedLanguage): Promise<void> {
+  updateLanguage(@Param('lang', new BlParseEnumPipe(ClSupportedLanguage)) lang: ClSupportedLanguage): Promise<void> {
     return this.usersService.updateLanguage(lang);
   }
 
   @Put('/theme/:theme')
-  updateTheme(@Param('theme', new ParseEnumPipe(ClTheme)) theme: ClTheme): Promise<void> {
+  updateTheme(@Param('theme', new BlParseEnumPipe(ClTheme)) theme: ClTheme): Promise<void> {
     return this.usersService.updateTheme(theme);
   }
 

@@ -4,7 +4,6 @@ import {UsersModule} from '../users/users.module';
 import {PassportModule} from '@nestjs/passport';
 import {JwtModule} from '@nestjs/jwt';
 import {jwtConfig} from './jwt.config';
-import {JwtStrategy} from './jwt.strategy';
 import {AuthController} from './auth.controller';
 import {CoreConfigService} from '../core/modules/core-config/core-config.service';
 import {JwtModuleOptions} from '@nestjs/jwt/dist/interfaces/jwt-module-options.interface';
@@ -30,7 +29,7 @@ function asyncRegister(coreConfigService: CoreConfigService): JwtModuleOptions {
 
     CoreModule,
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService],
   exports: [AuthService],
   controllers: [AuthController]
 })

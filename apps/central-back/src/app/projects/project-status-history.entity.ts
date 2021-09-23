@@ -2,8 +2,8 @@ import {ProjectStatus} from './project-status.enum';
 import {StatusHistory} from '../core/model/entities/status-history.entity';
 import {Column, Entity, ManyToOne} from 'typeorm';
 import {Exclude, Type} from 'class-transformer';
-import {NotUpdatable} from '../core/decorators/not-updatable.decorator';
 import {Project} from './project.entity';
+import {BlNotUpdatable} from '@monorepo/back-core-lib';
 
 @Entity()
 export class ProjectStatusHistory extends StatusHistory<ProjectStatus> {
@@ -16,7 +16,7 @@ export class ProjectStatusHistory extends StatusHistory<ProjectStatus> {
   status: ProjectStatus;
 
   @Exclude()
-  @NotUpdatable()
+  @BlNotUpdatable()
   @Type(() => Project)
   @ManyToOne(() => Project, {nullable: false})
   entity: Project;

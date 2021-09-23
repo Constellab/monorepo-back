@@ -1,10 +1,9 @@
 import {Body, Controller, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
 import {StudiesSecurityLayer} from './studies-security.layer';
-import {ParsePipe} from '../core/pipes/parse.pipe';
 import {Study} from './study.entity';
-import {ParseEnumPipe} from '../core/pipes/parse-enum.pipe';
 import {StudyStatusHistory} from './study-status-history.entity';
 import {StudyStatus} from './study-status.enum';
+import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
 
 @Controller('studies')
 export class StudiesController {
@@ -16,13 +15,13 @@ export class StudiesController {
    * Create an study for a project
    */
   @Post('project/:projectId')
-  create(@Body(new ParsePipe(Study)) study: Study,
+  create(@Body(new BlParsePipe(Study)) study: Study,
          @Param('projectId', ParseUUIDPipe) projectId: string): Promise<Study> {
     return this.securityLayer.createStudy(study, projectId);
   }
 
   @Put()
-  update(@Body(new ParsePipe(Study)) study: Study): Promise<Study> {
+  update(@Body(new BlParsePipe(Study)) study: Study): Promise<Study> {
     return this.securityLayer.updateSecure(study);
   }
 
@@ -45,7 +44,7 @@ export class StudiesController {
    */
   @Put('/:id/status/:status')
   updateStatus(@Param('id', new ParseUUIDPipe()) id: string,
-               @Param('status', new ParseEnumPipe(StudyStatus)) status: StudyStatus): Promise<Study> {
+               @Param('status', new BlParseEnumPipe(StudyStatus)) status: StudyStatus): Promise<Study> {
     return this.securityLayer.updateCurrentStatus(status, id);
   }
 

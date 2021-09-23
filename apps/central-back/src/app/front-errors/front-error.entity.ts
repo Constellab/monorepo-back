@@ -2,16 +2,16 @@ import {BeforeInsert, Column, Entity, ManyToOne} from 'typeorm';
 import {EntityWithId} from '../core/model/entities/entity-with-id.entity';
 import {Type} from 'class-transformer';
 import {User} from '../users/user.entity';
-import {LuxonDateTimeColumn} from '../core/decorators/luxon-column.decorator';
 import {DateTime} from 'luxon';
-import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
 import {ClDateHelper} from '@monorepo/core-lib';
+import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 /**
  * Entity to store the front errors
  */
 @Entity()
-export class FrontError extends EntityWithId{
+export class FrontError extends EntityWithId {
 
   @Column({nullable: false, length: 100})
   name: string;
@@ -29,12 +29,12 @@ export class FrontError extends EntityWithId{
   @ManyToOne(() => User, {eager: true, nullable: true})
   createdBy: User;
 
-  @LuxonDateTimeColumn({nullable: false, update: false})
+  @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
   @BeforeInsert()
   setCreatedByUser(): void {
-    this.createdBy = RequestContextHelper.getCurrentUser();
+    this.createdBy = CurrentUserHelper.getCurrentUser();
     this.createdAt = ClDateHelper.getDate();
   }
 }

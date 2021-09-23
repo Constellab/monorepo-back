@@ -1,15 +1,15 @@
 import {AbstractService} from './abstract.service';
 import {EntityWithId} from '../model/entities/entity-with-id.entity';
 import {Body, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
-import {ParsePipe} from '../pipes/parse.pipe';
+import {BlParsePipe} from '@monorepo/back-core-lib';
 
 export abstract class AbstractController<T extends EntityWithId> {
 
-  private readonly parsePipe: ParsePipe<T>;
+  private readonly parsePipe: BlParsePipe<T>;
 
   protected constructor(private abstractService: AbstractService<T>,
                         private classReference: new() => T) {
-    this.parsePipe = new ParsePipe<T>(classReference);
+    this.parsePipe = new BlParsePipe<T>(classReference);
   }
 
   @Post()
@@ -25,7 +25,7 @@ export abstract class AbstractController<T extends EntityWithId> {
   }
 
   @Delete(':id')
-  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void>{
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     await this.abstractService.deleteById(id);
   }
 

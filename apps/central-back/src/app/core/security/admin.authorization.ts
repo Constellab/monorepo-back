@@ -1,5 +1,5 @@
 import {AbstractCheckAuthorization} from './abstract-check.authorization';
-import {RequestContextHelper} from '../modules/request-context/request-context.helper';
+import {CurrentUserHelper} from '../utils/current-user.helper';
 
 /**
  * Check authorization that the current user is an admin
@@ -7,11 +7,11 @@ import {RequestContextHelper} from '../modules/request-context/request-context.h
 export class AdminAuthorization extends AbstractCheckAuthorization {
 
   isAuthorized(): boolean {
-    return RequestContextHelper.getCurrentUser()?.isAdmin() ?? false;
+    return CurrentUserHelper.getCurrentUser()?.isAdmin() ?? false;
   }
 
 
-  checkAuthorization(): void{
-   return super.checkAuthorization(null);
+  checkAuthorization(): void {
+    return super.checkAuthorization(null);
   }
 }

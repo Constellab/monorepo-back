@@ -25,13 +25,23 @@ import {ServersInfoModule} from './app/servers-info/servers-info.module';
 import {CustomExceptionHandlerFilter} from './app/core/filters/core-exception-handler.filter';
 import {StudiesModule} from './app/studies/studies.module';
 import {ReportsModule} from './app/reports/reports.module';
-import {PersistenceLogger} from './app/core/services/persistence-logger/persistence-logger';
-import {RequestContextMiddleware} from './app/core/modules/request-context/request-context.middleware';
 import {clDefaultLang} from '@monorepo/core-lib';
 import {FrontErrorsModule} from './app/front-errors/front-errors.module';
-import {WinstonModule} from 'nest-winston';
-import {configureLogger} from './app/core/logger/logger.config.class';
-
+import {WinstonModule, WinstonModuleOptions} from 'nest-winston';
+import {
+  blConfigureLogger,
+  BlCookieHelper,
+  BlJwtConfig,
+  BlJwtModule,
+  BlLoggerConfig,
+  BlMailModule,
+  BlMailModuleConfig,
+  BlPersistenceLogger,
+  BlRequestContextMiddleware
+} from '@monorepo/back-core-lib';
+import {jwtConfig} from './app/auth/jwt.config';
+import {Request} from 'express';
+import {UsersService} from './app/users/users.service';
 
 function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
   const dbConfig: DatabaseConfig = configService.getDatabaseConfig();
@@ -45,8 +55,28 @@ function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
     synchronize: configService.isLocal(), // only activate synchronization in local
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
-    logger: PersistenceLogger.getInstance()
+    logger: BlPersistenceLogger.getInstance()
   };
+}
+
+function configureLogger(configService: CoreConfigService): WinstonModuleOptions {
+  const logConfig: BlLoggerConfig = {
+    logLevel: configService.getLogLevel(),
+    logFilePath: configService.isLocal() ? null : configService.getLogPath()
+  };
+  return blConfigureLogger(logConfig);
+}
+
+function configureJwtModule(configService: CoreConfigService, userService: UsersService): BlJwtConfig {
+  return {
+    jwtSecret: configService.getJwtSecret(),
+    jwtFromRequest: (request: Request) => BlCookieHelper.getCookieFromHeader(request.headers.cookie, jwtConfig.authorizationCookie),
+    usersService: userService
+  };
+}
+
+function configureMailModule(configService: CoreConfigService): BlMailModuleConfig {
+  return configService.getMailConfig();
 }
 
 @Module({
@@ -76,12 +106,24 @@ function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
     // Custom module
     CoreModule,
 
-    // setup the loggin module
+    // setup the logging module
     WinstonModule.forRootAsync({
       imports: [CoreModule],
       useFactory: configureLogger,
       inject: [CoreConfigService],
     }),
+
+    BlJwtModule.forRootAsync({
+      imports: [CoreModule, UsersModule],
+      useFactory: configureJwtModule,
+      inject: [CoreConfigService, UsersService]
+    }),
+    BlMailModule.forRootAsync({
+      imports: [CoreModule],
+      useFactory: configureMailModule,
+      inject: [CoreConfigService]
+    }),
+
 
     // Entities module
     UsersModule,
@@ -127,7 +169,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): any {
     consumer
       // register the RequestContextMiddleware to be able to access the request anywhere
-      .apply(RequestContextMiddleware)
+      .apply(BlRequestContextMiddleware)
       .forRoutes({path: '*', method: RequestMethod.ALL});
   }
 }

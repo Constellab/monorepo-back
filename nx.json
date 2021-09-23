@@ -48,6 +48,9 @@
     },
     "common-model": {
       "tags": ["ts-core"]
+    },
+    "back-core-lib": {
+      "tags": ["back"]
     }
   }
 }

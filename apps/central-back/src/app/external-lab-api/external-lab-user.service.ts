@@ -63,7 +63,7 @@ export class ExternalLabUserService {
       first_name: user.firstname,
       last_name: user.lastname,
       is_active: true,
-      is_admin: group === 'admin'
+      is_admin: group === 'ADMIN'
     };
 
     return this.externalLabApiService.post(labInfo, this.route, newLabUser).toPromise();

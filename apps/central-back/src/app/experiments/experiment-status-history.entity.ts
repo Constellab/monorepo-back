@@ -1,9 +1,9 @@
 import {StatusHistory} from '../core/model/entities/status-history.entity';
 import {ExperimentStatus} from './experiment-status.enum';
 import {Column, Entity, ManyToOne} from 'typeorm';
-import {NotUpdatable} from '../core/decorators/not-updatable.decorator';
 import {Exclude, Type} from 'class-transformer';
 import {Experiment} from './experiment.entity';
+import {BlNotUpdatable} from '@monorepo/back-core-lib';
 
 @Entity()
 export class ExperimentStatusHistory extends StatusHistory<ExperimentStatus> {
@@ -12,7 +12,7 @@ export class ExperimentStatusHistory extends StatusHistory<ExperimentStatus> {
   status: ExperimentStatus;
 
   @Exclude()
-  @NotUpdatable()
+  @BlNotUpdatable()
   @Type(() => Experiment)
   @ManyToOne(() => Experiment, {nullable: false})
   entity: Experiment;

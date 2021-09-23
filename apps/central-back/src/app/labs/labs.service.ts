@@ -4,7 +4,7 @@ import {Lab} from './lab.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {User} from '../users/user.entity';
-import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
+import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 @Injectable()
 export class LabsService extends AbstractService<Lab> {
@@ -14,7 +14,7 @@ export class LabsService extends AbstractService<Lab> {
   }
 
   public getCurrentLabs(): Promise<Lab[]> {
-    const user: User = RequestContextHelper.getAndCheckCurrentUser();
+    const user: User = CurrentUserHelper.getAndCheckCurrentUser();
 
     return this.repository.find({
       where: {

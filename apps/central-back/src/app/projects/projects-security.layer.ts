@@ -7,7 +7,7 @@ import {RefuseAuthorization} from '../core/security/refuse.authorization';
 import {CreatedByAuthorization} from '../core/security/created-by.authorization';
 import {ProjectStatus} from './project-status.enum';
 import {ProjectStatusHistory} from './project-status-history.entity';
-import {Page} from '../core/model/config/page.class';
+import {ClPage} from '@monorepo/core-lib';
 
 @Injectable()
 export class ProjectsSecurityLayer extends AbstractSecurityLayer<Project> {
@@ -32,7 +32,7 @@ export class ProjectsSecurityLayer extends AbstractSecurityLayer<Project> {
     return new CreatedByAuthorization().isAuthorized(dbEntity);
   }
 
-  getCurrentProjects(page: number, size: number): Promise<Page<Project>> {
+  getCurrentProjects(page: number, size: number): Promise<ClPage<Project>> {
     // no security because we filter on user id
     return this.service.getCurrentProjects(page, size);
   }
