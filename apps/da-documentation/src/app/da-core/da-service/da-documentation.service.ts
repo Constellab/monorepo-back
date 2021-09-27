@@ -1,7 +1,7 @@
-import { Injectable } from "@angular/core";
-import { FlApiService } from "@monorepo/front-core-lib"
-import { Observable } from "rxjs";
-import { DaDocumentation } from "../da-model/da-entities/da-documentation.class";
+import { Injectable } from '@angular/core';
+import { FlApiService } from '@monorepo/front-core-lib'
+import { Observable } from 'rxjs';
+import { DaDocumentation } from '../da-model/da-entities/da-documentation.class';
 
 /**
  * Service to manage documentation entity
