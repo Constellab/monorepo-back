@@ -116,7 +116,15 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
   public abstract drawNode(container: SVGElement): FlD3SelectionSimple<FlBioNetworkD3Node>;
 
   // get the center of the node
-  public abstract getCenter(): FlCoord;
+  public getCenter(): FlCoord {
+    return this.convertToCenterCoord({
+      x: this.x, y: this.y
+    });
+  }
+
+  public abstract setCenter(coord: FlCoord): void;
+
+  public abstract convertToCenterCoord(coord: FlCoord): FlCoord;
 
   protected abstract drawNodeText(container: SVGElement, textColor: string, backgroundColor: string): void;
 
@@ -169,14 +177,15 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
     this.drawTextUnder(element, textColor, backgroundColor, flBioNetworkMetaboliteRadius);
   }
 
-
-  getCenter(): FlCoord {
-    // get the center of the metabolite round
-    return {
-      x: this.x,
-      y: this.y
-    };
+  setCenter(coord: FlCoord): void {
+    this.fx = coord.x;
+    this.fy = coord.y;
   }
+
+  convertToCenterCoord(coord: FlCoord): FlCoord {
+    return coord;
+  }
+
 }
 
 export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
@@ -218,13 +227,19 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
   }
 
 
-  getCenter(): FlCoord {
-    // get the center of the reaction rect
+  setCenter(coord: FlCoord): void {
+    this.fx = coord.x - (flBioNetworkReactionWidth / 2);
+    this.fy = coord.y - (flBioNetworkReactionHeight / 2);
+  }
+
+  convertToCenterCoord(coord: FlCoord): FlCoord {
     return {
-      x: this.x + (flBioNetworkReactionWidth / 2),
-      y: this.y + (flBioNetworkReactionHeight / 2)
+      x: coord.x + (flBioNetworkReactionWidth / 2),
+      y: coord.y + (flBioNetworkReactionHeight / 2)
     };
   }
+
+
 }
 
 export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
@@ -249,11 +264,15 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
     this.drawTextUnder(container, textColor, backgroundColor, flBioNetworkCofactorSize);
   }
 
-  getCenter(): FlCoord {
-    // get the center of the cofactor rect
+  setCenter(coord: FlCoord): void {
+    this.fx = coord.x - (flBioNetworkCofactorSize / 2);
+    this.fy = coord.y - (flBioNetworkCofactorSize / 2);
+  }
+
+  convertToCenterCoord(coord: FlCoord): FlCoord {
     return {
-      x: this.x + (flBioNetworkCofactorSize / 2),
-      y: this.y + (flBioNetworkCofactorSize / 2)
+      x: coord.x,
+      y: coord.y
     };
   }
 

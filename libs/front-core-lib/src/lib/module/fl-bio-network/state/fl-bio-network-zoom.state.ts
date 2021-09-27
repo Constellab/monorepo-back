@@ -2,7 +2,8 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {FlD3SelectionSimple, FlD3ZoomEvent} from '../../fl-chart/model/fl-d3.class';
 import {ZoomBehavior, ZoomTransform} from 'd3-zoom';
 import * as d3 from 'd3';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {filter} from 'rxjs/operators';
 
 /**
  * State to manage the zoom in the {@link FlBioNetworkComponent}
@@ -68,13 +69,13 @@ export class FlBioNetworkZoomState implements OnDestroy {
   //   this.zoomHandler.transform(this.svg, newZoom);
   // }
   //
-  // public getZoom$(): Observable<ZoomTransform> {
-  //   return this.zoom$.asObservable().pipe(
-  //     filter(zoom => zoom != null)
-  //   );
-  // }
+  public getZoom$(): Observable<ZoomTransform> {
+    return this.zoom$.asObservable().pipe(
+      filter(zoom => zoom != null)
+    );
+  }
 
-  private get currentZoom(): ZoomTransform | null {
+  public get currentZoom(): ZoomTransform | null {
     return this.zoom$.value;
   }
 
