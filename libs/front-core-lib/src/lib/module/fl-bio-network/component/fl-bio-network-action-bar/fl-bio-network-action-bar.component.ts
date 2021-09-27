@@ -5,6 +5,8 @@ import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3.class';
 import {MatSliderChange} from '@angular/material/slider';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {filter} from 'rxjs/operators';
+import {FlBioNetworkExportPosition} from '../../model/fl-bio-network-export.class';
+import {FlFileHelper} from '../../../../service/fl-file.helper';
 
 /**
  * Component inside the {@link FlBioNetworkComponent} to show the quick actions
@@ -74,6 +76,12 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   get slideLinkColorToggleText(): string {
     return this.slideLinkColorToggle ? 'flBioNetwork.link_color_log' : 'flBioNetwork.link_color_normal';
+  }
+
+  exportPositionToJson(): void {
+    const positions: FlBioNetworkExportPosition = this.rendererState.exportPositions();
+
+    FlFileHelper.downloadJsonFile(positions, 'network.json');
   }
 
 

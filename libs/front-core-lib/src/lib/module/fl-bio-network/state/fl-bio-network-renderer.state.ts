@@ -11,6 +11,7 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {FlBioNetworkState} from './fl-bio-network.state';
 import {FlBioNetworkSelectionState} from './fl-bio-network-selection.state';
 import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
+import {FlBioNetworkExportPosition} from '../model/fl-bio-network-export.class';
 
 /**
  * State to manager the drawing of bio network using d3
@@ -280,6 +281,30 @@ export class FlBioNetworkRendererState implements OnDestroy {
     this.nodesContainer = null;
     this.simulationEnded = false;
   }
+
+  public exportPositions(): FlBioNetworkExportPosition {
+    const position: FlBioNetworkExportPosition = {
+      metabolites: [],
+      reactions: []
+    };
+
+    position.metabolites = this.data.metabolites.map(node => {
+      return {
+        x: node.x,
+        y: node.y,
+        id: node.data.chebi_id
+      };
+    });
+    position.reactions = this.data.reactions.map(node => {
+      return {
+        x: node.x,
+        y: node.y,
+        id: node.data.id
+      };
+    });
+    return position;
+  }
+
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

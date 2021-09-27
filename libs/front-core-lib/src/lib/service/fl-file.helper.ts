@@ -40,31 +40,6 @@ export class FlFileHelper {
     return fullPath.replace(regex, '');
   }
 
-  /**
-   * Convert a base 64 string to a blob.
-   * Code from https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
-   * @param b64Data base 64 string
-   * @param contentType content type of the blob
-   */
-  public static convertBase64ToBlob(b64Data: string, contentType = 'application/json'): Blob {
-    const byteCharacters = atob(b64Data);
-    const byteArrays = [];
-    const sliceSize: number = 512;
-
-    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-      const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-      const byteNumbers = new Array(slice.length);
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
-
-    return new Blob(byteArrays, {type: contentType});
-  }
 
   public static isPDF(file: string): boolean {
     return FlFileHelper.extensionIsPDF(FlFileHelper.getFileExtension(file));
@@ -186,5 +161,58 @@ export class FlFileHelper {
 
     // download the file
     this.downloadBlob(blob, filename);
+  }
+
+  /**
+   * Convert a base 64 string to a blob.
+   * Code from https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
+   * @param b64Data base 64 string
+   * @param contentType content type of the blob
+   */
+  public static convertBase64ToBlob(b64Data: string, contentType = 'application/json'): Blob {
+    const byteCharacters = atob(b64Data);
+    const byteArrays = [];
+    const sliceSize: number = 512;
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, {type: contentType});
+  }
+
+
+  /**
+   * Convert a json to blob and download it to the user's computer
+   * @param json object
+   * @param filename the complete name of the file
+   */
+  public static downloadJsonFile(json: any, filename: string): void {
+    // convert to base 64
+    const blob: Blob = FlFileHelper.convertJsonToBlob(json);
+
+    // download the file
+    this.downloadBlob(blob, filename);
+  }
+
+  /**
+   * Convert a json to a blob.
+   * @param json object
+   */
+  public static convertJsonToBlob(json: any): Blob {
+    const str = JSON.stringify(json);
+
+    const bytes = new TextEncoder().encode(str);
+    return new Blob([bytes], {
+      type: 'application/json;charset=utf-8'
+    });
   }
 }

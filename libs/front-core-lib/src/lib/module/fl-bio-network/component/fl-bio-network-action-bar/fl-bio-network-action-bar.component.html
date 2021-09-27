@@ -25,5 +25,10 @@
 
   <fl-bio-network-selection-info class="g-full-height"></fl-bio-network-selection-info>
 
-<!--  <fl-bio-network-zoom></fl-bio-network-zoom>-->
+  <button mat-icon-button (click)="exportPositionToJson()" type="button" color="primary"
+          [matTooltip]="'flBioNetwork.export_position_to_json' | translate">
+    <mat-icon>file_download</mat-icon>
+  </button>
+
+  <!--  <fl-bio-network-zoom></fl-bio-network-zoom>-->
 </div>
