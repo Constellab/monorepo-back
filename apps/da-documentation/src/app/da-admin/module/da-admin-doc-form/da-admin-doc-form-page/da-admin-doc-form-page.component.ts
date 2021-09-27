@@ -12,7 +12,7 @@ import { DaDocumentationService } from '../../../../da-core/da-service/da-docume
 export class DaAdminDocFormPageComponent implements OnInit {
 
   doc: DaDocumentation = null;
-  search = false;
+  loaded = false;
 
   constructor(
     private daDocumentationService: DaDocumentationService,
@@ -20,13 +20,12 @@ export class DaAdminDocFormPageComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // FL Loader
     this.activatedRoute.params.subscribe(params => {
       if (params['id']) this.getById(params['id']).subscribe(documentation => {
           this.doc = documentation;
-          this.search = true;
+          this.loaded = true;
         });
-      else this.search = true;
+      else this.loaded = true;
     });
   }
 

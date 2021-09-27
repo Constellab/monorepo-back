@@ -24,5 +24,6 @@
 
     <button mat-raised-button color="primary" type="submit" form="documentation-form" class="g-centered-forced">
         Save
+        <fl-button-loader *ngIf="isLoading"></fl-button-loader>
     </button>
 </form>

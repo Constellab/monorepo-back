@@ -1,9 +1,11 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@ngneat/reactive-forms';
 import { Observable } from 'rxjs';
 import { Validators } from '@angular/forms';
 import { DaDocumentation } from '../../../../da-core/da-model/da-entities/da-documentation.class';
 import { DaDocumentationService } from '../../../../da-core/da-service/da-documentation.service';
+import { FlSnackBarService } from '@monorepo/front-core-lib';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'da-admin-doc-form',
@@ -16,14 +18,16 @@ export class DaAdminDocFormComponent implements OnInit {
 
     formGp: FormGroup<DaDocumentation>;
     isUpdate = false;
+    isLoading = false;
 
     constructor(
         private daDocumentationService: DaDocumentationService,
+        private snackBarService: FlSnackBarService,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
         this.buildForm();
-        if(this.documentation) this.isUpdate = true;
     }
 
     buildForm(): void {
@@ -32,15 +36,18 @@ export class DaAdminDocFormComponent implements OnInit {
             title: [null, Validators.required],
             content: [null, Validators.required]
         })
-        if (this.documentation) this.setFormGroupValue(this.documentation);
+        if (this.documentation){
+            this.setFormGroupValue(this.documentation);
+            this.isUpdate = true;
+        }
     }
 
     submit(): void {
-        //Button loader
+        this.isLoading = true;
         if (this.isUpdate) {
-            this.update(this.formGp.value).subscribe();
+            this.update(this.formGp.value);
         } else {
-            this.create(this.formGp.value).subscribe();
+            this.create(this.formGp.value);
         }
     }
 
@@ -48,13 +55,25 @@ export class DaAdminDocFormComponent implements OnInit {
         this.formGp.patchValue(doc);
     }
 
-    private create(formValue: DaDocumentation): Observable<DaDocumentation> {
-        return this.daDocumentationService.create(formValue);
-        // FL SnackBarService
+    private create(formValue: DaDocumentation): DaDocumentation {
+        let createdDoc:DaDocumentation;
+        this.daDocumentationService.create(formValue).subscribe(cDoc => {
+            createdDoc = cDoc;
+            this.snackBarService.openSuccessMessage('New documentation created !');
+            this.isLoading = false;
+            this.router.navigate(['admin']);
+        });
+        return createdDoc;
     }
 
-    private update(formValue: DaDocumentation): Observable<DaDocumentation> {
-        return this.daDocumentationService.update(formValue);
-        // FL SnackBarService
+    private update(formValue: DaDocumentation): DaDocumentation {
+        let updatedDoc:DaDocumentation; 
+        this.daDocumentationService.update(formValue).subscribe(uDoc => {
+            updatedDoc = uDoc;
+            this.snackBarService.openSuccessMessage('Documentation uptated !');
+            this.isLoading = false;
+            this.router.navigate(['admin']);
+        });
+        return updatedDoc;
     }
 }
