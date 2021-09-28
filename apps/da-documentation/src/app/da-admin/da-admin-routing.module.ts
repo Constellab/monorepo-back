@@ -5,15 +5,15 @@ import { DaAdminListPageComponent } from './module/da-admin-list-page/da-admin-l
 
 const routes: Route[] = [
     {
-        path: 'admin', 
+        path: '', 
         component: DaAdminListPageComponent
     },
     {
-        path: 'admin/edit', 
+        path: 'edit', 
         component: DaAdminDocFormPageComponent
     },
     {
-        path: 'admin/edit/:id',
+        path: 'edit/:id',
         component: DaAdminDocFormPageComponent
     }
 ];
