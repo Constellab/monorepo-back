@@ -299,16 +299,18 @@ export class FlBioNetworkRendererState implements OnDestroy {
     };
 
     position.metabolites = this.data.metabolites.map(node => {
+      const coord = node.getCenter()
       return {
-        x: node.x,
-        y: node.y,
+        x: coord.x,
+        y: coord.y,
         id: node.data.chebi_id
       };
     });
     position.reactions = this.data.reactions.map(node => {
+      const coord = node.getCenter()
       return {
-        x: node.x,
-        y: node.y,
+        x: coord.x,
+        y: coord.y,
         id: node.data.id
       };
     });
