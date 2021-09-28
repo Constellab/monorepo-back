@@ -1,16 +1,13 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Documentation {
+export class Version {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column()
-    title: string;
+    version: string;
 
     @Column('text')
     content: string;
-
-    @Column('uuid')
-    version_id: string;
 }

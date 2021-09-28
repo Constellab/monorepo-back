@@ -8,27 +8,27 @@ export class DocumentationController {
   constructor(private readonly documentationService: DocumentationService) {}
 
   @Post()
-  create(@Body(new ParsePipe(Documentation)) createDocumentation: Documentation) {
+  create(@Body(new ParsePipe(Documentation)) createDocumentation: Documentation): Promise<Documentation> {
     return this.documentationService.create(createDocumentation);
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<Documentation[]> {
     return this.documentationService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Promise<Documentation> {
     return this.documentationService.findOne(id);
   }
 
   @Put()
-  update(@Body(new ParsePipe(Documentation)) updateDocumentation: Documentation) {
+  update(@Body(new ParsePipe(Documentation)) updateDocumentation: Documentation): Promise<Documentation> {
     return this.documentationService.update(updateDocumentation);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: string): Promise<void> {
     return this.documentationService.remove(id);
   }
 }
