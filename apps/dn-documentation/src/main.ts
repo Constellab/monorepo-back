@@ -1,6 +1,5 @@
 import {NestFactory} from '@nestjs/core';
 import {AppModule} from './dn-app.module';
-import {WINSTON_MODULE_NEST_PROVIDER} from 'nest-winston';
 
 async function bootstrap(): Promise<void> {
 
