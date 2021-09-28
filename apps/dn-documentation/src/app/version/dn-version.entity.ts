@@ -6,5 +6,5 @@ export class Version {
     id: string;
 
     @Column({length: 20})
-    version: string;
+    versionNumber: string;
 }
