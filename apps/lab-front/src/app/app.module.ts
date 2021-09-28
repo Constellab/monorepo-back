@@ -2,7 +2,6 @@ import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, Injector, NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
-import {RouterModule} from '@angular/router';
 import {MainModule} from './main/main.module';
 import {CoreModule} from './core/core.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -28,6 +27,7 @@ import {AuthenticationService} from './core/service/authentication.service';
 import {ApiErrorService} from './core/service/api-error.service';
 import {LabEnvStore} from './core/service/lab-env.store';
 import {ApiServiceConfig} from './core/service/api-module.config';
+import {AppRoutingModule} from './app-routing.module';
 
 
 function loadTokenFromLocalStorage(jwtManager: LabEnvStore): () => void {
@@ -43,7 +43,6 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    RouterModule.forRoot([], {initialNavigation: 'enabled'}),
     BrowserAnimationsModule,
     HttpClientModule,
 
@@ -82,6 +81,8 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
         toolbar: FlQuillConfig.defaultToolbarConfig,
       },
     }),
+
+    AppRoutingModule
   ],
   providers: [
     {
