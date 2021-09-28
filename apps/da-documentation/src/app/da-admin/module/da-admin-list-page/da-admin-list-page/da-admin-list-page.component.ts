@@ -27,7 +27,9 @@ export class DaAdminListPageComponent implements OnInit {
   }
 
   private getDocumentations(): Observable<DaDocumentation[]>{
+    
     return this.daDocumentationService.get();
+    
   }
 
   create(): void{
@@ -35,7 +37,7 @@ export class DaAdminListPageComponent implements OnInit {
   }
 
   edit(id: string): void{
-    this.router.navigate(['admin', 'edit', id]);
+    this.router.navigate(['edit', id]);
   }
 
   delete(id: string, i: number): void{
