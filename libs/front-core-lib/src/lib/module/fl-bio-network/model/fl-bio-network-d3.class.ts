@@ -271,8 +271,8 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
 
   convertToCenterCoord(coord: FlCoord): FlCoord {
     return {
-      x: coord.x,
-      y: coord.y
+      x: coord.x + (flBioNetworkCofactorSize / 2),
+      y: coord.y + (flBioNetworkCofactorSize / 2),
     };
   }
 
