@@ -3,13 +3,13 @@ import {NgModule} from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {AppComponent} from './da-app.component';
 import {RouterModule} from '@angular/router';
-import {CoreModule} from '@angular/flex-layout';
 import {FlApiModule, FlTranslateModule, FlSnackBarModule, FlDialogModule} from '@monorepo/front-core-lib';
 import {DaApiServiceConfig} from './da-core/da-model/da-config/da-api-module.config';
 import {DaApiErrorService} from './da-core/da-model/da-config/da-api-error.service';
 import { ClSupportedLanguage } from '@monorepo/core-lib';
 import { HttpClientModule } from '@angular/common/http';
 import { DaAppRoutingModule } from './da-app-routing-module';
+import { DaCoreModule } from './da-core/da-core.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,9 +20,7 @@ import { DaAppRoutingModule } from './da-app-routing-module';
     HttpClientModule,
 
     DaAppRoutingModule,
-
-    // Core Modules
-    CoreModule,
+    DaCoreModule,
 
     FlApiModule.forRoot(DaApiServiceConfig, DaApiErrorService),
 

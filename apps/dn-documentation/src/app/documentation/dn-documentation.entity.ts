@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Version } from '../version/dn-version.entity';
 
 @Entity()
 export class Documentation {
@@ -11,6 +12,9 @@ export class Documentation {
     @Column('text')
     content: string;
 
-    @Column('uuid')
-    version_id: string;
+    @ManyToOne(() => Version)
+    version: Version;
+
+    @Column({length: 255})
+    path: string;
 }

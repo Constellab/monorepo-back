@@ -5,9 +5,6 @@ export class Version {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @Column({length: 20})
     version: string;
-
-    @Column('text')
-    content: string;
 }

@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { version } from 'punycode';
 import { Repository } from 'typeorm';
+import { VersionService } from '../version/dn-version.service';
 import { Documentation } from './dn-documentation.entity';
 
 @Injectable()
@@ -8,12 +10,15 @@ export class DocumentationService {
   constructor(
     @InjectRepository(Documentation)
     private documentationsRepository: Repository<Documentation>,
+    private versionService: VersionService
   ){}
 
   create(createDocumentationRes: Documentation): Promise<Documentation> {
     const createDocumentation = {
       title: createDocumentationRes.title,
-      content: createDocumentationRes.content
+      content: createDocumentationRes.content,
+      path: createDocumentationRes.path,
+
     }
     return this.documentationsRepository.save(createDocumentation);
   }
