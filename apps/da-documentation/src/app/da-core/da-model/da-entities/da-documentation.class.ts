@@ -4,5 +4,9 @@ export class DaDocumentation {
     title: string;
 
     content: string;
+
+    path: string;
+
+    versionId: string;
 }
 

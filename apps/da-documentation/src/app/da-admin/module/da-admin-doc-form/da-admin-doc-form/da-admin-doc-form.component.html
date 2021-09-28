@@ -21,6 +21,14 @@
         </mat-error>
     </fl-form-field>
   
+    <!--  path  -->
+    <mat-form-field class="g-form-input" appearance="fill">
+        <mat-label>Path</mat-label>
+        <input matInput type="text" formControlName="path">
+        <mat-error *ngIf="formGp.get('path').hasError('required')">
+            {{'path' | flErrorRequired}}
+        </mat-error>
+    </mat-form-field>
 
     <button mat-raised-button color="primary" type="submit" form="documentation-form" class="g-centered-forced">
         Save

@@ -5,5 +5,12 @@ import { Version } from './dn-version.entity';
 
 @Injectable()
 export class VersionService {
-    
+    constructor(
+        @InjectRepository(Version)
+        private versionsRepository: Repository<Version>,
+    ){}
+
+    getByVersionNumber(vNumber: string): Promise<Version>{
+        return this.versionsRepository.findOne({where: {versionNumber: vNumber}});
+    }
 }

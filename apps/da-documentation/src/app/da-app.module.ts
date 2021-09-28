@@ -16,7 +16,6 @@ import { DaCoreModule } from './da-core/da-core.module';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    RouterModule.forRoot([], { initialNavigation: 'enabled' }),
     HttpClientModule,
 
     DaAppRoutingModule,

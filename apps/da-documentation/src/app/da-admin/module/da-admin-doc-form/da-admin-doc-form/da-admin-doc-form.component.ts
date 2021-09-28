@@ -34,7 +34,9 @@ export class DaAdminDocFormComponent implements OnInit {
         this.formGp = new FormBuilder().group({
             id: [null],
             title: [null, Validators.required],
-            content: [null, Validators.required]
+            content: [null, Validators.required],
+            path: [null, Validators.required],
+            versionId: [null]
         })
         if (this.documentation){
             this.setFormGroupValue(this.documentation);
@@ -43,11 +45,13 @@ export class DaAdminDocFormComponent implements OnInit {
     }
 
     submit(): void {
-        this.isLoading = true;
-        if (this.isUpdate) {
-            this.update(this.formGp.value);
-        } else {
-            this.create(this.formGp.value);
+        if(this.formGp.status == 'VALID'){
+            this.isLoading = true;
+            if (this.isUpdate) {
+                this.update(this.formGp.value);
+            } else {
+                this.create(this.formGp.value);
+            }
         }
     }
 

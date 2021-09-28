@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { version } from 'punycode';
 import { Repository } from 'typeorm';
+import { Version } from '../version/dn-version.entity';
 import { VersionService } from '../version/dn-version.service';
 import { Documentation } from './dn-documentation.entity';
 
@@ -14,13 +14,23 @@ export class DocumentationService {
   ){}
 
   create(createDocumentationRes: Documentation): Promise<Documentation> {
-    const createDocumentation = {
-      title: createDocumentationRes.title,
-      content: createDocumentationRes.content,
-      path: createDocumentationRes.path,
+    let version: Version;
+    let doc: Promise<Documentation>;
 
-    }
-    return this.documentationsRepository.save(createDocumentation);
+    this.versionService.getByVersionNumber('1.0.0').then((v) => {
+      version = v;
+      console.log(version);
+
+      const createDocumentation = {
+        title: createDocumentationRes.title,
+        content: createDocumentationRes.content,
+        path: createDocumentationRes.path,
+        version: version
+      }
+      doc = this.documentationsRepository.save(createDocumentation);
+    })
+
+    return doc;
   }
 
   findAll(): Promise<Documentation[]> {
