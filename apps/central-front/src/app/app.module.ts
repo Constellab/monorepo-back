@@ -31,7 +31,7 @@ import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {AuthenticationService} from './login/service/authentication.service';
 import {UserAccountsService} from './core/service-api/user-accounts.service';
 import {ApiErrorService} from './core/service/api-error.service';
-import { DaAdminListPageComponent } from './da-admin-list-page/da-admin-list-page.component';
+
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -44,8 +44,7 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
 
 @NgModule({
   declarations: [
-    AppComponent,
-    DaAdminListPageComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
+import { pathToFileURL } from 'url';
 import { ParsePipe } from '../core/pipes/parse.pipe';
 import { Documentation } from './dn-documentation.entity';
 import { DocumentationService } from './dn-documentation.service';
@@ -15,6 +16,11 @@ export class DocumentationController {
   @Get()
   findAll(): Promise<Documentation[]> {
     return this.documentationService.findAll();
+  }
+
+  @Get('path')
+  findOneByPath(@Query() query: any): Promise<Documentation> {
+    return this.documentationService.findOneByPath(query.path);
   }
 
   @Get(':id')

@@ -32,6 +32,14 @@ export class DaDocumentationService {
         return this.apiService.getById(this.route, id, DaDocumentation);
     }
 
+     /**
+   * Call http get one by id
+   * @param path path of the entity
+   */
+      public getByPath(path: string): Observable<DaDocumentation> {
+        return this.apiService.get(`${this.route}/path/?path=${path}`, DaDocumentation);
+    }
+
     /**
    * Call http get
    */

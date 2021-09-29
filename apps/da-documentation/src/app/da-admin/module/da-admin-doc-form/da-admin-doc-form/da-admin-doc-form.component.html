@@ -2,7 +2,7 @@
 
     <!--  title  -->
     <mat-form-field class="g-form-input" appearance="fill">
-        <mat-label>Title</mat-label>
+        <mat-label>{{'title' | translate}}</mat-label>
         <input matInput type="text" formControlName="title">
         <mat-error *ngIf="formGp.get('title').hasError('required')">
             {{'title' | flErrorRequired}}
@@ -12,8 +12,8 @@
 
     <!--    content      -->
     <fl-form-field class="g-form-input">
-        <mat-label>Content</mat-label>
-        <quill-editor formControlName="content" placeholder="Content"
+        <mat-label>{{'content' | translate}}</mat-label>
+        <quill-editor formControlName="content" placeholder="{{'content' | translate}}"
                       class="g-full" [styles]="{height: '8em'}">
         </quill-editor>
         <mat-error *ngIf="formGp.get('content').hasError('required')">
@@ -23,7 +23,7 @@
   
     <!--  path  -->
     <mat-form-field class="g-form-input" appearance="fill">
-        <mat-label>Path</mat-label>
+        <mat-label>{{'path' | translate}}</mat-label>
         <input matInput type="text" formControlName="path">
         <mat-error *ngIf="formGp.get('path').hasError('required')">
             {{'path' | flErrorRequired}}
@@ -31,7 +31,7 @@
     </mat-form-field>
 
     <button mat-raised-button color="primary" type="submit" form="documentation-form" class="g-centered-forced">
-        Save
+        {{'save' | translate}}
         <fl-button-loader *ngIf="isLoading"></fl-button-loader>
     </button>
 </form>
