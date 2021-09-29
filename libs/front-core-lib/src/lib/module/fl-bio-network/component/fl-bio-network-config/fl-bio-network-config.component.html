@@ -29,10 +29,14 @@
 
     <!--  Select the pathway  -->
     <p>{{'flBioNetwork.select_sub_pathway' | translate}}</p>
-    <mat-checkbox *ngFor="let subPathway of pathways | async"
+    <mat-checkbox [checked]="pathwaysAllSelected"
+                  (change)="selectAllPathwayChange($event.checked)">
+     <strong>{{'flBioNetwork.select_all_pathway' | translate}}</strong>
+    </mat-checkbox>
+    <mat-checkbox *ngFor="let subPathway of pathways$ | async"
                   (click)="$event.stopPropagation()"
-                  (change)="$event ? selection.toggle(subPathway.id) : null"
-                  [checked]="selection.isSelected(subPathway.id)"
+                  (change)="$event ? pathwaySelection.toggle(subPathway.id) : null"
+                  [checked]="pathwaySelection.isSelected(subPathway.id)"
                   class="g-mat-checkbox-wrap-text">
       <div class="g-text-small g-text-capitalize-first">{{subPathway.name}} ({{subPathway.id}})</div>
     </mat-checkbox>

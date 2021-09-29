@@ -26,7 +26,8 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     cofactors_count : '{{count}} cofacteurs',
     reactions_count : '{{count}} réactions',
     links_count : '{{count}} liens',
-    export_position_to_json: 'Exporter les positions'
+    export_position_to_json: 'Exporter les positions',
+    select_all_pathway: 'Tout sélectionner'
   }
 };
 
@@ -51,7 +52,8 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     cofactors_count : '{{count}} cofactors',
     reactions_count : '{{count}} reactions',
     links_count : '{{count}} links',
-    export_position_to_json: 'Export positions'
+    export_position_to_json: 'Export positions',
+    select_all_pathway: 'Select all'
   }
 };
 

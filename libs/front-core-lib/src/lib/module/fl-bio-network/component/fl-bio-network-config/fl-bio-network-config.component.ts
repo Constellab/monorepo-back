@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FlBioNetwork, FlBioNetworkPathwayDetail, FlPathwayDatabase, flPathwayDatabases} from '../../model/fl-bio-network.class';
-import {Observable} from 'rxjs';
 import {MatSelectChange} from '@angular/material/select';
+import {Observable} from 'rxjs';
 
 /**
  * Component to select the config of the pathway before showing it
@@ -17,16 +17,15 @@ import {MatSelectChange} from '@angular/material/select';
 export class FlBioNetworkConfigComponent implements OnInit {
 
   networks: FlBioNetwork[] | null;
-
   networkName: string;
+
   database: FlPathwayDatabase;
-
-  pathways: Observable<FlBioNetworkPathwayDetail[]>;
-
-  // handle the selection per id
-  selection: SelectionModel<string>;
-
   pathwayDatabases: FlPathwayDatabase[] = flPathwayDatabases;
+
+  pathways$: Observable<FlBioNetworkPathwayDetail[]>;
+  // handle the selection per id
+  pathwaySelection: SelectionModel<string>;
+  pathwaysAllSelected: boolean = false;
 
   constructor(private state: FlBioNetworkState) {
   }
@@ -39,8 +38,8 @@ export class FlBioNetworkConfigComponent implements OnInit {
 
     this.networkName = this.state.getSelectedNetwork().name;
     this.database = this.state.getDatabase();
-    this.selection = this.state.selectedPathways;
-    this.pathways = this.state.getPathwayList$();
+    this.pathwaySelection = this.state.selectedPathways;
+    this.pathways$ = this.state.getPathwayList$();
   }
 
   onNetworkChange(change: MatSelectChange): void {
@@ -50,4 +49,15 @@ export class FlBioNetworkConfigComponent implements OnInit {
   onDatabaseChange(change: MatSelectChange): void {
     this.state.selectDatabase(change.value);
   }
+
+  selectAllPathwayChange(select: boolean): void {
+    this.pathwaysAllSelected = select;
+    if (select) {
+      this.state.selectAllPathways();
+    } else {
+      this.state.unselectAllPathways();
+    }
+  }
+
+
 }

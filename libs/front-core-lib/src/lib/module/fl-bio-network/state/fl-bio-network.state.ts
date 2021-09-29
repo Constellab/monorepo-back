@@ -64,7 +64,7 @@ export class FlBioNetworkState implements OnDestroy {
   }
 
   // select specific pathway in the network to display
-  public selectPathways(pathwayIds: string[]): void {
+  private selectPathways(pathwayIds: string[]): void {
     // if no ids are selected, we return null
     if (ClHelpService.isNullOrEmpty(pathwayIds) || this.getDatabase() == null ||
       this.getSelectedNetwork() == null) {
@@ -75,6 +75,18 @@ export class FlBioNetworkState implements OnDestroy {
       .convertPathwayToChartPathway(this.getSelectedNetwork(), pathwayIds, this.getDatabase());
 
     this.chartData$.next(chartData);
+  }
+
+  public selectAllPathways(): void {
+    this.selectedPathways.select(...this.getCurrentPathwayList().map(pathway => pathway.id));
+  }
+
+  public unselectAllPathways(): void {
+    this.selectedPathways.deselect(...this.getCurrentPathwayList().map(pathway => pathway.id));
+  }
+
+  private getCurrentPathwayList(): FlBioNetworkPathwayDetail[] {
+    return this.pathwayListCache[this.database$.value];
   }
 
   public getChartData$(): Observable<FlBioxNetworkD3 | null> {
@@ -145,7 +157,5 @@ export class FlBioNetworkState implements OnDestroy {
     this.chartData$.complete();
     this.database$.complete();
   }
-
-
 }
 
