@@ -1,12 +1,12 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {FlBioNetworkRendererState} from '../../state/fl-bio-network-renderer.state';
-import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3.class';
 import {MatSliderChange} from '@angular/material/slider';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {filter} from 'rxjs/operators';
 import {FlBioNetworkExportPosition} from '../../model/fl-bio-network-export.class';
 import {FlFileHelper} from '../../../../service/fl-file.helper';
+import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3-network.class';
 
 /**
  * Component inside the {@link FlBioNetworkComponent} to show the quick actions

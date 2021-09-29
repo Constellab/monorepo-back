@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import {Simulation} from 'd3-force';
 import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {ScaleLinear} from 'd3-scale';
-import {FlBioNetworkD3Link, FlBioNetworkD3Node, flBioNetworkReactionMaxValue, FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3Node} from '../model/fl-bio-network-d3.class';
 import {FlD3DragEvent, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
@@ -13,6 +13,9 @@ import {FlBioNetworkSelectionState} from './fl-bio-network-selection.state';
 import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
 import {FlBioNetworkExportPosition} from '../model/fl-bio-network-export.class';
 import {FlBioNetworkGridState} from './fl-bio-network-grid.state';
+import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
+import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
+import {flBioNetworkReactionMaxValue} from '../model/fl-bio-network-d3-reaction.class';
 
 /**
  * State to manager the drawing of bio network using d3
