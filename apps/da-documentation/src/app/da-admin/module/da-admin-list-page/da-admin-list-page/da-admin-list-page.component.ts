@@ -32,12 +32,13 @@ export class DaAdminListPageComponent implements OnInit {
     
   }
 
+  // TODO: Est-ce normal que je dois quand meme ref admin ?
   create(): void{
     this.router.navigate(['admin','edit']);
   }
 
   edit(id: string): void{
-    this.router.navigate(['edit', id]);
+    this.router.navigate(['admin', 'edit', id]);
   }
 
   delete(id: string, i: number): void{

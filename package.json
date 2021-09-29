@@ -51,8 +51,16 @@
     "central-back:caprover-deploy-prod": "caprover deploy --host https://captain.gws.gencovery.com --appName prod-back  --branch master",
     "central-back:lint": "nx run central-back:lint",
     "central-back:build-image-dev": "docker build -f apps/central-back/Dockerfile -t central-back .",
+    "da-documentation:serve": "nx serve da-documentation",
+    "da-documentation:build-prod": "nx build da-documentation --prod",
+    "da-documentation:build-pre-prod": "nx build da-documentation --configuration=preprod",
+    "da-documentation:build-dev": "nx build da-documentation --configuration=dev",
+    "da-documentation:build-image-dev": "docker build -f apps/da-documentation/Dockerfile -t da-documentation .",
+    "da-documentation:caprover-deploy-prod": "caprover deploy --host https://captain.gws.gencovery.com --appName doc  --branch master",
     "dn-documentation:serve": "nx run dn-documentation:serve",
-    "da-documentation:serve": "nx serve da-documentation"
+    "dn-documentation:build": "nx run dn-documentation:build",
+    "dn-documentation:build-image-dev": "docker build -f apps/dn-documentation/Dockerfile -t dn-documentation .",
+    "dn-documentation:caprover-deploy-prod": "caprover deploy --host https://captain.gws.gencovery.com --appName doc-prod-back  --branch master"
   },
   "private": true,
   "dependencies": {

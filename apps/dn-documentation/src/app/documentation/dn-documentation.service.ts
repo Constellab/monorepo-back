@@ -41,6 +41,10 @@ export class DocumentationService {
     return this.documentationsRepository.findOne(id);
   }
 
+  findOneByPath(path: string): Promise<Documentation> {
+    return this.documentationsRepository.findOne({where: {path: path}}).catch();
+  }
+
   update(updateDocumentation: Documentation): Promise<Documentation> {
     return this.documentationsRepository.save(updateDocumentation);
   }

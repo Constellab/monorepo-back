@@ -1,7 +1,14 @@
 import { NgModule } from '@angular/core';
-import { FlCorePipeModule, FlDialogModule, FlFormModule, FlLoaderModule, FlSnackBarModule } from '@monorepo/front-core-lib';
+import { 
+    FlCorePipeModule, 
+    FlDialogModule, 
+    FlFormModule, 
+    FlLoaderModule, 
+    FlSnackBarModule, 
+    FlTranslateModule 
+} from '@monorepo/front-core-lib';
 
 @NgModule({
-    exports: [FlCorePipeModule, FlFormModule, FlLoaderModule, FlDialogModule, FlSnackBarModule]
+    exports: [FlCorePipeModule, FlFormModule, FlLoaderModule, FlDialogModule, FlSnackBarModule, FlTranslateModule]
 })
 export class DaCustomLibraryModule{}

@@ -68,7 +68,6 @@ function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
       fallbackLanguage: clDefaultLang,
       parser: I18nJsonParser,
       parserOptions: {
-        path: join(__dirname, 'assets/i18n/'),
         watch: true //    // enable live translation
       },
     }),

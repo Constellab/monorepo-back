@@ -605,8 +605,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "apps/da-documentation/src/environments/environment.ts",
-                  "with": "apps/da-documentation/src/environments/environment.prod.ts"
+                  "replace": "apps/da-documentation/src/environments/da-environment.ts",
+                  "with": "apps/da-documentation/src/environments/da-environment.prod.ts"
                 }
               ],
               "optimization": true,
