@@ -35,3 +35,17 @@
 .drawer-opener-icon mat-icon {
   margin-left: 20px;
 }
+
+///////////////////////// GRID //////////////////////
+::ng-deep {
+  .axis path {
+    display: none;
+  }
+
+  .axis line {
+    stroke-opacity: 0.2;
+    shape-rendering: crispEdges;
+    stroke-width: 0.3;
+  }
+}
+

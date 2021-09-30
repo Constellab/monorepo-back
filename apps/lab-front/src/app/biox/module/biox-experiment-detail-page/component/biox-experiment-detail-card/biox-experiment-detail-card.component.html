@@ -9,10 +9,17 @@
         <mat-icon>{{expandIcon}}</mat-icon>
       </button>
 
-      <button mat-icon-button type="button" (click)="openUpdateDialog()"
-              [matTooltip]="'biox.update_experiment' | translate">
-        <mat-icon>edit</mat-icon>
-      </button>
+      <ng-container *ngIf="experiment.isEditable()">
+        <button mat-icon-button type="button" (click)="openUpdateDialog()"
+                [matTooltip]="'biox.update_experiment' | translate">
+          <mat-icon>edit</mat-icon>
+        </button>
+
+        <button mat-icon-button type="button" (click)="openValidationDialog()"
+                [matTooltip]="'biox.validate_experiment' | translate">
+          <mat-icon>verified</mat-icon>
+        </button>
+      </ng-container>
 
       <fl-status-chip [status]="experiment" mode="iconText"
                       class="status" (click)="openProgressInformation()"

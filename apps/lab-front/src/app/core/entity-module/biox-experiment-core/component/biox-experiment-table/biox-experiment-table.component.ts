@@ -6,7 +6,7 @@ import {RouterService} from '../../../../service/router.service';
 @Component({
   selector: 'gen-biox-experiment-table',
   templateUrl: './biox-experiment-table.component.html',
-  styleUrls: ['./biox-experiment-table.component.css']
+  styleUrls: ['./biox-experiment-table.component.scss']
 })
 export class BioxExperimentTableComponent extends FlPaginatedTableAbstractDirective<BioxExperiment>
   implements OnInit {

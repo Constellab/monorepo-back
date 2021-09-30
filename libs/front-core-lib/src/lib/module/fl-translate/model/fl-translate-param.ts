@@ -1,9 +1,9 @@
+import {ClObject, ClSupportedLanguage} from '@monorepo/core-lib';
+
 /**
  * When translating a mode can be provided
  * to change the case of the translated text
  */
-import {ClObject, ClSupportedLanguage} from '@monorepo/core-lib';
-
 export type FlTranslateMode = 'lowerCase' | 'upperCase' | 'capitalize';
 
 /**

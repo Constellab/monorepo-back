@@ -58,6 +58,9 @@
     "da-documentation-e2e": {
       "tags": [],
       "implicitDependencies": ["da-documentation"]
+    },
+    "back-core-lib": {
+      "tags": ["back"]
     }
   }
 }

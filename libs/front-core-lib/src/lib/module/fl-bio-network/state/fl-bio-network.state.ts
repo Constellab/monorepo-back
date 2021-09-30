@@ -1,7 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {FlBioNetwork, FlBioNetworkPathwayDetail, FlPathwayDatabase} from '../model/fl-bio-network.class';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkFactory} from '../utils/fl-bio-network.factory';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlBioNetworkHelper} from '../utils/fl-bio-network.helper';
@@ -9,6 +8,7 @@ import {debounceTime, map} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 import {FlThemeService} from '../../../service/fl-theme.service';
+import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
 
 
 /**

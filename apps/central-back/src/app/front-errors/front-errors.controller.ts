@@ -1,8 +1,7 @@
 import {Body, Controller, Post} from '@nestjs/common';
-import {ParsePipe} from '../core/pipes/parse.pipe';
 import {FrontErrorsService} from './front-errors.service';
 import {FrontError} from './front-error.entity';
-import {Public} from '../core/decorators/public.decorator';
+import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 
 @Controller('front-errors')
 export class FrontErrorsController {
@@ -13,9 +12,9 @@ export class FrontErrorsController {
   /**
    * Log a front error
    */
-  @Public()
+  @BlPublic()
   @Post()
-  create(@Body(new ParsePipe(FrontError)) error: FrontError): Promise<FrontError> {
+  create(@Body(new BlParsePipe(FrontError)) error: FrontError): Promise<FrontError> {
     return this.service.logFrontError(error);
   }
 

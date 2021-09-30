@@ -1,12 +1,11 @@
 import {Body, Controller, Get, HttpException, Param, ParseUUIDPipe, Post, Res} from '@nestjs/common';
-import {Public} from '../../core/decorators/public.decorator';
 import {Response} from 'express';
-import {ParsePipe} from '../../core/pipes/parse.pipe';
 import {User} from '../user.entity';
 import {UserAccountsService} from './user-accounts.service';
 import {FrontService} from '../../core/services/front/front.service';
 import {UserCategories} from '../../core/decorators/user-category.decorator';
 import {CmUserCategory} from '@monorepo/common-model';
+import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 
 /**
  * Open routes to manage users' accounts
@@ -18,16 +17,16 @@ export class UserAccountsController {
               private frontService: FrontService) {
   }
 
-  @Public()
+  @BlPublic()
   @Post()
-  create(@Body(new ParsePipe(User)) entity: User): Promise<User> {
+  create(@Body(new BlParsePipe(User)) entity: User): Promise<User> {
     return this.userAccountsService.signup(entity);
   }
 
   /**
    * Open route for account activation with link sent by mail
    */
-  @Public()
+  @BlPublic()
   @Get('activation/:token')
   async accountActivation(@Param('token') token: string, @Res() response: Response): Promise<void> {
     const loginUrl = this.frontService.getLoginUrl();
@@ -49,7 +48,7 @@ export class UserAccountsController {
   /**
    * Open route to unlock account with link sent by mail
    */
-  @Public()
+  @BlPublic()
   @Get('unlock/:token')
   async unlockAccount(@Param('token') token: string, @Res() response: Response): Promise<void> {
     const loginUrl = this.frontService.getLoginUrl();
@@ -71,7 +70,7 @@ export class UserAccountsController {
   /**
    * Open route to send an email with link to reset password
    */
-  @Public()
+  @BlPublic()
   @Post('password-forgotten')
   async passwordForgotten(@Body() body: { email: string }): Promise<void> {
     await this.userAccountsService.passwordForgotten(body.email);
@@ -80,7 +79,7 @@ export class UserAccountsController {
   /**
    * Open route to reset password with link
    */
-  @Public()
+  @BlPublic()
   @Post('reset-password/:token')
   async resetPassword(@Param('token') token: string,
                       @Body() body: { password: string }): Promise<void> {

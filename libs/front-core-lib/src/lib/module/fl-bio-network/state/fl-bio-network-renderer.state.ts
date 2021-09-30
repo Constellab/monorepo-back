@@ -2,8 +2,8 @@ import * as d3 from 'd3';
 import {Simulation} from 'd3-force';
 import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {ScaleLinear} from 'd3-scale';
-import {FlBioNetworkD3Link, FlBioNetworkD3Node, flBioNetworkReactionMaxValue, FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
-import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
+import {FlBioNetworkD3Node} from '../model/fl-bio-network-d3.class';
+import {FlD3DragEvent, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
@@ -11,6 +11,11 @@ import {Injectable, OnDestroy} from '@angular/core';
 import {FlBioNetworkState} from './fl-bio-network.state';
 import {FlBioNetworkSelectionState} from './fl-bio-network-selection.state';
 import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
+import {FlBioNetworkExportPosition} from '../model/fl-bio-network-export.class';
+import {FlBioNetworkGridState} from './fl-bio-network-grid.state';
+import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
+import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
+import {flBioNetworkReactionMaxValue} from '../model/fl-bio-network-d3-reaction.class';
 
 /**
  * State to manager the drawing of bio network using d3
@@ -46,7 +51,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
   constructor(themeService: FlThemeService, private drawerState: FlBioNetworkDrawerState,
               private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState,
-              private zoomState: FlBioNetworkZoomState) {
+              private zoomState: FlBioNetworkZoomState, private gridState: FlBioNetworkGridState) {
     const themeDetail: FlThemeDetail = themeService.getCurrentThemeDetail();
     this.textColor = themeDetail.foreground;
     this.backgroundColor = themeDetail.background;
@@ -75,6 +80,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
     if (chartData) {
       this.initSVG();
       this.initSimulation();
+      this.gridState.initGrid(this.mainGroup);
       this.initLinks(this.linkColorLogarithm);
       this.initNodes();
       this.defineArrowMarker();
@@ -159,16 +165,23 @@ export class FlBioNetworkRendererState implements OnDestroy {
   }
 
   private drag = (simulation: any): any => {
+    const gridState: FlBioNetworkGridState = this.gridState;
 
-    function dragStarted(event: any): void {
+    function dragStarted(event: FlD3DragEvent<FlBioNetworkD3Node>): void {
       if (!event.active) simulation.alphaTarget(0.3).restart();
       event.subject.fx = event.subject.x;
       event.subject.fy = event.subject.y;
     }
 
-    function dragged(event: any): void {
-      event.subject.fx = event.x;
-      event.subject.fy = event.y;
+    function dragged(event: FlD3DragEvent<FlBioNetworkD3Node>): void {
+      const roundedCoord = gridState.roundCoordOnGrid(event.subject.convertToCenterCoord(event));
+
+      if (roundedCoord) {
+        event.subject.setCenter(roundedCoord);
+      } else {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+      }
     }
 
     function dragEnded(event: any): void {
@@ -280,6 +293,33 @@ export class FlBioNetworkRendererState implements OnDestroy {
     this.nodesContainer = null;
     this.simulationEnded = false;
   }
+
+
+  public exportPositions(): FlBioNetworkExportPosition {
+    const position: FlBioNetworkExportPosition = {
+      metabolites: [],
+      reactions: []
+    };
+
+    position.metabolites = this.data.metabolites.map(node => {
+      const coord = node.getCenter()
+      return {
+        x: coord.x,
+        y: coord.y,
+        id: node.data.chebi_id
+      };
+    });
+    position.reactions = this.data.reactions.map(node => {
+      const coord = node.getCenter()
+      return {
+        x: coord.x,
+        y: coord.y,
+        id: node.data.id
+      };
+    });
+    return position;
+  }
+
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

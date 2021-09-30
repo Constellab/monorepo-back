@@ -1,10 +1,9 @@
 import {Body, Controller, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
 import {Experiment} from './experiment.entity';
-import {ParsePipe} from '../core/pipes/parse.pipe';
 import {ExperimentStatus} from './experiment-status.enum';
-import {ParseEnumPipe} from '../core/pipes/parse-enum.pipe';
 import {ExperimentsSecurityLayer} from './experiments-security-layer.service';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
+import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
 
 @Controller('experiments')
 export class ExperimentsController {
@@ -16,13 +15,13 @@ export class ExperimentsController {
    * Create an experiment for a study
    */
   @Post('study/:studyId')
-  create(@Body(new ParsePipe(Experiment)) experiment: Experiment,
+  create(@Body(new BlParsePipe(Experiment)) experiment: Experiment,
          @Param('studyId', ParseUUIDPipe) studyId: string): Promise<Experiment> {
     return this.securityLayer.createExperiment(experiment, studyId);
   }
 
   @Put()
-  update(@Body(new ParsePipe(Experiment)) experiment: Experiment): Promise<Experiment> {
+  update(@Body(new BlParsePipe(Experiment)) experiment: Experiment): Promise<Experiment> {
     return this.securityLayer.updateSecure(experiment);
   }
 
@@ -53,7 +52,7 @@ export class ExperimentsController {
 
   @Put('/:id/status/:status')
   updateStatus(@Param('id', new ParseUUIDPipe()) id: string,
-               @Param('status', new ParseEnumPipe(ExperimentStatus)) status: ExperimentStatus): Promise<Experiment> {
+               @Param('status', new BlParseEnumPipe(ExperimentStatus)) status: ExperimentStatus): Promise<Experiment> {
     return this.securityLayer.updateCurrentStatus(status, id);
   }
 }

@@ -3,9 +3,9 @@ import {LabInstance} from './lab-instance.entity';
 import {LabInstancesSecurityLayer} from './lab-instances-security-layer.service';
 import {LabInstanceStatusHistory} from './lab-instance-status-history.entity';
 import {LabInstanceToken} from './lab-instance-token.class';
-import {Page} from '../core/model/config/page.class';
-import {ParsePipe} from '../core/pipes/parse.pipe';
 import {ExternalLabUser, ExternalNewLabUser} from '../external-lab-api/external-lab-api.class';
+import {BlParsePipe} from '@monorepo/back-core-lib';
+import {ClPage} from '@monorepo/core-lib';
 
 
 @Controller('lab-instances')
@@ -15,12 +15,12 @@ export class LabInstancesController {
   }
 
   @Post()
-  create(@Body(new ParsePipe(LabInstance)) labInstance: LabInstance): Promise<LabInstance> {
+  create(@Body(new BlParsePipe(LabInstance)) labInstance: LabInstance): Promise<LabInstance> {
     return this.securityLayer.createSecure(labInstance);
   }
 
   @Put()
-  update(@Body(new ParsePipe(LabInstance)) labInstance: LabInstance): Promise<LabInstance> {
+  update(@Body(new BlParsePipe(LabInstance)) labInstance: LabInstance): Promise<LabInstance> {
     return this.securityLayer.updateSecure(labInstance);
   }
 
@@ -29,7 +29,7 @@ export class LabInstancesController {
    */
   @Get('current')
   public getCurrentLabInstances(@Query('page', ParseIntPipe) page: number,
-                                @Query('size', ParseIntPipe) size: number): Promise<Page<LabInstance>> {
+                                @Query('size', ParseIntPipe) size: number): Promise<ClPage<LabInstance>> {
     return this.securityLayer.getCurrentLabInstances(page, size);
   }
 

@@ -1,11 +1,13 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
-import {FlBioNetworkD3Link, FlBioNetworkD3Node, flBioNetworkNodeClass, FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3Node, flBioNetworkNodeClass} from '../model/fl-bio-network-d3.class';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.class';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkMetabolite} from '../model/fl-bio-network.class';
+import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
+import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
 
 /**
  * Class to manage the selection in the {@link FlBioNetworkComponent}

@@ -3,12 +3,13 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {User} from './user.entity';
 import {Repository} from 'typeorm';
 import {AbstractService} from '../core/class/abstract.service';
-import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
 import {ErrorText} from '../core/model/config/error-text.class';
 import {clLangIsSupported, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {BlUserService} from '@monorepo/back-core-lib';
+import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 @Injectable()
-export class UsersService extends AbstractService<User> {
+export class UsersService extends AbstractService<User> implements BlUserService {
 
   constructor(
     @InjectRepository(User) private repository: Repository<User>) {
@@ -38,7 +39,7 @@ export class UsersService extends AbstractService<User> {
   }
 
   getCurrent(): User {
-    return RequestContextHelper.getAndCheckCurrentUser();
+    return CurrentUserHelper.getAndCheckCurrentUser();
   }
 
   async updateLanguage(lang: ClSupportedLanguage): Promise<void> {

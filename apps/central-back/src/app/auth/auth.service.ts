@@ -1,16 +1,15 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {UsersService} from '../users/users.service';
 import {JwtService} from '@nestjs/jwt';
-import {Credentials} from './credentials.class';
 import {TokenUser} from '../core/model/config/token-user.class';
 import {User} from '../users/user.entity';
 import {CoreConfigService} from '../core/modules/core-config/core-config.service';
 import {ErrorText} from '../core/model/config/error-text.class';
-import {MailService} from '../core/services/mail/mail.service';
 import {TokenService} from '../core/services/token/token.service';
 import {UserAccountsService} from '../users/users-account/user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
-import {CmUserStatus} from '@monorepo/common-model';
+import {CmCredentials, CmUserStatus} from '@monorepo/common-model';
+import {BlMailService} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class AuthService {
@@ -23,13 +22,13 @@ export class AuthService {
   constructor(private usersService: UsersService,
               private jwtService: JwtService,
               private configService: CoreConfigService,
-              private mailService: MailService,
+              private mailService: BlMailService,
               private tokenService: TokenService,
               private userAccountsService: UserAccountsService) {
     this.failedLoginLock = configService.getFailedLoginLock();
   }
 
-  async login(credentials: Credentials): Promise<string> {
+  async login(credentials: CmCredentials): Promise<string> {
     const user = await this.usersService.findByEmail(credentials.email);
 
     // if the email is wrong

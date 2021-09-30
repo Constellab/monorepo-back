@@ -2,8 +2,8 @@ import {StatusHistory} from '../core/model/entities/status-history.entity';
 import {LabInstanceStatus} from './lab-instance-status.enum';
 import {Column, Entity, ManyToOne} from 'typeorm';
 import {Exclude, Type} from 'class-transformer';
-import {NotUpdatable} from '../core/decorators/not-updatable.decorator';
 import {LabInstance} from './lab-instance.entity';
+import {BlNotUpdatable} from '@monorepo/back-core-lib';
 
 @Entity()
 export class LabInstanceStatusHistory extends StatusHistory<LabInstanceStatus> {
@@ -15,7 +15,7 @@ export class LabInstanceStatusHistory extends StatusHistory<LabInstanceStatus> {
   status: LabInstanceStatus;
 
   @Exclude()
-  @NotUpdatable()
+  @BlNotUpdatable()
   @Type(() => LabInstance)
   @ManyToOne(() => LabInstance, {})
   entity: LabInstance;

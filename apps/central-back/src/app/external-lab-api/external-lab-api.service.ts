@@ -2,9 +2,8 @@ import {Injectable} from '@nestjs/common';
 import {Observable} from 'rxjs';
 import {LabServerInfo} from '../core/model/config/lab-server-info.class';
 import {externalLabApiKeyHeader, externalLabApiKeySchema} from '../core/model/config/external-lab.class';
-import {ExternalApiService} from '../core/services/external-api/external-api.service';
 import {ClDeserializationRef} from '@monorepo/core-lib';
-import {ExternalApiHttpOption} from '../core/services/external-api/external-api.class';
+import {BlExternalApiHttpOption, BlExternalApiService} from '@monorepo/back-core-lib';
 
 /**
  * Service to call the api of a lab
@@ -14,14 +13,14 @@ export class ExternalLabApiService {
 
   private readonly baseApiRoute: string = 'central-api/';
 
-  constructor(private apiService: ExternalApiService) {
+  constructor(private apiService: BlExternalApiService) {
   }
 
   /**
    * Make an http post with the ip of the lab and the API key of the lab in header
    */
   public post(labInfo: LabServerInfo, route: string, body: any, classReference?: ClDeserializationRef,
-              options: ExternalApiHttpOption = {}): Observable<any> {
+              options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.apiService.post(this.constructRoute(labInfo.apiUrl, route), body,
       classReference, this.getRequestOptions(labInfo.apiKey, options));
   }
@@ -30,7 +29,7 @@ export class ExternalLabApiService {
    * Make an http put with the ip of the lab and the API key of the lab in header
    */
   public put(labInfo: LabServerInfo, route: string, body: any, classReference?: ClDeserializationRef,
-             options: ExternalApiHttpOption = {}): Observable<any> {
+             options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.apiService.put(this.constructRoute(labInfo.apiUrl, route), body,
       classReference, this.getRequestOptions(labInfo.apiKey, options));
   }
@@ -39,7 +38,7 @@ export class ExternalLabApiService {
    * Make an http GET with the ip of the lab and the API key of the lab in header
    */
   public get(labInfo: LabServerInfo, route: string, classReference?: ClDeserializationRef,
-             options: ExternalApiHttpOption = {}): Observable<any> {
+             options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.apiService.get(this.constructRoute(labInfo.apiUrl, route),
       classReference, this.getRequestOptions(labInfo.apiKey, options));
   }
@@ -50,7 +49,7 @@ export class ExternalLabApiService {
 
 
   // get the axios request config with the api key in the header
-  private getRequestOptions(apiKey: string, options: ExternalApiHttpOption): ExternalApiHttpOption {
+  private getRequestOptions(apiKey: string, options: BlExternalApiHttpOption): BlExternalApiHttpOption {
     return Object.assign(options, {headers: this.getHeader(apiKey)});
   }
 

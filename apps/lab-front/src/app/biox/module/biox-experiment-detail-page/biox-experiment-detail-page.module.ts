@@ -22,11 +22,13 @@ import {BioxWorkflowPortsListComponent} from './component/biox-workflow-ports-li
 import {BioxWorkflowNodeConfigComponent} from './component/biox-workflow-node-config/biox-workflow-node-config.component';
 import {BioxProgressBarInfoComponent} from './component/biox-progress-bar-info/biox-progress-bar-info.component';
 import {BioxTaskSourceConfigComponent} from './component/biox-task-source-config/biox-task-source-config.component';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BioxWorkflowNodeDetailState} from './state/biox-workflow-node-detail.state';
 import {BioxProcessCoreModule} from '../../../core/entity-module/biox-process-core/biox-process-core.module';
 import {BioxExperimentDetailCardComponent} from './component/biox-experiment-detail-card/biox-experiment-detail-card.component';
 import {BioxProgressBarInfoDialogComponent} from './component/biox-progress-bar-info-dialog/biox-progress-bar-info-dialog.component';
+import {BioxExperimentValidationDialogComponent} from './component/biox-experiment-validation-dialog/biox-experiment-validation-dialog.component';
+import {BioxStudyCoreModule} from '../../../core/entity-module/biox-study-core/biox-study-core.module';
 
 
 @NgModule({
@@ -46,10 +48,12 @@ import {BioxProgressBarInfoDialogComponent} from './component/biox-progress-bar-
     BioxTaskSourceConfigComponent,
     BioxExperimentDetailCardComponent,
     BioxProgressBarInfoDialogComponent,
+    BioxExperimentValidationDialogComponent,
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
 
     CoreModule,
     BioxExperimentCoreModule,
@@ -57,12 +61,13 @@ import {BioxProgressBarInfoDialogComponent} from './component/biox-progress-bar-
     BioxResourceCoreModule,
     BioxConfigCoreModule,
     BioxProcessCoreModule,
+    BioxStudyCoreModule,
   ],
   providers: [
     // declare the state here otherwise the angular element can't access them
+    BioxExperimentDetailPageState,
     WorkflowManagerState,
     WorkflowActionState,
-    BioxExperimentDetailPageState,
     BioxWorkflowNodeDetailState,
   ]
 })

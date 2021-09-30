@@ -47,6 +47,10 @@ export class StudiesSecurityLayer extends AbstractSecurityLayer<Study> {
     return this.service.getStudiesOfProject(projectId);
   }
 
+  async getStudiesOfUser(userId: string): Promise<Study[]> {
+    return this.service.getStudiesOfUser(userId);
+  }
+
 
   /////////////////////// STATUS ////////////////////////////
   async updateCurrentStatus(status: StudyStatus, id: string): Promise<Study> {

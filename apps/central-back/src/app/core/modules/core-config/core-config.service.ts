@@ -2,7 +2,7 @@ import {Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {EnvironmentProfile} from '../../model/config/config.class';
 import {DatabaseConfig} from '../../model/config/database-config.class';
-import {MailConfig} from '../../model/config/mail-config.class';
+import {BlMailModuleConfig} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CoreConfigService {
@@ -50,18 +50,15 @@ export class CoreConfigService {
     };
   }
 
-  public getMailConfig(): MailConfig {
+  public getMailConfig(): BlMailModuleConfig {
     return {
       host: this.configService.get('MAIL_HOST'),
       port: this.getConfigNumber('MAIL_PORT'),
       secure: this.getConfigBoolean('MAIL_SECURE'),
       user: this.configService.get('MAIL_USER'),
       password: this.configService.get('MAIL_PASSWORD'),
+      sender: this.configService.get('MAIL_SENDER')
     };
-  }
-
-  public getMailSender(): string {
-    return this.configService.get('MAIL_SENDER');
   }
 
   public getFailedLoginLock(): number {

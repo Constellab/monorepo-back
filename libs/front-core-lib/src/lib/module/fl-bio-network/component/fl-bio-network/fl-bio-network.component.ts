@@ -6,6 +6,7 @@ import {FlBioNetworkRendererState} from '../../state/fl-bio-network-renderer.sta
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {FlBioNetworkZoomState} from '../../state/fl-bio-network-zoom.state';
+import {FlBioNetworkGridState} from '../../state/fl-bio-network-grid.state';
 
 @Component({
   selector: 'fl-bio-network',
@@ -17,6 +18,7 @@ import {FlBioNetworkZoomState} from '../../state/fl-bio-network-zoom.state';
     FlBioNetworkDrawerState,
     FlBioNetworkZoomState,
     FlBioNetworkSelectionState,
+    FlBioNetworkGridState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

@@ -28,6 +28,11 @@
       <span>{{'status' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let bioxExperiment">
+      <mat-icon *ngIf="bioxExperiment.isValidated"
+                [matTooltip]="'biox.experiment_validated' | translate"
+                class="verified-icon">verified
+      </mat-icon>
+
       <fl-status-chip [status]="$any(bioxExperiment)" mode="iconText">
       </fl-status-chip>
     </mat-cell>

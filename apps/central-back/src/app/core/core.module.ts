@@ -1,12 +1,8 @@
 import {HttpModule, Module} from '@nestjs/common';
 import {CoreConfigModule} from './modules/core-config/core-config.module';
-import {RequestContextModule} from './modules/request-context/request-context.module';
-import {TranslateModule} from './modules/translate/translate.module';
-import {MailService} from './services/mail/mail.service';
 import {TokenService} from './services/token/token.service';
 import {FrontService} from './services/front/front.service';
-import { ExternalApiService } from './services/external-api/external-api.service';
-import {ExternalApiErrorService} from './services/external-api/external-api-error.service';
+import {BlExternalApiModule, BlMailModule, BlRequestContextModule, BlTranslateModule} from '@monorepo/back-core-lib';
 
 /**
  * Core module of the app, export all modules
@@ -15,27 +11,26 @@ import {ExternalApiErrorService} from './services/external-api/external-api-erro
 @Module({
   imports: [
     CoreConfigModule,
-    RequestContextModule,
-    TranslateModule,
+    BlRequestContextModule,
+    BlTranslateModule,
+    BlExternalApiModule,
+    BlMailModule,
     HttpModule,
   ],
   providers: [
-    MailService,
     TokenService,
     FrontService,
-    ExternalApiService,
-    ExternalApiErrorService,
   ],
   exports: [
     CoreConfigModule,
-    RequestContextModule,
-    TranslateModule,
+    BlRequestContextModule,
+    BlTranslateModule,
+    BlExternalApiModule,
+    BlMailModule,
 
     // Providers
-    MailService,
     TokenService,
     FrontService,
-    ExternalApiService,
   ]
 })
 export class CoreModule {

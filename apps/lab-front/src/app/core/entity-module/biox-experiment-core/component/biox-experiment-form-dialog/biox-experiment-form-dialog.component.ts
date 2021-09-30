@@ -37,6 +37,7 @@ export class BioxExperimentFormDialogComponent extends FlFormDialogAbstractDirec
     return new FormBuilder().group({
       title: [null, Validators.required],
       description: [null],
+      study: [null]
     });
   }
 

@@ -1,13 +1,14 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlSnackBarService} from '@monorepo/front-core-lib';
 import {Observable, throwError} from 'rxjs';
-import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm, ExperimentUpdate} from '../model/entities/biox-experiment.entity';
+import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm} from '../model/entities/biox-experiment.entity';
 import {createViewModel} from '../model/global/view-model.entity';
 import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
 import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/workflow.class';
 import {BioxProtocolGraph} from '../model/entities/process/biox-protocol.entity';
 import {BioxExperimentFlowFactory} from '../utils/biox-experiment-flow.factory';
 import {mergeMap} from 'rxjs/operators';
+import {BioxStudy} from '../model/entities/biox-study.class';
 
 
 @Injectable({
@@ -15,12 +16,14 @@ import {mergeMap} from 'rxjs/operators';
 })
 export class BioxExperimentService {
 
+  private route: string = 'experiment';
+
   constructor(private apiService: FlApiService,
               private snackBarService: FlSnackBarService) {
   }
 
   public getExperiments(page: number, pageSize: number): Observable<ClPage<BioxExperiment>> {
-    return this.apiService.get(`experiment`, BioxExperiment,
+    return this.apiService.get(this.route, BioxExperiment,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
@@ -34,19 +37,19 @@ export class BioxExperimentService {
   }
 
   public getExperiment(id: string): Observable<BioxExperiment> {
-    return this.apiService.get(`experiment/${id}`, BioxExperiment);
+    return this.apiService.get(`${this.route}/${id}`, BioxExperiment);
   }
 
   public create(experiment: ExperimentSimpleForm): Observable<BioxExperiment> {
-    return this.apiService.post('experiment', experiment, BioxExperiment);
+    return this.apiService.post(this.route, experiment, BioxExperiment);
   }
 
   // update the experiment and the protocol inside if provided
   public update(experimentId: string, experiment: ExperimentSimpleForm): Observable<BioxExperiment> {
-    return this.apiService.put(`experiment/${experimentId}`, experiment, BioxExperiment);
+    return this.apiService.put(`${this.route}/${experimentId}`, experiment, BioxExperiment);
   }
 
-  public updateExperimentProtocol(experiment: BioxExperiment, workflow: Workflow): Observable<BioxExperiment> {
+  public updateExperimentProtocol(experimentId: string, workflow: Workflow): Observable<BioxExperiment> {
     // convert the workflow to a protocol
     const graph: BioxProtocolGraph = BioxExperimentFlowFactory.convertWorkflowToProtocolGraph(workflow);
 
@@ -55,24 +58,21 @@ export class BioxExperimentService {
       return throwError('biox.error_empty_experience');
     }
 
-    // build update object
-    const experimentUpdate: ExperimentUpdate = {
-      title: experiment.data.title,
-      description: experiment.data.description,
-      graph: graph
-    };
-
-    return this.update(experiment.id, experimentUpdate);
+    return this.apiService.put(`${this.route}/${experimentId}/protocol`, graph, BioxExperiment);
   }
 
   // launch an experiment
   public startExperiment(experimentId: string): Observable<BioxExperiment> {
-    return this.apiService.post(`experiment/${experimentId}/start`, createViewModel(BioxExperiment));
+    return this.apiService.post(`${this.route}/${experimentId}/start`, createViewModel(BioxExperiment));
   }
 
-  public saveAndStartExperiment(experiment: BioxExperiment, workflow: Workflow): Observable<BioxExperiment> {
-    return this.updateExperimentProtocol(experiment, workflow).pipe(
-      mergeMap(() => this.startExperiment(experiment.id))
+  public saveAndStartExperiment(experimentId: string, workflow: Workflow): Observable<BioxExperiment> {
+    return this.updateExperimentProtocol(experimentId, workflow).pipe(
+      mergeMap(() => this.startExperiment(experimentId))
     );
+  }
+
+  public validateExperiment(experimentId: string, study: BioxStudy): Observable<BioxExperiment> {
+    return this.apiService.put(`${this.route}/${experimentId}/validate`, study, BioxExperiment);
   }
 }

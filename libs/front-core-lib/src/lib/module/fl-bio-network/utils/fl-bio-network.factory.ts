@@ -5,17 +5,15 @@ import {
   FlBioNetworkReactionEstimate,
   FlPathwayDatabase
 } from '../model/fl-bio-network.class';
-import {
-  FlBioNetworkD3Cofactor,
-  FlBioNetworkD3Link,
-  FlBioNetworkD3Metabolite,
-  FlBioNetworkD3Reaction,
-  flBioNetworkGetCompartmentColor,
-  FlBioxNetworkD3
-} from '../model/fl-bio-network-d3.class';
+import {flBioNetworkGetCompartmentColor,} from '../model/fl-bio-network-d3.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlBioNetworkHelper} from './fl-bio-network.helper';
 import {flBioNetworkCofactor} from '../model/fl-bio-cofactor.class';
+import {FlBioNetworkD3Metabolite} from '../model/fl-bio-network-d3-metabolite.class';
+import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
+import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class';
+import {FlBioNetworkD3Cofactor} from '../model/fl-bio-network-d3-cofactor.class';
+import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
 
 export class FlBioNetworkFactory {
 

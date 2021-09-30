@@ -1,6 +1,6 @@
 import {AbstractCheckAuthorization} from './abstract-check.authorization';
-import {RequestContextHelper} from '../modules/request-context/request-context.helper';
 import {EntityWithOwner} from '../model/entities/entity-with-owner.entity';
+import {CurrentUserHelper} from '../utils/current-user.helper';
 
 
 /**
@@ -9,7 +9,7 @@ import {EntityWithOwner} from '../model/entities/entity-with-owner.entity';
 export class OwnerAuthorization extends AbstractCheckAuthorization<EntityWithOwner> {
 
   isAuthorized(entity: EntityWithOwner): boolean {
-    return entity.getOwner().id === RequestContextHelper.getAndCheckCurrentUser().id;
+    return entity.getOwner().id === CurrentUserHelper.getAndCheckCurrentUser().id;
   }
 
 }

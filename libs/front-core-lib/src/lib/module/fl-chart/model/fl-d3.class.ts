@@ -32,3 +32,11 @@ export interface FlCoord {
  * A simpler selection type where only the data object is configurable
  */
 export type FlD3SelectionSimple<T = any> = Selection<any, T, any, any>;
+
+/**
+ * Drag event on D3
+ */
+export interface FlD3DragEvent<T = any> extends DragEvent {
+  active: boolean;
+  subject: T;
+}

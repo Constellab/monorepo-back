@@ -1,10 +1,10 @@
 import {Column, Entity, JoinColumn, ManyToOne, OneToOne} from 'typeorm';
 import {Type} from 'class-transformer';
 import {LabInstance} from '../lab-instances/lab-instance.entity';
-import {NotUpdatable} from '../core/decorators/not-updatable.decorator';
 import {EntityWithStatus} from '../core/model/entities/entity-with-status.entity';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
 import {Study} from '../studies/study.entity';
+import {BlNotUpdatable} from '@monorepo/back-core-lib';
 
 /**
  * An experiment is executed in a lab to produce reports
@@ -25,12 +25,12 @@ export class Experiment extends EntityWithStatus<ExperimentStatusHistory> {
   @JoinColumn()
   currentStatus: ExperimentStatusHistory;
 
-  @NotUpdatable()
+  @BlNotUpdatable()
   @Type(() => LabInstance)
   @ManyToOne(() => LabInstance, {nullable: false, eager: true})
   labInstance: LabInstance;
 
-  @NotUpdatable()
+  @BlNotUpdatable()
   @Type(() => Study)
   @ManyToOne(() => Study, {nullable: false})
   study: Study;

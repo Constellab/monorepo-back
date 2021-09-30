@@ -1,22 +1,22 @@
 import {EntityWithId} from './entity-with-id.entity';
 import {BeforeInsert, BeforeUpdate, ManyToOne} from 'typeorm';
 import {User} from '../../../users/user.entity';
-import {RequestContextHelper} from '../../modules/request-context/request-context.helper';
 import {Type} from 'class-transformer';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {LuxonDateTimeColumn} from '../../decorators/luxon-column.decorator';
+import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {CurrentUserHelper} from '../../utils/current-user.helper';
 
 export abstract class BaseEntity extends EntityWithId {
 
-  @LuxonDateTimeColumn({nullable: false, update: false})
+  @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
   @Type(() => User)
   @ManyToOne(() => User, {eager: true, nullable: false})
   createdBy: User;
 
-  @LuxonDateTimeColumn()
+  @BlLuxonDateTimeColumn()
   lastModifiedAt: DateTime;
 
   @Type(() => User)
@@ -25,14 +25,14 @@ export abstract class BaseEntity extends EntityWithId {
 
   @BeforeInsert()
   setCreatedByUser(): void {
-    this.createdBy = RequestContextHelper.getAndCheckCurrentUser();
+    this.createdBy = CurrentUserHelper.getAndCheckCurrentUser();
     this.createdAt = ClDateHelper.getDate();
   }
 
   @BeforeInsert()
   @BeforeUpdate()
   setLastModifiedByUser(): void {
-    this.lastModifiedBy = RequestContextHelper.getAndCheckCurrentUser();
+    this.lastModifiedBy = CurrentUserHelper.getAndCheckCurrentUser();
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 

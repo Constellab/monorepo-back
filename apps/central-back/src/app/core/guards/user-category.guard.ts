@@ -2,8 +2,8 @@ import {CanActivate, ExecutionContext, Injectable} from '@nestjs/common';
 import {Reflector} from '@nestjs/core';
 import {User} from '../../users/user.entity';
 import {userCategoriesMetadata} from '../decorators/user-category.decorator';
-import {ReflectorHelper} from '../utils/reflector.helper';
 import {CmUserCategory} from '@monorepo/common-model';
+import {BlReflectorHelper} from '@monorepo/back-core-lib';
 
 /**
  * Guard that work with the decorator @UserCategories to guard route based
@@ -16,7 +16,7 @@ export class UserCategoryGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     // verify that the route is annotated with @UserCategory
-    const userCategories: CmUserCategory[] = ReflectorHelper.getClassOrMethodMetadata(this.reflector, context, userCategoriesMetadata);
+    const userCategories: CmUserCategory[] = BlReflectorHelper.getClassOrMethodMetadata(this.reflector, context, userCategoriesMetadata);
     // if not annotated, grant access
     if (!userCategories || userCategories.length === 0) {
       return true;

@@ -1,5 +1,7 @@
-import {SetMetadata, UseGuards} from '@nestjs/common';
+import {ExecutionContext, SetMetadata, UseGuards} from '@nestjs/common';
 import {LabAuthGuard} from '../guards/lab-auth.gaurd';
+import {Reflector} from '@nestjs/core';
+import {BlReflectorHelper} from '@monorepo/back-core-lib';
 
 export const labAuthMetadata = 'labAuth';
 
@@ -17,4 +19,12 @@ export function LabGuard(): MethodDecorator & ClassDecorator {
     // activate the LabAuthGuard
     UseGuards(LabAuthGuard)(target, property, descriptor);
   };
+}
+
+/**
+ * return true if the method or class is decorated with @LabAuth
+ */
+export function isDecoratedWithLabAuth(reflector: Reflector, context: ExecutionContext): boolean{
+  // Check if the route is annotated with @Public
+  return BlReflectorHelper.getClassOrMethodMetadata(reflector, context, labAuthMetadata);
 }

@@ -6,13 +6,13 @@ import {CreatedByAuthorization} from '../core/security/created-by.authorization'
 import {LabInstanceStatusHistory} from './lab-instance-status-history.entity';
 import {LabInstanceToken} from './lab-instance-token.class';
 import {ErrorText} from '../core/model/config/error-text.class';
-import {Page} from '../core/model/config/page.class';
 import {User} from '../users/user.entity';
-import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
 import {AdminAuthorization} from '../core/security/admin.authorization';
 import {OwnerAuthorization} from '../core/security/owner.authorization';
 import {CombinedAuthorization} from '../core/security/combined.authorization';
 import {ExternalLabUser, ExternalNewLabUser} from '../external-lab-api/external-lab-api.class';
+import {ClPage} from '@monorepo/core-lib';
+import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 
 @Injectable()
@@ -31,7 +31,7 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
   }
 
   async isAuthorizedToFindOne(dbEntity: LabInstance): Promise<boolean> {
-    return new CombinedAuthorization('OR',  new AdminAuthorization(), new OwnerAuthorization()).isAuthorized(dbEntity);
+    return new CombinedAuthorization('OR', new AdminAuthorization(), new OwnerAuthorization()).isAuthorized(dbEntity);
   }
 
   async isAuthorizedToUpdate(): Promise<boolean> {
@@ -42,7 +42,7 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
     return new CreatedByAuthorization().isAuthorized(dbEntity);
   }
 
-  getCurrentLabInstances(page: number, size: number): Promise<Page<LabInstance>> {
+  getCurrentLabInstances(page: number, size: number): Promise<ClPage<LabInstance>> {
     // no security check because the get is filtered with user id
     return this.service.getCurrentLabInstances(page, size);
   }
@@ -83,7 +83,7 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
   }
 
   async findAll(): Promise<LabInstance[]> {
-    const user: User = RequestContextHelper.getAndCheckCurrentUser();
+    const user: User = CurrentUserHelper.getAndCheckCurrentUser();
 
     if (!user.isAdmin()) {
       throw new UnauthorizedException();
@@ -92,14 +92,14 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
     return this.service.findAll();
   }
 
-  async getLabUsers(labInstanceId: string): Promise<ExternalLabUser[]>{
+  async getLabUsers(labInstanceId: string): Promise<ExternalLabUser[]> {
     // check that the user can get the lab
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
     return this.service.getLabUsers(labInstanceId);
   }
 
-  async addUser(labInstanceId: string, newUser: ExternalNewLabUser): Promise<ExternalLabUser>{
+  async addUser(labInstanceId: string, newUser: ExternalNewLabUser): Promise<ExternalLabUser> {
     // check that the user can get the lab
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
 

@@ -1,18 +1,17 @@
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
 import {EntityWithId} from '../model/entities/entity-with-id.entity';
 import {BadRequestException, NotFoundException} from '@nestjs/common';
-import {propertyIsNotUpdatable} from '../decorators/not-updatable.decorator';
 import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
-import {PersistenceAction, PersistenceLogger} from '../services/persistence-logger/persistence-logger';
 import {FindManyOptions} from 'typeorm/find-options/FindManyOptions';
-import {Page} from '../model/config/page.class';
 import {ErrorText} from '../model/config/error-text.class';
+import {BlPersistenceAction, BlPersistenceLogger, blPropertyIsNotUpdatable} from '@monorepo/back-core-lib';
+import {ClPage} from '@monorepo/core-lib';
 
 export abstract class AbstractService<T extends EntityWithId> {
 
   private readonly maxPageSize: number = 50;
 
-  private readonly persistenceLogger = PersistenceLogger.getInstance();
+  private readonly persistenceLogger = BlPersistenceLogger.getInstance();
 
 
   protected constructor(private repo: Repository<T>,
@@ -41,7 +40,7 @@ export abstract class AbstractService<T extends EntityWithId> {
 
   /**
    * Compare the DB entity and update it
-   * Use to check property metadata including {@link NotUpdatable}
+   * Use to check property metadata including {@link BlNotUpdatable}
    * @protected
    */
   protected async updateWithCompare(newEntity: T, dbEntity: T, entityManager?: EntityManager): Promise<T> {
@@ -52,7 +51,7 @@ export abstract class AbstractService<T extends EntityWithId> {
       }
 
       // check if the property is updatable or is undefined
-      if (propertyIsNotUpdatable(newEntity, property) || newEntity[property] === undefined) {
+      if (blPropertyIsNotUpdatable(newEntity, property) || newEntity[property] === undefined) {
         // if not set the value of the db (if undefined it won't be updated)
         newEntity[property] = dbEntity[property];
       }
@@ -92,7 +91,7 @@ export abstract class AbstractService<T extends EntityWithId> {
   }
 
   async findPaginated(page: number = 0, size: number = 10, options: FindOneOptions<T> = {},
-                      entityManager?: EntityManager): Promise<Page<T>> {
+                      entityManager?: EntityManager): Promise<ClPage<T>> {
     const manager: EntityManager = this.getEntityManager(entityManager);
 
     // must be a positive number
@@ -109,13 +108,18 @@ export abstract class AbstractService<T extends EntityWithId> {
     // get the results limited by page
     const result: T[] = await manager.find(this.entityClass, pageOptions);
 
-    return new Page<T>(result, safePage === 0,
-      ((safePage + 1) * safeSize) >= totalElements,
-      totalElements, safePage, safeSize);
+    return {
+      objects: result,
+      first: safePage === 0,
+      last: ((safePage + 1) * safeSize) >= totalElements,
+      totalElements: totalElements,
+      currentPage: safePage,
+      pageSize: safeSize
+    };
   }
 
   // use to log persistence
-  private logAction(actionName: PersistenceAction, entityId: string): void {
+  private logAction(actionName: BlPersistenceAction, entityId: string): void {
     this.persistenceLogger.logPersistence(actionName, entityId, this.entityClass.name);
   }
 

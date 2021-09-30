@@ -3,7 +3,6 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {LabInstance} from './lab-instance.entity';
 import {ObjectLiteral, Repository} from 'typeorm';
 import {User} from '../users/user.entity';
-import {RequestContextHelper} from '../core/modules/request-context/request-context.helper';
 import {LabInstanceStatus} from './lab-instance-status.enum';
 import {AbstractWithStatusService} from '../core/class/abstract-with-status.service';
 import {LabInstanceStatusHistory} from './lab-instance-status-history.entity';
@@ -11,10 +10,11 @@ import {ExternalLabUserService} from '../external-lab-api/external-lab-user.serv
 import {ExternalLabLoginResponse, ExternalLabUser, ExternalNewLabUser} from '../external-lab-api/external-lab-api.class';
 import {LabInstanceToken} from './lab-instance-token.class';
 import {ErrorText} from '../core/model/config/error-text.class';
-import {Page} from '../core/model/config/page.class';
 import {UsersService} from '../users/users.service';
 import {ExternalLabError} from '../external-lab-api/external-lab-error.class';
 import {AxiosResponse} from 'axios';
+import {ClPage} from '@monorepo/core-lib';
+import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 @Injectable()
 export class LabInstancesService extends AbstractWithStatusService<LabInstance, LabInstanceStatus> {
@@ -31,8 +31,8 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
     return super.createWithStatus(entity, LabInstanceStatus.STOPPED);
   }
 
-  public getCurrentLabInstances(page: number, size: number): Promise<Page<LabInstance>> {
-    const user: User = RequestContextHelper.getAndCheckCurrentUser();
+  public getCurrentLabInstances(page: number, size: number): Promise<ClPage<LabInstance>> {
+    const user: User = CurrentUserHelper.getAndCheckCurrentUser();
 
     return this.findPaginated(page, size, {
       where: {owner: user.id},
@@ -41,7 +41,7 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
   }
 
   public getCurrentRunningLabInstances(): Promise<LabInstance[]> {
-    const user: User = RequestContextHelper.getAndCheckCurrentUser();
+    const user: User = CurrentUserHelper.getAndCheckCurrentUser();
 
     return this.repository.find({
       where: (qb: ObjectLiteral) => {
@@ -63,19 +63,19 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
   public async login(labInstance: LabInstance): Promise<LabInstanceToken> {
     try {
       const labAuth: ExternalLabLoginResponse =
-        await this.externalLabUserService.login(labInstance, RequestContextHelper.getAndCheckCurrentUser());
+        await this.externalLabUserService.login(labInstance, CurrentUserHelper.getAndCheckCurrentUser());
 
       return new LabInstanceToken(labInstance, 'Bearer ' + labAuth.access_token);
     } catch (e: any) {
       const error: ExternalLabError = (e.response as AxiosResponse)?.data ?? '';
 
-      switch (error.code){
+      switch (error.code) {
         case 'gws.WRONG_CREDENTIALS_USER_NOT_ACTIVATED' :
           throw new UnauthorizedException(ErrorText.LAB_USER_NOT_ACTIVATED);
         case 'gws.WRONG_CREDENTIALS_USER_NOT_FOUND' :
           throw new UnauthorizedException(ErrorText.LAB_USER_NOT_FOUND);
         default:
-      throw new BadRequestException(ErrorText.LAB_AUTH_ERROR);
+          throw new BadRequestException(ErrorText.LAB_AUTH_ERROR);
 
       }
     }
@@ -98,13 +98,13 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
     );
   }
 
-  public async getLabUsers(labInstanceId: string): Promise<ExternalLabUser[]>{
+  public async getLabUsers(labInstanceId: string): Promise<ExternalLabUser[]> {
     const lab: LabInstance = await this.findByIdAndCheck(labInstanceId);
 
     return this.externalLabUserService.getUsers(lab);
   }
 
-  public async addUserToLab(labInstanceId: string, newUser: ExternalNewLabUser): Promise<ExternalLabUser>{
+  public async addUserToLab(labInstanceId: string, newUser: ExternalNewLabUser): Promise<ExternalLabUser> {
     const lab: LabInstance = await this.findByIdAndCheck(labInstanceId);
     const user: User = await this.userService.findByIdAndCheck(newUser.userId);
 

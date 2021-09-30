@@ -16,12 +16,18 @@ export * from './component/fl-bio-network-zoom/fl-bio-network-zoom.component';
 export * from './model/fl-bio-cofactor.class';
 export * from './model/fl-bio-network.class';
 export * from './model/fl-bio-network-d3.class';
+export * from './model/fl-bio-network-d3-cofactor.class';
+export * from './model/fl-bio-network-d3-link.class';
+export * from './model/fl-bio-network-d3-metabolite.class';
+export * from './model/fl-bio-network-d3-network.class';
+export * from './model/fl-bio-network-d3-reaction.class';
 export * from './model/fl-bio-network-drawer-action.class';
 export * from './model/fl-bio-network-selection.class';
 
 // States
 export * from './state/fl-bio-network.state';
 export * from './state/fl-bio-network-drawer.state';
+export * from './state/fl-bio-network-grid.state';
 export * from './state/fl-bio-network-renderer.state';
 export * from './state/fl-bio-network-selection.state';
 export * from './state/fl-bio-network-zoom.state';

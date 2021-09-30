@@ -1,13 +1,9 @@
 import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
-import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
-import {BioxConnection, BioxFlow} from '../../../../../core/model/global/biox-connection.class';
-import {BioxResourcePortalComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-portal/biox-resource-portal.component';
-import {ConnectedPosition} from '@angular/cdk/overlay';
-import {WorkflowConnection} from '../../model/workflow-connection.class';
-import {BioxProtocolLink} from '../../../../../core/model/entities/biox-protocol-link.entity';
+import {BioxFlow} from '../../../../../core/model/global/biox-connection.class';
 import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
 import {BioxProtocol} from '../../../../../core/model/entities/process/biox-protocol.entity';
+import {WorkflowActionState} from '../../state/workflow-action-state';
 
 
 @Component({
@@ -22,14 +18,13 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   flowIsLoading: boolean = false;
   error: boolean = false;
 
-  constructor(private workflowManagerService: WorkflowManagerState,
-              private portalService: FlPortalService,
+  constructor(private workflowManagerState: WorkflowManagerState,
+              private actionState: WorkflowActionState,
               private experimentState: BioxExperimentDetailPageState) {
   }
 
   ngOnInit(): void {
     this.loadExperimentFlow();
-
   }
 
 
@@ -42,12 +37,9 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   }
 
   private loadExperimentFlowSuccess(flow: BioxFlow<BioxProtocol>): void {
-    this.workflowManagerService.init(this.container.nativeElement, flow, this.experimentState.currentExperiment);
+    this.workflowManagerState.init(this.container.nativeElement, flow, this.experimentState.currentExperiment);
+    this.actionState.listenToConnectionSelected();
     this.flowIsLoading = false;
-
-    this.workflowManagerService.onConnectionSelected().subscribe(
-      connection => this.onConnectionSelected(connection)
-    );
   }
 
 
@@ -56,44 +48,13 @@ export class BioxWorkflowComponent implements OnInit, OnDestroy {
   }
 
 
-  // TOdo to move to action state
-  onConnectionSelected(workflowConnection: WorkflowConnection): void {
-    const connection: BioxConnection = workflowConnection.object;
-
-    if (connection instanceof BioxProtocolLink) {
-      const connectionHtmlElement: HTMLElement = workflowConnection.getHTMLElement();
-
-      if (connectionHtmlElement == null) {
-        return;
-      }
-
-      const position: ConnectedPosition[] = [{
-        originX: 'center',
-        originY: 'top',
-        overlayX: 'center',
-        overlayY: 'bottom',
-        offsetY: -20
-      }];
-      const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(connectionHtmlElement, position, {
-        panelClass: 'g-portal-panel',
-        elevation: true,
-        disposeOnNavigation: true,
-        size: 'small',
-        disposeOnOutsideClick: true,
-        scrollStrategy: this.portalService.getCloseOnScrollStrategy()
-      });
-
-      this.portalService.createPortal(BioxResourcePortalComponent, portalConfig, connection.resource.getObs());
-    }
-  }
-
   private onError(): void {
     this.flowIsLoading = false;
     this.error = true;
   }
 
   ngOnDestroy(): void {
-    this.workflowManagerService.clear();
+    this.workflowManagerState.clear();
   }
 
 }

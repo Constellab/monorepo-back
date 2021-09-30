@@ -1,11 +1,10 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {User} from '../user.entity';
 import {UserTokenPayload} from '../../core/model/config/user-token.class';
-import {MailTemplate} from '../../core/model/config/mail-config.class';
+import {MailTemplate} from '../../core/model/config/mail-template.class';
 import {InjectRepository} from '@nestjs/typeorm';
 import {getManager, Repository} from 'typeorm';
 import {CoreConfigService} from '../../core/modules/core-config/core-config.service';
-import {MailService} from '../../core/services/mail/mail.service';
 import {TokenService} from '../../core/services/token/token.service';
 import {UsersService} from '../users.service';
 import {ErrorText} from '../../core/model/config/error-text.class';
@@ -14,6 +13,7 @@ import {GroupType} from '../../groups/group-type.enum';
 import {TokenExpiredError} from 'jsonwebtoken';
 import * as argon2 from 'argon2';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
+import {BlMailService} from '@monorepo/back-core-lib';
 
 /**
  * Service to handle users' account (signup, mail validation, password forgotten, reset password...)
@@ -27,7 +27,7 @@ export class UserAccountsService {
   constructor(
     @InjectRepository(User) private repository: Repository<User>,
     private configService: CoreConfigService,
-    private mailService: MailService,
+    private mailService: BlMailService,
     private tokenService: TokenService,
     private usersService: UsersService) {
   }
