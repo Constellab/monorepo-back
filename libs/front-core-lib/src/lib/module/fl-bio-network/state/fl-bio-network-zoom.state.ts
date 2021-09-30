@@ -4,6 +4,7 @@ import {ZoomBehavior, ZoomTransform} from 'd3-zoom';
 import * as d3 from 'd3';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
+import {flBioNetworkNodeTextClass} from '../model/fl-bio-network-d3.class';
 
 /**
  * State to manage the zoom in the {@link FlBioNetworkComponent}
@@ -19,6 +20,10 @@ export class FlBioNetworkZoomState implements OnDestroy {
 
   public readonly minZoomScale: number = 0.1;
   public readonly maxZoomScale: number = 10;
+
+  // zoom threshold where the node-text are displayed
+  // if zoom >= threshold --> text is displayed
+  private readonly nodeTextVisibilityThreshold = 0.7;
 
 
   public enableZoom(svg: FlD3SelectionSimple, zoomableElement: FlD3SelectionSimple): void {
@@ -43,8 +48,24 @@ export class FlBioNetworkZoomState implements OnDestroy {
   private onZoom(transform: ZoomTransform): void {
     this.zoomableElement.attr('transform', transform.toString());
 
+    this.updateNodeTextVisibility(transform);
+
     // emit the zoom
     this.zoom$.next(transform);
+  }
+
+  // show or hide the text based on scroll scale
+  private updateNodeTextVisibility(transform: ZoomTransform): void {
+    const previousScale = this.zoom$.value?.k ?? 1;
+    const previousDisplay = previousScale >= this.nodeTextVisibilityThreshold;
+    const currentDisplay = transform.k >= this.nodeTextVisibilityThreshold;
+
+    if (previousDisplay != currentDisplay) {
+      const opacity = currentDisplay ? 1 : 0;
+      const selection = this.svg.selectAll('.' + flBioNetworkNodeTextClass)
+      selection.style('opacity', opacity);
+    }
+
   }
 
   // public resetZoom(): void{
