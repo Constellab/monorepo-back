@@ -59,6 +59,7 @@
         "project": "./tsconfig.*?.json"
       },
       "rules": {
+        "indent": ["error", 2],
         "max-len": [
           "error",
           {
