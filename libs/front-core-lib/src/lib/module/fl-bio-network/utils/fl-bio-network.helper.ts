@@ -10,6 +10,8 @@ import {
   FlPathwayDatabase
 } from '../model/fl-bio-network.class';
 
+const pathwaySplitChar = '; ';
+
 /**
  * Helper class to manipulate {@link FlBioNetwork}
  */
@@ -83,20 +85,21 @@ export class FlBioNetworkHelper {
     return (reaction.enzyme?.pathway ?? {})[database] ?? flDefaultPathway;
   }
 
+  // retrieve the list of pathways of a reaction for a database
+  public static getReactionPathwayId(reaction: FlBioNetworkReaction, database: FlPathwayDatabase): string[] {
+    const pathwayDetail: FlBioNetworkPathwayDetail = FlBioNetworkHelper.getReactionPathway(reaction, database);
+    const pathwayIdStr: string = ClHelpService.isNullOrEmpty(pathwayDetail.id) ? pathwayDetail.name : pathwayDetail.id;
+    return pathwayIdStr.split(pathwaySplitChar);
+  }
+
   // check if a reaction is in a pathway (of a specific database)
+  // if true, it returns the list of pathway in reaction
   public static reactionIsInAnyPathway(reaction: FlBioNetworkReaction, pathwayIds: string[],
                                        database: FlPathwayDatabase): boolean {
-    const reactionPathway: FlBioNetworkPathwayDetail = FlBioNetworkHelper.getReactionPathway(reaction, database);
+    const reactionPathways: string[] = FlBioNetworkHelper.getReactionPathwayId(reaction, database);
 
-    // create an regex with all the ids separated with OR
-    const regex: RegExp = new RegExp(pathwayIds.join('|'));
-
-    // if the reaction does not jave an id, check with the name
-    if (ClHelpService.isNullOrEmpty(reactionPathway.id)) {
-      return regex.test(reactionPathway.name);
-    } else {
-      return regex.test(reactionPathway.id);
-    }
+    // return only the the reaction pathways that are in the list of pathways
+    return reactionPathways.findIndex(id => pathwayIds.indexOf(id) !== -1) !== -1;
   }
 
   // return the estimate values of a reaction, with a default value if it doesn't exist

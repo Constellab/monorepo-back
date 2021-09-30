@@ -59,10 +59,12 @@ export class FlBioNetworkFactory {
       if (ClHelpService.isNullOrEmpty(selectedPathways) ||
         // or the reaction is in one of the filter pathway
         FlBioNetworkHelper.reactionIsInAnyPathway(reaction, selectedPathways, pathwayDatabase)) {
+
+        const reactionPathways: string[] = FlBioNetworkHelper.getReactionPathwayId(reaction, pathwayDatabase);
         // add the reaction
         reactionNodes.push(new FlBioNetworkD3Reaction(reaction.id,
           reaction.name ? reaction.name : reaction.id,
-          this.grey, ClHelpService.deepClone(reaction)
+          this.grey, ClHelpService.deepClone(reaction), reactionPathways
         ));
       }
     }

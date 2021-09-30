@@ -29,17 +29,38 @@
 
     <!--  Select the pathway  -->
     <p>{{'flBioNetwork.select_sub_pathway' | translate}}</p>
-    <mat-checkbox [checked]="pathwaysAllSelected"
-                  (change)="selectAllPathwayChange($event.checked)">
-     <strong>{{'flBioNetwork.select_all_pathway' | translate}}</strong>
-    </mat-checkbox>
-    <mat-checkbox *ngFor="let subPathway of pathways$ | async"
-                  (click)="$event.stopPropagation()"
-                  (change)="$event ? pathwaySelection.toggle(subPathway.id) : null"
-                  [checked]="pathwaySelection.isSelected(subPathway.id)"
-                  class="g-mat-checkbox-wrap-text">
-      <div class="g-text-small g-text-capitalize-first">{{subPathway.name}} ({{subPathway.id}})</div>
-    </mat-checkbox>
+
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <button mat-icon-button class="highlight-icon g-button-icon-tiny"
+              (click)="toggleAllPathwayHighlight()"
+              [matTooltip]="'flBioNetwork.highlight_all_pathway' | translate">
+        <mat-icon>colorize</mat-icon>
+      </button>
+      <!--  Select all toggle  -->
+      <mat-checkbox [checked]="pathwaysAllSelected"
+                    (change)="selectAllPathwayChange($event.checked)">
+        <strong>{{'flBioNetwork.select_all_pathway' | translate}}</strong>
+      </mat-checkbox>
+    </div>
+
+    <div *ngFor="let pathway of pathways$ | async" fxLayout="row" fxLayoutAlign="start center">
+      <button mat-icon-button class="highlight-icon g-button-icon-tiny"
+              (click)="togglePathwayHighlight(pathway, $event)" [disabled]="!pathway.selected"
+              [matTooltip]="'flBioNetwork.highlight_pathway' | translate">
+        <mat-icon [style.color]="pathway.highlighted ? pathway.color: ''">
+          colorize
+        </mat-icon>
+      </button>
+
+      <mat-checkbox (click)="$event.stopPropagation()"
+                    (change)="selectionChanged(pathway)"
+                    [(ngModel)]="pathway.selected"
+                    class="g-mat-checkbox-wrap-text">
+        <div class="g-text-small g-text-capitalize-first">
+          {{pathway.name}} ({{pathway.id}})
+        </div>
+      </mat-checkbox>
+    </div>
   </div>
 
 </div>

@@ -57,6 +57,13 @@ export interface FlBioNetworkPathwayDetail {
   name: string;
 }
 
+export interface FlBioNetworkPathwaySelection extends FlBioNetworkPathwayDetail{
+  selected: boolean;
+  highlighted: boolean;
+  color: string;
+}
+
+
 export interface FlBioNetworkReactionEstimate {
   value: number;
   lower_bound: number;

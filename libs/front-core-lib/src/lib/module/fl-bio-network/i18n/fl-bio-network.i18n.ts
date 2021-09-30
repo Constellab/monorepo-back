@@ -27,7 +27,9 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     reactions_count : '{{count}} réactions',
     links_count : '{{count}} liens',
     export_position_to_json: 'Exporter les positions',
-    select_all_pathway: 'Tout sélectionner'
+    select_all_pathway: 'Tout sélectionner',
+    highlight_pathway: 'Coloriser le pathway',
+    highlight_all_pathway: 'Coloriser tous les pathways sélectionnés'
   }
 };
 
@@ -53,7 +55,9 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     reactions_count : '{{count}} reactions',
     links_count : '{{count}} links',
     export_position_to_json: 'Export positions',
-    select_all_pathway: 'Select all'
+    select_all_pathway: 'Select all',
+    highlight_pathway: 'Colorize pathway',
+    highlight_all_pathway: 'Colorize all selected pathways'
   }
 };
 
