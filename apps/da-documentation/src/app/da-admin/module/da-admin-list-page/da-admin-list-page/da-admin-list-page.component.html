@@ -5,12 +5,12 @@
 </button>
 
 <mat-nav-list>
-    <mat-list-item *ngFor="let documentation of documentations; index as i">
+    <mat-list-item *ngFor="let documentation of documentations; index as i" (click)="redirectToDoc(documentation)">
         <p matLine>{{ documentation.title }}</p>
         <button mat-icon-button (click)="edit(documentation.id)">
             <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button (click)="delete(documentation.id, i)">
+        <button mat-icon-button (click)="delete(documentation.id, i, $event)">
             <mat-icon>delete</mat-icon>
         </button>
     </mat-list-item>

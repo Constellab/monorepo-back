@@ -3,7 +3,8 @@ import { Observable } from 'rxjs';
 import { FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService } from '@monorepo/front-core-lib';
 import { DaDocumentation } from '../../../../da-core/da-model/da-entities/da-documentation.class';
 import { DaDocumentationService } from '../../../../da-core/da-service/da-documentation.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Event, Router } from '@angular/router';
+import { ClHelpService } from '../../../../../../../../libs/core-lib/src';
 
 @Component({
   selector: 'da-da-admin-list-page',
@@ -17,7 +18,8 @@ export class DaAdminListPageComponent implements OnInit {
   constructor(
     private daDocumentationService: DaDocumentationService,
     private dialogService: FlDialogService,
-    private router: Router
+    private router: Router,
+    private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
@@ -41,7 +43,8 @@ export class DaAdminListPageComponent implements OnInit {
     this.router.navigate(['admin', 'edit', id]);
   }
 
-  delete(id: string, i: number): void{
+  delete(id: string, i: number, event: globalThis.Event): void{
+    ClHelpService.stopEventPropagation(event);
     const input: FlConfirmDialogInput = {
       title: 'Confirm deletion',
       content: 'Confirm the deletion?',
@@ -51,6 +54,13 @@ export class DaAdminListPageComponent implements OnInit {
     this.dialogService.openConfirmDialog(input).afterClosed().subscribe(res => {
       this.onCloseConfirmDialog(res, id, i);
     })
+    
+  }
+
+  redirectToDoc(documentation: DaDocumentation): void{
+    let route: string[] = ['docs'];
+    route = route.concat(documentation.path.split('/'));
+    this.router.navigate(route);
   }
 
   private onCloseConfirmDialog(res: FlConfirmDialogResult, id: string, i: number): void{
