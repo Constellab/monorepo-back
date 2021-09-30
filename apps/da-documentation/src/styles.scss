@@ -22,6 +22,24 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
+element.style {
+}
+[_nghost-cdu-c283] {
+    width: 100%;
+    display: block;
+}
+.g-form-input {
+    /* max-width: 800px; */
+}
+.g-form-input {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.ng-start-inserted{
+  max-width: 800px;
+}
+
 .g-page {
   padding: 2em 2em 0 2em;
   min-height: 100vh;
@@ -29,6 +47,22 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+}
+
+.ql-editor {
+  resize: vertical;
+  overflow-y: scroll;
+  min-height: 200px;
+}
+  
+.ql-container {
+  height: 60% !important;
+}
+
+monorepo-root{
+  margin: 0 auto !important;
+  max-width: 800px !important;
+  padding-top: 50px;
 }
 
 @media (max-width: 600px) {

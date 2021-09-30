@@ -1,4 +1,4 @@
-<form (ngSubmit)="submit()" id="documentation-form" [formGroup]="formGp">
+<form (ngSubmit)="submit()" id="documentation-form" [formGroup]="formGp" style="max-width: 800px;">
 
     <!--  title  -->
     <mat-form-field class="g-form-input" appearance="fill">
@@ -10,6 +10,15 @@
     </mat-form-field>
 
 
+    <!--  path  -->
+    <mat-form-field class="g-form-input" appearance="fill">
+        <mat-label>{{'path' | translate}}</mat-label>
+        <input matInput type="text" formControlName="path">
+        <mat-error *ngIf="formGp.get('path').hasError('required')">
+            {{'path' | flErrorRequired}}
+        </mat-error>
+    </mat-form-field>
+
     <!--    content      -->
     <fl-form-field class="g-form-input">
         <mat-label>{{'content' | translate}}</mat-label>
@@ -20,15 +29,6 @@
           {{'content' | flErrorRequired}}
         </mat-error>
     </fl-form-field>
-  
-    <!--  path  -->
-    <mat-form-field class="g-form-input" appearance="fill">
-        <mat-label>{{'path' | translate}}</mat-label>
-        <input matInput type="text" formControlName="path">
-        <mat-error *ngIf="formGp.get('path').hasError('required')">
-            {{'path' | flErrorRequired}}
-        </mat-error>
-    </mat-form-field>
 
     <button mat-raised-button color="primary" type="submit" form="documentation-form" class="g-centered-forced">
         {{'save' | translate}}
