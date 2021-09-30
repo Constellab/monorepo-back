@@ -4,8 +4,7 @@ import {FlBioNetworkD3Node, flBioNetworkNodeClass} from '../model/fl-bio-network
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.class';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
-import {FlThemeService} from '../../../service/fl-theme.service';
-import {FlBioNetworkMetabolite} from '../model/fl-bio-network.class';
+import {FlBioNetworkMetabolite, FlBioNetworkPathwaySelection} from '../model/fl-bio-network.class';
 import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
 import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
 
@@ -24,12 +23,10 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
   // opacity used when a object is hidden
   private readonly hiddenOpacity: number = 0.1;
-  private readonly selectUniqueNodeColor: string;
 
   private subscription: Subscription;
 
-  constructor(private drawerState: FlBioNetworkDrawerState, private themeService: FlThemeService) {
-    this.selectUniqueNodeColor = themeService.getCurrentThemeDetail().warn;
+  constructor(private drawerState: FlBioNetworkDrawerState) {
   }
 
 
@@ -56,9 +53,6 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     if (!this.isReady()) return;
 
     this.selectNodesAndDirectLinks([nodeIndex]);
-
-    // set a specific color to the selected node
-    this.nodes.attr('stroke', (d: FlBioNetworkD3Node) => d.index === nodeIndex ? this.selectUniqueNodeColor : d.color);
   }
 
   public selectNodesAndDirectLinks(nodesIndexes: number[]): void {
@@ -128,6 +122,38 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     this.selection$.next({mode: 'nodesByCompartments', nodes: nodes, links: links});
   }
 
+  public toggleAllPathwayHighlight(pathways: FlBioNetworkPathwaySelection[]): void {
+    // if there is at least one pathways not highlighted
+    const highlight: boolean = pathways.some(pathway => !pathway.highlighted);
+    for (const pathway of pathways) {
+      if (pathway.highlighted != highlight) {
+        this.togglePathwayHighlight(pathway);
+      }
+    }
+  }
+
+  public togglePathwayHighlight(pathway: FlBioNetworkPathwaySelection): void {
+    if (!this.isReady()) return;
+
+    // retrieve all the reaction of the pathway
+    const reactions: FlBioNetworkD3Node[] = this.data.getReactionsOfPathway(pathway.id);
+    const reactionsIndexes: number[] = reactions.map(reaction => reaction.index);
+
+    const links: FlD3SelectionSimple<FlBioNetworkD3Link> = this.getConnectedLinksSelection(reactionsIndexes);
+    const reactionSelection: FlD3SelectionSimple<FlBioNetworkD3Node> = this.getNodeSelection(reactionsIndexes);
+
+    // if the pathway was not highlighted
+    if (!pathway.highlighted) {
+      links.style('stroke', pathway.color);
+      reactionSelection.style('stroke', pathway.color);
+    } else {
+      links.style('stroke', 'grey'); // todo this color is not correct
+      reactionSelection.style('stroke', node => node.color);
+    }
+    pathway.highlighted = !pathway.highlighted;
+  }
+
+
   // return all the directly connected node of the node
   private getConnectedLinks(nodesIndexes: number[]): FlBioNetworkD3Link[] {
     return this.data.links
@@ -155,6 +181,16 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     return nodes;
   }
 
+  // select all the nodes connected to the links and return the node list
+  private getNodeSelection(nodesIndexes: number[]): FlD3SelectionSimple<FlBioNetworkD3Node> {
+    return this.nodes.filter((node: FlBioNetworkD3Node) => nodesIndexes.includes(node.index));
+  }
+
+  // return all the directly connected node of the node
+  private getConnectedLinksSelection(nodesIndexes: number[]): FlD3SelectionSimple<FlBioNetworkD3Link> {
+    return this.links.filter((link: FlBioNetworkD3Link) => link.isLinkedToAnyNode(nodesIndexes));
+  }
+
 
   /**
    * Reset all the color of the nodes and links
@@ -165,7 +201,6 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
     // update opacity and color of nodes
     this.nodesContainer.style('opacity', 1);
-    this.nodes.attr('stroke', (d: FlBioNetworkD3Node) => d.color);
 
     // update link opacity
     this.links.style('opacity', 1);
@@ -187,6 +222,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   private currentSelection(): FlBioNetworkSelectionEvent {
     return this.selection$.value;
   }
+
 
   public getSelectionMode$(): Observable<FlBioNetworkSelectionEvent> {
     return this.selection$.asObservable();

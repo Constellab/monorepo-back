@@ -59,4 +59,8 @@ export class FlBioNetworkD3Link implements SimulationLinkDatum<FlBioNetworkD3Nod
     return this.source.index === nodeIndex || this.target.index === nodeIndex;
   }
 
+  isLinkedToAnyNode(nodeIndexes: number[]): boolean {
+    return nodeIndexes.some(nodeIndex => this.isLinkedToNode(nodeIndex));
+  }
+
 }

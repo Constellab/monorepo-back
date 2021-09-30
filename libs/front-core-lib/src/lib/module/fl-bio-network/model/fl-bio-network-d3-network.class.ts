@@ -29,6 +29,11 @@ export class FlBioxNetworkD3 {
     return [...this.metabolites, ...this.cofactors];
   }
 
+  // return all the reaction of a pathway
+  public getReactionsOfPathway(pathwayId: string): FlBioNetworkD3Reaction[] {
+    return this.reactions.filter(reaction => reaction.isInPathway(pathwayId));
+  }
+
 
   // return the min and max value of all links
   public getLinksDomain(): [number, number] {

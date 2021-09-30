@@ -14,9 +14,11 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
 
   public type: 'reaction';
   public data: FlBioNetworkReaction;
+  public pathwayIds: string[]; // list of pathway for the reaction
 
-  constructor(id: string, name: string, color: string, data: FlBioNetworkReaction) {
+  constructor(id: string, name: string, color: string, data: FlBioNetworkReaction, pathwayIds: string[]) {
     super(id, name, 'reaction', color, data);
+    this.pathwayIds = pathwayIds;
   }
 
 
@@ -59,6 +61,10 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
       x: coord.x + (flBioNetworkReactionWidth / 2),
       y: coord.y + (flBioNetworkReactionHeight / 2)
     };
+  }
+
+  public isInPathway(id: string): boolean {
+    return this.pathwayIds.includes(id);
   }
 
 

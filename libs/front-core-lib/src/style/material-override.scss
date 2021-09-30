@@ -43,18 +43,27 @@
   line-height: 2.5em !important;
 }
 
-.g-button-icon-small.mat-icon-button {
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
 
-  mat-icon {
-    height: 18px;
-    width: 18px;
-    font-size: 18px;
-    line-height: 18px;
+@mixin g-button-icon-size($button-size, $icon-size){
+  &.mat-icon-button {
+    width: $button-size;
+    height: $button-size;
+    line-height: $button-size;
+
+    mat-icon {
+      height: $icon-size;
+      width: $icon-size;
+      font-size: $icon-size;
+      line-height: $icon-size;
+    }
   }
+}
+.g-button-icon-small {
+  @include g-button-icon-size(30px, 18px)
+}
 
+.g-button-icon-tiny {
+  @include g-button-icon-size(20px, 15px)
 }
 
 .g-button-hide-text span, .g-button-hide-text mat-icon {

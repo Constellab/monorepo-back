@@ -1,9 +1,10 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {SelectionModel} from '@angular/cdk/collections';
-import {FlBioNetwork, FlBioNetworkPathwayDetail, FlPathwayDatabase, flPathwayDatabases} from '../../model/fl-bio-network.class';
-import {Observable} from 'rxjs';
+import {FlBioNetwork, FlBioNetworkPathwaySelection, FlPathwayDatabase, flPathwayDatabases} from '../../model/fl-bio-network.class';
 import {MatSelectChange} from '@angular/material/select';
+import {Observable} from 'rxjs';
+import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
+import {ClHelpService} from '@monorepo/core-lib';
 
 /**
  * Component to select the config of the pathway before showing it
@@ -17,18 +18,15 @@ import {MatSelectChange} from '@angular/material/select';
 export class FlBioNetworkConfigComponent implements OnInit {
 
   networks: FlBioNetwork[] | null;
-
   networkName: string;
+
   database: FlPathwayDatabase;
-
-  pathways: Observable<FlBioNetworkPathwayDetail[]>;
-
-  // handle the selection per id
-  selection: SelectionModel<string>;
-
   pathwayDatabases: FlPathwayDatabase[] = flPathwayDatabases;
 
-  constructor(private state: FlBioNetworkState) {
+  pathways$: Observable<FlBioNetworkPathwaySelection[]>;
+  pathwaysAllSelected: boolean = false;
+
+  constructor(private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState) {
   }
 
   ngOnInit(): void {
@@ -39,8 +37,7 @@ export class FlBioNetworkConfigComponent implements OnInit {
 
     this.networkName = this.state.getSelectedNetwork().name;
     this.database = this.state.getDatabase();
-    this.selection = this.state.selectedPathways;
-    this.pathways = this.state.getPathwayList$();
+    this.pathways$ = this.state.getPathways$();
   }
 
   onNetworkChange(change: MatSelectChange): void {
@@ -49,5 +46,36 @@ export class FlBioNetworkConfigComponent implements OnInit {
 
   onDatabaseChange(change: MatSelectChange): void {
     this.state.selectDatabase(change.value);
+  }
+
+  selectAllPathwayChange(select: boolean): void {
+    this.pathwaysAllSelected = select;
+    if (select) {
+      this.state.selectAllPathways();
+    } else {
+      this.state.unselectAllPathways();
+    }
+  }
+
+  togglePathwayHighlight(pathwayDetail: FlBioNetworkPathwaySelection, event: MouseEvent): void {
+    ClHelpService.stopEventPropagation(event);
+    this.selectionState.togglePathwayHighlight(pathwayDetail);
+  }
+
+  // todo améliorer la gestion des pathways coloré
+  // faire un state ? Garer le pathway coloré quand on en ajout un autre ?
+  toggleAllPathwayHighlight(): void {
+    const selectedPathways: FlBioNetworkPathwaySelection[] = this.state.getCurrentPathways().filter(
+      pathway => pathway.selected
+    );
+    this.selectionState.toggleAllPathwayHighlight(selectedPathways);
+  }
+
+  selectionChanged(pathway: FlBioNetworkPathwaySelection): void {
+    // when unselecting the pathway, force the highlight to false
+    if (!pathway.selected) {
+      pathway.highlighted = false;
+    }
+    this.state.emitPathwaySelectionChange();
   }
 }
