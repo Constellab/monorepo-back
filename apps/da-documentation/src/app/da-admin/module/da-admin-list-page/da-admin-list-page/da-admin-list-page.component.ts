@@ -3,8 +3,8 @@ import { Observable } from 'rxjs';
 import { FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService } from '@monorepo/front-core-lib';
 import { DaDocumentation } from '../../../../da-core/da-model/da-entities/da-documentation.class';
 import { DaDocumentationService } from '../../../../da-core/da-service/da-documentation.service';
-import { ActivatedRoute, Event, Router } from '@angular/router';
-import { ClHelpService } from '../../../../../../../../libs/core-lib/src';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ClHelpService } from '@monorepo/core-lib';
 
 @Component({
   selector: 'da-da-admin-list-page',
@@ -48,8 +48,10 @@ export class DaAdminListPageComponent implements OnInit {
     const input: FlConfirmDialogInput = {
       title: 'Confirm deletion',
       content: 'Confirm the deletion?',
-      translateTitleAndContent: false
-    }
+      translateTitleAndContent: false,
+      observable: this.daDocumentationService.deleteById(id),
+      successMessage: 'Documentation deleted'
+    }//translate & observable
     
     this.dialogService.openConfirmDialog(input).afterClosed().subscribe(res => {
       this.onCloseConfirmDialog(res, id, i);

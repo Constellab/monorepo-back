@@ -1,5 +1,6 @@
-export class DaDocumentation {
-    id: string;
+import { DaEntity } from './da-entity.class';
+
+export class DaDocumentation extends DaEntity{
 
     title: string;
 

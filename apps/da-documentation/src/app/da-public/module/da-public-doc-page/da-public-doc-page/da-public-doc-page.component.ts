@@ -22,17 +22,10 @@ export class DaPublicDocPageComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.url.subscribe(url => {
       this.path = url.join('/');
+      //faire une foction
       this.getDocumentationByPath(this.path).subscribe(doc => {
         this.documentation = doc;
-        if(this.documentation){
-          document.querySelector('#docTitle').innerHTML = `<h1>${this.documentation.title}</h1>`;
-          document.querySelector('#docContent').innerHTML = this.documentation.content;
-        }
-      }
-      ,
-      error => {
-        console.log(error);
-      });
+      })
     });
   }
 

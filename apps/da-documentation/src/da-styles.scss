@@ -24,20 +24,10 @@ body {
 
 element.style {
 }
-[_nghost-cdu-c283] {
-    width: 100%;
-    display: block;
-}
-.g-form-input {
-    /* max-width: 800px; */
-}
+
 .g-form-input {
     width: 100%;
     margin-bottom: 20px;
-}
-
-.ng-start-inserted{
-  max-width: 800px;
 }
 
 .g-page {
@@ -57,12 +47,6 @@ element.style {
   
 .ql-container {
   height: 60% !important;
-}
-
-monorepo-root{
-  margin: 0 auto !important;
-  max-width: 800px !important;
-  padding-top: 50px;
 }
 
 @media (max-width: 600px) {

@@ -59,25 +59,19 @@ export class DaAdminDocFormComponent implements OnInit {
         this.formGp.patchValue(doc);
     }
 
-    private create(formValue: DaDocumentation): DaDocumentation {
-        let createdDoc:DaDocumentation;
-        this.daDocumentationService.create(formValue).subscribe(cDoc => {
-            createdDoc = cDoc;
-            this.snackBarService.openSuccessMessage('New documentation created !');
+    private create(formValue: DaDocumentation): void {
+        this.daDocumentationService.create(formValue).subscribe(() => {
+            this.snackBarService.openSuccessMessage('New documentation created');
             this.isLoading = false;
             this.router.navigate(['admin']);
         });
-        return createdDoc;
     }
 
-    private update(formValue: DaDocumentation): DaDocumentation {
-        let updatedDoc:DaDocumentation; 
-        this.daDocumentationService.update(formValue).subscribe(uDoc => {
-            updatedDoc = uDoc;
-            this.snackBarService.openSuccessMessage('Documentation uptated !');
+    private update(formValue: DaDocumentation): void {
+        this.daDocumentationService.update(formValue).subscribe(() => {
+            this.snackBarService.openSuccessMessage('Documentation uptated');//translate
             this.isLoading = false;
             this.router.navigate(['admin']);
         });
-        return updatedDoc;
     }
 }

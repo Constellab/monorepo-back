@@ -1,4 +1,4 @@
-<form (ngSubmit)="submit()" id="documentation-form" [formGroup]="formGp" style="max-width: 800px;">
+<form (ngSubmit)="submit()" id="documentation-form" [formGroup]="formGp">
 
     <!--  title  -->
     <mat-form-field class="g-form-input" appearance="fill">
@@ -30,7 +30,7 @@
         </mat-error>
     </fl-form-field>
 
-    <button mat-raised-button color="primary" type="submit" form="documentation-form" class="g-centered-forced">
+    <button mat-raised-button color="primary" type="submit" class="g-centered-forced">
         {{'save' | translate}}
         <fl-button-loader *ngIf="isLoading"></fl-button-loader>
     </button>

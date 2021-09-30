@@ -1,9 +1,8 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BlEntityWithId } from '@monorepo/back-core-lib';
 
 @Entity()
-export class DnVersion {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+export class DnVersion extends BlEntityWithId{
 
     @Column({length: 20})
     versionNumber: string;

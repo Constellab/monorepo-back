@@ -587,7 +587,7 @@
               "apps/da-documentation/src/assets"
             ],
             "styles": [
-              "apps/da-documentation/src/styles.scss",
+              "apps/da-documentation/src/da-styles.scss",
               {
                 "input": "apps/central-front/src/theme/light-theme.scss",
                 "bundleName": "light-theme",
