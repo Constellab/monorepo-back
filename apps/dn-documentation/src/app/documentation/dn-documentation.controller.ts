@@ -1,35 +1,35 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
 import { pathToFileURL } from 'url';
-import { ParsePipe } from '../core/pipes/parse.pipe';
-import { Documentation } from './dn-documentation.entity';
-import { DocumentationService } from './dn-documentation.service';
+import { ParsePipe } from '../core/pipes/dn-parse.pipe';
+import { DnDocumentation } from './dn-documentation.entity';
+import { DnDocumentationService } from './dn-documentation.service';
 
 @Controller('documentation')
-export class DocumentationController {
-  constructor(private readonly documentationService: DocumentationService) {}
+export class DnDocumentationController {
+  constructor(private readonly documentationService: DnDocumentationService) {}
 
   @Post()
-  create(@Body(new ParsePipe(Documentation)) createDocumentation: Documentation): Promise<Documentation> {
+  create(@Body(new ParsePipe(DnDocumentation)) createDocumentation: DnDocumentation): Promise<DnDocumentation> {
     return this.documentationService.create(createDocumentation);
   }
 
   @Get()
-  findAll(): Promise<Documentation[]> {
+  findAll(): Promise<DnDocumentation[]> {
     return this.documentationService.findAll();
   }
 
   @Get('path')
-  findOneByPath(@Query() query: any): Promise<Documentation> {
+  findOneByPath(@Query() query: any): Promise<DnDocumentation> {
     return this.documentationService.findOneByPath(query.path);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Documentation> {
+  findOne(@Param('id') id: string): Promise<DnDocumentation> {
     return this.documentationService.findOne(id);
   }
 
   @Put()
-  update(@Body(new ParsePipe(Documentation)) updateDocumentation: Documentation): Promise<Documentation> {
+  update(@Body(new ParsePipe(DnDocumentation)) updateDocumentation: DnDocumentation): Promise<DnDocumentation> {
     return this.documentationService.update(updateDocumentation);
   }
 

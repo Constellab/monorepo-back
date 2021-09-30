@@ -1,10 +1,10 @@
 import {Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
-import {EnvironmentProfile} from '../../model/config/config.class';
-import {DatabaseConfig} from '../../model/config/database-config.class';
+import {EnvironmentProfile} from '../../model/config/dn-config.class';
+import {DnDatabaseConfig} from '../../model/config/dn-database-config.class';
 
 @Injectable()
-export class CoreConfigService {
+export class DnCoreConfigService {
 
   constructor(protected configService: ConfigService) {
   }
@@ -21,7 +21,7 @@ export class CoreConfigService {
     const env: EnvironmentProfile = this.getEnvironmentProfile();
     return env === 'dev' || env === 'docker' || env === 'test';
   }
-  public getDatabaseConfig(): DatabaseConfig {
+  public getDatabaseConfig(): DnDatabaseConfig {
     return {
       host: this.configService.get('DATABASE_HOST'),
       port: this.getConfigNumber('DATABASE_PORT'),

@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Version } from '../version/dn-version.entity';
-import { VersionService } from '../version/dn-version.service';
-import { Documentation } from './dn-documentation.entity';
+import { DnVersion } from '../version/dn-version.entity';
+import { DnVersionService } from '../version/dn-version.service';
+import { DnDocumentation } from './dn-documentation.entity';
 
 @Injectable()
-export class DocumentationService {
+export class DnDocumentationService {
   constructor(
-    @InjectRepository(Documentation)
-    private documentationsRepository: Repository<Documentation>,
-    private versionService: VersionService
+    @InjectRepository(DnDocumentation)
+    private documentationsRepository: Repository<DnDocumentation>,
+    private versionService: DnVersionService
   ){}
 
-  create(createDocumentationRes: Documentation): Promise<Documentation> {
-    let version: Version;
-    let doc: Promise<Documentation>;
+  create(createDocumentationRes: DnDocumentation): Promise<DnDocumentation> {
+    let version: DnVersion;
+    let doc: Promise<DnDocumentation>;
 
     this.versionService.getByVersionNumber('1.0.0').then((v) => {
       version = v;
@@ -33,19 +33,19 @@ export class DocumentationService {
     return doc;
   }
 
-  findAll(): Promise<Documentation[]> {
+  findAll(): Promise<DnDocumentation[]> {
     return this.documentationsRepository.find();
   }
 
-  findOne(id: string): Promise<Documentation> {
+  findOne(id: string): Promise<DnDocumentation> {
     return this.documentationsRepository.findOne(id);
   }
 
-  findOneByPath(path: string): Promise<Documentation> {
+  findOneByPath(path: string): Promise<DnDocumentation> {
     return this.documentationsRepository.findOne({where: {path: path}}).catch();
   }
 
-  update(updateDocumentation: Documentation): Promise<Documentation> {
+  update(updateDocumentation: DnDocumentation): Promise<DnDocumentation> {
     return this.documentationsRepository.save(updateDocumentation);
   }
 

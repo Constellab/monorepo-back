@@ -1,5 +1,5 @@
 import {HttpModule, Module} from '@nestjs/common';
-import {CoreConfigModule} from './modules/core-config/core-config.module';
+import {DnCoreConfigModule} from './modules/core-config/dn-core-config.module';
 
 /**
  * Core module of the app, export all modules
@@ -7,17 +7,17 @@ import {CoreConfigModule} from './modules/core-config/core-config.module';
  */
 @Module({
   imports: [
-    CoreConfigModule,
+    DnCoreConfigModule,
     HttpModule,
   ],
   providers: [
   ],
   exports: [
-    CoreConfigModule,
+    DnCoreConfigModule,
 
     // Providers
   ]
 })
-export class CoreModule {
+export class DnCoreModule {
 
 }

@@ -1,17 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { VersionController } from './dn-version.controller';
-import { VersionService } from './dn-version.service';
+import { DnVersionController } from './dn-version.controller';
+import { DnVersionService } from './dn-version.service';
 
 describe('VersionController', () => {
-  let controller: VersionController;
+  let controller: DnVersionController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [VersionController],
-      providers: [VersionService],
+      controllers: [DnVersionController],
+      providers: [DnVersionService],
     }).compile();
 
-    controller = module.get<VersionController>(VersionController);
+    controller = module.get<DnVersionController>(DnVersionController);
   });
 
   it('should be defined', () => {

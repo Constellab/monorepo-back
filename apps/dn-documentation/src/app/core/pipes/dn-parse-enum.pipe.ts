@@ -1,5 +1,5 @@
 import {BadRequestException, Injectable, PipeTransform} from '@nestjs/common';
-import {ErrorText} from '../model/config/error-text.class';
+import {ErrorText} from '../model/config/dn-error-text.class';
 
 /**
  * pipe to convert an input to a enum and throw an error

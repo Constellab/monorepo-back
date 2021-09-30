@@ -1,7 +1,7 @@
 /**
  * Object containing info for database connexion
  */
-export interface DatabaseConfig {
+export interface DnDatabaseConfig {
   host: string;
   port: number;
   username: string;

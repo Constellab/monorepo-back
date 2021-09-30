@@ -3,14 +3,14 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { join } from 'path';
-import { DatabaseConfig } from './app/core/model/database-config.class';
-import { CoreConfigModule } from './app/core/modules/core-config/core-config.module';
-import { CoreConfigService } from './app/core/modules/core-config/core-config.service';
+import { DnDatabaseConfig } from './app/core/model/dn-database-config.class';
+import { DnCoreConfigModule } from './app/core/modules/core-config/dn-core-config.module';
+import { DnCoreConfigService } from './app/core/modules/core-config/dn-core-config.service';
 import { DocumentationModule } from './app/documentation/dn-documentation.module';
-import { VersionModule } from './app/version/dn-version.module';
+import { DnVersionModule } from './app/version/dn-version.module';
 
-function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
-  const dbConfig: DatabaseConfig = configService.getDatabaseConfig();
+function typeOrmConfig(configService: DnCoreConfigService): TypeOrmModuleOptions {
+  const dbConfig: DnDatabaseConfig = configService.getDatabaseConfig();
   return {
     type: 'mysql',
     host: dbConfig.host,
@@ -34,12 +34,12 @@ function typeOrmConfig(configService: CoreConfigService): TypeOrmModuleOptions {
 
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
-      inject: [CoreConfigService],
-      imports: [CoreConfigModule]
+      inject: [DnCoreConfigService],
+      imports: [DnCoreConfigModule]
     }),
 
     DocumentationModule,
-    VersionModule
+    DnVersionModule
   ],
   controllers: [],
   providers: [

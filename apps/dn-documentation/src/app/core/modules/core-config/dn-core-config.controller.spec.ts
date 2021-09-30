@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CoreConfigController } from './core-config.controller';
+import { DnCoreConfigController } from './dn-core-config.controller';
 
 describe('CoreConfigController', () => {
-  let controller: CoreConfigController;
+  let controller: DnCoreConfigController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [CoreConfigController],
+      controllers: [DnCoreConfigController],
     }).compile();
 
-    controller = module.get<CoreConfigController>(CoreConfigController);
+    controller = module.get<DnCoreConfigController>(DnCoreConfigController);
   });
 
   it('should be defined', () => {

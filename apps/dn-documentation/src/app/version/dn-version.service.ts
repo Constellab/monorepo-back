@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Version } from './dn-version.entity';
+import { DnVersion } from './dn-version.entity';
 
 @Injectable()
-export class VersionService {
+export class DnVersionService {
     constructor(
-        @InjectRepository(Version)
-        private versionsRepository: Repository<Version>,
+        @InjectRepository(DnVersion)
+        private versionsRepository: Repository<DnVersion>,
     ){}
 
-    getByVersionNumber(vNumber: string): Promise<Version>{
+    getByVersionNumber(vNumber: string): Promise<DnVersion>{
         return this.versionsRepository.findOne({where: {versionNumber: vNumber}});
     }
 }
