@@ -25,7 +25,7 @@ export class DaPublicDocPageComponent implements OnInit {
       this.getDocumentationByPath(this.path).subscribe(doc => {
         this.documentation = doc;
         if(this.documentation){
-          document.querySelector('#docTitle').innerHTML = this.documentation.title;
+          document.querySelector('#docTitle').innerHTML = `<h1>${this.documentation.title}</h1>`;
           document.querySelector('#docContent').innerHTML = this.documentation.content;
         }
       }
