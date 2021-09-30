@@ -59,7 +59,21 @@
         "project": "./tsconfig.*?.json"
       },
       "rules": {
-        "indent": ["error", 2],
+        "indent": [
+          "error", 2,
+          {
+            "FunctionDeclaration": {
+              "parameters": "first",
+              // or an integer
+              "body": 1
+            },
+            "FunctionExpression": {
+              "parameters": "first",
+              // or an integer
+              "body": 1
+            }
+          }
+        ],
         "max-len": [
           "error",
           {
