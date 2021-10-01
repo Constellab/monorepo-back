@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
 import { pathToFileURL } from 'url';
 import { ParsePipe } from '../core/pipes/dn-parse.pipe';
-import { DnDocumentation } from './dn-documentation.entity';
+import {DnDocumentation, DnDocumentationDTO} from './dn-documentation.entity';
 import { DnDocumentationService } from './dn-documentation.service';
 
 @Controller('documentation')
@@ -14,7 +14,7 @@ export class DnDocumentationController {
   }
 
   @Get()
-  findAll(): Promise<DnDocumentation[]> {
+  findAll(): Promise<DnDocumentationDTO[]> {
     return this.documentationService.findAll();
   }
 

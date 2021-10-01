@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DnVersion } from '../version/dn-version.entity';
 import { DnVersionService } from '../version/dn-version.service';
-import { DnDocumentation } from './dn-documentation.entity';
+import {DnDocumentation, DnDocumentationDTO} from './dn-documentation.entity';
 
 @Injectable()
 export class DnDocumentationService {
@@ -33,7 +33,7 @@ export class DnDocumentationService {
     return doc;
   }
 
-  findAll(): Promise<DnDocumentation[]> {
+  findAll(): Promise<DnDocumentationDTO[]> {
     return this.documentationsRepository.find();
   }
 

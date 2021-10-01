@@ -17,3 +17,9 @@ export class DnDocumentation extends BlEntityWithId{
     @Column()
     path: string;
 }
+
+export class DnDocumentationDTO extends BlEntityWithId{
+  title: string;
+
+  path:string;
+}
