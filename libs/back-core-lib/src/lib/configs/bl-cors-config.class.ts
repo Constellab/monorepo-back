@@ -3,10 +3,10 @@ import {CorsOptions} from '@nestjs/common/interfaces/external/cors-options.inter
 export function blGetCorsConfig(domain: string, isLocal: boolean): CorsOptions {
 
   let origin: (RegExp | string)[];
-  if (isLocal) {
+  if (!isLocal) {
     origin = [/^(.*)/];
   } else {
-    origin = [new RegExp(`https://*\\.${domain.replace('.', './')}`), 'http://localhost:4200'];
+    origin = [new RegExp(`https:\\/\\/.*\\.${domain.replace('.', '\\.')}`), 'http://localhost:4200'];
   }
   return {
     origin: origin, // use regex instead of simple '*'
