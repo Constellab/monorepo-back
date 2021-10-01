@@ -22,19 +22,8 @@ export class BlMailService {
   // base key for i18n subjects
   private readonly subjectI18nBase: string = 'mail-subject.';
 
-  // configuration for the template with hbs
-  private readonly templateOptions = {
-    viewEngine: {
-      extname: '.hbs', // handlebars extension
-      layoutsDir: join(__dirname, 'assets/templates/'), // location of handlebars templates
-      defaultLayout: 'main', // name of main template, will wrap all other templates
-      partialsDir: join(__dirname, 'assets/templates/'), // location of your subtemplates aka. header, footer etc
-    },
-    viewPath: join(__dirname, 'assets/templates/'),
-    extName: '.hbs'
-  };
 
-  constructor(@Inject(BL_MAIL_CONFIG_PROVIDER) private mailConfig: BlMailModuleConfig,
+  constructor(@Inject(BL_MAIL_CONFIG_PROVIDER) private moduleConfig: BlMailModuleConfig,
               private translateService: BlTranslateService) {
   }
 
@@ -52,7 +41,7 @@ export class BlMailService {
 
     // use https://nicholaspretorius.github.io/til0025/ example for configuration
     // configure the mail to use template .hbs files
-    transporter.use('compile', hbs(this.templateOptions));
+    transporter.use('compile', hbs(this.getTemplateOptions()));
 
     const mailOptions = {
       from: this.getMailSender(),
@@ -87,17 +76,31 @@ export class BlMailService {
   // return the config mail for transport
   private getTransportConfig(): SMTPTransport.Options {
     return {
-      host: this.mailConfig.host,
-      port: this.mailConfig.port,
-      secure: this.mailConfig.secure,
+      host: this.moduleConfig.mailConfig.host,
+      port: this.moduleConfig.mailConfig.port,
+      secure: this.moduleConfig.mailConfig.secure,
       auth: {
-        user: this.mailConfig.user,
-        pass: this.mailConfig.password
+        user: this.moduleConfig.mailConfig.user,
+        pass: this.moduleConfig.mailConfig.password
       }
     };
   }
 
   private getMailSender(): string {
-    return this.mailConfig.sender;
+    return this.moduleConfig.mailConfig.sender;
+  }
+
+  private getTemplateOptions(): any {
+    // configuration for the template with hbs
+    return {
+      viewEngine: {
+        extname: '.hbs', // handlebars extension
+        layoutsDir: this.moduleConfig.templateFolder, // location of handlebars templates
+        defaultLayout: 'main', // name of main template, will wrap all other templates
+        partialsDir: this.moduleConfig.templateFolder, // location of your subtemplates aka. header, footer etc
+      },
+      viewPath: this.moduleConfig.templateFolder,
+      extName: '.hbs'
+    };
   }
 }

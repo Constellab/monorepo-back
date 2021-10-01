@@ -1,3 +1,6 @@
+// Configs
+export * from './lib/configs/public-api';
+
 // Decorators
 export * from './lib/decorators/public-api';
 

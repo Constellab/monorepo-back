@@ -76,7 +76,10 @@ function configureJwtModule(configService: CoreConfigService, userService: Users
 }
 
 function configureMailModule(configService: CoreConfigService): BlMailModuleConfig {
-  return configService.getMailConfig();
+  return {
+    mailConfig: configService.getMailConfig(),
+    templateFolder: join(__dirname, 'assets/templates/')
+  };
 }
 
 @Module({
@@ -98,6 +101,7 @@ function configureMailModule(configService: CoreConfigService): BlMailModuleConf
       fallbackLanguage: clDefaultLang,
       parser: I18nJsonParser,
       parserOptions: {
+        path: join(__dirname, 'assets/i18n/'),
         watch: true //    // enable live translation
       },
     }),

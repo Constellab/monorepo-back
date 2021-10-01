@@ -1,22 +1,17 @@
 import {NestFactory} from '@nestjs/core';
 import {AppModule} from './app.module';
 import {WINSTON_MODULE_NEST_PROVIDER} from 'nest-winston';
+import {blGetCorsConfig} from '@monorepo/back-core-lib';
+import {ENVIRONMENT_PROFILE_KEY, ENVIRONMENT_PROFILE_PROD_VALUE} from './app/core/modules/core-config/core-config.service';
 
 async function bootstrap(): Promise<void> {
 
   const app = await NestFactory.create(AppModule);
 
   // enable cors
-  app.enableCors({
-    origin: [/^(.*)/], // use regex instead of simple '*'
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-    credentials: true,
-    // header If-None-Match useful for Safari with service workers
-    allowedHeaders:
-      'Origin,X-Requested-With,Content-Type,Accept,Authorization,authorization,X-Forwarded-for,lang,If-None-Match',
-  });
+  app.enableCors(blGetCorsConfig(
+    'gencovery.com',
+    process.env[ENVIRONMENT_PROFILE_KEY] !== ENVIRONMENT_PROFILE_PROD_VALUE));
 
   // enable custom logger using winston
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));

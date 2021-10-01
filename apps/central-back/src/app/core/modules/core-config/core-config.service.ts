@@ -2,7 +2,10 @@ import {Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {EnvironmentProfile} from '../../model/config/config.class';
 import {DatabaseConfig} from '../../model/config/database-config.class';
-import {BlMailModuleConfig} from '@monorepo/back-core-lib';
+import {BlMailConfig} from '@monorepo/back-core-lib';
+
+export const ENVIRONMENT_PROFILE_KEY = 'ENVIRONMENT_PROFILE';
+export const ENVIRONMENT_PROFILE_PROD_VALUE = 'prod';
 
 @Injectable()
 export class CoreConfigService {
@@ -11,11 +14,11 @@ export class CoreConfigService {
   }
 
   public getEnvironmentProfile(): EnvironmentProfile {
-    return this.configService.get('ENVIRONMENT_PROFILE');
+    return this.configService.get(ENVIRONMENT_PROFILE_KEY);
   }
 
   public isProduction(): boolean {
-    return this.getEnvironmentProfile() === 'prod';
+    return this.getEnvironmentProfile() === ENVIRONMENT_PROFILE_PROD_VALUE;
   }
 
   public isLocal(): boolean {
@@ -50,7 +53,7 @@ export class CoreConfigService {
     };
   }
 
-  public getMailConfig(): BlMailModuleConfig {
+  public getMailConfig(): BlMailConfig {
     return {
       host: this.configService.get('MAIL_HOST'),
       port: this.getConfigNumber('MAIL_PORT'),

@@ -1,7 +1,10 @@
-import {Injectable, LogLevel} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {EnvironmentProfile} from '../../model/config/dn-config.class';
 import {DnDatabaseConfig} from '../../model/config/dn-database-config.class';
+
+export const ENVIRONMENT_PROFILE_KEY = 'ENVIRONMENT_PROFILE';
+export const ENVIRONMENT_PROFILE_PROD_VALUE = 'prod';
 
 @Injectable()
 export class DnCoreConfigService {
@@ -10,17 +13,18 @@ export class DnCoreConfigService {
   }
 
   public getEnvironmentProfile(): EnvironmentProfile {
-    return this.configService.get('ENVIRONMENT_PROFILE');
+    return this.configService.get(ENVIRONMENT_PROFILE_KEY);
   }
 
   public isProduction(): boolean {
-    return this.getEnvironmentProfile() === 'prod';
+    return this.getEnvironmentProfile() === ENVIRONMENT_PROFILE_PROD_VALUE;
   }
 
   public isLocal(): boolean {
     const env: EnvironmentProfile = this.getEnvironmentProfile();
     return env === 'dev' || env === 'docker' || env === 'test';
   }
+
   public getDatabaseConfig(): DnDatabaseConfig {
     return {
       host: this.configService.get('DATABASE_HOST'),

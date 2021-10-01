@@ -4,15 +4,23 @@ import {ModuleMetadata} from '@nestjs/common/interfaces';
 export const BL_MAIL_CONFIG_PROVIDER = Symbol();
 
 /**
- * configuration for the mail module
+ * Information to configure mail
  */
-export interface BlMailModuleConfig {
+export interface BlMailConfig {
   sender: string;
   host: string;
   port: number;
   secure: boolean;
   user: string;
   password: string;
+}
+
+/**
+ * configuration for the mail module
+ */
+export interface BlMailModuleConfig {
+  mailConfig: BlMailConfig
+  templateFolder: string;
 }
 
 export interface BlMailModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
