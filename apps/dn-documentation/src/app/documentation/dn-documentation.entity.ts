@@ -1,8 +1,8 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { DnVersion } from '../version/dn-version.entity';
 import { BlEntityWithId } from '@monorepo/back-core-lib';
+import { Column, Entity, ManyToOne } from 'typeorm';
+import { DnVersion } from '../version/dn-version.entity';
 
-@Entity()
+@Entity('Documentation')
 export class DnDocumentation extends BlEntityWithId{
 
     @Column()

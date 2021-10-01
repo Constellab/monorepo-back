@@ -5,7 +5,7 @@ import { DaAdminDocFormModule } from './module/da-admin-doc-form/da-admin-doc-fo
 import { DaAdminListPageModule } from './module/da-admin-list-page/da-admin-list-page.module';
 
 @NgModule({
-    imports: [DaAdminCoreModule, DaAdminRoutingModule, DaAdminDocFormModule, DaAdminListPageModule]
+  imports: [DaAdminCoreModule, DaAdminRoutingModule, DaAdminDocFormModule, DaAdminListPageModule]
 })
 export class DaAdminModule{
 }

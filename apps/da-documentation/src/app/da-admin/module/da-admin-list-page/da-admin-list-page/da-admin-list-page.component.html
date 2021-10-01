@@ -1,11 +1,11 @@
 <p>Documentations list</p>
-    
+
 <button mat-raised-button color="primary" (click)="create()" class="g-centered-forced">
     Create
 </button>
 
 <mat-nav-list>
-    <mat-list-item *ngFor="let documentation of documentations; index as i" (click)="redirectToDoc(documentation)">
+    <mat-list-item *ngFor="let documentation of documentations; index as i" [routerLink]="publicDocsUrlPrefix + documentation.path">
         <p matLine>{{ documentation.title }}</p>
         <button mat-icon-button (click)="edit(documentation.id)">
             <mat-icon>edit</mat-icon>

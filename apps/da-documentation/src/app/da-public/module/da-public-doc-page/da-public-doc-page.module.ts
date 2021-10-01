@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DaPublicDocPageComponent } from './da-public-doc-page/da-public-doc-page.component';
-
-
+import {DaCoreModule} from '../../../da-core/da-core.module';
+import {CoreModule} from '@angular/flex-layout';
+import {DaPublicCoreModule} from '../da-public-core/da-public-core.module';
 
 @NgModule({
   declarations: [DaPublicDocPageComponent],
   imports: [
-    CommonModule
+    DaPublicCoreModule,
+    DaCoreModule,
+    CoreModule,
   ]
 })
 export class DaPublicDocPageModule { }

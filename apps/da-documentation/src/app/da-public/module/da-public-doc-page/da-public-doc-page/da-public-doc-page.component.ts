@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, UrlSegment} from '@angular/router';
 import { Observable } from 'rxjs';
 import { DaDocumentation } from '../../../../da-core/da-model/da-entities/da-documentation.class';
 import { DaDocumentationService } from '../../../../da-core/da-service/da-documentation.service';
@@ -12,7 +12,7 @@ import { DaDocumentationService } from '../../../../da-core/da-service/da-docume
 export class DaPublicDocPageComponent implements OnInit {
 
   path: string;
-  documentation: DaDocumentation;
+  documentation$: Observable<DaDocumentation>;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -21,16 +21,12 @@ export class DaPublicDocPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.url.subscribe(url => {
-      this.path = url.join('/');
-      //faire une foction
-      this.getDocumentationByPath(this.path).subscribe(doc => {
-        this.documentation = doc;
-      })
+      this.getDocumentationByPath(url);
     });
   }
 
-  private getDocumentationByPath(path: string): Observable<DaDocumentation>{
-    return this.daDocumentationService.getByPath(path);
+  public getDocumentationByPath(url: UrlSegment[]): void{
+    this.path = url.join('/');
+    this.documentation$ = this.daDocumentationService.getByPath(this.path);
   }
-
 }

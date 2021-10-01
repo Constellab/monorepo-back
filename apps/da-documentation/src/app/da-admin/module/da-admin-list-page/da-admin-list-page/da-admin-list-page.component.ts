@@ -14,27 +14,19 @@ import { ClHelpService } from '@monorepo/core-lib';
 export class DaAdminListPageComponent implements OnInit {
 
   documentations: DaDocumentation[];
+  publicDocsUrlPrefix: string;
 
   constructor(
     private daDocumentationService: DaDocumentationService,
     private dialogService: FlDialogService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.getDocumentations().subscribe(docs => {
-      this.documentations = docs;
-    });
+    this.publicDocsUrlPrefix = '../docs/';
+    this.daDocumentationService.get().subscribe(docs => this.documentations = docs);
   }
 
-  private getDocumentations(): Observable<DaDocumentation[]>{
-    
-    return this.daDocumentationService.get();
-    
-  }
-
-  // TODO: Est-ce normal que je dois quand meme ref admin ?
   create(): void{
     this.router.navigate(['admin','edit']);
   }
@@ -46,23 +38,17 @@ export class DaAdminListPageComponent implements OnInit {
   delete(id: string, i: number, event: globalThis.Event): void{
     ClHelpService.stopEventPropagation(event);
     const input: FlConfirmDialogInput = {
-      title: 'Confirm deletion',
-      content: 'Confirm the deletion?',
-      translateTitleAndContent: false,
+      title: 'confirm_deletion',
+      content: 'confirm_deletion_message',
+      translateTitleAndContent: true,
       observable: this.daDocumentationService.deleteById(id),
-      successMessage: 'Documentation deleted'
-    }//translate & observable
-    
+      successMessage: 'documentation_deleted',
+      translateMessage: true
+    }
+
     this.dialogService.openConfirmDialog(input).afterClosed().subscribe(res => {
       this.onCloseConfirmDialog(res, id, i);
     })
-    
-  }
-
-  redirectToDoc(documentation: DaDocumentation): void{
-    let route: string[] = ['docs'];
-    route = route.concat(documentation.path.split('/'));
-    this.router.navigate(route);
   }
 
   private onCloseConfirmDialog(res: FlConfirmDialogResult, id: string, i: number): void{

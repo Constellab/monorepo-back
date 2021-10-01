@@ -9,14 +9,14 @@ import { DaAdminDocFormPageComponent } from './da-admin-doc-form-page/da-admin-d
 
 
 @NgModule({
-    declarations: [DaAdminDocFormComponent, DaAdminDocFormPageComponent],
-    imports: [
-        DaAdminCoreModule, 
-        ReactiveFormsModule, 
-        CommonModule,
-        DaCoreModule,
+  declarations: [DaAdminDocFormComponent, DaAdminDocFormPageComponent],
+  imports: [
+    DaAdminCoreModule,
+    ReactiveFormsModule,
+    CommonModule,
+    DaCoreModule,
 
-        QuillModule.forRoot()
-    ]
+    QuillModule.forRoot()
+  ]
 })
 export class DaAdminDocFormModule{}

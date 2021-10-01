@@ -7,7 +7,7 @@ import { DaDocumentation } from '../da-model/da-entities/da-documentation.class'
  * Service to manage documentation entity
  */
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class DaDocumentationService {
 
@@ -21,45 +21,45 @@ export class DaDocumentationService {
    * @param object json object
    */
     public create(object: Partial<DaDocumentation>): Observable<DaDocumentation> {
-        return this.apiService.post(this.route, object, DaDocumentation);
+      return this.apiService.post(this.route, object, DaDocumentation);
     }
 
     /**
    * Call http get one by id
    * @param id id of the entity
    */
-     public getById(id: string): Observable<DaDocumentation> {
-        return this.apiService.getById(this.route, id, DaDocumentation);
+    public getById(id: string): Observable<DaDocumentation> {
+      return this.apiService.getById(this.route, id, DaDocumentation);
     }
 
-     /**
+    /**
    * Call http get one by id
    * @param path path of the entity
    */
-      public getByPath(path: string): Observable<DaDocumentation> {
-        return this.apiService.get(`${this.route}/path/?path=${path}`, DaDocumentation);
+    public getByPath(path: string): Observable<DaDocumentation> {
+      return this.apiService.get(`${this.route}/path/?path=${path}`, DaDocumentation);
     }
 
     /**
    * Call http get
    */
-     public get(): Observable<DaDocumentation[]> {
-        return this.apiService.get(this.route, DaDocumentation);
+    public get(): Observable<DaDocumentation[]> {
+      return this.apiService.get(this.route, DaDocumentation);
     }
 
     /**
    * Call http update
    * @param object json object
    */
-     public update(object: Partial<DaDocumentation>): Observable<DaDocumentation> {
-        return this.apiService.put(this.route, object, DaDocumentation);
+    public update(object: Partial<DaDocumentation>): Observable<DaDocumentation> {
+      return this.apiService.put(this.route, object, DaDocumentation);
     }
 
     /**
    * Call http delete
    * @param id id of the entity
    */
-     public deleteById(id: string): Observable<DaDocumentation> {
-        return this.apiService.deleteById(this.route, id, DaDocumentation);
+    public deleteById(id: string): Observable<DaDocumentation> {
+      return this.apiService.deleteById(this.route, id, DaDocumentation);
     }
 }
