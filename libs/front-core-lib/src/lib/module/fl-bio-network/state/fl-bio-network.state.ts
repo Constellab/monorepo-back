@@ -37,19 +37,14 @@ export class FlBioNetworkState implements OnDestroy {
 
     this.selectedNetwork$ = new BehaviorSubject(this.networks[0]);
     this.chartData$ = new BehaviorSubject(null);
-    this.database$ = new BehaviorSubject(defaultDb);
+    this.database$ = new BehaviorSubject(null);
     this.pathways$ = new BehaviorSubject([]);
     this.pathwaySelectionChange$ = new BehaviorSubject(null);
 
     this.pathwayListCache = {};
 
-    // load the pathway
-    const pathwayList: FlBioNetworkPathwaySelection[] = this.getPathwayList(defaultDb);
-    this.pathways$.next(pathwayList);
-    // if there is only one pathway, select it by default
-    if (pathwayList.length === 1) {
-      this.selectPathways([pathwayList[0]]);
-    }
+    // load the db and the list of pathways
+    this.selectDatabase(defaultDb)
 
     this.pathwaySelectionChange$.pipe(
       // use a debounce time to prevent rebuilding the graph to much
@@ -132,8 +127,15 @@ export class FlBioNetworkState implements OnDestroy {
 
   public selectDatabase(database: FlPathwayDatabase): void {
     this.database$.next(database);
-    // clear the pathway selection on change
-    this.pathways$.next([]);
+
+    const pathwayList: FlBioNetworkPathwaySelection[] = this.getPathwayList(database);
+    this.pathways$.next(pathwayList);
+
+    // if there is only one pathway, select it by default
+    if (pathwayList.length === 1) {
+      this.selectPathways([pathwayList[0]]);
+    }
+
     this.emitPathwaySelectionChange();
   }
 
