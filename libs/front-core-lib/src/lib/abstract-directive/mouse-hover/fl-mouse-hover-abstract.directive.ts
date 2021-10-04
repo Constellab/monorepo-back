@@ -74,7 +74,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
 
     if (this.isHovering) return;
 
-    // if an excluded element is provided, ignore if the mouse enters from the ecxluded element
+    // if an excluded element is provided, ignore if the mouse enters from the excluded element
     const fromElement: HTMLElement = (event as any).fromElement;
     if (this.flExcludeElement && fromElement && FlHtmlHelper.isChildOf(fromElement, this.flExcludeElement)) {
       return;

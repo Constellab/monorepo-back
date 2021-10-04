@@ -9,6 +9,7 @@ import {
   FlCorePipeModule,
   FlDateModule,
   FlDialogModule,
+  FlDrawerModule,
   FlDynamicFieldModule,
   FlFormModule,
   FlInfiniteScrollModule,
@@ -58,6 +59,7 @@ import {
     FlDateModule,
     FlAuthModule,
     FlBioNetworkModule,
+    FlDrawerModule,
   ]
 })
 export class CustomLibraryModule {

@@ -28,6 +28,7 @@ import {FlBioNetworkActionBarComponent} from './component/fl-bio-network-action-
 import {FlBioNetworkCompartmentsComponent} from './component/fl-bio-network-compartments/fl-bio-network-compartments.component';
 import {FlBioNetworkZoomComponent} from './component/fl-bio-network-zoom/fl-bio-network-zoom.component';
 import {FlBioNetworkSelectionInfoComponent} from './component/fl-bio-network-selection-info/fl-bio-network-selection-info.component';
+import {FlDrawerModule} from '../fl-drawer/fl-drawer.module';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -69,6 +70,7 @@ import {FlBioNetworkSelectionInfoComponent} from './component/fl-bio-network-sel
     FlJsonEditorModule,
     FlCoreDirectiveModule,
     FlCoreComponentModule,
+    FlDrawerModule,
   ],
 })
 export class FlBioNetworkModule {

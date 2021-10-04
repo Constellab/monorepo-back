@@ -10,30 +10,8 @@
   overflow: hidden;
 }
 
-
-.drawer-opener {
-  height: 100%;
-  width: 13px;
-  background-color: var(--grey-high-contrast);
-  color: var(--grey-high-contrast-text);
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-  cursor: pointer;
-}
-
-.drawer-opener-icon {
+.drawer-opener{
   width: 20px;
-  height: 40px;
-  border-bottom-left-radius: 100px;
-  border-top-left-radius: 100px;
-  background-color: var(--grey-high-contrast);
-  margin-left: -18px;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.drawer-opener-icon mat-icon {
-  margin-left: 20px;
 }
 
 ///////////////////////// GRID //////////////////////
