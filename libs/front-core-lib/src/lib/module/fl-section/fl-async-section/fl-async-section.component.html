@@ -16,10 +16,7 @@
       </ng-container>
 
       <ng-template #showEmptyText>
-        <div class="g-text-centered g-text-light">
-          <p>{{emptyText | translate}}</p>
-          <mat-icon>block</mat-icon>
-        </div>
+        <fl-error-text [errorMessage]="emptyText | translate"></fl-error-text>
       </ng-template>
     </ng-template>
 

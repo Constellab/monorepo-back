@@ -20,6 +20,7 @@ import {FlExternalLinkComponent} from './component/fl-external-link/fl-external-
 import {FlSelectUserCategoryOptionComponent} from './component/fl-select-user-category-option/fl-select-user-category-option.component';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flCoreComponentI18n} from './i18n/fl-core-component.i18n';
+import {FlErrorTextComponent} from './component/fl-error-text/fl-error-text.component';
 
 /**
  * Core modules containing components
@@ -33,6 +34,7 @@ import {flCoreComponentI18n} from './i18n/fl-core-component.i18n';
     FlSelectLanguageOptionsComponent,
     FlExternalLinkComponent,
     FlSelectUserCategoryOptionComponent,
+    FlErrorTextComponent,
   ],
   exports: [
     FlBreadcrumbComponent,
@@ -41,6 +43,7 @@ import {flCoreComponentI18n} from './i18n/fl-core-component.i18n';
     FlSelectLanguageOptionsComponent,
     FlExternalLinkComponent,
     FlSelectUserCategoryOptionComponent,
+    FlErrorTextComponent,
   ],
   imports: [
     CommonModule,

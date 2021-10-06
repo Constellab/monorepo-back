@@ -10,6 +10,7 @@ import {PortalModule} from '@angular/cdk/portal';
 import {FlAsyncSectionComponent} from './fl-async-section/fl-async-section.component';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
+import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
 
 /**
  * Module SectionList which is a section of a page displaying a list of element
@@ -38,6 +39,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 
     FlLoaderModule,
     FlTranslateModule,
+    FlCoreComponentModule,
   ]
 })
 export class FlSectionModule {

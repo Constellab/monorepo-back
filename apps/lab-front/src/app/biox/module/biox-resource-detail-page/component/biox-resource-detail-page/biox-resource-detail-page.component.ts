@@ -5,9 +5,9 @@ import {Observable} from 'rxjs';
 import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
 import {FileResource} from '../../../../../core/model/entities/resource/file-resource.entity';
-import {BioxResourceDetailPageState} from '../../state/biox-resource-detail-page.state';
+import {BioxResourceDetailPageState, BioxResourceViewEvent} from '../../state/biox-resource-detail-page.state';
 import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
-import {BioxResourceView, BioxResourceViewType} from '../../../../../core/model/entities/resource/biox-resource-view.entity';
+import {BioxResourceViewType} from '../../../../../core/model/entities/resource/biox-resource-view.entity';
 import {BioxResourceJsonComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-json/biox-resource-json.component';
 import {ComponentType} from '@angular/cdk/overlay';
 import {BioxResourceViewComponent} from '../../../../../core/entity-module/biox-resource-core/model/biox-resource-view-component.class';
@@ -24,17 +24,18 @@ import {BioxResourceNetworkComponent} from '../../../../../core/entity-module/bi
 })
 export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
 
-  @ViewChild('viewSpecButton', {static: true, read: ElementRef}) viewSpecButton: ElementRef<HTMLElement>;
+  @ViewChild('viewSpecButton', {static: false, read: ElementRef}) viewSpecButton: ElementRef<HTMLElement>;
   @ViewChild('viewContainer', {static: false, read: ViewContainerRef}) viewContainer: ViewContainerRef;
 
   resource$: Observable<BioxResource>;
 
-
   title: string;
 
   toolbarOverlay: FlOverlayRef;
-
   viewComponentRef: ComponentRef<BioxResourceViewComponent>;
+
+  viewIsLoading: boolean = true;
+  error: string;
 
   constructor(private resourceService: BioxResourceService,
               private route: ActivatedRoute,
@@ -61,22 +62,27 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
     );
   }
 
-  private initView(view: BioxResourceView): void {
+  private initView(viewEvent: BioxResourceViewEvent): void {
     // destroy previous if it exists
     this.destroyViewComponentRef();
 
-    if (view == null) {
-      this.viewComponentRef = null;
+    // if view is null, it mean it is loading
+    if (viewEvent.status === 'loading') {
+      this.viewIsLoading = true;
+      return;
+    } else if (viewEvent.status === 'error') {
+      this.viewIsLoading = false;
+      this.error = viewEvent.error.logDetail.message;
       return;
     }
 
     // dynamically create the view component
-    const componentType = this.getComponentType(view.type);
+    const componentType = this.getComponentType(viewEvent.view.type);
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
 
     this.viewComponentRef = this.viewContainer.createComponent(componentFactory);
-    this.viewComponentRef.instance.view = view;
-
+    this.viewComponentRef.instance.view = viewEvent.view;
+    this.viewIsLoading = false;
   }
 
   private getComponentType(viewType: BioxResourceViewType): ComponentType<BioxResourceViewComponent> {
@@ -117,12 +123,13 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
     if (resource instanceof FileResource) {
       this.title = resource.filename;
     } else {
-      this.title = resource.id;
+      this.title = resource.resourceHumanName;
     }
   }
 
   private destroyViewComponentRef(): void {
     this.viewComponentRef?.destroy();
+    this.viewComponentRef = null;
   }
 
   ngOnDestroy(): void {

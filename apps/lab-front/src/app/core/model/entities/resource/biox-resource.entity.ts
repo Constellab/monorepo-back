@@ -11,6 +11,9 @@ export abstract class BioxResource extends LabBaseEntity {
   @Expose({name: 'resource_typing_name'})
   resourceTypingName: string;
 
+  @Expose({name: 'resource_human_name'})
+  resourceHumanName: string;
+
   data: any;
 }
 

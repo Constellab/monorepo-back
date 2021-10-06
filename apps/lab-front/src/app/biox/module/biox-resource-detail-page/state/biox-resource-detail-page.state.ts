@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {ClCachedObservable} from '@monorepo/core-lib';
 import {BioxResourceService} from '../../../../core/entity-service/biox-resource.service';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {
   BioxResourceView,
   BioxResourceViewConfig,
@@ -11,6 +11,14 @@ import {
 } from '../../../../core/model/entities/resource/biox-resource-view.entity';
 import {BioxResource} from '../../../../core/model/entities/resource/biox-resource.entity';
 import {mergeMap} from 'rxjs/operators';
+import {FlServerError} from '@monorepo/front-core-lib';
+
+// Event on view loaded
+export interface BioxResourceViewEvent {
+  status: 'success' | 'error' | 'loading';
+  view?: BioxResourceView; // loaded view only if success
+  error?: FlServerError; // error only if error
+}
 
 @Injectable()
 export class BioxResourceDetailPageState implements OnDestroy {
@@ -19,9 +27,11 @@ export class BioxResourceDetailPageState implements OnDestroy {
   private id: string;
 
   private resource$: ClCachedObservable<BioxResource>;
-  private view$: BehaviorSubject<BioxResourceView>;
+  private view$: BehaviorSubject<BioxResourceViewEvent>;
   private viewSpecs$: ClCachedObservable<BioxResourceViewSpecsByType[]>;
   private selectedViewSpec$: BehaviorSubject<BioxResourceViewSpecWithConfig>;
+
+  private viewSubscription: Subscription;
 
   constructor(private resourceService: BioxResourceService) {
   }
@@ -30,7 +40,7 @@ export class BioxResourceDetailPageState implements OnDestroy {
     this.type = type;
     this.id = id;
     this.resource$ = new ClCachedObservable(this.resourceService.getByTypingNameAndId(type, id));
-    this.view$ = new BehaviorSubject(null);
+    this.view$ = new BehaviorSubject({status: 'loading'});
 
     // load the views once the resource was found
     this.viewSpecs$ = new ClCachedObservable(
@@ -86,17 +96,26 @@ export class BioxResourceDetailPageState implements OnDestroy {
   /////////////////////////////////// VIEW //////////////////////////////////////////
 
   private loadView(viewSpecConfigured: BioxResourceViewSpecWithConfig): void {
-    if (viewSpecConfigured == null) {
-      this.view$.next(null);
-    } else {
-      this.resourceService.callResourceView(this.type, this.id, viewSpecConfigured.viewSpec.methodName, viewSpecConfigured.config)
+    // mark the view as loading
+    this.view$.next({status: 'loading'});
+
+    if (viewSpecConfigured != null) {
+      this.viewSubscription?.unsubscribe(); // unsubscribe previous loading (if multiple view are requested in a row)
+      this.viewSubscription = this.resourceService.callResourceView(this.type, this.id,
+        viewSpecConfigured.viewSpec.methodName, viewSpecConfigured.config)
         .subscribe(
-          view => this.view$.next(view)
+          view => this.onLoadViewSuccess(view),
+          (error: FlServerError) => this.view$.next({status: 'error', error: error})
         );
     }
   }
 
-  public getView$(): Observable<BioxResourceView> {
+  private onLoadViewSuccess(view: BioxResourceView): void {
+    this.viewSubscription = null;
+    this.view$.next({status: 'success', view: view});
+  }
+
+  public getView$(): Observable<BioxResourceViewEvent> {
     return this.view$.asObservable();
   }
 
