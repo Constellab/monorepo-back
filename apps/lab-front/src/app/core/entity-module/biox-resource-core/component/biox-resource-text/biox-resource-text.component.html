@@ -1,11 +1,19 @@
-<div (flInfiniteScroll)="loadMoreText()" [flInfiniteMode]="infiniteScrollMode"
-     class="container">
-  {{displayedText}}
+<div class="g-text-centered button" *ngIf="!reachedFirstPage">
+  <button mat-flat-button color="primary" type="button"
+          (click)="loadPreviousPage()" [disabled]="isLoading">
+    {{'biox.resource_previous_text_load' | translate}}
+  </button>
 </div>
 
-<div class="g-text-centered button" *ngIf="!textFullyLoaded">
+
+<div (flInfiniteScroll)="loadNextPage()" [flInfiniteMode]="infiniteScrollMode" [flInfiniteDisabled]="reachedLastPage || isLoading"
+     class="container">
+  {{text}}
+</div>
+
+<div class="g-text-centered button" *ngIf="!reachedLastPage">
   <button mat-flat-button color="primary" type="button"
-          (click)="loadMoreText()">
-    {{'biox.resource_text_load' | translate}}
+          (click)="loadNextPage()" [disabled]="isLoading">
+    {{'biox.resource_next_text_load' | translate}}
   </button>
 </div>

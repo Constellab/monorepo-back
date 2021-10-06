@@ -1,5 +1,5 @@
 import {Expose} from 'class-transformer';
-import {ClRecordWrapperTransform} from '@monorepo/core-lib';
+import {ClHelpService, ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {BioxConfigSpecBase, BioxConfigSpecs} from '../biox-config-spec.entity';
 
 // list of available view type
@@ -34,6 +34,8 @@ export class BioxResourceViewSpec {
   getName(): string {
     return this.humanName ?? this.methodName;
   }
+
+
 }
 
 /**
@@ -57,6 +59,10 @@ export class BioxResourceViewConfig {
     this.viewConfig = viewConfig;
   }
 
+  public clone(): BioxResourceViewConfig {
+    return new BioxResourceViewConfig(ClHelpService.deepClone(this.methodConfig), ClHelpService.deepClone(this.viewConfig));
+  }
+
 }
 
 
@@ -70,9 +76,20 @@ export class BioxResourceViewJson extends BioxResourceViewBase {
   data: Record<string, any>;
 }
 
+export const bioxResourceViewTextSpecPage: string = 'page';
+
 export class BioxResourceViewText extends BioxResourceViewBase {
   type: 'text-view';
   data: string;
+  is_first_page: boolean;
+  is_last_page: boolean;
+  last_page: number;
+  next_page: number;
+  number_of_items_per_page: number;
+  page: number;
+  prev_page: number;
+  total_number_of_items: number;
+  total_number_of_pages: number;
 }
 
 export class BioxResourceViewTable extends BioxResourceViewBase {

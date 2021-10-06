@@ -1,17 +1,19 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FlInfiniteScrollMode} from '@monorepo/front-core-lib';
 import {BioxResourceViewComponent} from '../../model/biox-resource-view-component.class';
-import {BioxResourceViewText} from '../../../../model/entities/resource/biox-resource-view.entity';
+import {BioxResourceViewText, bioxResourceViewTextSpecPage} from '../../../../model/entities/resource/biox-resource-view.entity';
+import {BioxResourceDetailPageState} from '../../../../../biox/module/biox-resource-detail-page/state/biox-resource-detail-page.state';
 
 /**
  * Component to view a resource as plain text
  *
- * Support lazy text loading
+ * Support pagination to previous or next page
  */
 @Component({
   selector: 'gen-biox-resource-text',
   templateUrl: './biox-resource-text.component.html',
-  styleUrls: ['./biox-resource-text.component.scss']
+  styleUrls: ['./biox-resource-text.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BioxResourceTextComponent implements OnInit, BioxResourceViewComponent<BioxResourceViewText> {
 
@@ -19,14 +21,18 @@ export class BioxResourceTextComponent implements OnInit, BioxResourceViewCompon
 
   @Input() infiniteScrollMode: FlInfiniteScrollMode = 'body';
 
-  displayedText: string = '';
-  private fullText: string;
-  private page: number = 0;
-  private readonly pageSize: number = 20000;
+  text: string = '';
 
-  textFullyLoaded: boolean = false;
+  private lowerPage: number = 1; // for loading previous page
+  private higherPage: number = 1; // for loading next page
 
-  constructor() {
+  reachedFirstPage: boolean = false;
+  reachedLastPage: boolean = false;
+
+  isLoading: boolean = false;
+
+  constructor(private state: BioxResourceDetailPageState,
+              private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -34,20 +40,58 @@ export class BioxResourceTextComponent implements OnInit, BioxResourceViewCompon
   }
 
   private initText(): void {
-    const data: any = this.view.data;
-    if (typeof data === 'string') {
-      this.fullText = data;
-    } else {
-      this.fullText = JSON.stringify(data);
-    }
+    this.reachedFirstPage = this.view.is_first_page;
+    this.reachedLastPage = this.view.is_last_page;
+    this.lowerPage = this.view.page;
+    this.higherPage = this.view.page;
 
-    this.loadMoreText();
+    this.text = this.toString(this.view.data);
   }
 
-  loadMoreText(): void {
-    this.displayedText += this.fullText.substr(this.page * this.pageSize, this.pageSize);
-    this.textFullyLoaded = this.displayedText.length >= this.fullText.length;
-    this.page++;
+  loadNextPage(): void {
+    this.isLoading = true;
+    this.higherPage++;
+    const paginationConfig = {[bioxResourceViewTextSpecPage]: this.higherPage};
+    this.state.callPagination(paginationConfig).subscribe(
+      view => this.loadNextPageSuccess(view as any),
+      () => this.isLoading = false
+    );
+  }
+
+  private loadNextPageSuccess(view: BioxResourceViewText): void {
+    this.view.data += this.toString(view.data);
+    this.text += this.toString(view.data);
+    this.reachedLastPage = view.is_last_page;
+    this.onSuccess();
+  }
+
+  loadPreviousPage(): void {
+    this.isLoading = true;
+    this.lowerPage--;
+    const paginationConfig = {[bioxResourceViewTextSpecPage]: this.lowerPage};
+    this.state.callPagination(paginationConfig).subscribe(
+      view => this.loadPreviousPageSuccess(view as any),
+      () => this.isLoading = false
+    );
+  }
+  private loadPreviousPageSuccess(view: BioxResourceViewText): void {
+    this.view.data = this.toString(view.data) + this.view.data;
+    this.text = this.toString(view.data) + this.text;
+    this.reachedFirstPage = view.is_first_page;
+    this.onSuccess();
+  }
+
+  private onSuccess(): void {
+    this.isLoading = false;
+    this.cdr.markForCheck();
+  }
+
+  private toString(data: any): string {
+    if (typeof data === 'string') {
+      return data;
+    } else {
+      return JSON.stringify(data);
+    }
   }
 
 }

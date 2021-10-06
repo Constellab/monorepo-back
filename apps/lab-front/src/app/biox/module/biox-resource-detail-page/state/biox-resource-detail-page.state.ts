@@ -101,13 +101,31 @@ export class BioxResourceDetailPageState implements OnDestroy {
 
     if (viewSpecConfigured != null) {
       this.viewSubscription?.unsubscribe(); // unsubscribe previous loading (if multiple view are requested in a row)
-      this.viewSubscription = this.resourceService.callResourceView(this.type, this.id,
-        viewSpecConfigured.viewSpec.methodName, viewSpecConfigured.config)
+      this.viewSubscription = this.callResourceView(viewSpecConfigured.viewSpec.methodName, viewSpecConfigured.config)
         .subscribe(
           view => this.onLoadViewSuccess(view),
           (error: FlServerError) => this.view$.next({status: 'error', error: error})
         );
     }
+  }
+
+  /**
+   * Method to call the previous or next page of the view
+   * @param pageConfig
+   */
+  public callPagination(pageConfig: Record<string, any>): Observable<BioxResourceView> {
+    const config: BioxResourceViewConfig = this.selectedViewSpec$.value.config.clone();
+
+    // override the view config with page config
+    for (const key of Object.keys(pageConfig)) {
+      config.viewConfig[key] = pageConfig[key];
+    }
+
+    return this.callResourceView(this.selectedViewSpec$.value.viewSpec.methodName, config);
+  }
+
+  private callResourceView(methodName: string, config: BioxResourceViewConfig): Observable<BioxResourceView> {
+    return this.resourceService.callResourceView(this.type, this.id, methodName, config);
   }
 
   private onLoadViewSuccess(view: BioxResourceView): void {
