@@ -8,6 +8,14 @@ import {FileResource} from '../model/entities/resource/file-resource.entity';
 import {map, mergeMap} from 'rxjs/operators';
 import {LabBaseEntity} from '../model/global/lab-entity.entity';
 import {BioxLabTypeEntity, BioxLabTypeEntityDatasource} from '../model/entities/lab-type/biox-lab-type.entity';
+import {
+  bioxGroupResourceViewSpecsByType,
+  BioxResourceView,
+  BioxResourceViewBase,
+  BioxResourceViewConfig,
+  BioxResourceViewSpec,
+  BioxResourceViewSpecsByType
+} from '../model/entities/resource/biox-resource-view.entity';
 
 
 @Injectable({
@@ -21,6 +29,8 @@ export class BioxResourceService {
   constructor(private apiService: FlApiService,
               private fileResourceService: FileResourceService) {
   }
+
+  //////////////////////////////////////// RESOURCE ///////////////////////////////////////
 
   public getByTypingNameAndId(typingName: string, id: string): Observable<BioxResource> {
     if (!typingName || !id) {
@@ -81,8 +91,10 @@ export class BioxResourceService {
     return new FlEntityPaginatedDatasource(
       (page: number, pageSize: number) => this.getResourcesByType(type, page, pageSize),
       20, true);
-
   }
+
+  //////////////////////////////////////// RESOURCE TYPE///////////////////////////////////////
+
 
   // get the list of resource types
   public getResourceTypes(page: number, pageSize: number): Observable<ClPage<BioxLabTypeEntity>> {
@@ -94,6 +106,21 @@ export class BioxResourceService {
     return new FlEntityPaginatedDatasource(
       (page: number, pageSize: number) => this.getResourceTypes(page, pageSize),
       20, true);
-
   }
+
+  //////////////////////////////////////// RESOURCE VIEWS  ///////////////////////////////////////
+
+  public getResourceViews(type: string): Observable<BioxResourceViewSpec[]> {
+    return this.apiService.get(`resource/${type}/views`, BioxResourceViewSpec);
+  }
+
+  public getResourceViewsByType(type: string): Observable<BioxResourceViewSpecsByType[]> {
+    return this.getResourceViews(type).pipe(
+      map(views => bioxGroupResourceViewSpecsByType(views)));
+  }
+
+  public callResourceView(type: string, id: string, viewName: string, config: BioxResourceViewConfig): Observable<BioxResourceView> {
+    return this.apiService.post(`resource/${type}/${id}/views/${viewName}`, config, BioxResourceViewBase);
+  }
+
 }

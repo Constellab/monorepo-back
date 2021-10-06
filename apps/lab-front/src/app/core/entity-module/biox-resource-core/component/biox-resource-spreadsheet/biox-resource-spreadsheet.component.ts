@@ -1,15 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {FlSheet, FlSpreadsheet, FlSpreadsheetFactory} from '@monorepo/front-core-lib';
-import {FileResourcePreview} from '../../../../model/entities/resource/file-resource.entity';
-
-const data: any[][] = [
-  ['Item', 2012, 2013, 2014, 2015, null, null, null, null, null],
-  ['Desktop', 20, 12, 13, 12],
-  ['Laptops', 34, 45, 40, 39],
-  ['Monitors', 12, 10, 17, 15],
-  ['Printers', 78, 13, 90, 14]
-];
+import {BioxResourceViewComponent} from '../../model/biox-resource-view-component.class';
+import {BioxResourceViewTable} from '../../../../model/entities/resource/biox-resource-view.entity';
 
 /**
  * Component to display a resource in a spreadsheet
@@ -19,9 +11,9 @@ const data: any[][] = [
   templateUrl: './biox-resource-spreadsheet.component.html',
   styleUrls: ['./biox-resource-spreadsheet.component.scss'],
 })
-export class BioxResourceSpreadsheetComponent implements OnInit {
+export class BioxResourceSpreadsheetComponent implements OnInit, BioxResourceViewComponent<BioxResourceViewTable> {
 
-  @Input() resource: BioxResource;
+  @Input() view: BioxResourceViewTable;
 
   spreadSheet: FlSpreadsheet;
 
@@ -32,15 +24,9 @@ export class BioxResourceSpreadsheetComponent implements OnInit {
 
     const spreadSheet: FlSpreadsheet = new FlSpreadsheet();
     // if the resource is a csv file
-    let sheet: FlSheet;
-    if (this.resource instanceof FileResourcePreview && this.resource.getExtension() === 'csv') {
-      sheet = FlSpreadsheetFactory.fromCSV(this.resource.data, 'Sheet 1');
-    } else {
-      sheet = FlSpreadsheetFactory.fromAny(this.resource.data, 'Sheet 1');
-    }
-    spreadSheet.addSheet(sheet);
+    const sheet: FlSheet = FlSpreadsheetFactory.fromAny(this.view.data, 'Sheet 1');
 
-    // spreadSheet.addSheet(FlSpreadsheetFactory.fromArray(data, 'Sheet 2'));
+    spreadSheet.addSheet(sheet);
 
     this.spreadSheet = spreadSheet;
   }

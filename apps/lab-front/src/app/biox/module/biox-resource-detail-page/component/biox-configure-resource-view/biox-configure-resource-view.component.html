@@ -1,0 +1,18 @@
+<fl-dialog-title>
+  {{'biox.view_specs' | translate}}
+</fl-dialog-title>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
+    <fl-dynamic-form [formGp]="formGp" [configs]="configs"></fl-dynamic-form>
+  </form>
+</mat-dialog-content>
+
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" form="config-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+  </button>
+</div>
+

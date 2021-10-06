@@ -62,13 +62,13 @@ export class FlPortalService {
 
     // save the element to the config
     const hostElement = this.convertToElementRef(element);
-    const config: FlRelativePortalConfig = new FlRelativePortalConfig(hostElement, configuration);
+    const config: FlRelativePortalConfig = new FlRelativePortalConfig(hostElement).configureOverlay(configuration);
 
     // convert position to ConnectedPosition[]
     const positions: ConnectedPosition[] = this.convertPositionToConnectedPosition(position);
 
     // set the position strategy
-    config.setPositionStrategy(this.getFlexiblePositionStrategy(element, positions));
+    config.setPositionStrategy(this.getFlexiblePositionStrategy(element, positions, configuration.viewPortMargin));
 
     // if we show the arrow
     if (config.config.showArrow) {
@@ -82,14 +82,16 @@ export class FlPortalService {
    * Get a flexible position strategy relative to an element for a portal
    * @param element relative element for position
    * @param positions position of the portal compare to element
+   * @param viewPortMargin margin on the border
    */
-  public getFlexiblePositionStrategy(element: Element | ElementRef, positions: ConnectedPosition[])
+  public getFlexiblePositionStrategy(element: Element | ElementRef, positions: ConnectedPosition[],
+                                     viewPortMargin: number = 20)
     : FlexibleConnectedPositionStrategy {
     const elementRef: ElementRef = this.convertToElementRef(element);
 
     // set the portal position relative to the element with a margin of 10 for the viewport
     return this.overlay.position().flexibleConnectedTo(elementRef)
-      .withPositions(positions).withViewportMargin(20);
+      .withPositions(positions).withViewportMargin(viewPortMargin);
   }
 
   /**
@@ -106,7 +108,7 @@ export class FlPortalService {
    */
   public configureAbsolutePortal(position: PortalAbsolutePosition, configuration: FlOverlayConfig = {}): FlPortalConfig {
     // save the element to the config
-    const config: FlPortalConfig = new FlPortalConfig(configuration);
+    const config: FlPortalConfig = new FlPortalConfig().configureOverlay(configuration);
 
     config.setPositionStrategy(this.getAbsolutePositionStrategy(position));
 

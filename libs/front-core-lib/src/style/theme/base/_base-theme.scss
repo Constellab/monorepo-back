@@ -146,18 +146,18 @@
   }
 
   /**
-   * Define colors in the same color as background theme for text, background and border
-   */
-  .g-theme-text {
-    color: $background-color;
+  * Border theme color
+  */
+  .g-primary-border {
+    border-color: mat-color($primary);
   }
 
-  .g-theme-background {
-    background-color: $background-color;
+  .g-accent-border {
+    color: mat-color($accent);
   }
 
-  .g-theme-border {
-    border-color: $background-color;
+  .g-warn-border {
+    color: mat-color($warn);
   }
 
 
@@ -165,7 +165,7 @@
    * Define colors in the same color as text theme for text, background and border
    */
   .g-opposite-text {
-    border-color: $foreground-color;
+    color: $foreground-color;
   }
 
   .g-opposite-background {

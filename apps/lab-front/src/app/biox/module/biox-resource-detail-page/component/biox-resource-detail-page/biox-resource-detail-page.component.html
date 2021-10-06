@@ -1,52 +1,24 @@
 <div class="g-page-fixed page" fxLayout="column">
   <fl-async-section fxFlex [object]="resource$" class="section">
 
-    <fl-section-header class="page-padding">
-      <h2>
-        {{'resource' | translate}} : {{resourceId}}
-        <span *ngIf="filename" class="g-text-light g-text-normal filename">({{filename}})</span>
-      </h2>
-      <fl-section-actions *ngIf="availableViews">
-        <a *ngFor="let view of availableViews"
-           mat-icon-button type="button"
-           [routerLink]="'./'" [queryParams]="getQueryParam(view)"
-           [replaceUrl]="true"
-           [color]="view.route === currentView ? 'primary': null"
-           [matTooltip]="view.tooltip | translate" matTooltipPosition="below">
-          <mat-icon *ngIf="view.icon; else text">{{view.icon}}</mat-icon>
-          <ng-template #text>{{view.text}}</ng-template>
-        </a>
-      </fl-section-actions>
+
+    <fl-section-header class="page-padding" >
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <h2 class="header-title">
+          {{title}}
+        </h2>
+        <button mat-stroked-button type="button"
+                (click)="openViewSpecs()" #viewSpecButton>
+          {{'biox.view_specs' | translate}}
+        </button>
+      </div>
     </fl-section-header>
 
     <ng-container *flSectionBody="let resource">
 
-      <ng-container [ngSwitch]="currentView">
-
-        <!--    Json view    -->
-        <div class="page-padding" *ngSwitchCase="'json'">
-          <gen-biox-resource-json [resource]="resource"></gen-biox-resource-json>
-        </div>
-
-        <!--    Spreadsheet view    -->
-        <div class="page-padding" *ngSwitchCase="'spreadsheet'">
-          <gen-biox-resource-spreadsheet [resource]="resource"></gen-biox-resource-spreadsheet>
-        </div>
-
-        <!--    Image view    -->
-        <div class="page-padding" *ngSwitchCase="'image'">
-          <gen-biox-resource-image [resource]="resource"></gen-biox-resource-image>
-        </div>
-
-        <!--    Text view    -->
-        <div class="page-padding" *ngSwitchCase="'text'">
-          <gen-biox-resource-text [resource]="resource"></gen-biox-resource-text>
-        </div>
-
-        <!--    Network view    -->
-        <gen-biox-resource-network *ngSwitchCase="'network'" [resource]="resource"></gen-biox-resource-network>
-
-      </ng-container>
+      <div class="page-padding">
+        <ng-template #viewContainer></ng-template>
+      </div>
     </ng-container>
 
   </fl-async-section>

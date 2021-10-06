@@ -42,6 +42,10 @@
     "study": "Study",
     "validate_experiment": "Validate the experiment",
     "validate_experiment_help_text": "Once the experiment is validated, it can't be updated or deleted. The experiment must be linked to a study",
-    "experiment_validated": "Experiment validated"
+    "experiment_validated": "Experiment validated",
+    "open_resource_toolbar": "Open toolbar",
+    "no_views_on_resource": "No views found",
+    "view_specs": "Views",
+    "configure_view": "Configure view"
   }
 }

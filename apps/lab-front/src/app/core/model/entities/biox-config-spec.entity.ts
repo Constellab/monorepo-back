@@ -29,13 +29,16 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
       required: !spec.hasDefaultValue() // required if there is no default value
     };
 
+    const placeholder: string = spec.human_name ?? fieldName;
+
+    // todo add support to min and max values
     // create a select
     if (spec.allowed_values) {
       formFieldConfig.fieldConfig = {
         type: 'select',
-        placeholder: fieldName,
+        placeholder: placeholder,
         selectOptions: spec.allowed_values,
-        hint: spec.description,
+        hint: spec.short_description,
         suffix: spec.unit,
       };
     }
@@ -43,9 +46,9 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
     else {
       formFieldConfig.fieldConfig = {
         type: 'input',
-        placeholder: fieldName,
+        placeholder: placeholder,
         inputType: spec.type === 'str' ? 'text' : 'number',
-        hint: spec.description,
+        hint: spec.short_description,
         suffix: spec.unit
       };
     }
@@ -78,7 +81,7 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
     return Object.assign(this.getDefaultConfig(), config);
   }
 
-  public hasConfigs(): boolean{
+  public hasConfigs(): boolean {
     return this.record != null && Object.keys(this.record).length > 0;
   }
 }
@@ -110,12 +113,20 @@ export class BioxConfigSpecTyped<T extends BioxConfigSpecType, H> {
    */
   allowed_values?: H[];
 
-  description?: string;
-
   /**
    * Measure unit of the value (ex km)
    */
   unit?: string;
+
+  /**
+   * Human readable name for the config
+   */
+  human_name?: string;
+
+  /**
+   * Short description for the config
+   */
+  short_description?: string;
 
   public hasDefaultValue(): boolean {
     return this.default_value !== undefined;

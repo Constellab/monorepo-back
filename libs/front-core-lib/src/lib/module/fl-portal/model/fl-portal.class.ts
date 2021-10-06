@@ -9,11 +9,15 @@ export const flPortalArrowOffset: number = 15;
 
 /**
  * Responsive size for overlay
- *
- * hostWidth --> take the width of the host element (not responsive)
- * hostHeight --> take the height of the host element  (not responsive)
  */
 export type FlOverlaySize = 'small' | 'medium' | 'big' | 'full';
+
+/**
+ * Size of the portal based on the host element
+ * width --> same width as the host element
+ * height --> same height as the host element
+ * both --> same width and height
+ */
 export type FlRelativeOverlaySize = 'width' | 'height' | 'both';
 
 export interface FlOverlayConfig extends OverlayConfig {
@@ -72,6 +76,12 @@ export interface FlRelativeOverlayConfig extends FlOverlayConfig {
    * Color of the arrow, default white
    */
   arrowColor?: string;
+
+  /**
+   * margin on the view port borders
+   * Default to 20
+   */
+  viewPortMargin?: number;
 }
 
 

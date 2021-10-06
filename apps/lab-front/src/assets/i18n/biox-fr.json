@@ -42,6 +42,10 @@
     "study": "Étude",
     "validate_experiment": "Valider l'expérience",
     "validate_experiment_help_text": "Une fois l'expérience validée, elle ne peut plus être modifiée ou supprimée. L'expérience doit être rattachée à une étude",
-    "experiment_validated": "Expérience validée"
+    "experiment_validated": "Expérience validée",
+    "open_resource_toolbar": "Ouvrir la barre d'outil",
+    "no_views_on_resource": "Aucune vue trouvée",
+    "view_specs": "Vues",
+    "configure_view": "Configurer la vue"
   }
 }

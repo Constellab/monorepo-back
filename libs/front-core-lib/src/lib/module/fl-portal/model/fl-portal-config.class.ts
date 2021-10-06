@@ -9,9 +9,7 @@ export class FlPortalConfig {
 
   public config: FlOverlayConfig;
 
-
-  constructor(config: FlOverlayConfig = {}) {
-    this.configureOverlay(config);
+  constructor() {
   }
 
   public setPositionStrategy(strategy: PositionStrategy): void {
@@ -19,7 +17,7 @@ export class FlPortalConfig {
   }
 
   // configure the overlay
-  private configureOverlay(config: FlOverlayConfig): void {
+  public configureOverlay(config: FlOverlayConfig): this {
 
     // configure the backdrop
     this.configureBackdrop(config);
@@ -29,6 +27,8 @@ export class FlPortalConfig {
 
     // save the config
     this.config = config;
+
+    return this;
   }
 
   // configure the backdrop
@@ -99,8 +99,8 @@ export class FlRelativePortalConfig extends FlPortalConfig {
 
   public config: FlRelativeOverlayConfig;
 
-  constructor(public hostElement: ElementRef<HTMLElement>, config: FlRelativeOverlayConfig = {}) {
-    super(config);
+  constructor(public hostElement: ElementRef<HTMLElement>) {
+    super();
   }
 
   // configure the panel

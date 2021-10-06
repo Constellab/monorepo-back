@@ -33,7 +33,7 @@ export class FlDynamicFormComponent implements OnInit {
         disabled: config.disabled === true
       });
 
-      if(config.required){
+      if (config.required) {
         control.setValidators(Validators.required);
       }
 

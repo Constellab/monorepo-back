@@ -19,10 +19,10 @@ export class BioxConfigData {
   /**
    * Create a BioxConfigData with defined specs and empty params
    */
-  public static fromSpecs(specs: BioxConfigSpecs): BioxConfigData {
+  public static fromSpecs(specs: BioxConfigSpecs, values: any = {}): BioxConfigData {
     const config = new BioxConfigData();
     config.specs = specs;
-    config.values = {};
+    config.values = values;
     return config;
   }
 

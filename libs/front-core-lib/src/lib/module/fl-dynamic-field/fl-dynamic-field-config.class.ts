@@ -20,6 +20,7 @@ export interface FlDynamicFieldConfigBase {
   type: 'input' | 'select';
 
   placeholder: string;
+  hint?: string;
 }
 
 export interface FlDynamicFieldConfigMaterialInput extends FlDynamicFieldConfigBase {
@@ -27,7 +28,6 @@ export interface FlDynamicFieldConfigMaterialInput extends FlDynamicFieldConfigB
 
   prefix?: string;
   suffix?: string;
-  hint?: string;
 }
 
 export interface FlDynamicFieldConfigInput extends FlDynamicFieldConfigMaterialInput {

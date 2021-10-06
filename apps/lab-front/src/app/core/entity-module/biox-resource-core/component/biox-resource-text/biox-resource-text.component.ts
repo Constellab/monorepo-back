@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {FlInfiniteScrollMode} from '@monorepo/front-core-lib';
+import {BioxResourceViewComponent} from '../../model/biox-resource-view-component.class';
+import {BioxResourceViewText} from '../../../../model/entities/resource/biox-resource-view.entity';
 
 /**
  * Component to view a resource as plain text
@@ -12,9 +13,9 @@ import {FlInfiniteScrollMode} from '@monorepo/front-core-lib';
   templateUrl: './biox-resource-text.component.html',
   styleUrls: ['./biox-resource-text.component.scss']
 })
-export class BioxResourceTextComponent implements OnInit {
+export class BioxResourceTextComponent implements OnInit, BioxResourceViewComponent<BioxResourceViewText> {
 
-  @Input() resource: BioxResource;
+  @Input() view: BioxResourceViewText;
 
   @Input() infiniteScrollMode: FlInfiniteScrollMode = 'body';
 
@@ -33,7 +34,7 @@ export class BioxResourceTextComponent implements OnInit {
   }
 
   private initText(): void {
-    const data: any = this.resource.data;
+    const data: any = this.view.data;
     if (typeof data === 'string') {
       this.fullText = data;
     } else {
