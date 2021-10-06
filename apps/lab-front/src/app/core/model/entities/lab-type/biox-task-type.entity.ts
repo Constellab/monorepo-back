@@ -1,6 +1,6 @@
 import {Expose, Type} from 'class-transformer';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
-import {BioxConfigSpecs, BioxConfigSpecTyped} from '../biox-config-spec.entity';
+import {BioxConfigSpecBase, BioxConfigSpecs} from '../biox-config-spec.entity';
 import {BioxTaskData} from '../process/biox-task.entity';
 import {BioxProcessType} from './biox-process-type.entity';
 
@@ -16,7 +16,7 @@ export class BioxTaskType extends BioxProcessType {
   outputSpecs: Record<string, string[]>;
 
   @Expose({name: 'config_specs'})
-  @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecTyped)
+  @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecBase)
   configSpecs: BioxConfigSpecs;
 
   @Type(() => BioxTaskData)

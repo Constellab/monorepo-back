@@ -1,8 +1,7 @@
-<div [formGroup]="formGp" fxLayout="row wrap"  fxLayoutAlign="space-evenly start">
-  <div *ngFor="let config of configs" class="field-container" fxFlex="49%">
+<div [formGroup]="formGp" fxLayout="row wrap" fxLayoutAlign="space-evenly start">
+  <div *ngFor="let config of configs" class="field-container" [fxFlex]="inputFlexWidth">
     <fl-dynamic-field [config]="config.fieldConfig"
-                      [formControlName]="config.controlName"
-                      [required]="config.required">
+                      [formCtrl]="$any(formGp.get(config.controlName))">
     </fl-dynamic-field>
   </div>
 </div>

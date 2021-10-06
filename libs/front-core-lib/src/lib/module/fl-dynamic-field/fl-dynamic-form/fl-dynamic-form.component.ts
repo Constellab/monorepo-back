@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {FormControl, FormGroup} from '@angular/forms';
 import {FlDynamicFormFieldConfig} from '../fl-dynamic-field-config.class';
 
 /**
@@ -19,6 +19,9 @@ export class FlDynamicFormComponent implements OnInit {
 
   @Input() configs: FlDynamicFormFieldConfig[];
 
+  // width of the input, used in a fxFlex
+  @Input() inputFlexWidth: string = '1 1 49%';
+
   constructor() {
   }
 
@@ -28,16 +31,7 @@ export class FlDynamicFormComponent implements OnInit {
 
   private initForm(): void {
     for (const config of this.configs) {
-      const control: FormControl = new FormControl({
-        value: config.initValue,
-        disabled: config.disabled === true
-      });
-
-      if (config.required) {
-        control.setValidators(Validators.required);
-      }
-
-      this.formGp.addControl(config.controlName, control);
+      this.formGp.addControl(config.controlName, new FormControl());
     }
   }
 

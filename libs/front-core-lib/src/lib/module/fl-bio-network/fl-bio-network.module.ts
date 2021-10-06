@@ -75,6 +75,6 @@ import {FlDrawerModule} from '../fl-drawer/fl-drawer.module';
 })
 export class FlBioNetworkModule {
   constructor(translateService: FlTranslateService) {
-    translateService.addModuleTranslation('flBioNetworkI18nEn', flBioNetworkI18n);
+    translateService.addModuleTranslation('FlBioNetworkModule', flBioNetworkI18n);
   }
 }

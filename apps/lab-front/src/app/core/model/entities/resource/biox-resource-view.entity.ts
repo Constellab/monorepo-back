@@ -1,6 +1,6 @@
 import {Expose} from 'class-transformer';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
-import {BioxConfigSpecs, BioxConfigSpecTyped} from '../biox-config-spec.entity';
+import {BioxConfigSpecBase, BioxConfigSpecs} from '../biox-config-spec.entity';
 
 // list of available view type
 export type BioxResourceViewType = 'json-view' | 'text-view' | 'table-view' | 'network-view' | 'image-view';
@@ -20,12 +20,12 @@ export class BioxResourceViewSpec {
 
   // object describing the type of the configs and default values of the view
   @Expose({name: 'view_specs'})
-  @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecTyped)
+  @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecBase)
   viewSpecs: BioxConfigSpecs;
 
   // object describing the type of the configs and default values of the view methods
   @Expose({name: 'method_specs'})
-  @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecTyped)
+  @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecBase)
   methodSpecs: BioxConfigSpecs;
 
   @Expose({name: 'default_view'})

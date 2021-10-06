@@ -1,5 +1,10 @@
 import {ClRecordWrapper} from '@monorepo/core-lib';
-import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
+import {
+  FlDynamicFieldConfigBase,
+  FlDynamicFieldConfigInput,
+  FlDynamicFieldConfigSelect,
+  FlDynamicFormFieldConfig
+} from '@monorepo/front-core-lib';
 
 /**
  * Record class that contain the list of config spec
@@ -24,36 +29,42 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
 
     const formFieldConfig: FlDynamicFormFieldConfig = {
       controlName: fieldName,
-      initValue: currentConfig !== undefined ? currentConfig : spec.default_value,
       fieldConfig: null,
-      required: !spec.hasDefaultValue() // required if there is no default value
     };
 
-    const placeholder: string = spec.human_name ?? fieldName;
-
-    // todo add support to min and max values
     // create a select
     if (spec.allowed_values) {
-      formFieldConfig.fieldConfig = {
-        type: 'select',
-        placeholder: placeholder,
-        selectOptions: spec.allowed_values,
-        hint: spec.short_description,
-        suffix: spec.unit,
-      };
+      const config: FlDynamicFieldConfigSelect = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
+      config.type = 'select';
+      config.selectOptions = spec.allowed_values;
+      config.suffix = spec.unit;
+      formFieldConfig.fieldConfig = config;
     }
     // create a input
     else {
-      formFieldConfig.fieldConfig = {
-        type: 'input',
-        placeholder: placeholder,
-        inputType: spec.type === 'str' ? 'text' : 'number',
-        hint: spec.short_description,
-        suffix: spec.unit
-      };
-    }
+      const config: FlDynamicFieldConfigInput = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
+      config.type = 'input';
+      config.inputType = spec.type === 'str' ? 'text' : 'number';
+      config.suffix = spec.unit;
 
+
+      if (spec.type === 'int' || spec.type === 'float') {
+        config.min = spec.min_value;
+        config.max = spec.max_value;
+      }
+      formFieldConfig.fieldConfig = config;
+    }
     return formFieldConfig;
+  }
+
+  private convertToBaseFieldConfig(spec: BioxConfigSpec, fieldName: string, currentConfig?: any): FlDynamicFieldConfigBase {
+    return {
+      type: null,
+      initValue: currentConfig !== undefined ? currentConfig : spec.default_value,
+      required: !spec.hasDefaultValue(),// required if there is no default value
+      placeholder: spec.human_name ?? fieldName,
+      hint: spec.short_description,
+    };
   }
 
   /**
@@ -89,29 +100,23 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
 /**
  * Object describing the config properties
  */
-export type BioxConfigSpec = BioxConfigSpecTyped<'str', string> | BioxConfigSpecTyped<'float', number>;
+export type BioxConfigSpec = BioxConfigSpecString | BioxConfigSpecFloat;
 
 // If the config property is a string or a float
-export type BioxConfigSpecType = 'str' | 'float';
+export type BioxConfigSpecType = 'str' | 'int' | 'float';
 
 // Typed description of the config spec
-export class BioxConfigSpecTyped<T extends BioxConfigSpecType, H> {
-
+export class BioxConfigSpecBase {
   /**
    * Type of the config value (string, float...)
    */
-  type: T;
+  type: BioxConfigSpecType;
 
   /**
    * Default value
    * If not provided, the config is mandatory
    */
-  default_value?: H;
-
-  /**
-   * If present, the value must be in the array
-   */
-  allowed_values?: H[];
+  default_value?: any;
 
   /**
    * Measure unit of the value (ex km)
@@ -131,4 +136,33 @@ export class BioxConfigSpecTyped<T extends BioxConfigSpecType, H> {
   public hasDefaultValue(): boolean {
     return this.default_value !== undefined;
   }
+}
+
+// Typed description of the config spec
+export class BioxConfigSpecString extends BioxConfigSpecBase {
+
+
+  type: 'str';
+
+  /**
+   * If present, the value must be in the array
+   */
+  allowed_values?: string[];
+}
+
+// Typed description of the config spec
+export class BioxConfigSpecFloat extends BioxConfigSpecBase {
+
+  type: 'int' | 'float';
+
+  /**
+   * If present, the value must be in the array
+   */
+  allowed_values?: string[];
+
+  // min value validator
+  min_value: number;
+
+  // max value validator
+  max_value: number;
 }

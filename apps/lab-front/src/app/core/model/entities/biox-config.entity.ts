@@ -1,7 +1,7 @@
 import {LabBaseEntity} from '../global/lab-entity.entity';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {Type} from 'class-transformer';
-import {BioxConfigSpecs, BioxConfigSpecTyped} from './biox-config-spec.entity';
+import {BioxConfigSpecBase, BioxConfigSpecs} from './biox-config-spec.entity';
 import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
 
 /**
@@ -10,7 +10,7 @@ import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
 export class BioxConfigData {
 
   // object describing the type of the configs and default values
-  @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecTyped)
+  @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecBase)
   specs: BioxConfigSpecs;
 
   // actual values of the config
