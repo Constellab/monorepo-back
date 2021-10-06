@@ -10,7 +10,13 @@
          [ngClass]="getSelectedClass(view)"
          class="view-box"
          (click)="selectView(view)">
-      <p>{{view.humanName}}</p>
+      <div fxLayout="row" fxLayoutAlign="space-between">
+        <p>{{view.getName()}}</p>
+        <mat-icon *ngIf="view.defaultView" color="primary"
+                  [matTooltip]="'biox.default_view' | translate">done
+        </mat-icon>
+      </div>
+
       <p class="g-text-small g-text-light">{{view.shortDescription}}</p>
     </div>
   </div>

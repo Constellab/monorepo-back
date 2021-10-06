@@ -30,6 +30,10 @@ export class BioxResourceViewSpec {
 
   @Expose({name: 'default_view'})
   defaultView: boolean;
+
+  getName(): string {
+    return this.humanName ?? this.methodName;
+  }
 }
 
 /**

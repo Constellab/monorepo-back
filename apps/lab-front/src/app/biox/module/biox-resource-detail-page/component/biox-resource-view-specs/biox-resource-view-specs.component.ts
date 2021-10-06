@@ -7,7 +7,10 @@ import {
 } from '../../../../../core/model/entities/resource/biox-resource-view.entity';
 import {BioxResourceDetailPageState} from '../../state/biox-resource-detail-page.state';
 import {FlDialogService, FlOverlayRef} from '@monorepo/front-core-lib';
-import {BioxConfigureResourceViewComponent} from '../biox-configure-resource-view/biox-configure-resource-view.component';
+import {
+  BioxConfigureResourceViewComponent,
+  BioxConfigureResourceViewInput
+} from '../biox-configure-resource-view/biox-configure-resource-view.component';
 
 /**
  * List of view specs class by type and possibility to select a view specs
@@ -57,7 +60,12 @@ export class BioxResourceViewSpecsComponent implements OnInit {
       } else {
         specWithConfig = {viewSpec: view, config: new BioxResourceViewConfig()};
       }
-      this.dialogService.openMediumDialog(BioxConfigureResourceViewComponent, {data: specWithConfig}).afterClosed().subscribe(
+
+      const data: BioxConfigureResourceViewInput = {
+        viewSpecConfig: specWithConfig,
+        title: view.getName()
+      };
+      this.dialogService.openMediumDialog(BioxConfigureResourceViewComponent, {data: data}).afterClosed().subscribe(
         config => this.onConfigDialogClosed(view, config)
       );
     }

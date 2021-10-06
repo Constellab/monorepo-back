@@ -7,6 +7,11 @@ import {
 } from '../../../../../core/model/entities/resource/biox-resource-view.entity';
 import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
 
+export interface BioxConfigureResourceViewInput {
+  title: string;
+  viewSpecConfig: BioxResourceViewSpecWithConfig;
+}
+
 /**
  * Dialog to configure resource view spec
  */
@@ -22,15 +27,19 @@ export class BioxConfigureResourceViewComponent implements OnInit {
 
   configs: FlDynamicFormFieldConfig[];
 
+  title: string;
+  viewSpecConfig: BioxResourceViewSpecWithConfig;
+
   private readonly methodFieldPrefix: string = 'method_';
   private readonly viewFieldPrefix: string = 'view_';
 
-  constructor(@Inject(MAT_DIALOG_DATA) private viewSpecConfig: BioxResourceViewSpecWithConfig,
+  constructor(@Inject(MAT_DIALOG_DATA) input: BioxConfigureResourceViewInput,
               private dialogRef: MatDialogRef<BioxConfigureResourceViewComponent>) {
+    this.title = input.title;
+    this.viewSpecConfig = input.viewSpecConfig;
   }
 
   ngOnInit(): void {
-
     const configs: FlDynamicFormFieldConfig[] = [];
 
     // add the config for method config
