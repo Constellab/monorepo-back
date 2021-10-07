@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {FlBioNetworkRendererState} from '../../state/fl-bio-network-renderer.state';
 import {MatSliderChange} from '@angular/material/slider';
@@ -14,7 +14,8 @@ import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3-network.class';
 @Component({
   selector: 'fl-bio-network-action-bar',
   templateUrl: './fl-bio-network-action-bar.component.html',
-  styleUrls: ['./fl-bio-network-action-bar.component.scss']
+  styleUrls: ['./fl-bio-network-action-bar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlBioNetworkActionBarComponent implements OnInit {
 

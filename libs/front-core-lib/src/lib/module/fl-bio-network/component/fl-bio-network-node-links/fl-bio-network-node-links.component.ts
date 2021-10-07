@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FlExternalLinkService} from '../../../../service/fl-external-link.service';
 import {FlBioNetworkD3Node} from '../../model/fl-bio-network-d3.class';
 
@@ -15,7 +15,8 @@ interface Link {
 @Component({
   selector: 'fl-bio-network-node-links',
   templateUrl: './fl-bio-network-node-links.component.html',
-  styleUrls: ['./fl-bio-network-node-links.component.scss']
+  styleUrls: ['./fl-bio-network-node-links.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlBioNetworkNodeLinksComponent implements OnInit {
 

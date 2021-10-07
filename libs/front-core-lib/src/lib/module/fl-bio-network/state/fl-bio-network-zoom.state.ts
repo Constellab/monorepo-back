@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {FlD3SelectionSimple, FlD3ZoomEvent} from '../../fl-chart/model/fl-d3.class';
 import {ZoomBehavior, ZoomTransform} from 'd3-zoom';
 import * as d3 from 'd3';
@@ -25,6 +25,9 @@ export class FlBioNetworkZoomState implements OnDestroy {
   // if zoom >= threshold --> text is displayed
   private readonly nodeTextVisibilityThreshold = 0.7;
 
+  constructor(private ngZone: NgZone) {
+  }
+
 
   public enableZoom(svg: FlD3SelectionSimple, zoomableElement: FlD3SelectionSimple): void {
     this.zoomableElement = zoomableElement;
@@ -40,8 +43,10 @@ export class FlBioNetworkZoomState implements OnDestroy {
       this.zoomHandler.transform(svg, this.currentZoom);
     }
 
-
-    this.zoomHandler(svg);
+    // run the zoom handler outside ng zone to avoid ng check
+    this.ngZone.runOutsideAngular(() => {
+      this.zoomHandler(svg);
+    });
   }
 
   //Zoom functions
@@ -56,16 +61,16 @@ export class FlBioNetworkZoomState implements OnDestroy {
 
   // show or hide the text based on scroll scale
   private updateNodeTextVisibility(transform: ZoomTransform): void {
+
     const previousScale = this.zoom$.value?.k ?? 1;
     const previousDisplay = previousScale >= this.nodeTextVisibilityThreshold;
     const currentDisplay = transform.k >= this.nodeTextVisibilityThreshold;
 
     if (previousDisplay != currentDisplay) {
       const opacity = currentDisplay ? 1 : 0;
-      const selection = this.svg.selectAll('.' + flBioNetworkNodeTextClass)
+      const selection = this.svg.selectAll('.' + flBioNetworkNodeTextClass);
       selection.style('opacity', opacity);
     }
-
   }
 
   // public resetZoom(): void{

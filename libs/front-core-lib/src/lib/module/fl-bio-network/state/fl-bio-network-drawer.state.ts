@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {MatDrawer} from '@angular/material/sidenav';
 import {FlBioNetworkDrawerAction, FlBioNetworkDrawerStateValue} from '../model/fl-bio-network-drawer-action.class';
 import {BehaviorSubject, Observable} from 'rxjs';
@@ -14,6 +14,9 @@ export class FlBioNetworkDrawerState implements OnDestroy {
 
   private drawer: MatDrawer;
   private state$: BehaviorSubject<FlBioNetworkDrawerStateValue>;
+
+  constructor(private ngZone: NgZone) {
+  }
 
   public init(drawer: MatDrawer): void {
     this.drawer = drawer;
@@ -36,11 +39,15 @@ export class FlBioNetworkDrawerState implements OnDestroy {
   }
 
   public openDrawer(): void {
-    this.drawer.open();
+    this.ngZone.run(() => {
+      this.drawer.open();
+    });
   }
 
   public closeDrawer(): void {
-    this.drawer.close();
+    this.ngZone.run(() => {
+      this.drawer.close();
+    });
   }
 
   public drawerClosed$(): Observable<void> {

@@ -7,7 +7,7 @@ import {FlD3DragEvent, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.cla
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {FlBioNetworkState} from './fl-bio-network.state';
 import {FlBioNetworkSelectionState} from './fl-bio-network-selection.state';
 import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
@@ -51,7 +51,8 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
   constructor(themeService: FlThemeService, private drawerState: FlBioNetworkDrawerState,
               private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState,
-              private zoomState: FlBioNetworkZoomState, private gridState: FlBioNetworkGridState) {
+              private zoomState: FlBioNetworkZoomState, private gridState: FlBioNetworkGridState,
+              private ngZone: NgZone) {
     const themeDetail: FlThemeDetail = themeService.getCurrentThemeDetail();
     this.textColor = themeDetail.foreground;
     this.backgroundColor = themeDetail.background;
@@ -71,29 +72,32 @@ export class FlBioNetworkRendererState implements OnDestroy {
   }
 
   private drawNetwork(chartData: FlBioxNetworkD3): void {
-    if (this.svg != null) {
-      this.clearNetwork();
-    }
+    // run the d3 rendering outside ng zone to avoir ng check
+    this.ngZone.runOutsideAngular(() => {
+      if (this.svg != null) {
+        this.clearNetwork();
+      }
 
-    this.data = chartData;
+      this.data = chartData;
 
-    if (chartData) {
-      this.initSVG();
-      this.initSimulation();
-      this.gridState.initGrid(this.mainGroup);
-      this.initLinks(this.linkColorLogarithm);
-      this.initNodes();
-      this.defineArrowMarker();
-      this.zoomState.enableZoom(this.svg, this.mainGroup);
-      this.launchSimulation();
+      if (chartData) {
+        this.initSVG();
+        this.initSimulation();
+        this.gridState.initGrid(this.mainGroup);
+        this.initLinks(this.linkColorLogarithm);
+        this.initNodes();
+        this.defineArrowMarker();
+        this.zoomState.enableZoom(this.svg, this.mainGroup);
+        this.launchSimulation();
 
-      // speed up the simulation to quickly end it
-      this.simulation.tick(1000);
-      this.simulation.on('end', () => this.endSimulation());
+        // speed up the simulation to quickly end it
+        this.simulation.tick(1000);
+        this.simulation.on('end', () => this.endSimulation());
 
-      // init the selection state
-      this.selectionState.init(chartData, this.nodesContainer, this.links);
-    }
+        // init the selection state
+        this.selectionState.init(chartData, this.nodesContainer, this.links);
+      }
+    });
   }
 
   private initSVG(): void {
@@ -302,7 +306,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
     };
 
     position.metabolites = this.data.metabolites.map(node => {
-      const coord = node.getCenter()
+      const coord = node.getCenter();
       return {
         x: coord.x,
         y: coord.y,
@@ -310,7 +314,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       };
     });
     position.reactions = this.data.reactions.map(node => {
-      const coord = node.getCenter()
+      const coord = node.getCenter();
       return {
         x: coord.x,
         y: coord.y,
