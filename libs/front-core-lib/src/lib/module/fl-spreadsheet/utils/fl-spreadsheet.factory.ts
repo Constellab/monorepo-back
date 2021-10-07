@@ -1,5 +1,5 @@
 import {FlSheet} from '../model/fl-sheet.class';
-import {ClCSVDelimiter, clCSVDelimiters, ClCSVHelper, clCSVLineSeparator} from '@monorepo/core-lib';
+import {ClCSVDelimiter, clCSVDelimiters, ClCSVHelper, ClCsvJson, clCSVLineSeparator} from '@monorepo/core-lib';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 
 
@@ -7,6 +7,27 @@ import {FlTranslateService} from '../../fl-translate/service/fl-translate.servic
  * Factory to create a spreadsheet
  */
 export class FlSpreadsheetFactory {
+
+  /**
+   * Create a spreadsheet from a JSON csv.
+   * Each key is the column name and it contains the list of column values
+   */
+  public static fromCsvJson(values: ClCsvJson, sheetName: string): FlSheet {
+    const sheet: FlSheet = new FlSheet(sheetName);
+
+
+    let columnIndex: number = 0;
+    // happen the header row
+    sheet.appendMultipleRows(1);
+
+    for (const columnName of Object.keys(values)) {
+      sheet.appendMultipleColumns(1);
+      sheet.setColumnValues(columnIndex, [columnName, ...values[columnName]]);
+
+      columnIndex++;
+    }
+    return sheet;
+  }
 
   /**
    * Create a spreadsheet from any object

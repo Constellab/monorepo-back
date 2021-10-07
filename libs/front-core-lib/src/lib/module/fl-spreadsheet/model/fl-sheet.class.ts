@@ -274,6 +274,29 @@ export class FlSheet {
     }
   }
 
+  /**
+   * Set values for a column and add rows automatically it reached the limit
+   * @param column
+   * @param values
+   * @param fromRow
+   */
+  public setColumnValues(column: number, values: any[], fromRow: number = 0): void {
+    // create new rows if needed
+    const newRowsCount = (values.length + fromRow) - this.rowsCount;
+    if (newRowsCount > 0) {
+      this.appendMultipleRows(newRowsCount);
+    }
+
+    for (let i = 0; i < values.length; i++) {
+      const cellRow: number = i + fromRow;
+
+      const cell: FlCell = this.cells[cellRow][column];
+      if (cell != null) {
+        cell.value = values[i];
+      }
+    }
+  }
+
   private getCellsFlat(): FlCell[] {
     const cells: FlCell[] = [];
 

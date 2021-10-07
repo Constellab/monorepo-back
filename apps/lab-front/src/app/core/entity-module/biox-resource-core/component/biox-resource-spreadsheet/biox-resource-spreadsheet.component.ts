@@ -24,7 +24,7 @@ export class BioxResourceSpreadsheetComponent implements OnInit, BioxResourceVie
 
     const spreadSheet: FlSpreadsheet = new FlSpreadsheet();
     // if the resource is a csv file
-    const sheet: FlSheet = FlSpreadsheetFactory.fromAny(this.view.data, 'Sheet 1');
+    const sheet: FlSheet = FlSpreadsheetFactory.fromCsvJson(this.view.data, 'Sheet 1');
 
     spreadSheet.addSheet(sheet);
 

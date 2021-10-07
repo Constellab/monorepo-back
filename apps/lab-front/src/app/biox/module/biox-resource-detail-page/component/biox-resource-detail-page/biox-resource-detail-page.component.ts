@@ -66,12 +66,13 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
     // destroy previous if it exists
     this.destroyViewComponentRef();
 
+    this.viewIsLoading = false;
+    this.error = null;
     // if view is null, it mean it is loading
     if (viewEvent.status === 'loading') {
       this.viewIsLoading = true;
       return;
     } else if (viewEvent.status === 'error') {
-      this.viewIsLoading = false;
       this.error = viewEvent.error.logDetail.message;
       return;
     }

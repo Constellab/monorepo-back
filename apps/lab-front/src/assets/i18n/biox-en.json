@@ -16,6 +16,7 @@
     "score": "Score",
     "resource_view_json": "View as json",
     "resource_view_spreadsheet": "View in spreadsheet",
+    "resource_view_base": "View",
     "resource_view_pathway": "Show the pathway",
     "resource_view_text": "View as text",
     "resource_view_image": "View as image",

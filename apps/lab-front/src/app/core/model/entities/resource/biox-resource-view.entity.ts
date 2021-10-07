@@ -1,9 +1,9 @@
 import {Expose} from 'class-transformer';
-import {ClHelpService, ClRecordWrapperTransform} from '@monorepo/core-lib';
+import {ClCsvJson, ClHelpService, ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {BioxConfigSpecBase, BioxConfigSpecs} from '../biox-config-spec.entity';
 
 // list of available view type
-export type BioxResourceViewType = 'json-view' | 'text-view' | 'table-view' | 'network-view' | 'image-view';
+export type BioxResourceViewType = 'view' | 'json-view' | 'text-view' | 'table-view' | 'network-view' | 'image-view';
 
 export class BioxResourceViewSpec {
   @Expose({name: 'method_name'})
@@ -94,7 +94,7 @@ export class BioxResourceViewText extends BioxResourceViewBase {
 
 export class BioxResourceViewTable extends BioxResourceViewBase {
   type: 'table-view';
-  data: any[];
+  data: ClCsvJson;
 }
 
 export class BioxResourceViewNetwork extends BioxResourceViewBase {
@@ -111,6 +111,7 @@ export type BioxResourceView = BioxResourceViewJson;
 
 // Record of view type, icon
 const constBioxResourceViewIcon: Record<BioxResourceViewType, { icon: string, text: string }> = {
+  view: {icon: 'view_quilt', text: 'biox.resource_view_base'},
   'json-view': {icon: 'code', text: 'biox.resource_view_json'},
   'text-view': {icon: 'text_snippet', text: 'biox.resource_view_text'},
   'table-view': {icon: 'calendar_view_month', text: 'biox.resource_view_spreadsheet'},
@@ -132,9 +133,13 @@ export function bioxGroupResourceViewSpecsByType(views: BioxResourceViewSpec[]):
   const viewsByType: Record<string, BioxResourceViewSpecsByType> = {};
 
   for (const view of views) {
-    if (viewsByType[view.viewType] == null) {
-      const viewTypeInfo = constBioxResourceViewIcon[view.viewType];
-      viewsByType[view.viewType] = {
+    // get the type with 'view' by default if the type is not known
+    const type: BioxResourceViewType = constBioxResourceViewIcon[view.viewType] != null ? view.viewType : 'view';
+
+    if (viewsByType[type] == null) {
+      const viewTypeInfo = constBioxResourceViewIcon[type];
+
+      viewsByType[type] = {
         icon: viewTypeInfo.icon,
         text: viewTypeInfo.text,
         viewType: view.viewType,
@@ -142,7 +147,7 @@ export function bioxGroupResourceViewSpecsByType(views: BioxResourceViewSpec[]):
       };
     }
 
-    viewsByType[view.viewType].viewSpec.push(view);
+    viewsByType[type].viewSpec.push(view);
   }
 
   return Object.values(viewsByType);

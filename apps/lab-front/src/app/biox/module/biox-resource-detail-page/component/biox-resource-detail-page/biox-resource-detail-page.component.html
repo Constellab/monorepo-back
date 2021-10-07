@@ -1,21 +1,23 @@
 <div class="g-page-fixed page" fxLayout="column">
   <fl-async-section fxFlex [object]="resource$" class="section">
 
+    <fl-section-header>
+      <div class="page-padding" fxLayout="row" fxLayoutAlign="start center">
+        <h2 class="header-title">
+          {{title}}
+        </h2>
+        <button mat-stroked-button type="button"
+                (click)="openViewSpecs()" #viewSpecButton>
+          {{'biox.view_specs' | translate}}
+        </button>
+      </div>
+    </fl-section-header>
+
 
     <ng-container *flSectionBody="let resource">
 
       <!--  Header    -->
-      <div class="page-padding">
-        <div fxLayout="row" fxLayoutAlign="start center">
-          <h2 class="header-title">
-            {{title}}
-          </h2>
-          <button mat-stroked-button type="button"
-                  (click)="openViewSpecs()" #viewSpecButton>
-            {{'biox.view_specs' | translate}}
-          </button>
-        </div>
-
+      <div class="page-padding body">
         <ng-template #viewContainer></ng-template>
         <div *ngIf="viewIsLoading" class="g-text-centered">
           <fl-loader size="medium"></fl-loader>
