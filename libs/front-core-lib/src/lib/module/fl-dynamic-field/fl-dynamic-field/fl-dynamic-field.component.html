@@ -3,29 +3,29 @@
   <!--  Material input-->
   <ng-container *ngSwitchCase="'input'">
     <mat-form-field appearance="outline" class="g-full g-form-field-hint-include">
-      <mat-label>{{inputConfig.placeholder}}</mat-label>
+      <mat-label>{{config.placeholder}}</mat-label>
 
       <!--    Can't directly bind input type : https://github.com/angular/angular/issues/13243-->
-      <ng-container [ngSwitch]="inputConfig.inputType">
+      <ng-container [ngSwitch]="config.inputType">
         <input *ngSwitchCase="'text'" matInput type="text" [formControl]="formCtrl"
-               placeholder="{{inputConfig.placeholder}}" [required]="required">
+               placeholder="{{config.placeholder}}" [required]="required">
 
         <input *ngSwitchCase="'number'" matInput type="number" [formControl]="formCtrl"
-               placeholder="{{inputConfig.placeholder}}" [required]="required">
+               placeholder="{{config.placeholder}}" [required]="required">
       </ng-container>
 
-      <span *ngIf="inputConfig.prefix" matPrefix>{{inputConfig.prefix}}</span>
-      <span *ngIf="inputConfig.suffix" matSuffix>{{inputConfig.suffix}}</span>
-      <mat-hint *ngIf="inputConfig.hint">{{inputConfig.hint}}</mat-hint>
+      <span *ngIf="config.prefix" matPrefix>{{config.prefix}}</span>
+      <span *ngIf="config.suffix" matSuffix>{{config.suffix}}</span>
+      <mat-hint *ngIf="config.hint">{{config.hint}}</mat-hint>
 
       <mat-error *ngIf="formCtrl.hasError('required')">
-        {{inputConfig.placeholder | flErrorRequired:false}}
+        {{config.placeholder | flErrorRequired:false}}
       </mat-error>
       <mat-error *ngIf="formCtrl.hasError('min')">
-        {{'flDynamicField.min_error_validator' | translate :{ min: formCtrl.getError('min').min } }}
+        {{'flDynamicField.min_error_validator' | translate :{min: formCtrl.getError('min').min} }}
       </mat-error>
       <mat-error *ngIf="formCtrl.hasError('max')">
-        {{'flDynamicField.max_error_validator' | translate :{ max: formCtrl.getError('max').max } }}
+        {{'flDynamicField.max_error_validator' | translate :{max: formCtrl.getError('max').max} }}
       </mat-error>
     </mat-form-field>
   </ng-container>
@@ -35,20 +35,33 @@
   <ng-container *ngSwitchCase="'select'">
     <!--  Server info  -->
     <mat-form-field appearance="outline" class="g-full g-form-field-hint-include">
-      <mat-label>{{selectConfig.placeholder}}</mat-label>
-      <mat-select placeholder="{{selectConfig.placeholder}}"
+      <mat-label>{{config.placeholder}}</mat-label>
+      <mat-select placeholder="{{config.placeholder}}"
                   [formControl]="formCtrl" [required]="required">
-        <mat-option *ngFor="let option of selectConfig.selectOptions" [value]="option">{{option}}</mat-option>
+        <mat-option *ngFor="let option of config.selectOptions" [value]="option">{{option}}</mat-option>
       </mat-select>
 
-      <span *ngIf="selectConfig.prefix" matPrefix>{{selectConfig.prefix}}</span>
-      <span *ngIf="selectConfig.suffix" matSuffix>{{selectConfig.suffix}}</span>
-      <mat-hint *ngIf="selectConfig.hint">{{selectConfig.hint}}</mat-hint>
+      <span *ngIf="config.prefix" matPrefix>{{config.prefix}}</span>
+      <span *ngIf="config.suffix" matSuffix>{{config.suffix}}</span>
+      <mat-hint *ngIf="config.hint">{{config.hint}}</mat-hint>
 
       <mat-error *ngIf="formCtrl.hasError('required')">
-        {{selectConfig.placeholder | flErrorRequired:false }}
+        {{config.placeholder | flErrorRequired:false }}
       </mat-error>
     </mat-form-field>
+  </ng-container>
+
+  <!-- List -->
+  <ng-container *ngSwitchCase="'list'">
+    <fl-form-field>
+      <fl-multi-inputs [formControl]="formCtrl" [required]="required"
+                       [placeholder]="config.placeholder" [hint]="config.hint" [prefix]="config.prefix"
+                       [suffix]="config.suffix"></fl-multi-inputs>
+      <mat-error *ngIf="formCtrl.hasError('required')">
+        {{config.placeholder | flErrorRequired:false }}
+      </mat-error>
+    </fl-form-field>
+
   </ng-container>
 
 </ng-container>

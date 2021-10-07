@@ -48,6 +48,7 @@
     "open_resource_toolbar": "Open toolbar",
     "no_views_on_resource": "No views found",
     "view_specs": "Views",
-    "default_view": "Default view"
+    "default_view": "Default view",
+    "show_view": "Show view"
   }
 }

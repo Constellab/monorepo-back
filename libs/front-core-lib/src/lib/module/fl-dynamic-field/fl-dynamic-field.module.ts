@@ -11,6 +11,8 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flDynamicFieldI18n} from './i18n/fl-dynamic-field.i18n';
+import {FlMultiInputsComponent} from './fl-multi-inputs/fl-multi-inputs.component';
+import {FlFormModule} from '../fl-form/fl-form.module';
 
 
 /**
@@ -18,7 +20,7 @@ import {flDynamicFieldI18n} from './i18n/fl-dynamic-field.i18n';
  * based on a config
  */
 @NgModule({
-  declarations: [FlDynamicFieldComponent, FlDynamicFormComponent],
+  declarations: [FlDynamicFieldComponent, FlDynamicFormComponent, FlMultiInputsComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -31,8 +33,9 @@ import {flDynamicFieldI18n} from './i18n/fl-dynamic-field.i18n';
 
     FlTranslateModule,
     FlCorePipeModule,
+    FlFormModule,
   ],
-  exports: [FlDynamicFieldComponent, FlDynamicFormComponent]
+  exports: [FlDynamicFieldComponent, FlDynamicFormComponent, FlMultiInputsComponent]
 })
 export class FlDynamicFieldModule {
   constructor(translateService: FlTranslateService) {

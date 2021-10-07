@@ -2,7 +2,7 @@
  * Csv object stored in a Json.
  * Key = column name. Values = column values
  */
-export type ClCsvJson = Record<string, []>;
+export type ClCsvJson = Record<string, any[]>;
 
 export interface ClCSVDelimiter {
   delimiter: string;

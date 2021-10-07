@@ -6,6 +6,7 @@ const flDynamicFieldI18nFr: FlLangTranslation = {
   flDynamicField: {
     min_error_validator: 'Value must be higher or equal than {{min}}',
     max_error_validator: 'Value must be lower or equal than {{max}}',
+    multi_input_help: 'Renseigner une valeur par ligne'
   }
 };
 
@@ -13,6 +14,7 @@ const flDynamicFieldI18nEn: FlLangTranslation = {
   flDynamicField: {
     min_error_validator: 'La valeur doit être supérieur ou égal à {{min}}',
     max_error_validator: 'La valeur doit être inférieur ou égale à {{max}}',
+    multi_input_help: 'Specify one value per line'
   }
 };
 

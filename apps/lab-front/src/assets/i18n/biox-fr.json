@@ -48,6 +48,7 @@
     "open_resource_toolbar": "Ouvrir la barre d'outil",
     "no_views_on_resource": "Aucune vue trouvée",
     "view_specs": "Vues",
-    "default_view": "Vue par défaut"
+    "default_view": "Vue par défaut",
+    "show_view": "Affiche la vue"
   }
 }

@@ -2,6 +2,7 @@ import {ClRecordWrapper} from '@monorepo/core-lib';
 import {
   FlDynamicFieldConfigBase,
   FlDynamicFieldConfigInput,
+  FlDynamicFieldConfigList,
   FlDynamicFieldConfigSelect,
   FlDynamicFormFieldConfig
 } from '@monorepo/front-core-lib';
@@ -39,9 +40,12 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
       config.selectOptions = spec.allowed_values;
       config.suffix = spec.unit;
       formFieldConfig.fieldConfig = config;
-    }
-    // create a input
-    else {
+    } else if (spec.type === 'list') {
+      // create a input
+      const config: FlDynamicFieldConfigList = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
+      config.type = 'list';
+      formFieldConfig.fieldConfig = config;
+    } else {
       const config: FlDynamicFieldConfigInput = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
       config.type = 'input';
       config.inputType = spec.type === 'str' ? 'text' : 'number';
@@ -100,10 +104,10 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
 /**
  * Object describing the config properties
  */
-export type BioxConfigSpec = BioxConfigSpecString | BioxConfigSpecFloat;
+export type BioxConfigSpec = BioxConfigSpecString | BioxConfigSpecFloat | BioxConfigSpecList;
 
 // If the config property is a string or a float
-export type BioxConfigSpecType = 'str' | 'int' | 'float';
+export type BioxConfigSpecType = 'str' | 'int' | 'float' | 'list';
 
 // Typed description of the config spec
 export class BioxConfigSpecBase {
@@ -138,9 +142,7 @@ export class BioxConfigSpecBase {
   }
 }
 
-// Typed description of the config spec
 export class BioxConfigSpecString extends BioxConfigSpecBase {
-
 
   type: 'str';
 
@@ -150,7 +152,6 @@ export class BioxConfigSpecString extends BioxConfigSpecBase {
   allowed_values?: string[];
 }
 
-// Typed description of the config spec
 export class BioxConfigSpecFloat extends BioxConfigSpecBase {
 
   type: 'int' | 'float';
@@ -165,4 +166,9 @@ export class BioxConfigSpecFloat extends BioxConfigSpecBase {
 
   // max value validator
   max_value: number;
+}
+
+export class BioxConfigSpecList extends BioxConfigSpecBase {
+  type: 'list';
+  allowed_values?: void;
 }

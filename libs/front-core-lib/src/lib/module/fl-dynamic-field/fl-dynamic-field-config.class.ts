@@ -10,11 +10,11 @@ export interface FlDynamicFormFieldConfig {
 /**
  * Configuration for the {@link FlDynamicFieldComponent}
  */
-export type FlDynamicFieldConfig = FlDynamicFieldConfigInput | FlDynamicFieldConfigSelect;
+export type FlDynamicFieldConfig = FlDynamicFieldConfigInput | FlDynamicFieldConfigSelect | FlDynamicFieldConfigList;
 
 
 export interface FlDynamicFieldConfigBase {
-  type: 'input' | 'select';
+  type: 'input' | 'select' | 'list';
 
   initValue?: any;
   disabled?: boolean;
@@ -24,7 +24,7 @@ export interface FlDynamicFieldConfigBase {
 }
 
 export interface FlDynamicFieldConfigMaterialInput extends FlDynamicFieldConfigBase {
-  type: 'input' | 'select';
+  type: 'input' | 'select' | 'list';
 
   prefix?: string;
   suffix?: string;
@@ -45,3 +45,8 @@ export interface FlDynamicFieldConfigSelect extends FlDynamicFieldConfigMaterial
 
   selectOptions: any[];
 }
+
+export interface FlDynamicFieldConfigList extends FlDynamicFieldConfigMaterialInput {
+  type: 'list';
+}
+

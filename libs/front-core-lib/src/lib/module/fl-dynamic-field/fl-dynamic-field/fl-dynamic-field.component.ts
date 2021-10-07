@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FlDynamicFieldConfig, FlDynamicFieldConfigInput, FlDynamicFieldConfigSelect} from '../fl-dynamic-field-config.class';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FlDynamicFieldConfig} from '../fl-dynamic-field-config.class';
 import {FormControl, ValidatorFn, Validators} from '@angular/forms';
 
 /**
@@ -8,7 +8,8 @@ import {FormControl, ValidatorFn, Validators} from '@angular/forms';
 @Component({
   selector: 'fl-dynamic-field',
   templateUrl: './fl-dynamic-field.component.html',
-  styleUrls: ['./fl-dynamic-field.component.scss']
+  styleUrls: ['./fl-dynamic-field.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlDynamicFieldComponent implements OnInit {
 
@@ -53,15 +54,5 @@ export class FlDynamicFieldComponent implements OnInit {
     }
 
     return validators;
-  }
-
-
-  // getter to avoid error in HTML
-  get inputConfig(): FlDynamicFieldConfigInput {
-    return this.config as FlDynamicFieldConfigInput;
-  }
-
-  get selectConfig(): FlDynamicFieldConfigSelect {
-    return this.config as FlDynamicFieldConfigSelect;
   }
 }
