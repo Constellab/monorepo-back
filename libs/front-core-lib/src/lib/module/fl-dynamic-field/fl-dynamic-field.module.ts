@@ -13,6 +13,7 @@ import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flDynamicFieldI18n} from './i18n/fl-dynamic-field.i18n';
 import {FlMultiInputsComponent} from './fl-multi-inputs/fl-multi-inputs.component';
 import {FlFormModule} from '../fl-form/fl-form.module';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 /**
@@ -28,6 +29,7 @@ import {FlFormModule} from '../fl-form/fl-form.module';
 
     MatFormFieldModule,
     MatInputModule,
+    MatCheckboxModule,
     MatSelectModule,
     FlexLayoutModule,
 

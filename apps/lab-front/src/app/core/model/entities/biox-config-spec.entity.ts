@@ -1,6 +1,7 @@
 import {ClRecordWrapper} from '@monorepo/core-lib';
 import {
   FlDynamicFieldConfigBase,
+  FlDynamicFieldConfigBoolean,
   FlDynamicFieldConfigInput,
   FlDynamicFieldConfigList,
   FlDynamicFieldConfigSelect,
@@ -41,9 +42,12 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
       config.suffix = spec.unit;
       formFieldConfig.fieldConfig = config;
     } else if (spec.type === 'list') {
-      // create a input
       const config: FlDynamicFieldConfigList = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
       config.type = 'list';
+      formFieldConfig.fieldConfig = config;
+    } else if (spec.type === 'bool') {
+      const config: FlDynamicFieldConfigBoolean = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
+      config.type = 'boolean';
       formFieldConfig.fieldConfig = config;
     } else {
       const config: FlDynamicFieldConfigInput = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
@@ -104,10 +108,10 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
 /**
  * Object describing the config properties
  */
-export type BioxConfigSpec = BioxConfigSpecString | BioxConfigSpecFloat | BioxConfigSpecList;
+export type BioxConfigSpec = BioxConfigSpecString | BioxConfigSpecFloat | BioxConfigSpecList | BioxConfigSpecBoolean;
 
 // If the config property is a string or a float
-export type BioxConfigSpecType = 'str' | 'int' | 'float' | 'list';
+export type BioxConfigSpecType = 'str' | 'int' | 'float' | 'list' | 'bool';
 
 // Typed description of the config spec
 export class BioxConfigSpecBase {
@@ -166,6 +170,11 @@ export class BioxConfigSpecFloat extends BioxConfigSpecBase {
 
   // max value validator
   max_value: number;
+}
+
+export class BioxConfigSpecBoolean extends BioxConfigSpecBase {
+  type: 'bool';
+  allowed_values?: void;
 }
 
 export class BioxConfigSpecList extends BioxConfigSpecBase {

@@ -61,8 +61,17 @@
         {{config.placeholder | flErrorRequired:false }}
       </mat-error>
     </fl-form-field>
+  </ng-container>
 
+  <!-- Boolean -->
+  <ng-container *ngSwitchCase="'boolean'">
+    <mat-checkbox [formControl]="formCtrl"
+                  color="primary">
+      {{config.placeholder}}
+    </mat-checkbox>
+    <p *ngIf="config.hint" class="g-text-light g-text-small">{{config.hint}}</p>
   </ng-container>
 
 </ng-container>
+
 
