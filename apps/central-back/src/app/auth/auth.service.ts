@@ -8,7 +8,7 @@ import {ErrorText} from '../core/model/config/error-text.class';
 import {TokenService} from '../core/services/token/token.service';
 import {UserAccountsService} from '../users/users-account/user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
-import {CmCredentials, CmUserStatus} from '@monorepo/common-model';
+import {CmCredentials, CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 import {BlMailService} from '@monorepo/back-core-lib';
 
 @Injectable()
@@ -29,6 +29,18 @@ export class AuthService {
   }
 
   async login(credentials: CmCredentials): Promise<string> {
+    const user = await this.checkCredentialsAndUser(credentials);
+
+    return this.generateToken(user);
+  }
+
+  async checkCredentialsWithRole(category: CmUserCategory, credentials: CmCredentials): Promise<boolean> {
+    const user = await this.checkCredentialsAndUser(credentials);
+
+    return user.category === category;
+  }
+
+  private async checkCredentialsAndUser(credentials: CmCredentials): Promise<User> {
     const user = await this.usersService.findByEmail(credentials.email);
 
     // if the email is wrong
@@ -67,6 +79,10 @@ export class AuthService {
       this.resetFailedLoginCount(user);
     }
 
+    return user;
+  }
+
+  private generateToken(user: User): string {
     // set the userId and email in the token
     const payload: TokenUser = {sub: user.id, email: user.email};
     return this.jwtService.sign(payload);

@@ -1,10 +1,10 @@
-import {Body, Controller, Post, Res} from '@nestjs/common';
+import {Body, Controller, Param, Post, Res} from '@nestjs/common';
 import {AuthService} from './auth.service';
 import {Response} from 'express';
 import {jwtConfig} from './jwt.config';
 import {CoreConfigService} from '../core/modules/core-config/core-config.service';
-import {BlPublic} from '@monorepo/back-core-lib';
-import {CmCredentials} from '@monorepo/common-model';
+import {BlParseEnumPipe, BlPublic} from '@monorepo/back-core-lib';
+import {CmCredentials, CmUserCategory} from '@monorepo/common-model';
 
 @Controller('auth')
 export class AuthController {
@@ -24,6 +24,16 @@ export class AuthController {
 
     this.setTokenInResponseCookies(token, jwtConfig.tokenDurationInMilliseconds, response);
     response.send({expiresIn: jwtConfig.tokenDurationInMilliseconds});
+  }
+
+  /**
+   * Check if a user can login with the credential and check that the user have the right role
+   */
+  @BlPublic()
+  @Post('check-credentials/:role')
+  checkCredentialsWithRole(@Param('role', new BlParseEnumPipe(CmUserCategory)) category: CmUserCategory,
+                           @Body() credentials: CmCredentials): Promise<boolean> {
+    return this.authService.checkCredentialsWithRole(category, credentials);
   }
 
   /**
