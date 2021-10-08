@@ -32,7 +32,7 @@ export const flBioNetworkCofactor: Record<string, string> = {
   'CHEBI:16526': 'carbon_dioxide',
   'CHEBI:29108': 'ca2+',
   'CHEBI:57287': 'coenzyme_A',
-  'CHEBI:57288': 'acetyl_CoA_4',
+  // 'CHEBI:57288': 'acetyl_CoA_4',
   'CHEBI:59789': 'S_adenosyl_L_methionine',
   'CHEBI:57856': 'S_adenosyl_L_homocysteine',
   'CHEBI:29033': 'iron_2',

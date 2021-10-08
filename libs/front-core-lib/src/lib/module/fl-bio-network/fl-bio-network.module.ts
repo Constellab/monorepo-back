@@ -13,7 +13,7 @@ import {FlBioNetworkNodeLinksComponent} from './component/fl-bio-network-node-li
 import {MatListModule} from '@angular/material/list';
 import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
 import {MatSliderModule} from '@angular/material/slider';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {FlBioNetworkDrawerComponent} from './component/fl-bio-network-drawer/fl-bio-network-drawer.component';
 import {FlBioNetworkConfigComponent} from './component/fl-bio-network-config/fl-bio-network-config.component';
@@ -29,6 +29,9 @@ import {FlBioNetworkCompartmentsComponent} from './component/fl-bio-network-comp
 import {FlBioNetworkZoomComponent} from './component/fl-bio-network-zoom/fl-bio-network-zoom.component';
 import {FlBioNetworkSelectionInfoComponent} from './component/fl-bio-network-selection-info/fl-bio-network-selection-info.component';
 import {FlDrawerModule} from '../fl-drawer/fl-drawer.module';
+import {FlBioNetworkNodeSearchComponent} from './component/fl-bio-network-node-search/fl-bio-network-node-search.component';
+import {MatInputModule} from '@angular/material/input';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -43,7 +46,8 @@ import {FlDrawerModule} from '../fl-drawer/fl-drawer.module';
     FlBioNetworkActionBarComponent,
     FlBioNetworkCompartmentsComponent,
     FlBioNetworkZoomComponent,
-    FlBioNetworkSelectionInfoComponent
+    FlBioNetworkSelectionInfoComponent,
+    FlBioNetworkNodeSearchComponent
   ],
   exports: [
     FlBioNetworkComponent,
@@ -51,6 +55,7 @@ import {FlDrawerModule} from '../fl-drawer/fl-drawer.module';
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
 
     MatSidenavModule,
     FlexLayoutModule,
@@ -64,6 +69,8 @@ import {FlDrawerModule} from '../fl-drawer/fl-drawer.module';
     MatFormFieldModule,
     MatSelectModule,
     MatTabsModule,
+    MatInputModule,
+    MatAutocompleteModule,
 
 
     FlTranslateModule,

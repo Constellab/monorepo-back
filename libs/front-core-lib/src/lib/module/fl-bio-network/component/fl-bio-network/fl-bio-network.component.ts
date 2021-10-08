@@ -1,14 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  DoCheck,
-  ElementRef,
-  Input,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FlBioNetwork} from '../../model/fl-bio-network.class';
 import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
 import {MatDrawer, MatSidenav} from '@angular/material/sidenav';
@@ -32,7 +22,7 @@ import {FlBioNetworkGridState} from '../../state/fl-bio-network-grid.state';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlBioNetworkComponent implements OnInit, AfterViewInit, DoCheck {
+export class FlBioNetworkComponent implements OnInit, AfterViewInit {
 
   @Input() data: FlBioNetwork | FlBioNetwork[];
 
@@ -45,9 +35,9 @@ export class FlBioNetworkComponent implements OnInit, AfterViewInit, DoCheck {
               private rendererState: FlBioNetworkRendererState) {
   }
 
-  ngDoCheck(): void {
-    console.log('Check');
-  }
+  // ngDoCheck(): void {
+  //   console.log('Check');
+  // }
 
   ngOnInit(): void {
     if (this.data == null) {

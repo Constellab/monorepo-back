@@ -29,7 +29,8 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     export_position_to_json: 'Exporter les positions',
     select_all_pathway: 'Tout sélectionner',
     highlight_pathway: 'Coloriser le pathway',
-    highlight_all_pathway: 'Coloriser tous les pathways sélectionnés'
+    highlight_all_pathway: 'Coloriser tous les pathways sélectionnés',
+    search_node: 'Rechercher un metabolite'
   }
 };
 
@@ -57,7 +58,8 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     export_position_to_json: 'Export positions',
     select_all_pathway: 'Select all',
     highlight_pathway: 'Colorize pathway',
-    highlight_all_pathway: 'Colorize all selected pathways'
+    highlight_all_pathway: 'Colorize all selected pathways',
+    search_node: 'Search metabolite'
   }
 };
 

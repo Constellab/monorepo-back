@@ -15,6 +15,73 @@
   padding-bottom: 0;
 }
 
+.g-no-hint.mat-form-field, .g-no-hint .mat-form-field:not(.g-with-hint) {
+  .mat-form-field-wrapper {
+    padding-bottom: 0.2em;
+  }
+
+  .mat-form-field-underline {
+    bottom: 0.4em;
+  }
+}
+
+@mixin g-compact-form-height {
+  &.mat-form-field-appearance-outline {
+    .mat-form-field-infix {
+      padding-top: 0;
+      padding-bottom: 0.4em;
+    }
+
+    .mat-form-field-label-wrapper {
+      top: -1.6em;
+      padding-top: 1.6em;
+    }
+
+    &.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+      transform: translateY(-.9em) scale(.75);
+      width: 133.33333%;
+    }
+
+    .mat-select-arrow-wrapper {
+      transform: none;
+    }
+
+    .mat-form-field-prefix,
+    .mat-form-field-suffix {
+      margin-top: -5px;
+    }
+
+    .mat-form-field-prefix .mat-icon-button,
+    .mat-form-field-suffix .mat-icon-button {
+      width: 1.5em;
+      height: 1.5em;
+    }
+  }
+}
+
+@mixin g-compact-form-width {
+  .mat-form-field-infix {
+    width: 120px;
+  }
+}
+
+// make a mat-form-field compact in height and width
+.g-compact-form.mat-form-field, .g-compact-form .mat-form-field:not(.g-no-compact-form) {
+  @include g-compact-form-height;
+  @include g-compact-form-width;
+}
+
+// make a mat-form-field compact in height
+.g-compact-form-height.mat-form-field, .g-compact-form-height .mat-form-field:not(.g-no-compact-form) {
+  @include g-compact-form-height;
+}
+
+// make a mat-form-field compact in width
+.g-compact-form-width.mat-form-field, .g-compact-form-width .mat-form-field:not(.g-no-compact-form) {
+  @include g-compact-form-width;
+}
+
+
 
 //////////////////////////////////// BUTTON //////////////////////////////////
 // set the button texts to uppercase

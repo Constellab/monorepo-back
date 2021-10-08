@@ -1,0 +1,10 @@
+<mat-form-field class="search-input g-no-hint">
+  <mat-label>{{'flBioNetwork.search_node' | translate}}</mat-label>
+  <input type="text" matInput [formControl]="searchControl" [matAutocomplete]="auto">
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" [autoActiveFirstOption]="true"
+                    (optionSelected)="selectMetabolite()">
+    <mat-option *ngFor="let metabolite of filteredMetabolite | async" [value]="metabolite">
+      {{metabolite.name}}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

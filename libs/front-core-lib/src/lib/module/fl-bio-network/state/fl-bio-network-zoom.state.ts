@@ -14,6 +14,9 @@ export class FlBioNetworkZoomState implements OnDestroy {
 
   public svg: FlD3SelectionSimple;
   private zoomableElement: FlD3SelectionSimple;
+  private svgWidth: number;
+  private svgHeight: number;
+
   public zoomHandler: ZoomBehavior<any, any>;
 
   private zoom$: BehaviorSubject<ZoomTransform> = new BehaviorSubject(null);
@@ -25,13 +28,20 @@ export class FlBioNetworkZoomState implements OnDestroy {
   // if zoom >= threshold --> text is displayed
   private readonly nodeTextVisibilityThreshold = 0.7;
 
+  // Default zoom scale when zooming to a position
+  private readonly zoomToPositionScale: number = 3;
+
+
   constructor(private ngZone: NgZone) {
   }
 
 
-  public enableZoom(svg: FlD3SelectionSimple, zoomableElement: FlD3SelectionSimple): void {
+  public enableZoom(svg: FlD3SelectionSimple, zoomableElement: FlD3SelectionSimple,
+                    svgWidth: number, svgHeight: number): void {
     this.zoomableElement = zoomableElement;
     this.svg = svg;
+    this.svgWidth = svgWidth;
+    this.svgHeight = svgHeight;
 
     //add zoom capabilities
     this.zoomHandler = d3.zoom()
@@ -71,6 +81,22 @@ export class FlBioNetworkZoomState implements OnDestroy {
       const selection = this.svg.selectAll('.' + flBioNetworkNodeTextClass);
       selection.style('opacity', opacity);
     }
+  }
+
+  /**
+   * Method to zoom to a position
+   * @param posX
+   * @param posY
+   * @param scale zoom scale
+   */
+  public zoomToPosition(posX: number, posY: number, scale: number = this.zoomToPositionScale): void {
+    this.svg.transition()
+      .duration(750)
+      .call(this.zoomHandler.transform,
+        d3.zoomIdentity
+          .translate(this.svgWidth * 0.5 - scale * posX,
+            this.svgHeight * 0.5 - scale * posY)
+          .scale(scale));
   }
 
   // public resetZoom(): void{

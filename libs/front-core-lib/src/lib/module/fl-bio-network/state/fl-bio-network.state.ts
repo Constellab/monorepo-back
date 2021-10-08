@@ -44,7 +44,7 @@ export class FlBioNetworkState implements OnDestroy {
     this.pathwayListCache = {};
 
     // load the db and the list of pathways
-    this.selectDatabase(defaultDb)
+    this.selectDatabase(defaultDb);
 
     this.pathwaySelectionChange$.pipe(
       // use a debounce time to prevent rebuilding the graph to much
@@ -54,6 +54,20 @@ export class FlBioNetworkState implements OnDestroy {
     );
   }
 
+  private initNetworks(networks: FlBioNetwork | FlBioNetwork[]): void {
+    const networksArray: FlBioNetwork[] = ClHelpService.convertObjectOrArrayToArray(networks);
+
+    // set a default name to the networks if they don't have a name
+    for (let i = 0; i < networksArray.length; i++) {
+      if (ClHelpService.isNullOrEmpty(networksArray[i].name)) {
+        networksArray[i].name = this.translateService.translate('flBioNetwork.network') + ' ' + (i + 1);
+      }
+    }
+    this.networks = networksArray;
+  }
+
+  /////////////////////////////////////// NETWORKS /////////////////////////////////////////
+
   public selectNetwork(name: string): void {
     // find the network with the name
     const network: FlBioNetwork = this.networks.find(network => network.name === name);
@@ -61,6 +75,36 @@ export class FlBioNetworkState implements OnDestroy {
     this.pathways$.next([]);
     this.emitPathwaySelectionChange();
   }
+
+  public getSelectedNetwork(): FlBioNetwork {
+    return this.selectedNetwork$.value;
+  }
+
+  /////////////////////////////////////// DATABASE  /////////////////////////////////////////
+
+  public selectDatabase(database: FlPathwayDatabase): void {
+    this.database$.next(database);
+
+    const pathwayList: FlBioNetworkPathwaySelection[] = this.getPathwayList(database);
+    this.pathways$.next(pathwayList);
+
+    // if there is only one pathway, select it by default
+    if (pathwayList.length === 1) {
+      this.selectPathways([pathwayList[0]]);
+    }
+
+    this.emitPathwaySelectionChange();
+  }
+
+  public getDatabase$(): Observable<FlPathwayDatabase> {
+    return this.database$.asObservable();
+  }
+
+  public getDatabase(): FlPathwayDatabase {
+    return this.database$.value;
+  }
+
+  /////////////////////////////////////// PATHWAYS  /////////////////////////////////////////
 
   // select specific pathway in the network to display
   private selectPathways(pathways: FlBioNetworkPathwaySelection[]): void {
@@ -91,15 +135,6 @@ export class FlBioNetworkState implements OnDestroy {
     this.emitPathwaySelectionChange();
   }
 
-  public getChartData$(): Observable<FlBioxNetworkD3 | null> {
-    return this.chartData$.asObservable();
-  }
-
-  public getCurrentChartData(): FlBioxNetworkD3 | null {
-    return this.chartData$.value;
-  }
-
-
   private getPathwayList(database: FlPathwayDatabase): FlBioNetworkPathwaySelection[] {
     if (database == null || this.getSelectedNetwork() == null) {
       return [];
@@ -125,52 +160,9 @@ export class FlBioNetworkState implements OnDestroy {
     return this.pathwayListCache[database];
   }
 
-  public selectDatabase(database: FlPathwayDatabase): void {
-    this.database$.next(database);
-
-    const pathwayList: FlBioNetworkPathwaySelection[] = this.getPathwayList(database);
-    this.pathways$.next(pathwayList);
-
-    // if there is only one pathway, select it by default
-    if (pathwayList.length === 1) {
-      this.selectPathways([pathwayList[0]]);
-    }
-
-    this.emitPathwaySelectionChange();
-  }
 
   public emitPathwaySelectionChange(): void {
     this.pathwaySelectionChange$.next();
-  }
-
-  public getDatabase$(): Observable<FlPathwayDatabase> {
-    return this.database$.asObservable();
-  }
-
-  public getDatabase(): FlPathwayDatabase {
-    return this.database$.value;
-  }
-
-  public getSelectedNetwork(): FlBioNetwork {
-    return this.selectedNetwork$.value;
-  }
-
-  public getCompartments$(): Observable<Record<string, string>> {
-    return this.selectedNetwork$.pipe(
-      map(network => network.compartments)
-    );
-  }
-
-  private initNetworks(networks: FlBioNetwork | FlBioNetwork[]): void {
-    const networksArray: FlBioNetwork[] = ClHelpService.convertObjectOrArrayToArray(networks);
-
-    // set a default name to the networks if they don't have a name
-    for (let i = 0; i < networksArray.length; i++) {
-      if (ClHelpService.isNullOrEmpty(networksArray[i].name)) {
-        networksArray[i].name = this.translateService.translate('flBioNetwork.network') + ' ' + (i + 1);
-      }
-    }
-    this.networks = networksArray;
   }
 
   public getPathways$(): Observable<FlBioNetworkPathwaySelection[]> {
@@ -179,6 +171,25 @@ export class FlBioNetworkState implements OnDestroy {
 
   public getCurrentPathways(): FlBioNetworkPathwaySelection[] {
     return this.pathways$.value;
+  }
+
+
+  /////////////////////////////////////// CHART DATA /////////////////////////////////////////
+  public getChartData$(): Observable<FlBioxNetworkD3 | null> {
+    return this.chartData$.asObservable();
+  }
+
+  public getCurrentChartData(): FlBioxNetworkD3 | null {
+    return this.chartData$.value;
+  }
+
+
+  /////////////////////////////////////// OTHER /////////////////////////////////////////
+
+  public getCompartments$(): Observable<Record<string, string>> {
+    return this.selectedNetwork$.pipe(
+      map(network => network.compartments)
+    );
   }
 
 

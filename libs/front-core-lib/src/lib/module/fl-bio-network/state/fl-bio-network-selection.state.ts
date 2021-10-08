@@ -7,6 +7,7 @@ import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlBioNetworkMetabolite, FlBioNetworkPathwaySelection} from '../model/fl-bio-network.class';
 import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
 import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
+import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
 
 /**
  * Class to manage the selection in the {@link FlBioNetworkComponent}
@@ -26,7 +27,8 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
   private subscription: Subscription;
 
-  constructor(private drawerState: FlBioNetworkDrawerState) {
+  constructor(private drawerState: FlBioNetworkDrawerState,
+              private zoomState: FlBioNetworkZoomState) {
   }
 
 
@@ -47,12 +49,23 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
   /**
    * Select the nodes and direct links and hide all other node and links
-   * @param nodeIndex
+   * @param node
+   * @param zoomToNode if true we automatically zoom to node
    */
-  public selectNodeAndDirectLinks(nodeIndex: number): void {
+  public selectNodeAndDirectLinks(node: FlBioNetworkD3Node, zoomToNode: boolean = false): void {
     if (!this.isReady()) return;
 
-    this.selectNodesAndDirectLinks([nodeIndex]);
+    this.selectNodesAndDirectLinks([node.index]);
+
+    // open the drawer with detail
+    this.drawerState.newAction({
+      action: 'nodeDetail',
+      selectedNode: node
+    });
+
+    if (zoomToNode) {
+      this.zoomState.zoomToPosition(node.x, node.y);
+    }
   }
 
   public selectNodesAndDirectLinks(nodesIndexes: number[]): void {

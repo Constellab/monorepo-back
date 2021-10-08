@@ -9,6 +9,7 @@ export * from './component/fl-bio-network-config/fl-bio-network-config.component
 export * from './component/fl-bio-network-drawer/fl-bio-network-drawer.component';
 export * from './component/fl-bio-network-node-detail/fl-bio-network-node-detail.component';
 export * from './component/fl-bio-network-node-links/fl-bio-network-node-links.component';
+export * from './component/fl-bio-network-node-search/fl-bio-network-node-search.component';
 export * from './component/fl-bio-network-selection-info/fl-bio-network-selection-info.component';
 export * from './component/fl-bio-network-zoom/fl-bio-network-zoom.component';
 

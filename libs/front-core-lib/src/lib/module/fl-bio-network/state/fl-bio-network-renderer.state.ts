@@ -87,7 +87,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
         this.initLinks(this.linkColorLogarithm);
         this.initNodes();
         this.defineArrowMarker();
-        this.zoomState.enableZoom(this.svg, this.mainGroup);
+        this.zoomState.enableZoom(this.svg, this.mainGroup, this.chartWidth, this.chartHeight);
         this.launchSimulation();
 
         // speed up the simulation to quickly end it
@@ -211,13 +211,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       ClHelpService.stopEventPropagation(mouseEvent);
 
       // select the nodes and its connections
-      this.selectionState.selectNodeAndDirectLinks(clickedNode.index);
-
-      // open the drawer with detail
-      this.drawerState.newAction({
-        action: 'nodeDetail',
-        selectedNode: clickedNode
-      });
+      this.selectionState.selectNodeAndDirectLinks(clickedNode);
     };
   }
 
