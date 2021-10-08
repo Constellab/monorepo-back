@@ -19,29 +19,32 @@ export class FlBioNetworkGridState {
   private xAxisTick: AxisTick;
   private yAxisTick: AxisTick;
 
+  // threshold when rounding a position to the grid
+  private gridRoundPosThreshold: number = 0.15;
+  private gridSize: number = 15000;
+
   constructor() {
   }
 
   public initGrid(axisGroup: FlD3SelectionSimple): void {
-    const size: number = 10000;
     const xScale = d3.scaleLinear()
-      .domain([-size / 2, size / 2])
-      .range([0, size]);
+      .domain([-this.gridSize / 2, this.gridSize / 2])
+      .range([0, this.gridSize]);
 
     const yScale = d3.scaleLinear()
-      .domain([-size / 2, size / 2])
-      .range([size, 0]);
+      .domain([-this.gridSize / 2, this.gridSize / 2])
+      .range([this.gridSize, 0]);
     const gridXAxis = d3.axisBottom(xScale)
-      .ticks(size / 20)
+      .ticks(this.gridSize / 20)
       .tickFormat(() => '')
-      .tickSize(size);
+      .tickSize(this.gridSize);
     const gridYAxis = d3.axisRight(yScale)
-      .ticks(size / 20)
+      .ticks(this.gridSize / 20)
       .tickFormat(() => '')
-      .tickSize(size);
+      .tickSize(this.gridSize);
 
 
-    const translate = `translate(-${size/2}, -${size/2})`
+    const translate = `translate(-${this.gridSize / 2}, -${this.gridSize / 2})`;
     axisGroup.append('g')
       .attr('class', 'axis axis-x')
       .attr('transform', translate)
@@ -90,25 +93,27 @@ export class FlBioNetworkGridState {
   private roundToAxisTick(position: number, axis: 'x' | 'y'): number | null {
     const tickInfo: AxisTick = axis === 'x' ? this.xAxisTick : this.yAxisTick;
 
-    let closestTick: number = tickInfo.start;
-    let diff: number = Math.abs(position - closestTick);
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const newDiff = Math.abs(position - (closestTick + tickInfo.size));
-      if (diff > newDiff) {
-        diff = newDiff;
-        closestTick += tickInfo.size;
-      } else {
-        break;
-      }
-    }
+
+    // get diff between left tick and position
+    const firstDiff = Math.abs((position - tickInfo.start) % tickInfo.size);
+    // retrieve the tick index
+    const tickIndex: number = Math.trunc((position - tickInfo.start) / tickInfo.size);
 
     // it needs a diff of 15% or less than the tick size to automatically round the position
-    if (diff / tickInfo.size < 0.15) {
-      return closestTick;
-    } else {
-      return null;
+    if (firstDiff / tickInfo.size < this.gridRoundPosThreshold) {
+      // convert tick index to position
+      return tickIndex * tickInfo.size + tickInfo.start;
     }
+
+    // check the next tick
+    const secondDiff = Math.abs(tickInfo.size - firstDiff);
+    if (secondDiff / tickInfo.size < this.gridRoundPosThreshold) {
+      const nextTick = tickIndex < 0 ? -1 : +1;
+      // convert tick index to position
+      return (tickIndex + nextTick) * tickInfo.size + tickInfo.start;
+    }
+
+    return null;
   }
 
   // return tick size and first tick pos for an axis
