@@ -4,7 +4,7 @@ import {ZoomBehavior, ZoomTransform} from 'd3-zoom';
 import * as d3 from 'd3';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
-import {flBioNetworkNodeTextClass} from '../model/fl-bio-network-d3.class';
+import {flBioNetworkNodeTextClass} from '../model/fl-bio-network-d3-node.class';
 
 /**
  * State to manage the zoom in the {@link FlBioNetworkComponent}

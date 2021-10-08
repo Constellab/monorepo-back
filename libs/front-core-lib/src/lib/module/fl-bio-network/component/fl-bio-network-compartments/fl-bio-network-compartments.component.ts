@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@an
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import {flBioNetworkGetCompartmentColor} from '../../model/fl-bio-network-d3.class';
+import {flBioNetworkGetCompartmentColor} from '../../model/fl-bio-network-d3-node.class';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 
 interface FlCompartmentWithColor {

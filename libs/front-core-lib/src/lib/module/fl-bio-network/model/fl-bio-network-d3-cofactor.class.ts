@@ -1,12 +1,15 @@
 import {FlBioNetworkMetabolite} from './fl-bio-network.class';
 import {FlCoord, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {select} from 'd3';
-import {FlBioNetworkD3Node} from './fl-bio-network-d3.class';
+import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 
 // size for the cofactor losange
 export const flBioNetworkCofactorSize: number = 5;
 
 export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
+
+  public data: FlBioNetworkMetabolite;
+
   constructor(id: string, name: string, data: FlBioNetworkMetabolite) {
     super(id, name, 'cofactor', '#ffaa33', data);
   }
@@ -29,17 +32,22 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
       flBioNetworkCofactorSize, flBioNetworkCofactorSize / 2);
   }
 
-  setCenter(coord: FlCoord): void {
-    this.fx = coord.x - (flBioNetworkCofactorSize / 2);
-    this.fy = coord.y - (flBioNetworkCofactorSize / 2);
-  }
 
-  convertToCenterCoord(coord: FlCoord): FlCoord {
+  convertFromCenterCoord(coord: FlCoord): FlCoord {
     return {
       x: coord.x + (flBioNetworkCofactorSize / 2),
       y: coord.y + (flBioNetworkCofactorSize / 2),
     };
   }
+
+  convertToCenterCoord(coord: FlCoord): FlCoord {
+    return {
+      x: coord.x - (flBioNetworkCofactorSize / 2),
+      y: coord.y - (flBioNetworkCofactorSize / 2),
+    };
+  }
+
+
 
 
 }

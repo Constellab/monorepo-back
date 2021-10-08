@@ -1,4 +1,4 @@
-import {FlBioNetworkD3Node} from './fl-bio-network-d3.class';
+import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 
 // different possible actions for the drawer
 export type FlBioNetworkDrawerActionName = 'nodeDetail' | 'config';

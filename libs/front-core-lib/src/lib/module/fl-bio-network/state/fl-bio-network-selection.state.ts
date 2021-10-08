@@ -1,11 +1,11 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
-import {FlBioNetworkD3Node, flBioNetworkNodeClass} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3Node, flBioNetworkNodeClass} from '../model/fl-bio-network-d3-node.class';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.class';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlBioNetworkMetabolite, FlBioNetworkPathwaySelection} from '../model/fl-bio-network.class';
-import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
+import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
 import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
 
@@ -55,7 +55,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   public selectNodeAndDirectLinks(node: FlBioNetworkD3Node, zoomToNode: boolean = false): void {
     if (!this.isReady()) return;
 
-    this.selectNodesAndDirectLinks([node.index]);
+    this.selectNodesAndDirectLinks([node.id]);
 
     // open the drawer with detail
     this.drawerState.newAction({
@@ -68,10 +68,10 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     }
   }
 
-  public selectNodesAndDirectLinks(nodesIndexes: number[]): void {
+  public selectNodesAndDirectLinks(nodeIds: string[]): void {
     if (!this.isReady()) return;
 
-    const links: FlBioNetworkD3Link[] = this.getConnectedLinks(nodesIndexes);
+    const links: FlBioNetworkD3Link[] = this.getConnectedLinks(nodeIds);
 
     // select the connected links
     this.selectLinksFromList(links);
@@ -119,12 +119,12 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     }
 
     // get all the metabolites indexes in the compartments
-    const nodesIndexes: number[] = this.data.getMetabolitesNodes().filter(
+    const nodeIds: string[] = this.data.getMetabolitesNodes().filter(
       (node) =>
         compartments.includes((node.data as FlBioNetworkMetabolite).compartment)
-    ).map(node => node.index);
+    ).map(node => node.id);
 
-    const links: FlBioNetworkD3Link[] = this.getConnectedLinks(nodesIndexes);
+    const links: FlBioNetworkD3Link[] = this.getConnectedLinks(nodeIds);
 
     // select the connected links
     this.selectLinksFromList(links);
@@ -150,10 +150,10 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
     // retrieve all the reaction of the pathway
     const reactions: FlBioNetworkD3Node[] = this.data.getReactionsOfPathway(pathway.id);
-    const reactionsIndexes: number[] = reactions.map(reaction => reaction.index);
+    const reactionsIds: string[] = reactions.map(reaction => reaction.id);
 
-    const links: FlD3SelectionSimple<FlBioNetworkD3Link> = this.getConnectedLinksSelection(reactionsIndexes);
-    const reactionSelection: FlD3SelectionSimple<FlBioNetworkD3Node> = this.getNodeSelection(reactionsIndexes);
+    const links: FlD3SelectionSimple<FlBioNetworkD3Link> = this.getConnectedLinksSelection(reactionsIds);
+    const reactionSelection: FlD3SelectionSimple<FlBioNetworkD3Node> = this.getNodeSelection(reactionsIds);
 
     // if the pathway was not highlighted
     if (!pathway.highlighted) {
@@ -168,15 +168,15 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
 
   // return all the directly connected node of the node
-  private getConnectedLinks(nodesIndexes: number[]): FlBioNetworkD3Link[] {
+  private getConnectedLinks(nodeIds: string[]): FlBioNetworkD3Link[] {
     return this.data.links
       // filter the link directly connected
-      .filter(link => nodesIndexes.includes(link.target.index) || nodesIndexes.includes(link.source.index));
+      .filter(link => nodeIds.includes(link.target.id) || nodeIds.includes(link.source.id));
   }
 
   private selectLinksFromList(links: FlBioNetworkD3Link[]): void {
     this.links.style('opacity', (link: FlBioNetworkD3Link) =>
-      links.findIndex(l => l.index === link.index) !== -1 ? 1 : this.hiddenOpacity);
+      links.findIndex(l => l.id === link.id) !== -1 ? 1 : this.hiddenOpacity);
   }
 
   // select all the nodes connected to the links and return the node list
@@ -184,7 +184,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     const nodes: FlBioNetworkD3Node[] = [];
     this.nodesContainer.style('opacity', (node: FlBioNetworkD3Node) => {
       // is the node is connected to one of the links
-      if (links.findIndex(l => l.isLinkedToNode(node.index)) !== -1) {
+      if (links.findIndex(l => l.isLinkedToNode(node.id)) !== -1) {
         nodes.push(node); // save the node
         return 1;
       } else {
@@ -195,13 +195,13 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   }
 
   // select all the nodes connected to the links and return the node list
-  private getNodeSelection(nodesIndexes: number[]): FlD3SelectionSimple<FlBioNetworkD3Node> {
-    return this.nodes.filter((node: FlBioNetworkD3Node) => nodesIndexes.includes(node.index));
+  private getNodeSelection(nodesIds: string[]): FlD3SelectionSimple<FlBioNetworkD3Node> {
+    return this.nodes.filter((node: FlBioNetworkD3Node) => nodesIds.includes(node.id));
   }
 
   // return all the directly connected node of the node
-  private getConnectedLinksSelection(nodesIndexes: number[]): FlD3SelectionSimple<FlBioNetworkD3Link> {
-    return this.links.filter((link: FlBioNetworkD3Link) => link.isLinkedToAnyNode(nodesIndexes));
+  private getConnectedLinksSelection(nodeIds: string[]): FlD3SelectionSimple<FlBioNetworkD3Link> {
+    return this.links.filter((link: FlBioNetworkD3Link) => link.isLinkedToAnyNode(nodeIds));
   }
 
 

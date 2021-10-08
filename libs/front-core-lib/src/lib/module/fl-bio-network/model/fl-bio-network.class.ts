@@ -1,3 +1,5 @@
+import {FlCoord} from '../../fl-chart/model/fl-d3.class';
+
 /**
  * Complete Structured data of a pathway
  */
@@ -16,6 +18,7 @@ export interface FlBioNetworkMetabolite {
   mass?: any;
   formula?: string;
   chebi_id?: string;
+  position?: FlCoord;
 }
 
 export interface FlBioNetworkReaction {
@@ -26,6 +29,7 @@ export interface FlBioNetworkReaction {
   upper_bound?: number;
   enzyme?: FlBioNetworkEnzyme;
   estimate: FlBioNetworkReactionEstimate;
+  position?: FlCoord;
 }
 
 // Information about the enzyme in the reaction
@@ -75,7 +79,7 @@ export const flDefaultPathwayReactionValue: FlBioNetworkReactionEstimate = {
 };
 
 export const flDefaultPathway: FlBioNetworkPathwayDetail = {
-  id: 'None',
-  name: 'None'
+  id: 'Default',
+  name: 'Default'
 };
 

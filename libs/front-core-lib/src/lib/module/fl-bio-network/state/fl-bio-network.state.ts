@@ -7,7 +7,7 @@ import {FlBioNetworkHelper} from '../utils/fl-bio-network.helper';
 import {debounceTime, map} from 'rxjs/operators';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 import {FlThemeService} from '../../../service/fl-theme.service';
-import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
+import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 
 

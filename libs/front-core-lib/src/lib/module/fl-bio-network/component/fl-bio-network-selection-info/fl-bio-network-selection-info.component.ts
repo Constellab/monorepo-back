@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {FlBioNetworkSelectionEvent} from '../../model/fl-bio-network-selection.class';
 import {map} from 'rxjs/operators';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3-network.class';
+import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3.class';
 
 interface SelectionInfo {
   metabolites?: number;

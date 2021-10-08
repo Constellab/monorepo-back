@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import {Simulation} from 'd3-force';
 import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {ScaleLinear} from 'd3-scale';
-import {FlBioNetworkD3Node} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3Node} from '../model/fl-bio-network-d3-node.class';
 import {FlD3DragEvent, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
@@ -11,11 +11,11 @@ import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {FlBioNetworkState} from './fl-bio-network.state';
 import {FlBioNetworkSelectionState} from './fl-bio-network-selection.state';
 import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
-import {FlBioNetworkExportPosition} from '../model/fl-bio-network-export.class';
 import {FlBioNetworkGridState} from './fl-bio-network-grid.state';
-import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
+import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
 import {flBioNetworkReactionMaxValue} from '../model/fl-bio-network-d3-reaction.class';
+import {FlBioNetwork} from '../model/fl-bio-network.class';
 
 /**
  * State to manager the drawing of bio network using d3
@@ -31,15 +31,20 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
   private svg: FlD3SelectionSimple;
   private mainGroup: FlD3SelectionSimple;
+  private nodeGroup: FlD3SelectionSimple;
+  private linkGroup: FlD3SelectionSimple;
+
 
   private nodesContainer: FlD3SelectionSimple<FlBioNetworkD3Node>;
   private links: FlD3SelectionSimple<FlBioNetworkD3Link>;
 
+  private enableSimulation: boolean = false;
   private simulation: Simulation<FlBioNetworkD3Node, any>;
   private simulationEnded: boolean = false;
 
   // if true the link colors switch to logarithm
   private linkColorLogarithm: boolean;
+  private showCofactor: boolean = false;
 
   private readonly subscriptions = new ClSubscriptionHandler();
 
@@ -62,7 +67,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
   public init(htmlContainer: HTMLElement, slideLinkColorToggle: boolean): void {
     this.htmlContainer = htmlContainer;
     this.chartWidth = htmlContainer.clientWidth;
-    // set height minus 10 to avoid scrollbar
     this.chartHeight = htmlContainer.clientHeight;
     this.linkColorLogarithm = slideLinkColorToggle;
 
@@ -74,6 +78,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
   private drawNetwork(chartData: FlBioxNetworkD3): void {
     // run the d3 rendering outside ng zone to avoir ng check
     this.ngZone.runOutsideAngular(() => {
+
       if (this.svg != null) {
         this.clearNetwork();
       }
@@ -81,18 +86,32 @@ export class FlBioNetworkRendererState implements OnDestroy {
       this.data = chartData;
 
       if (chartData) {
+        this.enableSimulation = !chartData.hasPosition();
+        this.simulationEnded = !this.enableSimulation;
+        console.log('Enable simulation :', this.enableSimulation);
+
+        // if there is no simulation init all position to avoid error
+        if (!this.enableSimulation) {
+          this.data.initPositions();
+        }
+
         this.initSVG();
-        this.initSimulation();
+
+
         this.gridState.initGrid(this.mainGroup);
         this.initLinks(this.linkColorLogarithm);
         this.initNodes();
         this.defineArrowMarker();
         this.zoomState.enableZoom(this.svg, this.mainGroup, this.chartWidth, this.chartHeight);
-        this.launchSimulation();
 
-        // speed up the simulation to quickly end it
-        this.simulation.tick(1000);
-        this.simulation.on('end', () => this.endSimulation());
+        if (this.enableSimulation) {
+          this.initSimulation();
+          this.launchSimulation();
+
+          // speed up the simulation to quickly end it
+          this.simulation.tick(1000);
+          this.simulation.on('end', () => this.endSimulation());
+        }
 
         // init the selection state
         this.selectionState.init(chartData, this.nodesContainer, this.links);
@@ -111,42 +130,32 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .attr('class', 'everything');
   }
 
-  private initSimulation(): void {
-    this.simulation = d3.forceSimulation(this.data.getAllNodes())
-      .force('link',
-        d3.forceLink(this.data.links).distance(100)
-          .id((d: FlBioNetworkD3Node) => d.id)
-      )
-      .force('charge', d3.forceManyBody().strength(-40))
-      .force('center', d3.forceCenter(this.chartWidth / 2, this.chartHeight / 2))
-      .force('collide', d3.forceCollide().radius(this.collideRadius));
-  }
-
-  private launchSimulation(): void {
-    this.simulation.on('tick', () => {
-
-      // refresh link points
-      this.links.attr('points', (d: FlBioNetworkD3Link) => d.getPolylinePoints());
-
-      // refresh nodes positions
-      this.nodesContainer.attr('transform',
-        (d: FlBioNetworkD3Node) => 'translate(' + d.x + ',' + d.y + ')'
-      );
-    });
-
-    // todo voir ce que c'est a appeler au onDestroy?
-    // invalidation.then(() => simulation.stop());
-  }
 
   private initNodes(): void {
-    this.nodesContainer = this.mainGroup.append('g')
+    const nodeGroup: string = 'node-group';
+
+    if (!this.nodeGroup) {
+      this.nodeGroup = this.mainGroup.insert('g').attr('class', nodeGroup);
+    } else {
+      // if the link group already exist, clean all the links
+      // use .selectAll('*') instead of select children because select children does select all
+      this.nodeGroup.selectAll('*').remove();
+    }
+
+    const nodes: FlBioNetworkD3Node[] = this.showCofactor ? this.data.getAllNodes() : this.data.getMetabolitesAndReactions();
+    const drag: any = d3.drag()
+      .on('drag', (d) => this.dragNode(d));
+    this.nodesContainer = this.nodeGroup
       .selectAll('g')
-      .data(this.data.getAllNodes())
+      .data(nodes)
       .join('g')
-      .call(this.drag(this.simulation))
+      .call(drag)
       .style('cursor', 'pointer')
       .on('click', this.onNodeClicked());
 
+    if (this.simulationEnded) {
+      this.nodesContainer.attr('transform', d => `translate(${d.x},${d.y})`);
+    }
 
     const textColor: string = this.textColor;
     const backgroundColor: string = this.backgroundColor;
@@ -155,50 +164,57 @@ export class FlBioNetworkRendererState implements OnDestroy {
     });
   }
 
+  private dragNode(dragEvent: FlD3DragEvent<FlBioNetworkD3Node>): void {
+    // use to round the position based on grid if closed enough
+    const roundedCoord = this.gridState.roundCoordOnGrid(dragEvent.subject.convertFromCenterCoord(dragEvent));
+
+    if (roundedCoord) {
+      dragEvent.subject.setCenter(roundedCoord);
+    } else {
+      dragEvent.subject.setPosition(dragEvent);
+    }
+
+    // refresh nodes positions
+    this.nodesContainer
+      .filter((d) => d.id === dragEvent.subject.id)
+      .attr('transform',
+        (d: FlBioNetworkD3Node) => 'translate(' + d.x + ',' + d.y + ')'
+      );
+
+    // refresh link points
+    this.links
+      .filter((d) => d.isLinkedToNode(dragEvent.subject.id))
+      .attr('points', (d: FlBioNetworkD3Link) => d.getPolylinePoints());
+  }
+
 
   private initLinks(logarithmColor: boolean): void {
-    this.links = this.mainGroup.append('g')
+    const linkGroupClass: string = 'link-group';
+    if (!this.linkGroup) {
+      this.linkGroup = this.mainGroup.insert('g').attr('class', linkGroupClass);
+    } else {
+      // if the link group already exist, clean all the links
+      this.linkGroup.selectAll('*').remove();
+    }
+
+
+    const links: FlBioNetworkD3Link[] = this.showCofactor ? this.data.links : this.data.getMetaboliteLinks();
+    this.links = this.linkGroup
       .selectAll('polyline')
-      .data(this.data.links)
+      .data(links)
       .join('polyline')
       .attr('stroke-opacity', 0.9)
       .attr('stroke-width', (d: FlBioNetworkD3Link) => d.absLog10Value + 1)
-      .attr('marker-mid', 'url(#mid_arrow)') as any;
+      .attr('marker-mid', 'url(#mid_arrow)');
+
+    // preset the position only if we are not in a simulation
+    if (this.simulationEnded) {
+      this.links.attr('points', (d: FlBioNetworkD3Link) => d.getPolylinePoints());
+    }
 
     this.setLinksColors(logarithmColor);
   }
 
-  private drag = (simulation: any): any => {
-    const gridState: FlBioNetworkGridState = this.gridState;
-
-    function dragStarted(event: FlD3DragEvent<FlBioNetworkD3Node>): void {
-      if (!event.active) simulation.alphaTarget(0.3).restart();
-      event.subject.fx = event.subject.x;
-      event.subject.fy = event.subject.y;
-    }
-
-    function dragged(event: FlD3DragEvent<FlBioNetworkD3Node>): void {
-      const roundedCoord = gridState.roundCoordOnGrid(event.subject.convertToCenterCoord(event));
-
-      if (roundedCoord) {
-        event.subject.setCenter(roundedCoord);
-      } else {
-        event.subject.fx = event.x;
-        event.subject.fy = event.y;
-      }
-    }
-
-    function dragEnded(event: any): void {
-      if (!event.active) simulation.alphaTarget(0);
-      event.subject.fx = null;
-      event.subject.fy = null;
-    }
-
-    return d3.drag()
-      .on('start', dragStarted)
-      .on('drag', dragged)
-      .on('end', dragEnded);
-  };
 
   /**
    * Update the opacity of node and link not connected to clicked node
@@ -269,6 +285,35 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .style('stroke', 'none');
   }
 
+  /////////////////////////////////////////// SIMULATION ////////////////////////////////////
+
+  private initSimulation(): void {
+    this.simulation = d3.forceSimulation(this.data.getAllNodes())
+      .force('link',
+        d3.forceLink(this.data.links).distance(100)
+          .id((d: FlBioNetworkD3Node) => d.id)
+      )
+      .force('charge', d3.forceManyBody().strength(-40))
+      .force('center', d3.forceCenter(this.chartWidth / 2, this.chartHeight / 2))
+      .force('collide', d3.forceCollide().radius(this.collideRadius));
+  }
+
+  private launchSimulation(): void {
+    this.simulation.on('tick', () => {
+
+      // refresh link points
+      this.links.attr('points', (d: FlBioNetworkD3Link) => d.getPolylinePoints());
+
+      // refresh nodes positions
+      this.nodesContainer.attr('transform',
+        (d: FlBioNetworkD3Node) => 'translate(' + d.x + ',' + d.y + ')'
+      );
+    });
+
+    // todo voir ce que c'est a appeler au onDestroy?
+    // invalidation.then(() => simulation.stop());
+  }
+
   // disable all force so the user can move the node independently
   private endSimulation(): void {
     if (!this.simulationEnded) {
@@ -279,45 +324,69 @@ export class FlBioNetworkRendererState implements OnDestroy {
       this.simulation.force('collide', null);
       this.simulation.stop();
       this.simulationEnded = true;
+      // save the new positions
+      this.data.savePositions();
     }
   }
+
 
   // clear the d3 selections and reset simulation
   private clearNetwork(): void {
     this.svg.remove();
     this.svg = null;
     this.mainGroup = null;
+    this.linkGroup = null;
+    this.nodeGroup = null;
     this.links = null;
     this.nodesContainer = null;
     this.simulationEnded = false;
   }
 
 
-  public exportPositions(): FlBioNetworkExportPosition {
-    const position: FlBioNetworkExportPosition = {
-      metabolites: [],
-      reactions: []
-    };
-
-    position.metabolites = this.data.metabolites.map(node => {
-      const coord = node.getCenter();
-      return {
-        x: coord.x,
-        y: coord.y,
-        id: node.data.chebi_id
-      };
-    });
-    position.reactions = this.data.reactions.map(node => {
-      const coord = node.getCenter();
-      return {
-        x: coord.x,
-        y: coord.y,
-        id: node.data.id
-      };
-    });
-    return position;
+  public toggleCofactors(showCofactor: boolean): void {
+    if (this.showCofactor != showCofactor) {
+      this.showCofactor = showCofactor;
+      this.initNodes();
+      this.initLinks(this.linkColorLogarithm);
+    }
   }
 
+
+  public exportAllNetwork(): FlBioNetwork {
+    const network: FlBioNetwork = {
+      metabolites: [],
+      reactions: [],
+      compartments: this.state.getSelectedNetwork().compartments,
+      name: this.state.getSelectedNetwork().name
+    };
+
+    network.metabolites = this.data.metabolites.map(node => {
+      return node.data;
+    });
+    network.reactions = this.data.reactions.map(node => {
+      return node.data;
+    });
+
+    // add cofactor metabolite and check if there the metabolite was not already added (because cofactor are duplicated)
+    // don't send position
+    for (const cofactorD3 of this.data.cofactors) {
+      const cofactor = cofactorD3.data;
+      if (network.metabolites.findIndex(metabolite => metabolite.id === cofactor.id) === -1) {
+        network.metabolites.push(cofactor);
+      }
+    }
+
+
+    return network;
+  }
+
+  public getLinkColorLogarithm(): boolean {
+    return this.linkColorLogarithm;
+  }
+
+  public getShowCofactor(): boolean {
+    return this.showCofactor;
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

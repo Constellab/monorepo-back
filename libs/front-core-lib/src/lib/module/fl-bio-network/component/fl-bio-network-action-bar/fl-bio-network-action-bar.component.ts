@@ -4,9 +4,9 @@ import {FlBioNetworkRendererState} from '../../state/fl-bio-network-renderer.sta
 import {MatSliderChange} from '@angular/material/slider';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {filter} from 'rxjs/operators';
-import {FlBioNetworkExportPosition} from '../../model/fl-bio-network-export.class';
 import {FlFileHelper} from '../../../../service/fl-file.helper';
-import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3-network.class';
+import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3.class';
+import {FlBioNetwork} from '../../model/fl-bio-network.class';
 
 /**
  * Component inside the {@link FlBioNetworkComponent} to show the quick actions
@@ -25,7 +25,8 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   linksMaxAbsValue: number;
 
   // if true the link colors switch to logarithm
-  slideLinkColorToggle: boolean = false;
+  linkColorLogarithm: boolean = false;
+  showCofactor: boolean = false;
 
   constructor(private cdr: ChangeDetectorRef,
               private state: FlBioNetworkState,
@@ -34,6 +35,8 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.linkColorLogarithm = this.rendererState.getLinkColorLogarithm();
+    this.showCofactor = this.rendererState.getShowCofactor();
     this.state.getChartData$().subscribe(
       chartData => this.onNewData(chartData)
     );
@@ -60,7 +63,11 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
 
   setLinksColors(): void {
-    this.rendererState.setLinksColors(this.slideLinkColorToggle);
+    this.rendererState.setLinksColors(this.linkColorLogarithm);
+  }
+
+  toggleShowCofactor(): void {
+    this.rendererState.toggleCofactors(this.showCofactor);
   }
 
   // set opacity to 0.1 to link where abs value is lower than slider value
@@ -75,14 +82,17 @@ export class FlBioNetworkActionBarComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  get slideLinkColorToggleText(): string {
-    return this.slideLinkColorToggle ? 'flBioNetwork.link_color_log' : 'flBioNetwork.link_color_normal';
-  }
 
-  exportPositionToJson(): void {
-    const positions: FlBioNetworkExportPosition = this.rendererState.exportPositions();
+  exportAllNetwork(): void {
+    const network: FlBioNetwork = this.rendererState.exportAllNetwork();
 
-    FlFileHelper.downloadJsonFile(positions, 'network.json');
+    // TODO to remove, this is temporary to export a view object
+    const viewObject = {
+      type: 'network-view',
+      data: network
+    }
+
+    FlFileHelper.downloadJsonFile(viewObject, 'network.json');
   }
 
 

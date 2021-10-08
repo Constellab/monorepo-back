@@ -1,7 +1,7 @@
 import {FlBioNetworkReaction} from './fl-bio-network.class';
 import {FlCoord, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {select} from 'd3';
-import {FlBioNetworkD3Node} from './fl-bio-network-d3.class';
+import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 
 // size for the reaction rect
 export const flBioNetworkReactionWidth: number = 8;
@@ -51,17 +51,20 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
   }
 
 
-  setCenter(coord: FlCoord): void {
-    this.fx = coord.x - (flBioNetworkReactionWidth / 2);
-    this.fy = coord.y - (flBioNetworkReactionHeight / 2);
-  }
-
-  convertToCenterCoord(coord: FlCoord): FlCoord {
+  convertFromCenterCoord(coord: FlCoord): FlCoord {
     return {
       x: coord.x + (flBioNetworkReactionWidth / 2),
       y: coord.y + (flBioNetworkReactionHeight / 2)
     };
   }
+
+  convertToCenterCoord(coord: FlCoord): FlCoord {
+    return {
+      x: coord.x - (flBioNetworkReactionWidth / 2),
+      y: coord.y - (flBioNetworkReactionHeight / 2)
+    };
+  }
+
 
   public isInPathway(id: string): boolean {
     return this.pathwayIds.includes(id);

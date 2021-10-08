@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FlExternalLinkService} from '../../../../service/fl-external-link.service';
-import {FlBioNetworkD3Node} from '../../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3Node} from '../../model/fl-bio-network-d3-node.class';
 
 interface Link {
   link: string;

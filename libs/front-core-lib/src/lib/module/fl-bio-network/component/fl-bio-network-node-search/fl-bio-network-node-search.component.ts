@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {Observable, Subscription} from 'rxjs';
-import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3-network.class';
+import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Metabolite} from '../../model/fl-bio-network-d3-metabolite.class';
 import {FormControl} from '@ngneat/reactive-forms';
 import {map, startWith} from 'rxjs/operators';
@@ -48,7 +48,11 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
   }
 
   private onNewChartData(bioNetwork: FlBioxNetworkD3): void {
-    this.metabolites = bioNetwork.metabolites;
+    if (bioNetwork) {
+      this.metabolites = bioNetwork.metabolites;
+    } else {
+      this.metabolites = [];
+    }
     this.searchControl.patchValue('');
     this.cdr.markForCheck();
   }

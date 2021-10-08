@@ -19,15 +19,21 @@
 
   <fl-bio-network-compartments></fl-bio-network-compartments>
 
-  <mat-slide-toggle [(ngModel)]="slideLinkColorToggle" (change)="setLinksColors()" color="primary">
-    {{slideLinkColorToggleText | translate}}
-  </mat-slide-toggle>
+  <div fxLayout="column">
+    <mat-checkbox [(ngModel)]="linkColorLogarithm" (change)="setLinksColors()" color="primary">
+      {{'flBioNetwork.link_color_log' | translate}}
+    </mat-checkbox>
+
+    <mat-checkbox [(ngModel)]="showCofactor" (change)="toggleShowCofactor()" color="primary">
+      {{'flBioNetwork.toggle_show_cofactor' | translate}}
+    </mat-checkbox>
+  </div>
 
   <fl-bio-network-selection-info class="g-full-height"></fl-bio-network-selection-info>
 
   <fl-bio-network-node-search></fl-bio-network-node-search>
 
-  <button mat-icon-button (click)="exportPositionToJson()" type="button" color="primary"
+  <button mat-icon-button (click)="exportAllNetwork()" type="button" color="primary"
           [matTooltip]="'flBioNetwork.export_position_to_json' | translate">
     <mat-icon>file_download</mat-icon>
   </button>

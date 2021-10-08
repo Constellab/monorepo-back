@@ -1,4 +1,4 @@
-import {FlBioNetworkD3Node} from './fl-bio-network-d3.class';
+import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 import {FlBioNetworkD3Link} from './fl-bio-network-d3-link.class';
 
 /**

@@ -1,5 +1,5 @@
 import {select} from 'd3';
-import {FlBioNetworkD3Node} from './fl-bio-network-d3.class';
+import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 import {FlBioNetworkMetabolite} from './fl-bio-network.class';
 import {FlCoord, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 
@@ -31,13 +31,13 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
     return this.drawTextUnder(element, textColor, backgroundColor, '0.5em', flBioNetworkMetaboliteRadius);
   }
 
-  setCenter(coord: FlCoord): void {
-    this.fx = coord.x;
-    this.fy = coord.y;
+  convertFromCenterCoord(coord: FlCoord): FlCoord {
+    return coord;
   }
 
   convertToCenterCoord(coord: FlCoord): FlCoord {
     return coord;
   }
+
 
 }

@@ -5,12 +5,12 @@ import {
   FlBioNetworkReactionEstimate,
   FlPathwayDatabase
 } from '../model/fl-bio-network.class';
-import {flBioNetworkGetCompartmentColor,} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3Node, flBioNetworkGetCompartmentColor,} from '../model/fl-bio-network-d3-node.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlBioNetworkHelper} from './fl-bio-network.helper';
 import {flBioNetworkCofactor} from '../model/fl-bio-cofactor.class';
 import {FlBioNetworkD3Metabolite} from '../model/fl-bio-network-d3-metabolite.class';
-import {FlBioxNetworkD3} from '../model/fl-bio-network-d3-network.class';
+import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class';
 import {FlBioNetworkD3Cofactor} from '../model/fl-bio-network-d3-cofactor.class';
 import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
@@ -27,6 +27,8 @@ export class FlBioNetworkFactory {
   private cofactors: FlBioNetworkD3Cofactor[] = [];
   private links: FlBioNetworkD3Link[] = [];
 
+
+
   constructor(private grey: string) {
   }
 
@@ -41,7 +43,7 @@ export class FlBioNetworkFactory {
     this.initMetabolitesNodes(network.metabolites);
 
     // create the links from the reactions
-    this.initLinks();
+    this.initLinksAndCofactors(network.metabolites);
 
     return new FlBioxNetworkD3(this.metabolites, this.reactions, this.cofactors, this.links);
   }
@@ -50,8 +52,7 @@ export class FlBioNetworkFactory {
    * return the reactions nodes from the filterPathway using a specific database
    */
   private initReactionsNodes(reactions: FlBioNetworkReaction[], selectedPathways: string[],
-                             pathwayDatabase: FlPathwayDatabase)
-    : void {
+                             pathwayDatabase: FlPathwayDatabase): void {
     const reactionNodes: FlBioNetworkD3Reaction[] = [];
 
     for (const reaction of reactions) {
@@ -64,7 +65,7 @@ export class FlBioNetworkFactory {
         // add the reaction
         reactionNodes.push(new FlBioNetworkD3Reaction(reaction.id,
           reaction.name ? reaction.name : reaction.id,
-          this.grey, ClHelpService.deepClone(reaction), reactionPathways
+          this.grey, reaction, reactionPathways
         ));
       }
     }
@@ -73,11 +74,9 @@ export class FlBioNetworkFactory {
   }
 
   /**
-   * return only the metabolites node included in the reactions
+   * return only the metabolites node included in the reactions (to filter with pathway)
    */
-  private initMetabolitesNodes(metabolites: FlBioNetworkMetabolite[])
-    : void {
-
+  private initMetabolitesNodes(metabolites: FlBioNetworkMetabolite[]): void {
 
     for (const reaction of this.reactions) {
 
@@ -86,34 +85,15 @@ export class FlBioNetworkFactory {
         // find the metabolite in the list
         const metabolite: FlBioNetworkMetabolite = metabolites.find(metabolite => metabolite.id === metaboliteId);
 
-
         if (metabolite == null) {
           console.error('Could find metabolite with id ' + metaboliteId + 'used in reaction ' + reaction.id);
           continue;
         }
 
-        // if the metabolite is a cofactor, we create a new node for each metabolite reaction
-        // it prevent theses cofactor metabolites to be linked to a lot of reactions
+        // Skip cofactors, they will be created when creating the links
         if (this.isCofactor(metabolite.chebi_id)) {
-          // get and update the cofactor count
-          const id = (this.cofactorsCount[metabolite.chebi_id] ?? 0) + 1;
-          this.cofactorsCount[metabolite.chebi_id] = id;
-          // change the metabolite id to create a separate node
-          const newId: string = metaboliteId + ':' + id;
-
-          // replace the id in the reaction
-          reaction.data.metabolites[newId] = reaction.data.metabolites[metaboliteId];
-          delete reaction.data.metabolites[metaboliteId];
-
-          // create a new object with the new created id
-          const newMetabolite = Object.assign(ClHelpService.deepClone(metabolite), {id: newId});
-          this.cofactors.push(new FlBioNetworkD3Cofactor(newMetabolite.id,
-            newMetabolite.name ? newMetabolite.name : newMetabolite.id,
-            newMetabolite
-          ));
           continue;
         }
-
 
         // add the metabolites to the list if it is not already added
         if (this.metabolites.findIndex(node => node.id === metaboliteId) === -1) {
@@ -125,31 +105,66 @@ export class FlBioNetworkFactory {
         }
       }
     }
+
   }
 
   // create the pathway link from list of reaction nodes
-  private initLinks(): void {
+  // create the cofactors link to the reactions
+  private initLinksAndCofactors(metabolites: FlBioNetworkMetabolite[]): void {
 
-    const links: FlBioNetworkD3Link[] = [];
-    for (const reactionNode of this.reactions) {
-      const reaction: FlBioNetworkReaction = reactionNode.data;
-      for (const metaboliteId of Object.keys(reaction.metabolites)) {
+    for (const reactionD3 of this.reactions) {
+      for (const metaboliteId of Object.keys(reactionD3.data.metabolites)) {
+
+        const metabolite: FlBioNetworkMetabolite = metabolites.find(metabolite => metabolite.id === metaboliteId);
+
+        if (metabolite == null) {
+          console.error('Could find metabolite with id ' + metaboliteId + 'used in reaction ' + reactionD3.id);
+          continue;
+
+        }
+
+        let metaboliteNode: FlBioNetworkD3Node;
+        // if the metabolite is a cofactor, create a node for it
+        // and use the cofactor id
+        if (this.isCofactor(metabolite.chebi_id)) {
+          metaboliteNode = this.createCofactor(metabolite);
+        } else {
+          // use the metabolite id
+          metaboliteNode = this.metabolites.find(m => m.data.id === metabolite.id);
+        }
+
         // get the estimate with a default value if it doesn't exists
-        const estimate: FlBioNetworkReactionEstimate = FlBioNetworkHelper.getReactionEstimate(reaction);
-        const reactionDirection: number = reaction.metabolites[metaboliteId] * estimate.value;
+        const estimate: FlBioNetworkReactionEstimate = FlBioNetworkHelper.getReactionEstimate(reactionD3.data);
+        const reactionDirection: number = reactionD3.data.metabolites[metaboliteId] * estimate.value;
 
         // right side of the link
         if (reactionDirection > 0) {
-          links.push(new FlBioNetworkD3Link(reaction.id, metaboliteId, estimate));
+          this.links.push(new FlBioNetworkD3Link(reactionD3, metaboliteNode, estimate));
         }
         // left side of the link
         else {
-          links.push(new FlBioNetworkD3Link(metaboliteId, reaction.id, estimate));
+          this.links.push(new FlBioNetworkD3Link(metaboliteNode, reactionD3, estimate));
         }
       }
     }
+  }
 
-    this.links = links;
+  // create a cofactor and return the node
+  private createCofactor(metabolite: FlBioNetworkMetabolite): FlBioNetworkD3Cofactor {
+    // get and update the cofactor count
+    const id = (this.cofactorsCount[metabolite.chebi_id] ?? 0) + 1;
+    this.cofactorsCount[metabolite.chebi_id] = id;
+    // generate a unique id for the cofactor
+    const cofactorId: string = metabolite.id + ':' + id;
+
+
+    // create a new object with the new created id
+    const cofactor = new FlBioNetworkD3Cofactor(cofactorId,
+      metabolite.name ? metabolite.name : metabolite.id,
+      metabolite
+    );
+    this.cofactors.push(cofactor);
+    return cofactor;
   }
 
 
