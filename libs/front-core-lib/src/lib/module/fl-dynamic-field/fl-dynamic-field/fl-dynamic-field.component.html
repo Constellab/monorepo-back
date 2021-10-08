@@ -3,23 +3,23 @@
   <!--  Material input-->
   <ng-container *ngSwitchCase="'input'">
     <mat-form-field appearance="outline" class="g-full g-form-field-hint-include">
-      <mat-label>{{config.placeholder}}</mat-label>
+      <mat-label>{{inputConfig.placeholder}}</mat-label>
 
       <!--    Can't directly bind input type : https://github.com/angular/angular/issues/13243-->
-      <ng-container [ngSwitch]="config.inputType">
+      <ng-container [ngSwitch]="inputConfig.inputType">
         <input *ngSwitchCase="'text'" matInput type="text" [formControl]="formCtrl"
-               placeholder="{{config.placeholder}}" [required]="required">
+               placeholder="{{inputConfig.placeholder}}" [required]="required">
 
         <input *ngSwitchCase="'number'" matInput type="number" [formControl]="formCtrl"
-               placeholder="{{config.placeholder}}" [required]="required">
+               placeholder="{{inputConfig.placeholder}}" [required]="required">
       </ng-container>
 
-      <span *ngIf="config.prefix" matPrefix>{{config.prefix}}</span>
-      <span *ngIf="config.suffix" matSuffix>{{config.suffix}}</span>
-      <mat-hint *ngIf="config.hint">{{config.hint}}</mat-hint>
+      <span *ngIf="inputConfig.prefix" matPrefix>{{inputConfig.prefix}}</span>
+      <span *ngIf="inputConfig.suffix" matSuffix>{{inputConfig.suffix}}</span>
+      <mat-hint *ngIf="inputConfig.hint">{{inputConfig.hint}}</mat-hint>
 
       <mat-error *ngIf="formCtrl.hasError('required')">
-        {{config.placeholder | flErrorRequired:false}}
+        {{inputConfig.placeholder | flErrorRequired:false}}
       </mat-error>
       <mat-error *ngIf="formCtrl.hasError('min')">
         {{'flDynamicField.min_error_validator' | translate :{min: formCtrl.getError('min').min} }}
@@ -35,18 +35,18 @@
   <ng-container *ngSwitchCase="'select'">
     <!--  Server info  -->
     <mat-form-field appearance="outline" class="g-full g-form-field-hint-include">
-      <mat-label>{{config.placeholder}}</mat-label>
-      <mat-select placeholder="{{config.placeholder}}"
+      <mat-label>{{selectConfig.placeholder}}</mat-label>
+      <mat-select placeholder="{{selectConfig.placeholder}}"
                   [formControl]="formCtrl" [required]="required">
-        <mat-option *ngFor="let option of config.selectOptions" [value]="option">{{option}}</mat-option>
+        <mat-option *ngFor="let option of selectConfig.selectOptions" [value]="option">{{option}}</mat-option>
       </mat-select>
 
-      <span *ngIf="config.prefix" matPrefix>{{config.prefix}}</span>
-      <span *ngIf="config.suffix" matSuffix>{{config.suffix}}</span>
-      <mat-hint *ngIf="config.hint">{{config.hint}}</mat-hint>
+      <span *ngIf="selectConfig.prefix" matPrefix>{{selectConfig.prefix}}</span>
+      <span *ngIf="selectConfig.suffix" matSuffix>{{selectConfig.suffix}}</span>
+      <mat-hint *ngIf="selectConfig.hint">{{selectConfig.hint}}</mat-hint>
 
       <mat-error *ngIf="formCtrl.hasError('required')">
-        {{config.placeholder | flErrorRequired:false }}
+        {{selectConfig.placeholder | flErrorRequired:false }}
       </mat-error>
     </mat-form-field>
   </ng-container>
@@ -55,10 +55,10 @@
   <ng-container *ngSwitchCase="'list'">
     <fl-form-field>
       <fl-multi-inputs [formControl]="formCtrl" [required]="required"
-                       [placeholder]="config.placeholder" [hint]="config.hint" [prefix]="config.prefix"
-                       [suffix]="config.suffix"></fl-multi-inputs>
+                       [placeholder]="materialConfig.placeholder" [hint]="materialConfig.hint" [prefix]="materialConfig.prefix"
+                       [suffix]="materialConfig.suffix"></fl-multi-inputs>
       <mat-error *ngIf="formCtrl.hasError('required')">
-        {{config.placeholder | flErrorRequired:false }}
+        {{materialConfig.placeholder | flErrorRequired:false }}
       </mat-error>
     </fl-form-field>
   </ng-container>

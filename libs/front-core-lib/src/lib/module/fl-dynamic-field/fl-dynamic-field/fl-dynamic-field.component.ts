@@ -1,5 +1,10 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FlDynamicFieldConfig} from '../fl-dynamic-field-config.class';
+import {
+  FlDynamicFieldConfig,
+  FlDynamicFieldConfigInput,
+  FlDynamicFieldConfigMaterialInput,
+  FlDynamicFieldConfigSelect
+} from '../fl-dynamic-field-config.class';
 import {FormControl, ValidatorFn, Validators} from '@angular/forms';
 
 /**
@@ -54,5 +59,19 @@ export class FlDynamicFieldComponent implements OnInit {
     }
 
     return validators;
+  }
+
+  // getter to avoid error in HTML
+  get inputConfig(): FlDynamicFieldConfigInput {
+    return this.config as FlDynamicFieldConfigInput;
+  }
+
+  // getter to avoid error in HTML
+  get materialConfig(): FlDynamicFieldConfigMaterialInput {
+    return this.config as FlDynamicFieldConfigMaterialInput;
+  }
+
+  get selectConfig(): FlDynamicFieldConfigSelect {
+    return this.config as FlDynamicFieldConfigSelect;
   }
 }
