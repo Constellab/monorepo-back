@@ -54,11 +54,12 @@ export class FlMultiInputsComponent extends FlFormFieldDirective<string, string[
 
 
   protected convertOuterToInner(outerValue: string[]): string {
-    return outerValue.join(this.separator);
+    // remove empty and null values and return a string
+    return outerValue.filter(value => value).join(this.separator);
   }
 
   protected convertInnerToOuter(innerValue: string): string[] {
     if (innerValue == null) return [];
-    return innerValue.split(this.separator);
+    return innerValue.split(this.separator).filter(value => value);
   }
 }

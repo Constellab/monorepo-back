@@ -5,8 +5,7 @@ import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-char
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
-export class FlChartRendererScatterPlot
-  implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererScatterPlot implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
 

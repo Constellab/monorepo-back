@@ -18,7 +18,7 @@ const flChartI18nFr: FlLangTranslation = {
     min: 'Min',
     max: 'Max',
     LINE: 'Courbe',
-    SCATTER_PLOT: 'Nuage de point',
+    SCATTER_PLOT: 'Nuage de points',
     BAR_PLOT: 'Barres',
     HISTOGRAM: 'Histogramme',
     BOX_PLOT: 'Boîte à moustache',

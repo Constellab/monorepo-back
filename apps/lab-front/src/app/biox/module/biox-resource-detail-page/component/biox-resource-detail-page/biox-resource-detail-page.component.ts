@@ -6,7 +6,7 @@ import {BioxResource} from '../../../../../core/model/entities/resource/biox-res
 import {first, tap} from 'rxjs/operators';
 import {FileResource} from '../../../../../core/model/entities/resource/file-resource.entity';
 import {BioxResourceDetailPageState, BioxResourceViewEvent} from '../../state/biox-resource-detail-page.state';
-import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
+import {FlOverlayRef, FlPortalConfig, FlPortalService, FlTranslateService} from '@monorepo/front-core-lib';
 import {BioxResourceViewType} from '../../../../../core/model/entities/resource/biox-resource-view.entity';
 import {BioxResourceJsonComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-json/biox-resource-json.component';
 import {ComponentType} from '@angular/cdk/overlay';
@@ -15,6 +15,7 @@ import {BioxResourceTextComponent} from '../../../../../core/entity-module/biox-
 import {BioxResourceViewSpecsPortalComponent} from '../biox-resource-view-specs-portal/biox-resource-view-specs-portal.component';
 import {BioxResourceSpreadsheetComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-spreadsheet/biox-resource-spreadsheet.component';
 import {BioxResourceNetworkComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-network/biox-resource-network.component';
+import {BioxResourceChart2dComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-chart-2d/biox-resource-chart-2d.component';
 
 @Component({
   selector: 'gen-biox-resource-detail-page',
@@ -42,7 +43,8 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
               private router: Router,
               private state: BioxResourceDetailPageState,
               private portalService: FlPortalService,
-              private componentFactoryResolver: ComponentFactoryResolver) {
+              private componentFactoryResolver: ComponentFactoryResolver,
+              private translateService: FlTranslateService) {
   }
 
   ngOnInit(): void {
@@ -79,11 +81,14 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
 
     // dynamically create the view component
     const componentType = this.getComponentType(viewEvent.view.type);
+    if (componentType == null) {
+      this.error = this.translateService.translate('biox.view_type_node_supported');
+      return;
+    }
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
 
     this.viewComponentRef = this.viewContainer.createComponent(componentFactory);
     this.viewComponentRef.instance.view = viewEvent.view;
-    this.viewIsLoading = false;
   }
 
   private getComponentType(viewType: BioxResourceViewType): ComponentType<BioxResourceViewComponent> {
@@ -96,8 +101,12 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
         return BioxResourceSpreadsheetComponent;
       case 'network-view':
         return BioxResourceNetworkComponent;
+      case 'scatter-plot-2d':
+      case 'line-plot-2d':
+        return BioxResourceChart2dComponent;
       default:
-        throw new Error(`View of type ${viewType} not supported`);
+        console.error(`View of type ${viewType} not supported`);
+        return null;
     }
   }
 

@@ -13,6 +13,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BioxResourceTypeSelectOptionsComponent} from './component/biox-resource-type-select-options/biox-resource-type-select-options.component';
 import {BioxResourceSelectOptionsComponent} from './component/biox-resource-select-options/biox-resource-select-options.component';
 import {BioxResourceNetworkComponent} from './component/biox-resource-network/biox-resource-network.component';
+import {BioxResourceChart2dComponent} from './component/biox-resource-chart-2d/biox-resource-chart-2d.component';
 
 
 @NgModule({
@@ -27,6 +28,7 @@ import {BioxResourceNetworkComponent} from './component/biox-resource-network/bi
     BioxResourceTypeSelectOptionsComponent,
     BioxResourceSelectOptionsComponent,
     BioxResourceNetworkComponent,
+    BioxResourceChart2dComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
