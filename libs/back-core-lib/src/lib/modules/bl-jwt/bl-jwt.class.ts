@@ -7,6 +7,7 @@ export interface BlJwtConfig {
   jwtSecret: string;
   jwtFromRequest: (request: Request) => string | undefined;
   usersService: BlUserService;
+  tokenDurationInSeconds: number;
 }
 
 export interface BlTokenUser {

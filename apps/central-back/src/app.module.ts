@@ -71,7 +71,8 @@ function configureJwtModule(configService: CoreConfigService, userService: Users
   return {
     jwtSecret: configService.getJwtSecret(),
     jwtFromRequest: (request: Request) => BlCookieHelper.getCookieFromHeader(request.headers.cookie, jwtConfig.authorizationCookie),
-    usersService: userService
+    usersService: userService,
+    tokenDurationInSeconds: jwtConfig.tokenDurationInSeconds
   };
 }
 
@@ -116,11 +117,16 @@ function configureMailModule(configService: CoreConfigService): BlMailModuleConf
       inject: [CoreConfigService],
     }),
 
+    // JwtModule.register({
+    //   secret: 'jhkjh',
+    // }),
+
     BlJwtModule.forRootAsync({
       imports: [CoreModule, UsersModule],
       useFactory: configureJwtModule,
       inject: [CoreConfigService, UsersService]
     }),
+
     BlMailModule.forRootAsync({
       imports: [CoreModule],
       useFactory: configureMailModule,

@@ -1,6 +1,8 @@
 import {JwtService} from '@nestjs/jwt';
 import {BlTokenUser} from './bl-jwt.class';
+import {Injectable} from '@nestjs/common';
 
+@Injectable()
 export class BlJwtService {
 
   constructor(private jwtService: JwtService) {
