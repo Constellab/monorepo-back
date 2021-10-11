@@ -4,17 +4,20 @@ import { DaPublicCoreModule } from './module/da-public-core/da-public-core.modul
 import { DaPublicRoutingModule } from './da-public-routing.module';
 import { CoreModule } from '@angular/flex-layout';
 import {DaPublicDocPageModule} from './module/da-public-doc-page/da-public-doc-page.module';
+import { DaPublicSidenavComponent } from './module/da-public-sidenav/da-public-sidenav.component';
+import {DaCoreModule} from '../da-core/da-core.module';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [DaPublicSidenavComponent],
   imports: [
     CommonModule,
     DaPublicCoreModule,
     DaPublicRoutingModule,
     DaPublicDocPageModule,
-    CoreModule
+    CoreModule,
+    DaCoreModule,
   ]
 })
 export class DaPublicModule { }

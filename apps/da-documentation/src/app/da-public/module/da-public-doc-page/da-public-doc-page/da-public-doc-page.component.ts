@@ -13,6 +13,7 @@ export class DaPublicDocPageComponent implements OnInit {
 
   path: string;
   documentation$: Observable<DaDocumentation>;
+  showFiller = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,

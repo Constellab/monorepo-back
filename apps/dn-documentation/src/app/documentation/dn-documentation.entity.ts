@@ -22,4 +22,11 @@ export class DnDocumentationDTO extends BlEntityWithId{
   title: string;
 
   path:string;
+
+  constructor(documentation: DnDocumentation) {
+    super();
+    this.path = documentation.path;
+    this.title = documentation.title;
+    this.id = documentation.id;
+  }
 }

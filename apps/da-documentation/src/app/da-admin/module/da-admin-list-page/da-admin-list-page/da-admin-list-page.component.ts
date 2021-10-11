@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
 import { FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService } from '@monorepo/front-core-lib';
-import { DaDocumentation } from '../../../../da-core/da-model/da-entities/da-documentation.class';
+import { DaDocumentationDTO} from '../../../../da-core/da-model/da-entities/da-documentation.class';
 import { DaDocumentationService } from '../../../../da-core/da-service/da-documentation.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ClHelpService } from '@monorepo/core-lib';
 
 @Component({
@@ -13,7 +12,7 @@ import { ClHelpService } from '@monorepo/core-lib';
 })
 export class DaAdminListPageComponent implements OnInit {
 
-  documentations: DaDocumentation[];
+  documentations: DaDocumentationDTO[];
   publicDocsUrlPrefix: string;
 
   constructor(

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FlApiService } from '@monorepo/front-core-lib'
 import { Observable } from 'rxjs';
-import { DaDocumentation } from '../da-model/da-entities/da-documentation.class';
+import {DaDocumentation, DaDocumentationDTO} from '../da-model/da-entities/da-documentation.class';
 
 /**
  * Service to manage documentation entity
@@ -33,7 +33,7 @@ export class DaDocumentationService {
     }
 
     /**
-   * Call http get one by id
+   * Call http get
    * @param path path of the entity
    */
     public getByPath(path: string): Observable<DaDocumentation> {
@@ -43,8 +43,8 @@ export class DaDocumentationService {
     /**
    * Call http get
    */
-    public get(): Observable<DaDocumentation[]> {
-      return this.apiService.get(this.route, DaDocumentation);
+    public get(): Observable<DaDocumentationDTO[]> {
+      return this.apiService.get(this.route, DaDocumentationDTO);
     }
 
     /**

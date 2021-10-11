@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { DnVersion } from '../version/dn-version.entity';
 import { DnVersionService } from '../version/dn-version.service';
 import {DnDocumentation, DnDocumentationDTO} from './dn-documentation.entity';
+import {doc} from 'prettier';
 
 @Injectable()
 export class DnDocumentationService {
@@ -19,7 +20,6 @@ export class DnDocumentationService {
 
     this.versionService.getByVersionNumber('1.0.0').then((v) => {
       version = v;
-      console.log(version);
 
       const createDocumentation = {
         title: createDocumentationRes.title,
@@ -33,7 +33,7 @@ export class DnDocumentationService {
     return doc;
   }
 
-  findAll(): Promise<DnDocumentationDTO[]> {
+  findAll(): Promise<DnDocumentation[]> {
     return this.documentationsRepository.find();
   }
 
@@ -42,7 +42,7 @@ export class DnDocumentationService {
   }
 
   findOneByPath(path: string): Promise<DnDocumentation> {
-    return this.documentationsRepository.findOne({where: {path: path}}).catch();
+    return this.documentationsRepository.findOne({where: {path: path}});
   }
 
   update(updateDocumentation: DnDocumentation): Promise<DnDocumentation> {

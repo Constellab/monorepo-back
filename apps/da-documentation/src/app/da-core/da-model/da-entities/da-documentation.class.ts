@@ -11,3 +11,8 @@ export class DaDocumentation extends DaEntity{
     versionId: string;
 }
 
+export class DaDocumentationDTO extends DaEntity{
+  title: string;
+
+  path: string;
+}

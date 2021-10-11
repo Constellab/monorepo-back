@@ -1,5 +1,4 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
-import { pathToFileURL } from 'url';
 import { ParsePipe } from '../core/pipes/dn-parse.pipe';
 import {DnDocumentation, DnDocumentationDTO} from './dn-documentation.entity';
 import { DnDocumentationService } from './dn-documentation.service';
@@ -14,8 +13,9 @@ export class DnDocumentationController {
   }
 
   @Get()
-  findAll(): Promise<DnDocumentationDTO[]> {
-    return this.documentationService.findAll();
+  async findAll(): Promise<DnDocumentationDTO[]> {
+    const docs = await this.documentationService.findAll();
+    return docs.map(doc => new DnDocumentationDTO(doc));
   }
 
   @Get('path')
