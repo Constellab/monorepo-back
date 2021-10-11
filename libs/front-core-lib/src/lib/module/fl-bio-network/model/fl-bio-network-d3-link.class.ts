@@ -21,7 +21,7 @@ export class FlBioNetworkD3Link implements SimulationLinkDatum<FlBioNetworkD3Nod
   }
 
   get value(): number {
-    return this.estimate.value;
+    return typeof this.estimate.value === 'number' ? this.estimate.value : 0;
   }
 
   get absValue(): number {

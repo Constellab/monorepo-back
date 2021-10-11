@@ -49,7 +49,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
   private readonly subscriptions = new ClSubscriptionHandler();
 
   ////////////// READONLY VARIABLE //////////////////
-  private readonly collideRadius: number = 25;
+  private readonly collideRadius: number = 20;
   public readonly grey: string;
   private readonly textColor: string;
   private readonly backgroundColor: string;
@@ -290,10 +290,10 @@ export class FlBioNetworkRendererState implements OnDestroy {
   private initSimulation(): void {
     this.simulation = d3.forceSimulation(this.data.getAllNodes())
       .force('link',
-        d3.forceLink(this.data.links).distance(100)
+        d3.forceLink(this.data.links).distance(1)
           .id((d: FlBioNetworkD3Node) => d.id)
       )
-      .force('charge', d3.forceManyBody().strength(-40))
+      .force('charge', d3.forceManyBody().strength(-10))
       .force('center', d3.forceCenter(this.chartWidth / 2, this.chartHeight / 2))
       .force('collide', d3.forceCollide().radius(this.collideRadius));
   }
