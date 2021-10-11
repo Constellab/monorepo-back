@@ -32,10 +32,14 @@ export class AuthService {
     return this.jwtService.generateToken(user.id, user.email);
   }
 
-  async checkCredentialsWithRole(category: CmUserCategory, credentials: CmCredentials): Promise<boolean> {
+  async checkCredentialsWithRole(category: CmUserCategory, credentials: CmCredentials): Promise<User | null> {
     const user = await this.checkCredentialsAndUser(credentials);
 
-    return user.category === category;
+    if (user.category === category) {
+      return user;
+    }
+
+    return null;
   }
 
   private async checkCredentialsAndUser(credentials: CmCredentials): Promise<User> {

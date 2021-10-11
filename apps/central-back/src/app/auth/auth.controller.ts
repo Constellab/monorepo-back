@@ -5,6 +5,7 @@ import {jwtConfig} from './jwt.config';
 import {CoreConfigService} from '../core/modules/core-config/core-config.service';
 import {BlParseEnumPipe, BlPublic} from '@monorepo/back-core-lib';
 import {CmCredentials, CmUserCategory} from '@monorepo/common-model';
+import {User} from '../users/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -32,7 +33,7 @@ export class AuthController {
   @BlPublic()
   @Post('check-credentials/:role')
   checkCredentialsWithRole(@Param('role', new BlParseEnumPipe(CmUserCategory)) category: CmUserCategory,
-                           @Body() credentials: CmCredentials): Promise<boolean> {
+                           @Body() credentials: CmCredentials): Promise<User | null> {
     return this.authService.checkCredentialsWithRole(category, credentials);
   }
 
