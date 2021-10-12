@@ -131,7 +131,7 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
 
   private initTitle(resource: BioxResource): void {
     if (resource instanceof FileResource) {
-      this.title = resource.filename;
+      this.title = resource.name;
     } else {
       this.title = resource.resourceHumanName;
     }

@@ -10,10 +10,10 @@ export class FileResourcePreview extends BioxResource {
   @Expose({name: 'file_store_uri'})
   fileStoreUri: string;
 
-  filename: string;
+  name: string;
 
   getExtension(): string {
-    return FlFileHelper.getFileExtension(this.filename);
+    return FlFileHelper.getFileExtension(this.name);
   }
 
   isImage(): boolean {

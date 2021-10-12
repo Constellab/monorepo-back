@@ -10,13 +10,13 @@
     </mat-cell>
   </ng-container>
 
-  <!-- CreatedAt -->
-  <ng-container matColumnDef="filename">
+  <!-- Name -->
+  <ng-container matColumnDef="name">
     <mat-header-cell *matHeaderCellDef>
       <span> {{'biox.filename' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let resource">
-      {{resource.filename}}
+      {{resource.name}}
     </mat-cell>
   </ng-container>
 
