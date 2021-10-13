@@ -156,12 +156,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
 
   ///////////////////////////////////////////////// Nodes ///////////////////////////////////////////////////////
-  // return the selection of reaction and metabolite
   private get nodes(): FlD3SelectionSimple<FlBioNetworkD3Node> {
-    return this.nodeGroup.selectChildren();
-  }
-
-  private get allNodes(): FlD3SelectionSimple<FlBioNetworkD3Node> {
     return this.mainGroup.selectAll(`.${this.nodeGroupClass},.${this.cofactorGroupClass}`).selectChildren();
   }
 
@@ -196,13 +191,13 @@ export class FlBioNetworkRendererState implements OnDestroy {
     }
 
 
-    this.allNodes.filter((d) => nodeToMoveIds.includes(d.id))
+    this.nodes.filter((d) => nodeToMoveIds.includes(d.id))
       .attr('transform',
         (d: FlBioNetworkD3Node) => 'translate(' + d.x + ',' + d.y + ')'
       );
 
     // refresh link points
-    this.allLinks
+    this.links
       .filter((d) => d.isLinkedToNode(dragEvent.subject.id))
       .attr('points', (d: FlBioNetworkD3Link) => d.getPolylinePoints());
 
@@ -225,10 +220,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
   ///////////////////////////////////////////////// LINKS ///////////////////////////////////////////////////////
   private get links(): FlD3SelectionSimple<FlBioNetworkD3Link> {
-    return this.linkGroup.selectChildren();
-  }
-
-  private get allLinks(): FlD3SelectionSimple<FlBioNetworkD3Link> {
     return this.mainGroup.selectAll(`.${this.linksGroupClass},.${this.cofactorLinksGroupClass}`).selectChildren();
   }
 
@@ -255,7 +246,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
     this.linkColorLogarithm = linkColorLogarithm;
     const colorTransform: (value: number) => number = this.getLinkColorTransformFunction(linkColorLogarithm);
     const colorScale = this.getLinkColorScale(colorTransform);
-    this.allLinks
+    this.links
       .attr('stroke', (d: FlBioNetworkD3Link) => colorScale(colorTransform(d.value)));
   }
 
@@ -318,7 +309,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
     this.simulation.on('tick', () => {
 
       // refresh link points
-      this.allLinks.attr('points', (d: FlBioNetworkD3Link) => d.getPolylinePoints());
+      this.links.attr('points', (d: FlBioNetworkD3Link) => d.getPolylinePoints());
 
       // refresh nodes positions
       this.nodes.attr('transform',

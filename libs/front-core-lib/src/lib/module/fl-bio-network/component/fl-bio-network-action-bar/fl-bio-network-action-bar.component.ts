@@ -57,7 +57,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
       this.isReady = false;
 
     }
-
+    this.showCofactor = false;
     this.cdr.markForCheck();
   }
 
@@ -90,7 +90,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
     const viewObject = {
       type: 'network-view',
       data: network
-    }
+    };
 
     FlFileHelper.downloadJsonFile(viewObject, 'network.json');
   }
