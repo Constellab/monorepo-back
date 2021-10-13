@@ -1,7 +1,7 @@
 import {FlArrayObs} from './fl-array-obs.class';
 import {Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
-import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
+import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 
 /**
  * Datasource that work with a method that returns paginated results.
@@ -14,7 +14,7 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
   /**
    * Current page information
    */
-  public page ?: ClPage<T>;
+  public page ?: ClPageI<T>;
 
   // true when a request is being made
   public isLoading: boolean = false;
@@ -87,7 +87,7 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
   }
 
   // add results to current array and save page
-  private onSuccess(result: ClPage<T>): void {
+  private onSuccess(result: ClPageI<T>): void {
     this.isReady = true;
     this.page = result;
     this.clearAfterCall();

@@ -39,11 +39,8 @@
         <mat-icon class="g-icon-small">launch</mat-icon>
       </fl-text-icon>
 
-      <!--  Lab IPs    -->
-      <p><span class="g-text-light">{{'ip' | translate}} : </span>{{labInstance.ip}}</p>
-      <p *ngIf="labInstance.ipv6">
-        <span class="g-text-light">{{'ipv6' | translate}} : </span>{{labInstance.ipv6}}
-      </p>
+      <!--  Lab Type    -->
+      <p><span class="g-text-light">{{'lab_type' | translate}} : </span>{{labInstance.lab.label}}</p>
     </fl-card-body>
 
     <fl-card-footer layoutGap="0.5em">

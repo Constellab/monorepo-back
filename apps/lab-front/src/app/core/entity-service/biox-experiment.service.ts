@@ -3,7 +3,7 @@ import {FlApiService, FlEntityPaginatedDatasource, FlSnackBarService} from '@mon
 import {Observable, throwError} from 'rxjs';
 import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm} from '../model/entities/biox-experiment.entity';
 import {createViewModel} from '../model/global/view-model.entity';
-import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
+import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/workflow.class';
 import {BioxProtocolGraph} from '../model/entities/process/biox-protocol.entity';
 import {BioxExperimentFlowFactory} from '../utils/biox-experiment-flow.factory';
@@ -22,7 +22,7 @@ export class BioxExperimentService {
               private snackBarService: FlSnackBarService) {
   }
 
-  public getExperiments(page: number, pageSize: number): Observable<ClPage<BioxExperiment>> {
+  public getExperiments(page: number, pageSize: number): Observable<ClPageI<BioxExperiment>> {
     return this.apiService.get(this.route, BioxExperiment,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
@@ -33,7 +33,7 @@ export class BioxExperimentService {
   }
 
   private getExperimentsMethod(): ClGetPageFunction<BioxExperiment> {
-    return (page: number, pageSize: number): Observable<ClPage<BioxExperiment>> => this.getExperiments(page, pageSize);
+    return (page: number, pageSize: number): Observable<ClPageI<BioxExperiment>> => this.getExperiments(page, pageSize);
   }
 
   public getExperiment(id: string): Observable<BioxExperiment> {

@@ -2,7 +2,7 @@ import {HttpService, Injectable} from '@nestjs/common';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {BlExternalApiHttpOption, BlExternalApiHttpOptionObserve} from './bl-external-api.class';
-import {ClCoreJsonConvert, ClDeserializationRef, ClPage} from '@monorepo/core-lib';
+import {ClCoreJsonConvert, ClDeserializationRef, ClPageI} from '@monorepo/core-lib';
 import {BlExternalApiErrorService} from './bl-external-api-error.service';
 import {AxiosResponse} from 'axios';
 
@@ -84,7 +84,7 @@ export class BlExternalApiService {
    * @param response
    * @param classReference class reference of object
    * @param observe
-   * @param isPaginated if true the result is considered as a {@link ClPage}
+   * @param isPaginated if true the result is considered as a {@link ClPageI}
    */
   public deserialize(response: AxiosResponse, classReference: ClDeserializationRef,
                      observe: BlExternalApiHttpOptionObserve = 'data', isPaginated: boolean = false): any {
@@ -109,7 +109,7 @@ export class BlExternalApiService {
     }
   }
 
-  private deserializePage(json: any, classReference: ClDeserializationRef): ClPage<any> {
+  private deserializePage(json: any, classReference: ClDeserializationRef): ClPageI<any> {
     // if the result if paginated (we supposed the json is type of ClPage)
     if (json.data != null && json.data instanceof Array) {
       return {

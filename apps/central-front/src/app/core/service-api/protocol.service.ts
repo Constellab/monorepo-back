@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Protocol, ProtocolDatasource} from '../model/entities/protocol.entity';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
+import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +29,7 @@ export class ProtocolService {
   }
 
   private getMyProtocolsMethod(): ClGetPageFunction<Protocol> {
-    return (page: number, pageSize: number): Observable<ClPage<Protocol>> => this.apiService.get(`${this.route}/current`, Protocol,
+    return (page: number, pageSize: number): Observable<ClPageI<Protocol>> => this.apiService.get(`${this.route}/current`, Protocol,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 

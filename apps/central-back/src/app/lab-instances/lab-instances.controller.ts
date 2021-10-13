@@ -4,8 +4,9 @@ import {LabInstancesSecurityLayer} from './lab-instances-security-layer.service'
 import {LabInstanceStatusHistory} from './lab-instance-status-history.entity';
 import {LabInstanceToken} from './lab-instance-token.class';
 import {ExternalLabUser, ExternalNewLabUser} from '../external-lab-api/external-lab-api.class';
-import {BlParsePipe} from '@monorepo/back-core-lib';
+import {BlDtoHelper, BlParsePipe} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
+import {LabInstanceDto} from './lab-instance.dto';
 
 
 @Controller('lab-instances')
@@ -15,13 +16,16 @@ export class LabInstancesController {
   }
 
   @Post()
-  create(@Body(new BlParsePipe(LabInstance)) labInstance: LabInstance): Promise<LabInstance> {
-    return this.securityLayer.createSecure(labInstance);
+  async create(@Body(new BlParsePipe(LabInstanceDto)) labInstanceDto: LabInstanceDto): Promise<LabInstanceDto> {
+    const labInstance = await this.securityLayer.createSecure(BlDtoHelper.fromDto(LabInstance, labInstanceDto));
+    return BlDtoHelper.toDto(LabInstanceDto,labInstance )
   }
 
+  // use the DTO to get the apiKey (which is excluded)
   @Put()
-  update(@Body(new BlParsePipe(LabInstance)) labInstance: LabInstance): Promise<LabInstance> {
-    return this.securityLayer.updateSecure(labInstance);
+  async update(@Body(new BlParsePipe(LabInstanceDto)) labInstanceDto: LabInstanceDto): Promise<LabInstanceDto> {
+    const labInstance = await this.securityLayer.updateSecure(BlDtoHelper.fromDto(LabInstance, labInstanceDto));
+    return BlDtoHelper.toDto(LabInstanceDto,labInstance )
   }
 
   /**
@@ -42,8 +46,10 @@ export class LabInstancesController {
   }
 
   @Get()
-  findAll(): Promise<LabInstance[]> {
-    return this.securityLayer.findAll();
+  async findAll(): Promise<LabInstanceDto[]> {
+    // use a DTO to return all the field including the apiKey
+    const labInstances = await this.securityLayer.findAll();
+    return BlDtoHelper.listToDto(LabInstanceDto, labInstances);
   }
 
   /**

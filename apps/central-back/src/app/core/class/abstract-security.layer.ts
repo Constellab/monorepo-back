@@ -1,12 +1,12 @@
-import {EntityWithId} from '../model/entities/entity-with-id.entity';
 import {AbstractService} from './abstract.service';
 import {DeleteResult} from 'typeorm';
 import {UnauthorizedException} from '@nestjs/common';
+import {BlEntityWithId} from '@monorepo/back-core-lib';
 
 /**
  * Security layer between the controller and the service to check if the user can CRUD the entity
  */
-export abstract class AbstractSecurityLayer<T extends EntityWithId> {
+export abstract class AbstractSecurityLayer<T extends BlEntityWithId> {
   protected constructor(private abstractService: AbstractService<T>) {
   }
 

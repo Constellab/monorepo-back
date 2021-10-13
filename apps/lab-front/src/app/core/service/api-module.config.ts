@@ -1,5 +1,5 @@
 import {FlApiServiceConfig} from '@monorepo/front-core-lib';
-import {ClCoreJsonConvert, ClDeserializationRef, ClPage} from '@monorepo/core-lib';
+import {ClCoreJsonConvert, ClDeserializationRef, ClPageI} from '@monorepo/core-lib';
 import {Injectable} from '@angular/core';
 import {LabEnvStore} from './lab-env.store';
 import {LabEnvironment} from '../model/global/lab-environment.class';
@@ -33,7 +33,7 @@ export class ApiServiceConfig extends FlApiServiceConfig {
     super();
   }
 
-  deserializePage(json: PaginatedResponse, classReference: ClDeserializationRef): ClPage<any> {
+  deserializePage(json: PaginatedResponse, classReference: ClDeserializationRef): ClPageI<any> {
     // if the result if paginated (we supposed the json is type of ClPage)
     if (json.objects != null && json.objects instanceof Array) {
       return {

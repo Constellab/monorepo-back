@@ -1,5 +1,5 @@
 import {LabBaseEntity} from './lab-entity.entity';
-import {ClClassReference, ClConstructorFunction, ClCoreJsonConvert, ClPage} from '@monorepo/core-lib';
+import {ClClassReference, ClConstructorFunction, ClCoreJsonConvert, ClPageI} from '@monorepo/core-lib';
 
 export class ViewModel<T extends LabBaseEntity> extends LabBaseEntity {
 
@@ -10,7 +10,7 @@ export class ViewModel<T extends LabBaseEntity> extends LabBaseEntity {
   id: '';
 }
 
-export type ViewModelPage<T extends LabBaseEntity> = ClPage<ViewModel<T>>;
+export type ViewModelPage<T extends LabBaseEntity> = ClPageI<ViewModel<T>>;
 
 /**
  * Function to instantiate the view model and instantiate the model under it

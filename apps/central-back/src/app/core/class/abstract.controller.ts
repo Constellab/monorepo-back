@@ -1,9 +1,8 @@
 import {AbstractService} from './abstract.service';
-import {EntityWithId} from '../model/entities/entity-with-id.entity';
 import {Body, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
-import {BlParsePipe} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlParsePipe} from '@monorepo/back-core-lib';
 
-export abstract class AbstractController<T extends EntityWithId> {
+export abstract class AbstractController<T extends BlEntityWithId> {
 
   private readonly parsePipe: BlParsePipe<T>;
 

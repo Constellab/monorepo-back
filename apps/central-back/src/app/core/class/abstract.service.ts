@@ -1,13 +1,12 @@
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
-import {EntityWithId} from '../model/entities/entity-with-id.entity';
 import {BadRequestException, NotFoundException} from '@nestjs/common';
 import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
 import {FindManyOptions} from 'typeorm/find-options/FindManyOptions';
 import {ErrorText} from '../model/config/error-text.class';
-import {BlPersistenceAction, BlPersistenceLogger, blPropertyIsNotUpdatable} from '@monorepo/back-core-lib';
-import {ClPage} from '@monorepo/core-lib';
+import {BlEntityWithId, BlPersistenceAction, BlPersistenceLogger, blPropertyIsNotUpdatable} from '@monorepo/back-core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
 
-export abstract class AbstractService<T extends EntityWithId> {
+export abstract class AbstractService<T extends BlEntityWithId> {
 
   private readonly maxPageSize: number = 50;
 
@@ -91,7 +90,7 @@ export abstract class AbstractService<T extends EntityWithId> {
   }
 
   async findPaginated(page: number = 0, size: number = 10, options: FindOneOptions<T> = {},
-                      entityManager?: EntityManager): Promise<ClPage<T>> {
+                      entityManager?: EntityManager): Promise<ClPageI<T>> {
     const manager: EntityManager = this.getEntityManager(entityManager);
 
     // must be a positive number
@@ -108,14 +107,8 @@ export abstract class AbstractService<T extends EntityWithId> {
     // get the results limited by page
     const result: T[] = await manager.find(this.entityClass, pageOptions);
 
-    return {
-      objects: result,
-      first: safePage === 0,
-      last: ((safePage + 1) * safeSize) >= totalElements,
-      totalElements: totalElements,
-      currentPage: safePage,
-      pageSize: safeSize
-    };
+    return new ClPage(safePage === 0, ((safePage + 1) * safeSize) >= totalElements, totalElements,
+      safePage, safeSize, result);
   }
 
   // use to log persistence

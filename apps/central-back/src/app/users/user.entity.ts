@@ -1,16 +1,15 @@
 import {BeforeInsert, Column, Entity, ManyToMany, OneToOne} from 'typeorm';
-import {EntityWithId} from '../core/model/entities/entity-with-id.entity';
 import {Exclude} from 'class-transformer';
 import {GroupSingleUser, GroupUsers} from '../groups/group.entity';
 import * as argon2 from 'argon2';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
-import {BlLuxonDateTimeColumn, BlUser} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlLuxonDateTimeColumn, BlUser} from '@monorepo/back-core-lib';
 
 
 @Entity()
-export class User extends EntityWithId implements BlUser{
+export class User extends BlEntityWithId implements BlUser {
 
   @Column({nullable: false, length: 50})
   firstname: string;

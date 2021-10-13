@@ -5,7 +5,7 @@
  */
 import {Observable} from 'rxjs';
 
-export interface ClPage<T> {
+export interface ClPageI<T> {
   objects: T[];
   first: boolean;
   last: boolean;
@@ -14,17 +14,23 @@ export interface ClPage<T> {
   pageSize: number;
 }
 
+export class ClPage<T> implements ClPageI<T> {
+  constructor(public first: boolean, public last: boolean, public totalElements: number,
+              public currentPage: number, public pageSize: number, public objects: T[]) {
+  }
+}
+
 /**
  * Function used by  to retrieve element that are paginated
  * @param page number of the page to get
  * @param pageSize size of the page
  */
-export type ClGetPageFunction<T> = (page: number, pageSize: number) => Observable<ClPage<T>>;
+export type ClGetPageFunction<T> = (page: number, pageSize: number) => Observable<ClPageI<T>>;
 
 /**
  * Return an empty page
  */
-export function clGetEmptyPage(): ClPage<any> {
+export function clGetEmptyPage(): ClPageI<any> {
   return {
     first: true,
     last: true,

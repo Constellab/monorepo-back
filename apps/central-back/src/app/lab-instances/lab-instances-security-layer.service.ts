@@ -11,7 +11,7 @@ import {AdminAuthorization} from '../core/security/admin.authorization';
 import {OwnerAuthorization} from '../core/security/owner.authorization';
 import {CombinedAuthorization} from '../core/security/combined.authorization';
 import {ExternalLabUser, ExternalNewLabUser} from '../external-lab-api/external-lab-api.class';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPageI} from '@monorepo/core-lib';
 import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 
@@ -42,7 +42,7 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
     return new CreatedByAuthorization().isAuthorized(dbEntity);
   }
 
-  getCurrentLabInstances(page: number, size: number): Promise<ClPage<LabInstance>> {
+  getCurrentLabInstances(page: number, size: number): Promise<ClPageI<LabInstance>> {
     // no security check because the get is filtered with user id
     return this.service.getCurrentLabInstances(page, size);
   }

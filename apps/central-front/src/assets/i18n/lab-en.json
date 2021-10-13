@@ -29,5 +29,7 @@
   "lab_user_create": "Add a user to lab",
   "lab_user_created": "User added to lab",
   "update_lab_name": "Update lab name",
-  "lab_name_updated": "Lab name updated"
+  "lab_name_updated": "Lab name updated",
+  "lab_type": "Lab type",
+  "lab_api_key": "Api key"
 }

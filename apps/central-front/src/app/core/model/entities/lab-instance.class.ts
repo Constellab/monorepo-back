@@ -37,11 +37,6 @@ export class LabInstance extends BaseEntity {
   @Type(() => LabInstanceStatusHistory)
   currentStatus: LabInstanceStatusHistory = null;
 
-  ip: string;
-
-  // ip v6 of the server
-  ipv6: string;
-
   // api url of the lab
   apiUrl: string;
 
@@ -50,6 +45,8 @@ export class LabInstance extends BaseEntity {
 
   @Type(() => ServerInfo)
   serverInfo: ServerInfo;
+
+  apiKey?: string; // only provided when getting lab as admin
 
   public isRunning(): boolean {
     return this.currentStatus.status === 'RUNNING';

@@ -9,7 +9,7 @@ import {
   LabInstanceUserForm
 } from '../model/entities/lab-instance.class';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {ClGetPageFunction, ClPage, clRxjsDebug} from '@monorepo/core-lib';
+import {ClGetPageFunction, ClPageI, clRxjsDebug} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -48,8 +48,8 @@ export class LabInstanceService {
   }
 
   private getCurrentLabInstanceMethod(): ClGetPageFunction<LabInstance> {
-    return (page: number, pageSize: number): Observable<ClPage<LabInstance>> => this.apiService.get(`${this.route}/current`, LabInstance,
-      {resultIsPaginated: true, page: page, pageSize: pageSize});
+    return (page: number, pageSize: number): Observable<ClPageI<LabInstance>> => this.apiService.get(`${this.route}/current`, LabInstance,
+      {resultIsPaginated: true, page: page, pageSize: pageSize}).pipe(clRxjsDebug());
   }
 
   public getCurrentRunningLabInstance(): Observable<LabInstance[]> {

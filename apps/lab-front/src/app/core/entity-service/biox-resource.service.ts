@@ -3,7 +3,7 @@ import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-li
 import {Observable, of} from 'rxjs';
 import {BioxBasicResource, BioxResource, BioxResourceDatasource} from '../model/entities/resource/biox-resource.entity';
 import {FileResourceService, FileWithContent} from './file-resource.service';
-import {ClConstructorFunction, ClCoreJsonConvert, ClPage} from '@monorepo/core-lib';
+import {ClConstructorFunction, ClCoreJsonConvert, ClPageI} from '@monorepo/core-lib';
 import {FileResource} from '../model/entities/resource/file-resource.entity';
 import {map, mergeMap} from 'rxjs/operators';
 import {LabBaseEntity} from '../model/global/lab-entity.entity';
@@ -82,7 +82,7 @@ export class BioxResourceService {
     );
   }
 
-  public getResourcesByType(type: string, page: number, pageSize: number): Observable<ClPage<LabBaseEntity>> {
+  public getResourcesByType(type: string, page: number, pageSize: number): Observable<ClPageI<LabBaseEntity>> {
     return this.apiService.get(`${this.route}/${type}`, LabBaseEntity,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
@@ -97,7 +97,7 @@ export class BioxResourceService {
 
 
   // get the list of resource types
-  public getResourceTypes(page: number, pageSize: number): Observable<ClPage<BioxLabTypeEntity>> {
+  public getResourceTypes(page: number, pageSize: number): Observable<ClPageI<BioxLabTypeEntity>> {
     return this.apiService.get(this.resourceTypeRoute, BioxLabTypeEntity,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }

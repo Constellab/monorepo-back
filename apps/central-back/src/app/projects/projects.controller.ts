@@ -5,7 +5,7 @@ import {ProjectsSecurityLayer} from './projects-security.layer';
 import {ProjectStatus} from './project-status.enum';
 import {ProjectStatusHistory} from './project-status-history.entity';
 import {BlParseEnumPipe} from '@monorepo/back-core-lib';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPageI} from '@monorepo/core-lib';
 
 @Controller('projects')
 export class ProjectsController extends AbstractSecureController<Project> {
@@ -19,7 +19,7 @@ export class ProjectsController extends AbstractSecureController<Project> {
    */
   @Get('current')
   public getCurrentProjects(@Query('page', ParseIntPipe) page: number,
-                            @Query('size', ParseIntPipe) size: number): Promise<ClPage<Project>> {
+                            @Query('size', ParseIntPipe) size: number): Promise<ClPageI<Project>> {
     return this.securityLayer.getCurrentProjects(page, size);
   }
 

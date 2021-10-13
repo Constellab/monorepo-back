@@ -1,17 +1,16 @@
 import {BeforeInsert, Column, Entity, ManyToOne} from 'typeorm';
-import {EntityWithId} from '../core/model/entities/entity-with-id.entity';
 import {Type} from 'class-transformer';
 import {User} from '../users/user.entity';
 import {DateTime} from 'luxon';
 import {ClDateHelper} from '@monorepo/core-lib';
-import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 /**
  * Entity to store the front errors
  */
 @Entity()
-export class FrontError extends EntityWithId {
+export class FrontError extends BlEntityWithId {
 
   @Column({nullable: false, length: 100})
   name: string;

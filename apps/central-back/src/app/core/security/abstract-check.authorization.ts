@@ -1,10 +1,10 @@
-import {EntityWithId} from '../model/entities/entity-with-id.entity';
 import {UnauthorizedException} from '@nestjs/common';
+import {BlEntityWithId} from '@monorepo/back-core-lib';
 
 /**
  * defined one authorization executed for an entity
  */
-export abstract class AbstractCheckAuthorization<T = EntityWithId> {
+export abstract class AbstractCheckAuthorization<T = BlEntityWithId> {
   /**
    * Return true if the authorization is OK
    * @param entity entity to check

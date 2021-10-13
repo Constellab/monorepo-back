@@ -35,12 +35,11 @@ export class LabInstanceFormDialogComponent extends FlFormDialogAbstractDirectiv
     return new FormBuilder().group({
       id: [null],
       name: [null, Validators.required],
-      ip: [null, Validators.required],
-      ipv6: [null],
       apiUrl: [null, [Validators.required]],
       frontUrl: [null, [Validators.required]],
       serverInfo: [null, [Validators.required]],
       owner: [null, Validators.required],
+      apiKey: [null, Validators.required],
       lab: [{value: null, disabled: this.isUpdateMode()}, Validators.required]
     });
   }

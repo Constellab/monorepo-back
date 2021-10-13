@@ -6,34 +6,17 @@
   <form (ngSubmit)="submit()" id="server-info-form" [formGroup]="formGp">
 
     <!--  Name  -->
-    <mat-form-field class="g-form-input" appearance="outline">
+    <mat-form-field class="g-form-input">
       <mat-label>{{'name' | translate}}</mat-label>
-      <input matInput formControlName="name" required flInputMaxLength="15"
+      <input matInput formControlName="name" required flInputMaxLength="50"
              placeholder="{{'name' | translate}}">
       <mat-error *ngIf="formGp.get('name').hasError('required')">
         {{'name' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
-    <!--  Ip  -->
-    <mat-form-field class="g-form-input" appearance="outline">
-      <mat-label>{{'ip' | translate}}</mat-label>
-      <input matInput formControlName="ip" required flInputMaxLength="15"
-             placeholder="{{'ip' | translate}}">
-      <mat-error *ngIf="formGp.get('ip').hasError('required')">
-        {{'ip' | flErrorRequired}}
-      </mat-error>
-    </mat-form-field>
-
-    <!--  Ipv6  -->
-    <mat-form-field class="g-form-input" appearance="outline">
-      <mat-label>{{'ipv6' | translate}}</mat-label>
-      <input matInput formControlName="ipv6" flInputMaxLength="50"
-             placeholder="{{'ipv6' | translate}}">
-    </mat-form-field>
-
     <!--  API URL  -->
-    <mat-form-field class="g-form-input" appearance="outline">
+    <mat-form-field class="g-form-input">
       <mat-label>{{'apiUrl' | translate}}</mat-label>
       <input matInput formControlName="apiUrl" required
              placeholder="{{'apiUrl' | translate}}" >
@@ -43,7 +26,7 @@
     </mat-form-field>
 
     <!--  Front URL  -->
-    <mat-form-field class="g-form-input" appearance="outline">
+    <mat-form-field class="g-form-input">
       <mat-label>{{'frontUrl' | translate}}</mat-label>
       <input matInput formControlName="frontUrl" required
              placeholder="{{'frontUrl' | translate}}" >
@@ -53,7 +36,7 @@
     </mat-form-field>
 
     <!--  Server info  -->
-    <mat-form-field class="g-form-input" appearance="outline">
+    <mat-form-field class="g-form-input">
       <mat-label>{{'server_info' | translate}}</mat-label>
       <mat-select placeholder="{{'server_info' | translate}}" formControlName="serverInfo">
         <gen-select-server-info-options></gen-select-server-info-options>
@@ -64,7 +47,7 @@
     </mat-form-field>
 
     <!--  Lab  -->
-    <mat-form-field class="g-form-input" appearance="outline">
+    <mat-form-field class="g-form-input">
       <mat-label>{{'lab' | translate}}</mat-label>
       <mat-select placeholder="{{'lab' | translate}}" formControlName="lab">
         <gen-select-lab-options></gen-select-lab-options>
@@ -75,13 +58,23 @@
     </mat-form-field>
 
     <!--  Owner  -->
-    <mat-form-field class="g-form-input" appearance="outline">
+    <mat-form-field class="g-form-input">
       <mat-label>{{'owner' | translate}}</mat-label>
       <mat-select placeholder="{{'owner' | translate}}" formControlName="owner">
         <gen-select-user-options></gen-select-user-options>
       </mat-select>
       <mat-error *ngIf="formGp.get('owner').hasError('required')">
         {{'owner' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  Api key  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'lab_api_key' | translate}}</mat-label>
+      <input matInput formControlName="apiKey" required flInputMaxLength="80"
+             placeholder="{{'lab_api_key' | translate}}">
+      <mat-error *ngIf="formGp.get('apiKey').hasError('required')">
+        {{'lab_api_key' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
   </form>

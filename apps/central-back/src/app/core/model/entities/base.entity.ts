@@ -1,13 +1,12 @@
-import {EntityWithId} from './entity-with-id.entity';
 import {BeforeInsert, BeforeUpdate, ManyToOne} from 'typeorm';
 import {User} from '../../../users/user.entity';
 import {Type} from 'class-transformer';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {CurrentUserHelper} from '../../utils/current-user.helper';
 
-export abstract class BaseEntity extends EntityWithId {
+export abstract class BaseEntity extends BlEntityWithId {
 
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;

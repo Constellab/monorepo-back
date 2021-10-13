@@ -1,13 +1,13 @@
 import {Column, Entity, OneToMany, Unique} from 'typeorm';
-import {EntityWithId} from '../core/model/entities/entity-with-id.entity';
 import {DiskType} from './disk-type.enum';
 import {ServerHost} from './server-host.enum';
 import {LabInstance} from '../lab-instances/lab-instance.entity';
+import {BlEntityWithId} from '@monorepo/back-core-lib';
 
 // unique key on Name/Host
 @Unique('UQ_NAME', ['name', 'host'])
 @Entity()
-export class ServerInfo extends EntityWithId {
+export class ServerInfo extends BlEntityWithId {
 
   // host like OVH, AWS...
   @Column({nullable: false, type: 'enum', enum: ServerHost})

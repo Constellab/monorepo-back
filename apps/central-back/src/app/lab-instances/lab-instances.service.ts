@@ -13,7 +13,7 @@ import {ErrorText} from '../core/model/config/error-text.class';
 import {UsersService} from '../users/users.service';
 import {ExternalLabError} from '../external-lab-api/external-lab-error.class';
 import {AxiosResponse} from 'axios';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPageI} from '@monorepo/core-lib';
 import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
     return super.createWithStatus(entity, LabInstanceStatus.STOPPED);
   }
 
-  public getCurrentLabInstances(page: number, size: number): Promise<ClPage<LabInstance>> {
+  public getCurrentLabInstances(page: number, size: number): Promise<ClPageI<LabInstance>> {
     const user: User = CurrentUserHelper.getAndCheckCurrentUser();
 
     return this.findPaginated(page, size, {

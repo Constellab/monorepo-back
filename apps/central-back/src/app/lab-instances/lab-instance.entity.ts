@@ -40,14 +40,6 @@ export class LabInstance extends EntityWithStatus<LabInstanceStatusHistory>
   @Column({nullable: false, length: 80})
   apiKey: string;
 
-  // ip v4 of the server
-  @Column({nullable: false, length: 15})
-  ip: string;
-
-  // ip v6 of the server
-  @Column({nullable: true, length: 50})
-  ipv6: string;
-
   // url of the api server
   @Column({nullable: false, length: 255})
   apiUrl: string;

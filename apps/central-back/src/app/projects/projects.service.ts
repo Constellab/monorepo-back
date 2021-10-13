@@ -6,7 +6,7 @@ import {User} from '../users/user.entity';
 import {AbstractWithStatusService} from '../core/class/abstract-with-status.service';
 import {ProjectStatus} from './project-status.enum';
 import {ProjectStatusHistory} from './project-status-history.entity';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPageI} from '@monorepo/core-lib';
 import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class ProjectsService extends AbstractWithStatusService<Project, ProjectS
     return super.createWithStatus(entity, ProjectStatus.ACTIVE);
   }
 
-  public async getCurrentProjects(page: number, size: number): Promise<ClPage<Project>> {
+  public async getCurrentProjects(page: number, size: number): Promise<ClPageI<Project>> {
     const user: User = CurrentUserHelper.getAndCheckCurrentUser();
 
     return this.findPaginated(page, size, {

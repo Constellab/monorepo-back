@@ -1,5 +1,5 @@
 import {FlApiServiceConfig} from '@monorepo/front-core-lib';
-import {ClCoreJsonConvert, ClDeserializationRef, ClPage} from '@monorepo/core-lib';
+import {ClCoreJsonConvert, ClDeserializationRef, ClPageI} from '@monorepo/core-lib';
 import {Injectable} from '@angular/core';
 import {environment} from '../../../../environments/da-environment';
 
@@ -10,7 +10,7 @@ import {environment} from '../../../../environments/da-environment';
   providedIn: 'root'
 })
 export class DaApiServiceConfig extends FlApiServiceConfig {
-  deserializePage(json: any, classReference: ClDeserializationRef): ClPage<any> {
+  deserializePage(json: any, classReference: ClDeserializationRef): ClPageI<any> {
     // if the result if paginated (we supposed the json is type of ClPage)
     if (json.objects != null && json.objects instanceof Array) {
       json.objects = ClCoreJsonConvert.deserialize(json.objects, classReference);

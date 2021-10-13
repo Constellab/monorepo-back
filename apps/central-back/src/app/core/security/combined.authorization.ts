@@ -1,5 +1,5 @@
 import {AbstractCheckAuthorization} from './abstract-check.authorization';
-import {EntityWithId} from '../model/entities/entity-with-id.entity';
+import {BlEntityWithId} from '@monorepo/back-core-lib';
 
 export type CombinedCheckOperator = 'AND' | 'OR';
 
@@ -20,7 +20,7 @@ export class CombinedAuthorization extends AbstractCheckAuthorization<any> {
   /**
    * Check the combined authorizations for an entity
    */
-  isAuthorized(entity: EntityWithId): boolean {
+  isAuthorized(entity: BlEntityWithId): boolean {
     // if there is only one authorization
     if (this.authorizations.length === 1) {
       return this.authorizations[0].isAuthorized(entity);

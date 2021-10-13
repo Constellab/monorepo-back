@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {FileResourceDatasource, FileResourcePreview} from '../model/entities/resource/file-resource.entity';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPageI} from '@monorepo/core-lib';
 import {map, mergeMap} from 'rxjs/operators';
 
 export interface FileWithContent {
@@ -55,7 +55,7 @@ export class FileResourceService {
     return this.readFile(file.typingName, file.id, file.getExtension());
   }
 
-  public getAll(page: number, pageSize: number): Observable<ClPage<FileResourcePreview>> {
+  public getAll(page: number, pageSize: number): Observable<ClPageI<FileResourcePreview>> {
     return this.apiService.get(`file`, FileResourcePreview,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
