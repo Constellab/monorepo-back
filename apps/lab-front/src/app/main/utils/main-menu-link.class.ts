@@ -27,9 +27,9 @@ export const mainMenuLinks: MainMenuLink[] = [
     icon: 'folder',
     route: constFileExplorerFullRoute
   },
-  {
-    label: 'add_brick',
-    icon: 'view_in_ar',
-    route: '/app/brick'
-  }
+  // {
+  //   label: 'add_brick',
+  //   icon: 'view_in_ar',
+  //   route: '/app/brick'
+  // }
 ];
