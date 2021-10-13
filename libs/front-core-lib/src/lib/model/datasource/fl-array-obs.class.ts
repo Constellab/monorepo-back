@@ -58,7 +58,7 @@ export abstract class FlArrayObs<T = any> implements FlDatasource<T> {
       } else if (data instanceof Observable) {
         data.subscribe(
           array => this.array = array,
-          error => this.error(error)
+          error => this.error(error, true)
         );
       }
     }

@@ -15,7 +15,7 @@ export class LabInstanceTableComponent extends FlTableAbstractDirective<LabInsta
   @Input() datasource: FlArrayObs<LabInstance>;
 
   constructor(private dialogService: FlDialogService) {
-    super(['lab', 'owner', 'createdBy', 'currentStatus', 'serverInfo', 'createdBy', 'actions']);
+    super(['name', 'owner', 'createdBy', 'currentStatus', 'serverInfo', 'createdBy', 'actions']);
   }
 
   ngOnInit(): void {
@@ -26,8 +26,7 @@ export class LabInstanceTableComponent extends FlTableAbstractDirective<LabInsta
       mode: 'update', object: labInstance
     };
 
-    this.dialogService.openSmallDialog(LabInstanceFormDialogComponent, {data: dialogInput})
-      .afterClosed().subscribe(
+    this.dialogService.openSmallDialog(LabInstanceFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
       result => this.onUpdateClosed(result)
     );
   }

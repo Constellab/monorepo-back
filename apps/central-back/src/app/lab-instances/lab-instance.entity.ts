@@ -17,6 +17,9 @@ import {BlNotUpdatable} from '@monorepo/back-core-lib';
 export class LabInstance extends EntityWithStatus<LabInstanceStatusHistory>
   implements LabServerInfo, EntityWithOwner {
 
+  @Column({nullable: false, length: 50})
+  name: string;
+
   @BlNotUpdatable()
   @Type(() => Lab)
   @ManyToOne(() => Lab, {eager: true, nullable: false})
@@ -66,6 +69,9 @@ export class LabInstance extends EntityWithStatus<LabInstanceStatusHistory>
     // this.apiKey = crypto.randomBytes(48).toString('base64').replace(/\W/g, '');
     // todo to remove
     this.apiKey = '123456';
+    if (!this.name) {
+      this.name = this.lab.label;
+    }
   }
 
   isRunning(): boolean {

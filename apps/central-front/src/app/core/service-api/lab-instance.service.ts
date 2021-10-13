@@ -9,7 +9,7 @@ import {
   LabInstanceUserForm
 } from '../model/entities/lab-instance.class';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {ClGetPageFunction, ClPage} from '@monorepo/core-lib';
+import {ClGetPageFunction, ClPage, clRxjsDebug} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -84,15 +84,19 @@ export class LabInstanceService {
   }
 
   public getLabInstanceUsers(id: string): Observable<LabInstanceUser[]> {
-    return this.apiService.get(`${this.route}/${id}/users`, LabInstanceUser);
+    return this.apiService.get(`${this.route}/${id}/users`, LabInstanceUser).pipe(clRxjsDebug());
   }
 
   public addUserToLab(labId: string, labInstanceUserForm: LabInstanceUserForm): Observable<LabInstanceUser> {
     const object = {
       userId: labInstanceUserForm.user.id,
       group: labInstanceUserForm.group
-    }
+    };
     return this.apiService.post(`${this.route}/${labId}/add-user`, object, LabInstanceUser);
+  }
+
+  public updateName(id: string, name: string): Observable<LabInstance> {
+    return this.apiService.put(`${this.route}/${id}/name/${name}`, null);
   }
 
 }

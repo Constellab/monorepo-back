@@ -34,8 +34,7 @@ export class LabInstanceUsersListComponent implements OnInit {
       mode: 'create'
     };
 
-    this.dialogService.openSmallDialog(LabInstanceUserFormDialogComponent, {data: input})
-      .afterClosed().subscribe(
+    this.dialogService.openSmallDialog(LabInstanceUserFormDialogComponent, {data: input}).afterClosed().subscribe(
       result => this.onUserAddedClosed(result)
     );
   }

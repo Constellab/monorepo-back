@@ -106,5 +106,10 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
     return this.service.addUserToLab(labInstanceId, newUser);
   }
 
+  public async updateName(labInstanceId: string, name: string): Promise<LabInstance> {
+    await this.getAndCheckAuthorizationToFindById(labInstanceId);
+
+    return this.service.updateName(labInstanceId, name);
+  }
 
 }

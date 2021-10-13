@@ -1,6 +1,6 @@
 <ng-container *ngIf="labInstances?.length > 0; else noInstances">
   <mat-option *ngFor="let lab of labInstances" [value]="lab">
-    {{lab.lab.label}}
+    {{lab.name}}
   </mat-option>
 </ng-container>
 

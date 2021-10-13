@@ -15,10 +15,10 @@ import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} fro
 export class LabInstanceFormDialogComponent extends FlFormDialogAbstractDirective<Partial<LabInstance>, LabInstance>
   implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<LabInstance>,
-              private labInstanceService: LabInstanceService,
-              snackBarService: FlSnackBarService,
-              dialogRef: MatDialogRef<LabInstanceFormDialogComponent>) {
+  constructor(snackBarService: FlSnackBarService,
+              dialogRef: MatDialogRef<LabInstanceFormDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<LabInstance>,
+              private labInstanceService: LabInstanceService) {
     super(dialogInput, snackBarService, dialogRef, 'create_lab_instance', 'update_lab_instance');
   }
 
@@ -34,6 +34,7 @@ export class LabInstanceFormDialogComponent extends FlFormDialogAbstractDirectiv
   buildForm(): FormGroup<Partial<LabInstance>> {
     return new FormBuilder().group({
       id: [null],
+      name: [null, Validators.required],
       ip: [null, Validators.required],
       ipv6: [null],
       apiUrl: [null, [Validators.required]],

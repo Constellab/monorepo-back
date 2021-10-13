@@ -26,6 +26,8 @@ export class LabInstanceStatusHistory extends StatusHistory<LabInstanceStatus> {
  */
 export class LabInstance extends BaseEntity {
 
+  name: string;
+
   @Type(() => Lab)
   lab: Lab = null;
 

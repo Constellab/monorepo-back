@@ -3,10 +3,15 @@
   <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
     <fl-text-icon>
       <mat-icon class="g-icon-big" svgIcon="lab"></mat-icon>
-      <h1>{{labInstance.lab.label}}</h1>
+      <h1>{{labInstance.name}}</h1>
     </fl-text-icon>
 
     <div fxLayout="row" fxLayoutAlign="start center">
+      <button mat-icon-button type="button" (click)="openLabNameUpdate()"
+              [matTooltip]="'update_lab_name' | translate" class="g-button-action">
+        <mat-icon>edit</mat-icon>
+      </button>
+
       <button mat-icon-button type="button" (click)="openStatusHistoryDialog()"
               [matTooltip]="'status_history' | translate" class="g-button-action">
         <mat-icon>history</mat-icon>

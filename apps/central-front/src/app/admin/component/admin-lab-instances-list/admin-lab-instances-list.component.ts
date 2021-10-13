@@ -16,7 +16,7 @@ export class AdminLabInstancesListComponent implements OnInit {
 
   labInstances: FlArrayObs<LabInstance>;
 
-  displayedColumns: FlTableColumn<LabInstance>[] = ['lab', 'owner', 'currentStatus', 'ip', 'ipv6', 'apiUrl',
+  displayedColumns: FlTableColumn<LabInstance>[] = ['name', 'owner', 'currentStatus', 'ip', 'ipv6', 'apiUrl',
     'frontUrl', 'serverInfo', 'actions'];
 
   constructor(private labInstanceService: LabInstanceService,
@@ -36,10 +36,10 @@ export class AdminLabInstancesListComponent implements OnInit {
       mode: 'create'
     };
 
-    this.dialogService.openSmallDialog(LabInstanceFormDialogComponent, {data: dialogInput})
-      .afterClosed().subscribe(
-      labInstance => this.onCreateLabInstanceClosed(labInstance)
-    );
+    this.dialogService.openSmallDialog(LabInstanceFormDialogComponent, {data: dialogInput}).afterClosed()
+      .subscribe(
+        labInstance => this.onCreateLabInstanceClosed(labInstance)
+      );
   }
 
   private onCreateLabInstanceClosed(labInstance?: LabInstance): void {

@@ -105,4 +105,12 @@ export class LabInstancesController {
     return this.securityLayer.addUser(id, newUser);
   }
 
+  /**
+   * Update the lab name
+   */
+  @Put(':id/name/:name')
+  public updateName(@Param('id', new ParseUUIDPipe()) id: string, @Param('name') name: string): Promise<LabInstance> {
+    return this.securityLayer.updateName(id, name);
+  }
+
 }

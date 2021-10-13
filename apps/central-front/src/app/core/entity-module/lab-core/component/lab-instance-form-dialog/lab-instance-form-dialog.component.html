@@ -5,6 +5,16 @@
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="server-info-form" [formGroup]="formGp">
 
+    <!--  Name  -->
+    <mat-form-field class="g-form-input" appearance="outline">
+      <mat-label>{{'name' | translate}}</mat-label>
+      <input matInput formControlName="name" required flInputMaxLength="15"
+             placeholder="{{'name' | translate}}">
+      <mat-error *ngIf="formGp.get('name').hasError('required')">
+        {{'name' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
     <!--  Ip  -->
     <mat-form-field class="g-form-input" appearance="outline">
       <mat-label>{{'ip' | translate}}</mat-label>

@@ -110,4 +110,10 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
 
     return this.externalLabUserService.addUser(lab, user, newUser.group);
   }
+
+  public async updateName(labInstanceId: string, name: string): Promise<LabInstance> {
+    const lab: LabInstance = await this.findByIdAndCheck(labInstanceId);
+    lab.name = name;
+    return this.repository.save(lab);
+  }
 }

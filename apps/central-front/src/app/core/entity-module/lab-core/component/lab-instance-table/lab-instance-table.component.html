@@ -1,13 +1,13 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource">
 
-  <!-- Lab -->
-  <ng-container matColumnDef="lab">
+  <!-- Name -->
+  <ng-container matColumnDef="name">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'lab' | translate}}</span>
+      <span>{{'name' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
       <a [routerLink]="getLabRoute(labInstance)" class="g-text-link">
-        <span>{{labInstance.lab.label}}</span>
+        <span>{{labInstance.name}}</span>
       </a>
     </mat-cell>
   </ng-container>
