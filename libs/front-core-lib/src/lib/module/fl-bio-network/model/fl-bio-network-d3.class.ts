@@ -44,6 +44,11 @@ export class FlBioxNetworkD3 {
     return this.links.filter(link => !link.isLinkedToCofactor());
   }
 
+  // return all the link that are link to cofactors
+  public getCofactorLinks(): FlBioNetworkD3Link[] {
+    return this.links.filter(link => link.isLinkedToCofactor());
+  }
+
 
   // return the min and max value of all links
   public getLinksDomain(): [number, number] {

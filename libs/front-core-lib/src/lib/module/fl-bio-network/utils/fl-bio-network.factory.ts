@@ -28,7 +28,6 @@ export class FlBioNetworkFactory {
   private links: FlBioNetworkD3Link[] = [];
 
 
-
   constructor(private grey: string) {
   }
 
@@ -127,7 +126,9 @@ export class FlBioNetworkFactory {
         // if the metabolite is a cofactor, create a node for it
         // and use the cofactor id
         if (this.isCofactor(metabolite.chebi_id)) {
-          metaboliteNode = this.createCofactor(metabolite);
+          const cofactor = this.createCofactor(metabolite);
+          reactionD3.addCofactor(cofactor);
+          metaboliteNode = cofactor;
         } else {
           // use the metabolite id
           metaboliteNode = this.metabolites.find(m => m.data.id === metabolite.id);

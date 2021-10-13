@@ -13,6 +13,7 @@ export class FlFileHelper {
    * @return return the filename name of a file without the extension
    */
   public static getFilenameWithoutExtension(file: string): string {
+    if (!file) return null;
     return FlFileHelper.extractFilenameFromFullPath(file)
       .split('.')
       .slice(0, -1)
@@ -24,6 +25,7 @@ export class FlFileHelper {
    * @return the file extension without the .
    */
   public static getFileExtension(file: string): string {
+    if (!file) return null;
     return FlFileHelper.extractFilenameFromFullPath(file)
       .split('.')
       .slice(-1)

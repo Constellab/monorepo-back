@@ -23,11 +23,17 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
   // Node’s current y-velocity
   vy?: number;
 
+  fx?: number;
+  fy?: number;
+
 
   protected constructor(public id: string, public name: string, public type: FlBioNetworkD3NodeType, public color: string,
                         public data: FlBioNetworkMetabolite | FlBioNetworkReaction) {
-    if (data.position != null) {
+    if (data.position != null && data.position.x != null && data.position.y != null) {
       this.setCenter(data.position);
+      // set the fixed positions
+      this.fx = this.x;
+      this.fy = this.y;
     }
   }
 
@@ -53,14 +59,31 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
     });
   }
 
-  public setCenter(coord: FlCoord): void {
-    this.setPosition(this.convertToCenterCoord(coord));
+  /**
+   * Set the center position of the node
+   * return the ids of the moved nodes
+   */
+  public setCenter(coord: FlCoord): string[] {
+    return this.setPosition(this.convertToCenterCoord(coord));
   }
 
-  public setPosition(coord: FlCoord): void {
+  /**
+   * Set the position position of the node
+   * return the ids of the moved nodes
+   */
+  public setPosition(coord: FlCoord): string[] {
     this.x = coord.x;
     this.y = coord.y;
     this.savePosition();
+    return [this.id];
+  }
+
+  // add the coord to the current position
+  public move(coord: FlCoord): string[] {
+    this.x += coord.x;
+    this.y += coord.y;
+    this.savePosition();
+    return [this.id];
   }
 
   public abstract convertFromCenterCoord(coord: FlCoord): FlCoord;

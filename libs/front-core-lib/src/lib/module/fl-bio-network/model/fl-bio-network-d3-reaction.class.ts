@@ -2,6 +2,7 @@ import {FlBioNetworkReaction} from './fl-bio-network.class';
 import {FlCoord, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {select} from 'd3';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
+import {FlBioNetworkD3Cofactor} from './fl-bio-network-d3-cofactor.class';
 
 // size for the reaction rect
 export const flBioNetworkReactionWidth: number = 8;
@@ -15,6 +16,8 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
   public type: 'reaction';
   public data: FlBioNetworkReaction;
   public pathwayIds: string[]; // list of pathway for the reaction
+
+  public cofactors: FlBioNetworkD3Cofactor[] = [];
 
   constructor(id: string, name: string, color: string, data: FlBioNetworkReaction, pathwayIds: string[]) {
     super(id, name, 'reaction', color, data);
@@ -68,6 +71,29 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
 
   public isInPathway(id: string): boolean {
     return this.pathwayIds.includes(id);
+  }
+
+
+  setPosition(coord: FlCoord): string[] {
+    const diff: FlCoord = {
+      x: coord.x - this.x,
+      y: coord.y - this.y
+    };
+    super.setPosition(coord);
+
+    // the cofactors are linked to the reaction. When moving the reaction, we also move the cofactors
+    const movedNode: string[] = [this.id];
+    if (this.cofactors) {
+      for (const cofactor of this.cofactors) {
+        movedNode.push(...cofactor.move(diff));
+      }
+    }
+
+    return movedNode;
+  }
+
+  public addCofactor(cofactor: FlBioNetworkD3Cofactor): void {
+    this.cofactors.push(cofactor);
   }
 
 
