@@ -1,5 +1,6 @@
 import {NgModule} from '@angular/core';
 import {
+  FlAuthModule,
   FlCorePipeModule,
   FlDialogModule,
   FlFormModule,
@@ -17,7 +18,8 @@ import {
     FlDialogModule,
     FlSnackBarModule,
     FlTranslateModule,
-    FlSectionModule
+    FlSectionModule,
+    FlAuthModule
   ]
 })
 export class DaCustomLibraryModule {

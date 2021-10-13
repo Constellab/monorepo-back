@@ -524,7 +524,8 @@
             "main": "apps/dn-documentation/src/main.ts",
             "tsConfig": "apps/dn-documentation/tsconfig.app.json",
             "assets": [
-              "apps/dn-documentation/src/assets"
+              "apps/dn-documentation/src/assets",
+              "apps/dn-documentation/src/environments"
             ]
           },
           "configurations": {

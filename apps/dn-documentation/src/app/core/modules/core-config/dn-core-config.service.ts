@@ -20,15 +20,23 @@ export class DnCoreConfigService {
     return this.getEnvironmentProfile() === ENVIRONMENT_PROFILE_PROD_VALUE;
   }
 
+  public getJwtSecret(): string {
+    return this.configService.get('JWT_SECRET');
+  }
+
   public isLocal(): boolean {
     const env: EnvironmentProfile = this.getEnvironmentProfile();
     return env === 'dev' || env === 'docker' || env === 'test';
   }
 
+  public getCentralApiUrl(): string {
+    return this.configService.get('CENTRAL_API_URL');
+  }
+
   public getDatabaseConfig(): DnDatabaseConfig {
     return {
       host: this.configService.get('DATABASE_HOST'),
-      port: this.getConfigNumber('DATABASE_PORT'),
+      port: this.configService.get('DATABASE_PORT'),
       username: this.configService.get('DATABASE_USER'),
       password: this.configService.get('DATABASE_PASSWORD'),
       database: this.configService.get('DATABASE')

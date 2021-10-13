@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/
 import { ParsePipe } from '../core/pipes/dn-parse.pipe';
 import {DnDocumentation, DnDocumentationDTO} from './dn-documentation.entity';
 import { DnDocumentationService } from './dn-documentation.service';
+import {BlPublic} from '@monorepo/back-core-lib';
 
 @Controller('documentation')
 export class DnDocumentationController {
@@ -12,17 +13,20 @@ export class DnDocumentationController {
     return this.documentationService.create(createDocumentation);
   }
 
+  @BlPublic()
   @Get()
   async findAll(): Promise<DnDocumentationDTO[]> {
     const docs = await this.documentationService.findAll();
     return docs.map(doc => new DnDocumentationDTO(doc));
   }
 
+  @BlPublic()
   @Get('path')
   findOneByPath(@Query() query: any): Promise<DnDocumentation> {
     return this.documentationService.findOneByPath(query.path);
   }
 
+  @BlPublic()
   @Get(':id')
   findOne(@Param('id') id: string): Promise<DnDocumentation> {
     return this.documentationService.findOne(id);

@@ -3,10 +3,10 @@ import { NgModule } from '@angular/core';
 import { QuillModule } from 'ngx-quill';
 import { DaCoreModule } from '../../../da-core/da-core.module';
 import { DaAdminCoreModule } from '../da-admin-core/da-admin-core.module';
-import { DaAdminListPageComponent } from './da-admin-list-page/da-admin-list-page.component';
+import { DaAdminLoginComponent } from './da-admin-login/da-admin-login.component';
 
 @NgModule({
-  declarations: [DaAdminListPageComponent],
+  declarations: [DaAdminLoginComponent],
   imports: [
     DaAdminCoreModule,
     CommonModule,
@@ -15,6 +15,6 @@ import { DaAdminListPageComponent } from './da-admin-list-page/da-admin-list-pag
     QuillModule.forRoot()
   ]
 })
-export class DaAdminListPageModule{
+export class DaAdminLoginModule {
 
 }

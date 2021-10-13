@@ -12,4 +12,4 @@ import { DnVersionService } from '../version/dn-version.service';
   controllers: [DnDocumentationController],
   providers: [DnDocumentationService, DnVersionService]
 })
-export class DocumentationModule {}
+export class DnDocumentationModule {}

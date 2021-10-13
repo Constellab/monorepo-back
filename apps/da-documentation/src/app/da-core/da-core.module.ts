@@ -3,9 +3,9 @@ import { DaCustomLibraryModule } from './da-custom-library/da-custom-library.mod
 import { DaCustomMaterialModule } from './da-custom-material/da-custom-material.module';
 
 @NgModule({
-    exports: [
-        DaCustomLibraryModule,
-        DaCustomMaterialModule,
-    ]
+  exports: [
+    DaCustomLibraryModule,
+    DaCustomMaterialModule,
+  ]
 })
 export class DaCoreModule{}
