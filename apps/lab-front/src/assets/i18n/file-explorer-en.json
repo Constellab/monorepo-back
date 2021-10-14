@@ -1,6 +1,6 @@
 {
   "fe": {
-    "file_explorer": "Files",
+    "file_explorer": "Databox",
     "no_file_resources": "No file",
     "upload_file": "Upload files",
     "uploading_files": "Uploading {{nbFiles}} files",
