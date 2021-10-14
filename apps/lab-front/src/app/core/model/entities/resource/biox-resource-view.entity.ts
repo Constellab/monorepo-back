@@ -6,6 +6,9 @@ import {BioxConfigSpecBase, BioxConfigSpecs} from '../biox-config-spec.entity';
 export type BioxResourceViewType = 'view' | 'json-view' | 'text-view' | 'table-view' | 'network-view' | 'image-view' |
   'scatter-plot-2d' | 'line-plot-2d' | 'histogram';
 
+// Mode to where display the view
+export type BioxResourceViewDisplayMode = 'fullScreen' | 'portal';
+
 export class BioxResourceViewSpec {
   @Expose({name: 'method_name'})
   methodName: string;
@@ -44,8 +47,8 @@ export class BioxResourceViewSpec {
  */
 export interface BioxResourceViewSpecWithConfig {
   viewSpec: BioxResourceViewSpec;
-
-  config: BioxResourceViewConfig;
+  viewConfig: BioxResourceViewConfig;
+  displayMode: BioxResourceViewDisplayMode;
 }
 
 export class BioxResourceViewConfig {
@@ -142,26 +145,49 @@ export interface BioxResourceViewChart2dData {
 
 export type BioxResourceView = BioxResourceViewJson;
 
+// Information of the view type
+export interface BioxResourceViewTypeInfo {
+  icon: string;
+  text: string;
+  // Where the view show in a portal or component by default
+  defaultDisplayMode: BioxResourceViewDisplayMode;
+  // if true the default display mode can be modified
+  forceDefaultDisplayMode: boolean;
+}
+
 // Record of view type, icon
-const constBioxResourceViewIcon: Record<BioxResourceViewType, { icon: string, text: string }> = {
-  view: {icon: 'view_quilt', text: 'biox.resource_view_base'},
-  'json-view': {icon: 'code', text: 'biox.resource_view_json'},
-  'text-view': {icon: 'text_snippet', text: 'biox.resource_view_text'},
-  'table-view': {icon: 'calendar_view_month', text: 'biox.resource_view_spreadsheet'},
-  'network-view': {icon: 'share', text: 'biox.resource_view_pathway'},
-  'image-view': {icon: 'insert_photo', text: 'biox.resource_view_image'},
-  'scatter-plot-2d': {icon: 'scatter_plot', text: 'biox.resource_view_scatter_plot_2d'},
-  'line-plot-2d': {icon: 'show_chart', text: 'biox.resource_view_line_plot_2d'},
-  histogram: {icon: 'bar_chart', text: 'biox.resource_view_histogram'},
+const constBioxResourceViewIcon: Record<BioxResourceViewType, BioxResourceViewTypeInfo> = {
+  view: {icon: 'view_quilt', text: 'biox.resource_view_base', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
+  'json-view': {icon: 'code', text: 'biox.resource_view_json', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
+  'text-view': {icon: 'text_snippet', text: 'biox.resource_view_text', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
+  'table-view': {
+    icon: 'calendar_view_month',
+    text: 'biox.resource_view_spreadsheet',
+    defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: true
+  },
+  'network-view': {icon: 'share', text: 'biox.resource_view_pathway', defaultDisplayMode: 'fullScreen', forceDefaultDisplayMode: true},
+  'image-view': {icon: 'insert_photo', text: 'biox.resource_view_image', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
+  'scatter-plot-2d': {
+    icon: 'scatter_plot',
+    text: 'biox.resource_view_scatter_plot_2d',
+    defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
+  'line-plot-2d': {
+    icon: 'show_chart',
+    text: 'biox.resource_view_line_plot_2d',
+    defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
+  histogram: {icon: 'bar_chart', text: 'biox.resource_view_histogram', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
 };
 
 /**
  * Object that group view specs by type
  */
 export interface BioxResourceViewSpecsByType {
-  viewType: BioxResourceViewType;
-  icon: string;
-  text: string;
+  viewTypeInfo: BioxResourceViewTypeInfo;
   viewSpec: BioxResourceViewSpec[];
 }
 
@@ -176,9 +202,7 @@ export function bioxGroupResourceViewSpecsByType(views: BioxResourceViewSpec[]):
       const viewTypeInfo = constBioxResourceViewIcon[type];
 
       viewsByType[type] = {
-        icon: viewTypeInfo.icon,
-        text: viewTypeInfo.text,
-        viewType: view.viewType,
+        viewTypeInfo: viewTypeInfo,
         viewSpec: []
       };
     }

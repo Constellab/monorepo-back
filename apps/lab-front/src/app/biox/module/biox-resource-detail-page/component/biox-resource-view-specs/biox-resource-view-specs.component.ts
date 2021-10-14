@@ -9,7 +9,8 @@ import {BioxResourceDetailPageState} from '../../state/biox-resource-detail-page
 import {FlDialogService, FlOverlayRef} from '@monorepo/front-core-lib';
 import {
   BioxConfigureResourceViewComponent,
-  BioxConfigureResourceViewInput
+  BioxConfigureResourceViewInput,
+  BioxConfigureResourceViewResult
 } from '../biox-configure-resource-view/biox-configure-resource-view.component';
 
 /**
@@ -49,21 +50,26 @@ export class BioxResourceViewSpecsComponent implements OnInit {
     return this.selectedView?.viewSpec.methodName === view.methodName;
   }
 
-  selectView(view: BioxResourceViewSpec): void {
-    if (view.methodSpecs.isEmpty() && view.viewSpecs.isEmpty()) {
-      this.selectViewSpec(view);
+  selectView(view: BioxResourceViewSpec, viewByType: BioxResourceViewSpecsByType): void {
+    if (view.methodSpecs.isEmpty() && view.viewSpecs.isEmpty() && viewByType.viewTypeInfo.forceDefaultDisplayMode) {
+      this.selectViewSpec(view, {displayMode: viewByType.viewTypeInfo.defaultDisplayMode, viewConfig: new BioxResourceViewConfig()});
     } else {
       // if this view was previously selected, get the config value from it
       let specWithConfig: BioxResourceViewSpecWithConfig;
       if (this.isSpecIsSelected(view)) {
         specWithConfig = this.selectedView;
       } else {
-        specWithConfig = {viewSpec: view, config: new BioxResourceViewConfig()};
+        specWithConfig = {
+          viewSpec: view,
+          displayMode: viewByType.viewTypeInfo.defaultDisplayMode,
+          viewConfig: new BioxResourceViewConfig()
+        };
       }
 
       const data: BioxConfigureResourceViewInput = {
         viewSpecConfig: specWithConfig,
-        title: view.getName()
+        title: view.getName(),
+        viewTypeInfo: viewByType.viewTypeInfo
       };
       this.dialogService.openMediumDialog(BioxConfigureResourceViewComponent, {data: data}).afterClosed().subscribe(
         config => this.onConfigDialogClosed(view, config)
@@ -71,13 +77,13 @@ export class BioxResourceViewSpecsComponent implements OnInit {
     }
   }
 
-  private onConfigDialogClosed(view: BioxResourceViewSpec, config?: BioxResourceViewConfig): void {
+  private onConfigDialogClosed(view: BioxResourceViewSpec, config: BioxConfigureResourceViewResult): void {
     if (config == null) return;
     this.selectViewSpec(view, config);
   }
 
-  private selectViewSpec(view: BioxResourceViewSpec, config?: BioxResourceViewConfig): void {
-    this.state.selectViewSpec(view, config);
+  private selectViewSpec(viewSpec: BioxResourceViewSpec, config: BioxConfigureResourceViewResult): void {
+    this.state.selectViewSpec(Object.assign(config, {viewSpec: viewSpec}));
     this.closeOverlay();
   }
 

@@ -20,6 +20,8 @@ import {MatListModule} from '@angular/material/list';
 import {MatTreeModule} from '@angular/material/tree';
 import {MatSelectModule} from '@angular/material/select';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatRadioModule} from '@angular/material/radio';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -46,7 +48,9 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     MatTreeModule,
     MatSelectModule,
     MatSlideToggleModule,
+    MatRadioModule,
 
+    DragDropModule,
 
     FlexLayoutModule,
   ],

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FlInfiniteScrollMode} from '@monorepo/front-core-lib';
-import {BioxResourceViewComponent} from '../../model/biox-resource-view-component.class';
+import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
 import {BioxResourceViewText, bioxResourceViewTextSpecPage} from '../../../../model/entities/resource/biox-resource-view.entity';
 import {BioxResourceDetailPageState} from '../../../../../biox/module/biox-resource-detail-page/state/biox-resource-detail-page.state';
 
@@ -15,7 +15,7 @@ import {BioxResourceDetailPageState} from '../../../../../biox/module/biox-resou
   styleUrls: ['./biox-resource-text.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BioxResourceTextComponent implements OnInit, BioxResourceViewComponent<BioxResourceViewText> {
+export class BioxResourceTextComponent extends BioxResourceViewDirective<BioxResourceViewText> implements OnInit {
 
   @Input() view: BioxResourceViewText;
 
@@ -33,6 +33,7 @@ export class BioxResourceTextComponent implements OnInit, BioxResourceViewCompon
 
   constructor(private state: BioxResourceDetailPageState,
               private cdr: ChangeDetectorRef) {
+    super();
   }
 
   ngOnInit(): void {
@@ -74,6 +75,7 @@ export class BioxResourceTextComponent implements OnInit, BioxResourceViewCompon
       () => this.isLoading = false
     );
   }
+
   private loadPreviousPageSuccess(view: BioxResourceViewText): void {
     this.view.data = this.toString(view.data) + this.view.data;
     this.text = this.toString(view.data) + this.text;

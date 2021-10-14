@@ -5,6 +5,7 @@ import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {
   BioxResourceView,
   BioxResourceViewConfig,
+  BioxResourceViewDisplayMode,
   BioxResourceViewSpec,
   BioxResourceViewSpecsByType,
   BioxResourceViewSpecWithConfig
@@ -18,6 +19,7 @@ export interface BioxResourceViewEvent {
   status: 'success' | 'error' | 'loading';
   view?: BioxResourceView; // loaded view only if success
   error?: FlServerError; // error only if error
+  displayMode?: BioxResourceViewDisplayMode; // mode to where show the view when success
 }
 
 @Injectable()
@@ -72,7 +74,7 @@ export class BioxResourceDetailPageState implements OnDestroy {
     }
 
     if (defaultView) {
-      this.selectViewSpec(defaultView);
+      this.selectViewSpec({viewSpec: defaultView, displayMode: 'fullScreen', viewConfig: new BioxResourceViewConfig()});
     }
   }
 
@@ -84,11 +86,7 @@ export class BioxResourceDetailPageState implements OnDestroy {
     return this.selectedViewSpec$.asObservable();
   }
 
-  public selectViewSpec(viewSpec: BioxResourceViewSpec, viewConfig?: BioxResourceViewConfig): void {
-    if (viewConfig == null) {
-      viewConfig = new BioxResourceViewConfig();
-    }
-    const viewSpecConfigured: BioxResourceViewSpecWithConfig = {viewSpec: viewSpec, config: viewConfig};
+  public selectViewSpec(viewSpecConfigured: BioxResourceViewSpecWithConfig): void {
     this.selectedViewSpec$.next(viewSpecConfigured);
     this.loadView(viewSpecConfigured);
   }
@@ -96,17 +94,19 @@ export class BioxResourceDetailPageState implements OnDestroy {
   /////////////////////////////////// VIEW //////////////////////////////////////////
 
   private loadView(viewSpecConfigured: BioxResourceViewSpecWithConfig): void {
-    // mark the view as loading
-    this.view$.next({status: 'loading'});
-
-    if (viewSpecConfigured != null) {
-      this.viewSubscription?.unsubscribe(); // unsubscribe previous loading (if multiple view are requested in a row)
-      this.viewSubscription = this.callResourceView(viewSpecConfigured.viewSpec.methodName, viewSpecConfigured.config)
-        .subscribe(
-          view => this.onLoadViewSuccess(view),
-          (error: FlServerError) => this.view$.next({status: 'error', error: error})
-        );
+    // todo improve loading management
+    if (viewSpecConfigured.displayMode === 'fullScreen') {
+      // mark the view as loading
+      this.view$.next({status: 'loading', displayMode: 'fullScreen'});
     }
+
+    this.viewSubscription?.unsubscribe(); // unsubscribe previous loading (if multiple view are requested in a row)
+    this.viewSubscription = this.callResourceView(viewSpecConfigured.viewSpec.methodName, viewSpecConfigured.viewConfig)
+      .subscribe(
+        view => this.onLoadViewSuccess(view, viewSpecConfigured.displayMode),
+        (error: FlServerError) => this.view$.next({status: 'error', error: error})
+      );
+
   }
 
   /**
@@ -114,7 +114,7 @@ export class BioxResourceDetailPageState implements OnDestroy {
    * @param pageConfig
    */
   public callPagination(pageConfig: Record<string, any>): Observable<BioxResourceView> {
-    const config: BioxResourceViewConfig = this.selectedViewSpec$.value.config.clone();
+    const config: BioxResourceViewConfig = this.selectedViewSpec$.value.viewConfig.clone();
 
     // override the view config with page config
     for (const key of Object.keys(pageConfig)) {
@@ -128,9 +128,9 @@ export class BioxResourceDetailPageState implements OnDestroy {
     return this.resourceService.callResourceView(this.type, this.id, methodName, config);
   }
 
-  private onLoadViewSuccess(view: BioxResourceView): void {
+  private onLoadViewSuccess(view: BioxResourceView, displayMode: BioxResourceViewDisplayMode): void {
     this.viewSubscription = null;
-    this.view$.next({status: 'success', view: view});
+    this.view$.next({status: 'success', view: view, displayMode: displayMode});
   }
 
   public getView$(): Observable<BioxResourceViewEvent> {

@@ -1,7 +1,7 @@
 <div *ngFor="let viewByType of viewsByType" class="group">
   <fl-text-icon>
-    {{viewByType.text | translate}}
-    <mat-icon [flIcon]="viewByType.icon"></mat-icon>
+    {{viewByType.viewTypeInfo.text | translate}}
+    <mat-icon [flIcon]="viewByType.viewTypeInfo.icon"></mat-icon>
   </fl-text-icon>
 
   <div fxLayout="row wrap" fxLayoutGap="1em">
@@ -9,7 +9,7 @@
     <div *ngFor="let view of viewByType.viewSpec"
          [ngClass]="getSelectedClass(view)"
          class="view-box"
-         (click)="selectView(view)">
+         (click)="selectView(view, viewByType)">
       <div fxLayout="row" fxLayoutAlign="space-between">
         <p>{{view.getName()}}</p>
         <mat-icon *ngIf="view.defaultView" color="primary"

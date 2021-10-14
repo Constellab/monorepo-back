@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {BioxResourceViewComponent} from '../../model/biox-resource-view-component.class';
+import {Component, OnInit} from '@angular/core';
+import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
 import {BioxResourceViewLinePlot2d, BioxResourceViewScatterPlot2d} from '../../../../model/entities/resource/biox-resource-view.entity';
 import {FlChart2dDatum, FlChart2dDatumNumber, FlChart2dMultiSerie, FlChartSerie, FlChartType} from '@monorepo/front-core-lib';
 
@@ -11,16 +11,12 @@ import {FlChart2dDatum, FlChart2dDatumNumber, FlChart2dMultiSerie, FlChartSerie,
   templateUrl: './biox-resource-chart-2d.component.html',
   styleUrls: ['./biox-resource-chart-2d.component.scss']
 })
-export class BioxResourceChart2dComponent implements OnInit,
-  BioxResourceViewComponent<BioxResourceViewScatterPlot2d | BioxResourceViewLinePlot2d> {
-
-  @Input() view: BioxResourceViewScatterPlot2d | BioxResourceViewLinePlot2d;
+export class BioxResourceChart2dComponent
+  extends BioxResourceViewDirective<BioxResourceViewScatterPlot2d | BioxResourceViewLinePlot2d> implements OnInit {
 
   series: FlChart2dMultiSerie<FlChart2dDatum>;
   chartType: FlChartType;
 
-  constructor() {
-  }
 
   ngOnInit(): void {
     this.convertToChartData();

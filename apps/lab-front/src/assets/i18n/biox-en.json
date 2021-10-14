@@ -53,6 +53,9 @@
     "view_type_node_supported": "View not supported. It will be supported in a short notice",
     "resource_view_scatter_plot_2d": "Scatter plot 2d",
     "resource_view_line_plot_2d": "Line 2d",
-    "resource_view_histogram": "Histogram"
+    "resource_view_histogram": "Histogram",
+    "resource_view_display_mode": "Display mode",
+    "resource_view_display_portal": "Dialog",
+    "resource_view_display_component": "Full screen"
   }
 }

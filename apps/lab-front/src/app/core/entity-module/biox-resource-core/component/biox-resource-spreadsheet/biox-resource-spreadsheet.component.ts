@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlSheet, FlSpreadsheet, FlSpreadsheetFactory} from '@monorepo/front-core-lib';
-import {BioxResourceViewComponent} from '../../model/biox-resource-view-component.class';
+import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
 import {BioxResourceViewTable} from '../../../../model/entities/resource/biox-resource-view.entity';
 
 /**
@@ -11,14 +11,11 @@ import {BioxResourceViewTable} from '../../../../model/entities/resource/biox-re
   templateUrl: './biox-resource-spreadsheet.component.html',
   styleUrls: ['./biox-resource-spreadsheet.component.scss'],
 })
-export class BioxResourceSpreadsheetComponent implements OnInit, BioxResourceViewComponent<BioxResourceViewTable> {
+export class BioxResourceSpreadsheetComponent extends BioxResourceViewDirective<BioxResourceViewTable> implements OnInit {
 
   @Input() view: BioxResourceViewTable;
 
   spreadSheet: FlSpreadsheet;
-
-  constructor() {
-  }
 
   ngOnInit(): void {
 

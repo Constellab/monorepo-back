@@ -5,6 +5,14 @@
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
     <fl-dynamic-form [formGp]="formGp" [configs]="configs"></fl-dynamic-form>
+
+    <div *ngIf="showDisplayModeControl" class="display-mode">
+      <label >{{'biox.resource_view_display_mode' | translate}}</label>
+      <mat-radio-group formControlName="displayMode" color="primary">
+        <mat-radio-button value="fullScreen" class="display-mode-label">{{'biox.resource_view_display_component' | translate}}</mat-radio-button>
+        <mat-radio-button value="portal" class="display-mode-label">{{'biox.resource_view_display_portal' | translate}}</mat-radio-button>
+      </mat-radio-group>
+    </div>
   </form>
 </mat-dialog-content>
 

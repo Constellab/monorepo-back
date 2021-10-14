@@ -1,0 +1,16 @@
+<div class="container">
+
+  <div fxLayout="row" fxLayoutAlign="end center"
+       cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
+       cdkDragBoundary="body" class="header">
+
+    <button mat-icon-button type="button" flPortalClose
+            [matTooltip]="'close' | translate">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <ng-template #viewContainer></ng-template>
+
+
+</div>

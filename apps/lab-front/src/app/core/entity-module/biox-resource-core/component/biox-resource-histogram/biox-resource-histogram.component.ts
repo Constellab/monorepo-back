@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {BioxResourceViewComponent} from '../../model/biox-resource-view-component.class';
+import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
 import {BioxResourceViewHistogram} from '../../../../model/entities/resource/biox-resource-view.entity';
 import {FlChart2dMultiSerie, FlChartDataBin, FlChartSerie, FlChartType} from '@monorepo/front-core-lib';
 
@@ -8,16 +8,13 @@ import {FlChart2dMultiSerie, FlChartDataBin, FlChartSerie, FlChartType} from '@m
   templateUrl: './biox-resource-histogram.component.html',
   styleUrls: ['./biox-resource-histogram.component.scss']
 })
-export class BioxResourceHistogramComponent implements OnInit,
-  BioxResourceViewComponent<BioxResourceViewHistogram> {
+export class BioxResourceHistogramComponent extends BioxResourceViewDirective<BioxResourceViewHistogram>
+  implements OnInit {
 
   @Input() view: BioxResourceViewHistogram;
 
   series: FlChart2dMultiSerie<FlChartDataBin>;
   chartType: FlChartType = FlChartType.HISTOGRAM;
-
-  constructor() {
-  }
 
   ngOnInit(): void {
     this.convertToChartData();
