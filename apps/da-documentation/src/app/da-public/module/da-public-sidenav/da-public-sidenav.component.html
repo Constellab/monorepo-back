@@ -1,5 +1,6 @@
 <mat-sidenav-container class="container" autosize>
   <mat-sidenav #drawer class="sidenav" mode="side" [opened]="true">
+    <h1>{{'Documentations' | translate}}</h1>
     <mat-nav-list>
       <mat-list-item class="sidenav-element"
                      *ngFor="let doc of docs;"

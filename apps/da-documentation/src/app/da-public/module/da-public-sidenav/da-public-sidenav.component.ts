@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {DaDocumentationService} from '../../../da-core/da-service/da-documentation.service';
-import {DaDocumentationDTO} from '../../../da-core/da-model/da-entities/da-documentation.class';
+import {DaDocumentation, DaDocumentationDTO} from '../../../da-core/da-model/da-entities/da-documentation.class';
 
 @Component({
   selector: 'da-da-public-sidenav',
@@ -12,13 +12,13 @@ export class DaPublicSidenavComponent implements OnInit {
   docs: DaDocumentationDTO[] = [];
 
   constructor(
-    private daDocumentationService: DaDocumentationService
+    private daDocumentationService: DaDocumentationService,
   ) { }
 
   ngOnInit(): void {
     this.daDocumentationService.get().subscribe((docs) => {
       docs.map(doc => this.docs.push(doc));
-    })
+    });
   }
 
 }

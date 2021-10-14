@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ActivatedRoute, UrlSegment} from '@angular/router';
 import { Observable } from 'rxjs';
 import { DaDocumentation } from '../../../../da-core/da-model/da-entities/da-documentation.class';
@@ -12,7 +12,7 @@ import { DaDocumentationService } from '../../../../da-core/da-service/da-docume
 export class DaPublicDocPageComponent implements OnInit {
 
   path: string;
-  documentation$: Observable<DaDocumentation>;
+  documentation$: Observable<DaDocumentation> | DaDocumentation;
   showFiller = false;
 
   constructor(
@@ -22,6 +22,9 @@ export class DaPublicDocPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.url.subscribe(url => {
+      if(url.length == 0){
+
+      }
       this.getDocumentationByPath(url);
     });
   }

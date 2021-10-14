@@ -1,5 +1,5 @@
 import { BlEntityWithId } from '@monorepo/back-core-lib';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import { DnVersion } from '../version/dn-version.entity';
 
 @Entity('Documentation')
@@ -14,8 +14,12 @@ export class DnDocumentation extends BlEntityWithId{
     @ManyToOne(() => DnVersion)
     version: DnVersion;
 
-    @Column()
-    path: string;
+
+    @Column({
+      unique: true,
+      nullable: true
+    })
+    path: string | null;
 }
 
 export class DnDocumentationDTO extends BlEntityWithId{
