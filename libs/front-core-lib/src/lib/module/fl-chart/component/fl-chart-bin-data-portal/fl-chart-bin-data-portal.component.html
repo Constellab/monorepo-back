@@ -1,9 +1,6 @@
 <div>
   <div>{{'flChart.number_of_data' | translate}} : {{y}}</div>
   <div>{{'flChart.interval' | translate}} : {{intervalText}}</div>
-<!--  <div class="data-list g-scrollable-element">-->
-<!--    <div *ngFor="let d of data">{{d}}</div>-->
-<!--  </div>-->
 
   <fl-chart-serie-inline class="serie" [color]="serieKey | flChartScale:seriesColorScale" [serieName]="serieName">
   </fl-chart-serie-inline>

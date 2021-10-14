@@ -10,7 +10,7 @@ import {FlChartDomain} from '../fl-chart-domain.class';
  */
 export class FlChartDataBin implements FlChart2dDatum {
 
-  constructor(private x: number, private data: number[],
+  constructor(private x: number, private y: number,
               public readonly min: number, public readonly max: number) {
   }
 
@@ -19,15 +19,11 @@ export class FlChartDataBin implements FlChart2dDatum {
   }
 
   getY(): Numeric {
-    return this.data.length;
+    return this.y;
   }
 
-  addData(data: number): void {
-    this.data.push(data);
-  }
-
-  public getSortedData(): number[] {
-    return this.data.sort((a, b) => a - b);
+  addData(): void {
+    this.y++;
   }
 
   public getIntervalText(): string {
@@ -53,7 +49,7 @@ export function flChartGetDataBins(data: number[], numberOfBins: number): FlChar
     const min = (i * thresholds) + domain[0];
     // for the last bin, use the domain max value
     const max = i === numberOfBins - 1 ? domain[1] : min + thresholds;
-    bins.push(new FlChartDataBin(i, [], min, max));
+    bins.push(new FlChartDataBin(i, 0, min, max));
   }
 
   // add the data in the right category
@@ -73,7 +69,7 @@ export function flChartGetDataBins(data: number[], numberOfBins: number): FlChar
     }
 
     // add the data to the bin
-    bins[index].addData(d);
+    bins[index].addData();
   }
 
   return bins;

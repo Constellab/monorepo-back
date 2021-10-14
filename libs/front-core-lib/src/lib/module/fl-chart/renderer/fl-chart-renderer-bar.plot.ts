@@ -20,8 +20,7 @@ import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 /**
  * Renderer for bar plot or histogram
  */
-export class FlChartRendererBarPlot
-  implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererBarPlot implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly groupClassName: string = 'serie';
 
@@ -41,7 +40,8 @@ export class FlChartRendererBarPlot
       .enter()
       .append('g')
       .attr('class', this.groupClassName)  // I add the class line to be able to modify this line later on.
-      .attr('transform', (d, index) => this.getGroupTranslate(input.xScale, input.chartWidth, index))
+      .attr('transform', (d) =>
+        this.getGroupTranslate(input.xScale, input.chartWidth, d))
 
       // for each group generate the values
       .each((data, index, nodes) =>
@@ -68,7 +68,8 @@ export class FlChartRendererBarPlot
     input.container
       // generate a group for each serie
       .selectAll(`.${this.groupClassName}`)
-      .attr('transform', (d, index) => this.getGroupTranslate(input.xScale, input.chartWidth, index))
+      .attr('transform', (d: FlChartDataWithSerie<FlChart2dDatum>[]) =>
+        this.getGroupTranslate(input.xScale, input.chartWidth, d))
       // for each group generate the values
       .each((data: FlChartDataWithSerie<FlChart2dDatum>[], index, nodes: SVGElement[]) =>
         this.refreshSerie(nodes[index], data, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
@@ -86,9 +87,11 @@ export class FlChartRendererBarPlot
   }
 
   // return the position of the group
-  private getGroupTranslate(xScale: FlChartScale<Numeric>, chartWidth: number, index: number): string {
+  private getGroupTranslate(xScale: FlChartScale<Numeric>, chartWidth: number, d: FlChartDataWithSerie<FlChart2dDatum>[]): string {
+    // get the x value (each series have the same x) and scale it
+    const x = xScale.scale(d[0].data.getX());
     // if the scale return null set the the group outside chart
-    return 'translate(' + (xScale.scale(index) == null ? (chartWidth + 10) : xScale.scale(index)) + ',0)';
+    return 'translate(' + (x == null ? (chartWidth + 10) : x) + ',0)';
   }
 
   // draw one bar

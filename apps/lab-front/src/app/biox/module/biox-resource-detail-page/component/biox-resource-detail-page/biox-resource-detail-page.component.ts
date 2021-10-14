@@ -16,6 +16,7 @@ import {BioxResourceViewSpecsPortalComponent} from '../biox-resource-view-specs-
 import {BioxResourceSpreadsheetComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-spreadsheet/biox-resource-spreadsheet.component';
 import {BioxResourceNetworkComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-network/biox-resource-network.component';
 import {BioxResourceChart2dComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-chart-2d/biox-resource-chart-2d.component';
+import {BioxResourceHistogramComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-histogram/biox-resource-histogram.component';
 
 @Component({
   selector: 'gen-biox-resource-detail-page',
@@ -104,6 +105,8 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
       case 'scatter-plot-2d':
       case 'line-plot-2d':
         return BioxResourceChart2dComponent;
+      case 'histogram':
+        return BioxResourceHistogramComponent;
       default:
         console.error(`View of type ${viewType} not supported`);
         return null;

@@ -23,7 +23,6 @@ export class FlChartBinDataPortalComponent implements OnInit {
 
   y: Numeric;
   intervalText: string;
-  data: number[];
 
   serieName: string;
   serieKey: number;
@@ -33,7 +32,6 @@ export class FlChartBinDataPortalComponent implements OnInit {
     const bin = input.data.data;
     this.y = bin.getY();
     this.intervalText = bin.getIntervalText();
-    this.data = bin.getSortedData();
     this.serieName = input.data.serieName;
     this.serieKey = input.data.serieKey;
     this.seriesColorScale = input.seriesColorScale;

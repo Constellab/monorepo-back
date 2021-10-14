@@ -52,6 +52,7 @@
     "show_view": "Affiche la vue",
     "view_type_node_supported": "La vue n'est pas encore supportée, elle le sera très prochainement.",
     "resource_view_scatter_plot_2d": "Nuage de points 2d",
-    "resource_view_line_plot_2d": "Courbe"
+    "resource_view_line_plot_2d": "Courbe",
+    "resource_view_histogram": "Histogramme"
   }
 }

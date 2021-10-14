@@ -14,6 +14,7 @@ import {BioxResourceTypeSelectOptionsComponent} from './component/biox-resource-
 import {BioxResourceSelectOptionsComponent} from './component/biox-resource-select-options/biox-resource-select-options.component';
 import {BioxResourceNetworkComponent} from './component/biox-resource-network/biox-resource-network.component';
 import {BioxResourceChart2dComponent} from './component/biox-resource-chart-2d/biox-resource-chart-2d.component';
+import {BioxResourceHistogramComponent} from './component/biox-resource-histogram/biox-resource-histogram.component';
 
 
 @NgModule({
@@ -29,6 +30,7 @@ import {BioxResourceChart2dComponent} from './component/biox-resource-chart-2d/b
     BioxResourceSelectOptionsComponent,
     BioxResourceNetworkComponent,
     BioxResourceChart2dComponent,
+    BioxResourceHistogramComponent,
   ],
   exports: [
     BioxResourceInfoComponent,

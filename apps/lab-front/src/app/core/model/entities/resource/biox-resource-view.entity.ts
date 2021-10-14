@@ -4,7 +4,7 @@ import {BioxConfigSpecBase, BioxConfigSpecs} from '../biox-config-spec.entity';
 
 // list of available view type
 export type BioxResourceViewType = 'view' | 'json-view' | 'text-view' | 'table-view' | 'network-view' | 'image-view' |
-  'scatter-plot-2d' | 'line-plot-2d';
+  'scatter-plot-2d' | 'line-plot-2d' | 'histogram';
 
 export class BioxResourceViewSpec {
   @Expose({name: 'method_name'})
@@ -118,6 +118,19 @@ export class BioxResourceViewLinePlot2d extends BioxResourceViewBase {
   data: BioxResourceViewChart2dData[];
 }
 
+export class BioxResourceViewHistogram extends BioxResourceViewBase {
+  type: 'histogram';
+  data: BioxResourceViewHistogramData[];
+}
+
+export class BioxResourceViewHistogramData extends BioxResourceViewBase {
+  column_name: string;
+  data: {
+    bin_edges: number[]; // list of bin interval, one more value than hist
+    hist: number[]; // list of hist values, one value correspond ton one bin interval
+  };
+}
+
 export interface BioxResourceViewChart2dData {
   data: {
     x: number[];
@@ -139,6 +152,7 @@ const constBioxResourceViewIcon: Record<BioxResourceViewType, { icon: string, te
   'image-view': {icon: 'insert_photo', text: 'biox.resource_view_image'},
   'scatter-plot-2d': {icon: 'scatter_plot', text: 'biox.resource_view_scatter_plot_2d'},
   'line-plot-2d': {icon: 'show_chart', text: 'biox.resource_view_line_plot_2d'},
+  histogram: {icon: 'bar_chart', text: 'biox.resource_view_histogram'},
 };
 
 /**
