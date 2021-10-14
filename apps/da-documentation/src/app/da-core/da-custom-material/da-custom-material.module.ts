@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
 import { FlLuxonDateAdapter, flLuxonDateFormat, flMatFormFieldConfig } from '@monorepo/front-core-lib';
 import { QuillModule } from 'ngx-quill';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @NgModule({
   exports: [
@@ -19,7 +20,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
     RouterModule,
     MatListModule,
     MatIconModule,
-    MatSidenavModule
+    MatSidenavModule,
+    FlexLayoutModule
   ],
   providers: [
     // form field default config

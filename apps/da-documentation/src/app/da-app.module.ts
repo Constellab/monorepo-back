@@ -2,11 +2,18 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {AppComponent} from './da-app.component';
-import {FlApiModule, FlTranslateModule, FlSnackBarModule, FlDialogModule, FlAuthModule} from '@monorepo/front-core-lib';
+import {
+  FlApiModule,
+  FlTranslateModule,
+  FlSnackBarModule,
+  FlDialogModule,
+  FlAuthModule,
+  FlHttpInterceptorService
+} from '@monorepo/front-core-lib';
 import {DaApiServiceConfig} from './da-core/da-model/da-config/da-api-module.config';
 import {DaApiErrorService} from './da-core/da-model/da-config/da-api-error.service';
 import { ClSupportedLanguage } from '@monorepo/core-lib';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { DaAppRoutingModule } from './da-app-routing-module';
 import { DaCoreModule } from './da-core/da-core.module';
 import {DaAuthService} from './da-core/da-service/da-auth.service';
@@ -38,7 +45,11 @@ import {DaAuthService} from './da-core/da-service/da-auth.service';
     FlDialogModule.forRoot(),
 
   ],
-  providers: [],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: FlHttpInterceptorService,
+    multi: true
+  },],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

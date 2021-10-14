@@ -20,7 +20,7 @@ import {CmNestApiError} from '@monorepo/common-model';
  * The errors opens a snackbar
  */
 @Injectable()
-export class ApiErrorService extends FlApiErrorService {
+export class    ApiErrorService extends FlApiErrorService {
   constructor(snackBarService: FlSnackBarService,
               translateService: FlTranslateService,
               private router: Router,

@@ -1,7 +1,16 @@
 import {Injectable} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
-import {FlApiErrorService, FlServerError, FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
+import {Router} from '@angular/router';
+import {
+  FlApiErrorService,
+  flAuthExpiredCookie,
+  FlCookieService,
+  FlLoginSavedRoute,
+  FlServerError,
+  FlSnackBarService,
+  FlTranslateService
+} from '@monorepo/front-core-lib';
 import {CmNestApiError} from '@monorepo/common-model';
 
 
@@ -12,7 +21,9 @@ import {CmNestApiError} from '@monorepo/common-model';
 @Injectable()
 export class DaApiErrorService extends FlApiErrorService {
   constructor(snackBarService: FlSnackBarService,
-              translateService: FlTranslateService) {
+              translateService: FlTranslateService,
+              private router: Router,
+              private cookieService: FlCookieService) {
     super(snackBarService, translateService);
   }
 
@@ -37,14 +48,19 @@ export class DaApiErrorService extends FlApiErrorService {
         timestamp: new Date()
       },
     };
-
     // specific handling or connection error because it is not thrown by the API
     if (errorResponse.status === 0 || errorResponse.status === 504) {
+
       // connection lost error
       serverError.logDetail.message = this.translateService.translate('connection_lost');
     } else {
 
       const nestError: CmNestApiError = errorResponse.error;
+
+      // handle session expired specifically
+      if (errorResponse.error.message === 'error.wrong_token') {
+        return this.sessionExpired(serverError, snackBarDuration);
+      }
 
       // get the error message
       serverError.logDetail.message = this.getErrorMessage(nestError, defaultError);
@@ -61,6 +77,34 @@ export class DaApiErrorService extends FlApiErrorService {
 
   }
 
+
+  /**
+   * Redirect the user to the login page
+   */
+  private sessionExpired(serverError: FlServerError, snackBarDuration: number): Observable<never> {
+    // save the current url for rerouting after login
+    const currentRoute = this.router.url;
+
+    // save the url if it's different
+    if (currentRoute !== '/admin/login') {
+      FlLoginSavedRoute.route = currentRoute;
+    }
+
+    // for security clear the authentication expiration cookie
+    // to assure the user is disconnect
+    this.cookieService.removeCookie(flAuthExpiredCookie);
+
+    // redirect the user to the login page
+    this.router.navigate(['/admin/login']);
+
+    serverError.logDetail.message = this.translateService.translate('session_expired');
+
+    // show error to the user
+    this.showError(serverError.logDetail.message, snackBarDuration);
+
+    // throw the error to propagate it
+    return throwError(serverError);
+  }
 
   /**
    * Handle the error message for the not specific errors
