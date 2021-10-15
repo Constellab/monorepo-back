@@ -8,7 +8,6 @@ import {
 import {FlBioNetworkD3Node, flBioNetworkGetCompartmentColor,} from '../model/fl-bio-network-d3-node.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlBioNetworkHelper} from './fl-bio-network.helper';
-import {flBioNetworkCofactor} from '../model/fl-bio-cofactor.class';
 import {FlBioNetworkD3Metabolite} from '../model/fl-bio-network-d3-metabolite.class';
 import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class';
@@ -90,7 +89,7 @@ export class FlBioNetworkFactory {
         }
 
         // Skip cofactors, they will be created when creating the links
-        if (this.isCofactor(metabolite.chebi_id)) {
+        if (metabolite.is_cofactor) {
           continue;
         }
 
@@ -125,7 +124,7 @@ export class FlBioNetworkFactory {
         let metaboliteNode: FlBioNetworkD3Node;
         // if the metabolite is a cofactor, create a node for it
         // and use the cofactor id
-        if (this.isCofactor(metabolite.chebi_id)) {
+        if (metabolite.is_cofactor) {
           const cofactor = this.createCofactor(metabolite);
           reactionD3.addCofactor(cofactor);
           metaboliteNode = cofactor;
@@ -171,10 +170,6 @@ export class FlBioNetworkFactory {
 
   private getMetaboliteColor(metabolite: FlBioNetworkMetabolite): string {
     return flBioNetworkGetCompartmentColor(metabolite.compartment);
-  }
-
-  private isCofactor(chebiId: string): boolean {
-    return chebiId != null && flBioNetworkCofactor[chebiId] != null;
   }
 
 }

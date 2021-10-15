@@ -19,6 +19,7 @@ export interface FlBioNetworkMetabolite {
   formula?: string;
   chebi_id?: string;
   position?: FlCoord;
+  is_cofactor: boolean;
 }
 
 export interface FlBioNetworkReaction {
@@ -61,7 +62,7 @@ export interface FlBioNetworkPathwayDetail {
   name: string;
 }
 
-export interface FlBioNetworkPathwaySelection extends FlBioNetworkPathwayDetail{
+export interface FlBioNetworkPathwaySelection extends FlBioNetworkPathwayDetail {
   selected: boolean;
   highlighted: boolean;
   color: string;
