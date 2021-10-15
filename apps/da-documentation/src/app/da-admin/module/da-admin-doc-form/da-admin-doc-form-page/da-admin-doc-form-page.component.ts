@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { DaDocumentation } from '../../../../da-core/da-model/da-entities/da-documentation.class';
-import { DaDocumentationService } from '../../../../da-core/da-service/da-documentation.service';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {Observable} from 'rxjs';
+import {DaDocumentation} from '../../../../da-core/da-model/da-entities/da-documentation.class';
+import {DaDocumentationService} from '../../../../da-core/da-service/da-documentation.service';
 
 @Component({
   selector: 'da-admin-doc-form-page',
@@ -13,18 +13,21 @@ export class DaAdminDocFormPageComponent implements OnInit {
 
   doc: DaDocumentation = null;
   loaded = false;
+  backToListLink = '../';
 
   constructor(
     private daDocumentationService: DaDocumentationService,
     private activatedRoute: ActivatedRoute
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe(params => {
       if (params['id']) this.getById(params['id']).subscribe(documentation => {
-          this.doc = documentation;
-          this.loaded = true;
-        });
+        this.doc = documentation;
+        this.loaded = true;
+        this.backToListLink = '../../'
+      });
       else this.loaded = true;
     });
   }

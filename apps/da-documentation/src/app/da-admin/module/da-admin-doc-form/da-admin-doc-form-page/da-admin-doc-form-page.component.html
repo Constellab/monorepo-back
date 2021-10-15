@@ -1,4 +1,4 @@
-<button mat-raised-button color="primary" [routerLink]="'../'" class="bt-back-to-list">
+<button mat-raised-button color="primary" [routerLink]="backToListLink" class="bt-back-to-list">
   Back to list
 </button>
 <da-admin-doc-form [documentation]="doc" *ngIf="loaded; else elseBlock"></da-admin-doc-form>

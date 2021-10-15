@@ -8,6 +8,7 @@
   "documentation_created": "Documentation created",
   "documentation_uptated": "Documentation uptated",
   "documentation_deleted": "Documentation deleted",
+  "order": "Order",
   "confirm_deletion": "Confirm deletion",
   "confirm_deletion_message": "Confirm the deletion ?",
   "test": "English test",

@@ -1,10 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@ngneat/reactive-forms';
-import { Validators } from '@angular/forms';
-import { DaDocumentation } from '../../../../da-core/da-model/da-entities/da-documentation.class';
-import { DaDocumentationService } from '../../../../da-core/da-service/da-documentation.service';
-import { FlSnackBarService } from '@monorepo/front-core-lib';
-import { Router } from '@angular/router';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
+import {Validators} from '@angular/forms';
+import {DaDocumentation} from '../../../../da-core/da-model/da-entities/da-documentation.class';
+import {DaDocumentationService} from '../../../../da-core/da-service/da-documentation.service';
+import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'da-admin-doc-form',
@@ -13,71 +13,73 @@ import { Router } from '@angular/router';
 })
 export class DaAdminDocFormComponent implements OnInit {
 
-    @Input() documentation?: DaDocumentation;
+  @Input() documentation?: DaDocumentation;
 
-    formGp: FormGroup<DaDocumentation>;
-    isUpdate = false;
-    isLoading = false;
+  formGp: FormGroup<DaDocumentation>;
+  isUpdate = false;
+  isLoading = false;
 
-    constructor(
-        private daDocumentationService: DaDocumentationService,
-        private snackBarService: FlSnackBarService,
-        private router: Router
-    ) { }
+  constructor(
+    private daDocumentationService: DaDocumentationService,
+    private snackBarService: FlSnackBarService,
+    private router: Router
+  ) {
+  }
 
-    ngOnInit(): void {
-      this.buildForm();
+  ngOnInit(): void {
+    this.buildForm();
+  }
+
+  buildForm(): void {
+    this.formGp = new FormBuilder().group({
+      id: [null],
+      title: [null, Validators.required],
+      content: [null, Validators.required],
+      path: '',
+      versionId: [null],
+      order: [null, Validators.required]
+    })
+    if (this.documentation) {
+      this.setFormGroupValue(this.documentation);
+      this.isUpdate = true;
     }
+  }
 
-    buildForm(): void {
-      this.formGp = new FormBuilder().group({
-        id: [null],
-        title: [null, Validators.required],
-        content: [null, Validators.required],
-        path: '',
-        versionId: [null]
-      })
-      if (this.documentation){
-        this.setFormGroupValue(this.documentation);
-        this.isUpdate = true;
+  submit(): void {
+    if (this.formGp.valid) {
+      this.isLoading = true;
+      if (this.isUpdate) {
+        this.update(this.formGp.value);
+      } else {
+        this.create(this.formGp.value);
       }
     }
+  }
 
-    submit(): void {
-      if(this.formGp.valid){
-        this.isLoading = true;
-        if (this.isUpdate) {
-          this.update(this.formGp.value);
-        } else {
-          this.create(this.formGp.value);
-        }
-      }
-    }
+  private setFormGroupValue(doc: DaDocumentation): void {
+    this.formGp.patchValue(doc);
+  }
 
-    private setFormGroupValue(doc: DaDocumentation): void {
-      this.formGp.patchValue(doc);
-    }
-
-    private create(formValue: DaDocumentation): void {
-      console.log(formValue);
-      this.daDocumentationService.create(formValue).subscribe(() => {
+  private create(formValue: DaDocumentation): void {
+    console.log(formValue);
+    this.daDocumentationService.create(formValue).subscribe(() => {
         this.creationSuccess();
       },
       () => this.isLoading = false);
-    }
+  }
 
-    private creationSuccess(): void{
-      this.snackBarService.openSuccessMessage('documentation_created', true);
-      this.isLoading = false;
-      this.router.navigate(['admin']);
-    }
+  private creationSuccess(): void {
+    this.snackBarService.openSuccessMessage('documentation_created', true);
+    this.isLoading = false;
+    this.router.navigate(['admin']);
+  }
 
-    private update(formValue: DaDocumentation): void {
-      this.daDocumentationService.update(formValue).subscribe(() => {
+  private update(formValue: DaDocumentation): void {
+    this.daDocumentationService.update(formValue).subscribe(() => {
         this.snackBarService.openSuccessMessage('documentation_uptated', true);
         this.isLoading = false;
         this.router.navigate(['admin']);
       },
       () => this.isLoading = false);
-    }
+  }
 }

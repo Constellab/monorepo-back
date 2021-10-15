@@ -1,18 +1,22 @@
-import { DaEntity } from './da-entity.class';
+import {DaEntity} from './da-entity.class';
 
-export class DaDocumentation extends DaEntity{
+export class DaDocumentation extends DaEntity {
 
-    title: string;
+  title: string;
 
-    content: string;
+  content: string;
 
-    path: string;
+  path: string;
 
-    versionId: string;
+  versionId: string;
+
+  order: number;
 }
 
-export class DaDocumentationDTO extends DaEntity{
+export class DaDocumentationDTO extends DaEntity {
   title: string;
 
   path: string;
+
+  order: number;
 }

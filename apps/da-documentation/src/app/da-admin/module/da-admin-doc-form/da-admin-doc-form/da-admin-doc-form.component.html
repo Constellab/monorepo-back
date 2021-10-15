@@ -1,34 +1,43 @@
 <form (ngSubmit)="submit()" id="documentation-form" [formGroup]="formGp">
 
-    <!--  title  -->
-    <mat-form-field class="g-form-input" appearance="fill">
-        <mat-label>{{'title' | translate}}</mat-label>
-        <input matInput type="text" formControlName="title">
-        <mat-error *ngIf="formGp.get('title').hasError('required')">
-            {{'title' | flErrorRequired}}
-        </mat-error>
-    </mat-form-field>
+  <!--  title  -->
+  <mat-form-field class="g-form-input" appearance="fill">
+    <mat-label>{{'order' | translate}}</mat-label>
+    <input matInput type="text" formControlName="order">
+    <mat-error *ngIf="formGp.get('order').hasError('order')">
+      {{'order' | flErrorRequired}}
+    </mat-error>
+  </mat-form-field>
+
+  <!--  title  -->
+  <mat-form-field class="g-form-input" appearance="fill">
+    <mat-label>{{'title' | translate}}</mat-label>
+    <input matInput type="text" formControlName="title">
+    <mat-error *ngIf="formGp.get('title').hasError('required')">
+      {{'title' | flErrorRequired}}
+    </mat-error>
+  </mat-form-field>
 
 
-    <!--  path  -->
-    <mat-form-field class="g-form-input" appearance="fill">
-        <mat-label>{{'path' | translate}}</mat-label>
-        <input matInput type="text" formControlName="path">
-    </mat-form-field>
+  <!--  path  -->
+  <mat-form-field class="g-form-input" appearance="fill">
+    <mat-label>{{'path' | translate}}</mat-label>
+    <input matInput type="text" formControlName="path">
+  </mat-form-field>
 
-    <!--    content      -->
-    <fl-form-field class="g-form-input">
-        <mat-label>{{'content' | translate}}</mat-label>
-        <quill-editor formControlName="content" placeholder="{{'content' | translate}}"
-                      class="g-full" [styles]="{height: '8em'}">
-        </quill-editor>
-        <mat-error *ngIf="formGp.get('content').hasError('required')">
-          {{'content' | flErrorRequired}}
-        </mat-error>
-    </fl-form-field>
+  <!--    content      -->
+  <fl-form-field class="g-form-input">
+    <mat-label>{{'content' | translate}}</mat-label>
+    <quill-editor formControlName="content" placeholder="{{'content' | translate}}"
+                  class="g-full" [styles]="{height: '8em'}">
+    </quill-editor>
+    <mat-error *ngIf="formGp.get('content').hasError('required')">
+      {{'content' | flErrorRequired}}
+    </mat-error>
+  </fl-form-field>
 
-    <button mat-raised-button color="primary" type="submit" class="g-centered-forced">
-        {{'save' | translate}}
-        <fl-button-loader *ngIf="isLoading"></fl-button-loader>
-    </button>
+  <button mat-raised-button color="primary" type="submit" class="g-centered-forced">
+    {{'save' | translate}}
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+  </button>
 </form>
