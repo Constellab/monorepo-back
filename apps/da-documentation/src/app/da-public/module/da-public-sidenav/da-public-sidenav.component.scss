@@ -11,10 +11,25 @@
 }
 
 .sidenav {
-  min-width: 10%;
+  min-width: 15em;
   padding-top: 20px;
+}
+
+.sidenav-title{
+  margin-left: 7%;
 }
 
 .sidenav-element {
   font-size: 20px;
+}
+
+.sidenav-div-redirect-admin{
+  position: absolute;
+  bottom: 2em;
+  text-align: center;
+  width: 100%;
+}
+
+.sidenav-bt-redirect-admin{
+
 }

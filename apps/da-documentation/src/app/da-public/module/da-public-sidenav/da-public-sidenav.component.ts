@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {DaDocumentationService} from '../../../da-core/da-service/da-documentation.service';
-import {DaDocumentation, DaDocumentationDTO} from '../../../da-core/da-model/da-entities/da-documentation.class';
+import {DaDocumentationDTO} from '../../../da-core/da-model/da-entities/da-documentation.class';
+import {DaAuthService} from '../../../da-core/da-service/da-auth.service';
 
 @Component({
   selector: 'da-da-public-sidenav',
@@ -10,15 +11,19 @@ import {DaDocumentation, DaDocumentationDTO} from '../../../da-core/da-model/da-
 export class DaPublicSidenavComponent implements OnInit {
 
   docs: DaDocumentationDTO[] = [];
+  isConnected = false;
 
   constructor(
     private daDocumentationService: DaDocumentationService,
+    private daAuthService: DaAuthService
   ) { }
 
   ngOnInit(): void {
     this.daDocumentationService.get().subscribe((docs) => {
       docs.map(doc => this.docs.push(doc));
     });
+
+    this.isConnected = this.daAuthService.hasAuthorizationCookie();
   }
 
 }
