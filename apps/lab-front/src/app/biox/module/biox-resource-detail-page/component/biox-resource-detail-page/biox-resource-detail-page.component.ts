@@ -7,7 +7,13 @@ import {first, tap} from 'rxjs/operators';
 import {FileResource} from '../../../../../core/model/entities/resource/file-resource.entity';
 import {BioxResourceDetailPageState, BioxResourceViewEvent} from '../../state/biox-resource-detail-page.state';
 import {FlOverlayRef, FlPortalConfig, FlPortalService, FlTranslateService} from '@monorepo/front-core-lib';
-import {BioxResourceView, BioxResourceViewType} from '../../../../../core/model/entities/resource/biox-resource-view.entity';
+import {
+  BioxResourceView,
+  BioxResourceViewDisplayMode,
+  BioxResourceViewType,
+  BioxResourceViewTypeInfo,
+  constBioxResourceViewTypeInfos
+} from '../../../../../core/model/entities/resource/biox-resource-view.entity';
 import {BioxResourceJsonComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-json/biox-resource-json.component';
 import {ComponentType} from '@angular/cdk/overlay';
 import {BioxResourceViewDirective} from '../../../../../core/entity-module/biox-resource-core/model/biox-resource-view-component.class';
@@ -87,12 +93,18 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
 
     // dynamically create the view component
     const componentType = this.getComponentType(viewEvent.view.type);
-    if (componentType == null) {
+    const viewTypeInfo: BioxResourceViewTypeInfo = constBioxResourceViewTypeInfos[viewEvent.view.type];
+    if (componentType == null || viewTypeInfo == null) {
       this.error = this.translateService.translate('biox.view_type_node_supported');
       return;
     }
 
-    if (viewEvent.displayMode === 'fullScreen') {
+    // if the view as a force display mode, use it. Otherwise use the selected display mode
+    const displayMode: BioxResourceViewDisplayMode = viewTypeInfo.forceDefaultDisplayMode ?
+      viewTypeInfo.defaultDisplayMode : viewEvent.displayMode;
+
+
+    if (displayMode === 'fullScreen') {
       this.destroyViewComponentRef();
       this.openViewInFullScreen(componentType, viewEvent.view);
 

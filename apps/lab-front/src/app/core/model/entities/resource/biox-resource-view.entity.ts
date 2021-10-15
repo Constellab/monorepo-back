@@ -156,7 +156,7 @@ export interface BioxResourceViewTypeInfo {
 }
 
 // Record of view type, icon
-const constBioxResourceViewIcon: Record<BioxResourceViewType, BioxResourceViewTypeInfo> = {
+export const constBioxResourceViewTypeInfos: Record<BioxResourceViewType, BioxResourceViewTypeInfo> = {
   view: {icon: 'view_quilt', text: 'biox.resource_view_base', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
   'json-view': {icon: 'code', text: 'biox.resource_view_json', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
   'text-view': {icon: 'text_snippet', text: 'biox.resource_view_text', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
@@ -196,10 +196,10 @@ export function bioxGroupResourceViewSpecsByType(views: BioxResourceViewSpec[]):
 
   for (const view of views) {
     // get the type with 'view' by default if the type is not known
-    const type: BioxResourceViewType = constBioxResourceViewIcon[view.viewType] != null ? view.viewType : 'view';
+    const type: BioxResourceViewType = constBioxResourceViewTypeInfos[view.viewType] != null ? view.viewType : 'view';
 
     if (viewsByType[type] == null) {
-      const viewTypeInfo = constBioxResourceViewIcon[type];
+      const viewTypeInfo = constBioxResourceViewTypeInfos[type];
 
       viewsByType[type] = {
         viewTypeInfo: viewTypeInfo,
