@@ -19,4 +19,10 @@ export class DaDocumentationDTO extends DaEntity {
   path: string;
 
   order: number;
+
+  asChild: boolean;
+
+  childs: DaDocumentationDTO[];
+
+  toggleChild: boolean = false;
 }

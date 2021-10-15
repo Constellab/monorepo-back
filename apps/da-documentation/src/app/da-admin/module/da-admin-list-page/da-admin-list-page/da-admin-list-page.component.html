@@ -3,13 +3,27 @@
 </button>
 
 <mat-nav-list>
-  <mat-list-item *ngFor="let documentation of documentations; index as i"
-                 [routerLink]="publicDocsUrlPrefix + documentation.path">
-    <div matLine>{{ documentation.order}} {{ documentation.title }}</div>
-    <button mat-icon-button [routerLink]="edit(documentation.id)">
+  <mat-list-item *ngFor="let documentation of documentations; index as i">
+    <div matLine [routerLink]="publicDocsUrlPrefix + documentation.path">
+      {{ documentation.order}} {{ documentation.title }}
+    </div>
+    <mat-nav-list matLine>
+      <mat-list-item *ngFor="let child of documentation.childs; index as j">
+        <div matLine [routerLink]="publicDocsUrlPrefix + child.path">
+          {{ child.order}} {{ child.title }}
+        </div>
+        <button mat-icon-button [routerLink]="edit(child.id)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="delete(child.id, i, $event, j)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-nav-list>
+    <button *ngIf="!documentation.asChild" mat-icon-button [routerLink]="edit(documentation.id)">
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button (click)="delete(documentation.id, i, $event)">
+    <button *ngIf="!documentation.asChild" mat-icon-button (click)="delete(documentation.id, i, $event)">
       <mat-icon>delete</mat-icon>
     </button>
   </mat-list-item>

@@ -1,13 +1,25 @@
-<mat-sidenav-container class="container" autosize>
+<mat-sidenav-container class="container" autosize="true">
   <mat-sidenav class="sidenav" mode="side" [opened]="true">
     <div class="g-full-height" fxLayout="column">
       <h1 class="sidenav-title g-text-capitalize-first">{{'documentations' | translate}}</h1>
       <mat-nav-list fxFlex="auto">
-        <mat-list-item class="sidenav-element"
-                       *ngFor="let doc of docs$ | async;"
-                       [routerLink]="doc.path">
-          <p matLine>{{doc.title}}</p>
-        </mat-list-item>
+        <ng-container *ngFor="let doc of docs$ | async">
+          <mat-list-item class="sidenav-element" [routerLink]="doc.path" *ngIf="!doc.asChild">
+            <p matLine class="sidenav-element-p">{{doc.title}}</p>
+          </mat-list-item>
+          <mat-list-item class="sidenav-element" *ngIf="doc.asChild">
+            <p matLine class="sidenav-element-p">{{doc.title}}</p>
+            <button mat-icon-button (click)="doc.toggleChild = !doc.toggleChild">
+              <mat-icon *ngIf="!doc.toggleChild">chevron_right</mat-icon>
+              <mat-icon *ngIf="doc.toggleChild">expand_more</mat-icon>
+            </button>
+          </mat-list-item>
+          <mat-nav-list *ngIf="doc.toggleChild">
+            <mat-list-item class="sidenav-element-child" *ngFor="let child of doc.childs" [routerLink]="child.path">
+              <p matLine class="sidenav-element-p">{{child.title}}</p>
+            </mat-list-item>
+          </mat-nav-list>
+        </ng-container>
       </mat-nav-list>
 
       <div class="sidenav-div-redirect-admin">

@@ -30,11 +30,17 @@ export class DnDocumentationDTO extends BlEntityWithId {
 
   order:number;
 
+  asChild: boolean;
+
+  childs: DnDocumentationDTO[];
+
   constructor(documentation: DnDocumentation) {
     super();
     this.path = documentation.path;
     this.title = documentation.title;
     this.id = documentation.id;
     this.order = documentation.order;
+    this.asChild = false;
+    this.childs = null;
   }
 }

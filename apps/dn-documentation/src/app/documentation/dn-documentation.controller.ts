@@ -16,8 +16,7 @@ export class DnDocumentationController {
   @BlPublic()
   @Get()
   async findAll(): Promise<DnDocumentationDTO[]> {
-    const docs = await this.documentationService.findAll();
-    return docs.map(doc => new DnDocumentationDTO(doc));
+    return await this.documentationService.findAll();
   }
 
   @BlPublic()

@@ -26,7 +26,7 @@ export class DaAdminListPageComponent implements OnInit {
     this.daDocumentationService.get().subscribe(docs => this.documentations = docs);
   }
 
-  delete(id: string, i: number, event: globalThis.Event): void{
+  delete(id: string, i: number, event: globalThis.Event, j: number = null): void{
     ClHelpService.stopEventPropagation(event);
     const input: FlConfirmDialogInput = {
       title: 'confirm_deletion',
@@ -38,14 +38,21 @@ export class DaAdminListPageComponent implements OnInit {
     }
 
     this.dialogService.openConfirmDialog(input).afterClosed().subscribe(res => {
-      this.onCloseConfirmDialog(res, id, i);
+      this.onCloseConfirmDialog(res, id, i, j);
     })
   }
 
-  private onCloseConfirmDialog(res: FlConfirmDialogResult, id: string, i: number): void{
+  private onCloseConfirmDialog(res: FlConfirmDialogResult, id: string, i: number, j: number): void{
     if(res.choice){
       this.daDocumentationService.deleteById(id).subscribe(()=>{
-        this.documentations.splice(i, 1);
+        if(!j==null){
+          this.documentations.splice(i, 1);
+        }else{
+          this.documentations[i].childs.splice(j, 1);
+          if(this.documentations[i].childs.length == 0){
+            this.documentations[i].asChild = false;
+          }
+        }
       });
     }
   }
