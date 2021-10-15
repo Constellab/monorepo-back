@@ -34,7 +34,7 @@ export class DaAdminDocFormComponent implements OnInit {
         id: [null],
         title: [null, Validators.required],
         content: [null, Validators.required],
-        path: [null],
+        path: '',
         versionId: [null]
       })
       if (this.documentation){
@@ -45,7 +45,6 @@ export class DaAdminDocFormComponent implements OnInit {
 
     submit(): void {
       if(this.formGp.valid){
-        this.formGp.value.path = '';
         this.isLoading = true;
         if (this.isUpdate) {
           this.update(this.formGp.value);
@@ -60,6 +59,7 @@ export class DaAdminDocFormComponent implements OnInit {
     }
 
     private create(formValue: DaDocumentation): void {
+      console.log(formValue);
       this.daDocumentationService.create(formValue).subscribe(() => {
         this.creationSuccess();
       },

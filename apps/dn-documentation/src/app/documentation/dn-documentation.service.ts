@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DnVersion } from '../version/dn-version.entity';
 import { DnVersionService } from '../version/dn-version.service';
-import {DnDocumentation, DnDocumentationDTO} from './dn-documentation.entity';
-import {doc} from 'prettier';
+import {DnDocumentation} from './dn-documentation.entity';
 
 @Injectable()
 export class DnDocumentationService {
@@ -14,23 +13,19 @@ export class DnDocumentationService {
     private versionService: DnVersionService
   ){}
 
-  create(createDocumentationRes: DnDocumentation): Promise<DnDocumentation> {
-    let version: DnVersion;
-    let doc: Promise<DnDocumentation>;
+  async create(createDocumentationRes: DnDocumentation): Promise<DnDocumentation> {
 
-    this.versionService.getByVersionNumber('1.0.0').then((v) => {
-      version = v;
-
-      const createDocumentation = {
-        title: createDocumentationRes.title,
-        content: createDocumentationRes.content,
-        path: createDocumentationRes.path,
-        version: version
-      }
-      doc = this.documentationsRepository.save(createDocumentation);
-    })
-
-    return doc;
+    const version: DnVersion = await this.versionService.getByVersionNumber('1.0.0');
+    if(!version){
+      throw new NotFoundException();
+    }
+    const createDocumentation = {
+      title: createDocumentationRes.title,
+      content: createDocumentationRes.content,
+      path: createDocumentationRes.path,
+      version: version
+    }
+    return this.documentationsRepository.save(createDocumentation);
   }
 
   findAll(): Promise<DnDocumentation[]> {

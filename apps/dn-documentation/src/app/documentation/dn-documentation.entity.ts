@@ -14,7 +14,6 @@ export class DnDocumentation extends BlEntityWithId{
     @ManyToOne(() => DnVersion)
     version: DnVersion;
 
-
     @Column({
       unique: true,
       nullable: true
