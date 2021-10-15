@@ -37,7 +37,7 @@ export class LabInstance extends EntityWithStatus<LabInstanceStatusHistory>
 
   // api key shared with the lab instance API
   @Exclude()
-  @Column({nullable: false, length: 80})
+  @Column({nullable: false, length: 255})
   apiKey: string;
 
   // url of the api server

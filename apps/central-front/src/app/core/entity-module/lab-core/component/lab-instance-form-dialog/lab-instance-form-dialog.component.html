@@ -71,7 +71,7 @@
     <!--  Api key  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'lab_api_key' | translate}}</mat-label>
-      <input matInput formControlName="apiKey" required flInputMaxLength="80"
+      <input matInput formControlName="apiKey" required flInputMaxLength="255"
              placeholder="{{'lab_api_key' | translate}}">
       <mat-error *ngIf="formGp.get('apiKey').hasError('required')">
         {{'lab_api_key' | flErrorRequired}}
