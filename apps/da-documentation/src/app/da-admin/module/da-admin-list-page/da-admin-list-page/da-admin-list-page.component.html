@@ -1,11 +1,11 @@
-<button mat-raised-button color="primary" (click)="create()">
+<button mat-raised-button color="primary" [routerLink]="'edit'">
     Create
 </button>
 
 <mat-nav-list>
     <mat-list-item *ngFor="let documentation of documentations; index as i" [routerLink]="publicDocsUrlPrefix + documentation.path">
         <p matLine>{{ documentation.title }}</p>
-        <button mat-icon-button (click)="edit(documentation.id)">
+        <button mat-icon-button [routerLink]="edit(documentation.id)">
             <mat-icon>edit</mat-icon>
         </button>
         <button mat-icon-button (click)="delete(documentation.id, i, $event)">

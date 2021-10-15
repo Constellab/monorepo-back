@@ -26,7 +26,10 @@ export class DnAuthService {
     try{
       const userCentral = await this.blExternalApiService
         .post(this.coreConfigService.getCentralApiUrl() + 'auth/check-credentials/ADMIN', credentials).toPromise();
-      return userCentral ? userCentral : new UnauthorizedException('Wrong mail or password');
+      if(!userCentral){
+        throw new UnauthorizedException('Wrong mail or passord');
+      }
+      return userCentral;
     }
     catch (e) {
       throw new UnauthorizedException('Wrong mail or password');

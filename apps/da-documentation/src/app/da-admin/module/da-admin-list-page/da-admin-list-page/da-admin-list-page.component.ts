@@ -26,14 +26,6 @@ export class DaAdminListPageComponent implements OnInit {
     this.daDocumentationService.get().subscribe(docs => this.documentations = docs);
   }
 
-  create(): void{
-    this.router.navigate(['admin','edit']);
-  }
-
-  edit(id: string): void{
-    this.router.navigate(['admin', 'edit', id]);
-  }
-
   delete(id: string, i: number, event: globalThis.Event): void{
     ClHelpService.stopEventPropagation(event);
     const input: FlConfirmDialogInput = {
@@ -56,5 +48,9 @@ export class DaAdminListPageComponent implements OnInit {
         this.documentations.splice(i, 1);
       });
     }
+  }
+
+  edit(id: string): string{
+    return 'edit/' + id;
   }
 }

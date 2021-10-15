@@ -13,6 +13,7 @@
 .sidenav {
   min-width: 15em;
   padding-top: 20px;
+  height: 100%;
 }
 
 .sidenav-title{
@@ -24,8 +25,7 @@
 }
 
 .sidenav-div-redirect-admin{
-  position: absolute;
-  bottom: 2em;
+  padding-bottom: 2em;
   text-align: center;
   width: 100%;
 }

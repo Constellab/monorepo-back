@@ -13,8 +13,6 @@ export class DnUserService implements BlUserService{
   ){}
 
   createOrUpdate(user: DnUser): Promise<DnUser>{
-    if(!this.findOne(user.id))
-      user.initValues();
     return this.userRepository.save(user);
   }
 

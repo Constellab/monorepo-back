@@ -2,6 +2,7 @@ import { BlEntityWithId } from '@monorepo/back-core-lib';
 import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import { DnVersion } from '../version/dn-version.entity';
 
+//UNIQUE
 @Entity('Documentation')
 export class DnDocumentation extends BlEntityWithId{
 

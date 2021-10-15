@@ -1,18 +1,21 @@
 <mat-sidenav-container class="container" autosize>
-  <mat-sidenav #drawer class="sidenav" mode="side" [opened]="true">
-    <h1 class="sidenav-title">{{'Documentations' | translate}}</h1>
-    <mat-nav-list>
-      <mat-list-item class="sidenav-element"
-                     *ngFor="let doc of docs;"
-                     [routerLink]="doc.path">
-        <p matLine>{{doc.title}}</p>
-      </mat-list-item>
-    </mat-nav-list>
+  <mat-sidenav class="sidenav" mode="side" [opened]="true">
+    <div class="g-full-height" fxLayout="column">
+      <h1 class="sidenav-title g-text-capitalize-first">{{'documentations' | translate}}</h1>
+      <mat-nav-list fxFlex="auto">
+        <mat-list-item class="sidenav-element"
+                       *ngFor="let doc of docs$ | async;"
+                       [routerLink]="doc.path">
+          <p matLine>{{doc.title}}</p>
+        </mat-list-item>
+      </mat-nav-list>
 
-    <div class="sidenav-div-redirect-admin">
-      <button mat-raised-button color="primary" *ngIf="isConnected" [routerLink]="'../admin'" class="sidenav-bt-redirect-admin">
-        Admin page
-      </button>
+      <div class="sidenav-div-redirect-admin">
+        <button mat-raised-button color="primary" *ngIf="isConnected" [routerLink]="'../admin'"
+                class="sidenav-bt-redirect-admin">
+          {{'admin_page' | translate}}
+        </button>
+      </div>
     </div>
   </mat-sidenav>
 
