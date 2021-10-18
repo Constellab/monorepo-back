@@ -50,6 +50,6 @@
   "http_status": "HTTP status",
   "auto_dev_login_failed": "The automatic connexion to the development environment failed, please lo on manually",
   "reset_dev_env": "Reset dev environment",
-  "reset_dev_env_confirmation": "Are you sure you want to reset the dev environment ? The database will be clear, the files and temporary files will be deleted. The production environment will not be modified.",
+  "reset_dev_env_confirmation": "Are you sure you want to reset the dev environment ? The database will be cleared, the files and temporary files will be deleted. The production environment will not be modified.",
   "dev_env_reset_success": "Dev env reset"
 }

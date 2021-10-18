@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlSnackBarService} from '@monorepo/front-core-lib';
 import {Observable, throwError} from 'rxjs';
 import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm} from '../model/entities/biox-experiment.entity';
-import {createViewModel} from '../model/global/view-model.entity';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/workflow.class';
 import {BioxProtocolGraph} from '../model/entities/process/biox-protocol.entity';
@@ -63,7 +62,12 @@ export class BioxExperimentService {
 
   // launch an experiment
   public startExperiment(experimentId: string): Observable<BioxExperiment> {
-    return this.apiService.post(`${this.route}/${experimentId}/start`, createViewModel(BioxExperiment));
+    return this.apiService.post(`${this.route}/${experimentId}/start`, BioxExperiment);
+  }
+
+  // stop (kill) an experiment
+  public stopExperiment(experimentId: string): Observable<BioxExperiment> {
+    return this.apiService.post(`${this.route}/${experimentId}/stop`, BioxExperiment);
   }
 
   public saveAndStartExperiment(experimentId: string, workflow: Workflow): Observable<BioxExperiment> {

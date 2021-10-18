@@ -57,6 +57,10 @@ export class BioxExperiment extends LabBaseEntity implements FlStatus {
   isEditable(): boolean {
     return !this.isArchived && !this.isValidated;
   }
+
+  isRunning(): boolean {
+    return this.status === 'RUNNING' || this.status === 'WAITING_FOR_CLI_PROCESS';
+  }
 }
 
 export type BioxExperimentVM = ViewModel<BioxExperiment>;

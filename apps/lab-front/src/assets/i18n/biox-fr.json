@@ -56,7 +56,10 @@
     "resource_view_histogram": "Histogramme",
     "resource_view_display_mode": "Mode d'affichage",
     "resource_view_display_portal": "Popup",
-    "resource_view_display_component": "Plein écran"
+    "resource_view_display_component": "Plein écran",
+    "stop_experiment": "Arrêter l'expérience",
+    "stop_experiment_confirmation": "Êtes-vous sûr de vouloir arrêter l'expérience ?",
+    "experiment_stopped": "Expérience arrêtée"
 
   }
 }

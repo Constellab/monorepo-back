@@ -10,6 +10,11 @@
       </button>
 
       <ng-container *ngIf="experiment.isEditable()">
+        <button *ngIf="experiment.isRunning()" mat-icon-button type="button" (click)="stopExperiment()"
+                [matTooltip]="'biox.stop_experiment' | translate">
+          <mat-icon>stop</mat-icon>
+        </button>
+
         <button mat-icon-button type="button" (click)="openUpdateDialog()"
                 [matTooltip]="'biox.update_experiment' | translate">
           <mat-icon>edit</mat-icon>

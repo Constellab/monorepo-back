@@ -3,8 +3,8 @@ import {ClRecordTransform} from '@monorepo/core-lib';
 import {BioxNode} from '../../global/biox-connection.class';
 import {Expose, Type} from 'class-transformer';
 import {BioxInput} from '../biox-input.entity';
-import {BioxProgressBar, BioxProgressBarStatus} from '../biox-progress-bar.entity';
-import {FlStatus} from '@monorepo/front-core-lib';
+import {BioxProgressBar} from '../biox-progress-bar.entity';
+import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
 import {bioxTaskSourceTypingName} from '../biox-process-special-type';
 
 export interface BioxProcessData {
@@ -17,13 +17,15 @@ export interface BioxProcessData {
   graph?: any;
 }
 
+export type BioxProcessStatus = 'DRAFT' | 'RUNNING' | 'SUCCESS' | 'ERROR';
+
 /**
  * Task or protocol inside a flow
  */
 export class BioxProcess extends BioxNode implements FlStatus {
 
   @Expose({name: 'process_typing_name'})
-  processTypingName: string
+  processTypingName: string;
 
   data: BioxProcessData;
 
@@ -34,6 +36,8 @@ export class BioxProcess extends BioxNode implements FlStatus {
   protocol: {
     uri: string;
   };
+
+  status: BioxProcessStatus;
 
 
   @Type(() => BioxConfig)
@@ -59,7 +63,7 @@ export class BioxProcess extends BioxNode implements FlStatus {
   isDeleted: boolean;
 
   @Expose({name: 'is_protocol'})
-  isProtocol: boolean
+  isProtocol: boolean;
 
 
   public hasConfig(): boolean {
@@ -67,27 +71,48 @@ export class BioxProcess extends BioxNode implements FlStatus {
   }
 
   getStatusClassColor(mode: 'background' | 'text'): string {
-    if (this.progressBar == null) {
-      return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
-    }
-
-    return this.progressBar.getStatusClassColor(mode);
+    return getBioxProcessStatusColorClass(this.getStatusName(), mode);
   }
 
   getStatusIcon(): string {
-    return this.progressBar?.getStatusIcon() ?? 'edit';
+    return getBioxProcessStatusStatusIcon(this.getStatusName());
   }
 
-  getStatusName(): BioxProgressBarStatus {
-    return this.progressBar?.getStatusName() ?? 'draft';
+  getStatusName(): string {
+    return this.status;
   }
 
-// return true if the process is a Source
+  // return true if the process is a Source
   isPlugSource(): boolean {
     return this.processTypingName === bioxTaskSourceTypingName;
   }
 
-  get title(): string{
-    return this.data.title || this.name
+  get title(): string {
+    return this.data.title || this.name;
   }
 }
+
+const getBioxProcessStatusColorClass: FlGetStatusClassColorFunction = (status: BioxProcessStatus,
+                                                                       mode: 'background' | 'text' = 'background'): string => {
+  switch (status) {
+    case 'ERROR':
+      return mode === 'background' ? 'g-warn-background' : 'g-warn-text';
+    case 'DRAFT':
+      return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
+    default:
+      return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
+  }
+};
+
+const getBioxProcessStatusStatusIcon: FlGetStatusIconFunction = (status: BioxProcessStatus): string => {
+  switch (status) {
+    case 'DRAFT':
+      return 'edit';
+    case 'ERROR':
+      return 'error';
+    case 'SUCCESS':
+      return 'done';
+    case 'RUNNING':
+      return 'cached';
+  }
+};
