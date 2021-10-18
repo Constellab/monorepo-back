@@ -15,7 +15,7 @@ export const environment: Environment = {
   settings: {
     apiBaseUrl: apiBaseUrl,
     // devApiBaseUrl: apiBaseUrl,
-    devApiBaseUrl: 'https://glab-dev.berlin.gencovery.io/',
+    devApiBaseUrl: apiBaseUrl,
     codeServerUrl: 'https://vlab.tokyo.gencovery.io/',
   },
 };

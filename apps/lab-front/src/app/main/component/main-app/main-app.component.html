@@ -30,6 +30,11 @@
 
           <gen-lab-environment-toggle class="env-toggle"></gen-lab-environment-toggle>
 
+          <button mat-menu-item *genLabEnvDev (click)="resetDevEnvironment()">
+            <mat-icon>delete_forever</mat-icon>
+            <span>{{'reset_dev_env' | translate}}</span>
+          </button>
+
           <mat-divider></mat-divider>
 
           <div class="documentation">{{'documentations_links' | translate}}</div>

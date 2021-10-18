@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {FlCleanableService, FlCleanerService, FlLocalStorageService} from '@monorepo/front-core-lib';
 import {LabEnvironment} from '../model/global/lab-environment.class';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {EnvironmentHelper} from '../utils/environment.helper';
 
 /**
  * Class to manage the env and jwt, store it and clean it
@@ -77,7 +78,9 @@ export class LabEnvStore implements FlCleanableService {
 
   // return the correct storage key based on environment
   private getStorageKey(env?: LabEnvironment): string {
-    if (!env) env = this.getLabEnvironment();
+    if (!env) {
+      env = this.getLabEnvironment();
+    }
     return env === 'prod' ? this.jwtStorageKey : this.devJwtStorageKey;
   }
 
@@ -90,8 +93,12 @@ export class LabEnvStore implements FlCleanableService {
    * @param env if not provided, it uses the current env
    */
   public getToken(env?: LabEnvironment): string {
-    if (!env) env = this.getLabEnvironment();
-    return env === 'prod' ? this.token : this.devToken;
+    if (!env) {
+      env = this.getLabEnvironment();
+    }
+    // return the corresponding token.
+    // in front dev env, return always the prod token
+    return (env === 'prod' || !EnvironmentHelper.isProd()) ? this.token : this.devToken;
   }
 
   public setLabEnvironment(environment: LabEnvironment): void {
@@ -107,6 +114,14 @@ export class LabEnvStore implements FlCleanableService {
 
   public getLabEnvironment(): LabEnvironment {
     return this._labEnvironment$.value;
+  }
+
+  public isDev(): boolean {
+    return this.getLabEnvironment() === 'dev';
+  }
+
+  public isProd(): boolean {
+    return this.getLabEnvironment() === 'prod';
   }
 
   /**
@@ -128,7 +143,7 @@ export class LabEnvStore implements FlCleanableService {
     return value;
   }
 
-  public clearLabEnvironmentStorage(): void{
+  public clearLabEnvironmentStorage(): void {
     this.localStorage.removeItem(this.labEnvironmentStorageKey);
   }
 

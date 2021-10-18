@@ -48,5 +48,8 @@
   "dev_env_not_available": "L'environnement de développement est éteint. Pour le démarrer il faut ouvrir le VLAB et lancer l'application",
   "error_code": "Code",
   "http_status": "Status HTTP",
-  "auto_dev_login_failed": "La connexion automatique à l'environnement de dev a échouée, veuillez vous connecter manuellement"
+  "auto_dev_login_failed": "La connexion automatique à l'environnement de dev a échouée, veuillez vous connecter manuellement",
+  "reset_dev_env": "Réinitialiser l'environement de dev",
+  "reset_dev_env_confirmation": "Êtes-vous sûr de vouloir réinitialiser l'environement de développement ? La base de données sera vidée, les fichiers et fichiers temporaires seront supprimés. L'environment de production ne sera pas impacté.",
+  "dev_env_reset_success": "Environement de dev réinitialisé"
 }

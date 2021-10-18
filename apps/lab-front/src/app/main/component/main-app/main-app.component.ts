@@ -9,6 +9,8 @@ import {AuthenticationService} from '../../../core/service/authentication.servic
 import {Router} from '@angular/router';
 import {constLoginRoute} from '../../../core/utils/base-route';
 import {LabEnvStore} from '../../../core/service/lab-env.store';
+import {LabSystemService} from '../../../core/service/lab-system.service';
+import {FlConfirmDialogInput, FlDialogService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-main-app',
@@ -25,7 +27,9 @@ export class MainAppComponent implements OnInit {
 
   constructor(private labEnvManager: LabEnvStore,
               private authenticationService: AuthenticationService,
-              private router: Router) {
+              private router: Router,
+              private dialogService: FlDialogService,
+              private systemService: LabSystemService) {
   }
 
   ngOnInit(): void {
@@ -44,4 +48,18 @@ export class MainAppComponent implements OnInit {
       () => this.router.navigate([constLoginRoute])
     );
   }
+
+  resetDevEnvironment(): void {
+    const data: FlConfirmDialogInput = {
+      title: 'reset_dev_env',
+      content: 'reset_dev_env_confirmation',
+      translateTitleAndContent: true,
+      observable: this.systemService.resetDevEnvironment(),
+      successMessage: 'dev_env_reset_success',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(data);
+  }
+
 }

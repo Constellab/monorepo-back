@@ -1,13 +1,16 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {CustomMaterialModule} from './custom-material/custom-material.module';
 import {CustomLibraryModule} from './custom-library/custom-library.module';
 import {QuillModule} from 'ngx-quill';
-
+import {LabEnvDevDirective} from './directive/lab-env-dev.directive';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    // Directives
+    LabEnvDevDirective
+  ],
   imports: [
     CommonModule,
 
@@ -19,6 +22,9 @@ import {QuillModule} from 'ngx-quill';
     CustomLibraryModule,
 
     QuillModule,
+
+    // Directives
+    LabEnvDevDirective,
   ]
 })
 export class CoreModule { }
