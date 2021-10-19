@@ -30,10 +30,17 @@
 
           <gen-lab-environment-toggle class="env-toggle"></gen-lab-environment-toggle>
 
-          <button mat-menu-item *genLabEnvDev (click)="resetDevEnvironment()">
-            <mat-icon>delete_forever</mat-icon>
-            <span>{{'reset_dev_env' | translate}}</span>
-          </button>
+          <ng-container *genLabEnvDev >
+            <button mat-menu-item (click)="resetDevEnvironment()">
+              <mat-icon>delete_forever</mat-icon>
+              <span>{{'reset_dev_env' | translate}}</span>
+            </button>
+
+            <button mat-menu-item (click)="stopDevServer()">
+              <mat-icon>stop</mat-icon>
+              <span>{{'stop_dev_api' | translate}}</span>
+            </button>
+          </ng-container>
 
           <mat-divider></mat-divider>
 

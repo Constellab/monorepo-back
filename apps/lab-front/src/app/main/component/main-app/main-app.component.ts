@@ -62,4 +62,17 @@ export class MainAppComponent implements OnInit {
     this.dialogService.openConfirmDialog(data);
   }
 
+  stopDevServer(): void {
+    const data: FlConfirmDialogInput = {
+      title: 'stop_dev_api',
+      content: 'stop_dev_api_confirmation',
+      translateTitleAndContent: true,
+      observable: this.systemService.killApi(),
+      successMessage: 'dev_api_stooped',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(data);
+  }
+
 }

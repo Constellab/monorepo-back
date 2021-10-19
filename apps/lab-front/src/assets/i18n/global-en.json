@@ -51,5 +51,8 @@
   "auto_dev_login_failed": "The automatic connexion to the development environment failed, please lo on manually",
   "reset_dev_env": "Reset dev environment",
   "reset_dev_env_confirmation": "Are you sure you want to reset the dev environment ? The database will be cleared, the files and temporary files will be deleted. The production environment will not be modified.",
-  "dev_env_reset_success": "Dev env reset"
+  "dev_env_reset_success": "Dev env reset",
+  "stop_dev_api": "Stop dev server",
+  "stop_dev_api_confirmation": "Are you sure you want to stop the dev server ? You will be redirected to the prod environment. You will be able to restart de dev server on the codelab.",
+  "dev_api_stooped": "Dev server stopped"
 }
