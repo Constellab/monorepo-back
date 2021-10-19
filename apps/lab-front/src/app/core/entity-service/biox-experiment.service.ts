@@ -67,7 +67,7 @@ export class BioxExperimentService {
 
   // stop (kill) an experiment
   public stopExperiment(experimentId: string): Observable<BioxExperiment> {
-    return this.apiService.post(`${this.route}/${experimentId}/stop`, BioxExperiment);
+    return this.apiService.post(`${this.route}/${experimentId}/stop`, null, BioxExperiment);
   }
 
   public saveAndStartExperiment(experimentId: string, workflow: Workflow): Observable<BioxExperiment> {
