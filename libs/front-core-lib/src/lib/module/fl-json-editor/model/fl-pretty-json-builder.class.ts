@@ -127,13 +127,19 @@ export class FlPrettyJsonBuilder {
 
       node.type = this.getType(value);
       if (value != null) {
-        if (node.type === 'object') {
+        // for object that contains at least one element
+        if (node.type === 'object' && Object.keys(value).length > 0) {
           node.preview = this.getPreview(value);
 
           // build the sub objects
           node.children = this.buildObjectNodeRecur(value, level + 1);
         } else {
-          node.value = value;
+          // case for the empty object and array
+          if (node.type === 'object') {
+            node.value = value instanceof Array ? '[ ]' : '{ }';
+          } else {
+            node.value = value;
+          }
         }
       } else {
         node.value = 'null';
