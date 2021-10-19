@@ -5,7 +5,7 @@ import {BioxBasicResource, BioxResource, BioxResourceDatasource} from '../model/
 import {FileResourceService, FileWithContent} from './file-resource.service';
 import {ClConstructorFunction, ClCoreJsonConvert, ClPageI} from '@monorepo/core-lib';
 import {FileResource} from '../model/entities/resource/file-resource.entity';
-import {map, mergeMap} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {LabBaseEntity} from '../model/global/lab-entity.entity';
 import {BioxLabTypeEntity, BioxLabTypeEntityDatasource} from '../model/entities/lab-type/biox-lab-type.entity';
 import {
@@ -38,17 +38,7 @@ export class BioxResourceService {
     }
 
     // get the resource in the correct type
-    return this.getResource(typingName, id).pipe(
-      mergeMap(resource => {
-        // if the resource is a file, get the file content
-        if (resource instanceof FileResource) {
-          return this.loadFileResourceContent(resource);
-        } else {
-          // otherwise return the basic resource
-          return of(resource);
-        }
-      })
-    );
+    return this.getResource(typingName, id);
   }
 
   private getResource(type: string, id: string): Observable<any> {

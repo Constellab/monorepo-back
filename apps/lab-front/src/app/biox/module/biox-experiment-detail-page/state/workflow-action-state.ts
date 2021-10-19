@@ -83,7 +83,7 @@ export class WorkflowActionState {
         scrollStrategy: this.portalService.getCloseOnScrollStrategy()
       });
 
-      this.portalService.createPortal(BioxResourcePortalComponent, portalConfig, connection.resource.getObs());
+      this.portalService.createPortal(BioxResourcePortalComponent, portalConfig, connection.resource);
     }
   }
 }

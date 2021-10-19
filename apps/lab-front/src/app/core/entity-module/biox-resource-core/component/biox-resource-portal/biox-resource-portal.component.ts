@@ -1,6 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
-import {Observable} from 'rxjs';
+import {UnconvertedResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
 
 @Component({
@@ -10,9 +9,9 @@ import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
 })
 export class BioxResourcePortalComponent implements OnInit {
 
-  resource: BioxResource | Observable<BioxResource>;
+  resource: UnconvertedResource;
 
-  constructor(@Inject(FL_PORTAL_DATA) input: BioxResource | Observable<BioxResource>) {
+  constructor(@Inject(FL_PORTAL_DATA) input: UnconvertedResource) {
     this.resource = input;
   }
 
