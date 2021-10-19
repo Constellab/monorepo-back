@@ -126,7 +126,8 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
       {
         panelClass: 'g-portal-background',
         elevation: true,
-        disposeOnNavigation: true
+        disposeOnNavigation: true,
+        customProviders: [{provide: BioxResourceDetailPageState, useValue: this.state}]
       });
 
     const input: BioxResourcePortalViewInput = {
