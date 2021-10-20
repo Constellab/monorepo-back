@@ -158,8 +158,8 @@ export interface BioxResourceViewTypeInfo {
 // Record of view type, icon
 export const constBioxResourceViewTypeInfos: Record<BioxResourceViewType, BioxResourceViewTypeInfo> = {
   view: {icon: 'view_quilt', text: 'biox.resource_view_base', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
-  'json-view': {icon: 'code', text: 'biox.resource_view_json', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
-  'text-view': {icon: 'text_snippet', text: 'biox.resource_view_text', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
+  'json-view': {icon: 'code', text: 'biox.resource_view_json', defaultDisplayMode: 'fullScreen', forceDefaultDisplayMode: false},
+  'text-view': {icon: 'text_snippet', text: 'biox.resource_view_text', defaultDisplayMode: 'fullScreen', forceDefaultDisplayMode: false},
   'table-view': {
     icon: 'calendar_view_month',
     text: 'biox.resource_view_spreadsheet',
