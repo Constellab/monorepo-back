@@ -36,7 +36,7 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
 
   // list of nodes that are linked to this node
   // It means that when this node moves, all the linked node moves
-  public linkedNodes: FlBioNetworkD3Node[] = [];
+  public childNodes: FlBioNetworkD3Node[] = [];
 
 
   protected constructor(public id: string, public name: string, public type: FlBioNetworkD3NodeType, public color: string,
@@ -109,8 +109,8 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
   private moveLinkedNodes(coord: FlCoord): string[] {
     // move also the linked nodes
     const movedNode: string[] = [];
-    if (this.linkedNodes) {
-      for (const node of this.linkedNodes) {
+    if (this.childNodes) {
+      for (const node of this.childNodes) {
         movedNode.push(...node.move(coord));
       }
     }
@@ -159,8 +159,8 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
     }
   }
 
-  public addLinkedNode(node: FlBioNetworkD3Node): void {
-    this.linkedNodes.push(node);
+  public addChildNode(node: FlBioNetworkD3Node): void {
+    this.childNodes.push(node);
   }
 
   public hasPositions(): boolean {
@@ -177,6 +177,10 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
 
   public getConnectedNodes(): FlBioNetworkD3Node[] {
     return [...this.getPreviousNodes(), ...this.getNextNodes()];
+  }
+
+  public getAllLinks(): FlBioNetworkD3Link[] {
+    return [...this.departureLinks, ...this.arrivalLinks];
   }
 }
 

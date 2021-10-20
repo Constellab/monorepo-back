@@ -317,12 +317,12 @@ export class FlBioNetworkRendererState implements OnDestroy {
     if (showCofactor) {
       for (const reaction of this.data.reactions) {
         // init cofactor positions
-        const tSpaces = Math.PI * 2 / reaction.linkedNodes.length;
+        const tSpaces = Math.PI * 2 / reaction.childNodes.length;
         let t = 0;
         const center: FlCoord = reaction.getCenter();
 
 
-        for (const node of reaction.linkedNodes) {
+        for (const node of reaction.childNodes) {
           const x = 25 * Math.cos(t) + center.x;
           const y = 25 * Math.sin(t) + center.y;
           node.setCenter({x, y});

@@ -9,6 +9,7 @@ import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
 import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
+import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class';
 
 /**
  * Class to manage the selection in the {@link FlBioNetworkComponent}
@@ -67,7 +68,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   public selectNodesAndDirectLinks(nodeIds: string[]): void {
     if (!this.isReady()) return;
 
-    const links: FlBioNetworkD3Link[] = this.getConnectedLinks(nodeIds);
+    const links: FlBioNetworkD3Link[] = this.getConnectedReactionsLinks(nodeIds);
 
     // select the connected links
     this.selectLinksFromList(links);
@@ -151,7 +152,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     const links: FlD3SelectionSimple<FlBioNetworkD3Link> =
       this.groupState.links.filter((link: FlBioNetworkD3Link) => link.isLinkedToAnyNode(reactionsIds));
     const reactionSelection: FlD3SelectionSimple<FlBioNetworkD3Node> =
-      this.allNodes.filter((node: FlBioNetworkD3Node) => reactionsIds.includes(node.id))
+      this.allNodes.filter((node: FlBioNetworkD3Node) => reactionsIds.includes(node.id));
 
     // if the pathway was not highlighted
     if (!pathway.highlighted) {
@@ -170,6 +171,34 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     return this.data.links
       // filter the link directly connected
       .filter(link => nodeIds.includes(link.target.id) || nodeIds.includes(link.source.id));
+  }
+
+  // return all the connected links to a node and if the connected node is a reaction
+  // return also the link connected to the reaction
+  private getConnectedReactionsLinks(nodeIds: string[]): FlBioNetworkD3Link[] {
+    const links: FlBioNetworkD3Link[] = [];
+
+    for (const link of this.data.links) {
+
+      let otherNode: FlBioNetworkD3Node;
+      if (nodeIds.includes(link.target.id)) {
+        otherNode = link.source;
+      } else if (nodeIds.includes(link.source.id)) {
+        otherNode = link.target;
+      }
+
+      // if the node is directly connected
+      if (otherNode) {
+        links.push(link);
+
+        // if the other part of the connection is a reaction, get also all the links of the reaction
+        if (otherNode instanceof FlBioNetworkD3Reaction) {
+          links.push(...otherNode.getAllLinks());
+        }
+      }
+    }
+
+    return links;
   }
 
   private selectLinksFromList(links: FlBioNetworkD3Link[]): void {
@@ -230,7 +259,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   }
 
   private isReady(): boolean {
-    return this.groupState.nodes != null && this.groupState.links != null;
+    return this.groupState.mainGroup != null;
   }
 
 

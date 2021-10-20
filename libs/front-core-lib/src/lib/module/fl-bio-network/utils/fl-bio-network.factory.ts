@@ -127,7 +127,7 @@ export class FlBioNetworkFactory {
         // and use the cofactor id
         if (metabolite.is_cofactor) {
           const cofactor = this.createCofactor(metabolite);
-          reactionD3.addLinkedNode(cofactor);
+          reactionD3.addChildNode(cofactor);
           metaboliteNode = cofactor;
         } else {
           // use the metabolite id
