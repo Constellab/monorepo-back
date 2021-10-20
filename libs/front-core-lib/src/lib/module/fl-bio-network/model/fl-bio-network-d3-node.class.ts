@@ -2,6 +2,8 @@ import {select, SimulationNodeDatum} from 'd3';
 import {FlBioNetworkMetabolite, FlBioNetworkReaction} from './fl-bio-network.class';
 import {FlCoord, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
+import {FlBioNetworkD3Link} from './fl-bio-network-d3-link.class';
+import {FlBioNetworkD3Object} from './fl-bio-network-d3.class';
 
 // class for all node the bio network
 export const flBioNetworkNodeClass: string = 'node';
@@ -9,7 +11,7 @@ export const flBioNetworkNodeTextClass: string = 'node-text';
 
 export type FlBioNetworkD3NodeType = 'metabolite' | 'reaction' | 'cofactor';
 
-export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
+export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNetworkD3Object {
 
   // the following properties are set by d3
   // Node’s zero-based index into nodes array. This property is set during the initialization process of a simulation.
@@ -25,6 +27,16 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
 
   fx?: number;
   fy?: number;
+
+
+  visible: boolean = true;
+
+  public departureLinks: FlBioNetworkD3Link[] = [];
+  public arrivalLinks: FlBioNetworkD3Link[] = [];
+
+  // list of nodes that are linked to this node
+  // It means that when this node moves, all the linked node moves
+  public linkedNodes: FlBioNetworkD3Node[] = [];
 
 
   protected constructor(public id: string, public name: string, public type: FlBioNetworkD3NodeType, public color: string,
@@ -47,6 +59,7 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
       textSelection.attr('class', flBioNetworkNodeTextClass);
     }
     this.setNodeTitle(container);
+    this.visible = true;
   }
 
   // draw the node element using d3 js
@@ -68,14 +81,20 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
   }
 
   /**
-   * Set the position position of the node
+   * Set the position of the node
    * return the ids of the moved nodes
    */
   public setPosition(coord: FlCoord): string[] {
+    const diff: FlCoord = {
+      x: coord.x - this.x,
+      y: coord.y - this.y
+    };
+
     this.x = coord.x;
     this.y = coord.y;
     this.savePosition();
-    return [this.id];
+
+    return [this.id, ...this.moveLinkedNodes(diff)];
   }
 
   // add the coord to the current position
@@ -83,7 +102,19 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
     this.x += coord.x;
     this.y += coord.y;
     this.savePosition();
-    return [this.id];
+
+    return [this.id, ...this.moveLinkedNodes(coord)];
+  }
+
+  private moveLinkedNodes(coord: FlCoord): string[] {
+    // move also the linked nodes
+    const movedNode: string[] = [];
+    if (this.linkedNodes) {
+      for (const node of this.linkedNodes) {
+        movedNode.push(...node.move(coord));
+      }
+    }
+    return movedNode;
   }
 
   public abstract convertFromCenterCoord(coord: FlCoord): FlCoord;
@@ -91,6 +122,8 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
   public abstract convertToCenterCoord(coord: FlCoord): FlCoord;
 
   protected abstract drawNodeText(container: SVGElement, textColor: string, backgroundColor: string): FlD3SelectionSimple | null;
+
+  public abstract getLevel(): number;
 
   protected setNodeTitle(container: SVGElement): void {
     select(container).append('title')
@@ -126,6 +159,25 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum {
     }
   }
 
+  public addLinkedNode(node: FlBioNetworkD3Node): void {
+    this.linkedNodes.push(node);
+  }
+
+  public hasPositions(): boolean {
+    return this.x != null && this.y != null;
+  }
+
+  public getNextNodes(): FlBioNetworkD3Node[] {
+    return this.departureLinks.map(link => link.target);
+  }
+
+  public getPreviousNodes(): FlBioNetworkD3Node[] {
+    return this.arrivalLinks.map(link => link.source);
+  }
+
+  public getConnectedNodes(): FlBioNetworkD3Node[] {
+    return [...this.getPreviousNodes(), ...this.getNextNodes()];
+  }
 }
 
 

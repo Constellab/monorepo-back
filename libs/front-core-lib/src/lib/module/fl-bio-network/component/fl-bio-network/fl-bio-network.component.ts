@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FlBioNetwork} from '../../model/fl-bio-network.class';
 import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
 import {MatDrawer, MatSidenav} from '@angular/material/sidenav';
@@ -7,6 +7,7 @@ import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {FlBioNetworkZoomState} from '../../state/fl-bio-network-zoom.state';
 import {FlBioNetworkGridState} from '../../state/fl-bio-network-grid.state';
+import {FlBioNetworkGroupState} from '../../state/fl-bio-network-group.state';
 
 @Component({
   selector: 'fl-bio-network',
@@ -14,6 +15,7 @@ import {FlBioNetworkGridState} from '../../state/fl-bio-network-grid.state';
   styleUrls: ['./fl-bio-network.component.scss'],
   providers: [
     FlBioNetworkState,
+    FlBioNetworkGroupState,
     FlBioNetworkRendererState,
     FlBioNetworkDrawerState,
     FlBioNetworkZoomState,
@@ -29,8 +31,7 @@ export class FlBioNetworkComponent implements OnInit, AfterViewInit {
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
   @ViewChild(MatSidenav, {static: true}) drawer: MatDrawer;
 
-  constructor(private cdr: ChangeDetectorRef,
-              private state: FlBioNetworkState,
+  constructor(private state: FlBioNetworkState,
               private drawerState: FlBioNetworkDrawerState,
               private rendererState: FlBioNetworkRendererState) {
   }

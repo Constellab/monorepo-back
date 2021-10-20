@@ -10,6 +10,8 @@ export interface FlBioNetwork {
   compartments: Record<string, string>;
 }
 
+export type FlBioNetworkMetaboliteLevel = 'major' | 'minor' | 'cofactor'
+
 export interface FlBioNetworkMetabolite {
   id: string;
   name: string;
@@ -20,7 +22,10 @@ export interface FlBioNetworkMetabolite {
   chebi_id?: string;
   position?: FlCoord;
   is_cofactor: boolean;
+  level: FlBioNetworkMetaboliteLevel;
 }
+
+export type FlBioNetworkReactionLevel = 'major' | 'minor';
 
 export interface FlBioNetworkReaction {
   id: string;
@@ -31,6 +36,7 @@ export interface FlBioNetworkReaction {
   enzyme?: FlBioNetworkEnzyme;
   estimate: FlBioNetworkReactionEstimate;
   position?: FlCoord;
+  level?: FlBioNetworkReactionLevel;
 }
 
 // Information about the enzyme in the reaction

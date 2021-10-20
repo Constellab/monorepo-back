@@ -2,7 +2,6 @@ import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {MatDrawer} from '@angular/material/sidenav';
 import {FlBioNetworkDrawerAction, FlBioNetworkDrawerStateValue} from '../model/fl-bio-network-drawer-action.class';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {ClHelpService} from '@monorepo/core-lib';
 import {filter, map} from 'rxjs/operators';
 
 
@@ -29,9 +28,7 @@ export class FlBioNetworkDrawerState implements OnDestroy {
 
   public newAction(action: FlBioNetworkDrawerAction): void {
     this.openDrawer();
-
-    const previousState: FlBioNetworkDrawerStateValue = ClHelpService.deepClone(this.state$.value);
-    this.state$.next(Object.assign(previousState, action));
+    this.state$.next(Object.assign(this.state$.value, action));
   }
 
   public getState$(): Observable<FlBioNetworkDrawerStateValue> {

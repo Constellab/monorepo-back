@@ -8,6 +8,8 @@ export const flBioNetworkCofactorSize: number = 5;
 
 export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
 
+  visible: boolean = false;
+
   public data: FlBioNetworkMetabolite;
 
   constructor(id: string, name: string, data: FlBioNetworkMetabolite) {
@@ -47,7 +49,7 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
     };
   }
 
-
-
-
+  getLevel(): number {
+    return 0;
+  }
 }

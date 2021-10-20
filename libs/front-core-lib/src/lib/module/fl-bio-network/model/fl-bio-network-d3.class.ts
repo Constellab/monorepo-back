@@ -92,3 +92,10 @@ export class FlBioxNetworkD3 {
     this.getAllNodes().forEach(node => node.initPosition());
   }
 }
+
+// Any D3 object in the network
+export interface FlBioNetworkD3Object {
+  visible: boolean;
+
+  getLevel(): number;
+}

@@ -89,7 +89,8 @@ export class FlBioNetworkFactory {
         }
 
         // Skip cofactors, they will be created when creating the links
-        if (metabolite.is_cofactor) {
+        if (metabolite.level === 'cofactor') {
+          metabolite.level = 'cofactor';
           continue;
         }
 
@@ -126,7 +127,7 @@ export class FlBioNetworkFactory {
         // and use the cofactor id
         if (metabolite.is_cofactor) {
           const cofactor = this.createCofactor(metabolite);
-          reactionD3.addCofactor(cofactor);
+          reactionD3.addLinkedNode(cofactor);
           metaboliteNode = cofactor;
         } else {
           // use the metabolite id

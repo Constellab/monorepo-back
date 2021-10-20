@@ -5,6 +5,16 @@ import * as d3 from 'd3';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {flBioNetworkNodeTextClass} from '../model/fl-bio-network-d3-node.class';
+import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
+
+/**
+ * Different threshold for D3 object levels
+ */
+const d3ObjectZoomLevelThreshold = {
+  0: Infinity, // levels 0 showed when zoom > 3
+  1: 3, // level 1 showed when zoom > 1.2
+  2: 1.2 // level 2 are always showed
+};
 
 /**
  * State to manage the zoom in the {@link FlBioNetworkComponent}
@@ -31,8 +41,10 @@ export class FlBioNetworkZoomState implements OnDestroy {
   // Default zoom scale when zooming to a position
   private readonly zoomToPositionScale: number = 3;
 
+  // true after the enable zoom and false after first zoom handling
+  private firstZoom: boolean = true;
 
-  constructor(private ngZone: NgZone) {
+  constructor(private ngZone: NgZone, private groupState: FlBioNetworkGroupState) {
   }
 
 
@@ -42,6 +54,7 @@ export class FlBioNetworkZoomState implements OnDestroy {
     this.svg = svg;
     this.svgWidth = svgWidth;
     this.svgHeight = svgHeight;
+    this.firstZoom = true;
 
     //add zoom capabilities
     this.zoomHandler = d3.zoom()
@@ -51,6 +64,9 @@ export class FlBioNetworkZoomState implements OnDestroy {
     // init the zoom with a value if
     if (this.currentZoom) {
       this.zoomHandler.transform(svg, this.currentZoom);
+    } else {
+      this.updateObjectVisibility(1);
+      this.firstZoom = false;
     }
 
     // run the zoom handler outside ng zone to avoid ng check
@@ -63,23 +79,34 @@ export class FlBioNetworkZoomState implements OnDestroy {
   private onZoom(transform: ZoomTransform): void {
     this.zoomableElement.attr('transform', transform.toString());
 
-    this.updateNodeTextVisibility(transform);
+    this.updateObjectVisibility(transform.k);
 
     // emit the zoom
     this.zoom$.next(transform);
+    this.firstZoom = false;
+  }
+
+  private updateObjectVisibility(zoomScale: number): void {
+
+    // update the zoom visibility if there were no zoom previously or the zoom level has changed
+    const currentLevel = this.getObjectLevelFromScale(zoomScale);
+    const updateVisibility: boolean = this.firstZoom
+      || this.getObjectLevelFromScale(this.getCurrentScale()) != currentLevel;
+
+    if (updateVisibility) {
+      this.groupState.allObjects.each(d => d.visible = d.getLevel() >= currentLevel)
+        .style('opacity', (d => d.visible ? 1 : 0));
+    }
   }
 
   // show or hide the text based on scroll scale
-  private updateNodeTextVisibility(transform: ZoomTransform): void {
-
-    const previousScale = this.zoom$.value?.k ?? 1;
-    const previousDisplay = previousScale >= this.nodeTextVisibilityThreshold;
-    const currentDisplay = transform.k >= this.nodeTextVisibilityThreshold;
+  private updateNodeTextVisibility(zoomScale: number): void {
+    const previousDisplay = this.getCurrentScale() >= this.nodeTextVisibilityThreshold;
+    const currentDisplay = zoomScale >= this.nodeTextVisibilityThreshold;
 
     if (previousDisplay != currentDisplay) {
       const opacity = currentDisplay ? 1 : 0;
-      const selection = this.svg.selectAll('.' + flBioNetworkNodeTextClass);
-      selection.style('opacity', opacity);
+      this.svg.selectAll('.' + flBioNetworkNodeTextClass).style('opacity', opacity);
     }
   }
 
@@ -97,6 +124,10 @@ export class FlBioNetworkZoomState implements OnDestroy {
           .translate(this.svgWidth * 0.5 - scale * posX,
             this.svgHeight * 0.5 - scale * posY)
           .scale(scale));
+  }
+
+  private getCurrentScale(): number {
+    return this.zoom$.value?.k ?? 1;
   }
 
   // public resetZoom(): void{
@@ -129,6 +160,16 @@ export class FlBioNetworkZoomState implements OnDestroy {
 
   public get currentZoom(): ZoomTransform | null {
     return this.zoom$.value;
+  }
+
+  // retrieve the Object level to show based on current zoom scale
+  public getObjectLevelFromScale(scale: number): number {
+    let level = 0;
+
+    while (d3ObjectZoomLevelThreshold[level + 1] > scale) {
+      level++;
+    }
+    return level;
   }
 
   ngOnDestroy(): void {
