@@ -7,6 +7,7 @@
     "path": "Chemin",
     "download_file": "Télécharger le fichier",
     "select_file_types": "Sélectionner le type des fichiers",
-    "select_file_type": "Type du fichier"
+    "select_file_type": "Type du fichier",
+    "file_type": "Type du fichier"
   }
 }

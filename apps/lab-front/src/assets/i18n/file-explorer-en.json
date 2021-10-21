@@ -7,6 +7,7 @@
     "path": "Path",
     "download_file": "Download file",
     "select_file_types": "Select file types",
-    "select_file_type": "Select file type"
+    "select_file_type": "Select file type",
+    "file_type": "File type"
   }
 }
