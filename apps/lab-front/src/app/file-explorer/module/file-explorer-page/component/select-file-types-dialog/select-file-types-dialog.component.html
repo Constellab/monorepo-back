@@ -1,0 +1,50 @@
+<fl-dialog-title>
+  {{'fe.select_file_types' | translate}}
+</fl-dialog-title>
+
+<mat-dialog-content>
+
+  <fl-section [object]="fileTypes" [isLoading]="getFileTypeIsLoading">
+
+    <ng-container *flSectionBody>
+
+      <form (ngSubmit)="submit()" id="file-type-form" [formGroup]="formGp">
+
+        <ng-container formArrayName="array">
+          <div *ngFor="let control of formArray.controls; index as i" [formGroupName]="i"
+          >
+
+            <div fxLayout="row" fxLayoutAlign="space-between">
+
+
+              <p fxFlex="39%" class="filename">{{control.get('file').value.name}}</p>
+
+              <!--  File type  -->
+              <mat-form-field fxFlex="59%">
+                <mat-label>{{'fe.select_file_type' | translate}}</mat-label>
+                <mat-select formControlName="typingName" placeholder="{{'fe.select_file_type' | translate}}"
+                            required>
+                  <mat-option *ngFor="let fileType of fileTypes" [value]="fileType.typingName">
+                    {{fileType.name}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="control.get('typingName').hasError('required')">
+                  {{'fe.select_file_type' | flErrorRequired}}
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <mat-divider class="divider"></mat-divider>
+          </div>
+        </ng-container>
+      </form>
+    </ng-container>
+  </fl-section>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" form="file-type-form"
+          class="g-centered-forced">
+    {{'fe.upload_file' | translate}}
+  </button>
+</div>

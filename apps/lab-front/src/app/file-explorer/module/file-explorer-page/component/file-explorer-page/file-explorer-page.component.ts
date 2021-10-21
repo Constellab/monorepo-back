@@ -2,13 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {FileResourceDatasource, FileResourcePreview} from '../../../../../core/model/entities/resource/file-resource.entity';
 import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
 import {
+  FlDialogService,
   FlDropFileEvent,
-  FlPortalAction,
   FlPortalActionResult,
   FlPortalActionsService,
   FlTableColumn,
   FlTranslateService
 } from '@monorepo/front-core-lib';
+import {SelectFileTypesDialogComponent, SelectFileTypesDialogInput} from '../select-file-types-dialog/select-file-types-dialog.component';
 
 @Component({
   selector: 'gen-file-explorer-page',
@@ -27,7 +28,8 @@ export class FileExplorerPageComponent implements OnInit {
 
   constructor(private labFileService: FileResourceService,
               private actionsService: FlPortalActionsService,
-              private translateService: FlTranslateService) {
+              private translateService: FlTranslateService,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -48,17 +50,10 @@ export class FileExplorerPageComponent implements OnInit {
       return;
     }
 
-    const text: string = files.length > 1 ?
-      this.translateService.translate('fe.uploading_files', {param: {nbFiles: files.length}}) :
-      files[0].name;
-
-    const action: FlPortalAction = {
-      text: text,
-      type: this.actionType,
-      action: this.labFileService.uploadFiles(files),
-    };
-
-    this.actionsService.addAction(action, true);
+    const data: SelectFileTypesDialogInput[] = files.map(file => {
+      return {file: file, typingName: null};
+    });
+    this.dialogService.openSmallDialog(SelectFileTypesDialogComponent, {data: data});
 
     // clear the list of files
     this.files = [];

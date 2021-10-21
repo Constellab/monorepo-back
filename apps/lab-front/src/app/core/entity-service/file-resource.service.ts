@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {FileResourceDatasource, FileResourcePreview} from '../model/entities/resource/file-resource.entity';
+import {BioxFileType, FileResourceDatasource, FileResourcePreview} from '../model/entities/resource/file-resource.entity';
 import {ClPageI} from '@monorepo/core-lib';
 import {map, mergeMap} from 'rxjs/operators';
 
@@ -15,16 +15,18 @@ export interface FileWithContent {
 })
 export class FileResourceService {
 
+  public static readonly uploadFileActon = 'uploadFile';
+
   private readonly route: string = 'file';
+  private readonly fileTypeRoute: string = 'file-type';
 
   constructor(private apiService: FlApiService) {
   }
 
-  public uploadFiles(files: File[]): Observable<any> {
+  public uploadFiles(files: File[], typingNames: string[]): Observable<FileResourcePreview[]> {
     const formData: FormData = new FormData();
-    for (const file of files) {
-      formData.append('files', file);
-    }
+    files.forEach(file => formData.append('files', file));
+    typingNames.forEach(type => formData.append('typing_names', type));
 
     return this.apiService.post(`${this.route}/upload`, formData, FileResourcePreview);
   }
@@ -56,7 +58,7 @@ export class FileResourceService {
   }
 
   public getAll(page: number, pageSize: number): Observable<ClPageI<FileResourcePreview>> {
-    return this.apiService.get(`file`, FileResourcePreview,
+    return this.apiService.get(this.route, FileResourcePreview,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
@@ -66,4 +68,9 @@ export class FileResourceService {
   }
 
 
+  //////////////////////////////////////////// FILE TYPE ////////////////////////////////////////
+  // return the list of all file types
+  public getFileTypes(): Observable<BioxFileType[]> {
+    return this.apiService.get(this.fileTypeRoute, BioxFileType);
+  }
 }

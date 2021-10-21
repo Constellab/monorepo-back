@@ -1,7 +1,11 @@
 import {Expose} from 'class-transformer';
 import {FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 import {BioxResource} from './biox-resource.entity';
+import {BioxLabTypeEntity} from '../lab-type/biox-lab-type.entity';
 
+
+// typing name of the file entity
+export const constFileResourceTypingName: string = 'RESOURCE.gws_core.File';
 
 export class FileResourcePreview extends BioxResource {
 
@@ -43,3 +47,14 @@ export class FileResource extends FileResourcePreview {
 
 
 export type FileResourceDatasource = FlEntityPaginatedDatasource<FileResourcePreview>;
+
+export class BioxFileType extends BioxLabTypeEntity {
+
+  @Expose({name: 'supported_extensions'})
+  supportedExtensions: string[];
+
+  // return true if the provided extension is supported by the type
+  public extensionIsSupported(extension: string): boolean {
+    return this.supportedExtensions?.includes(extension) ?? false;
+  }
+}

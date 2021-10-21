@@ -5,6 +5,8 @@
     "upload_file": "Uploader des fichier",
     "uploading_files": "Envoie de {{nbFiles}} fichiers",
     "path": "Chemin",
-    "download_file": "Télécharger le fichier"
+    "download_file": "Télécharger le fichier",
+    "select_file_types": "Sélectionner le type des fichiers",
+    "select_file_type": "Type du fichier"
   }
 }
