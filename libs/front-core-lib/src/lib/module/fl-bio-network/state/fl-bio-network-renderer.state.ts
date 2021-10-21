@@ -103,7 +103,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
         this.groupState.initGroups(mainGroup);
         this.drawLinks(this.groupState.linkGroup, this.data.getMetaboliteLinks());
         this.drawNodes(this.groupState.nodeGroup, this.data.getMetabolitesAndReactions());
-        this.defineArrowMarker();
         this.zoomState.enableZoom(this.svg, mainGroup, this.chartWidth, this.chartHeight);
 
         if (this.enableSimulation) {
@@ -166,16 +165,10 @@ export class FlBioNetworkRendererState implements OnDestroy {
       nodeToMoveIds = dragEvent.subject.setPosition(dragEvent);
     }
 
-
     this.groupState.nodes.filter((d) => nodeToMoveIds.includes(d.id))
       .attr('transform',
         (d: FlBioNetworkD3Node) => 'translate(' + d.x + ',' + d.y + ')'
       );
-
-    // refresh link points
-    // this.groupState.links
-    //   .filter((d) => d.isLinkedToNode(dragEvent.subject.id))
-    //   .attr('points', (d: FlBioNetworkD3Link) => d.getPolylinePoints());
 
     // refresh link points
     this.groupState.links
@@ -335,25 +328,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
     } else {
       return (value => value);
     }
-  }
-
-
-  // define the arrow marker to use it in lines
-  private defineArrowMarker(): void {
-    // define a marker for tha arrow
-    this.svg.append('defs').append('marker')
-      .attr('id', 'mid_arrow')
-      .attr('viewBox', '-0 -5 10 10')
-      .attr('refX', 10)
-      .attr('refY', 0)
-      .attr('orient', 'auto')
-      .attr('markerWidth', 4)
-      .attr('markerHeight', 4)
-      .attr('xoverflow', 'visible')
-      .append('svg:path')
-      .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-      .attr('fill', this.grey)
-      .style('stroke', 'none');
   }
 
   /////////////////////////////////////////// SIMULATION //////////////////////////////////////////////
