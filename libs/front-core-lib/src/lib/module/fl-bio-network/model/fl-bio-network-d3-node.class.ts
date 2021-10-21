@@ -1,9 +1,10 @@
 import {select, SimulationNodeDatum} from 'd3';
 import {FlBioNetworkMetabolite, FlBioNetworkReaction} from './fl-bio-network.class';
-import {FlCoord, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
+import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {FlBioNetworkD3Link} from './fl-bio-network-d3-link.class';
 import {FlBioNetworkD3Object} from './fl-bio-network-d3.class';
+import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 // class for all node the bio network
 export const flBioNetworkNodeClass: string = 'node';
@@ -49,6 +50,15 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
     }
   }
 
+
+  public abstract getLevel(): number;
+
+  ///////////////////////////////////////////// DRAW  ////////////////////////////////
+  // draw the node element using d3 js
+  public abstract drawNode(container: SVGElement): FlD3SelectionSimple<FlBioNetworkD3Node>;
+
+  protected abstract drawNodeText(container: SVGElement, textColor: string, backgroundColor: string): FlD3SelectionSimple | null;
+
   public drawNodeAndText(container: SVGElement, textColor: string, backgroundColor: string): void {
     // draw the node and add the class 'node' to each node so we can retrieve them
     this.drawNode(container)
@@ -62,8 +72,32 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
     this.visible = true;
   }
 
-  // draw the node element using d3 js
-  public abstract drawNode(container: SVGElement): FlD3SelectionSimple<FlBioNetworkD3Node>;
+  protected setNodeTitle(container: SVGElement): void {
+    select(container).append('title')
+      .text((d: FlBioNetworkD3Node) => d.name);
+  }
+
+  protected drawTextUnder(element: SVGElement, textColor: string, backgroundColor: string,
+                          fontSize: string, y: number, x: number = 0): FlD3SelectionSimple {
+    // create the text for metabolite
+    return select(element).append('text')
+      .text((d: FlBioNetworkD3Node) => d.name.substr(0, 20))
+      .attr('x', x)
+      .attr('y', y)
+      .attr('dy', '1em')
+      .attr('text-anchor', 'middle')
+      .attr('fill', textColor)
+      .style('text-shadow', this.getTextShadow(backgroundColor))
+      .style('font-size', fontSize);
+  }
+
+  protected getTextShadow(backgroundColor: string): string {
+    return `-1px -1px 0 ${backgroundColor}, 1px -1px 0 ${backgroundColor},
+            -1px 1px 0 ${backgroundColor}, 1px 1px 0 ${backgroundColor}`;
+  }
+
+
+  ///////////////////////////////////////////// POSITIONS ////////////////////////////////
 
   // get the center of the node
   public getCenter(): FlCoord {
@@ -121,32 +155,8 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
 
   public abstract convertToCenterCoord(coord: FlCoord): FlCoord;
 
-  protected abstract drawNodeText(container: SVGElement, textColor: string, backgroundColor: string): FlD3SelectionSimple | null;
-
-  public abstract getLevel(): number;
-
-  protected setNodeTitle(container: SVGElement): void {
-    select(container).append('title')
-      .text((d: FlBioNetworkD3Node) => d.name);
-  }
-
-  protected drawTextUnder(element: SVGElement, textColor: string, backgroundColor: string,
-                          fontSize: string, y: number, x: number = 0): FlD3SelectionSimple {
-    // create the text for metabolite
-    return select(element).append('text')
-      .text((d: FlBioNetworkD3Node) => d.name.substr(0, 20))
-      .attr('x', x)
-      .attr('y', y)
-      .attr('dy', '1em')
-      .attr('text-anchor', 'middle')
-      .attr('fill', textColor)
-      .style('text-shadow', this.getTextShadow(backgroundColor))
-      .style('font-size', fontSize);
-  }
-
-  protected getTextShadow(backgroundColor: string): string {
-    return `-1px -1px 0 ${backgroundColor}, 1px -1px 0 ${backgroundColor},
-            -1px 1px 0 ${backgroundColor}, 1px 1px 0 ${backgroundColor}`;
+  public hasPositions(): boolean {
+    return this.x != null && this.y != null;
   }
 
   public savePosition(): void {
@@ -159,12 +169,10 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
     }
   }
 
+
+  ///////////////////////////////////////////// NODES ////////////////////////////////////////////
   public addChildNode(node: FlBioNetworkD3Node): void {
     this.childNodes.push(node);
-  }
-
-  public hasPositions(): boolean {
-    return this.x != null && this.y != null;
   }
 
   public getNextNodes(): FlBioNetworkD3Node[] {
@@ -181,6 +189,20 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
 
   public getAllLinks(): FlBioNetworkD3Link[] {
     return [...this.departureLinks, ...this.arrivalLinks];
+  }
+
+  /**
+   * Search the link, link to the node and the provided node
+   * @param nodeId
+   */
+  public getLinkToNode(nodeId: string): FlBioNetworkD3Link | null {
+    // search on departure links
+    let link = this.departureLinks.find(link => link.target.id === nodeId);
+    if (link) return link;
+
+    // search on arrival links
+    link = this.arrivalLinks.find(link => link.source.id === nodeId);
+    return link;
   }
 }
 

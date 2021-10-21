@@ -1,8 +1,9 @@
 import {select} from 'd3';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 import {FlBioNetworkMetabolite} from './fl-bio-network.class';
-import {FlCoord, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
+import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
+import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 
 // radius of the metabolite round

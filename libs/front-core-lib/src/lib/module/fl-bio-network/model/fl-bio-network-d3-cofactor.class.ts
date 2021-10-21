@@ -1,12 +1,14 @@
 import {FlBioNetworkMetabolite} from './fl-bio-network.class';
-import {FlCoord, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
+import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {select} from 'd3';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
+import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 // size for the cofactor losange
 export const flBioNetworkCofactorSize: number = 5;
 
 export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
+  public type: 'cofactor';
 
   visible: boolean = false;
 

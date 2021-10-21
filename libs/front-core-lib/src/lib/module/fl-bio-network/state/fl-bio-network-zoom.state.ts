@@ -6,6 +6,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {flBioNetworkNodeTextClass} from '../model/fl-bio-network-d3-node.class';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
+import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 /**
  * Different threshold for D3 object levels
@@ -171,6 +172,19 @@ export class FlBioNetworkZoomState implements OnDestroy {
     }
     return level;
   }
+
+  public convertCoord(coord: FlCoord): FlCoord {
+    if (this.zoom$.value == null) return coord;
+
+    const result = this.zoom$.value.invert([coord.x, coord.y]);
+    return {
+      x: result[0],
+      y: result[1]
+    };
+    // console.log(this.zoom$.value.apply([coord.x, coord.y]))
+    // return null;
+  }
+
 
   ngOnDestroy(): void {
     this.zoom$.complete();

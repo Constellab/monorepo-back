@@ -95,7 +95,7 @@ export class FlBioxNetworkD3 {
 
 // Any D3 object in the network
 export interface FlBioNetworkD3Object {
-  visible: boolean;
+  visible: boolean; // true if the element is visible on the network
 
-  getLevel(): number;
+  getLevel(): number; // level for the zoom
 }

@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import * as d3 from 'd3';
-import {FlCoord, FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
+import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
+import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 interface AxisTick {
   start: number;
@@ -16,8 +17,8 @@ export class FlBioNetworkGridState {
   private xAxis: FlD3SelectionSimple;
   private yAxis: FlD3SelectionSimple;
 
-  private xAxisTick: AxisTick;
-  private yAxisTick: AxisTick;
+  public xAxisTick: AxisTick;
+  public yAxisTick: AxisTick;
 
   // threshold when rounding a position to the grid
   private gridRoundPosThreshold: number = 0.15;
@@ -26,6 +27,7 @@ export class FlBioNetworkGridState {
   constructor() {
   }
 
+  // draw the grid
   public initGrid(axisGroup: FlD3SelectionSimple): void {
     const xScale = d3.scaleLinear()
       .domain([-this.gridSize / 2, this.gridSize / 2])
@@ -147,8 +149,8 @@ export class FlBioNetworkGridState {
   private coordFromTransform(transform: string): FlCoord {
     const coord: string[] = transform.substring(transform.indexOf('(') + 1, transform.indexOf(')')).split(',');
     return {
-      x: parseInt(coord[0]),
-      y: parseInt(coord[1])
+      x: parseFloat(coord[0]),
+      y: parseFloat(coord[1])
     };
   }
 }

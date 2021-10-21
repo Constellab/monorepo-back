@@ -3,6 +3,7 @@ import {
   FlBioNetworkMetabolite,
   FlBioNetworkReaction,
   FlBioNetworkReactionEstimate,
+  FlBioNetworkReactionLink,
   FlPathwayDatabase
 } from '../model/fl-bio-network.class';
 import {FlBioNetworkD3Node, flBioNetworkGetCompartmentColor,} from '../model/fl-bio-network-d3-node.class';
@@ -136,15 +137,15 @@ export class FlBioNetworkFactory {
 
         // get the estimate with a default value if it doesn't exists
         const estimate: FlBioNetworkReactionEstimate = FlBioNetworkHelper.getReactionEstimate(reactionD3.data);
-        const reactionDirection: number = reactionD3.data.metabolites[metaboliteId];
+        const reactionLink: FlBioNetworkReactionLink = reactionD3.data.metabolites[metaboliteId];
 
         // right side of the link
-        if (reactionDirection > 0) {
-          this.links.push(new FlBioNetworkD3Link(reactionD3, metaboliteNode, estimate));
+        if (reactionLink.stoich > 0) {
+          this.links.push(new FlBioNetworkD3Link(reactionD3, metaboliteNode, estimate, reactionLink.points));
         }
         // left side of the link
         else {
-          this.links.push(new FlBioNetworkD3Link(metaboliteNode, reactionD3, estimate));
+          this.links.push(new FlBioNetworkD3Link(metaboliteNode, reactionD3, estimate, reactionLink.points));
         }
       }
     }
