@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import * as d3 from 'd3';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
+import {axisBottom, axisRight, scaleLinear, select} from 'd3';
 
 interface AxisTick {
   start: number;
@@ -29,18 +29,18 @@ export class FlBioNetworkGridState {
 
   // draw the grid
   public initGrid(axisGroup: FlD3SelectionSimple): void {
-    const xScale = d3.scaleLinear()
+    const xScale = scaleLinear()
       .domain([-this.gridSize / 2, this.gridSize / 2])
       .range([0, this.gridSize]);
 
-    const yScale = d3.scaleLinear()
+    const yScale = scaleLinear()
       .domain([-this.gridSize / 2, this.gridSize / 2])
       .range([this.gridSize, 0]);
-    const gridXAxis = d3.axisBottom(xScale)
+    const gridXAxis = axisBottom(xScale)
       .ticks(this.gridSize / 20)
       .tickFormat(() => '')
       .tickSize(this.gridSize);
-    const gridYAxis = d3.axisRight(yScale)
+    const gridYAxis = axisRight(yScale)
       .ticks(this.gridSize / 20)
       .tickFormat(() => '')
       .tickSize(this.gridSize);
@@ -139,7 +139,7 @@ export class FlBioNetworkGridState {
   }
 
   private getTickCoords(tick: any): FlCoord {
-    const tickSelection = d3.select(tick);
+    const tickSelection = select(tick);
     // get transform like translate(x,y)
     const translate = tickSelection.attr('transform');
     return this.coordFromTransform(translate);

@@ -1,6 +1,5 @@
 import {InterpolatorFactory, NumberValue, ScaleBand} from 'd3-scale';
-import * as d3 from 'd3';
-import {AxisScale, interpolateRound, Numeric} from 'd3';
+import {AxisScale, interpolateRound, Numeric, scaleBand, scaleLinear} from 'd3';
 
 export interface FlD3Scale<Value> extends AxisScale<Value> {
   (value: Value): number;
@@ -32,7 +31,7 @@ export interface FlD3ScaleLinear<Value extends Numeric> extends FlD3Scale<Value>
 }
 
 export interface FlChartScaleI {
-  scale(value: any): any
+  scale(value: any): any;
 }
 
 
@@ -135,23 +134,6 @@ export abstract class FlChartScaleLinear extends FlChartScale<Numeric> {
 }
 
 
-export class FlChartScaleDate extends FlChartScaleLinear {
-
-  constructor() {
-    super();
-  }
-
-  protected initScale(): FlD3ScaleLinear<Date> {
-    return d3.scaleTime();
-  }
-
-
-  public nice(): this {
-    this.d3Scale.nice(1);
-    return this;
-  }
-}
-
 export class FlChartScaleNumber extends FlChartScaleLinear {
 
   constructor() {
@@ -159,7 +141,7 @@ export class FlChartScaleNumber extends FlChartScaleLinear {
   }
 
   protected initScale(): FlD3ScaleLinear<Numeric> {
-    return d3.scaleLinear();
+    return scaleLinear();
   }
 
   public nice(): this {
@@ -177,7 +159,7 @@ export class FlChartScaleBand extends FlChartScale<Numeric> {
   }
 
   protected initScale(): ScaleBand<Numeric> {
-    const band: ScaleBand<Numeric> = d3.scaleBand();
+    const band: ScaleBand<Numeric> = scaleBand();
     band.paddingInner(0.1);
     return band;
   }

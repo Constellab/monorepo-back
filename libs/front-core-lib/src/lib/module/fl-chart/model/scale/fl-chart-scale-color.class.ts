@@ -1,5 +1,4 @@
-import * as d3 from 'd3';
-import {scaleLinear, ScaleOrdinal} from 'd3';
+import {scaleLinear, scaleOrdinal, ScaleOrdinal} from 'd3';
 import {FlChartScaleI} from './fl-chart-scale.class';
 import {ScaleLinear} from 'd3-scale';
 
@@ -29,7 +28,7 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
 
   private initScale(): ScaleOrdinal<string, string> {
     // the range contains all available colors
-    return d3.scaleOrdinal<string>(['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
+    return scaleOrdinal<string>(['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
       '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999']);
   }
 

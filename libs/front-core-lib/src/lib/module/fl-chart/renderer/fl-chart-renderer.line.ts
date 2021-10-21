@@ -1,6 +1,5 @@
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
-import * as d3 from 'd3';
-import {Numeric} from 'd3';
+import {line, Numeric} from 'd3';
 import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
 import {FlChartScale} from '../model/scale/fl-chart-scale.class';
 import {ValueFn} from 'd3-selection';
@@ -12,8 +11,7 @@ import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 /**
  * Class to manage line chart with multiple series
  */
-export class FlChartRendererLine
-  implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererLine implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly serieClassName: string = 'serie';
 
@@ -43,7 +41,7 @@ export class FlChartRendererLine
 
   private getDValue(xScale: FlChartScale<Numeric>,
                     yScale: FlChartScale<Numeric>): ValueFn<any, FlChartSerie<FlChart2dDatum>, any> {
-    return (d: FlChartSerie<FlChart2dDatum>) => d3.line<FlChart2dDatum>()
+    return (d: FlChartSerie<FlChart2dDatum>) => line<FlChart2dDatum>()
       .x((d: FlChart2dDatum) => xScale.scale(d.getX()))
       .y((d: FlChart2dDatum) => yScale.scale(d.getY()))
       (d.getData()); // use to loop through serie's data

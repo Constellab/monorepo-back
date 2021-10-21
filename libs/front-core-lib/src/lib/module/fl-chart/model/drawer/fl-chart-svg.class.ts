@@ -1,6 +1,6 @@
 import {Selection} from 'd3-selection';
-import * as d3 from 'd3';
 import {FlFileHelper} from '../../../../service/fl-file.helper';
+import {select} from 'd3';
 
 /**
  * Main class to manage the svg for the chart.
@@ -30,7 +30,7 @@ export class FlChartSvg {
   public initSvg(containerElement: HTMLElement): this {
     this.container = containerElement;
     // append the svg object to the body of the page
-    this.svg = d3.select<HTMLElement, void>(containerElement)
+    this.svg = select<HTMLElement, void>(containerElement)
       .append('svg')
       .attr('width', this.width)
       .attr('height', this.height);

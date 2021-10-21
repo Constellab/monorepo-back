@@ -1,12 +1,12 @@
 import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {FlD3SelectionSimple, FlD3ZoomEvent} from '../../fl-chart/model/fl-d3.class';
 import {ZoomBehavior, ZoomTransform} from 'd3-zoom';
-import * as d3 from 'd3';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {flBioNetworkNodeTextClass} from '../model/fl-bio-network-d3-node.class';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
+import {zoom, zoomIdentity} from 'd3';
 
 /**
  * Different threshold for D3 object levels
@@ -58,7 +58,7 @@ export class FlBioNetworkZoomState implements OnDestroy {
     this.firstZoom = true;
 
     //add zoom capabilities
-    this.zoomHandler = d3.zoom()
+    this.zoomHandler = zoom()
       .on('zoom', (event: FlD3ZoomEvent) => this.onZoom(event.transform))
       .scaleExtent([this.minZoomScale, this.maxZoomScale]);
 
@@ -121,7 +121,7 @@ export class FlBioNetworkZoomState implements OnDestroy {
     this.svg.transition()
       .duration(750)
       .call(this.zoomHandler.transform,
-        d3.zoomIdentity
+        zoomIdentity
           .translate(this.svgWidth * 0.5 - scale * posX,
             this.svgHeight * 0.5 - scale * posY)
           .scale(scale));
