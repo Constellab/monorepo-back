@@ -9,6 +9,7 @@ import {FlTranslateService} from '../../fl-translate/service/fl-translate.servic
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
+import {FlFileHelper} from '../../../service/fl-file.helper';
 
 
 /**
@@ -181,6 +182,44 @@ export class FlBioNetworkState implements OnDestroy {
 
   public getCurrentChartData(): FlBioxNetworkD3 | null {
     return this.chartData$.value;
+  }
+
+  public downloadNetworkJson(): void{
+    const network: FlBioNetwork = this.exportAllNetwork();
+
+    // TODO to remove, this is temporary to export a view object
+    const viewObject = {
+      type: 'network-view',
+      data: network
+    };
+
+    FlFileHelper.downloadJsonFile(viewObject, 'network.json');
+  }
+
+  public exportAllNetwork(): FlBioNetwork {
+    const d3Network: FlBioxNetworkD3 = this.chartData$.value;
+    if (d3Network == null) return null;
+    const network: FlBioNetwork = {
+      metabolites: [],
+      reactions: [],
+      compartments: this.getSelectedNetwork().compartments,
+      name: this.getSelectedNetwork().name
+    };
+
+    network.metabolites = d3Network.metabolites.map(node => node.data);
+    network.reactions = d3Network.reactions.map(node => node.data);
+
+    // add cofactor metabolite and check if there the metabolite was not already added (because cofactor are duplicated)
+    // don't send position
+    for (const cofactorD3 of d3Network.cofactors) {
+      const cofactor = cofactorD3.data;
+      if (network.metabolites.findIndex(metabolite => metabolite.id === cofactor.id) === -1) {
+        network.metabolites.push(cofactor);
+      }
+    }
+
+
+    return network;
   }
 
 

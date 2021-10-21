@@ -4,9 +4,7 @@ import {FlBioNetworkRendererState} from '../../state/fl-bio-network-renderer.sta
 import {MatSliderChange} from '@angular/material/slider';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {filter} from 'rxjs/operators';
-import {FlFileHelper} from '../../../../service/fl-file.helper';
 import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3.class';
-import {FlBioNetwork} from '../../model/fl-bio-network.class';
 
 /**
  * Component inside the {@link FlBioNetworkComponent} to show the quick actions
@@ -84,15 +82,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
 
   exportAllNetwork(): void {
-    const network: FlBioNetwork = this.rendererState.exportAllNetwork();
-
-    // TODO to remove, this is temporary to export a view object
-    const viewObject = {
-      type: 'network-view',
-      data: network
-    };
-
-    FlFileHelper.downloadJsonFile(viewObject, 'network.json');
+    this.state.downloadNetworkJson();
   }
 
 

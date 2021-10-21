@@ -14,7 +14,6 @@ import {FlBioNetworkGridState} from './fl-bio-network-grid.state';
 import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Link, FlBioNetworkD3LinkPoint} from '../model/fl-bio-network-d3-link.class';
 import {flBioNetworkReactionMaxValue} from '../model/fl-bio-network-d3-reaction.class';
-import {FlBioNetwork} from '../model/fl-bio-network.class';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
 import {drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, scaleLinear, select} from 'd3';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
@@ -330,6 +329,10 @@ export class FlBioNetworkRendererState implements OnDestroy {
     }
   }
 
+  public getLinkColorLogarithm(): boolean {
+    return this.linkColorLogarithm;
+  }
+
   /////////////////////////////////////////// SIMULATION //////////////////////////////////////////////
 
   private initSimulation(): void {
@@ -420,35 +423,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
   }
 
 
-  // todo move this function should not be there
-  public exportAllNetwork(): FlBioNetwork {
-    const network: FlBioNetwork = {
-      metabolites: [],
-      reactions: [],
-      compartments: this.state.getSelectedNetwork().compartments,
-      name: this.state.getSelectedNetwork().name
-    };
-
-    network.metabolites = this.data.metabolites.map(node => node.data);
-    network.reactions = this.data.reactions.map(node => node.data);
-
-    // add cofactor metabolite and check if there the metabolite was not already added (because cofactor are duplicated)
-    // don't send position
-    for (const cofactorD3 of this.data.cofactors) {
-      const cofactor = cofactorD3.data;
-      if (network.metabolites.findIndex(metabolite => metabolite.id === cofactor.id) === -1) {
-        network.metabolites.push(cofactor);
-      }
-    }
-
-
-    return network;
-  }
-
-  public getLinkColorLogarithm(): boolean {
-    return this.linkColorLogarithm;
-  }
-
   private clearGroup(selection: FlD3SelectionSimple): void {
     selection.selectAll('*').remove();
   }
@@ -457,8 +431,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
-
 }
 
 
