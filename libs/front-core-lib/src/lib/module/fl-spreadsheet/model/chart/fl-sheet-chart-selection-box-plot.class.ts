@@ -8,7 +8,7 @@ export class FlSheetChartSelectionBoxPlot extends FlSheetChartSelection {
 
   public chartType: FlChartType.BOX_PLOT;
 
-  exportToSeries(): FlChartMultiSerie<any> {
+  exportToSeries(): FlChartMultiSerie<FlChartBoxPlotSerie> {
     const series: FlChartMultiSerie<any> = new FlChartMultiSerie();
 
     for (const serie of this.selectionForm.series) {

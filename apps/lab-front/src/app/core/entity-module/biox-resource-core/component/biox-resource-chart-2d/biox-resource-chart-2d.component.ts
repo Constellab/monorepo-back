@@ -43,10 +43,10 @@ export class BioxResourceChart2dComponent
 
   private setChartType(): void {
     switch (this.view.type) {
-      case 'scatter-plot-2d':
+      case 'scatter-plot-2d-view':
         this.chartType = FlChartType.SCATTER_PLOT;
         break;
-      case 'line-plot-2d':
+      case 'line-plot-2d-view':
         this.chartType = FlChartType.LINE;
         break;
     }

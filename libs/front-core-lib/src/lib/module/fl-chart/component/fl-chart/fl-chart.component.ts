@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, HostListener, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import {FlThemeService} from '../../../../service/fl-theme.service';
 import {FlChartState} from '../../state/fl-chart.state';
 import {FlChartMultiSerie} from '../../model/data/fl-chart-multi-serie.class';
@@ -41,18 +41,25 @@ export class FlChartComponent implements OnInit, AfterViewInit {
   constructor(private themeService: FlThemeService,
               private state: FlChartState,
               private menuService: FlMenuDynamicService,
-              private elementRef: ElementRef<HTMLElement>) {
+              private elementRef: ElementRef<HTMLElement>,
+              private renderer: Renderer2) {
   }
 
   ngOnInit(): void {
   }
 
   ngAfterViewInit(): void {
+    const width = this.elementRef.nativeElement.clientWidth;
+    const height = this.elementRef.nativeElement.clientHeight;
+
+    // fix the container size (because it can be altered when generating the svg)
+    this.renderer.setStyle(this.elementRef.nativeElement, 'width', width + 'px');
+    this.renderer.setStyle(this.elementRef.nativeElement, 'height', height+ 'px');
+
     this.state.initData(this.data, this.chartType);
-    this.state.initChart(this.elementRef.nativeElement.clientWidth, this.elementRef.nativeElement.clientHeight,
+    this.state.initChart(width, height,
       this.elementRef.nativeElement);
   }
-
 
 
   private openContextMenu(mouseEvent: MouseEvent): void {

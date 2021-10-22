@@ -4,7 +4,7 @@ import {BioxConfigSpecBase, BioxConfigSpecs} from '../biox-config-spec.entity';
 
 // list of available view type
 export type BioxResourceViewType = 'view' | 'json-view' | 'text-view' | 'table-view' | 'network-view' | 'image-view' |
-  'scatter-plot-2d' | 'line-plot-2d' | 'histogram';
+  'scatter-plot-2d-view' | 'line-plot-2d-view' | 'histogram-view' | 'box-plot-view';
 
 // Mode to where display the view
 export type BioxResourceViewDisplayMode = 'fullScreen' | 'portal';
@@ -57,7 +57,7 @@ export interface BioxResourceViewSpecWithConfig {
 
 export class BioxResourceViewConfig {
   @Expose({name: 'config_values'})
-  config: Record<string, any>
+  config: Record<string, any>;
 
   constructor(config: Record<string, any> = {}) {
     this.config = config;
@@ -113,26 +113,46 @@ export class BioxResourceViewImage extends BioxResourceViewBase {
 }
 
 export class BioxResourceViewScatterPlot2d extends BioxResourceViewBase {
-  type: 'scatter-plot-2d';
+  type: 'scatter-plot-2d-view';
   data: BioxResourceViewChart2dData[];
 }
 
 export class BioxResourceViewLinePlot2d extends BioxResourceViewBase {
-  type: 'line-plot-2d';
+  type: 'line-plot-2d-view';
   data: BioxResourceViewChart2dData[];
 }
 
 export class BioxResourceViewHistogram extends BioxResourceViewBase {
-  type: 'histogram';
+  type: 'histogram-view';
   data: BioxResourceViewHistogramData[];
 }
 
-export class BioxResourceViewHistogramData extends BioxResourceViewBase {
+export interface BioxResourceViewHistogramData extends BioxResourceViewBase {
   column_name: string;
   data: {
     bin_edges: number[]; // list of bin interval, one more value than hist
     hist: number[]; // list of hist values, one value correspond ton one bin interval
   };
+}
+
+export class BioxResourceViewBoxPlot extends BioxResourceViewBase {
+  type: 'box-plot-view';
+  data: BioxResourceViewBoxPlotData[];
+}
+
+export interface BioxResourceViewBoxPlotData {
+  data: {
+    x: number;
+    max: number;
+    q1: number;
+    median: number;
+    min: number;
+    q3: number;
+    lower_whisker: number;
+    upper_whisker: number;
+    nb_of_data: number;
+  };
+  column_name: string;
 }
 
 export interface BioxResourceViewChart2dData {
@@ -169,19 +189,25 @@ export const constBioxResourceViewTypeInfos: Record<BioxResourceViewType, BioxRe
   },
   'network-view': {icon: 'share', text: 'biox.resource_view_pathway', defaultDisplayMode: 'fullScreen', forceDefaultDisplayMode: true},
   'image-view': {icon: 'insert_photo', text: 'biox.resource_view_image', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
-  'scatter-plot-2d': {
+  'scatter-plot-2d-view': {
     icon: 'scatter_plot',
     text: 'biox.resource_view_scatter_plot_2d',
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false
   },
-  'line-plot-2d': {
+  'line-plot-2d-view': {
     icon: 'show_chart',
     text: 'biox.resource_view_line_plot_2d',
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false
   },
-  histogram: {icon: 'bar_chart', text: 'biox.resource_view_histogram', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
+  'histogram-view': {icon: 'bar_chart', text: 'biox.resource_view_histogram', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
+  'box-plot-view': {
+    icon: 'multiline_chart',
+    text: 'biox.resource_view_box_plot',
+    defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
 };
 
 /**

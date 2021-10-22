@@ -69,7 +69,7 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
     return {
       type: null,
       initValue: currentConfig !== undefined ? currentConfig : spec.default_value,
-      required: !spec.hasDefaultValue(),// required if there is no default value
+      required: !spec.optional,// required if there is no default value
       placeholder: spec.human_name ?? fieldName,
       hint: spec.short_description,
     };
@@ -121,8 +121,12 @@ export class BioxConfigSpecBase {
   type: BioxConfigSpecType;
 
   /**
+   * If false the config if mandatory
+   */
+  optional: boolean;
+
+  /**
    * Default value
-   * If not provided, the config is mandatory
    */
   default_value?: any;
 
