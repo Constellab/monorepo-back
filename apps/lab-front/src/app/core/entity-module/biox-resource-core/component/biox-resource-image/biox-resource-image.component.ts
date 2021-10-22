@@ -14,7 +14,7 @@ import {FileResourceService} from '../../../../entity-service/file-resource.serv
 })
 export class BioxResourceImageComponent implements OnInit {
 
-  @Input() resource: BioxResource;
+  @Input() resource: BioxResource<string>;
 
   downloadLink: string;
 
