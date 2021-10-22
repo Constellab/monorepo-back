@@ -32,6 +32,10 @@ export class BioxResourceViewSpec {
   @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecBase)
   methodSpecs: BioxConfigSpecs;
 
+  // object describing the type of the configs and default values of the view methods
+  @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecBase)
+  specs: BioxConfigSpecs;
+
   @Expose({name: 'default_view'})
   defaultView: boolean;
 
@@ -52,19 +56,15 @@ export interface BioxResourceViewSpecWithConfig {
 }
 
 export class BioxResourceViewConfig {
-  @Expose({name: 'method_config'})
-  methodConfig: Record<string, any>;
+  @Expose({name: 'config_values'})
+  config: Record<string, any>
 
-  @Expose({name: 'view_config'})
-  viewConfig: Record<string, any>;
-
-  constructor(methodConfig: Record<string, any> = {}, viewConfig: Record<string, any> = {}) {
-    this.methodConfig = methodConfig;
-    this.viewConfig = viewConfig;
+  constructor(config: Record<string, any> = {}) {
+    this.config = config;
   }
 
   public clone(): BioxResourceViewConfig {
-    return new BioxResourceViewConfig(ClHelpService.deepClone(this.methodConfig), ClHelpService.deepClone(this.viewConfig));
+    return new BioxResourceViewConfig(ClHelpService.deepClone(this.config));
   }
 
 }
@@ -80,7 +80,8 @@ export class BioxResourceViewJson extends BioxResourceViewBase {
   data: Record<string, any>;
 }
 
-export const bioxResourceViewTextSpecPage: string = 'page';
+// Spec name of the page on view text
+export const bioxResourceViewTextSpecPage: string = 'view_page';
 
 export class BioxResourceViewText extends BioxResourceViewBase {
   type: 'text-view';

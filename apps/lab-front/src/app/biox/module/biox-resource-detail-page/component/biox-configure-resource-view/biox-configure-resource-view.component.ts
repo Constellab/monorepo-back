@@ -40,9 +40,6 @@ export class BioxConfigureResourceViewComponent implements OnInit {
 
   showDisplayModeControl: boolean;
 
-  private readonly methodFieldPrefix: string = 'method_';
-  private readonly viewFieldPrefix: string = 'view_';
-
   constructor(@Inject(MAT_DIALOG_DATA) private input: BioxConfigureResourceViewInput,
               private dialogRef: MatDialogRef<BioxConfigureResourceViewComponent>) {
     this.title = input.title;
@@ -58,36 +55,12 @@ export class BioxConfigureResourceViewComponent implements OnInit {
       displayMode: [this.input.viewSpecConfig.displayMode, Validators.required]
     });
     // don't show the button mode if the view type support only one mode
-    this.showDisplayModeControl = !this.input.viewTypeInfo.forceDefaultDisplayMode
+    this.showDisplayModeControl = !this.input.viewTypeInfo.forceDefaultDisplayMode;
   }
 
   private initFormFieldConfig(): void {
-    const configs: FlDynamicFormFieldConfig[] = [];
     const viewSpecConfig = this.input.viewSpecConfig;
-
-    // add the config for method config
-    const methodsConfigs: FlDynamicFormFieldConfig[] =
-      viewSpecConfig.viewSpec.methodSpecs.convertToFieldConfigs(viewSpecConfig.viewConfig.methodConfig);
-
-    // prefix the method config with 'method_'
-    for (const methodsConfig of methodsConfigs) {
-      methodsConfig.controlName = this.methodFieldPrefix + methodsConfig.controlName;
-      configs.push(methodsConfig);
-    }
-
-
-    // add the config for view config
-    const viewConfigs: FlDynamicFormFieldConfig[] =
-      viewSpecConfig.viewSpec.viewSpecs.convertToFieldConfigs(viewSpecConfig.viewConfig.viewConfig);
-
-    // prefix the view config with 'view_'
-    for (const viewConfig of viewConfigs) {
-      viewConfig.controlName = this.viewFieldPrefix + viewConfig.controlName;
-      configs.push(viewConfig);
-    }
-
-    this.configs = configs;
-
+    this.configs = viewSpecConfig.viewSpec.specs.convertToFieldConfigs(viewSpecConfig.viewConfig.config);
   }
 
   submit(): void {
@@ -98,21 +71,8 @@ export class BioxConfigureResourceViewComponent implements OnInit {
   }
 
   private convertFormValueToResult(formValue: any): BioxConfigureResourceViewResult {
-    const viewConfig = new BioxResourceViewConfig();
-
-    // place the config in the right config object
-    for (const controlName of Object.keys(formValue)) {
-      if (controlName.startsWith(this.methodFieldPrefix)) {
-        const configName = controlName.substr(this.methodFieldPrefix.length);
-        viewConfig.methodConfig[configName] = formValue[controlName];
-      } else if (controlName.startsWith(this.viewFieldPrefix)) {
-        const configName = controlName.substr(this.viewFieldPrefix.length);
-        viewConfig.viewConfig[configName] = formValue[controlName];
-      }
-    }
-
     return {
-      viewConfig: viewConfig,
+      viewConfig: new BioxResourceViewConfig(formValue),
       displayMode: formValue.displayMode
     };
   }

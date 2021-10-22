@@ -51,7 +51,7 @@ export class BioxResourceViewSpecsComponent implements OnInit {
   }
 
   selectView(view: BioxResourceViewSpec, viewByType: BioxResourceViewSpecsByType): void {
-    if (view.methodSpecs.isEmpty() && view.viewSpecs.isEmpty() && viewByType.viewTypeInfo.forceDefaultDisplayMode) {
+    if (view.specs.isEmpty() && viewByType.viewTypeInfo.forceDefaultDisplayMode) {
       this.selectViewSpec(view, {displayMode: viewByType.viewTypeInfo.defaultDisplayMode, viewConfig: new BioxResourceViewConfig()});
     } else {
       // if this view was previously selected, get the config value from it
