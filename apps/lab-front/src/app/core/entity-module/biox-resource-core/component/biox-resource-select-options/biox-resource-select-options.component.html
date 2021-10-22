@@ -2,7 +2,7 @@
 
   <mat-option *ngFor="let resource of resources$ | async" [value]="getValue(resource)">
     <div class="option">
-      <div>{{resource.id}}</div>
+      <div>{{resource.resourceHumanName}}</div>
       <div class="g-text-tiny g-text-light">{{'created' | translate}} {{resource.createdAt | flFromNow}}</div>
     </div>
   </mat-option>

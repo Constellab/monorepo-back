@@ -4,7 +4,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
-import {FileResource} from '../../../../../core/model/entities/resource/file-resource.entity';
 import {BioxResourceDetailPageState, BioxResourceViewEvent} from '../../state/biox-resource-detail-page.state';
 import {FlOverlayRef, FlPortalConfig, FlPortalService, FlTranslateService} from '@monorepo/front-core-lib';
 import {
@@ -178,11 +177,7 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
   }
 
   private initTitle(resource: BioxResource): void {
-    if (resource instanceof FileResource) {
-      this.title = resource.name;
-    } else {
-      this.title = resource.resourceHumanName;
-    }
+    this.title = resource.resourceHumanName;
   }
 
   private destroyViewComponentRef(): void {

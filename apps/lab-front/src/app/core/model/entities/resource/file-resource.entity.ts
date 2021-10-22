@@ -14,10 +14,12 @@ export class FileResourcePreview extends BioxResource {
   @Expose({name: 'file_store_uri'})
   fileStoreUri: string;
 
-  name: string;
+  get filename(): string{
+    return this.resourceHumanName;
+  }
 
   getExtension(): string {
-    return FlFileHelper.getFileExtension(this.name);
+    return FlFileHelper.getFileExtension(this.filename);
   }
 
   isImage(): boolean {

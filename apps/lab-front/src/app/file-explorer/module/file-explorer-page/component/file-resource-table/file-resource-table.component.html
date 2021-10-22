@@ -10,13 +10,13 @@
     </mat-cell>
   </ng-container>
 
-  <!-- Name -->
-  <ng-container matColumnDef="name">
+  <!-- Filename -->
+  <ng-container matColumnDef="filename">
     <mat-header-cell *matHeaderCellDef>
       <span> {{'biox.filename' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let resource">
-      {{resource.name}}
+      {{resource.filename}}
     </mat-cell>
   </ng-container>
 
@@ -37,8 +37,7 @@
       </button>
     </mat-cell>
   </ng-container>
-
-
+  
   <!-- Dynamic columns -->
   <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
     <mat-header-cell *matHeaderCellDef>

@@ -1,4 +1,4 @@
-import {BioxBasicResource} from './biox-resource.entity';
+import {BioxResource} from './biox-resource.entity';
 import {BioxNetwork} from './biox-network.class';
 
 export const bioxResourceBioModelType: string = 'gena.biomodel.BioModel';
@@ -6,7 +6,7 @@ export const bioxResourceBioModelType: string = 'gena.biomodel.BioModel';
 /**
  * A BioModel is a resource that contains multiple network resources
  */
-export type BioModel = BioxBasicResource<BioModelData>;
+export type BioModel = BioxResource<BioModelData>;
 
 export interface BioModelData {
 
@@ -14,5 +14,5 @@ export interface BioModelData {
   description: string;
   biomodel: {
     networks: BioxNetwork[];
-  }
+  };
 }

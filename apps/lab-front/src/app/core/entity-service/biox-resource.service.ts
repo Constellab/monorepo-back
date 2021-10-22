@@ -1,12 +1,11 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
-import {BioxBasicResource, BioxResource, BioxResourceDatasource} from '../model/entities/resource/biox-resource.entity';
+import {BioxResource, BioxResourceDatasource} from '../model/entities/resource/biox-resource.entity';
 import {FileResourceService, FileWithContent} from './file-resource.service';
 import {ClConstructorFunction, ClCoreJsonConvert, ClPageI} from '@monorepo/core-lib';
 import {FileResource} from '../model/entities/resource/file-resource.entity';
 import {map} from 'rxjs/operators';
-import {LabBaseEntity} from '../model/global/lab-entity.entity';
 import {BioxLabTypeEntity, BioxLabTypeEntityDatasource} from '../model/entities/lab-type/biox-lab-type.entity';
 import {
   bioxGroupResourceViewSpecsByType,
@@ -54,7 +53,7 @@ export class BioxResourceService {
     if (json.is_file) {
       return ClCoreJsonConvert.deserializeObject(json, FileResource);
     } else {
-      return ClCoreJsonConvert.deserializeObject(json, BioxBasicResource);
+      return ClCoreJsonConvert.deserializeObject(json, BioxResource);
     }
   };
 
@@ -72,8 +71,8 @@ export class BioxResourceService {
     );
   }
 
-  public getResourcesByType(type: string, page: number, pageSize: number): Observable<ClPageI<LabBaseEntity>> {
-    return this.apiService.get(`${this.route}/${type}`, LabBaseEntity,
+  public getResourcesByType(type: string, page: number, pageSize: number): Observable<ClPageI<BioxResource>> {
+    return this.apiService.get(`${this.route}/${type}`, BioxResource,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
