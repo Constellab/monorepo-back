@@ -47,6 +47,7 @@ export class LabEnvironmentToggleComponent implements OnInit, OnDestroy {
       );
     } else {
       this.labEnvStore.setLabEnvironment('prod');
+      this.reloadPage();
     }
   }
 
@@ -54,7 +55,13 @@ export class LabEnvironmentToggleComponent implements OnInit, OnDestroy {
   private onActivateDevEnvironment(activate: boolean): void {
     if (!activate) {
       this.checked = false;
+    } else {
+      this.reloadPage();
     }
+  }
+
+  private reloadPage(): void {
+    location.reload();
   }
 
   get disabled(): boolean {
