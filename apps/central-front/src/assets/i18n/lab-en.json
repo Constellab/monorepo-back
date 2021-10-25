@@ -31,5 +31,6 @@
   "update_lab_name": "Update lab name",
   "lab_name_updated": "Lab name updated",
   "lab_type": "Lab type",
-  "lab_api_key": "Api key"
+  "lab_api_key": "Api key",
+  "lab_check_status": "Check status"
 }

@@ -119,4 +119,12 @@ export class LabInstancesController {
     return this.securityLayer.updateName(id, name);
   }
 
+  /**
+   * Check the lab status and returns settings if ok
+   */
+  @Get(':id/check-status')
+  public checkStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
+    return this.securityLayer.checkStatus(id);
+  }
+
 }

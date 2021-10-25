@@ -57,11 +57,15 @@
 
   <!-- Action -->
   <ng-container matColumnDef="actions">
-    <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>
+    <mat-header-cell *matHeaderCellDef>
     </mat-header-cell>
-    <mat-cell class="g-table-icon-button-cell" *matCellDef="let labInstance">
+    <mat-cell *matCellDef="let labInstance">
       <button mat-icon-button type="button" (click)="openUpdateDialog(labInstance)">
         <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button type="button" (click)="openStatusDialog(labInstance)"
+              [matTooltip]="'lab_check_status' | translate">
+        <mat-icon>info</mat-icon>
       </button>
     </mat-cell>
   </ng-container>

@@ -16,6 +16,14 @@ export class ExternalLabApiService {
   constructor(private apiService: BlExternalApiService) {
   }
 
+  public async healthCheck(labInfo: LabServerInfo): Promise<boolean>{
+    return this.get( labInfo,`health-check`).toPromise();
+  }
+
+  public async getSettings(labInfo: LabServerInfo): Promise<any>{
+    return this.get(labInfo, `settings`).toPromise();
+  }
+
   /**
    * Make an http post with the ip of the lab and the API key of the lab in header
    */

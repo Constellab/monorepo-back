@@ -11,12 +11,12 @@
 
     <ng-template #notLoading>
       <!--  Render the body  -->
-      <ng-container *ngIf="showBody; else showEmptyText">
+      <ng-container *ngIf="showBody; else showErrorText">
         <ng-container *ngTemplateOutlet="lazyContent; context: viewContext"></ng-container>
       </ng-container>
 
-      <ng-template #showEmptyText>
-        <fl-error-text [errorMessage]="emptyText | translate"></fl-error-text>
+      <ng-template #showErrorText>
+        <fl-error-text [errorMessage]="errorText"></fl-error-text>
       </ng-template>
     </ng-template>
 

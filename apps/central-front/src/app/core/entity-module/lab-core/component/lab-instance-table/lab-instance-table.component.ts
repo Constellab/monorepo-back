@@ -3,6 +3,7 @@ import {LabInstance} from '../../../../model/entities/lab-instance.class';
 import {LabInstanceFormDialogComponent} from '../lab-instance-form-dialog/lab-instance-form-dialog.component';
 import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
 import {RouterService} from '../../../../service/router.service';
+import {LabInstanceStatusDialogComponent} from '../lab-instance-status-dialog/lab-instance-status-dialog.component';
 
 
 @Component({
@@ -39,6 +40,10 @@ export class LabInstanceTableComponent extends FlTableAbstractDirective<LabInsta
 
   getLabRoute(lab: LabInstance): string {
     return RouterService.getLabInstanceDetailRoute(lab.id);
+  }
+
+  openStatusDialog(labInstance: LabInstance): void {
+    this.dialogService.openMediumDialog(LabInstanceStatusDialogComponent, {data: labInstance.id});
   }
 
 

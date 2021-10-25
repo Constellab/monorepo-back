@@ -99,4 +99,8 @@ export class LabInstanceService {
     return this.apiService.put(`${this.route}/${id}/name/${name}`, null);
   }
 
+  public checkStatus(id: string): Observable<any> {
+    return this.apiService.get(`${this.route}/${id}/check-status`);
+  }
+
 }

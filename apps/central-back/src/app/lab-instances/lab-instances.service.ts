@@ -15,6 +15,7 @@ import {ExternalLabError} from '../external-lab-api/external-lab-error.class';
 import {AxiosResponse} from 'axios';
 import {ClPageI} from '@monorepo/core-lib';
 import {CurrentUserHelper} from '../core/utils/current-user.helper';
+import {ExternalLabApiService} from '../external-lab-api/external-lab-api.service';
 
 @Injectable()
 export class LabInstancesService extends AbstractWithStatusService<LabInstance, LabInstanceStatus> {
@@ -22,6 +23,7 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
   constructor(@InjectRepository(LabInstance) private repository: Repository<LabInstance>,
               @InjectRepository(LabInstanceStatusHistory) statusHistoRepo: Repository<LabInstanceStatusHistory>,
               private externalLabUserService: ExternalLabUserService,
+              private externalLabApiService: ExternalLabApiService,
               private userService: UsersService) {
     super(repository, LabInstance, statusHistoRepo, LabInstanceStatusHistory);
   }
@@ -115,5 +117,21 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
     const lab: LabInstance = await this.findByIdAndCheck(labInstanceId);
     lab.name = name;
     return this.repository.save(lab);
+  }
+
+  public async checkStatus(labInstanceId: string): Promise<any> {
+    const lab: LabInstance = await this.findByIdAndCheck(labInstanceId);
+
+    try {
+      await this.externalLabApiService.healthCheck(lab);
+    } catch {
+      throw new BadRequestException('The lab is not running');
+    }
+
+    try {
+      return await this.externalLabApiService.getSettings(lab);
+    } catch {
+      throw new BadRequestException('Can\'t retrieve la settings');
+    }
   }
 }

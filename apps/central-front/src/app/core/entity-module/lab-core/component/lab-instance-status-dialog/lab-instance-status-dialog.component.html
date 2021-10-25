@@ -1,0 +1,7 @@
+
+<fl-async-section [object]="status$" [showErrorText]="true">
+
+  <ng-container *flSectionBody="let status">
+    <fl-pretty-json [object]="status"></fl-pretty-json>
+  </ng-container>
+</fl-async-section>

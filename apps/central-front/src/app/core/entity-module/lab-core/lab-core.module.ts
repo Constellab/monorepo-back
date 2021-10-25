@@ -15,6 +15,7 @@ import {ServerInfoCoreModule} from '../server-info-core/server-info-core.module'
 import {SelectLabOptionsComponent} from './component/select-lab-options/select-lab-options.component';
 import {LabTableComponent} from './component/lab-table/lab-table.component';
 import {LabFormDialogComponent} from './component/lab-form-dialog/lab-form-dialog.component';
+import {LabInstanceStatusDialogComponent} from './component/lab-instance-status-dialog/lab-instance-status-dialog.component';
 
 /**
  * Core module for Lab and LabInstance
@@ -32,6 +33,7 @@ import {LabFormDialogComponent} from './component/lab-form-dialog/lab-form-dialo
     SelectLabOptionsComponent,
     LabTableComponent,
     LabFormDialogComponent,
+    LabInstanceStatusDialogComponent,
   ],
   exports: [
     LabCardComponent,

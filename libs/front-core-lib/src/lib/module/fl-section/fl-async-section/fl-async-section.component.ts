@@ -5,6 +5,8 @@ import {ClHelpService} from '@monorepo/core-lib';
 import {FlViewContext} from '../../../model/fl-view-context.class';
 import {FlDatasource} from '../../../model/datasource/fl-datasource.class';
 import {delay} from 'rxjs/operators';
+import {FlServerError} from '../../fl-api/model/fl-server-error.class';
+import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 
 @Component({
   selector: 'fl-async-section',
@@ -46,18 +48,26 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
    */
   @Input() nullOrEmptyIsValid: boolean = false;
 
+  /**
+   * If true and an error happens, the error is show in the html
+   */
+  @Input() showErrorText: boolean = false;
+
   /** Content that will be rendered lazily. */
   @ContentChild(FlSectionBodyDirective, {read: TemplateRef, static: true}) lazyContent: TemplateRef<any>;
 
   // when true, the body is lazy loaded
   showBody: boolean = false;
 
+  errorText: string;
+
   private result: any;
   isLoading: boolean = false;
 
   private subscription: Subscription;
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor(private cdr: ChangeDetectorRef,
+              private translateService: FlTranslateService) {
   }
 
   ngOnInit(): void {
@@ -80,6 +90,7 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
   private onSuccess(result: any): void {
     this.isLoading = false;
     this.result = result;
+    this.errorText = null;
 
     // show the result if it not null of we consider null as a valid value
     this.showBody = this.nullOrEmptyIsValid || !ClHelpService.isNullOrEmpty(this.result);
@@ -87,10 +98,17 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  private onError(error: any): void {
+  private onError(error: FlServerError): void {
     this.isLoading = false;
     this.showBody = false;
-    console.error(error);
+
+    // show error text if input is set and the error is a FlServerError
+    if (this.showErrorText && error?.logDetail?.message) {
+      this.errorText = error.logDetail.message;
+    } else {
+      // otherwise show the empty text
+      this.errorText = this.translateService.translate(this.emptyText);
+    }
     this.cdr.detectChanges();
   }
 

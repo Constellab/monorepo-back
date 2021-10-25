@@ -31,5 +31,6 @@
   "update_lab_name": "Modifier le nom du lab",
   "lab_name_updated": "Nom du lab modifié",
   "lab_type": "Type de lab",
-  "lab_api_key": "Api key"
+  "lab_api_key": "Api key",
+  "lab_check_status": "Vérifier le statut"
 }
