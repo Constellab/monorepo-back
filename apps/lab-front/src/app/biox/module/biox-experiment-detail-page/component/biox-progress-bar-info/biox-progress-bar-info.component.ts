@@ -17,7 +17,6 @@ export class BioxProgressBarInfoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.progressBar)
   }
 
 }
