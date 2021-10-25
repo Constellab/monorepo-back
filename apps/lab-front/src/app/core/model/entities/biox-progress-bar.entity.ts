@@ -5,16 +5,51 @@ import {DateTime} from 'luxon';
 import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
 
 export type BioxProgressBarStatus = 'draft' | 'running' | 'finished' | 'archived'
+export type BioxProgressBarMessageType = 'SUCCESS' | 'INFO' | 'ERROR' | 'WARNING' | 'PROGRESS'
 
 /**
  * Different step of the progress bar, each message has a timestamp
  */
-export class BioxProgressMessage {
+export class BioxProgressMessage implements FlStatus {
 
   @ClLuxonDateTimeTransform()
   datetime: DateTime;
 
   text: string;
+
+  type: BioxProgressBarMessageType;
+
+  getStatusClassColor(mode: 'background' | 'text'): string {
+    switch (this.type) {
+      case 'ERROR':
+        return mode === 'background' ? 'g-warn-background' : 'g-warn-text';
+      case 'SUCCESS':
+        return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
+      default:
+        return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
+    }
+  }
+
+  getStatusIcon(): string {
+    switch (this.type) {
+      case 'ERROR':
+        return 'error';
+      case 'SUCCESS':
+        return 'done';
+      case 'PROGRESS':
+        return 'cached';
+      case 'INFO':
+        return  'info';
+      case 'WARNING':
+        return 'warning'
+    }
+  }
+
+  getStatusName(): string {
+    return this.type;
+  }
+
+
 }
 
 export class BioxProgressBarData extends LabBaseEntity {
@@ -86,8 +121,8 @@ export class BioxProgressBar extends LabBaseEntity implements FlStatus {
   }
 
   // get in percentage the progress
-  getProgress(): number{
-    return (this.data.value / this.data.maxValue) * 100
+  getProgress(): number {
+    return (this.data.value / this.data.maxValue) * 100;
   }
 }
 

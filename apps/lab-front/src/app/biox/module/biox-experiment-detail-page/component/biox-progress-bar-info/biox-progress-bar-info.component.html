@@ -1,15 +1,27 @@
-<p>{{'biox.execution_time' | translate}} :
+<p class="execution-time">{{'biox.execution_time' | translate}} :
   {{progressBar.data.elapsedTime | number:'1.0-3'}}s
 </p>
 
-<mat-list dense>
-  <mat-list-item *ngFor="let message of progressBar.data.messages">
+<div>
+  <div *ngFor="let message of progressBar.data.messages">
+    <!--    <div fxLayout="row" fxLayoutAlign="space-between" class="g-full">-->
     <div fxLayout="row" fxLayoutAlign="space-between" class="g-full">
-      <div>{{message.text}}</div>
+      <fl-status-chip [status]="message" mode="iconText"></fl-status-chip>
       <div class="g-text-light date"
            [matTooltip]="message.datetime | flDate:'D, HH:mm:ss'">
         {{message.datetime | flDate : 'HH:mm:ss'}}
       </div>
     </div>
-  </mat-list-item>
-</mat-list>
+    <div>
+
+      {{message.text}}
+    </div>
+    <!--      <div class="g-text-light date"-->
+    <!--           [matTooltip]="message.datetime | flDate:'D, HH:mm:ss'">-->
+    <!--        {{message.datetime | flDate : 'HH:mm:ss'}}-->
+    <!--      </div>-->
+    <!--    </div>-->
+
+    <mat-divider class="divider"></mat-divider>
+  </div>
+</div>
