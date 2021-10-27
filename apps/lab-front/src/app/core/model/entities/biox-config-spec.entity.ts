@@ -82,7 +82,7 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
     const defaultConfig: any = {};
     for (const specName of Object.keys(this.record)) {
       const spec: BioxConfigSpec = this.record[specName];
-      if (spec.hasDefaultValue()) {
+      if (spec.optional) {
         defaultConfig[specName] = spec.default_value;
       }
     }
@@ -97,11 +97,20 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
     if (config == null) {
       config = {};
     }
-    return Object.assign(this.getDefaultConfig(), config);
+    return Object.assign(this.getNullConfig(), this.getDefaultConfig(), config);
   }
 
   public hasConfigs(): boolean {
     return this.record != null && Object.keys(this.record).length > 0;
+  }
+
+  // get the config value with only null vales
+  public getNullConfig(): Record<string, null> {
+    const nullConfig: Record<string, null> = {};
+    for (const recordKey in this.record) {
+      nullConfig[recordKey] = null;
+    }
+    return nullConfig;
   }
 }
 
