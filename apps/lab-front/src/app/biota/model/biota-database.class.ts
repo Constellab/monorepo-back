@@ -86,3 +86,8 @@ const biotaMolecularDbGroup: BiotaDatabaseGroup = {
 };
 
 export const biotaDatabaseGroups: BiotaDatabaseGroup[] = [biotaOntologyDbGroup, biotaMolecularDbGroup];
+
+export interface BiotaDatabaseSearch {
+  typingName: string;
+  searchText: string;
+}

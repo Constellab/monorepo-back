@@ -21,7 +21,12 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
    * @param object
    */
   @Input() set object(object: Observable<T> | Observable<T[]> | T) {
-    if (object && object instanceof Observable) {
+    this.inputIsProvided = object != null;
+    if (object == null) {
+      return;
+    }
+
+    if (object instanceof Observable) {
       this.subscribeToObservable(object);
     } else {
       this.onSuccess(object);
@@ -32,6 +37,11 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
    * If an array obs is provided, it disconnect it on destroy
    */
   @Input() set arrayObs(arrayObs: FlDatasource<T>) {
+    this.inputIsProvided = arrayObs != null;
+    if (arrayObs == null) {
+      return;
+    }
+
     if (arrayObs) {
       this.subscribeToObservable(arrayObs.connect());
     }
@@ -55,6 +65,8 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
 
   /** Content that will be rendered lazily. */
   @ContentChild(FlSectionBodyDirective, {read: TemplateRef, static: true}) lazyContent: TemplateRef<any>;
+
+  inputIsProvided: boolean = false;
 
   // when true, the body is lazy loaded
   showBody: boolean = false;
@@ -90,7 +102,7 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
   private onSuccess(result: any): void {
     this.isLoading = false;
     this.result = result;
-    this.errorText = null;
+    this.setEmptyText();
 
     // show the result if it not null of we consider null as a valid value
     this.showBody = this.nullOrEmptyIsValid || !ClHelpService.isNullOrEmpty(this.result);
@@ -107,9 +119,13 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
       this.errorText = error.logDetail.message;
     } else {
       // otherwise show the empty text
-      this.errorText = this.translateService.translate(this.emptyText);
+      this.setEmptyText();
     }
     this.cdr.detectChanges();
+  }
+
+  private setEmptyText(): void{
+    this.errorText = this.translateService.translate(this.emptyText);
   }
 
   get viewContext(): FlViewContext<any> {

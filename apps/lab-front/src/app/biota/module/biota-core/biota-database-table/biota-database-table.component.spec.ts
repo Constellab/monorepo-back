@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { BiotaDatabaseTableComponent } from './biota-database-table.component';
+import {BiotaDatabaseTableComponent} from './biota-database-table.component';
 
 describe('BiotaDatabaseTableComponent', () => {
   let component: BiotaDatabaseTableComponent;

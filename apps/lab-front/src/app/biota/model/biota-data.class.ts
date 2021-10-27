@@ -11,6 +11,8 @@ export class BiotaData extends LabBaseEntity {
   name: string;
 
   sbo_id: string;
+
+  data: any;
 }
 
 export type BiotaDataDatasource = FlEntityPaginatedDatasource<BiotaData>;

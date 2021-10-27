@@ -4,6 +4,7 @@ import {BiotaDatabasesComponent} from './component/biota-databases/biota-databas
 import {BiotaDatabaseCardComponent} from './component/biota-database-card/biota-database-card.component';
 import {CoreModule} from '../../../core/core.module';
 import {RouterModule} from '@angular/router';
+import {BiotaCoreModule} from '../biota-core/biota-core.module';
 
 /**
  * Module for the main biota page to list the databases
@@ -18,6 +19,7 @@ import {RouterModule} from '@angular/router';
     RouterModule,
 
     CoreModule,
+    BiotaCoreModule,
   ]
 })
 export class BiotaDatabasesModule {

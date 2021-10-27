@@ -18,6 +18,9 @@
     "pathway": "Pathway",
     "entries": "entries",
     "no_entry": "No entry",
-    "definition": "Definition"
+    "definition": "Definition",
+    "database_type": "Database type",
+    "database_search_field": "Key work",
+    "data_detail": "Detail"
   }
 }

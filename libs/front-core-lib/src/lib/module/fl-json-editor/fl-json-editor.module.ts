@@ -12,16 +12,19 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flJsonEditorI18n} from './i18n/fl-json-editor.i18n';
+import {FlPrettyJsonDialogComponent} from './fl-pretty-json-dialog/fl-pretty-json-dialog.component';
 
 /**
  * Module containing a component to edit json in html
  */
 @NgModule({
   declarations: [
-    FlPrettyJsonComponent
+    FlPrettyJsonComponent,
+    FlPrettyJsonDialogComponent
   ],
   exports: [
     FlPrettyJsonComponent,
+    FlPrettyJsonDialogComponent,
   ],
   imports: [
     CommonModule,

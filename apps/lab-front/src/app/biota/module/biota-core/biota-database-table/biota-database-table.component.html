@@ -17,7 +17,7 @@
         <span>{{'name' | translate}}</span>
       </mat-header-cell>
       <mat-cell *matCellDef="let biotaData">
-          {{biotaData.name}}
+        {{biotaData.name}}
       </mat-cell>
     </ng-container>
 
@@ -29,6 +29,18 @@
       </mat-header-cell>
       <mat-cell *matCellDef="let biotaData">
         {{biotaData.type}}
+      </mat-cell>
+    </ng-container>
+
+    <!-- Action -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let biotaData">
+        <button mat-icon-button type="button" [matTooltip]="'biota.data_detail' | translate"
+                (click)="openDetail(biotaData)">
+          <mat-icon>info</mat-icon>
+        </button>
       </mat-cell>
     </ng-container>
 
