@@ -18,7 +18,7 @@
 
       <!--  Header    -->
       <div class="page-padding body">
-        <ng-template #viewContainer></ng-template>
+        <gen-biox-resource-view *ngIf="fullScreenView" [view]="fullScreenView"></gen-biox-resource-view>
         <div *ngIf="viewIsLoading" class="g-text-centered">
           <fl-loader size="medium"></fl-loader>
         </div>

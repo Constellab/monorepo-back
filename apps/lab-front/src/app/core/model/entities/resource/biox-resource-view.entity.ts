@@ -4,7 +4,7 @@ import {BioxConfigSpecBase, BioxConfigSpecs} from '../biox-config-spec.entity';
 
 // list of available view type
 export type BioxResourceViewType = 'view' | 'json-view' | 'text-view' | 'table-view' | 'network-view' | 'image-view' |
-  'scatter-plot-2d-view' | 'line-plot-2d-view' | 'histogram-view' | 'box-plot-view';
+  'scatter-plot-2d-view' | 'line-plot-2d-view' | 'histogram-view' | 'box-plot-view' | 'multi-view';
 
 // Mode to where display the view
 export type BioxResourceViewDisplayMode = 'fullScreen' | 'portal';
@@ -57,14 +57,14 @@ export interface BioxResourceViewSpecWithConfig {
 
 export class BioxResourceViewConfig {
   @Expose({name: 'config_values'})
-  config: Record<string, any>;
+  configValues: Record<string, any>;
 
   constructor(config: Record<string, any> = {}) {
-    this.config = config;
+    this.configValues = config;
   }
 
   public clone(): BioxResourceViewConfig {
-    return new BioxResourceViewConfig(ClHelpService.deepClone(this.config));
+    return new BioxResourceViewConfig(ClHelpService.deepClone(this.configValues));
   }
 
 }
@@ -122,6 +122,15 @@ export class BioxResourceViewLinePlot2d extends BioxResourceViewBase {
   data: BioxResourceViewChart2dData[];
 }
 
+export interface BioxResourceViewChart2dData {
+  data: {
+    x: number[];
+    y: number[];
+  };
+  x_label: string;
+  y_label: string;
+}
+
 export class BioxResourceViewHistogram extends BioxResourceViewBase {
   type: 'histogram-view';
   data: BioxResourceViewHistogramData[];
@@ -155,16 +164,21 @@ export interface BioxResourceViewBoxPlotData {
   column_name: string;
 }
 
-export interface BioxResourceViewChart2dData {
-  data: {
-    x: number[];
-    y: number[];
-  };
-  x_label: string;
-  y_label: string;
+export class BioxResourceViewMulti extends BioxResourceViewBase {
+  type: 'multi-view';
+  data: BioxResourceViewMultiData[];
+  nb_of_columns: number;
 }
 
-export type BioxResourceView = BioxResourceViewJson;
+export interface BioxResourceViewMultiData {
+  colspan: number;
+  rowspan: number;
+  view: BioxResourceView;
+}
+
+
+export type BioxResourceView = BioxResourceViewJson | BioxResourceViewLinePlot2d | BioxResourceViewMulti | BioxResourceViewBoxPlot |
+  BioxResourceViewHistogram | BioxResourceViewScatterPlot2d | BioxResourceViewImage | BioxResourceViewNetwork;
 
 // Information of the view type
 export interface BioxResourceViewTypeInfo {
@@ -206,6 +220,12 @@ export const constBioxResourceViewTypeInfos: Record<BioxResourceViewType, BioxRe
     icon: 'multiline_chart',
     text: 'biox.resource_view_box_plot',
     defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
+  'multi-view': {
+    icon: 'multiline_chart',
+    text: 'biox.resource_view_multi_views',
+    defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false
   },
 };

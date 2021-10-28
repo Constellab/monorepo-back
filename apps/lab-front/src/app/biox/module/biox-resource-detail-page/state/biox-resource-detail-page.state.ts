@@ -118,14 +118,14 @@ export class BioxResourceDetailPageState implements OnDestroy {
 
     // override the view config with page config
     for (const key of Object.keys(pageConfig)) {
-      config.config[key] = pageConfig[key];
+      config.configValues[key] = pageConfig[key];
     }
 
     return this.callResourceView(this.selectedViewSpec$.value.viewSpec.methodName, config);
   }
 
   private callResourceView(methodName: string, config: BioxResourceViewConfig): Observable<BioxResourceView> {
-    return this.resourceService.callResourceView(this.type, this.id, methodName, config);
+    return this.resourceService.callResourceView(this.type, this.id, methodName, config.configValues);
   }
 
   private onLoadViewSuccess(view: BioxResourceView, displayMode: BioxResourceViewDisplayMode): void {

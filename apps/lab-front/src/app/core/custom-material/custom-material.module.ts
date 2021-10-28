@@ -22,6 +22,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MatRadioModule} from '@angular/material/radio';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -49,6 +50,7 @@ import {MatRadioModule} from '@angular/material/radio';
     MatSelectModule,
     MatSlideToggleModule,
     MatRadioModule,
+    MatGridListModule,
 
     DragDropModule,
 

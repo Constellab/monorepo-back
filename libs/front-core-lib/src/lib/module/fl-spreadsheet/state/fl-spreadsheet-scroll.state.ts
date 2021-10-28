@@ -4,7 +4,7 @@ import {FlSheet} from '../model/fl-sheet.class';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {debounceTime, filter, startWith} from 'rxjs/operators';
 import {FlSheetRow} from '../model/fl-sheet-row.class';
-import {clRxjsEnterZone, ClSubscriptionHandler} from '@monorepo/core-lib';
+import {ClHelpService, clRxjsEnterZone, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {FlRendererListenerObs} from '../../../model/fl-renderer-listener-obs.class';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 
@@ -68,7 +68,7 @@ export class FlSpreadsheetScrollState {
     this.ngZone.runOutsideAngular(() => {
       // listen to wheel event on spreadsheet to trigger a scroll event on scroller
       this.wheelListener = this.renderer.listen(this.tableContainer, 'wheel',
-        (event: WheelEvent) => this.triggerScroll(event.deltaY));
+        (event: WheelEvent) => this.onWheelEvent(event));
 
       this.scrollListener = new FlRendererListenerObs(this.renderer, this.scroller, 'scroll');
       this.windowsResizeListener = new FlRendererListenerObs(this.renderer, 'window', 'resize');
@@ -81,6 +81,11 @@ export class FlSpreadsheetScrollState {
         ([number]) => this.refreshRowsToDisplay(number)
       ));
     });
+  }
+
+  private onWheelEvent(event: WheelEvent): void {
+    ClHelpService.stopEventPropagation(event);
+    this.triggerScroll(event.deltaY);
   }
 
   private triggerScroll(y: number): void {

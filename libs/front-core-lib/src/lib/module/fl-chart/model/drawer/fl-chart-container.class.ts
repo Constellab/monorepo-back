@@ -49,12 +49,13 @@ export abstract class FlChartContainer<Data> {
     this.group = parent.append('g')
       .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
+    const clipId = `clip${new Date().getTime()}`
     this.chartContainer = this.group.append('g')
-      .attr('clip-path', 'url(#clip)') as any;  // prevent line to overflow
+      .attr('clip-path', `url(#${clipId})`) as any;  // prevent line to overflow
 
     // Add a clipPath: everything out of this area won't be drawn.
     this.group.append('defs').append('svg:clipPath')
-      .attr('id', 'clip')
+      .attr('id', clipId)
       .append('svg:rect')
       .attr('width', this.chartWidth)
       .attr('height', this.chartHeight)

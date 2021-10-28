@@ -11,7 +11,6 @@ import {
   bioxGroupResourceViewSpecsByType,
   BioxResourceView,
   BioxResourceViewBase,
-  BioxResourceViewConfig,
   BioxResourceViewSpec,
   BioxResourceViewSpecsByType
 } from '../model/entities/resource/biox-resource-view.entity';
@@ -108,7 +107,12 @@ export class BioxResourceService {
       map(views => bioxGroupResourceViewSpecsByType(views)));
   }
 
-  public callResourceView(type: string, id: string, viewName: string, config: BioxResourceViewConfig): Observable<BioxResourceView> {
+  public callResourceView(type: string, id: string, viewName: string, config: Record<string, any>): Observable<BioxResourceView> {
+    for (const key in config) {
+      if (config[key] == null) {
+        delete config[key];
+      }
+    }
     return this.apiService.post(`resource/${type}/${id}/views/${viewName}`, config, BioxResourceViewBase);
   }
 

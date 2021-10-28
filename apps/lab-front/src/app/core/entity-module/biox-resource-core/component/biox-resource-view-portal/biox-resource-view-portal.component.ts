@@ -1,12 +1,7 @@
-import {Component, ComponentFactoryResolver, ComponentRef, Inject, OnInit, Type, ViewChild, ViewContainerRef} from '@angular/core';
-import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
+import {Component, ComponentFactoryResolver, Inject, OnInit} from '@angular/core';
 import {BioxResourceView} from '../../../../model/entities/resource/biox-resource-view.entity';
 import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
 
-export interface BioxResourcePortalViewInput {
-  viewComponentType: Type<BioxResourceViewDirective>;
-  view: BioxResourceView;
-}
 
 @Component({
   selector: 'gen-biox-resource-view-portal',
@@ -15,17 +10,25 @@ export interface BioxResourcePortalViewInput {
 })
 export class BioxResourceViewPortalComponent implements OnInit {
 
-  @ViewChild('viewContainer', {static: true, read: ViewContainerRef}) viewContainer: ViewContainerRef;
+  view: BioxResourceView;
+
+  width: string;
+  height: string;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
-              @Inject(FL_PORTAL_DATA) private input: BioxResourcePortalViewInput) {
+              @Inject(FL_PORTAL_DATA) private input: BioxResourceView) {
+    this.view = input;
+
+    if(input.type === 'multi-view'){
+      this.width = 'min(1000px, 90vw)';
+      this.height = 'min(1000px, 90vh)';
+    }else{
+      this.width = '400px';
+      this.height = '400px';
+    }
   }
 
   ngOnInit(): void {
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.input.viewComponentType);
-
-    const viewComponentRef: ComponentRef<BioxResourceViewDirective> = this.viewContainer.createComponent(componentFactory);
-    viewComponentRef.instance.view = this.input.view;
   }
 
 }

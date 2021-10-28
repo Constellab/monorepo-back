@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
 import {BioxResourceViewJson} from '../../../../model/entities/resource/biox-resource-view.entity';
 
@@ -10,12 +10,8 @@ import {BioxResourceViewJson} from '../../../../model/entities/resource/biox-res
   templateUrl: './biox-resource-json.component.html',
   styleUrls: ['./biox-resource-json.component.scss']
 })
-export class BioxResourceJsonComponent implements OnInit, BioxResourceViewDirective<BioxResourceViewJson> {
+export class BioxResourceJsonComponent extends BioxResourceViewDirective<BioxResourceViewJson> implements OnInit {
 
-  @Input() view: BioxResourceViewJson;
-
-  constructor() {
-  }
 
   ngOnInit(): void {
   }

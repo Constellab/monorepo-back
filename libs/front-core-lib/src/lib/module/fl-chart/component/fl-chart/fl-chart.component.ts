@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, HostListener, Input, OnInit, Renderer2} from '@angular/core';
+import {Component, ElementRef, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import {FlThemeService} from '../../../../service/fl-theme.service';
 import {FlChartState} from '../../state/fl-chart.state';
 import {FlChartMultiSerie} from '../../model/data/fl-chart-multi-serie.class';
@@ -18,7 +18,7 @@ import {FlMenuDynamicService} from '../../../fl-menu-dynamic/fl-menu-dynamic.ser
   styleUrls: ['./fl-chart.component.scss'],
   providers: [FlChartState]
 })
-export class FlChartComponent implements OnInit, AfterViewInit {
+export class FlChartComponent implements OnInit {
 
   @Input() data: FlChartMultiSerie<any>;
 
@@ -46,15 +46,21 @@ export class FlChartComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => this.initChart(), 0);
   }
 
-  ngAfterViewInit(): void {
+  private initChart(): void {
     const width = this.elementRef.nativeElement.clientWidth;
     const height = this.elementRef.nativeElement.clientHeight;
 
+    if (width <= 0 || height <= 0) {
+      console.error(`[FlChart] width: ${width}, height: ${height}`);
+      return;
+    }
+
     // fix the container size (because it can be altered when generating the svg)
     this.renderer.setStyle(this.elementRef.nativeElement, 'width', width + 'px');
-    this.renderer.setStyle(this.elementRef.nativeElement, 'height', height+ 'px');
+    this.renderer.setStyle(this.elementRef.nativeElement, 'height', height + 'px');
 
     this.state.initData(this.data, this.chartType);
     this.state.initChart(width, height,

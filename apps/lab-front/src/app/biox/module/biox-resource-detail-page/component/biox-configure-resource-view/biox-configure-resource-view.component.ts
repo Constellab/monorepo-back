@@ -60,7 +60,7 @@ export class BioxConfigureResourceViewComponent implements OnInit {
 
   private initFormFieldConfig(): void {
     const viewSpecConfig = this.input.viewSpecConfig;
-    this.configs = viewSpecConfig.viewSpec.specs.convertToFieldConfigs(viewSpecConfig.viewConfig.config);
+    this.configs = viewSpecConfig.viewSpec.specs.convertToFieldConfigs(viewSpecConfig.viewConfig.configValues);
   }
 
   submit(): void {

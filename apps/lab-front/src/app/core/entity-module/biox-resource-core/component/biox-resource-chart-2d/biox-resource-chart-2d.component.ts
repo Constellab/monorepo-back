@@ -38,7 +38,6 @@ export class BioxResourceChart2dComponent
 
 
     this.series = series;
-    console.log(series);
   }
 
   private setChartType(): void {
