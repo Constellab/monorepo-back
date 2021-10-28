@@ -19,10 +19,10 @@
       <!--  Header    -->
       <div class="page-padding body">
         <gen-biox-resource-view *ngIf="fullScreenView" [view]="fullScreenView"></gen-biox-resource-view>
-        <div *ngIf="viewIsLoading" class="g-text-centered">
+        <div *ngIf="showLoader" class="g-text-centered">
           <fl-loader size="medium"></fl-loader>
         </div>
-        <fl-error-text *ngIf="error" [errorMessage]="error"></fl-error-text>
+        <fl-error-text *ngIf="errorText" [errorMessage]="errorText"></fl-error-text>
       </div>
     </ng-container>
 

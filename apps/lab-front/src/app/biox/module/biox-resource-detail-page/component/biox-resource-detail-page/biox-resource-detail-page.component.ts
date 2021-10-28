@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
 import {BioxResourceDetailPageState, BioxResourceViewEvent} from '../../state/biox-resource-detail-page.state';
-import {FlOverlayRef, FlPortalConfig, FlPortalService, FlTranslateService} from '@monorepo/front-core-lib';
+import {FlOverlayRef, FlPortalActionResult, FlPortalConfig, FlPortalService, FlTranslateService} from '@monorepo/front-core-lib';
 import {
   BioxResourceView,
   BioxResourceViewDisplayMode,
@@ -34,8 +34,9 @@ export class BioxResourceDetailPageComponent implements OnInit {
 
   toolbarOverlay: FlOverlayRef;
 
-  viewIsLoading: boolean = true;
-  error: string;
+
+  showLoader: boolean = true;
+  errorText: string;
 
   constructor(private resourceService: BioxResourceService,
               private route: ActivatedRoute,
@@ -62,25 +63,21 @@ export class BioxResourceDetailPageComponent implements OnInit {
     );
   }
 
-  private initView(viewEvent: BioxResourceViewEvent): void {
+  private initView(result: FlPortalActionResult<BioxResourceViewEvent>): void {
+    this.showLoader = false;
+    this.errorText = null;
 
-    this.viewIsLoading = false;
-    this.error = null;
-
-    // if view is null, it mean it is loading
-    if (viewEvent.status === 'loading') {
-      this.viewIsLoading = true;
-      return;
-    } else if (viewEvent.status === 'error') {
-      this.error = viewEvent.error.logDetail.message;
+    if (result.status === 'error') {
       return;
     }
+
+    const viewEvent: BioxResourceViewEvent = result.result;
 
     // dynamically create the view component
     const componentType = bioxResourceViewGetComponentType(viewEvent.view.type);
     const viewTypeInfo: BioxResourceViewTypeInfo = constBioxResourceViewTypeInfos[viewEvent.view.type];
     if (componentType == null || viewTypeInfo == null) {
-      this.error = this.translateService.translate('biox.view_type_node_supported');
+      this.errorText = this.translateService.translate('biox.view_type_node_supported');
       if (viewEvent.displayMode === 'fullScreen') this.fullScreenView = null;
       return;
     }

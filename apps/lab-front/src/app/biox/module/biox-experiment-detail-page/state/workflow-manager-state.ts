@@ -114,12 +114,13 @@ export class WorkflowManagerState {
 
     // create an action to add this process
     const action: FlPortalAction = {
-      text: 'biox.adding_process',
+      text: {
+        text: 'biox.adding_process', translateText: true,
+        translateParam: {param: {processName: processName}}
+      },
       type: this.addProcessActionName,
       // create the process in the API and get the process
       action: this.bioxProtocolService.addProcessToProtocol(currentProtocol.id, processTypingName),
-      translateText: true,
-      translateParam: {param: {processName: processName}}
     };
 
     this.actionsService.addAction(action, true);

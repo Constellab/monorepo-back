@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {ClCachedObservable} from '@monorepo/core-lib';
 import {BioxResourceService} from '../../../../core/entity-service/biox-resource.service';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {
   BioxResourceView,
   BioxResourceViewConfig,
@@ -11,19 +11,19 @@ import {
   BioxResourceViewSpecWithConfig
 } from '../../../../core/model/entities/resource/biox-resource-view.entity';
 import {BioxResource} from '../../../../core/model/entities/resource/biox-resource.entity';
-import {mergeMap} from 'rxjs/operators';
-import {FlServerError} from '@monorepo/front-core-lib';
+import {map, mergeMap} from 'rxjs/operators';
+import {FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
 
 // Event on view loaded
 export interface BioxResourceViewEvent {
-  status: 'success' | 'error' | 'loading';
-  view?: BioxResourceView; // loaded view only if success
-  error?: FlServerError; // error only if error
+  view: BioxResourceView;
   displayMode?: BioxResourceViewDisplayMode; // mode to where show the view when success
 }
 
 @Injectable()
 export class BioxResourceDetailPageState implements OnDestroy {
+
+  private readonly actionType: string = 'view-loader';
 
   private type: string;
   private id: string;
@@ -33,16 +33,15 @@ export class BioxResourceDetailPageState implements OnDestroy {
   private viewSpecs$: ClCachedObservable<BioxResourceViewSpecsByType[]>;
   private selectedViewSpec$: BehaviorSubject<BioxResourceViewSpecWithConfig>;
 
-  private viewSubscription: Subscription;
 
-  constructor(private resourceService: BioxResourceService) {
+  constructor(private resourceService: BioxResourceService,
+              private flActionService: FlPortalActionsService) {
   }
 
   public init(type: string, id: string): void {
     this.type = type;
     this.id = id;
     this.resource$ = new ClCachedObservable(this.resourceService.getByTypingNameAndId(type, id));
-    this.view$ = new BehaviorSubject({status: 'loading'});
 
     // load the views once the resource was found
     this.viewSpecs$ = new ClCachedObservable(
@@ -94,19 +93,16 @@ export class BioxResourceDetailPageState implements OnDestroy {
   /////////////////////////////////// VIEW //////////////////////////////////////////
 
   private loadView(viewSpecConfigured: BioxResourceViewSpecWithConfig): void {
-    // todo improve loading management
-    if (viewSpecConfigured.displayMode === 'fullScreen') {
-      // mark the view as loading
-      this.view$.next({status: 'loading', displayMode: 'fullScreen'});
-    }
-
-    this.viewSubscription?.unsubscribe(); // unsubscribe previous loading (if multiple view are requested in a row)
-    this.viewSubscription = this.callResourceView(viewSpecConfigured.viewSpec.methodName, viewSpecConfigured.viewConfig)
-      .subscribe(
-        view => this.onLoadViewSuccess(view, viewSpecConfigured.displayMode),
-        (error: FlServerError) => this.view$.next({status: 'error', error: error})
+    const actionObs: Observable<BioxResourceViewEvent> =
+      this.callResourceView(viewSpecConfigured.viewSpec.methodName, viewSpecConfigured.viewConfig).pipe(
+        map(view => ({view: view, displayMode: viewSpecConfigured.displayMode}))
       );
 
+    this.flActionService.addAction({
+      type: this.actionType,
+      text: viewSpecConfigured.viewSpec.getName(),
+      action: actionObs
+    }, true);
   }
 
   /**
@@ -128,13 +124,8 @@ export class BioxResourceDetailPageState implements OnDestroy {
     return this.resourceService.callResourceView(this.type, this.id, methodName, config.configValues);
   }
 
-  private onLoadViewSuccess(view: BioxResourceView, displayMode: BioxResourceViewDisplayMode): void {
-    this.viewSubscription = null;
-    this.view$.next({status: 'success', view: view, displayMode: displayMode});
-  }
-
-  public getView$(): Observable<BioxResourceViewEvent> {
-    return this.view$.asObservable();
+  public getView$(): Observable<FlPortalActionResult<BioxResourceViewEvent>> {
+    return this.flActionService.getResult$(this.actionType);
   }
 
 

@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FlPortalActionDetail} from '../../model/fl-portal-actions.class';
+import {FlPortalActionDetail, FlPortalActionStatus} from '../../model/fl-portal-actions.class';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
-import {FlPortalActionsState} from '../../service/fl-portal-actions.state';
+import {Observable} from 'rxjs';
 
 /**
  * Component inside {@link FlPortalActionsComponent} that subscribe
@@ -16,40 +16,17 @@ export class FlPortalActionLineComponent implements OnInit {
 
   @Input() action: FlPortalActionDetail;
 
+  status$: Observable<FlPortalActionStatus>;
+
   text: string;
 
-  constructor(private translateService: FlTranslateService,
-              private actionState: FlPortalActionsState) {
+  constructor(private translateService: FlTranslateService) {
   }
 
   ngOnInit(): void {
     // translate the text if necessary
-    this.text = this.action.translateText ? this.translateService.translate(this.action.text, this.action.translateParam) :
-      this.action.text;
-
-    // only subscribe if the loader is ready
-    // this prevent multiple subscription
-    if (this.action.status === 'ready') {
-      this.subscribe();
-    }
-  }
-
-  private subscribe(): void {
-    this.action.status = 'loading';
-    this.action.action.subscribe(
-      result => this.onSuccess(result),
-      error => this.onError(error)
-    );
-  }
-
-  private onSuccess(result: any): void {
-    this.action.status = 'success';
-    this.actionState.emitResult({action: this.action, result: result, status: 'success'});
-  }
-
-  private onError(error: any): void {
-    this.action.status = 'error';
-    this.actionState.emitResult({action: this.action, result: error, status: 'error'});
+    this.text = this.translateService.translatableText(this.action.text);
+    this.status$ = this.action.getStatus$();
   }
 
 }

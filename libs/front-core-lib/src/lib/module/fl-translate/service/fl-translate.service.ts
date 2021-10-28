@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
-import {FlTranslateMode, FlTranslateObject, FlTranslateParam} from '../model/fl-translate-param';
+import {FlTranslatableText, FlTranslateMode, FlTranslateObject, FlTranslateParam} from '../model/fl-translate-param';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {FL_TRANSLATE_MODULE_CONFIG, FlTranslateModuleConfig} from '../model/fl-translate-module-config';
@@ -63,6 +63,20 @@ export class FlTranslateService {
     const text = this.translateService.instant(key, params.param);
 
     return this.convertTranslatedTextCase(text, params.mode);
+  }
+
+  /**
+   * Translate or not a text
+   * @param translatableText
+   */
+  public translatableText(translatableText: FlTranslatableText): string {
+    if (typeof translatableText === 'string') {
+      return translatableText;
+    } else if (!translatableText.translateText) {
+      return translatableText.text;
+    } else {
+      return this.translate(translatableText.text, translatableText.translateParam);
+    }
   }
 
   /**
@@ -153,7 +167,7 @@ export class FlTranslateService {
    */
   public addModuleTranslation(moduleName: string, value: FlTranslateObject): void {
     // check if the translation has already been loaded
-    if(this.modulesTranslation.indexOf(moduleName) === -1){
+    if (this.modulesTranslation.indexOf(moduleName) === -1) {
       this.addTranslation(value);
       this.modulesTranslation.push(moduleName);
     }

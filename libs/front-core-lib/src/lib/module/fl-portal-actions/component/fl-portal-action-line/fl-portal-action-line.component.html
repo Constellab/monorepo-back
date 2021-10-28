@@ -5,18 +5,24 @@
     {{text}}
   </div>
 
-  <ng-container [ngSwitch]="action.status">
-    <ng-container *ngSwitchCase="'loading'">
-      <!--   loader the same size as the icons   -->
-      <fl-loader [size]="24"></fl-loader>
-    </ng-container>
+  <ng-container>
+    <ng-container [ngSwitch]="status$ | async">
+      <ng-container *ngSwitchCase="'waiting'">
+        <mat-icon>hourglass_empty</mat-icon>
+      </ng-container>
 
-    <ng-container *ngSwitchCase="'success'">
-      <mat-icon class="g-success-text">check_circle</mat-icon>
-    </ng-container>
+      <ng-container *ngSwitchCase="'loading'">
+        <!--   loader the same size as the icons   -->
+        <fl-loader [size]="24"></fl-loader>
+      </ng-container>
 
-    <ng-container *ngSwitchCase="'error'">
-      <mat-icon class="g-error-text">error</mat-icon>
+      <ng-container *ngSwitchCase="'success'">
+        <mat-icon class="g-success-text">check_circle</mat-icon>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'error'">
+        <mat-icon class="g-error-text">error</mat-icon>
+      </ng-container>
     </ng-container>
   </ng-container>
 

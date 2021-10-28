@@ -10,7 +10,7 @@
 
 
   <div fxLayout="column">
-    <div *ngFor="let loader of actions$ | async; trackBy:trackBySymbole; let last=last">
+    <div *ngFor="let loader of actions$ | async; trackBy:trackBySymbole;">
       <fl-portal-action-line [action]="loader"></fl-portal-action-line>
 
       <mat-divider></mat-divider>

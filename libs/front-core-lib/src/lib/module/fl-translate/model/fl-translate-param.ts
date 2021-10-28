@@ -39,3 +39,22 @@ export interface FlTranslateParam {
 export type FlTranslateObject = {
   [K in ClSupportedLanguage]: FlLangTranslation;
 }
+
+/**
+ * Object for text to translate or not. If string, the text is not translated
+ */
+export type FlTranslatableText = string | {
+  /**
+   * Text to translate or not
+   */
+  text: string;
+  /**
+   * If true the text is translated
+   */
+  translateText?: boolean;
+
+  /**
+   * Param for the translation
+   */
+  translateParam?: FlTranslateParam;
+}

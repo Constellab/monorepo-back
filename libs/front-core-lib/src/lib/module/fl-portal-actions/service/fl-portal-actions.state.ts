@@ -18,7 +18,6 @@ export class FlPortalActionsState implements FlCleanableService {
   // each time an action success or error, it is emitting in this subject
   private results$: Subject<FlPortalActionResult> = new Subject<FlPortalActionResult>();
 
-
   constructor() {
     FlCleanerService.getInstance().registerService(this);
   }
@@ -28,7 +27,8 @@ export class FlPortalActionsState implements FlCleanableService {
    * @param actions
    */
   public setActions(actions: FlPortalAction | FlPortalAction[]): void {
-    this.actions$.next(this.toActionDetails(actions));
+    this.actions$.next([]);
+    this.appendActions(actions);
   }
 
   /**
@@ -36,8 +36,17 @@ export class FlPortalActionsState implements FlCleanableService {
    * @param actions
    */
   public appendActions(actions: FlPortalAction | FlPortalAction[]): void {
+    const newActions: FlPortalActionDetail[] = this.toActionDetails(actions);
+
+    // subscribe to the action on add
+    for (const action of newActions) {
+      action.callAction().subscribe(
+        result => this.emitResult(result)
+      );
+    }
+
     // append new actions to current actions
-    const allActions: FlPortalActionDetail[] = [...this.currentActions, ...this.toActionDetails(actions)];
+    const allActions: FlPortalActionDetail[] = [...this.currentActions, ...newActions];
 
     this.actions$.next(allActions);
   }
@@ -54,10 +63,7 @@ export class FlPortalActionsState implements FlCleanableService {
   private toActionDetails(actions: FlPortalAction | FlPortalAction[]): FlPortalActionDetail[] {
     const actionsArray: FlPortalAction[] = ClHelpService.convertObjectOrArrayToArray(actions);
 
-    return actionsArray.map(action => {
-        return {...action, status: 'ready', symbol: Symbol()};
-      }
-    );
+    return actionsArray.map(action => new FlPortalActionDetail(action));
   }
 
   public emitResult(result: FlPortalActionResult): void {
@@ -65,7 +71,7 @@ export class FlPortalActionsState implements FlCleanableService {
   }
 
   public allActionFinished(): boolean {
-    return this.actions$.value.every(action => action.status === 'success' || action.status === 'error');
+    return this.actions$.value.every(action => action.isFinished());
   }
 
   /**
