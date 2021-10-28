@@ -34,8 +34,10 @@ export class FlPortalActionsService {
    * If portal is closed, it opens it
    * @param actions
    * @param autoClose if true, the portal is close after all the action finished (with a small delay)
+   * @param openPortal when false the portal is not opened if it doesn't exists
    */
-  public addAction(actions: FlPortalAction | FlPortalAction[], autoClose?: boolean): void {
+  public addAction(actions: FlPortalAction | FlPortalAction[], autoClose?: boolean,
+                   openPortal: boolean = true): void {
     // clear the auto close timer if it exists
     this.clearAutoCloseTimer();
 
@@ -46,6 +48,9 @@ export class FlPortalActionsService {
 
     if (this.currentOverlay != null) {
       this.actionsState.appendActions(actions);
+    } else if (!openPortal) {
+      // if we don't open the portal, only set actions
+      this.actionsState.setActions(actions);
     } else {
       this.openPortal(actions);
     }
@@ -77,7 +82,7 @@ export class FlPortalActionsService {
   }
 
   private closeOverlay(): void {
-    this.currentOverlay.dispose();
+    this.currentOverlay?.dispose();
   }
 
   /**

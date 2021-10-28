@@ -73,7 +73,8 @@ export class BioxResourceDetailPageState implements OnDestroy {
     }
 
     if (defaultView) {
-      this.selectViewSpec({viewSpec: defaultView, displayMode: 'fullScreen', viewConfig: new BioxResourceViewConfig()});
+      this.selectViewSpec({viewSpec: defaultView, displayMode: 'fullScreen', viewConfig: new BioxResourceViewConfig()},
+        true);
     }
   }
 
@@ -85,24 +86,27 @@ export class BioxResourceDetailPageState implements OnDestroy {
     return this.selectedViewSpec$.asObservable();
   }
 
-  public selectViewSpec(viewSpecConfigured: BioxResourceViewSpecWithConfig): void {
+  public selectViewSpec(viewSpecConfigured: BioxResourceViewSpecWithConfig, isDefaultView: boolean = false): void {
     this.selectedViewSpec$.next(viewSpecConfigured);
-    this.loadView(viewSpecConfigured);
+    this.loadView(viewSpecConfigured, isDefaultView);
   }
 
   /////////////////////////////////// VIEW //////////////////////////////////////////
 
-  private loadView(viewSpecConfigured: BioxResourceViewSpecWithConfig): void {
+  private loadView(viewSpecConfigured: BioxResourceViewSpecWithConfig, isDefaultView: boolean = false): void {
     const actionObs: Observable<BioxResourceViewEvent> =
       this.callResourceView(viewSpecConfigured.viewSpec.methodName, viewSpecConfigured.viewConfig).pipe(
         map(view => ({view: view, displayMode: viewSpecConfigured.displayMode}))
       );
 
-    this.flActionService.addAction({
-      type: this.actionType,
-      text: viewSpecConfigured.viewSpec.getName(),
-      action: actionObs
-    }, true);
+    this.flActionService.addAction(
+      {
+        type: this.actionType,
+        text: viewSpecConfigured.viewSpec.getName(),
+        action: actionObs
+      },
+      true,
+      !isDefaultView); // for the default view, don't show the action portal
   }
 
   /**
