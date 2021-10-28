@@ -29,7 +29,6 @@ export class BioxResourceDetailPageState implements OnDestroy {
   private id: string;
 
   private resource$: ClCachedObservable<BioxResource>;
-  private view$: BehaviorSubject<BioxResourceViewEvent>;
   private viewSpecs$: ClCachedObservable<BioxResourceViewSpecsByType[]>;
   private selectedViewSpec$: BehaviorSubject<BioxResourceViewSpecWithConfig>;
 
@@ -132,11 +131,7 @@ export class BioxResourceDetailPageState implements OnDestroy {
     return this.flActionService.getResult$(this.actionType);
   }
 
-
   ngOnDestroy(): void {
     this.selectedViewSpec$.complete();
-    this.view$.complete();
   }
-
-
 }
