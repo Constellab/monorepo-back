@@ -7,4 +7,6 @@ export class BioxResourceViewDirective<T extends BioxResourceViewBase = BioxReso
 
   @Input() view: T;
 
+  @Input() fullscreen: boolean;
+
 }

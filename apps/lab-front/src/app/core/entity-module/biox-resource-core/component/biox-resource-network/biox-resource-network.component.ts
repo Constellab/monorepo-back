@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FlBioNetwork} from '@monorepo/front-core-lib';
 import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
 import {BioxResourceViewNetwork} from '../../../../model/entities/resource/biox-resource-view.entity';
@@ -12,8 +12,6 @@ import {BioxResourceViewNetwork} from '../../../../model/entities/resource/biox-
   styleUrls: ['./biox-resource-network.component.scss']
 })
 export class BioxResourceNetworkComponent extends BioxResourceViewDirective<BioxResourceViewNetwork> implements OnInit {
-
-  @Input() view: BioxResourceViewNetwork;
 
   networks: FlBioNetwork | FlBioNetwork[];
 

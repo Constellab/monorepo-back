@@ -63,7 +63,9 @@ export class FlBioNetworkD3Link implements SimulationLinkDatum<FlBioNetworkD3Nod
     this.id = FlBioNetworkD3Link.id++;
 
     // init each points
-    points.forEach(point => this.pointPositions.push(new FlBioNetworkD3LinkPoint(point.x, point.y, this)));
+    if (points) {
+      points.forEach(point => this.pointPositions.push(new FlBioNetworkD3LinkPoint(point.x, point.y, this)));
+    }
 
     // add the link to the source and target
     this.source.departureLinks.push(this);

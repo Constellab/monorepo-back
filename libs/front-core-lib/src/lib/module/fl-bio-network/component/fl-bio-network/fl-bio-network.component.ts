@@ -28,6 +28,8 @@ export class FlBioNetworkComponent implements OnInit, AfterViewInit {
 
   @Input() data: FlBioNetwork | FlBioNetwork[];
 
+  @Input() fullscreen: boolean = false;
+
   @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
   @ViewChild(MatSidenav, {static: true}) drawer: MatDrawer;
 

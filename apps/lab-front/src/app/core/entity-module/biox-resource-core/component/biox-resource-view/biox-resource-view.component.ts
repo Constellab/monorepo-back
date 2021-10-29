@@ -62,6 +62,8 @@ export class BioxResourceViewComponent implements OnInit, OnDestroy {
 
   private _view: BioxResourceView;
 
+  @Input() fullscreen: boolean = false;
+
   @ViewChild('viewContainer', {static: true, read: ViewContainerRef}) viewContainer: ViewContainerRef;
 
   private isReady: boolean = false;
@@ -91,6 +93,7 @@ export class BioxResourceViewComponent implements OnInit, OnDestroy {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
     this.viewComponentRef = this.viewContainer.createComponent(componentFactory);
     this.viewComponentRef.instance.view = view;
+    this.viewComponentRef.instance.fullscreen = this.fullscreen;
   }
 
   private destroyViewComponentRef(): void {
