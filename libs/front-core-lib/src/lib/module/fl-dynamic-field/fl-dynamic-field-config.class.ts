@@ -39,6 +39,8 @@ export interface FlDynamicFieldConfigInput extends FlDynamicFieldConfigMaterialI
   // validators (only for numbers)
   min?: number;
   max?: number;
+  // if true the number must be an integer
+  integer?: boolean;
 }
 
 export interface FlDynamicFieldConfigSelect extends FlDynamicFieldConfigMaterialInput {

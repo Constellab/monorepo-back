@@ -22,6 +22,8 @@ export class FlDynamicFormComponent implements OnInit {
   // width of the input, used in a fxFlex
   @Input() inputFlexWidth: string = '1 1 49%';
 
+  @Input() inputFlexGap: string = '1%';
+
   constructor() {
   }
 

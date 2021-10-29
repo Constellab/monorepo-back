@@ -4,8 +4,9 @@ import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
 
 const flDynamicFieldI18nFr: FlLangTranslation = {
   flDynamicField: {
-    min_error_validator: 'Value must be higher or equal than {{min}}',
-    max_error_validator: 'Value must be lower or equal than {{max}}',
+    min_error_validator: 'The value must be higher or equal than {{min}}',
+    max_error_validator: 'The value must be lower or equal than {{max}}',
+    integer_error_validator: 'The value must be an integer',
     multi_input_help: 'Renseigner une valeur par ligne'
   }
 };
@@ -14,6 +15,7 @@ const flDynamicFieldI18nEn: FlLangTranslation = {
   flDynamicField: {
     min_error_validator: 'La valeur doit être supérieur ou égal à {{min}}',
     max_error_validator: 'La valeur doit être inférieur ou égale à {{max}}',
+    integer_error_validator: 'The value doit être un entier',
     multi_input_help: 'Specify one value per line'
   }
 };

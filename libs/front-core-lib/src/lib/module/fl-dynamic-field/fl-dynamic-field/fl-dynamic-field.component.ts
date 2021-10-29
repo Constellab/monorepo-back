@@ -6,6 +6,7 @@ import {
   FlDynamicFieldConfigSelect
 } from '../fl-dynamic-field-config.class';
 import {FormControl, ValidatorFn, Validators} from '@angular/forms';
+import {FlGlobalValidators} from '../../../utils/fl-global.validators';
 
 /**
  * NgModel component to generate a form field dynamically based on a config
@@ -55,6 +56,9 @@ export class FlDynamicFieldComponent implements OnInit {
       }
       if (this.config.max != null) {
         validators.push(Validators.max(this.config.max));
+      }
+      if(this.config.integer){
+        validators.push(FlGlobalValidators.isInteger())
       }
     }
 

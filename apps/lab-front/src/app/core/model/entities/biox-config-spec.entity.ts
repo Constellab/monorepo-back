@@ -64,6 +64,7 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
       if (spec.type === 'int' || spec.type === 'float') {
         config.min = spec.min_value;
         config.max = spec.max_value;
+        config.integer = spec.type === 'int';
       }
       formFieldConfig.fieldConfig = config;
     }
