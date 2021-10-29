@@ -2,6 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {BioxConfigData} from '../../../../model/entities/biox-config.entity';
+import {BioxConfigValue} from '../biox-configure-specs-form/biox-configure-specs-form.component';
 
 
 /**
@@ -29,7 +30,8 @@ export class BioxConfigureSpecsFormDialogComponent implements OnInit {
 
   submit(): void {
     if (this.formGp.valid) {
-      this.dialogRef.close(this.formGp.getRawValue());
+      const value: BioxConfigValue = this.formGp.getRawValue();
+      this.dialogRef.close({...value.public, ...value.protected});
     }
   }
 

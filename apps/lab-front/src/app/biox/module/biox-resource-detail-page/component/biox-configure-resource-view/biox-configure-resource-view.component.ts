@@ -7,8 +7,8 @@ import {
   BioxResourceViewSpecWithConfig,
   BioxResourceViewTypeInfo
 } from '../../../../../core/model/entities/resource/biox-resource-view.entity';
-import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
 import {Validators} from '@angular/forms';
+import {BioxConfigData} from '../../../../../core/model/entities/biox-config.entity';
 
 export interface BioxConfigureResourceViewInput {
   title: string;
@@ -34,7 +34,7 @@ export class BioxConfigureResourceViewComponent implements OnInit {
 
   formGp: FormGroup = new FormGroup({});
 
-  configs: FlDynamicFormFieldConfig[];
+  configs: BioxConfigData;
 
   title: string;
 
@@ -60,7 +60,7 @@ export class BioxConfigureResourceViewComponent implements OnInit {
 
   private initFormFieldConfig(): void {
     const viewSpecConfig = this.input.viewSpecConfig;
-    this.configs = viewSpecConfig.viewSpec.specs.convertToFieldConfigs(viewSpecConfig.viewConfig.configValues);
+    this.configs = BioxConfigData.fromSpecs(viewSpecConfig.viewSpec.specs, viewSpecConfig.viewConfig.configValues);
   }
 
   submit(): void {
@@ -72,7 +72,7 @@ export class BioxConfigureResourceViewComponent implements OnInit {
 
   private convertFormValueToResult(formValue: any): BioxConfigureResourceViewResult {
     return {
-      viewConfig: new BioxResourceViewConfig(formValue),
+      viewConfig: new BioxResourceViewConfig({...formValue.public, ...formValue.protected}),
       displayMode: formValue.displayMode
     };
   }

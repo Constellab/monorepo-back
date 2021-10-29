@@ -4,7 +4,7 @@
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
-    <fl-dynamic-form [formGp]="formGp" [configs]="configs"></fl-dynamic-form>
+    <gen-biox-configure-specs-form [bioxConfigData]="configs" [formGp]="formGp"></gen-biox-configure-specs-form>
 
     <div *ngIf="showDisplayModeControl" class="display-mode">
       <label >{{'biox.resource_view_display_mode' | translate}}</label>

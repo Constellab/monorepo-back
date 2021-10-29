@@ -1,3 +1,12 @@
+<fl-dynamic-form [formGp]="publicFormGp" [configs]="publicConfig"></fl-dynamic-form>
 
+<mat-expansion-panel flDisableAnimationInit [expanded]="protectedConfigExpand"
+                     class="expansion-panel">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      {{'biox.advanced_configuration' | translate}}
+    </mat-panel-title>
+  </mat-expansion-panel-header>
 
-<fl-dynamic-form [formGp]="formGp" [configs]="configs"></fl-dynamic-form>
+  <fl-dynamic-form [formGp]="protectedFormGp" [configs]="protectedConfig"></fl-dynamic-form>
+</mat-expansion-panel>

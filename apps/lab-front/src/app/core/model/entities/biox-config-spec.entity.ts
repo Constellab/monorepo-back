@@ -17,9 +17,14 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
   /**
    * Method to convert the BioxConfigSpec to a FlDynamicFormFieldConfig to create a form
    */
-  public convertToFieldConfigs(currentConfig: Record<string, unknown> = {}): FlDynamicFormFieldConfig[] {
+  public convertToFieldConfigs(currentConfig: Record<string, unknown> = {},
+                               visibility?: BioxConfigSpecVisibility): FlDynamicFormFieldConfig[] {
     const configs: FlDynamicFormFieldConfig[] = [];
-    for (const specName of Object.keys(this.record)) {
+    for (const specName in this.record) {
+      const configSpec: BioxConfigSpec = this.record[specName];
+
+      // if a visibility is specified, only get the config for this visibility
+      if (visibility && configSpec.visibility !== visibility) continue;
       configs.push(this.convertToFieldConfig(specName, currentConfig[specName] ?? undefined));
     }
 
@@ -100,8 +105,12 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
     return Object.assign(this.getNullConfig(), this.getDefaultConfig(), config);
   }
 
-  public hasConfigs(): boolean {
-    return this.record != null && Object.keys(this.record).length > 0;
+  public hasConfigs(visibility?: BioxConfigSpecVisibility): boolean {
+    if (visibility == null) {
+      return this.record != null && Object.keys(this.record).length > 0;
+    } else {
+      return this.some(spec => spec.visibility === visibility);
+    }
   }
 
   // get the config value with only null vales
@@ -121,6 +130,8 @@ export type BioxConfigSpec = BioxConfigSpecString | BioxConfigSpecFloat | BioxCo
 
 // If the config property is a string or a float
 export type BioxConfigSpecType = 'str' | 'int' | 'float' | 'list' | 'bool';
+
+export type BioxConfigSpecVisibility = 'protected' | 'public';
 
 // Typed description of the config spec
 export class BioxConfigSpecBase {
@@ -153,6 +164,11 @@ export class BioxConfigSpecBase {
    * Short description for the config
    */
   short_description?: string;
+
+  /**
+   * Visibility for the config, if protected, it is considered as advanced option
+   */
+  visibility: BioxConfigSpecVisibility;
 
   public hasDefaultValue(): boolean {
     return this.default_value !== undefined;

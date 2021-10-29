@@ -1,9 +1,13 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
 import {BioxConfigData} from '../../../../model/entities/biox-config.entity';
+import {MatExpansionPanel} from '@angular/material/expansion';
+import {FormGroup} from '@ngneat/reactive-forms';
 
-
+export interface BioxConfigValue {
+  public: Record<string, any>;
+  protected: Record<string, any>;
+}
 /**
  * Use to create a form to create a configuration based on a spec {@link BioxConfigSpec}
  */
@@ -18,13 +22,31 @@ export class BioxConfigureSpecsFormComponent implements OnInit {
 
   @Input() formGp: FormGroup;
 
-  configs: FlDynamicFormFieldConfig[];
+  @ViewChild(MatExpansionPanel) expansion: MatExpansionPanel;
+
+  publicFormGp: FormGroup;
+  protectedFormGp: FormGroup;
+
+  publicConfig: FlDynamicFormFieldConfig[];
+  protectedConfig: FlDynamicFormFieldConfig[];
+
+  showProtectedConfigs: boolean = false;
+  protectedConfigExpand: boolean = false;
 
   constructor() {
   }
 
   ngOnInit(): void {
-    this.configs = this.bioxConfigData.getDynamicFormFieldsConfig();
-  }
+    this.publicConfig = this.bioxConfigData.getDynamicFormFieldsConfig('public');
+    this.protectedConfig = this.bioxConfigData.getDynamicFormFieldsConfig('protected');
 
+    this.publicFormGp = new FormGroup({});
+    this.protectedFormGp = new FormGroup({});
+    this.formGp.addControl('public', this.publicFormGp);
+    this.formGp.addControl('protected', this.protectedFormGp);
+
+    this.showProtectedConfigs = this.bioxConfigData.hasConfig('protected');
+    // Automatically expand the advanced config if there is no public config
+    this.protectedConfigExpand = !this.bioxConfigData.hasConfig('public');
+  }
 }

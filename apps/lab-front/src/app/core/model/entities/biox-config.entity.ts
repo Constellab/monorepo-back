@@ -1,7 +1,7 @@
 import {LabBaseEntity} from '../global/lab-entity.entity';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {Type} from 'class-transformer';
-import {BioxConfigSpecBase, BioxConfigSpecs} from './biox-config-spec.entity';
+import {BioxConfigSpecBase, BioxConfigSpecs, BioxConfigSpecVisibility} from './biox-config-spec.entity';
 import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
 
 /**
@@ -37,8 +37,12 @@ export class BioxConfigData {
   /**
    * Get a FlDynamicFormFieldConfig based on config spec and params to create a form
    */
-  public getDynamicFormFieldsConfig(): FlDynamicFormFieldConfig[] {
-    return this.specs.convertToFieldConfigs(this.values);
+  public getDynamicFormFieldsConfig(visibility?: BioxConfigSpecVisibility): FlDynamicFormFieldConfig[] {
+    return this.specs.convertToFieldConfigs(this.values, visibility);
+  }
+
+  public hasConfig(visibility?: BioxConfigSpecVisibility): boolean {
+    return this.specs.hasConfigs(visibility);
   }
 }
 

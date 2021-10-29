@@ -8,6 +8,7 @@ import {BioxResourceViewSpecsComponent} from './component/biox-resource-view-spe
 import {BioxResourceViewSpecsPortalComponent} from './component/biox-resource-view-specs-portal/biox-resource-view-specs-portal.component';
 import {BioxConfigureResourceViewComponent} from './component/biox-configure-resource-view/biox-configure-resource-view.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {BioxConfigCoreModule} from '../../../core/entity-module/biox-config-core/biox-config-core.module';
 
 /**
  * Simple module for the resource detail page
@@ -27,6 +28,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
     CoreModule,
     BioxResourceCoreModule,
+    BioxConfigCoreModule,
   ]
 })
 export class BioxResourceDetailPageModule {
