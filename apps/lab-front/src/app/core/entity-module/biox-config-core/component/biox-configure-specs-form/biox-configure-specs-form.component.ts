@@ -2,7 +2,7 @@ import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FlDynamicFormFieldConfig} from '@monorepo/front-core-lib';
 import {BioxConfigData} from '../../../../model/entities/biox-config.entity';
 import {MatExpansionPanel} from '@angular/material/expansion';
-import {FormGroup} from '@ngneat/reactive-forms';
+import {FormGroup} from '@angular/forms';
 
 export interface BioxConfigValue {
   public: Record<string, any>;
