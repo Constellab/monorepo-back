@@ -1,6 +1,6 @@
 <fl-dynamic-form [formGp]="publicFormGp" [configs]="publicConfig"></fl-dynamic-form>
 
-<mat-expansion-panel flDisableAnimationInit [expanded]="protectedConfigExpand"
+<mat-expansion-panel *ngIf="showProtectedConfigs" flDisableAnimationInit [expanded]="protectedConfigExpand"
                      class="expansion-panel">
   <mat-expansion-panel-header>
     <mat-panel-title>

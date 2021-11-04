@@ -12,7 +12,7 @@ export class WorkflowNodeProcess extends WorkflowNode<BioxProcess> {
               processName: string,
               initialCoordX: number = 0, initialCoordY: number = 0) {
     super(processName, process.title, process,
-      process.isPlugSource() ? 'task-source' : 'node-process',
+      process.isSource() ? 'task-source' : 'node-process',
       initialCoordX, initialCoordY);
     this.html = `<biox-workflow-node name="${this.nodeName}"></biox-workflow-node>`;
   }

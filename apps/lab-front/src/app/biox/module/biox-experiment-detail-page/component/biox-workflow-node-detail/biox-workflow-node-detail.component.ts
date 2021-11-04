@@ -33,7 +33,7 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
     const object: BioxProcess = this.node.object;
 
     // don't show config for source
-    if (object.isPlugSource()) {
+    if (object.isSource()) {
       return null;
     }
     // the config is only for process node
@@ -64,7 +64,7 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
   }
 
   get isSource(): boolean {
-    return this.node.object.isPlugSource();
+    return this.node.object.isSource();
   }
 
   private onConfigDialogClosed(config?: any): void {

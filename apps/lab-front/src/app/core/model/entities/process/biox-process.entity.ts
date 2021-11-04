@@ -5,7 +5,7 @@ import {Expose, Type} from 'class-transformer';
 import {BioxIO} from '../biox-io.entity';
 import {BioxProgressBar} from '../biox-progress-bar.entity';
 import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
-import {bioxTaskSourceTypingName} from '../biox-process-special-type';
+import {bioxTaskSourceTypingName} from '../biox_typing_name.py';
 
 export interface BioxProcessData {
   title: string;
@@ -82,8 +82,8 @@ export class BioxProcess extends BioxNode implements FlStatus {
     return this.status;
   }
 
-  // return true if the process is a Source
-  isPlugSource(): boolean {
+  // return true if the process is a of type Source
+  isSource(): boolean {
     return this.processTypingName === bioxTaskSourceTypingName;
   }
 
@@ -107,7 +107,7 @@ const getBioxProcessStatusColorClass: FlGetStatusClassColorFunction = (status: B
 const getBioxProcessStatusStatusIcon: FlGetStatusIconFunction = (status: BioxProcessStatus): string => {
   switch (status) {
     case 'DRAFT':
-      return 'edit';
+      return 'hourglass_empty';
     case 'ERROR':
       return 'error';
     case 'SUCCESS':

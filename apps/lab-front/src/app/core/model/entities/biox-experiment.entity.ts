@@ -80,7 +80,7 @@ const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status
 const getBioxExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: BioxExperimentStatus): string => {
   switch (status) {
     case 'DRAFT':
-      return 'edit';
+      return 'hourglass_empty';
     case 'ERROR':
       return 'error';
     case 'SUCCESS':
