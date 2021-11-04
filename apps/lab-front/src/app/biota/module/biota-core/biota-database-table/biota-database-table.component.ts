@@ -1,10 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {
-  FlDialogService,
-  FlPaginatedTableAbstractDirective,
-  FlPrettyJsonDialogComponent,
-  FlPrettyJsonDialogInput
-} from '@monorepo/front-core-lib';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {FlPaginatedTableAbstractDirective} from '@monorepo/front-core-lib';
 import {BiotaData} from '../../../model/biota-data.class';
 
 @Component({
@@ -15,22 +10,19 @@ import {BiotaData} from '../../../model/biota-data.class';
 export class BiotaDatabaseTableComponent extends FlPaginatedTableAbstractDirective<BiotaData>
   implements OnInit {
 
+  @Output() showDetail: EventEmitter<BiotaData> = new EventEmitter();
 
-  constructor(private dialogService: FlDialogService) {
+
+  constructor() {
     super(['id', 'name']);
   }
 
   ngOnInit(): void {
   }
 
-  openDetail(biotaData: BiotaData): void {
-    const input: FlPrettyJsonDialogInput = {
-      title: 'biota.data_detail',
-      translateTitle: true,
-      object: biotaData.data
-    };
 
-    this.dialogService.openMediumDialog(FlPrettyJsonDialogComponent, {data: input});
+  onShowDetail(data: BiotaData): void {
+    this.showDetail.emit(data);
   }
 
 }
