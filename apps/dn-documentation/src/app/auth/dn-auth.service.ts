@@ -31,7 +31,10 @@ export class DnAuthService {
       }
       return userCentral;
     }
-    catch (e) {
+    catch (e: any) {
+      if(e.status >= 500 && e.status < 600) {
+        throw new UnauthorizedException('Central disconnected');
+      }
       throw new UnauthorizedException('Wrong mail or password');
     }
   }

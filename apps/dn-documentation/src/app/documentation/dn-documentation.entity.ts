@@ -1,9 +1,8 @@
 import {BlEntityWithId} from '@monorepo/back-core-lib';
 import {Column, Entity, ManyToOne, Unique} from 'typeorm';
-import {DnVersion} from '../version/dn-version.entity';
-import {doc} from 'prettier';
+import {DnFolder} from '../folder/dn-folder.entity';
 
-@Unique('', ['path', 'version'])
+@Unique('', ['folder', 'order'])
 @Entity('Documentation')
 export class DnDocumentation extends BlEntityWithId {
 
@@ -13,14 +12,14 @@ export class DnDocumentation extends BlEntityWithId {
   @Column('text')
   content: string;
 
-  @ManyToOne(() => DnVersion)
-  version: DnVersion;
-
   @Column()
   path: string;
 
   @Column()
   order: number;
+
+  @ManyToOne(() => DnFolder)
+  folder: DnFolder;
 }
 
 export class DnDocumentationDTO extends BlEntityWithId {
@@ -30,17 +29,23 @@ export class DnDocumentationDTO extends BlEntityWithId {
 
   order:number;
 
-  asChild: boolean;
-
-  childs: DnDocumentationDTO[];
-
   constructor(documentation: DnDocumentation) {
     super();
     this.path = documentation.path;
     this.title = documentation.title;
     this.id = documentation.id;
     this.order = documentation.order;
-    this.asChild = false;
-    this.childs = null;
   }
+}
+
+export class DnDocumentationResDTO extends BlEntityWithId{
+  title: string;
+
+  content: string;
+
+  path: string;
+
+  order: number;
+
+  folderId: string;
 }

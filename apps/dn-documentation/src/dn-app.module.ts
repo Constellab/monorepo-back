@@ -16,6 +16,7 @@ import {DnUserService} from './app/users/dn-user.service';
 import {Request} from 'express';
 import {jwtConfig} from './app/auth/jwt.config';
 import {DnJwtAuthGuard} from './app/core/guards/dn-jwt-auth.guard';
+import {DnFolderModule} from './app/folder/dn-folder.module';
 
 function typeOrmConfig(configService: DnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: DnDatabaseConfig = configService.getDatabaseConfig();
@@ -66,7 +67,8 @@ function configureJwtModule(configService: DnCoreConfigService, userService: DnU
     DnDocumentationModule,
     DnVersionModule,
     DnUserModule,
-    DnAuthModule
+    DnAuthModule,
+    DnFolderModule
   ],
   controllers: [],
   providers: [

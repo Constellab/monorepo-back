@@ -8,8 +8,8 @@
       {{ documentation.order}} {{ documentation.title }}
     </div>
     <mat-nav-list matLine>
-      <mat-list-item *ngFor="let child of documentation.childs; index as j">
-        <div matLine [routerLink]="publicDocsUrlPrefix + child.path">
+      <mat-list-item *ngFor="let child of documentation.childs; index as j" [routerLink]="publicDocsUrlPrefix + child.path">
+        <div matLine>
           {{ child.order}} {{ child.title }}
         </div>
         <button mat-icon-button [routerLink]="edit(child.id)">

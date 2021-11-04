@@ -1,5 +1,5 @@
 import {Body, Controller, Delete, Get, Param, Post, Put, Query} from '@nestjs/common';
-import {DnDocumentation, DnDocumentationDTO} from './dn-documentation.entity';
+import {DnDocumentation, DnDocumentationDTO, DnDocumentationResDTO} from './dn-documentation.entity';
 import {DnDocumentationService} from './dn-documentation.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 
@@ -9,7 +9,7 @@ export class DnDocumentationController {
   }
 
   @Post()
-  create(@Body(new BlParsePipe(DnDocumentation)) createDocumentation: DnDocumentation): Promise<DnDocumentation> {
+  create(@Body(new BlParsePipe(DnDocumentationResDTO)) createDocumentation: DnDocumentationResDTO): Promise<DnDocumentation> {
     return this.documentationService.create(createDocumentation);
   }
 
