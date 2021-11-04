@@ -44,7 +44,6 @@ export class DnFolderService {
 
   async findTree(): Promise<DnNode> {
     const allDoc: DnFolder[] = await this.findAll();
-
     return this.createTree(allDoc[0]);
   }
 
