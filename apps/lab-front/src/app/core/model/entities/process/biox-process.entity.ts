@@ -2,7 +2,7 @@ import {BioxConfig} from '../biox-config.entity';
 import {ClRecordTransform} from '@monorepo/core-lib';
 import {BioxNode} from '../../global/biox-connection.class';
 import {Expose, Type} from 'class-transformer';
-import {BioxInput} from '../biox-input.entity';
+import {BioxIO} from '../biox-io.entity';
 import {BioxProgressBar} from '../biox-progress-bar.entity';
 import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
 import {bioxTaskSourceTypingName} from '../biox-process-special-type';
@@ -46,11 +46,11 @@ export class BioxProcess extends BioxNode implements FlStatus {
   @Expose({name: 'instance_name'})
   name: string;
 
-  @ClRecordTransform(BioxInput)
-  inputs: Record<string, BioxInput>;
+  @ClRecordTransform(BioxIO)
+  inputs: Record<string, BioxIO>;
 
-  @ClRecordTransform(BioxInput)
-  outputs: Record<string, BioxInput>;
+  @ClRecordTransform(BioxIO)
+  outputs: Record<string, BioxIO>;
 
   @Expose({name: 'progress_bar'})
   @Type(() => BioxProgressBar)

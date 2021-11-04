@@ -2,6 +2,7 @@ import {BioxProcessData} from '../process/biox-process.entity';
 import {bioxTaskSourceTypingName} from '../biox-process-special-type';
 import {BioxConfigSpecs} from '../biox-config-spec.entity';
 import {BioxLabTypeEntity} from './biox-lab-type.entity';
+import {BioxIOSpec} from '../biox-io.entity';
 
 
 export abstract class BioxProcessType extends BioxLabTypeEntity {
@@ -19,13 +20,13 @@ export abstract class BioxProcessType extends BioxLabTypeEntity {
 
 
   hasInputSpecs(): boolean {
-    const inputSpecs: Record<string, string[]> = this.getInputSpecs();
+    const inputSpecs: Record<string, BioxIOSpec[]> = this.getInputSpecs();
     return inputSpecs != null && Object.keys(inputSpecs).length > 0;
 
   }
 
   hasOutputSpecs(): boolean {
-    const outputSpecs: Record<string, string[]> = this.getOutputSpecs();
+    const outputSpecs: Record<string, BioxIOSpec[]> = this.getOutputSpecs();
     return outputSpecs != null && Object.keys(outputSpecs).length > 0;
 
   }
@@ -35,9 +36,9 @@ export abstract class BioxProcessType extends BioxLabTypeEntity {
     return config != null && config.hasConfigs();
   }
 
-  abstract getInputSpecs(): Record<string, string[]>;
+  abstract getInputSpecs(): Record<string, BioxIOSpec[]>;
 
-  abstract getOutputSpecs(): Record<string, string[]>;
+  abstract getOutputSpecs(): Record<string, BioxIOSpec[]>;
 
   abstract getConfigSpecs(): BioxConfigSpecs;
 

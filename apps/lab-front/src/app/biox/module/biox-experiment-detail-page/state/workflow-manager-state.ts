@@ -31,9 +31,11 @@ export class WorkflowManagerState {
 
   private readonly htmlNodeWidth: number = 200;
   private readonly htmlNodeHeight: number = 100;
-  private readonly htmlDefaultNodeSpace: number = 70;
-  private readonly htmlOffsetX: number = 20;
-  private readonly htmlOffsetY: number = 20;
+  private readonly htmlDefaultNodeSpaceX: number = 30;
+  private readonly htmlDefaultNodeSpaceY: number = 10;
+  private readonly htmlOffsetX: number = 10;
+  private readonly htmlOffsetY: number = 10;
+
 
   private experiment: BioxExperiment = null;
 
@@ -140,19 +142,13 @@ export class WorkflowManagerState {
   }
 
   public addInterface(): void {
-    const interfaceNode: BioxInterfaceNode = new BioxInterfaceNode();
-    interfaceNode.portName = this.generateId('i_');
-    interfaceNode.name = interfaceNode.portName;
-    interfaceNode.portType = null;
+    const interfaceNode: BioxInterfaceNode = BioxInterfaceNode.newGenericInterface(this.generateId('i_'));
     // todo see pos
     this.addBioxNodeOnPosition(interfaceNode, 0, 0);
   }
 
   public addOuterface(): void {
-    const outerfaceNode: BioxOuterfaceNode = new BioxOuterfaceNode();
-    outerfaceNode.portName = this.generateId('o_');
-    outerfaceNode.name = outerfaceNode.portName;
-    outerfaceNode.portType = null;
+    const outerfaceNode: BioxOuterfaceNode = BioxOuterfaceNode.newGenericInterface(this.generateId('o_'));
     // todo see pos
     this.addBioxNodeOnPosition(outerfaceNode, 0, 0);
   }
@@ -233,8 +229,8 @@ export class WorkflowManagerState {
    */
   private addBioxNodeOnPosition(node: BioxNode, posX: number, posY: number): void {
     // convert the 2D position to coords
-    const coordX = ((this.htmlNodeWidth + this.htmlDefaultNodeSpace) * posX) + this.htmlOffsetX;
-    const coordY = ((this.htmlNodeHeight + this.htmlDefaultNodeSpace) * posY) + this.htmlOffsetY;
+    const coordX = ((this.htmlNodeWidth + this.htmlDefaultNodeSpaceX) * posX) + this.htmlOffsetX;
+    const coordY = ((this.htmlNodeHeight + this.htmlDefaultNodeSpaceY) * posY) + this.htmlOffsetY;
 
     let workflowNode: WorkflowNode<any>;
     if (node instanceof BioxProcess) {

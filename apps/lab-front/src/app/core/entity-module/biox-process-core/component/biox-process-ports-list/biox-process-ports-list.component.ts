@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {BioxIOSpec} from '../../../../model/entities/biox-io.entity';
 
 /**
  * Component to show a list of port with associated types
@@ -10,9 +11,10 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class BioxProcessPortsListComponent implements OnInit {
 
-  @Input() ports: Record<string, string[]>
+  @Input() ports: Record<string, BioxIOSpec[]>
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

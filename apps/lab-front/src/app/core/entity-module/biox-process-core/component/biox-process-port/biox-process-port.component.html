@@ -1,6 +1,6 @@
 <div fxLayout="row" fxLayoutAlign="start center">
   <div class="color-container">
-    <div [style.backgroundColor]="types | bioxProcessPortColor" class="color-round"></div>
+    <div [style.backgroundColor]="specs | bioxProcessPortColor" class="color-round"></div>
   </div>
 
   <div fxFlex="35%" class="text">
@@ -8,8 +8,9 @@
   </div>
 
   <div fxFlex="auto" class="g-text-light g-text-small text">
-    <div *ngFor="let type of types">
-      {{type}}
+    <div *ngFor="let spec of specs" [matTooltip]="spec.short_description">
+      {{spec.human_name}}
     </div>
   </div>
 </div>
+
