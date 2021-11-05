@@ -5,7 +5,7 @@ import {Expose, Type} from 'class-transformer';
 import {BioxIO} from '../biox-io.entity';
 import {BioxProgressBar} from '../biox-progress-bar.entity';
 import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
-import {bioxTaskSourceTypingName} from '../biox_typing_name.py';
+import {bioxTaskSourceTypingName} from '../biox-typing-name.py';
 
 export interface BioxProcessData {
   title: string;

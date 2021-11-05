@@ -1,5 +1,12 @@
 import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
-import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
+import {
+  FlEntityPaginatedDatasource,
+  FlGetStatusClassColorFunction,
+  FlGetStatusIconFunction,
+  FlStatus,
+  FlStatusColorMode,
+  FlStatusHelper
+} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {ViewModel} from '../global/view-model.entity';
 import {BioxStudy} from './biox-study.class';
@@ -68,12 +75,12 @@ export type BioxExperimentVM = ViewModel<BioxExperiment>;
 export type BioxExperimentDatasource = FlEntityPaginatedDatasource<BioxExperiment>;
 
 const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: BioxExperimentStatus,
-                                                                          mode: 'background' | 'text' = 'background'): string => {
+                                                                          mode: FlStatusColorMode = 'background'): string => {
   switch (status) {
     case 'ERROR':
-      return mode === 'background' ? 'g-warn-background' : 'g-warn-text';
+      return FlStatusHelper.getErrorColor(mode);
     default:
-      return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
+      return FlStatusHelper.getSuccessColor(mode);
   }
 };
 
@@ -82,9 +89,9 @@ const getBioxExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: Biox
     case 'DRAFT':
       return 'hourglass_empty';
     case 'ERROR':
-      return 'error';
+      return FlStatusHelper.errorIcon;
     case 'SUCCESS':
-      return 'done';
+      return FlStatusHelper.successIcon;
     case 'RUNNING':
     case 'WAITING_FOR_CLI_PROCESS':
       return 'cached';

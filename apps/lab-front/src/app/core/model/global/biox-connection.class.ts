@@ -1,7 +1,7 @@
 import {LabBaseEntity} from './lab-entity.entity';
 import {BioxIO, BioxIOSpec} from '../entities/biox-io.entity';
 import {Exclude} from 'class-transformer';
-import {constTypingNameResource} from '../entities/biox_typing_name.py';
+import {constTypingNameResource} from '../entities/biox-typing-name.py';
 
 export interface BioxConnectionPart {
 

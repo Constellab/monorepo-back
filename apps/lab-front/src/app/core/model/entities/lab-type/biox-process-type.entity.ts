@@ -2,7 +2,7 @@ import {BioxProcessData} from '../process/biox-process.entity';
 import {BioxConfigSpecs} from '../biox-config-spec.entity';
 import {BioxLabTypeEntity} from './biox-lab-type.entity';
 import {BioxIOSpec} from '../biox-io.entity';
-import {bioxTaskSourceTypingName} from '../biox_typing_name.py';
+import {bioxTaskSourceTypingName} from '../biox-typing-name.py';
 
 
 export abstract class BioxProcessType extends BioxLabTypeEntity {
