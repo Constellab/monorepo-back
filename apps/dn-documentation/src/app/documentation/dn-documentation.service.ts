@@ -20,7 +20,7 @@ export class DnDocumentationService {
     const createDocumentation = {
       title: createDocumentationRes.title,
       content: createDocumentationRes.content,
-      path: createDocumentationRes.path,
+      path: folder.path + createDocumentationRes.path + '/',
       order: createDocumentationRes.order,
       folder: folder
     }

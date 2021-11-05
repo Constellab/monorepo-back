@@ -24,5 +24,5 @@ export class DaDocumentationDTO extends DaEntity {
 
   childs: DaDocumentationDTO[];
 
-  toggleChild: boolean = false;
+  toggleChild: boolean;
 }

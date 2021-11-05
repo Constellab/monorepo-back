@@ -30,7 +30,7 @@ export class DnFolderService {
     const createFolder = {
       title: createFolderRes.title,
       folder: folder,
-      path: createFolderRes.path,
+      path: folder.path + createFolderRes.path + '/',
       version: version,
       order: createFolderRes.order
     }
@@ -51,10 +51,10 @@ export class DnFolderService {
 
     const currentChild: DnNode[] = [];
 
-    const currentParent: DnNode = new DnNode(folder.title, folder.order, []);
+    const currentParent: DnNode = new DnNode(folder.id, folder.title, folder.path, folder.order, []);
 
     folder.documentations.map(doc => {
-      currentChild.push(new DnNode(doc.title, doc.order));
+      currentChild.push(new DnNode(doc.id, doc.title, doc.path, doc.order));
     })
 
     folder.folders.map(f => {

@@ -56,16 +56,21 @@ export class DnFolderResDTO extends BlEntityWithId{
   folderId: string;
 }
 
-export class DnNode{
+export class DnNode extends  BlEntityWithId{
   name: string;
 
   order: number;
 
+  path: string;
+
   children?: DnNode[];
 
-  constructor(n: string, o: number, c?: DnNode[]) {
+  constructor(i: string, n: string, p: string, o: number, c?: DnNode[]) {
+    super();
+    this.id = i;
     this.name = n;
     this.order = o;
+    this.path = p;
     if(c){
       this.children = c;
     }

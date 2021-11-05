@@ -10,6 +10,7 @@ import { FlLuxonDateAdapter, flLuxonDateFormat, flMatFormFieldConfig } from '@mo
 import { QuillModule } from 'ngx-quill';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {MatTreeModule} from '@angular/material/tree';
 
 @NgModule({
   exports: [
@@ -21,6 +22,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatListModule,
     MatIconModule,
     MatSidenavModule,
+    MatTreeModule,
     FlexLayoutModule
   ],
   providers: [
