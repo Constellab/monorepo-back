@@ -2,34 +2,8 @@
   Create
 </button>
 
-<!--<mat-nav-list>-->
-<!--  <mat-list-item *ngFor="let documentation of documentations; index as i">-->
-<!--    <div matLine [routerLink]="publicDocsUrlPrefix + documentation.path">-->
-<!--      {{ documentation.order}} {{ documentation.title }}-->
-<!--    </div>-->
-<!--    <mat-nav-list matLine>-->
-<!--      <mat-list-item *ngFor="let child of documentation.childs; index as j" [routerLink]="publicDocsUrlPrefix + child.path">-->
-<!--        <div matLine>-->
-<!--          {{ child.order}} {{ child.title }}-->
-<!--        </div>-->
-<!--        <button mat-icon-button [routerLink]="edit(child.id)">-->
-<!--          <mat-icon>edit</mat-icon>-->
-<!--        </button>-->
-<!--        <button mat-icon-button (click)="delete(child.id, i, $event, j)">-->
-<!--          <mat-icon>delete</mat-icon>-->
-<!--        </button>-->
-<!--      </mat-list-item>-->
-<!--    </mat-nav-list>-->
-<!--    <button *ngIf="!documentation.asChild" mat-icon-button [routerLink]="edit(documentation.id)">-->
-<!--      <mat-icon>edit</mat-icon>-->
-<!--    </button>-->
-<!--    <button *ngIf="!documentation.asChild" mat-icon-button (click)="delete(documentation.id, i, $event)">-->
-<!--      <mat-icon>delete</mat-icon>-->
-<!--    </button>-->
-<!--  </mat-list-item>-->
-<!--</mat-nav-list>-->
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree">
 
-<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree" [trackBy]="">
   <!-- This is the tree node template for leaf nodes -->
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class="tree-node">
     <mat-nav-list class="nav-list">
@@ -45,8 +19,8 @@
         </button>
       </mat-list-item>
     </mat-nav-list>
-
   </mat-tree-node>
+
   <!-- This is the tree node template for expandable nodes -->
   <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
     <button mat-icon-button matTreeNodeToggle

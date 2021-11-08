@@ -19,11 +19,34 @@
   </mat-form-field>
 
 
-  <!--  path  -->
-  <mat-form-field class="g-form-input" appearance="fill">
-    <mat-label>{{'path' | translate}}</mat-label>
-    <input matInput type="text" formControlName="path">
-  </mat-form-field>
+  <!--  &lt;!&ndash;  path  &ndash;&gt;-->
+  <!--  <mat-form-field class="g-form-input" appearance="fill">-->
+  <!--    <mat-label>{{'path' | translate}}</mat-label>-->
+  <!--    <input matInput type="text" formControlName="path">-->
+  <!--  </mat-form-field>-->
+
+  <table class="g-form-input" cellspacing="0">
+    <tr>
+      <td>
+        <mat-form-field class="g-form-input" appearance="fill">
+          <mat-label>Folder</mat-label>
+          <mat-select formControlName="folderId" name="folderPath">
+            <mat-option>Default</mat-option>
+            <mat-option *ngFor="let folder of folders" [value]="folder.id">
+              {{folder.title}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </td>
+      <td>  <!--  path  -->
+        <mat-form-field class="g-form-input" appearance="fill">
+          <mat-label>{{'path' | translate}}</mat-label>
+          <input matInput type="text" formControlName="path">
+        </mat-form-field>
+      </td>
+    </tr>
+  </table>
+
 
   <!--    content      -->
   <fl-form-field class="g-form-input">

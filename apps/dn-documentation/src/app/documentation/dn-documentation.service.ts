@@ -20,7 +20,8 @@ export class DnDocumentationService {
     const createDocumentation = {
       title: createDocumentationRes.title,
       content: createDocumentationRes.content,
-      path: folder.path + createDocumentationRes.path + '/',
+      path: createDocumentationRes.path,
+      completePath: folder.path + createDocumentationRes.path + '/',
       order: createDocumentationRes.order,
       folder: folder
     }
@@ -54,7 +55,7 @@ export class DnDocumentationService {
   }
 
   findOne(id: string): Promise<DnDocumentation> {
-    return this.documentationsRepository.findOne(id);
+    return this.documentationsRepository.findOne(id, {relations: ['folder']});
   }
 
   findOneByPath(path: string): Promise<DnDocumentation> {

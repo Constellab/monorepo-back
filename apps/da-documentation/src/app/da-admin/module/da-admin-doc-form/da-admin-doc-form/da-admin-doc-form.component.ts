@@ -1,10 +1,16 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
-import {DaDocumentation} from '../../../../da-core/da-model/da-entities/da-documentation.class';
+import {
+  DaDocumentation,
+  DaDocumentationDTO,
+  DaDocumentationFormDTO
+} from '../../../../da-core/da-model/da-entities/da-documentation.class';
 import {DaDocumentationService} from '../../../../da-core/da-service/da-documentation.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {Router} from '@angular/router';
+import {DaFolderService} from '../../../../da-core/da-service/da-folder.service';
+import {DaFolder} from '../../../../da-core/da-model/da-entities/da-folder.class';
 
 @Component({
   selector: 'da-admin-doc-form',
@@ -15,12 +21,16 @@ export class DaAdminDocFormComponent implements OnInit {
 
   @Input() documentation?: DaDocumentation;
 
-  formGp: FormGroup<DaDocumentation>;
+  formGp: FormGroup<DaDocumentationFormDTO>;
+  folder: DaFolder;
+  defaultFolder: DaFolder;
+  folders: DaFolder[];
   isUpdate = false;
   isLoading = false;
 
   constructor(
     private daDocumentationService: DaDocumentationService,
+    private daFolderService: DaFolderService,
     private snackBarService: FlSnackBarService,
     private router: Router
   ) {
@@ -28,6 +38,12 @@ export class DaAdminDocFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.buildForm();
+
+    this.daFolderService.get().subscribe(folders => {
+      this.folders = folders;
+      this.defaultFolder = this.folders[0];
+      this.folders.shift();
+    })
   }
 
   buildForm(): void {
@@ -35,8 +51,8 @@ export class DaAdminDocFormComponent implements OnInit {
       id: [null],
       title: [null, Validators.required],
       content: [null, Validators.required],
-      path: '',
-      versionId: [null],
+      folderId: [null],
+      path: [null, Validators.required],
       order: [null, Validators.required]
     })
     if (this.documentation) {
@@ -48,6 +64,11 @@ export class DaAdminDocFormComponent implements OnInit {
   submit(): void {
     if (this.formGp.valid) {
       this.isLoading = true;
+
+      if(this.formGp.value.folderId == null){
+        this.formGp.value.folderId = this.defaultFolder.id;
+      }
+
       if (this.isUpdate) {
         this.update(this.formGp.value);
       } else {
@@ -56,16 +77,15 @@ export class DaAdminDocFormComponent implements OnInit {
     }
   }
 
-  private setFormGroupValue(doc: DaDocumentation): void {
+  private setFormGroupValue(doc: DaDocumentationFormDTO): void {
     this.formGp.patchValue(doc);
   }
 
-  private create(formValue: DaDocumentation): void {
-    console.log(formValue);
+  private create(formValue: DaDocumentationFormDTO): void {
     this.daDocumentationService.create(formValue).subscribe(() => {
-        this.creationSuccess();
-      },
-      () => this.isLoading = false);
+      this.creationSuccess();
+    },
+    () => this.isLoading = false);
   }
 
   private creationSuccess(): void {
@@ -74,12 +94,12 @@ export class DaAdminDocFormComponent implements OnInit {
     this.router.navigate(['admin']);
   }
 
-  private update(formValue: DaDocumentation): void {
+  private update(formValue: DaDocumentationFormDTO): void {
     this.daDocumentationService.update(formValue).subscribe(() => {
-        this.snackBarService.openSuccessMessage('documentation_uptated', true);
-        this.isLoading = false;
-        this.router.navigate(['admin']);
-      },
-      () => this.isLoading = false);
+      this.snackBarService.openSuccessMessage('documentation_uptated', true);
+      this.isLoading = false;
+      this.router.navigate(['admin']);
+    },
+    () => this.isLoading = false);
   }
 }

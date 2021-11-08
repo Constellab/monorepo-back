@@ -25,6 +25,7 @@ export class DaAdminDocFormPageComponent implements OnInit {
     this.activatedRoute.params.subscribe(params => {
       if (params['id']) this.getById(params['id']).subscribe(documentation => {
         this.doc = documentation;
+        this.doc.folderId = this.doc.folder.id;
         this.loaded = true;
         this.backToListLink = '../../'
       });

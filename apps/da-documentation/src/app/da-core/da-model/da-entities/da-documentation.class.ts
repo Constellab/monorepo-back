@@ -1,4 +1,5 @@
 import {DaEntity} from './da-entity.class';
+import {DaFolder} from './da-folder.class';
 
 export class DaDocumentation extends DaEntity {
 
@@ -8,6 +9,12 @@ export class DaDocumentation extends DaEntity {
 
   path: string;
 
+  completePath: string;
+
+  folder: DaFolder;
+
+  folderId: string;
+
   versionId: string;
 
   order: number;
@@ -16,13 +23,17 @@ export class DaDocumentation extends DaEntity {
 export class DaDocumentationDTO extends DaEntity {
   title: string;
 
+  completePath: string;
+}
+
+export class DaDocumentationFormDTO extends DaEntity {
+  title: string;
+
+  content: string;
+
+  folderId: string;
+
   path: string;
 
   order: number;
-
-  asChild: boolean;
-
-  childs: DaDocumentationDTO[];
-
-  toggleChild: boolean;
 }

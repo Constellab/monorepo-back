@@ -39,11 +39,12 @@ export class DnFolderService {
   }
 
   async findAll(): Promise<DnFolder[]> {
-    return this.foldersTreeRepository.findTrees({relations: ['documentations', 'version']});
+    const tree = await this.foldersTreeRepository.findTrees();
+    return this.TreeToArray(tree[0]);
   }
 
   async findTree(): Promise<DnNode> {
-    const allDoc: DnFolder[] = await this.findAll();
+    const allDoc: DnFolder[] = await this.foldersTreeRepository.findTrees({relations: ['documentations', 'version']});
     return this.createTree(allDoc[0]);
   }
 
@@ -53,18 +54,35 @@ export class DnFolderService {
 
     const currentParent: DnNode = new DnNode(folder.id, folder.title, folder.path, folder.order, []);
 
-    folder.documentations.map(doc => {
-      currentChild.push(new DnNode(doc.id, doc.title, doc.path, doc.order));
-    })
+    if(typeof folder.documentations !== 'undefined'){
+      folder.documentations.map(doc => {
+        currentChild.push(new DnNode(doc.id, doc.title, doc.path, doc.order));
+      });
+    }
 
-    folder.folders.map(f => {
-      currentChild.push(this.createTree(f));
-    })
+    if(typeof folder.folders !== 'undefined') {
+      folder.folders.map(f => {
+        currentChild.push(this.createTree(f));
+      })
+    }
 
     currentParent.children = currentChild;
     currentParent.children.sort((a, b) => a.order - b.order);
 
     return currentParent;
+  }
+
+  TreeToArray(folder: DnFolder): DnFolder[]{
+    let array:DnFolder[] = [folder];
+    let arrayChildFolder: DnFolder[] = [];
+
+    folder.folders.sort((a, b) => a.order - b.order);
+    folder.folders.map(f => {
+      const yeah = this.TreeToArray(f);
+      arrayChildFolder = arrayChildFolder.concat(yeah);
+    });
+    array = array.concat(arrayChildFolder);
+    return array;
   }
 
   findOne(id: string): Promise<DnFolder> {

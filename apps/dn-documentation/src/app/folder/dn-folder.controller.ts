@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Post, Query} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Put, Query} from '@nestjs/common';
 import {DnFolderService} from './dn-folder.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {DnNode, DnFolder, DnFolderResDTO} from './dn-folder.entity';
@@ -44,4 +44,8 @@ export class DnFolderController {
     return this.folderService.findDocsByParentId(id);
   }
 
+  // @Put()
+  // update(@Body(new BlParsePipe(DnFolder)) updateDocumentation: DnFolderEditDTO): Promise<DnDocumentation> {
+  //   return this.folderService.update(updateDocumentation);
+  // }
 }

@@ -30,7 +30,7 @@ export class DnFolder extends BlEntityWithId{
   documentations: DnDocumentation[];
 }
 
-export class DnFolderDTO extends BlEntityWithId{
+export class DnFolderEditDTO extends BlEntityWithId{
 
   title: string;
 

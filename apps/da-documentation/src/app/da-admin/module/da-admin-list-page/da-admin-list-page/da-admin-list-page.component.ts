@@ -61,7 +61,9 @@ export class DaAdminListPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.publicDocsUrlPrefix = '../docs/';
-    this.daDocumentationService.get().subscribe(docs => this.documentations = docs);
+    this.daDocumentationService.get().subscribe(docs => {
+      this.documentations = docs
+    });
 
     this.daFolderService.getTree().subscribe((data) => {
       this.dataSource.data = data.children;

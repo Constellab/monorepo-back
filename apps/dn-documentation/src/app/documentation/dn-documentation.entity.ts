@@ -16,6 +16,9 @@ export class DnDocumentation extends BlEntityWithId {
   path: string;
 
   @Column()
+  completePath: string;
+
+  @Column()
   order: number;
 
   @ManyToOne(() => DnFolder)

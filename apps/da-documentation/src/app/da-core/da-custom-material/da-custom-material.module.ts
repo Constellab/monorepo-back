@@ -11,6 +11,7 @@ import { QuillModule } from 'ngx-quill';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatTreeModule} from '@angular/material/tree';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   exports: [
@@ -23,6 +24,7 @@ import {MatTreeModule} from '@angular/material/tree';
     MatIconModule,
     MatSidenavModule,
     MatTreeModule,
+    MatSelectModule,
     FlexLayoutModule
   ],
   providers: [
