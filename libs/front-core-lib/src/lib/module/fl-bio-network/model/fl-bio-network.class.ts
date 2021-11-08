@@ -21,7 +21,6 @@ export interface FlBioNetworkMetabolite {
   formula?: string;
   chebi_id?: string;
   position?: FlCoord;
-  is_cofactor: boolean;
   level: FlBioNetworkMetaboliteLevel;
 }
 
