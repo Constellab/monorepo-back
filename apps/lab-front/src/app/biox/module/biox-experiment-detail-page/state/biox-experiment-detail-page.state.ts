@@ -6,6 +6,7 @@ import {filter} from 'rxjs/operators';
 import {BioxFlow} from '../../../../core/model/global/biox-connection.class';
 import {BioxProtocol} from '../../../../core/model/entities/process/biox-protocol.entity';
 import {BioxProtocolService} from '../../../../core/entity-service/biox-protocol.service';
+import {BioxTag} from '../../../../core/model/entities/biox-tag.entity';
 
 @Injectable()
 export class BioxExperimentDetailPageState {
@@ -59,6 +60,9 @@ export class BioxExperimentDetailPageState {
     this.experiment$.next(experiment);
   }
 
+  public updateTags(tags: BioxTag[]): void {
+    this.experiment$.value.tags = tags;
+  }
 
   /////////////////////////////////// FLOW ////////////////////////////////////
 

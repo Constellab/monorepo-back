@@ -5,7 +5,7 @@ import {
   BioxExperimentFormDialogInput
 } from '../../../../../core/entity-module/biox-experiment-core/component/biox-experiment-form-dialog/biox-experiment-form-dialog.component';
 import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
-import {FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService} from '@monorepo/front-core-lib';
+import {FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService, FlTagDialogService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {BioxProgressBarInfoDialogComponent} from '../biox-progress-bar-info-dialog/biox-progress-bar-info-dialog.component';
 import {map} from 'rxjs/operators';
@@ -31,7 +31,8 @@ export class BioxExperimentDetailCardComponent implements OnInit {
 
   constructor(private experimentState: BioxExperimentDetailPageState,
               private dialogService: FlDialogService,
-              private experimentService: BioxExperimentService) {
+              private experimentService: BioxExperimentService,
+              private tagDialogService: FlTagDialogService) {
   }
 
   ngOnInit(): void {
@@ -112,6 +113,20 @@ export class BioxExperimentDetailCardComponent implements OnInit {
     if (result?.choice) {
       this.experimentState.updateExperiment(result.result);
     }
+  }
+
+  openTagsFormDialog(): void {
+    const experiment = this.experimentState.currentExperiment;
+    this.tagDialogService.openUpdateTagDialog({
+      tags: experiment.tags,
+      updateMethod: (tags) => this.experimentService.saveTags(experiment.id, tags)
+    }).afterClosed().subscribe(
+      newTags => {
+        if (newTags != null) {
+          this.experimentState.updateTags(newTags);
+        }
+      }
+    );
   }
 
 }

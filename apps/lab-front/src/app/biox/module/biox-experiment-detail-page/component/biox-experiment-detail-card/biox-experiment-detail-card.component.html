@@ -24,6 +24,11 @@
                 [matTooltip]="'biox.validate_experiment' | translate">
           <mat-icon>verified</mat-icon>
         </button>
+
+        <button mat-icon-button type="button" (click)="openTagsFormDialog()"
+                [matTooltip]="'tags' | translate">
+          <mat-icon>local_offer</mat-icon>
+        </button>
       </ng-container>
 
       <fl-status-chip [status]="experiment" mode="iconText"
@@ -32,6 +37,7 @@
     </fl-card-actions>
   </fl-card-header>
   <fl-card-body *ngIf="showDetail">
+    <fl-tag-list class="tag-list" [tags]="experiment.tags"></fl-tag-list>
 
     <fl-limit-height [maxHeight]="100">
       <div [innerHTML]="experiment.data.description"></div>

@@ -10,6 +10,7 @@ import {
 import {Expose, Type} from 'class-transformer';
 import {ViewModel} from '../global/view-model.entity';
 import {BioxStudy} from './biox-study.class';
+import {BioxTag} from './biox-tag.entity';
 
 
 export class BioxExperimentData {
@@ -48,6 +49,9 @@ export class BioxExperiment extends LabBaseEntity implements FlStatus {
 
   @Type(() => BioxStudy)
   study: BioxStudy;
+
+  @Type(() => BioxTag)
+  tags: BioxTag[];
 
   getStatusClassColor(mode: 'background' | 'text'): string {
     return getBioxExperimentStatusColorClass(this.getStatusName(), mode);

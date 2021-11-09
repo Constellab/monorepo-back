@@ -18,18 +18,21 @@ import {MatButtonModule} from '@angular/material/button';
 import {FlTagDialogService} from './fl-tag-dialog.service';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
+import {FlTagListComponent} from './component/fl-tag-list/fl-tag-list.component';
 
 
 @NgModule({
   declarations: [
     FlTagInputComponent,
     FlTagComponent,
-    FlTagFormDialogComponent
+    FlTagFormDialogComponent,
+    FlTagListComponent
   ],
   exports: [
     FlTagInputComponent,
     FlTagComponent,
     FlTagFormDialogComponent,
+    FlTagListComponent,
   ],
   imports: [
     CommonModule,
