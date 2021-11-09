@@ -5,7 +5,14 @@ import {Observable} from 'rxjs';
 import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
 import {BioxResourceDetailPageState, BioxResourceViewEvent} from '../../state/biox-resource-detail-page.state';
-import {FlOverlayRef, FlPortalActionResult, FlPortalConfig, FlPortalService, FlTranslateService} from '@monorepo/front-core-lib';
+import {
+  FlOverlayRef,
+  FlPortalActionResult,
+  FlPortalConfig,
+  FlPortalService,
+  FlTagDialogService,
+  FlTranslateService
+} from '@monorepo/front-core-lib';
 import {
   BioxResourceView,
   BioxResourceViewDisplayMode,
@@ -15,6 +22,8 @@ import {
 import {BioxResourceViewSpecsPortalComponent} from '../biox-resource-view-specs-portal/biox-resource-view-specs-portal.component';
 import {BioxResourceViewPortalComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-view-portal/biox-resource-view-portal.component';
 import {bioxResourceViewGetComponentType} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-view/biox-resource-view.component';
+import {BioxTagService} from '../../../../../core/entity-service/biox-tag.service';
+import {BioxTag} from '../../../../../core/model/entities/biox-tag.entity';
 
 @Component({
   selector: 'gen-biox-resource-detail-page',
@@ -43,7 +52,9 @@ export class BioxResourceDetailPageComponent implements OnInit {
               private router: Router,
               private state: BioxResourceDetailPageState,
               private portalService: FlPortalService,
-              private translateService: FlTranslateService) {
+              private translateService: FlTranslateService,
+              private tagDialogService: FlTagDialogService,
+              private tagService: BioxTagService) {
   }
 
   ngOnInit(): void {
@@ -130,4 +141,19 @@ export class BioxResourceDetailPageComponent implements OnInit {
     this.title = resource.resourceHumanName;
   }
 
+
+  async openTagFormDialog(): Promise<void> {
+    const resource = await this.state.getResourcePromise();
+
+    this.tagDialogService.openUpdateTagDialog({
+      tags: resource.tags,
+      updateMethod: (tags) => this.tagService.saveTags(resource.typingName, resource.id, tags)
+    }).afterClosed().subscribe(
+      (newTags: BioxTag[]) => {
+        if (newTags != null) {
+          this.state.setTags(newTags);
+        }
+      }
+    );
+  }
 }

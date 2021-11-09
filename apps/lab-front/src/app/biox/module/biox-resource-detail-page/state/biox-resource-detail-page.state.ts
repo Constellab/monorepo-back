@@ -13,6 +13,7 @@ import {
 import {BioxResource} from '../../../../core/model/entities/resource/biox-resource.entity';
 import {map, mergeMap} from 'rxjs/operators';
 import {FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
+import {BioxTag} from '../../../../core/model/entities/biox-tag.entity';
 
 // Event on view loaded
 export interface BioxResourceViewEvent {
@@ -58,6 +59,14 @@ export class BioxResourceDetailPageState implements OnDestroy {
 
   public getResource$(): Observable<BioxResource> {
     return this.resource$.getObs();
+  }
+
+  public getResourcePromise(): Promise<BioxResource> {
+    return this.resource$.toPromise();
+  }
+
+  public setTags(tags: BioxTag[]): void {
+    this.resource$.value.tags = tags;
   }
 
   /////////////////////////////////// VIEW SPEC //////////////////////////////////////////

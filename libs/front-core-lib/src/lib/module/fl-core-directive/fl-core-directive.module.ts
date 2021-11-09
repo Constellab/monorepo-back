@@ -11,6 +11,7 @@ import {FlQuillSanitizerDirective} from './fl-quill-sanitizer/fl-quill-sanitizer
 import {FlResizeDirective} from './fl-resize/fl-resize.directive';
 import {FlOutsideClickDirective} from './fl-outside-click/fl-outside-click.directive';
 import {FlDisableAnimationInitDirective} from './fl-disable-animation-init/fl-disable-animation-init.directive';
+import {FlAutofocusDirective} from './fl-autofocus/fl-autofocus.directive';
 
 
 /**
@@ -28,6 +29,7 @@ import {FlDisableAnimationInitDirective} from './fl-disable-animation-init/fl-di
     FlResizeDirective,
     FlOutsideClickDirective,
     FlDisableAnimationInitDirective,
+    FlAutofocusDirective,
   ],
   exports: [
     FlInputMaxLengthDirective,
@@ -40,6 +42,7 @@ import {FlDisableAnimationInitDirective} from './fl-disable-animation-init/fl-di
     FlResizeDirective,
     FlOutsideClickDirective,
     FlDisableAnimationInitDirective,
+    FlAutofocusDirective,
   ],
   imports: [
     CommonModule,

@@ -2,4 +2,12 @@
 export * from './fl-tag.module';
 
 // Components
+export * from './component/fl-tag/fl-tag.component';
+export * from './component/fl-tag-form-dialog/fl-tag-form-dialog.component';
 export * from './component/fl-tag-input/fl-tag-input.component';
+
+// service
+export * from './fl-tag-dialog.service';
+
+// Models
+export * from './fl-tag.class';

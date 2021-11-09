@@ -1,27 +1,36 @@
-<mat-form-field class="example-chip-list">
-  <mat-label>Favorite Fruits</mat-label>
-  <mat-chip-list #chipList aria-label="Fruit selection">
+<mat-form-field class="g-full">
+  <mat-label>{{label | translate}}</mat-label>
+  <mat-chip-list #chipList
+                 cdkDropList
+                 cdkDropListOrientation="horizontal"
+                 (cdkDropListDropped)="dropChip($event)">
     <mat-chip
-      *ngFor="let fruit of fruits"
-      [selectable]="selectable"
-      [removable]="removable"
-      (removed)="remove(fruit)">
-      {{fruit}}
-      <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      *ngFor="let tag of value"
+      [flTag]="tag"
+      cdkDrag
+      [removable]="true"
+      (removed)="remove(tag)">
+    </mat-chip>
+    <mat-chip *ngIf="newTag" [removable]="true" (removed)="removeTempFruit()" class="temp-fruit">{{newTag.key}} :
     </mat-chip>
     <input
-      placeholder="New fruit..."
-      #fruitInput
-      [formControl]="fruitCtrl"
+      [placeholder]="'flTag.search_tag' | translate"
+      #input
+      [formControl]="inputCtrl"
       [matAutocomplete]="auto"
       [matChipInputFor]="chipList"
       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-      (matChipInputTokenEnd)="add($event)">
+      (matChipInputTokenEnd)="addUnknownValue($event)" tabindex="0" [flAutofocus]="300">
   </mat-chip-list>
-  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-    <mat-option *ngFor="let fruit of filteredFruits | async" [value]="fruit">
-      {{fruit}}
+  <mat-autocomplete #auto="matAutocomplete"
+                    (optionSelected)="optionSelected($event)" [autoActiveFirstOption]="true">
+
+    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+      {{option}}
     </mat-option>
+
   </mat-autocomplete>
+
+  <mat-hint>{{'flTag.input_helper_text' | translate}}</mat-hint>
 </mat-form-field>
 

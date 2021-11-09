@@ -54,5 +54,6 @@
   "dev_env_reset_success": "Dev env reset",
   "stop_dev_api": "Stop dev server",
   "stop_dev_api_confirmation": "Are you sure you want to stop the dev server ? You will be redirected to the prod environment. You will be able to restart de dev server on the codelab.",
-  "dev_api_stooped": "Dev server stopped"
+  "dev_api_stooped": "Dev server stopped",
+  "tags": "Tags"
 }

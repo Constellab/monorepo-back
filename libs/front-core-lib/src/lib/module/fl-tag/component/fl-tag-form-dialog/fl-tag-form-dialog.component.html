@@ -1,0 +1,15 @@
+<fl-dialog-title>{{title | translate}}</fl-dialog-title>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="tags-form">
+    <fl-tag-input [formControl]="formCtrl"></fl-tag-input>
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" form="tags-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+  </button>
+</div>
