@@ -8,6 +8,7 @@
     "lab_status_success": "Ok",
     "lab_status_info": "Info",
     "lab_no_brick_message": "Aucun message",
-    "brick_list": "Briques"
+    "brick_list": "Briques",
+    "messages_count": "{{count}} message(s)"
   }
 }

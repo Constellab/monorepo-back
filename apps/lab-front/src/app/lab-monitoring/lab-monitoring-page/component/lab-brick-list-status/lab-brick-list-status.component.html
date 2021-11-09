@@ -11,6 +11,7 @@
             <fl-status-chip mode="iconText" [status]="brick" class="status"></fl-status-chip>
             {{brick.name}}
           </mat-panel-title>
+          <mat-panel-description>{{'monitoring.messages_count' | translate: {count: brick.countMessages()} }}</mat-panel-description>
         </mat-expansion-panel-header>
         <gen-lab-brick-message-list [messages]="$any(brick.data.messages)"></gen-lab-brick-message-list>
       </mat-expansion-panel>

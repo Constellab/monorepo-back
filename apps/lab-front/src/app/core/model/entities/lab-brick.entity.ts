@@ -60,6 +60,14 @@ export class LabBrickEntity extends LabEntity implements FlStatus {
   @Type(() => LabBrickData)
   data: LabBrickData;
 
+  hasMessages(): boolean {
+    return this.countMessages() > 0;
+  }
+
+  countMessages(): number{
+    return this.data?.messages.length ?? 0
+  }
+
   getStatusClassColor(mode: FlStatusColorMode): string {
     switch (this.status) {
       case 'SUCCESS':

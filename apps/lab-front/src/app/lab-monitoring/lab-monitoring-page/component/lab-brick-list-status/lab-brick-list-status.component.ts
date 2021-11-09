@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {LabBrickEntity} from '../../../../core/model/entities/lab-brick.entity';
 import {LabBrickService} from '../../../../core/entity-service/lab-brick.service';
@@ -6,7 +6,8 @@ import {LabBrickService} from '../../../../core/entity-service/lab-brick.service
 @Component({
   selector: 'gen-lab-brick-list-status',
   templateUrl: './lab-brick-list-status.component.html',
-  styleUrls: ['./lab-brick-list-status.component.scss']
+  styleUrls: ['./lab-brick-list-status.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LabBrickListStatusComponent implements OnInit {
 
