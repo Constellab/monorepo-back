@@ -16,7 +16,7 @@ export class Study extends BaseEntity {
 
   @BlNotUpdatable()
   @Type(() => Project)
-  @ManyToOne(() => Project, {nullable: false})
+  @ManyToOne(() => Project, {nullable: false, eager: true})
   project: Project;
 
   @Type(() => StudyStatusHistory)
