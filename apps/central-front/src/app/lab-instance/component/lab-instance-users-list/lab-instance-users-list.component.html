@@ -3,7 +3,7 @@
   <fl-card-header>
     {{'lab_users' | translate}}
 
-    <fl-card-actions>
+    <fl-card-actions *genIsAdmin>
       <button mat-icon-button type="button" (click)="openAddUserDialog()"
               [matTooltip]="'lab_user_create' | translate">
         <mat-icon>add</mat-icon>
