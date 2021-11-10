@@ -211,6 +211,7 @@ export class FlBioNetworkD3Link implements SimulationLinkDatum<FlBioNetworkD3Nod
 
 
   getLevel(): number {
-    return Math.min(this.source.getLevel(), this.target.getLevel());
+    // the link takes the highest level of the connected nodes
+    return Math.max(this.source.getLevel(), this.target.getLevel());
   }
 }

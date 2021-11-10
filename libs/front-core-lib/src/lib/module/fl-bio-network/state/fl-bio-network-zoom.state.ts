@@ -7,14 +7,15 @@ import {flBioNetworkNodeTextClass} from '../model/fl-bio-network-d3-node.class';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 import {zoom, zoomIdentity} from 'd3';
+import {FlBioNetworkState} from './fl-bio-network.state';
 
 /**
  * Different threshold for D3 object levels
  */
 const d3ObjectZoomLevelThreshold = {
-  0: Infinity, // levels 0 showed when zoom > 3
-  1: 3, // level 1 showed when zoom > 1.2
-  2: 1.2 // level 2 are always showed
+  1: 0, // levels 0 showed when zoom > 3
+  2: 1.2, // level 1 showed when zoom > 1.2
+  3: 3 // level 2 are always showed
 };
 
 /**
@@ -45,7 +46,8 @@ export class FlBioNetworkZoomState implements OnDestroy {
   // true after the enable zoom and false after first zoom handling
   private firstZoom: boolean = true;
 
-  constructor(private ngZone: NgZone, private groupState: FlBioNetworkGroupState) {
+  constructor(private ngZone: NgZone, private groupState: FlBioNetworkGroupState,
+              private state: FlBioNetworkState) {
   }
 
 
@@ -95,7 +97,7 @@ export class FlBioNetworkZoomState implements OnDestroy {
       || this.getObjectLevelFromScale(this.getCurrentScale()) != currentLevel;
 
     if (updateVisibility) {
-      this.groupState.allObjects.each(d => d.visible = d.getLevel() >= currentLevel)
+      this.groupState.allObjects.each(d => d.visible = d.getLevel() <= currentLevel)
         .style('opacity', (d => d.visible ? 1 : 0));
     }
   }
@@ -167,7 +169,7 @@ export class FlBioNetworkZoomState implements OnDestroy {
   public getObjectLevelFromScale(scale: number): number {
     let level = 0;
 
-    while (d3ObjectZoomLevelThreshold[level + 1] > scale) {
+    while (scale > d3ObjectZoomLevelThreshold[level + 1]) {
       level++;
     }
     return level;

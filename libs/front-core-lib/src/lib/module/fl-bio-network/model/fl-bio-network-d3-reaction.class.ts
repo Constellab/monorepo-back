@@ -3,6 +3,7 @@ import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {select} from 'd3';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
+import {FlBioNetworkD3Metabolite} from './fl-bio-network-d3-metabolite.class';
 
 // size for the reaction rect
 export const flBioNetworkReactionWidth: number = 8;
@@ -71,9 +72,16 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
     return this.pathwayIds.includes(id);
   }
 
-  // The level of the reaction is the lowest level of connected nodes
+  // The level of the reaction is the lowest level of connected metabolites
   // Exclude connected FlBioNetworkD3Reaction to avoid infinite loop
   getLevel(): number {
-    return this.data.level === 'major' ? 2 : 1;
+    if (this.data.level) return this.data.level;
+
+
+    // if the level is not defined, take the linked metabolite with the lowest level
+    return Math.min(3, ...this.getConnectedNodes()
+      .filter(node => node instanceof FlBioNetworkD3Metabolite)
+      .map(node => node.getLevel())
+    );
   }
 }
