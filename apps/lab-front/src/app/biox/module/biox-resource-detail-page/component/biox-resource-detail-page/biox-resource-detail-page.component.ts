@@ -138,7 +138,7 @@ export class BioxResourceDetailPageComponent implements OnInit {
   }
 
   private initTitle(resource: BioxResource): void {
-    this.title = resource.resourceHumanName;
+    this.title = resource.name;
   }
 
 

@@ -24,6 +24,8 @@ export class BioxResource<DATA = Record<string, any>> extends LabBaseEntity {
   @Type(() => BioxTag)
   tags: BioxTag[];
 
+  name: string;
+
   data: DATA;
 }
 

@@ -15,14 +15,14 @@ export class FileResourceTableComponent extends FlTableAbstractDirective<FileRes
   @Input() datasource: FileResourceDatasource;
 
   constructor(private fileService: FileResourceService) {
-    super(['createdAt', 'action', 'filename']);
+    super(['createdAt', 'action', 'name']);
   }
 
   ngOnInit(): void {
   }
 
   downloadFile(file: FileResourcePreview): void {
-    this.fileService.downloadFile(file.typingName, file.id, file.filename).subscribe();
+    this.fileService.downloadFile(file.typingName, file.id, file.name).subscribe();
   }
 
   resourceFileRoute(file: FileResourcePreview): string {
