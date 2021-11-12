@@ -44,7 +44,7 @@ export class DaFolderService {
    * Call http get
    */
   public getTree(): Observable<DaNode> {
-    return this.apiService.get(`${this.route}/tree`, DaNode);
+    return this.apiService.get(`${this.route}/tree`);
   }
 
   /**

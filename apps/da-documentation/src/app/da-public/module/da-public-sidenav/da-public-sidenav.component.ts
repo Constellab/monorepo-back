@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import {Component, OnInit} from '@angular/core';
-import {DaDocumentationService} from '../../../da-core/da-service/da-documentation.service';
-import {DaDocumentationDTO} from '../../../da-core/da-model/da-entities/da-documentation.class';
 import {DaAuthService} from '../../../da-core/da-service/da-auth.service';
-import {Observable} from 'rxjs';
 import {DaMateTreeFlatDataSource, DaNode} from '../../../da-core/da-model/da-entities/da-node.class';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
