@@ -53,8 +53,6 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
   openConfig(event: MouseEvent, panel: MatExpansionPanel): void {
     ClHelpService.stopEventPropagation(event);
 
-    console.log(this.config.data.getDynamicFormFieldsConfig());
-
     this.dialogService.openMediumDialog(BioxConfigureSpecsFormDialogComponent,
       {data: this.config.data}).afterClosed().subscribe(
       config => this.onConfigDialogClosed(config)

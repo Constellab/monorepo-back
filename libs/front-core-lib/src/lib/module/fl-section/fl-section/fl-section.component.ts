@@ -33,6 +33,8 @@ export class FlSectionComponent implements OnInit, AfterContentInit {
 
   @Input() emptyText: string = 'object_not_found';
 
+  @Input() disableEmptyText: boolean = false;
+
   /** Content that will be rendered lazily. */
   @ContentChild(FlSectionBodyDirective) private lazyContent: FlSectionBodyDirective;
 
@@ -56,7 +58,7 @@ export class FlSectionComponent implements OnInit, AfterContentInit {
   }
 
   get objectIsNullOrEmpty(): boolean {
-    return ClHelpService.isNullOrEmpty(this._object);
+    return !this.disableEmptyText && ClHelpService.isNullOrEmpty(this._object);
   }
 
   lazyRender(): void {

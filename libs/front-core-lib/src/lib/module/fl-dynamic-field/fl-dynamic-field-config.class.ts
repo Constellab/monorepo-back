@@ -1,27 +1,52 @@
 /**
- * Config to create a form based on dynamic fields
+ * Generic config for a FormGroup, FormArray or FormControl
  */
-export interface FlDynamicFormFieldConfig {
-  controlName: string;
-  fieldConfig: FlDynamicFieldConfig;
+export type FlDynamicFormAbstractControl =
+  FlDynamicFormGroupConfig | FlDynamicFormArrayConfig | FlDynamicFieldConfig
+
+/**
+ * Base object for configs
+ */
+interface FlDynamicFormConfigBase {
+  controlType: 'formControl' | 'formGroup' | 'formArray';
+  placeholder?: string;
+  hint?: string;
+}
+
+/**
+ * Config for a FormGroup
+ */
+export interface FlDynamicFormGroupConfig extends FlDynamicFormConfigBase {
+  controlType: 'formGroup';
+  subConfigs: Record<string, FlDynamicFormAbstractControl>;
+}
+
+/**
+ * Config for a FormArray
+ */
+export interface FlDynamicFormArrayConfig extends FlDynamicFormConfigBase {
+  controlType: 'formArray';
+  formGpConfig: FlDynamicFormGroupConfig;
+  minSize?: number; // if set the formArray must contains at least minSize number
+  maxSize?: number; // if set the formArray can't contains more than maxSize values
 }
 
 
 /**
- * Configuration for the {@link FlDynamicFieldComponent}
+ * Configuration for a FormControl
  */
 export type FlDynamicFieldConfig = FlDynamicFieldConfigInput | FlDynamicFieldConfigSelect | FlDynamicFieldConfigList
   | FlDynamicFieldConfigBoolean;
 
 
-export interface FlDynamicFieldConfigBase {
+export interface FlDynamicFieldConfigBase extends FlDynamicFormConfigBase {
+  controlType: 'formControl';
+
   type: 'input' | 'select' | 'list' | 'boolean';
 
-  initValue?: any;
   disabled?: boolean;
   required?: boolean;
-  placeholder: string;
-  hint?: string;
+  defaultValue?: any;
 }
 
 export interface FlDynamicFieldConfigMaterialInput extends FlDynamicFieldConfigBase {

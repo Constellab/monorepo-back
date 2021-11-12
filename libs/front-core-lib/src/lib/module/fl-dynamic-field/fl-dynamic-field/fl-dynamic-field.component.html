@@ -7,10 +7,10 @@
 
       <!--    Can't directly bind input type : https://github.com/angular/angular/issues/13243-->
       <ng-container [ngSwitch]="inputConfig.inputType">
-        <input *ngSwitchCase="'text'" matInput type="text" [formControl]="formCtrl"
+        <input *ngSwitchCase="'text'" matInput type="text" [formControl]="control"
                placeholder="{{inputConfig.placeholder}}" [required]="required">
 
-        <input *ngSwitchCase="'number'" matInput type="number" [formControl]="formCtrl"
+        <input *ngSwitchCase="'number'" matInput type="number" [formControl]="control"
                placeholder="{{inputConfig.placeholder}}" [required]="required">
       </ng-container>
 
@@ -18,16 +18,16 @@
       <span *ngIf="inputConfig.suffix" matSuffix>{{inputConfig.suffix}}</span>
       <mat-hint *ngIf="inputConfig.hint">{{inputConfig.hint}}</mat-hint>
 
-      <mat-error *ngIf="formCtrl.hasError('required')">
+      <mat-error *ngIf="control.hasError('required')">
         {{inputConfig.placeholder | flErrorRequired:false}}
       </mat-error>
-      <mat-error *ngIf="formCtrl.hasError('min')">
-        {{'flDynamicField.min_error_validator' | translate :{min: formCtrl.getError('min').min} }}
+      <mat-error *ngIf="control.hasError('min')">
+        {{'flDynamicField.min_error_validator' | translate :{min: control.getError('min').min} }}
       </mat-error>
-      <mat-error *ngIf="formCtrl.hasError('max')">
-        {{'flDynamicField.max_error_validator' | translate :{max: formCtrl.getError('max').max} }}
+      <mat-error *ngIf="control.hasError('max')">
+        {{'flDynamicField.max_error_validator' | translate :{max: control.getError('max').max} }}
       </mat-error>
-      <mat-error *ngIf="formCtrl.hasError('notInteger')">
+      <mat-error *ngIf="control.hasError('notInteger')">
         {{'flDynamicField.integer_error_validator' | translate }}
       </mat-error>
     </mat-form-field>
@@ -40,7 +40,7 @@
     <mat-form-field appearance="outline" class="g-full g-form-field-hint-include">
       <mat-label>{{selectConfig.placeholder}}</mat-label>
       <mat-select placeholder="{{selectConfig.placeholder}}"
-                  [formControl]="formCtrl" [required]="required">
+                  [formControl]="control" [required]="required">
         <mat-option *ngFor="let option of selectConfig.selectOptions" [value]="option">{{option}}</mat-option>
       </mat-select>
 
@@ -48,7 +48,7 @@
       <span *ngIf="selectConfig.suffix" matSuffix>{{selectConfig.suffix}}</span>
       <mat-hint *ngIf="selectConfig.hint">{{selectConfig.hint}}</mat-hint>
 
-      <mat-error *ngIf="formCtrl.hasError('required')">
+      <mat-error *ngIf="control.hasError('required')">
         {{selectConfig.placeholder | flErrorRequired:false }}
       </mat-error>
     </mat-form-field>
@@ -57,11 +57,11 @@
   <!-- List -->
   <ng-container *ngSwitchCase="'list'">
     <fl-form-field>
-      <fl-multi-inputs [formControl]="formCtrl" [required]="required"
+      <fl-multi-inputs [formControl]="control" [required]="required"
                        [placeholder]="materialConfig.placeholder" [hint]="materialConfig.hint"
                        [prefix]="materialConfig.prefix"
                        [suffix]="materialConfig.suffix"></fl-multi-inputs>
-      <mat-error *ngIf="formCtrl.hasError('required')">
+      <mat-error *ngIf="control.hasError('required')">
         {{materialConfig.placeholder | flErrorRequired:false }}
       </mat-error>
     </fl-form-field>
@@ -69,7 +69,7 @@
 
   <!-- Boolean -->
   <ng-container *ngSwitchCase="'boolean'">
-    <mat-checkbox [formControl]="formCtrl"
+    <mat-checkbox [formControl]="control"
                   color="primary">
       {{config.placeholder}}
     </mat-checkbox>

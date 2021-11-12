@@ -1,0 +1,12 @@
+<div [formGroup]="control" fxLayout="row wrap" [fxLayoutGap]="inputFlexGap" class="g-full">
+  <ng-container *ngFor="let controlName of config.subConfigs | flObjectKeys">
+
+    <div class="field-container g-form-input-bottom" [fxFlex]="getFlexWidth(config.subConfigs[controlName])">
+      <fl-dynamic-abstract-form [config]="config.subConfigs[controlName]"
+                        [control]="control.get(controlName)">
+      </fl-dynamic-abstract-form>
+    </div>
+
+
+  </ng-container>
+</div>
