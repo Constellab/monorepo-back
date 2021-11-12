@@ -1,4 +1,4 @@
-<fl-infinite-scroll [datasource]="datasource" infiniteMode="body">
+<fl-infinite-scroll [datasource]="datasource">
   <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
 
     <!-- Id -->
@@ -38,7 +38,7 @@
       </mat-header-cell>
       <mat-cell *matCellDef="let biotaData">
         <button mat-icon-button type="button" [matTooltip]="'biota.data_detail' | translate"
-                (click)="openDetail(biotaData)">
+                (click)="onShowDetail(biotaData)">
           <mat-icon>info</mat-icon>
         </button>
       </mat-cell>

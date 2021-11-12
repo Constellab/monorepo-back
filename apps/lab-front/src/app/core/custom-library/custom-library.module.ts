@@ -23,6 +23,7 @@ import {
   FlSpreadsheetModule,
   FlStatusModule,
   FlSvgIconModule,
+  FlTagModule,
   FlTextIconModule,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
@@ -60,6 +61,7 @@ import {
     FlAuthModule,
     FlBioNetworkModule,
     FlDrawerModule,
+    FlTagModule,
   ]
 })
 export class CustomLibraryModule {

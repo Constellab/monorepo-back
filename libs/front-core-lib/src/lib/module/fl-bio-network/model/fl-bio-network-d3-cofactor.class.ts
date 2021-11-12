@@ -52,6 +52,6 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
   }
 
   getLevel(): number {
-    return 0;
+    return this.data.level ?? 3;
   }
 }

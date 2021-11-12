@@ -1,0 +1,15 @@
+<fl-card>
+
+  <fl-card-header>
+    {{biotaData.name}}
+    <div class="g-text-small g-text-light">{{biotaData.id}}</div>
+  </fl-card-header>
+
+  <fl-card-body>
+    <fl-pretty-json [object]="biotaData"></fl-pretty-json>
+  </fl-card-body>
+
+  <fl-card-footer>
+    <fl-from-now [date]="biotaData.createdAt" [prefix]="'created' | translate"></fl-from-now>
+  </fl-card-footer>
+</fl-card>

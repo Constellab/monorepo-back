@@ -90,8 +90,7 @@ export class FlBioNetworkFactory {
         }
 
         // Skip cofactors, they will be created when creating the links
-        if (metabolite.level === 'cofactor') {
-          metabolite.level = 'cofactor';
+        if (metabolite.is_cofactor) {
           continue;
         }
 

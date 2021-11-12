@@ -10,7 +10,9 @@ export interface FlBioNetwork {
   compartments: Record<string, string>;
 }
 
-export type FlBioNetworkMetaboliteLevel = 'major' | 'minor' | 'cofactor'
+// Level of the metabolite 3 = cofactor
+// The lower the level, the more important the metabolite is
+export type FlBioNetworkMetaboliteLevel = 1 | 2 | 3
 
 export interface FlBioNetworkMetabolite {
   id: string;
@@ -21,11 +23,10 @@ export interface FlBioNetworkMetabolite {
   formula?: string;
   chebi_id?: string;
   position?: FlCoord;
-  is_cofactor: boolean;
   level: FlBioNetworkMetaboliteLevel;
+  is_cofactor: boolean;
 }
 
-export type FlBioNetworkReactionLevel = 'major' | 'minor';
 
 export interface FlBioNetworkReaction {
   id: string;
@@ -36,7 +37,7 @@ export interface FlBioNetworkReaction {
   enzyme?: FlBioNetworkEnzyme;
   estimate: FlBioNetworkReactionEstimate;
   position?: FlCoord;
-  level?: FlBioNetworkReactionLevel;
+  level?: FlBioNetworkMetaboliteLevel;
 }
 
 export interface FlBioNetworkReactionLink {

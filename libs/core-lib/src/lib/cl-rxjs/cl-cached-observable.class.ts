@@ -13,7 +13,7 @@ import {delay} from 'rxjs/operators';
  */
 export class ClCachedObservable<T> {
 
-  private value: T;
+  private _value: T;
   private error: any;
 
   private subject: Subject<T>;
@@ -42,7 +42,7 @@ export class ClCachedObservable<T> {
     // if the obs is completed, send the last value or error
     if (this.isComplete) {
       if (this.isSuccess) {
-        return of(this.value);
+        return of(this._value);
         // is error
       } else {
         return throwError(this.error);
@@ -83,7 +83,7 @@ export class ClCachedObservable<T> {
 
   // save and emit the value
   private onSuccess(value: T): void {
-    this.value = value;
+    this._value = value;
     this.isSuccess = true;
     this.subject.next(value);
   }
@@ -103,5 +103,9 @@ export class ClCachedObservable<T> {
     this.subject.complete();
     this.isComplete = true;
     this.isLoading = false;
+  }
+
+  get value(): T {
+    return this._value;
   }
 }

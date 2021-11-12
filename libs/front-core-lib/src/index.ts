@@ -28,6 +28,7 @@ export * from './lib/module/fl-snack-bar/public-api';
 export * from './lib/module/fl-spreadsheet/public-api';
 export * from './lib/module/fl-status/public-api';
 export * from './lib/module/fl-svg-icon/public-api';
+export * from './lib/module/fl-tag/public-api';
 export * from './lib/module/fl-text-icon/public-api';
 export * from './lib/module/fl-translate/public-api';
 

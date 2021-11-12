@@ -54,5 +54,6 @@
   "dev_env_reset_success": "Environement de dev réinitialisé",
   "stop_dev_api": "Arrêter le serveur de dev",
   "stop_dev_api_confirmation": "Êtes-vous sûr de vouloir arrêter le serveur de dev ? Vous serez rebasculer sur l'environement de production. Vous pourrez relancer le serveur de dev dans le codelab.",
-  "dev_api_stooped": "Serveur de dev arrêté"
+  "dev_api_stooped": "Serveur de dev arrêté",
+  "tags": "Tags"
 }

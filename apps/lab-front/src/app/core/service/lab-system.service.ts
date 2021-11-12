@@ -38,4 +38,8 @@ export class LabSystemService {
         tap(() => this.labEnvStore.setLabEnvironment('prod'))
       );
   }
+
+  public healthCheck(): Observable<void> {
+    return this.apiService.get(`health-check`);
+  }
 }

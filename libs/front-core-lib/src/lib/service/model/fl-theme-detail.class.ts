@@ -72,3 +72,20 @@ export const flThemeDetailDark: FlThemeDetail = {
   greyHighContrast: '#808080',
   greyHighContrastText: '#ffffff',
 };
+
+/**
+ * Object containing class name of the theme
+ */
+export const flThemeClass = {
+  primaryText: 'g-primary-text',
+  accentText: 'g-accent-text',
+  warnText: 'g-warn-text',
+  greyText: 'g-grey-text',
+
+  primaryBackground: 'g-primary-background',
+  accentBackground: 'g-accent-background',
+  warnBackground: 'g-warn-background',
+  greyBackground: 'g-grey-text',
+
+
+};

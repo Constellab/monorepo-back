@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource, FlTag} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm} from '../model/entities/biox-experiment.entity';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
@@ -8,6 +8,7 @@ import {BioxProtocolGraph} from '../model/entities/process/biox-protocol.entity'
 import {BioxExperimentFlowFactory} from '../utils/biox-experiment-flow.factory';
 import {mergeMap} from 'rxjs/operators';
 import {BioxStudy} from '../model/entities/biox-study.class';
+import {BioxTag} from '../model/entities/biox-tag.entity';
 
 
 @Injectable({
@@ -71,5 +72,9 @@ export class BioxExperimentService {
 
   public validateExperiment(experimentId: string, study: BioxStudy): Observable<BioxExperiment> {
     return this.apiService.put(`${this.route}/${experimentId}/validate`, study, BioxExperiment);
+  }
+
+  public saveTags(id: string, tags: FlTag[]): Observable<BioxTag[]> {
+    return this.apiService.put(`${this.route}/${id}/tags`, tags, BioxTag);
   }
 }

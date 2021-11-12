@@ -3,6 +3,7 @@ import {BioxProtocolData} from '../process/biox-protocol.entity';
 import {BioxProcessType} from './biox-process-type.entity';
 import {BioxConfigSpecs} from '../biox-config-spec.entity';
 import {BioxProtocolLink, BioxProtocolLinkPart} from '../biox-protocol-link.entity';
+import {BioxIOSpec} from '../biox-io.entity';
 
 
 export class BioxProtocolType extends BioxProcessType {
@@ -18,8 +19,8 @@ export class BioxProtocolType extends BioxProcessType {
     return null;
   }
 
-  getInputSpecs(): Record<string, string[]> {
-    const inputSpecs: Record<string, string[]> = {};
+  getInputSpecs(): Record<string, BioxIOSpec[]> {
+    const inputSpecs: Record<string, BioxIOSpec[]> = {};
     // we construct the input spec from the interface
     const interfaces: Record<string, BioxProtocolLink> = this.data.graph.interfaces ?? {};
 
@@ -34,8 +35,8 @@ export class BioxProtocolType extends BioxProcessType {
     return inputSpecs;
   }
 
-  getOutputSpecs(): Record<string, string[]> {
-    const outputSpecs: Record<string, string[]> = {};
+  getOutputSpecs(): Record<string, BioxIOSpec[]> {
+    const outputSpecs: Record<string, BioxIOSpec[]> = {};
     // we construct the input spec from the interface
     const outerfaces: Record<string, BioxProtocolLink> = this.data.graph.outerfaces ?? {};
 

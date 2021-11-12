@@ -1,6 +1,10 @@
 /**
- * List specific typing name
+ * List of specific typing name
  */
+
+//Typing name of the resource class
+export const constTypingNameResource = 'MODEL.gws_core.RESOURCE'
+
 
 // specific typing name for task source
 export const bioxTaskSourceTypingName: string = 'TASK.gws_core.Source';

@@ -7,6 +7,7 @@ import {QuillModule} from 'ngx-quill';
 import {StatusModule} from './module/status/status.module';
 import {UserCoreModule} from './entity-module/user-core/user-core.module';
 import {CustomLibraryModule} from './custom-library/custom-library.module';
+import {CoreDirectiveModule} from './module/core-directive/core-directive.module';
 
 /**
  * Core module of the app containing, component, services, directives and pipes
@@ -20,6 +21,7 @@ import {CustomLibraryModule} from './custom-library/custom-library.module';
   exports: [
     // export all core modules
     CoreComponentModule,
+    CoreDirectiveModule,
 
     // other modules
     CoreSelectModule,

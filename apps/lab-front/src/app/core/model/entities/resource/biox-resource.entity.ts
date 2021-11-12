@@ -1,6 +1,7 @@
 import {LabBaseEntity, LabUnconvertedEntity} from '../../global/lab-entity.entity';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
-import {Expose} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
+import {BioxTag} from '../biox-tag.entity';
 
 export class BioxResource<DATA = Record<string, any>> extends LabBaseEntity {
   // typing name of the resource model
@@ -19,6 +20,9 @@ export class BioxResource<DATA = Record<string, any>> extends LabBaseEntity {
 
   @Expose({name: 'resource_human_name'})
   resourceHumanName: string;
+
+  @Type(() => BioxTag)
+  tags: BioxTag[];
 
   data: DATA;
 }

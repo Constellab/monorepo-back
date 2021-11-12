@@ -5,6 +5,8 @@ import {BiotaDatabaseCardComponent} from './component/biota-database-card/biota-
 import {CoreModule} from '../../../core/core.module';
 import {RouterModule} from '@angular/router';
 import {BiotaCoreModule} from '../biota-core/biota-core.module';
+import {BiotaDataCardComponent} from './component/biota-data-card/biota-data-card.component';
+import {BiotaDataCardDialogComponent} from './component/biota-data-card-dialog/biota-data-card-dialog.component';
 
 /**
  * Module for the main biota page to list the databases
@@ -12,7 +14,9 @@ import {BiotaCoreModule} from '../biota-core/biota-core.module';
 @NgModule({
   declarations: [
     BiotaDatabasesComponent,
-    BiotaDatabaseCardComponent
+    BiotaDatabaseCardComponent,
+    BiotaDataCardComponent,
+    BiotaDataCardDialogComponent
   ],
   imports: [
     CommonModule,

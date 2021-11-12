@@ -1,7 +1,7 @@
 import {WorkflowNode} from './workflow-node.class';
 import {WorkflowPort} from './workflow-port.class';
 import {BioxProcess} from '../../../../core/model/entities/process/biox-process.entity';
-import {BioxInput} from '../../../../core/model/entities/biox-input.entity';
+import {BioxIO} from '../../../../core/model/entities/biox-io.entity';
 
 /**
  * Representation of a process (protocol or task)
@@ -12,7 +12,7 @@ export class WorkflowNodeProcess extends WorkflowNode<BioxProcess> {
               processName: string,
               initialCoordX: number = 0, initialCoordY: number = 0) {
     super(processName, process.title, process,
-      process.isPlugSource() ? 'task-source' : 'node-process',
+      process.isSource() ? 'task-source' : 'node-process',
       initialCoordX, initialCoordY);
     this.html = `<biox-workflow-node name="${this.nodeName}"></biox-workflow-node>`;
   }
@@ -23,7 +23,7 @@ export class WorkflowNodeProcess extends WorkflowNode<BioxProcess> {
   }
 
   // generate ports base on input or output spec
-  private generatePorts(specs: Record<string, BioxInput>, type: 'input' | 'output'): WorkflowPort[] {
+  private generatePorts(specs: Record<string, BioxIO>, type: 'input' | 'output'): WorkflowPort[] {
     const ports: WorkflowPort[] = [];
     let i = 1;
     for (const property of Object.keys(specs)) {

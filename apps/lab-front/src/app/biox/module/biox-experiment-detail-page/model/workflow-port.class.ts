@@ -1,4 +1,5 @@
 import {getBioxProcessPortColor} from '../../../../core/entity-module/biox-process-core/utils/biox-process-port-color';
+import {BioxIOSpec} from '../../../../core/model/entities/biox-io.entity';
 
 export class WorkflowPort {
 
@@ -7,7 +8,7 @@ export class WorkflowPort {
 
   constructor(public name: string,
               public drawFlowName: string,
-              public types: string[]) {
+              public specs: BioxIOSpec[]) {
   }
 
   /**
@@ -33,7 +34,7 @@ export class WorkflowPort {
    */
   public isCompatible(port: WorkflowPort): boolean {
     // todo check what to do when null
-    if (this.types == null || port.types == null) {
+    if (this.specs == null || port.specs == null) {
       return true;
     }
 
@@ -51,6 +52,6 @@ export class WorkflowPort {
    * return the port color base on first type
    */
   public getColor(): string {
-    return getBioxProcessPortColor(this.types);
+    return getBioxProcessPortColor(this.specs);
   }
 }

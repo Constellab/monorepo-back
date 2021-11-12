@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {constBaseRoute, constBioxFullRoute} from '../utils/base-route';
+import {constBaseRoute, constBioxFullRoute, constMonitoringFullRoute} from '../utils/base-route';
 import {Router} from '@angular/router';
 
 /**
@@ -24,6 +24,10 @@ export class RouterService {
 
   public static getBioxResourceDetailRoute(type: string, id: string): string {
     return `${constBioxFullRoute}/resource/${type}/${id}`;
+  }
+
+  public static getLabMonitoringRoute(): string {
+    return `${constMonitoringFullRoute}`;
   }
 
   /////////////////// NAVIGATE METHODS ///////////////////

@@ -31,7 +31,7 @@ export class BioxTaskSourceConfigComponent implements OnInit, OnDestroy {
   }
 
   private setNode(process: BioxProcess): void {
-    if (!process.isPlugSource()) {
+    if (!process.isSource()) {
       return;
     }
 

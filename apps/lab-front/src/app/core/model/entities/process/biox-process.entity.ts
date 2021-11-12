@@ -2,10 +2,10 @@ import {BioxConfig} from '../biox-config.entity';
 import {ClRecordTransform} from '@monorepo/core-lib';
 import {BioxNode} from '../../global/biox-connection.class';
 import {Expose, Type} from 'class-transformer';
-import {BioxInput} from '../biox-input.entity';
+import {BioxIO} from '../biox-io.entity';
 import {BioxProgressBar} from '../biox-progress-bar.entity';
 import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
-import {bioxTaskSourceTypingName} from '../biox-process-special-type';
+import {bioxTaskSourceTypingName} from '../biox-typing-name.py';
 
 export interface BioxProcessData {
   title: string;
@@ -46,11 +46,11 @@ export class BioxProcess extends BioxNode implements FlStatus {
   @Expose({name: 'instance_name'})
   name: string;
 
-  @ClRecordTransform(BioxInput)
-  inputs: Record<string, BioxInput>;
+  @ClRecordTransform(BioxIO)
+  inputs: Record<string, BioxIO>;
 
-  @ClRecordTransform(BioxInput)
-  outputs: Record<string, BioxInput>;
+  @ClRecordTransform(BioxIO)
+  outputs: Record<string, BioxIO>;
 
   @Expose({name: 'progress_bar'})
   @Type(() => BioxProgressBar)
@@ -82,8 +82,8 @@ export class BioxProcess extends BioxNode implements FlStatus {
     return this.status;
   }
 
-  // return true if the process is a Source
-  isPlugSource(): boolean {
+  // return true if the process is a of type Source
+  isSource(): boolean {
     return this.processTypingName === bioxTaskSourceTypingName;
   }
 
@@ -107,7 +107,7 @@ const getBioxProcessStatusColorClass: FlGetStatusClassColorFunction = (status: B
 const getBioxProcessStatusStatusIcon: FlGetStatusIconFunction = (status: BioxProcessStatus): string => {
   switch (status) {
     case 'DRAFT':
-      return 'edit';
+      return 'hourglass_empty';
     case 'ERROR':
       return 'error';
     case 'SUCCESS':

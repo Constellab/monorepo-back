@@ -1,6 +1,7 @@
 import {LabBaseEntity} from './lab-entity.entity';
-import {BioxInput} from '../entities/biox-input.entity';
+import {BioxIO, BioxIOSpec} from '../entities/biox-io.entity';
 import {Exclude} from 'class-transformer';
+import {constTypingNameResource} from '../entities/biox-typing-name.py';
 
 export interface BioxConnectionPart {
 
@@ -19,7 +20,7 @@ export interface BioxConnectionPart {
 
 export interface BioxConnection {
   from: BioxConnectionPart;
-  to: BioxConnectionPart
+  to: BioxConnectionPart;
 }
 
 export abstract class BioxNode extends LabBaseEntity {
@@ -59,6 +60,12 @@ export abstract class BioxNode extends LabBaseEntity {
   }
 }
 
+const resourceSpec: BioxIOSpec = {
+  typing_name: constTypingNameResource,
+  human_name: 'Resource',
+  short_description: 'Any resource'
+};
+
 /**
  * Specific node for the interface that only has one output port
  * It's name correspond to the port name
@@ -68,8 +75,18 @@ export class BioxInterfaceNode extends BioxNode {
   portName: string;
 
   // types supported by the port
-  portType: string[];
+  portType: BioxIOSpec[];
 
+  /**
+   * Return a new interface with specs equals to resource
+   */
+  public static newGenericInterface(portName: string): BioxInterfaceNode {
+    const node = new BioxInterfaceNode();
+    node.portName = portName;
+    node.name = portName;
+    node.portType = [resourceSpec];
+    return node;
+  }
 }
 
 /**
@@ -81,7 +98,18 @@ export class BioxOuterfaceNode extends BioxNode {
   portName: string;
 
   // types supported by the port
-  portType: string[];
+  portType: BioxIOSpec[];
+
+  /**
+   * Return a new outerface with specs equals to resource
+   */
+  public static newGenericInterface(portName: string): BioxOuterfaceNode {
+    const node = new BioxOuterfaceNode();
+    node.portName = portName;
+    node.name = portName;
+    node.portType = [resourceSpec];
+    return node;
+  }
 }
 
 
@@ -97,9 +125,9 @@ export interface BioxFlowManager {
 
   getNodes(): Record<string, BioxNode>;
 
-  getInputSpecs(): Record<string, BioxInput>;
+  getInputSpecs(): Record<string, BioxIO>;
 
-  getOutputSpecs(): Record<string, BioxInput>;
+  getOutputSpecs(): Record<string, BioxIO>;
 
   getInterfacesConnections(): Record<string, BioxConnection>;
 
@@ -207,7 +235,7 @@ export class BioxFlow<T extends BioxFlowManager> {
    */
   private initInterfaceNodes(): void {
     this.object.interfaceNodes = {};
-    const specs: Record<string, BioxInput> = this.object.getInputSpecs();
+    const specs: Record<string, BioxIO> = this.object.getInputSpecs();
     if (specs == null) {
       return;
     }
@@ -238,7 +266,7 @@ export class BioxFlow<T extends BioxFlowManager> {
    */
   private initOuterfaceNodes(): void {
     this.object.outerfaceNodes = {};
-    const specs: Record<string, BioxInput> = this.object.getOutputSpecs();
+    const specs: Record<string, BioxIO> = this.object.getOutputSpecs();
     if (specs == null) {
       return;
     }

@@ -1,28 +1,20 @@
-<div class="g-page">
+<div class="g-page-fixed" fxLayout="column">
 
   <gen-biota-database-search-form (search)="onSearch($event)"></gen-biota-database-search-form>
 
-  <fl-async-section [arrayObs]="biotaDatasource" emptyText="biota.no_entry">
+  <fl-async-section fxFlex="auto" [arrayObs]="biotaDatasource" emptyText="biota.no_entry" class="g-grow-max">
 
     <ng-container *flSectionBody>
-      <gen-biota-database-table [datasource]="biotaDatasource" [columns]="columns"></gen-biota-database-table>
+
+      <div fxLayout="row" fxLayoutGap="1em" class="container">
+        <gen-biota-database-table class="table" fxFlex="auto" [datasource]="biotaDatasource" [columns]="columns"
+                                  (showDetail)="openDetail($event)"></gen-biota-database-table>
+
+        <div fxFlex="30%" fxHide.xs class="max-height g-scrollable-element">
+          <gen-biota-data-card class="g-full" *ngIf="selectedData" [biotaData]="selectedData"></gen-biota-data-card>
+        </div>
+      </div>
     </ng-container>
   </fl-async-section>
 
-  <!--  <div *ngFor="let group of databasesGroups" class="g-section">-->
-
-  <!--    <div class="g-text-big g-primary-text">-->
-  <!--      <fl-text-icon>-->
-  <!--        <mat-icon class="g-icon-big" [flIcon]="group.icon"></mat-icon>-->
-  <!--        {{group.name | translate}}-->
-  <!--      </fl-text-icon>-->
-  <!--    </div>-->
-
-  <!--    <div fxLayout="row wrap" fxLayoutGap="2em">-->
-  <!--      <a class="database-card" *ngFor="let database of group.databases" [routerLink]="'database/' + database.typingName">-->
-  <!--        <gen-biota-database-card [database]="database">-->
-  <!--        </gen-biota-database-card>-->
-  <!--      </a>-->
-  <!--    </div>-->
-  <!--  </div>-->
 </div>

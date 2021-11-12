@@ -1,0 +1,20 @@
+<fl-async-section [object]="bricks$">
+  <fl-section-header>
+    <h1>{{'monitoring.brick_list' | translate}}</h1>
+  </fl-section-header>
+
+  <ng-container *flSectionBody="let bricks">
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let brick of bricks">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <fl-status-chip mode="iconText" [status]="brick" class="status"></fl-status-chip>
+            {{brick.name}}
+          </mat-panel-title>
+          <mat-panel-description>{{'monitoring.messages_count' | translate: {count: brick.countMessages()} }}</mat-panel-description>
+        </mat-expansion-panel-header>
+        <gen-lab-brick-message-list [messages]="$any(brick.data.messages)"></gen-lab-brick-message-list>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </ng-container>
+</fl-async-section>

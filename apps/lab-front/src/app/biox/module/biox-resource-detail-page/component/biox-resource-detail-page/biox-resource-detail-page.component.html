@@ -7,8 +7,13 @@
           {{title}}
         </h2>
         <button mat-stroked-button type="button"
-                (click)="openViewSpecs()" #viewSpecButton>
+                (click)="openViewSpecs()" #viewSpecButton  class="button">
           {{'biox.view_specs' | translate}}
+        </button>
+
+        <button mat-stroked-button type="button"
+                (click)="openTagFormDialog()" class="button">
+          {{'tags' | translate}}
         </button>
       </div>
     </fl-section-header>

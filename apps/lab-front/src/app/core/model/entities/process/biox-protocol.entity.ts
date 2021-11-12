@@ -4,7 +4,7 @@ import {BioxProtocolIOFace, BioxProtocolLink} from '../biox-protocol-link.entity
 import {Exclude, Expose, Type} from 'class-transformer';
 import {BioxProcess, BioxProcessData} from './biox-process.entity';
 import {BioxConnection, BioxFlowManager, BioxNode} from '../../global/biox-connection.class';
-import {BioxInput} from '../biox-input.entity';
+import {BioxIO} from '../biox-io.entity';
 import {ViewModel} from '../../global/view-model.entity';
 import {ViewModelDatasourcePaginated} from '../../../utils/view-model.datasource';
 
@@ -90,11 +90,11 @@ export class BioxProtocol extends BioxProcess implements BioxFlowManager {
     return this.data.graph.outerfaces;
   }
 
-  getInputSpecs(): Record<string, BioxInput> {
+  getInputSpecs(): Record<string, BioxIO> {
     return this.inputs;
   }
 
-  getOutputSpecs(): Record<string, BioxInput> {
+  getOutputSpecs(): Record<string, BioxIO> {
     return this.outputs;
   }
 }

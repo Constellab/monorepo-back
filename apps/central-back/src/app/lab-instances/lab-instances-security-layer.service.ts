@@ -53,13 +53,13 @@ export class LabInstancesSecurityLayer extends AbstractSecurityLayer<LabInstance
   }
 
   async startInstance(id: string): Promise<LabInstance> {
-    await this.getAndCheckAuthorizationToUpdateById(id);
+    await this.getAndCheckAuthorizationToFindById(id);
 
     return this.service.startInstance(id);
   }
 
   async stopInstance(id: string): Promise<LabInstance> {
-    await this.getAndCheckAuthorizationToUpdateById(id);
+    await this.getAndCheckAuthorizationToFindById(id);
 
     return this.service.stopInstance(id);
   }

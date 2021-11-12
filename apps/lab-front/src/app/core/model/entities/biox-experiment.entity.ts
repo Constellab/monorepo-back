@@ -1,8 +1,16 @@
 import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
-import {FlEntityPaginatedDatasource, FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
+import {
+  FlEntityPaginatedDatasource,
+  FlGetStatusClassColorFunction,
+  FlGetStatusIconFunction,
+  FlStatus,
+  FlStatusColorMode,
+  FlStatusHelper
+} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {ViewModel} from '../global/view-model.entity';
 import {BioxStudy} from './biox-study.class';
+import {BioxTag} from './biox-tag.entity';
 
 
 export class BioxExperimentData {
@@ -42,6 +50,9 @@ export class BioxExperiment extends LabBaseEntity implements FlStatus {
   @Type(() => BioxStudy)
   study: BioxStudy;
 
+  @Type(() => BioxTag)
+  tags: BioxTag[];
+
   getStatusClassColor(mode: 'background' | 'text'): string {
     return getBioxExperimentStatusColorClass(this.getStatusName(), mode);
   }
@@ -68,23 +79,23 @@ export type BioxExperimentVM = ViewModel<BioxExperiment>;
 export type BioxExperimentDatasource = FlEntityPaginatedDatasource<BioxExperiment>;
 
 const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status: BioxExperimentStatus,
-                                                                          mode: 'background' | 'text' = 'background'): string => {
+                                                                          mode: FlStatusColorMode = 'background'): string => {
   switch (status) {
     case 'ERROR':
-      return mode === 'background' ? 'g-warn-background' : 'g-warn-text';
+      return FlStatusHelper.getErrorColor(mode);
     default:
-      return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
+      return FlStatusHelper.getSuccessColor(mode);
   }
 };
 
 const getBioxExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: BioxExperimentStatus): string => {
   switch (status) {
     case 'DRAFT':
-      return 'edit';
+      return 'hourglass_empty';
     case 'ERROR':
-      return 'error';
+      return FlStatusHelper.errorIcon;
     case 'SUCCESS':
-      return 'done';
+      return FlStatusHelper.successIcon;
     case 'RUNNING':
     case 'WAITING_FOR_CLI_PROCESS':
       return 'cached';

@@ -16,6 +16,7 @@ import {
   flSetRootInjector,
   FlSnackBarModule,
   FlSvgIconModule,
+  FlTagModule,
   FlThemeService,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
@@ -28,6 +29,7 @@ import {ApiErrorService} from './core/service/api-error.service';
 import {LabEnvStore} from './core/service/lab-env.store';
 import {ApiServiceConfig} from './core/service/api-module.config';
 import {AppRoutingModule} from './app-routing.module';
+import {BioxTagService} from './core/entity-service/biox-tag.service';
 
 
 function loadTokenFromLocalStorage(jwtManager: LabEnvStore): () => void {
@@ -60,7 +62,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlTranslateModule.forRoot({
       defaultLang: ClSupportedLanguage.en,
       availableLang: [ClSupportedLanguage.en],
-      filenames: ['global-', 'biox-', 'biota-', 'file-explorer-']
+      filenames: ['global-', 'biox-', 'biota-', 'file-explorer-', 'monitoring-']
     }),
     FlTranslateModule.forRoot2(),
 
@@ -75,6 +77,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlPortalModule.forRoot(),
     FlPortalActionsModule.forRoot(),
     FlAuthModule.forRoot(AuthenticationService),
+    FlTagModule.forRoot(BioxTagService),
 
     QuillModule.forRoot({
       modules: {

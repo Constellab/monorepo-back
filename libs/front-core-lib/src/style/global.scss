@@ -178,5 +178,12 @@ ul, ol {
   text-decoration: underline;
 }
 
+
+/**************************** Flex *****************************/
+.g-grow-max{
+  // use to force the max height of the grow element
+  min-height: 0;
+}
+
 /**************************** Other *****************************/
 
