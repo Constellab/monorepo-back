@@ -10,7 +10,7 @@
 
   <!-- This is the tree node template for leaf nodes -->
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class="tree-node">
-    <mat-nav-list class="nav-list">
+    <mat-nav-list class="nav-list" [routerLink]="node.completePath">
       <mat-list-item>
         <div matLine>
           {{node.name}}
