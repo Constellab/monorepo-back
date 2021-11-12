@@ -1,19 +1,30 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import { FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService } from '@monorepo/front-core-lib';
-import { DaDocumentationDTO} from '../../../../da-core/da-model/da-entities/da-documentation.class';
-import { DaDocumentationService } from '../../../../da-core/da-service/da-documentation.service';
-import { Router } from '@angular/router';
-import { ClHelpService } from '@monorepo/core-lib';
+import {Component, OnInit} from '@angular/core';
+import {
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDialogService,
+  FlFormDialogInput,
+} from '@monorepo/front-core-lib';
+import {DaDocumentationDTO} from '../../../../da-core/da-model/da-entities/da-documentation.class';
+import {DaDocumentationService} from '../../../../da-core/da-service/da-documentation.service';
+import {ClHelpService} from '@monorepo/core-lib';
 import {DaMateTreeFlatDataSource, DaNode} from '../../../../da-core/da-model/da-entities/da-node.class';
 import {DaFolderService} from '../../../../da-core/da-service/da-folder.service';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
+import {MatTreeFlattener} from '@angular/material/tree';
+import {DaFolder, DaFolderDTO} from '../../../../da-core/da-model/da-entities/da-folder.class';
+import {FormGroup} from '@ngneat/reactive-forms';
+import {DaAdminListPageFormDialogComponent} from '../da-admin-list-page-form-dialog/da-admin-list-page-form-dialog.component';
+import {type} from 'os';
+
+
 
 interface FlatNode {
   expandable: boolean;
   name: string;
   level: number;
+  id: string;
 }
 
 @Component({
@@ -23,15 +34,20 @@ interface FlatNode {
 })
 export class DaAdminListPageComponent implements OnInit {
 
+  formGp: FormGroup<DaFolderDTO>;
+
+  isUpdate = false;
   documentations: DaDocumentationDTO[];
   publicDocsUrlPrefix: string;
 
-  private _transformer = (node: DaNode, level: number):any => {
+  private _transformer = (node: DaNode, level: number): any => {
     return {
       expandable: !!node.children,
-      name: node.name,
       order: node.order,
+      name: node.name,
       path: node.path,
+      completePath: node.completePath,
+      parentId: node.parentId,
       id: node.id,
       level: level,
     };
@@ -39,7 +55,7 @@ export class DaAdminListPageComponent implements OnInit {
 
   treeControl = new FlatTreeControl<FlatNode>(
     node => node.level,
-    node => node.expandable,
+    node => node.expandable
   );
 
   treeFlattener = new MatTreeFlattener(
@@ -55,7 +71,8 @@ export class DaAdminListPageComponent implements OnInit {
     private daDocumentationService: DaDocumentationService,
     private dialogService: FlDialogService,
     private daFolderService: DaFolderService,
-  ) {}
+  ) {
+  }
 
   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
 
@@ -71,7 +88,7 @@ export class DaAdminListPageComponent implements OnInit {
 
   }
 
-  delete(id: string, event: globalThis.Event): void{
+  delete(id: string, event: globalThis.Event): void {
     ClHelpService.stopEventPropagation(event);
     const input: FlConfirmDialogInput = {
       title: 'confirm_deletion',
@@ -87,17 +104,116 @@ export class DaAdminListPageComponent implements OnInit {
     })
   }
 
-  private onCloseConfirmDialog(res: FlConfirmDialogResult, id: string): void{
-    if(res.choice){
-      this.daDocumentationService.deleteById(id).subscribe(()=>{
+  private onCloseConfirmDialog(res: FlConfirmDialogResult, id: string): void {
+    if (res.choice) {
+      this.daDocumentationService.deleteById(id).subscribe(() => {
         let r: boolean;
         [this.dataSource.data, r] = this.dataSource.deleteNode(this.dataSource.data, id);
       });
     }
   }
 
-  edit(id: string): string{
+  editFolder(folder?: DaNode): void {
+    if (folder) {
+      this.openUpdateDialog(folder);
+    } else {
+      this.openCreateDialog();
+    }
+  }
+
+  openCreateDialog(): void{
+    const input: FlFormDialogInput<DaFolderDTO> = {
+      mode: 'create'
+    };
+
+    this.dialogService.openSmallDialog(DaAdminListPageFormDialogComponent, {data: input}).afterClosed().subscribe(
+      (res: DaFolder) => {
+        //this.dataSource.updateNodes(new DaNode(res.id, res.path, res.completePath, res.title, res.order, res.folder.id));
+        this.daFolderService.getTree().subscribe(folder => {
+          this.dataSource.data = folder.children;
+          this.expandParentToNode(res.id, this.dataSource.data);
+        });
+      }
+    );
+  }
+
+  openUpdateDialog(node: DaNode): void{
+
+    const folderForm: DaFolderDTO = {
+      title: node.name,
+      folderId: node.parentId,
+      path: node.path,
+      id: node.id,
+      order: node.order
+    };
+
+    const input: FlFormDialogInput<DaFolderDTO> = {
+      object: folderForm,
+      mode: 'update'
+    };
+
+    this.dialogService.openSmallDialog(DaAdminListPageFormDialogComponent, {data: input}).afterClosed().subscribe(
+      (res: DaFolder) => {
+        //this.dataSource.updateNodes(new DaNode(res.id, res.path, res.completePath, res.title, res.order, res.folder.id));
+        this.daFolderService.getTree().subscribe(folder => {
+          this.dataSource.data = folder.children;
+          this.expandParentToNode(res.id, this.dataSource.data);
+        });
+      }
+    );
+  }
+
+  expandParentToNode(id: string, data: DaNode[]): boolean{
+    const node: DaNode = data.find(n => n.id == id);
+    if(!node){
+      data.map(n => {
+        if(typeof n.children !== 'undefined'){
+          if(this.expandParentToNode(id, n.children)) {
+            this.treeControl.expand(this.treeControl.dataNodes.find(no => no.id == n.id));
+            return true;
+          }else{
+            return false;
+          }
+        }
+        return false;
+      });
+      return false;
+    } else {
+      this.treeControl.expand(this.treeControl.dataNodes.find(no => no.id == node.id));
+      return true;
+    }
+  }
+
+  edit(id: string): string {
     return 'edit/' + id;
+  }
+
+  deleteFolder(id: string, parentId: string): void {
+    ClHelpService.stopEventPropagation(event);
+    const input: FlConfirmDialogInput = {
+      title: 'confirm_deletion',
+      content: 'confirm_deletion_message',
+      translateTitleAndContent: true,
+      observable: this.daDocumentationService.deleteById(id),
+      successMessage: 'folder_deleted',
+      translateMessage: true
+    }
+
+    this.dialogService.openConfirmDialog(input).afterClosed().subscribe(res => {
+      this.onCloseConfirmDialogFolder(res, id, parentId);
+    });
+  }
+
+  private onCloseConfirmDialogFolder(res: FlConfirmDialogResult, id: string, parentId: string): void {
+    if (res.choice) {
+      this.daFolderService.deleteById(id).subscribe(() => {
+        let r: boolean;
+
+        [this.dataSource.data, r] = this.dataSource.deleteNode(this.dataSource.data, id);
+
+        this.expandParentToNode(parentId, this.dataSource.data);
+      });
+    }
   }
 
 }

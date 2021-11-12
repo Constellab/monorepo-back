@@ -10,6 +10,8 @@ export class DaFolder extends DaEntity{
 
   path: string;
 
+  completePath: string;
+
   order: number;
 
   folder: DaFolder;
@@ -17,5 +19,17 @@ export class DaFolder extends DaEntity{
   folders: DaFolder[];
 
   documentations: DaDocumentation[];
+
+}
+
+export class DaFolderDTO extends DaEntity{
+
+  title: string;
+
+  path: string;
+
+  folderId: string;
+
+  order: number;
 
 }

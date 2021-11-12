@@ -1,17 +1,25 @@
-import {Body, Controller, Get, Param, Post, Put, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, Query, Res} from '@nestjs/common';
 import {DnFolderService} from './dn-folder.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {DnNode, DnFolder, DnFolderResDTO} from './dn-folder.entity';
-import {DnDocumentation} from '../documentation/dn-documentation.entity';
+import {DnDocumentation, DnDocumentationResDTO} from '../documentation/dn-documentation.entity';
 
 @Controller('folder')
 export class DnFolderController {
-  constructor(private readonly folderService: DnFolderService) {
+  constructor(
+    private readonly folderService: DnFolderService,
+
+  ) {
   }
 
   @Post()
   create(@Body(new BlParsePipe(DnFolderResDTO)) createFolder: DnFolderResDTO): Promise<DnFolder> {
     return this.folderService.create(createFolder);
+  }
+
+  @Post('doc')
+  createDoc(@Body(new BlParsePipe(DnDocumentationResDTO)) createDocumentation: DnDocumentationResDTO): Promise<DnDocumentation> {
+    return this.folderService.createDoc(createDocumentation);
   }
 
   @BlPublic()
@@ -44,8 +52,13 @@ export class DnFolderController {
     return this.folderService.findDocsByParentId(id);
   }
 
-  // @Put()
-  // update(@Body(new BlParsePipe(DnFolder)) updateDocumentation: DnFolderEditDTO): Promise<DnDocumentation> {
-  //   return this.folderService.update(updateDocumentation);
-  // }
+  @Put()
+  update(@Body(new BlParsePipe(DnFolderResDTO)) updateFolder: DnFolderResDTO): Promise<DnFolder> {
+    return this.folderService.update(updateFolder);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string): Promise<void> {
+    return this.folderService.remove(id);
+  }
 }

@@ -25,18 +25,19 @@ export class DnDocumentation extends BlEntityWithId {
   folder: DnFolder;
 }
 
-export class DnDocumentationDTO extends BlEntityWithId {
+export class DnDocumentationDTO {
+
   title: string;
 
   path: string;
 
+  completePath?: string;
+
   order:number;
 
   constructor(documentation: DnDocumentation) {
-    super();
     this.path = documentation.path;
     this.title = documentation.title;
-    this.id = documentation.id;
     this.order = documentation.order;
   }
 }

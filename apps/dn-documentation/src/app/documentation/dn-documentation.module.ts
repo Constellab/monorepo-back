@@ -7,11 +7,12 @@ import { DnVersionModule } from '../version/dn-version.module';
 import { DnVersionService } from '../version/dn-version.service';
 import {DnFolderModule} from '../folder/dn-folder.module';
 import {DnFolderService} from '../folder/dn-folder.service';
+import {forwardRef} from '@angular/core';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([DnDocumentation]), DnFolderModule, DnVersionModule],
+  imports: [TypeOrmModule.forFeature([DnDocumentation]), DnVersionModule],
   exports: [TypeOrmModule],
   controllers: [DnDocumentationController],
-  providers: [DnDocumentationService, DnFolderService, DnVersionService]
+  providers: [DnDocumentationService, DnVersionService]
 })
 export class DnDocumentationModule {}

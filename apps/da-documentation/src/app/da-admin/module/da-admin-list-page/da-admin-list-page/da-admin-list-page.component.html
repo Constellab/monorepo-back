@@ -2,6 +2,10 @@
   Create
 </button>
 
+<button mat-raised-button color="primary" (click)="editFolder()">
+  Create Folder
+</button>
+
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree">
 
   <!-- This is the tree node template for leaf nodes -->
@@ -23,12 +27,25 @@
 
   <!-- This is the tree node template for expandable nodes -->
   <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
-    <button mat-icon-button matTreeNodeToggle
-            [attr.aria-label]="'Toggle ' + node.name">
-      <mat-icon class="mat-icon-rtl-mirror">
-        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-      </mat-icon>
-    </button>
-    {{node.name}}
+    <mat-nav-list class="nav-list">
+      <mat-list-item>
+        <button mat-list-icon matTreeNodeToggle
+                [attr.aria-label]="'Toggle ' + node.name">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
+        <div matLine>
+          {{node.name}}
+        </div>
+        <button mat-icon-button (click)="editFolder(node)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="deleteFolder(node.id, node.parentId)">
+          <mat-icon>delete</mat-icon>
+        </button>
+
+      </mat-list-item>
+    </mat-nav-list>
   </mat-tree-node>
 </mat-tree>

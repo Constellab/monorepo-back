@@ -18,6 +18,9 @@ export class DnFolder extends BlEntityWithId{
   path: string;
 
   @Column()
+  completePath: string;
+
+  @Column()
   order: number;
 
   @TreeParent()
@@ -27,21 +30,6 @@ export class DnFolder extends BlEntityWithId{
   folders: DnFolder[];
 
   @OneToMany(() => DnDocumentation, doc => doc.folder)
-  documentations: DnDocumentation[];
-}
-
-export class DnFolderEditDTO extends BlEntityWithId{
-
-  title: string;
-
-  path: string;
-
-  order: number;
-
-  folder: DnFolder;
-
-  folders: DnFolder[];
-
   documentations: DnDocumentation[];
 }
 
@@ -63,16 +51,23 @@ export class DnNode extends  BlEntityWithId{
 
   path: string;
 
+  completePath: string;
+
+  parentId: string;
+
   children?: DnNode[];
 
-  constructor(i: string, n: string, p: string, o: number, c?: DnNode[]) {
+  constructor(id: string, name: string, path: string, completePath: string, o: number, children?: DnNode[], parentId?: string) {
     super();
-    this.id = i;
-    this.name = n;
+    this.id = id;
+    this.name = name;
     this.order = o;
-    this.path = p;
-    if(c){
-      this.children = c;
+    this.path = path;
+    if(parentId)
+      this.parentId = parentId;
+    this.completePath = completePath;
+    if(children){
+      this.children = children;
     }
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FlApiService } from '@monorepo/front-core-lib'
 import { Observable } from 'rxjs';
-import {DaFolder} from '../da-model/da-entities/da-folder.class';
+import {DaFolder, DaFolderDTO} from '../da-model/da-entities/da-folder.class';
 import {DaNode} from '../da-model/da-entities/da-node.class';
 
 /**
@@ -21,8 +21,8 @@ export class DaFolderService {
    * Call http create
    * @param object json object
    */
-  public create(object: Partial<DaFolder>): Observable<DaFolder> {
-    return this.apiService.post(this.route, object, DaFolder);
+  public create(object: Partial<DaFolderDTO>): Observable<DaFolder> {
+    return this.apiService.post(this.route, object, DaFolderDTO);
   }
 
   /**
@@ -51,8 +51,8 @@ export class DaFolderService {
    * Call http update
    * @param object json object
    */
-  public update(object: Partial<DaFolder>): Observable<DaFolder> {
-    return this.apiService.put(this.route, object, DaFolder);
+  public update(object: Partial<DaFolderDTO>): Observable<DaFolder> {
+    return this.apiService.put(this.route, object, DaFolderDTO);
   }
 
   /**

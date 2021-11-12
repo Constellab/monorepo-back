@@ -43,7 +43,7 @@ export class DaAdminDocFormComponent implements OnInit {
       this.folders = folders;
       this.defaultFolder = this.folders[0];
       this.folders.shift();
-    })
+    });
   }
 
   buildForm(): void {

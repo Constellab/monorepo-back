@@ -1,21 +1,24 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {Repository, TreeRepository} from 'typeorm';
-import {DnFolder, DnFolderDTO, DnFolderResDTO, DnNode} from './dn-folder.entity';
+import {DnFolder, DnFolderResDTO, DnNode} from './dn-folder.entity';
 import {DnVersion} from '../version/dn-version.entity';
 import {DnVersionService} from '../version/dn-version.service';
-import {DnDocumentation} from '../documentation/dn-documentation.entity';
+import {DnDocumentation, DnDocumentationResDTO} from '../documentation/dn-documentation.entity';
+import {DnDocumentationService} from '../documentation/dn-documentation.service';
 
 @Injectable()
 export class DnFolderService {
   constructor(
-        @InjectRepository(DnFolder)
-        private foldersRepository: Repository<DnFolder>,
+    @InjectRepository(DnFolder)
+    private foldersRepository: Repository<DnFolder>,
 
-        @InjectRepository(DnFolder)
-        private foldersTreeRepository: TreeRepository<DnFolder>,
+    @InjectRepository(DnFolder)
+    private foldersTreeRepository: TreeRepository<DnFolder>,
 
-        private versionService: DnVersionService
+    private documentationService: DnDocumentationService,
+
+    private versionService: DnVersionService
   ){}
 
   async create(createFolderRes: DnFolderResDTO): Promise<DnFolder> {
@@ -30,12 +33,27 @@ export class DnFolderService {
     const createFolder = {
       title: createFolderRes.title,
       folder: folder,
-      path: folder.path + createFolderRes.path + '/',
+      path: createFolderRes.path,
+      completePath: folder.completePath + createFolderRes.path + '/',
       version: version,
       order: createFolderRes.order
     }
 
     return this.foldersRepository.save(createFolder);
+  }
+
+  async createDoc(createDocumentationRes: DnDocumentationResDTO): Promise<DnDocumentation> {
+    const folder = await this.foldersRepository.findOne(createDocumentationRes.folderId);
+
+    const createDocumentation = {
+      title: createDocumentationRes.title,
+      content: createDocumentationRes.content,
+      path: createDocumentationRes.path,
+      completePath: folder.path + createDocumentationRes.path + '/',
+      order: createDocumentationRes.order,
+      folder: folder
+    }
+    return this.documentationService.create(createDocumentation);
   }
 
   async findAll(): Promise<DnFolder[]> {
@@ -44,7 +62,7 @@ export class DnFolderService {
   }
 
   async findTree(): Promise<DnNode> {
-    const allDoc: DnFolder[] = await this.foldersTreeRepository.findTrees({relations: ['documentations', 'version']});
+    const allDoc: DnFolder[] = await this.foldersTreeRepository.findTrees({relations: ['documentations', 'version', 'folder']});
     return this.createTree(allDoc[0]);
   }
 
@@ -52,11 +70,12 @@ export class DnFolderService {
 
     const currentChild: DnNode[] = [];
 
-    const currentParent: DnNode = new DnNode(folder.id, folder.title, folder.path, folder.order, []);
+    const currentParent: DnNode =
+      new DnNode(folder.id, folder.title, folder.path, folder.completePath, folder.order, [], folder.folder ? folder.folder.id : null);
 
     if(typeof folder.documentations !== 'undefined'){
       folder.documentations.map(doc => {
-        currentChild.push(new DnNode(doc.id, doc.title, doc.path, doc.order));
+        currentChild.push(new DnNode(doc.id, doc.title, doc.path, doc.completePath, doc.order));
       });
     }
 
@@ -101,4 +120,52 @@ export class DnFolderService {
     return parent.documentations;
   }
 
+  async update(updateFolder: DnFolderResDTO): Promise<DnFolder> {
+    let folder: DnFolder = await this.foldersRepository.findOne(updateFolder.id, {relations: ['documentations', 'folder']});
+
+    folder.path = updateFolder.path;
+    folder.title = updateFolder.title;
+    folder.order = updateFolder.order;
+    if(updateFolder.folderId){
+      folder.folder = await this.foldersRepository.findOne(updateFolder.folderId);
+      folder.completePath = folder.folder.completePath + folder.path + '/';
+    } else {
+
+    }
+
+
+    folder = await this.foldersRepository.save(folder);
+
+    const folderTree: DnFolder = await this.foldersTreeRepository.findDescendantsTree(folder, {relations: ['documentations', 'folder']});
+
+    return this.updateChildrenPath(folderTree);
+  }
+
+  updateChildrenPath(folder: DnFolder): DnFolder{
+    folder.folders.map(
+      f => {
+        f.completePath = folder.completePath + f.path + '/';
+        this.foldersRepository.save(f);
+        this.updateChildrenPath(f);
+      }
+    );
+
+    folder.documentations.map(
+      d => {
+        d.completePath = folder.completePath + d.path + '/';
+        this.documentationService.update(d);
+      }
+    );
+
+    return folder;
+  }
+
+  async remove(id: string): Promise<void> {
+    const folderToDelete: DnFolder = await this.foldersRepository.findOne(id, {relations: ['documentations', 'folders']});
+    if(folderToDelete.documentations.length <= 0 && folderToDelete.folders.length <= 0){
+      await this.foldersRepository.delete(id);
+    } else {
+      throw new BadRequestException('Folders with children can\'t be deleted.');
+    }
+  }
 }

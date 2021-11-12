@@ -1,34 +1,26 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {DnDocumentation, DnDocumentationDTO, DnDocumentationResDTO} from './dn-documentation.entity';
 import {DnFolderService} from '../folder/dn-folder.service';
-import {DnFolderDTO} from '../folder/dn-folder.entity';
+import {forwardRef, Inject} from '@angular/core';
+import {DnFolder} from '../folder/dn-folder.entity';
+import {doc} from 'prettier';
 
 @Injectable()
 export class DnDocumentationService {
   constructor(
     @InjectRepository(DnDocumentation)
     private documentationsRepository: Repository<DnDocumentation>,
-    private folderService: DnFolderService
+
   ) {
   }
 
-  async create(createDocumentationRes: DnDocumentationResDTO): Promise<DnDocumentation> {
-    const folder = await this.folderService.findOne(createDocumentationRes.folderId);
-
-    const createDocumentation = {
-      title: createDocumentationRes.title,
-      content: createDocumentationRes.content,
-      path: createDocumentationRes.path,
-      completePath: folder.path + createDocumentationRes.path + '/',
-      order: createDocumentationRes.order,
-      folder: folder
-    }
-    return this.documentationsRepository.save(createDocumentation);
+  async create(documentation: DnDocumentationDTO): Promise<DnDocumentation>{
+    return await this.documentationsRepository.save(documentation);
   }
 
-  async findAll(): Promise<Array<DnDocumentationDTO | DnFolderDTO>> {
+  async findAll(): Promise<Array<DnDocumentationDTO>> {
     const docsDto: DnDocumentationDTO[] = [];
     const docs: DnDocumentation[] = await this.documentationsRepository.find({
       order: {
@@ -39,15 +31,6 @@ export class DnDocumentationService {
       if(!doc.path.includes('/')){
         const docDto = new DnDocumentationDTO(doc);
         const childs: DnDocumentation[] = docs.filter((documentation) => documentation.path.includes(doc.path+'/') && doc.path != '');
-
-        // if(childs.length > 0){
-        //   docDto.asChild = true;
-        //   docDto.childs = [];
-        //   childs.map((child) => {
-        //     const docDtoChild = new DnDocumentationDTO(child);
-        //     docDto.childs.push(docDtoChild);
-        //   })
-        // }
         docsDto.push(docDto);
       }
     })
