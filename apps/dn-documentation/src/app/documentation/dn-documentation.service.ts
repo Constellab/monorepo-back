@@ -42,10 +42,11 @@ export class DnDocumentationService {
   }
 
   findOneByPath(path: string): Promise<DnDocumentation> {
-    return this.documentationsRepository.findOne({where: {path: path}});
+    return this.documentationsRepository.findOne({where: {completePath: path + '/'}});
   }
 
   update(updateDocumentation: DnDocumentation): Promise<DnDocumentation> {
+
     return this.documentationsRepository.save(updateDocumentation);
   }
 
