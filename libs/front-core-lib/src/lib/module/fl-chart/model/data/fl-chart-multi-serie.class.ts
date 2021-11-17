@@ -60,6 +60,7 @@ export class FlChartMultiSerie<Data> implements FlChartDataContainer<Data> {
     return data;
   }
 
+
   // return an array of series keys
   public getSeriesKeys(): number[] {
     return this.series.map((v) => v.key);
@@ -92,5 +93,21 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> extends FlChartMul
 
   getDomainYComplete(): Numeric[] {
     return FlChartDomain.getCompleteDomain(this.getData().map(data => data.getY().valueOf()));
+  }
+
+  getDomainYStacked(): [Numeric, Numeric] {
+    const data: number[] = [];
+    for (const serie of this.series) {
+      const serieData = serie.getData()
+      for (let i = 0; i < serieData.length; i++) {
+        if (data[i] == null) {
+          data[i] = serieData[i].getY().valueOf();
+        } else {
+          data[i] += serieData[i].getY().valueOf();
+        }
+      }
+    }
+
+    return FlChartDomain.getLinearDomain(data)
   }
 }

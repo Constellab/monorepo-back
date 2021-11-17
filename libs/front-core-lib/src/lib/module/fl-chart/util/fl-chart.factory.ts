@@ -1,11 +1,20 @@
 import {FlChartSvg} from '../model/drawer/fl-chart-svg.class';
 import {FlChartType} from '../model/fl-chart.class';
 import {FlChartContainer2d} from '../model/drawer/fl-chart-container.class';
-import {FlChartScale, FlChartScaleBand, FlChartScaleLinear, FlChartScaleNumber} from '../model/scale/fl-chart-scale.class';
+import {
+  FlChartScale,
+  FlChartScaleBand,
+  FlChartScaleLinear,
+  FlChartScaleNumber
+} from '../model/scale/fl-chart-scale.class';
 import {Numeric} from 'd3';
 import {FlChartAxis, FlChartAxisBand} from '../model/drawer/fl-chart-axis.class';
 import {FlChartRendererScatterPlot} from '../renderer/fl-chart-renderer-scatter.plot';
-import {FlChartScaleColor, FlChartScaleColorLinear, FlChartScaleColorMulti} from '../model/scale/fl-chart-scale-color.class';
+import {
+  FlChartScaleColor,
+  FlChartScaleColorLinear,
+  FlChartScaleColorMulti
+} from '../model/scale/fl-chart-scale-color.class';
 import {FlChartRendererLine} from '../renderer/fl-chart-renderer.line';
 import {FlChartRendererBarPlot} from '../renderer/fl-chart-renderer-bar.plot';
 import {FlChart2dBrush, FlChart2dBrushX} from '../model/drawer/fl-chart-brush.class';
@@ -18,6 +27,7 @@ import {FlChart3dDatum} from '../model/data/fl-chart-data.class';
 import {FlChartConfig} from '../model/fl-chart-config.class';
 import {FlChartLegendHeatMap} from '../model/legend/fl-chart-legend-heat-map.class';
 import {FlChartLegendMultiSeries} from '../model/legend/fl-chart-legend-multi-series.class';
+import {FlChartRendererStackedBarPlot} from '../renderer/fl-chart-renderer-stacked-bar.plot';
 
 export class FlChartFactory {
 
@@ -36,6 +46,9 @@ export class FlChartFactory {
           FlChartAxisBand.tickCharacterWidth * 3);
       case FlChartType.HISTOGRAM:
         return this.getBarPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale, 50);
+      case FlChartType.STACKED_PLOT:
+        return this.getStackBarConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale,
+          FlChartAxisBand.tickCharacterWidth * 3);
       case FlChartType.BOX_PLOT:
         return this.getBoxPlotConfig(chartSVG, data, seriesColorScale);
       case FlChartType.HEAT_MAP:
@@ -55,7 +68,7 @@ export class FlChartFactory {
 
     const renderer = new FlChartRendererScatterPlot(seriesColorScale);
 
-    return this.buildLinear2dMultiContainer(chartSVG, dataContainer, [renderer], seriesColorScale,0.5);
+    return this.buildLinear2dMultiContainer(chartSVG, dataContainer, [renderer], seriesColorScale, 0.5);
   }
 
   /**
@@ -106,6 +119,49 @@ export class FlChartFactory {
       .initXAxis(xAxis)
       .initAxisY(yAxis)
       .addRenderer(new FlChartRendererBarPlot(seriesColorScale))
+      .initData(dataContainer);
+
+    return {
+      chartContainer: chartContainer,
+      legend: showLegend ? new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
+        dataContainer, seriesColorScale) : null,
+      zoomEnabled: true
+    };
+  }
+
+  /**
+   * Build a StackBar
+   */
+  private static getStackBarConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
+                                   seriesColorScale: FlChartScaleColor, xTickSize?: number,
+                                   showLegend?: boolean)
+    : FlChartConfig {
+
+    const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
+
+    // build the x axis and scale based on ScaleBand
+    const xScale: FlChartScaleBand = new FlChartScaleBand()
+      .setInitialDomain(dataContainer.getDomainXComplete())
+      .range(chartContainer.getRangeX());
+    const xAxis: FlChartAxisBand = new FlChartAxisBand('bottom').setScale(xScale);
+
+    if (xTickSize != null) {
+      xAxis.setSmartTickFormat(50, dataContainer.axisXLabelFormat);
+    }
+
+    // build the y axis and scale linear
+    const yScale: FlChartScaleLinear = new FlChartScaleNumber()
+      .setInitialDomain(dataContainer.getDomainYStacked())
+      .range(chartContainer.getRangeY());
+    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
+
+    // Activate brush only on X axis before the data init so the brush doesn't prevent hover events
+    new FlChart2dBrushX(chartContainer);
+
+    chartContainer
+      .initXAxis(xAxis)
+      .initAxisY(yAxis)
+      .addRenderer(new FlChartRendererStackedBarPlot(seriesColorScale))
       .initData(dataContainer);
 
     return {

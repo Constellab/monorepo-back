@@ -9,6 +9,8 @@ import {ExperimentStatus} from './experiment-status.enum';
 import {LabInstancesSecurityLayer} from '../lab-instances/lab-instances-security-layer.service';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
 import {StudiesSecurityLayer} from '../studies/studies-security.layer';
+import {LabExperimentDto} from './lab-experiment.dto';
+import {Study} from '../studies/study.entity';
 
 @Injectable()
 export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> {
@@ -71,5 +73,13 @@ export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> 
     return await this.service.getStatusHistory(id) as ExperimentStatusHistory[];
   }
 
+  async createLabExperiment(studyId: string, labExperimentDto: LabExperimentDto): Promise<void> {
+
+    // check that the user can update the study
+    const study: Study = await this.studiesSecurityLayer.getAndCheckAuthorizationToUpdateById(studyId);
+
+    await this.service.createLabExperiment(study, labExperimentDto)
+
+  }
 
 }

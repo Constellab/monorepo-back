@@ -7,7 +7,11 @@ import {UsersService} from '../../users/users.service';
 import {CoreConfigService} from '../modules/core-config/core-config.service';
 import {User} from '../../users/user.entity';
 import {ErrorText} from '../model/config/error-text.class';
-import {externalLabApiKeyHeader, externalLabApiKeySchema} from '../model/config/external-lab.class';
+import {
+  externalLabApiKeyHeader,
+  externalLabApiKeySchema,
+  externalLabUserHeader
+} from '../model/config/external-lab.class';
 
 /**
  * Guard to authenticate route called by the lab servers.
@@ -48,9 +52,37 @@ export class LabAuthGuard implements CanActivate {
     request.authInfo = labInstance;
 
     // set the robot user in the context as the connected user
-    await this.setRobotUserInContext(request);
+    await this.setContext(request);
 
     return true;
+  }
+
+  /**
+   * Set the context user in the request context. If there is a user id in the request,
+   * set the user in the context, otherwise set the robot user
+   * @param request
+   * @private
+   */
+  private async setContext(request: Request): Promise<void> {
+    const userId: string = this.getLabUserIdFromRequest(request);
+
+    if (userId == null) {
+      await this.setRobotUserInContext(request)
+    } else {
+      await this.setUserInContext(request, userId)
+    }
+  }
+
+  private async setUserInContext(request: Request, userId: string): Promise<void> {
+    const user: User = await this.usersService.findById(userId)
+
+    if (user == null) {
+      this.logger.error(`Can't find the user with id ${userId}`);
+      throw new UnauthorizedException();
+    }
+
+    request.user = user;
+
   }
 
   // set the robot user in request user
@@ -69,7 +101,12 @@ export class LabAuthGuard implements CanActivate {
 
   private getLabApiKeyFromRequest(request: Request): string {
     // get the api-key from header without the 'API-KEY'
-    return request.header(externalLabApiKeyHeader)?.replace(`${externalLabApiKeySchema} `, '') || null;
+    return request.header(externalLabApiKeyHeader)?.replace(`${externalLabApiKeySchema} `, '') ?? null;
+  }
+
+  private getLabUserIdFromRequest(request: Request): string | null {
+    // get user id from the request if it exists
+    return request.header(externalLabUserHeader) ?? null;
   }
 
 }

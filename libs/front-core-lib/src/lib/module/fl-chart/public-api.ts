@@ -63,3 +63,4 @@ export * from './renderer/fl-chart-renderer-heat.map';
 export * from './renderer/fl-chart-renderer-bar.plot';
 export * from './renderer/fl-chart-renderer.line';
 export * from './renderer/fl-chart-renderer-scatter.plot';
+export * from './renderer/fl-chart-renderer-stacked-bar.plot'
