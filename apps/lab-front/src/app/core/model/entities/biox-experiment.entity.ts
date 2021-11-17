@@ -83,6 +83,8 @@ const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status
   switch (status) {
     case 'ERROR':
       return FlStatusHelper.getErrorColor(mode);
+    case 'DRAFT':
+      return FlStatusHelper.getInfoColor(mode)
     default:
       return FlStatusHelper.getSuccessColor(mode);
   }

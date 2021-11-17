@@ -13,7 +13,6 @@
   "update_project": "Update project",
   "project_created": "Project created",
   "project_updated": "Project updated",
-
   "experiments": "Experiments",
   "experiment": "Experiment",
   "no_experiment": "No experiment",
@@ -22,6 +21,8 @@
   "experiment_created": "Experiment created",
   "experiment_updated": "Experiment updated",
   "DRAFT": "Draft",
+  "SUCCESS": "SUCCESS",
+  "ERROR": "Error",
   "STARTED": "Started",
   "FINISHED": "Finished",
   "update_project_status": "Update project's status",
