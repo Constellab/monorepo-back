@@ -9,9 +9,6 @@ import {Lab} from '../labs/lab.entity';
 @Entity()
 export class Brick extends BaseEntity {
 
-  // @Column({nullable: false})
-  // uri: string;
-
   @Column({nullable: false})
   label: string;
 

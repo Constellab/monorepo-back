@@ -92,7 +92,6 @@ export class LabInstanceToken {
 }
 
 export class LabInstanceUser implements FlEntity {
-  @Expose({name: 'uri'})
   id: string;
 
   email: string;

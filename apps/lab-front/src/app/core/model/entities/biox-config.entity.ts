@@ -4,6 +4,8 @@ import {Type} from 'class-transformer';
 import {BioxConfigSpecBase, BioxConfigSpecs, BioxConfigSpecVisibility} from './biox-config-spec.entity';
 import {FlDynamicFormGroupConfig} from '@monorepo/front-core-lib';
 
+export type BioxConfigValues = Record<string, any>
+
 /**
  * Config object for a process
  */
@@ -14,7 +16,7 @@ export class BioxConfigData {
   specs: BioxConfigSpecs;
 
   // actual values of the config
-  values: Record<string, unknown>;
+  values: BioxConfigValues;
 
   /**
    * Create a BioxConfigData with defined specs and empty params

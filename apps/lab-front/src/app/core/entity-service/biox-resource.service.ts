@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
 import {BioxResource, BioxResourceDatasource} from '../model/entities/resource/biox-resource.entity';
-import {FileResourceService, FileWithContent} from './file-resource.service';
 import {ClConstructorFunction, ClCoreJsonConvert, ClPageI} from '@monorepo/core-lib';
 import {FileResource} from '../model/entities/resource/file-resource.entity';
 import {map} from 'rxjs/operators';
@@ -24,23 +23,22 @@ export class BioxResourceService {
   private readonly route: string = 'resource';
   private readonly resourceTypeRoute: string = 'resource-type';
 
-  constructor(private apiService: FlApiService,
-              private fileResourceService: FileResourceService) {
+  constructor(private apiService: FlApiService) {
   }
 
   //////////////////////////////////////// RESOURCE ///////////////////////////////////////
 
-  public getByTypingNameAndId(typingName: string, id: string): Observable<BioxResource> {
-    if (!typingName || !id) {
+  public getById(id: string): Observable<BioxResource> {
+    if (!id) {
       return of(null);
     }
 
     // get the resource in the correct type
-    return this.getResource(typingName, id);
+    return this.getResource(id);
   }
 
-  private getResource(type: string, id: string): Observable<any> {
-    return this.apiService.get(`${this.route}/${type}/${id}`, this.instantiateResource);
+  private getResource(id: string): Observable<any> {
+    return this.apiService.get(`${this.route}/${id}`, this.instantiateResource);
   }
 
   /**
@@ -57,21 +55,8 @@ export class BioxResourceService {
   };
 
 
-  /**
-   * Load the content of a FileResource and set the result in data attribute
-   */
-  private loadFileResourceContent(file: FileResource): Observable<FileResource> {
-    return this.fileResourceService.readFileFromResource(file).pipe(
-      map((fileContent: FileWithContent) => {
-        file.file = fileContent.file;
-        file.data = fileContent.content;
-        return file;
-      })
-    );
-  }
-
   public getResourcesByType(type: string, page: number, pageSize: number): Observable<ClPageI<BioxResource>> {
-    return this.apiService.get(`${this.route}/${type}`, BioxResource,
+    return this.apiService.get(`${this.route}/by-type/${type}`, BioxResource,
       {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
@@ -107,13 +92,13 @@ export class BioxResourceService {
       map(views => bioxGroupResourceViewSpecsByType(views)));
   }
 
-  public callResourceView(type: string, id: string, viewName: string, config: Record<string, any>): Observable<BioxResourceView> {
+  public callResourceView(id: string, viewName: string, config: Record<string, any>): Observable<BioxResourceView> {
     for (const key in config) {
       if (config[key] == null) {
         delete config[key];
       }
     }
-    return this.apiService.post(`resource/${type}/${id}/views/${viewName}`, config, BioxResourceViewBase);
+    return this.apiService.post(`resource/${id}/views/${viewName}`, config, BioxResourceViewBase);
   }
 
 }

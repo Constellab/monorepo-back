@@ -1,4 +1,4 @@
-<gen-biox-resource-info *ngIf="resource.uri; else noResource" [resource]="resource"></gen-biox-resource-info>
+<gen-biox-resource-info *ngIf="resourceId; else noResource" [resourceId]="resourceId"></gen-biox-resource-info>
 
 <ng-template #noResource>
   {{'resource_empty' | translate}}

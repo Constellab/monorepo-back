@@ -7,7 +7,7 @@ import {BioxResourceDetailPageComponent} from './module/biox-resource-detail-pag
 const routes: Routes = [
   {path: '', component: BioxExperimentsListPageComponent},
   {path: 'experiment/:id', component: BioxExperimentDetailPageComponent},
-  {path: 'resource/:type/:id', component: BioxResourceDetailPageComponent},
+  {path: 'resource/:id', component: BioxResourceDetailPageComponent},
 ];
 
 @NgModule({

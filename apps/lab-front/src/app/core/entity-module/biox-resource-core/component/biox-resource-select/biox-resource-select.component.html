@@ -10,7 +10,7 @@
 
   <mat-form-field class="g-full">
     <mat-label>{{'biox.resource_select' | translate}}</mat-label>
-    <mat-select formControlName="resource_uri"
+    <mat-select formControlName="resource_id"
                 (selectionChange)="onResourceChange()">
       <gen-biox-resource-select-options [ressourceType]="selectedType"
                                         valueMode="id"></gen-biox-resource-select-options>

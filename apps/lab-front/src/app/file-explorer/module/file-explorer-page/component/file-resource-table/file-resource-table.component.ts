@@ -1,6 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
-import {FileResourceDatasource, FileResourcePreview} from '../../../../../core/model/entities/resource/file-resource.entity';
+import {
+  FileResourceDatasource,
+  FileResourcePreview
+} from '../../../../../core/model/entities/resource/file-resource.entity';
 import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
 import {RouterService} from '../../../../../core/service/router.service';
 
@@ -26,7 +29,7 @@ export class FileResourceTableComponent extends FlTableAbstractDirective<FileRes
   }
 
   resourceFileRoute(file: FileResourcePreview): string {
-    return RouterService.getBioxResourceDetailRoute(file.typingName, file.id);
+    return RouterService.getBioxResourceDetailRoute(file.id);
   }
 
 }

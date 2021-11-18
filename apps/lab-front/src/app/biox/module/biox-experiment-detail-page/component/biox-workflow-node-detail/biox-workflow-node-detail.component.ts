@@ -68,7 +68,7 @@ export class BioxWorkflowNodeDetailComponent implements OnInit {
   private onConfigDialogClosed(config?: any): void {
     if (config != null) {
       // save the config into the value
-      this.nodeDetailState.updateConfig(config);
+      this.nodeDetailState.updateConfigValues(config);
     }
   }
 }

@@ -32,7 +32,7 @@ export class ExperimentsService extends AbstractWithStatusService<Experiment, Ex
   }
 
   public async createLabExperiment(study: Study, labExperimentDto: LabExperimentDto): Promise<Experiment> {
-    const experimentDB: Experiment = await this.findById(labExperimentDto.uri, {relations: ['study']})
+    const experimentDB: Experiment = await this.findById(labExperimentDto.id, {relations: ['study']})
 
     if (experimentDB && experimentDB.study.id !== study.id) {
       throw new UnauthorizedException('Can\'t change the study of a validated experiment')
@@ -40,7 +40,7 @@ export class ExperimentsService extends AbstractWithStatusService<Experiment, Ex
 
 
     const newExperiment = new Experiment()
-    newExperiment.id = labExperimentDto.uri;
+    newExperiment.id = labExperimentDto.id;
     newExperiment.study = study;
     newExperiment.label = labExperimentDto.data.title;
     newExperiment.description = labExperimentDto.data.description;

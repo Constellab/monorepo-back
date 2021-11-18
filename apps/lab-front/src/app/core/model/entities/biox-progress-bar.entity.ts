@@ -87,7 +87,7 @@ export class BioxProgressBarData extends LabBaseEntity {
 
 export class BioxProgressBar extends LabBaseEntity implements FlStatus {
 
-  process: { uri: string, type: string };
+  process: { id: string, type: string };
 
   @Type(() => BioxProgressBarData)
   data: BioxProgressBarData;

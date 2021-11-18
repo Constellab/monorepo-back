@@ -11,8 +11,8 @@ export class FileResourcePreview extends BioxResource {
 
   path: string;
 
-  @Expose({name: 'file_store_uri'})
-  fileStoreUri: string;
+  @Expose({name: 'file_store_id'})
+  fileStoreId: string;
 
   getExtension(): string {
     return FlFileHelper.getFileExtension(this.path);
@@ -35,10 +35,10 @@ export class FileResource extends FileResourcePreview {
   file: Blob;
 
   /**
-   * return true if the resource data is a json object representing a LabEntity (contains an uri, type and data)
+   * return true if the resource data is a json object representing a LabEntity (contains an id, type and data)
    */
   dataIsLabEntity(): boolean {
-    return this.data && typeof this.data.uri === 'string' && typeof this.data.typingName === 'string'
+    return this.data && typeof this.data.id === 'string' && typeof this.data.typingName === 'string'
       && typeof this.data.data === 'object';
   }
 }

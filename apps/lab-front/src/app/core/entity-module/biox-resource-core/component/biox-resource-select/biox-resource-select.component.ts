@@ -5,7 +5,7 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 
 export interface BioxResourceSelect {
   resource_typing_name: string;
-  resource_uri: string;
+  resource_id: string;
 }
 
 /**
@@ -43,7 +43,7 @@ export class BioxResourceSelectComponent extends FlFormFieldDirective<BioxResour
   private initForm(): void {
     this.formGp = new FormBuilder().group({
       resource_typing_name: [null],
-      resource_uri: [null]
+      resource_id: [null]
     });
   }
 
@@ -60,7 +60,7 @@ export class BioxResourceSelectComponent extends FlFormFieldDirective<BioxResour
   }
 
   writeValue(obj: BioxResourceSelect): void {
-    this.value = obj ?? {resource_typing_name: null, resource_uri: null};
+    this.value = obj ?? {resource_typing_name: null, resource_id: null};
     this.formGp.patchValue(this.value);
     this.toggleResourceDisable();
   }
@@ -68,14 +68,14 @@ export class BioxResourceSelectComponent extends FlFormFieldDirective<BioxResour
 
   onResourceTypeChange(): void {
     this.toggleResourceDisable();
-    this.formGp.get('resource_uri').patchValue(null);
+    this.formGp.get('resource_id').patchValue(null);
   }
 
   toggleResourceDisable(): void {
     if (this.selectedType == null) {
-      this.formGp.get('resource_uri').disable();
+      this.formGp.get('resource_id').disable();
     } else {
-      this.formGp.get('resource_uri').enable();
+      this.formGp.get('resource_id').enable();
     }
   }
 

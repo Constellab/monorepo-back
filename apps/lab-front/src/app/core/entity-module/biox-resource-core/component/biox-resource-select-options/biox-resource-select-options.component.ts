@@ -49,7 +49,7 @@ export class BioxResourceSelectOptionsComponent extends FlEmbeddedOptionsAbstrac
     this.datasource?.disconnect();
 
     let datasource: BioxResourceDatasource;
-    if (type == null) {
+    if (!type) {
       // clear the datasource
       datasource = flGetEmptyPaginatedDatasource();
     } else {

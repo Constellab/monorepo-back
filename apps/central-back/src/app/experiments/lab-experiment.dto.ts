@@ -6,7 +6,7 @@ import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
  * Experiment object from the Lab
  */
 export class LabExperimentDto {
-  uri: string;
+  id: string;
   data: {
     title: string;
     description: string

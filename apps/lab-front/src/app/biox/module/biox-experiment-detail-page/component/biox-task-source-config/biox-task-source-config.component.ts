@@ -39,7 +39,7 @@ export class BioxTaskSourceConfigComponent implements OnInit, OnDestroy {
   }
 
   onResourceChange(resource: BioxResourceSelect): void {
-    this.nodeDetail.updateConfig(resource);
+    this.nodeDetail.updateConfigValues({resource_id: resource.resource_id});
   }
 
   ngOnDestroy(): void {
