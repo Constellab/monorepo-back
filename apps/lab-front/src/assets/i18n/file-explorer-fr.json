@@ -8,6 +8,9 @@
     "download_file": "Télécharger le fichier",
     "select_file_types": "Sélectionner le type des fichiers",
     "select_file_type": "Type du fichier",
-    "file_type": "Type du fichier"
+    "file_type": "Type du fichier",
+    "delete_file": "Supprimer le fichier",
+    "delete_file_confirmation": "Êtes-vous sûr de vouloir supprimer ce fichier ? Si le fichier est utilise dans une experiment, il ne pourra pas être supprimé.",
+    "file_deleted": "Fichier supprimé"
   }
 }

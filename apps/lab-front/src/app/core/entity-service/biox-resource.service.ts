@@ -66,6 +66,10 @@ export class BioxResourceService {
       20, true);
   }
 
+  public delete(id: string): Observable<void> {
+    return this.apiService.delete(`${this.route}/${id}`)
+  }
+
   //////////////////////////////////////// RESOURCE TYPE///////////////////////////////////////
 
 

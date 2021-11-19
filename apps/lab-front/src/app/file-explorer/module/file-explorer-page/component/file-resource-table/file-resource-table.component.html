@@ -35,6 +35,11 @@
               [matTooltip]="'biox.file_resource_download' | translate">
         <mat-icon>cloud_download</mat-icon>
       </button>
+
+      <button mat-icon-button type="button" color="warn" (click)="deleteFile(resource)"
+              [matTooltip]="'fe.delete_file' | translate">
+        <mat-icon>delete</mat-icon>
+      </button>
     </mat-cell>
   </ng-container>
 
