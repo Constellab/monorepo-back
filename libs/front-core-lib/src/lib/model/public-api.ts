@@ -9,5 +9,6 @@ export * from './fl-entity.class';
 export * from './fl-event-wrapper.class';
 export * from './fl-flat-tree-control.class';
 export * from './fl-form.class';
+export * from './fl-form-helper';
 export * from './fl-renderer-listener-obs.class';
 export * from './fl-view-context.class';

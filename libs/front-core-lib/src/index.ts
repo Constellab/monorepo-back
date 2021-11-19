@@ -15,6 +15,7 @@ export * from './lib/module/fl-dialog/public-api';
 export * from './lib/module/fl-drawer/public-api';
 export * from './lib/module/fl-dynamic-field/public-api';
 export * from './lib/module/fl-form/public-api';
+export * from './lib/module/fl-form-inputs-manager/public-api';
 export * from './lib/module/fl-image/public-api';
 export * from './lib/module/fl-inifite-scroll/public-api';
 export * from './lib/module/fl-input-file/public-api';
