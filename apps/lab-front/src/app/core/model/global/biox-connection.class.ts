@@ -1,5 +1,5 @@
 import {LabBaseEntity} from './lab-entity.entity';
-import {BioxIO, BioxIOSpec} from '../entities/biox-io.entity';
+import {BioxIO, BioxIOSpec, BioxIOSpecResourceType} from '../entities/biox-io.entity';
 import {Exclude} from 'class-transformer';
 import {constTypingNameResource} from '../entities/biox-typing-name.py';
 
@@ -60,7 +60,7 @@ export abstract class BioxNode extends LabBaseEntity {
   }
 }
 
-const resourceSpec: BioxIOSpec = {
+const resourceSpec: BioxIOSpecResourceType = {
   typing_name: constTypingNameResource,
   human_name: 'Resource',
   short_description: 'Any resource'
@@ -75,7 +75,7 @@ export class BioxInterfaceNode extends BioxNode {
   portName: string;
 
   // types supported by the port
-  portType: BioxIOSpec[];
+  portType: BioxIOSpec;
 
   /**
    * Return a new interface with specs equals to resource
@@ -84,7 +84,10 @@ export class BioxInterfaceNode extends BioxNode {
     const node = new BioxInterfaceNode();
     node.portName = portName;
     node.name = portName;
-    node.portType = [resourceSpec];
+    node.portType = {
+      resource_types: [resourceSpec],
+      type_io: 'TypeIO'
+    };
     return node;
   }
 }
@@ -98,7 +101,7 @@ export class BioxOuterfaceNode extends BioxNode {
   portName: string;
 
   // types supported by the port
-  portType: BioxIOSpec[];
+  portType: BioxIOSpec;
 
   /**
    * Return a new outerface with specs equals to resource
@@ -107,7 +110,10 @@ export class BioxOuterfaceNode extends BioxNode {
     const node = new BioxOuterfaceNode();
     node.portName = portName;
     node.name = portName;
-    node.portType = [resourceSpec];
+    node.portType = {
+      resource_types: [resourceSpec],
+      type_io: 'TypeIO'
+    };
     return node;
   }
 }

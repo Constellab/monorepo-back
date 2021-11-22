@@ -8,7 +8,7 @@
   </div>
 
   <div fxFlex="auto" class="g-text-light g-text-small text">
-    <div *ngFor="let spec of specs" [matTooltip]="spec.short_description">
+    <div *ngFor="let spec of specs.resource_types" [matTooltip]="spec.short_description">
       {{spec.human_name}}
     </div>
   </div>

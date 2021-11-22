@@ -20,15 +20,14 @@ export abstract class BioxProcessType extends BioxLabTypeEntity {
 
 
   hasInputSpecs(): boolean {
-    const inputSpecs: Record<string, BioxIOSpec[]> = this.getInputSpecs();
+    const inputSpecs: Record<string, BioxIOSpec> = this.getInputSpecs();
     return inputSpecs != null && Object.keys(inputSpecs).length > 0;
 
   }
 
   hasOutputSpecs(): boolean {
-    const outputSpecs: Record<string, BioxIOSpec[]> = this.getOutputSpecs();
+    const outputSpecs: Record<string, BioxIOSpec> = this.getOutputSpecs();
     return outputSpecs != null && Object.keys(outputSpecs).length > 0;
-
   }
 
   hasConfigSpecs(): boolean {
@@ -36,9 +35,9 @@ export abstract class BioxProcessType extends BioxLabTypeEntity {
     return config != null && config.hasConfigs();
   }
 
-  abstract getInputSpecs(): Record<string, BioxIOSpec[]>;
+  abstract getInputSpecs(): Record<string, BioxIOSpec>;
 
-  abstract getOutputSpecs(): Record<string, BioxIOSpec[]>;
+  abstract getOutputSpecs(): Record<string, BioxIOSpec>;
 
   abstract getConfigSpecs(): BioxConfigSpecs;
 

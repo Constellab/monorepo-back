@@ -11,7 +11,7 @@ import {BioxIOSpec} from '../../../../model/entities/biox-io.entity';
 })
 export class BioxProcessPortsListComponent implements OnInit {
 
-  @Input() ports: Record<string, BioxIOSpec[]>
+  @Input() ports: Record<string, BioxIOSpec>
 
   constructor() {
   }

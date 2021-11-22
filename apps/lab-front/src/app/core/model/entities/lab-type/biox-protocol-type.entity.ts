@@ -19,8 +19,8 @@ export class BioxProtocolType extends BioxProcessType {
     return null;
   }
 
-  getInputSpecs(): Record<string, BioxIOSpec[]> {
-    const inputSpecs: Record<string, BioxIOSpec[]> = {};
+  getInputSpecs(): Record<string, BioxIOSpec> {
+    const inputSpecs: Record<string, BioxIOSpec> = {};
     // we construct the input spec from the interface
     const interfaces: Record<string, BioxProtocolLink> = this.data.graph.interfaces ?? {};
 
@@ -35,8 +35,8 @@ export class BioxProtocolType extends BioxProcessType {
     return inputSpecs;
   }
 
-  getOutputSpecs(): Record<string, BioxIOSpec[]> {
-    const outputSpecs: Record<string, BioxIOSpec[]> = {};
+  getOutputSpecs(): Record<string, BioxIOSpec> {
+    const outputSpecs: Record<string, BioxIOSpec> = {};
     // we construct the input spec from the interface
     const outerfaces: Record<string, BioxProtocolLink> = this.data.graph.outerfaces ?? {};
 

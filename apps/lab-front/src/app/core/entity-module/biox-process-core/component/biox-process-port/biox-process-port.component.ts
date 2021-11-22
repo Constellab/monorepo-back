@@ -10,7 +10,7 @@ export class BioxProcessPortComponent implements OnInit {
 
   @Input() name: string;
 
-  @Input() specs: BioxIOSpec[];
+  @Input() specs: BioxIOSpec;
 
   constructor() {
   }

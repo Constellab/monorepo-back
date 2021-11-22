@@ -11,10 +11,10 @@ import {BioxIOSpec} from '../biox-io.entity';
 export class BioxTaskType extends BioxProcessType {
 
   @Expose({name: 'input_specs'})
-  inputSpecs: Record<string, BioxIOSpec[]>;
+  inputSpecs: Record<string, BioxIOSpec>;
 
   @Expose({name: 'output_specs'})
-  outputSpecs: Record<string, BioxIOSpec[]>;
+  outputSpecs: Record<string, BioxIOSpec>;
 
   @Expose({name: 'config_specs'})
   @ClRecordWrapperTransform(BioxConfigSpecs, BioxConfigSpecBase)
@@ -27,11 +27,11 @@ export class BioxTaskType extends BioxProcessType {
     return this.configSpecs;
   }
 
-  getInputSpecs(): Record<string, BioxIOSpec[]> {
+  getInputSpecs(): Record<string, BioxIOSpec> {
     return this.inputSpecs;
   }
 
-  getOutputSpecs(): Record<string, BioxIOSpec[]> {
+  getOutputSpecs(): Record<string, BioxIOSpec> {
     return this.outputSpecs;
   }
 

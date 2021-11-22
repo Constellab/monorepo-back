@@ -8,7 +8,7 @@ export class WorkflowPort {
 
   constructor(public name: string,
               public drawFlowName: string,
-              public specs: BioxIOSpec[]) {
+              public specs: BioxIOSpec) {
   }
 
   /**
