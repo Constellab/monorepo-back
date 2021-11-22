@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {UnconvertedResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {RouterService} from '../../../../service/router.service';
 
 /**
@@ -12,7 +11,7 @@ import {RouterService} from '../../../../service/router.service';
 })
 export class BioxResourceInfoComponent implements OnInit {
 
-  @Input() resource: UnconvertedResource;
+  @Input() resourceId: string;
 
   resourceDetailUrl: string;
 
@@ -20,7 +19,7 @@ export class BioxResourceInfoComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.resourceDetailUrl = RouterService.getBioxResourceDetailRoute(this.resource.typing_name, this.resource.uri);
+    this.resourceDetailUrl = RouterService.getBioxResourceDetailRoute(this.resourceId);
   }
 
 }

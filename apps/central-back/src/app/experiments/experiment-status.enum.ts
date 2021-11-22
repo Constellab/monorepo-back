@@ -1,6 +1,6 @@
 export enum ExperimentStatus {
   DRAFT = 'DRAFT',
-  STARTED = 'STARTED',
-  FINISHED = 'FINISHED',
-  ARCHIVED = 'ARCHIVED'
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
+  ARCHIVED = 'ARCHIVED',
 }

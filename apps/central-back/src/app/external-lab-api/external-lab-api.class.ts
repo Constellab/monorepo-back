@@ -10,7 +10,7 @@ export interface ExternalLabLoginResponse {
 export type ExternalLabUserGroup = 'ADMIN' | 'USER';
 
 export interface ExternalLabUser {
-  uri: string;
+  id: string;
   email: string;
   group: ExternalLabUserGroup;
   is_active: boolean;
@@ -22,16 +22,4 @@ export interface ExternalLabUser {
 export interface ExternalNewLabUser {
   userId: string;
   group: ExternalLabUserGroup;
-}
-
-
-/**
- * Object format of the experiment in the lab
- */
-export interface ExternalExperimentClass {
-  uri: string;
-  protocol: {
-    uri: string,
-    graph: string
-  };
 }

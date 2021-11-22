@@ -26,7 +26,7 @@ export type BioxExperimentStatus = 'DRAFT' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNIN
 
 export class BioxExperiment extends LabBaseEntity implements FlStatus {
 
-  @Expose({name: 'protocol_job_uri'})
+  @Expose({name: 'protocol_job_id'})
   protocolJobId: string;
 
   score: any;
@@ -83,6 +83,8 @@ const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status
   switch (status) {
     case 'ERROR':
       return FlStatusHelper.getErrorColor(mode);
+    case 'DRAFT':
+      return FlStatusHelper.getInfoColor(mode)
     default:
       return FlStatusHelper.getSuccessColor(mode);
   }

@@ -1,5 +1,3 @@
-import {UnconvertedResource} from './resource/biox-resource.entity';
-
 export interface BioxIOSpec {
   typing_name: string;
   human_name: string;
@@ -11,7 +9,7 @@ export interface BioxIOSpec {
  */
 export class BioxIO {
 
-  resource: UnconvertedResource;
+  resource_id: string;
 
   specs: BioxIOSpec[];
 }

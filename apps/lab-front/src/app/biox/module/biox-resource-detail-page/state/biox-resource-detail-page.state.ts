@@ -26,7 +26,6 @@ export class BioxResourceDetailPageState implements OnDestroy {
 
   private readonly actionType: string = 'view-loader';
 
-  private type: string;
   private id: string;
 
   private resource$: ClCachedObservable<BioxResource>;
@@ -38,10 +37,9 @@ export class BioxResourceDetailPageState implements OnDestroy {
               private flActionService: FlPortalActionsService) {
   }
 
-  public init(type: string, id: string): void {
-    this.type = type;
+  public init(id: string): void {
     this.id = id;
-    this.resource$ = new ClCachedObservable(this.resourceService.getByTypingNameAndId(type, id));
+    this.resource$ = new ClCachedObservable(this.resourceService.getById(id));
 
     // load the views once the resource was found
     this.viewSpecs$ = new ClCachedObservable(
@@ -133,7 +131,7 @@ export class BioxResourceDetailPageState implements OnDestroy {
   }
 
   private callResourceView(methodName: string, config: BioxResourceViewConfig): Observable<BioxResourceView> {
-    return this.resourceService.callResourceView(this.type, this.id, methodName, config.configValues);
+    return this.resourceService.callResourceView(this.id, methodName, config.configValues);
   }
 
   public getView$(): Observable<FlPortalActionResult<BioxResourceViewEvent>> {

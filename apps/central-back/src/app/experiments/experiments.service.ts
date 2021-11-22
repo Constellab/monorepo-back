@@ -1,10 +1,13 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {Experiment} from './experiment.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {AbstractWithStatusService} from '../core/class/abstract-with-status.service';
 import {ExperimentStatus} from './experiment-status.enum';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
+import {LabExperimentDto} from './lab-experiment.dto';
+import {Study} from '../studies/study.entity';
+import {CurrentUserHelper} from '../core/utils/current-user.helper';
 
 @Injectable()
 export class ExperimentsService extends AbstractWithStatusService<Experiment, ExperimentStatus> {
@@ -27,4 +30,29 @@ export class ExperimentsService extends AbstractWithStatusService<Experiment, Ex
       order: {lastModifiedAt: 'DESC'}
     });
   }
+
+  public async createLabExperiment(study: Study, labExperimentDto: LabExperimentDto): Promise<Experiment> {
+    const experimentDB: Experiment = await this.findById(labExperimentDto.id, {relations: ['study']})
+
+    if (experimentDB && experimentDB.study.id !== study.id) {
+      throw new UnauthorizedException('Can\'t change the study of a validated experiment')
+    }
+
+
+    const newExperiment = new Experiment()
+    newExperiment.id = labExperimentDto.id;
+    newExperiment.study = study;
+    newExperiment.label = labExperimentDto.data.title;
+    newExperiment.description = labExperimentDto.data.description;
+    newExperiment.createdAt = labExperimentDto.creation_datetime;
+    newExperiment.lastModifiedAt = labExperimentDto.save_datetime;
+    if (experimentDB) {
+      // todo does not support status change
+      return await this.updateWithCompare(newExperiment, experimentDB);
+    } else {
+      newExperiment.labInstance = CurrentUserHelper.getLabInstance()
+      return this.createWithStatus(newExperiment, labExperimentDto.status)
+    }
+  }
+
 }

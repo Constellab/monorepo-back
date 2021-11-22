@@ -80,8 +80,10 @@ export class FlBioxNetworkD3 {
   }
 
   public hasPosition(): boolean {
+    return this.metabolites.every(metabolite => metabolite.x != null && metabolite.y != null) &&
+    this.reactions.every(reaction  => reaction.x != null && reaction.y != null)
     // true if the node have a position, in this case, no need to launch simulation
-    return this.metabolites[0]?.x != null && this.metabolites[0]?.x !== 0;
+    // return this.metabolites[0]?.x != null && this.metabolites[0]?.x !== 0;
   }
 
   public savePositions(): void {

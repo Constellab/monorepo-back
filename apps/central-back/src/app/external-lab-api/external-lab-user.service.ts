@@ -23,7 +23,7 @@ export class ExternalLabUserService {
    */
   public login(labInfo: LabServerInfo, user: User): Promise<ExternalLabLoginResponse> {
     const body: any = {
-      uri: user.id
+      id: user.id
     };
 
     return this.externalLabApiService.post(labInfo, `${this.route}/generate-access-token`, body).toPromise();
@@ -57,7 +57,7 @@ export class ExternalLabUserService {
     }
 
     const newLabUser: ExternalLabUser = {
-      uri: user.id,
+      id: user.id,
       email: user.email,
       group: group,
       first_name: user.firstname,

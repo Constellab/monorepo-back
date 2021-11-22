@@ -341,7 +341,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
         forceLink(this.data.links).distance(1)
           .id((d: FlBioNetworkD3Node) => d.id)
       )
-      .force('charge', forceManyBody().strength(-10))
+      .force('charge', forceManyBody().strength(-1))
       .force('center', forceCenter(this.chartWidth / 2, this.chartHeight / 2))
       .force('collide', forceCollide().radius(this.collideRadius));
   }

@@ -3,6 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {WorkflowNode} from '../model/workflow-node.class';
 import {BioxProcess} from '../../../../core/model/entities/process/biox-process.entity';
 import {map} from 'rxjs/operators';
+import {BioxConfigValues} from '../../../../core/model/entities/biox-config.entity';
 
 /**
  * State to manage the selected node to show it in the drawer
@@ -36,7 +37,7 @@ export class BioxWorkflowNodeDetailState {
     this.node$.complete();
   }
 
-  public updateConfig(config: any): void{
+  public updateConfigValues(config: BioxConfigValues): void{
     this.node$.value.object.config.data.values = config;
     this.emitCurrentNode();
   }

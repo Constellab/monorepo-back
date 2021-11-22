@@ -5,8 +5,8 @@ import {
   FlDynamicFieldConfigMaterialInput,
   FlDynamicFieldConfigSelect
 } from '../fl-dynamic-field-config.class';
-import {FormControl, ValidatorFn, Validators} from '@angular/forms';
-import {FlGlobalValidators} from '../../../utils/fl-global.validators';
+import {FormControl} from '@angular/forms';
+import {FlDynamicAbstractFormDirective} from '../fl-dynamic-abstract-form.directive';
 
 /**
  * NgModel component to generate a form field dynamically based on a config
@@ -17,11 +17,11 @@ import {FlGlobalValidators} from '../../../utils/fl-global.validators';
   styleUrls: ['./fl-dynamic-field.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlDynamicFieldComponent implements OnInit {
+export class FlDynamicFieldComponent implements OnInit, FlDynamicAbstractFormDirective {
 
   @Input() config: FlDynamicFieldConfig;
 
-  @Input() formCtrl: FormControl;
+  @Input() control: FormControl;
 
   @Output() valueChange: EventEmitter<any> = new EventEmitter<any>();
 
@@ -29,40 +29,7 @@ export class FlDynamicFieldComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.required = !!this.config.required
-
-    this.formCtrl.patchValue(this.config.initValue);
-
-
-    this.formCtrl.setValidators(this.getValidators());
-
-    if (this.config.disabled) {
-      this.formCtrl.disable();
-    }
-
-    this.formCtrl.updateValueAndValidity();
-  }
-
-  private getValidators(): ValidatorFn[] {
-    const validators: ValidatorFn[] = [];
-
-    if (this.required) {
-      validators.push(Validators.required);
-    }
-
-    if (this.config.type === 'input') {
-      if (this.config.min != null) {
-        validators.push(Validators.min(this.config.min));
-      }
-      if (this.config.max != null) {
-        validators.push(Validators.max(this.config.max));
-      }
-      if(this.config.integer){
-        validators.push(FlGlobalValidators.isInteger())
-      }
-    }
-
-    return validators;
+    this.required = !!this.config.required;
   }
 
   // getter to avoid error in HTML

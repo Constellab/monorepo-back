@@ -59,12 +59,12 @@ export class BioxResourceDetailPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.pipe(first()).subscribe(
-      params => this.init(params.type, params.id)
+      params => this.init(params.id)
     );
   }
 
-  private init(type: string, id: string): void {
-    this.state.init(type, id);
+  private init(id: string): void {
+    this.state.init(id);
     this.resource$ = this.state.getResource$().pipe(
       tap(resource => this.initTitle(resource))
     );
@@ -138,7 +138,7 @@ export class BioxResourceDetailPageComponent implements OnInit {
   }
 
   private initTitle(resource: BioxResource): void {
-    this.title = resource.resourceHumanName;
+    this.title = resource.name;
   }
 
 

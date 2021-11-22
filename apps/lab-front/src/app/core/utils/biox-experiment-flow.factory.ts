@@ -39,14 +39,14 @@ export class BioxExperimentFlowFactory {
       // if the connection is an interface or outerface, don't add it to the links
       if (connection.isIOFaceConnection()) {
         const ioFace: BioxProtocolIOFace = BioxExperimentFlowFactory.workflowConnection(connection) as BioxProtocolIOFace;
-        // retrieve the name of the ioFace
-        const ioFaceName: string = (connection.object as BioxProtocolIOFace).name;
-        ioFace.name = ioFaceName;
-
         if (connection.isInterfaceConnection()) {
-          graph.interfaces[ioFaceName] = ioFace;
+          // retrieve the name of the ioFace
+          ioFace.name = connection.outputPort.name;
+          graph.interfaces[ioFace.name] = ioFace;
         } else {
-          graph.outerfaces[ioFaceName] = ioFace;
+          // retrieve the name of the ioFace
+          ioFace.name = connection.inputPort.name;
+          graph.outerfaces[ioFace.name] = ioFace;
         }
 
       } else {

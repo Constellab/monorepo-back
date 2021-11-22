@@ -1,6 +1,5 @@
 import {BioxConnection, BioxConnectionPart, BioxNode} from '../global/biox-connection.class';
 import {Exclude, Expose, Type} from 'class-transformer';
-import {UnconvertedResource} from './resource/biox-resource.entity';
 
 /**
  * Part of a link between different process in protocol
@@ -48,7 +47,7 @@ export class BioxProtocolLink implements BioxConnection {
   @Type(() => BioxProtocolLinkPart)
   to: BioxProtocolLinkPart;
 
-  resource: UnconvertedResource;
+  resource_id: string;
 }
 
 /**

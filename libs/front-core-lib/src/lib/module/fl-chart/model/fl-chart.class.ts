@@ -14,6 +14,7 @@ export enum FlChartType {
   SCATTER_PLOT = 'SCATTER_PLOT',
   BAR_PLOT = 'BAR_PLOT',
   HISTOGRAM = 'HISTOGRAM',
+  STACKED_PLOT = 'STACKED_PLOT',
   BOX_PLOT = 'BOX_PLOT',
   HEAT_MAP = 'HEAT_MAP',
 }
@@ -40,6 +41,10 @@ export const flChartTypeSelectOptions: FlChartTypeSelectOption[] = [
   {
     component: FlChartType.HISTOGRAM,
     icon: 'bar_chart'
+  },
+  {
+    component: FlChartType.STACKED_PLOT,
+    icon: 'stacked_bar_chart'
   },
   {
     component: FlChartType.BOX_PLOT,

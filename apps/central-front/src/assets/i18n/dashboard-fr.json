@@ -21,6 +21,8 @@
   "experiment_created": "Expérience créée",
   "experiment_updated": "Expérience modifiée",
   "DRAFT": "Brouillon",
+  "SUCCESS": "Succès",
+  "ERROR": "Erreur",
   "STARTED": "Démarrée",
   "FINISHED": "Finie",
   "update_project_status": "Modifier le statut du projet",

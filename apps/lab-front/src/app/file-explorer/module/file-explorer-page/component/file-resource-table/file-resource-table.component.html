@@ -10,13 +10,13 @@
     </mat-cell>
   </ng-container>
 
-  <!-- Filename -->
-  <ng-container matColumnDef="filename">
+  <!-- Name -->
+  <ng-container matColumnDef="name">
     <mat-header-cell *matHeaderCellDef>
-      <span> {{'biox.filename' | translate}}</span>
+      <span> {{'name' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let resource">
-      {{resource.filename}}
+      {{resource.name}}
     </mat-cell>
   </ng-container>
 
@@ -35,9 +35,14 @@
               [matTooltip]="'biox.file_resource_download' | translate">
         <mat-icon>cloud_download</mat-icon>
       </button>
+
+      <button mat-icon-button type="button" color="warn" (click)="deleteFile(resource)"
+              [matTooltip]="'fe.delete_file' | translate">
+        <mat-icon>delete</mat-icon>
+      </button>
     </mat-cell>
   </ng-container>
-  
+
   <!-- Dynamic columns -->
   <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
     <mat-header-cell *matHeaderCellDef>

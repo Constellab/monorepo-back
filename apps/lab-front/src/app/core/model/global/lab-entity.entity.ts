@@ -8,7 +8,6 @@ import {Expose} from 'class-transformer';
  */
 export class LabEntity implements FlEntity {
 
-  @Expose({name: 'uri'})
   id: string;
 
 }
@@ -29,9 +28,4 @@ export class LabBaseEntity extends LabEntity {
   @ClLuxonTransform()
   savedAt: DateTime;
 
-}
-
-
-export interface LabUnconvertedEntity {
-  uri: string;
 }

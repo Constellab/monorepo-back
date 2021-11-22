@@ -30,11 +30,11 @@ export class BioxProcess extends BioxNode implements FlStatus {
   data: BioxProcessData;
 
   experiment: {
-    uri: string;
+    id: string;
   };
 
   protocol: {
-    uri: string;
+    id: string;
   };
 
   status: BioxProcessStatus;

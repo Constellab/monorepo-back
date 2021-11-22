@@ -1,9 +1,14 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {BioxFileType, FileResourceDatasource, FileResourcePreview} from '../model/entities/resource/file-resource.entity';
+import {
+  BioxFileType,
+  FileResourceDatasource,
+  FileResourcePreview
+} from '../model/entities/resource/file-resource.entity';
 import {ClPageI} from '@monorepo/core-lib';
 import {map, mergeMap} from 'rxjs/operators';
+import {BioxResource} from '../model/entities/resource/biox-resource.entity';
 
 export interface FileWithContent {
   file: Blob;
@@ -65,6 +70,12 @@ export class FileResourceService {
   public getAllDatasource(): FileResourceDatasource {
     return new FlEntityPaginatedDatasource(((page, pageSize) => this.getAll(page, pageSize)),
       20, true);
+  }
+
+
+
+  public updateFileType(id: string, fileType: string): Observable<BioxResource> {
+    return this.apiService.put(`${this.route}/${id}/${fileType}`, BioxResource)
   }
 
 

@@ -1,4 +1,4 @@
-import {LabBaseEntity, LabUnconvertedEntity} from '../../global/lab-entity.entity';
+import {LabBaseEntity} from '../../global/lab-entity.entity';
 import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {BioxTag} from '../biox-tag.entity';
@@ -24,13 +24,9 @@ export class BioxResource<DATA = Record<string, any>> extends LabBaseEntity {
   @Type(() => BioxTag)
   tags: BioxTag[];
 
+  name: string;
+
   data: DATA;
 }
 
 export type BioxResourceDatasource = FlEntityPaginatedDatasource<BioxResource>
-
-
-export interface UnconvertedResource extends LabUnconvertedEntity {
-  typing_name: string;
-}
-

@@ -1,5 +1,8 @@
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
-import {FlSheetChart2dSerieSelectionForm, FlSheetChartSelectionForm} from '../model/chart/fl-sheet-chart-selection-form.class';
+import {
+  FlSheetChart2dSerieSelectionForm,
+  FlSheetChartSelectionForm
+} from '../model/chart/fl-sheet-chart-selection-form.class';
 import {FlChartType} from '../../fl-chart/model/fl-chart.class';
 import {FlSheetMultiSelection} from '../model/selection/fl-sheet-multi-selection.class';
 import {FlSheet} from '../model/fl-sheet.class';
@@ -53,6 +56,7 @@ export class FlSpreadsheetChartSelectionFactory {
         break;
       case FlChartType.LINE:
       case FlChartType.BAR_PLOT:
+      case FlChartType.STACKED_PLOT:
       case FlChartType.BOX_PLOT:
         series = FlSpreadsheetChartSelectionFactory.createMultiplesSeriesForY(dataSelection);
         break;
@@ -63,6 +67,8 @@ export class FlSpreadsheetChartSelectionFactory {
         // create a single selection only from the first selection
         series = FlSpreadsheetChartSelectionFactory.createSingleSerieForY(dataSelection.selections[0]);
         break;
+      default:
+        console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${chartType} is not supported`)
     }
 
     // set the series' names
@@ -129,9 +135,13 @@ export class FlSpreadsheetChartSelectionFactory {
       case FlChartType.BOX_PLOT:
         return new FlSheetChartSelectionBoxPlot(sheet, formValue);
       case FlChartType.BAR_PLOT:
+      case FlChartType.STACKED_PLOT:
         return new FlSheetChartSelectionBarPlot(sheet, formValue);
       case FlChartType.HEAT_MAP:
         return new FlSheetChartSelectionHeatMap(sheet, formValue);
+      default:
+        console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${formValue.chartType} is not supported`)
+        return null
     }
   }
 
@@ -155,18 +165,22 @@ export class FlSpreadsheetChartSelectionFactory {
       case FlChartType.HISTOGRAM:
       case FlChartType.BOX_PLOT:
       case FlChartType.BAR_PLOT:
+      case FlChartType.STACKED_PLOT:
         return {
           serie: serie,
           mode: 'onlyY',
           ySelectionMode: 'multi',
         };
-        // in heat we only allow single selection to have a clean 2d array
+      // in heat we only allow single selection to have a clean 2d array
       case FlChartType.HEAT_MAP:
         return {
           serie: serie,
           mode: 'onlyY',
           ySelectionMode: 'single',
         };
+      default:
+        console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${chartType} is not supported`)
+        return null
     }
   }
 

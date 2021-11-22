@@ -1,11 +1,13 @@
 import {ClRecordWrapper} from '@monorepo/core-lib';
 import {
+  FlDynamicFieldConfig,
   FlDynamicFieldConfigBase,
   FlDynamicFieldConfigBoolean,
   FlDynamicFieldConfigInput,
   FlDynamicFieldConfigList,
   FlDynamicFieldConfigSelect,
-  FlDynamicFormFieldConfig
+  FlDynamicFormAbstractControl,
+  FlDynamicFormGroupConfig,
 } from '@monorepo/front-core-lib';
 
 /**
@@ -17,45 +19,59 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
   /**
    * Method to convert the BioxConfigSpec to a FlDynamicFormFieldConfig to create a form
    */
-  public convertToFieldConfigs(currentConfig: Record<string, unknown> = {},
-                               visibility?: BioxConfigSpecVisibility): FlDynamicFormFieldConfig[] {
-    const configs: FlDynamicFormFieldConfig[] = [];
-    for (const specName in this.record) {
-      const configSpec: BioxConfigSpec = this.record[specName];
+  public convertToFieldConfigs(visibility?: BioxConfigSpecVisibility): FlDynamicFormGroupConfig {
+    return this.convertRecordToFieldConfigs(this.record, visibility);
+  }
+
+  public convertRecordToFieldConfigs(record: Record<string, BioxConfigSpec>, visibility?: BioxConfigSpecVisibility)
+    : FlDynamicFormGroupConfig {
+    const configs: FlDynamicFormGroupConfig = {
+      controlType: 'formGroup',
+      subConfigs: {}
+    };
+    for (const specName in record) {
+      const configSpec: BioxConfigSpec = record[specName];
 
       // if a visibility is specified, only get the config for this visibility
       if (visibility && configSpec.visibility !== visibility) continue;
-      configs.push(this.convertToFieldConfig(specName, currentConfig[specName] ?? undefined));
+      configs.subConfigs[specName] = this.convertToAbstractConfig(record[specName], specName);
     }
 
     return configs;
   }
 
-  private convertToFieldConfig(fieldName: string, currentConfig?: any): FlDynamicFormFieldConfig {
-    const spec: BioxConfigSpec = this.record[fieldName];
 
-    const formFieldConfig: FlDynamicFormFieldConfig = {
-      controlName: fieldName,
-      fieldConfig: null,
-    };
+  private convertToAbstractConfig(spec: BioxConfigSpec, defaultPlaceholder: string): FlDynamicFormAbstractControl {
+    if (spec.type === 'param_set') {
+      return {
+        controlType: 'formArray', formGpConfig: this.convertRecordToFieldConfigs(spec.param_set),
+        placeholder: spec.human_name ?? defaultPlaceholder, hint: spec.short_description,
+        minSize: spec.optional ? 1 : 0, maxSize: spec.max_number_of_occurrences > 0 ? spec.max_number_of_occurrences : null
+      };
+    } else {
+      return this.convertToControlConfig(spec, defaultPlaceholder);
+    }
+  }
 
+
+  private convertToControlConfig(spec: BioxConfigSpecSimple, defaultPlaceholder: string): FlDynamicFieldConfig {
     // create a select
     if (spec.allowed_values) {
-      const config: FlDynamicFieldConfigSelect = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
+      const config: FlDynamicFieldConfigSelect = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'select';
       config.selectOptions = spec.allowed_values;
       config.suffix = spec.unit;
-      formFieldConfig.fieldConfig = config;
+      return config;
     } else if (spec.type === 'list') {
-      const config: FlDynamicFieldConfigList = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
+      const config: FlDynamicFieldConfigList = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'list';
-      formFieldConfig.fieldConfig = config;
+      return config;
     } else if (spec.type === 'bool') {
-      const config: FlDynamicFieldConfigBoolean = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
+      const config: FlDynamicFieldConfigBoolean = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'boolean';
-      formFieldConfig.fieldConfig = config;
+      return config;
     } else {
-      const config: FlDynamicFieldConfigInput = this.convertToBaseFieldConfig(spec, fieldName, currentConfig) as any;
+      const config: FlDynamicFieldConfigInput = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'input';
       config.inputType = spec.type === 'str' ? 'text' : 'number';
       config.suffix = spec.unit;
@@ -66,18 +82,18 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
         config.max = spec.max_value;
         config.integer = spec.type === 'int';
       }
-      formFieldConfig.fieldConfig = config;
+      return config;
     }
-    return formFieldConfig;
   }
 
-  private convertToBaseFieldConfig(spec: BioxConfigSpec, fieldName: string, currentConfig?: any): FlDynamicFieldConfigBase {
+  private convertToBaseFieldConfig(spec: BioxConfigSpec, defaultPlaceholder: string): FlDynamicFieldConfigBase {
     return {
+      controlType: 'formControl',
       type: null,
-      initValue: currentConfig !== undefined ? currentConfig : spec.default_value,
-      required: !spec.optional,// required if there is no default value
-      placeholder: spec.human_name ?? fieldName,
+      required: !spec.optional,
+      placeholder: spec.human_name ?? defaultPlaceholder,
       hint: spec.short_description,
+      defaultValue: spec.default_value,
     };
   }
 
@@ -127,10 +143,18 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
 /**
  * Object describing the config properties
  */
-export type BioxConfigSpec = BioxConfigSpecString | BioxConfigSpecFloat | BioxConfigSpecList | BioxConfigSpecBoolean;
+export type BioxConfigSpec =
+  BioxConfigSpecSimple
+  | BioxConfigSpecParamSet;
+
+export type BioxConfigSpecSimple =
+  BioxConfigSpecString
+  | BioxConfigSpecFloat
+  | BioxConfigSpecList
+  | BioxConfigSpecBoolean;
 
 // If the config property is a string or a float
-export type BioxConfigSpecType = 'str' | 'int' | 'float' | 'list' | 'bool';
+export type BioxConfigSpecType = 'str' | 'int' | 'float' | 'list' | 'bool' | 'param_set';
 
 export type BioxConfigSpecVisibility = 'protected' | 'public';
 
@@ -170,13 +194,9 @@ export class BioxConfigSpecBase {
    * Visibility for the config, if protected, it is considered as advanced option
    */
   visibility: BioxConfigSpecVisibility;
-
-  public hasDefaultValue(): boolean {
-    return this.default_value !== undefined;
-  }
 }
 
-export class BioxConfigSpecString extends BioxConfigSpecBase {
+export interface BioxConfigSpecString extends BioxConfigSpecBase {
 
   type: 'str';
 
@@ -186,7 +206,7 @@ export class BioxConfigSpecString extends BioxConfigSpecBase {
   allowed_values?: string[];
 }
 
-export class BioxConfigSpecFloat extends BioxConfigSpecBase {
+export interface BioxConfigSpecFloat extends BioxConfigSpecBase {
 
   type: 'int' | 'float';
 
@@ -202,12 +222,19 @@ export class BioxConfigSpecFloat extends BioxConfigSpecBase {
   max_value: number;
 }
 
-export class BioxConfigSpecBoolean extends BioxConfigSpecBase {
+export interface BioxConfigSpecBoolean extends BioxConfigSpecBase {
   type: 'bool';
   allowed_values?: void;
 }
 
-export class BioxConfigSpecList extends BioxConfigSpecBase {
+export interface BioxConfigSpecList extends BioxConfigSpecBase {
   type: 'list';
   allowed_values?: void;
+}
+
+export interface BioxConfigSpecParamSet extends BioxConfigSpecBase {
+  type: 'param_set';
+
+  param_set: Record<string, BioxConfigSpec>;
+  max_number_of_occurrences: number;
 }

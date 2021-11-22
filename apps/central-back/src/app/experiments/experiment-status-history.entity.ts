@@ -8,7 +8,7 @@ import {BlNotUpdatable} from '@monorepo/back-core-lib';
 @Entity()
 export class ExperimentStatusHistory extends StatusHistory<ExperimentStatus> {
 
-  @Column({type: 'enum', enum: ExperimentStatus, nullable: false, default: ExperimentStatus.STARTED})
+  @Column({type: 'enum', enum: ExperimentStatus, nullable: false, default: ExperimentStatus.DRAFT})
   status: ExperimentStatus;
 
   @Exclude()
