@@ -49,11 +49,30 @@ export class DnFolderService {
       title: createDocumentationRes.title,
       content: createDocumentationRes.content,
       path: createDocumentationRes.path,
-      completePath: folder.path + createDocumentationRes.path + '/',
+      completePath: folder.completePath + createDocumentationRes.path + '/',
       order: createDocumentationRes.order,
       folder: folder
     }
-    return this.documentationService.create(createDocumentation);
+
+    const doc: DnDocumentation = await this.documentationService.create(createDocumentation);
+    return doc;
+  }
+
+  async updateDoc(updateDocumentationRes: DnDocumentationResDTO): Promise<DnDocumentation> {
+    const folder = await this.foldersRepository.findOne(updateDocumentationRes.folderId);
+
+    const updateDocumentation = {
+      id: updateDocumentationRes.id,
+      title: updateDocumentationRes.title,
+      content: updateDocumentationRes.content,
+      path: updateDocumentationRes.path,
+      completePath: folder.completePath + updateDocumentationRes.path + '/',
+      order: updateDocumentationRes.order,
+      folder: folder
+    }
+
+    const doc: DnDocumentation = await this.documentationService.update(updateDocumentation);
+    return doc;
   }
 
   async findAll(): Promise<DnFolder[]> {

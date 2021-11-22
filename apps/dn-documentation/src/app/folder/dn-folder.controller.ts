@@ -22,6 +22,11 @@ export class DnFolderController {
     return this.folderService.createDoc(createDocumentation);
   }
 
+  @Put('doc')
+  updateDoc(@Body(new BlParsePipe(DnDocumentationResDTO)) createDocumentation: DnDocumentationResDTO): Promise<DnDocumentation> {
+    return this.folderService.updateDoc(createDocumentation);
+  }
+
   @BlPublic()
   @Get()
   async findAll(): Promise<DnFolder[]> {

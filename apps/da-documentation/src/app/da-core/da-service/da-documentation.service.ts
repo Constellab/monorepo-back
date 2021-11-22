@@ -21,7 +21,7 @@ export class DaDocumentationService {
    * @param object json object
    */
     public create(object: Partial<DaDocumentation>): Observable<DaDocumentation> {
-      return this.apiService.post(this.route, object, DaDocumentation);
+      return this.apiService.post('folder/doc', object, DaDocumentation);
     }
 
     /**
@@ -52,7 +52,7 @@ export class DaDocumentationService {
    * @param object json object
    */
     public update(object: Partial<DaDocumentation>): Observable<DaDocumentation> {
-      return this.apiService.put(this.route, object, DaDocumentation);
+      return this.apiService.put('folder/doc', object, DaDocumentation);
     }
 
     /**

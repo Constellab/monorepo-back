@@ -91,14 +91,12 @@ export class DaAdminDocFormComponent implements OnInit {
   private creationSuccess(): void {
     this.snackBarService.openSuccessMessage('documentation_created', true);
     this.isLoading = false;
-    this.router.navigate(['admin']);
   }
 
   private update(formValue: DaDocumentationFormDTO): void {
     this.daDocumentationService.update(formValue).subscribe(() => {
       this.snackBarService.openSuccessMessage('documentation_uptated', true);
       this.isLoading = false;
-      this.router.navigate(['admin']);
     },
     () => this.isLoading = false);
   }
