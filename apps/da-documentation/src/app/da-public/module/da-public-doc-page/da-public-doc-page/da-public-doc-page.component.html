@@ -1,10 +1,7 @@
 <fl-async-section [object]="documentation$">
 
   <ng-container *flSectionBody="let documentation">
-    <div>
-      <h1>{{documentation.title}}</h1>
-    </div>
-    <div [innerHtml]="documentation.content"></div>
+    <div class="main-public" [innerHtml]="documentation.content"></div>
   </ng-container>
 
 </fl-async-section>

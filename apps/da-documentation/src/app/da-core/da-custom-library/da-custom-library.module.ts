@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {
   FlAuthModule,
+  FlCoreDirectiveModule,
   FlCorePipeModule,
   FlDialogModule,
   FlFormModule,
@@ -12,6 +13,7 @@ import {
 
 @NgModule({
   exports: [
+    FlCoreDirectiveModule,
     FlCorePipeModule,
     FlFormModule,
     FlLoaderModule,
