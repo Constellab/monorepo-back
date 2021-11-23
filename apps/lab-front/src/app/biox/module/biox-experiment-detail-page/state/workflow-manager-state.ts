@@ -278,7 +278,7 @@ export class WorkflowManagerState {
     this.workflow?.destroy();
     this.workflow = null;
     this._layerIsLoading$.complete();
-    this.subscription.unsubscribe();
+    this.subscription?.unsubscribe();
   }
 
 }

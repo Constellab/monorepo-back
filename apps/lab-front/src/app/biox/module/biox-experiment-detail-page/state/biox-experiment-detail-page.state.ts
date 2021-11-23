@@ -68,7 +68,8 @@ export class BioxExperimentDetailPageState {
 
   private loadFlow(protocolId: string): void {
     this.bioxProtocolService.getProtocolAsFlow(protocolId).subscribe(
-      flow => this.loadFlowSuccess(flow)
+      flow => this.loadFlowSuccess(flow),
+      error => this.flow$.error(error)
     );
   }
 

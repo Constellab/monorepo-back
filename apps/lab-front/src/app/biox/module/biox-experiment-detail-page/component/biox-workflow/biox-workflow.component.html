@@ -22,7 +22,5 @@
 </div>
 
 <ng-template #showError>
-  <div class="g-text-centered g-full">
-    {{'biox.workflow_loading_error' | translate}}
-  </div>
+  <fl-error-text [errorMessage]="'biox.workflow_loading_error' | translate"></fl-error-text>
 </ng-template>
