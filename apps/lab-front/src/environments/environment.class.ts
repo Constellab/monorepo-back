@@ -22,6 +22,9 @@ export interface EnvironmentSettings {
   // url for the jupyter lab
   codeServerUrl: string;
 
+  // domain name of the server
+  virtualHost: string;
+
 }
 
 // Path of the environment json file created during the docker run (used in production)

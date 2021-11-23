@@ -32,7 +32,7 @@ export class MainMenuSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.documentationBricks = getDocumentationBricks();
-    this.codeServerUrl = EnvironmentHelper.getCodeServerUrl();
+    this.codeServerUrl = EnvironmentHelper.getCodelabFullUrl();
   }
 
   logout(): void {

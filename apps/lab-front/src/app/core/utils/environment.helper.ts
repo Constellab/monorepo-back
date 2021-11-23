@@ -15,8 +15,14 @@ export class EnvironmentHelper {
     return `${EnvironmentHelper.getBaseApiUrl()}${EnvironmentHelper.coreApiRoute}/`;
   }
 
-  public static getCodeServerUrl(): string {
+  public static getCodelabUrl(): string {
     return EnvironmentHelper.getEnv().settings.codeServerUrl;
+  }
+
+  // return the full URL for the codelab with direct link to open the right folder
+  public static getCodelabFullUrl(): string {
+    // eslint-disable-next-line max-len
+    return `${EnvironmentHelper.getCodelabUrl()}?folder=vscode-remote://codelab.${EnvironmentHelper.getEnv().settings.virtualHost}/lab/user`;
   }
 
   public static getBaseApiUrl(): string {
@@ -43,7 +49,7 @@ export class EnvironmentHelper {
    * Return the lab environment of an URL
    * @param url
    */
-  public static getLabEnvFromUrl(url :string): LabEnvironment | null {
+  public static getLabEnvFromUrl(url: string): LabEnvironment | null {
     if (url.startsWith(EnvironmentHelper.getBaseApiUrl())) {
       return 'prod';
     } else if (url.startsWith(EnvironmentHelper.getDevBaseApiUrl())) {

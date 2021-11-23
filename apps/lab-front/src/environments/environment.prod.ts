@@ -12,6 +12,7 @@ export const environment: Environment = {
   settings: {
     apiBaseUrl: '',
     devApiBaseUrl: '',
-    codeServerUrl: ''
+    codeServerUrl: '',
+    virtualHost: '',
   }
 };
