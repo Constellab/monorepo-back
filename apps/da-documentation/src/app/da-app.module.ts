@@ -8,7 +8,7 @@ import {
   FlSnackBarModule,
   FlDialogModule,
   FlAuthModule,
-  FlHttpInterceptorService
+  FlHttpInterceptorService, FlPortalModule
 } from '@monorepo/front-core-lib';
 import {DaApiServiceConfig} from './da-core/da-model/da-config/da-api-module.config';
 import {DaApiErrorService} from './da-core/da-model/da-config/da-api-error.service';
@@ -43,6 +43,8 @@ import {DaAuthService} from './da-core/da-service/da-auth.service';
     FlSnackBarModule.forRoot(),
 
     FlDialogModule.forRoot(),
+
+    FlPortalModule.forRoot(),
 
   ],
   providers: [{

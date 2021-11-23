@@ -23,7 +23,6 @@ export class DaAdminDocFormComponent implements OnInit {
 
   formGp: FormGroup<DaDocumentationFormDTO>;
   folder: DaFolder;
-  defaultFolder: DaFolder;
   folders: DaFolder[];
   isUpdate = false;
   isLoading = false;
@@ -41,8 +40,6 @@ export class DaAdminDocFormComponent implements OnInit {
 
     this.daFolderService.get().subscribe(folders => {
       this.folders = folders;
-      this.defaultFolder = this.folders[0];
-      this.folders.shift();
     });
   }
 
@@ -51,7 +48,7 @@ export class DaAdminDocFormComponent implements OnInit {
       id: [null],
       title: [null, Validators.required],
       content: [null, Validators.required],
-      folderId: [null],
+      folderId: [null, Validators.required],
       path: [null, Validators.required],
       order: [null, Validators.required]
     })
@@ -64,10 +61,6 @@ export class DaAdminDocFormComponent implements OnInit {
   submit(): void {
     if (this.formGp.valid) {
       this.isLoading = true;
-
-      if(this.formGp.value.folderId == null){
-        this.formGp.value.folderId = this.defaultFolder.id;
-      }
 
       if (this.isUpdate) {
         this.update(this.formGp.value);

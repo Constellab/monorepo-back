@@ -25,33 +25,26 @@
   <!--    <input matInput type="text" formControlName="path">-->
   <!--  </mat-form-field>-->
 
-  <table class="g-form-input" cellspacing="0">
-    <tr>
-      <td>
-        <mat-form-field class="g-form-input" appearance="fill">
-          <mat-label>Folder</mat-label>
-          <mat-select formControlName="folderId" name="folderPath">
-            <mat-option>Default</mat-option>
-            <mat-option *ngFor="let folder of folders" [value]="folder.id">
-              {{folder.title}}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </td>
-      <td>  <!--  path  -->
-        <mat-form-field class="g-form-input" appearance="fill">
-          <mat-label>{{'path' | translate}}</mat-label>
-          <input matInput type="text" formControlName="path">
-        </mat-form-field>
-      </td>
-    </tr>
-  </table>
-
+  <div fxLayout="row" fxLayoutAlign="space-between">
+    <mat-form-field class="g-form-input" appearance="fill" fxFlex="47">
+      <mat-label>Folder</mat-label>
+      <mat-select formControlName="folderId" name="folderPath">
+        <mat-option *ngFor="let folder of folders" [value]="folder.id">
+          {{folder.title}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!--  path  -->
+    <mat-form-field class="g-form-input" appearance="fill" fxFlex="47" fxFlexOffset="6">
+      <mat-label>{{'path' | translate}}</mat-label>
+      <input matInput type="text" formControlName="path">
+    </mat-form-field>
+  </div>
 
   <!--    content      -->
   <fl-form-field class="g-form-input">
     <mat-label>{{'content' | translate}}</mat-label>
-    <quill-editor formControlName="content"  placeholder="{{'content' | translate}}"
+    <quill-editor formControlName="content" placeholder="{{'content' | translate}}"
                   class="g-full">
     </quill-editor>
     <mat-error *ngIf="formGp.get('content').hasError('required')">

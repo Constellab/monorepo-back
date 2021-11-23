@@ -32,7 +32,7 @@ interface FlatNode {
 })
 export class DaAdminListPageComponent implements OnInit {
 
-  formGp: FormGroup<DaFolderDTO>;
+
 
   isUpdate = false;
   documentations: DaDocumentationDTO[];

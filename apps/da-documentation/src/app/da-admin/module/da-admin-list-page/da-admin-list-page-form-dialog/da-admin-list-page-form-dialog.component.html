@@ -3,7 +3,7 @@
 </fl-dialog-title>
 
 <mat-dialog-content>
-  <form (ngSubmit)="submit()" [formGroup]="formGp">
+  <form (ngSubmit)="submit()" id="folder-form" [formGroup]="formGp">
 
     <!--  title  -->
     <mat-form-field class="g-form-input">
@@ -16,33 +16,26 @@
     </mat-form-field>
 
 
-    <table class="g-form-input" cellspacing="0">
-      <tr>
-        <td>
-          <!--  folderId  -->
-          <mat-form-field class="g-form-input" appearance="fill">
-            <mat-label>Folder</mat-label>
-            <mat-select formControlName="folderId" name="folderPath">
-              <mat-option>Default</mat-option>
-              <mat-option *ngFor="let folder of folders" [value]="folder.id">
-                {{folder.title}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </td>
-        <td>
-          <!--  path  -->
-          <mat-form-field class="g-form-input" appearance="fill">
-            <mat-label>{{'path' | translate}}</mat-label>
-            <input matInput formControlName="path" required flInputMaxLength="50"
-                   placeholder="{{'path' | translate}}">
-            <mat-error *ngIf="formGp.get('path').hasError('required')">
-              {{'title' | flErrorRequired}}
-            </mat-error>
-          </mat-form-field>
-        </td>
-      </tr>
-    </table>
+    <div fxLayout="row">
+      <!--  folderId  -->
+      <mat-form-field class="g-form-input" appearance="fill" fxFlex="47">
+        <mat-label>Folder</mat-label>
+        <mat-select formControlName="folderId" name="folderPath">
+          <mat-option *ngFor="let folder of folders" [value]="folder.id">
+            {{folder.title}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!--  path  -->
+      <mat-form-field class="g-form-input" appearance="fill" fxFlex="47" fxFlexOffset="6">
+        <mat-label>{{'path' | translate}}</mat-label>
+        <input matInput formControlName="path" required flInputMaxLength="50"
+               placeholder="{{'path' | translate}}">
+        <mat-error *ngIf="formGp.get('path').hasError('required')">
+          {{'title' | flErrorRequired}}
+        </mat-error>
+      </mat-form-field>
+    </div>
 
     <!--  order  -->
     <mat-form-field class="g-form-input">
@@ -57,7 +50,7 @@
 </mat-dialog-content>
 
 <div mat-dialog-actions>
-  <button mat-raised-button color="primary" type="submit" form="biox-form"
+  <button mat-raised-button color="primary" type="submit" form="folder-form"
           class="g-centered-forced">
     {{'save' | translate}}
     <fl-button-loader *ngIf="isLoading"></fl-button-loader>

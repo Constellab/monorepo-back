@@ -5,7 +5,7 @@ import {
   FlCorePipeModule,
   FlDialogModule,
   FlFormModule,
-  FlLoaderModule,
+  FlLoaderModule, FlPortalModule,
   FlSectionModule,
   FlSnackBarModule,
   FlTranslateModule
@@ -16,6 +16,7 @@ import {
     FlCoreDirectiveModule,
     FlCorePipeModule,
     FlFormModule,
+    FlPortalModule,
     FlLoaderModule,
     FlDialogModule,
     FlSnackBarModule,

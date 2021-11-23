@@ -25,7 +25,7 @@ import {MatSelectModule} from '@angular/material/select';
     MatSidenavModule,
     MatTreeModule,
     MatSelectModule,
-    FlexLayoutModule
+    FlexLayoutModule,
   ],
   providers: [
     // form field default config

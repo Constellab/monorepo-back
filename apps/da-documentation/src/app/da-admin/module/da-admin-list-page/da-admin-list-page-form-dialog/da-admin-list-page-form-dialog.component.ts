@@ -15,7 +15,6 @@ import {Observable} from 'rxjs';
 export class DaAdminListPageFormDialogComponent extends FlFormDialogAbstractDirective<DaFolderDTO, DaFolder> implements OnInit{
 
   folders: DaFolder[];
-  defaultFolder: DaFolder;
 
   constructor(@Inject(MAT_DIALOG_DATA)
               protected dialogInput: FlFormDialogInput<DaFolderDTO>,
@@ -30,8 +29,6 @@ export class DaAdminListPageFormDialogComponent extends FlFormDialogAbstractDire
 
     this.folderService.get().subscribe(folders => {
       this.folders = folders;
-      this.defaultFolder = this.folders[0];
-      this.folders.shift();
     });
   }
 
@@ -39,7 +36,7 @@ export class DaAdminListPageFormDialogComponent extends FlFormDialogAbstractDire
     return new FormBuilder().group({
       id: [null],
       title: [null, Validators.required],
-      folderId: [null],
+      folderId: [null, Validators.required],
       path: [null, Validators.required],
       order: [null, Validators.required]
     });
@@ -50,9 +47,6 @@ export class DaAdminListPageFormDialogComponent extends FlFormDialogAbstractDire
   }
 
   update(formValue: DaFolderDTO): Observable<DaFolder> {
-    if(!formValue.folderId){
-      formValue.folderId = this.defaultFolder.id;
-    }
     return this.folderService.update(formValue);
   }
 }
