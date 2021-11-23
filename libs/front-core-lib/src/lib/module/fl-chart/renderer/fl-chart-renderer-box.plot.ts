@@ -1,5 +1,5 @@
 import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
-import {Numeric, select} from 'd3';
+import {select} from 'd3';
 import {FlChartSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartScale, FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
@@ -15,8 +15,7 @@ import {FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
 
-export class FlChartRendererBoxPlot
-  implements FlChart2dRenderer<FlChartMultiSerie<number>> {
+export class FlChartRendererBoxPlot implements FlChart2dRenderer<FlChartMultiSerie<number>> {
 
   private readonly groupClassName: string = 'serie';
   private readonly verticalLineClassName: string = 'vertical-line';
@@ -115,7 +114,7 @@ export class FlChartRendererBoxPlot
   }
 
   // return the position of the group
-  private getGroupTranslate(xScale: FlChartScale<Numeric>, chartWidth: number, serieKey: number): string {
+  private getGroupTranslate(xScale: FlChartScale, chartWidth: number, serieKey: number): string {
     // if the scale return null set the the group outside chart
     return 'translate(' + (xScale.scale(serieKey) == null ? (chartWidth + 10) : xScale.scale(serieKey)) + ',0)';
   }

@@ -4,7 +4,7 @@ import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../selection/fl-sheet-single-selection.class';
 import {FlSheetMultiSelection} from '../selection/fl-sheet-multi-selection.class';
 import {FlSheetSelection} from '../selection/fl-sheet-selection.class';
-import {FlChart2dDatum, FlChart2dDatumNumber} from '../../../fl-chart/model/data/fl-chart-data.class';
+import {FlChart2dDatum} from '../../../fl-chart/model/data/fl-chart-data.class';
 import {ClHelpService, ClNumberHelper} from '@monorepo/core-lib';
 import {FlSheetChartSelectionForm} from './fl-sheet-chart-selection-form.class';
 
@@ -54,7 +54,7 @@ export abstract class FlSheetChartSelection {
    */
   protected convertSelectionTo2dDatum(selection: FlSheetSelection): FlChart2dDatum[] {
     // create a chart datum for each values
-    return this.getSelectionValues(selection).map((value, index) => new FlChart2dDatumNumber(index, value));
+    return this.getSelectionValues(selection).map((value, index) => new FlChart2dDatum(index, value));
   }
 
   /**
@@ -67,7 +67,7 @@ export abstract class FlSheetChartSelection {
     // create a chart datum for each values (where x and y exists
     const data: FlChart2dDatum[] = [];
     for (let i = 0; i < limit; i++) {
-      data.push(new FlChart2dDatumNumber(xValues[i], yValues[i]));
+      data.push(new FlChart2dDatum(xValues[i], yValues[i]));
     }
     return data;
   }

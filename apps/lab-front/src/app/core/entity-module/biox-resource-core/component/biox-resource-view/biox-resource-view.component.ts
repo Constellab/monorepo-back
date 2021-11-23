@@ -28,6 +28,8 @@ export function bioxResourceViewGetComponentType(viewType: BioxResourceViewType)
       return BioxResourceNetworkComponent;
     case 'scatter-plot-2d-view':
     case 'line-plot-2d-view':
+    case 'bar-plot-view':
+    case 'stacked-bar-plot-view':
       return BioxResourceChart2dComponent;
     case 'histogram-view':
       return BioxResourceHistogramComponent;

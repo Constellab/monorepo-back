@@ -12,7 +12,7 @@ export type FlChartAxisType = 'left' | 'bottom' | 'right' | 'top';
 
 export class FlChartAxis {
 
-  public scale: FlChartScale<Numeric>;
+  public scale: FlChartScale;
 
   public axisContainer: Selection<any, void, null, undefined>;
 
@@ -26,7 +26,7 @@ export class FlChartAxis {
     this.type = type;
   }
 
-  public setScale(scale: FlChartScale<Numeric>): this {
+  public setScale(scale: FlChartScale): this {
     this.scale = scale.nice();
     return this;
   }

@@ -1,5 +1,5 @@
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
-import {line, Numeric} from 'd3';
+import {line} from 'd3';
 import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
 import {FlChartScale} from '../model/scale/fl-chart-scale.class';
 import {ValueFn} from 'd3-selection';
@@ -39,8 +39,8 @@ export class FlChartRendererLine implements FlChart2dRenderer<FlChart2dMultiSeri
       .attr('d', this.getDValue(input.xScale, input.yScale));
   }
 
-  private getDValue(xScale: FlChartScale<Numeric>,
-                    yScale: FlChartScale<Numeric>): ValueFn<any, FlChartSerie<FlChart2dDatum>, any> {
+  private getDValue(xScale: FlChartScale,
+                    yScale: FlChartScale): ValueFn<any, FlChartSerie<FlChart2dDatum>, any> {
     return (d: FlChartSerie<FlChart2dDatum>) => line<FlChart2dDatum>()
       .x((d: FlChart2dDatum) => xScale.scale(d.getX()))
       .y((d: FlChart2dDatum) => yScale.scale(d.getY()))

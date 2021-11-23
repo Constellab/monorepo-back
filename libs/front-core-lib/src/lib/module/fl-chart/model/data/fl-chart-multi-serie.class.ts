@@ -1,4 +1,3 @@
-import {Numeric} from 'd3';
 import {FlChart2dDatum, FlChartAxisTickFormat, FlChartDataContainer} from './fl-chart-data.class';
 import {FlChartDataWithSerie, FlChartSerie} from './fl-chart-serie.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
@@ -79,35 +78,45 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> extends FlChartMul
    */
   axisXLabelFormat: FlChartAxisTickFormat | null;
 
-  getDomainXLinear(extendDomain: number = 0): [Numeric, Numeric] {
-    return FlChartDomain.getLinearDomain(this.getData().map(data => data.getX().valueOf()), extendDomain);
+  getDomainXLinear(extendDomain: number = 0, minValue?: number, maxValue?: number): [number, number] {
+    return FlChartDomain.getLinearDomain(this.getData().map(data => data.getX()), extendDomain, minValue, maxValue);
   }
 
-  getDomainXComplete(): Numeric[] {
-    return FlChartDomain.getCompleteDomain(this.getData().map(data => data.getX().valueOf()));
+  getDomainXComplete(): number[] {
+    return FlChartDomain.getCompleteDomain(this.getData().map(data => data.getX()));
   }
 
-  getDomainYLinear(extendDomain: number = 0): [Numeric, Numeric] {
-    return FlChartDomain.getLinearDomain(this.getData().map(data => data.getY().valueOf()), extendDomain);
+  getDomainYLinear(extendDomain: number = 0, minValue?: number, maxValue?: number): [number, number] {
+    return FlChartDomain.getLinearDomain(this.getData().map(data => data.getY()), extendDomain, minValue, maxValue);
   }
 
-  getDomainYComplete(): Numeric[] {
-    return FlChartDomain.getCompleteDomain(this.getData().map(data => data.getY().valueOf()));
+  getDomainYComplete(): number[] {
+    return FlChartDomain.getCompleteDomain(this.getData().map(data => data.getY()));
   }
 
-  getDomainYStacked(): [Numeric, Numeric] {
+  getDomainYStacked(): [number, number] {
     const data: number[] = [];
     for (const serie of this.series) {
-      const serieData = serie.getData()
+      const serieData = serie.getData();
       for (let i = 0; i < serieData.length; i++) {
         if (data[i] == null) {
-          data[i] = serieData[i].getY().valueOf();
+          data[i] = serieData[i].getY();
         } else {
-          data[i] += serieData[i].getY().valueOf();
+          data[i] += serieData[i].getY();
         }
       }
     }
 
-    return FlChartDomain.getLinearDomain(data)
+    return FlChartDomain.getLinearDomain(data);
+  }
+
+  // return the indexes of the complete domain (array from 0 to N)
+  getDomainCompleteIndex(): number[] {
+    return FlChartDomain.getCompleteDomainIndex(this.getData().length);
+  }
+
+  // return the indexes of the complete domain of the biggest serie
+  getBiggestSerieDomainCompleteIndex(): number[] {
+    return FlChartDomain.getCompleteDomainIndex(this.maxSerieDataCount());
   }
 }

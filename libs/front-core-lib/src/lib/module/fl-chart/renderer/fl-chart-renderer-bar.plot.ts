@@ -1,5 +1,5 @@
 import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
-import {Numeric, select} from 'd3';
+import {select} from 'd3';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
 import {FlChartScale, FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
@@ -87,7 +87,7 @@ export class FlChartRendererBarPlot implements FlChart2dRenderer<FlChart2dMultiS
   }
 
   // return the position of the group
-  private getGroupTranslate(xScale: FlChartScale<Numeric>, chartWidth: number, d: FlChartDataWithSerie<FlChart2dDatum>[]): string {
+  private getGroupTranslate(xScale: FlChartScale, chartWidth: number, d: FlChartDataWithSerie<FlChart2dDatum>[]): string {
     // get the x value (each series have the same x) and scale it
     const x = xScale.scale(d[0].data.getX());
     // if the scale return null set the the group outside chart
@@ -96,7 +96,7 @@ export class FlChartRendererBarPlot implements FlChart2dRenderer<FlChart2dMultiS
 
   // draw one bar
   private drawBar(d: FlChartDataWithSerie<FlChart2dDatum>, element: SVGRectElement, barWidth: number, chartHeight: number,
-                  yScale: FlChartScale<Numeric>, index: number): void {
+                  yScale: FlChartScale, index: number): void {
     if (d.data == null) {
       return;
     }

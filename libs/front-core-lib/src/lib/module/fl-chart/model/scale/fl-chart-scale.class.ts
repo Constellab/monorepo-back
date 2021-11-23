@@ -17,11 +17,11 @@ export interface FlD3Scale<Value> extends AxisScale<Value> {
 
 }
 
-export interface FlD3ScaleLinear<Value extends Numeric> extends FlD3Scale<Value> {
+export interface FlD3ScaleLinear extends FlD3Scale<number> {
 
-  invert(rangeValue: NumberValue): Value;
+  invert(rangeValue: NumberValue): number;
 
-  ticks(count: number): Value[];
+  ticks(count: number): number[];
 
   interpolate(interpolate: InterpolatorFactory<any, any>): this;
 
@@ -31,22 +31,27 @@ export interface FlD3ScaleLinear<Value extends Numeric> extends FlD3Scale<Value>
 }
 
 export interface FlChartScaleI {
-  scale(value: any): any;
+  /**
+   * Scale the value
+   * @param value
+   * @param defaultValue use if the returned value is null
+   */
+  scale(value: any, defaultValue?: number): any;
 }
 
 
-export abstract class FlChartScale<Value> implements FlChartScaleI {
+export abstract class FlChartScale implements FlChartScaleI {
 
-  public readonly d3Scale: FlD3Scale<Value>;
+  public readonly d3Scale: FlD3Scale<number>;
 
   // save the last set domain to be able to reset the domain
-  private initialDomain: Value[];
+  private initialDomain: number[];
 
   protected constructor() {
     this.d3Scale = this.initScale();
   }
 
-  protected abstract initScale(): FlD3Scale<Value>;
+  protected abstract initScale(): FlD3Scale<number>;
 
   /**
    * Function used to recalibrate the domain (usually for zooming)
@@ -68,8 +73,8 @@ export abstract class FlChartScale<Value> implements FlChartScaleI {
    */
   public abstract nice(): this;
 
-  public scale(value: Value): number {
-    return this.d3Scale(value);
+  public scale(value: number, defaultValue?: number): number {
+    return this.d3Scale(value) ?? defaultValue;
   }
 
 
@@ -86,28 +91,27 @@ export abstract class FlChartScale<Value> implements FlChartScaleI {
    * Init the domain and save the value as initial domain
    * @param domain
    */
-  public setInitialDomain(domain: Value[]): this {
+  public setInitialDomain(domain: number[]): this {
     this.initialDomain = [...domain];
     return this.setD3Domain(domain);
   }
 
-  protected setD3Domain(domain: Value[]): this {
+  protected setD3Domain(domain: number[]): this {
     this.d3Scale.domain(domain);
     return this;
   }
 
   /////////////////////// GET METHODS ///////////////////////
 
-  public getDomain(): Value[] {
+  public getDomain(): number[] {
     return this.d3Scale.domain();
   }
 }
 
-// todo est-ce qu'on garde le generic ?
-export abstract class FlChartScaleLinear extends FlChartScale<Numeric> {
-  public readonly d3Scale: FlD3ScaleLinear<Numeric>;
+export abstract class FlChartScaleLinear extends FlChartScale {
+  public readonly d3Scale: FlD3ScaleLinear;
 
-  protected abstract initScale(): FlD3ScaleLinear<Numeric>;
+  protected abstract initScale(): FlD3ScaleLinear;
 
   /**
    *
@@ -140,7 +144,7 @@ export class FlChartScaleNumber extends FlChartScaleLinear {
     super();
   }
 
-  protected initScale(): FlD3ScaleLinear<Numeric> {
+  protected initScale(): FlD3ScaleLinear {
     return scaleLinear();
   }
 
@@ -151,15 +155,15 @@ export class FlChartScaleNumber extends FlChartScaleLinear {
   }
 }
 
-export class FlChartScaleBand extends FlChartScale<Numeric> {
-  public readonly d3Scale: ScaleBand<Numeric>;
+export class FlChartScaleBand extends FlChartScale {
+  public readonly d3Scale: ScaleBand<number>;
 
   constructor() {
     super();
   }
 
-  protected initScale(): ScaleBand<Numeric> {
-    const band: ScaleBand<Numeric> = scaleBand();
+  protected initScale(): ScaleBand<number> {
+    const band: ScaleBand<number> = scaleBand();
     band.paddingInner(0.1);
     return band;
   }

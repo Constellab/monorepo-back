@@ -34,7 +34,7 @@ const flChartI18nEn: FlLangTranslation = {
   flChart: {
     export_chart: 'Export chart as SVG file',
     reset_zoom: 'Reset zoom (double click)',
-    serie: 'Serie',
+    serie: 'Series',
     quartile_1: 'Q1',
     quartile_3: 'Q3',
     median: 'Median',

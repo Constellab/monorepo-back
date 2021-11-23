@@ -3,8 +3,20 @@ import {ClCsvJson, ClHelpService, ClRecordWrapperTransform} from '@monorepo/core
 import {BioxConfigSpecBase, BioxConfigSpecs} from '../biox-config-spec.entity';
 
 // list of available view type
-export type BioxResourceViewType = 'view' | 'json-view' | 'text-view' | 'table-view' | 'network-view' | 'image-view' |
-  'scatter-plot-2d-view' | 'line-plot-2d-view' | 'histogram-view' | 'box-plot-view' | 'multi-view';
+export type BioxResourceViewType =
+  'view'
+  | 'json-view'
+  | 'text-view'
+  | 'table-view'
+  | 'network-view'
+  | 'image-view'
+  | 'scatter-plot-2d-view'
+  | 'line-plot-2d-view'
+  | 'bar-plot-view'
+  | 'stacked-bar-plot-view'
+  | 'histogram-view'
+  | 'box-plot-view'
+  | 'multi-view';
 
 // Mode to where display the view
 export type BioxResourceViewDisplayMode = 'fullScreen' | 'portal';
@@ -85,16 +97,18 @@ export const bioxResourceViewTextSpecPage: string = 'view_page';
 
 export class BioxResourceViewText extends BioxResourceViewBase {
   type: 'text-view';
-  data: string;
-  is_first_page: boolean;
-  is_last_page: boolean;
-  last_page: number;
-  next_page: number;
-  number_of_items_per_page: number;
-  page: number;
-  prev_page: number;
-  total_number_of_items: number;
-  total_number_of_pages: number;
+  data: {
+    text: string
+    is_first_page: boolean;
+    is_last_page: boolean;
+    last_page: number;
+    next_page: number;
+    number_of_items_per_page: number;
+    page: number;
+    prev_page: number;
+    total_number_of_items: number;
+    total_number_of_pages: number;
+  };
 }
 
 export class BioxResourceViewTable extends BioxResourceViewBase {
@@ -112,24 +126,27 @@ export class BioxResourceViewImage extends BioxResourceViewBase {
   data: any;
 }
 
-export class BioxResourceViewScatterPlot2d extends BioxResourceViewBase {
-  type: 'scatter-plot-2d-view';
-  data: BioxResourceViewChart2dData[];
-}
-
-export class BioxResourceViewLinePlot2d extends BioxResourceViewBase {
-  type: 'line-plot-2d-view';
-  data: BioxResourceViewChart2dData[];
+export class BioxResourceViewBasicPlot2d extends BioxResourceViewBase {
+  type: 'scatter-plot-2d-view' | 'line-plot-2d-view' | 'bar-plot-view' | 'stacked-bar-plot-view';
+  data: BioxResourceViewChart2dData
 }
 
 export interface BioxResourceViewChart2dData {
+  x_tick_labels?: string[]; // if provided, those values should be displayed as X
+  x_label: string; // name of the x axis
+  y_label: string; // name of the y axis
+  series: BioxResourceViewChart2dSerie[];
+}
+
+export interface BioxResourceViewChart2dSerie {
   data: {
     x: number[];
     y: number[];
   };
-  x_label: string;
-  y_label: string;
+  x_column_name: string;
+  y_column_name: string;
 }
+
 
 export class BioxResourceViewHistogram extends BioxResourceViewBase {
   type: 'histogram-view';
@@ -166,19 +183,27 @@ export interface BioxResourceViewBoxPlotData {
 
 export class BioxResourceViewMulti extends BioxResourceViewBase {
   type: 'multi-view';
-  data: BioxResourceViewMultiData[];
-  nb_of_columns: number;
+  data: BioxResourceViewMultiData;
 }
 
 export interface BioxResourceViewMultiData {
-  colspan: number;
-  rowspan: number;
-  view: BioxResourceView;
+  nb_of_columns: number;
+  views: {
+    colspan: number;
+    rowspan: number;
+    view: BioxResourceView;
+  }[];
 }
 
 
-export type BioxResourceView = BioxResourceViewJson | BioxResourceViewLinePlot2d | BioxResourceViewMulti | BioxResourceViewBoxPlot |
-  BioxResourceViewHistogram | BioxResourceViewScatterPlot2d | BioxResourceViewImage | BioxResourceViewNetwork;
+export type BioxResourceView =
+  BioxResourceViewJson
+  | BioxResourceViewMulti
+  | BioxResourceViewBoxPlot
+  | BioxResourceViewHistogram
+  | BioxResourceViewBasicPlot2d
+  | BioxResourceViewImage
+  | BioxResourceViewNetwork;
 
 // Information of the view type
 export interface BioxResourceViewTypeInfo {
@@ -192,17 +217,42 @@ export interface BioxResourceViewTypeInfo {
 
 // Record of view type, icon
 export const constBioxResourceViewTypeInfos: Record<BioxResourceViewType, BioxResourceViewTypeInfo> = {
-  view: {icon: 'view_quilt', text: 'biox.resource_view_base', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
-  'json-view': {icon: 'code', text: 'biox.resource_view_json', defaultDisplayMode: 'fullScreen', forceDefaultDisplayMode: false},
-  'text-view': {icon: 'text_snippet', text: 'biox.resource_view_text', defaultDisplayMode: 'fullScreen', forceDefaultDisplayMode: false},
+  view: {
+    icon: 'view_quilt',
+    text: 'biox.resource_view_base',
+    defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
+  'json-view': {
+    icon: 'code',
+    text: 'biox.resource_view_json',
+    defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: false
+  },
+  'text-view': {
+    icon: 'text_snippet',
+    text: 'biox.resource_view_text',
+    defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: false
+  },
   'table-view': {
     icon: 'calendar_view_month',
     text: 'biox.resource_view_spreadsheet',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true
   },
-  'network-view': {icon: 'share', text: 'biox.resource_view_pathway', defaultDisplayMode: 'fullScreen', forceDefaultDisplayMode: true},
-  'image-view': {icon: 'insert_photo', text: 'biox.resource_view_image', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
+  'network-view': {
+    icon: 'share',
+    text: 'biox.resource_view_pathway',
+    defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: true
+  },
+  'image-view': {
+    icon: 'insert_photo',
+    text: 'biox.resource_view_image',
+    defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
   'scatter-plot-2d-view': {
     icon: 'scatter_plot',
     text: 'biox.resource_view_scatter_plot_2d',
@@ -215,7 +265,24 @@ export const constBioxResourceViewTypeInfos: Record<BioxResourceViewType, BioxRe
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false
   },
-  'histogram-view': {icon: 'bar_chart', text: 'biox.resource_view_histogram', defaultDisplayMode: 'portal', forceDefaultDisplayMode: false},
+  'bar-plot-view': {
+    icon: 'bar_chart',
+    text: 'biox.resource_view_bar_plot',
+    defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
+  'stacked-bar-plot-view': {
+    icon: 'stacked_bar_chart',
+    text: 'biox.resource_view_stacked_bar_plot',
+    defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
+  'histogram-view': {
+    icon: 'bar_chart',
+    text: 'biox.resource_view_histogram',
+    defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
   'box-plot-view': {
     icon: 'multiline_chart',
     text: 'biox.resource_view_box_plot',

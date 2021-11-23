@@ -1,8 +1,11 @@
 <div>
-  <div>x : {{data.data.getX()}}</div>
-  <div>y : {{data.data.getY()}}</div>
+  <div *ngFor="let dataWithSerie of data">
+    <div>x : {{dataWithSerie.data.getX()}}</div>
+    <div>y : {{dataWithSerie.data.getY()}}</div>
 
-  <fl-chart-serie-inline class="serie" [color]="data.serieKey | flChartScale:seriesColorScale" [serieName]="data.serieName">
-  </fl-chart-serie-inline>
+    <fl-chart-serie-inline class="serie" [color]="dataWithSerie.serieKey | flChartScale:seriesColorScale"
+                           [serieName]="dataWithSerie.serieName">
+    </fl-chart-serie-inline>
+  </div>
 </div>
 

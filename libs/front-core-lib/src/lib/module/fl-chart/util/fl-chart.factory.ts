@@ -7,7 +7,6 @@ import {
   FlChartScaleLinear,
   FlChartScaleNumber
 } from '../model/scale/fl-chart-scale.class';
-import {Numeric} from 'd3';
 import {FlChartAxis, FlChartAxisBand} from '../model/drawer/fl-chart-axis.class';
 import {FlChartRendererScatterPlot} from '../renderer/fl-chart-renderer-scatter.plot';
 import {
@@ -90,8 +89,7 @@ export class FlChartFactory {
    * Build a Bar plot multi container
    */
   private static getBarPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                  seriesColorScale: FlChartScaleColor, xTickSize?: number,
-                                  showLegend?: boolean)
+                                  seriesColorScale: FlChartScaleColor, xTickSize?: number)
     : FlChartConfig {
 
     const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
@@ -108,7 +106,7 @@ export class FlChartFactory {
 
     // build the y axis and scale linear
     const yScale: FlChartScaleLinear = new FlChartScaleNumber()
-      .setInitialDomain(dataContainer.getDomainYLinear())
+      .setInitialDomain(dataContainer.getDomainYLinear(0, 0))
       .range(chartContainer.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
@@ -123,8 +121,8 @@ export class FlChartFactory {
 
     return {
       chartContainer: chartContainer,
-      legend: showLegend ? new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
-        dataContainer, seriesColorScale) : null,
+      legend: new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
+        dataContainer, seriesColorScale),
       zoomEnabled: true
     };
   }
@@ -133,8 +131,7 @@ export class FlChartFactory {
    * Build a StackBar
    */
   private static getStackBarConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                   seriesColorScale: FlChartScaleColor, xTickSize?: number,
-                                   showLegend?: boolean)
+                                   seriesColorScale: FlChartScaleColor, xTickSize?: number)
     : FlChartConfig {
 
     const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
@@ -151,7 +148,7 @@ export class FlChartFactory {
 
     // build the y axis and scale linear
     const yScale: FlChartScaleLinear = new FlChartScaleNumber()
-      .setInitialDomain(dataContainer.getDomainYStacked())
+      .setInitialDomain(dataContainer.getDomainYLinear(0, 0))
       .range(chartContainer.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
@@ -166,8 +163,8 @@ export class FlChartFactory {
 
     return {
       chartContainer: chartContainer,
-      legend: showLegend ? new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
-        dataContainer, seriesColorScale) : null,
+      legend: new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
+        dataContainer, seriesColorScale),
       zoomEnabled: true
     };
   }
@@ -184,7 +181,7 @@ export class FlChartFactory {
 
     // build the x axis and scale based on ScaleBand
     // the x domain is an array of the number of series with index of the serie
-    const xScale: FlChartScale<Numeric> = new FlChartScaleBand()
+    const xScale: FlChartScale = new FlChartScaleBand()
       .setInitialDomain(dataContainer.getSeriesKeys())
       .range(chartContainer.getRangeX())
       .paddingOuter(0.3);

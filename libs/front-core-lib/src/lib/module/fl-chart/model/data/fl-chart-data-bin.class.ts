@@ -1,5 +1,4 @@
 // data holder for the histogram
-import {Numeric} from 'd3';
 import {FlChart2dDatum} from './fl-chart-data.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
 
@@ -14,11 +13,11 @@ export class FlChartDataBin implements FlChart2dDatum {
               public readonly min: number, public readonly max: number) {
   }
 
-  getX(): Numeric {
+  getX(): number {
     return this.x;
   }
 
-  getY(): Numeric {
+  getY(): number {
     return this.y;
   }
 
