@@ -9,6 +9,12 @@ export class FlChartMultiSerie<Data> implements FlChartDataContainer<Data> {
 
   series: FlChartSerie<Data>[];
 
+  /**
+   * Function to format the x axis labels
+   */
+  axisXLabelFormat: FlChartAxisTickFormat | null;
+
+
   constructor(series: FlChartSerie<Data>[] = []) {
     this.series = series;
   }
@@ -74,6 +80,16 @@ export class FlChartMultiSerie<Data> implements FlChartDataContainer<Data> {
   public getSeriesKeys(): number[] {
     return this.series.map((v) => v.key);
   }
+
+  /**
+   * Set the list of x tick label for all the series. It define the axisXLabelFormat
+   * @param xTickLabels
+   */
+  public setXTickLabels(xTickLabels: string[]): void {
+    if (xTickLabels) {
+      this.axisXLabelFormat = (value) => (xTickLabels[value] ?? value).toString();
+    }
+  }
 }
 
 
@@ -81,12 +97,6 @@ export class FlChartMultiSerie<Data> implements FlChartDataContainer<Data> {
  * Multiple series with 2d data
  */
 export class FlChart2dMultiSerie<Data extends FlChart2dDatum> extends FlChartMultiSerie<Data> {
-
-
-  /**
-   * Function to format the x axis labels
-   */
-  axisXLabelFormat: FlChartAxisTickFormat | null;
 
   getDomainXLinear(extendDomain: number = 0, minValue?: number, maxValue?: number): [number, number] {
     return FlChartDomain.getLinearDomain(this.getData().map(data => data.getX()), extendDomain, minValue, maxValue);
@@ -104,7 +114,7 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> extends FlChartMul
     return FlChartDomain.getCompleteDomain(this.getData().map(data => data.getY()));
   }
 
-  getDomainYStacked(): [number, number] {
+  getDomainYStacked(extendDomain: number = 0, minValue?: number, maxValue?: number): [number, number] {
     const data: number[] = [];
     for (const serie of this.series) {
       const serieData = serie.getData();
@@ -117,16 +127,8 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> extends FlChartMul
       }
     }
 
-    return FlChartDomain.getLinearDomain(data);
+    return FlChartDomain.getLinearDomain(data, extendDomain, minValue, maxValue);
   }
 
-  /**
-   * Set the list of x tick label for all the series. It define the axisXLabelFormat
-   * @param xTickLabels
-   */
-  public setXTickLabels(xTickLabels: string[]): void{
-    if(xTickLabels){
-      this.axisXLabelFormat = (value) => (xTickLabels[value] ?? value).toString();
-    }
-  }
+
 }

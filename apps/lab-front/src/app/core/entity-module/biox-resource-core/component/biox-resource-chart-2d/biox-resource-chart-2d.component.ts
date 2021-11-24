@@ -38,7 +38,7 @@ export class BioxResourceChart2dComponent
 
     // if there are some tick labels
     if (this.view.data.x_tick_labels?.length > 0) {
-      this.series.setXTickLabels(this.view.data.x_tick_labels);
+      series.setXTickLabels(this.view.data.x_tick_labels);
     }
 
     this.series = series;

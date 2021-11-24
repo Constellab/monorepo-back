@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
 import {BioxResourceViewBoxPlot} from '../../../../model/entities/resource/biox-resource-view.entity';
-import {FlChart2dMultiSerie, FlChartBoxPlotSerie, FlChartMultiSerie, FlChartType} from '@monorepo/front-core-lib';
+import {FlChartBoxPlotSerie, FlChartMultiSerie, FlChartType} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-biox-resource-box-plot',
@@ -22,7 +22,7 @@ export class BioxResourceBoxPlotComponent extends BioxResourceViewDirective<Biox
   }
 
   private convertToChartData(): void {
-    const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
+    const series: FlChartMultiSerie<any> = new FlChartMultiSerie();
 
     for (const viewSerie of this.view.data.series) {
       const serie = new FlChartBoxPlotSerie([], viewSerie.column_names.join(' '));

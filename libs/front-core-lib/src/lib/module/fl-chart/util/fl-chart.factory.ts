@@ -42,13 +42,11 @@ export class FlChartFactory {
       case FlChartType.SCATTER_PLOT:
         return this.getScatterPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
       case FlChartType.BAR_PLOT:
-        return this.getBarPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale,
-          FlChartAxisBand.tickCharacterWidth * 3);
+        return this.getBarPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
       case FlChartType.HISTOGRAM:
-        return this.getBarPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale, 50);
+        return this.getHistogramPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
       case FlChartType.STACKED_PLOT:
-        return this.getStackBarConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale,
-          FlChartAxisBand.tickCharacterWidth * 3);
+        return this.getStackedBarPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
       case FlChartType.BOX_PLOT:
         return this.getBoxPlotConfig(chartSVG, data, seriesColorScale);
       case FlChartType.HEAT_MAP:
@@ -86,54 +84,42 @@ export class FlChartFactory {
     return this.buildLinear2dMultiContainer(chartSVG, dataContainer, [renderer, scatterPlot], seriesColorScale);
   }
 
-  /**
-   * Build a Bar plot multi container
-   */
   private static getBarPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                  seriesColorScale: FlChartScaleColor, xTickSize?: number)
-    : FlChartConfig {
+                                  seriesColorScale: FlChartScaleColor): FlChartConfig {
+    return this.getGenericBarPlotConfig(chartSVG, dataContainer,
+      [new FlChartRendererBarPlot(seriesColorScale)],
+      dataContainer.getDomainYLinear(0, 0),
+      seriesColorScale,
+      FlChartAxisBand.tickCharacterWidth * 3);
+  }
 
-    const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
+  private static getHistogramPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
+                                        seriesColorScale: FlChartScaleColor): FlChartConfig {
+    return this.getGenericBarPlotConfig(chartSVG, dataContainer,
+      [new FlChartRendererBarPlot(seriesColorScale)],
+      dataContainer.getDomainYLinear(0, 0),
+      seriesColorScale,
+      50);
+  }
 
-    // build the x axis and scale based on ScaleBand
-    const xScale: FlChartScaleBand = new FlChartScaleBand()
-      .setInitialDomain(dataContainer.getDomainXComplete())
-      .range(chartContainer.getRangeX());
-    const xAxis: FlChartAxisBand = new FlChartAxisBand('bottom').setScale(xScale);
-
-    if (xTickSize != null) {
-      xAxis.setSmartTickFormat(50, dataContainer.axisXLabelFormat);
-    }
-
-    // build the y axis and scale linear
-    const yScale: FlChartScaleLinear = new FlChartScaleNumber()
-      .setInitialDomain(dataContainer.getDomainYLinear(0, 0))
-      .range(chartContainer.getRangeY());
-    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
-
-    // Activate brush only on X axis before the data init so the brush doesn't prevent hover events
-    new FlChart2dBrushX(chartContainer);
-
-    chartContainer
-      .initXAxis(xAxis)
-      .initAxisY(yAxis)
-      .addRenderer(new FlChartRendererBarPlot(seriesColorScale))
-      .initData(dataContainer);
-
-    return {
-      chartContainer: chartContainer,
-      legend: new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
-        dataContainer, seriesColorScale),
-      zoomEnabled: true
-    };
+  private static getStackedBarPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
+                                         seriesColorScale: FlChartScaleColor): FlChartConfig {
+    return this.getGenericBarPlotConfig(chartSVG, dataContainer,
+      [new FlChartRendererStackedBarPlot(seriesColorScale)],
+      dataContainer.getDomainYStacked(0, 0),
+      seriesColorScale,
+      FlChartAxisBand.tickCharacterWidth * 3);
   }
 
   /**
-   * Build a StackBar
+   *
+   * Build a Bar plot multi container
    */
-  private static getStackBarConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                   seriesColorScale: FlChartScaleColor, xTickSize?: number)
-    : FlChartConfig {
+  private static getGenericBarPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
+                                         renderers: FlChart2dRenderer<FlChart2dMultiSerie<any>>[],
+                                         yDomain: number[],
+                                         seriesColorScale: FlChartScaleColor,
+                                         xTickSize?: number): FlChartConfig {
 
     const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
 
@@ -144,12 +130,14 @@ export class FlChartFactory {
     const xAxis: FlChartAxisBand = new FlChartAxisBand('bottom').setScale(xScale);
 
     if (xTickSize != null) {
-      xAxis.setSmartTickFormat(50, dataContainer.axisXLabelFormat);
+      xAxis.setSmartTickFormat(xTickSize, dataContainer.axisXLabelFormat);
+    } else {
+      xAxis.setTickFormat(dataContainer.axisXLabelFormat);
     }
 
     // build the y axis and scale linear
     const yScale: FlChartScaleLinear = new FlChartScaleNumber()
-      .setInitialDomain(dataContainer.getDomainYLinear(0, 0))
+      .setInitialDomain(yDomain)
       .range(chartContainer.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
@@ -159,7 +147,7 @@ export class FlChartFactory {
     chartContainer
       .initXAxis(xAxis)
       .initAxisY(yAxis)
-      .addRenderer(new FlChartRendererStackedBarPlot(seriesColorScale))
+      .addRenderer(renderers)
       .initData(dataContainer);
 
     return {
@@ -189,8 +177,7 @@ export class FlChartFactory {
     const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
       .setTickFormat(() => ''); // no info in x abscissa
 
-    xAxis.setTickFormat((dataContainer as any).axisXLabelFormat);
-
+    xAxis.setTickFormat((dataContainer).axisXLabelFormat);
 
 
     const data = dataContainer.getData();
