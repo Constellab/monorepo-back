@@ -7,19 +7,13 @@ import {FlChartDomain} from '../fl-chart-domain.class';
  *
  * Useful for histogram
  */
-export class FlChartDataBin implements FlChart2dDatum {
+export class FlChartDataBin extends FlChart2dDatum {
 
-  constructor(private x: number, private y: number,
+  constructor(x: number, y: number,
               public readonly min: number, public readonly max: number) {
+    super(x, y);
   }
 
-  getX(): number {
-    return this.x;
-  }
-
-  getY(): number {
-    return this.y;
-  }
 
   addData(): void {
     this.y++;

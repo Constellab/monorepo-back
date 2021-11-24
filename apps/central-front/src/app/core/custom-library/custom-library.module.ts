@@ -14,7 +14,7 @@ import {
   FlSectionModule,
   FlSnackBarModule,
   FlStatusModule,
-  FlSvgIconModule,
+  FlSvgIconModule, FlTextEditorModule,
   FlTextIconModule,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
@@ -48,6 +48,7 @@ import {
     FlInfiniteScrollModule,
     FlDateModule,
     FlAuthModule,
+    FlTextEditorModule,
   ]
 })
 export class CustomLibraryModule {

@@ -7,6 +7,7 @@ import {filter, first, map} from 'rxjs/operators';
 import {FlConfirmDialogInput} from './model/fl-confirm-dialog.class';
 import {FlConfirmDialogComponent} from './component/fl-confirm-dialog/fl-confirm-dialog.component';
 import {FlPlatformService} from '../../service/fl-plateform.service';
+import {ClHelpService} from '@monorepo/core-lib';
 
 /**
  * Service to open responsive dialog. The max-height and width of the dialog
@@ -31,11 +32,9 @@ export class FlDialogService {
    */
   public openBigDialog<T = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
                                 config: MatDialogConfig = {}): MatDialogRef<T> {
-    config.panelClass = 'g-big-dialog';
-
     config = this.manageSafariBrowser(config);
 
-    return this.openDialog(componentOrTemplateRef, config);
+    return this.openDialog(componentOrTemplateRef, config, 'g-big-dialog');
   }
 
   /**
@@ -48,11 +47,9 @@ export class FlDialogService {
    */
   public openHugeDialog<T = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
                                  config: MatDialogConfig = {}): MatDialogRef<T> {
-    config.panelClass = 'g-huge-dialog';
-
     config = this.manageSafariBrowser(config);
 
-    return this.openDialog(componentOrTemplateRef, config);
+    return this.openDialog(componentOrTemplateRef, config, 'g-huge-dialog');
   }
 
   /**
@@ -67,11 +64,9 @@ export class FlDialogService {
    */
   public openMediumDialog<T = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
                                    config: MatDialogConfig = {}): MatDialogRef<T> {
-    config.panelClass = 'g-medium-dialog';
-
     config = this.manageSafariBrowser(config);
 
-    return this.openDialog(componentOrTemplateRef, config);
+    return this.openDialog(componentOrTemplateRef, config, 'g-medium-dialog');
   }
 
   /**
@@ -86,12 +81,9 @@ export class FlDialogService {
    */
   public openSmallDialog<T = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
                                   config: MatDialogConfig = {}): MatDialogRef<T> {
-    config.panelClass = 'g-small-dialog';
-
-
     config = this.manageSafariBrowser(config);
 
-    return this.openDialog(componentOrTemplateRef, config);
+    return this.openDialog(componentOrTemplateRef, config,  'g-small-dialog');
   }
 
   /**
@@ -102,11 +94,9 @@ export class FlDialogService {
    */
   public openFullDialog<T = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
                                  config: MatDialogConfig = {}): MatDialogRef<T> {
-    config.panelClass = 'g-full-dialog';
-
     config = this.manageSafariBrowser(config, false);
 
-    return this.openDialog(componentOrTemplateRef, config);
+    return this.openDialog(componentOrTemplateRef, config, 'g-full-dialog');
   }
 
   /**
@@ -126,7 +116,9 @@ export class FlDialogService {
 
   // open the dialog
   private openDialog<T = any>(componentOrTemplateRef: ComponentType<T> | TemplateRef<T>,
-                              config: MatDialogConfig): MatDialogRef<T> {
+                              config: MatDialogConfig, panelClass: string): MatDialogRef<T> {
+
+    config.panelClass = this.addPanelClass(config.panelClass, panelClass);
 
     const dialogRef: MatDialogRef<T> = this.dialog.open(componentOrTemplateRef, config);
 
@@ -134,6 +126,12 @@ export class FlDialogService {
     this.manageDialogClosing(config, dialogRef);
 
     return dialogRef;
+  }
+
+  private addPanelClass(currentPanelClass: string | string[], newClass: string): string[] {
+    const panelClasses = ClHelpService.convertObjectOrArrayToArray(currentPanelClass);
+    panelClasses.push(newClass);
+    return panelClasses;
   }
 
   // handle the full screen dialog on safari browser

@@ -29,8 +29,8 @@ export class BioxExperimentsListPageComponent implements OnInit {
 
   createExperiment(): void {
     const input: FlFormDialogInput<BioxExperiment> = {mode: 'create'};
-    this.dialogService.openSmallDialog(BioxExperimentFormDialogComponent, {data: input})
-      .afterClosed().subscribe(
+    this.dialogService.openSmallDialog(BioxExperimentFormDialogComponent,
+      {data: input, panelClass: 'g-dialog-allow-overflow'}).afterClosed().subscribe(
       experiment => this.onCreateExperimentClosed(experiment)
     );
   }

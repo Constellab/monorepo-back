@@ -19,6 +19,13 @@
   flex: 1 1 100%;
 }
 
+// Specific style to allow elements to overflow the dialog container and dialog content
+.g-dialog-allow-overflow {
+  .mat-dialog-container, mat-dialog-content {
+    overflow: initial;
+  }
+}
+
 /********************* SMALL DIALOG ***********************/
 .g-small-dialog {
   width: 30vw;
@@ -99,12 +106,12 @@
 
 /*******************************   PORTAL  *************************************/
 // style used for the portals
-.g-portal-panel{
+.g-portal-panel {
   padding: 1em;
   background-color: var(--card-background);
 }
 
-.g-portal-background{
+.g-portal-background {
   background-color: var(--card-background);
 }
 

@@ -1,8 +1,24 @@
 
-@import "~quill/dist/quill.snow.css";
+//@import "~quill/dist/quill.snow.css";
+@import "~quill/dist/quill.bubble.css";
 
 //////////////////////////// QUILL ////////////////////////////////////
 // file to configure quill css
+
+// make the editor scrollable
+.ql-editor{
+  overflow: auto;
+  max-height: inherit;
+}
+
+// set background color for tooltip containing button
+.ql-bubble .ql-tooltip {
+  background-color: black;
+  z-index: 9999;
+}
+
+
+
 
 
 // Color available by the quill editor

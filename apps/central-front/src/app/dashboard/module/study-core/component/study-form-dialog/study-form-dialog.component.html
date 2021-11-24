@@ -19,10 +19,9 @@
     <!--    Description      -->
     <fl-form-field class="g-form-input">
       <mat-label>{{'description' | translate}}</mat-label>
-      <quill-editor formControlName="description" placeholder="{{'description' | translate}}"
-                    class="g-full"
-                    [styles]="{height: '8em'}">
-      </quill-editor>
+      <fl-text-editor formControlName="description"
+                      class="text-editor">
+      </fl-text-editor>
       <mat-error *ngIf="formGp.get('description').hasError('required')">
         {{'description' | flErrorRequired}}
       </mat-error>

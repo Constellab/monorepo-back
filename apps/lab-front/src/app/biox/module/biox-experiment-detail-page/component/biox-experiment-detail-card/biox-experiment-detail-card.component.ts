@@ -5,7 +5,12 @@ import {
   BioxExperimentFormDialogInput
 } from '../../../../../core/entity-module/biox-experiment-core/component/biox-experiment-form-dialog/biox-experiment-form-dialog.component';
 import {BioxExperimentDetailPageState} from '../../state/biox-experiment-detail-page.state';
-import {FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService, FlTagDialogService} from '@monorepo/front-core-lib';
+import {
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDialogService,
+  FlTagDialogService
+} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {BioxProgressBarInfoDialogComponent} from '../biox-progress-bar-info-dialog/biox-progress-bar-info-dialog.component';
 import {map} from 'rxjs/operators';
@@ -53,7 +58,8 @@ export class BioxExperimentDetailCardComponent implements OnInit {
       experimentId: experiment.id
     };
 
-    this.dialogService.openSmallDialog(BioxExperimentFormDialogComponent, {data: input}).afterClosed().subscribe(
+    this.dialogService.openSmallDialog(BioxExperimentFormDialogComponent,
+      {data: input, panelClass: 'g-dialog-allow-overflow'}).afterClosed().subscribe(
       result => this.onExperimentUpdate(result)
     );
   }

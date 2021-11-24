@@ -10,7 +10,7 @@ export interface FlChartDataContainer<Data> {
 
 export class FlChart2dDatum {
 
-  constructor(private x: number, private y: number) {
+  constructor(protected x: number, protected y: number) {
   }
 
   getX(): number {
