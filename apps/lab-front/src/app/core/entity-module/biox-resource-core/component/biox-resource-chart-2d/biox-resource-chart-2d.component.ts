@@ -33,7 +33,7 @@ export class BioxResourceChart2dComponent
         data.push(new FlChart2dDatum(viewSerie.data.x[i], viewSerie.data.y[i]));
       }
 
-      series.addSerie(new FlChartSerie(data, viewSerie.y_column_name));
+      series.addSerie(new FlChartSerie(data, viewSerie.y_column_name ?? viewSerie.column_name));
     }
 
     // if there are some tick labels

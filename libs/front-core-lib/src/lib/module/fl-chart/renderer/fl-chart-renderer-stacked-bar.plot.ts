@@ -26,12 +26,15 @@ export class FlChartRendererStackedBarPlot implements FlChart2dRenderer<FlChart2
   }
 
   initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+    this.refreshData(input);
+  }
 
+  refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     const stackedData = this.getStackedData(input.data);
 
     // Show the bars
-    input.container.append('g')
-      .selectAll('g')
+    input.container
+      .selectAll(`.${this.barGroupClassName}`)
       // Enter in the stack data = loop key per key = group per group
       // first group is the first serie, second group the second serie
       .data(stackedData)
@@ -46,15 +49,6 @@ export class FlChartRendererStackedBarPlot implements FlChart2dRenderer<FlChart2
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut())
       .attr('class', this.barClassName)
-      .each((data, index, nodes) =>
-        this.drawBars(nodes[index] as any, input));
-  }
-
-  refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
-    // Show the bars
-    input.container
-      .selectAll(`.${this.barGroupClassName}`)
-      .selectAll(`.${this.barClassName}`)
       .each((data, index, nodes) =>
         this.drawBars(nodes[index] as any, input));
   }

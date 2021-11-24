@@ -30,22 +30,25 @@ export class FlChartRendererBarPlot implements FlChart2dRenderer<FlChart2dMultiS
   }
 
   initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+    this.refreshData(input);
+  }
 
+
+  refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     const data: FlChartDataWithSerie<FlChart2dDatum>[][] = input.data.invert();
 
     input.container
       // generate a group for each serie
-      .selectAll()
+      .selectAll(`.${this.groupClassName}`)
       .data(data)
-      .enter()
-      .append('g')
+      .join('g')
       .attr('class', this.groupClassName)  // I add the class line to be able to modify this line later on.
       .attr('transform', (d) =>
         this.getGroupTranslate(input.xScale, input.chartWidth, d))
 
       // for each group generate the values
       .each((data, index, nodes) =>
-        this.drawSerie(nodes[index], data, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
+        this.drawSerie(nodes[index] as any, data, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
   }
 
   private drawSerie(group: SVGElement, data: FlChartDataWithSerie<FlChart2dDatum>[],
@@ -53,10 +56,9 @@ export class FlChartRendererBarPlot implements FlChart2dRenderer<FlChart2dMultiS
 
     const barWidth: number = groupWidth / data.length;
 
-    select(group).selectAll()
+    select(group).selectAll('rect')
       .data(data)
-      .enter()
-      .append('rect')
+      .join('rect')
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut())
       .style('fill', (d) => this.colorScale.scale(d.serieKey))
@@ -64,27 +66,6 @@ export class FlChartRendererBarPlot implements FlChart2dRenderer<FlChart2dMultiS
         this.drawBar(d, nodes[index], barWidth, input.chartHeight, input.yScale, index));
   }
 
-  refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
-    input.container
-      // generate a group for each serie
-      .selectAll(`.${this.groupClassName}`)
-      .attr('transform', (d: FlChartDataWithSerie<FlChart2dDatum>[]) =>
-        this.getGroupTranslate(input.xScale, input.chartWidth, d))
-      // for each group generate the values
-      .each((data: FlChartDataWithSerie<FlChart2dDatum>[], index, nodes: SVGElement[]) =>
-        this.refreshSerie(nodes[index], data, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
-  }
-
-  private refreshSerie(group: SVGElement, data: FlChartDataWithSerie<FlChart2dDatum>[],
-                       groupWidth: number, input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
-
-    const barWidth: number = groupWidth / data.length;
-
-    select(group)
-      .selectAll('rect')
-      .each((d: FlChartDataWithSerie<FlChart2dDatum>, index, nodes: SVGRectElement[]) =>
-        this.drawBar(d, nodes[index], barWidth, input.chartHeight, input.yScale, index));
-  }
 
   // return the position of the group
   private getGroupTranslate(xScale: FlChartScale, chartWidth: number, d: FlChartDataWithSerie<FlChart2dDatum>[]): string {

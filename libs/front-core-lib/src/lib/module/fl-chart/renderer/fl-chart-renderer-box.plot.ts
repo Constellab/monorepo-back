@@ -46,7 +46,6 @@ export class FlChartRendererBoxPlot implements FlChart2dRenderer<FlChartMultiSer
       // generate a group for each serie
       .selectAll(`.${this.groupClassName}`)
       .data(data)
-      // .enter()
       .join('g')
       .attr('class', this.groupClassName)  // I add the class line to be able to modify this line later on.
       .attr('transform', (d, i) =>
@@ -64,7 +63,6 @@ export class FlChartRendererBoxPlot implements FlChart2dRenderer<FlChartMultiSer
     select(group)
       .selectAll(`.${this.boxPlotGroupClassName}`)
       .data(groupData)
-      // .enter()
       .join('g')
       .attr('class', this.boxPlotGroupClassName)
       .attr('transform', (d, i) => `translate(${groupWidth * i},0)`)

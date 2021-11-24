@@ -143,8 +143,9 @@ export interface BioxResourceViewChart2dSerie {
     x: number[];
     y: number[];
   };
-  x_column_name: string;
-  y_column_name: string;
+  x_column_name?: string;
+  y_column_name?: string;
+  column_name?: string;
 }
 
 
