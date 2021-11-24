@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { QuillModule } from 'ngx-quill';
 import { DaCoreModule } from '../../../da-core/da-core.module';
 import { DaAdminCoreModule } from '../da-admin-core/da-admin-core.module';
 import { DaAdminLoginComponent } from './da-admin-login/da-admin-login.component';
@@ -11,8 +10,6 @@ import { DaAdminLoginComponent } from './da-admin-login/da-admin-login.component
     DaAdminCoreModule,
     CommonModule,
     DaCoreModule,
-
-    QuillModule.forRoot()
   ]
 })
 export class DaAdminLoginModule {

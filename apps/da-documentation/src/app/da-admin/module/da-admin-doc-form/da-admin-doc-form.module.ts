@@ -1,11 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { DaCoreModule } from '../../../da-core/da-core.module';
-import { DaAdminCoreModule } from '../da-admin-core/da-admin-core.module';
-import { DaAdminDocFormComponent } from './da-admin-doc-form/da-admin-doc-form.component';
-import { QuillModule } from 'ngx-quill';
-import { DaAdminDocFormPageComponent } from './da-admin-doc-form-page/da-admin-doc-form-page.component';
+import {DaCoreModule} from '../../../da-core/da-core.module';
+import {DaAdminCoreModule} from '../da-admin-core/da-admin-core.module';
+import {DaAdminDocFormComponent} from './da-admin-doc-form/da-admin-doc-form.component';
+import {DaAdminDocFormPageComponent} from './da-admin-doc-form-page/da-admin-doc-form-page.component';
 
 
 @NgModule({
@@ -15,9 +14,8 @@ import { DaAdminDocFormPageComponent } from './da-admin-doc-form-page/da-admin-d
     ReactiveFormsModule,
     CommonModule,
     DaCoreModule,
-
-    QuillModule.forRoot(),
     FormsModule
   ]
 })
-export class DaAdminDocFormModule{}
+export class DaAdminDocFormModule {
+}

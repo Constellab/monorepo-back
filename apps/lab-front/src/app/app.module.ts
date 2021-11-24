@@ -12,7 +12,6 @@ import {
   FlDialogModule,
   FlPortalActionsModule,
   FlPortalModule,
-  FlQuillConfig,
   flSetRootInjector,
   FlSnackBarModule,
   FlSvgIconModule,
@@ -21,7 +20,6 @@ import {
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {svgIcons} from './core/utils/svg-icon-config';
-import {QuillModule} from 'ngx-quill';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {LoginModule} from './login/login.module';
 import {AuthenticationService} from './core/service/authentication.service';
@@ -78,12 +76,6 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlPortalActionsModule.forRoot(),
     FlAuthModule.forRoot(AuthenticationService),
     FlTagModule.forRoot(BioxTagService),
-
-    QuillModule.forRoot({
-      modules: {
-        toolbar: FlQuillConfig.defaultToolbarConfig,
-      },
-    }),
 
     AppRoutingModule
   ],

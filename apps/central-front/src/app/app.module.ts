@@ -9,7 +9,6 @@ import {MainModule} from './main/main.module';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {environment} from '../environments/environment';
 import {CookieService} from 'ngx-cookie-service';
-import {QuillModule} from 'ngx-quill';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {
   FlApiModule,
@@ -17,7 +16,6 @@ import {
   FlDialogModule,
   FlHttpInterceptorService,
   FlPortalModule,
-  FlQuillConfig,
   FlServiceWorkerService,
   flSetRootInjector,
   FlSnackBarModule,
@@ -78,12 +76,6 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     FlSnackBarModule.forRoot(),
     FlPortalModule.forRoot(),
     FlAuthModule.forRoot(AuthenticationService, UserAccountsService),
-
-    QuillModule.forRoot({
-      modules: {
-        toolbar: FlQuillConfig.defaultToolbarConfig,
-      },
-    }),
 
     ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production}),
   ],

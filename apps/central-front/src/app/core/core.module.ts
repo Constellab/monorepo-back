@@ -3,7 +3,6 @@ import {CommonModule} from '@angular/common';
 import {CoreComponentModule} from './module/core-component/core-component.module';
 import {CustomMaterialModule} from './custom-material/custom-material.module';
 import {CoreSelectModule} from './module/core-select/core-select.module';
-import {QuillModule} from 'ngx-quill';
 import {StatusModule} from './module/status/status.module';
 import {UserCoreModule} from './entity-module/user-core/user-core.module';
 import {CustomLibraryModule} from './custom-library/custom-library.module';
@@ -33,9 +32,6 @@ import {CoreDirectiveModule} from './module/core-directive/core-directive.module
 
     // Library
     CustomLibraryModule,
-
-    // Quill
-    QuillModule,
   ]
 })
 export class CoreModule {
