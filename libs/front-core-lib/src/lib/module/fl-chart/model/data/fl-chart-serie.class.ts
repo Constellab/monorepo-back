@@ -1,4 +1,5 @@
 import {FlChartDataContainer} from './fl-chart-data.class';
+import {ClHelpService} from '@monorepo/core-lib';
 
 /**
  * Key to distingue a serie form another
@@ -50,5 +51,10 @@ export class FlChartSerie<Data> implements FlChartDataContainer<Data> {
 
   public getData(): Data[] {
     return this.data;
+  }
+
+  public addData(data: Data | Data[]): void {
+    const dataArray = ClHelpService.convertObjectOrArrayToArray(data)
+    this.data.push(...dataArray)
   }
 }

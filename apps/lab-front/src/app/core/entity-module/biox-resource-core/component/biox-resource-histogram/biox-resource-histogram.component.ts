@@ -23,14 +23,14 @@ export class BioxResourceHistogramComponent extends BioxResourceViewDirective<Bi
   private convertToChartData(): void {
     const series: FlChart2dMultiSerie<FlChartDataBin> = new FlChart2dMultiSerie();
 
-    for (const viewSerie of this.view.data) {
+    for (const viewSerie of this.view.data.series) {
       const data: FlChartDataBin[] = [];
 
-      for (let i = 0; i < viewSerie.data.bin_edges.length - 1; i++) {
+      for (let i = 0; i < viewSerie.data.x.length - 1; i++) {
         // create the bin
-        const min = viewSerie.data.bin_edges[i];
-        const max = viewSerie.data.bin_edges[i + 1];
-        data.push(new FlChartDataBin(i, viewSerie.data.hist[i], min, max));
+        const min = viewSerie.data.x[i];
+        const max = viewSerie.data.x[i + 1];
+        data.push(new FlChartDataBin(i, viewSerie.data.y[i], min, max));
       }
 
       series.addSerie(new FlChartSerie(data, viewSerie.column_name));
@@ -42,6 +42,7 @@ export class BioxResourceHistogramComponent extends BioxResourceViewDirective<Bi
       const dataHisto: FlChartDataBin = series.series[0].data[index];
       return dataHisto.getIntervalText();
     };
+
     this.series = series;
   }
 

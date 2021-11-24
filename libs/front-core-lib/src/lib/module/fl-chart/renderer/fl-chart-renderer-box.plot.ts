@@ -1,11 +1,11 @@
 import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
 import {select} from 'd3';
-import {FlChartSerie} from '../model/data/fl-chart-serie.class';
+import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartScale, FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {flRootInjector} from '../../../utils/fl-root-injector';
 import {FlThemeService} from '../../../service/fl-theme.service';
-import {FlChartBoxPlotData, FlChartBoxPlotSerie} from '../model/data/fl-chart-box-plot-data.class';
+import {FlChartBoxPlotData} from '../model/data/fl-chart-box-plot-data.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
 import {
   FlChartBoxPlotDataPortalComponent,
@@ -15,9 +15,10 @@ import {FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
 
-export class FlChartRendererBoxPlot implements FlChart2dRenderer<FlChartMultiSerie<number>> {
+export class FlChartRendererBoxPlot implements FlChart2dRenderer<FlChartMultiSerie<FlChartBoxPlotData>> {
 
-  private readonly groupClassName: string = 'serie';
+  private readonly groupClassName: string = 'group';
+  private readonly boxPlotGroupClassName: string = 'group-box-plot';
   private readonly verticalLineClassName: string = 'vertical-line';
   private readonly horizontalLineClassName: string = 'horizontal-line';
 
@@ -28,107 +29,119 @@ export class FlChartRendererBoxPlot implements FlChart2dRenderer<FlChartMultiSer
   constructor(public colorScale: FlChartScaleColor) {
   }
 
-  initData(input: FlChart2dRendererInput<FlChartMultiSerie<number>>): void {
+  initData(input: FlChart2dRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
     this.initTheme();
 
-    input.container
-      // generate a group for each serie
-      .selectAll()
-      .data(input.data.series as FlChartBoxPlotSerie[])
-      .enter()
-      .append('g')
-      .attr('class', this.groupClassName)  // I add the class line to be able to modify this line later on.
-      .attr('transform', (d) => this.getGroupTranslate(input.xScale, input.chartWidth, d.key))
-      .on('mouseover', (event, d) => this.onMouseHover(event, d))
-      .on('mouseout', () => this.onMouseOut())
-
-      // for each group generate the values
-      .each((data, index, nodes) =>
-        this.drawSerie(nodes[index], data, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
+    this.refreshData(input);
   }
 
-  private drawSerie(group: SVGElement, serie: FlChartSerie<number>,
-                    groupWidth: number, input: FlChart2dRendererInput<FlChartMultiSerie<number>>): void {
-    // Show the main vertical line
-    select(group)
-      .append('line')
-      .attr('class', this.verticalLineClassName);
 
-    // Show the box
-    select(group)
-      .append('rect');
+  refreshData(input: FlChart2dRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
+    const data: FlChartDataWithSerie<FlChartBoxPlotData>[][] = input.data.invert();
 
-    // create the 3 lines for median min and max horizontal lines
-    select(group).append('line').attr('class', this.horizontalLineClassName);
-    select(group).append('line').attr('class', this.horizontalLineClassName);
-    select(group).append('line').attr('class', this.horizontalLineClassName);
+    const bandWidth: number = (input.xScale as FlChartScaleBand).bandwidth();
 
-    // draw the plot with the data
-    this.drawBoxPlot(group, serie as FlChartBoxPlotSerie, groupWidth, input);
-  }
-
-  refreshData(input: FlChart2dRendererInput<FlChartMultiSerie<number>>): void {
+    // draw the groups for each invert array
     input.container
       // generate a group for each serie
       .selectAll(`.${this.groupClassName}`)
-      .attr('transform', ((d: FlChartSerie<number>) => this.getGroupTranslate(input.xScale, input.chartWidth, d.key)))
-      // for each group generate the values
-      .each((data: FlChartSerie<number>, index, nodes: SVGElement[]) =>
-        this.drawBoxPlot(nodes[index], data as FlChartBoxPlotSerie, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
+      .data(data)
+      // .enter()
+      .join('g')
+      .attr('class', this.groupClassName)  // I add the class line to be able to modify this line later on.
+      .attr('transform', (d, i) =>
+        this.getGroupTranslate(input.xScale, input.chartWidth, i))
+      .each((data, index, nodes) =>
+        this.drawBoxPlotGroup(nodes[index] as any, data, bandWidth, input));
   }
 
-  private drawBoxPlot(group: SVGElement, serie: FlChartBoxPlotSerie,
-                      groupWidth: number, input: FlChart2dRendererInput<FlChartMultiSerie<number>>): void {
-    const boxData: FlChartBoxPlotData = serie.boxPlotData;
+  //draw the groups for each box plot
+  private drawBoxPlotGroup(group: SVGElement, groupData: FlChartDataWithSerie<FlChartBoxPlotData>[],
+                           parentGroupWidth: number, input: FlChart2dRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
+
+    const groupWidth: number = parentGroupWidth / groupData.length;
+    // Draw the main vertical line
+    select(group)
+      .selectAll(`.${this.boxPlotGroupClassName}`)
+      .data(groupData)
+      // .enter()
+      .join('g')
+      .attr('class', this.boxPlotGroupClassName)
+      .attr('transform', (d, i) => `translate(${groupWidth * i},0)`)
+      .on('mouseover', (event, d) => this.onMouseHover(event, d))
+      .on('mouseout', () => this.onMouseOut())
+      .each((data, index, nodes) =>
+        this.drawBoxPlot(nodes[index] as any, data, groupWidth, input));
+  }
+
+  // draw on box plot in the group
+  private drawBoxPlot(group: SVGElement, dataWithSerie: FlChartDataWithSerie<FlChartBoxPlotData>,
+                      groupWidth: number, input: FlChart2dRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
+
+    if (dataWithSerie.data == null) {
+      return;
+    }
 
     const xCenter = groupWidth / 2;
 
-    // Show the main vertical line
+    const padding = 2;
+    const x1 = padding;
+    const width = groupWidth - (padding * 2);
+
+    // Place the main vertical line
     select(group)
       .selectAll(`.${this.verticalLineClassName}`)
+      .data([dataWithSerie])
+      .join('line')
+      .attr('class', this.verticalLineClassName)
       .attr('x1', xCenter)
       .attr('x2', xCenter)
-      .attr('y1', input.yScale.scale(boxData.lowerWhisker))
-      .attr('y2', input.yScale.scale(boxData.upperWhisker))
+      .attr('y1', d => input.yScale.scale(d.data.lowerWhisker))
+      .attr('y2', d => input.yScale.scale(d.data.upperWhisker))
       .attr('stroke', this.theme.foreground);
 
-    // Show the box
+    // Place the box
     select(group)
       .selectAll(`rect`)
-      .attr('x', xCenter - groupWidth / 2)
-      .attr('y', input.yScale.scale(boxData.q3))
-      .attr('height', (input.yScale.scale(boxData.q1) - input.yScale.scale(boxData.q3)))
-      .attr('width', groupWidth)
+      .data([dataWithSerie])
+      .join('rect')
+      .attr('x', x1)
+      .attr('y', d => input.yScale.scale(d.data.q3))
+      .attr('height', d => (input.yScale.scale(d.data.q1) - input.yScale.scale(d.data.q3)))
+      .attr('width', width)
       .attr('stroke', this.theme.foreground)
-      .style('fill', () => this.colorScale.scale(serie.key));
+      .style('fill', (d) => this.colorScale.scale(d.serieKey));
 
-    // show median, min and max horizontal lines
+    // Place median, min and max horizontal lines
     select(group)
       .selectAll(`.${this.horizontalLineClassName}`)
-      .data([boxData.lowerWhisker, boxData.median, boxData.upperWhisker])
-      .attr('x1', xCenter - groupWidth / 2)
-      .attr('x2', xCenter + groupWidth / 2)
+      .data([dataWithSerie.data.lowerWhisker, dataWithSerie.data.median, dataWithSerie.data.upperWhisker])
+      .join('line')
+      .attr('class', this.horizontalLineClassName)
+      .attr('x1', x1)
+      .attr('x2', width)
       .attr('y1', (d) => input.yScale.scale(d))
       .attr('y2', (d) => input.yScale.scale(d))
       .attr('stroke', this.theme.foreground);
   }
 
   // return the position of the group
-  private getGroupTranslate(xScale: FlChartScale, chartWidth: number, serieKey: number): string {
+  private getGroupTranslate(xScale: FlChartScale, chartWidth: number, index: number): string {
+    const scale: number = xScale.scale(index);
     // if the scale return null set the the group outside chart
-    return 'translate(' + (xScale.scale(serieKey) == null ? (chartWidth + 10) : xScale.scale(serieKey)) + ',0)';
+    return 'translate(' + (scale == null ? (chartWidth + 10) : scale) + ',0)';
   }
 
   private initTheme(): void {
     this.theme = flRootInjector.get(FlThemeService).getCurrentThemeDetail();
   }
 
-  private onMouseHover(event: MouseEvent, serie: FlChartBoxPlotSerie): void {
-    const data: FlChartBoxPlotDataPortalInput = {
-      serie: serie,
+  private onMouseHover(event: MouseEvent, data: FlChartDataWithSerie<FlChartBoxPlotData>): void {
+    const input: FlChartBoxPlotDataPortalInput = {
+      data: data,
       seriesColorScale: this.colorScale
     };
-    this.portalHandler.openPortal(event.target as any, FlChartBoxPlotDataPortalComponent, data);
+    this.portalHandler.openPortal(event.target as any, FlChartBoxPlotDataPortalComponent, input);
   }
 
   private onMouseOut(): void {

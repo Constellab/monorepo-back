@@ -15,7 +15,7 @@ export class FlSheetChartSelectionBoxPlot extends FlSheetChartSelection {
       const ySelection: FlSheetSelection = this.getMultiSelectionFromString(serie.y);
       const values: number[] = this.getSelectionValues(ySelection);
 
-      series.addSerie(new FlChartBoxPlotSerie(flChartGetBoxPlotData(values), serie.name));
+      series.addSerie(new FlChartBoxPlotSerie([flChartGetBoxPlotData(values)], serie.name));
     }
     return series;
   }

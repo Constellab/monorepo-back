@@ -46,7 +46,7 @@ export class BioxResourceTextComponent extends BioxResourceViewDirective<BioxRes
     this.lowerPage = this.view.data.page;
     this.higherPage = this.view.data.page;
 
-    this.text = this.toString(this.view.data);
+    this.text = this.toString(this.view.data.text);
   }
 
   loadNextPage(): void {
@@ -60,8 +60,8 @@ export class BioxResourceTextComponent extends BioxResourceViewDirective<BioxRes
   }
 
   private loadNextPageSuccess(view: BioxResourceViewText): void {
-    this.view.data.text += this.toString(view.data);
-    this.text += this.toString(view.data);
+    this.view.data.text += this.toString(view.data.text);
+    this.text += this.toString(view.data.text);
     this.reachedLastPage = view.data.is_last_page;
     this.onSuccess();
   }

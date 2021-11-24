@@ -37,6 +37,16 @@ export class FlChartMultiSerie<Data> implements FlChartDataContainer<Data> {
       .countData();
   }
 
+  // return the indexes of the complete domain (array from 0 to N)
+  getDomainCompleteIndexes(): number[] {
+    return FlChartDomain.getCompleteDomainIndex(this.getData().length);
+  }
+
+  // return the indexes of the complete domain of the biggest serie
+  getBiggestSerieDomainCompleteIndexes(): number[] {
+    return FlChartDomain.getCompleteDomainIndex(this.maxSerieDataCount());
+  }
+
   /**
    * return an array of data with serie
    * The first array contains all the series first value,
@@ -110,13 +120,13 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> extends FlChartMul
     return FlChartDomain.getLinearDomain(data);
   }
 
-  // return the indexes of the complete domain (array from 0 to N)
-  getDomainCompleteIndex(): number[] {
-    return FlChartDomain.getCompleteDomainIndex(this.getData().length);
-  }
-
-  // return the indexes of the complete domain of the biggest serie
-  getBiggestSerieDomainCompleteIndex(): number[] {
-    return FlChartDomain.getCompleteDomainIndex(this.maxSerieDataCount());
+  /**
+   * Set the list of x tick label for all the series. It define the axisXLabelFormat
+   * @param xTickLabels
+   */
+  public setXTickLabels(xTickLabels: string[]): void{
+    if(xTickLabels){
+      this.axisXLabelFormat = (value) => (xTickLabels[value] ?? value).toString();
+    }
   }
 }

@@ -9,19 +9,17 @@ export interface FlChartBoxPlotData {
   upperWhisker: number;
   min: number;
   max: number;
-  nbOfData: number;
+  // nbOfData: number;
 }
 
 /**
  * Specific serie type for the box plot
  */
-export class FlChartBoxPlotSerie extends FlChartSerie<number> {
+export class FlChartBoxPlotSerie extends FlChartSerie<FlChartBoxPlotData> {
 
-  constructor(public boxPlotData: FlChartBoxPlotData, serieName: string) {
+  constructor(boxPlotData: FlChartBoxPlotData[], serieName: string) {
     // we set an array of number as data to have a correct domain
-    super([boxPlotData.q1, boxPlotData.median, boxPlotData.q3, boxPlotData.lowerWhisker, boxPlotData.upperWhisker],
-      serieName
-    );
+    super(boxPlotData, serieName);
   }
 
 
@@ -51,7 +49,7 @@ export function flChartGetBoxPlotData(data: number[]): FlChartBoxPlotData {
     upperWhisker: upperWhisker,
     min: min,
     max: max,
-    nbOfData: data.length
+    // nbOfData: data.length
   };
 }
 

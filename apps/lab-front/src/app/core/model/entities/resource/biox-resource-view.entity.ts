@@ -93,7 +93,7 @@ export class BioxResourceViewJson extends BioxResourceViewBase {
 }
 
 // Spec name of the page on view text
-export const bioxResourceViewTextSpecPage: string = 'view_page';
+export const bioxResourceViewTextSpecPage: string = 'page';
 
 export class BioxResourceViewText extends BioxResourceViewBase {
   type: 'text-view';
@@ -128,7 +128,7 @@ export class BioxResourceViewImage extends BioxResourceViewBase {
 
 export class BioxResourceViewBasicPlot2d extends BioxResourceViewBase {
   type: 'scatter-plot-2d-view' | 'line-plot-2d-view' | 'bar-plot-view' | 'stacked-bar-plot-view';
-  data: BioxResourceViewChart2dData
+  data: BioxResourceViewChart2dData;
 }
 
 export interface BioxResourceViewChart2dData {
@@ -150,35 +150,49 @@ export interface BioxResourceViewChart2dSerie {
 
 export class BioxResourceViewHistogram extends BioxResourceViewBase {
   type: 'histogram-view';
-  data: BioxResourceViewHistogramData[];
+  data: BioxResourceViewHistogramData;
 }
 
 export interface BioxResourceViewHistogramData extends BioxResourceViewBase {
-  column_name: string;
-  data: {
-    bin_edges: number[]; // list of bin interval, one more value than hist
-    hist: number[]; // list of hist values, one value correspond ton one bin interval
-  };
+  y_label: string;
+  x_tick_labels?: string[];
+  series: BioxResourceViewHistogramSerie[];
 }
+
+export interface BioxResourceViewHistogramSerie {
+  data: {
+    x: number[];// list of bin interval, one more value than hist
+    y: number[];// list of hist values, one value correspond ton one bin interval
+  };
+  column_name: string;
+}
+
 
 export class BioxResourceViewBoxPlot extends BioxResourceViewBase {
   type: 'box-plot-view';
-  data: BioxResourceViewBoxPlotData[];
+  data: BioxResourceViewBoxPlotData;
 }
 
 export interface BioxResourceViewBoxPlotData {
+  x_label: string;
+  y_label: string;
+  x_tick_labels?: string[];
+  series: BioxResourceViewBoxPlotSerie[];
+}
+
+export interface BioxResourceViewBoxPlotSerie {
+  column_names: string[];
   data: {
-    x: number;
-    max: number;
-    q1: number;
-    median: number;
-    min: number;
-    q3: number;
-    lower_whisker: number;
-    upper_whisker: number;
-    nb_of_data: number;
+    // x: number;
+    max: number[];
+    q1: number[];
+    median: number[];
+    min: number[];
+    q3: number[];
+    lower_whisker: number[];
+    upper_whisker: number[];
+    // nb_of_data: number;
   };
-  column_name: string;
 }
 
 export class BioxResourceViewMulti extends BioxResourceViewBase {

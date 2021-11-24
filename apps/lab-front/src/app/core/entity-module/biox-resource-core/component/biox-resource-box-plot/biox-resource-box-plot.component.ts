@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
 import {BioxResourceViewBoxPlot} from '../../../../model/entities/resource/biox-resource-view.entity';
-import {FlChartBoxPlotData, FlChartBoxPlotSerie, FlChartMultiSerie, FlChartType} from '@monorepo/front-core-lib';
+import {FlChart2dMultiSerie, FlChartBoxPlotSerie, FlChartMultiSerie, FlChartType} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'gen-biox-resource-box-plot',
@@ -22,22 +22,28 @@ export class BioxResourceBoxPlotComponent extends BioxResourceViewDirective<Biox
   }
 
   private convertToChartData(): void {
-    // todo fix FlChartMultiSerie to work with FlChartBoxPlotSerie
-    const series: FlChartMultiSerie<any> = new FlChartMultiSerie();
+    const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
 
-    for (const viewSerie of this.view.data) {
-      const boxPLotData: FlChartBoxPlotData = {
-        min: viewSerie.data.min,
-        max: viewSerie.data.max,
-        q1: viewSerie.data.q1,
-        median: viewSerie.data.median,
-        q3: viewSerie.data.q3,
-        lowerWhisker: viewSerie.data.lower_whisker,
-        upperWhisker: viewSerie.data.upper_whisker,
-        nbOfData: viewSerie.data.nb_of_data,
+    for (const viewSerie of this.view.data.series) {
+      const serie = new FlChartBoxPlotSerie([], viewSerie.column_names.join(' '));
+
+      for (let i = 0; i < viewSerie.data.max.length; i++) {
+        serie.addData({
+          min: viewSerie.data.min[i],
+          max: viewSerie.data.max[i],
+          q1: viewSerie.data.q1[i],
+          median: viewSerie.data.median[i],
+          q3: viewSerie.data.q3[i],
+          lowerWhisker: viewSerie.data.lower_whisker[i],
+          upperWhisker: viewSerie.data.upper_whisker[i],
+        });
       }
 
-      series.addSerie(new FlChartBoxPlotSerie(boxPLotData, viewSerie.column_name));
+      series.addSerie(serie);
+    }
+
+    if (this.view.data.x_tick_labels) {
+      series.setXTickLabels(this.view.data.x_tick_labels);
     }
     this.series = series;
   }

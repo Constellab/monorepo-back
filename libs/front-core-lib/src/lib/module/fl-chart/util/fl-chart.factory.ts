@@ -27,6 +27,7 @@ import {FlChartConfig} from '../model/fl-chart-config.class';
 import {FlChartLegendHeatMap} from '../model/legend/fl-chart-legend-heat-map.class';
 import {FlChartLegendMultiSeries} from '../model/legend/fl-chart-legend-multi-series.class';
 import {FlChartRendererStackedBarPlot} from '../renderer/fl-chart-renderer-stacked-bar.plot';
+import {FlChartBoxPlotData} from '../model/data/fl-chart-box-plot-data.class';
 
 export class FlChartFactory {
 
@@ -173,7 +174,7 @@ export class FlChartFactory {
   /**
    * Build a Box plot multi container
    */
-  private static getBoxPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChartMultiSerie<number>,
+  private static getBoxPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChartMultiSerie<FlChartBoxPlotData>,
                                   seriesColorScale: FlChartScaleColor)
     : FlChartConfig {
 
@@ -182,16 +183,24 @@ export class FlChartFactory {
     // build the x axis and scale based on ScaleBand
     // the x domain is an array of the number of series with index of the serie
     const xScale: FlChartScale = new FlChartScaleBand()
-      .setInitialDomain(dataContainer.getSeriesKeys())
+      .setInitialDomain(dataContainer.getBiggestSerieDomainCompleteIndexes())
       .range(chartContainer.getRangeX())
       .paddingOuter(0.3);
     const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
       .setTickFormat(() => ''); // no info in x abscissa
 
+    xAxis.setTickFormat((dataContainer as any).axisXLabelFormat);
 
+
+
+    const data = dataContainer.getData();
+    const numberData: number[] = [];
+    for (const d of data) {
+      numberData.push(d.min, d.lowerWhisker, d.max, d.upperWhisker);
+    }
     // build the y axis and scale linear
     const yScale: FlChartScaleLinear = new FlChartScaleNumber()
-      .setInitialDomain(FlChartDomain.getLinearDomain(dataContainer.getData()))
+      .setInitialDomain(FlChartDomain.getLinearDomain(numberData, 0, 0))
       .range(chartContainer.getRangeY());
     const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
 
