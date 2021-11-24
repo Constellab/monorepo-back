@@ -7,7 +7,7 @@ import {
   FlFormModule,
   FlLoaderModule, FlPortalModule,
   FlSectionModule,
-  FlSnackBarModule,
+  FlSnackBarModule, FlTextEditorModule,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 
@@ -22,7 +22,8 @@ import {
     FlSnackBarModule,
     FlTranslateModule,
     FlSectionModule,
-    FlAuthModule
+    FlAuthModule,
+    FlTextEditorModule
   ]
 })
 export class DaCustomLibraryModule {
