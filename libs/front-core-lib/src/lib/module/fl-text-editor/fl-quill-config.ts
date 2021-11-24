@@ -11,6 +11,7 @@ export class FlQuillConfig {
     ['bold', 'italic', 'underline', 'strike'],
     ['blockquote', 'code-block'],
     [{list: 'ordered'}, {list: 'bullet'}],
+    [{header: [1, 2, 3, 4, false]}],
     [{align: []}, {color: ['#000', '#e60000', '#ff9900', '#008a00', '#0066cc', '#9933ff']}],
     [{indent: '-1'}, {indent: '+1'}],
     ['link', 'blockquote', 'clean'],
