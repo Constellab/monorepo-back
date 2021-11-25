@@ -20,6 +20,18 @@
     </mat-cell>
   </ng-container>
 
+  <!-- Info -->
+  <ng-container matColumnDef="info">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'resource_info' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let resource">
+      <div *ngIf="resource.fsNode?.size != null">
+        {{resource.fsNode.size | flByteText}}
+      </div>
+    </mat-cell>
+  </ng-container>
+
   <!-- Action -->
   <ng-container matColumnDef="action">
     <mat-header-cell *matHeaderCellDef class="download-column">
@@ -32,6 +44,7 @@
       </a>
 
       <button mat-icon-button type="button" color="primary" (click)="downloadFile(resource)"
+              *ngIf="resource.isDownloadable()"
               [matTooltip]="'biox.file_resource_download' | translate">
         <mat-icon>cloud_download</mat-icon>
       </button>

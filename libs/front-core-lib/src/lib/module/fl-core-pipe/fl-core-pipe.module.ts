@@ -7,6 +7,7 @@ import {FlDebugPipe} from './fl-debug/fl-debug.pipe';
 import {FlYesNoPipe} from './fl-yes-no/fl-yes-no.pipe';
 import {FlBlobToSrcPipe} from './fl-blob-to-src/fl-blob-to-src.pipe';
 import { FlCallMethodPipe } from './fl-call-method/fl-call-method.pipe';
+import { FlByteTextPipe } from './fl-byte-text/fl-byte-text.pipe';
 
 /**
  * Core module containing pipes
@@ -19,6 +20,7 @@ import { FlCallMethodPipe } from './fl-call-method/fl-call-method.pipe';
     FlYesNoPipe,
     FlBlobToSrcPipe,
     FlCallMethodPipe,
+    FlByteTextPipe,
   ],
   exports: [
     FlErrorRequiredPipe,
@@ -27,6 +29,7 @@ import { FlCallMethodPipe } from './fl-call-method/fl-call-method.pipe';
     FlYesNoPipe,
     FlBlobToSrcPipe,
     FlCallMethodPipe,
+    FlByteTextPipe,
   ],
   imports: [
     CommonModule,

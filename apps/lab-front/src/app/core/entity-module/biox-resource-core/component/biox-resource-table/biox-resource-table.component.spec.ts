@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FileResourceTableComponent } from './file-resource-table.component';
+import { BioxResourceTableComponent } from './biox-resource-table.component';
 
 describe('FileResourceTableComponent', () => {
-  let component: FileResourceTableComponent;
-  let fixture: ComponentFixture<FileResourceTableComponent>;
+  let component: BioxResourceTableComponent;
+  let fixture: ComponentFixture<BioxResourceTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FileResourceTableComponent ]
+      declarations: [ BioxResourceTableComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FileResourceTableComponent);
+    fixture = TestBed.createComponent(BioxResourceTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

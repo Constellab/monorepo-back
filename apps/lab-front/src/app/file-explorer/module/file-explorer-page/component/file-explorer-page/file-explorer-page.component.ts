@@ -1,8 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {
-  FileResourceDatasource,
-  FileResourcePreview
-} from '../../../../../core/model/entities/resource/file-resource.entity';
 import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
 import {
   FlDialogService,
@@ -20,6 +16,7 @@ import {
   UploadFsNodeMode
 } from '../upload-fs-node-dialog/upload-fs-node-dialog.component';
 import {Subscription} from 'rxjs';
+import {BioxResource, BioxResourceDatasource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 
 @Component({
   selector: 'gen-file-explorer-page',
@@ -28,10 +25,10 @@ import {Subscription} from 'rxjs';
 })
 export class FileExplorerPageComponent implements OnInit, OnDestroy {
 
-  datasource: FileResourceDatasource;
+  datasource: BioxResourceDatasource;
 
-  columns: FlTableColumn<FileResourcePreview>[] = ['id', 'name', {columnName: 'fe.path', accessor: 'path'},
-    {columnName: 'fe.file_type', accessor: 'resourceTypeHumanName'}, 'createdAt', 'action'];
+  columns: FlTableColumn<BioxResource>[] = ['id', 'name', 'info',
+    {columnName: 'resource_type', accessor: 'resourceTypeHumanName'}, 'createdAt', 'action'];
 
   files: File[];
   actionType: 'uploadFile';
@@ -89,7 +86,7 @@ export class FileExplorerPageComponent implements OnInit, OnDestroy {
     this.files = [];
   }
 
-  private onFileUploadResult(result: FlPortalActionResult<FileResourcePreview | FileResourcePreview[]>): void {
+  private onFileUploadResult(result: FlPortalActionResult<BioxResource | BioxResource[]>): void {
     if (result.status === 'success') {
       // if multiple file were uploaded
       this.datasource.addItem(result.result, () => true);

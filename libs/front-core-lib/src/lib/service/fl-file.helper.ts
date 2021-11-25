@@ -1,4 +1,6 @@
 import {Observable} from 'rxjs';
+import {FlTranslateService} from '../module/fl-translate/service/fl-translate.service';
+import {ClNumberHelper} from '@monorepo/core-lib';
 
 /**
  * Helper to manage files, like download a file
@@ -77,6 +79,30 @@ export class FlFileHelper {
   public static extensionIsImage(extension: string): boolean {
     return extension === 'png' || extension === 'jpg' || extension === 'jpeg' ||
       extension === 'gif' || extension === 'webp' || extension === 'svg';
+  }
+
+  /**
+   * Method to get the readable text of a file size like 5Mo
+   * @param size
+   */
+  public static getFileSizeText(size: number = 0): string {
+    const translateService = FlTranslateService.getInstance();
+    let unit: number = 0;
+    let unitSize = size;
+    while (unitSize >= 1024) {
+      unit++;
+      unitSize = unitSize / 1024;
+    }
+
+    const roundedSize = ClNumberHelper.round(unitSize, 1);
+    let text: string;
+    // find the correct text of the unit
+    if (unit === 0) text = 'flCoreComponent.byte_symbol';
+    else if (unit === 1) text = 'flCoreComponent.kilo_byte_symbole';
+    else if (unit === 2) text = 'flCoreComponent.mega_byte_symbole';
+    else text = 'flCoreComponent.giga_byte_symbole';
+
+    return roundedSize + ' ' + translateService.translate(text);
   }
 
   /////////////////////////////////////////// JS FILE //////////////////////////////////////////////

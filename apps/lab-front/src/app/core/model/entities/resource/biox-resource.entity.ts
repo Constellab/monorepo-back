@@ -1,7 +1,27 @@
-import {LabBaseEntity} from '../../global/lab-entity.entity';
-import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {LabBaseEntity, LabEntity} from '../../global/lab-entity.entity';
+import {FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {BioxTag} from '../biox-tag.entity';
+
+export class FsNodeEntity extends LabEntity {
+
+  // size of the node
+  size: number;
+
+  @Expose({name: 'is_file'})
+  isFile: boolean;
+
+  name: string;
+
+  isImage(): boolean{
+    return FlFileHelper.extensionIsImage(this.getExtension());
+  }
+
+  getExtension(): string {
+    return FlFileHelper.getFileExtension(this.name);
+  }
+
+}
 
 export class BioxResource<DATA = Record<string, any>> extends LabBaseEntity {
   // typing name of the resource model
@@ -24,9 +44,23 @@ export class BioxResource<DATA = Record<string, any>> extends LabBaseEntity {
   @Type(() => BioxTag)
   tags: BioxTag[];
 
+  @Expose({name: 'fs_node'})
+  @Type(() => FsNodeEntity)
+  fsNode ?: FsNodeEntity;
+
   name: string;
 
   data: DATA;
+
+  isFile(): boolean {
+    return this.fsNode != null && this.fsNode.isFile;
+  }
+
+  isDownloadable(): boolean {
+    return this.isFile();
+  }
+
 }
+
 
 export type BioxResourceDatasource = FlEntityPaginatedDatasource<BioxResource>

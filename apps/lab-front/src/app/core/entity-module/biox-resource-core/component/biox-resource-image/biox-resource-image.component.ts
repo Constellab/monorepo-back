@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
-import {FileResourcePreview} from '../../../../model/entities/resource/file-resource.entity';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {FileResourceService} from '../../../../entity-service/file-resource.service';
 
@@ -32,9 +31,9 @@ export class BioxResourceImageComponent implements OnInit {
   }
 
   private initImage(): void {
-    if (this.resource instanceof FileResourcePreview && this.resource.isImage()) {
+    if (this.resource.isFile() && this.resource.fsNode.isImage()) {
 
-      if (this.resource.getExtension() === 'svg') {
+      if (this.resource.fsNode.getExtension() === 'svg') {
         this.svg = this.sanitizer.bypassSecurityTrustHtml(this.resource.data);
       } else {
         this.downloadLink = this.resourceFileService.downloadFileUrl(this.resource.typingName, this.resource.id);

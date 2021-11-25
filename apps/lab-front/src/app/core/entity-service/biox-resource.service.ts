@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
 import {BioxResource, BioxResourceDatasource} from '../model/entities/resource/biox-resource.entity';
-import {ClConstructorFunction, ClCoreJsonConvert, ClPageI} from '@monorepo/core-lib';
-import {FileResource} from '../model/entities/resource/file-resource.entity';
+import {ClPageI} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
 import {BioxLabTypeEntity, BioxLabTypeEntityDatasource} from '../model/entities/lab-type/biox-lab-type.entity';
 import {
@@ -34,25 +33,8 @@ export class BioxResourceService {
     }
 
     // get the resource in the correct type
-    return this.getResource(id);
+    return this.apiService.get(`${this.route}/${id}`, BioxResource);
   }
-
-  private getResource(id: string): Observable<any> {
-    return this.apiService.get(`${this.route}/${id}`, this.instantiateResource);
-  }
-
-  /**
-   * Method to instantiate the correct resource when getting it from the DB
-   * @param json
-   */
-  private instantiateResource: ClConstructorFunction<BioxResource> = (json: any): BioxResource => {
-    // if this is a resource file
-    if (json.is_file) {
-      return ClCoreJsonConvert.deserializeObject(json, FileResource);
-    } else {
-      return ClCoreJsonConvert.deserializeObject(json, BioxResource);
-    }
-  };
 
 
   public getResourcesByType(type: string, page: number, pageSize: number): Observable<ClPageI<BioxResource>> {
@@ -67,7 +49,7 @@ export class BioxResourceService {
   }
 
   public delete(id: string): Observable<void> {
-    return this.apiService.delete(`${this.route}/${id}`)
+    return this.apiService.delete(`${this.route}/${id}`);
   }
 
   //////////////////////////////////////// RESOURCE TYPE///////////////////////////////////////

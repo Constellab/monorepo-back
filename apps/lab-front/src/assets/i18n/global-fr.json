@@ -38,6 +38,8 @@
   "open_resource_detail": "ouvrir le détail",
   "resource": "Ressource",
   "resource_empty": "Ressource vide",
+  "resource_info": "Info",
+  "resource_type": "Type",
   "name": "Nom",
   "id": "Id",
   "type": "Type",

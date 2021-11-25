@@ -30,4 +30,17 @@ export class ClNumberHelper {
       return number;
     }
   }
+
+  /**
+   * Method useful to round nb with a certain amount of decimals
+   * @param num
+   * @param nbDecimals
+   */
+  public static round(num: number, nbDecimals: number = 0): number {
+    if (typeof num != 'number' || typeof nbDecimals != 'number') return num;
+
+    const rounder = 10 ** nbDecimals;
+    return Math.round((num + Number.EPSILON) * rounder) / rounder;
+
+  }
 }

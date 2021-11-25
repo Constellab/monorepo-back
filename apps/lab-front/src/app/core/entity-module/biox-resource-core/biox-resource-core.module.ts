@@ -19,6 +19,7 @@ import {BioxResourceViewPortalComponent} from './component/biox-resource-view-po
 import {BioxResourceBoxPlotComponent} from './component/biox-resource-box-plot/biox-resource-box-plot.component';
 import {BioxResourceMultiViewComponent} from './component/biox-resource-multi-view/biox-resource-multi-view.component';
 import {BioxResourceViewComponent} from './component/biox-resource-view/biox-resource-view.component';
+import {BioxResourceTableComponent} from './component/biox-resource-table/biox-resource-table.component';
 
 
 @NgModule({
@@ -39,6 +40,7 @@ import {BioxResourceViewComponent} from './component/biox-resource-view/biox-res
     BioxResourceBoxPlotComponent,
     BioxResourceMultiViewComponent,
     BioxResourceViewComponent,
+    BioxResourceTableComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
@@ -57,6 +59,7 @@ import {BioxResourceViewComponent} from './component/biox-resource-view/biox-res
     BioxResourceBoxPlotComponent,
     BioxResourceMultiViewComponent,
     BioxResourceViewComponent,
+    BioxResourceTableComponent,
   ],
   imports: [
     CommonModule,
