@@ -15,7 +15,17 @@ import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Link, FlBioNetworkD3LinkPoint} from '../model/fl-bio-network-d3-link.class';
 import {flBioNetworkReactionMaxValue} from '../model/fl-bio-network-d3-reaction.class';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
-import {drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, scaleLinear, select} from 'd3';
+import {
+  drag,
+  forceCenter,
+  forceCollide,
+  forceLink,
+  forceManyBody,
+  forceSimulation,
+  line,
+  scaleLinear,
+  select
+} from 'd3';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 /**
@@ -50,6 +60,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
   public readonly grey: string;
   private readonly textColor: string;
   private readonly backgroundColor: string;
+  private readonly arrowSize: number = 10;
 
 
   constructor(themeService: FlThemeService, private drawerState: FlBioNetworkDrawerState,
@@ -103,6 +114,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
         this.drawLinks(this.groupState.linkGroup, this.data.getMetaboliteLinks());
         this.drawNodes(this.groupState.nodeGroup, this.data.getMetabolitesAndReactions());
         this.zoomState.enableZoom(this.svg, mainGroup, this.chartWidth, this.chartHeight);
+        this.defineArrowMarker();
 
         if (this.enableSimulation) {
           this.initSimulation();
@@ -210,6 +222,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .attr('stroke-opacity', 0.9)
       .attr('stroke-width', (d: FlBioNetworkD3Link) => d.getLinkWidth())
       .attr('fill', 'transparent')
+      .attr('marker-end', 'url(#arrow)')
       .each(d => d.visible = true)
       .on('contextmenu', this.createLinkPoint());
 
@@ -332,6 +345,26 @@ export class FlBioNetworkRendererState implements OnDestroy {
   public getLinkColorLogarithm(): boolean {
     return this.linkColorLogarithm;
   }
+
+  // define the arrow marker to use it in lines
+  private defineArrowMarker(): void {
+    // arrow from https://observablehq.com/@harrylove/draw-an-arrowhead-marker-connected-to-a-line-in-d3
+    const ref = this.arrowSize / 2;
+    this.svg.append('defs')
+      .append('marker')
+      .attr('id', 'arrow')
+      .attr('viewBox', [0, 0, this.arrowSize, this.arrowSize] as any)
+      .attr('refX', 21) // use as offset to avoir overlap nodes
+      .attr('refY', ref) // use to center the arrow in the line
+      .attr('markerWidth', this.arrowSize)
+      .attr('markerHeight', this.arrowSize)
+      .attr('orient', 'auto-start-reverse')
+      .append('path')
+      .attr('d', line()([[0, 0], [0, this.arrowSize], [this.arrowSize, ref]]))
+      .attr('stroke', 'none')
+      .attr('fill', this.grey);
+  }
+
 
   /////////////////////////////////////////// SIMULATION //////////////////////////////////////////////
 
