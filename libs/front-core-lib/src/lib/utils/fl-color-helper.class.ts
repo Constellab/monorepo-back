@@ -35,8 +35,11 @@ export class FlColorHelper {
   }
 
   // return a list of colors
-  public getColorList(): string[] {
-    return ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
-      '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999'];
+  public static getColorList(): string[] {
+    // return ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
+    //   '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999'];
+    // color for color blind : https://jfly.uni-koeln.de/color/
+    return ['#e69f00', '#56b4e9', '#009e73', '#f0e442',
+      '#0072b2', '#d55c00', '#cc79a7'];
   }
 }

@@ -1,6 +1,7 @@
 import {scaleLinear, scaleOrdinal, ScaleOrdinal} from 'd3';
 import {FlChartScaleI} from './fl-chart-scale.class';
 import {ScaleLinear} from 'd3-scale';
+import {FlColorHelper} from '../../../../utils/fl-color-helper.class';
 
 /**
  * Specific scale to return a color based on a value
@@ -28,8 +29,7 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
 
   private initScale(): ScaleOrdinal<string, string> {
     // the range contains all available colors
-    return scaleOrdinal<string>(['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
-      '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999']);
+    return scaleOrdinal<string>(FlColorHelper.getColorList());
   }
 
   public scale(value: number): string {
