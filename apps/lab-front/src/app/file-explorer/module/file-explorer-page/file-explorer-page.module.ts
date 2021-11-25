@@ -5,14 +5,14 @@ import {FileExplorerPageComponent} from './component/file-explorer-page/file-exp
 import {FileResourceTableComponent} from './component/file-resource-table/file-resource-table.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
-import {SelectFileTypesDialogComponent} from './component/select-file-types-dialog/select-file-types-dialog.component';
+import {UploadFsNodeDialogComponent} from './component/upload-fs-node-dialog/upload-fs-node-dialog.component';
 
 
 @NgModule({
   declarations: [
     FileExplorerPageComponent,
     FileResourceTableComponent,
-    SelectFileTypesDialogComponent
+    UploadFsNodeDialogComponent
   ],
   imports: [
     CommonModule,

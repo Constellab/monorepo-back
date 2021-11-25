@@ -1,5 +1,5 @@
 <fl-dialog-title>
-  {{'fe.select_file_types' | translate}}
+  {{title | translate}}
 </fl-dialog-title>
 
 <mat-dialog-content>
@@ -10,9 +10,19 @@
 
       <form (ngSubmit)="submit()" id="file-type-form" [formGroup]="formGp">
 
-        <ng-container formArrayName="array">
-          <div *ngFor="let control of formArray.controls; index as i" [formGroupName]="i"
-          >
+
+        <!--     When uploading a folder, we show 2 options  -->
+        <div *ngIf="selectedNodes === 'folder'" class="folder-mode">
+          <mat-radio-group class="g-mat-radio-wrap-text" formControlName="uploadMode">
+            <mat-radio-button value="files">{{'fe.folder_upload_files_options' | translate }}</mat-radio-button>
+            <mat-radio-button value="folder"
+                              class="radio-button">{{'fe.folder_upload_folder_options' | translate }}</mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <!--    Selection of the folder types    -->
+        <ng-container *ngIf="showSelectFileTypes" formArrayName="files">
+          <div *ngFor="let control of formArray.controls; index as i" [formGroupName]="i">
 
             <div fxLayout="row" fxLayoutAlign="space-between">
 

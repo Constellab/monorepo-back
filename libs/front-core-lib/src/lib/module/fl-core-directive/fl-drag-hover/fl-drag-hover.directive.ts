@@ -1,6 +1,7 @@
 import {Directive, ElementRef, EventEmitter, HostListener, Input, Output, Renderer2} from '@angular/core';
 import {FlDropFileEvent} from './fl-drop-file-event.class';
 import {ClHelpService} from '@monorepo/core-lib';
+import {FlFileHelper} from '../../../service/fl-file.helper';
 
 
 /**
@@ -87,7 +88,7 @@ export class FlDragHoverDirective {
 
       // emit the drop event
       this.flDrop.emit({
-        files: ClHelpService.convertFileListToArray(event.dataTransfer.files),
+        files: FlFileHelper.convertFileListToArray(event.dataTransfer.files),
         event: event
       });
 

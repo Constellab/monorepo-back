@@ -11,11 +11,22 @@
       </fl-text-icon>
 
       <fl-section-actions>
+
+        <!--   Upload files     -->
         <fl-input-file-container color="primary" class="file-input" [disableFileDrop]="true"
-                                 [placeholder]="'fe.upload_file' | translate" icon="cloud_upload">
+                                 [placeholder]="'fe.upload_file' | translate" icon="upload_file">
           <input flInputFile [multiple]="true" type="file" (fileChange)="uploadFiles($event)"
                  [(ngModel)]="files">
         </fl-input-file-container>
+
+        <!--   Upload folders     -->
+        <fl-input-file-container color="primary" class="file-input" [disableFileDrop]="true"
+                                 [placeholder]="'fe.upload_folder' | translate" icon="drive_folder_upload">
+          <input flInputFile [multiple]="true" type="file" (fileChange)="uploadFolder($event)"
+                 [(ngModel)]="files" webkitdirectory mozdirectory>
+        </fl-input-file-container>
+
+
       </fl-section-actions>
     </fl-section-header>
 

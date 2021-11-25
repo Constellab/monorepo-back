@@ -90,20 +90,6 @@ export class ClHelpService {
   }
 
   /**
-   * Convert a {@link FileList} to File[]
-   * @param files fileList
-   */
-  public static convertFileListToArray(files: FileList): File[] {
-    const array: File[] = [];
-    // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < files.length; i++) {
-      array.push(files[i]);
-    }
-
-    return array;
-  }
-
-  /**
    * Simple method to convert a type 'T | T[]' to 'T[]'
    * @param object object or array
    * @return an array

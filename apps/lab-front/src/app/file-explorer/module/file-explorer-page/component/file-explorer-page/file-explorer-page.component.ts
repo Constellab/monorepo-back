@@ -1,22 +1,32 @@
-import {Component, OnInit} from '@angular/core';
-import {FileResourceDatasource, FileResourcePreview} from '../../../../../core/model/entities/resource/file-resource.entity';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {
+  FileResourceDatasource,
+  FileResourcePreview
+} from '../../../../../core/model/entities/resource/file-resource.entity';
 import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
 import {
   FlDialogService,
   FlDropFileEvent,
+  FlFileHelper,
   FlPortalActionResult,
   FlPortalActionsService,
+  FlSnackBarService,
   FlTableColumn,
   FlTranslateService
 } from '@monorepo/front-core-lib';
-import {SelectFileTypesDialogComponent, SelectFileTypesDialogInput} from '../select-file-types-dialog/select-file-types-dialog.component';
+import {
+  UploadFsNodeDialogComponent,
+  UploadFsNodeDialogInput,
+  UploadFsNodeMode
+} from '../upload-fs-node-dialog/upload-fs-node-dialog.component';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'gen-file-explorer-page',
   templateUrl: './file-explorer-page.component.html',
   styleUrls: ['./file-explorer-page.component.scss']
 })
-export class FileExplorerPageComponent implements OnInit {
+export class FileExplorerPageComponent implements OnInit, OnDestroy {
 
   datasource: FileResourceDatasource;
 
@@ -26,35 +36,54 @@ export class FileExplorerPageComponent implements OnInit {
   files: File[];
   actionType: 'uploadFile';
 
+  private subscription: Subscription;
 
   constructor(private labFileService: FileResourceService,
               private actionsService: FlPortalActionsService,
               private translateService: FlTranslateService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {
     this.datasource = this.labFileService.getAllDatasource();
 
-    this.actionsService.getResult$(this.actionType).subscribe(
+    this.subscription = this.actionsService.getResult$(this.actionType).subscribe(
       result => this.onFileUploadResult(result)
     );
   }
 
   onFileDrop(event: FlDropFileEvent): void {
+    // don't keep the folder
+    const files: File[] = event.files.filter(file => !FlFileHelper.isFolder(file));
+
+    if (files.length === 0) {
+      this.snackBarService.openErrorMessage('fe.drop_folders_error', true);
+      return;
+    }
+
     this.uploadFiles(event.files);
   }
 
   uploadFiles(fileEvent: File | File[]): void {
+    this.uploadFsNode(fileEvent, 'files');
+  }
+
+  uploadFolder(fileEvent: File | File[]): void {
+    this.uploadFsNode(fileEvent, 'folder');
+  }
+
+  private uploadFsNode(fileEvent: File | File[], selectedNodes: UploadFsNodeMode): void {
     const files: File[] = fileEvent as File[];
     if (files.length === 0) {
       return;
     }
 
-    const data: SelectFileTypesDialogInput[] = files.map(file => {
-      return {file: file, typingName: null};
-    });
-    this.dialogService.openSmallDialog(SelectFileTypesDialogComponent, {data: data});
+    const data: UploadFsNodeDialogInput = {
+      selectedNodes: selectedNodes,
+      files: files
+    };
+    this.dialogService.openSmallDialog(UploadFsNodeDialogComponent, {data: data});
 
     // clear the list of files
     this.files = [];
@@ -66,4 +95,10 @@ export class FileExplorerPageComponent implements OnInit {
       this.datasource.addItem(result.result, () => true);
     }
   }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
+
+
 }

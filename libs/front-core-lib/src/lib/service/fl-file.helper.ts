@@ -8,6 +8,9 @@ export class FlFileHelper {
   constructor() {
   }
 
+  /////////////////////////////////////////// STRING //////////////////////////////////////////////
+
+
   /**
    * @param file filename or full file path
    * @return return the filename name of a file without the extension
@@ -75,6 +78,30 @@ export class FlFileHelper {
     return extension === 'png' || extension === 'jpg' || extension === 'jpeg' ||
       extension === 'gif' || extension === 'webp' || extension === 'svg';
   }
+
+  /////////////////////////////////////////// JS FILE //////////////////////////////////////////////
+  /**
+   * Convert a {@link FileList} to File[]
+   * @param files fileList
+   */
+  public static convertFileListToArray(files: FileList): File[] {
+    const array: File[] = [];
+    // tslint:disable-next-line:prefer-for-of
+    for (let i = 0; i < files.length; i++) {
+      array.push(files[i]);
+    }
+
+    return array;
+  }
+
+
+  public static isFolder(file: File): boolean {
+    // not perfect, this also detect empty file without extension as folder
+    return !file.type && file.size === 0;
+  }
+
+
+  /////////////////////////////////////////// BLOB //////////////////////////////////////////////
 
   public static createBlob(blobParts?: BlobPart[], options?: BlobPropertyBag): Blob {
     return new Blob(blobParts, options);

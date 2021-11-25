@@ -15,6 +15,7 @@ import {ControlValueAccessor, NgControl} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {FlFormFieldDirective} from '../../abstract-directive/form/fl-form-field.directive';
 import {FlFormFieldMultipleDirective} from '../../abstract-directive/form/fl-form-field-multiple.directive';
+import {FlFileHelper} from '../../service/fl-file.helper';
 import {ClHelpService} from '@monorepo/core-lib';
 
 /**
@@ -70,7 +71,7 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
 
   // when a file is added or changed
   public fileChanged(fileList: FileList): void {
-    const files: File[] = ClHelpService.convertFileListToArray(fileList);
+    const files: File[] = FlFileHelper.convertFileListToArray(fileList);
 
     if (this.strictMode) {
       // if we are in strict mode we filter the files
@@ -87,11 +88,12 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
   writeValue(obj: File | File[]): void {
     this.value = obj;
 
-    if (!obj) {
+    if (ClHelpService.isNullOrEmpty(this.value)) {
       this.clearInput(false);
-    } else {
-      this.fileChange.emit(obj);
     }
+
+    // trigger change event to refresh button
+    this.fileChange.emit(this.value);
   }
 
   callChangeEvent(value: File[] | File): void {
