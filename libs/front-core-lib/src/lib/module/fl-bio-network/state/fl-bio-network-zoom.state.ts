@@ -7,14 +7,15 @@ import {flBioNetworkNodeTextClass} from '../model/fl-bio-network-d3-node.class';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 import {zoom, zoomIdentity} from 'd3';
+import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
 
 /**
  * Different threshold for D3 object levels
  */
 const d3ObjectZoomLevelThreshold = {
-  1: 0, // levels 0 showed when zoom > 3
-  2: 1, // level 1 showed when zoom > 1.2
-  3: 3 // level 2 are always showed
+  1: 0, // levels 0 are always showed
+  2: 1, // level 2 showed when zoom > 1
+  3: 3 // level 3 are showed if zoom > 3
 };
 
 /**
@@ -45,17 +46,21 @@ export class FlBioNetworkZoomState implements OnDestroy {
   // true after the enable zoom and false after first zoom handling
   private firstZoom: boolean = true;
 
+  // store the lowest level of all the data. The lowest level should always be visible
+  private lowestLevel: number = 1;
+
   constructor(private ngZone: NgZone, private groupState: FlBioNetworkGroupState) {
   }
 
 
   public enableZoom(svg: FlD3SelectionSimple, zoomableElement: FlD3SelectionSimple,
-                    svgWidth: number, svgHeight: number): void {
+                    svgWidth: number, svgHeight: number, data: FlBioxNetworkD3): void {
     this.zoomableElement = zoomableElement;
     this.svg = svg;
     this.svgWidth = svgWidth;
     this.svgHeight = svgHeight;
     this.firstZoom = true;
+    this.lowestLevel = data.getLowestLevel();
 
     //add zoom capabilities
     this.zoomHandler = zoom()
@@ -89,8 +94,11 @@ export class FlBioNetworkZoomState implements OnDestroy {
 
   private updateObjectVisibility(zoomScale: number): void {
 
+    // get the current zoom level based on current scale
+    // Make the current level equal of higher than lowest level so the lowest level are always shown
+    const currentLevel = Math.max(this.getObjectLevelFromScale(zoomScale), this.lowestLevel);
+
     // update the zoom visibility if there were no zoom previously or the zoom level has changed
-    const currentLevel = this.getObjectLevelFromScale(zoomScale);
     const updateVisibility: boolean = this.firstZoom
       || this.getObjectLevelFromScale(this.getCurrentScale()) != currentLevel;
 

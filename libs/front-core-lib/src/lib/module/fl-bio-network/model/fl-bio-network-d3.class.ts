@@ -93,6 +93,11 @@ export class FlBioxNetworkD3 {
   public initPositions(): void {
     this.getAllNodes().forEach(node => node.initPosition());
   }
+
+  // return the lowest level of objects
+  public getLowestLevel(): number{
+    return Math.min(...this.getAllNodes().map(node => node.getLevel()))
+  }
 }
 
 // Any D3 object in the network

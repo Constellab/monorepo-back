@@ -3,7 +3,7 @@
      *ngIf="isReady">
 
   <!--   Slider to hide link     -->
-  <div>
+  <div *ngIf="linksMaxAbsValue > 0">
     <p class="g-text-small g-text-light">{{'flBioNetwork.link_value_help' | translate}} : {{sliderValue}}</p>
     <mat-slider class="slider" color="primary"
                 [max]="linksMaxAbsValue"

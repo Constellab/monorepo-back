@@ -113,7 +113,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
         this.groupState.initGroups(mainGroup);
         this.drawLinks(this.groupState.linkGroup, this.data.getMetaboliteLinks());
         this.drawNodes(this.groupState.nodeGroup, this.data.getMetabolitesAndReactions());
-        this.zoomState.enableZoom(this.svg, mainGroup, this.chartWidth, this.chartHeight);
+        this.zoomState.enableZoom(this.svg, mainGroup, this.chartWidth, this.chartHeight, this.data);
         this.defineArrowMarker();
 
         if (this.enableSimulation) {
