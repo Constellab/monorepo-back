@@ -110,7 +110,8 @@ export class FlBioNetworkGridState {
     // check the next tick
     const secondDiff = Math.abs(tickInfo.size - firstDiff);
     if (secondDiff / tickInfo.size < this.gridRoundPosThreshold) {
-      const nextTick = tickIndex < 0 ? -1 : +1;
+      // if the index is negative of -0, set descrese tickIndex, otherwise increase it
+      const nextTick = tickIndex < 0 || Object.is(tickIndex, -0) ? -1 : +1;
       // convert tick index to position
       return (tickIndex + nextTick) * tickInfo.size + tickInfo.start;
     }
