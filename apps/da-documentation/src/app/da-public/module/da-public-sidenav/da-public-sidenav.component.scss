@@ -11,28 +11,43 @@
 }
 
 .sidenav {
-  min-width: 15em;
-  padding-top: 20px;
+  min-width: 20em;
   height: 100%;
 }
 
 .sidenav-title{
-  margin-left: 7%;
+  padding-top: 10px;
+  padding-left: 15px;
+  border-bottom: #6c6c6c solid 1px;
+  padding-bottom: 15px;
+  margin-bottom: 5px;
 }
-
-.sidenav-element {
-  font-size: 20px;
-}
-
-.sidenav-element-child{
-  margin-left: 1em;
-  font-size: 15px;
-}
-
-
 
 .sidenav-div-redirect-admin{
   padding-bottom: 2em;
   text-align: center;
   width: 100%;
+}
+
+.element{
+  width: 100%;
+}
+
+.item{
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.item:hover{
+  color: #018989;
+}
+
+.active{
+  color: #018989;
+}
+
+.tree{
+  border-bottom: #6c6c6c solid 1px;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
 }

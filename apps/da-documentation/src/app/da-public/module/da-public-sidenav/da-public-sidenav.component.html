@@ -6,20 +6,22 @@
       <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree">
 
         <!-- This is the tree node template for leaf nodes -->
-        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class="tree-node">
-          <mat-nav-list class="nav-list" [routerLink]="node.completePath">
-            <mat-list-item>
+        <mat-tree-node *matTreeNodeDef="let node" class="tree-node element">
+          <mat-nav-list class="nav-list element">
+            <a mat-list-item matTreeNodePadding matTreeNodePaddingIndent="15px" [routerLink]="node.completePath"
+                           class="item" [ngStyle]="{'font-size':node.level > 0 ? '14px': '16px'}" routerLinkActive="active">
               <div matLine>
                 {{node.name}}
               </div>
-            </mat-list-item>
+            </a>
           </mat-nav-list>
         </mat-tree-node>
 
         <!-- This is the tree node template for expandable nodes -->
-        <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
-          <mat-nav-list class="nav-list">
-            <mat-list-item>
+        <mat-tree-node *matTreeNodeDef="let node;when: hasChild" class="element">
+          <mat-nav-list class="nav-list element">
+            <mat-list-item matTreeNodePadding matTreeNodePaddingIndent="15px" class="item"
+                           [ngStyle]="{'font-size':node.level > 0 ? '14px': '16px'}">
               <button mat-icon-button matTreeNodeToggle
                       [attr.aria-label]="'Toggle ' + node.name">
                 <mat-icon class="mat-icon-rtl-mirror">
@@ -35,10 +37,10 @@
       </mat-tree>
 
       <div class="sidenav-div-redirect-admin">
-        <button mat-raised-button color="primary" *ngIf="isConnected" [routerLink]="'../admin'"
+        <a mat-raised-button color="primary" *ngIf="isConnected" [routerLink]="'../admin'"
                 class="sidenav-bt-redirect-admin">
           {{'admin_page' | translate}}
-        </button>
+        </a>
       </div>
     </div>
 
