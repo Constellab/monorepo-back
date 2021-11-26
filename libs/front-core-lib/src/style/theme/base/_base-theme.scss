@@ -28,6 +28,12 @@
   @include _file-input-color($mat-theme);
 
   :root {
+    --primary-color: #{mat-color($primary)};
+    --accent-color: #{mat-color($primary)};
+    --warn-color: #{mat-color($primary)};
+    --success-color: #{mat-color($primary)};
+    --warning-color: #{mat-color($primary)};
+    --error-color: #{mat-color($primary)};
     --card-background: #{mat-color($background, card)};
     --color-foreground: #{$foreground-color};
     --main-background: #{$background-color}
