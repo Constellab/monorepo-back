@@ -11,7 +11,7 @@
   <!-- This is the tree node template for leaf nodes -->
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class="tree-node">
     <mat-nav-list class="nav-list" [routerLink]="'../docs/' + node.completePath">
-      <mat-list-item>
+      <mat-list-item *ngIf="node.id != null; else elseBlock">
         <div matLine>
           {{node.name}}
         </div>
@@ -22,6 +22,11 @@
           <mat-icon>delete</mat-icon>
         </button>
       </mat-list-item>
+      <ng-template #elseBlock>
+        <div>
+          The folder is empty.
+        </div>
+      </ng-template>
     </mat-nav-list>
   </mat-tree-node>
 

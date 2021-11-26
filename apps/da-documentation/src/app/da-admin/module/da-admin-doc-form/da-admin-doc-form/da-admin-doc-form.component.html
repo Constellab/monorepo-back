@@ -41,12 +41,8 @@
     </mat-form-field>
   </div>
 
-  <!--    content      -->
   <fl-form-field class="g-form-input">
     <mat-label>{{'content' | translate}}</mat-label>
-<!--    <quill-editor formControlName="content" placeholder="{{'content' | translate}}"-->
-<!--                  class="g-full">-->
-<!--    </quill-editor>-->
     <fl-text-editor matInput formControlName="content" ></fl-text-editor>
     <mat-error *ngIf="formGp.get('content').hasError('required')">
       {{'content' | flErrorRequired}}

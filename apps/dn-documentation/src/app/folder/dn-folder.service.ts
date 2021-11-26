@@ -104,6 +104,9 @@ export class DnFolderService {
       })
     }
 
+    if(currentChild.length == 0){
+      currentChild[0] = new DnNode(null, null, null, null, 0);
+    }
     currentParent.children = currentChild;
     currentParent.children.sort((a, b) => a.order - b.order);
 
