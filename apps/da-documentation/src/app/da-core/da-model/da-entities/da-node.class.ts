@@ -44,17 +44,15 @@ class FlatNode {
 export class EntityWithPotentialsChildren<T> implements FlEntity{
   id: string;
   children?: T[];
-  parentId?: string;
 }
 
 
 export class DaMateTreeFlatDataSource<T extends EntityWithPotentialsChildren<T>, F, K = F> extends MatTreeFlatDataSource<T, F, K>{
 
   //Create Node
-  createNode(node: T): void{
-    const parent: T = this.findNode(node.parentId, this.data);
+  createNode(node: T, parentId: string): void{
+    const parent: T = this.findNode(parentId, this.data);
     parent.children.push(node);
-
   }
 
   findNode(nodeId: string, data: T[]): T{
