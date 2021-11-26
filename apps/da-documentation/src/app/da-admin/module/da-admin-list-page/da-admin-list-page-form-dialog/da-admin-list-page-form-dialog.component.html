@@ -32,7 +32,7 @@
         <input matInput formControlName="path" required flInputMaxLength="50"
                placeholder="{{'path' | translate}}">
         <mat-error *ngIf="formGp.get('path').hasError('required')">
-          {{'title' | flErrorRequired}}
+          {{'path' | flErrorRequired}}
         </mat-error>
       </mat-form-field>
     </div>

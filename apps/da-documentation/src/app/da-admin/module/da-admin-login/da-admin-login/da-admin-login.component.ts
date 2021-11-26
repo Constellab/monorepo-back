@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 
 @Component({
-  selector: 'da-da-admin-list-page',
+  selector: 'da-admin-list-page',
   templateUrl: './da-admin-login.component.html',
   styleUrls: ['./da-admin-login.component.scss']
 })

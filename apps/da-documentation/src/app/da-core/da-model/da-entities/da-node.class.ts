@@ -1,5 +1,6 @@
 import {MatTreeFlatDataSource} from '@angular/material/tree';
 import {FlEntity} from '@monorepo/front-core-lib';
+import {Type} from 'class-transformer';
 
 export class DaNode{
   id: string;
@@ -12,6 +13,7 @@ export class DaNode{
 
   order: number;
 
+  @Type(() => DaNode)
   children?: DaNode[];
 
   parentId: string;
@@ -34,14 +36,15 @@ class FlatNode {
   expandable: boolean;
   name: string;
   level: number;
-  id: string;
+  hasChild?: boolean;
+  id?: string;
 }
 
 
 export class EntityWithPotentialsChildren<T> implements FlEntity{
   id: string;
   children?: T[];
-  parentId: string;
+  parentId?: string;
 }
 
 
@@ -49,33 +52,36 @@ export class DaMateTreeFlatDataSource<T extends EntityWithPotentialsChildren<T>,
 
   //Create Node
   createNode(node: T): void{
-    console.log(node);
     const parent: T = this.findNode(node.parentId, this.data);
     parent.children.push(node);
-    console.log(this.data);
+
   }
 
   findNode(nodeId: string, data: T[]): T{
     const node: T = data.find(n => n.id == nodeId);
-    if(!node){
-      data.map(n => {
-        return this.findNode(nodeId, n.children);
-      });
-      return null;
-    } else {
+    if(node) {
       return node;
     }
+    data.map(n => {
+      return this.findNode(nodeId, n.children);
+    });
+    return null;
+  }
+
+  delete(id: string): void{
+    let res: boolean;
+    [this.data, res] = this.deleteNode(this.data, id);
   }
 
   //Delete Node
-  deleteNode(nodes: T[], id: string): [T[], boolean] {
+  private deleteNode(nodes: T[], id: string): [T[], boolean]{
     nodes.map(node => {
       if(node.id == id){
         nodes.splice(nodes.indexOf(node), 1);
         return [nodes, true];
       }
       else{
-        if(typeof node.children !== 'undefined'){
+        if(node.children != null){
           let r:boolean;
           [node.children, r] = this.deleteNode(node.children, id);
           return [nodes, r]

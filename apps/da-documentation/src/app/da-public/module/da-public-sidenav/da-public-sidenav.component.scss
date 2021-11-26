@@ -12,42 +12,53 @@
 
 .sidenav {
   min-width: 20em;
+  width: auto;
   height: 100%;
 }
 
-.sidenav-title{
+.title{
   padding-top: 10px;
   padding-left: 15px;
-  border-bottom: #6c6c6c solid 1px;
+  font-size: x-large;
+  border-bottom: #6c6c6c solid 1px; //Couleur ! (secondary)
   padding-bottom: 15px;
-  margin-bottom: 5px;
+}
+
+.tree{
+  width: 100%;
+  height: auto;
+  border-bottom: #6c6c6c solid 1px; //Couleur ! (secondary)
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.tree-node{
+  padding: 0;
+  margin: 0;
 }
 
 .sidenav-div-redirect-admin{
-  padding-bottom: 2em;
+  position: relative;
+  align-self: flex-end;
+  padding-bottom: 10px;
   text-align: center;
   width: 100%;
 }
 
-.element{
+.line{
   width: 100%;
 }
 
 .item{
   box-sizing: border-box;
-  width: 100%;
 }
 
 .item:hover{
-  color: #018989;
+  color: #018989; //Primary !
 }
 
 .active{
-  color: #018989;
+
+  color: #018989; //Primary !
 }
 
-.tree{
-  border-bottom: #6c6c6c solid 1px;
-  padding-bottom: 15px;
-  margin-bottom: 15px;
-}

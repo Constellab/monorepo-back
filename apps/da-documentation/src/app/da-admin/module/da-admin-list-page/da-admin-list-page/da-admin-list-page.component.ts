@@ -14,7 +14,6 @@ import {DaFolderService} from '../../../../da-core/da-service/da-folder.service'
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {DaFolder, DaFolderDTO} from '../../../../da-core/da-model/da-entities/da-folder.class';
-import {FormGroup} from '@ngneat/reactive-forms';
 import {DaAdminListPageFormDialogComponent} from '../da-admin-list-page-form-dialog/da-admin-list-page-form-dialog.component';
 
 
@@ -26,12 +25,11 @@ interface FlatNode {
 }
 
 @Component({
-  selector: 'da-da-admin-list-page',
+  selector: 'da-admin-list-page',
   templateUrl: './da-admin-list-page.component.html',
   styleUrls: ['./da-admin-list-page.component.scss']
 })
 export class DaAdminListPageComponent implements OnInit {
-
 
 
   isUpdate = false;
@@ -105,8 +103,7 @@ export class DaAdminListPageComponent implements OnInit {
   private onCloseConfirmDialog(res: FlConfirmDialogResult, id: string): void {
     if (res.choice) {
       this.daDocumentationService.deleteById(id).subscribe(() => {
-        let r: boolean;
-        [this.dataSource.data, r] = this.dataSource.deleteNode(this.dataSource.data, id);
+        this.dataSource.delete(id);
       });
     }
   }
@@ -119,7 +116,7 @@ export class DaAdminListPageComponent implements OnInit {
     }
   }
 
-  openCreateDialog(): void{
+  openCreateDialog(): void {
     const input: FlFormDialogInput<DaFolderDTO> = {
       mode: 'create'
     };
@@ -135,7 +132,7 @@ export class DaAdminListPageComponent implements OnInit {
     );
   }
 
-  openUpdateDialog(node: DaNode): void{
+  openUpdateDialog(node: DaNode): void {
 
     const folderForm: DaFolderDTO = {
       title: node.name,
@@ -152,34 +149,34 @@ export class DaAdminListPageComponent implements OnInit {
 
     this.dialogService.openSmallDialog(DaAdminListPageFormDialogComponent, {data: input}).afterClosed().subscribe(
       (res: DaFolder) => {
-        //this.dataSource.updateNodes(new DaNode(res.id, res.path, res.completePath, res.title, res.order, res.folder.id));
-        this.daFolderService.getTree().subscribe(folder => {
-          this.dataSource.data = folder.children;
-          this.expandParentToNode(res.id, this.dataSource.data);
-        });
+        this.setDataSource(res);
       }
     );
   }
 
-  expandParentToNode(id: string, data: DaNode[]): boolean{
+  private setDataSource(res: DaFolder): void {
+    this.daFolderService.getTree().subscribe(folder => {
+      this.dataSource.data = folder.children;
+      this.expandParentToNode(res.id, this.dataSource.data);
+    });
+  }
+
+  private expandParentToNode(id: string, data: DaNode[]): boolean {
     const node: DaNode = data.find(n => n.id == id);
-    if(!node){
+    if (!node) {
       data.map(n => {
-        if(typeof n.children !== 'undefined'){
-          if(this.expandParentToNode(id, n.children)) {
-            this.treeControl.expand(this.treeControl.dataNodes.find(no => no.id == n.id));
-            return true;
-          }else{
-            return false;
-          }
+        if (n.children != null && this.expandParentToNode(id, n.children)) {
+          this.treeControl.expand(this.treeControl.dataNodes.find(no => no.id == n.id));
+          return true;
         }
         return false;
       });
       return false;
-    } else {
-      this.treeControl.expand(this.treeControl.dataNodes.find(no => no.id == node.id));
-      return true;
     }
+
+    this.treeControl.expand(this.treeControl.dataNodes.find(no => no.id == node.id));
+    return true;
+
   }
 
   edit(id: string): string {
@@ -205,9 +202,7 @@ export class DaAdminListPageComponent implements OnInit {
   private onCloseConfirmDialogFolder(res: FlConfirmDialogResult, id: string, parentId: string): void {
     if (res.choice) {
       this.daFolderService.deleteById(id).subscribe(() => {
-        let r: boolean;
-
-        [this.dataSource.data, r] = this.dataSource.deleteNode(this.dataSource.data, id);
+        this.dataSource.delete(id);
 
         this.expandParentToNode(parentId, this.dataSource.data);
       });

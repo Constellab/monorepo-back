@@ -1,11 +1,13 @@
 import {DaEntity} from './da-entity.class';
 import {DaVersion} from './da-version.class';
 import {DaDocumentation} from './da-documentation.class';
+import {Type} from 'class-transformer';
 
 export class DaFolder extends DaEntity{
 
   title: string;
 
+  @Type(() => DaVersion)
   version: DaVersion;
 
   path: string;
@@ -14,10 +16,13 @@ export class DaFolder extends DaEntity{
 
   order: number;
 
+  @Type(() => DaFolder)
   folder: DaFolder;
 
+  @Type(() => DaFolder)
   folders: DaFolder[];
 
+  @Type(() => DaDocumentation)
   documentations: DaDocumentation[];
 
 }

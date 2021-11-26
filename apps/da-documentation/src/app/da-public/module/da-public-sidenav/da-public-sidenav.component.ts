@@ -15,7 +15,7 @@ interface FlatNode {
 }
 
 @Component({
-  selector: 'da-da-public-sidenav',
+  selector: 'da-public-sidenav',
   templateUrl: './da-public-sidenav.component.html',
   styleUrls: ['./da-public-sidenav.component.scss']
 })

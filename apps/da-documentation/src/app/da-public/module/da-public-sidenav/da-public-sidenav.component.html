@@ -1,15 +1,16 @@
 <mat-sidenav-container class="container" autosize="true">
   <mat-sidenav class="sidenav" mode="side" [opened]="true">
-    <div class="g-full-height" fxLayout="column">
-      <h1 class="sidenav-title g-text-capitalize-first">{{'documentations' | translate}}</h1>
+    <div class="g-full-height">
 
-      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree">
+      <h1 class="title">Gencovery</h1>
 
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree item">
         <!-- This is the tree node template for leaf nodes -->
-        <mat-tree-node *matTreeNodeDef="let node" class="tree-node element">
-          <mat-nav-list class="nav-list element">
-            <a mat-list-item matTreeNodePadding matTreeNodePaddingIndent="15px" [routerLink]="node.completePath"
-                           class="item" [ngStyle]="{'font-size':node.level > 0 ? '14px': '16px'}" routerLinkActive="active">
+        <mat-tree-node *matTreeNodeDef="let node">
+          <mat-nav-list *ngIf="node.id != null" class="line">
+            <a matTreeNodePadding matTreeNodePaddingIndent="15px" class="item" mat-list-item
+                           [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
+                            [routerLink]="node.completePath" routerLinkActive="active">
               <div matLine>
                 {{node.name}}
               </div>
@@ -18,10 +19,10 @@
         </mat-tree-node>
 
         <!-- This is the tree node template for expandable nodes -->
-        <mat-tree-node *matTreeNodeDef="let node;when: hasChild" class="element">
-          <mat-nav-list class="nav-list element">
-            <mat-list-item matTreeNodePadding matTreeNodePaddingIndent="15px" class="item"
-                           [ngStyle]="{'font-size':node.level > 0 ? '14px': '16px'}">
+        <mat-tree-node *matTreeNodeDef="let node;when: hasChild">
+          <mat-nav-list class="nav-list line">
+            <mat-list-item class="item" matTreeNodePadding matTreeNodePaddingIndent="15px"
+                           [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}">
               <button mat-icon-button matTreeNodeToggle
                       [attr.aria-label]="'Toggle ' + node.name">
                 <mat-icon class="mat-icon-rtl-mirror">
@@ -43,6 +44,8 @@
         </a>
       </div>
     </div>
+
+
   </mat-sidenav>
 
   <mat-sidenav-content class="sidenav-content">

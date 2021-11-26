@@ -85,7 +85,7 @@ export class DnFolderService {
     return this.createTree(allDoc[0]);
   }
 
-  createTree(folder: DnFolder): DnNode{
+  private createTree(folder: DnFolder): DnNode{
 
     const currentChild: DnNode[] = [];
 
@@ -107,20 +107,20 @@ export class DnFolderService {
     if(currentChild.length == 0){
       currentChild[0] = new DnNode(null, null, null, null, 0);
     }
+
     currentParent.children = currentChild;
     currentParent.children.sort((a, b) => a.order - b.order);
 
     return currentParent;
   }
 
-  TreeToArray(folder: DnFolder): DnFolder[]{
+  private TreeToArray(folder: DnFolder): DnFolder[]{
     let array:DnFolder[] = [folder];
     let arrayChildFolder: DnFolder[] = [];
 
     folder.folders.sort((a, b) => a.order - b.order);
     folder.folders.map(f => {
-      const yeah = this.TreeToArray(f);
-      arrayChildFolder = arrayChildFolder.concat(yeah);
+      arrayChildFolder = arrayChildFolder.concat(this.TreeToArray(f));
     });
     array = array.concat(arrayChildFolder);
     return array;
@@ -163,7 +163,7 @@ export class DnFolderService {
     return this.updateChildrenPath(folderTree);
   }
 
-  updateChildrenPath(folder: DnFolder): DnFolder{
+  private updateChildrenPath(folder: DnFolder): DnFolder{
     folder.folders.map(
       f => {
         f.completePath = folder.completePath + f.path + '/';

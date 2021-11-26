@@ -1,22 +1,17 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {DnDocumentation, DnDocumentationDTO, DnDocumentationResDTO} from './dn-documentation.entity';
-import {DnFolderService} from '../folder/dn-folder.service';
-import {forwardRef, Inject} from '@angular/core';
-import {DnFolder} from '../folder/dn-folder.entity';
-import {doc} from 'prettier';
+import {DnDocumentation, DnDocumentationDTO} from './dn-documentation.entity';
 
 @Injectable()
 export class DnDocumentationService {
   constructor(
     @InjectRepository(DnDocumentation)
     private documentationsRepository: Repository<DnDocumentation>,
-
   ) {
   }
 
-  async create(documentation: DnDocumentationDTO): Promise<DnDocumentation>{
+  async create(documentation: DnDocumentationDTO): Promise<DnDocumentation> {
     return await this.documentationsRepository.save(documentation);
   }
 
@@ -28,9 +23,8 @@ export class DnDocumentationService {
       }
     });
     docs.map((doc) => {
-      if(!doc.path.includes('/')){
+      if (!doc.path.includes('/')) {
         const docDto = new DnDocumentationDTO(doc);
-        const childs: DnDocumentation[] = docs.filter((documentation) => documentation.path.includes(doc.path+'/') && doc.path != '');
         docsDto.push(docDto);
       }
     })

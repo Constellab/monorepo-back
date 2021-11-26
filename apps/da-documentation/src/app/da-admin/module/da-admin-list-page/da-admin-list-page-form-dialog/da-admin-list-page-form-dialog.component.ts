@@ -8,7 +8,7 @@ import {Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 
 @Component({
-  selector: 'da-da-admin-list-page-form-dialog',
+  selector: 'da-admin-list-page-form-dialog',
   templateUrl: './da-admin-list-page-form-dialog.component.html',
   styleUrls: ['./da-admin-list-page-form-dialog.component.scss']
 })
@@ -21,7 +21,7 @@ export class DaAdminListPageFormDialogComponent extends FlFormDialogAbstractDire
               private folderService: DaFolderService,
               snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<DaAdminListPageFormDialogComponent>) {
-    super(dialogInput, snackBarService, dialogRef, 'Folder created', 'Folder updated');
+    super(dialogInput, snackBarService, dialogRef, 'folder_created', 'folder_updated');
   }
 
   ngOnInit(): void {

@@ -2,7 +2,7 @@ import {BlEntityWithId} from '@monorepo/back-core-lib';
 import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {DnFolder} from '../folder/dn-folder.entity';
 
-@Unique('', ['folder', 'order'])
+@Unique(['folder', 'order'])
 @Entity('Documentation')
 export class DnDocumentation extends BlEntityWithId {
 

@@ -1,17 +1,17 @@
-<button mat-raised-button color="primary" [routerLink]="'edit'">
+<button mat-raised-button color="primary" routerLink="edit">
   Create
 </button>
 
-<button mat-raised-button color="primary" style="margin-left: 10px" (click)="editFolder()">
+<button mat-raised-button color="primary" class="2" (click)="editFolder()">
   Create Folder
 </button>
 
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree">
 
   <!-- This is the tree node template for leaf nodes -->
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="10px" class="tree-node">
-    <mat-nav-list class="nav-list" [routerLink]="'../docs/' + node.completePath">
-      <mat-list-item *ngIf="node.id != null; else elseBlock">
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class="tree-node">
+    <mat-nav-list *ngIf="node.id != null; else elseBlock" class="nav-list" [routerLink]="'../docs/' + node.completePath">
+      <mat-list-item>
         <div matLine>
           {{node.name}}
         </div>
@@ -22,16 +22,18 @@
           <mat-icon>delete</mat-icon>
         </button>
       </mat-list-item>
-      <ng-template #elseBlock>
-        <div>
-          The folder is empty.
-        </div>
-      </ng-template>
     </mat-nav-list>
+    <ng-template #elseBlock>
+      <mat-nav-list>
+        <mat-list-item>
+          The folder is empty.
+        </mat-list-item>
+      </mat-nav-list>
+    </ng-template>
   </mat-tree-node>
 
   <!-- This is the tree node template for expandable nodes -->
-  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodePaddingIndent="10px">
+  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
     <mat-nav-list class="nav-list">
       <mat-list-item>
         <button mat-icon-button matTreeNodeToggle
@@ -49,7 +51,6 @@
         <button mat-icon-button (click)="deleteFolder(node.id, node.parentId)">
           <mat-icon>delete</mat-icon>
         </button>
-
       </mat-list-item>
     </mat-nav-list>
   </mat-tree-node>

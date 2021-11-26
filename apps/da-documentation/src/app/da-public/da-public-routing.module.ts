@@ -9,6 +9,11 @@ const routes: Route[] = [
     component: DaPublicSidenavComponent,
     children: [
       {
+        path: '',
+        redirectTo: 'intro',
+        component: DaPublicDocPageComponent
+      },
+      {
         path: '**',
         component: DaPublicDocPageComponent
       }
