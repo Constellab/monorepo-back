@@ -92,13 +92,13 @@ export class DnFolderService {
     const currentParent: DnNode =
       new DnNode(folder.id, folder.title, folder.path, folder.completePath, folder.order, [], folder.folder ? folder.folder.id : null);
 
-    if(typeof folder.documentations !== 'undefined'){
+    if(folder.documentations != null){
       folder.documentations.map(doc => {
         currentChild.push(new DnNode(doc.id, doc.title, doc.path, doc.completePath, doc.order));
       });
     }
 
-    if(typeof folder.folders !== 'undefined') {
+    if(folder.folders != null) {
       folder.folders.map(f => {
         currentChild.push(this.createTree(f));
       })
