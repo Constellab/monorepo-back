@@ -137,6 +137,7 @@ export class UploadFsNodeDialogComponent implements OnInit {
       text: text,
       type: FileResourceService.uploadFileActon,
       action: obs,
+      trackHttpEvents: true,
     };
 
     this.actionsService.addAction(action, true);

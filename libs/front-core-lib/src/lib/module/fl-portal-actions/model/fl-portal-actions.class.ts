@@ -1,6 +1,7 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlTranslatableText} from '../../fl-translate/model/fl-translate-param';
-import {filter, map} from 'rxjs/operators';
+import {filter} from 'rxjs/operators';
+import {HttpEvent, HttpEventType} from '@angular/common/http';
 
 /**
  * Action to be shown in the screen
@@ -23,12 +24,18 @@ export interface FlPortalAction {
    * Text to show beside the loader
    */
   text: FlTranslatableText;
+
+  /**
+   * If true the action must return a HttpEvent and the action will display a progress bar
+   */
+  trackHttpEvents?: boolean;
 }
 
 /**
  * Current status of the action
+ * Progress is like loading but with information about loader (like file upload)
  */
-export type FlPortalActionStatus = 'ready' | 'waiting' | 'loading' | 'success' | 'error';
+export type FlPortalActionStatus = 'ready' | 'waiting' | 'loading' | 'progress' | 'success' | 'error';
 
 /**
  * Information used within the {@link FlPortalActionsComponent}
@@ -39,7 +46,7 @@ export class FlPortalActionDetail {
 
   text: FlTranslatableText;
 
-  private actionSubject$: BehaviorSubject<FlPortalActionDetailResult> = new BehaviorSubject({status: 'waiting'});
+  private actionSubject$: BehaviorSubject<FlPortalActionDetailStatusEvent> = new BehaviorSubject({status: 'waiting'});
 
   constructor(private action: FlPortalAction) {
     this.symbol = Symbol();
@@ -49,7 +56,7 @@ export class FlPortalActionDetail {
   public callAction(): Observable<FlPortalActionResult> {
     this.emitLoading();
     this.action.action.subscribe(
-      result => this.emitSuccess(result),
+      result => this.onSuccess(result),
       error => this.emitError(error)
     );
     return this.getResult$();
@@ -59,31 +66,49 @@ export class FlPortalActionDetail {
     this.actionSubject$.next({status: 'loading'});
   }
 
+  private onSuccess(result: any): void {
+    if (this.action.trackHttpEvents) {
+      this.emitProgress(result);
+    } else {
+      this.emitSuccess(result);
+    }
+  }
+
+  private emitProgress(result: HttpEvent<any>): void {
+    // if upload progress
+    if (result.type === HttpEventType.UploadProgress) {
+      const progress = Math.trunc((result.loaded / result.total) * 100);
+      this.actionSubject$.next({status: 'progress', progressValue: progress});
+    }
+    // end of the request with the object
+    else if (result.type === HttpEventType.Response) {
+      this.emitSuccess(result.body);
+      // once the upload is down, show a basic loader
+    } else if (result.type === HttpEventType.DownloadProgress || result.type === HttpEventType.ResponseHeader) {
+      this.emitLoading();
+    }
+  }
+
   private emitSuccess(result: any): void {
-    this.actionSubject$.next({status: 'success', result: result});
+    this.actionSubject$.next({status: 'success', result: result, action: this.action});
     this.actionSubject$.complete();
   }
+
 
   private emitError(error: any): void {
-    this.actionSubject$.next({status: 'error', result: error});
+    this.actionSubject$.next({status: 'error', result: error, action: this.action});
     this.actionSubject$.complete();
   }
 
-  public getStatus$(): Observable<FlPortalActionStatus> {
-    return this.actionSubject$.asObservable().pipe(
-      map(result => result.status)
-    );
+  public getStatusEvent$(): Observable<FlPortalActionDetailStatusEvent> {
+    return this.actionSubject$.asObservable();
   }
 
   public getResult$(): Observable<FlPortalActionResult> {
-    return this.actionSubject$.asObservable().pipe(
+    // only keep the success and error events
+    return this.getStatusEvent$().pipe(
       filter(result => result.status === 'success' || result.status === 'error'),
-      map(result => ({
-        status: result.status as any,
-        result: result.result,
-        action: this.action
-      }))
-    );
+    ) as any;
   }
 
   public getCurrentStatus(): FlPortalActionStatus {
@@ -96,10 +121,27 @@ export class FlPortalActionDetail {
 
 }
 
-export interface FlPortalActionDetailResult {
-  status: FlPortalActionStatus;
-  result?: any;
+
+/**
+ * Event emitted by the portal action , can be any state
+ */
+export type FlPortalActionDetailStatusEvent = FlPortalActionResult | FlPortalActionProgress | FlPortalActionEmpty;
+
+/**
+ * Object emitted when a action is in progress
+ */
+export interface FlPortalActionProgress {
+  status: 'progress';
+  progressValue: number; // percentage of the progress
 }
+
+/**
+ * Portal Action result empty
+ */
+export interface FlPortalActionEmpty {
+  status: 'ready' | 'waiting' | 'loading';
+}
+
 
 /**
  * Result of the actions observables, can be error or success
@@ -123,3 +165,4 @@ export class FlPortalActionError<T = any> {
   result: T;
   action: FlPortalAction;
 }
+

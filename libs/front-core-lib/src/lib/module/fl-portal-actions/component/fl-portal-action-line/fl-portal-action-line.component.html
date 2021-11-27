@@ -5,8 +5,8 @@
     {{text}}
   </div>
 
-  <ng-container>
-    <ng-container [ngSwitch]="status$ | async">
+  <ng-container *ngIf="statusEvent$ | async as statusEvent">
+    <ng-container [ngSwitch]="statusEvent.status">
       <ng-container *ngSwitchCase="'waiting'">
         <mat-icon>hourglass_empty</mat-icon>
       </ng-container>
@@ -14,6 +14,12 @@
       <ng-container *ngSwitchCase="'loading'">
         <!--   loader the same size as the icons   -->
         <fl-loader [size]="24"></fl-loader>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'progress'">
+        <!--   loader the same size as the icons   -->
+        <fl-progress-loader [percent]="statusEvent.progressValue"
+                            size="small"></fl-progress-loader>
       </ng-container>
 
       <ng-container *ngSwitchCase="'success'">

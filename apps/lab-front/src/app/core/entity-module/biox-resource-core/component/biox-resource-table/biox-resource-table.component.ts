@@ -34,6 +34,10 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
     this.fileService.downloadFile(file.typingName, file.id, file.name).subscribe();
   }
 
+  getDownloadFileRoute(file: BioxResource): string {
+    return this.fileService.getDownloadFileRoute(file.typingName, file.id);
+  }
+
   resourceFileRoute(file: BioxResource): string {
     return RouterService.getBioxResourceDetailRoute(file.id);
   }

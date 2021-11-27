@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FlPortalActionDetail, FlPortalActionStatus} from '../../model/fl-portal-actions.class';
+import {FlPortalActionDetail, FlPortalActionDetailStatusEvent} from '../../model/fl-portal-actions.class';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
 import {Observable} from 'rxjs';
 
@@ -16,7 +16,7 @@ export class FlPortalActionLineComponent implements OnInit {
 
   @Input() action: FlPortalActionDetail;
 
-  status$: Observable<FlPortalActionStatus>;
+  statusEvent$: Observable<FlPortalActionDetailStatusEvent>;
 
   text: string;
 
@@ -26,7 +26,7 @@ export class FlPortalActionLineComponent implements OnInit {
   ngOnInit(): void {
     // translate the text if necessary
     this.text = this.translateService.translatableText(this.action.text);
-    this.status$ = this.action.getStatus$();
+    this.statusEvent$ = this.action.getStatusEvent$();
   }
 
 }

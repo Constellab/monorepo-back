@@ -1,0 +1,6 @@
+<div class="container">
+  <mat-progress-spinner class="spinner" mode="determinate"
+                        [value]="loaderValue" [diameter]="sizeInPixel">
+  </mat-progress-spinner>
+  <div class="score-text" [style.fontSize]="fontSize + 'px'" fxLayoutAlign="center center">{{loaderValue}}%</div>
+</div>

@@ -1,4 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {FlAbstractLoaderDirective} from '../fl-abstract-loader.directive';
 
 /**
  * Loader component, the size can be set with the input or set with CSS. If you
@@ -19,29 +20,9 @@ import {Component, Input, OnInit} from '@angular/core';
   templateUrl: './fl-loader.component.html',
   styleUrls: ['./fl-loader.component.scss']
 })
-export class FlLoaderComponent implements OnInit {
+export class FlLoaderComponent extends FlAbstractLoaderDirective implements OnInit {
 
-  @Input() size: 'small' | 'medium' | 'large' | 'extra-large' | number = 'medium';
-
-  constructor() {
-  }
 
   ngOnInit(): void {
   }
-
-  get sizeInPixel(): number {
-    switch (this.size) {
-      case 'small':
-        return 30;
-      case 'medium':
-        return 50;
-      case 'large':
-        return 100;
-      case 'extra-large':
-        return 150;
-      default:
-        return this.size;
-    }
-  }
-
 }

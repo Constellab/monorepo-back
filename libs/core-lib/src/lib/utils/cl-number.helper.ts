@@ -41,6 +41,15 @@ export class ClNumberHelper {
 
     const rounder = 10 ** nbDecimals;
     return Math.round((num + Number.EPSILON) * rounder) / rounder;
+  }
 
+  /**
+   * Return the number or min or max if number is outside the interval
+   * @param number
+   * @param min
+   * @param max
+   */
+  public static between(number: number, min: number, max: number): number {
+    return Math.min(Math.max(number, min), max);
   }
 }

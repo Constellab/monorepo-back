@@ -17,6 +17,7 @@ import {
 } from '../upload-fs-node-dialog/upload-fs-node-dialog.component';
 import {Subscription} from 'rxjs';
 import {BioxResource, BioxResourceDatasource} from '../../../../../core/model/entities/resource/biox-resource.entity';
+import {ClCoreJsonConvert} from '@monorepo/core-lib';
 
 @Component({
   selector: 'gen-file-explorer-page',
@@ -86,10 +87,11 @@ export class FileExplorerPageComponent implements OnInit, OnDestroy {
     this.files = [];
   }
 
-  private onFileUploadResult(result: FlPortalActionResult<BioxResource | BioxResource[]>): void {
+  private onFileUploadResult(result: FlPortalActionResult): void {
     if (result.status === 'success') {
+      const files: BioxResource | BioxResource[] = ClCoreJsonConvert.deserialize(result.result, BioxResource);
       // if multiple file were uploaded
-      this.datasource.addItem(result.result, () => true);
+      this.datasource.addItem(files, () => true);
     }
   }
 
