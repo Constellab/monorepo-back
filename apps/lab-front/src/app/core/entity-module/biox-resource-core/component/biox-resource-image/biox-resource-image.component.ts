@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {FileResourceService} from '../../../../entity-service/file-resource.service';
+import {Observable} from 'rxjs';
 
 /**
  * Component to view resource as image
@@ -15,7 +16,7 @@ export class BioxResourceImageComponent implements OnInit {
 
   @Input() resource: BioxResource<string>;
 
-  downloadLink: string;
+  downloadLink$: Observable<string>;
 
   // todo improve svg support to use it directly in src attribute
   svg: SafeHtml;
@@ -36,7 +37,7 @@ export class BioxResourceImageComponent implements OnInit {
       if (this.resource.fsNode.getExtension() === 'svg') {
         this.svg = this.sanitizer.bypassSecurityTrustHtml(this.resource.data);
       } else {
-        this.downloadLink = this.resourceFileService.downloadFileUrl(this.resource.typingName, this.resource.id);
+        this.downloadLink$ = this.resourceFileService.getDownloadFileUrl(this.resource.id);
       }
     }
   }

@@ -184,23 +184,32 @@ export class FlFileHelper {
     if (window.navigator.msSaveOrOpenBlob) { // IE10+
       window.navigator.msSaveOrOpenBlob(file, filename);
     } else { // Others
-      // create an <a> tag to download the file
-      const a = document.createElement('a');
       const url = URL.createObjectURL(file);
-
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-
-      // trigger a click event on the tag
-      a.click();
-
-      // clear elements
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 0);
+      FlFileHelper.downloadUrl(url, filename);
     }
+  }
+
+  /**
+   * Download a file url to the user's computer
+   * @param url url of the file to download
+   * @param filename the complete name of the file
+   */
+  public static downloadUrl(url: string, filename: string): void {
+    // create an <a> tag to download the file
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+
+    // trigger a click event on the tag
+    a.click();
+
+    // clear elements
+    setTimeout(() => {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, 0);
 
   }
 

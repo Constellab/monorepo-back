@@ -43,11 +43,11 @@
         <mat-icon>preview</mat-icon>
       </a>
 
-      <a mat-icon-button type="button" color="primary" [href]="getDownloadFileRoute(resource)"
-              *ngIf="resource.isDownloadable()" download
-              [matTooltip]="'biox.file_resource_download' | translate">
+      <button mat-icon-button type="button" color="primary"
+         (click)="downloadFile(resource)"
+         [matTooltip]="'biox.file_resource_download' | translate">
         <mat-icon>cloud_download</mat-icon>
-      </a>
+      </button>
 
       <button mat-icon-button type="button" color="warn" (click)="deleteFile(resource)"
               [matTooltip]="'fe.delete_file' | translate">

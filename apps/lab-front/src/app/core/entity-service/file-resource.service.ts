@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {FlApiService, FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {BioxFileType} from '../model/entities/resource/biox-file-type';
 import {ClPageI} from '@monorepo/core-lib';
 import {BioxResource, BioxResourceDatasource} from '../model/entities/resource/biox-resource.entity';
 import {HttpEvent} from '@angular/common/http';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -45,16 +46,20 @@ export class FileResourceService {
       {observe: 'events', reportProgress: true});
   }
 
-  public downloadFileUrl(type: string, id: string): string {
-    return this.apiService.getBaseRouteUrl(`${this.route}/${type}/${id}/download`);
+
+  public downloadFile(id: string, filename: string): Observable<void> {
+    // get the download file url
+    return this.getDownloadFileUrl(id).pipe(
+      map(url => {
+        // download the file from the url
+        const fullUrl = this.apiService.getBaseRouteUrl(url);
+        FlFileHelper.downloadUrl(fullUrl, filename);
+      })
+    );
   }
 
-  public downloadFile(type: string, id: string, filename: string): Observable<Blob> {
-    return this.apiService.downloadFile(`${this.route}/${type}/${id}/download`, filename);
-  }
-
-  public getDownloadFileRoute(type: string, id: string): string {
-    return this.apiService.getBaseRouteUrl(`${this.route}/${type}/${id}/download`);
+  public getDownloadFileUrl(id: string): Observable<string> {
+    return this.apiService.get(`${this.route}/${id}/get-download-url`);
   }
 
 
