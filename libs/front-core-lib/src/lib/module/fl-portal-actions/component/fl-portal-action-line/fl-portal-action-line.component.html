@@ -18,7 +18,7 @@
 
       <ng-container *ngSwitchCase="'progress'">
         <!--   loader the same size as the icons   -->
-        <fl-progress-loader [percent]="statusEvent.progressValue"
+        <fl-progress-loader [percent]="$any(statusEvent).progressValue"
                             size="small"></fl-progress-loader>
       </ng-container>
 
