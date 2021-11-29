@@ -5,8 +5,6 @@ import {Exclude, Expose, Type} from 'class-transformer';
 import {BioxProcess, BioxProcessData} from './biox-process.entity';
 import {BioxConnection, BioxFlowManager, BioxNode} from '../../global/biox-connection.class';
 import {BioxIO} from '../biox-io.entity';
-import {ViewModel} from '../../global/view-model.entity';
-import {ViewModelDatasourcePaginated} from '../../../utils/view-model.datasource';
 
 export class BioxProtocolGraph extends LabEntity {
 
@@ -58,7 +56,7 @@ export class BioxProtocol extends BioxProcess implements BioxFlowManager {
   data: BioxProtocolData;
 
   @Expose({name: 'is_protocol'})
-  isProtocol: true
+  isProtocol: true;
 
   @Exclude()
   interfaceNodes: Record<string, BioxNode>;
@@ -98,7 +96,3 @@ export class BioxProtocol extends BioxProcess implements BioxFlowManager {
     return this.outputs;
   }
 }
-
-export type BioxProtocolVM = ViewModel<BioxProtocol>;
-
-export type BioxProtocolDatasource = ViewModelDatasourcePaginated<BioxProtocol>;

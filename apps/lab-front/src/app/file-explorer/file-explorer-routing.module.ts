@@ -1,9 +1,9 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {FileExplorerPageComponent} from './module/file-explorer-page/component/file-explorer-page/file-explorer-page.component';
+import {BioxResourceSearchPageComponent} from './module/biox-resource-search-page/component/biox-resource-search-page/biox-resource-search-page.component';
 
 const routes: Routes = [
-  {path: '', component: FileExplorerPageComponent}
+  {path: '', component: BioxResourceSearchPageComponent}
 ];
 
 @NgModule({

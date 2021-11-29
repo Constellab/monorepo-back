@@ -1,0 +1,39 @@
+import {Component, OnInit} from '@angular/core';
+import {FlFormInputsManagerConfig, FlSearchState} from '@monorepo/front-core-lib';
+import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
+import {FormGroup} from '@ngneat/reactive-forms';
+import {BioxResourceSearch, BioxResourceSearchFields} from '../../model/biox-resource-advanced-search.class';
+import {ClCoreJsonConvert} from '@monorepo/core-lib';
+
+/**
+ * Work within the biox-resource-search and this manage the advanced search form
+ */
+@Component({
+  selector: 'gen-biox-resource-advanced-search-form',
+  templateUrl: './biox-resource-advanced-search-form.component.html',
+  styleUrls: ['./biox-resource-advanced-search-form.component.scss']
+})
+export class BioxResourceAdvancedSearchFormComponent implements OnInit {
+
+  formGp: FormGroup;
+
+  formInputConfig: FlFormInputsManagerConfig = BioxResourceSearch.advancedSearchManagerConfig;
+
+  constructor(private searchState: FlSearchState<BioxResource>) {
+  }
+
+  ngOnInit(): void {
+    this.formGp = this.searchState.advancedSearchFormGroup;
+  }
+
+  submit(): void {
+    if (this.formGp.valid) {
+
+      // const tt = ClCoreJsonConvert.deserialize(this.formGp.getRawValue(), BioxResourceSearchFields);
+      const tt = ClCoreJsonConvert.classToPlain(this.formGp.getRawValue(), BioxResourceSearchFields);
+      console.log(tt)
+      this.searchState.newAdvancedSearch();
+    }
+  }
+
+}

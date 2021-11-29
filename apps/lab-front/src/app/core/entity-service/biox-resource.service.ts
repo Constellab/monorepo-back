@@ -1,5 +1,11 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {
+  FlAdvancedSearchInput,
+  FlApiService,
+  FlEntityPaginatedDatasource,
+  FlSearchConverter,
+  FlSearchService
+} from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
 import {BioxResource, BioxResourceDatasource} from '../model/entities/resource/biox-resource.entity';
 import {ClPageI} from '@monorepo/core-lib';
@@ -12,12 +18,16 @@ import {
   BioxResourceViewSpec,
   BioxResourceViewSpecsByType
 } from '../model/entities/resource/biox-resource-view.entity';
+import {
+  BioxResourceSearch,
+  BioxResourceSearchFields
+} from '../entity-module/biox-resource-core/model/biox-resource-advanced-search.class';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class BioxResourceService {
+export class BioxResourceService implements FlSearchService<BioxResource> {
 
   private readonly route: string = 'resource';
   private readonly resourceTypeRoute: string = 'resource-type';
@@ -50,6 +60,16 @@ export class BioxResourceService {
 
   public delete(id: string): Observable<void> {
     return this.apiService.delete(`${this.route}/${id}`);
+  }
+
+  public advancedSearch(page: number, pageSize: number, filters?: BioxResourceSearchFields): Observable<ClPageI<BioxResource>> {
+    const data: FlAdvancedSearchInput = {
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, BioxResourceSearch.advancedSearchConverter),
+      sortsCriteria: null
+    };
+    return this.apiService.post(`${this.route}/advanced-search`, data, BioxResource, {
+      page: page, pageSize:pageSize, resultIsPaginated: true
+    });
   }
 
   //////////////////////////////////////// RESOURCE TYPE///////////////////////////////////////

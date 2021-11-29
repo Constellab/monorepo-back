@@ -49,6 +49,11 @@ export class FlFormInputsManagerComponent implements OnInit, OnDestroy {
   @Input() chipColor: ThemePalette = 'primary';
 
   /**
+   * If true, the false values are considered as null an the chip will not be created
+   */
+  @Input() skipFalseBoolean : boolean = true;
+
+  /**
    * Event called whenever the chip list is refreshed (on form value change)
    */
   @Output() chipListChange: EventEmitter<FlFormFilledInput[]> = new EventEmitter<FlFormFilledInput[]>();
@@ -121,6 +126,12 @@ export class FlFormInputsManagerComponent implements OnInit, OnDestroy {
 
     // if this is not a nested config
     if (typeof config === 'string' || (config != null && typeof config.name === 'string') || control instanceof FormControl) {
+
+      // skip false boolean, consider them like null
+      if (this.skipFalseBoolean && control.value === false) {
+        return;
+      }
+
       if (!FlFormHelper.isControlEmpty(control)) {
         this.filledInputs.push(this.getFilledInputName(key, control, config as any));
       }

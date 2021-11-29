@@ -1,5 +1,5 @@
 import {
-  ChangeDetectionStrategy,
+  ChangeDetectionStrategy, ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -51,7 +51,8 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[]> implement
   newTag: FlTagEntity;
 
   constructor(@Optional() @Self() ngControl: NgControl,
-              private tagService: FlTagService) {
+              private tagService: FlTagService,
+              private cdr: ChangeDetectorRef) {
     super(ngControl);
   }
 
@@ -111,6 +112,8 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[]> implement
     } else {
       this.value = obj;
     }
+
+    this.cdr.markForCheck();
   }
 
   // function to filter an array

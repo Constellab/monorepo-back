@@ -155,11 +155,20 @@ export class ClHelpService {
   }
 
   /**
+   * Return true if the value is an object and is empty
+   * @param value value to check
+   */
+  public static isEmptyObject(value: any): boolean {
+    return typeof value === 'object' && value.length === 0;
+  }
+
+  /**
    * Return true if the value is null or an empty string or an empty array or 0
    * @param value to check
    */
   public static isNullOrEmpty(value: any): boolean {
-    return value == null || ClHelpService.isEmptyArray(value) || ClHelpService.isEmptyString(value) || value === 0;
+    return value == null || ClHelpService.isEmptyArray(value) || ClHelpService.isEmptyString(value)
+      || ClHelpService.isEmptyObject(value) || value === 0;
   }
 
   /**
@@ -178,6 +187,24 @@ export class ClHelpService {
     }
     return copy;
   }
+
+  /**
+   * return false if object is null of if all properties are none
+   */
+  public static objectHasNonNullProperties(value: any): boolean {
+    if (value == null) {
+      return false;
+    }
+
+    for (const key of Object.keys(value)) {
+      if (!ClHelpService.isNullOrEmpty(value[key])) {
+        return true
+      }
+    }
+    return false;
+  }
+
+
 
   /**
    * Sort an array in the alphabetical order

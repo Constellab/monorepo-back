@@ -3,6 +3,9 @@ import {FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-li
 import {Expose, Type} from 'class-transformer';
 import {BioxTag} from '../biox-tag.entity';
 
+/**
+ * Represent a file or a folder link to the resource
+ */
 export class FsNodeEntity extends LabEntity {
 
   // size of the node
@@ -13,17 +16,18 @@ export class FsNodeEntity extends LabEntity {
 
   name: string;
 
-  isImage(): boolean{
+  isImage(): boolean {
     return FlFileHelper.extensionIsImage(this.getExtension());
   }
 
   getExtension(): string {
     return FlFileHelper.getFileExtension(this.name);
   }
-
 }
 
-export class BioxResource<DATA = Record<string, any>> extends LabBaseEntity {
+export type BioxResourceOrigin = 'IMPORTED' | 'GENERATED';
+
+export class BioxResource extends LabBaseEntity {
   // typing name of the resource model
   @Expose({name: 'typing_name'})
   typingName: string;
@@ -48,9 +52,10 @@ export class BioxResource<DATA = Record<string, any>> extends LabBaseEntity {
   @Type(() => FsNodeEntity)
   fsNode ?: FsNodeEntity;
 
+  origin: BioxResourceOrigin;
+
   name: string;
 
-  data: DATA;
 
   isFile(): boolean {
     return this.fsNode != null && this.fsNode.isFile;

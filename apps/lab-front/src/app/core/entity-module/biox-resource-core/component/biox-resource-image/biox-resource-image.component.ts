@@ -14,7 +14,7 @@ import {Observable} from 'rxjs';
 })
 export class BioxResourceImageComponent implements OnInit {
 
-  @Input() resource: BioxResource<string>;
+  @Input() resource: BioxResource;
 
   downloadLink$: Observable<string>;
 
@@ -35,7 +35,7 @@ export class BioxResourceImageComponent implements OnInit {
     if (this.resource.isFile() && this.resource.fsNode.isImage()) {
 
       if (this.resource.fsNode.getExtension() === 'svg') {
-        this.svg = this.sanitizer.bypassSecurityTrustHtml(this.resource.data);
+        // this.svg = this.sanitizer.bypassSecurityTrustHtml(this.resource.data);
       } else {
         this.downloadLink$ = this.resourceFileService.getDownloadFileUrl(this.resource.id);
       }

@@ -1,0 +1,79 @@
+<form [formGroup]="formGp" (ngSubmit)="submit()">
+
+  <fl-form-inputs-manager [config]="formInputConfig" [translateByDefault]="true"></fl-form-inputs-manager>
+
+  <div fxLayout="column" class="form">
+
+    <div fxLayout="row wrap" fxLayoutGap="1em 0 grid" fxLayoutAlign="space-between center"
+         class="g-full">
+
+      <!--  Resource Type  -->
+      <mat-form-field class="min-section-width">
+        <mat-label>{{'resource_type' | translate }}</mat-label>
+        <mat-select formControlName="resourceTypingName" multiple [placeholder]="'resource_type' | translate">
+          <gen-biox-resource-type-select-options></gen-biox-resource-type-select-options>
+        </mat-select>
+      </mat-form-field>
+
+
+      <!--  Origin  -->
+      <mat-form-field class="min-section-width">
+        <mat-label>{{'resource_origin' | translate }}</mat-label>
+        <mat-select formControlName="origin" [placeholder]="'resource_origin' | translate">
+          <gen-biox-resource-origin-options></gen-biox-resource-origin-options>
+        </mat-select>
+      </mat-form-field>
+
+      <!--  Tags  -->
+      <fl-form-field class="g-full">
+        <fl-tag-input formControlName="tags"></fl-tag-input>
+      </fl-form-field>
+
+      <!--  Data  -->
+      <mat-form-field class="g-full">
+        <mat-label>{{'resource_data' | translate }}</mat-label>
+        <input matInput formControlName="data" [placeholder]="'resource_data' | translate" autocomplete="off"/>
+      </mat-form-field>
+
+      <!-------------------------------  Creation date  ---------------------------->
+      <div formGroupName="createdAt" class="g-no-hint g-full">
+        <p class="g-text-small subtitle">{{'creation_date' | translate}}</p>
+        <div fxLayout="row wrap" fxLayoutAlign="space-between center" fxLayoutGap="0.5em"
+             class="date-interval">
+
+          <!--    Created at from    -->
+          <p class="g-text-light g-text-capitalize-first">{{'between_the_from' | translate}}</p>
+          <mat-form-field class="date" appearance="outline">
+            <mat-label>{{'begin_date' | translate}}</mat-label>
+            <input matInput formControlName="from" autocomplete="disabled"
+                   [matDatepicker]="createdAtFrom" placeholder="{{'begin_date' | translate}}">
+            <mat-datepicker-toggle matSuffix [for]="createdAtFrom"></mat-datepicker-toggle>
+            <mat-datepicker #createdAtFrom></mat-datepicker>
+          </mat-form-field>
+
+        </div>
+        <div fxLayout="row wrap" fxLayoutAlign="space-between center" fxLayoutGap="0.5em"
+             class="date-interval">
+          <!--    Created at to    -->
+          <p class="g-text-light">{{'between_the_to' | translate}}</p>
+          <mat-form-field class="date" appearance="outline">
+            <mat-label>{{'end_date' | translate}}</mat-label>
+            <input matInput formControlName="to" autocomplete="off"
+                   [min]="formGp.value.createdAt.from"
+                   [matDatepicker]="createdAtTo" placeholder="{{'end_date' | translate}}">
+            <mat-datepicker-toggle matSuffix [for]="createdAtTo"></mat-datepicker-toggle>
+            <mat-datepicker #createdAtTo></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <mat-checkbox formControlName="isArchived" class="archived g-mat-checkbox-wrap-text">{{'resource_include_archived' | translate }}</mat-checkbox>
+    </div>
+  </div>
+
+  <button mat-raised-button color="primary" type="submit" [disabled]="formGp.invalid"
+          class="g-centered-forced">
+    {{'search' | translate}}
+  </button>
+
+</form>

@@ -37,7 +37,7 @@ body {
 }
 
 // full page with possibility to grow
-.g-page{
+.g-page, .g-page-height{
   min-height: calc(100vh - var(--menu-toolbar-height));
 }
 

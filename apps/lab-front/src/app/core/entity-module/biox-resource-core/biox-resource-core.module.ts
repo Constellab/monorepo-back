@@ -20,6 +20,9 @@ import {BioxResourceBoxPlotComponent} from './component/biox-resource-box-plot/b
 import {BioxResourceMultiViewComponent} from './component/biox-resource-multi-view/biox-resource-multi-view.component';
 import {BioxResourceViewComponent} from './component/biox-resource-view/biox-resource-view.component';
 import {BioxResourceTableComponent} from './component/biox-resource-table/biox-resource-table.component';
+import { BioxResourceSearchComponent } from './component/biox-resource-search/biox-resource-search.component';
+import { BioxResourceAdvancedSearchFormComponent } from './component/biox-resource-advanced-search-form/biox-resource-advanced-search-form.component';
+import { BioxResourceOriginOptionsComponent } from './component/biox-resource-origin-options/biox-resource-origin-options.component';
 
 
 @NgModule({
@@ -41,6 +44,9 @@ import {BioxResourceTableComponent} from './component/biox-resource-table/biox-r
     BioxResourceMultiViewComponent,
     BioxResourceViewComponent,
     BioxResourceTableComponent,
+    BioxResourceSearchComponent,
+    BioxResourceAdvancedSearchFormComponent,
+    BioxResourceOriginOptionsComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
@@ -60,6 +66,8 @@ import {BioxResourceTableComponent} from './component/biox-resource-table/biox-r
     BioxResourceMultiViewComponent,
     BioxResourceViewComponent,
     BioxResourceTableComponent,
+    BioxResourceSearchComponent,
+    BioxResourceOriginOptionsComponent,
   ],
   imports: [
     CommonModule,

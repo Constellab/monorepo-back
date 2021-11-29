@@ -19,6 +19,9 @@ export interface FlTagEntity {
 
 export class FlTagHelper {
 
+  private static readonly KEY_VALUE_SEPARATOR = ':';
+  private static readonly TAGS_SEPARATOR = ',';
+
   public static addOrReplaceTag(tags: FlTag[], tag: FlTag): FlTag[] {
     if (!tags) return [tag];
 
@@ -30,6 +33,27 @@ export class FlTagHelper {
     } else {
       return [...tags, tag];
     }
+  }
+
+  public static tagsToString(tags: FlTag[]): string {
+    if (!tags) return null;
+
+    let strTag = '';
+    for (const tag of tags) {
+      if (strTag.length > 0) {
+        strTag += FlTagHelper.TAGS_SEPARATOR;
+      }
+
+      strTag += FlTagHelper.tagToString(tag);
+    }
+
+    return strTag;
+  }
+
+  public static tagToString(tag: FlTag): string {
+    if (!tag) return null;
+
+    return `${tag.key}${FlTagHelper.KEY_VALUE_SEPARATOR}${tag.value}`;
   }
 }
 

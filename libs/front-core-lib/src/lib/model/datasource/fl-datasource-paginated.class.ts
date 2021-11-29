@@ -29,6 +29,9 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
   // when the datasource it prevent all call to be made event if a filter of function are called
   private disabled: boolean = false;
 
+  // The request data is passed when calling the get page method
+  private requestData: any;
+
   protected constructor(private getPageFunction: ClGetPageFunction<T>, private pageSize: number, initFirstPage: boolean = true) {
     super();
     if (initFirstPage) {
@@ -48,7 +51,7 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
   /**
    * Call a the getPage method for the first page
    */
-  public getFirstPage(): void {
+  public getFirstPage(requestData?: any): void {
     if (this.disabled) {
       return;
     }
@@ -56,6 +59,7 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
     this.pageNumber = 0;
     this.page = null;
     this.firstPageIsLoading = true;
+    this.setRequestData(requestData);
 
     if (!this.isEmpty()) {
       this.clearArray();
@@ -80,7 +84,7 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
 
   private callGetPageFunction(): void {
     this.isLoading = true;
-    this.getPageFunction(this.pageNumber, this.pageSize).subscribe(
+    this.getPageFunction(this.pageNumber, this.pageSize, this.requestData).subscribe(
       result => this.onSuccess(result),
       error => this.onError(error)
     );
@@ -157,6 +161,15 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
    */
   public clearObservables(): void {
     super.disconnect();
+  }
+
+
+  /**
+   * Set the request data. The request data is passed when calling the get page method
+   * @param data
+   */
+  public setRequestData(data: any): void {
+    this.requestData = data;
   }
 
 }

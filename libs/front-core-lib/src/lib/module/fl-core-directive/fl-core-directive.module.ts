@@ -10,6 +10,7 @@ import {FlResizeDirective} from './fl-resize/fl-resize.directive';
 import {FlOutsideClickDirective} from './fl-outside-click/fl-outside-click.directive';
 import {FlDisableAnimationInitDirective} from './fl-disable-animation-init/fl-disable-animation-init.directive';
 import {FlAutofocusDirective} from './fl-autofocus/fl-autofocus.directive';
+import { FlDrawerOverDirective } from './fl-drawer-over/fl-drawer-over.directive';
 
 
 /**
@@ -26,6 +27,7 @@ import {FlAutofocusDirective} from './fl-autofocus/fl-autofocus.directive';
     FlOutsideClickDirective,
     FlDisableAnimationInitDirective,
     FlAutofocusDirective,
+    FlDrawerOverDirective,
   ],
   exports: [
     FlInputMaxLengthDirective,
@@ -37,6 +39,7 @@ import {FlAutofocusDirective} from './fl-autofocus/fl-autofocus.directive';
     FlOutsideClickDirective,
     FlDisableAnimationInitDirective,
     FlAutofocusDirective,
+    FlDrawerOverDirective,
   ],
   imports: [
     CommonModule,

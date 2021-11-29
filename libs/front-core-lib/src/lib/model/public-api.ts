@@ -1,6 +1,15 @@
 // Export the datasource
 export * from './datasource/public-api';
 
+// Search
+export * from './search/fl-search.class';
+export * from './search/fl-search.state';
+export * from './search/fl-search-converter.class';
+export * from './search/fl-search-service.class';
+export * from './search/fl-search-state-config.class';
+export * from './search/fl-search-url.helper';
+export * from './search/fl-sort.class';
+
 // Export the shared
 export * from './shared/public-api';
 
