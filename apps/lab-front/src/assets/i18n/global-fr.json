@@ -47,7 +47,7 @@
   "resource_data": "Données",
   "resource_include_archived": "Inclure les ressources archivées",
   "select_resource": "Sélectionner une ressource",
-  "selected_resource": "Ressource sélectionnée",
+  "loaded_resource_error": "Erreur durant le chargement de la ressource, veuillez en sélectionner une nouvelle",
   "no_selected_resource": "Aucune ressource sélectionnée",
   "name": "Nom",
   "id": "Id",

@@ -25,6 +25,7 @@ export type FlGetStatusClassColorFunction = (status: any,
  */
 export type FlGetStatusIconFunction = (status: any) => string;
 
+
 /**
  * Class that contains generic icon, background class and text class for status
  */
@@ -40,24 +41,98 @@ export class FlStatusHelper {
   public static warningBackground: string = flThemeClass.accentBackground;
   public static infoBackground: string = flThemeClass.greyBackground;
 
-  public static successText: string = flThemeClass.primaryText;
-  public static errorText: string = flThemeClass.warnText;
-  public static warningText: string = flThemeClass.accentText;
-  public static infoText: string = flThemeClass.greyText;
+  public static successTextClass: string = flThemeClass.primaryText;
+  public static errorTextClass: string = flThemeClass.warnText;
+  public static warningTextClass: string = flThemeClass.accentText;
+  public static infoTextClass: string = flThemeClass.greyText;
 
   public static getSuccessColor(mode: FlStatusColorMode): string {
-    return mode === 'background' ? FlStatusHelper.successBackground : FlStatusHelper.successText;
+    return mode === 'background' ? FlStatusHelper.successBackground : FlStatusHelper.successTextClass;
   }
 
   public static getErrorColor(mode: FlStatusColorMode): string {
-    return mode === 'background' ? FlStatusHelper.errorBackground : FlStatusHelper.errorText;
+    return mode === 'background' ? FlStatusHelper.errorBackground : FlStatusHelper.errorTextClass;
   }
 
   public static getWarningColor(mode: FlStatusColorMode): string {
-    return mode === 'background' ? FlStatusHelper.warningBackground : FlStatusHelper.warningText;
+    return mode === 'background' ? FlStatusHelper.warningBackground : FlStatusHelper.warningTextClass;
   }
 
   public static getInfoColor(mode: FlStatusColorMode): string {
-    return mode === 'background' ? FlStatusHelper.infoBackground : FlStatusHelper.infoText;
+    return mode === 'background' ? FlStatusHelper.infoBackground : FlStatusHelper.infoTextClass;
+  }
+
+  public static getSuccessStatus(): FlStatus {
+    return new FlSuccessStatus();
+  }
+
+  public static getErrorStatus(): FlStatus {
+    return new FlErrorStatus();
+  }
+
+  public static getWarningStatus(): FlStatus {
+    return new FlWarningStatus();
+  }
+
+  public static getInfoStatus(): FlStatus {
+    return new FlInfoStatus();
+  }
+}
+
+
+/////////////////////// Multiple preconfigured status class /////////////////
+class FlSuccessStatus implements FlStatus {
+  getStatusClassColor(mode: FlStatusColorMode): string {
+    return FlStatusHelper.getSuccessColor(mode);
+  }
+
+  getStatusIcon(): string {
+    return FlStatusHelper.successIcon;
+  }
+
+  getStatusName(): string {
+    return 'error';
+  }
+}
+
+class FlErrorStatus implements FlStatus {
+  getStatusClassColor(mode: FlStatusColorMode): string {
+    return FlStatusHelper.getErrorColor(mode);
+  }
+
+  getStatusIcon(): string {
+    return FlStatusHelper.errorIcon;
+  }
+
+  getStatusName(): string {
+    return 'success';
+  }
+}
+
+class FlWarningStatus implements FlStatus {
+  getStatusClassColor(mode: FlStatusColorMode): string {
+    return FlStatusHelper.getWarningColor(mode);
+  }
+
+  getStatusIcon(): string {
+    return FlStatusHelper.warningIcon;
+  }
+
+  getStatusName(): string {
+    return 'warning';
+  }
+}
+
+class FlInfoStatus implements FlStatus {
+  getStatusClassColor(mode: FlStatusColorMode): string {
+    return FlStatusHelper.getInfoColor(mode);
+  }
+
+  getStatusIcon(): string {
+    return FlStatusHelper.infoIcon;
+  }
+
+  getStatusName(): string {
+    return 'info';
   }
 }

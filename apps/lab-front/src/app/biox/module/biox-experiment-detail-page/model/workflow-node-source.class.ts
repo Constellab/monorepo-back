@@ -2,14 +2,15 @@ import {WorkflowNodeProcess} from './workflow-node-process.class';
 import {BioxProcess} from '../../../../core/model/entities/process/biox-process.entity';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {BioxResource} from '../../../../core/model/entities/resource/biox-resource.entity';
+import {FlStatusEvent} from '@monorepo/front-core-lib';
+
 
 /**
  * Representation of a Source process
  */
 export class WorkflowNodeSource extends WorkflowNodeProcess {
 
-  private loadedResource$: BehaviorSubject<BioxResource> = new BehaviorSubject(null);
-
+  private loadedResource$: BehaviorSubject<FlStatusEvent<BioxResource>> = new BehaviorSubject({status: 'loading'});
 
   constructor(process: BioxProcess,
               processName: string,
@@ -22,7 +23,8 @@ export class WorkflowNodeSource extends WorkflowNodeProcess {
 
   private initLoadedResource(loadedResource$: Observable<BioxResource>): void {
     loadedResource$.subscribe(
-      resource => this.loadedResource$.next(resource)
+      resource => this.loadedResource$.next({status: 'success', object: resource}),
+      error => this.loadedResource$.next({status: 'error', error: error})
     );
   }
 
@@ -35,12 +37,12 @@ export class WorkflowNodeSource extends WorkflowNodeProcess {
   }
 
   // get the resource in the config
-  public getLoadedResource$(): Observable<BioxResource | null> {
+  public getLoadedResource$(): Observable<FlStatusEvent<BioxResource>> {
     return this.loadedResource$.asObservable();
   }
 
   public setLoadedResource(resource: BioxResource): void {
-    this.loadedResource$.next(resource);
+    this.loadedResource$.next({status: 'success', object: resource});
   }
 
 

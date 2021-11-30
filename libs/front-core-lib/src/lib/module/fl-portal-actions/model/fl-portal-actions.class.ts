@@ -151,7 +151,7 @@ export type FlPortalActionResult<T = any> = FlPortalActionSuccess<T> | FlPortalA
 /**
  * Object emitted when a action ended in success
  */
-export class FlPortalActionSuccess<T = any> {
+export interface FlPortalActionSuccess<T = any> {
   status: 'success';
   result: T;
   action: FlPortalAction;
@@ -160,7 +160,7 @@ export class FlPortalActionSuccess<T = any> {
 /**
  * Object emitted when an action ended up in error
  */
-export class FlPortalActionError<T = any> {
+export interface FlPortalActionError<T = any> {
   status: 'error';
   result: T;
   action: FlPortalAction;

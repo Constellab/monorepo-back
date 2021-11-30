@@ -1,6 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FlStatus} from '../../model/fl-status.class';
 import {TooltipPosition} from '@angular/material/tooltip';
+import {Observable, Subscription} from 'rxjs';
 
 export type FlStatusChipMode = 'iconText' | 'iconOnly' | 'textOnly';
 
@@ -10,11 +11,21 @@ export type FlStatusChipMode = 'iconText' | 'iconOnly' | 'textOnly';
 @Component({
   selector: 'fl-status-chip',
   templateUrl: './fl-status-chip.component.html',
-  styleUrls: ['./fl-status-chip.component.scss']
+  styleUrls: ['./fl-status-chip.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlStatusChipComponent implements OnInit {
+export class FlStatusChipComponent implements OnInit, OnDestroy {
 
-  @Input() status: FlStatus;
+  @Input() set status(status: FlStatus | Observable<FlStatus>) {
+    this.unsubscribe();
+    if (status instanceof Observable) {
+      status.subscribe(
+        s => this.setStatus(s)
+      );
+    } else {
+      this.setStatus(status);
+    }
+  }
 
   /**
    * The position of the icon. Start --> the icon before the text. End --> the icon is after the text
@@ -34,16 +45,25 @@ export class FlStatusChipComponent implements OnInit {
    */
   @Input() tooltipDisabled: boolean;
 
+  _status: FlStatus;
+
   icon: string;
 
   statusColorClass: string;
+
+
+  private subscription: Subscription;
 
   constructor() {
   }
 
   ngOnInit(): void {
-    this.statusColorClass = this.status.getStatusClassColor('background');
-    this.icon = this.status.getStatusIcon();
+  }
+
+  private setStatus(status: FlStatus): void {
+    this.statusColorClass = status.getStatusClassColor('background');
+    this.icon = status.getStatusIcon();
+    this._status = status;
   }
 
   get showIcon(): boolean {
@@ -62,5 +82,14 @@ export class FlStatusChipComponent implements OnInit {
   get tooltipDisabledBool(): boolean {
     return this.tooltipDisabled != null ? this.tooltipDisabled : this.showText;
   }
+
+  private unsubscribe(): void {
+    this.subscription?.unsubscribe();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe();
+  }
+
 
 }

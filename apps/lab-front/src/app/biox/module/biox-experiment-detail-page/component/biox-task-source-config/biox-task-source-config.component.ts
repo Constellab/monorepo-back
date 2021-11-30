@@ -6,7 +6,7 @@ import {BioxResource} from '../../../../../core/model/entities/resource/biox-res
 import {BioxSelectResourceDialogComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-select-resource-dialog/biox-select-resource-dialog.component';
 import {WorkflowNodeSource} from '../../model/workflow-node-source.class';
 import {RouterService} from '../../../../../core/service/router.service';
-import {tap} from 'rxjs/operators';
+import {FlStatusEvent} from '@monorepo/front-core-lib';
 
 /**
  * Specific component to configure a task of type gws.plug.Source
@@ -20,7 +20,7 @@ import {tap} from 'rxjs/operators';
 })
 export class BioxTaskSourceConfigComponent implements OnInit, OnDestroy {
 
-  selectedResource$: Observable<BioxResource>;
+  selectedResource$: Observable<FlStatusEvent<BioxResource>>;
 
   resourceRoute: string;
 
@@ -40,9 +40,7 @@ export class BioxTaskSourceConfigComponent implements OnInit, OnDestroy {
 
   private setNode(node: WorkflowNodeSource): void {
     this.node = node;
-    this.selectedResource$ = node.getLoadedResource$().pipe(
-      tap()
-    );
+    this.selectedResource$ = node.getLoadedResource$();
   }
 
   getResourceRoute(resource: BioxResource): string {

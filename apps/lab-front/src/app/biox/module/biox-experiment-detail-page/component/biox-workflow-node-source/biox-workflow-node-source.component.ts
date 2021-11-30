@@ -5,6 +5,8 @@ import {FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
 import {WorkflowActionState} from '../../state/workflow-action-state';
 import {WorkflowNodeSource} from '../../model/workflow-node-source.class';
 import {map} from 'rxjs/operators';
+import {FlStatusEvent} from '@monorepo/front-core-lib';
+import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 
 /**
  * Node of an experiment in the workflow specifically for the Source process
@@ -42,8 +44,18 @@ export class BioxWorkflowNodeSourceComponent implements OnInit {
 
     // if the resource is loaded, use the name of the resource, otherwise, take the node title
     this.title$ = this.node.getLoadedResource$().pipe(
-      map(resource => resource != null ? resource.name : this.node.title)
+      map(loadedResource => this.getTitle(loadedResource))
     );
+  }
+
+  private getTitle(resource: FlStatusEvent<BioxResource>): string {
+    if (resource.status === 'success') {
+      return resource.object != null ? resource.object.name : this.node.title;
+    } else if (resource.status === 'error') {
+      return 'ERROR'; // todo to improve
+    } else {
+      return this.node.title;
+    }
   }
 
 

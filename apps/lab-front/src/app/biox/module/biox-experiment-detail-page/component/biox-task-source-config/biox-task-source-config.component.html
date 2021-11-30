@@ -1,6 +1,13 @@
 <div *ngIf="selectedResource$ | async as selectedResource ; else noSelectedResource ">
+
+
   <!-- A resource is selected -->
-  <gen-biox-resource-card [resource]="selectedResource"></gen-biox-resource-card>
+  <gen-biox-resource-card *ngIf="selectedResource.status === 'success'; else error"
+                          [resource]="$any(selectedResource.object)"></gen-biox-resource-card>
+
+  <ng-template #error>
+    <fl-error-text [errorMessage]="'loaded_resource_error' | translate"></fl-error-text>
+  </ng-template>
 </div>
 <!-- no selected resource -->
 <ng-template #noSelectedResource>

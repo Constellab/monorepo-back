@@ -22,7 +22,6 @@ export class WorkflowNodeProcess extends WorkflowNode<BioxProcess> {
     return `<biox-workflow-node name="${this.nodeName}"></biox-workflow-node>`;
   }
 
-
   protected initPorts(): void {
     this.inputPorts = this.generatePorts(this.object.inputs, 'input');
     this.outputPorts = this.generatePorts(this.object.outputs, 'output');
