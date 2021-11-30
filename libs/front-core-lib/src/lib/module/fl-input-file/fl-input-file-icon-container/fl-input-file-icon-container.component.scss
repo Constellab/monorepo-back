@@ -1,0 +1,13 @@
+:host {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.input-container {
+  position: relative;
+}
+
+.input-file-trigger {
+  display: block;
+  cursor: pointer;
+}

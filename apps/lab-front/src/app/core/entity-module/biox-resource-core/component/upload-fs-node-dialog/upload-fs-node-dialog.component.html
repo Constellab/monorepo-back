@@ -14,9 +14,9 @@
         <!--     When uploading a folder, we show 2 options  -->
         <div *ngIf="selectedNodes === 'folder'" class="folder-mode">
           <mat-radio-group class="g-mat-radio-wrap-text" formControlName="uploadMode">
-            <mat-radio-button value="files">{{'fe.folder_upload_files_options' | translate }}</mat-radio-button>
+            <mat-radio-button value="files">{{'databox.folder_upload_files_options' | translate }}</mat-radio-button>
             <mat-radio-button value="folder"
-                              class="radio-button">{{'fe.folder_upload_folder_options' | translate }}</mat-radio-button>
+                              class="radio-button">{{'databox.folder_upload_folder_options' | translate }}</mat-radio-button>
           </mat-radio-group>
         </div>
 
@@ -31,15 +31,15 @@
 
               <!--  File type  -->
               <mat-form-field fxFlex="59%">
-                <mat-label>{{'fe.select_file_type' | translate}}</mat-label>
-                <mat-select formControlName="typingName" placeholder="{{'fe.select_file_type' | translate}}"
+                <mat-label>{{'databox.select_file_type' | translate}}</mat-label>
+                <mat-select formControlName="typingName" placeholder="{{'databox.select_file_type' | translate}}"
                             required>
                   <mat-option *ngFor="let fileType of fileTypes" [value]="fileType.typingName">
                     {{fileType.name}}
                   </mat-option>
                 </mat-select>
                 <mat-error *ngIf="control.get('typingName').hasError('required')">
-                  {{'fe.select_file_type' | flErrorRequired}}
+                  {{'databox.select_file_type' | flErrorRequired}}
                 </mat-error>
               </mat-form-field>
             </div>
@@ -55,6 +55,6 @@
 <div mat-dialog-actions>
   <button mat-raised-button color="primary" type="submit" form="file-type-form"
           class="g-centered-forced">
-    {{'fe.upload_file' | translate}}
+    {{'databox.upload_file' | translate}}
   </button>
 </div>

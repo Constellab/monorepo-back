@@ -49,11 +49,11 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
   deleteFile(file: BioxResource, event: MouseEvent): void {
     ClHelpService.stopEventPropagation(event);
     const input: FlConfirmDialogInput = {
-      title: 'fe.delete_file',
-      content: 'fe.delete_file_confirmation',
+      title: 'databox.delete_file',
+      content: 'databox.delete_file_confirmation',
       translateTitleAndContent: true,
       observable: this.resourceService.delete(file.id),
-      successMessage: 'fe.file_deleted',
+      successMessage: 'databox.file_deleted',
       translateMessage: true
     };
 

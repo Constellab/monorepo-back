@@ -53,7 +53,7 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
    *  call when a file is added
    */
   @HostListener('change')
-  onMouseLeave(): void {
+  listenOnChange(): void {
     this.fileChanged(this.elementRef.nativeElement.files);
   }
 

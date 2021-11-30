@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {
   FL_SEARCH_PAGE_CONFIG,
-  FlDatasourcePaginated,
+  FlDatasourcePaginated, FlDialogService,
   FlSavedSearch,
   FlSearchPageConfig,
   FlSearchService,
@@ -13,6 +13,12 @@ import {BioxResourceSearch, BioxResourceSearchFields} from '../../model/biox-res
 import {BioxResourceService} from '../../../../entity-service/biox-resource.service';
 import {MatDrawer} from '@angular/material/sidenav';
 import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
+import {
+  UploadFsNodeDialogComponent,
+  UploadFsNodeDialogInput,
+  UploadFsNodeMode
+} from '../upload-fs-node-dialog/upload-fs-node-dialog.component';
+import {ClHelpService} from '@monorepo/core-lib';
 
 // list of predefined search of the resources
 const savedSearch: FlSavedSearch[] = [{
@@ -38,6 +44,9 @@ function searchConfig(searchService: FlSearchService<any>): FlSearchPageConfig {
   };
 }
 
+/**
+ * Complete component to search on resource. It support a select mode and manage file upload.
+ */
 @Component({
   selector: 'gen-biox-resource-search',
   templateUrl: './biox-resource-search.component.html',
@@ -63,7 +72,11 @@ export class BioxResourceSearchComponent implements OnInit {
   columns: FlTableColumn<BioxResource>[] = ['id', 'name', 'info',
     {columnName: 'resource_type', accessor: 'resourceTypeHumanName'}, 'createdAt'];
 
-  constructor(private searchState: FlSearchState<any>) {
+  files: File[];
+
+
+  constructor(private searchState: FlSearchState<any>,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -90,5 +103,31 @@ export class BioxResourceSearchComponent implements OnInit {
 
   selectResource(resource: BioxResource): void {
     this.resourceSelected.next(resource);
+  }
+
+
+  //////////////////////////// FILE ///////////////////////
+  uploadFiles(fileEvent: File | File[]): void {
+    this.uploadFsNode(fileEvent, 'files');
+  }
+
+  uploadFolder(fileEvent: File | File[]): void {
+    this.uploadFsNode(fileEvent, 'folder');
+  }
+
+  private uploadFsNode(fileEvent: File | File[], selectedNodes: UploadFsNodeMode): void {
+    const files: File[] = ClHelpService.convertObjectOrArrayToArray(fileEvent);
+    if (files.length === 0) {
+      return;
+    }
+
+    const data: UploadFsNodeDialogInput = {
+      selectedNodes: selectedNodes,
+      files: files
+    };
+    this.dialogService.openSmallDialog(UploadFsNodeDialogComponent, {data: data});
+
+    // clear the list of files
+    this.files = [];
   }
 }

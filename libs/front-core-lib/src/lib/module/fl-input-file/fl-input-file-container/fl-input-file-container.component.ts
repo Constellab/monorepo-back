@@ -39,7 +39,6 @@ const _FlInputFileContainerComponentMixinBase =
  *            File is required
  *         </mat-error>
  * </fl-input-file-container>
- *
  */
 @Component({
   selector: 'fl-input-file-container',

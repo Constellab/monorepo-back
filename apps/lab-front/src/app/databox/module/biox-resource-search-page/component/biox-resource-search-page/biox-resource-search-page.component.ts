@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 /**
  * Page to search and navigate in resources
@@ -10,7 +10,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BioxResourceSearchPageComponent implements OnInit {
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

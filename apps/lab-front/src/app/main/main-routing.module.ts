@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {constBaseRoute, constBiotaRoute, constBioxRoute, constFileExplorerRoute, constMonitoringRoute} from '../core/utils/base-route';
+import {constBaseRoute, constBiotaRoute, constBioxRoute, constDataboxRoute, constMonitoringRoute} from '../core/utils/base-route';
 import {MainAppComponent} from './component/main-app/main-app.component';
 import {AutoLoginGuard} from './guard/auto-login.guard';
 import {FlLabRoute} from '@monorepo/front-core-lib';
@@ -34,10 +34,10 @@ const routes: Routes = [
         loadChildren: () => import('../biota/biota.module').then(m => m.BiotaModule)
       },
 
-      //////////////////////// FILE EXPLORER  /////////////////////////
+      //////////////////////// DATABOX  /////////////////////////
       {
-        path: constFileExplorerRoute,
-        loadChildren: () => import('../file-explorer/file-explorer.module').then(m => m.FileExplorerModule)
+        path: constDataboxRoute,
+        loadChildren: () => import('../databox/databox.module').then(m => m.DataboxModule)
       },
       //////////////////////// MONITORING  /////////////////////////
       {

@@ -1,15 +1,19 @@
-.drawer{
+.drawer {
   width: 25vw;
   min-width: 26rem;
   padding: 1em 0.3em;
 }
 
-.drawer-content{
+.drawer-content {
   background-color: var(--card-background);
 }
 
-.saved-search-container{
-  padding : 0.3em 0.5em;
+.saved-search-container {
+  padding: 0.3em 0.5em;
+}
+
+.upload-button {
+  padding-right: 0.5em;
 }
 
 .result-count {
@@ -18,3 +22,5 @@
   line-height: 1em;
   border-bottom: 1px solid var(--grey-low-contrast);
 }
+
+

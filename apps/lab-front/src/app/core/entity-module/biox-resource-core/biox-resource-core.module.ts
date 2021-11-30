@@ -25,6 +25,7 @@ import { BioxResourceAdvancedSearchFormComponent } from './component/biox-resour
 import { BioxResourceOriginOptionsComponent } from './component/biox-resource-origin-options/biox-resource-origin-options.component';
 import { BioxSelectResourceDialogComponent } from './component/biox-select-resource-dialog/biox-select-resource-dialog.component';
 import { BioxResourceCardComponent } from './component/biox-resource-card/biox-resource-card.component';
+import {UploadFsNodeDialogComponent} from './component/upload-fs-node-dialog/upload-fs-node-dialog.component';
 
 
 @NgModule({
@@ -51,6 +52,7 @@ import { BioxResourceCardComponent } from './component/biox-resource-card/biox-r
     BioxResourceOriginOptionsComponent,
     BioxSelectResourceDialogComponent,
     BioxResourceCardComponent,
+    UploadFsNodeDialogComponent,
   ],
   exports: [
     BioxResourceInfoComponent,

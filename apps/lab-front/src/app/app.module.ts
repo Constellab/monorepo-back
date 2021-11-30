@@ -60,7 +60,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlTranslateModule.forRoot({
       defaultLang: ClSupportedLanguage.en,
       availableLang: [ClSupportedLanguage.en],
-      filenames: ['global-', 'biox-', 'biota-', 'file-explorer-', 'monitoring-']
+      filenames: ['global-', 'biox-', 'biota-', 'databox-', 'monitoring-']
     }),
     FlTranslateModule.forRoot2(),
 

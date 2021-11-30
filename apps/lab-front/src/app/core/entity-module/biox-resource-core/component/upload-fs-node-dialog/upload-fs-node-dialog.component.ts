@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
+import {FileResourceService} from '../../../../entity-service/file-resource.service';
 import {FlFileHelper, FlPortalAction, FlPortalActionsService, FlTranslateService} from '@monorepo/front-core-lib';
 import {FormArray, FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {BioxFileType} from '../../../../../core/model/entities/resource/biox-file-type';
+import {BioxFileType} from '../../../../model/entities/resource/biox-file-type';
 import {Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
-import {constResourceFileTypingName} from '../../../../../core/model/entities/biox-typing-name.py';
+import {constResourceFileTypingName} from '../../../../model/entities/biox-typing-name.py';
 
 export type UploadFsNodeMode = 'files' | 'folder'
 
@@ -62,7 +62,7 @@ export class UploadFsNodeDialogComponent implements OnInit {
   }
 
   get title(): string {
-    return this.selectedNodes === 'files' ? 'fe.select_file_types' : 'fe.upload_folder';
+    return this.selectedNodes === 'files' ? 'databox.select_file_types' : 'databox.upload_folder';
   }
 
   // show the selection of file types when the mode is not folder
@@ -121,14 +121,14 @@ export class UploadFsNodeDialogComponent implements OnInit {
     // mode when uploading all the file separately
     if (formValue.uploadMode === 'files') {
       text = formValue.files.length > 1 ?
-        this.translateService.translate('fe.uploading_files', {param: {nbFiles: formValue.files.length}}) :
+        this.translateService.translate('databox.uploading_files', {param: {nbFiles: formValue.files.length}}) :
         formValue.files[0].file.name;
 
       obs = this.fileResourceService.uploadFiles(formValue.files.map(file => file.file),
         formValue.files.map(fileType => fileType.typingName));
     } else {
       // mode when uploading only one folder with everything
-      text = this.translateService.translate('fe.uploading_folder');
+      text = this.translateService.translate('databox.uploading_folder');
       obs = this.fileResourceService.uploadFolder(formValue.files.map(file => file.file));
     }
 

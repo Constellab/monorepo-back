@@ -34,7 +34,8 @@
 }
 
 // specific css on the for the Input File component
-fl-input-file-container input{
+fl-input-file-container input,
+fl-input-file-icon-container input{
   position: absolute;
   top: 0;
   left: 0;
