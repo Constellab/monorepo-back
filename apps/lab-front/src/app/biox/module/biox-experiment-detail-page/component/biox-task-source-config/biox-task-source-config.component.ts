@@ -1,9 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BioxResourceSelect} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-select/biox-resource-select.component';
-import {FormControl} from '@ngneat/reactive-forms';
-import {BioxProcess} from '../../../../../core/model/entities/process/biox-process.entity';
 import {BioxWorkflowNodeDetailState} from '../../state/biox-workflow-node-detail.state';
-import {Subscription} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
+import {FlDialogService} from '@monorepo/front-core-lib';
+import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
+import {BioxSelectResourceDialogComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-select-resource-dialog/biox-select-resource-dialog.component';
+import {WorkflowNodeSource} from '../../model/workflow-node-source.class';
+import {RouterService} from '../../../../../core/service/router.service';
+import {tap} from 'rxjs/operators';
 
 /**
  * Specific component to configure a task of type gws.plug.Source
@@ -17,29 +20,47 @@ import {Subscription} from 'rxjs';
 })
 export class BioxTaskSourceConfigComponent implements OnInit, OnDestroy {
 
-  formControl: FormControl<BioxResourceSelect>;
+  selectedResource$: Observable<BioxResource>;
 
+  resourceRoute: string;
+
+  private node: WorkflowNodeSource;
   private subscription: Subscription;
 
-  constructor(private nodeDetail: BioxWorkflowNodeDetailState) {
+
+  constructor(private nodeDetail: BioxWorkflowNodeDetailState,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
-    this.subscription = this.nodeDetail.getProcess$().subscribe(
-      process => this.setNode(process)
+    this.subscription = this.nodeDetail.getNode$().subscribe(
+      node => this.setNode(node as WorkflowNodeSource)
     );
   }
 
-  private setNode(process: BioxProcess): void {
-    if (!process.isSource()) {
-      return;
-    }
-
-    this.formControl = new FormControl(process.config.data.values as any);
+  private setNode(node: WorkflowNodeSource): void {
+    this.node = node;
+    this.selectedResource$ = node.getLoadedResource$().pipe(
+      tap()
+    );
   }
 
-  onResourceChange(resource: BioxResourceSelect): void {
-    this.nodeDetail.updateConfigValues({resource_id: resource.resource_id});
+  getResourceRoute(resource: BioxResource): string {
+    return RouterService.getBioxResourceDetailRoute(resource.id);
+  }
+
+
+  openResourceSelection(): void {
+    this.dialogService.openBigDialog(BioxSelectResourceDialogComponent).afterClosed().subscribe(
+      resource => this.onResourceSelectionClosed(resource)
+    );
+  }
+
+  private onResourceSelectionClosed(resource?: BioxResource): void {
+    if (resource) {
+      this.nodeDetail.updateConfigValues({resource_id: resource.id});
+      this.node.setLoadedResource(resource);
+    }
   }
 
   ngOnDestroy(): void {

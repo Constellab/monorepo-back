@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {
   FL_SEARCH_PAGE_CONFIG,
   FlDatasourcePaginated,
@@ -50,6 +50,10 @@ function searchConfig(searchService: FlSearchService<any>): FlSearchPageConfig {
 })
 export class BioxResourceSearchComponent implements OnInit {
 
+  @Input() resourceSelectable: boolean = false;
+
+  @Output() resourceSelected: EventEmitter<BioxResource> = new EventEmitter<BioxResource>();
+
   @ViewChild(MatDrawer) drawer: MatDrawer;
 
   datasource: FlDatasourcePaginated<BioxResource>;
@@ -57,12 +61,17 @@ export class BioxResourceSearchComponent implements OnInit {
   savedSearch: FlSavedSearch[] = savedSearch;
 
   columns: FlTableColumn<BioxResource>[] = ['id', 'name', 'info',
-    {columnName: 'resource_type', accessor: 'resourceTypeHumanName'}, 'createdAt', 'action'];
+    {columnName: 'resource_type', accessor: 'resourceTypeHumanName'}, 'createdAt'];
 
   constructor(private searchState: FlSearchState<any>) {
   }
 
   ngOnInit(): void {
+    // in none selectable mode, we add the action column
+    if (!this.resourceSelectable) {
+      this.columns.push('action');
+    }
+
     this.searchState.setDrawer(this.drawer);
     this.datasource = this.searchState.datasource;
   }
@@ -77,5 +86,9 @@ export class BioxResourceSearchComponent implements OnInit {
 
   callSavedSearch(savedSearch: FlSavedSearch): void {
     this.searchState.callAdvancedSearchFromSavedSearch(savedSearch);
+  }
+
+  selectResource(resource: BioxResource): void {
+    this.resourceSelected.next(resource);
   }
 }

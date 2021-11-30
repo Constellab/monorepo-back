@@ -1,0 +1,21 @@
+<fl-card>
+  <fl-card-header>
+    {{resource.name}}
+
+    <fl-card-actions>
+      <a [routerLink]="resourceDetailRoute" mat-icon-button
+         type="button" color="primary"
+         [matTooltip]="'biox.file_resource_open' | translate">
+        <mat-icon>preview</mat-icon>
+      </a>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+    <p>{{'resource_type' | translate }} : {{resource.resourceTypeHumanName}}</p>
+  </fl-card-body>
+
+  <fl-card-footer class="g-text-light g-text-small">
+    <fl-from-now [prefix]="'created' | translate" [date]="resource.createdAt"></fl-from-now>
+  </fl-card-footer>
+</fl-card>

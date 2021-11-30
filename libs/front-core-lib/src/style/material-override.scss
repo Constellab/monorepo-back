@@ -169,6 +169,13 @@
   max-width: 100%;
 }
 
+// to be place on mat-row to make the line selectable
+.g-table-row-selectable:hover {
+  background: var(--grey-low-contrast);
+  cursor: pointer;
+}
+
+
 .g-table-cell {
   padding-left: 5px; // use to add a small space between 2 columns
   box-sizing: border-box;

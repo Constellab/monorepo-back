@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FlApiWithCacheService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {ClConstructorFunction, ClCoreJsonConvert, clRxjsDebug} from '@monorepo/core-lib';
+import {ClConstructorFunction, ClCoreJsonConvert} from '@monorepo/core-lib';
 import {BioxFlow} from '../model/global/biox-connection.class';
 import {BioxProtocol} from '../model/entities/process/biox-protocol.entity';
 import {BioxProcess} from '../model/entities/process/biox-process.entity';
@@ -31,7 +31,6 @@ export class BioxProtocolService {
   public getProtocolAsFlow(protocolId: string): Observable<BioxFlow<BioxProtocol>> {
     return this.getProtocol(protocolId).pipe(
       map(flow => this.initProtocolFlow(flow)),
-      clRxjsDebug(),
     );
   }
 
@@ -59,7 +58,6 @@ export class BioxProtocolService {
   };
 
   private initProtocolFlow(protocol: BioxProtocol): BioxFlow<BioxProtocol> {
-    console.log(protocol);
     return new BioxFlow<BioxProtocol>(protocol);
   }
 

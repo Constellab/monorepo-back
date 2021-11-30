@@ -67,7 +67,7 @@ export class WorkflowLayer {
   private createAndInitNode(node: WorkflowNode<any>): void {
     const nodeId: number = this.editor.addNode(node.title,
       node.countInputs(), node.countOutputs(), node.initialCoordX,
-      node.initialCoordY, node.className, {}, node.html, false);
+      node.initialCoordY, node.getClassName(), {}, node.getHTML(), false);
 
     // set the nodeId in workflow node
     node.initNode(nodeId.toString(), (id: string) => this.editor.getNodeFromId(id));
@@ -158,6 +158,18 @@ export class WorkflowLayer {
   public resetPortColors(): void {
     for (const node of this.nodes) {
       node.initPortColors();
+    }
+  }
+
+  public destroy(): void {
+    // destroy all nodes
+    for (const node of this.nodes) {
+      node.destroy();
+    }
+
+    // destroy all child layer
+    for (const key in this.children) {
+      this.children[key].destroy();
     }
   }
 

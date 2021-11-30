@@ -2,8 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FlFormInputsManagerConfig, FlSearchState} from '@monorepo/front-core-lib';
 import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {FormGroup} from '@ngneat/reactive-forms';
-import {BioxResourceSearch, BioxResourceSearchFields} from '../../model/biox-resource-advanced-search.class';
-import {ClCoreJsonConvert} from '@monorepo/core-lib';
+import {BioxResourceSearch} from '../../model/biox-resource-advanced-search.class';
 
 /**
  * Work within the biox-resource-search and this manage the advanced search form
@@ -28,10 +27,6 @@ export class BioxResourceAdvancedSearchFormComponent implements OnInit {
 
   submit(): void {
     if (this.formGp.valid) {
-
-      // const tt = ClCoreJsonConvert.deserialize(this.formGp.getRawValue(), BioxResourceSearchFields);
-      const tt = ClCoreJsonConvert.classToPlain(this.formGp.getRawValue(), BioxResourceSearchFields);
-      console.log(tt)
       this.searchState.callAdvancedSearchFromForm();
     }
   }

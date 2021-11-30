@@ -11,11 +11,17 @@ export class WorkflowNodeProcess extends WorkflowNode<BioxProcess> {
   constructor(process: BioxProcess,
               processName: string,
               initialCoordX: number = 0, initialCoordY: number = 0) {
-    super(processName, process.title, process,
-      process.isSource() ? 'task-source' : 'node-process',
-      initialCoordX, initialCoordY);
-    this.html = `<biox-workflow-node name="${this.nodeName}"></biox-workflow-node>`;
+    super(processName, process.title, process, initialCoordX, initialCoordY);
   }
+
+  getClassName(): string {
+    return 'node-process';
+  }
+
+  getHTML(): string {
+    return `<biox-workflow-node name="${this.nodeName}"></biox-workflow-node>`;
+  }
+
 
   protected initPorts(): void {
     this.inputPorts = this.generatePorts(this.object.inputs, 'input');

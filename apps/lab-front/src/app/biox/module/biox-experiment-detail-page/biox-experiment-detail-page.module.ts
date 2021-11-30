@@ -29,6 +29,7 @@ import {BioxExperimentDetailCardComponent} from './component/biox-experiment-det
 import {BioxProgressBarInfoDialogComponent} from './component/biox-progress-bar-info-dialog/biox-progress-bar-info-dialog.component';
 import {BioxExperimentValidationDialogComponent} from './component/biox-experiment-validation-dialog/biox-experiment-validation-dialog.component';
 import {BioxStudyCoreModule} from '../../../core/entity-module/biox-study-core/biox-study-core.module';
+import {BioxWorkflowNodeSourceComponent} from './component/biox-workflow-node-source/biox-workflow-node-source.component';
 
 
 @NgModule({
@@ -49,6 +50,7 @@ import {BioxStudyCoreModule} from '../../../core/entity-module/biox-study-core/b
     BioxExperimentDetailCardComponent,
     BioxProgressBarInfoDialogComponent,
     BioxExperimentValidationDialogComponent,
+    BioxWorkflowNodeSourceComponent,
   ],
   imports: [
     CommonModule,
@@ -76,18 +78,23 @@ export class BioxExperimentDetailPageModule {
 
     // declare the BioxWorkflowNodeComponent as angular element to make the tag
     // biox-workflow-node work natively
-    const ngElement = createCustomElement(BioxWorkflowNodeComponent, {
-      injector,
-    });
+    customElements.define('biox-workflow-node',
+      createCustomElement(BioxWorkflowNodeComponent, {
+        injector,
+      }));
 
-    customElements.define('biox-workflow-node', ngElement);
+    // declare the BioxWorkflowNodeSourceComponent as angular element to make the tag
+    // biox-workflow-node-source work natively
+    customElements.define('biox-workflow-node-source',
+      createCustomElement(BioxWorkflowNodeSourceComponent, {
+        injector,
+      }));
 
     // declare the BioxWorkflowInterfaceComponent as angular element to make the tag
     // biox-workflow-node-interface work natively
-    const ngElement2 = createCustomElement(BioxWorkflowNodeInterfaceComponent, {
-      injector,
-    });
-
-    customElements.define('biox-workflow-node-interface', ngElement2);
+    customElements.define('biox-workflow-node-interface',
+      createCustomElement(BioxWorkflowNodeInterfaceComponent, {
+        injector,
+      }));
   }
 }

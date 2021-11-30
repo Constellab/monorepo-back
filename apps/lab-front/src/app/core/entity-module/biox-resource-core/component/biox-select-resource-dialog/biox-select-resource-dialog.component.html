@@ -1,0 +1,8 @@
+<fl-dialog-title>
+  {{'select_resource' | translate }}
+</fl-dialog-title>
+
+<mat-dialog-content>
+  <gen-biox-resource-search [resourceSelectable]="true"
+                            (resourceSelected)="onResourceSelected($event)"></gen-biox-resource-search>
+</mat-dialog-content>

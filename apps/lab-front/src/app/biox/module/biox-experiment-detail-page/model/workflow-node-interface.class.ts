@@ -9,8 +9,15 @@ import {BioxInterfaceNode} from '../../../../core/model/global/biox-connection.c
 export class WorkflowNodeInterface extends WorkflowNode<BioxInterfaceNode> {
 
   constructor(bioxInterfaceNode: BioxInterfaceNode, initialCoordX: number = 0, initialCoordY: number = 0) {
-    super(bioxInterfaceNode.name, bioxInterfaceNode.name, bioxInterfaceNode, 'interface', initialCoordX, initialCoordY);
-    this.html = `<biox-workflow-node-interface name="${this.nodeName}"></biox-workflow-node-interface>`;
+    super(bioxInterfaceNode.name, bioxInterfaceNode.name, bioxInterfaceNode, initialCoordX, initialCoordY);
+  }
+
+  getClassName(): string {
+    return 'interface';
+  }
+
+  getHTML(): string {
+    return `<biox-workflow-node-interface name="${this.nodeName}"></biox-workflow-node-interface>`;
   }
 
   protected initPorts(): void {

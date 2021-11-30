@@ -1,30 +1,32 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Observable} from 'rxjs';
 import {WorkflowManagerState} from '../../state/workflow-manager-state';
 import {FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
-import {Observable} from 'rxjs';
 import {WorkflowActionState} from '../../state/workflow-action-state';
-import {WorkflowNodeProcess} from '../../model/workflow-node-process.class';
+import {WorkflowNodeSource} from '../../model/workflow-node-source.class';
+import {map} from 'rxjs/operators';
 
 /**
- * Node of an experiment in the workflow
+ * Node of an experiment in the workflow specifically for the Source process
  *
  * This component is converted to an angular element to be injectable in html
  */
 @Component({
-  selector: 'gen-biox-workflow-node',
-  templateUrl: './biox-workflow-node.component.html',
-  styleUrls: ['./biox-workflow-node.component.scss']
+  selector: 'gen-biox-workflow-node-source',
+  templateUrl: './biox-workflow-node-source.component.html',
+  styleUrls: ['./biox-workflow-node-source.component.scss']
 })
-export class BioxWorkflowNodeComponent implements OnInit {
+export class BioxWorkflowNodeSourceComponent implements OnInit {
 
   // Name of the node
   @Input() name: string;
 
   @ViewChild('container', {static: true}) container: ElementRef<HTMLElement>;
 
-  node: WorkflowNodeProcess;
+  title$: Observable<string>;
 
-  layerIsLoading$: Observable<boolean>;
+  node: WorkflowNodeSource;
+
 
   constructor(private workflowManager: WorkflowManagerState,
               private dialogService: FlDialogService,
@@ -33,21 +35,17 @@ export class BioxWorkflowNodeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.node = this.workflowManager.findNodeWithName(this.name) as WorkflowNodeProcess;
+    this.node = this.workflowManager.findNodeWithName(this.name) as WorkflowNodeSource;
     if (this.node == null) {
       console.error('Couldn\'t find node with name : ' + this.name);
     }
 
-    this.layerIsLoading$ = this.workflowManager.layerIsLoading$;
+    // if the resource is loaded, use the name of the resource, otherwise, take the node title
+    this.title$ = this.node.getLoadedResource$().pipe(
+      map(resource => resource != null ? resource.name : this.node.title)
+    );
   }
 
-  nodeIsProtocol(): boolean {
-    return this.node.object.isProtocol;
-  }
-
-  zoomInProtocol(): void {
-    return this.workflowManager.selectLayer(this.node.nodeId);
-  }
 
   openNodeDetail(): void {
     this.drawerState.newAction({
@@ -57,7 +55,4 @@ export class BioxWorkflowNodeComponent implements OnInit {
     });
   }
 
-  showNodeStatus(): boolean {
-    return this.node.object.getStatusName() !== 'draft';
-  }
 }

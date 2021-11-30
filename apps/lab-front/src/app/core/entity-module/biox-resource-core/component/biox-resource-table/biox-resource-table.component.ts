@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,
@@ -9,6 +9,7 @@ import {FileResourceService} from '../../../../entity-service/file-resource.serv
 import {RouterService} from '../../../../service/router.service';
 import {BioxResourceService} from '../../../../entity-service/biox-resource.service';
 import {BioxResource, BioxResourceDatasource} from '../../../../model/entities/resource/biox-resource.entity';
+import {ClHelpService} from '@monorepo/core-lib';
 
 @Component({
   selector: 'gen-biox-resource-table',
@@ -21,6 +22,11 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
 
   @Input() datasource: BioxResourceDatasource;
 
+  // when true, the row become clickable and resourceSelected event is trigger
+  @Input() selectableRow: boolean = false;
+
+  @Output() resourceSelected: EventEmitter<BioxResource> = new EventEmitter<BioxResource>();
+
   constructor(private fileService: FileResourceService,
               private resourceService: BioxResourceService,
               private dialogService: FlDialogService) {
@@ -30,7 +36,8 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
   ngOnInit(): void {
   }
 
-  downloadFile(file: BioxResource): void {
+  downloadFile(file: BioxResource, event: MouseEvent): void {
+    ClHelpService.stopEventPropagation(event);
     this.fileService.downloadFile(file.id, file.name).subscribe();
   }
 
@@ -39,7 +46,8 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
     return RouterService.getBioxResourceDetailRoute(file.id);
   }
 
-  deleteFile(file: BioxResource): void {
+  deleteFile(file: BioxResource, event: MouseEvent): void {
+    ClHelpService.stopEventPropagation(event);
     const input: FlConfirmDialogInput = {
       title: 'fe.delete_file',
       content: 'fe.delete_file_confirmation',
@@ -57,6 +65,13 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
   private onDeleteFileClosed(result: FlConfirmDialogResult<void>, file: BioxResource): void {
     if (result.choice) {
       this.datasource.removeItem(file);
+    }
+  }
+
+  rowClicked(resource: BioxResource): void {
+    if (this.selectableRow) {
+      console.log(resource);
+      this.resourceSelected.next(resource);
     }
   }
 

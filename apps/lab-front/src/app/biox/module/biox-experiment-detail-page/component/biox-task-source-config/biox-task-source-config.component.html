@@ -1,2 +1,17 @@
-<gen-biox-resource-select [formControl]="formControl"
-                          (resourceChange)="onResourceChange($event)"></gen-biox-resource-select>
+<div *ngIf="selectedResource$ | async as selectedResource ; else noSelectedResource ">
+  <!-- A resource is selected -->
+  <gen-biox-resource-card [resource]="selectedResource"></gen-biox-resource-card>
+</div>
+<!-- no selected resource -->
+<ng-template #noSelectedResource>
+  <fl-error-text [errorMessage]="'no_selected_resource' | translate"></fl-error-text>
+</ng-template>
+
+
+<div class="select-button">
+  <button mat-stroked-button type="button"
+          (click)="openResourceSelection()" class="g-centered-forced">
+    {{'select_resource' | translate }}
+  </button>
+</div>
+

@@ -5,7 +5,7 @@
     <gen-biox-resource-advanced-search-form></gen-biox-resource-advanced-search-form>
   </mat-drawer>
 
-  <div class="g-full-height" fxLayout="column">
+  <div class="g-full-height drawer-content" fxLayout="column">
 
     <!--  Center header  -->
     <div fxLayout="row">
@@ -36,7 +36,9 @@
       <div>
 
         <div fxLayout="column">
-          <gen-biox-resource-table [datasource]="datasource" [columns]="columns"></gen-biox-resource-table>
+          <gen-biox-resource-table [datasource]="datasource" [columns]="columns"
+                                   [selectableRow]="resourceSelectable"
+                                   (resourceSelected)="selectResource($event)"></gen-biox-resource-table>
         </div>
 
         <fl-infinite-load-more-result [datasource]="datasource"></fl-infinite-load-more-result>

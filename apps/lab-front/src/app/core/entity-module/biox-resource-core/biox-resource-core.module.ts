@@ -23,6 +23,8 @@ import {BioxResourceTableComponent} from './component/biox-resource-table/biox-r
 import { BioxResourceSearchComponent } from './component/biox-resource-search/biox-resource-search.component';
 import { BioxResourceAdvancedSearchFormComponent } from './component/biox-resource-advanced-search-form/biox-resource-advanced-search-form.component';
 import { BioxResourceOriginOptionsComponent } from './component/biox-resource-origin-options/biox-resource-origin-options.component';
+import { BioxSelectResourceDialogComponent } from './component/biox-select-resource-dialog/biox-select-resource-dialog.component';
+import { BioxResourceCardComponent } from './component/biox-resource-card/biox-resource-card.component';
 
 
 @NgModule({
@@ -47,6 +49,8 @@ import { BioxResourceOriginOptionsComponent } from './component/biox-resource-or
     BioxResourceSearchComponent,
     BioxResourceAdvancedSearchFormComponent,
     BioxResourceOriginOptionsComponent,
+    BioxSelectResourceDialogComponent,
+    BioxResourceCardComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
@@ -68,6 +72,8 @@ import { BioxResourceOriginOptionsComponent } from './component/biox-resource-or
     BioxResourceTableComponent,
     BioxResourceSearchComponent,
     BioxResourceOriginOptionsComponent,
+    BioxSelectResourceDialogComponent,
+    BioxResourceCardComponent,
   ],
   imports: [
     CommonModule,

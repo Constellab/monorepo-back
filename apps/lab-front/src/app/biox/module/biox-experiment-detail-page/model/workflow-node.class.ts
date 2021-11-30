@@ -6,8 +6,6 @@ import {WorkflowPort} from './workflow-port.class';
  */
 export abstract class WorkflowNode<T> {
 
-  public html: string;
-
   public nodeId: string;
 
   public inputPorts: WorkflowPort[];
@@ -21,7 +19,6 @@ export abstract class WorkflowNode<T> {
     public readonly nodeName: string,
     public readonly title: string,
     public readonly object: T,
-    public readonly className: string,
     public readonly initialCoordX: number = 0,
     public readonly initialCoordY: number = 0) {
     this.initPorts();
@@ -34,6 +31,10 @@ export abstract class WorkflowNode<T> {
   }
 
   protected abstract initPorts(): void;
+
+  public abstract getHTML(): string;
+
+  public abstract getClassName(): string;
 
 
   /////////////////////////////// INPUT //////////////////////////////
@@ -156,6 +157,10 @@ export abstract class WorkflowNode<T> {
       // set the color
       portElement.style.backgroundColor = 'grey';
     }
+  }
+
+  public destroy(): void{
+
   }
 
 

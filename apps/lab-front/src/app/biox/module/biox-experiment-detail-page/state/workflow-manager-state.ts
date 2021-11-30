@@ -20,6 +20,8 @@ import {WorkflowNodeOuterface} from '../model/workflow-node-outerface.class';
 import {WorkflowPort} from '../model/workflow-port.class';
 import {BioxProtocol} from '../../../../core/model/entities/process/biox-protocol.entity';
 import {FlPortalAction, FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
+import {WorkflowNodeSource} from '../model/workflow-node-source.class';
+import {BioxResourceService} from '../../../../core/entity-service/biox-resource.service';
 
 /**
  * State for the workflow, it is created for the module and can only manage on state a the time
@@ -50,6 +52,7 @@ export class WorkflowManagerState {
 
   constructor(private bioxProtocolService: BioxProtocolService,
               private actionsService: FlPortalActionsService,
+              private bioxResourceService: BioxResourceService,
               private ngZone: NgZone) {
     console.log('New workflow manager');
   }
@@ -131,14 +134,21 @@ export class WorkflowManagerState {
   private onNewProcess(actionResult: FlPortalActionResult<BioxProcess>): void {
     if (actionResult.status === 'error') return;
 
+    const process: BioxProcess = actionResult.result;
     // convert to node
-    const node: WorkflowNodeProcess = this.createNodeFromProcess(actionResult.result);
+    const node: WorkflowNode<any> = this.createNodeFromProcess(process, process.name);
     // add the node to the workflow
     this.addNode(node);
   }
 
-  private createNodeFromProcess(process: BioxProcess): WorkflowNodeProcess {
-    return new WorkflowNodeProcess(process, process.name, 0, 0);
+  private createNodeFromProcess(process: BioxProcess, name: string, coordX: number = 0, coordY: number = 0): WorkflowNode<any> {
+    // create a specific node for the source
+    if (process.isSource()) {
+      const resourceId: string | null = process.config.data.values?.resource_id ?? null;
+      return new WorkflowNodeSource(process, name, this.bioxResourceService.getById(resourceId), coordX, coordY);
+    } else {
+      return new WorkflowNodeProcess(process, name, coordX, coordY);
+    }
   }
 
   public addInterface(): void {
@@ -234,7 +244,7 @@ export class WorkflowManagerState {
 
     let workflowNode: WorkflowNode<any>;
     if (node instanceof BioxProcess) {
-      workflowNode = new WorkflowNodeProcess(node as BioxProcess, node.name, coordX, coordY);
+      workflowNode = this.createNodeFromProcess(node, node.name, coordX, coordY);
     } else if (node instanceof BioxInterfaceNode) {
       workflowNode = new WorkflowNodeInterface(node, coordX, coordY);
     } else if (node instanceof BioxOuterfaceNode) {
