@@ -33,7 +33,7 @@
     }
 
     .mat-form-field-label-wrapper {
-      top: -1.6em;
+      top: -1.35em;
       padding-top: 1.6em;
     }
 
@@ -42,8 +42,8 @@
       width: 133.33333%;
     }
 
-    .mat-select-arrow-wrapper {
-      transform: none;
+    .mat-form-field-appearance-outline .mat-select-arrow-wrapper {
+      transform: translateY(-15%);
     }
 
     .mat-form-field-prefix,
@@ -55,6 +55,10 @@
     .mat-form-field-suffix .mat-icon-button {
       width: 1.5em;
       height: 1.5em;
+    }
+
+    .mat-input-element, .mat-form-field-label, .mat-select {
+      font-size: 0.85rem;
     }
   }
 }
@@ -94,7 +98,7 @@
 }
 
 // increase a bit, the width of stroked buttons
-.mat-stroked-button{
+.mat-stroked-button {
   border-width: 2px !important;
 }
 

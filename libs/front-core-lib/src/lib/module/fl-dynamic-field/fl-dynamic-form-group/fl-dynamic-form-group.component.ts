@@ -21,10 +21,7 @@ export class FlDynamicFormGroupComponent implements OnInit, FlDynamicAbstractFor
 
   @Input() config: FlDynamicFormGroupConfig;
 
-  // width of the input, used in a fxFlex
-  @Input() inputFlexWidth: string = '1 1 49%';
-
-  @Input() inputFlexGap: string = '1%';
+  @Input() inputFlexGap: string = '0.3em';
 
   constructor() {
   }
@@ -32,9 +29,11 @@ export class FlDynamicFormGroupComponent implements OnInit, FlDynamicAbstractFor
   ngOnInit(): void {
   }
 
-  getFlexWidth(config: FlDynamicFormAbstractControl): string {
-    // use the input flex width only when the child is a FormControl
-    return config.controlType === 'formControl' ? this.inputFlexWidth : '1 1 100%';
+  getControlClass(config: FlDynamicFormAbstractControl): string {
+    // different classe based on type
+    // if FormGroup or FormArray --> width 100%
+    // else width flex 1
+    return config.controlType !== 'formControl' ? 'group-container': 'field-container';
   }
 
 

@@ -19,7 +19,7 @@ export class FlMultiInputsComponent extends FlFormFieldDirective<string, string[
   @Input() prefix: string;
   @Input() suffix: string;
 
-  @Input() rows: number = 4;
+  @Input() rows: number = 2;
 
   @Output() valuesChange: EventEmitter<string[]> = new EventEmitter();
 
