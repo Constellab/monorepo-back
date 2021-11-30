@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, Host, OnDestroy, OnInit, Optional} from '@angular/core';
+import {AfterViewInit, Component, Host, OnInit, Optional} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {MatSelect} from '@angular/material/select';
 import {BioxResourceService} from '../../../../entity-service/biox-resource.service';
 import {Observable} from 'rxjs';
-import {BioxLabTypeEntity, BioxLabTypeEntityDatasource} from '../../../../model/entities/lab-type/biox-lab-type.entity';
+import {BioxLabTypeEntity} from '../../../../model/entities/lab-type/biox-lab-type.entity';
 
 /**
  * Component to place under a mat-select to show the list of resource type
@@ -14,9 +14,8 @@ import {BioxLabTypeEntity, BioxLabTypeEntityDatasource} from '../../../../model/
   styleUrls: ['./biox-resource-type-select-options.component.scss']
 })
 export class BioxResourceTypeSelectOptionsComponent extends FlEmbeddedOptionsAbstractDirective
-  implements OnInit, AfterViewInit, OnDestroy {
+  implements OnInit, AfterViewInit {
 
-  datasource: BioxLabTypeEntityDatasource;
 
   resourceTypes$: Observable<BioxLabTypeEntity[]>;
 
@@ -26,16 +25,11 @@ export class BioxResourceTypeSelectOptionsComponent extends FlEmbeddedOptionsAbs
   }
 
   ngOnInit(): void {
-    this.datasource = this.bioxResourceService.getResourceTypesDatasource();
-    this.resourceTypes$ = this.datasource.connect();
+    this.resourceTypes$ = this.bioxResourceService.getResourceTypes();
   }
 
   ngAfterViewInit(): void {
     this.initOptions();
-  }
-
-  ngOnDestroy(): void {
-    this.datasource.disconnect();
   }
 
 

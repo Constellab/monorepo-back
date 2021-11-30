@@ -32,7 +32,7 @@ export class BioxResourceAdvancedSearchFormComponent implements OnInit {
       // const tt = ClCoreJsonConvert.deserialize(this.formGp.getRawValue(), BioxResourceSearchFields);
       const tt = ClCoreJsonConvert.classToPlain(this.formGp.getRawValue(), BioxResourceSearchFields);
       console.log(tt)
-      this.searchState.newAdvancedSearch();
+      this.searchState.callAdvancedSearchFromForm();
     }
   }
 

@@ -9,6 +9,7 @@ import {
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {LabSearchConverter} from '../../../model/global/lab-search-converter.class';
 import {Type} from 'class-transformer';
+import {BioxResourceOrigin} from '../../../model/entities/resource/biox-resource.entity';
 
 /**
  * Format of the data for the Advanced search form of the resource
@@ -16,7 +17,7 @@ import {Type} from 'class-transformer';
 export class BioxResourceSearchFields {
   resourceTypingName: string[];
   tags: FlTag[];
-  origin: string;
+  origin: BioxResourceOrigin;
   data: string;
 
   @Type(() => FlSearchDateInterval)

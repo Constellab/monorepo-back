@@ -7,10 +7,11 @@ import {FlSearchService} from './fl-search-service.class';
 import {FlEntityPaginatedDatasource} from '../datasource/fl-entity-datasource.class';
 import {FlEntity} from '../fl-entity.class';
 import {ActivatedRoute, Router} from '@angular/router';
-import {FlAdvancedSearchObject, FlSearchPageUrlHelper} from './fl-search-url.helper';
-import {first, skipWhile, tap} from 'rxjs/operators';
+import {FlAdvancedSearchObject, FlSearchPageUrlHelper, FlSearchUrlObject} from './fl-search-url.helper';
+import {first} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
+import {FlSavedSearch} from './fl-saved-search.class';
 
 type FlSearchMode = 'advanced' | 'default';
 
@@ -30,9 +31,8 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
   // form group instance of the advanced form
   public readonly advancedSearchFormGroup: FormGroup;
 
-  // use skip call advanced search when url change
-  // start a one because the first call is manage by a specific method
-  private queryParamSkip: number = 1;
+  // timestamp code of the last search to prevent calling the same search twice
+  private lastSearchTimestamp: string;
 
   private drawer: MatDrawer;
   private routeSubscription: Subscription;
@@ -46,8 +46,6 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
     this.datasource = new FlEntityPaginatedDatasource(
       this.searchService.advancedSearch.bind(this.searchService), 20, false);
 
-    this.initFirstSearch();
-
     this.subscribeToNavigation();
   }
 
@@ -56,39 +54,60 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
   }
 
 
-  public newAdvancedSearch(): void {
-    const advancedSearch: FlAdvancedSearchObject = {
-      filtersCriteria: this.advancedSearchFormGroup.getRawValue()
-    };
+  // call advanced search form advanced search form
+  public callAdvancedSearchFromForm(): void {
+    const advancedSearch: FlAdvancedSearchObject = this.callAdvancedSearch(this.advancedSearchFormGroup.getRawValue());
 
-    this.callAdvancedSearch(advancedSearch.filtersCriteria);
-    // save the form value to the url
-    this.saveAdvancedSearchToURL(advancedSearch);
+    const timestamp = this.generateSearchTimestamp();
+    this.saveAdvancedSearchInUrl(advancedSearch, timestamp);
+  }
+
+  // call advanced search from a saved search
+  public callAdvancedSearchFromSavedSearch(savedSearch: FlSavedSearch): void {
+    const advancedSearchObject = this.callAdvancedSearch(savedSearch.filtersCriteria);
+    this.patchAdvancedFormGroup(savedSearch.filtersCriteria);
+
+    const timestamp = this.generateSearchTimestamp();
+    this.saveAdvancedSearchInUrl(advancedSearchObject, timestamp);
+  }
+
+  // call the advanced search from a URL change
+  private callAdvancedSearchFromUrl(filtersCriteria: any, timestamp: string): void {
+    this.callAdvancedSearch(filtersCriteria);
+    this.lastSearchTimestamp = timestamp;
+
+    this.patchAdvancedFormGroup(filtersCriteria);
   }
 
   // method to just call advanced search function
-  private callAdvancedSearch(searchCriteria: any): void {
+  private callAdvancedSearch(filtersCriteria: any): FlAdvancedSearchObject {
     // call first page and set data
-    this.datasource.getFirstPage(searchCriteria);
+    this.datasource.getFirstPage(filtersCriteria);
+
 
     // if the drawer is in over mode (small screens) close it
     if (this.drawer?.mode === 'over') {
       this.closeDrawer();
     }
-  }
 
+    return {filtersCriteria: filtersCriteria};
+  }
 
   /////////////////////////////////////////////////// URL ///////////////////////////////////////////////////
 
   // subscribe to navigation to call advanced search if it is a navigation back
   private subscribeToNavigation(): void {
-    this.routeSubscription = this.route.queryParams.pipe(
-      // use to skip when route change is made before calling advanced search
-      tap(() => this.queryParamSkip--),
-      skipWhile(() => this.queryParamSkip >= 0),
-    ).subscribe(
-      params => this.checkAndCallSearchFromUrl(params)
-    );
+    // subscribe to current url on init
+    this.route.queryParams.pipe(first()).subscribe(
+      params => {
+        // init the search with param of url
+        this.initFirstSearch(params as any);
+
+        // after init, subscribe to route change to call search is needed
+        this.routeSubscription = this.route.queryParams.subscribe(
+          params => this.checkAndCallSearchFromUrl(params as any)
+        );
+      });
   }
 
   /**
@@ -97,35 +116,29 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
    * Else if there is a default saved advanced search, call it
    * Otherwise call the default search if it exists
    */
-  private initFirstSearch(): void {
-    this.route.queryParams.pipe(first()).subscribe(
-      params => {
-        // call the advanced search from query params if they exists
-        if (this.checkAndCallSearchFromUrl(params)) {
-          return;
-        }
+  private initFirstSearch(params: FlSearchUrlObject): void {
+    // call the advanced search from query params if they exists
+    if (this.checkAndCallSearchFromUrl(params as any)) {
+      return;
+    }
 
-        // // automatic select default value
-        // const defaultBoard: UserBoard = await this.userBoardState.getDefaultBoard();
-        // if (defaultBoard) {
-        //   this.callUserBoard(defaultBoard);
-        //
-        //   return;
-        // }
-        //
-        // // call default search if exists
-        // this.newDefaultSearch();
-        return;
-      }
-    );
+    const savedSearch: FlSavedSearch = this.config.savedSearch?.find(search => search.default) ?? null;
+    if (savedSearch) {
+      this.callAdvancedSearchFromSavedSearch(savedSearch);
+    }
   }
 
   /**
    * check the url query params and if valid, it calls the advanced search
    * if the search is called, it returns true
    */
-  private checkAndCallSearchFromUrl(params: any): boolean {
-    const mode: FlSearchMode = params?.mode;
+  private checkAndCallSearchFromUrl(params: FlSearchUrlObject): boolean {
+    // prevent calling the save search twice
+    if (this.lastSearchTimestamp && params.timestamp === this.lastSearchTimestamp) {
+      return false;
+    }
+
+    const mode: FlSearchMode = params?.mode as FlSearchMode;
 
     switch (mode) {
       case 'advanced':
@@ -133,15 +146,12 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
         if (formValue != null) {
           try {
-            formValue.filtersCriteria = ClCoreJsonConvert.deserialize(formValue.filtersCriteria, this.config.advancedFormClass);
+            const filtersCriteria = ClCoreJsonConvert.deserialize(formValue.filtersCriteria, this.config.advancedFormClass);
+            this.callAdvancedSearchFromUrl(filtersCriteria, params.timestamp);
+            return true;
           } catch {
             return false;
           }
-
-          // set the value as apply in the state to refresh the advanced search form
-          this.patchAdvancedFormGroup(formValue.filtersCriteria);
-          this.callAdvancedSearch(formValue.filtersCriteria);
-          return true;
         }
         return false;
 
@@ -156,9 +166,6 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
   // search the default mode search in url
   private saveDefaultSearchToURL(): void {
-    // set skip to 1 to avoid double search call with route subscription
-    this.queryParamSkip = 1;
-
     // save the criteria list in the url as query params
     this.router.navigate([], {
       relativeTo: this.route,
@@ -170,18 +177,27 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
   }
 
   // save the advanced form search in the url
-  private saveAdvancedSearchToURL(advancedSearch: FlAdvancedSearchObject): void {
+  // store the last search timestamp in state
+  private generateSearchTimestamp(): string {
+    // save the search timestamp to prevent call on router
+    this.lastSearchTimestamp = new Date().getTime().toString();
+
+    return this.lastSearchTimestamp;
+  }
+
+  // save the advanced search in URL
+  private saveAdvancedSearchInUrl(advancedSearch: FlAdvancedSearchObject, timestamp: string): void {
+    // convert object to class and to plain json again to trigger transforms
     const convertedFilters = ClCoreJsonConvert.classToPlain(advancedSearch.filtersCriteria, this.config.advancedFormClass);
     const searchString: string = FlSearchPageUrlHelper.advancedSearchToString({filtersCriteria: convertedFilters});
+
     // limit length to avoid URL problem
     if (searchString.length < 1700) {
-      // set skip to 1 to avoid double search call with route subscription
-      this.queryParamSkip = 1;
-
+      const searchUrl = FlSearchPageUrlHelper.buildSearchUrlObject('advanced', searchString, timestamp);
       // save the criteria list in the url as query params
       this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: FlSearchPageUrlHelper.getSearchPageQueryParams('advanced', searchString),
+        queryParams: searchUrl,
       });
     }
   }

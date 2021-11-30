@@ -88,6 +88,16 @@
   text-transform: uppercase;
 }
 
+// set the border color of the stroked = to color (not grey)
+.mat-stroked-button:not(.mat-button-disabled) {
+  border-color: currentColor;
+}
+
+// increase a bit, the width of stroked buttons
+.mat-stroked-button{
+  border-width: 2px !important;
+}
+
 .g-button-medium {
   font-size: 1.3rem !important;
 }
@@ -106,7 +116,7 @@
   font-size: 0.8rem !important;
   padding-left: 0.5em !important;
   padding-right: 0.5em !important;
-  line-height: 2.5em !important;
+  line-height: 2.0em !important;
 }
 
 

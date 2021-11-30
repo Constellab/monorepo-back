@@ -1,4 +1,3 @@
-import {Params} from '@angular/router';
 import {ClHelpService} from '@monorepo/core-lib';
 
 /**
@@ -8,7 +7,14 @@ export interface FlAdvancedSearchObject {
   filtersCriteria: Record<string, any>;
 }
 
-
+/**
+ * Object stored in the url to save the search
+ */
+export interface FlSearchUrlObject {
+  mode: string;
+  search: string;
+  timestamp: string;
+}
 
 export class FlSearchPageUrlHelper {
 
@@ -16,9 +22,10 @@ export class FlSearchPageUrlHelper {
    * Method to convert search to query param for search page
    * @param mode search mode
    * @param search search criteria
+   * @param timestamp of the search
    */
-  public static getSearchPageQueryParams(mode: string, search: string): Params {
-    return {mode: mode, search: search};
+  public static buildSearchUrlObject(mode: string, search: string, timestamp: string): FlSearchUrlObject {
+    return {mode: mode, search: search, timestamp: timestamp};
   }
 
   /**

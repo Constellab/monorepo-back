@@ -10,7 +10,7 @@ import {Observable, of} from 'rxjs';
 import {BioxResource, BioxResourceDatasource} from '../model/entities/resource/biox-resource.entity';
 import {ClPageI} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
-import {BioxLabTypeEntity, BioxLabTypeEntityDatasource} from '../model/entities/lab-type/biox-lab-type.entity';
+import {BioxLabTypeEntity} from '../model/entities/lab-type/biox-lab-type.entity';
 import {
   bioxGroupResourceViewSpecsByType,
   BioxResourceView,
@@ -68,7 +68,7 @@ export class BioxResourceService implements FlSearchService<BioxResource> {
       sortsCriteria: null
     };
     return this.apiService.post(`${this.route}/advanced-search`, data, BioxResource, {
-      page: page, pageSize:pageSize, resultIsPaginated: true
+      page: page, pageSize: pageSize, resultIsPaginated: true
     });
   }
 
@@ -76,16 +76,10 @@ export class BioxResourceService implements FlSearchService<BioxResource> {
 
 
   // get the list of resource types
-  public getResourceTypes(page: number, pageSize: number): Observable<ClPageI<BioxLabTypeEntity>> {
-    return this.apiService.get(this.resourceTypeRoute, BioxLabTypeEntity,
-      {resultIsPaginated: true, page: page, pageSize: pageSize});
+  public getResourceTypes(): Observable<BioxLabTypeEntity[]> {
+    return this.apiService.get(this.resourceTypeRoute, BioxLabTypeEntity);
   }
 
-  public getResourceTypesDatasource(): BioxLabTypeEntityDatasource {
-    return new FlEntityPaginatedDatasource(
-      (page: number, pageSize: number) => this.getResourceTypes(page, pageSize),
-      20, true);
-  }
 
   //////////////////////////////////////// RESOURCE VIEWS  ///////////////////////////////////////
 

@@ -2,6 +2,7 @@
 export * from './datasource/public-api';
 
 // Search
+export * from './search/fl-saved-search.class';
 export * from './search/fl-search.class';
 export * from './search/fl-search.state';
 export * from './search/fl-search-converter.class';

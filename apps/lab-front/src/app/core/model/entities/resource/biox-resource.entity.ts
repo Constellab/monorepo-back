@@ -1,5 +1,5 @@
 import {LabBaseEntity, LabEntity} from '../../global/lab-entity.entity';
-import {FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
+import {FlDatasourcePaginated, FlFileHelper} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {BioxTag} from '../biox-tag.entity';
 
@@ -68,4 +68,4 @@ export class BioxResource extends LabBaseEntity {
 }
 
 
-export type BioxResourceDatasource = FlEntityPaginatedDatasource<BioxResource>
+export type BioxResourceDatasource = FlDatasourcePaginated<BioxResource>
