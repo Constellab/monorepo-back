@@ -1,5 +1,6 @@
 import {FlChartDataContainer} from './fl-chart-data.class';
 import {ClHelpService} from '@monorepo/core-lib';
+import {FlLegend} from '../legend/fl-chart-legend-multi-series.class';
 
 /**
  * Key to distingue a serie form another
@@ -11,7 +12,7 @@ export interface FlChartDataWithSerie<T> {
 }
 
 
-export class FlChartSerie<Data> implements FlChartDataContainer<Data> {
+export class FlChartSerie<Data> implements FlChartDataContainer<Data>, FlLegend {
 
   private static key: number = 0;
 
@@ -54,7 +55,7 @@ export class FlChartSerie<Data> implements FlChartDataContainer<Data> {
   }
 
   public addData(data: Data | Data[]): void {
-    const dataArray = ClHelpService.convertObjectOrArrayToArray(data)
-    this.data.push(...dataArray)
+    const dataArray = ClHelpService.convertObjectOrArrayToArray(data);
+    this.data.push(...dataArray);
   }
 }

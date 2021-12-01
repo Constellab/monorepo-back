@@ -25,7 +25,7 @@ import {FlChartRendererHeatMap} from '../renderer/fl-chart-renderer-heat-map.plo
 import {FlChart3dDatum} from '../model/data/fl-chart-data.class';
 import {FlChartConfig} from '../model/fl-chart-config.class';
 import {FlChartLegendHeatMap} from '../model/legend/fl-chart-legend-heat-map.class';
-import {FlChartLegendMultiSeries} from '../model/legend/fl-chart-legend-multi-series.class';
+import {FlChartLegendMultiSeries, FlLegend} from '../model/legend/fl-chart-legend-multi-series.class';
 import {FlChartRendererStackedBarPlot} from '../renderer/fl-chart-renderer-stacked-bar.plot';
 import {FlChartBoxPlotData} from '../model/data/fl-chart-box-plot-data.class';
 import {FlChartRendererVennDiagram} from '../renderer/fl-chart-renderer-venn-diagram.plot';
@@ -164,7 +164,7 @@ export class FlChartFactory {
     return {
       chartContainer: chartContainer,
       legend: new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
-        dataContainer, seriesColorScale),
+        dataContainer.series, seriesColorScale),
       zoomEnabled: true
     };
   }
@@ -215,7 +215,7 @@ export class FlChartFactory {
     return {
       chartContainer: chartContainer,
       legend: new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
-        dataContainer, seriesColorScale),
+        dataContainer.series, seriesColorScale),
       zoomEnabled: true
     };
   }
@@ -256,7 +256,7 @@ export class FlChartFactory {
     return {
       chartContainer: chartContainer,
       legend: new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
-        dataContainer, colorScale),
+        dataContainer.series, colorScale),
       zoomEnabled: true
     };
   }
@@ -323,8 +323,13 @@ export class FlChartFactory {
       .addRenderer(new FlChartRendererVennDiagram(colorScale))
       .initData(dataContainer);
 
+    // create the legend object where key = name = groupName
+    const legends: FlLegend[] = dataContainer.groupNames.map(groupName => ({name: groupName, key: groupName}));
+
     return {
       chartContainer: chartContainer,
+      legend: new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
+        legends, colorScale),
       zoomEnabled: false
     };
   }
