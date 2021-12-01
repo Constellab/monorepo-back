@@ -17,6 +17,7 @@ export enum FlChartType {
   STACKED_PLOT = 'STACKED_PLOT',
   BOX_PLOT = 'BOX_PLOT',
   HEAT_MAP = 'HEAT_MAP',
+  VENN_DIAGRAM = 'VENN_DIAGRAM'
 }
 
 export interface FlChartTypeSelectOption {

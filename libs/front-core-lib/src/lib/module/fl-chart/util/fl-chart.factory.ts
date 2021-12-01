@@ -1,6 +1,6 @@
 import {FlChartSvg} from '../model/drawer/fl-chart-svg.class';
 import {FlChartType} from '../model/fl-chart.class';
-import {FlChartContainer2d} from '../model/drawer/fl-chart-container.class';
+import {FlChartContainer2Axis, FlChartContainerNoAxis} from '../model/drawer/fl-chart-container.class';
 import {
   FlChartScale,
   FlChartScaleBand,
@@ -14,43 +14,46 @@ import {
   FlChartScaleColorLinear,
   FlChartScaleColorMulti
 } from '../model/scale/fl-chart-scale-color.class';
-import {FlChartRendererLine} from '../renderer/fl-chart-renderer.line';
+import {FlChartRendererLine} from '../renderer/fl-chart-renderer-line.plot';
 import {FlChartRendererBarPlot} from '../renderer/fl-chart-renderer-bar.plot';
 import {FlChart2dBrush, FlChart2dBrushX} from '../model/drawer/fl-chart-brush.class';
 import {FlChartRendererBoxPlot} from '../renderer/fl-chart-renderer-box.plot';
 import {FlChart2dMultiSerie, FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
-import {FlChart2dRenderer} from '../renderer/fl-chart-2d-renderer.class';
+import {FlChart2AxisRenderer} from '../renderer/fl-chart-renderer.class';
 import {FlChartDomain} from '../model/fl-chart-domain.class';
-import {FlChartRendererHeatMap} from '../renderer/fl-chart-renderer-heat.map';
+import {FlChartRendererHeatMap} from '../renderer/fl-chart-renderer-heat-map.plot';
 import {FlChart3dDatum} from '../model/data/fl-chart-data.class';
 import {FlChartConfig} from '../model/fl-chart-config.class';
 import {FlChartLegendHeatMap} from '../model/legend/fl-chart-legend-heat-map.class';
 import {FlChartLegendMultiSeries} from '../model/legend/fl-chart-legend-multi-series.class';
 import {FlChartRendererStackedBarPlot} from '../renderer/fl-chart-renderer-stacked-bar.plot';
 import {FlChartBoxPlotData} from '../model/data/fl-chart-box-plot-data.class';
+import {FlChartRendererVennDiagram} from '../renderer/fl-chart-renderer-venn-diagram.plot';
+import {FlChartVennData} from '../model/data/fl-chart-venn-data.class';
 
 export class FlChartFactory {
 
 
-  public static getChartConfig(chartSVG: FlChartSvg, data: FlChartMultiSerie<any>,
-                               chartType: FlChartType, seriesColorScale: FlChartScaleColor)
+  public static getChartConfig(chartSVG: FlChartSvg, data: any, chartType: FlChartType)
     : FlChartConfig {
 
     switch (chartType) {
       case FlChartType.LINE:
-        return this.getLineConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
+        return this.getLineConfig(chartSVG, data);
       case FlChartType.SCATTER_PLOT:
-        return this.getScatterPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
+        return this.getScatterPlotConfig(chartSVG, data);
       case FlChartType.BAR_PLOT:
-        return this.getBarPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
+        return this.getBarPlotConfig(chartSVG, data);
       case FlChartType.HISTOGRAM:
-        return this.getHistogramPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
+        return this.getHistogramPlotConfig(chartSVG, data);
       case FlChartType.STACKED_PLOT:
-        return this.getStackedBarPlotConfig(chartSVG, data as FlChart2dMultiSerie<any>, seriesColorScale);
+        return this.getStackedBarPlotConfig(chartSVG, data);
       case FlChartType.BOX_PLOT:
-        return this.getBoxPlotConfig(chartSVG, data, seriesColorScale);
+        return this.getBoxPlotConfig(chartSVG, data);
       case FlChartType.HEAT_MAP:
-        return this.getHeatMapConfig(chartSVG, data as FlChart2dMultiSerie<any>);
+        return this.getHeatMapConfig(chartSVG, data);
+      case FlChartType.VENN_DIAGRAM:
+        return this.getVennDiagramConfig(chartSVG, data);
     }
 
     throw new Error('Unsupported chart type ' + chartType);
@@ -60,9 +63,10 @@ export class FlChartFactory {
   /**
    * Build a Scatter Plot multi container
    */
-  private static getScatterPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                      seriesColorScale: FlChartScaleColor)
+  private static getScatterPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>)
     : FlChartConfig {
+
+    const seriesColorScale = FlChartFactory.getMultiSeriesColorScale(dataContainer);
 
     const renderer = new FlChartRendererScatterPlot(seriesColorScale);
 
@@ -72,9 +76,10 @@ export class FlChartFactory {
   /**
    * Build a Line multi container
    */
-  private static getLineConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                               seriesColorScale: FlChartScaleColor)
+  private static getLineConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>)
     : FlChartConfig {
+    const seriesColorScale = FlChartFactory.getMultiSeriesColorScale(dataContainer);
+
     const renderer = new FlChartRendererLine(seriesColorScale);
 
     // also use a scatter plot renderer to show point on the line
@@ -84,8 +89,10 @@ export class FlChartFactory {
     return this.buildLinear2dMultiContainer(chartSVG, dataContainer, [renderer, scatterPlot], seriesColorScale);
   }
 
-  private static getBarPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                  seriesColorScale: FlChartScaleColor): FlChartConfig {
+  private static getBarPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>): FlChartConfig {
+
+    const seriesColorScale = FlChartFactory.getMultiSeriesColorScale(dataContainer);
+
     return this.getGenericBarPlotConfig(chartSVG, dataContainer,
       [new FlChartRendererBarPlot(seriesColorScale)],
       dataContainer.getDomainYLinear(0, 0),
@@ -93,8 +100,10 @@ export class FlChartFactory {
       FlChartAxisBand.tickCharacterWidth * 3);
   }
 
-  private static getHistogramPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                        seriesColorScale: FlChartScaleColor): FlChartConfig {
+  private static getHistogramPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>): FlChartConfig {
+
+    const seriesColorScale = FlChartFactory.getMultiSeriesColorScale(dataContainer);
+
     return this.getGenericBarPlotConfig(chartSVG, dataContainer,
       [new FlChartRendererBarPlot(seriesColorScale)],
       dataContainer.getDomainYLinear(0, 0),
@@ -102,8 +111,10 @@ export class FlChartFactory {
       50);
   }
 
-  private static getStackedBarPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                         seriesColorScale: FlChartScaleColor): FlChartConfig {
+  private static getStackedBarPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>): FlChartConfig {
+
+    const seriesColorScale = FlChartFactory.getMultiSeriesColorScale(dataContainer);
+
     return this.getGenericBarPlotConfig(chartSVG, dataContainer,
       [new FlChartRendererStackedBarPlot(seriesColorScale)],
       dataContainer.getDomainYStacked(0, 0),
@@ -116,12 +127,12 @@ export class FlChartFactory {
    * Build a Bar plot multi container
    */
   private static getGenericBarPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                         renderers: FlChart2dRenderer<FlChart2dMultiSerie<any>>[],
+                                         renderers: FlChart2AxisRenderer<FlChart2dMultiSerie<any>>[],
                                          yDomain: number[],
                                          seriesColorScale: FlChartScaleColor,
                                          xTickSize?: number): FlChartConfig {
 
-    const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
+    const chartContainer: FlChartContainer2Axis<FlChart2dMultiSerie<any>> = this.getChartContainer2Axis(chartSVG);
 
     // build the x axis and scale based on ScaleBand
     const xScale: FlChartScaleBand = new FlChartScaleBand()
@@ -162,11 +173,10 @@ export class FlChartFactory {
   /**
    * Build a Box plot multi container
    */
-  private static getBoxPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChartMultiSerie<FlChartBoxPlotData>,
-                                  seriesColorScale: FlChartScaleColor)
+  private static getBoxPlotConfig(chartSVG: FlChartSvg, dataContainer: FlChartMultiSerie<FlChartBoxPlotData>)
     : FlChartConfig {
 
-    const chartContainer: FlChartContainer2d<FlChartMultiSerie<any>> = this.getChartContainer2d(chartSVG);
+    const chartContainer: FlChartContainer2Axis<FlChartMultiSerie<any>> = this.getChartContainer2Axis(chartSVG);
 
     // build the x axis and scale based on ScaleBand
     // the x domain is an array of the number of series with index of the serie
@@ -194,6 +204,8 @@ export class FlChartFactory {
     // Activate brush only on X axis before the data init so the brush doesn't prevent hover events
     new FlChart2dBrushX(chartContainer);
 
+    const seriesColorScale = FlChartFactory.getMultiSeriesColorScale(dataContainer);
+
     chartContainer
       .initXAxis(xAxis)
       .initAxisY(yAxis)
@@ -212,11 +224,11 @@ export class FlChartFactory {
    * Build a linear multi chart container such as ScatterPlot Multi of Line Multi
    */
   private static buildLinear2dMultiContainer(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<any>,
-                                             renderers: FlChart2dRenderer<FlChart2dMultiSerie<any>>[],
-                                             seriesColorScale: FlChartScaleColor,
+                                             renderers: FlChart2AxisRenderer<FlChart2dMultiSerie<any>>[],
+                                             colorScale: FlChartScaleColor,
                                              extendDomain: number = 0):
     FlChartConfig {
-    const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<any>> = this.getChartContainer2d(chartSVG);
+    const chartContainer: FlChartContainer2Axis<FlChart2dMultiSerie<any>> = this.getChartContainer2Axis(chartSVG);
 
     // Build X axis
     const xScale: FlChartScaleLinear = new FlChartScaleNumber()
@@ -244,7 +256,7 @@ export class FlChartFactory {
     return {
       chartContainer: chartContainer,
       legend: new FlChartLegendMultiSeries(chartSVG.legendContainer, chartSVG.width, chartSVG.height,
-        dataContainer, seriesColorScale),
+        dataContainer, colorScale),
       zoomEnabled: true
     };
   }
@@ -255,7 +267,7 @@ export class FlChartFactory {
   private static getHeatMapConfig(chartSVG: FlChartSvg, dataContainer: FlChart2dMultiSerie<FlChart3dDatum>):
     FlChartConfig {
 
-    const chartContainer: FlChartContainer2d<FlChart2dMultiSerie<FlChart3dDatum>> = this.getChartContainer2d(chartSVG);
+    const chartContainer: FlChartContainer2Axis<FlChart2dMultiSerie<FlChart3dDatum>> = this.getChartContainer2Axis(chartSVG);
 
     // Build X axis
     const xScale: FlChartScaleBand = new FlChartScaleBand()
@@ -297,15 +309,39 @@ export class FlChartFactory {
     };
   }
 
+  /**
+   * Build a venn diagram container
+   */
+  private static getVennDiagramConfig(chartSVG: FlChartSvg, dataContainer: FlChartVennData):
+    FlChartConfig {
 
-  private static getChartContainer2d(chartSVG: FlChartSvg): FlChartContainer2d<any> {
-    return new FlChartContainer2d(chartSVG.chartContainer, chartSVG.chartContainerWidth, chartSVG.chartContainerHeight);
+    const chartContainer: FlChartContainerNoAxis<FlChartVennData> = this.getChartContainerNoAxis(chartSVG);
+
+    const colorScale: FlChartScaleColor = new FlChartScaleColorMulti(dataContainer.groupNames);
+
+    chartContainer
+      .addRenderer(new FlChartRendererVennDiagram(colorScale))
+      .initData(dataContainer);
+
+    return {
+      chartContainer: chartContainer,
+      zoomEnabled: false
+    };
+  }
+
+
+  private static getChartContainer2Axis(chartSVG: FlChartSvg): FlChartContainer2Axis<any> {
+    return new FlChartContainer2Axis(chartSVG.chartContainer, chartSVG.chartContainerWidth, chartSVG.chartContainerHeight);
+  }
+
+  private static getChartContainerNoAxis(chartSVG: FlChartSvg): FlChartContainerNoAxis<any> {
+    return new FlChartContainerNoAxis<any>(chartSVG.chartContainer, chartSVG.chartContainerWidth, chartSVG.chartContainerHeight);
   }
 
   /**
    * Build a basic color scale for series based on data
    */
-  public static getSeriesColorScale(dataContainer: FlChartMultiSerie<any>): FlChartScaleColorMulti {
+  public static getMultiSeriesColorScale(dataContainer: FlChartMultiSerie<any>): FlChartScaleColorMulti {
     return new FlChartScaleColorMulti(dataContainer.series.map(d => d.key));
   }
 }

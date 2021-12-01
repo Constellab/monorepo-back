@@ -1,6 +1,6 @@
 import {BrushBehavior} from 'd3-brush';
 import {Selection} from 'd3-selection';
-import {FlChartContainer2d} from './fl-chart-container.class';
+import {FlChartContainer2Axis} from './fl-chart-container.class';
 import {brush, brushX, brushY} from 'd3';
 
 
@@ -8,12 +8,12 @@ export abstract class FlChartBrush {
 
   protected brush: BrushBehavior<any>;
 
-  protected chart: FlChartContainer2d<any>;
+  protected chart: FlChartContainer2Axis<any>;
 
   public brushContainer: Selection<any, any, null, null>;
 
   protected constructor(brush: BrushBehavior<any>,
-                        chart: FlChartContainer2d<any>) {
+                        chart: FlChartContainer2Axis<any>) {
     this.brush = brush;
     this.chart = chart;
     this.initBrush();
@@ -72,7 +72,7 @@ export abstract class FlChartBrush {
 
 export class FlChart2dBrush extends FlChartBrush {
 
-  constructor(chart: FlChartContainer2d<any>) {
+  constructor(chart: FlChartContainer2Axis<any>) {
     super(brush(), chart);
   }
 
@@ -88,7 +88,7 @@ export class FlChart2dBrush extends FlChartBrush {
 
 export class FlChart2dBrushX extends FlChartBrush {
 
-  constructor(chart: FlChartContainer2d<any>) {
+  constructor(chart: FlChartContainer2Axis<any>) {
     super(brushX(), chart);
   }
 
@@ -104,7 +104,7 @@ export class FlChart2dBrushX extends FlChartBrush {
 
 export class FlChart2dBrushY extends FlChartBrush {
 
-  constructor(chart: FlChartContainer2d<any>) {
+  constructor(chart: FlChartContainer2Axis<any>) {
     super(brushY(), chart);
   }
 

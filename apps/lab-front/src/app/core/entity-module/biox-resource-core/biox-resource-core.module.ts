@@ -26,6 +26,7 @@ import { BioxResourceOriginOptionsComponent } from './component/biox-resource-or
 import { BioxSelectResourceDialogComponent } from './component/biox-select-resource-dialog/biox-select-resource-dialog.component';
 import { BioxResourceCardComponent } from './component/biox-resource-card/biox-resource-card.component';
 import {UploadFsNodeDialogComponent} from './component/upload-fs-node-dialog/upload-fs-node-dialog.component';
+import { BioxResourceVennDiagramComponent } from './component/biox-resource-venn-diagram/biox-resource-venn-diagram.component';
 
 
 @NgModule({
@@ -53,6 +54,7 @@ import {UploadFsNodeDialogComponent} from './component/upload-fs-node-dialog/upl
     BioxSelectResourceDialogComponent,
     BioxResourceCardComponent,
     UploadFsNodeDialogComponent,
+    BioxResourceVennDiagramComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
@@ -76,6 +78,7 @@ import {UploadFsNodeDialogComponent} from './component/upload-fs-node-dialog/upl
     BioxResourceOriginOptionsComponent,
     BioxSelectResourceDialogComponent,
     BioxResourceCardComponent,
+    BioxResourceVennDiagramComponent,
   ],
   imports: [
     CommonModule,

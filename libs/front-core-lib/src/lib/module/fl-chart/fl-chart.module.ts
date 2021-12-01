@@ -23,6 +23,7 @@ import {FlChartBinDataPortalComponent} from './component/fl-chart-bin-data-porta
 import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
 import {MatDividerModule} from '@angular/material/divider';
 import {FlChartHeatMapDataPortalComponent} from './component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
+import { FlChartVennDataPortalComponent } from './component/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
 
 /**
  * Main module exporting all the chart modules
@@ -41,6 +42,8 @@ import {FlChartHeatMapDataPortalComponent} from './component/fl-chart-heat-map-d
 
     // Pipe
     FlChartScalePipe,
+
+    FlChartVennDataPortalComponent,
 
   ],
   exports: [

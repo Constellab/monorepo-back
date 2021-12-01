@@ -1,4 +1,4 @@
-import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
+import {FlChart2AxisRenderer, FlChart2AxisRendererInput} from './fl-chart-renderer.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
 import {select, Series, SeriesPoint, Stack, stack} from 'd3';
@@ -15,7 +15,7 @@ import {FlD3SelectionSimple} from '../model/fl-d3.class';
 /**
  * Renderer for stack stack bar plot or histogram
  */
-export class FlChartRendererStackedBarPlot implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererStackedBarPlot implements FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly barGroupClassName: string = 'bar-group';
   private readonly barClassName: string = 'bar';
@@ -25,11 +25,11 @@ export class FlChartRendererStackedBarPlot implements FlChart2dRenderer<FlChart2
   constructor(public colorScale: FlChartScaleColor) {
   }
 
-  initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  initData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     this.refreshData(input);
   }
 
-  refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  refreshData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     const stackedData = this.getStackedData(input.data);
 
     // Show the bars
@@ -53,7 +53,7 @@ export class FlChartRendererStackedBarPlot implements FlChart2dRenderer<FlChart2
         this.drawBars(nodes[index] as any, input));
   }
 
-  private drawBars(group: SVGElement, input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  private drawBars(group: SVGElement, input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     const selection: FlD3SelectionSimple<SeriesPoint<FlChartDataWithSerie<FlChart2dDatum>>> = select(group);
 
     selection

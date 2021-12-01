@@ -26,7 +26,11 @@ const flChartI18nFr: FlLangTranslation = {
     HEAT_MAP: 'Heat map',
     number_of_data: 'Nb de données',
     interval: 'Interval',
-    value: 'Valeur'
+    value: 'Valeur',
+    venn_groups: 'Groupe(s)',
+    venn_nb_data: 'Nb de données',
+    venn_data: 'Donnée(s)',
+    venn_no_data: 'Pas de données'
   }
 };
 
@@ -51,7 +55,11 @@ const flChartI18nEn: FlLangTranslation = {
     HEAT_MAP: 'Heat map',
     number_of_data: 'Nb of data',
     interval: 'Interval',
-    value: 'Value'
+    value: 'Value',
+    venn_groups: 'Group(s)',
+    venn_nb_data: 'Nb of data',
+    venn_data: 'Data',
+    venn_no_data: 'No data'
   }
 };
 

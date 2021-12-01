@@ -1,18 +1,18 @@
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
-import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
+import {FlChart2AxisRenderer, FlChart2AxisRendererInput} from './fl-chart-renderer.class';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
-export class FlChartRendererScatterPlot implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererScatterPlot implements FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
 
   constructor(public colorScale: FlChartScaleColor) {
   }
 
-  initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  initData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     // Add dots
     input.container
       // generate groups for the series
@@ -34,7 +34,7 @@ export class FlChartRendererScatterPlot implements FlChart2dRenderer<FlChart2dMu
       .on('mouseout', () => this.onMouseOut());
   }
 
-  refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  refreshData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     input.container
       .selectAll(`circle`)
       .transition()

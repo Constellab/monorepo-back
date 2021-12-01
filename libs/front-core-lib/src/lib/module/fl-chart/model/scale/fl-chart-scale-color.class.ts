@@ -12,7 +12,7 @@ export interface FlChartScaleColor extends FlChartScaleI {
    * return a color base on a value
    * @param value
    */
-  scale(value: number): string;
+  scale(value: any): string;
 }
 
 /**
@@ -22,7 +22,7 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
 
   public readonly d3Scale: ScaleOrdinal<string, string>;
 
-  constructor(domain: number[]) {
+  constructor(domain: (number | string)[]) {
     this.d3Scale = this.initScale();
     this.d3Scale.domain(domain.map(d => d.toString()));
   }
@@ -32,7 +32,7 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
     return scaleOrdinal<string>(FlColorHelper.getColorList());
   }
 
-  public scale(value: number): string {
+  public scale(value: number | string): string {
     return this.d3Scale(value.toString());
   }
 }

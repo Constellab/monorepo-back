@@ -16,7 +16,8 @@ export type BioxResourceViewType =
   | 'stacked-bar-plot-view'
   | 'histogram-view'
   | 'box-plot-view'
-  | 'multi-view';
+  | 'multi-view'
+  | 'venn-diagram-view';
 
 // Mode to where display the view
 export type BioxResourceViewDisplayMode = 'fullScreen' | 'portal';
@@ -210,7 +211,23 @@ export interface BioxResourceViewMultiData {
   }[];
 }
 
+// VENN DIAGRAM
+export class BioxResourceVennDiagram extends BioxResourceViewBase {
+  type: 'venn-diagram-view';
+  data: BioxResourceVennDiagramData;
+}
 
+export class BioxResourceVennDiagramData {
+  label: string;
+  total_number_of_groups: number; // number of group for the venn diagram
+  group_names: string[];
+  sections: {
+    group_names: string[]; // column ensemble
+    data: any[]; // list of data that are in all columns
+  }[];
+}
+
+//////////////////////////// TYPE THAT GROUP ALL VIEW TYPES /////////////////////////////
 export type BioxResourceView =
   BioxResourceViewJson
   | BioxResourceViewMulti
@@ -218,7 +235,8 @@ export type BioxResourceView =
   | BioxResourceViewHistogram
   | BioxResourceViewBasicPlot2d
   | BioxResourceViewImage
-  | BioxResourceViewNetwork;
+  | BioxResourceViewNetwork
+  | BioxResourceVennDiagram;
 
 // Information of the view type
 export interface BioxResourceViewTypeInfo {
@@ -229,6 +247,9 @@ export interface BioxResourceViewTypeInfo {
   // if true the default display mode can be modified
   forceDefaultDisplayMode: boolean;
 }
+
+
+//////////////////////////// VIEW STATIC INFO FOR EACH TYPE /////////////////////////////
 
 // Record of view type, icon
 export const constBioxResourceViewTypeInfos: Record<BioxResourceViewType, BioxResourceViewTypeInfo> = {
@@ -308,6 +329,12 @@ export const constBioxResourceViewTypeInfos: Record<BioxResourceViewType, BioxRe
     icon: 'multiline_chart',
     text: 'biox.resource_view_multi_views',
     defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: false
+  },
+  'venn-diagram-view': {
+    icon: 'join_full',
+    text: 'biox.resource_view_venn_diagram',
+    defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false
   },
 };

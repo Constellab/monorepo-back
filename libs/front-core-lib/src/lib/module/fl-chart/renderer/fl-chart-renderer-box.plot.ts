@@ -1,4 +1,4 @@
-import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
+import {FlChart2AxisRenderer, FlChart2AxisRendererInput} from './fl-chart-renderer.class';
 import {select} from 'd3';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartScale, FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
@@ -15,7 +15,7 @@ import {FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
 
-export class FlChartRendererBoxPlot implements FlChart2dRenderer<FlChartMultiSerie<FlChartBoxPlotData>> {
+export class FlChartRendererBoxPlot implements FlChart2AxisRenderer<FlChartMultiSerie<FlChartBoxPlotData>> {
 
   private readonly groupClassName: string = 'group';
   private readonly boxPlotGroupClassName: string = 'group-box-plot';
@@ -29,14 +29,14 @@ export class FlChartRendererBoxPlot implements FlChart2dRenderer<FlChartMultiSer
   constructor(public colorScale: FlChartScaleColor) {
   }
 
-  initData(input: FlChart2dRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
+  initData(input: FlChart2AxisRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
     this.initTheme();
 
     this.refreshData(input);
   }
 
 
-  refreshData(input: FlChart2dRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
+  refreshData(input: FlChart2AxisRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
     const data: FlChartDataWithSerie<FlChartBoxPlotData>[][] = input.data.invert();
 
     const bandWidth: number = (input.xScale as FlChartScaleBand).bandwidth();
@@ -56,7 +56,7 @@ export class FlChartRendererBoxPlot implements FlChart2dRenderer<FlChartMultiSer
 
   //draw the groups for each box plot
   private drawBoxPlotGroup(group: SVGElement, groupData: FlChartDataWithSerie<FlChartBoxPlotData>[],
-                           parentGroupWidth: number, input: FlChart2dRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
+                           parentGroupWidth: number, input: FlChart2AxisRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
 
     const groupWidth: number = parentGroupWidth / groupData.length;
     // Draw the main vertical line
@@ -74,7 +74,7 @@ export class FlChartRendererBoxPlot implements FlChart2dRenderer<FlChartMultiSer
 
   // draw on box plot in the group
   private drawBoxPlot(group: SVGElement, dataWithSerie: FlChartDataWithSerie<FlChartBoxPlotData>,
-                      groupWidth: number, input: FlChart2dRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
+                      groupWidth: number, input: FlChart2AxisRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
 
     if (dataWithSerie.data == null) {
       return;

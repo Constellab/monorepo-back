@@ -1,6 +1,6 @@
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
 import {line} from 'd3';
-import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
+import {FlChart2AxisRenderer, FlChart2AxisRendererInput} from './fl-chart-renderer.class';
 import {FlChartScale} from '../model/scale/fl-chart-scale.class';
 import {ValueFn} from 'd3-selection';
 import {FlChartSerie} from '../model/data/fl-chart-serie.class';
@@ -11,14 +11,14 @@ import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 /**
  * Class to manage line chart with multiple series
  */
-export class FlChartRendererLine implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererLine implements FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly serieClassName: string = 'serie';
 
   constructor(public colorScale: FlChartScaleColor) {
   }
 
-  initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  initData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     input.container
       .selectAll()
       .data(input.data.series)
@@ -32,7 +32,7 @@ export class FlChartRendererLine implements FlChart2dRenderer<FlChart2dMultiSeri
       );
   }
 
-  refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  refreshData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     input.container
       .selectAll(`.${this.serieClassName}`)
       .transition()

@@ -1,6 +1,9 @@
 import {Selection} from 'd3-selection';
-import {FlChart2dRenderer, FlChart2dRendererInput} from '../../renderer/fl-chart-2d-renderer.class';
-import {FlChartDataContainer} from '../data/fl-chart-data.class';
+import {
+  FlChart2AxisRenderer,
+  FlChart2AxisRendererInput, FlChartNoAxisRenderer,
+  FlChartNoAxisRendererInput
+} from '../../renderer/fl-chart-renderer.class';
 import {FlChartAxis} from './fl-chart-axis.class';
 import {ClHelpService} from '@monorepo/core-lib';
 
@@ -8,7 +11,7 @@ import {ClHelpService} from '@monorepo/core-lib';
  * Chart container, it can contains multiple renderer
  * to be able to show multi chart type in same container
  */
-export abstract class FlChartContainer<Data> {
+export abstract class FlChartContainer<Data, Renderer extends FlChartNoAxisRenderer<Data> = FlChartNoAxisRenderer<Data>> {
 
   public group: Selection<any, null, null, null>;
   public chartContainer: Selection<SVGElement, null, null, null>;
@@ -18,11 +21,11 @@ export abstract class FlChartContainer<Data> {
   protected readonly groupWidth: number;
   protected readonly groupHeight: number;
 
-  protected renderers: FlChart2dRenderer<Data>[];
+  protected renderers: Renderer[];
 
 
   // margin for the axis
-  private margin = {top: 10, right: 30, bottom: 30, left: 40};
+  protected margin = {top: 0, right: 0, bottom: 0, left: 0};
 
   constructor(parent: Selection<any, any, any, any>, width: number, height: number) {
     this.groupWidth = width;
@@ -38,8 +41,8 @@ export abstract class FlChartContainer<Data> {
     return this;
   }
 
-  public addRenderer(renderers: FlChart2dRenderer<Data> | FlChart2dRenderer<Data>[]): this {
-    const array: FlChart2dRenderer<Data>[] = ClHelpService.convertObjectOrArrayToArray(renderers);
+  public addRenderer(renderers: Renderer | Renderer[]): this {
+    const array: Renderer[] = ClHelpService.convertObjectOrArrayToArray(renderers);
     this.renderers.push(...array);
     return this;
   }
@@ -60,12 +63,11 @@ export abstract class FlChartContainer<Data> {
       .attr('width', this.chartWidth)
       .attr('height', this.chartHeight)
       .attr('x', 0)
-      .attr('y', 0);
+      .attr('y', 0)
+    ;
 
     return this;
   }
-
-
 
   public get chartWidth(): number {
     return this.groupWidth - this.margin.left - this.margin.right;
@@ -77,17 +79,18 @@ export abstract class FlChartContainer<Data> {
 }
 
 /**
- * Chart container for 2d chart with 2 axis
+ * Chart container with 2 axis
  */
-export class FlChartContainer2d<Data extends FlChartDataContainer<any>> extends FlChartContainer<Data> {
+export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2AxisRenderer<Data>> {
 
   public xAxis: FlChartAxis;
 
   public yAxis: FlChartAxis;
 
-
   public zoomTransitionDuration: number = 250;
 
+  // margin for the axis
+  protected margin = {top: 10, right: 30, bottom: 30, left: 40};
 
   public initXAxis(axis: FlChartAxis): this {
     this.xAxis = axis.setZoomDuration(this.zoomTransitionDuration)
@@ -114,7 +117,7 @@ export class FlChartContainer2d<Data extends FlChartDataContainer<any>> extends 
     this.renderers.forEach(renderer => renderer.refreshData(this.getRendererInput()));
   }
 
-  private getRendererInput(): FlChart2dRendererInput<Data> {
+  private getRendererInput(): FlChart2AxisRendererInput<Data> {
     return {
       container: this.chartContainer,
       data: this.dataContainer,
@@ -201,4 +204,23 @@ export class FlChartContainer2d<Data extends FlChartDataContainer<any>> extends 
   public getRangeY(): [number, number] {
     return [this.chartHeight, 0];
   }
+}
+
+/**
+ * Chart container with 0 axis
+ */
+export class FlChartContainerNoAxis<Data> extends FlChartContainer<Data, FlChartNoAxisRenderer<Data>> {
+  firstChartRendering(): void {
+    this.renderers.forEach(renderer => renderer.initData(this.getRendererInput()));
+  }
+
+  private getRendererInput(): FlChartNoAxisRendererInput<Data> {
+    return {
+      container: this.chartContainer,
+      data: this.dataContainer,
+      chartHeight: this.chartHeight,
+      chartWidth: this.chartWidth
+    };
+  }
+
 }

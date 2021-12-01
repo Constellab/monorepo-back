@@ -1,4 +1,13 @@
-import {Component, ComponentFactoryResolver, ComponentRef, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  ComponentRef,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
 import {
   BioxResourceView,
   BioxResourceViewType,
@@ -15,6 +24,7 @@ import {BioxResourceChart2dComponent} from '../biox-resource-chart-2d/biox-resou
 import {BioxResourceHistogramComponent} from '../biox-resource-histogram/biox-resource-histogram.component';
 import {BioxResourceBoxPlotComponent} from '../biox-resource-box-plot/biox-resource-box-plot.component';
 import {BioxResourceMultiViewComponent} from '../biox-resource-multi-view/biox-resource-multi-view.component';
+import {BioxResourceVennDiagramComponent} from '../biox-resource-venn-diagram/biox-resource-venn-diagram.component';
 
 export function bioxResourceViewGetComponentType(viewType: BioxResourceViewType): ComponentType<BioxResourceViewDirective> {
   switch (viewType) {
@@ -37,6 +47,8 @@ export function bioxResourceViewGetComponentType(viewType: BioxResourceViewType)
       return BioxResourceBoxPlotComponent;
     case 'multi-view':
       return BioxResourceMultiViewComponent;
+    case 'venn-diagram-view':
+      return BioxResourceVennDiagramComponent;
     default:
       console.error(`View of type ${viewType} not supported`);
       return null;

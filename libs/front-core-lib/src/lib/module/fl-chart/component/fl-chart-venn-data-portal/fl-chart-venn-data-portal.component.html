@@ -1,0 +1,12 @@
+<div class="section">{{'flChart.venn_groups' | translate}} : {{groupNames}}</div>
+<div class="section">{{'flChart.venn_nb_data' | translate}} : {{dataLength}}</div>
+
+<div class="section data" >
+  <ng-container *ngIf="dataLength > 0; else noData">
+    {{'flChart.venn_data' | translate }} : {{dataStr}}
+  </ng-container>
+  <ng-template #noData>
+    {{'flChart.venn_no_data' | translate }}
+  </ng-template>
+</div>
+

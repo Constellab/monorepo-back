@@ -1,4 +1,4 @@
-import {FlChart2dRenderer, FlChart2dRendererInput} from './fl-chart-2d-renderer.class';
+import {FlChart2AxisRenderer, FlChart2AxisRendererInput} from './fl-chart-renderer.class';
 import {select} from 'd3';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
@@ -20,21 +20,21 @@ import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 /**
  * Renderer for bar plot or histogram
  */
-export class FlChartRendererBarPlot implements FlChart2dRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererBarPlot implements FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly groupClassName: string = 'serie';
 
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
-  constructor(public colorScale: FlChartScaleColor) {
+  constructor(private colorScale: FlChartScaleColor) {
   }
 
-  initData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  initData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     this.refreshData(input);
   }
 
 
-  refreshData(input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  refreshData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
     const data: FlChartDataWithSerie<FlChart2dDatum>[][] = input.data.invert();
 
     input.container
@@ -52,7 +52,7 @@ export class FlChartRendererBarPlot implements FlChart2dRenderer<FlChart2dMultiS
   }
 
   private drawSerie(group: SVGElement, data: FlChartDataWithSerie<FlChart2dDatum>[],
-                    groupWidth: number, input: FlChart2dRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+                    groupWidth: number, input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
 
     const barWidth: number = groupWidth / data.length;
 

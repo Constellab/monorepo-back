@@ -58,6 +58,7 @@
     "resource_view_histogram": "Histogramme",
     "resource_view_box_plot": "Boîte à moustache",
     "resource_view_multi_views": "Vues multiple",
+    "resource_view_venn_diagram": "Diagramme de venn",
     "resource_view_display_mode": "Mode d'affichage",
     "resource_view_display_portal": "Popup",
     "resource_view_display_component": "Plein écran",
@@ -65,6 +66,5 @@
     "stop_experiment_confirmation": "Êtes-vous sûr de vouloir arrêter l'expérience ?",
     "experiment_stopped": "Expérience arrêtée",
     "advanced_configuration": "Configuration avancée"
-
   }
 }

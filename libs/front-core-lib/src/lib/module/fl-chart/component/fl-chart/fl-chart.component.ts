@@ -1,7 +1,6 @@
 import {Component, ElementRef, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import {FlThemeService} from '../../../../service/fl-theme.service';
 import {FlChartState} from '../../state/fl-chart.state';
-import {FlChartMultiSerie} from '../../model/data/fl-chart-multi-serie.class';
 import {FlChartType} from '../../model/fl-chart.class';
 import {FlMenuDynamic} from '../../../fl-menu-dynamic/model/fl-menu-dynamic.class';
 import {ClHelpService} from '@monorepo/core-lib';
@@ -20,7 +19,7 @@ import {FlMenuDynamicService} from '../../../fl-menu-dynamic/fl-menu-dynamic.ser
 })
 export class FlChartComponent implements OnInit {
 
-  @Input() data: FlChartMultiSerie<any>;
+  @Input() dataContainer: any;
 
   @Input() chartType: FlChartType;
 
@@ -62,7 +61,7 @@ export class FlChartComponent implements OnInit {
     this.renderer.setStyle(this.elementRef.nativeElement, 'width', width + 'px');
     this.renderer.setStyle(this.elementRef.nativeElement, 'height', height + 'px');
 
-    this.state.initData(this.data, this.chartType);
+    this.state.initData(this.dataContainer, this.chartType);
     this.state.initChart(width, height,
       this.elementRef.nativeElement);
   }

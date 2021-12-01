@@ -10,6 +10,7 @@ export * from './component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-
 export * from './component/fl-chart-portal/fl-chart-portal.component';
 export * from './component/fl-chart-serie-inline/fl-chart-serie-inline.component';
 export * from './component/fl-chart-type-select-options/fl-chart-type-select-options.component';
+export * from './component/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
 
 // Pipes
 export * from './pipe/fl-chart-scale.pipe';
@@ -32,6 +33,7 @@ export * from './model/data/fl-chart-data.class';
 export * from './model/data/fl-chart-data-bin.class';
 export * from './model/data/fl-chart-multi-serie.class';
 export * from './model/data/fl-chart-serie.class';
+export * from './model/data/fl-chart-venn-data.class';
 
 // Drawer
 export * from './model/drawer/fl-chart-brush.class';
@@ -57,10 +59,11 @@ export * from './model/fl-d3.class';
 export * from './util/fl-chart.factory';
 
 // Renderer
-export * from './renderer/fl-chart-2d-renderer.class';
+export * from './renderer/fl-chart-renderer.class';
 export * from './renderer/fl-chart-renderer-box.plot';
-export * from './renderer/fl-chart-renderer-heat.map';
+export * from './renderer/fl-chart-renderer-heat-map.plot';
 export * from './renderer/fl-chart-renderer-bar.plot';
-export * from './renderer/fl-chart-renderer.line';
+export * from './renderer/fl-chart-renderer-line.plot';
 export * from './renderer/fl-chart-renderer-scatter.plot';
-export * from './renderer/fl-chart-renderer-stacked-bar.plot'
+export * from './renderer/fl-chart-renderer-stacked-bar.plot';
+export * from './renderer/fl-chart-renderer-venn-diagram.plot';
