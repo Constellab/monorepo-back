@@ -17,7 +17,8 @@ export type BioxResourceViewType =
   | 'histogram-view'
   | 'box-plot-view'
   | 'multi-view'
-  | 'venn-diagram-view';
+  | 'venn-diagram-view'
+  | 'heatmap-view';
 
 // Mode to where display the view
 export type BioxResourceViewDisplayMode = 'fullScreen' | 'portal';
@@ -55,8 +56,6 @@ export class BioxResourceViewSpec {
   getName(): string {
     return this.humanName ?? this.methodName;
   }
-
-
 }
 
 /**
@@ -83,12 +82,12 @@ export class BioxResourceViewConfig {
 }
 
 
-export class BioxResourceViewBase {
+export interface BioxResourceViewBase {
   type: BioxResourceViewType;
   data: any;
 }
 
-export class BioxResourceViewJson extends BioxResourceViewBase {
+export interface BioxResourceViewJson extends BioxResourceViewBase {
   type: 'json-view';
   data: Record<string, any>;
 }
@@ -96,7 +95,7 @@ export class BioxResourceViewJson extends BioxResourceViewBase {
 // Spec name of the page on view text
 export const bioxResourceViewTextSpecPage: string = 'page';
 
-export class BioxResourceViewText extends BioxResourceViewBase {
+export interface BioxResourceViewText extends BioxResourceViewBase {
   type: 'text-view';
   data: {
     text: string
@@ -112,22 +111,22 @@ export class BioxResourceViewText extends BioxResourceViewBase {
   };
 }
 
-export class BioxResourceViewTable extends BioxResourceViewBase {
+export interface BioxResourceViewTable extends BioxResourceViewBase {
   type: 'table-view';
   data: ClCsvJson;
 }
 
-export class BioxResourceViewNetwork extends BioxResourceViewBase {
+export interface BioxResourceViewNetwork extends BioxResourceViewBase {
   type: 'network-view';
   data: any;
 }
 
-export class BioxResourceViewImage extends BioxResourceViewBase {
+export interface BioxResourceViewImage extends BioxResourceViewBase {
   type: 'image-view';
   data: any;
 }
 
-export class BioxResourceViewBasicPlot2d extends BioxResourceViewBase {
+export interface BioxResourceViewBasicPlot2d extends BioxResourceViewBase {
   type: 'scatter-plot-2d-view' | 'line-plot-2d-view' | 'bar-plot-view' | 'stacked-bar-plot-view';
   data: BioxResourceViewChart2dData;
 }
@@ -150,7 +149,7 @@ export interface BioxResourceViewChart2dSerie {
 }
 
 
-export class BioxResourceViewHistogram extends BioxResourceViewBase {
+export interface BioxResourceViewHistogram extends BioxResourceViewBase {
   type: 'histogram-view';
   data: BioxResourceViewHistogramData;
 }
@@ -170,7 +169,7 @@ export interface BioxResourceViewHistogramSerie {
 }
 
 
-export class BioxResourceViewBoxPlot extends BioxResourceViewBase {
+export interface BioxResourceViewBoxPlot extends BioxResourceViewBase {
   type: 'box-plot-view';
   data: BioxResourceViewBoxPlotData;
 }
@@ -197,7 +196,7 @@ export interface BioxResourceViewBoxPlotSerie {
   };
 }
 
-export class BioxResourceViewMulti extends BioxResourceViewBase {
+export interface BioxResourceViewMulti extends BioxResourceViewBase {
   type: 'multi-view';
   data: BioxResourceViewMultiData;
 }
@@ -212,12 +211,12 @@ export interface BioxResourceViewMultiData {
 }
 
 // VENN DIAGRAM
-export class BioxResourceVennDiagram extends BioxResourceViewBase {
+export interface BioxResourceVennDiagram extends BioxResourceViewBase {
   type: 'venn-diagram-view';
   data: BioxResourceVennDiagramData;
 }
 
-export class BioxResourceVennDiagramData {
+export interface BioxResourceVennDiagramData {
   label: string;
   total_number_of_groups: number; // number of group for the venn diagram
   group_names: string[];
@@ -225,6 +224,11 @@ export class BioxResourceVennDiagramData {
     group_names: string[]; // column ensemble
     data: any[]; // list of data that are in all columns
   }[];
+}
+
+export interface BioxResourceViewHeatMap extends BioxResourceViewBase {
+  type: 'heatmap-view';
+  data: ClCsvJson;
 }
 
 //////////////////////////// TYPE THAT GROUP ALL VIEW TYPES /////////////////////////////
@@ -236,7 +240,8 @@ export type BioxResourceView =
   | BioxResourceViewBasicPlot2d
   | BioxResourceViewImage
   | BioxResourceViewNetwork
-  | BioxResourceVennDiagram;
+  | BioxResourceVennDiagram
+  | BioxResourceViewHeatMap;
 
 // Information of the view type
 export interface BioxResourceViewTypeInfo {
@@ -334,6 +339,12 @@ export const constBioxResourceViewTypeInfos: Record<BioxResourceViewType, BioxRe
   'venn-diagram-view': {
     icon: 'join_full',
     text: 'biox.resource_view_venn_diagram',
+    defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
+  'heatmap-view': {
+    icon: 'multiline_chart',
+    text: 'biox.resource_view_heatmap',
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false
   },

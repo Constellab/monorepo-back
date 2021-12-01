@@ -14,7 +14,6 @@ import {BioxLabTypeEntity} from '../model/entities/lab-type/biox-lab-type.entity
 import {
   bioxGroupResourceViewSpecsByType,
   BioxResourceView,
-  BioxResourceViewBase,
   BioxResourceViewSpec,
   BioxResourceViewSpecsByType
 } from '../model/entities/resource/biox-resource-view.entity';
@@ -98,7 +97,7 @@ export class BioxResourceService implements FlSearchService<BioxResource> {
         delete config[key];
       }
     }
-    return this.apiService.post(`resource/${id}/views/${viewName}`, config, BioxResourceViewBase);
+    return this.apiService.post(`resource/${id}/views/${viewName}`, config);
   }
 
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
 import {BioxResourceViewHistogram} from '../../../../model/entities/resource/biox-resource-view.entity';
 import {FlChart2dMultiSerie, FlChartDataBin, FlChartSerie, FlChartType} from '@monorepo/front-core-lib';
@@ -11,7 +11,6 @@ import {FlChart2dMultiSerie, FlChartDataBin, FlChartSerie, FlChartType} from '@m
 export class BioxResourceHistogramComponent extends BioxResourceViewDirective<BioxResourceViewHistogram>
   implements OnInit {
 
-  @Input() view: BioxResourceViewHistogram;
 
   series: FlChart2dMultiSerie<FlChartDataBin>;
   chartType: FlChartType = FlChartType.HISTOGRAM;

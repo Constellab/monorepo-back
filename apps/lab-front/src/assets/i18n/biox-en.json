@@ -59,6 +59,7 @@
     "resource_view_box_plot": "Box plot",
     "resource_view_multi_views": "Multi views",
     "resource_view_venn_diagram": "Venn diagram",
+    "resource_view_heatmap": "Heatmap",
     "resource_view_display_mode": "Display mode",
     "resource_view_display_portal": "Dialog",
     "resource_view_display_component": "Full screen",

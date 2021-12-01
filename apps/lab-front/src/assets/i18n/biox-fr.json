@@ -59,6 +59,7 @@
     "resource_view_box_plot": "Boîte à moustache",
     "resource_view_multi_views": "Vues multiple",
     "resource_view_venn_diagram": "Diagramme de venn",
+    "resource_view_heatmap": "Heatmap",
     "resource_view_display_mode": "Mode d'affichage",
     "resource_view_display_portal": "Popup",
     "resource_view_display_component": "Plein écran",

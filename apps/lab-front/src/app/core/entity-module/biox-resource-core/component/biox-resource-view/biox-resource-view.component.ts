@@ -25,6 +25,7 @@ import {BioxResourceHistogramComponent} from '../biox-resource-histogram/biox-re
 import {BioxResourceBoxPlotComponent} from '../biox-resource-box-plot/biox-resource-box-plot.component';
 import {BioxResourceMultiViewComponent} from '../biox-resource-multi-view/biox-resource-multi-view.component';
 import {BioxResourceVennDiagramComponent} from '../biox-resource-venn-diagram/biox-resource-venn-diagram.component';
+import {BioxResourceHeatmapComponent} from '../biox-resource-heatmap/biox-resource-heatmap.component';
 
 export function bioxResourceViewGetComponentType(viewType: BioxResourceViewType): ComponentType<BioxResourceViewDirective> {
   switch (viewType) {
@@ -49,6 +50,8 @@ export function bioxResourceViewGetComponentType(viewType: BioxResourceViewType)
       return BioxResourceMultiViewComponent;
     case 'venn-diagram-view':
       return BioxResourceVennDiagramComponent;
+    case 'heatmap-view':
+      return BioxResourceHeatmapComponent;
     default:
       console.error(`View of type ${viewType} not supported`);
       return null;
