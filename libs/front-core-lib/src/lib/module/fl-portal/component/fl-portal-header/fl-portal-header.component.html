@@ -1,0 +1,17 @@
+<div fxLayout="row" fxLayoutAlign="space-between"
+     class="header" [ngClass]="{'draggable': enableDrag}"
+     cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
+     cdkDragBoundary="body" [cdkDragDisabled]="!enableDrag">
+  <!-- Use to center the title -->
+  <div class="fake-icon">
+  </div>
+  <div class="g-centered-forced">
+    <ng-content></ng-content>
+  </div>
+  <div>
+    <button mat-icon-button type="button" flPortalClose
+            tabindex="-1">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>

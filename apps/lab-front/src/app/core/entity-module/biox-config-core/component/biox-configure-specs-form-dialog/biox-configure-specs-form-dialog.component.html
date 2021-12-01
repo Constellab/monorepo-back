@@ -2,7 +2,7 @@
   {{'biox.configuration' | translate}}
 </fl-dialog-title>
 
-<mat-dialog-content>
+<mat-dialog-content class="content">
   <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
     <gen-biox-configure-specs-form [bioxConfigData]="bioxConfigData"
                                    [formGp]="formGp"></gen-biox-configure-specs-form>

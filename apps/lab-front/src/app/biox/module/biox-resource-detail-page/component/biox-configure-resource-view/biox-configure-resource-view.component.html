@@ -1,26 +1,28 @@
-<fl-dialog-title>
-  {{title}}
-</fl-dialog-title>
+<fl-portal-header [enableDrag]="true">
+  <h2>{{title}}</h2>
+</fl-portal-header>
 
-<mat-dialog-content>
+<div class="container g-scrollable-element" fxLayout="column">
+
   <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
     <gen-biox-configure-specs-form [bioxConfigData]="configs" [formGp]="formGp"></gen-biox-configure-specs-form>
 
     <div *ngIf="showDisplayModeControl" class="display-mode">
-      <label >{{'biox.resource_view_display_mode' | translate}}</label>
+      <label>{{'biox.resource_view_display_mode' | translate}}</label>
       <mat-radio-group formControlName="displayMode" color="primary">
-        <mat-radio-button value="fullScreen" class="display-mode-label">{{'biox.resource_view_display_component' | translate}}</mat-radio-button>
-        <mat-radio-button value="portal" class="display-mode-label">{{'biox.resource_view_display_portal' | translate}}</mat-radio-button>
+        <mat-radio-button value="fullScreen"
+                          class="display-mode-label">{{'biox.resource_view_display_component' | translate}}</mat-radio-button>
+        <mat-radio-button value="portal"
+                          class="display-mode-label">{{'biox.resource_view_display_portal' | translate}}</mat-radio-button>
       </mat-radio-group>
     </div>
   </form>
-</mat-dialog-content>
 
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" type="submit" form="config-form"
+            class="g-centered-forced">
+      {{'biox.show_view' | translate}}
+    </button>
+  </div>
 
-<div mat-dialog-actions>
-  <button mat-raised-button color="primary" type="submit" form="config-form"
-          class="g-centered-forced">
-    {{'biox.show_view' | translate}}
-  </button>
 </div>
-

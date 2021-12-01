@@ -1,17 +1,6 @@
-<div class="container g-scrollable-element" fxLayout="column">
+<fl-portal-header [enableDrag]="true"></fl-portal-header>
 
-  <div fxLayout="row" fxLayoutAlign="end center"
-       cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
-       cdkDragBoundary="body" class="header">
-
-    <button mat-icon-button type="button" flPortalClose
-            [matTooltip]="'close' | translate">
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-
+<div class="g-scrollable-element" fxLayout="column">
   <gen-biox-resource-view [view]="view"
                           [style.width]="width" [style.height]="height"></gen-biox-resource-view>
-
-
 </div>

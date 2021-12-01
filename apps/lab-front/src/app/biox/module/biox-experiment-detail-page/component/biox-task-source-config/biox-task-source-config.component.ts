@@ -1,12 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BioxWorkflowNodeDetailState} from '../../state/biox-workflow-node-detail.state';
 import {Observable, Subscription} from 'rxjs';
-import {FlDialogService} from '@monorepo/front-core-lib';
+import {FlDialogService, FlStatusEvent} from '@monorepo/front-core-lib';
 import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 import {BioxSelectResourceDialogComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-select-resource-dialog/biox-select-resource-dialog.component';
 import {WorkflowNodeSource} from '../../model/workflow-node-source.class';
 import {RouterService} from '../../../../../core/service/router.service';
-import {FlStatusEvent} from '@monorepo/front-core-lib';
 
 /**
  * Specific component to configure a task of type gws.plug.Source
@@ -39,6 +38,9 @@ export class BioxTaskSourceConfigComponent implements OnInit, OnDestroy {
   }
 
   private setNode(node: WorkflowNodeSource): void {
+    // security to prevent not source node
+    // it can be called because the state change before the component is destroy
+    if (!(node instanceof WorkflowNodeSource)) return;
     this.node = node;
     this.selectedResource$ = node.getLoadedResource$();
   }

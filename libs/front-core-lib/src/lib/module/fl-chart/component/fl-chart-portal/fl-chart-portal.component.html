@@ -1,16 +1,5 @@
-<div class="container">
+<fl-portal-header [enableDrag]="true">
+</fl-portal-header>
 
-  <div fxLayout="row" fxLayoutAlign="end center"
-       cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
-       cdkDragBoundary="body" class="header">
-
-    <button mat-icon-button type="button" flPortalClose
-            [matTooltip]="'close' | translate">
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-
-  <fl-chart class="chart" [dataContainer]="config.data" [chartType]="config.chartType"
-            [contextMenuItems]="config.contextMenuItems"></fl-chart>
-
-</div>
+<fl-chart class="chart" [dataContainer]="config.data" [chartType]="config.chartType"
+          [contextMenuItems]="config.contextMenuItems"></fl-chart>

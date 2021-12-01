@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {
   BioxResourceViewConfig,
@@ -9,6 +8,7 @@ import {
 } from '../../../../../core/model/entities/resource/biox-resource-view.entity';
 import {Validators} from '@angular/forms';
 import {BioxConfigData} from '../../../../../core/model/entities/biox-config.entity';
+import {FL_PORTAL_DATA, FlOverlayRef} from '@monorepo/front-core-lib';
 
 export interface BioxConfigureResourceViewInput {
   title: string;
@@ -40,8 +40,8 @@ export class BioxConfigureResourceViewComponent implements OnInit {
 
   showDisplayModeControl: boolean;
 
-  constructor(@Inject(MAT_DIALOG_DATA) private input: BioxConfigureResourceViewInput,
-              private dialogRef: MatDialogRef<BioxConfigureResourceViewComponent>) {
+  constructor(@Inject(FL_PORTAL_DATA) private input: BioxConfigureResourceViewInput,
+              private overlayRef: FlOverlayRef) {
     this.title = input.title;
   }
 
@@ -66,7 +66,7 @@ export class BioxConfigureResourceViewComponent implements OnInit {
   submit(): void {
     if (this.formGp.valid) {
       const viewConfig = this.convertFormValueToResult(this.formGp.getRawValue());
-      this.dialogRef.close(viewConfig);
+      this.overlayRef.dispose(viewConfig);
     }
   }
 

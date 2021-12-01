@@ -5,7 +5,12 @@ import {FlPortalArrowComponent} from './component/fl-portal-arrow/fl-portal-arro
 import {FlTooltipComponent} from './component/fl-tooltip/fl-tooltip.component';
 import {FlPortalService} from './service/fl-portal.service';
 import {FlTooltipService} from './service/fl-tooltip.service';
-import { FlPortalCloseDirective } from './directive/fl-portal-close.directive';
+import {FlPortalCloseDirective} from './directive/fl-portal-close.directive';
+import {FlPortalHeaderComponent} from './component/fl-portal-header/fl-portal-header.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
 
 /**
  * Core modules containing components
@@ -15,15 +20,21 @@ import { FlPortalCloseDirective } from './directive/fl-portal-close.directive';
     FlPortalArrowComponent,
     FlTooltipComponent,
     FlPortalCloseDirective,
+    FlPortalHeaderComponent,
   ],
   exports: [
-    FlPortalCloseDirective
+    FlPortalCloseDirective,
+    FlPortalHeaderComponent
   ],
   imports: [
     CommonModule,
 
     // Material
     PortalModule,
+    DragDropModule,
+    FlexLayoutModule,
+    MatButtonModule,
+    MatIconModule,
   ]
 })
 export class FlPortalModule {

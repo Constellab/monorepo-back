@@ -7,6 +7,7 @@ export * from './service/fl-portal.service';
 
 // Export the components
 export * from './component/fl-portal-arrow/fl-portal-arrow.component';
+export * from './component/fl-portal-header/fl-portal-header.component';
 export * from './component/fl-tooltip/fl-tooltip.component';
 
 // Export the directives

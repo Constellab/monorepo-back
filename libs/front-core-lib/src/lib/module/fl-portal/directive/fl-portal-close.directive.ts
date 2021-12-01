@@ -9,14 +9,15 @@ export class FlPortalCloseDirective {
   /**
    * Data to send when closing portal using this button
    */
-  @Input() flPortalClose: any;
+  @Input() flPortalClose: any = null;
 
   constructor(private overlayRef: FlOverlayRef) {
   }
 
   @HostListener('click')
   click(): void {
-    this.overlayRef.dispose(this.flPortalClose);
+    // when value is '' consider it as null
+    this.overlayRef.dispose(this.flPortalClose === '' ? null: this.flPortalClose);
   }
 
 }
