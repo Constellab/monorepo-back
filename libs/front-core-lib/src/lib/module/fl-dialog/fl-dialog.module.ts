@@ -5,7 +5,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {FlDialogTitleComponent} from './component/fl-dialog-title/fl-dialog-title.component';
+import {FlDialogHeaderComponent} from './component/fl-dialog-header/fl-dialog-header.component';
 import {FlConfirmDialogComponent} from './component/fl-confirm-dialog/fl-confirm-dialog.component';
 import {FlDialogService} from './fl-dialog.service';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
@@ -18,10 +18,10 @@ import {FlSnackBarModule} from '../fl-snack-bar/fl-snack-bar.module';
 @NgModule({
   declarations: [
     FlConfirmDialogComponent,
-    FlDialogTitleComponent
+    FlDialogHeaderComponent
   ],
   exports: [
-    FlDialogTitleComponent,
+    FlDialogHeaderComponent,
 
     MatDialogModule,
   ],

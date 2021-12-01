@@ -1,4 +1,6 @@
-<div mat-dialog-title [innerHTML]="title"></div>
+<fl-dialog-header [hideCloseButton]="true">
+  <div [innerHTML]="title"></div>
+</fl-dialog-header>
 
 <div mat-dialog-content>
   <div [innerHTML]="content" class="content g-text-with-jump"></div>

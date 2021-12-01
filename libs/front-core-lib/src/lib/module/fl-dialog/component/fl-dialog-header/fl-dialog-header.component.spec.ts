@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FlDialogTitleComponent} from './fl-dialog-title.component';
+import {FlDialogHeaderComponent} from './fl-dialog-header.component';
 
 describe('DialogTitleComponent', () => {
-  let component: FlDialogTitleComponent;
-  let fixture: ComponentFixture<FlDialogTitleComponent>;
+  let component: FlDialogHeaderComponent;
+  let fixture: ComponentFixture<FlDialogHeaderComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FlDialogTitleComponent ]
+      declarations: [ FlDialogHeaderComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FlDialogTitleComponent);
+    fixture = TestBed.createComponent(FlDialogHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

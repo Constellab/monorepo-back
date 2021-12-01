@@ -1,11 +1,11 @@
 <div mat-dialog-title fxLayout="row" fxLayoutAlign="space-between">
-<!-- Use to center the title -->
-  <div class="fake-icon">
+  <!-- Use to center the title -->
+  <div class="fake-icon" *ngIf="!hideCloseButton">
   </div>
   <div class="g-centered-forced">
     <ng-content></ng-content>
   </div>
-  <div>
+  <div *ngIf="!hideCloseButton">
     <button mat-icon-button type="button" [matTooltip]="'close' | translate"
             [mat-dialog-close]="null" tabindex="-1">
       <mat-icon>close</mat-icon>
