@@ -10,7 +10,7 @@ import {RouterService} from '../../../../../core/service/router.service';
 /**
  * Specific component to configure a task of type gws.plug.Source
  *
- * This allow the user to select a resource
+ * This allows the user to select a resource
  */
 @Component({
   selector: 'gen-biox-task-source-config',
