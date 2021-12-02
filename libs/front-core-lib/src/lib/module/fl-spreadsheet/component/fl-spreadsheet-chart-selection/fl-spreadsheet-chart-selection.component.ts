@@ -70,8 +70,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     // subscribe to sheet change and clear the form on change to secure data
     // because selection does not support multi sheet
     this.subscriptions.add(
-      this.state.currentSheet$
-        .pipe(skip(1)).subscribe(
+      this.state.currentSheet$.pipe(skip(1)).subscribe(
         () => this.resetForm()
       )
     );
@@ -147,8 +146,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
     // subscribe to serie change to refresh data based on series
     this.subscriptions.add(
-      this.formGp.get('series').valueChanges
-        .pipe().subscribe(
+      this.formGp.get('series').valueChanges.pipe().subscribe(
         () => this.refreshFormOnSeriesChange()
       )
     );
@@ -226,13 +224,11 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     // use the top 0 to make the portal appear on top (otherwise it take all the height)
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal({centerHorizontally: '0', top: '0'},
       {
-        panelClass: 'g-portal-background',
         elevation: true,
         disposeOnNavigation: true
       });
 
-    this.portalService.createPortal(FlSpreadsheetChartSerieSelectionComponent, portalConfig, data)
-      .detachments().subscribe(
+    this.portalService.createPortal(FlSpreadsheetChartSerieSelectionComponent, portalConfig, data).detachments().subscribe(
       (newSerie) => this.onSerieUpdated(newSerie, index)
     );
 

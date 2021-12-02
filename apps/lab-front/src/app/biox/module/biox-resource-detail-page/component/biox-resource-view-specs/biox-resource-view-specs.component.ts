@@ -85,7 +85,6 @@ export class BioxResourceViewSpecsComponent implements OnInit {
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
       {centerHorizontally: '0', top: '0'},
       {
-        panelClass: 'g-portal-background',
         elevation: true,
         disposeOnNavigation: true,
         size: 'medium'

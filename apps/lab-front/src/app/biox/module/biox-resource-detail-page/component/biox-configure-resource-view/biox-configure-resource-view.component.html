@@ -1,28 +1,29 @@
-<fl-portal-header [enableDrag]="true">
-  <h2>{{title}}</h2>
-</fl-portal-header>
+<fl-portal class="portal">
 
-<div class="container g-scrollable-element" fxLayout="column">
+  <fl-portal-header class="header" [enableDrag]="true">
+    <h2>{{title}}</h2>
+  </fl-portal-header>
 
-  <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
-    <gen-biox-configure-specs-form [bioxConfigData]="configs" [formGp]="formGp"></gen-biox-configure-specs-form>
 
-    <div *ngIf="showDisplayModeControl" class="display-mode">
-      <label>{{'biox.resource_view_display_mode' | translate}}</label>
-      <mat-radio-group formControlName="displayMode" color="primary">
-        <mat-radio-button value="fullScreen"
-                          class="display-mode-label">{{'biox.resource_view_display_component' | translate}}</mat-radio-button>
-        <mat-radio-button value="portal"
-                          class="display-mode-label">{{'biox.resource_view_display_portal' | translate}}</mat-radio-button>
-      </mat-radio-group>
-    </div>
-  </form>
+  <fl-portal-content>
+    <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
+      <gen-biox-configure-specs-form [bioxConfigData]="configs" [formGp]="formGp"></gen-biox-configure-specs-form>
 
-  <div mat-dialog-actions>
+      <div *ngIf="showDisplayModeControl" class="display-mode">
+        <label>{{'biox.resource_view_display_mode' | translate}}</label>
+        <mat-radio-group formControlName="displayMode" color="primary">
+          <mat-radio-button value="fullScreen"
+                            class="display-mode-label">{{'biox.resource_view_display_component' | translate}}</mat-radio-button>
+          <mat-radio-button value="portal"
+                            class="display-mode-label">{{'biox.resource_view_display_portal' | translate}}</mat-radio-button>
+        </mat-radio-group>
+      </div>
+    </form>
+
     <button mat-raised-button color="primary" type="submit" form="config-form"
             class="g-centered-forced">
       {{'biox.show_view' | translate}}
     </button>
-  </div>
+  </fl-portal-content>
+</fl-portal>
 
-</div>

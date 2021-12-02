@@ -1,11 +1,14 @@
-<div>
-  <div *ngFor="let dataWithSerie of data">
-    <div>x : {{dataWithSerie.data.getX()}}</div>
-    <div>y : {{dataWithSerie.data.getY()}}</div>
+<fl-portal>
+  <fl-portal-content>
 
-    <fl-chart-serie-inline class="serie" [color]="dataWithSerie.serieKey | flChartScale:seriesColorScale"
-                           [serieName]="dataWithSerie.serieName">
-    </fl-chart-serie-inline>
-  </div>
-</div>
+    <div *ngFor="let dataWithSerie of data">
+      <div>x : {{dataWithSerie.data.getX()}}</div>
+      <div>y : {{dataWithSerie.data.getY()}}</div>
+
+      <fl-chart-serie-inline class="serie" [color]="dataWithSerie.serieKey | flChartScale:seriesColorScale"
+                             [serieName]="dataWithSerie.serieName">
+      </fl-chart-serie-inline>
+    </div>
+  </fl-portal-content>
+</fl-portal>
 

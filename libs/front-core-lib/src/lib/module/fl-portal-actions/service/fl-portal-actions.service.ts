@@ -66,7 +66,7 @@ export class FlPortalActionsService {
       {right: '10px', bottom: '10px'},
       {
         elevation: true,
-        panelClass: 'g-portal-panel'
+        panelClass: 'g-portal-background'
       });
 
     // open portal

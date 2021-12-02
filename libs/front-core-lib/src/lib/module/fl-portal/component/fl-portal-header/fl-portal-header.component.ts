@@ -2,7 +2,9 @@ import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 
 /**
  * Header of the portal with a ng-content for the title. Contain a close button and
- * support drag on header
+ * support drag on header.
+ *
+ * Can be put in <fl-portal>
  */
 @Component({
   selector: 'fl-portal-header',

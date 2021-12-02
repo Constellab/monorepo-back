@@ -75,7 +75,7 @@ export class WorkflowActionState {
         offsetY: -20
       }];
       const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(connectionHtmlElement, position, {
-        panelClass: 'g-portal-panel',
+        panelClass: 'g-portal-background',
         elevation: true,
         disposeOnNavigation: true,
         size: 'small',

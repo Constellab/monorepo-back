@@ -11,6 +11,9 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
+import { FlPortalComponent } from './component/fl-portal/fl-portal.component';
+import { FlPortalContentComponent } from './component/fl-portal-content/fl-portal-content.component';
+import { FlPortalFooterComponent } from './component/fl-portal-footer/fl-portal-footer.component';
 
 /**
  * Core modules containing components
@@ -21,10 +24,16 @@ import {MatIconModule} from '@angular/material/icon';
     FlTooltipComponent,
     FlPortalCloseDirective,
     FlPortalHeaderComponent,
+    FlPortalComponent,
+    FlPortalContentComponent,
+    FlPortalFooterComponent,
   ],
   exports: [
     FlPortalCloseDirective,
-    FlPortalHeaderComponent
+    FlPortalHeaderComponent,
+    FlPortalComponent,
+    FlPortalContentComponent,
+    FlPortalFooterComponent,
   ],
   imports: [
     CommonModule,

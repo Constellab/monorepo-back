@@ -22,7 +22,7 @@ export class FlChartPortalHandler {
       disposeOnNavigation: true,
       showArrow: false,
       elevation: true,
-      panelClass: 'g-portal-panel',
+      panelClass: 'g-portal-background',
     };
 
     const positions: ConnectedPosition[] = [

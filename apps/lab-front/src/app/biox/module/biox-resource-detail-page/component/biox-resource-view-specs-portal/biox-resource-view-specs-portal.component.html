@@ -1,11 +1,11 @@
-<div class="panel g-scrollable-element">
+<fl-portal class="portal">
+  <fl-portal-content>
+    <fl-async-section class="g-full content"
+                      [object]="views$" emptyText="biox.no_views_on_resource">
 
-  <fl-async-section class="g-full"
-                    [object]="views$" emptyText="biox.no_views_on_resource">
-
-    <ng-container *flSectionBody="let viewsByType">
-      <gen-biox-resource-view-specs [viewsByType]="viewsByType"></gen-biox-resource-view-specs>
-    </ng-container>
-  </fl-async-section>
-
-</div>
+      <ng-container *flSectionBody="let viewsByType">
+        <gen-biox-resource-view-specs [viewsByType]="viewsByType"></gen-biox-resource-view-specs>
+      </ng-container>
+    </fl-async-section>
+  </fl-portal-content>
+</fl-portal>

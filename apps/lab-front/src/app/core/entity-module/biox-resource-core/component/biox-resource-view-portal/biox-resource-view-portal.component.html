@@ -1,6 +1,8 @@
-<fl-portal-header [enableDrag]="true"></fl-portal-header>
+<fl-portal class="portal">
+  <fl-portal-header [enableDrag]="true"></fl-portal-header>
 
-<div class="g-scrollable-element" fxLayout="column">
-  <gen-biox-resource-view [view]="view"
-                          [style.width]="width" [style.height]="height"></gen-biox-resource-view>
-</div>
+  <fl-portal-content>
+    <gen-biox-resource-view [view]="view"
+                            [style.width]="width" [style.height]="height"></gen-biox-resource-view>
+  </fl-portal-content>
+</fl-portal>

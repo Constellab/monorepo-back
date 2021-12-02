@@ -1,8 +1,13 @@
-<div>
-  <div>{{'flChart.number_of_data' | translate}} : {{y}}</div>
-  <div>{{'flChart.interval' | translate}} : {{intervalText}}</div>
+<fl-portal>
+  <fl-portal-content>
 
-  <fl-chart-serie-inline class="serie" [color]="serieKey | flChartScale:seriesColorScale" [serieName]="serieName">
-  </fl-chart-serie-inline>
-</div>
+    <div>
+      <div>{{'flChart.number_of_data' | translate}} : {{y}}</div>
+      <div>{{'flChart.interval' | translate}} : {{intervalText}}</div>
 
+      <fl-chart-serie-inline class="serie" [color]="serieKey | flChartScale:seriesColorScale" [serieName]="serieName">
+      </fl-chart-serie-inline>
+    </div>
+  </fl-portal-content>
+
+</fl-portal>

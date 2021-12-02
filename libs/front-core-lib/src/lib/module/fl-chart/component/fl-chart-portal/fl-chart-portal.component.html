@@ -1,5 +1,11 @@
-<fl-portal-header [enableDrag]="true">
-</fl-portal-header>
+<fl-portal class="portal">
 
-<fl-chart class="chart" [chart]="config.chart"
-          [contextMenuItems]="config.contextMenuItems"></fl-chart>
+  <fl-portal-header [enableDrag]="true">
+  </fl-portal-header>
+
+  <fl-portal-content>
+
+    <fl-chart class="chart" [chart]="config.chart"
+              [contextMenuItems]="config.contextMenuItems"></fl-chart>
+  </fl-portal-content>
+</fl-portal>

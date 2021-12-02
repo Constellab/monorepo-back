@@ -111,7 +111,7 @@ export class BioxResourceDetailPageState implements OnDestroy {
         text: viewSpecConfigured.viewSpec.getName(),
         action: actionObs
       },
-      true,
+      false,
       !isDefaultView); // for the default view, don't show the action portal
   }
 

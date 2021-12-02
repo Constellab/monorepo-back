@@ -41,7 +41,6 @@ export class FlSpreadsheetChartState {
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
       {centerHorizontally: '0', top: '0'},
       {
-        panelClass: 'g-portal-background',
         elevation: true,
         disposeOnNavigation: true,
       });
@@ -90,7 +89,6 @@ export class FlSpreadsheetChartState {
       const portalConfig: FlPortalConfig = this.chartPortalService.configureAbsolutePortal(
         {centerHorizontally: '0', top: '0'},
         {
-          panelClass: 'g-portal-background',
           elevation: true,
           disposeOnNavigation: true
         });
