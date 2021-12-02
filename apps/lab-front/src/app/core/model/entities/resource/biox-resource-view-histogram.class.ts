@@ -1,0 +1,56 @@
+import {
+  FlChart2dMultiSerie,
+  FlChartConfig2,
+  FlChartDataBin,
+  FlChartHistogram,
+  FlChartSerie
+} from '@monorepo/front-core-lib';
+
+export interface BioxResourceViewHistogram {
+  type: 'histogram-view';
+  data: BioxResourceViewHistogramData;
+}
+
+export interface BioxResourceViewHistogramData {
+  y_label: string;
+  x_tick_labels?: string[];
+  series: BioxResourceViewHistogramSerie[];
+}
+
+export interface BioxResourceViewHistogramSerie {
+  data: {
+    x: number[];// list of bin interval, one more value than hist
+    y: number[];// list of hist values, one value correspond ton one bin interval
+  };
+  column_name: string;
+}
+
+/**
+ * Convert a resource histogram view to a Chart
+ * @param view
+ */
+export function bioxHistogramToChart(view: BioxResourceViewHistogram): FlChartConfig2 {
+  const series: FlChart2dMultiSerie<FlChartDataBin> = new FlChart2dMultiSerie();
+
+  for (const viewSerie of view.data.series) {
+    const data: FlChartDataBin[] = [];
+
+    for (let i = 0; i < viewSerie.data.x.length - 1; i++) {
+      // create the bin
+      const min = viewSerie.data.x[i];
+      const max = viewSerie.data.x[i + 1];
+      data.push(new FlChartDataBin(i, viewSerie.data.y[i], min, max));
+    }
+
+    series.addSerie(new FlChartSerie(data, viewSerie.column_name));
+  }
+
+
+  // set the axisXLabelFormat but taking the interval text of the first serie
+  series.axisXLabelFormat = (_: number, index: number) => {
+    const dataHisto: FlChartDataBin = series.series[0].data[index];
+    return dataHisto.getIntervalText();
+  };
+
+  return new FlChartHistogram(series);
+}

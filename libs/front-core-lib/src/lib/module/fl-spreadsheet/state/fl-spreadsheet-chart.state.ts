@@ -82,8 +82,7 @@ export class FlSpreadsheetChartState {
         FlSpreadsheetChartSelectionFactory.convertFormGpValueToSelectionChart(result.selection, this.state.currentSheet);
 
       const chartConfig: FlChartPortalConfig = {
-        data: selection.exportToSeries(),
-        chartType: selection.chartType,
+        chart: selection.exportToChart(),
         contextMenuItems: this.getContextMenuItem(selection.id)
       };
 

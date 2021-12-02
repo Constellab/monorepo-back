@@ -2,6 +2,7 @@ import {scaleLinear, scaleOrdinal, ScaleOrdinal} from 'd3';
 import {FlChartScaleI} from './fl-chart-scale.class';
 import {ScaleLinear} from 'd3-scale';
 import {FlColorHelper} from '../../../../utils/fl-color-helper.class';
+import {FlChartMultiSerie} from '../data/fl-chart-multi-serie.class';
 
 /**
  * Specific scale to return a color based on a value
@@ -25,6 +26,11 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
   constructor(domain: (number | string)[]) {
     this.d3Scale = this.initScale();
     this.d3Scale.domain(domain.map(d => d.toString()));
+  }
+
+  // create a color scale from a multiple series. Each series key is linked to a color
+  public static fromMultiSeries(dataContainer: FlChartMultiSerie<any>): FlChartScaleColorMulti{
+    return new FlChartScaleColorMulti(dataContainer.series.map(d => d.key));
   }
 
   private initScale(): ScaleOrdinal<string, string> {

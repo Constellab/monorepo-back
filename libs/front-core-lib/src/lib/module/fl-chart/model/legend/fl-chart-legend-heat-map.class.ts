@@ -4,27 +4,29 @@ import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
 import {axisBottom, scaleLinear} from 'd3';
 
 /**
- * Class to draw an heat map legend
+ * Class to draw a heat map legend
  */
 export class FlChartLegendHeatMap extends FlChartLegend {
 
-  private readonly rectHeight: number = 20;
-  private readonly padding: number = 10;
 
-  constructor(parent: Selection<any, any, any, any>, width: number,
-              height: number, private colorScale: FlChartScaleColor,
+  constructor(private colorScale: FlChartScaleColor,
               private domain: [number, number]) {
-    super(parent, width, height);
+    super();
   }
 
 
-  renderLegend(): void {
-    this.drawLegendRect();
-    this.drawLegendAxis();
+  renderLegend(parent: Selection<any, any, any, any>, width: number, height: number): void {
+
+    const padding: number = height / 5;
+    const widthWithoutPadding = width - (padding * 2);
+    const rectHeight: number = height / 2;
+    this.drawLegendRect(parent, widthWithoutPadding, padding, rectHeight);
+    this.drawLegendAxis(parent, widthWithoutPadding, padding, rectHeight);
   }
 
-  private drawLegendRect(): void {
-    this.parent.append('defs')
+  private drawLegendRect(parent: Selection<any, any, any, any>, width: number,
+                         padding: number, rectHeight: number): void {
+    parent.append('defs')
       .append('linearGradient')
       .attr('id', 'legend-traffic')
       .attr('x1', '0%').attr('y1', '0%')
@@ -35,28 +37,25 @@ export class FlChartLegendHeatMap extends FlChartLegend {
       .attr('offset', (d, i) => i === 0 ? 0 : 200)
       .attr('stop-color', (d) => this.colorScale.scale(d));
 
-    this.parent.append('rect') // rectangle avec gradient
+    parent.append('rect') // gradient rect
       .attr('class', 'legendRect')
-      .attr('x', this.padding)
+      .attr('x', padding)
       .attr('y', 0)
-      .attr('width', this.getWidth())
-      .attr('height', this.rectHeight)
+      .attr('width', width)
+      .attr('height', rectHeight / 2)
       .style('fill', 'url(#legend-traffic)');
   }
 
-  private drawLegendAxis(): void {
+  private drawLegendAxis(parent: Selection<any, any, any, any>, width: number,
+                         padding: number, rectHeight: number): void {
     const domainScale = scaleLinear()
       .domain(this.domain)
-      .range([0, this.getWidth()]);
+      .range([0, width]);
 
-    this.parent.append('g') // x axis
+    parent.append('g') // x axis
       .attr('class', 'axis')
-      .attr('transform', `translate(${this.padding},${this.rectHeight})`)
+      .attr('transform', `translate(${padding},${rectHeight})`)
       .call(axisBottom(domainScale));
-  }
-
-  private getWidth(): number {
-    return this.width - (this.padding * 2);
   }
 
 

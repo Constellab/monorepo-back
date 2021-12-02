@@ -1,38 +1,27 @@
 import {Selection} from 'd3-selection';
 import {
   FlChart2AxisRenderer,
-  FlChart2AxisRendererInput, FlChartNoAxisRenderer,
+  FlChart2AxisRendererInput,
+  FlChartNoAxisRenderer,
   FlChartNoAxisRendererInput
 } from '../../renderer/fl-chart-renderer.class';
 import {FlChartAxis} from './fl-chart-axis.class';
 import {ClHelpService} from '@monorepo/core-lib';
 
 /**
- * Chart container, it can contains multiple renderer
+ * Chart container, it can contain multiple renderer
  * to be able to show multi chart type in same container
  */
 export abstract class FlChartContainer<Data, Renderer extends FlChartNoAxisRenderer<Data> = FlChartNoAxisRenderer<Data>> {
-
   public group: Selection<any, null, null, null>;
   public chartContainer: Selection<SVGElement, null, null, null>;
 
   public dataContainer: Data;
 
-  protected readonly groupWidth: number;
-  protected readonly groupHeight: number;
+  private _groupWidth: number;
+  private _groupHeight: number;
 
-  protected renderers: Renderer[];
-
-
-  // margin for the axis
-  protected margin = {top: 0, right: 0, bottom: 0, left: 0};
-
-  constructor(parent: Selection<any, any, any, any>, width: number, height: number) {
-    this.groupWidth = width;
-    this.groupHeight = height;
-    this.renderers = [];
-    this.initChart(parent);
-  }
+  protected renderers: Renderer[] = [];
 
   public abstract firstChartRendering(): void
 
@@ -47,14 +36,18 @@ export abstract class FlChartContainer<Data, Renderer extends FlChartNoAxisRende
     return this;
   }
 
+  protected get margin(): any {
+    return {top: 0, right: 0, bottom: 0, left: 0};
+  }
 
-  private initChart(parent: Selection<any, any, any, any>): this {
+
+  public drawChartContainer(parent: Selection<any, any, any, any>): void {
     this.group = parent.append('g')
       .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
-    const clipId = `clip${new Date().getTime()}`
+    const clipId = `clip${new Date().getTime()}`;
     this.chartContainer = this.group.append('g')
-      .attr('clip-path', `url(#${clipId})`) as any;  // prevent line to overflow
+      .attr('clip-path', `url(#${clipId})`) as any;  // prevent elements to overflow
 
     // Add a clipPath: everything out of this area won't be drawn.
     this.group.append('defs').append('svg:clipPath')
@@ -63,18 +56,44 @@ export abstract class FlChartContainer<Data, Renderer extends FlChartNoAxisRende
       .attr('width', this.chartWidth)
       .attr('height', this.chartHeight)
       .attr('x', 0)
-      .attr('y', 0)
-    ;
+      .attr('y', 0);
+  }
 
-    return this;
+  // Set the width and height of the group element including axis
+  public setGroupSize(width: number, height: number): void {
+    this._groupWidth = width;
+    this._groupHeight = height;
+    // trigger the size change event
+    this.onSizeChanged();
+  }
+
+  // set the width and height, of the chart rendering element and the axis will be added to the size
+  public setChartRendererSize(width: number, height: number): void {
+    this.setGroupSize(
+      width + this.margin.left + this.margin.right,
+      height + this.margin.top + this.margin.bottom);
+  }
+
+  protected onSizeChanged(): void {
+  }
+
+  public sizeIsSet(): boolean {
+    return this._groupWidth != null && this._groupHeight != null;
+  }
+
+  get groupHeight(): number {
+    return this._groupHeight;
+  }
+  get groupWidth(): number {
+    return this._groupWidth;
   }
 
   public get chartWidth(): number {
-    return this.groupWidth - this.margin.left - this.margin.right;
+    return this._groupWidth - this.margin.left - this.margin.right;
   }
 
   public get chartHeight(): number {
-    return this.groupHeight - this.margin.top - this.margin.bottom;
+    return this._groupHeight - this.margin.top - this.margin.bottom;
   }
 }
 
@@ -89,27 +108,35 @@ export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2
 
   public zoomTransitionDuration: number = 250;
 
-  // margin for the axis
-  protected margin = {top: 10, right: 30, bottom: 30, left: 40};
+  protected get margin(): any {
+    return {top: 10, right: 30, bottom: 30, left: 40};
+  }
 
   public initXAxis(axis: FlChartAxis): this {
-    this.xAxis = axis.setZoomDuration(this.zoomTransitionDuration)
-      .create(this.group, this.chartHeight, this.chartWidth);
-
+    this.xAxis = axis.setZoomDuration(this.zoomTransitionDuration);
     return this;
   }
 
   public initAxisY(yAxis: FlChartAxis): this {
-    this.yAxis = yAxis.setZoomDuration(this.zoomTransitionDuration)
-      .create(this.group, this.chartHeight, this.chartWidth);
-
+    this.yAxis = yAxis.setZoomDuration(this.zoomTransitionDuration);
     return this;
   }
 
+  // when the size of the chart change, recalculate the axis ranges
+  protected onSizeChanged(): void {
+    super.onSizeChanged();
+    this.xAxis.scale.range(this.getRangeX());
+    this.yAxis.scale.range(this.getRangeY());
+  }
 
   ///////////////////////////////// RENDERING ////////////////////////////
 
   public firstChartRendering(): void {
+    // draw the x and y-axis
+    this.xAxis.draw(this.group, this.chartHeight, this.chartWidth);
+    this.yAxis.draw(this.group, this.chartHeight, this.chartWidth);
+
+    // render the charts
     this.renderers.forEach(renderer => renderer.initData(this.getRendererInput()));
   }
 
@@ -197,11 +224,11 @@ export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2
 
   ///////////////////////////////////////// OTHER //////////////////////////////////
 
-  public getRangeX(): [number, number] {
+  private getRangeX(): [number, number] {
     return [0, this.chartWidth];
   }
 
-  public getRangeY(): [number, number] {
+  private getRangeY(): [number, number] {
     return [this.chartHeight, 0];
   }
 }
@@ -210,7 +237,7 @@ export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2
  * Chart container with 0 axis
  */
 export class FlChartContainerNoAxis<Data> extends FlChartContainer<Data, FlChartNoAxisRenderer<Data>> {
-  firstChartRendering(): void {
+  public firstChartRendering(): void {
     this.renderers.forEach(renderer => renderer.initData(this.getRendererInput()));
   }
 

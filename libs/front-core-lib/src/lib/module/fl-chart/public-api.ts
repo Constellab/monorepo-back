@@ -23,9 +23,12 @@ export * from './service/fl-chart-portal.service';
 export * from './state/fl-chart.state';
 
 // Export the models
-// Portal-handler
-export * from './model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
-export * from './model/portal-handler/fl-chart-portal-handler.class';
+// Chart
+export * from './model/chart/fl-chart-bar.class';
+export * from './model/chart/fl-chart-box-plot.class';
+export * from './model/chart/fl-chart-heat-map.class';
+export * from './model/chart/fl-chart-linear-2d.class';
+export * from './model/chart/fl-chart-venn-diagram.class';
 
 // Data
 export * from './model/data/fl-chart-box-plot-data.class';
@@ -46,6 +49,10 @@ export * from './model/legend/fl-chart-legend.class';
 export * from './model/legend/fl-chart-legend-heat-map.class';
 export * from './model/legend/fl-chart-legend-multi-series.class';
 
+// Portal-handler
+export * from './model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
+export * from './model/portal-handler/fl-chart-portal-handler.class';
+
 // Scale
 export * from './model/scale/fl-chart-scale.class';
 export * from './model/scale/fl-chart-scale-color.class';
@@ -55,8 +62,6 @@ export * from './model/fl-chart-config.class';
 export * from './model/fl-chart-domain.class';
 export * from './model/fl-d3.class';
 
-// Utils
-export * from './util/fl-chart.factory';
 
 // Renderer
 export * from './renderer/fl-chart-renderer.class';

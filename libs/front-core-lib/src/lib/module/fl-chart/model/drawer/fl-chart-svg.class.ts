@@ -9,8 +9,9 @@ import {select} from 'd3';
  */
 export class FlChartSvg {
 
-  public readonly width: number;
-  public readonly height: number;
+
+  private _width: number;
+  private _height: number;
 
   public svg: Selection<SVGElement, void, null, null>;
   public chartContainer: Selection<SVGElement, void, null, null>;
@@ -21,19 +22,13 @@ export class FlChartSvg {
   private readonly spaceBeforeLegend: number = 10;
   private readonly legendHeight: number = 50;
 
-
-  constructor(width: number, height: number) {
-    this.width = width;
-    this.height = height;
-  }
-
   public initSvg(containerElement: HTMLElement): this {
     this.container = containerElement;
     // append the svg object to the body of the page
     this.svg = select<HTMLElement, void>(containerElement)
       .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height);
+      .attr('width', this._width)
+      .attr('height', this._height);
 
     this.chartContainer = this.svg
       .append('g');
@@ -47,16 +42,23 @@ export class FlChartSvg {
     return this;
   }
 
+  get height(): number {
+    return this._height;
+  }
+  get width(): number {
+    return this._width;
+  }
+
   public get chartContainerWidth(): number {
-    return this.width;
+    return this._width;
   }
 
   public get chartContainerHeight(): number {
-    return this.height - (this.legendHeight + this.spaceBeforeLegend);
+    return this._height - (this.legendHeight + this.spaceBeforeLegend);
   }
 
   public get legendContainerWidth(): number {
-    return this.width;
+    return this._width;
   }
 
   public get legendContainerHeight(): number {
@@ -86,6 +88,19 @@ export class FlChartSvg {
     }
     const blob: Blob = new Blob([svg]);
     FlFileHelper.downloadBlob(blob, 'chart.svg');
+  }
+
+  // Set the global size of the SVG
+  public setSVGSize(width: number, height: number): void {
+    this._width = width;
+    this._height = height;
+  }
+
+  // set the width and height of the chart container element. The legend will be added to the size
+  public setChartContainerSize(width: number, height: number): void {
+    this.setSVGSize(
+      width + width,
+      height + this.legendHeight + this.spaceBeforeLegend);
   }
 }
 

@@ -8,9 +8,11 @@ import {FlSheetMultiSelection} from '../model/selection/fl-sheet-multi-selection
 import {FlSheet} from '../model/fl-sheet.class';
 import {FlSheetChartSelectionBasic} from '../model/chart/fl-sheet-chart-selection-basic.class';
 import {FlSheetChartSelection} from '../model/chart/fl-sheet-chart-selection.class';
-import {FlSheetChartSelectionHistogram} from '../model/chart/fl-sheet-chart-selection-histogram.class';
 import {FlSheetChartSelectionBoxPlot} from '../model/chart/fl-sheet-chart-selection-box-plot.class';
-import {FlSheetChartSelectionBarPlot} from '../model/chart/fl-sheet-chart-selection-bar-plot.class';
+import {
+  FlSheetChartSelectionBarPlot,
+  FlSheetChartSelectionHistogram
+} from '../model/chart/fl-sheet-chart-selection-bar-plot.class';
 import {FlSheetChartSelectionHeatMap} from '../model/chart/fl-sheet-chart-selection-heat-map.class';
 import {AbstractControl, ValidatorFn} from '@angular/forms';
 import {FlSpreadsheetHelper} from './fl-spreadsheet.helper';
@@ -68,7 +70,7 @@ export class FlSpreadsheetChartSelectionFactory {
         series = FlSpreadsheetChartSelectionFactory.createSingleSerieForY(dataSelection.selections[0]);
         break;
       default:
-        console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${chartType} is not supported`)
+        console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${chartType} is not supported`);
     }
 
     // set the series' names
@@ -140,8 +142,8 @@ export class FlSpreadsheetChartSelectionFactory {
       case FlChartType.HEAT_MAP:
         return new FlSheetChartSelectionHeatMap(sheet, formValue);
       default:
-        console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${formValue.chartType} is not supported`)
-        return null
+        console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${formValue.chartType} is not supported`);
+        return null;
     }
   }
 
@@ -179,8 +181,8 @@ export class FlSpreadsheetChartSelectionFactory {
           ySelectionMode: 'single',
         };
       default:
-        console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${chartType} is not supported`)
-        return null
+        console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${chartType} is not supported`);
+        return null;
     }
   }
 

@@ -5,17 +5,10 @@ import {Selection} from 'd3-selection';
  */
 export abstract class FlChartLegend {
 
-  protected constructor(protected parent: Selection<any, any, any, any>, protected width: number,
-                        protected height: number) {
+  protected constructor() {
   }
 
-  public abstract renderLegend(): void;
+  public abstract renderLegend(parent: Selection<any, any, any, any>, width: number,
+                               height: number): void;
 
-  protected getRangeX(): [number, number]{
-    return [0, this.width];
-  }
-
-  protected getRangeY(): [number, number]{
-    return [0, this.height];
-  }
 }

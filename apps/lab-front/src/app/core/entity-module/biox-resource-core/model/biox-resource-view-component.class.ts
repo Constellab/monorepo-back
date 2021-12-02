@@ -1,9 +1,9 @@
-import {BioxResourceViewBase} from '../../../model/entities/resource/biox-resource-view.entity';
+import {BioxResourceView} from '../../../model/entities/resource/biox-resource-view.entity';
 import {Directive, Input} from '@angular/core';
 
 
 @Directive()
-export class BioxResourceViewDirective<T extends BioxResourceViewBase = BioxResourceViewBase> {
+export class BioxResourceViewDirective<T extends BioxResourceView = BioxResourceView> {
 
   @Input() view: T;
 

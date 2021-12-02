@@ -21,11 +21,7 @@ import {BioxResourceTextComponent} from '../biox-resource-text/biox-resource-tex
 import {BioxResourceSpreadsheetComponent} from '../biox-resource-spreadsheet/biox-resource-spreadsheet.component';
 import {BioxResourceNetworkComponent} from '../biox-resource-network/biox-resource-network.component';
 import {BioxResourceChart2dComponent} from '../biox-resource-chart-2d/biox-resource-chart-2d.component';
-import {BioxResourceHistogramComponent} from '../biox-resource-histogram/biox-resource-histogram.component';
-import {BioxResourceBoxPlotComponent} from '../biox-resource-box-plot/biox-resource-box-plot.component';
 import {BioxResourceMultiViewComponent} from '../biox-resource-multi-view/biox-resource-multi-view.component';
-import {BioxResourceVennDiagramComponent} from '../biox-resource-venn-diagram/biox-resource-venn-diagram.component';
-import {BioxResourceHeatmapComponent} from '../biox-resource-heatmap/biox-resource-heatmap.component';
 
 export function bioxResourceViewGetComponentType(viewType: BioxResourceViewType): ComponentType<BioxResourceViewDirective> {
   switch (viewType) {
@@ -41,17 +37,13 @@ export function bioxResourceViewGetComponentType(viewType: BioxResourceViewType)
     case 'line-plot-2d-view':
     case 'bar-plot-view':
     case 'stacked-bar-plot-view':
-      return BioxResourceChart2dComponent;
-    case 'histogram-view':
-      return BioxResourceHistogramComponent;
     case 'box-plot-view':
-      return BioxResourceBoxPlotComponent;
+    case 'heatmap-view':
+    case 'histogram-view':
+    case 'venn-diagram-view':
+      return BioxResourceChart2dComponent;
     case 'multi-view':
       return BioxResourceMultiViewComponent;
-    case 'venn-diagram-view':
-      return BioxResourceVennDiagramComponent;
-    case 'heatmap-view':
-      return BioxResourceHeatmapComponent;
     default:
       console.error(`View of type ${viewType} not supported`);
       return null;

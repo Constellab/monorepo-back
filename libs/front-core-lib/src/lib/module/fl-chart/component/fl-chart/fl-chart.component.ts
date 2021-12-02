@@ -1,10 +1,10 @@
 import {Component, ElementRef, HostListener, Input, OnInit, Renderer2} from '@angular/core';
 import {FlThemeService} from '../../../../service/fl-theme.service';
 import {FlChartState} from '../../state/fl-chart.state';
-import {FlChartType} from '../../model/fl-chart.class';
 import {FlMenuDynamic} from '../../../fl-menu-dynamic/model/fl-menu-dynamic.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlMenuDynamicService} from '../../../fl-menu-dynamic/fl-menu-dynamic.service';
+import {FlChartConfig2} from '../../model/fl-chart-config.class';
 
 /**
  * Component to show a chart, must be included in the FlChartContainer
@@ -19,13 +19,12 @@ import {FlMenuDynamicService} from '../../../fl-menu-dynamic/fl-menu-dynamic.ser
 })
 export class FlChartComponent implements OnInit {
 
-  @Input() dataContainer: any;
 
-  @Input() chartType: FlChartType;
+  @Input() chart: FlChartConfig2;
 
 
   /**
-   * If provided, it append the item to the context menu
+   * If provided, it appends the item to the context menu
    */
   @Input() contextMenuItems: FlMenuDynamic[];
 
@@ -49,21 +48,23 @@ export class FlChartComponent implements OnInit {
   }
 
   private initChart(): void {
-    const width = this.elementRef.nativeElement.clientWidth;
-    const height = this.elementRef.nativeElement.clientHeight;
+    let width = this.elementRef.nativeElement.clientWidth;
+    let height = this.elementRef.nativeElement.clientHeight;
 
+    // set a default width and height
     if (width <= 0 || height <= 0) {
-      console.error(`[FlChart] width: ${width}, height: ${height}`);
-      return;
+      width = 400;
+      height = 400;
     }
 
-    // fix the container size (because it can be altered when generating the svg)
-    this.renderer.setStyle(this.elementRef.nativeElement, 'width', width + 'px');
-    this.renderer.setStyle(this.elementRef.nativeElement, 'height', height + 'px');
-
-    this.state.initData(this.dataContainer, this.chartType);
+    this.state.initData(this.chart);
     this.state.initChart(width, height,
       this.elementRef.nativeElement);
+
+    // fix the container size (because it can be altered when generating the svg) the same size as the SVG
+    this.renderer.setStyle(this.elementRef.nativeElement, 'width', this.state.chartSVG.width + 'px');
+    this.renderer.setStyle(this.elementRef.nativeElement, 'height', this.state.chartSVG.height + 'px');
+
   }
 
 
@@ -76,7 +77,7 @@ export class FlChartComponent implements OnInit {
         onClick: () => this.state.downloadSVG()
       }];
 
-    if (this.state.zoomEnabled) {
+    if (this.state.zoomBrush) {
       menu.push(
         // Reset zoom
         {

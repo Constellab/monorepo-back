@@ -4,7 +4,7 @@ import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
 
 export interface FlLegend {
   key: any; // unique key that will be used by the color scale
-  name: string; // human readable name of the legend
+  name: string; // Human-readable name of the legend
 }
 
 /**
@@ -14,24 +14,22 @@ export class FlChartLegendMultiSeries extends FlChartLegend {
 
   private readonly circleRadius: number = 5;
 
-  constructor(parent: Selection<any, any, any, any>, width: number,
-              height: number,
-              private legends: FlLegend[],
+  constructor(private legends: FlLegend[],
               public colorScale: FlChartScaleColor) {
-    super(parent, width, height);
+    super();
   }
 
-  renderLegend(): void {
-    let size: number = this.width / this.legends.length;
+  renderLegend(parent: Selection<any, any, any, any>, width: number): void {
+    let size: number = width / this.legends.length;
     let offset: number = this.circleRadius;
 
     // if there is enough space for an offset
     if (size > 50) {
       offset = 20;
-      size = (this.width - offset) / this.legends.length;
+      size = (width - offset) / this.legends.length;
     }
 
-    const legend = this.parent.selectAll()
+    const legend = parent.selectAll()
       .data(this.legends)
       .enter().append('g')
       .attr('transform', (d, i) => `translate(${(i * size) + offset},0)`);

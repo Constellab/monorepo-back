@@ -22,10 +22,11 @@ export class BioxResourceViewPortalComponent implements OnInit {
     if(input.type === 'multi-view'){
       this.width = 'min(1000px, 90vw)';
       this.height = 'min(1000px, 90vh)';
-    }else{
-      this.width = '400px';
-      this.height = '400px';
     }
+    // else{
+    //   this.width = '400px';
+    //   this.height = '400px';
+    // }
   }
 
   ngOnInit(): void {

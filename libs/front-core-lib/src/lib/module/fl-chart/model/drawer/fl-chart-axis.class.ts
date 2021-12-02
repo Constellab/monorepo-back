@@ -42,7 +42,7 @@ export class FlChartAxis {
     return this;
   }
 
-  public create(parent: Selection<any, void, null, undefined>, chartHeight: number, chartWidth: number): this {
+  public draw(parent: Selection<any, void, null, undefined>, chartHeight: number, chartWidth: number): this {
     this.axisContainer = parent.append('g')
       .attr('transform', this.getAxisTransform(chartHeight, chartWidth))
       .call(this.createAxis());

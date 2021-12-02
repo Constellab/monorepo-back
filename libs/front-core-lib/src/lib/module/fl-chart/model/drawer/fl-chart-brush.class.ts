@@ -12,11 +12,8 @@ export abstract class FlChartBrush {
 
   public brushContainer: Selection<any, any, null, null>;
 
-  protected constructor(brush: BrushBehavior<any>,
-                        chart: FlChartContainer2Axis<any>) {
+  protected constructor(brush: BrushBehavior<any>) {
     this.brush = brush;
-    this.chart = chart;
-    this.initBrush();
   }
 
   public abstract zoom(extent: any): void;
@@ -27,7 +24,8 @@ export abstract class FlChartBrush {
    * Create the brush and listen to end and dblclick events
    * @private
    */
-  private initBrush(): void {
+  public initBrush(chart: FlChartContainer2Axis<any>): void {
+    this.chart = chart;
     // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
     this.brush.extent([[0, 0], [this.chart.chartWidth, this.chart.chartHeight]])
 
@@ -72,8 +70,8 @@ export abstract class FlChartBrush {
 
 export class FlChart2dBrush extends FlChartBrush {
 
-  constructor(chart: FlChartContainer2Axis<any>) {
-    super(brush(), chart);
+  constructor() {
+    super(brush());
   }
 
 
@@ -88,8 +86,8 @@ export class FlChart2dBrush extends FlChartBrush {
 
 export class FlChart2dBrushX extends FlChartBrush {
 
-  constructor(chart: FlChartContainer2Axis<any>) {
-    super(brushX(), chart);
+  constructor() {
+    super(brushX());
   }
 
 
@@ -104,8 +102,8 @@ export class FlChart2dBrushX extends FlChartBrush {
 
 export class FlChart2dBrushY extends FlChartBrush {
 
-  constructor(chart: FlChartContainer2Axis<any>) {
-    super(brushY(), chart);
+  constructor() {
+    super(brushY());
   }
 
 
