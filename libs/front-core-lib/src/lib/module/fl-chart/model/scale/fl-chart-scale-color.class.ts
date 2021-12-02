@@ -50,7 +50,13 @@ export class FlChartScaleColorLinear implements FlChartScaleColor {
 
   public readonly d3Scale: ScaleLinear<string, string>;
 
-  constructor(domain: number[]) {
+  /**
+   *
+   * @param domain domain of the values
+   * @param fromColor color for lowest value
+   * @param toColor color for highest value
+   */
+  constructor(domain: number[], private fromColor: string = FlColorHelper.blue, private toColor: string = FlColorHelper.red) {
     this.d3Scale = this.initScale();
     this.d3Scale.domain(domain);
   }
@@ -58,7 +64,7 @@ export class FlChartScaleColorLinear implements FlChartScaleColor {
   private initScale(): ScaleLinear<string, string> {
     // the range contains all available colors
     return scaleLinear<string>()
-      .range(['white', '#69b3a2']);
+      .range([this.fromColor, this.toColor]);
   }
 
   public scale(value: number): string {

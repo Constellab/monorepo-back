@@ -40,6 +40,14 @@ export class FlColorHelper {
     //   '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999'];
     // color for color blind : https://jfly.uni-koeln.de/color/
     return ['#e69f00', '#56b4e9', '#009e73', '#f0e442',
-      '#0072b2', '#d55c00', '#cc79a7'];
+      FlColorHelper.blue, FlColorHelper.red, '#cc79a7'];
+  }
+
+  public static get blue(): string{
+    return '#0072b2'
+  }
+
+  public static get red(): string{
+    return '#d55c00'
   }
 }
