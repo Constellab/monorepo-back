@@ -31,6 +31,11 @@
         </button>
       </ng-container>
 
+      <mat-icon *ngIf="experiment.isValidated"
+                [matTooltip]="'biox.experiment_validated' | translate">
+        verified
+      </mat-icon>
+
       <fl-status-chip [status]="experiment" mode="iconText"
                       class="status" (click)="openProgressInformation()"
                       [ngClass]="{'g-clickable': experiment.status !== 'DRAFT'}"></fl-status-chip>
