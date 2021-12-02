@@ -60,14 +60,11 @@ export class FlSpreadsheetChartSelectionFactory {
       case FlChartType.BAR_PLOT:
       case FlChartType.STACKED_PLOT:
       case FlChartType.BOX_PLOT:
+      case FlChartType.HEAT_MAP:
         series = FlSpreadsheetChartSelectionFactory.createMultiplesSeriesForY(dataSelection);
         break;
       case FlChartType.HISTOGRAM:
         series = FlSpreadsheetChartSelectionFactory.createSingleSerieForY(dataSelection);
-        break;
-      case FlChartType.HEAT_MAP:
-        // create a single selection only from the first selection
-        series = FlSpreadsheetChartSelectionFactory.createSingleSerieForY(dataSelection.selections[0]);
         break;
       default:
         console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${chartType} is not supported`);
@@ -168,17 +165,11 @@ export class FlSpreadsheetChartSelectionFactory {
       case FlChartType.BOX_PLOT:
       case FlChartType.BAR_PLOT:
       case FlChartType.STACKED_PLOT:
-        return {
-          serie: serie,
-          mode: 'onlyY',
-          ySelectionMode: 'multi',
-        };
-      // in heat we only allow single selection to have a clean 2d array
       case FlChartType.HEAT_MAP:
         return {
           serie: serie,
           mode: 'onlyY',
-          ySelectionMode: 'single',
+          ySelectionMode: 'multi',
         };
       default:
         console.error(`[FlSpreadsheetChartSelectionFactory] The chart type ${chartType} is not supported`);
@@ -193,7 +184,6 @@ export class FlSpreadsheetChartSelectionFactory {
   public static getNbMaxOfSeries(chartType: FlChartType): number {
     switch (chartType) {
       case FlChartType.HISTOGRAM:
-      case FlChartType.HEAT_MAP:
         return 1;
       default:
         return Infinity;

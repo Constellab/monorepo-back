@@ -21,7 +21,6 @@ export function bioxHeatMapToChart(view: BioxResourceViewHeatMap): FlChartConfig
   const series: FlChart2dMultiSerie<FlChart3dDatum> = new FlChart2dMultiSerie();
 
   let columnIndex: number = 0;
-  // todo a améliorer car dupliqué dans FlSheetChartSelectionHeatMap
   for (const columnName in view.data) {
     // convert all the column data into a 3d datum, where x = columnIndex, y = index of value and z = value as number
     const data: FlChart3dDatum[] = view.data[columnName].map(
