@@ -140,7 +140,7 @@ export class UploadFsNodeDialogComponent implements OnInit {
       trackHttpEvents: true,
     };
 
-    this.actionsService.addAction(action, true);
+    this.actionsService.addAction(action, false);
     this.dialogRef.close();
   }
 

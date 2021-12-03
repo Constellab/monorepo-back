@@ -30,7 +30,7 @@ export class FlPortalActionsService {
   }
 
   /**
-   * A an action or multiple actions to the action portal
+   * Add an action or multiple actions to the action portal
    * If portal is closed, it opens it
    * @param actions
    * @param autoClose if true, the portal is close after all the action finished (with a small delay)
