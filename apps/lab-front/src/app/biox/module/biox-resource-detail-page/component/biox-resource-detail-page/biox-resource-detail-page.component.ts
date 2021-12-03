@@ -1,7 +1,7 @@
-import {Component, ElementRef, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {BioxResourceService} from '../../../../../core/entity-service/biox-resource.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Observable} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
 import {first, tap} from 'rxjs/operators';
 import {BioxResourceDetailPageState, BioxResourceViewEvent} from '../../state/biox-resource-detail-page.state';
@@ -19,9 +19,15 @@ import {
   BioxResourceViewTypeInfo,
   constBioxResourceViewTypeInfos
 } from '../../../../../core/model/entities/resource/biox-resource-view.entity';
-import {BioxResourceViewSpecsPortalComponent} from '../biox-resource-view-specs-portal/biox-resource-view-specs-portal.component';
-import {BioxResourceViewPortalComponent} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-view-portal/biox-resource-view-portal.component';
-import {bioxResourceViewGetComponentType} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-view/biox-resource-view.component';
+import {
+  BioxResourceViewSpecsPortalComponent
+} from '../biox-resource-view-specs-portal/biox-resource-view-specs-portal.component';
+import {
+  BioxResourceViewPortalComponent
+} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-view-portal/biox-resource-view-portal.component';
+import {
+  bioxResourceViewGetComponentType
+} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-view/biox-resource-view.component';
 import {BioxTagService} from '../../../../../core/entity-service/biox-tag.service';
 import {BioxTag} from '../../../../../core/model/entities/biox-tag.entity';
 
@@ -31,7 +37,7 @@ import {BioxTag} from '../../../../../core/model/entities/biox-tag.entity';
   styleUrls: ['./biox-resource-detail-page.component.scss'],
   providers: [BioxResourceDetailPageState]
 })
-export class BioxResourceDetailPageComponent implements OnInit {
+export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
 
   @ViewChild('viewSpecButton', {static: false, read: ElementRef}) viewSpecButton: ElementRef<HTMLElement>;
   @ViewChild('viewContainer', {static: false, read: ViewContainerRef}) viewContainer: ViewContainerRef;
@@ -46,6 +52,8 @@ export class BioxResourceDetailPageComponent implements OnInit {
 
   showLoader: boolean = true;
   errorText: string;
+
+  private subscription: Subscription;
 
   constructor(private resourceService: BioxResourceService,
               private route: ActivatedRoute,
@@ -69,7 +77,7 @@ export class BioxResourceDetailPageComponent implements OnInit {
       tap(resource => this.initTitle(resource))
     );
 
-    this.state.getView$().subscribe(
+    this.subscription = this.state.getView$().subscribe(
       view => this.initView(view)
     );
   }
@@ -155,4 +163,10 @@ export class BioxResourceDetailPageComponent implements OnInit {
       }
     );
   }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
+
+
 }
