@@ -2,7 +2,7 @@ import {ClCsvJson, ClNumberHelper} from '@monorepo/core-lib';
 import {
   FlChart2dMultiSerie,
   FlChart3dDatum,
-  FlChartConfig2,
+  FlChartConfig,
   FlChartHeatMap,
   FlChartSerie
 } from '@monorepo/front-core-lib';
@@ -17,7 +17,7 @@ export interface BioxResourceViewHeatMap {
  * Convert the heat map view to a FlChart object
  * @param view
  */
-export function bioxHeatMapToChart(view: BioxResourceViewHeatMap): FlChartConfig2 {
+export function bioxHeatMapToChart(view: BioxResourceViewHeatMap): FlChartConfig {
   const series: FlChart2dMultiSerie<FlChart3dDatum> = new FlChart2dMultiSerie();
 
   let columnIndex: number = 0;

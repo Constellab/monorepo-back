@@ -21,5 +21,6 @@ export * from './fl-flat-tree-control.class';
 export * from './fl-form.class';
 export * from './fl-form-helper';
 export * from './fl-renderer-listener-obs.class';
+export * from './fl-resize-observable.class';
 export * from './fl-status-event.class';
 export * from './fl-view-context.class';

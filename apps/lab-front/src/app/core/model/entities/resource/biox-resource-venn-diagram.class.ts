@@ -1,4 +1,4 @@
-import {FlChartConfig2, FlChartVennData, FlChartVennDiagram} from '@monorepo/front-core-lib';
+import {FlChartConfig, FlChartVennData, FlChartVennDiagram} from '@monorepo/front-core-lib';
 
 export interface BioxResourceVennDiagram {
   type: 'venn-diagram-view';
@@ -20,7 +20,7 @@ export interface BioxResourceVennDiagramData {
  * Convert a venn diagram view to a FlChart object
  * @param view
  */
-export function bioxVennDiagramToChart(view: BioxResourceVennDiagram): FlChartConfig2 {
+export function bioxVennDiagramToChart(view: BioxResourceVennDiagram): FlChartConfig {
   const data: FlChartVennData = {
     totalNbOfGroups: view.data.total_number_of_groups,
     groupNames: view.data.group_names,

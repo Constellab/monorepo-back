@@ -2,7 +2,7 @@ import {
   FlChartBoxPlot,
   FlChartBoxPlotData,
   FlChartBoxPlotSerie,
-  FlChartConfig2,
+  FlChartConfig,
   FlChartMultiSerie
 } from '@monorepo/front-core-lib';
 
@@ -37,7 +37,7 @@ export interface BioxResourceViewBoxPlotSerie {
  * Function to convert the box plot view to a chart
  * @param view
  */
-export function bioxBoxPlotToChart(view: BioxResourceViewBoxPlot): FlChartConfig2 {
+export function bioxBoxPlotToChart(view: BioxResourceViewBoxPlot): FlChartConfig {
   const series: FlChartMultiSerie<FlChartBoxPlotData> = new FlChartMultiSerie();
 
   for (const viewSerie of view.data.series) {

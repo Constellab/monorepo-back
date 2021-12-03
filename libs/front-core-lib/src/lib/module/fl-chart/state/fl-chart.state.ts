@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FlChartSvg} from '../model/drawer/fl-chart-svg.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../model/drawer/fl-chart-container.class';
 import {FlThemeService} from '../../../service/fl-theme.service';
-import {FlChartConfig2} from '../model/fl-chart-config.class';
+import {FlChartConfig} from '../model/fl-chart-config.class';
 import {FlChartBrush} from '../model/drawer/fl-chart-brush.class';
 import {FlChartLegend} from '../model/legend/fl-chart-legend.class';
 
@@ -11,7 +11,7 @@ import {FlChartLegend} from '../model/legend/fl-chart-legend.class';
 export class FlChartState {
 
   public chartSVG: FlChartSvg;
-  public chart: FlChartConfig2;
+  public chart: FlChartConfig;
 
   public chartContainer: FlChartContainer<any>;
   public zoomBrush?: FlChartBrush;
@@ -20,7 +20,7 @@ export class FlChartState {
   constructor(private themeService: FlThemeService) {
   }
 
-  public initData(chart: FlChartConfig2): void {
+  public initData(chart: FlChartConfig): void {
     this.chart = chart;
   }
 

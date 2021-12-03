@@ -5,15 +5,7 @@ import {FlChartBrush} from './drawer/fl-chart-brush.class';
 /**
  * Config object to draw a new chart
  */
-export class FlChartConfig {
-
-  chartContainer: FlChartContainer<any>;
-  legend?: FlChartLegend;
-  zoomBrush?: FlChartBrush;
-}
-
-
-export abstract class FlChartConfig2 {
+export abstract class FlChartConfig {
   abstract getChartContainer(): FlChartContainer<any>;
 
   abstract getLegend(): FlChartLegend;

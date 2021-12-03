@@ -1,4 +1,4 @@
-import {FlChartConfig2} from '../fl-chart-config.class';
+import {FlChartConfig} from '../fl-chart-config.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
 import {FlChartLegend} from '../legend/fl-chart-legend.class';
 import {FlChart2dBrushX, FlChartBrush} from '../drawer/fl-chart-brush.class';
@@ -11,7 +11,7 @@ import {FlChartRendererStackedBarPlot} from '../../renderer/fl-chart-renderer-st
 import {FlChartRendererBarPlot} from '../../renderer/fl-chart-renderer-bar.plot';
 import {FlChartScaleBand, FlChartScaleLinear, FlChartScaleNumber} from '../scale/fl-chart-scale.class';
 
-abstract class FlChartBar extends FlChartConfig2 {
+abstract class FlChartBar extends FlChartConfig {
 
   protected readonly seriesColorScale: FlChartScaleColor;
 

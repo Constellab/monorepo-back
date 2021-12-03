@@ -1,4 +1,4 @@
-import {FlChartConfig2} from '../fl-chart-config.class';
+import {FlChartConfig} from '../fl-chart-config.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
 import {FlChartLegend} from '../legend/fl-chart-legend.class';
 import {FlChartBrush} from '../drawer/fl-chart-brush.class';
@@ -11,7 +11,7 @@ import {FlChartScaleBand} from '../scale/fl-chart-scale.class';
 import {FlChartAxis, FlChartAxisBand} from '../drawer/fl-chart-axis.class';
 import {FlChartRendererHeatMap} from '../../renderer/fl-chart-renderer-heat-map.plot';
 
-export class FlChartHeatMap extends FlChartConfig2 {
+export class FlChartHeatMap extends FlChartConfig {
 
   private readonly colorScale: FlChartScaleColor;
   private readonly domain: [number, number];

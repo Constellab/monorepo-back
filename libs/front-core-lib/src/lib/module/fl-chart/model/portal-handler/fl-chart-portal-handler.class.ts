@@ -4,6 +4,7 @@ import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {flRootInjector} from '../../../../utils/fl-root-injector';
 import {FlRelativeOverlayConfig} from '../../../fl-portal/model/fl-portal.class';
 import {FlPortalConfig} from '../../../fl-portal/model/fl-portal-config.class';
+import {NgZone} from '@angular/core';
 
 /**
  * Used to opening and closing portal
@@ -15,6 +16,7 @@ export class FlChartPortalHandler {
 
   public openPortal(element: Element, component: ComponentType<any>, data: any): void {
     const portalService: FlPortalService = flRootInjector.get(FlPortalService);
+    const ngZone: NgZone = flRootInjector.get(NgZone);
 
     // get the overlay config form config or the default one
     const overlayConfig: FlRelativeOverlayConfig = {
@@ -36,8 +38,12 @@ export class FlChartPortalHandler {
     const portalConfig: FlPortalConfig =
       portalService.configureRelativePortal(element, positions, overlayConfig);
 
-    // create the portal
-    this.currentHoverOverlay = portalService.createPortal(component, portalConfig, data);
+    // run the portal in NgZone because all the chart is outside zone
+    ngZone.run(() => {
+      // create the portal
+      this.currentHoverOverlay = portalService.createPortal(component, portalConfig, data);
+    });
+
   }
 
   public closePortal(): void {

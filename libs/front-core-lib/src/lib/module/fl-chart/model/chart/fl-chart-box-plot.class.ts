@@ -1,4 +1,4 @@
-import {FlChartConfig2} from '../fl-chart-config.class';
+import {FlChartConfig} from '../fl-chart-config.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
 import {FlChartLegend} from '../legend/fl-chart-legend.class';
 import {FlChart2dBrushX, FlChartBrush} from '../drawer/fl-chart-brush.class';
@@ -12,7 +12,7 @@ import {FlChartDomain} from '../fl-chart-domain.class';
 import {FlChartRendererBoxPlot} from '../../renderer/fl-chart-renderer-box.plot';
 
 // Config box plot
-export class FlChartBoxPlot extends FlChartConfig2 {
+export class FlChartBoxPlot extends FlChartConfig {
 
   protected readonly seriesColorScale: FlChartScaleColor;
 

@@ -1,8 +1,14 @@
-import {Directive, ElementRef, Input, NgZone, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output, Renderer2} from '@angular/core';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 
-type FlResizeMode = 'width' | 'height' | 'both'
+export type FlResizeMode = 'width' | 'height' | 'both'
+
+export interface FlResizeEvent {
+  mode: FlResizeMode;
+  width: number; // new width of the element
+  height: number; // new height of the element
+}
 
 /**
  * Directive be able to resize the host element
@@ -26,10 +32,7 @@ export class FlResizeDirective implements OnInit, OnDestroy {
    */
   @Input() flResizeSize: number = 6;
 
-  /**
-   * Min size during resizing
-   */
-  @Input() flMinSize: number = 5;
+  @Output() flResizeChanged: EventEmitter<FlResizeEvent> = new EventEmitter();
 
   private mouseDownListeners: (() => void)[] = [];
   private mouseUpListener: () => void;
@@ -89,6 +92,7 @@ export class FlResizeDirective implements OnInit, OnDestroy {
     });
   }
 
+  // generate the resize HTML element
   private getResizeElement(resizeMode: FlResizeMode): HTMLElement {
     const div: HTMLElement = this.renderer.createElement('div');
     this.renderer.setStyle(div, 'position', 'absolute');
@@ -127,6 +131,13 @@ export class FlResizeDirective implements OnInit, OnDestroy {
   }
 
 
+  /**
+   * Event called on a resize element mouse down. This save the resize mode, mouse pos and element size
+   * It create a mouse move event to track mouse moves
+   * @param event
+   * @param resizeMode
+   * @private
+   */
   private onMouseDown(event: MouseEvent, resizeMode: FlResizeMode): void {
     ClHelpService.stopEventPropagation(event);
 
@@ -138,8 +149,8 @@ export class FlResizeDirective implements OnInit, OnDestroy {
     };
 
     this.baseHostSize = {
-      x: this.elementRef.nativeElement.clientWidth,
-      y: this.elementRef.nativeElement.clientHeight
+      x: this.hostWidth,
+      y: this.hostHeight
     };
 
     // add a mouse move event to change the size of the parent
@@ -152,7 +163,6 @@ export class FlResizeDirective implements OnInit, OnDestroy {
   }
 
   private onMouseMove(event: MouseEvent): void {
-
     switch (this.currentResizeMode) {
       case 'width':
         this.changeWidth(event.pageX);
@@ -166,17 +176,24 @@ export class FlResizeDirective implements OnInit, OnDestroy {
         break;
     }
 
+    // trigger change event
+    this.flResizeChanged.next({
+      mode: this.currentResizeMode,
+      width: this.hostWidth,
+      height: this.hostHeight,
+    });
+
   }
 
   private changeWidth(x: number): void {
-    const newWidth: number = Math.max(this.baseHostSize.x + x - this.baseEventPos.x, this.flMinSize);
+    const newWidth: number = this.baseHostSize.x + x - this.baseEventPos.x;
 
     // update the host with
     this.renderer.setStyle(this.elementRef.nativeElement, 'width', newWidth + 'px');
   }
 
   private changeHeight(y: number): void {
-    const newHeight: number = Math.max(this.baseHostSize.y + y - this.baseEventPos.y, this.flMinSize);
+    const newHeight: number = this.baseHostSize.y + y - this.baseEventPos.y;
 
     // update the host height
     this.renderer.setStyle(this.elementRef.nativeElement, 'height', newHeight + 'px');
@@ -188,6 +205,15 @@ export class FlResizeDirective implements OnInit, OnDestroy {
     this.baseEventPos = null;
     this.baseHostSize = null;
   }
+
+  private get hostWidth(): number {
+    return this.elementRef.nativeElement.clientWidth;
+  }
+
+  private get hostHeight(): number {
+    return this.elementRef.nativeElement.clientHeight;
+  }
+
 
   ngOnDestroy(): void {
     // clear all the mouse down event

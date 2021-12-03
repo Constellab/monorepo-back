@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {BioxResourceViewDirective} from '../../model/biox-resource-view-component.class';
-import {FlChartConfig2} from '@monorepo/front-core-lib';
+import {FlChartConfig} from '@monorepo/front-core-lib';
 import {bioxBasicPlotToChart} from '../../../../model/entities/resource/biox-resource-view-basic-plot-2d.class';
 import {bioxBoxPlotToChart} from '../../../../model/entities/resource/biox-resource-view-box-plot.class';
 import {bioxHeatMapToChart} from '../../../../model/entities/resource/biox-resource-view-heat-map.class';
@@ -18,7 +18,7 @@ import {bioxVennDiagramToChart} from '../../../../model/entities/resource/biox-r
 export class BioxResourceChart2dComponent
   extends BioxResourceViewDirective implements OnInit {
 
-  chart: FlChartConfig2;
+  chart: FlChartConfig;
 
 
   ngOnInit(): void {

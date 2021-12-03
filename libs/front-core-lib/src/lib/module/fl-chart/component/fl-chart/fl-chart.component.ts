@@ -1,10 +1,12 @@
-import {Component, ElementRef, HostListener, Input, OnInit, Renderer2} from '@angular/core';
+import {Component, ElementRef, HostListener, Input, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {FlThemeService} from '../../../../service/fl-theme.service';
 import {FlChartState} from '../../state/fl-chart.state';
 import {FlMenuDynamic} from '../../../fl-menu-dynamic/model/fl-menu-dynamic.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlMenuDynamicService} from '../../../fl-menu-dynamic/fl-menu-dynamic.service';
-import {FlChartConfig2} from '../../model/fl-chart-config.class';
+import {FlChartConfig} from '../../model/fl-chart-config.class';
+import {debounceTime, filter, map} from 'rxjs/operators';
+import {FlResizeObservable} from '../../../../model/fl-resize-observable.class';
 
 /**
  * Component to show a chart, must be included in the FlChartContainer
@@ -17,10 +19,10 @@ import {FlChartConfig2} from '../../model/fl-chart-config.class';
   styleUrls: ['./fl-chart.component.scss'],
   providers: [FlChartState]
 })
-export class FlChartComponent implements OnInit {
+export class FlChartComponent implements OnInit, OnDestroy {
 
 
-  @Input() chart: FlChartConfig2;
+  @Input() chart: FlChartConfig;
 
 
   /**
@@ -28,7 +30,10 @@ export class FlChartComponent implements OnInit {
    */
   @Input() contextMenuItems: FlMenuDynamic[];
 
-  // @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
+  private previousWidth: number;
+  private previousHeight: number;
+
+  private resizeObs: FlResizeObservable;
 
   @HostListener('contextmenu', ['$event'])
   contextMenu(event: MouseEvent): void {
@@ -40,16 +45,19 @@ export class FlChartComponent implements OnInit {
               private state: FlChartState,
               private menuService: FlMenuDynamicService,
               private elementRef: ElementRef<HTMLElement>,
-              private renderer: Renderer2) {
+              private ngZone: NgZone) {
   }
 
   ngOnInit(): void {
-    setTimeout(() => this.initChart(), 0);
+    // run the whole chart outside angular zone to improve performance
+    this.ngZone.runOutsideAngular(() => {
+      setTimeout(() => this.initChart(), 0);
+    });
   }
 
   private initChart(): void {
-    let width = this.elementRef.nativeElement.clientWidth;
-    let height = this.elementRef.nativeElement.clientHeight;
+    let width = this.hostWidth;
+    let height = this.hostHeight;
 
     // set a default width and height
     if (width <= 0 || height <= 0) {
@@ -61,10 +69,39 @@ export class FlChartComponent implements OnInit {
     this.state.initChart(width, height,
       this.elementRef.nativeElement);
 
-    // fix the container size (because it can be altered when generating the svg) the same size as the SVG
-    this.renderer.setStyle(this.elementRef.nativeElement, 'width', this.state.chartSVG.width + 'px');
-    this.renderer.setStyle(this.elementRef.nativeElement, 'height', this.state.chartSVG.height + 'px');
+    this.previousWidth = width;
+    this.previousHeight = height;
 
+    this.subscribeToResize();
+
+  }
+
+  // function to subscribe to host resize to redraw the chart
+  private subscribeToResize(): void {
+    this.resizeObs = new FlResizeObservable(this.elementRef.nativeElement);
+
+    this.resizeObs.getObs().pipe(
+      debounceTime(250),
+      map(() => ({x: this.hostWidth, y: this.hostHeight})),
+      filter(size => size.x !== this.previousWidth || size.y !== this.previousHeight)).subscribe(
+      size => this.redrawChart(size.x, size.y),
+    );
+  }
+
+  // clear the svg and rebuild the chart
+  private redrawChart(width: number, height: number): void {
+    console.log('Redraw chart');
+    this.state.chartSVG.svg.remove();
+    this.state.initChart(width, height, this.elementRef.nativeElement);
+  }
+
+
+  private get hostWidth(): number {
+    return this.elementRef.nativeElement.clientWidth;
+  }
+
+  private get hostHeight(): number {
+    return this.elementRef.nativeElement.clientHeight;
   }
 
 
@@ -93,4 +130,10 @@ export class FlChartComponent implements OnInit {
 
     this.menuService.openDynamicMenuFromMouseEvent(menu, mouseEvent);
   }
+
+  ngOnDestroy(): void {
+    this.resizeObs?.disconnect();
+  }
+
+
 }

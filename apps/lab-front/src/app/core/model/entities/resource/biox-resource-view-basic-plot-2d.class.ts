@@ -2,7 +2,7 @@ import {
   FlChart2dDatum,
   FlChart2dMultiSerie,
   FlChartBarPlot,
-  FlChartConfig2,
+  FlChartConfig,
   FlChartLine2d,
   FlChartScatterPlot2d,
   FlChartSerie,
@@ -35,7 +35,7 @@ export interface BioxResourceViewChart2dSerie {
  * Build a FlChart from a basic resource view
  * @param view
  */
-export function bioxBasicPlotToChart(view: BioxResourceViewBasicPlot2d): FlChartConfig2 {
+export function bioxBasicPlotToChart(view: BioxResourceViewBasicPlot2d): FlChartConfig {
   const series: FlChart2dMultiSerie<FlChart2dDatum> = bioxResourceBuildBasicChart2d(view);
 
   switch (view.type) {

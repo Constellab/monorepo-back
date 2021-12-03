@@ -10,9 +10,9 @@ import {FlChart2dBrush, FlChartBrush} from '../drawer/fl-chart-brush.class';
 import {FlChart2AxisRenderer} from '../../renderer/fl-chart-renderer.class';
 import {FlChartRendererLine} from '../../renderer/fl-chart-renderer-line.plot';
 import {FlChartRendererScatterPlot} from '../../renderer/fl-chart-renderer-scatter.plot';
-import {FlChartConfig2} from '../fl-chart-config.class';
+import {FlChartConfig} from '../fl-chart-config.class';
 
-abstract class FlChartLinear2d extends FlChartConfig2 {
+abstract class FlChartLinear2d extends FlChartConfig {
 
   protected readonly seriesColorScale: FlChartScaleColor;
 

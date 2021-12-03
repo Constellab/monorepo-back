@@ -1,4 +1,4 @@
-import {FlChartConfig2} from '../fl-chart-config.class';
+import {FlChartConfig} from '../fl-chart-config.class';
 import {FlChartContainer, FlChartContainerNoAxis} from '../drawer/fl-chart-container.class';
 import {FlChartLegend} from '../legend/fl-chart-legend.class';
 import {FlChartBrush} from '../drawer/fl-chart-brush.class';
@@ -7,7 +7,7 @@ import {FlChartVennData} from '../data/fl-chart-venn-data.class';
 import {FlChartLegendMultiSeries, FlLegend} from '../legend/fl-chart-legend-multi-series.class';
 import {FlChartRendererVennDiagram} from '../../renderer/fl-chart-renderer-venn-diagram.plot';
 
-export class FlChartVennDiagram extends FlChartConfig2 {
+export class FlChartVennDiagram extends FlChartConfig {
 
   private readonly colorScale: FlChartScaleColor;
 

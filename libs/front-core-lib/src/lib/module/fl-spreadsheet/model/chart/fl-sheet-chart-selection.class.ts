@@ -6,7 +6,7 @@ import {FlSheetSelection} from '../selection/fl-sheet-selection.class';
 import {FlChart2dDatum} from '../../../fl-chart/model/data/fl-chart-data.class';
 import {ClHelpService, ClNumberHelper} from '@monorepo/core-lib';
 import {FlSheetChartSelectionForm} from './fl-sheet-chart-selection-form.class';
-import {FlChartConfig2} from '../../../fl-chart/model/fl-chart-config.class';
+import {FlChartConfig} from '../../../fl-chart/model/fl-chart-config.class';
 
 /**
  * Object to store the chart selection and contain a method to export the selection to series
@@ -26,7 +26,7 @@ export abstract class FlSheetChartSelection {
   /**
    * Method to convert the selection to a multiple series
    */
-  public abstract exportToChart(): FlChartConfig2;
+  public abstract exportToChart(): FlChartConfig;
 
 
   /**

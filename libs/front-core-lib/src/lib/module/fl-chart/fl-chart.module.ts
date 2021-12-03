@@ -24,6 +24,7 @@ import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
 import {MatDividerModule} from '@angular/material/divider';
 import {FlChartHeatMapDataPortalComponent} from './component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
 import { FlChartVennDataPortalComponent } from './component/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
+import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 
 /**
  * Main module exporting all the chart modules
@@ -62,6 +63,7 @@ import { FlChartVennDataPortalComponent } from './component/fl-chart-venn-data-p
     FlSvgIconModule,
     FlTranslateModule,
     FlMenuDynamicModule,
+    FlCoreDirectiveModule,
 
     DragDropModule,
     MatButtonModule,

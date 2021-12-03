@@ -1,6 +1,6 @@
 import {
   FlChart2dMultiSerie,
-  FlChartConfig2,
+  FlChartConfig,
   FlChartDataBin,
   FlChartHistogram,
   FlChartSerie
@@ -29,7 +29,7 @@ export interface BioxResourceViewHistogramSerie {
  * Convert a resource histogram view to a Chart
  * @param view
  */
-export function bioxHistogramToChart(view: BioxResourceViewHistogram): FlChartConfig2 {
+export function bioxHistogramToChart(view: BioxResourceViewHistogram): FlChartConfig {
   const series: FlChart2dMultiSerie<FlChartDataBin> = new FlChart2dMultiSerie();
 
   for (const viewSerie of view.data.series) {

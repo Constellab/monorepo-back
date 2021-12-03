@@ -1,6 +1,7 @@
 import {Component, ComponentFactoryResolver, Inject, OnInit} from '@angular/core';
 import {BioxResourceView} from '../../../../model/entities/resource/biox-resource-view.entity';
-import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
+import {FL_PORTAL_DATA, FlCoord} from '@monorepo/front-core-lib';
+import {Subject} from 'rxjs';
 
 
 @Component({
@@ -14,6 +15,8 @@ export class BioxResourceViewPortalComponent implements OnInit {
 
   width: string;
   height: string;
+
+  private size$ = new Subject<FlCoord>();
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver,
               @Inject(FL_PORTAL_DATA) private input: BioxResourceView) {
@@ -30,6 +33,7 @@ export class BioxResourceViewPortalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.size$.next({x: 400, y: 400})
   }
 
 }
