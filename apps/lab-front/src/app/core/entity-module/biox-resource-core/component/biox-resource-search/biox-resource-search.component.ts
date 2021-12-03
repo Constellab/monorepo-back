@@ -1,7 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {
   FL_SEARCH_PAGE_CONFIG,
-  FlDatasourcePaginated, FlDialogService,
+  FlDatasourcePaginated,
+  FlDialogService,
   FlSavedSearch,
   FlSearchPageConfig,
   FlSearchService,
@@ -69,8 +70,9 @@ export class BioxResourceSearchComponent implements OnInit {
 
   savedSearch: FlSavedSearch[] = savedSearch;
 
-  columns: FlTableColumn<BioxResource>[] = ['id', 'name', 'info',
-    {columnName: 'resource_type', accessor: 'resourceTypeHumanName'}, 'createdAt'];
+  columns: FlTableColumn<BioxResource>[] = ['name', 'info',
+    {columnName: 'resource_type', accessor: 'resourceTypeHumanName'},
+    'tags', 'createdAt'];
 
   files: File[];
 

@@ -16,6 +16,7 @@ import {BioxResourceOrigin} from '../../../model/entities/resource/biox-resource
  */
 export class BioxResourceSearchFields {
   resourceTypingName: string[];
+  name: string;
   tags: FlTag[];
   origin: BioxResourceOrigin;
   data: string;
@@ -47,6 +48,7 @@ export class BioxResourceSearch {
    */
   public static advancedSearchConverter: FlSearchCriteriaConverter<BioxResourceSearchFields> = {
     resourceTypingName: {key: 'resource_typing_name', operator: 'IN'},
+    name: {key: 'name', operator: 'CONTAINS'},
     tags: {key: 'tags', operator: 'EQ', convertValue: FlTagHelper.tagsToString},
     origin: {key: 'origin', operator: 'EQ'},
     data: {key: 'data', operator: 'MATCH'},
@@ -65,6 +67,7 @@ export class BioxResourceSearch {
     return new FormBuilder().group(
       {
         resourceTypingName: [null],
+        name: [null],
         tags: [null],
         origin: [null],
         data: [null],

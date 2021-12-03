@@ -67,6 +67,7 @@
   "stop_dev_api_confirmation": "Are you sure you want to stop the dev server ? You will be redirected to the prod environment. You will be able to restart de dev server on the codelab.",
   "dev_api_stooped": "Dev server stopped",
   "tags": "Tags",
+  "update_tags": "Update tags",
   "is_archived": "Archive",
   "between_the_from": "From the",
   "between_the_to": "to the",

@@ -1,15 +1,26 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output
+} from '@angular/core';
 import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,
   FlDialogService,
-  FlTableAbstractDirective
+  FlTableAbstractDirective,
+  FlTagDialogService
 } from '@monorepo/front-core-lib';
 import {FileResourceService} from '../../../../entity-service/file-resource.service';
 import {RouterService} from '../../../../service/router.service';
 import {BioxResourceService} from '../../../../entity-service/biox-resource.service';
 import {BioxResource, BioxResourceDatasource} from '../../../../model/entities/resource/biox-resource.entity';
 import {ClHelpService} from '@monorepo/core-lib';
+import {BioxTag} from '../../../../model/entities/biox-tag.entity';
+import {BioxTagService} from '../../../../entity-service/biox-tag.service';
 
 @Component({
   selector: 'gen-biox-resource-table',
@@ -29,15 +40,17 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
 
   constructor(private fileService: FileResourceService,
               private resourceService: BioxResourceService,
-              private dialogService: FlDialogService) {
-    super(['createdAt', 'action', 'name', 'info']);
+              private dialogService: FlDialogService,
+              private tagDialogService: FlTagDialogService,
+              private tagService: BioxTagService,
+              private cdr: ChangeDetectorRef) {
+    super(['createdAt', 'action', 'name', 'info', 'tags']);
   }
 
   ngOnInit(): void {
   }
 
-  downloadFile(file: BioxResource, event: MouseEvent): void {
-    ClHelpService.stopEventPropagation(event);
+  downloadFile(file: BioxResource): void {
     this.fileService.downloadFile(file.id, file.name).subscribe();
   }
 
@@ -46,8 +59,7 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
     return RouterService.getBioxResourceDetailRoute(file.id);
   }
 
-  deleteFile(file: BioxResource, event: MouseEvent): void {
-    ClHelpService.stopEventPropagation(event);
+  deleteFile(file: BioxResource): void {
     const input: FlConfirmDialogInput = {
       title: 'databox.delete_file',
       content: 'databox.delete_file_confirmation',
@@ -73,6 +85,26 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
       console.log(resource);
       this.resourceSelected.next(resource);
     }
+  }
+
+  openTagFormDialog(resource: BioxResource): void {
+    this.tagDialogService.openUpdateTagDialog({
+      tags: resource.tags,
+      updateMethod: (tags) => this.tagService.saveTags(resource.typingName, resource.id, tags)
+    }).afterClosed().subscribe(
+      (newTags: BioxTag[]) => this.onTagClosed(resource, newTags)
+    );
+  }
+
+  private onTagClosed(resource: BioxResource, newTags: BioxTag[]): void {
+    if (newTags != null) {
+      resource.tags = newTags;
+      this.cdr.markForCheck();
+    }
+  }
+
+  stopEventPropagation(event: MouseEvent): void{
+    ClHelpService.stopEventPropagation(event);
   }
 
 }

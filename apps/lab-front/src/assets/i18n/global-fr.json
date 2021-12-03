@@ -67,6 +67,7 @@
   "stop_dev_api_confirmation": "Êtes-vous sûr de vouloir arrêter le serveur de dev ? Vous serez rebasculer sur l'environnement de production. Vous pourrez relancer le serveur de dev dans le codelab.",
   "dev_api_stooped": "Serveur de dev arrêté",
   "tags": "Tags",
+  "update_tags": "Modifier les tags",
   "is_archived": "Archiver",
   "between_the_from": "Du",
   "between_the_to": "au",

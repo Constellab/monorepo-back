@@ -32,27 +32,50 @@
     </mat-cell>
   </ng-container>
 
+  <!-- Tags -->
+  <ng-container matColumnDef="tags">
+    <mat-header-cell *matHeaderCellDef class="g-column-width-2">
+      <span> {{'tags' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let resource" class="g-column-width-2 tags">
+      <fl-tag-list [tags]="resource.tags" [limitNumber]="6"></fl-tag-list>
+    </mat-cell>
+  </ng-container>
+
   <!-- Action -->
   <ng-container matColumnDef="action">
-    <mat-header-cell *matHeaderCellDef class="download-column">
+    <mat-header-cell *matHeaderCellDef class="action-column">
     </mat-header-cell>
-    <mat-cell *matCellDef="let resource" class="download-column">
+    <mat-cell *matCellDef="let resource" class="action-column">
       <a [routerLink]="resourceFileRoute(resource)" mat-icon-button
          type="button" color="primary"
          [matTooltip]="'biox.file_resource_open' | translate">
         <mat-icon>preview</mat-icon>
       </a>
 
-      <button mat-icon-button type="button" color="primary"
-              (click)="downloadFile(resource, $event)"
-              [matTooltip]="'biox.file_resource_download' | translate">
-        <mat-icon>cloud_download</mat-icon>
+      <!--   Mat menu containing action buttons   -->
+      <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventPropagation($event)">
+        <mat-icon>more_vert</mat-icon>
       </button>
+      <mat-menu #menu="matMenu" xPosition="before">
+        <button mat-menu-item type="button"
+                (click)="downloadFile(resource)">
+          <mat-icon>cloud_download</mat-icon>
+          <span>{{'biox.file_resource_download' | translate}}</span>
+        </button>
 
-      <button mat-icon-button type="button" color="warn" (click)="deleteFile(resource, $event)"
-              [matTooltip]="'databox.delete_file' | translate">
-        <mat-icon>delete</mat-icon>
-      </button>
+        <button mat-menu-item type="button" (click)="openTagFormDialog(resource)">
+          <mat-icon>local_offer</mat-icon>
+          <span>{{'update_tags' | translate }}</span>
+        </button>
+
+        <button mat-menu-item type="button" (click)="deleteFile(resource)" class="g-warn-text">
+          <mat-icon color="warn">delete</mat-icon>
+          <span>{{'databox.delete_file' | translate}}</span>
+        </button>
+      </mat-menu>
+
+
     </mat-cell>
   </ng-container>
 
