@@ -77,4 +77,8 @@ export class BioxExperimentService {
   public saveTags(id: string, tags: FlTag[]): Observable<BioxTag[]> {
     return this.apiService.put(`${this.route}/${id}/tags`, tags, BioxTag);
   }
+
+  public cloneExperiment(id: string): Observable<BioxExperiment> {
+    return this.apiService.put(`${this.route}/${id}/clone`, null, BioxExperiment);
+  }
 }

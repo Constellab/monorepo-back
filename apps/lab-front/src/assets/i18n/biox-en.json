@@ -66,6 +66,9 @@
     "stop_experiment": "Stop experiment",
     "stop_experiment_confirmation": "Are you sure you want to stop the experiment ?",
     "experiment_stopped": "Experiment stopped",
-    "advanced_configuration": "Advanced config"
+    "advanced_configuration": "Advanced config",
+    "clone_experiment": "Duplicate experiment",
+    "clone_experiment_confirmation": "Do you want to duplicate the experiment ? The processes and the configurations will be copied but not the resources.",
+    "experiment_cloned": "Experiment duplicated"
   }
 }

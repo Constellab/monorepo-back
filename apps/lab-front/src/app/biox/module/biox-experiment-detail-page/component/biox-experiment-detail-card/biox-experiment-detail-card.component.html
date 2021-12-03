@@ -31,6 +31,11 @@
         </button>
       </ng-container>
 
+      <button mat-icon-button type="button" (click)="openDuplicateConfirmation()"
+              [matTooltip]="'biox.clone_experiment' | translate">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+
       <mat-icon *ngIf="experiment.isValidated"
                 [matTooltip]="'biox.experiment_validated' | translate">
         verified

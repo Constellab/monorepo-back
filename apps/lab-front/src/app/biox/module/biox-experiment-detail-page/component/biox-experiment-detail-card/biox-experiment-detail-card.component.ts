@@ -12,13 +12,16 @@ import {
   FlTagDialogService
 } from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {BioxProgressBarInfoDialogComponent} from '../biox-progress-bar-info-dialog/biox-progress-bar-info-dialog.component';
+import {
+  BioxProgressBarInfoDialogComponent
+} from '../biox-progress-bar-info-dialog/biox-progress-bar-info-dialog.component';
 import {map} from 'rxjs/operators';
 import {
   BioxExperimentValidationDialogComponent,
   BioxExperimentValidationDialogInput
 } from '../biox-experiment-validation-dialog/biox-experiment-validation-dialog.component';
 import {BioxExperimentService} from '../../../../../core/entity-service/biox-experiment.service';
+import {RouterService} from '../../../../../core/service/router.service';
 
 /**
  * Experiment card info for the experiment detail page
@@ -37,7 +40,8 @@ export class BioxExperimentDetailCardComponent implements OnInit {
   constructor(private experimentState: BioxExperimentDetailPageState,
               private dialogService: FlDialogService,
               private experimentService: BioxExperimentService,
-              private tagDialogService: FlTagDialogService) {
+              private tagDialogService: FlTagDialogService,
+              private routerService: RouterService) {
   }
 
   ngOnInit(): void {
@@ -133,6 +137,29 @@ export class BioxExperimentDetailCardComponent implements OnInit {
         }
       }
     );
+  }
+
+  openDuplicateConfirmation(): void {
+    const experiment = this.experimentState.currentExperiment;
+
+    const input: FlConfirmDialogInput = {
+      title: 'biox.clone_experiment',
+      content: 'biox.clone_experiment_confirmation',
+      translateTitleAndContent: true,
+      observable: this.experimentService.cloneExperiment(experiment.id),
+      successMessage: 'biox.experiment_cloned',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(input).afterClosed().subscribe(
+      result => this.onDuplicateClosed(result)
+    );
+  }
+
+  private onDuplicateClosed(result: FlConfirmDialogResult<BioxExperiment>): void {
+    if (result.choice) {
+      this.routerService.navigateToBioxExperimentDetail(result.result.id);
+    }
   }
 
 }
