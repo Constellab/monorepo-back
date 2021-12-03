@@ -1,5 +1,6 @@
 import {
-  ChangeDetectionStrategy, ChangeDetectorRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -33,6 +34,8 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[]> implement
   @Input() searchDebounceTime: number = 300;
 
   @Input() label: string = 'flTag.tags';
+
+  @Input() maxLength: number = 20;
 
   @Output() tagChange: EventEmitter<FlTag[]> = new EventEmitter();
 
