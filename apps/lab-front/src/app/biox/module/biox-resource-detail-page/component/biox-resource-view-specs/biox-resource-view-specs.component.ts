@@ -87,7 +87,6 @@ export class BioxResourceViewSpecsComponent implements OnInit {
       {
         elevation: true,
         disposeOnNavigation: true,
-        size: 'medium'
       });
 
     this.portalService.createPortal(BioxConfigureResourceViewComponent, portalConfig, data).detachments().subscribe(

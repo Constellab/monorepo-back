@@ -22,7 +22,7 @@ export interface BioxConfigureResourceViewResult {
 }
 
 /**
- * Dialog to configure resource view spec
+ * Portal to configure resource view spec
  */
 @Component({
   selector: 'gen-biox-configure-resource-view',
