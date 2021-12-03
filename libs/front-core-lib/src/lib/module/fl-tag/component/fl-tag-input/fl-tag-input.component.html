@@ -20,7 +20,7 @@
       [matAutocomplete]="auto"
       [matChipInputFor]="chipList"
       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-      (matChipInputTokenEnd)="addUnknownValue($event)" tabindex="0" [flAutofocus]="300">
+      (matChipInputTokenEnd)="addUnknownValue($event)" tabindex="0">
   </mat-chip-list>
   <mat-autocomplete #auto="matAutocomplete"
                     (optionSelected)="optionSelected($event)" [autoActiveFirstOption]="true">
