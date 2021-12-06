@@ -36,7 +36,7 @@ export class BioxExperimentFormDialogComponent extends FlFormDialogAbstractDirec
   buildForm(): FormGroup<ExperimentSimpleForm> {
     return new FormBuilder().group({
       title: [null, Validators.required],
-      description: [null, Validators.required],
+      description: [null],
       study: [null]
     });
   }
