@@ -26,6 +26,7 @@ export class DaAdminDocFormComponent implements OnInit {
   folders: DaFolder[];
   isUpdate = false;
   isLoading = false;
+  re = new RegExp('^(0|[1-9][0-9]*)$');
 
   constructor(
     private daDocumentationService: DaDocumentationService,
@@ -49,8 +50,8 @@ export class DaAdminDocFormComponent implements OnInit {
       title: [null, Validators.required],
       content: [null, Validators.required],
       folderId: [null, Validators.required],
-      path: [null, Validators.required],
-      order: [null, Validators.required]
+      path: [null, [Validators.required, Validators.pattern('^[a-z0-9A-Z-]+$')]],
+      order: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]]
     })
     if (this.documentation) {
       this.setFormGroupValue(this.documentation);

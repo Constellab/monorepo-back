@@ -37,8 +37,8 @@ export class DaAdminListPageFormDialogComponent extends FlFormDialogAbstractDire
       id: [null],
       title: [null, Validators.required],
       folderId: [null, Validators.required],
-      path: [null, Validators.required],
-      order: [null, Validators.required]
+      path: [null, [Validators.required, Validators.pattern('^[a-z0-9A-Z-]+$')]],
+      order: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]]
     });
   }
 

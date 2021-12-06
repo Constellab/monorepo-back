@@ -32,6 +32,8 @@
   "not_authorized": "Not authorized",
   "connection_lost": "The connection has been lost",
   "session_expired": "Session expired",
+  "order_pattern_error": "The value of 'Order' must be numeric.",
+  "path_pattern_error": "The value of 'Path' is not correct.",
   "dashboard": "Dashboard",
   "settings": "Settings",
   "theme": "Theme",

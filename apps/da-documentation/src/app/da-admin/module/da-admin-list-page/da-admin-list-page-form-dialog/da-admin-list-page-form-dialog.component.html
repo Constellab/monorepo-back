@@ -25,6 +25,9 @@
             {{folder.title}}
           </mat-option>
         </mat-select>
+        <mat-error *ngIf="formGp.get('folderId').hasError('required')">
+          {{'Folder' | flErrorRequired}}
+        </mat-error>
       </mat-form-field>
       <!--  path  -->
       <mat-form-field class="g-form-input" appearance="fill" fxFlex="47" fxFlexOffset="6">
@@ -33,6 +36,9 @@
                placeholder="{{'path' | translate}}">
         <mat-error *ngIf="formGp.get('path').hasError('required')">
           {{'path' | flErrorRequired}}
+        </mat-error>
+        <mat-error *ngIf="formGp.get('path').hasError('pattern')">
+          {{'path_pattern_error' | translate}}
         </mat-error>
       </mat-form-field>
     </div>
@@ -44,6 +50,9 @@
              placeholder="{{'order' | translate}}">
       <mat-error *ngIf="formGp.get('order').hasError('required')">
         {{'order' | flErrorRequired}}
+      </mat-error>
+      <mat-error *ngIf="formGp.get('order').hasError('pattern')">
+        {{'order_pattern_error' | translate}}
       </mat-error>
     </mat-form-field>
   </form>
