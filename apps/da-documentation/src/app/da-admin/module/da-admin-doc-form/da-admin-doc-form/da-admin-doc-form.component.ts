@@ -7,7 +7,7 @@ import {
   DaDocumentationFormDTO
 } from '../../../../da-core/da-model/da-entities/da-documentation.class';
 import {DaDocumentationService} from '../../../../da-core/da-service/da-documentation.service';
-import {FlSnackBarService} from '@monorepo/front-core-lib';
+import {FlGlobalValidators, FlSnackBarService} from '@monorepo/front-core-lib';
 import {Router} from '@angular/router';
 import {DaFolderService} from '../../../../da-core/da-service/da-folder.service';
 import {DaFolder} from '../../../../da-core/da-model/da-entities/da-folder.class';
@@ -21,7 +21,7 @@ export class DaAdminDocFormComponent implements OnInit {
 
   @Input() documentation?: DaDocumentation;
 
-  formGp: FormGroup<DaDocumentationFormDTO>;
+  formGp: FormGroup<Partial<DaDocumentationFormDTO>>;
   folder: DaFolder;
   folders: DaFolder[];
   isUpdate = false;
@@ -51,7 +51,7 @@ export class DaAdminDocFormComponent implements OnInit {
       content: [null, Validators.required],
       folderId: [null, Validators.required],
       path: [null, [Validators.required, Validators.pattern('^[a-z0-9A-Z-]+$')]],
-      order: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]]
+      order: [null, [Validators.required, Validators.min(0), FlGlobalValidators.isInteger()]]
     })
     if (this.documentation) {
       this.setFormGroupValue(this.documentation);
@@ -75,7 +75,7 @@ export class DaAdminDocFormComponent implements OnInit {
     this.formGp.patchValue(doc);
   }
 
-  private create(formValue: DaDocumentationFormDTO): void {
+  private create(formValue: Partial<DaDocumentationFormDTO>): void {
     this.daDocumentationService.create(formValue).subscribe(() => {
       this.creationSuccess();
     },
@@ -87,7 +87,7 @@ export class DaAdminDocFormComponent implements OnInit {
     this.isLoading = false;
   }
 
-  private update(formValue: DaDocumentationFormDTO): void {
+  private update(formValue: Partial<DaDocumentationFormDTO>): void {
     this.daDocumentationService.update(formValue).subscribe(() => {
       this.snackBarService.openSuccessMessage('documentation_uptated', true);
       this.isLoading = false;

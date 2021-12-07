@@ -123,18 +123,19 @@ export class DaAdminListPageComponent implements OnInit {
 
     this.dialogService.openSmallDialog(DaAdminListPageFormDialogComponent, {data: input}).afterClosed().subscribe(
       (res: DaFolder) => {
-        //this.dataSource.updateNodes(new DaNode(res.id, res.path, res.completePath, res.title, res.order, res.folder.id));
-        this.daFolderService.getTree().subscribe(folder => {
-          this.dataSource.data = folder.children;
-          this.expandParentToNode(res.id, this.dataSource.data);
-        });
+        if(res != null) {
+          this.daFolderService.getTree().subscribe(folder => {
+            this.dataSource.data = folder.children;
+            this.expandParentToNode(res.id, this.dataSource.data);
+          });
+        }
       }
     );
   }
 
   openUpdateDialog(node: DaNode): void {
 
-    const folderForm: DaFolderDTO = {
+    const folderForm: Partial<DaFolderDTO> = {
       title: node.name,
       folderId: node.parentId,
       path: node.path,
@@ -142,14 +143,16 @@ export class DaAdminListPageComponent implements OnInit {
       order: node.order
     };
 
-    const input: FlFormDialogInput<DaFolderDTO> = {
+    const input: FlFormDialogInput<Partial<DaFolderDTO>> = {
       object: folderForm,
       mode: 'update'
     };
 
     this.dialogService.openSmallDialog(DaAdminListPageFormDialogComponent, {data: input}).afterClosed().subscribe(
       (res: DaFolder) => {
-        this.setDataSource(res);
+        if(res != null){
+          this.setDataSource(res);
+        }
       }
     );
   }

@@ -1,10 +1,11 @@
 import {BlEntityWithId} from '@monorepo/back-core-lib';
 import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {DnFolder} from '../folder/dn-folder.entity';
+import {DnBaseEntity} from '../core/model/entities/dn-base.entity';
 
 @Unique(['folder', 'order'])
 @Entity('Documentation')
-export class DnDocumentation extends BlEntityWithId {
+export class DnDocumentation extends DnBaseEntity {
 
   @Column()
   title: string;
@@ -23,6 +24,24 @@ export class DnDocumentation extends BlEntityWithId {
 
   @ManyToOne(() => DnFolder)
   folder: DnFolder;
+
+  static newDoc(pId: string, pTitle: string, pContent: string, pPath: string
+    , pCompletePath: string, pOrder: number, pFolder: DnFolder): DnDocumentation
+  {
+    const newDoc: DnDocumentation = new DnDocumentation();
+    newDoc.id = pId;
+    newDoc.title = pTitle;
+    newDoc.content = pContent;
+    newDoc.path = pPath;
+    newDoc.completePath = pCompletePath;
+    newDoc.order = pOrder;
+    newDoc.folder = pFolder;
+    return newDoc;
+  }
+
+  constructor() {
+    super();
+  }
 }
 
 export class DnDocumentationDTO {
@@ -33,7 +52,7 @@ export class DnDocumentationDTO {
 
   completePath?: string;
 
-  order:number;
+  order: number;
 
   constructor(documentation: DnDocumentation) {
     this.path = documentation.path;
@@ -42,7 +61,7 @@ export class DnDocumentationDTO {
   }
 }
 
-export class DnDocumentationResDTO extends BlEntityWithId{
+export class DnDocumentationResDTO extends DnBaseEntity {
   title: string;
 
   content: string;

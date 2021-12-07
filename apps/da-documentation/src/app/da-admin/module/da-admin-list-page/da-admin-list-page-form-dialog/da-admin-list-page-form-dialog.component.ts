@@ -1,5 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
+import {
+  FlFormDialogAbstractDirective,
+  FlFormDialogInput,
+  FlGlobalValidators,
+  FlSnackBarService
+} from '@monorepo/front-core-lib';
 import {DaFolder, DaFolderDTO} from '../../../../da-core/da-model/da-entities/da-folder.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {DaFolderService} from '../../../../da-core/da-service/da-folder.service';
@@ -12,7 +17,7 @@ import {Observable} from 'rxjs';
   templateUrl: './da-admin-list-page-form-dialog.component.html',
   styleUrls: ['./da-admin-list-page-form-dialog.component.scss']
 })
-export class DaAdminListPageFormDialogComponent extends FlFormDialogAbstractDirective<DaFolderDTO, DaFolder> implements OnInit{
+export class DaAdminListPageFormDialogComponent extends FlFormDialogAbstractDirective<Partial<DaFolder>> implements OnInit{
 
   folders: DaFolder[];
 
@@ -32,13 +37,13 @@ export class DaAdminListPageFormDialogComponent extends FlFormDialogAbstractDire
     });
   }
 
-  buildForm(): FormGroup<DaFolderDTO> {
+  buildForm(): FormGroup<Partial<DaFolderDTO>> {
     return new FormBuilder().group({
       id: [null],
       title: [null, Validators.required],
       folderId: [null, Validators.required],
       path: [null, [Validators.required, Validators.pattern('^[a-z0-9A-Z-]+$')]],
-      order: [null, [Validators.required, Validators.pattern('^(0|[1-9][0-9]*)$')]]
+      order: [null, [Validators.required, Validators.min(0), FlGlobalValidators.isInteger()]]
     });
   }
 

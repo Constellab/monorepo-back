@@ -11,7 +11,7 @@ export class DnDocumentationService {
   ) {
   }
 
-  async create(documentation: DnDocumentationDTO): Promise<DnDocumentation> {
+  async create(documentation: DnDocumentation): Promise<DnDocumentation> {
     return await this.documentationsRepository.save(documentation);
   }
 

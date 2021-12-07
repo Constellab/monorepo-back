@@ -26,7 +26,7 @@
           </mat-option>
         </mat-select>
         <mat-error *ngIf="formGp.get('folderId').hasError('required')">
-          {{'Folder' | flErrorRequired}}
+          {{'folder' | flErrorRequired}}
         </mat-error>
       </mat-form-field>
       <!--  path  -->
@@ -48,11 +48,8 @@
       <mat-label>{{'order' | translate}}</mat-label>
       <input matInput formControlName="order" required flInputMaxLength="50"
              placeholder="{{'order' | translate}}">
-      <mat-error *ngIf="formGp.get('order').hasError('required')">
-        {{'order' | flErrorRequired}}
-      </mat-error>
-      <mat-error *ngIf="formGp.get('order').hasError('pattern')">
-        {{'order_pattern_error' | translate}}
+      <mat-error *ngIf="formGp.get('order').invalid">
+        {{ 'order_form_error' | translate}}
       </mat-error>
     </mat-form-field>
   </form>

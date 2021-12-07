@@ -1,12 +1,13 @@
 import { BlEntityWithId } from '@monorepo/back-core-lib';
-import {Column, Entity, ManyToOne, OneToMany, TreeChildren, TreeParent, Unique, JoinColumn, Tree} from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany, TreeChildren, TreeParent, Unique, Tree} from 'typeorm';
 import {DnVersion} from '../version/dn-version.entity';
 import {DnDocumentation} from '../documentation/dn-documentation.entity';
+import {DnBaseEntity} from '../core/model/entities/dn-base.entity';
 
 @Unique('', ['folder', 'order'])
 @Entity('Folder')
 @Tree('materialized-path')
-export class DnFolder extends BlEntityWithId{
+export class DnFolder extends DnBaseEntity{
 
   @Column()
   title: string;
@@ -33,7 +34,7 @@ export class DnFolder extends BlEntityWithId{
   documentations: DnDocumentation[];
 }
 
-export class DnFolderResDTO extends BlEntityWithId{
+export class DnFolderResDTO extends DnBaseEntity{
 
   title: string;
 
@@ -44,7 +45,7 @@ export class DnFolderResDTO extends BlEntityWithId{
   folderId: string;
 }
 
-export class DnNode extends  BlEntityWithId{
+export class DnNode extends  DnBaseEntity{
   name: string;
 
   order: number;

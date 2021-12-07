@@ -1,5 +1,5 @@
 import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import {InjectRepository} from '@nestjs/typeorm';
 import {Repository, TreeRepository} from 'typeorm';
 import {DnFolder, DnFolderResDTO, DnNode} from './dn-folder.entity';
 import {DnVersion} from '../version/dn-version.entity';
@@ -12,14 +12,12 @@ export class DnFolderService {
   constructor(
     @InjectRepository(DnFolder)
     private foldersRepository: Repository<DnFolder>,
-
     @InjectRepository(DnFolder)
     private foldersTreeRepository: TreeRepository<DnFolder>,
-
     private documentationService: DnDocumentationService,
-
     private versionService: DnVersionService
-  ){}
+  ) {
+  }
 
   async create(createFolderRes: DnFolderResDTO): Promise<DnFolder> {
 
@@ -45,14 +43,15 @@ export class DnFolderService {
   async createDoc(createDocumentationRes: DnDocumentationResDTO): Promise<DnDocumentation> {
     const folder = await this.foldersRepository.findOne(createDocumentationRes.folderId);
 
-    const createDocumentation = {
-      title: createDocumentationRes.title,
-      content: createDocumentationRes.content,
-      path: createDocumentationRes.path,
-      completePath: folder.completePath + createDocumentationRes.path + '/',
-      order: createDocumentationRes.order,
-      folder: folder
-    }
+    const createDocumentation = new DnDocumentation();
+
+    createDocumentation.title = createDocumentationRes.title;
+    createDocumentation.content = createDocumentationRes.content;
+    createDocumentation.path = createDocumentationRes.path;
+    createDocumentation.completePath = folder.completePath + createDocumentationRes.path + '/';
+    createDocumentation.order = createDocumentationRes.order;
+    createDocumentation.folder = folder;
+
 
     const doc: DnDocumentation = await this.documentationService.create(createDocumentation);
     return doc;
@@ -61,15 +60,13 @@ export class DnFolderService {
   async updateDoc(updateDocumentationRes: DnDocumentationResDTO): Promise<DnDocumentation> {
     const folder = await this.foldersRepository.findOne(updateDocumentationRes.folderId);
 
-    const updateDocumentation = {
-      id: updateDocumentationRes.id,
-      title: updateDocumentationRes.title,
-      content: updateDocumentationRes.content,
-      path: updateDocumentationRes.path,
-      completePath: folder.completePath + updateDocumentationRes.path + '/',
-      order: updateDocumentationRes.order,
-      folder: folder
-    }
+    const updateDocumentation = DnDocumentation.newDoc(
+      updateDocumentationRes.id,
+      updateDocumentationRes.title,
+      updateDocumentationRes.content,
+      updateDocumentationRes.path,
+      folder.completePath + updateDocumentationRes.path + '/',
+      updateDocumentationRes.order, folder);
 
     const doc: DnDocumentation = await this.documentationService.update(updateDocumentation);
     return doc;
@@ -85,26 +82,26 @@ export class DnFolderService {
     return this.createTree(allDoc[0]);
   }
 
-  private createTree(folder: DnFolder): DnNode{
+  private createTree(folder: DnFolder): DnNode {
 
     const currentChild: DnNode[] = [];
 
     const currentParent: DnNode =
       new DnNode(folder.id, folder.title, folder.path, folder.completePath, folder.order, [], folder.folder ? folder.folder.id : null);
 
-    if(folder.documentations != null){
+    if (folder.documentations != null) {
       folder.documentations.map(doc => {
         currentChild.push(new DnNode(doc.id, doc.title, doc.path, doc.completePath, doc.order));
       });
     }
 
-    if(folder.folders != null) {
+    if (folder.folders != null) {
       folder.folders.map(f => {
         currentChild.push(this.createTree(f));
       })
     }
 
-    if(currentChild.length == 0){
+    if (currentChild.length == 0) {
       currentChild[0] = new DnNode(null, null, null, null, 0);
     }
 
@@ -114,8 +111,8 @@ export class DnFolderService {
     return currentParent;
   }
 
-  private TreeToArray(folder: DnFolder): DnFolder[]{
-    let array:DnFolder[] = [folder];
+  private TreeToArray(folder: DnFolder): DnFolder[] {
+    let array: DnFolder[] = [folder];
     let arrayChildFolder: DnFolder[] = [];
 
     folder.folders.sort((a, b) => a.order - b.order);
@@ -130,13 +127,13 @@ export class DnFolderService {
     return this.foldersRepository.findOne({where: {id: id}, relations: ['documentations', 'folders']});
   }
 
-  async findFoldersByParentId(id: string): Promise<DnFolder[]>{
+  async findFoldersByParentId(id: string): Promise<DnFolder[]> {
     const parent: DnFolder = await this.findOne(id);
 
     return parent.folders;
   }
 
-  async findDocsByParentId(id: string): Promise<DnDocumentation[]>{
+  async findDocsByParentId(id: string): Promise<DnDocumentation[]> {
     const parent: DnFolder = await this.findOne(id);
 
     return parent.documentations;
@@ -148,7 +145,7 @@ export class DnFolderService {
     folder.path = updateFolder.path;
     folder.title = updateFolder.title;
     folder.order = updateFolder.order;
-    if(updateFolder.folderId){
+    if (updateFolder.folderId) {
       folder.folder = await this.foldersRepository.findOne(updateFolder.folderId);
       folder.completePath = folder.folder.completePath + folder.path + '/';
     } else {
@@ -163,7 +160,7 @@ export class DnFolderService {
     return this.updateChildrenPath(folderTree);
   }
 
-  private updateChildrenPath(folder: DnFolder): DnFolder{
+  private updateChildrenPath(folder: DnFolder): DnFolder {
     folder.folders.map(
       f => {
         f.completePath = folder.completePath + f.path + '/';
@@ -184,7 +181,7 @@ export class DnFolderService {
 
   async remove(id: string): Promise<void> {
     const folderToDelete: DnFolder = await this.foldersRepository.findOne(id, {relations: ['documentations', 'folders']});
-    if(folderToDelete.documentations.length <= 0 && folderToDelete.folders.length <= 0){
+    if (folderToDelete.documentations.length <= 0 && folderToDelete.folders.length <= 0) {
       await this.foldersRepository.delete(id);
     } else {
       throw new BadRequestException('Folders with children can\'t be deleted.');
