@@ -70,7 +70,7 @@
   <!-- Boolean -->
   <ng-container *ngSwitchCase="'boolean'">
     <mat-checkbox [formControl]="control"
-                  color="primary">
+                  color="primary" class="g-mat-checkbox-wrap-text">
       {{config.placeholder}}
     </mat-checkbox>
     <p *ngIf="config.hint" class="g-text-light g-text-small">{{config.hint}}</p>

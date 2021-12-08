@@ -29,11 +29,10 @@
 
   :root {
     --primary-color: #{mat-color($primary)};
-    --accent-color: #{mat-color($primary)};
-    --warn-color: #{mat-color($primary)};
-    --success-color: #{mat-color($primary)};
-    --warning-color: #{mat-color($primary)};
-    --error-color: #{mat-color($primary)};
+    --accent-color: #{mat-color($accent)};
+    --warn-color: #{mat-color($warn)};
+    --success-color: #{$color-success};
+    --warning-color: #{$color-warning};
     --card-background: #{mat-color($background, card)};
     --color-foreground: #{$foreground-color};
     --main-background: #{$background-color}
@@ -170,16 +169,8 @@
   /**
    * Define colors in the same color as text theme for text, background and border
    */
-  .g-opposite-text {
+  .g-text-normal-color {
     color: $foreground-color;
-  }
-
-  .g-opposite-background {
-    border-color: $foreground-color;
-  }
-
-  .g-opposite-border {
-    border-color: $foreground-color;
   }
 
 

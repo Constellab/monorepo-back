@@ -1,7 +1,6 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FlDynamicFormGroupConfig, FlDynamicFormHelper} from '@monorepo/front-core-lib';
 import {BioxConfigData} from '../../../../model/entities/biox-config.entity';
-import {MatExpansionPanel} from '@angular/material/expansion';
 import {FormGroup} from '@angular/forms';
 
 export interface BioxConfigValue {
@@ -22,8 +21,6 @@ export class BioxConfigureSpecsFormComponent implements OnInit {
   @Input() bioxConfigData: BioxConfigData;
 
   @Input() formGp: FormGroup;
-
-  @ViewChild(MatExpansionPanel) expansion: MatExpansionPanel;
 
   publicFormGp: FormGroup;
   protectedFormGp: FormGroup;

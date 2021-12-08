@@ -9,16 +9,22 @@ import {
 import {Validators} from '@angular/forms';
 import {BioxConfigData} from '../../../../../core/model/entities/biox-config.entity';
 import {FL_PORTAL_DATA, FlOverlayRef} from '@monorepo/front-core-lib';
+import {
+  CallTransformerParams,
+  convertTransformFormToParams
+} from '../../../../../core/model/global/biox-transformer.class';
 
 export interface BioxConfigureResourceViewInput {
   title: string;
   viewSpecConfig: BioxResourceViewSpecWithConfig;
   viewTypeInfo: BioxResourceViewTypeInfo;
+  resourceTypingName: string;
 }
 
 export interface BioxConfigureResourceViewResult {
   viewConfig: BioxResourceViewConfig;
   displayMode: BioxResourceViewDisplayMode;
+  transformers: CallTransformerParams[];
 }
 
 /**
@@ -37,12 +43,13 @@ export class BioxConfigureResourceViewComponent implements OnInit {
   configs: BioxConfigData;
 
   title: string;
-
   showDisplayModeControl: boolean;
+  resourceTypingName: string;
 
   constructor(@Inject(FL_PORTAL_DATA) private input: BioxConfigureResourceViewInput,
               private overlayRef: FlOverlayRef) {
     this.title = input.title;
+    this.resourceTypingName = input.resourceTypingName;
   }
 
   ngOnInit(): void {
@@ -73,7 +80,8 @@ export class BioxConfigureResourceViewComponent implements OnInit {
   private convertFormValueToResult(formValue: any): BioxConfigureResourceViewResult {
     return {
       viewConfig: new BioxResourceViewConfig({...formValue.public, ...formValue.protected}),
-      displayMode: formValue.displayMode
+      displayMode: formValue.displayMode,
+      transformers: convertTransformFormToParams(formValue.transformers)
     };
   }
 

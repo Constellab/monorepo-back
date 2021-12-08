@@ -14,6 +14,7 @@ import {BioxResource} from '../../../../core/model/entities/resource/biox-resour
 import {map, mergeMap} from 'rxjs/operators';
 import {FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
 import {BioxTag} from '../../../../core/model/entities/biox-tag.entity';
+import {CallTransformerParams} from '../../../../core/model/global/biox-transformer.class';
 
 // Event on view loaded
 export interface BioxResourceViewEvent {
@@ -59,6 +60,10 @@ export class BioxResourceDetailPageState implements OnDestroy {
     return this.resource$.getObs();
   }
 
+  public getCurrentResource(): BioxResource {
+    return this.resource$.value;
+  }
+
   public getResourcePromise(): Promise<BioxResource> {
     return this.resource$.toPromise();
   }
@@ -79,7 +84,13 @@ export class BioxResourceDetailPageState implements OnDestroy {
     }
 
     if (defaultView) {
-      this.selectViewSpec({viewSpec: defaultView, displayMode: 'fullScreen', viewConfig: new BioxResourceViewConfig()},
+      this.selectViewSpec(
+        {
+          viewSpec: defaultView,
+          displayMode: 'fullScreen',
+          viewConfig: new BioxResourceViewConfig(),
+          transformers: []
+        },
         true);
     }
   }
@@ -101,7 +112,8 @@ export class BioxResourceDetailPageState implements OnDestroy {
 
   private loadView(viewSpecConfigured: BioxResourceViewSpecWithConfig, isDefaultView: boolean = false): void {
     const actionObs: Observable<BioxResourceViewEvent> =
-      this.callResourceView(viewSpecConfigured.viewSpec.methodName, viewSpecConfigured.viewConfig).pipe(
+      this.callResourceView(viewSpecConfigured.viewSpec.methodName,
+        viewSpecConfigured.viewConfig, viewSpecConfigured.transformers).pipe(
         map(view => ({view: view, displayMode: viewSpecConfigured.displayMode}))
       );
 
@@ -127,11 +139,13 @@ export class BioxResourceDetailPageState implements OnDestroy {
       config.configValues[key] = pageConfig[key];
     }
 
-    return this.callResourceView(this.selectedViewSpec$.value.viewSpec.methodName, config);
+    // todo fix transformers
+    return this.callResourceView(this.selectedViewSpec$.value.viewSpec.methodName, config, []);
   }
 
-  private callResourceView(methodName: string, config: BioxResourceViewConfig): Observable<BioxResourceView> {
-    return this.resourceService.callResourceView(this.id, methodName, config.configValues);
+  private callResourceView(methodName: string, config: BioxResourceViewConfig,
+                           transformers: CallTransformerParams[]): Observable<BioxResourceView> {
+    return this.resourceService.callResourceView(this.id, methodName, config.configValues, transformers);
   }
 
   public getView$(): Observable<FlPortalActionResult<BioxResourceViewEvent>> {
@@ -139,6 +153,10 @@ export class BioxResourceDetailPageState implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.selectedViewSpec$.complete();
+    this.clear();
+  }
+
+  public clear(): void {
+    this.selectedViewSpec$?.complete();
   }
 }

@@ -29,6 +29,24 @@ export class FlFormHelper {
     }
 
     return false;
+  }
 
+  /**
+   * Mark the control and children as touched and force updating validity
+   * @param control
+   */
+  public static markAllAsTouched(control: AbstractControl): void {
+    if (control == null) {
+      return;
+    }
+
+    control.markAsTouched();
+    // update validity with onlySelf because parent were already updated
+    control.updateValueAndValidity({onlySelf: true});
+    if (control instanceof FormArray || control instanceof FormGroup) {
+      for (const key of Object.keys(control.controls)) {
+        FlFormHelper.markAllAsTouched(control.get(key));
+      }
+    }
   }
 }

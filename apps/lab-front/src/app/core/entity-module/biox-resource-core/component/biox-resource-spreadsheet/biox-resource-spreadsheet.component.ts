@@ -18,7 +18,6 @@ export class BioxResourceSpreadsheetComponent extends BioxResourceViewDirective<
   spreadSheet: FlSpreadsheet;
 
   ngOnInit(): void {
-
     const spreadSheet: FlSpreadsheet = new FlSpreadsheet();
     // if the resource is a csv file
     const sheet: FlSheet = FlSpreadsheetFactory.fromCsvJson(this.view.data, 'Sheet 1');

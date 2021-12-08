@@ -34,4 +34,8 @@ export class RouterService {
   public navigateToBioxExperimentDetail(bioxExperimentId: string): Promise<boolean>{
     return this.router.navigate([RouterService.getBioxExperimentDetailRoute(bioxExperimentId)]);
   }
+
+  public navigateToBioxResourceDetail(id: string): Promise<boolean>{
+    return this.router.navigate([RouterService.getBioxResourceDetailRoute(id)]);
+  }
 }

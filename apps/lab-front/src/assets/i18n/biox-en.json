@@ -69,6 +69,11 @@
     "advanced_configuration": "Advanced config",
     "clone_experiment": "Duplicate experiment",
     "clone_experiment_confirmation": "Do you want to duplicate the experiment ? The processes and the configurations will be copied but not the resources.",
-    "experiment_cloned": "Experiment duplicated"
+    "experiment_cloned": "Experiment duplicated",
+    "transformers": "Transformers",
+    "transform_resource": "Transform {{resourceName}}",
+    "add_transformer": "Add transformer",
+    "call_transform": "Transform",
+    "transformer_no_config": "No config"
   }
 }

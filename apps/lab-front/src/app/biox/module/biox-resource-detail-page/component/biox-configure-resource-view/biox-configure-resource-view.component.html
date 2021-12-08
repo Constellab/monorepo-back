@@ -7,8 +7,21 @@
 
   <fl-portal-content>
     <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
+
+      <!--  View configuration   -->
       <gen-biox-configure-specs-form [bioxConfigData]="configs" [formGp]="formGp"></gen-biox-configure-specs-form>
 
+      <mat-divider class="divider"></mat-divider>
+
+      <!--  Transformers   -->
+      <div class="transformers-container">
+        <h3>{{'biox.transformers' | translate}}</h3>
+        <gen-biox-transform-resource [formGp]="formGp" class="transformers"
+                                     [resourceTypingName]="resourceTypingName"></gen-biox-transform-resource>
+      </div>
+      <mat-divider class="divider"></mat-divider>
+
+      <!--  Full screen or dialog   -->
       <div *ngIf="showDisplayModeControl" class="display-mode">
         <label>{{'biox.resource_view_display_mode' | translate}}</label>
         <mat-radio-group formControlName="displayMode" color="primary">

@@ -8,7 +8,7 @@
   min-width: 300px;
 }
 
-.header{
+.header {
   padding-left: 1em;
   padding-right: 1em;
 }
@@ -27,4 +27,17 @@
 
 .display-mode-label {
   margin-left: 1em;
+}
+
+.transformers-container {
+  padding: 0 1em;
+}
+
+.transformers {
+  max-height: 300px;
+}
+
+.divider{
+  margin: 1em auto;
+  width: 80%;
 }

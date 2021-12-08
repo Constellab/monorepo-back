@@ -1,9 +1,9 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {BioxResourceService} from '../../../../../core/entity-service/biox-resource.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable, Subscription} from 'rxjs';
 import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
-import {first, tap} from 'rxjs/operators';
+import {tap} from 'rxjs/operators';
 import {BioxResourceDetailPageState, BioxResourceViewEvent} from '../../state/biox-resource-detail-page.state';
 import {
   FlOverlayRef,
@@ -30,6 +30,10 @@ import {
 } from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-view/biox-resource-view.component';
 import {BioxTagService} from '../../../../../core/entity-service/biox-tag.service';
 import {BioxTag} from '../../../../../core/model/entities/biox-tag.entity';
+import {
+  BioxTransformResourcePortalComponent,
+  BioxTransformResourcePortalInput
+} from '../../../../../core/entity-module/biox-transformer/component/biox-transform-resource-portal/biox-transform-resource-portal.component';
 
 @Component({
   selector: 'gen-biox-resource-detail-page',
@@ -39,20 +43,17 @@ import {BioxTag} from '../../../../../core/model/entities/biox-tag.entity';
 })
 export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
 
-  @ViewChild('viewSpecButton', {static: false, read: ElementRef}) viewSpecButton: ElementRef<HTMLElement>;
-  @ViewChild('viewContainer', {static: false, read: ViewContainerRef}) viewContainer: ViewContainerRef;
-
   resource$: Observable<BioxResource>;
   fullScreenView: BioxResourceView;
 
   title: string;
 
-  toolbarOverlay: FlOverlayRef;
-
 
   showLoader: boolean = true;
   errorText: string;
 
+  private viewOverlay: FlOverlayRef;
+  private transformerOverlay: FlOverlayRef;
   private subscription: Subscription;
 
   constructor(private resourceService: BioxResourceService,
@@ -66,12 +67,14 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.params.pipe(first()).subscribe(
+    this.route.params.subscribe(
       params => this.init(params.id)
     );
   }
 
   private init(id: string): void {
+    this.clearComponent();
+
     this.state.init(id);
     this.resource$ = this.state.getResource$().pipe(
       tap(resource => this.initTitle(resource))
@@ -80,6 +83,10 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
     this.subscription = this.state.getView$().subscribe(
       view => this.initView(view)
     );
+  }
+
+  private initTitle(resource: BioxResource): void {
+    this.title = resource.name;
   }
 
   private initView(result: FlPortalActionResult<BioxResourceViewEvent>): void {
@@ -125,10 +132,10 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
     this.portalService.createPortal(BioxResourceViewPortalComponent, portalConfig, view);
   }
 
-  openViewSpecs(): void {
-    if (this.toolbarOverlay != null) return;
+  openViewSpecs(event: MouseEvent): void {
+    if (this.viewOverlay != null) return;
     const config: FlPortalConfig = this.portalService.configureRelativePortal(
-      this.viewSpecButton.nativeElement, ['bottom'],
+      event.target as any, ['bottom'],
       {
         elevation: true,
         disposeOnNavigation: true,
@@ -139,13 +146,34 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
         disposeOnBackdropClick: true,
       });
 
-    this.toolbarOverlay = this.portalService.createPortal(BioxResourceViewSpecsPortalComponent, config);
+    this.viewOverlay = this.portalService.createPortal(BioxResourceViewSpecsPortalComponent, config);
 
-    this.toolbarOverlay.detachments().subscribe(() => this.toolbarOverlay = null);
+    this.viewOverlay.detachments().subscribe(() => this.viewOverlay = null);
   }
 
-  private initTitle(resource: BioxResource): void {
-    this.title = resource.name;
+  async openTransformerResource(event: MouseEvent): Promise<void> {
+    if (this.transformerOverlay != null) return;
+
+    const resource = await this.state.getResourcePromise();
+
+    const config: FlPortalConfig = this.portalService.configureRelativePortal(
+      event.target as any, ['right'],
+      {
+        elevation: true,
+        disposeOnNavigation: true,
+        viewPortMargin: 0,
+        hasBackdrop: true,
+        transparentBackdrop: true,
+      });
+
+    const input: BioxTransformResourcePortalInput = {
+      resourceName: resource.name,
+      resourceTypingName: resource.resourceTypingName,
+      resourceId: resource.id
+    };
+
+    this.transformerOverlay = this.portalService.createPortal(BioxTransformResourcePortalComponent, config, input);
+    this.transformerOverlay.detachments().subscribe(() => this.transformerOverlay = null);
   }
 
 
@@ -164,8 +192,16 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
+  private clearComponent(): void {
     this.subscription?.unsubscribe();
+    this.viewOverlay?.dispose();
+    this.transformerOverlay?.dispose();
+    this.state.clear();
+    this.fullScreenView = null;
+  }
+
+  ngOnDestroy(): void {
+    this.clearComponent();
   }
 
 

@@ -1,0 +1,21 @@
+<fl-portal class="portal">
+
+  <fl-portal-header [enableDrag]="true">
+    <h2>{{'biox.transform_resource' | translate:{resourceName: resourceName} }}</h2>
+  </fl-portal-header>
+
+  <fl-portal-content>
+    <form id="transform-form" (ngSubmit)="submit()">
+      <gen-biox-transform-resource [resourceTypingName]="resourceTypingName"
+                                   [formGp]="formGp" [arrayMinLength]="1"></gen-biox-transform-resource>
+    </form>
+  </fl-portal-content>
+
+  <fl-portal-footer>
+    <button mat-raised-button color="primary" type="submit" form="transform-form"
+            class="g-centered-forced">
+      {{'biox.call_transform' | translate}}
+      <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+    </button>
+  </fl-portal-footer>
+</fl-portal>

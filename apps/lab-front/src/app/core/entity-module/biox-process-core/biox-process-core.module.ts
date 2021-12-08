@@ -7,6 +7,8 @@ import {BioxProcessTypeCardComponent} from './component/biox-process-type-card/b
 import {BioxProcessPortColorPipe} from './pipe/biox-process-port-color.pipe';
 import {BioxProcessPortComponent} from './component/biox-process-port/biox-process-port.component';
 import {BioxProcessPortsListComponent} from './component/biox-process-ports-list/biox-process-ports-list.component';
+import {BioxProcessTypePortalComponent} from './component/biox-process-type-portal/biox-process-type-portal.component';
+import {BioxProcessTypeHoverDetailDirective} from './directive/biox-process-type-hover-detail.directive';
 
 
 @NgModule({
@@ -16,8 +18,11 @@ import {BioxProcessPortsListComponent} from './component/biox-process-ports-list
     BioxProcessTypeCardComponent,
     BioxProcessPortComponent,
     BioxProcessPortsListComponent,
+    BioxProcessTypePortalComponent,
 
     BioxProcessPortColorPipe,
+
+    BioxProcessTypeHoverDetailDirective,
   ],
   exports: [
     BioxProcessTypesTreeComponent,
@@ -25,8 +30,11 @@ import {BioxProcessPortsListComponent} from './component/biox-process-ports-list
     BioxProcessTypeCardComponent,
     BioxProcessPortComponent,
     BioxProcessPortsListComponent,
+    BioxProcessTypePortalComponent,
 
     BioxProcessPortColorPipe,
+
+    BioxProcessTypeHoverDetailDirective,
   ],
   imports: [
     CommonModule,

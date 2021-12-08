@@ -24,6 +24,11 @@ export class BioxTaskService {
   public getTaskType(id: string): Observable<BioxTaskType> {
     return this.apiService.getByIdWithCache(`${this.typeRoute}`, id, BioxTaskType);
   }
+
+  public getTransformerByResourceType(resourceTypingName: string): Observable<BioxLabTypeEntity[]> {
+    return this.apiService.getWithCache(`${this.typeRoute}/transformers/${resourceTypingName}`,
+      BioxTaskType);
+  }
 }
 
 

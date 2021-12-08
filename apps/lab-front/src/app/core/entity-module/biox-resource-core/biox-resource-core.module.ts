@@ -38,6 +38,7 @@ import {
 } from './component/biox-select-resource-dialog/biox-select-resource-dialog.component';
 import {BioxResourceCardComponent} from './component/biox-resource-card/biox-resource-card.component';
 import {UploadFsNodeDialogComponent} from './component/upload-fs-node-dialog/upload-fs-node-dialog.component';
+import {BioxTransformerModule} from '../biox-transformer/biox-transformer.module';
 
 
 @NgModule({
@@ -92,6 +93,7 @@ import {UploadFsNodeDialogComponent} from './component/upload-fs-node-dialog/upl
     ReactiveFormsModule,
 
     CoreModule,
+    BioxTransformerModule,
   ],
 })
 export class BioxResourceCoreModule {

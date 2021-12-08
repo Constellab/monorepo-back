@@ -21,6 +21,7 @@ import {
   BioxResourceSearch,
   BioxResourceSearchFields
 } from '../entity-module/biox-resource-core/model/biox-resource-advanced-search.class';
+import {CallTransformerParams} from '../model/global/biox-transformer.class';
 
 
 @Injectable({
@@ -91,13 +92,26 @@ export class BioxResourceService implements FlSearchService<BioxResource> {
       map(views => bioxGroupResourceViewSpecsByType(views)));
   }
 
-  public callResourceView(id: string, viewName: string, config: Record<string, any>): Observable<BioxResourceView> {
+  public callResourceView(id: string, viewName: string, config: Record<string, any>,
+                          transformers: CallTransformerParams[]): Observable<BioxResourceView> {
     for (const key in config) {
       if (config[key] == null) {
         delete config[key];
       }
     }
-    return this.apiService.post(`resource/${id}/views/${viewName}`, config);
+    return this.apiService.post(`resource/${id}/views/${viewName}`, {
+      values: config,
+      transformers: transformers
+    });
   }
 
+  //////////////////////////////////////// TRANSFORMERS  ///////////////////////////////////////
+  /**
+   * Create an experiment for a resource, with a list of transformers
+   * @param transformers
+   * @param resourceId
+   */
+  public transformResource(transformers: CallTransformerParams[], resourceId: string): Observable<BioxResource> {
+    return this.apiService.post(`${this.route}/${resourceId}/transform`, transformers, BioxResource);
+  }
 }

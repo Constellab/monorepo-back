@@ -51,19 +51,14 @@ export class BioxResourceViewSpecsComponent implements OnInit {
   }
 
   selectView(view: BioxResourceViewSpec, viewByType: BioxResourceViewSpecsByType): void {
-    if (view.specs.isEmpty() && viewByType.viewTypeInfo.forceDefaultDisplayMode) {
-      this.selectViewSpec(view, {
-        displayMode: viewByType.viewTypeInfo.defaultDisplayMode,
-        viewConfig: new BioxResourceViewConfig()
-      });
-      this.closeOverlay();
-    } else {
-      this.openConfigPortal(view, viewByType);
-    }
+    this.openConfigPortal(view, viewByType);
+
   }
 
   // prepare the data and open the view configuration portal
   private openConfigPortal(view: BioxResourceViewSpec, viewByType: BioxResourceViewSpecsByType): void {
+    const resource = this.state.getCurrentResource();
+
     // if this view was previously selected, get the config value from it
     let specWithConfig: BioxResourceViewSpecWithConfig;
     if (this.isSpecIsSelected(view)) {
@@ -72,14 +67,16 @@ export class BioxResourceViewSpecsComponent implements OnInit {
       specWithConfig = {
         viewSpec: view,
         displayMode: viewByType.viewTypeInfo.defaultDisplayMode,
-        viewConfig: new BioxResourceViewConfig()
+        viewConfig: new BioxResourceViewConfig(),
+        transformers: []
       };
     }
 
     const data: BioxConfigureResourceViewInput = {
       viewSpecConfig: specWithConfig,
       title: view.getName(),
-      viewTypeInfo: viewByType.viewTypeInfo
+      viewTypeInfo: viewByType.viewTypeInfo,
+      resourceTypingName: resource.resourceTypingName
     };
 
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(

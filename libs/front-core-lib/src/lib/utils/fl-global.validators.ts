@@ -1,4 +1,4 @@
-import {AbstractControl, ValidationErrors, ValidatorFn} from '@angular/forms';
+import {AbstractControl, FormArray, ValidationErrors, ValidatorFn} from '@angular/forms';
 
 export class FlGlobalValidators {
 
@@ -94,6 +94,21 @@ export class FlGlobalValidators {
 
       if (!Number.isInteger(value)) {
         return {notInteger: true};
+      }
+      return null;
+    };
+  }
+
+  /**
+   * Validator for FormArray to force a min number of element
+   * @param length
+   */
+  public static arrayMinLength(length: number): ValidatorFn {
+    return (control: FormArray): { [key: string]: any } => {
+      const arrayLength = control.value?.length ?? 0;
+
+      if (arrayLength < length) {
+        return {minArrayLength: arrayLength};
       }
       return null;
     };

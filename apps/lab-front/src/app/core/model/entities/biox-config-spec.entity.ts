@@ -9,6 +9,7 @@ import {
   FlDynamicFormAbstractControl,
   FlDynamicFormGroupConfig,
 } from '@monorepo/front-core-lib';
+import {BioxConfigValues} from './biox-config.entity';
 
 /**
  * Record class that contain the list of config spec
@@ -46,7 +47,7 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
       return {
         controlType: 'formArray', formGpConfig: this.convertRecordToFieldConfigs(spec.param_set),
         placeholder: spec.human_name ?? defaultPlaceholder, hint: spec.short_description,
-        minSize: spec.optional ? 1 : 0, maxSize: spec.max_number_of_occurrences > 0 ? spec.max_number_of_occurrences : null
+        minSize: spec.optional ? 0 : 1, maxSize: spec.max_number_of_occurrences > 0 ? spec.max_number_of_occurrences : null
       };
     } else {
       return this.convertToControlConfig(spec, defaultPlaceholder);
@@ -100,8 +101,8 @@ export class BioxConfigSpecs extends ClRecordWrapper<BioxConfigSpec> {
   /**
    * return the complete default config object
    */
-  public getDefaultConfig(): any {
-    const defaultConfig: any = {};
+  public getDefaultConfig(): BioxConfigValues {
+    const defaultConfig: BioxConfigValues = {};
     for (const specName of Object.keys(this.record)) {
       const spec: BioxConfigSpec = this.record[specName];
       if (spec.optional) {

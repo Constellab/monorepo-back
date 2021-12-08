@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Input} from '@angular/core';
+import {Directive, ElementRef, Input, OnDestroy, Renderer2} from '@angular/core';
 import {FlMouseHoverAbstractDirective} from './fl-mouse-hover-abstract.directive';
 import {FlRelativeOverlayConfig} from '../../module/fl-portal/model/fl-portal.class';
 import {FlOverlayRef} from '../../module/fl-portal/model/fl-overlay-ref.class';
@@ -7,13 +7,12 @@ import {FlPortalConfig} from '../../module/fl-portal/model/fl-portal-config.clas
 import {FlMouseHoverPortalConfig} from './fl-mouse-hover-portal.config';
 
 
-
 /**
  * Abstract class for directive to define a directive that will open a portal when the
  * user is hovering the host element
  */
 @Directive()
-export abstract class FlMouseHoverPortalAbstractDirective extends FlMouseHoverAbstractDirective {
+export abstract class FlMouseHoverPortalAbstractDirective extends FlMouseHoverAbstractDirective implements OnDestroy {
 
   /**
    *  if true doesn't display the detail on the hover
@@ -23,8 +22,11 @@ export abstract class FlMouseHoverPortalAbstractDirective extends FlMouseHoverAb
   // current overlay if portal is open
   protected currentOverlay: FlOverlayRef;
 
-  protected constructor(elementRef: ElementRef,
-                        protected portalService: FlPortalService) {
+  private listener: () => void;
+
+  constructor(elementRef: ElementRef,
+              protected portalService: FlPortalService,
+              private render: Renderer2) {
     super(elementRef);
   }
 
@@ -91,6 +93,7 @@ export abstract class FlMouseHoverPortalAbstractDirective extends FlMouseHoverAb
     while (element != null && element.tagName !== 'BODY') {
       // if this is a child of the detail portal, don't close the portal
       if (element.tagName === config.portalTagName) {
+        this.addPortalMouseLeaveEvent(element, event);
         return;
       }
       // check the parent
@@ -107,7 +110,27 @@ export abstract class FlMouseHoverPortalAbstractDirective extends FlMouseHoverAb
       this.currentOverlay = null;
       this.onPortalClosed(event);
     }
+    this.clearListener();
+  }
+
+  // once the mouse entered the portal, it will be closed when the mouse leaves it
+  private addPortalMouseLeaveEvent(element: HTMLElement, event: MouseEvent): void {
+    if (this.listener == null) {
+      this.listener = this.render.listen(element, 'mouseleave', () => this.closePortal(event));
+    }
   }
 
 
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.clearListener();
+  }
+
+  private clearListener(): void {
+    if (this.listener) {
+      this.listener();
+      this.listener = null;
+    }
+
+  }
 }
