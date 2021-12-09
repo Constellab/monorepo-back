@@ -14,7 +14,7 @@ import {BioxResource} from '../../../../core/model/entities/resource/biox-resour
 import {map, mergeMap} from 'rxjs/operators';
 import {FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
 import {BioxTag} from '../../../../core/model/entities/biox-tag.entity';
-import {CallTransformerParams} from '../../../../core/model/global/biox-transformer.class';
+import {BioxTransformerWithConfig, CallTransformerParams} from '../../../../core/model/global/biox-transformer.class';
 
 // Event on view loaded
 export interface BioxResourceViewEvent {
@@ -89,7 +89,7 @@ export class BioxResourceDetailPageState implements OnDestroy {
           viewSpec: defaultView,
           displayMode: 'fullScreen',
           viewConfig: new BioxResourceViewConfig(),
-          transformers: []
+          transformersWithConfig: []
         },
         true);
     }
@@ -113,7 +113,7 @@ export class BioxResourceDetailPageState implements OnDestroy {
   private loadView(viewSpecConfigured: BioxResourceViewSpecWithConfig, isDefaultView: boolean = false): void {
     const actionObs: Observable<BioxResourceViewEvent> =
       this.callResourceView(viewSpecConfigured.viewSpec.methodName,
-        viewSpecConfigured.viewConfig, viewSpecConfigured.transformers).pipe(
+        viewSpecConfigured.viewConfig, viewSpecConfigured.transformersWithConfig).pipe(
         map(view => ({view: view, displayMode: viewSpecConfigured.displayMode}))
       );
 
@@ -139,13 +139,18 @@ export class BioxResourceDetailPageState implements OnDestroy {
       config.configValues[key] = pageConfig[key];
     }
 
-    // todo fix transformers
-    return this.callResourceView(this.selectedViewSpec$.value.viewSpec.methodName, config, []);
+    return this.callResourceView(this.selectedViewSpec$.value.viewSpec.methodName, config,
+      this.selectedViewSpec$.value.transformersWithConfig);
   }
 
   private callResourceView(methodName: string, config: BioxResourceViewConfig,
-                           transformers: CallTransformerParams[]): Observable<BioxResourceView> {
-    return this.resourceService.callResourceView(this.id, methodName, config.configValues, transformers);
+                           transformers: BioxTransformerWithConfig[]): Observable<BioxResourceView> {
+
+    const transformerParams: CallTransformerParams[] = transformers.map(transformer => ({
+      typing_name: transformer.transformer.typingName,
+      config_values: transformer.config
+    }));
+    return this.resourceService.callResourceView(this.id, methodName, config.configValues, transformerParams);
   }
 
   public getView$(): Observable<FlPortalActionResult<BioxResourceViewEvent>> {

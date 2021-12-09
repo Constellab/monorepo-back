@@ -63,6 +63,7 @@
     "resource_view_display_mode": "Mode d'affichage",
     "resource_view_display_portal": "Popup",
     "resource_view_display_component": "Plein écran",
+    "resource_view_filters": "Filtres",
     "stop_experiment": "Arrêter l'expérience",
     "stop_experiment_confirmation": "Êtes-vous sûr de vouloir arrêter l'expérience ?",
     "experiment_stopped": "Expérience arrêtée",
@@ -74,6 +75,7 @@
     "transform_resource": "Transformer {{resourceName}}",
     "add_transformer": "Ajouter un transformeur",
     "call_transform": "Transformer",
-    "transformer_no_config": "Pas de config"
+    "transformer_no_config": "Pas de config",
+    "no_transformers": "Aucun transformeurs"
   }
 }

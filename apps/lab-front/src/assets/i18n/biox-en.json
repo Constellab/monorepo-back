@@ -63,6 +63,7 @@
     "resource_view_display_mode": "Display mode",
     "resource_view_display_portal": "Dialog",
     "resource_view_display_component": "Full screen",
+    "resource_view_filters": "Filters",
     "stop_experiment": "Stop experiment",
     "stop_experiment_confirmation": "Are you sure you want to stop the experiment ?",
     "experiment_stopped": "Experiment stopped",
@@ -74,6 +75,7 @@
     "transform_resource": "Transform {{resourceName}}",
     "add_transformer": "Add transformer",
     "call_transform": "Transform",
-    "transformer_no_config": "No config"
+    "transformer_no_config": "No config",
+    "no_transformers": "No transformers"
   }
 }

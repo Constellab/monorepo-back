@@ -1,6 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FL_PORTAL_DATA, FlFormHelper, FlOverlayRef} from '@monorepo/front-core-lib';
-import {FormGroup} from '@angular/forms';
 import {
   BioxTransformForm,
   CallTransformerParams,
@@ -9,11 +8,20 @@ import {
 import {BioxResourceService} from '../../../../entity-service/biox-resource.service';
 import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {RouterService} from '../../../../service/router.service';
+import {
+  BioxTransformResourceComponent,
+  BioxTransformResourceForm
+} from '../biox-transform-resource/biox-transform-resource.component';
+import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 
 export interface BioxTransformResourcePortalInput {
   resourceTypingName: string;
   resourceName: string;
   resourceId: string;
+}
+
+interface BioxTransformResourcePortalForm {
+  transformers: BioxTransformResourceForm[];
 }
 
 /**
@@ -30,7 +38,7 @@ export class BioxTransformResourcePortalComponent implements OnInit {
 
   resourceName: string;
 
-  formGp: FormGroup = new FormGroup({});
+  formGp: FormGroup<BioxTransformResourcePortalForm>;
   isLoading: boolean = false;
 
   constructor(@Inject(FL_PORTAL_DATA) private input: BioxTransformResourcePortalInput,
@@ -42,6 +50,9 @@ export class BioxTransformResourcePortalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.formGp = new FormBuilder().group({
+      transformers: BioxTransformResourceComponent.buildFormArray([], 1)
+    });
   }
 
   submit(): void {
@@ -66,5 +77,4 @@ export class BioxTransformResourcePortalComponent implements OnInit {
     this.overlayRef.dispose();
     this.routerService.navigateToBioxResourceDetail(resource.id);
   }
-
 }

@@ -1,11 +1,11 @@
 <mat-form-field class="g-full g-form-field-hint-include">
   <mat-label *ngIf="placeholder">{{placeholder}}</mat-label>
 
-  <textarea matInput [(ngModel)]="value" [disabled]="disabled"
+  <textarea matInput [(ngModel)]="value" [disabled]="disabled" [required]="required"
             [ngModelOptions]="{standalone: true}" [rows]="rows"
             (ngModelChange)="onValueChange()"></textarea>
 
-  <mat-hint>
+  <mat-hint *ngIf="!error">
     <p *ngIf="hint">{{hint}}</p>
     <p>{{'flDynamicField.multi_input_help' | translate}}</p>
   </mat-hint>

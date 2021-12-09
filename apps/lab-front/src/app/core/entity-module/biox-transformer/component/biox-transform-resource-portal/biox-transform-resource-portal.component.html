@@ -1,13 +1,13 @@
-<fl-portal class="portal">
+<fl-portal class="portal" flResize="both">
 
   <fl-portal-header [enableDrag]="true">
     <h2>{{'biox.transform_resource' | translate:{resourceName: resourceName} }}</h2>
   </fl-portal-header>
 
   <fl-portal-content>
-    <form id="transform-form" (ngSubmit)="submit()">
-      <gen-biox-transform-resource [resourceTypingName]="resourceTypingName"
-                                   [formGp]="formGp" [arrayMinLength]="1"></gen-biox-transform-resource>
+    <form id="transform-form" (ngSubmit)="submit()" [formGroup]="formGp">
+      <gen-biox-transform-resource formArrayName="transformers" [resourceTypingName]="resourceTypingName">
+      </gen-biox-transform-resource>
     </form>
   </fl-portal-content>
 

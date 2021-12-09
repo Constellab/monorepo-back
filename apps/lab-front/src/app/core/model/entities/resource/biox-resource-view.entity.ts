@@ -6,7 +6,7 @@ import {BioxResourceViewBasicPlot2d} from './biox-resource-view-basic-plot-2d.cl
 import {BioxResourceViewHeatMap} from './biox-resource-view-heat-map.class';
 import {BioxResourceViewHistogram} from './biox-resource-view-histogram.class';
 import {BioxResourceVennDiagram} from './biox-resource-venn-diagram.class';
-import {CallTransformerParams} from '../../global/biox-transformer.class';
+import {BioxTransformerWithConfig} from '../../global/biox-transformer.class';
 
 // list of available view type
 export type BioxResourceViewType =
@@ -71,7 +71,7 @@ export interface BioxResourceViewSpecWithConfig {
   viewSpec: BioxResourceViewSpec;
   viewConfig: BioxResourceViewConfig;
   displayMode: BioxResourceViewDisplayMode;
-  transformers: CallTransformerParams[]
+  transformersWithConfig: BioxTransformerWithConfig[];
 }
 
 export class BioxResourceViewConfig {

@@ -90,6 +90,9 @@
 // set the button texts to uppercase
 .mat-stroked-button, .mat-raised-button, .mat-button, .mat-flat-button {
   text-transform: uppercase;
+  overflow: hidden !important;
+  //text-overflow: ellipsis;
+  //white-space: nowrap;
 }
 
 // set the border color of the stroked = to color (not grey)

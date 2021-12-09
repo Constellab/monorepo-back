@@ -1,9 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlDynamicFormGroupConfig, FlDynamicFormHelper} from '@monorepo/front-core-lib';
 import {BioxConfigData} from '../../../../model/entities/biox-config.entity';
-import {FormGroup} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
+import {ControlContainer} from '@angular/forms';
 
-export interface BioxConfigValue {
+/**
+ * form structure for the {@link BioxConfigureSpecsFormComponent}
+ */
+export interface BioxConfigureSpecsForm {
   public: Record<string, any>;
   protected: Record<string, any>;
 }
@@ -20,8 +24,6 @@ export class BioxConfigureSpecsFormComponent implements OnInit {
 
   @Input() bioxConfigData: BioxConfigData;
 
-  @Input() formGp: FormGroup;
-
   publicFormGp: FormGroup;
   protectedFormGp: FormGroup;
 
@@ -31,21 +33,29 @@ export class BioxConfigureSpecsFormComponent implements OnInit {
   showProtectedConfigs: boolean = false;
   protectedConfigExpand: boolean = false;
 
-  constructor() {
+  constructor(private controlContainer: ControlContainer) {
+  }
+
+  // build the form group to configure specs
+  public static buildFormGroup(bioxConfigData: BioxConfigData): FormGroup<BioxConfigureSpecsForm> {
+    const value = bioxConfigData.mergeConfigWithDefault();
+
+    return new FormBuilder().group({
+      public: FlDynamicFormHelper.generateFormGroup(bioxConfigData.getDynamicFormFieldsConfig('public'), value),
+      protected: FlDynamicFormHelper.generateFormGroup(bioxConfigData.getDynamicFormFieldsConfig('protected'), value),
+    });
   }
 
   ngOnInit(): void {
     this.publicConfig = this.bioxConfigData.getDynamicFormFieldsConfig('public');
     this.protectedConfig = this.bioxConfigData.getDynamicFormFieldsConfig('protected');
+    this.publicFormGp = this.controlContainer.control.get('public') as any;
+    this.protectedFormGp = this.controlContainer.control.get('protected') as any;
 
-    const value = this.bioxConfigData.mergeConfigWithDefault();
-    this.publicFormGp = FlDynamicFormHelper.generateFormGroup(this.publicConfig, value);
-    this.protectedFormGp = FlDynamicFormHelper.generateFormGroup(this.protectedConfig, value);
-    this.formGp.addControl('public', this.publicFormGp);
-    this.formGp.addControl('protected', this.protectedFormGp);
 
     this.showProtectedConfigs = this.bioxConfigData.hasConfig('protected');
     // Automatically expand the advanced config if there is no public config
     this.protectedConfigExpand = !this.bioxConfigData.hasConfig('public');
   }
+
 }

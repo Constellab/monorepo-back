@@ -12,6 +12,11 @@ export interface BioxTransformForm {
   protected: BioxConfigValues;
 }
 
+export interface BioxTransformerWithConfig {
+  transformer: BioxProcessType;
+  config: BioxConfigValues;
+}
+
 export function convertTransformFormToParams(formValue: BioxTransformForm[]): CallTransformerParams[] {
   const transformers: CallTransformerParams[] = [];
   for (const form of formValue) {

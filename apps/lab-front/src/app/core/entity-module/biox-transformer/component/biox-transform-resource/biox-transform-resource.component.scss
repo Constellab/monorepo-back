@@ -26,11 +26,6 @@
   padding-bottom: 1em;
 }
 
-// to force point event if expansion panel is disabled
-.transform-panel {
-  cursor: pointer;
-}
-
 // Use to set panel text in red when the config of the transformer is invalid
 .transform-panel.ng-invalid.ng-touched {
   .transform-name {

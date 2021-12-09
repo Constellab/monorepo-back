@@ -10,7 +10,6 @@ import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-cor
 import {
   BioxConfigureResourceViewComponent,
   BioxConfigureResourceViewInput,
-  BioxConfigureResourceViewResult
 } from '../biox-configure-resource-view/biox-configure-resource-view.component';
 
 /**
@@ -46,6 +45,7 @@ export class BioxResourceViewSpecsComponent implements OnInit {
     }
   }
 
+  // return true if the view is the last view selected (so we can keep the previous config)
   private isSpecIsSelected(view: BioxResourceViewSpec): boolean {
     return this.selectedView?.viewSpec.methodName === view.methodName;
   }
@@ -68,7 +68,7 @@ export class BioxResourceViewSpecsComponent implements OnInit {
         viewSpec: view,
         displayMode: viewByType.viewTypeInfo.defaultDisplayMode,
         viewConfig: new BioxResourceViewConfig(),
-        transformers: []
+        transformersWithConfig: []
       };
     }
 
@@ -87,19 +87,15 @@ export class BioxResourceViewSpecsComponent implements OnInit {
       });
 
     this.portalService.createPortal(BioxConfigureResourceViewComponent, portalConfig, data).detachments().subscribe(
-      config => this.onConfigDialogClosed(view, config)
+      config => this.onConfigDialogClosed(config)
     );
 
     this.closeOverlay();
   }
 
-  private onConfigDialogClosed(view: BioxResourceViewSpec, config: BioxConfigureResourceViewResult): void {
+  private onConfigDialogClosed(config: BioxResourceViewSpecWithConfig): void {
     if (config == null) return;
-    this.selectViewSpec(view, config);
-  }
-
-  private selectViewSpec(viewSpec: BioxResourceViewSpec, config: BioxConfigureResourceViewResult): void {
-    this.state.selectViewSpec(Object.assign(config, {viewSpec: viewSpec}));
+    this.state.selectViewSpec(config);
   }
 
   closeOverlay(): void {

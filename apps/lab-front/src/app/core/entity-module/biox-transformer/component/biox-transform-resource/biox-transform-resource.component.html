@@ -1,5 +1,5 @@
-<div fxLayout="row" [formGroup]="formGp" class="g-full">
-  <fl-async-section [object]="transformersList$" class="section g-scrollable-element"
+<div fxLayout="row" class="g-full">
+  <fl-async-section [object]="transformersList$" emptyText="biox.no_transformers" class="section g-scrollable-element"
                     fxFlex="20%">
 
     <ng-container *flSectionBody="let transformers">
@@ -16,10 +16,10 @@
   <div class="divider"></div>
 
   <div class="section right-section g-scrollable-element" fxFlex="80%">
-    <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" formArrayName="transformers">
+    <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)">
       <ng-container *ngFor="let transformer of selectedTransformers; let index = index; let last = last">
-        <mat-expansion-panel hideToggle cdkDrag
-                             [formGroupName]="index" [disabled]="!transformer.hasConfig" class="transform-panel">
+        <mat-expansion-panel hideToggle cdkDrag [expanded]="true" class="transform-panel"
+                             [formGroup]="getFormGroup(index)">
 
           <mat-expansion-panel-header>
             <!--    Force text color to override disable color    -->
@@ -35,8 +35,14 @@
             </div>
           </mat-expansion-panel-header>
 
-          <gen-biox-configure-specs-form [bioxConfigData]="transformer.configData"
-                                         [formGp]="getFormGroup(index)"></gen-biox-configure-specs-form>
+          <gen-biox-configure-specs-form *ngIf="transformer.hasConfig; else noConfig"
+                                         [bioxConfigData]="transformer.configData"
+                                         formGroupName="config"></gen-biox-configure-specs-form>
+
+
+          <ng-template #noConfig>
+            <fl-error-text [errorMessage]="'biox.transformer_no_config' | translate"></fl-error-text>
+          </ng-template>
         </mat-expansion-panel>
 
         <mat-icon class="g-centered-forced" *ngIf="!last">arrow_drop_down</mat-icon>

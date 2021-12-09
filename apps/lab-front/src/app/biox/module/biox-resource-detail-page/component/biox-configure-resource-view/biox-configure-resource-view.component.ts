@@ -8,11 +8,16 @@ import {
 } from '../../../../../core/model/entities/resource/biox-resource-view.entity';
 import {Validators} from '@angular/forms';
 import {BioxConfigData} from '../../../../../core/model/entities/biox-config.entity';
-import {FL_PORTAL_DATA, FlOverlayRef} from '@monorepo/front-core-lib';
+import {FL_PORTAL_DATA, FlFormHelper, FlOverlayRef} from '@monorepo/front-core-lib';
+import {BioxTransformerWithConfig} from '../../../../../core/model/global/biox-transformer.class';
 import {
-  CallTransformerParams,
-  convertTransformFormToParams
-} from '../../../../../core/model/global/biox-transformer.class';
+  BioxConfigureSpecsForm,
+  BioxConfigureSpecsFormComponent
+} from '../../../../../core/entity-module/biox-config-core/component/biox-configure-specs-form/biox-configure-specs-form.component';
+import {
+  BioxTransformResourceComponent,
+  BioxTransformResourceForm
+} from '../../../../../core/entity-module/biox-transformer/component/biox-transform-resource/biox-transform-resource.component';
 
 export interface BioxConfigureResourceViewInput {
   title: string;
@@ -21,10 +26,10 @@ export interface BioxConfigureResourceViewInput {
   resourceTypingName: string;
 }
 
-export interface BioxConfigureResourceViewResult {
-  viewConfig: BioxResourceViewConfig;
+interface BioxConfigureResourceViewForm {
   displayMode: BioxResourceViewDisplayMode;
-  transformers: CallTransformerParams[];
+  viewConfig: BioxConfigureSpecsForm;
+  transformers: BioxTransformResourceForm[];
 }
 
 /**
@@ -38,8 +43,7 @@ export interface BioxConfigureResourceViewResult {
 })
 export class BioxConfigureResourceViewComponent implements OnInit {
 
-  formGp: FormGroup = new FormGroup({});
-
+  formGp: FormGroup<BioxConfigureResourceViewForm>;
   configs: BioxConfigData;
 
   title: string;
@@ -53,13 +57,15 @@ export class BioxConfigureResourceViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initFormGroup();
     this.initFormFieldConfig();
+    this.initFormGroup();
   }
 
   private initFormGroup(): void {
     this.formGp = new FormBuilder().group({
-      displayMode: [this.input.viewSpecConfig.displayMode, Validators.required]
+      displayMode: [this.input.viewSpecConfig.displayMode, Validators.required],
+      viewConfig: BioxConfigureSpecsFormComponent.buildFormGroup(this.configs),
+      transformers: BioxTransformResourceComponent.buildFormArray(this.input.viewSpecConfig.transformersWithConfig),
     });
     // don't show the button mode if the view type support only one mode
     this.showDisplayModeControl = !this.input.viewTypeInfo.forceDefaultDisplayMode;
@@ -74,14 +80,22 @@ export class BioxConfigureResourceViewComponent implements OnInit {
     if (this.formGp.valid) {
       const viewConfig = this.convertFormValueToResult(this.formGp.getRawValue());
       this.overlayRef.dispose(viewConfig);
+    } else {
+      FlFormHelper.markAllAsTouched(this.formGp);
     }
   }
 
-  private convertFormValueToResult(formValue: any): BioxConfigureResourceViewResult {
+  private convertFormValueToResult(formValue: BioxConfigureResourceViewForm): BioxResourceViewSpecWithConfig {
+    const transformers: BioxTransformerWithConfig[] = formValue.transformers.map(transformer => ({
+      transformer: transformer.transformer,
+      config: {...transformer.config.public, ...transformer.config.protected}
+    }));
+
     return {
-      viewConfig: new BioxResourceViewConfig({...formValue.public, ...formValue.protected}),
+      viewSpec: this.input.viewSpecConfig.viewSpec,
+      viewConfig: new BioxResourceViewConfig({...formValue.viewConfig.public, ...formValue.viewConfig.protected}),
       displayMode: formValue.displayMode,
-      transformers: convertTransformFormToParams(formValue.transformers)
+      transformersWithConfig: transformers
     };
   }
 

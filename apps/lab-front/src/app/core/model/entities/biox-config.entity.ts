@@ -21,7 +21,7 @@ export class BioxConfigData {
   /**
    * Create a BioxConfigData with defined specs and empty params
    */
-  public static fromSpecs(specs: BioxConfigSpecs, values: any = {}): BioxConfigData {
+  public static fromSpecs(specs: BioxConfigSpecs, values: BioxConfigValues = {}): BioxConfigData {
     const config = new BioxConfigData();
     config.specs = specs;
     config.values = values;

@@ -1,4 +1,14 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Optional, Output, Self} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Optional,
+  Output,
+  Self
+} from '@angular/core';
 import {NgControl} from '@angular/forms';
 import {FlFormFieldDirective} from '../../../abstract-directive/form/fl-form-field.directive';
 
@@ -9,7 +19,8 @@ import {FlFormFieldDirective} from '../../../abstract-directive/form/fl-form-fie
   selector: 'fl-multi-inputs',
   templateUrl: './fl-multi-inputs.component.html',
   styleUrls: ['./fl-multi-inputs.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{provide: FlFormFieldDirective, useExisting: FlMultiInputsComponent}]
 })
 export class FlMultiInputsComponent extends FlFormFieldDirective<string, string[]> implements OnInit {
 
@@ -26,7 +37,8 @@ export class FlMultiInputsComponent extends FlFormFieldDirective<string, string[
   private readonly separator: string = '\n';
 
 
-  constructor(@Optional() @Self() ngControl: NgControl) {
+  constructor(@Optional() @Self() ngControl: NgControl,
+              private cdr: ChangeDetectorRef) {
     super(ngControl);
   }
 
@@ -61,5 +73,11 @@ export class FlMultiInputsComponent extends FlFormFieldDirective<string, string[
   protected convertInnerToOuter(innerValue: string): string[] {
     if (innerValue == null) return [];
     return innerValue.split(this.separator).filter(value => value);
+  }
+
+
+  setErrorState(isError: boolean): void {
+    super.setErrorState(isError);
+    this.cdr.markForCheck();
   }
 }
