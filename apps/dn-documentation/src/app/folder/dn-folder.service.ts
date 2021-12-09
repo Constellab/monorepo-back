@@ -1,11 +1,10 @@
-import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository, TreeRepository} from 'typeorm';
 import {DnFolder, DnFolderResDTO, DnNode} from './dn-folder.entity';
-import {DnVersion} from '../version/dn-version.entity';
-import {DnVersionService} from '../version/dn-version.service';
 import {DnDocumentation, DnDocumentationResDTO} from '../documentation/dn-documentation.entity';
 import {DnDocumentationService} from '../documentation/dn-documentation.service';
+import {DnBrickVersion} from '../brick-version/dn-brick-version.entity';
 
 @Injectable()
 export class DnFolderService {
@@ -15,29 +14,30 @@ export class DnFolderService {
     @InjectRepository(DnFolder)
     private foldersTreeRepository: TreeRepository<DnFolder>,
     private documentationService: DnDocumentationService,
-    private versionService: DnVersionService
   ) {
   }
 
-  async create(createFolderRes: DnFolderResDTO): Promise<DnFolder> {
-
-    const version: DnVersion = await this.versionService.getByVersionNumber('1.0.0');
-    if (!version) {
-      throw new NotFoundException();
-    }
+  async create(createFolderRes: DnFolderResDTO, brickVersion: DnBrickVersion): Promise<DnFolder> {
 
     const folder: DnFolder = await this.foldersRepository.findOne(createFolderRes.folderId);
 
     const createFolder = {
       title: createFolderRes.title,
-      folder: folder,
+      folder: folder ? folder : null,
       path: createFolderRes.path,
-      completePath: folder.completePath + createFolderRes.path + '/',
-      version: version,
+      completePath: folder ? folder.completePath + createFolderRes.path + '/' : null,
+      brickVersion: brickVersion,
       order: createFolderRes.order
     }
 
     return this.foldersRepository.save(createFolder);
+  }
+
+  async createMainFolders(brickVersion: DnBrickVersion): Promise<void>{
+
+    const createMainFolder: DnFolderResDTO = new DnFolderResDTO(null, null, 0, null);
+
+    await this.create(createMainFolder, brickVersion);
   }
 
   async createDoc(createDocumentationRes: DnDocumentationResDTO): Promise<DnDocumentation> {
@@ -78,8 +78,18 @@ export class DnFolderService {
   }
 
   async findTree(): Promise<DnNode> {
-    const allDoc: DnFolder[] = await this.foldersTreeRepository.findTrees({relations: ['documentations', 'version', 'folder']});
+    const allDoc: DnFolder[] = await this.foldersTreeRepository.findTrees({relations: ['documentations', 'folder']});
     return this.createTree(allDoc[0]);
+  }
+
+  async findFolderByBrickVersion(brickVersion: DnBrickVersion): Promise<DnFolder>{
+    return this.foldersRepository.findOne({where : { brickVersion: brickVersion, path: null }});
+  }
+
+  async findBrickDocsTree(mainFolder: DnFolder): Promise<DnNode>{
+    const brickDocs: DnFolder =
+      await this.foldersTreeRepository.findDescendantsTree(mainFolder, {relations: ['documentations', 'folder']});
+    return this.createTree(brickDocs);
   }
 
   private createTree(folder: DnFolder): DnNode {

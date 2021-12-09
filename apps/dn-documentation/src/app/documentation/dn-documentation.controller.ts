@@ -1,8 +1,7 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Query} from '@nestjs/common';
-import {DnDocumentation, DnDocumentationDTO, DnDocumentationResDTO} from './dn-documentation.entity';
+import {Controller, Delete, Get, Param, Query} from '@nestjs/common';
+import {DnDocumentation, DnDocumentationDTO} from './dn-documentation.entity';
 import {DnDocumentationService} from './dn-documentation.service';
-import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
-import {DnFolder} from '../folder/dn-folder.entity';
+import {BlPublic} from '@monorepo/back-core-lib';
 
 @Controller('documentation')
 export class DnDocumentationController {

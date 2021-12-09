@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DnVersionService } from './dn-version.service';
+import { DnBrickService } from './dn-brick.service';
 
-describe('VersionService', () => {
-  let service: DnVersionService;
+describe('DnBrickService', () => {
+  let service: DnBrickService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [DnVersionService],
+      providers: [DnBrickService],
     }).compile();
 
-    service = module.get<DnVersionService>(DnVersionService);
+    service = module.get<DnBrickService>(DnBrickService);
   });
 
   it('should be defined', () => {

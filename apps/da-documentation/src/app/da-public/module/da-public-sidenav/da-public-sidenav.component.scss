@@ -19,14 +19,14 @@
   padding-top: 10px;
   padding-left: 15px;
   font-size: x-large;
-  border-bottom: #6c6c6c solid 1px; //Couleur ! (secondary)
+  border-bottom: var(--grey-contrast) solid 1px;
   padding-bottom: 15px;
 }
 
 .tree{
   width: 100%;
   height: auto;
-  border-bottom: #6c6c6c solid 1px; //Couleur ! (secondary)
+  border-bottom: var(--grey-contrast) solid 1px;
   padding-bottom: 15px;
   margin-bottom: 15px;
 }
@@ -46,7 +46,9 @@
 
 .line{
   width: 100%;
-  white-space: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .item{
@@ -54,11 +56,11 @@
 }
 
 .item:hover{
-  color: #018989; //Primary !
+  color: var(--primary-color);
 }
 
 .active{
 
-  color: #018989; //Primary !
+  color: var(--primary-color);
 }
 

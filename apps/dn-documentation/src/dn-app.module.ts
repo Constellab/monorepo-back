@@ -7,7 +7,6 @@ import {DnDatabaseConfig} from './app/core/model/dn-database-config.class';
 import {DnCoreConfigModule} from './app/core/modules/core-config/dn-core-config.module';
 import {DnCoreConfigService} from './app/core/modules/core-config/dn-core-config.service';
 import {DnDocumentationModule} from './app/documentation/dn-documentation.module';
-import {DnVersionModule} from './app/version/dn-version.module';
 import {DnUserModule} from './app/users/dn-user.module';
 import {DnAuthModule} from './app/auth/dn-auth.module';
 import {

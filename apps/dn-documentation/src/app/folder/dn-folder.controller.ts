@@ -12,10 +12,10 @@ export class DnFolderController {
   ) {
   }
 
-  @Post()
-  create(@Body(new BlParsePipe(DnFolderResDTO)) createFolder: DnFolderResDTO): Promise<DnFolder> {
-    return this.folderService.create(createFolder);
-  }
+  // @Post()
+  // create(@Body(new BlParsePipe(DnFolderResDTO)) createFolder: DnFolderResDTO): Promise<DnFolder> {
+  //   return this.folderService.create(createFolder);
+  // }
 
   @Post('doc')
   createDoc(@Body(new BlParsePipe(DnDocumentationResDTO)) createDocumentation: DnDocumentationResDTO): Promise<DnDocumentation> {
@@ -57,10 +57,10 @@ export class DnFolderController {
     return this.folderService.findDocsByParentId(id);
   }
 
-  @Put()
-  update(@Body(new BlParsePipe(DnFolderResDTO)) updateFolder: DnFolderResDTO): Promise<DnFolder> {
-    return this.folderService.update(updateFolder);
-  }
+  // @Put()
+  // update(@Body(new BlParsePipe(DnFolderResDTO)) updateFolder: DnFolderResDTO): Promise<DnFolder> {
+  //   return this.folderService.update(updateFolder);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
