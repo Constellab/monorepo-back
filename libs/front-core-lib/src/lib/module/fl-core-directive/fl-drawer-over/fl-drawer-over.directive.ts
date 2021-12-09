@@ -20,6 +20,13 @@ export class FlDrawerOverDirective implements OnInit, OnDestroy {
    */
   @Input() flDrawerOver: FlMediaAlias;
 
+  /**
+   * If true, on init this will close the drawer if the mode is over. And this will
+   * open the drawer in other modes
+   */
+  @Input() flDrawerCloseOverOnInit: boolean = true;
+
+
   private mediaSubscription: Subscription;
 
   private initialMode: MatDrawerMode;
@@ -34,10 +41,15 @@ export class FlDrawerOverDirective implements OnInit, OnDestroy {
     this.mediaSubscription = this.media.asObservable().subscribe(
       () => this.onMediaChange()
     );
+
+    // if the option is active, open the drawer only if over is not active
+    if (this.flDrawerCloseOverOnInit) {
+      this.matDrawer.opened = !this.media.isActive(this.flDrawerOver);
+    }
   }
 
   private onMediaChange(): void {
-    if (this.media.isActive('lt-lg')) {
+    if (this.media.isActive(this.flDrawerOver)) {
       this.matDrawer.mode = 'over';
     } else {
       this.matDrawer.mode = this.initialMode;
