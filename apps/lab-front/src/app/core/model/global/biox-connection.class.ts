@@ -1,7 +1,7 @@
-import {LabBaseEntity} from './lab-entity.entity';
 import {BioxIO, BioxIOSpec, BioxIOSpecResourceType} from '../entities/biox-io.entity';
 import {Exclude} from 'class-transformer';
 import {constTypingNameResource} from '../entities/biox-typing-name.py';
+import {LabBaseEntityWithUser} from '../entities/lab-user.entity';
 
 export interface BioxConnectionPart {
 
@@ -23,7 +23,7 @@ export interface BioxConnection {
   to: BioxConnectionPart;
 }
 
-export abstract class BioxNode extends LabBaseEntity {
+export abstract class BioxNode extends LabBaseEntityWithUser {
 
   // inputConnections automatically set by the ConnectionManager
   @Exclude()

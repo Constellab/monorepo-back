@@ -17,15 +17,15 @@ export class LabEntity implements FlEntity {
  */
 export class LabBaseEntity extends LabEntity {
 
-  @Expose({name: 'creation_datetime'})
+  @Expose({name: 'created_at'})
   @ClLuxonTransform()
   createdAt: DateTime;
 
   @Expose({name: 'is_archived'})
   isArchived: boolean;
 
-  @Expose({name: 'save_datetime'})
+  @Expose({name: 'last_modified_at'})
   @ClLuxonTransform()
-  savedAt: DateTime;
-
+  lastModifiedAt: DateTime;
 }
+

@@ -52,8 +52,8 @@ export class BioxExperimentDetailCardComponent implements OnInit {
     const experiment: BioxExperiment = this.experimentState.currentExperiment;
 
     const experimentForm: ExperimentSimpleForm = {
-      title: experiment.data.title,
-      description: experiment.data.description,
+      title: experiment.title,
+      description: experiment.description,
       study: experiment.study
     };
     const input: BioxExperimentFormDialogInput = {

@@ -1,7 +1,8 @@
-import {LabBaseEntity, LabEntity} from '../../global/lab-entity.entity';
+import {LabEntity} from '../../global/lab-entity.entity';
 import {FlDatasourcePaginated, FlFileHelper} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {BioxTag} from '../biox-tag.entity';
+import {LabBaseEntityWithUser} from '../lab-user.entity';
 
 /**
  * Represent a file or a folder link to the resource
@@ -27,7 +28,7 @@ export class FsNodeEntity extends LabEntity {
 
 export type BioxResourceOrigin = 'IMPORTED' | 'GENERATED';
 
-export class BioxResource extends LabBaseEntity {
+export class BioxResource extends LabBaseEntityWithUser {
   // typing name of the resource model
   @Expose({name: 'typing_name'})
   typingName: string;

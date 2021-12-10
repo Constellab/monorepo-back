@@ -1,7 +1,7 @@
 <fl-card *ngIf="experiment$ | async as experiment">
 
   <fl-card-header>
-    <h1>{{experiment.data.title}}</h1>
+    <h1>{{experiment.title}}</h1>
 
     <fl-card-actions>
 
@@ -50,13 +50,13 @@
     <fl-tag-list class="tag-list" [tags]="experiment.tags"></fl-tag-list>
 
     <fl-limit-height [maxHeight]="100">
-      <div [innerHTML]="experiment.data.description"></div>
+      <div [innerHTML]="experiment.description"></div>
     </fl-limit-height>
   </fl-card-body>
 
   <fl-card-footer *ngIf="showDetail">
     <p class="g-text-small g-text-light">
-      {{'last_modified_the'| translate}} {{experiment.savedAt | flDate}}
+      {{'last_modified_the'| translate}} {{experiment.lastModifiedAt | flDate}}
     </p>
   </fl-card-footer>
 </fl-card>

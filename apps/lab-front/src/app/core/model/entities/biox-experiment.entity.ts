@@ -1,8 +1,9 @@
-import {LabBaseEntity, LabEntity} from '../global/lab-entity.entity';
+import {LabEntity} from '../global/lab-entity.entity';
 import {
   FlEntityPaginatedDatasource,
   FlGetStatusClassColorFunction,
   FlGetStatusIconFunction,
+  FlSanitizeTransform,
   FlStatus,
   FlStatusColorMode,
   FlStatusHelper
@@ -11,29 +12,24 @@ import {Expose, Type} from 'class-transformer';
 import {ViewModel} from '../global/view-model.entity';
 import {BioxStudy} from './biox-study.class';
 import {BioxTag} from './biox-tag.entity';
-
-
-export class BioxExperimentData {
-
-  title: string;
-
-  // todo to sanitize ?
-  description: string;
-}
+import {LabBaseEntityWithUser} from './lab-user.entity';
+import {SecurityContext} from '@angular/core';
 
 export type BioxExperimentStatus = 'DRAFT' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
-
-export class BioxExperiment extends LabBaseEntity implements FlStatus {
+export class BioxExperiment extends LabBaseEntityWithUser implements FlStatus {
 
   @Expose({name: 'protocol_job_id'})
   protocolJobId: string;
 
   score: any;
 
+  title: string;
 
-  @Type(() => BioxExperimentData)
-  data: BioxExperimentData;
+  @FlSanitizeTransform(SecurityContext.HTML)
+  description: string;
+
+  data: void;
 
   @Type(() => LabEntity)
   protocol: LabEntity;
@@ -84,7 +80,7 @@ const getBioxExperimentStatusColorClass: FlGetStatusClassColorFunction = (status
     case 'ERROR':
       return FlStatusHelper.getErrorColor(mode);
     case 'DRAFT':
-      return FlStatusHelper.getInfoColor(mode)
+      return FlStatusHelper.getInfoColor(mode);
     default:
       return FlStatusHelper.getSuccessColor(mode);
   }

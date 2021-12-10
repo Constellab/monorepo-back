@@ -60,7 +60,7 @@ export class WorkflowManagerState {
   public init(element: HTMLElement, flow: BioxFlow<BioxProtocol>, experiment: BioxExperiment): void {
     this.experiment = experiment;
 
-    this.workflow = new Workflow(element, experiment.data.title ?? 'Experiment', flow.object, 'edit', this.ngZone);
+    this.workflow = new Workflow(element, experiment.title ?? 'Experiment', flow.object, 'edit', this.ngZone);
 
     this.workflow.start();
 
