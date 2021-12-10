@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   FL_SEARCH_CONFIG,
   FlDatasourcePaginated,
@@ -12,7 +12,6 @@ import {
 } from '@monorepo/front-core-lib';
 import {BioxResourceSearch, BioxResourceSearchFields} from '../../model/biox-resource-advanced-search.class';
 import {BioxResourceService} from '../../../../entity-service/biox-resource.service';
-import {MatDrawer} from '@angular/material/sidenav';
 import {BioxResource} from '../../../../model/entities/resource/biox-resource.entity';
 import {
   UploadFsNodeDialogComponent,
@@ -65,7 +64,6 @@ export class BioxResourceSearchComponent implements OnInit {
 
   @Output() resourceSelected: EventEmitter<BioxResource> = new EventEmitter<BioxResource>();
 
-  @ViewChild(MatDrawer) drawer: MatDrawer;
 
   datasource: FlDatasourcePaginated<BioxResource>;
 
@@ -88,12 +86,11 @@ export class BioxResourceSearchComponent implements OnInit {
       this.columns.push('action');
     }
 
-    this.searchState.setDrawer(this.drawer);
     this.datasource = this.searchState.datasource;
   }
 
   toggleDrawer(): void {
-    this.drawer.toggle();
+    this.searchState.toggleDrawer();
   }
 
   selectResource(resource: BioxResource): void {

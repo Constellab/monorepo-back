@@ -1,5 +1,12 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlEntityPaginatedDatasource, FlTag} from '@monorepo/front-core-lib';
+import {
+  FlAdvancedSearchInput,
+  FlApiService,
+  FlEntityPaginatedDatasource,
+  FlSearchConverter,
+  FlSearchService,
+  FlTag
+} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {BioxExperiment, BioxExperimentDatasource, ExperimentSimpleForm} from '../model/entities/biox-experiment.entity';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
@@ -9,12 +16,16 @@ import {BioxExperimentFlowFactory} from '../utils/biox-experiment-flow.factory';
 import {mergeMap} from 'rxjs/operators';
 import {BioxStudy} from '../model/entities/biox-study.class';
 import {BioxTag} from '../model/entities/biox-tag.entity';
+import {
+  BioxExperimentSearch,
+  BioxExperimentSearchFields
+} from '../entity-module/biox-experiment-core/model/biox-experiment-advanced-search.class';
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class BioxExperimentService {
+export class BioxExperimentService implements FlSearchService<BioxExperiment> {
 
   private route: string = 'experiment';
 
@@ -80,5 +91,15 @@ export class BioxExperimentService {
 
   public cloneExperiment(id: string): Observable<BioxExperiment> {
     return this.apiService.put(`${this.route}/${id}/clone`, null, BioxExperiment);
+  }
+
+  public advancedSearch(page: number, pageSize: number, filters?: BioxExperimentSearchFields): Observable<ClPageI<BioxExperiment>> {
+    const data: FlAdvancedSearchInput = {
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, BioxExperimentSearch.advancedSearchConverter),
+      sortsCriteria: null
+    };
+    return this.apiService.post(`${this.route}/advanced-search`, data, BioxExperiment, {
+      page: page, pageSize: pageSize, resultIsPaginated: true
+    });
   }
 }

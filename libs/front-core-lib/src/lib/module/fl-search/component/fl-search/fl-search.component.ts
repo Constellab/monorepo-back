@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {FlSavedSearch} from '../../model/fl-saved-search.class';
 import {FlSearchState} from '../../model/fl-search.state';
 import {FlDatasourcePaginated} from '../../../../model/datasource/fl-datasource-paginated.class';
+import {MatDrawer} from '@angular/material/sidenav';
 
 /**
  * Search component with a header, a drawer search on the right and result in table on bottom
@@ -15,6 +16,8 @@ import {FlDatasourcePaginated} from '../../../../model/datasource/fl-datasource-
 })
 export class FlSearchComponent implements OnInit {
 
+  @ViewChild(MatDrawer, {static: true}) drawer: MatDrawer;
+
   datasource: FlDatasourcePaginated<any>;
 
   constructor(private searchState: FlSearchState<any>) {
@@ -22,6 +25,7 @@ export class FlSearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.datasource = this.searchState.datasource;
+    this.searchState.setDrawer(this.drawer);
   }
 
   toggleDrawer(): void {

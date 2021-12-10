@@ -17,6 +17,8 @@ import {SecurityContext} from '@angular/core';
 
 export type BioxExperimentStatus = 'DRAFT' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
+export type BioxExperimentType = 'EXPERIMENT' | 'TRANSFORMER';
+
 export class BioxExperiment extends LabBaseEntityWithUser implements FlStatus {
 
   @Expose({name: 'protocol_job_id'})
@@ -30,6 +32,8 @@ export class BioxExperiment extends LabBaseEntityWithUser implements FlStatus {
   description: string;
 
   data: void;
+
+  type: BioxExperimentType;
 
   @Type(() => LabEntity)
   protocol: LabEntity;
