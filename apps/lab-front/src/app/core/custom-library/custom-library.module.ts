@@ -10,7 +10,8 @@ import {
   FlDateModule,
   FlDialogModule,
   FlDrawerModule,
-  FlDynamicFieldModule, FlFormInputsManagerModule,
+  FlDynamicFieldModule,
+  FlFormInputsManagerModule,
   FlFormModule,
   FlInfiniteScrollModule,
   FlInputFileModule,
@@ -18,6 +19,7 @@ import {
   FlLoaderModule,
   FlPortalActionsModule,
   FlPortalModule,
+  FlSearchModule,
   FlSectionModule,
   FlSnackBarModule,
   FlSpreadsheetModule,
@@ -65,6 +67,7 @@ import {
     FlTagModule,
     FlTextEditorModule,
     FlFormInputsManagerModule,
+    FlSearchModule,
   ]
 })
 export class CustomLibraryModule {

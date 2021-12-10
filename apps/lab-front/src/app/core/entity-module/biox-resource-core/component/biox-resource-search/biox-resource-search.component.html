@@ -1,68 +1,43 @@
-<mat-drawer-container class="g-full-height">
+<fl-search class="g-full-height">
 
   <!-- Advanced section in the right in a drawer -->
-  <mat-drawer mode="side" position="end" class="drawer" flDrawerOver="lt-lg">
+  <fl-search-advanced-form>
     <gen-biox-resource-advanced-search-form></gen-biox-resource-advanced-search-form>
-  </mat-drawer>
+  </fl-search-advanced-form>
 
-  <div class="g-full-height drawer-content" fxLayout="column">
 
-    <!--  Center header  -->
-    <div fxLayout="row">
+  <!--  Center header  -->
+  <fl-search-header fxLayout="row">
 
-      <div fxFlex="grow" class="saved-search-container">
-        <button mat-stroked-button type="button" [style.color]="search.color" class="g-button-small"
-                *ngFor="let search of savedSearch" (click)="callSavedSearch(search)">
-          {{search.label}}
-        </button>
-      </div>
-
-      <!--   Upload files     -->
-      <fl-input-file-icon-container [matTooltip]="'databox.upload_file' | translate" icon="upload_file"
-                                    class="upload-button">
-        <input flInputFile [multiple]="true" type="file" (fileChange)="uploadFiles($event)"
-               [(ngModel)]="files">
-      </fl-input-file-icon-container>
-
-      <!--   Upload folders     -->
-      <fl-input-file-icon-container [matTooltip]="'databox.upload_folder' | translate" icon="drive_folder_upload"
-                                    class="upload-button">
-        <input flInputFile type="file" (fileChange)="uploadFolder($event)"
-               [(ngModel)]="files" webkitdirectory mozdirectory>
-      </fl-input-file-icon-container>
-
-      <button mat-icon-button type="button" (click)="toggleDrawer()">
-        <mat-icon>menu</mat-icon>
-      </button>
+    <div fxFlex="grow" class="saved-search-container">
+      <fl-search-saved-list></fl-search-saved-list>
     </div>
 
+    <!--   Upload files     -->
+    <fl-input-file-icon-container [matTooltip]="'databox.upload_file' | translate" icon="upload_file"
+                                  class="upload-button">
+      <input flInputFile [multiple]="true" type="file" (fileChange)="uploadFiles($event)"
+             [(ngModel)]="files">
+    </fl-input-file-icon-container>
 
-    <!--   Number of results   -->
-    <p class="result-count g-text-light">
-      <ng-container *ngIf="datasource.page?.totalElements > 0">
-        {{'count_result' | translate:{count: datasource.page?.totalElements} }}
-      </ng-container>
-    </p>
+    <!--   Upload folders     -->
+    <fl-input-file-icon-container [matTooltip]="'databox.upload_folder' | translate" icon="drive_folder_upload"
+                                  class="upload-button">
+      <input flInputFile type="file" (fileChange)="uploadFolder($event)"
+             [(ngModel)]="files" webkitdirectory mozdirectory>
+    </fl-input-file-icon-container>
 
-    <div fxFlex="grow" class="g-scrollable-element"
-         fxLayout="column" (flInfiniteScroll)="loadMoreResults()"
-         [flInfiniteDisabled]="datasource.isLoading || datasource.page?.last">
-      <div>
-
-        <div fxLayout="column">
-          <gen-biox-resource-table [datasource]="datasource" [columns]="columns"
-                                   [selectableRow]="resourceSelectable"
-                                   (resourceSelected)="selectResource($event)"></gen-biox-resource-table>
-        </div>
-
-        <fl-infinite-load-more-result [datasource]="datasource"></fl-infinite-load-more-result>
-      </div>
-
-      <fl-loader size="medium" *ngIf="datasource.firstPageIsLoading" class="g-centered"></fl-loader>
-    </div>
+    <button mat-icon-button type="button" (click)="toggleDrawer()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </fl-search-header>
 
 
-  </div>
+  <fl-search-result>
+    <gen-biox-resource-table [datasource]="datasource" [columns]="columns"
+                             [selectableRow]="resourceSelectable"
+                             (resourceSelected)="selectResource($event)"></gen-biox-resource-table>
+  </fl-search-result>
 
 
-</mat-drawer-container>
+</fl-search>

@@ -1,4 +1,4 @@
-import { FlDrawerOverDirective } from './fl-drawer-over.directive';
+import {FlDrawerOverDirective} from './fl-drawer-over.directive';
 
 describe('FlDrawerOverDirective', () => {
   it('should create an instance', () => {

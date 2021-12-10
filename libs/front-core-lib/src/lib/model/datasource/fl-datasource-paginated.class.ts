@@ -55,15 +55,15 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
     if (this.disabled) {
       return;
     }
+    if (!this.isEmpty()) {
+      this.clearArray();
+    }
 
     this.pageNumber = 0;
     this.page = null;
     this.firstPageIsLoading = true;
     this.setRequestData(requestData);
 
-    if (!this.isEmpty()) {
-      this.clearArray();
-    }
     this.callGetPageFunction();
   }
 

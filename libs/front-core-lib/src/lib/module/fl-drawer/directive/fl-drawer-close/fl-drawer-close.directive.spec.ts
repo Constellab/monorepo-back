@@ -1,4 +1,4 @@
-import { FlDrawerCloseDirective } from './fl-drawer-close.directive';
+import {FlDrawerCloseDirective} from './fl-drawer-close.directive';
 
 describe('FlSidenavCloseDirective', () => {
   it('should create an instance', () => {

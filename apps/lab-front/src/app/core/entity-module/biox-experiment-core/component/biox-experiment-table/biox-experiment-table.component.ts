@@ -12,7 +12,7 @@ export class BioxExperimentTableComponent extends FlPaginatedTableAbstractDirect
   implements OnInit {
 
   constructor() {
-    super(['title', 'score', 'status', 'createdAt']);
+    super(['title', 'score', 'status', 'createdAt', 'tags']);
   }
 
   ngOnInit(): void {

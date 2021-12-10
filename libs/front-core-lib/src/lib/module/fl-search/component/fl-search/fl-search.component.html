@@ -1,0 +1,39 @@
+<mat-drawer-container class="g-full-height">
+
+  <!-- Advanced section in the right in a drawer -->
+  <mat-drawer mode="side" position="end" class="drawer" flDrawerOver="lt-lg">
+    <ng-content select="fl-search-advanced-form"></ng-content>
+  </mat-drawer>
+
+  <div class="g-full-height drawer-content" fxLayout="column">
+
+    <ng-content select="fl-search-header"></ng-content>
+
+
+    <!--   Number of results   -->
+    <p class="result-count g-text-light">
+      <ng-container *ngIf="datasource.page?.totalElements > 0">
+        {{'flSearch.count_result' | translate:{count: datasource.page?.totalElements} }}
+      </ng-container>
+    </p>
+
+    <div fxFlex="grow" class="g-scrollable-element"
+         fxLayout="column" (flInfiniteScroll)="loadMoreResults()"
+         [flInfiniteDisabled]="datasource.isLoading || datasource.page?.last">
+      <div>
+
+        <div>
+          <ng-content select="fl-search-result"></ng-content>
+        </div>
+
+        <fl-infinite-load-more-result [datasource]="datasource"></fl-infinite-load-more-result>
+      </div>
+
+      <fl-loader size="medium" *ngIf="datasource.firstPageIsLoading" class="g-centered"></fl-loader>
+    </div>
+
+
+  </div>
+
+
+</mat-drawer-container>

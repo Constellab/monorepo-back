@@ -1,4 +1,4 @@
-import {FlEntity} from '../fl-entity.class';
+import {FlEntity} from '../../../model/fl-entity.class';
 
 /**
  * Interface representing a saved search
@@ -16,7 +16,7 @@ export interface FlSavedSearch extends FlEntity {
   // color provided by the user
   color: string;
 
-  // if default, the search is triggered automatically
+  // if true, the search is triggered automatically
   default: boolean;
 
   // version of the search, must match the version of the form

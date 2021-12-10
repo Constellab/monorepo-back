@@ -1,0 +1,4 @@
+<button mat-stroked-button type="button" [style.color]="search.color" class="g-button-small"
+        *ngFor="let search of savedSearch" (click)="callSavedSearch(search)">
+  {{search.label}}
+</button>

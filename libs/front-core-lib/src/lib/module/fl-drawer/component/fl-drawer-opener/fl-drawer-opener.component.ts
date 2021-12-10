@@ -2,7 +2,7 @@ import {Component, HostListener, Input, OnInit} from '@angular/core';
 import {MatDrawer} from '@angular/material/sidenav';
 
 /**
- * Component to be placed under a mzt-sidenav or mat-drawer. It will open the drawer on mouse hover.
+ * Component to be placed under a mat-sidenav or mat-drawer. It will open the drawer on mouse hover.
  */
 @Component({
   selector: 'fl-drawer-opener',

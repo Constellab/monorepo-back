@@ -48,6 +48,16 @@
     </mat-cell>
   </ng-container>
 
+  <!-- Tags -->
+  <ng-container matColumnDef="tags">
+    <mat-header-cell *matHeaderCellDef class="g-column-width-2">
+      <span> {{'tags' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let resource" class="g-column-width-2 tags">
+      <fl-tag-list [tags]="resource.tags" [limitNumber]="6"></fl-tag-list>
+    </mat-cell>
+  </ng-container>
+
 
   <!-- Dynamic columns -->
   <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">

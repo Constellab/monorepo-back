@@ -1,11 +1,11 @@
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {FlDatasourcePaginated} from '../datasource/fl-datasource-paginated.class';
+import {FlDatasourcePaginated} from '../../../model/datasource/fl-datasource-paginated.class';
 import {FormGroup} from '@ngneat/reactive-forms';
 import {MatDrawer} from '@angular/material/sidenav';
-import {FL_SEARCH_PAGE_CONFIG, FlSearchPageConfig} from './fl-search-state-config.class';
+import {FL_SEARCH_CONFIG, FlSearchConfig} from './fl-search-state-config.class';
 import {FlSearchService} from './fl-search-service.class';
-import {FlEntityPaginatedDatasource} from '../datasource/fl-entity-datasource.class';
-import {FlEntity} from '../fl-entity.class';
+import {FlEntityPaginatedDatasource} from '../../../model/datasource/fl-entity-datasource.class';
+import {FlEntity} from '../../../model/fl-entity.class';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FlAdvancedSearchObject, FlSearchPageUrlHelper, FlSearchUrlObject} from './fl-search-url.helper';
 import {first} from 'rxjs/operators';
@@ -40,7 +40,7 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
   constructor(private route: ActivatedRoute,
               private router: Router,
-              @Inject(FL_SEARCH_PAGE_CONFIG) private config: FlSearchPageConfig) {
+              @Inject(FL_SEARCH_CONFIG) private config: FlSearchConfig) {
     this.advancedSearchFormGroup = config.buildAdvancedForm();
     this.searchService = config.searchService;
     this.datasource = new FlEntityPaginatedDatasource(
@@ -208,6 +208,10 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
   public closeDrawer(): void {
     this.drawer.close();
+  }
+
+  public toggleDrawer(): void {
+    this.drawer.toggle();
   }
 
   ngOnDestroy(): void {

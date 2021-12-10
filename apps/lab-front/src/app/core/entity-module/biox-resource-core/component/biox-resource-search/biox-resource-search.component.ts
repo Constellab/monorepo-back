@@ -1,10 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {
-  FL_SEARCH_PAGE_CONFIG,
+  FL_SEARCH_CONFIG,
   FlDatasourcePaginated,
   FlDialogService,
   FlSavedSearch,
-  FlSearchPageConfig,
+  FlSearchConfig,
   FlSearchService,
   FlSearchState,
   FlTableColumn,
@@ -35,18 +35,19 @@ const savedSearch: FlSavedSearch[] = [{
 /**
  * Configuration factory for the
  * */
-function searchConfig(searchService: FlSearchService<any>): FlSearchPageConfig {
+function searchConfig(searchService: FlSearchService<any>): FlSearchConfig {
   return {
     version: 1,
     searchService: searchService,
     buildAdvancedForm: BioxResourceSearch.getAdvancedSearchForm,
     advancedFormClass: BioxResourceSearchFields,
-    savedSearch: savedSearch
+    savedSearch: savedSearch,
+    advancedSearchFormManagerConfig: BioxResourceSearch.advancedSearchManagerConfig
   };
 }
 
 /**
- * Complete component to search on resource. It support a select mode and manage file upload.
+ * Complete component to search on resource. It supports a select mode and manage file upload.
  */
 @Component({
   selector: 'gen-biox-resource-search',
@@ -54,7 +55,7 @@ function searchConfig(searchService: FlSearchService<any>): FlSearchPageConfig {
   styleUrls: ['./biox-resource-search.component.scss'],
   providers: [
     FlSearchState,
-    {provide: FL_SEARCH_PAGE_CONFIG, useFactory: searchConfig, deps: [BioxResourceService]}
+    {provide: FL_SEARCH_CONFIG, useFactory: searchConfig, deps: [BioxResourceService]}
   ]
 
 })
@@ -93,14 +94,6 @@ export class BioxResourceSearchComponent implements OnInit {
 
   toggleDrawer(): void {
     this.drawer.toggle();
-  }
-
-  loadMoreResults(): void {
-    this.datasource.getNextPage();
-  }
-
-  callSavedSearch(savedSearch: FlSavedSearch): void {
-    this.searchState.callAdvancedSearchFromSavedSearch(savedSearch);
   }
 
   selectResource(resource: BioxResource): void {

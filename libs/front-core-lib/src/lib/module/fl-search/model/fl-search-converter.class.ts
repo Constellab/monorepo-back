@@ -1,7 +1,7 @@
 import {FlSearchCriteria, FlSearchOperator} from './fl-search.class';
 import {DateTime} from 'luxon';
 import {ClDateHelper, ClHelpService, ClLuxonDateTimeTransform} from '@monorepo/core-lib';
-import {FlEntity} from '../fl-entity.class';
+import {FlEntity} from '../../../model/fl-entity.class';
 
 /**
  * Object used to convert an object attribute to a {@link FlSearchCriteria} to perform a advanced search
