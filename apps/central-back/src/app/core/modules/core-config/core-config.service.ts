@@ -94,7 +94,7 @@ export class CoreConfigService {
   }
 
   public getLogLevel(): LogLevel {
-    return this.configService.get('LOG_LEVEL');
+    return this.configService.get('LOG_LEVEL') ?? 'log';
   }
 
   public getLogPath(): string {

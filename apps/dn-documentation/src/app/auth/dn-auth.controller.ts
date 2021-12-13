@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post, Res} from '@nestjs/common';
+import {Body, Controller, Post, Res} from '@nestjs/common';
 import {DnAuthService} from './dn-auth.service';
 import {Response} from 'express';
 import {jwtConfig} from './jwt.config';

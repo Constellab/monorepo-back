@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://doc-prod-back.gws.gencovery.com/',
+  apiUrl: 'https://hub-back.constellab.gencovery.com/',
 };
 

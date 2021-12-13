@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {EnvironmentProfile} from '../../model/config/dn-config.class';
 import {DnDatabaseConfig} from '../../model/config/dn-database-config.class';
@@ -50,6 +50,14 @@ export class DnCoreConfigService {
       console.error('Error while parsing config ' + configName + ' to number');
       throw error;
     }
+  }
+
+  public getLogLevel(): LogLevel {
+    return this.configService.get('LOG_LEVEL') ?? 'log';
+  }
+
+  public getLogPath(): string {
+    return this.configService.get('LOG_PATH');
   }
 }
 

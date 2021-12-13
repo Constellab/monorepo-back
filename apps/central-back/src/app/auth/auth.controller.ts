@@ -10,6 +10,7 @@ import {User} from '../users/user.entity';
 @Controller('auth')
 export class AuthController {
 
+
   constructor(private authService: AuthService,
               private configService: CoreConfigService) {
   }

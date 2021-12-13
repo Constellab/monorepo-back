@@ -2,7 +2,10 @@ import {NestFactory} from '@nestjs/core';
 import {AppModule} from './app.module';
 import {WINSTON_MODULE_NEST_PROVIDER} from 'nest-winston';
 import {blGetCorsConfig} from '@monorepo/back-core-lib';
-import {ENVIRONMENT_PROFILE_KEY, ENVIRONMENT_PROFILE_PROD_VALUE} from './app/core/modules/core-config/core-config.service';
+import {
+  ENVIRONMENT_PROFILE_KEY,
+  ENVIRONMENT_PROFILE_PROD_VALUE
+} from './app/core/modules/core-config/core-config.service';
 
 async function bootstrap(): Promise<void> {
 
@@ -16,7 +19,10 @@ async function bootstrap(): Promise<void> {
   // enable custom logger using winston
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
-  await app.listen(3001);
+  const port = 3001;
+  await app.listen(port, () => {
+    console.log('Listening at http://localhost:' + port + '/');
+  });
 }
 
 bootstrap();

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://pre-prod-back.gws.gencovery.com/',
+  apiUrl: 'https://central-back-pre-prod.gws.gencovery.com/',
 };

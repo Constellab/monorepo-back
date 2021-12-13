@@ -13,7 +13,8 @@ export class DnAuthService {
     private jwtService: BlJwtService,
     private blExternalApiService: BlExternalApiService,
     private coreConfigService: DnCoreConfigService
-  ) {}
+  ) {
+  }
 
   async login(credentials: CmCredentials): Promise<string> {
     const userCentral = await this.checkCredentialsAndUser(credentials);
@@ -22,24 +23,23 @@ export class DnAuthService {
     return this.jwtService.generateToken(user.id, user.email);
   }
 
-  async checkCredentialsAndUser(credentials: CmCredentials): Promise<any>{
-    try{
+  async checkCredentialsAndUser(credentials: CmCredentials): Promise<any> {
+    try {
       const userCentral = await this.blExternalApiService
         .post(this.coreConfigService.getCentralApiUrl() + 'auth/check-credentials/ADMIN', credentials).toPromise();
-      if(!userCentral){
+      if (!userCentral) {
         throw new UnauthorizedException('Wrong mail or passord');
       }
       return userCentral;
-    }
-    catch (e: any) {
-      if(e.status >= 500 && e.status < 600) {
+    } catch (e: any) {
+      if (e.status >= 500 && e.status < 600) {
         throw new UnauthorizedException('Central disconnected');
       }
       throw new UnauthorizedException('Wrong mail or password');
     }
   }
 
-  async createOrUpdateUser(userFromCentral: any): Promise<DnUser>{
+  async createOrUpdateUser(userFromCentral: any): Promise<DnUser> {
     const user: DnUser = new DnUser();
     user.id = userFromCentral.id;
     user.firstname = userFromCentral.firstname;
