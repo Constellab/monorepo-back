@@ -314,6 +314,12 @@ mat-tree {
 }
 
 
+/************************************* MAT OPTION ***********************************/
+// class to hide the checkbox on multiple seletable mat options
+.g-mat-option-hide-checkbox .mat-pseudo-checkbox{
+  display: none;
+}
+
 /************************************* MAT CHIP ***********************************/
 .g-mat-chip-small {
   font-size: 0.8em !important;

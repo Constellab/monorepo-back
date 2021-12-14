@@ -1,5 +1,4 @@
 import {AfterViewInit, Component, Host, OnInit, Optional} from '@angular/core';
-import {Observable} from 'rxjs';
 import {BioxStudy} from '../../../../model/entities/biox-study.class';
 import {BioxStudyService} from '../../../../entity-service/biox-study.service';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
@@ -16,7 +15,7 @@ import {MatSelect} from '@angular/material/select';
 export class BioxStudySelectOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit {
 
-  studies$: Observable<BioxStudy[]>;
+  studies: BioxStudy[];
 
   constructor(@Host() @Optional() public select: MatSelect,
               private studyService: BioxStudyService) {
@@ -24,13 +23,14 @@ export class BioxStudySelectOptionsComponent extends FlEmbeddedOptionsAbstractDi
   }
 
   ngOnInit(): void {
-    this.studies$ = this.studyService.getStudies();
+    this.studyService.getStudies().subscribe(
+      studies => this.studies = studies
+    );
+
     this.overrideCompareWithOnIds(this.select);
   }
 
   ngAfterViewInit(): void {
     this.initOptions();
   }
-
-
 }

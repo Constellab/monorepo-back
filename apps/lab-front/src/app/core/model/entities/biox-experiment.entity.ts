@@ -54,15 +54,15 @@ export class BioxExperiment extends LabBaseEntityWithUser implements FlStatus {
   tags: BioxTag[];
 
   getStatusClassColor(mode: 'background' | 'text'): string {
-    return getBioxExperimentStatusColorClass(this.getStatusName(), mode);
+    return getBioxExperimentStatusColorClass(this.status, mode);
   }
 
   getStatusIcon(): string {
-    return getBioxExperimentStatusStatusIcon(this.getStatusName());
+    return getBioxExperimentStatusStatusIcon(this.status);
   }
 
   getStatusName(): BioxExperimentStatus {
-    return this.status;
+    return bioxExperimentStatusNames[this.status];
   }
 
   isEditable(): boolean {
@@ -102,6 +102,15 @@ const getBioxExperimentStatusStatusIcon: FlGetStatusIconFunction = (status: Biox
     case 'WAITING_FOR_CLI_PROCESS':
       return 'cached';
   }
+};
+
+// const to list the experiment status translation texts
+export const bioxExperimentStatusNames: Record<BioxExperimentStatus, any> = {
+  DRAFT: 'biox.experiment_draft',
+  SUCCESS: 'biox.experiment_success',
+  ERROR: 'biox.experiment_error',
+  RUNNING: 'biox.experiment_running',
+  WAITING_FOR_CLI_PROCESS: 'biox.experiment_waiting_for_cli'
 };
 
 

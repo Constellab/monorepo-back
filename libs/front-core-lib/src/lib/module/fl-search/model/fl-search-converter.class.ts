@@ -145,7 +145,7 @@ export class FlSearchConverter {
    * @param object entity
    */
   public static getEntityId(object: FlEntity): string {
-    return object.id;
+    return object?.id ?? null;
   }
 
   public static getCustomKey(key: string) {
@@ -163,6 +163,7 @@ export class FlSearchConverter {
    * @param objects entities
    */
   public static getEntitiesId(objects: FlEntity[]): string[] {
+    if (objects == null) return null;
     return objects.map(o => FlSearchConverter.getEntityId(o));
   }
 
@@ -172,7 +173,7 @@ export class FlSearchConverter {
    * @param date date to convert
    */
   public static convertDateToTime(date: Date): number {
-    return date.getTime();
+    return date?.getTime() ?? null;
   }
 
   /**
@@ -244,18 +245,6 @@ export class FlSearchConverter {
       return [criteria];
     };
   }
-
-  /**
-   * It return false if the boolean is null or false and true if boolean
-   * is true.
-   *
-   * With this, you can only filter on true values but not false values
-   * @param bool value
-   */
-  public static convertBooleanFalse(bool: boolean | null): boolean {
-    return !!bool;
-  }
-
 
 }
 

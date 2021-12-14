@@ -44,8 +44,8 @@ export class ExperimentsService extends AbstractWithStatusService<Experiment, Ex
     newExperiment.study = study;
     newExperiment.label = labExperimentDto.data.title;
     newExperiment.description = labExperimentDto.data.description;
-    newExperiment.createdAt = labExperimentDto.creation_datetime;
-    newExperiment.lastModifiedAt = labExperimentDto.save_datetime;
+    newExperiment.createdAt = labExperimentDto.created_at;
+    newExperiment.lastModifiedAt = labExperimentDto.last_modified_at;
     if (experimentDB) {
       // todo does not support status change
       return await this.updateWithCompare(newExperiment, experimentDB);

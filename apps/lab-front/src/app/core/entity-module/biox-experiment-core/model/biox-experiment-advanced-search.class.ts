@@ -19,10 +19,13 @@ export class BioxExperimentSearchFields {
   type: BioxExperimentType;
   status: BioxExperimentStatus;
   tags: FlTag[];
-  study: BioxStudy;
+  study: BioxStudy[];
 
   @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
+
+  @Type(() => FlSearchDateInterval)
+  lastModifiedAt: FlSearchDateInterval;
   isValidated: boolean;
   isArchived: boolean;
 
@@ -36,9 +39,11 @@ export class BioxExperimentSearch {
     text: 'biox.experiment_text',
     type: 'biox.experiment_type',
     tags: 'flTag.tags',
+    study: 'biox.study',
     isArchived: 'is_archived',
     // group the creation date into one chip
     createdAt: 'creation_date',
+    lastModifiedAt: 'last_modified_date',
     isValidated: 'biox.experiment_is_validated',
   };
 
@@ -49,11 +54,12 @@ export class BioxExperimentSearch {
   public static advancedSearchConverter: FlSearchCriteriaConverter<BioxExperimentSearchFields> = {
     text: {key: 'text', operator: 'MATCH'},
     type: {key: 'type', operator: 'EQ'},
-    status: {key: 'status', operator: 'EQ'},
+    status: {key: 'status', operator: 'IN'},
     tags: {key: 'tags', operator: 'EQ', convertValue: FlTagHelper.tagsToString},
-    study: {key: 'study', operator: 'EQ'},
+    study: {key: 'study', operator: 'IN', convertValue: FlSearchConverter.getEntitiesId},
     // Date
-    createdAt: FlSearchConverter.dateInterval('creation_datetime'),
+    createdAt: FlSearchConverter.dateInterval('created_at'),
+    lastModifiedAt: FlSearchConverter.dateInterval('last_modified_at'),
     isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.convertArchived},
     isValidated: {key: 'is_validated', operator: 'EQ', convertValue: BioxExperimentSearch.convertValidated},
   };
@@ -73,11 +79,6 @@ export class BioxExperimentSearch {
 
 
   public static getAdvancedSearchForm(): FormGroup<BioxExperimentSearchFields> {
-    const createAtFormGroup: FormGroup<FlSearchDateInterval> = new FormBuilder().group({
-      from: [null],
-      to: [null],
-    });
-
     return new FormBuilder().group(
       {
         text: [null],
@@ -85,7 +86,14 @@ export class BioxExperimentSearch {
         status: [null],
         tags: [null],
         study: [null],
-        createdAt: createAtFormGroup,
+        createdAt: new FormBuilder().group<FlSearchDateInterval>({
+          from: [null],
+          to: [null],
+        }),
+        lastModifiedAt: new FormBuilder().group<FlSearchDateInterval>({
+          from: [null],
+          to: [null],
+        }),
         isArchived: [null],
         isValidated: [null],
       }

@@ -17,6 +17,10 @@ import {flSearchI18n} from './i18n/fl-search.i18n';
 import {FlFormInputsManagerModule} from '../fl-form-inputs-manager/fl-form-inputs-manager.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {FlSearchSavedListComponent} from './component/fl-search-saved-list/fl-search-saved-list.component';
+import {FlSearchDateIntervalComponent} from './component/fl-search-date-interval/fl-search-date-interval.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 
 
 @NgModule({
@@ -26,6 +30,7 @@ import {FlSearchSavedListComponent} from './component/fl-search-saved-list/fl-se
     FlSearchHeaderComponent,
     FlSearchResultComponent,
     FlSearchSavedListComponent,
+    FlSearchDateIntervalComponent,
   ],
   exports: [
     FlSearchComponent,
@@ -33,6 +38,7 @@ import {FlSearchSavedListComponent} from './component/fl-search-saved-list/fl-se
     FlSearchHeaderComponent,
     FlSearchResultComponent,
     FlSearchSavedListComponent,
+    FlSearchDateIntervalComponent,
   ],
   imports: [
     CommonModule,
@@ -43,6 +49,9 @@ import {FlSearchSavedListComponent} from './component/fl-search-saved-list/fl-se
     MatIconModule,
     MatSidenavModule,
     FlexLayoutModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
 
 
     FlInfiniteScrollModule,

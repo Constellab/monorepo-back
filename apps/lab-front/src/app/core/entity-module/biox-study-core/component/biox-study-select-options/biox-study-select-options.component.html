@@ -1,3 +1,7 @@
-<mat-option *ngFor="let study of studies$ | async" [value]="study">
+<mat-option *ngFor="let study of studies" [value]="study">
   {{study.title}}
+</mat-option>
+
+<mat-option disabled class="g-mat-option-hide-checkbox" *ngIf="studies?.length === 0">
+  {{'biox.no_study' | translate}}
 </mat-option>

@@ -38,35 +38,10 @@
     </mat-form-field>
 
     <!-------------------------------  Creation date  ---------------------------->
-    <div formGroupName="createdAt" class="g-no-hint g-full">
+    <div class="g-no-hint g-full g-compact-form">
       <p class="g-text-small subtitle">{{'creation_date' | translate}}</p>
-      <div fxLayout="row wrap" fxLayoutAlign="space-between center" fxLayoutGap="0.5em"
-           class="date-interval">
-
-        <!--    Created at from    -->
-        <p class="g-text-light g-text-capitalize-first">{{'between_the_from' | translate}}</p>
-        <mat-form-field class="date" appearance="outline">
-          <mat-label>{{'begin_date' | translate}}</mat-label>
-          <input matInput formControlName="from" autocomplete="disabled"
-                 [matDatepicker]="createdAtFrom" placeholder="{{'begin_date' | translate}}">
-          <mat-datepicker-toggle matSuffix [for]="createdAtFrom"></mat-datepicker-toggle>
-          <mat-datepicker #createdAtFrom></mat-datepicker>
-        </mat-form-field>
-
-      </div>
-      <div fxLayout="row wrap" fxLayoutAlign="space-between center" fxLayoutGap="0.5em"
-           class="date-interval">
-        <!--    Created at to    -->
-        <p class="g-text-light">{{'between_the_to' | translate}}</p>
-        <mat-form-field class="date" appearance="outline">
-          <mat-label>{{'end_date' | translate}}</mat-label>
-          <input matInput formControlName="to" autocomplete="off"
-                 [min]="formGp.value.createdAt.from"
-                 [matDatepicker]="createdAtTo" placeholder="{{'end_date' | translate}}">
-          <mat-datepicker-toggle matSuffix [for]="createdAtTo"></mat-datepicker-toggle>
-          <mat-datepicker #createdAtTo></mat-datepicker>
-        </mat-form-field>
-      </div>
+      <fl-search-date-interval formGroupName="createdAt">
+      </fl-search-date-interval>
     </div>
 
     <mat-checkbox formControlName="isArchived"

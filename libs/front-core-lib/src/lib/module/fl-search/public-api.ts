@@ -4,6 +4,7 @@ export * from './fl-search.module';
 // Components
 export * from './component/fl-search/fl-search.component';
 export * from './component/fl-search-advanced-form/fl-search-advanced-form.component';
+export * from './component/fl-search-date-interval/fl-search-date-interval.component';
 export * from './component/fl-search-header/fl-search-header.component';
 export * from './component/fl-search-result/fl-search-result.component';
 export * from './component/fl-search-saved-list/fl-search-saved-list.component';

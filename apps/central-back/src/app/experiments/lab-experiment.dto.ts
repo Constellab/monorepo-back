@@ -14,8 +14,8 @@ export class LabExperimentDto {
   status: ExperimentStatus;
 
   @ClLuxonDateTimeTransform()
-  creation_datetime: DateTime;
+  created_at: DateTime;
 
   @ClLuxonDateTimeTransform()
-  save_datetime: DateTime;
+  last_modified_at: DateTime;
 }

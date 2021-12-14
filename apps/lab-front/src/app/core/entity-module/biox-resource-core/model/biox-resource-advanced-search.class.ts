@@ -53,7 +53,7 @@ export class BioxResourceSearch {
     origin: {key: 'origin', operator: 'EQ'},
     data: {key: 'data', operator: 'MATCH'},
     // Date
-    createdAt: FlSearchConverter.dateInterval('creation_datetime'),
+    createdAt: FlSearchConverter.dateInterval('created_at'),
     isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.convertArchived},
   };
 
