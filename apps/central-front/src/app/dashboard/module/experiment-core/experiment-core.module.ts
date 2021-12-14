@@ -5,7 +5,6 @@ import {CoreModule} from '../../../core/core.module';
 import {ExperimentFormDialogComponent} from './component/experiment-form-dialog/experiment-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabCoreModule} from '../../../core/entity-module/lab-core/lab-core.module';
-import {ExperimentStatusColorPipe} from './pipe/experiment-status-color/experiment-status-color.pipe';
 import {RouterModule} from '@angular/router';
 import {ExperimentInfoComponent} from './component/experiment-info/experiment-info.component';
 
@@ -14,13 +13,11 @@ import {ExperimentInfoComponent} from './component/experiment-info/experiment-in
   declarations: [
     ExperimentCardComponent,
     ExperimentFormDialogComponent,
-    ExperimentStatusColorPipe,
     ExperimentInfoComponent
   ],
   exports: [
     ExperimentCardComponent,
     ExperimentFormDialogComponent,
-    ExperimentStatusColorPipe,
     ExperimentInfoComponent,
   ],
   imports: [

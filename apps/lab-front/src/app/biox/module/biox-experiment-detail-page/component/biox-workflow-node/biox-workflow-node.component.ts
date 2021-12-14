@@ -58,6 +58,6 @@ export class BioxWorkflowNodeComponent implements OnInit {
   }
 
   showNodeStatus(): boolean {
-    return this.node.object.getStatusName() !== 'draft';
+    return this.node.object.status.value !== 'DRAFT';
   }
 }

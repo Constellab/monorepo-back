@@ -1,4 +1,4 @@
 
-<!--TODO translate-->
-<mat-option value="EXPERIMENT">EXPERIMENT</mat-option>
-<mat-option value="TRANSFORMER">TRANSFORMER</mat-option>
+<mat-option *ngFor="let status of statusList" [value]="status.value">
+  {{status.name | translate}}
+</mat-option>

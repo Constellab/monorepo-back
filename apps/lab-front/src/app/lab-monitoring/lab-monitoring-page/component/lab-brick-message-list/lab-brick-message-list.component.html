@@ -5,7 +5,7 @@
     <div>
       <div *ngFor="let message of messages">
         <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
-          <fl-status-chip mode="iconText" [status]="message"></fl-status-chip>
+          <fl-status-chip mode="iconText" [status]="message.status"></fl-status-chip>
           <p>{{message.message}}</p>
         </div>
         <mat-divider></mat-divider>

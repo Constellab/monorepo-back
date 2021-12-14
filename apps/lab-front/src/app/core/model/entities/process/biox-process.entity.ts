@@ -4,7 +4,7 @@ import {BioxNode} from '../../global/biox-connection.class';
 import {Expose, Type} from 'class-transformer';
 import {BioxIO} from '../biox-io.entity';
 import {BioxProgressBar} from '../biox-progress-bar.entity';
-import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
+import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {bioxTaskSourceTypingName} from '../biox-typing-name.py';
 
 export interface BioxProcessData {
@@ -19,10 +19,17 @@ export interface BioxProcessData {
 
 export type BioxProcessStatus = 'DRAFT' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
+const bioxProcessStatusDict: FlStatusDict<BioxProcessStatus> = {
+  DRAFT: FlStatusHelper.getDraftStatus('DRAFT'),
+  RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
+  SUCCESS: FlStatusHelper.getSuccessStatus('SUCCESS'),
+  ERROR: FlStatusHelper.getErrorStatus('ERROR'),
+};
+
 /**
  * Task or protocol inside a flow
  */
-export class BioxProcess extends BioxNode implements FlStatus {
+export class BioxProcess extends BioxNode {
 
   @Expose({name: 'process_typing_name'})
   processTypingName: string;
@@ -37,7 +44,8 @@ export class BioxProcess extends BioxNode implements FlStatus {
     id: string;
   };
 
-  status: BioxProcessStatus;
+  @FlStatusTransform(bioxProcessStatusDict)
+  status: FlStatus<BioxProcessStatus>;
 
 
   @Type(() => BioxConfig)
@@ -70,17 +78,6 @@ export class BioxProcess extends BioxNode implements FlStatus {
     return this.config?.data.specs.hasProperties() ?? false;
   }
 
-  getStatusClassColor(mode: 'background' | 'text'): string {
-    return getBioxProcessStatusColorClass(this.getStatusName(), mode);
-  }
-
-  getStatusIcon(): string {
-    return getBioxProcessStatusStatusIcon(this.getStatusName());
-  }
-
-  getStatusName(): string {
-    return this.status;
-  }
 
   // return true if the process is a of type Source
   isSource(): boolean {
@@ -91,28 +88,3 @@ export class BioxProcess extends BioxNode implements FlStatus {
     return this.data.title || this.name;
   }
 }
-
-const getBioxProcessStatusColorClass: FlGetStatusClassColorFunction = (status: BioxProcessStatus,
-                                                                       mode: 'background' | 'text' = 'background'): string => {
-  switch (status) {
-    case 'ERROR':
-      return mode === 'background' ? 'g-warn-background' : 'g-warn-text';
-    case 'DRAFT':
-      return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
-    default:
-      return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
-  }
-};
-
-const getBioxProcessStatusStatusIcon: FlGetStatusIconFunction = (status: BioxProcessStatus): string => {
-  switch (status) {
-    case 'DRAFT':
-      return 'hourglass_empty';
-    case 'ERROR':
-      return 'error';
-    case 'SUCCESS':
-      return 'done';
-    case 'RUNNING':
-      return 'cached';
-  }
-};

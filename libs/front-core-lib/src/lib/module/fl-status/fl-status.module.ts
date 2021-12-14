@@ -7,6 +7,8 @@ import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
 import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
+import {flStatusI18n} from './i18n/fl-status.i18n';
 
 @NgModule({
   declarations: [
@@ -29,4 +31,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
   ]
 })
 export class FlStatusModule {
+  constructor(translateService: FlTranslateService) {
+    translateService.addModuleTranslation('FlStatusModule', flStatusI18n);
+  }
 }

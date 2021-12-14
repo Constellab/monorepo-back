@@ -13,14 +13,10 @@ export class StatusHistoryCardComponent implements OnInit {
 
   @Input() statusHistory: StatusHistory<any>;
 
-  statusColorClass: string;
-
   constructor() {
   }
 
   ngOnInit(): void {
-    // get the status color
-    this.statusColorClass = this.statusHistory.getStatusClassColor('background');
   }
 
 }

@@ -1,7 +1,4 @@
 
-<!--TODO translate-->
-<!--<mat-option [value]="key | flObjectKeys">DRAFT</mat-option>-->
-<!--<mat-option [value]="WAITING_FOR_CLI_PROCESS | experimentStatusColor" >WAITING_FOR_CLI_PROCESS</mat-option>-->
-<mat-option value="RUNNING">RUNNING</mat-option>
-<mat-option value="SUCCESS">SUCCESS</mat-option>
-<mat-option value="ERROR">ERROR</mat-option>
+<mat-option *ngFor="let status of statusList" [value]="status.value">
+  {{status.name | translate}}
+</mat-option>

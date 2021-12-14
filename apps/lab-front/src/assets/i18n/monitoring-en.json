@@ -3,10 +3,6 @@
     "monitoring": "Monitoring",
     "lab_running": "The lab is up and running",
     "lab_not_running": "The lab is not running",
-    "lab_status_error": "Error",
-    "lab_status_warning": "Warning",
-    "lab_status_success": "Ok",
-    "lab_status_info": "Info",
     "lab_no_brick_message": "No message",
     "brick_list": "Bricks",
     "messages_count": "{{count}} message(s)"

@@ -12,13 +12,13 @@
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
-            <fl-status-chip [status]="node.object.progressBar"></fl-status-chip>
+            <fl-status-chip [status]="node.object.progressBar.status"></fl-status-chip>
           </fl-text-icon>
         </mat-panel-title>
 
         <!--    Show the progress if it's running    -->
         <mat-panel-description>
-          <div *ngIf="node.object.getStatusName() === 'running'">
+          <div *ngIf="node.object.status.value === 'RUNNING'">
             {{node.object.progressBar.getProgress()}} %
           </div>
         </mat-panel-description>

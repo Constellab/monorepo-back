@@ -4,27 +4,27 @@ import {DateTime} from 'luxon';
 import {ClLuxonDateTransform} from '@monorepo/core-lib';
 import {
   FlEntityPaginatedDatasource,
-  FlGetStatusClassColorFunction,
-  FlGetStatusIconFunction,
-  FlSanitizeTransform
+  FlSanitizeTransform,
+  FlStatus,
+  FlStatusDict,
+  FlStatusHelper,
+  FlStatusTransform
 } from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
 import {SecurityContext} from '@angular/core';
 
-export enum ProjectStatus {
-  ACTIVE = 'ACTIVE',
-  IN_PROGRESS = 'IN_PROGRESS',
-  ARCHIVED = 'ARCHIVED'
-}
+export type ProjectStatus = 'ACTIVE' | 'IN_PROGRESS' | 'ARCHIVED';
+
+export const projectStatusDict: FlStatusDict<ProjectStatus> = {
+  ACTIVE: FlStatusHelper.getInfoStatus('ACTIVE', 'ACTIVE', 'done'),
+  IN_PROGRESS: FlStatusHelper.getInfoStatus('ACTIVE', 'IN_PROGRESS', FlStatusHelper.runningIcon),
+  ARCHIVED: FlStatusHelper.getArchivedStatus('ACTIVE'),
+};
 
 export class ProjectStatusHistory extends StatusHistory<ProjectStatus> {
-  getStatusClassColor(mode: 'background' | 'text'): string {
-    return getProjectStatusColorClass(this.status, mode);
-  }
 
-  getStatusIcon(): string {
-    return getProjectStatusIcon(this.status);
-  }
+  @FlStatusTransform(projectStatusDict)
+  status: FlStatus<ProjectStatus>;
 }
 
 
@@ -49,30 +49,3 @@ export class Project extends BaseEntity {
 
 export type ProjectDatasource = FlEntityPaginatedDatasource<Project>;
 
-
-export const getProjectStatusColorClass: FlGetStatusClassColorFunction = (projectStatus: ProjectStatus,
-                                                                          mode: 'background' | 'text' = 'background'): string => {
-  switch (projectStatus) {
-    case 'ACTIVE':
-      return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
-    case 'IN_PROGRESS':
-      return mode === 'background' ? 'g-accent-background' : 'g-accent-text';
-    case 'ARCHIVED':
-      return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
-    default:
-      return '';
-  }
-};
-
-export const getProjectStatusIcon: FlGetStatusIconFunction = (projectStatus: ProjectStatus): string => {
-  switch (projectStatus) {
-    case 'ACTIVE':
-      return 'done';
-    case 'IN_PROGRESS':
-      return 'cached';
-    case 'ARCHIVED':
-      return 'archive';
-    default:
-      return '';
-  }
-};

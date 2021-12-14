@@ -1,7 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Study, StudyStatus} from '../../../../../core/model/entities/study.class';
+import {Study, StudyStatus, studyStatusDict} from '../../../../../core/model/entities/study.class';
 import {StudyService} from '../../../../service/study.service';
-import {StudyFormDialogComponent, StudyFormDialogInput} from '../../../study-core/component/study-form-dialog/study-form-dialog.component';
+import {
+  StudyFormDialogComponent,
+  StudyFormDialogInput
+} from '../../../study-core/component/study-form-dialog/study-form-dialog.component';
 import {
   UpdateStatusFormDialogComponent,
   UpdateStatusFormDialogInput
@@ -35,8 +38,7 @@ export class StudyDetailComponent implements OnInit {
       mode: 'update',
       object: this.study,
     };
-    this.dialogService.openSmallDialog(StudyFormDialogComponent, {data: dialogInput})
-      .afterClosed().subscribe(
+    this.dialogService.openSmallDialog(StudyFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
       newExp => this.onUpdateDialogClosed(newExp)
     );
   }
@@ -49,13 +51,12 @@ export class StudyDetailComponent implements OnInit {
 
   openUpdateStatusDialog(): void {
     const dialogInput: UpdateStatusFormDialogInput<StudyStatus> = {
-      statusEnum: StudyStatus,
+      statusDict: studyStatusDict,
       currentStatus: this.study.currentStatus.status,
       updateStatus: this.studyService.getUpdateStatusMethod(this.study.id),
       title: 'update_study_status'
     };
-    this.dialogService.openSmallDialog(UpdateStatusFormDialogComponent, {data: dialogInput})
-      .afterClosed().subscribe(
+    this.dialogService.openSmallDialog(UpdateStatusFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
       newExp => this.onUpdateDialogClosed(newExp)
     );
   }

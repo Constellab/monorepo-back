@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FlStatus} from '../../model/fl-status.class';
 import {TooltipPosition} from '@angular/material/tooltip';
-import {Observable, Subscription} from 'rxjs';
+import {Observable, of} from 'rxjs';
 
 export type FlStatusChipMode = 'iconText' | 'iconOnly' | 'textOnly';
 
@@ -14,16 +14,13 @@ export type FlStatusChipMode = 'iconText' | 'iconOnly' | 'textOnly';
   styleUrls: ['./fl-status-chip.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlStatusChipComponent implements OnInit, OnDestroy {
+export class FlStatusChipComponent implements OnInit {
 
   @Input() set status(status: FlStatus | Observable<FlStatus>) {
-    this.unsubscribe();
     if (status instanceof Observable) {
-      status.subscribe(
-        s => this.setStatus(s)
-      );
+      this.status$ = status;
     } else {
-      this.setStatus(status);
+      this.status$ = of(status);
     }
   }
 
@@ -45,14 +42,7 @@ export class FlStatusChipComponent implements OnInit, OnDestroy {
    */
   @Input() tooltipDisabled: boolean;
 
-  _status: FlStatus;
-
-  icon: string;
-
-  statusColorClass: string;
-
-
-  private subscription: Subscription;
+  status$: Observable<FlStatus>;
 
   constructor() {
   }
@@ -60,11 +50,6 @@ export class FlStatusChipComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
   }
 
-  private setStatus(status: FlStatus): void {
-    this.statusColorClass = status.getStatusClassColor('background');
-    this.icon = status.getStatusIcon();
-    this._status = status;
-  }
 
   get showIcon(): boolean {
     return this.mode === 'iconText' || this.mode === 'iconOnly';
@@ -82,14 +67,4 @@ export class FlStatusChipComponent implements OnInit, OnDestroy {
   get tooltipDisabledBool(): boolean {
     return this.tooltipDisabled != null ? this.tooltipDisabled : this.showText;
   }
-
-  private unsubscribe(): void {
-    this.subscription?.unsubscribe();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribe();
-  }
-
-
 }

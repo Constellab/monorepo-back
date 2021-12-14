@@ -2,54 +2,31 @@ import {LabBaseEntity} from '../global/lab-entity.entity';
 import {Expose, Type} from 'class-transformer';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlStatus} from '@monorepo/front-core-lib';
+import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 
-export type BioxProgressBarStatus = 'draft' | 'running' | 'finished' | 'archived'
+
 export type BioxProgressBarMessageType = 'SUCCESS' | 'INFO' | 'ERROR' | 'WARNING' | 'PROGRESS'
+
+const bioxProgressBarMessageTypeDict: FlStatusDict<BioxProgressBarMessageType> = {
+  INFO: FlStatusHelper.getInfoStatus('INFO'),
+  SUCCESS: FlStatusHelper.getSuccessStatus('SUCCESS'),
+  ERROR: FlStatusHelper.getErrorStatus('ERROR'),
+  WARNING: FlStatusHelper.getWarningStatus('WARNING'),
+  PROGRESS: FlStatusHelper.getInfoStatus('PROGRESS', 'biox.progress_bar_progress', 'cached')
+};
 
 /**
  * Different step of the progress bar, each message has a timestamp
  */
-export class BioxProgressMessage implements FlStatus {
+export class BioxProgressMessage {
 
   @ClLuxonDateTimeTransform()
   datetime: DateTime;
 
   text: string;
 
-  type: BioxProgressBarMessageType;
-
-  getStatusClassColor(mode: 'background' | 'text'): string {
-    switch (this.type) {
-      case 'ERROR':
-        return mode === 'background' ? 'g-warn-background' : 'g-warn-text';
-      case 'SUCCESS':
-        return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
-      default:
-        return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
-    }
-  }
-
-  getStatusIcon(): string {
-    switch (this.type) {
-      case 'ERROR':
-        return 'error';
-      case 'SUCCESS':
-        return 'done';
-      case 'PROGRESS':
-        return 'cached';
-      case 'INFO':
-        return  'info';
-      case 'WARNING':
-        return 'warning'
-    }
-  }
-
-  getStatusName(): string {
-    return this.type;
-  }
-
-
+  @FlStatusTransform(bioxProgressBarMessageTypeDict)
+  type: FlStatus<BioxProgressBarMessageType>;
 }
 
 export class BioxProgressBarData extends LabBaseEntity {
@@ -85,33 +62,35 @@ export class BioxProgressBarData extends LabBaseEntity {
 }
 
 
-export class BioxProgressBar extends LabBaseEntity implements FlStatus {
+export type BioxProgressBarStatus = 'DRAFT' | 'RUNNING' | 'FINISHED' | 'ARCHIVED'
+
+const bioxProgressBarStatusDict: FlStatusDict<BioxProgressBarStatus> = {
+  DRAFT: FlStatusHelper.getInfoStatus('DRAFT'),
+  ARCHIVED: FlStatusHelper.getInfoStatus('ARCHIVED'),
+  FINISHED: FlStatusHelper.getSuccessStatus('FINISHED'),
+  RUNNING: FlStatusHelper.getRunningStatus('RUNNING')
+};
+
+
+export class BioxProgressBar extends LabBaseEntity {
 
   process: { id: string, type: string };
 
   @Type(() => BioxProgressBarData)
   data: BioxProgressBarData;
 
-  getStatusName(): BioxProgressBarStatus {
+  get status(): FlStatus<BioxProgressBarStatus> {
     if (this.isArchived) {
-      return 'archived';
+      return bioxProgressBarStatusDict.ARCHIVED;
     }
 
     if (this.data.elapsedTime === 0) {
-      return 'draft';
+      return bioxProgressBarStatusDict.DRAFT;
     } else if (this.data.value < this.data.maxValue) {
-      return 'running';
+      return bioxProgressBarStatusDict.RUNNING;
     } else {
-      return 'finished';
+      return bioxProgressBarStatusDict.FINISHED;
     }
-  }
-
-  getStatusIcon(): string {
-    return getBioxProgressBarStatusStatusIcon(this.getStatusName());
-  }
-
-  getStatusClassColor(mode: 'background' | 'text'): string {
-    return getBioxProgressBarStatusColorClass(this.getStatusName(), mode);
   }
 
 
@@ -125,27 +104,3 @@ export class BioxProgressBar extends LabBaseEntity implements FlStatus {
     return (this.data.value / this.data.maxValue) * 100;
   }
 }
-
-
-const getBioxProgressBarStatusColorClass: FlGetStatusClassColorFunction = (status: BioxProgressBarStatus,
-                                                                           mode: 'background' | 'text' = 'background'): string => {
-  switch (status) {
-    case 'finished':
-      return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
-    default:
-      return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
-  }
-};
-
-const getBioxProgressBarStatusStatusIcon: FlGetStatusIconFunction = (status: BioxProgressBarStatus): string => {
-  switch (status) {
-    case 'archived':
-      return 'inventory_2';
-    case 'draft':
-      return 'edit';
-    case 'finished':
-      return 'done';
-    case 'running':
-      return 'cached';
-  }
-};

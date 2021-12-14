@@ -3,11 +3,11 @@ import {Observable} from 'rxjs';
 import {FormControl} from '@ngneat/reactive-forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Validators} from '@angular/forms';
-import {FlGlobalValidators, FlSnackBarService} from '@monorepo/front-core-lib';
+import {FlGlobalValidators, FlSnackBarService, FlStatus, FlStatusDict} from '@monorepo/front-core-lib';
 
-export interface UpdateStatusFormDialogInput<S> {
-  statusEnum: any;
-  currentStatus: S;
+export interface UpdateStatusFormDialogInput<S extends string> {
+  statusDict: FlStatusDict<S>;
+  currentStatus: FlStatus<S>;
   title?: string;
 
   updateStatus(status: S): Observable<any>;
@@ -25,14 +25,14 @@ export interface UpdateStatusFormDialogInput<S> {
 export class UpdateStatusFormDialogComponent implements OnInit {
 
   formControl: FormControl;
-  enum: any;
+  statusDict: FlStatusDict;
 
   isLoading: boolean;
 
   constructor(private dialogRef: MatDialogRef<UpdateStatusFormDialogComponent>,
               @Inject(MAT_DIALOG_DATA) private dialogInput: UpdateStatusFormDialogInput<any>,
               private snackBarService: FlSnackBarService) {
-    this.enum = dialogInput.statusEnum;
+    this.statusDict = dialogInput.statusDict;
   }
 
   ngOnInit(): void {
@@ -41,8 +41,8 @@ export class UpdateStatusFormDialogComponent implements OnInit {
 
   private initForm(): void {
     // create form control with a validator to verify that the status has changed
-    this.formControl = new FormControl<any, any>(this.dialogInput.currentStatus,
-      [Validators.required, FlGlobalValidators.differentValue(this.dialogInput.currentStatus)]);
+    this.formControl = new FormControl<any, any>(this.dialogInput.currentStatus.value,
+      [Validators.required, FlGlobalValidators.differentValue(this.dialogInput.currentStatus.value)]);
   }
 
   submit(): void {

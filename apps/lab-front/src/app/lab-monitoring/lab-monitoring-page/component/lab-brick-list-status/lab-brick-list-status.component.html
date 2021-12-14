@@ -8,7 +8,7 @@
       <mat-expansion-panel *ngFor="let brick of bricks">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            <fl-status-chip mode="iconText" [status]="brick" class="status"></fl-status-chip>
+            <fl-status-chip mode="iconText" [status]="brick.status" class="status"></fl-status-chip>
             {{brick.name}}
           </mat-panel-title>
           <mat-panel-description>{{'monitoring.messages_count' | translate: {count: brick.countMessages()} }}</mat-panel-description>

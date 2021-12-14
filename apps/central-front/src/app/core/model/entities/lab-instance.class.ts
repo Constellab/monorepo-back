@@ -3,22 +3,27 @@ import {Lab} from './lab.class';
 import {StatusHistory} from './status-history.class';
 import {ServerInfo} from './server-info.class';
 import {User} from './user.class';
-import {FlEntity, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
+import {
+  FlEntity,
+  FlEntityPaginatedDatasource,
+  FlStatus,
+  FlStatusDict,
+  FlStatusHelper,
+  FlStatusTransform
+} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 
-export enum LabInstanceStatus {
-  RUNNING = 'RUNNING',
-  STOPPED = 'STOPPED'
-}
+export type LabInstanceStatus = 'RUNNING' | 'STOPPED';
+
+const labInstanceStatusDict: FlStatusDict<LabInstanceStatus> = {
+  RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
+  STOPPED: FlStatusHelper.getStoppedStatus('STOPPED')
+};
 
 export class LabInstanceStatusHistory extends StatusHistory<LabInstanceStatus> {
-  getStatusClassColor(mode: 'background' | 'text'): string {
-    return getLabInstanceStatusColorClass(this.status, mode);
-  }
 
-  getStatusIcon(): string {
-    return getLabInstanceStatusIcon(this.status);
-  }
+  @FlStatusTransform(labInstanceStatusDict)
+  status: FlStatus<LabInstanceStatus>;
 }
 
 /**
@@ -49,35 +54,11 @@ export class LabInstance extends BaseEntity {
   apiKey?: string; // only provided when getting lab as admin
 
   public isRunning(): boolean {
-    return this.currentStatus.status === 'RUNNING';
+    return this.currentStatus.status.value === 'RUNNING';
   }
 }
 
 export type LabInstanceDatasource = FlEntityPaginatedDatasource<LabInstance>;
-
-
-export function getLabInstanceStatusColorClass(status: LabInstanceStatus,
-                                               mode: 'background' | 'text' = 'background'): string {
-  switch (status) {
-    case 'RUNNING':
-      return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
-    case 'STOPPED':
-      return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
-    default:
-      return '';
-  }
-}
-
-export function getLabInstanceStatusIcon(status: LabInstanceStatus): string {
-  switch (status) {
-    case 'RUNNING':
-      return 'play_arrow';
-    case 'STOPPED':
-      return 'stop';
-    default:
-      return '';
-  }
-}
 
 /**
  * Return by the lab instance login

@@ -30,7 +30,7 @@
       <span>{{'status' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
-      <fl-status-chip [status]="labInstance.currentStatus"></fl-status-chip>
+      <fl-status-chip [status]="labInstance.currentStatus.status"></fl-status-chip>
     </mat-cell>
   </ng-container>
 

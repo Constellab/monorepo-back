@@ -1,6 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Project, ProjectStatus} from '../../../../../core/model/entities/project.class';
-import {ProjectFormDialogComponent} from '../../../../../core/entity-module/project-core/component/project-form-dialog/project-form-dialog.component';
+import {Project, ProjectStatus, projectStatusDict} from '../../../../../core/model/entities/project.class';
+import {
+  ProjectFormDialogComponent
+} from '../../../../../core/entity-module/project-core/component/project-form-dialog/project-form-dialog.component';
 import {
   UpdateStatusFormDialogComponent,
   UpdateStatusFormDialogInput
@@ -48,13 +50,12 @@ export class ProjectDetailComponent implements OnInit {
 
   openUpdateStatusDialog(): void {
     const dialogInput: UpdateStatusFormDialogInput<ProjectStatus> = {
-      statusEnum: ProjectStatus,
+      statusDict: projectStatusDict,
       currentStatus: this.project.currentStatus.status,
       updateStatus: this.projectService.getUpdateStatusMethod(this.project.id),
       title: 'update_project_status'
     };
-    this.dialogService.openSmallDialog(UpdateStatusFormDialogComponent, {data: dialogInput})
-      .afterClosed().subscribe(
+    this.dialogService.openSmallDialog(UpdateStatusFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
       newExp => this.updateDialogClosed(newExp)
     );
   }

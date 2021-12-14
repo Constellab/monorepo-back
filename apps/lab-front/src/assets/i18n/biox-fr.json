@@ -15,11 +15,9 @@
     "experiment_started": "Expérience lancée",
     "experiment_text": "Titre et description",
     "experiment_type": "Type",
+    "experiment_type_experiment": "Expérience",
+    "experiment_type_transformer": "Transformeur",
     "experiment_is_validated": "Validée",
-    "experiment_draft": "Brouillon",
-    "experiment_success": "Succès",
-    "experiment_error": "Erreur",
-    "experiment_running": "En cours",
     "experiment_waiting_for_cli": "En attente",
     "score": "Score",
     "resource_view_json": "Afficher au format json",
@@ -86,6 +84,7 @@
     "add_transformer": "Ajouter un transformeur",
     "call_transform": "Transformer",
     "transformer_no_config": "Pas de config",
-    "no_transformers": "Aucun transformeurs"
+    "no_transformers": "Aucun transformeurs",
+    "progress_bar_progress": "Avancement"
   }
 }

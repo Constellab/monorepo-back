@@ -10,8 +10,8 @@
       <mat-label>{{'status' | translate}}</mat-label>
       <mat-select [formControl]="formControl" placeholder="{{'status' | translate}}"
                   required>
-        <mat-option *ngFor="let status of enum | flObjectKeys" [value]="status">
-          {{status | translate}}
+        <mat-option *ngFor="let status of statusDict | flObjectKeys" [value]="status">
+          {{statusDict[status].name | translate}}
         </mat-option>
       </mat-select>
       <mat-error *ngIf="formControl.hasError('required')">

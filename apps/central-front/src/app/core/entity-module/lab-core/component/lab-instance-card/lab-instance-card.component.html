@@ -9,7 +9,7 @@
       </div>
 
       <fl-card-actions>
-        <fl-status-chip class="status" [status]="labInstance.currentStatus"
+        <fl-status-chip class="status" [status]="labInstance.currentStatus.status"
                          [mode]="statusChipMode"></fl-status-chip>
       </fl-card-actions>
     </fl-card-header>
@@ -17,7 +17,7 @@
 
     <fl-card-body class="body">
       <div class="g-text-light g-text-small">
-        {{labInstance.currentStatus.status | translate}} {{'since_the' | translate}}
+        {{labInstance.currentStatus.status.name | translate}} {{'since_the' | translate}}
         {{labInstance.currentStatus.createdAt | flDate}}
       </div>
 

@@ -4,7 +4,6 @@ import {StudyCardComponent} from './component/study-card/study-card.component';
 import {CoreModule} from '../../../core/core.module';
 import {StudyFormDialogComponent} from './component/study-form-dialog/study-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {StudyStatusColorPipe} from './pipe/study-status-color.pipe';
 import {StudyInfoComponent} from './component/study-info/study-info.component';
 
 
@@ -12,13 +11,11 @@ import {StudyInfoComponent} from './component/study-info/study-info.component';
   declarations: [
     StudyCardComponent,
     StudyFormDialogComponent,
-    StudyStatusColorPipe,
     StudyInfoComponent,
   ],
   exports: [
     StudyCardComponent,
     StudyFormDialogComponent,
-    StudyStatusColorPipe,
     StudyInfoComponent,
   ],
   imports: [

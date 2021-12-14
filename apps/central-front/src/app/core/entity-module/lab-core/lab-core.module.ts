@@ -3,8 +3,9 @@ import {CommonModule} from '@angular/common';
 import {CoreModule} from '../../core.module';
 import {LabCardComponent} from './component/lab-card/lab-card.component';
 import {LabInstanceCardComponent} from './component/lab-instance-card/lab-instance-card.component';
-import {LabInstanceStatusColorPipe} from './pipe/lab-instance-status-color/lab-instance-status-color.pipe';
-import {SelectAccessibleLabInstanceOptionsComponent} from './component/select-accessible-lab-instance-options/select-accessible-lab-instance-options.component';
+import {
+  SelectAccessibleLabInstanceOptionsComponent
+} from './component/select-accessible-lab-instance-options/select-accessible-lab-instance-options.component';
 import {LabInstanceStartStopComponent} from './component/lab-instance-start-stop/lab-instance-start-stop.component';
 import {RouterModule} from '@angular/router';
 import {LabInstancesListComponent} from './component/lab-instances-list/lab-instances-list.component';
@@ -15,7 +16,9 @@ import {ServerInfoCoreModule} from '../server-info-core/server-info-core.module'
 import {SelectLabOptionsComponent} from './component/select-lab-options/select-lab-options.component';
 import {LabTableComponent} from './component/lab-table/lab-table.component';
 import {LabFormDialogComponent} from './component/lab-form-dialog/lab-form-dialog.component';
-import {LabInstanceStatusDialogComponent} from './component/lab-instance-status-dialog/lab-instance-status-dialog.component';
+import {
+  LabInstanceStatusDialogComponent
+} from './component/lab-instance-status-dialog/lab-instance-status-dialog.component';
 
 /**
  * Core module for Lab and LabInstance
@@ -24,7 +27,6 @@ import {LabInstanceStatusDialogComponent} from './component/lab-instance-status-
   declarations: [
     LabCardComponent,
     LabInstanceCardComponent,
-    LabInstanceStatusColorPipe,
     SelectAccessibleLabInstanceOptionsComponent,
     LabInstanceStartStopComponent,
     LabInstancesListComponent,
@@ -38,7 +40,6 @@ import {LabInstanceStatusDialogComponent} from './component/lab-instance-status-
   exports: [
     LabCardComponent,
     LabInstanceCardComponent,
-    LabInstanceStatusColorPipe,
     SelectAccessibleLabInstanceOptionsComponent,
     LabInstanceStartStopComponent,
     LabInstancesListComponent,

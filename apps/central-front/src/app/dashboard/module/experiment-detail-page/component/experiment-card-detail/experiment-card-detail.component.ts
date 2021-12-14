@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Experiment, ExperimentStatus} from '../../../../../core/model/entities/experiment.class';
+import {Experiment, ExperimentStatus, experimentStatusDict} from '../../../../../core/model/entities/experiment.class';
 import {ExperimentService} from '../../../../service/experiment.service';
 import {
   ExperimentFormDialogComponent,
@@ -59,21 +59,19 @@ export class ExperimentCardDetailComponent implements OnInit {
       mode: 'update',
       object: this.experiment,
     };
-    this.dialogService.openSmallDialog(ExperimentFormDialogComponent, {data: dialogInput})
-      .afterClosed().subscribe(
+    this.dialogService.openSmallDialog(ExperimentFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
       newExp => this.onUpdateDialogClosed(newExp)
     );
   }
 
   openUpdateStatusDialog(): void {
     const dialogInput: UpdateStatusFormDialogInput<ExperimentStatus> = {
-      statusEnum: ExperimentStatus,
+      statusDict: experimentStatusDict,
       currentStatus: this.experiment.currentStatus.status,
       updateStatus: this.experimentService.getUpdateStatusMethod(this.experiment.id),
       title: 'update_experiment_status'
     };
-    this.dialogService.openSmallDialog(UpdateStatusFormDialogComponent, {data: dialogInput})
-      .afterClosed().subscribe(
+    this.dialogService.openSmallDialog(UpdateStatusFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
       newExp => this.onUpdateDialogClosed(newExp)
     );
   }

@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, Host, OnInit, Optional} from '@angular/core';
-import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
+import {FlEmbeddedOptionsAbstractDirective, FlStatus} from '@monorepo/front-core-lib';
 import {MatSelect} from '@angular/material/select';
+import {bioxExperimentTypeDict} from '../../../../model/entities/biox-experiment.entity';
 
 @Component({
   selector: 'gen-biox-experiment-type-options',
@@ -9,6 +10,8 @@ import {MatSelect} from '@angular/material/select';
 })
 export class BioxExperimentTypeOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit {
+
+  statusList: FlStatus[] = Object.values(bioxExperimentTypeDict);
 
   constructor(@Host() @Optional() public select: MatSelect) {
     super(select);

@@ -41,9 +41,9 @@
         verified
       </mat-icon>
 
-      <fl-status-chip [status]="experiment" mode="iconText"
+      <fl-status-chip [status]="experiment.status" mode="iconText"
                       class="status" (click)="openProgressInformation()"
-                      [ngClass]="{'g-clickable': experiment.status !== 'DRAFT'}"></fl-status-chip>
+                      [ngClass]="{'g-clickable': experiment.status.value !== 'DRAFT'}"></fl-status-chip>
     </fl-card-actions>
   </fl-card-header>
   <fl-card-body *ngIf="showDetail">

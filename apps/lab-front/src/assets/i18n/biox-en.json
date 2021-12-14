@@ -15,11 +15,9 @@
     "experiment_started": "Experiment started",
     "experiment_text": "Title and description",
     "experiment_type": "Type",
+    "experiment_type_experiment": "Experiment",
+    "experiment_type_transformer": "Transformer",
     "experiment_is_validated": "Validated",
-    "experiment_draft": "Draft",
-    "experiment_success": "Success",
-    "experiment_error": "Error",
-    "experiment_running": "Running",
     "experiment_waiting_for_cli": "Waiting",
     "score": "Score",
     "no_study": "No study",
@@ -86,6 +84,7 @@
     "add_transformer": "Add transformer",
     "call_transform": "Transform",
     "transformer_no_config": "No config",
-    "no_transformers": "No transformers"
+    "no_transformers": "No transformers",
+    "progress_bar_progress": "Progress"
   }
 }

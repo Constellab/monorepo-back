@@ -1,23 +1,31 @@
 import {BaseEntity} from './base-entity.class';
 import {StatusHistory} from './status-history.class';
-import {FlGetStatusClassColorFunction, FlGetStatusIconFunction, FlSanitizeTransform} from '@monorepo/front-core-lib';
+import {
+  FlSanitizeTransform,
+  FlStatus,
+  FlStatusDict,
+  FlStatusHelper,
+  FlStatusTransform,
+  flThemeClass
+} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
 import {SecurityContext} from '@angular/core';
 
-export enum StudyStatus {
-  STARTED = 'STARTED',
-  FINISHED = 'FINISHED',
-  ARCHIVED = 'ARCHIVED'
-}
+export type StudyStatus = 'STARTED' | 'FINISHED' | 'ARCHIVED';
+
+export const studyStatusDict: FlStatusDict<StudyStatus> = {
+  STARTED: FlStatusHelper.getSuccessStatus('STARTED', 'STARTED', 'cached'),
+  FINISHED: {
+    value: 'FINISHED', name: 'FINISHED', backgroundColorClass: flThemeClass.accentBackground,
+    textColorClass: flThemeClass.accentText, icon: FlStatusHelper.successIcon
+  },
+  ARCHIVED: FlStatusHelper.getArchivedStatus('ARCHIVED')
+};
 
 export class StudyStatusHistory extends StatusHistory<StudyStatus> {
-  getStatusClassColor(mode: 'background' | 'text'): string {
-    return getStudyStatusColorClass(this.status, mode);
-  }
 
-  getStatusIcon(): string {
-    return getStudyStatusIcon(this.status);
-  }
+  @FlStatusTransform(studyStatusDict)
+  status: FlStatus<StudyStatus>;
 }
 
 export class Study extends BaseEntity {
@@ -29,30 +37,3 @@ export class Study extends BaseEntity {
   @Type(() => StudyStatusHistory)
   currentStatus: StudyStatusHistory;
 }
-
-export const getStudyStatusColorClass: FlGetStatusClassColorFunction = (status: StudyStatus,
-                                                                        mode: 'background' | 'text' = 'background'): string => {
-  switch (status) {
-    case 'STARTED':
-      return mode === 'background' ? 'g-primary-background' : 'g-primary-text';
-    case 'FINISHED':
-      return mode === 'background' ? 'g-accent-background' : 'g-accent-text';
-    case 'ARCHIVED':
-      return mode === 'background' ? 'g-grey-background' : 'g-grey-text';
-    default:
-      return '';
-  }
-};
-
-export const getStudyStatusIcon: FlGetStatusIconFunction = (status: StudyStatus): string => {
-  switch (status) {
-    case 'STARTED':
-      return 'cached';
-    case 'FINISHED':
-      return 'done';
-    case 'ARCHIVED':
-      return 'archive';
-    default:
-      return '';
-  }
-};

@@ -6,7 +6,7 @@
   <div *ngFor="let message of progressBar.data.messages">
     <!--    <div fxLayout="row" fxLayoutAlign="space-between" class="g-full">-->
     <div fxLayout="row" fxLayoutAlign="space-between" class="g-full">
-      <fl-status-chip [status]="message" mode="iconText"></fl-status-chip>
+      <fl-status-chip [status]="message.type" mode="iconText"></fl-status-chip>
       <div class="g-text-light date"
            [matTooltip]="message.datetime | flDate:'D, HH:mm:ss'">
         {{message.datetime | flDate : 'HH:mm:ss'}}
