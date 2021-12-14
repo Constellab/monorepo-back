@@ -67,10 +67,6 @@ export class BioxExperimentSearchComponent implements OnInit {
     this.datasource = this.searchState.datasource;
   }
 
-  toggleDrawer(): void {
-    this.searchState.toggleDrawer();
-  }
-
   createExperiment(): void {
     const input: FlFormDialogInput<BioxExperiment> = {mode: 'create'};
     this.dialogService.openSmallDialog(BioxExperimentFormDialogComponent,

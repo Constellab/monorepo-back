@@ -89,10 +89,6 @@ export class BioxResourceSearchComponent implements OnInit {
     this.datasource = this.searchState.datasource;
   }
 
-  toggleDrawer(): void {
-    this.searchState.toggleDrawer();
-  }
-
   selectResource(resource: BioxResource): void {
     this.resourceSelected.next(resource);
   }

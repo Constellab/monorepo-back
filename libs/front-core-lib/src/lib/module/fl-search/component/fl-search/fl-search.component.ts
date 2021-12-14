@@ -1,5 +1,4 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {FlSavedSearch} from '../../model/fl-saved-search.class';
 import {FlSearchState} from '../../model/fl-search.state';
 import {FlDatasourcePaginated} from '../../../../model/datasource/fl-datasource-paginated.class';
 import {MatDrawer} from '@angular/material/sidenav';
@@ -35,9 +34,4 @@ export class FlSearchComponent implements OnInit {
   loadMoreResults(): void {
     this.datasource.getNextPage();
   }
-
-  callSavedSearch(savedSearch: FlSavedSearch): void {
-    this.searchState.callAdvancedSearchFromSavedSearch(savedSearch);
-  }
-
 }
