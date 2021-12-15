@@ -43,9 +43,6 @@ export class BioxResource extends LabBaseEntityWithUser {
   @Expose({name: 'resource_type_short_description'})
   resourceTypeShortDescription: string;
 
-  @Expose({name: 'resource_human_name'})
-  resourceHumanName: string;
-
   @Type(() => BioxTag)
   tags: BioxTag[];
 
