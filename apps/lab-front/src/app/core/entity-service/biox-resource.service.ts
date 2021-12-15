@@ -22,6 +22,8 @@ import {
   BioxResourceSearchFields
 } from '../entity-module/biox-resource-core/model/biox-resource-advanced-search.class';
 import {CallTransformerParams} from '../model/global/biox-transformer.class';
+import {BioxResourceImportConfig} from '../model/entities/resource/biox-resource-converter.class';
+import {BioxConfigValues} from '../model/entities/biox-config.entity';
 
 
 @Injectable({
@@ -113,5 +115,14 @@ export class BioxResourceService implements FlSearchService<BioxResource> {
    */
   public transformResource(transformers: CallTransformerParams[], resourceId: string): Observable<BioxResource> {
     return this.apiService.post(`${this.route}/${resourceId}/transform`, transformers, BioxResource);
+  }
+
+  //////////////////////////////////////// IMPORTER  ///////////////////////////////////////
+  public getImportSpecs(resourceTypingName: string): Observable<BioxResourceImportConfig> {
+    return this.apiService.get(`${this.resourceTypeRoute}/${resourceTypingName}/import/specs`, BioxResourceImportConfig);
+  }
+
+  public callImporter(resourceId: string, config: BioxConfigValues): Observable<BioxResource>{
+    return this.apiService.post(`${this.route}/${resourceId}/import`, config, BioxResource);
   }
 }

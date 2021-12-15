@@ -25,11 +25,12 @@ export const bioxExperimentStatusDict: FlStatusDict<BioxExperimentStatus> = {
 };
 
 
-export type BioxExperimentType = 'EXPERIMENT' | 'TRANSFORMER';
+export type BioxExperimentType = 'EXPERIMENT' | 'TRANSFORMER' | 'IMPORTER';
 
 export const bioxExperimentTypeDict: FlStatusDict<BioxExperimentType> = {
   EXPERIMENT: FlStatusHelper.getInfoStatus('EXPERIMENT', 'biox.experiment_type_experiment'),
-  TRANSFORMER: FlStatusHelper.getInfoStatus('EXPERIMENT', 'biox.experiment_type_transformer'),
+  TRANSFORMER: FlStatusHelper.getInfoStatus('TRANSFORMER', 'biox.experiment_type_transformer'),
+  IMPORTER: FlStatusHelper.getInfoStatus('IMPORTER', 'biox.experiment_type_importer'),
 }
 
 export class BioxExperiment extends LabBaseEntityWithUser {

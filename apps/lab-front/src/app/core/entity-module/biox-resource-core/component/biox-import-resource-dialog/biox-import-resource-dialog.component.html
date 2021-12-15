@@ -1,0 +1,48 @@
+<fl-dialog-header>
+  {{'biox.import_resource' | translate}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <div *ngIf="getIsLoading; else ready" class="g-text-centered">
+    <fl-loader size="medium"></fl-loader>
+  </div>
+
+  <ng-template #ready>
+    <div *ngIf="!resourceNoImportable; else noImportable">
+      <div class="g-text-light help-text">
+
+        <!--   Small explanation text     -->
+        {{'biox.import_resource_text' | translate: {
+        sourceType: resourceHumanName,
+        targetType: importConfig.resourceDestination
+      } }}
+      </div>
+
+      <!--   The import need config, show the form   -->
+      <form (ngSubmit)="submit()" [formGroup]="formGp">
+        <ng-container *ngIf="importConfig.hasConfig(); else noConfig">
+
+          <!--  View configuration   -->
+          <gen-biox-configure-specs-form [bioxConfigData]="configData"></gen-biox-configure-specs-form>
+        </ng-container>
+
+        <!--   If the import doesn't need config   -->
+        <ng-template #noConfig>
+          <div class="g-text-light">
+            {{'biox.resource_import_no_config' | translate}}
+          </div>
+        </ng-template>
+
+        <button mat-raised-button color="primary" type="submit"
+                class="g-centered-forced">
+          {{'biox.import_resource' | translate}}
+          <fl-button-loader *ngIf="callIsLoading"></fl-button-loader>
+        </button>
+      </form>
+    </div>
+
+    <ng-template #noImportable>
+      <fl-error-text [errorMessage]="'biox.resource_not_importable' | translate"></fl-error-text>
+    </ng-template>
+  </ng-template>
+</mat-dialog-content>

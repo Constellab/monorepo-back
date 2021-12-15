@@ -39,6 +39,10 @@ import {
 import {BioxResourceCardComponent} from './component/biox-resource-card/biox-resource-card.component';
 import {UploadFsNodeDialogComponent} from './component/upload-fs-node-dialog/upload-fs-node-dialog.component';
 import {BioxTransformerModule} from '../biox-transformer/biox-transformer.module';
+import {
+  BioxImportResourceDialogComponent
+} from './component/biox-import-resource-dialog/biox-import-resource-dialog.component';
+import {BioxConfigCoreModule} from '../biox-config-core/biox-config-core.module';
 
 
 @NgModule({
@@ -64,6 +68,7 @@ import {BioxTransformerModule} from '../biox-transformer/biox-transformer.module
     BioxSelectResourceDialogComponent,
     BioxResourceCardComponent,
     UploadFsNodeDialogComponent,
+    BioxImportResourceDialogComponent,
   ],
   exports: [
     BioxResourceInfoComponent,
@@ -85,6 +90,7 @@ import {BioxTransformerModule} from '../biox-transformer/biox-transformer.module
     BioxResourceOriginOptionsComponent,
     BioxSelectResourceDialogComponent,
     BioxResourceCardComponent,
+    BioxImportResourceDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -94,6 +100,7 @@ import {BioxTransformerModule} from '../biox-transformer/biox-transformer.module
 
     CoreModule,
     BioxTransformerModule,
+    BioxConfigCoreModule,
   ],
 })
 export class BioxResourceCoreModule {

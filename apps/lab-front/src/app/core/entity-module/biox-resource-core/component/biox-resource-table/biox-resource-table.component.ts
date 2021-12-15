@@ -21,7 +21,14 @@ import {BioxResource, BioxResourceDatasource} from '../../../../model/entities/r
 import {ClHelpService} from '@monorepo/core-lib';
 import {BioxTag} from '../../../../model/entities/biox-tag.entity';
 import {BioxTagService} from '../../../../entity-service/biox-tag.service';
+import {
+  BioxImportResourceDialogComponent,
+  BioxImportResourceDialogInput
+} from '../biox-import-resource-dialog/biox-import-resource-dialog.component';
 
+/**
+ * Table to show resource with possibility actions on resource and a select mode
+ */
 @Component({
   selector: 'gen-biox-resource-table',
   templateUrl: './biox-resource-table.component.html',
@@ -50,33 +57,43 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
   ngOnInit(): void {
   }
 
-  downloadFile(file: BioxResource): void {
-    this.fileService.downloadFile(file.id, file.name).subscribe();
+  downloadFile(resource: BioxResource): void {
+    this.fileService.downloadFile(resource.id, resource.name).subscribe();
+  }
+
+  openImportResource(resource: BioxResource): void {
+    const input: BioxImportResourceDialogInput = {
+      resourceId: resource.id,
+      resourceHumanName: resource.resourceTypeHumanName,
+      resourceTypingName: resource.resourceTypingName
+    };
+
+    this.dialogService.openMediumDialog(BioxImportResourceDialogComponent, {data: input});
   }
 
 
-  resourceFileRoute(file: BioxResource): string {
-    return RouterService.getBioxResourceDetailRoute(file.id);
+  resourceRoute(resource: BioxResource): string {
+    return RouterService.getBioxResourceDetailRoute(resource.id);
   }
 
-  deleteFile(file: BioxResource): void {
+  deleteResource(resource: BioxResource): void {
     const input: FlConfirmDialogInput = {
-      title: 'databox.delete_file',
-      content: 'databox.delete_file_confirmation',
+      title: 'databox.delete_resource',
+      content: 'databox.delete_resource_confirmation',
       translateTitleAndContent: true,
-      observable: this.resourceService.delete(file.id),
-      successMessage: 'databox.file_deleted',
+      observable: this.resourceService.delete(resource.id),
+      successMessage: 'databox.resource_deleted',
       translateMessage: true
     };
 
     this.dialogService.openConfirmDialog(input).afterClosed().subscribe(
-      result => this.onDeleteFileClosed(result, file)
+      result => this.onDeleteResourceClosed(result, resource)
     );
   }
 
-  private onDeleteFileClosed(result: FlConfirmDialogResult<void>, file: BioxResource): void {
+  private onDeleteResourceClosed(result: FlConfirmDialogResult<void>, resource: BioxResource): void {
     if (result.choice) {
-      this.datasource.removeItem(file);
+      this.datasource.removeItem(resource);
     }
   }
 
@@ -103,7 +120,7 @@ export class BioxResourceTableComponent extends FlTableAbstractDirective<BioxRes
     }
   }
 
-  stopEventPropagation(event: MouseEvent): void{
+  stopEventPropagation(event: MouseEvent): void {
     ClHelpService.stopEventPropagation(event);
   }
 

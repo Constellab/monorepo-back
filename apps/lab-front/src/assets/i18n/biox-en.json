@@ -17,6 +17,7 @@
     "experiment_type": "Type",
     "experiment_type_experiment": "Experiment",
     "experiment_type_transformer": "Transformer",
+    "experiment_type_importer": "Importer",
     "experiment_is_validated": "Validated",
     "experiment_waiting_for_cli": "Waiting",
     "score": "Score",
@@ -85,6 +86,11 @@
     "call_transform": "Transform",
     "transformer_no_config": "No config",
     "no_transformers": "No transformers",
-    "progress_bar_progress": "Progress"
+    "progress_bar_progress": "Progress",
+    "import_resource": "Import resource",
+    "import_resource_text": "Import the resource of type {{sourceType}} to {{targetType}}. A new resource will be created.",
+    "resource_imported": "Resource imported",
+    "resource_not_importable": "The resource doesn't support import",
+    "resource_import_no_config": "No configuration required to import the resource"
   }
 }

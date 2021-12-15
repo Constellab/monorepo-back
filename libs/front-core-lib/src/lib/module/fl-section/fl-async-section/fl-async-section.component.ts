@@ -1,4 +1,13 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, Input, OnDestroy, OnInit, TemplateRef} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ContentChild,
+  Input,
+  OnDestroy,
+  OnInit,
+  TemplateRef
+} from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {FlSectionBodyDirective} from '../fl-section-body';
 import {ClHelpService} from '@monorepo/core-lib';
@@ -50,7 +59,18 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
 
   private _arrayObs: FlDatasource<any>;
 
+  /**
+   * Show if the observable return an empty object or an error and error text is not defined
+   * The text is translated
+   */
   @Input() emptyText: string = 'object_not_found';
+
+  /**
+   * Show if the observable end up in error and the errorText is defined
+   * The text is translated
+   */
+  @Input() errorText: string = null;
+
 
   /**
    * If true, the null, undefined or empty array result is considered as a valid value
@@ -71,7 +91,7 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
   // when true, the body is lazy loaded
   showBody: boolean = false;
 
-  errorText: string;
+  infoText: string;
 
   private result: any;
   isLoading: boolean = false;
@@ -102,9 +122,9 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
   private onSuccess(result: any): void {
     this.isLoading = false;
     this.result = result;
-    this.setEmptyText();
+    this.setInfoText(false);
 
-    // show the result if it not null of we consider null as a valid value
+    // show the result if it's not null of we consider null as a valid value
     this.showBody = this.nullOrEmptyIsValid || !ClHelpService.isNullOrEmpty(this.result);
 
     this.cdr.detectChanges();
@@ -116,17 +136,22 @@ export class FlAsyncSectionComponent<T> implements OnInit, OnDestroy {
 
     // show error text if input is set and the error is a FlServerError
     if (this.showErrorText && error?.logDetail?.message) {
-      this.errorText = error.logDetail.message;
+      this.infoText = error.logDetail.message;
     } else {
-      // otherwise show the empty text
-      this.setEmptyText();
+      // otherwise, show the empty text
+      this.setInfoText(true);
     }
     this.cdr.detectChanges();
   }
 
-  private setEmptyText(): void{
-    this.errorText = this.translateService.translate(this.emptyText);
+  private setInfoText(error: boolean): void {
+    if (error && this.errorText != null) {
+      this.infoText = this.translateService.translate(this.errorText);
+    } else {
+      this.infoText = this.translateService.translate(this.emptyText);
+    }
   }
+
 
   get viewContext(): FlViewContext<any> {
     return {$implicit: this.result};

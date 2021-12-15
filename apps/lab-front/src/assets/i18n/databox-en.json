@@ -13,9 +13,8 @@
     "download_file": "Download file",
     "select_file_types": "Select file types",
     "select_file_type": "Select file type",
-    "file_type": "File type",
-    "delete_file": "Delete file",
-    "delete_file_confirmation": "Are you sure you want to delete this file ? If this file is used in an experiment, it can't be deleted.",
-    "file_deleted": "File deleted"
+    "delete_resource": "Delete resource",
+    "delete_resource_confirmation": "Are you sure you want to delete this resource ? If this resource is used in an experiment, it can't be deleted.",
+    "resource_deleted": "Resource deleted"
   }
 }
