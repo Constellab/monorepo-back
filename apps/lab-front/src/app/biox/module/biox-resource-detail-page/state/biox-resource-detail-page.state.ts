@@ -1,20 +1,25 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {ClCachedObservable} from '@monorepo/core-lib';
 import {BioxResourceService} from '../../../../core/entity-service/biox-resource.service';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {
   BioxResourceView,
   BioxResourceViewConfig,
   BioxResourceViewDisplayMode,
   BioxResourceViewSpec,
   BioxResourceViewSpecsByType,
-  BioxResourceViewSpecWithConfig
+  BioxResourceViewSpecWithConfig,
+  BioxResourceViewTypeInfo,
+  constBioxResourceViewTypeInfos
 } from '../../../../core/model/entities/resource/biox-resource-view.entity';
 import {BioxResource} from '../../../../core/model/entities/resource/biox-resource.entity';
-import {map, mergeMap} from 'rxjs/operators';
-import {FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
+import {filter, map, mergeMap} from 'rxjs/operators';
+import {FlPortalActionResult, FlPortalActionsService, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {BioxTag} from '../../../../core/model/entities/biox-tag.entity';
 import {BioxTransformerWithConfig, CallTransformerParams} from '../../../../core/model/global/biox-transformer.class';
+import {
+  BioxResourceViewPortalComponent
+} from '../../../../core/entity-module/biox-resource-core/component/biox-resource-view-portal/biox-resource-view-portal.component';
 
 // Event on view loaded
 export interface BioxResourceViewEvent {
@@ -34,9 +39,11 @@ export class BioxResourceDetailPageState implements OnDestroy {
   private viewSpecs$: ClCachedObservable<BioxResourceViewSpecsByType[]>;
   private selectedViewSpec$: BehaviorSubject<BioxResourceViewSpecWithConfig>;
 
+  private subscription: Subscription;
 
   constructor(private resourceService: BioxResourceService,
-              private flActionService: FlPortalActionsService) {
+              private flActionService: FlPortalActionsService,
+              private portalService: FlPortalService) {
   }
 
   public init(id: string): void {
@@ -55,6 +62,11 @@ export class BioxResourceDetailPageState implements OnDestroy {
       views => this.onViewSpecsLoaded(views)
     );
     this.selectedViewSpec$ = new BehaviorSubject(null);
+
+    // subscribe to portal view to open them
+    this.subscription = this.getView$('portal').subscribe(
+      viewEvent => this.openViewInPortal(viewEvent.view)
+    );
   }
 
   public getResource$(): Observable<BioxResource> {
@@ -164,8 +176,36 @@ export class BioxResourceDetailPageState implements OnDestroy {
     return this.resourceService.callResourceView(this.id, methodName, config.configValues, transformerParams);
   }
 
-  public getView$(): Observable<FlPortalActionResult<BioxResourceViewEvent>> {
-    return this.flActionService.getResult$(this.actionType);
+  private openViewInPortal(view: BioxResourceView): void {
+    const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
+      {centerHorizontally: '0', top: '0'},
+      {
+        elevation: true,
+        disposeOnNavigation: true,
+      });
+
+    this.portalService.createPortal(BioxResourceViewPortalComponent, portalConfig, view);
+  }
+
+  /**
+   * Get the view to display
+   * @param displayMode
+   */
+  public getView$(displayMode: BioxResourceViewDisplayMode): Observable<BioxResourceViewEvent> {
+    return this.flActionService.getResult$(this.actionType).pipe(
+      filter(actionResult => actionResult.status === 'success'),
+      // convert the action result to BioxResourceViewEvent
+      map((actionResult: FlPortalActionResult<BioxResourceViewEvent>) => {
+        const viewEvent: BioxResourceViewEvent = actionResult.result;
+
+        // if the view has a force display mode, use it. Otherwise, use the selected display mode
+        const viewTypeInfo: BioxResourceViewTypeInfo = constBioxResourceViewTypeInfos[viewEvent.view.type];
+        viewEvent.displayMode = viewTypeInfo.forceDefaultDisplayMode ?
+          viewTypeInfo.defaultDisplayMode : actionResult.result.displayMode;
+        return actionResult.result;
+      }),
+      filter((viewEvent: BioxResourceViewEvent) => viewEvent.displayMode === displayMode)
+    );
   }
 
   ngOnDestroy(): void {
@@ -174,5 +214,6 @@ export class BioxResourceDetailPageState implements OnDestroy {
 
   public clear(): void {
     this.selectedViewSpec$?.complete();
+    this.subscription?.unsubscribe();
   }
 }

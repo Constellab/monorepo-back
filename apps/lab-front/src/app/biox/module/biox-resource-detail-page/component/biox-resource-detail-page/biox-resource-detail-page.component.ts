@@ -7,27 +7,15 @@ import {BioxResourceDetailPageState, BioxResourceViewEvent} from '../../state/bi
 import {
   FlDialogService,
   FlOverlayRef,
-  FlPortalActionResult,
   FlPortalConfig,
   FlPortalService,
   FlTagDialogService,
   FlTranslateService
 } from '@monorepo/front-core-lib';
-import {
-  BioxResourceView,
-  BioxResourceViewDisplayMode,
-  BioxResourceViewTypeInfo,
-  constBioxResourceViewTypeInfos
-} from '../../../../../core/model/entities/resource/biox-resource-view.entity';
+import {BioxResourceView} from '../../../../../core/model/entities/resource/biox-resource-view.entity';
 import {
   BioxResourceViewSpecsPortalComponent
 } from '../biox-resource-view-specs-portal/biox-resource-view-specs-portal.component';
-import {
-  BioxResourceViewPortalComponent
-} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-view-portal/biox-resource-view-portal.component';
-import {
-  bioxResourceViewGetComponentType
-} from '../../../../../core/entity-module/biox-resource-core/component/biox-resource-view/biox-resource-view.component';
 import {BioxTagService} from '../../../../../core/entity-service/biox-tag.service';
 import {BioxTag} from '../../../../../core/model/entities/biox-tag.entity';
 import {
@@ -53,7 +41,6 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
   fullScreenViewName: string;
 
   showLoader: boolean = true;
-  errorText: string;
 
   private viewOverlay: FlOverlayRef;
   private transformerOverlay: FlOverlayRef;
@@ -83,55 +70,20 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
     this.state.init(id);
     this.resource$ = this.state.getResource$();
 
-    this.subscription = this.state.getView$().subscribe(
-      view => this.initView(view)
+    // subscribe to fullscreen view
+    this.subscription = this.state.getView$('fullScreen').subscribe(
+      view => this.showFullScreenView(view)
     );
   }
 
 
-  private initView(result: FlPortalActionResult<BioxResourceViewEvent>): void {
+  private showFullScreenView(viewEvent: BioxResourceViewEvent): void {
     this.showLoader = false;
-    this.errorText = null;
 
-    if (result.status === 'error') {
-      return;
-    }
-
-    const viewEvent: BioxResourceViewEvent = result.result;
-
-    // dynamically create the view component
-    const componentType = bioxResourceViewGetComponentType(viewEvent.view.type);
-    const viewTypeInfo: BioxResourceViewTypeInfo = constBioxResourceViewTypeInfos[viewEvent.view.type];
-    if (componentType == null || viewTypeInfo == null) {
-      this.errorText = this.translateService.translate('biox.view_type_node_supported');
-      if (viewEvent.displayMode === 'fullScreen') this.fullScreenView = null;
-      return;
-    }
-
-    // if the view as a force display mode, use it. Otherwise use the selected display mode
-    const displayMode: BioxResourceViewDisplayMode = viewTypeInfo.forceDefaultDisplayMode ?
-      viewTypeInfo.defaultDisplayMode : viewEvent.displayMode;
-
-
-    if (displayMode === 'fullScreen') {
-      this.fullScreenView = viewEvent.view;
-      this.fullScreenViewName = viewEvent.viewName;
-    } else {
-      this.openViewInPortal(viewEvent.view);
-    }
+    this.fullScreenView = viewEvent.view;
+    this.fullScreenViewName = viewEvent.viewName;
   }
 
-  private openViewInPortal(view: BioxResourceView): void {
-    const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
-      {centerHorizontally: '0', top: '0'},
-      {
-        elevation: true,
-        disposeOnNavigation: true,
-        customProviders: [{provide: BioxResourceDetailPageState, useValue: this.state}]
-      });
-
-    this.portalService.createPortal(BioxResourceViewPortalComponent, portalConfig, view);
-  }
 
   openViewSpecs(event: MouseEvent): void {
     if (this.viewOverlay != null) return;
