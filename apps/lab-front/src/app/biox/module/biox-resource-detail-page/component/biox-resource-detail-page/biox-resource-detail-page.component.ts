@@ -3,9 +3,9 @@ import {BioxResourceService} from '../../../../../core/entity-service/biox-resou
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable, Subscription} from 'rxjs';
 import {BioxResource} from '../../../../../core/model/entities/resource/biox-resource.entity';
-import {tap} from 'rxjs/operators';
 import {BioxResourceDetailPageState, BioxResourceViewEvent} from '../../state/biox-resource-detail-page.state';
 import {
+  FlDialogService,
   FlOverlayRef,
   FlPortalActionResult,
   FlPortalConfig,
@@ -34,6 +34,11 @@ import {
   BioxTransformResourcePortalComponent,
   BioxTransformResourcePortalInput
 } from '../../../../../core/entity-module/biox-transformer/component/biox-transform-resource-portal/biox-transform-resource-portal.component';
+import {
+  BioxImportResourceDialogComponent,
+  BioxImportResourceDialogInput
+} from '../../../../../core/entity-module/biox-resource-core/component/biox-import-resource-dialog/biox-import-resource-dialog.component';
+import {FileResourceService} from '../../../../../core/entity-service/file-resource.service';
 
 @Component({
   selector: 'gen-biox-resource-detail-page',
@@ -45,9 +50,7 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
 
   resource$: Observable<BioxResource>;
   fullScreenView: BioxResourceView;
-
-  title: string;
-
+  fullScreenViewName: string;
 
   showLoader: boolean = true;
   errorText: string;
@@ -63,7 +66,9 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
               private portalService: FlPortalService,
               private translateService: FlTranslateService,
               private tagDialogService: FlTagDialogService,
-              private tagService: BioxTagService) {
+              private tagService: BioxTagService,
+              private dialogService: FlDialogService,
+              private fileService: FileResourceService) {
   }
 
   ngOnInit(): void {
@@ -76,18 +81,13 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
     this.clearComponent();
 
     this.state.init(id);
-    this.resource$ = this.state.getResource$().pipe(
-      tap(resource => this.initTitle(resource))
-    );
+    this.resource$ = this.state.getResource$();
 
     this.subscription = this.state.getView$().subscribe(
       view => this.initView(view)
     );
   }
 
-  private initTitle(resource: BioxResource): void {
-    this.title = resource.name;
-  }
 
   private initView(result: FlPortalActionResult<BioxResourceViewEvent>): void {
     this.showLoader = false;
@@ -115,6 +115,7 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
 
     if (displayMode === 'fullScreen') {
       this.fullScreenView = viewEvent.view;
+      this.fullScreenViewName = viewEvent.viewName;
     } else {
       this.openViewInPortal(viewEvent.view);
     }
@@ -191,6 +192,24 @@ export class BioxResourceDetailPageComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+  async openImportResource(): Promise<void> {
+    const resource = await this.state.getResourcePromise();
+
+    const input: BioxImportResourceDialogInput = {
+      resourceId: resource.id,
+      resourceHumanName: resource.resourceTypeHumanName,
+      resourceTypingName: resource.resourceTypingName
+    };
+
+    this.dialogService.openMediumDialog(BioxImportResourceDialogComponent, {data: input});
+  }
+
+  async downloadFile(): Promise<void> {
+    const resource = await this.state.getResourcePromise();
+    this.fileService.downloadFile(resource.id, resource.name).subscribe();
+  }
+
 
   private clearComponent(): void {
     this.subscription?.unsubscribe();

@@ -1,7 +1,6 @@
 {
   "databox": {
     "file_explorer": "Databox",
-    "no_file_resources": "Aucun fichier",
     "upload_file": "Uploader des fichiers",
     "upload_folder": "Uploader un dossier",
     "uploading_files": "Envoie de {{nbFiles}} fichiers",

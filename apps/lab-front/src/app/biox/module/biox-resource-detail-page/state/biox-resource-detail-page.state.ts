@@ -20,6 +20,7 @@ import {BioxTransformerWithConfig, CallTransformerParams} from '../../../../core
 export interface BioxResourceViewEvent {
   view: BioxResourceView;
   displayMode?: BioxResourceViewDisplayMode; // mode to where show the view when success
+  viewName: string;
 }
 
 @Injectable()
@@ -110,11 +111,21 @@ export class BioxResourceDetailPageState implements OnDestroy {
 
   /////////////////////////////////// VIEW //////////////////////////////////////////
 
+  /**
+   * From a configured view spec, it creates an action to call and open the view
+   * @param viewSpecConfigured
+   * @param isDefaultView
+   * @private
+   */
   private loadView(viewSpecConfigured: BioxResourceViewSpecWithConfig, isDefaultView: boolean = false): void {
     const actionObs: Observable<BioxResourceViewEvent> =
       this.callResourceView(viewSpecConfigured.viewSpec.methodName,
         viewSpecConfigured.viewConfig, viewSpecConfigured.transformersWithConfig).pipe(
-        map(view => ({view: view, displayMode: viewSpecConfigured.displayMode}))
+        map(view => ({
+          view: view,
+          displayMode: viewSpecConfigured.displayMode,
+          viewName: viewSpecConfigured.viewSpec.humanName
+        }))
       );
 
     this.flActionService.addAction(

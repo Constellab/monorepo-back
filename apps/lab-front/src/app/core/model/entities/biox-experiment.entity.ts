@@ -29,7 +29,7 @@ export type BioxExperimentType = 'EXPERIMENT' | 'TRANSFORMER' | 'IMPORTER';
 
 export const bioxExperimentTypeDict: FlStatusDict<BioxExperimentType> = {
   EXPERIMENT: FlStatusHelper.getInfoStatus('EXPERIMENT', 'biox.experiment_type_experiment'),
-  TRANSFORMER: FlStatusHelper.getInfoStatus('TRANSFORMER', 'biox.experiment_type_transformer'),
+  TRANSFORMER: FlStatusHelper.getInfoStatus('TRANSFORMER', 'biox.experiment_type_transformer', 'move_down'),
   IMPORTER: FlStatusHelper.getInfoStatus('IMPORTER', 'biox.experiment_type_importer'),
 }
 

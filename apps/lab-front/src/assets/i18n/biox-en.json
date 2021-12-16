@@ -1,6 +1,6 @@
 {
   "biox": {
-    "biox": "BioX",
+    "biox": "Experiments",
     "configuration": "Configuration",
     "add_object": "Add object",
     "interface": "Interface",
@@ -38,7 +38,7 @@
     "node_progress": "Progress",
     "node_process_name": "Process",
     "file_resource_download": "Download",
-    "file_resource_open": "View file content",
+    "resource_preview": "Preview",
     "resource_next_text_load": "Load more text",
     "resource_previous_text_load": "Load previous text",
     "resource_type_select": "Select a resource type",

@@ -49,7 +49,7 @@
     <mat-cell *matCellDef="let resource" class="action-column">
       <a [routerLink]="resourceRoute(resource)" mat-icon-button
          type="button" color="primary"
-         [matTooltip]="'biox.file_resource_open' | translate">
+         [matTooltip]="'biox.resource_preview' | translate">
         <mat-icon>preview</mat-icon>
       </a>
 
@@ -66,7 +66,7 @@
 
         <button mat-menu-item type="button" *ngIf="resource.isImportable()"
                 (click)="openImportResource(resource)">
-          <mat-icon>drive_file_move</mat-icon>
+          <mat-icon>system_update_alt</mat-icon>
           <span>{{'biox.import_resource' | translate}}</span>
         </button>
 
