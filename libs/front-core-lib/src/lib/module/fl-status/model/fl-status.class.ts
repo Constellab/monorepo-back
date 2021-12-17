@@ -65,6 +65,8 @@ export class FlStatusHelper {
     };
   }
 
+
+
   public static getWarningStatus<STATUS = string>(value: STATUS,
                                                   name: string = 'flStatus.warning',
                                                   icon = FlStatusHelper.warningIcon): FlStatus<STATUS> {
@@ -105,6 +107,11 @@ export class FlStatusHelper {
 
   public static getStoppedStatus<STATUS = string>(value: STATUS): FlStatus<STATUS> {
     return FlStatusHelper.getInfoStatus(value, 'flStatus.stopped', FlStatusHelper.stoppedIcon);
+  }
+
+  public static getCriticalStatus<STATUS = string>(value: STATUS): FlStatus<STATUS> {
+    return FlStatusHelper.getErrorStatus(value, 'flStatus.critical', FlStatusHelper.errorIcon);
+
   }
 }
 
