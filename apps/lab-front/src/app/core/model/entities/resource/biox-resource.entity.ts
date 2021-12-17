@@ -28,8 +28,6 @@ export class FsNodeEntity extends LabEntity {
 
 export type BioxResourceOrigin = 'IMPORTED' | 'GENERATED';
 
-export type BioxResourceType = 'RESOURCE' | 'IMPORTABLE_RESOURCE';
-
 export class BioxResource extends LabBaseEntityWithUser {
   // typing name of the resource model
   @Expose({name: 'typing_name'})
@@ -45,15 +43,15 @@ export class BioxResource extends LabBaseEntityWithUser {
   @Expose({name: 'resource_type_short_description'})
   resourceTypeShortDescription: string;
 
-  @Expose({name: 'resource_type'})
-  type: BioxResourceType;
-
   @Type(() => BioxTag)
   tags: BioxTag[];
 
   @Expose({name: 'fs_node'})
   @Type(() => FsNodeEntity)
   fsNode ?: FsNodeEntity;
+
+  @Expose({name: 'is_importable'})
+  isImportable: boolean;
 
   origin: BioxResourceOrigin;
 
@@ -68,9 +66,6 @@ export class BioxResource extends LabBaseEntityWithUser {
     return this.isFile();
   }
 
-  isImportable(): boolean {
-    return this.type === 'IMPORTABLE_RESOURCE';
-  }
 
   isDeletable(): boolean {
     return this.origin === 'IMPORTED';

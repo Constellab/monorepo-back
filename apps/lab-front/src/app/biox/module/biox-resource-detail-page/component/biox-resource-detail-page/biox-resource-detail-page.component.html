@@ -6,12 +6,12 @@
     <fl-section fxFlex="auto" [object]="resource" class="section">
 
       <fl-section-header>
-        <h2 class="header-title" [matTooltip]="resource.name">{{resource.name}} |
+        <h2 class="header-title">{{resource.name}} |
           <span class="g-text-light">{{fullScreenViewName}}</span>
         </h2>
 
         <fl-section-actions>
-          <button mat-stroked-button type="button" *ngIf="resource.isImportable()"
+          <button mat-stroked-button type="button" *ngIf="resource.isImportable"
                   (click)="openImportResource()" class="button g-button-small">
             <mat-icon>system_update_alt</mat-icon>
             {{'biox.import_resource' | translate}}

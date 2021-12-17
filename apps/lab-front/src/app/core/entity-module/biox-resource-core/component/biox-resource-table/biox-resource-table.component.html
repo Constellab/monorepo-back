@@ -64,7 +64,7 @@
           <span>{{'biox.file_resource_download' | translate}}</span>
         </button>
 
-        <button mat-menu-item type="button" *ngIf="resource.isImportable()"
+        <button mat-menu-item type="button" *ngIf="resource.isImportable"
                 (click)="openImportResource(resource)">
           <mat-icon>system_update_alt</mat-icon>
           <span>{{'biox.import_resource' | translate}}</span>

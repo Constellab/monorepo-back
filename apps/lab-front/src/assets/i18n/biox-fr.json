@@ -91,6 +91,7 @@
     "import_resource_text": "Importer la resource de type {{sourceType}} en {{targetType}}. Une nouvelle resource va être créée.",
     "resource_imported": "Resource importée",
     "resource_not_importable": "La resource ne supporte pas l'import",
-    "resource_import_no_config": "Aucune configuration nécessaire pour importer la resource"
+    "resource_import_no_config": "Aucune configuration nécessaire pour importer la resource",
+    "select_importer": "Sélectionner un importeur"
   }
 }

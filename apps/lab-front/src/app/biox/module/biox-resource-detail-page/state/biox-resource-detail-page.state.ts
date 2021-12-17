@@ -200,6 +200,12 @@ export class BioxResourceDetailPageState implements OnDestroy {
 
         // if the view has a force display mode, use it. Otherwise, use the selected display mode
         const viewTypeInfo: BioxResourceViewTypeInfo = constBioxResourceViewTypeInfos[viewEvent.view.type];
+        if(viewTypeInfo == null){
+          // todo quoi faire quand la vue n'est pas supportée ?
+          console.error(`The view type '${viewEvent.view.type}' is not supported`)
+          return ;
+        }
+
         viewEvent.displayMode = viewTypeInfo.forceDefaultDisplayMode ?
           viewTypeInfo.defaultDisplayMode : actionResult.result.displayMode;
         return actionResult.result;

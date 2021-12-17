@@ -22,8 +22,9 @@ import {
   BioxResourceSearchFields
 } from '../entity-module/biox-resource-core/model/biox-resource-advanced-search.class';
 import {CallTransformerParams} from '../model/global/biox-transformer.class';
-import {BioxResourceImportConfig} from '../model/entities/resource/biox-resource-converter.class';
 import {BioxConfigValues} from '../model/entities/biox-config.entity';
+import {BioxProcessType} from '../model/entities/lab-type/biox-process-type.entity';
+import {BioxTaskType} from '../model/entities/lab-type/biox-task-type.entity';
 
 
 @Injectable({
@@ -118,11 +119,11 @@ export class BioxResourceService implements FlSearchService<BioxResource> {
   }
 
   //////////////////////////////////////// IMPORTER  ///////////////////////////////////////
-  public getImportSpecs(resourceTypingName: string): Observable<BioxResourceImportConfig> {
-    return this.apiService.get(`${this.resourceTypeRoute}/${resourceTypingName}/import/specs`, BioxResourceImportConfig);
+  public getImporters(resourceTypingName: string): Observable<BioxProcessType[]> {
+    return this.apiService.get(`${this.resourceTypeRoute}/${resourceTypingName}/importer`, BioxTaskType);
   }
 
-  public callImporter(resourceId: string, config: BioxConfigValues): Observable<BioxResource>{
-    return this.apiService.post(`${this.route}/${resourceId}/import`, config, BioxResource);
+  public callImporter(resourceId: string, importerType: string, config: BioxConfigValues): Observable<BioxResource>{
+    return this.apiService.post(`${this.route}/${resourceId}/import/${importerType}`, config, BioxResource);
   }
 }
