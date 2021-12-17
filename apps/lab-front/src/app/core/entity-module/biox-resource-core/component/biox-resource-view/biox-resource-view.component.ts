@@ -79,6 +79,8 @@ export class BioxResourceViewComponent implements OnInit, OnDestroy {
 
   private viewComponentRef: ComponentRef<BioxResourceViewDirective>;
 
+  viewNotSupportedError: boolean = false;
+
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) {
   }
@@ -96,8 +98,10 @@ export class BioxResourceViewComponent implements OnInit, OnDestroy {
     const viewTypeInfo: BioxResourceViewTypeInfo = constBioxResourceViewTypeInfos[view.type];
 
     if (componentType == null || viewTypeInfo == null) {
+      this.viewNotSupportedError = true;
       return;
     }
+    this.viewNotSupportedError = false;
 
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
     this.viewComponentRef = this.viewContainer.createComponent(componentFactory);

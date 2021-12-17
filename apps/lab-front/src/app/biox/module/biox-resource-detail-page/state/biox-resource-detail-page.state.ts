@@ -14,7 +14,13 @@ import {
 } from '../../../../core/model/entities/resource/biox-resource-view.entity';
 import {BioxResource} from '../../../../core/model/entities/resource/biox-resource.entity';
 import {filter, map, mergeMap} from 'rxjs/operators';
-import {FlPortalActionResult, FlPortalActionsService, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
+import {
+  FlPortalActionResult,
+  FlPortalActionsService,
+  FlPortalConfig,
+  FlPortalService,
+  FlSnackBarService
+} from '@monorepo/front-core-lib';
 import {BioxTag} from '../../../../core/model/entities/biox-tag.entity';
 import {BioxTransformerWithConfig, CallTransformerParams} from '../../../../core/model/global/biox-transformer.class';
 import {
@@ -43,7 +49,8 @@ export class BioxResourceDetailPageState implements OnDestroy {
 
   constructor(private resourceService: BioxResourceService,
               private flActionService: FlPortalActionsService,
-              private portalService: FlPortalService) {
+              private portalService: FlPortalService,
+              private flSnackBarService: FlSnackBarService) {
   }
 
   public init(id: string): void {
@@ -200,10 +207,9 @@ export class BioxResourceDetailPageState implements OnDestroy {
 
         // if the view has a force display mode, use it. Otherwise, use the selected display mode
         const viewTypeInfo: BioxResourceViewTypeInfo = constBioxResourceViewTypeInfos[viewEvent.view.type];
-        if(viewTypeInfo == null){
-          // todo quoi faire quand la vue n'est pas supportée ?
-          console.error(`The view type '${viewEvent.view.type}' is not supported`)
-          return ;
+        if (viewTypeInfo == null) {
+          this.flSnackBarService.openErrorMessage('biox.view_type_node_supported', true);
+          return actionResult.result;
         }
 
         viewEvent.displayMode = viewTypeInfo.forceDefaultDisplayMode ?
