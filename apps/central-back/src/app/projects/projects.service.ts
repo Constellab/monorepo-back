@@ -33,4 +33,13 @@ export class ProjectsService extends AbstractWithStatusService<Project, ProjectS
       order: {lastModifiedAt: 'DESC'}
     });
   }
+
+  public async getProjectsOfUser(userId: string): Promise<Project[]> {
+    return this.repository.find({
+      where: {
+        createdBy: {id: userId},
+      },
+      order: {lastModifiedAt: 'DESC'}
+    });
+  }
 }

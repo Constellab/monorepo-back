@@ -8,7 +8,7 @@ import {Observable} from 'rxjs';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 
 export interface ExperimentFormDialogInput extends FlFormDialogInput<Experiment> {
-  studyId?: string;
+  projectId?: string;
 }
 
 /**
@@ -43,7 +43,7 @@ export class ExperimentFormDialogComponent extends FlFormDialogAbstractDirective
   }
 
   create(formValue: Partial<Experiment>): Observable<Experiment> {
-    return this.experimentService.create(formValue, this.dialogInput.studyId);
+    return this.experimentService.create(formValue, this.dialogInput.projectId);
   }
 
   update(formValue: Partial<Experiment>): Observable<Experiment> {

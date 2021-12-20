@@ -4,8 +4,8 @@ import {LabInstancesModule} from '../lab-instances/lab-instances.module';
 import {UsersModule} from '../users/users.module';
 import {CoreModule} from '../core/core.module';
 import {ReportsModule} from '../reports/reports.module';
-import {StudiesModule} from '../studies/studies.module';
 import {ExperimentsModule} from '../experiments/experiments.module';
+import {ProjectsModule} from '../projects/projects.module';
 
 /**
  * Module for incoming calls from the labs
@@ -17,7 +17,7 @@ import {ExperimentsModule} from '../experiments/experiments.module';
     ReportsModule,
     UsersModule, // used by the lab auth
     CoreModule,
-    StudiesModule,
+    ProjectsModule,
     ExperimentsModule,
   ],
 })

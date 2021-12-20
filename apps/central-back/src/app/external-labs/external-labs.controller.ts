@@ -5,15 +5,15 @@ import {LabInstancesService} from '../lab-instances/lab-instances.service';
 import {LabGuard} from '../core/decorators/lab-guard.decorator';
 import {ReportsSecurityLayer} from '../reports/reports-security.layer';
 import {Report} from '../reports/report.entity';
-import {StudiesSecurityLayer} from '../studies/studies-security.layer';
-import {Study} from '../studies/study.entity';
 import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
 import {CurrentUserHelper} from '../core/utils/current-user.helper';
 import {LabExperimentDto} from '../experiments/lab-experiment.dto';
 import {ExperimentsSecurityLayer} from '../experiments/experiments-security-layer.service';
+import {Project} from '../projects/project.entity';
+import {ProjectsSecurityLayer} from '../projects/projects-security.layer';
 
 /**
- * Specific controller for route called by the lab servers. Theses route are not called by a user
+ * Specific controller for route called by the lab servers. These routes are not called by a user
  */
 @LabGuard()
 @Controller('external-labs')
@@ -21,14 +21,14 @@ export class ExternalLabsController {
 
   constructor(private labInstanceService: LabInstancesService,
               private reportSecurityLayer: ReportsSecurityLayer,
-              private studiesSecurityLayer: StudiesSecurityLayer,
+              private projectSecurityLayer: ProjectsSecurityLayer,
               private experimentSecurityLayer: ExperimentsSecurityLayer) {
   }
 
   @Get('/user/:userId/studies')
   getStudiesOfUser(
-    @Param('userId', new ParseUUIDPipe()) userId: string): Promise<Study[]> {
-    return this.studiesSecurityLayer.getStudiesOfUser(userId);
+    @Param('userId', new ParseUUIDPipe()) userId: string): Promise<Project[]> {
+    return this.projectSecurityLayer.getProjectsOfUser(userId);
   }
 
   @Put('/lab-instance/status/:status')
@@ -38,11 +38,11 @@ export class ExternalLabsController {
   }
 
 
-  @Put('study/:studyId/add-experiment')
+  @Put('project/:projectId/add-experiment')
   createOrUpdateExperiment(
-    @Param('studyId', new ParseUUIDPipe()) studyId: string,
+    @Param('projectId', new ParseUUIDPipe()) projectId: string,
     @Body(new BlParsePipe(LabExperimentDto)) labExperimentDto: LabExperimentDto): Promise<void> {
-    return this.experimentSecurityLayer.createLabExperiment(studyId, labExperimentDto);
+    return this.experimentSecurityLayer.createLabExperiment(projectId, labExperimentDto);
   }
 
 

@@ -12,12 +12,12 @@ export class ExperimentsController {
   }
 
   /**
-   * Create an experiment for a study
+   * Create an experiment for a project
    */
-  @Post('study/:studyId')
+  @Post('project/:projectId')
   create(@Body(new BlParsePipe(Experiment)) experiment: Experiment,
-         @Param('studyId', ParseUUIDPipe) studyId: string): Promise<Experiment> {
-    return this.securityLayer.createExperiment(experiment, studyId);
+         @Param('projectId', ParseUUIDPipe) projectId: string): Promise<Experiment> {
+    return this.securityLayer.createExperiment(experiment, projectId);
   }
 
   @Put()
@@ -33,11 +33,11 @@ export class ExperimentsController {
 
 
   /**
-   * Return the list of experiment of a study
+   * Return the list of experiment of a project
    */
-  @Get('study/:studyId')
-  public getExperimentOfStudy(@Param('studyId', ParseUUIDPipe) studyId: string): Promise<Experiment[]> {
-    return this.securityLayer.getExperimentsOfStudy(studyId);
+  @Get('project/:projectId')
+  public getExperimentOfProject(@Param('projectId', ParseUUIDPipe) projectId: string): Promise<Experiment[]> {
+    return this.securityLayer.getExperimentsOfProject(projectId);
   }
 
   ////////////////////// STATUS ////////////////////

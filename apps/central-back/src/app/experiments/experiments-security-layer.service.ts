@@ -8,9 +8,9 @@ import {CreatedByAuthorization} from '../core/security/created-by.authorization'
 import {ExperimentStatus} from './experiment-status.enum';
 import {LabInstancesSecurityLayer} from '../lab-instances/lab-instances-security-layer.service';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
-import {StudiesSecurityLayer} from '../studies/studies-security.layer';
 import {LabExperimentDto} from './lab-experiment.dto';
-import {Study} from '../studies/study.entity';
+import {ProjectsSecurityLayer} from '../projects/projects-security.layer';
+import {Project} from '../projects/project.entity';
 
 @Injectable()
 export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> {
@@ -18,7 +18,7 @@ export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> 
   private createdByAuthorization: AbstractCheckAuthorization = new CreatedByAuthorization();
 
   constructor(private service: ExperimentsService,
-              private studiesSecurityLayer: StudiesSecurityLayer,
+              private projectsSecurityLayer: ProjectsSecurityLayer,
               private labInstanceSecurityLayer: LabInstancesSecurityLayer) {
     super(service);
   }
@@ -40,9 +40,9 @@ export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> 
   }
 
 
-  async createExperiment(experiment: Experiment, studyId: string): Promise<Experiment> {
-    // check that the user can update the study
-    experiment.study = await this.studiesSecurityLayer.getAndCheckAuthorizationToUpdateById(studyId);
+  async createExperiment(experiment: Experiment, projectId: string): Promise<Experiment> {
+    // check that the user can update the project
+    experiment.project = await this.projectsSecurityLayer.getAndCheckAuthorizationToUpdateById(projectId);
 
     // check that the user can update the lab instance
     if (experiment.labInstance == null) {
@@ -59,11 +59,11 @@ export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> 
     return this.service.updateCurrentStatusWithDbEntity(status, experiment);
   }
 
-  async getExperimentsOfStudy(studyId: string): Promise<Experiment[]> {
+  async getExperimentsOfProject(projectId: string): Promise<Experiment[]> {
     // check that the user can get the project
-    await this.studiesSecurityLayer.getAndCheckAuthorizationToFindById(studyId);
+    await this.projectsSecurityLayer.getAndCheckAuthorizationToFindById(projectId);
 
-    return this.service.getExperimentsOfStudy(studyId);
+    return this.service.getExperimentsOfProject(projectId);
   }
 
   async getStatusHistory(id: string): Promise<ExperimentStatusHistory[]> {
@@ -73,12 +73,12 @@ export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> 
     return await this.service.getStatusHistory(id) as ExperimentStatusHistory[];
   }
 
-  async createLabExperiment(studyId: string, labExperimentDto: LabExperimentDto): Promise<void> {
+  async createLabExperiment(projectId: string, labExperimentDto: LabExperimentDto): Promise<void> {
 
-    // check that the user can update the study
-    const study: Study = await this.studiesSecurityLayer.getAndCheckAuthorizationToUpdateById(studyId);
+    // check that the user can update the project
+    const project: Project = await this.projectsSecurityLayer.getAndCheckAuthorizationToUpdateById(projectId);
 
-    await this.service.createLabExperiment(study, labExperimentDto)
+    await this.service.createLabExperiment(project, labExperimentDto);
 
   }
 

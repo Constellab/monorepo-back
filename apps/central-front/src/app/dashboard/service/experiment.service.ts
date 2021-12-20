@@ -18,12 +18,12 @@ export class ExperimentService {
     return this.apiService.get(`${this.route}/${id}`, Experiment);
   }
 
-  public getExperimentsOfStudy(studyId: string): FlArrayObs<Experiment> {
-    return new FlEntityArrayObs(this.apiService.get(`${this.route}/study/${studyId}`, Experiment));
+  public getExperimentsOfProject(projectId: string): Observable<Experiment[]> {
+    return this.apiService.get(`${this.route}/project/${projectId}`, Experiment);
   }
 
-  public create(experiment: Partial<Experiment>, studyId: string): Observable<Experiment> {
-    return this.apiService.post(`${this.route}/study/${studyId}`, experiment, Experiment);
+  public create(experiment: Partial<Experiment>, projectId: string): Observable<Experiment> {
+    return this.apiService.post(`${this.route}/project/${projectId}`, experiment, Experiment);
   }
 
   public update(experiment: Partial<Experiment>): Observable<Experiment> {
@@ -36,13 +36,6 @@ export class ExperimentService {
 
   public startExperiment(experimentId: string): Observable<Experiment> {
     return this.apiService.put(`${this.route}/${experimentId}/start`, null, Experiment);
-  }
-
-  /**
-   * retrieve the list of user's experiments that uses the protocol
-   */
-  public getExperimentsByProtocol(protocolId: string): FlArrayObs<Experiment> {
-    return new FlEntityArrayObs(this.apiService.get(`${this.route}/protocol/${protocolId}`, Experiment));
   }
 
 

@@ -37,6 +37,11 @@ export class ProjectsSecurityLayer extends AbstractSecurityLayer<Project> {
     return this.service.getCurrentProjects(page, size);
   }
 
+  getProjectsOfUser(userId: string): Promise<Project[]> {
+    // no security because we filter on user id
+    return this.service.getProjectsOfUser(userId);
+  }
+
   async updateCurrentStatus(status: ProjectStatus, id: string): Promise<Project> {
     const project: Project = await this.getAndCheckAuthorizationToUpdateById(id);
 

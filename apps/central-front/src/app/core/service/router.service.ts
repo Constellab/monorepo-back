@@ -39,9 +39,6 @@ export class RouterService {
     return `${RouterService.getLabInstanceDetailRoute(labInstanceId)}/view`;
   }
 
-  public static getProtocolDetailRoute(protocolId: string): string {
-    return `${constProtocolsFullRoute}/${protocolId}`;
-  }
 
   public static getProjectDetailRoute(projectId: string): string {
     return `${constDashboardFullRoute}/project/${projectId}`;

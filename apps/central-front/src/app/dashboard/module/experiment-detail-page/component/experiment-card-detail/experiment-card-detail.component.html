@@ -8,10 +8,10 @@
     <!--   Start experiment button when DRAFT   -->
     <div *ngIf="experiment.statusIsDraft(); else notDraft"
          [matTooltip]="disabledStartButtonText | translate" [matTooltipDisabled]="!disabledStartButton">
-      <button mat-raised-button type="button" color="primary" (click)="startExperiment()"
-              [disabled]="disabledStartButton">
-        {{'start_experiment' | translate}}
-      </button>
+<!--      <button mat-raised-button type="button" color="primary" (click)="startExperiment()"-->
+<!--              [disabled]="disabledStartButton">-->
+<!--        {{'start_experiment' | translate}}-->
+<!--      </button>-->
     </div>
 
     <ng-template #notDraft>
@@ -21,16 +21,16 @@
         <mat-icon>arrow_forward_ios</mat-icon>
       </a>
 
-      <button mat-button type="button" (click)="openUpdateStatusDialog()"
-              color="primary">
-        {{'update_status' | translate}}
-      </button>
+<!--      <button mat-button type="button" (click)="openUpdateStatusDialog()"-->
+<!--              color="primary">-->
+<!--        {{'update_status' | translate}}-->
+<!--      </button>-->
     </ng-template>
 
-    <button mat-button type="button" (click)="openUpdateExperimentDialog()"
-            color="primary">
-      <mat-icon>edit</mat-icon>
-      {{'edit' | translate}}
-    </button>
+<!--    <button mat-button type="button" (click)="openUpdateExperimentDialog()"-->
+<!--            color="primary">-->
+<!--      <mat-icon>edit</mat-icon>-->
+<!--      {{'edit' | translate}}-->
+<!--    </button>-->
   </fl-card-footer>
 </fl-card>

@@ -58,5 +58,4 @@ export class UsersService extends AbstractService<User> implements BlUserService
     await this.update(user);
   }
 
-
 }

@@ -7,8 +7,8 @@ import {CoreModule} from '../core/core.module';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
 import {ExperimentsSecurityLayer} from './experiments-security-layer.service';
 import {LabInstancesModule} from '../lab-instances/lab-instances.module';
-import {StudiesModule} from '../studies/studies.module';
 import {ExternalLabApiModule} from '../external-lab-api/external-lab-api.module';
+import {ProjectsModule} from '../projects/projects.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import {ExternalLabApiModule} from '../external-lab-api/external-lab-api.module'
     CoreModule,
 
     // Other modules
-    StudiesModule,
+    ProjectsModule,
     LabInstancesModule,
     ExternalLabApiModule,
   ],

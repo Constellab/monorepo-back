@@ -7,7 +7,11 @@ import {LabInstanceStatus} from './lab-instance-status.enum';
 import {AbstractWithStatusService} from '../core/class/abstract-with-status.service';
 import {LabInstanceStatusHistory} from './lab-instance-status-history.entity';
 import {ExternalLabUserService} from '../external-lab-api/external-lab-user.service';
-import {ExternalLabLoginResponse, ExternalLabUser, ExternalNewLabUser} from '../external-lab-api/external-lab-api.class';
+import {
+  ExternalLabLoginResponse,
+  ExternalLabUser,
+  ExternalNewLabUser
+} from '../external-lab-api/external-lab-api.class';
 import {LabInstanceToken} from './lab-instance-token.class';
 import {ErrorText} from '../core/model/config/error-text.class';
 import {UsersService} from '../users/users.service';
@@ -45,12 +49,15 @@ export class LabInstancesService extends AbstractWithStatusService<LabInstance, 
   public getCurrentRunningLabInstances(): Promise<LabInstance[]> {
     const user: User = CurrentUserHelper.getAndCheckCurrentUser();
 
+    // TODO fix this route, problem to filter on status because user also has a status
     return this.repository.find({
       where: (qb: ObjectLiteral) => {
         qb.where({owner: user.id})
-          .andWhere('status = :status', {status: LabInstanceStatus.RUNNING});
+          .andWhere('sh.status = :status', {status: LabInstanceStatus.RUNNING});
       },
-      order: {lastModifiedAt: 'DESC'}
+      // join: {alias: 'lll', leftJoinAndSelect: {sh: 'currentStatus'}},
+      // join: {},
+      order: {lastModifiedAt: 'DESC'},
     });
   }
 

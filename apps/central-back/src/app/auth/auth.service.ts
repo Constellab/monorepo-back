@@ -65,7 +65,7 @@ export class AuthService {
 
     if (!await user.comparePassword(credentials.password)) {
       // increment the failed login count
-      this.incrementFailedLoginCount(user);
+      await this.incrementFailedLoginCount(user);
 
       // check if user is locked
       if (user.failedLoginCount >= this.failedLoginLock) {
@@ -77,8 +77,8 @@ export class AuthService {
     }
 
     // login successful
-    if (user.failedLoginCount >= 0) {
-      this.resetFailedLoginCount(user);
+    if (user.failedLoginCount > 0) {
+      await this.resetFailedLoginCount(user);
     }
 
     return user;
@@ -91,11 +91,11 @@ export class AuthService {
    * @param user
    * @private
    */
-  private incrementFailedLoginCount(user: User): void {
+  private async incrementFailedLoginCount(user: User): Promise<void> {
     user.failedLoginCount++;
     user.lastLoginAttempt = ClDateHelper.getDate();
 
-    this.usersService.update(user);
+    await this.usersService.update(user);
   }
 
   /**
@@ -103,8 +103,8 @@ export class AuthService {
    * @param user
    * @private
    */
-  private resetFailedLoginCount(user: User): void {
+  private async resetFailedLoginCount(user: User): Promise<void> {
     user.failedLoginCount = 0;
-    this.usersService.update(user);
+    await this.usersService.update(user);
   }
 }

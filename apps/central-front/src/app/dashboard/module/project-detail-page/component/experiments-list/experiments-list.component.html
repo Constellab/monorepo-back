@@ -1,18 +1,10 @@
-<fl-async-section [arrayObs]="experimentsArray" emptyText="no_experiment">
+<fl-async-section [object]="experiments$" emptyText="no_experiment">
 
   <fl-section-header>
     <fl-text-icon>
       <mat-icon svgIcon="experiment"></mat-icon>
       <h2>{{'experiments' | translate}}</h2>
     </fl-text-icon>
-
-<!--    <fl-section-actions>-->
-<!--      <button mat-mini-fab type="button" color="accent"-->
-<!--              (click)="openCreateExperimentDialog()"-->
-<!--              [matTooltip]="'new_experiment' | translate">-->
-<!--        <mat-icon>add</mat-icon>-->
-<!--      </button>-->
-<!--    </fl-section-actions>-->
   </fl-section-header>
 
 

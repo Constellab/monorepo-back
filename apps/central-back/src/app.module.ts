@@ -23,7 +23,6 @@ import {UserCategoryGuard} from './app/core/guards/user-category.guard';
 import {ExternalLabsModule} from './app/external-labs/external-labs.module';
 import {ServersInfoModule} from './app/servers-info/servers-info.module';
 import {CustomExceptionHandlerFilter} from './app/core/filters/core-exception-handler.filter';
-import {StudiesModule} from './app/studies/studies.module';
 import {ReportsModule} from './app/reports/reports.module';
 import {clDefaultLang} from '@monorepo/core-lib';
 import {FrontErrorsModule} from './app/front-errors/front-errors.module';
@@ -146,7 +145,6 @@ function configureMailModule(configService: CoreConfigService): BlMailModuleConf
     LabInstancesModule,
     ExternalLabsModule,
     ServersInfoModule,
-    StudiesModule,
     ReportsModule,
     FrontErrorsModule,
   ],

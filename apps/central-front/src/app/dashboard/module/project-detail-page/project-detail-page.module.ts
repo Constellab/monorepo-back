@@ -5,8 +5,8 @@ import {CoreModule} from '../../../core/core.module';
 import {ProjectCoreModule} from '../../../core/entity-module/project-core/project-core.module';
 import {ProjectDetailComponent} from './component/project-detail/project-detail.component';
 import {RouterModule} from '@angular/router';
-import {StudiesListComponent} from './component/studies-list/studies-list.component';
-import {StudyCoreModule} from '../study-core/study-core.module';
+import {ExperimentCoreModule} from '../experiment-core/experiment-core.module';
+import {ExperimentsListComponent} from './component/experiments-list/experiments-list.component';
 
 /**
  * Module for the project detail page
@@ -15,7 +15,7 @@ import {StudyCoreModule} from '../study-core/study-core.module';
   declarations: [
     ProjectDetailPageComponent,
     ProjectDetailComponent,
-    StudiesListComponent
+    ExperimentsListComponent,
   ],
   imports: [
     CommonModule,
@@ -23,7 +23,7 @@ import {StudyCoreModule} from '../study-core/study-core.module';
 
     CoreModule,
     ProjectCoreModule,
-    StudyCoreModule,
+    ExperimentCoreModule,
   ]
 })
 export class ProjectDetailPageModule {

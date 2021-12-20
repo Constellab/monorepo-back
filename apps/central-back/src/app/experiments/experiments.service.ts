@@ -6,8 +6,8 @@ import {AbstractWithStatusService} from '../core/class/abstract-with-status.serv
 import {ExperimentStatus} from './experiment-status.enum';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
 import {LabExperimentDto} from './lab-experiment.dto';
-import {Study} from '../studies/study.entity';
 import {CurrentUserHelper} from '../core/utils/current-user.helper';
+import {Project} from '../projects/project.entity';
 
 @Injectable()
 export class ExperimentsService extends AbstractWithStatusService<Experiment, ExperimentStatus> {
@@ -22,26 +22,26 @@ export class ExperimentsService extends AbstractWithStatusService<Experiment, Ex
   }
 
 
-  getExperimentsOfStudy(studyId: string): Promise<Experiment[]> {
+  getExperimentsOfProject(projectId: string): Promise<Experiment[]> {
     return this.repository.find({
       where: {
-        study: {id: studyId}
+        project: {id: projectId}
       },
       order: {lastModifiedAt: 'DESC'}
     });
   }
 
-  public async createLabExperiment(study: Study, labExperimentDto: LabExperimentDto): Promise<Experiment> {
-    const experimentDB: Experiment = await this.findById(labExperimentDto.id, {relations: ['study']})
+  public async createLabExperiment(project: Project, labExperimentDto: LabExperimentDto): Promise<Experiment> {
+    const experimentDB: Experiment = await this.findById(labExperimentDto.id, {relations: ['project']});
 
-    if (experimentDB && experimentDB.study.id !== study.id) {
-      throw new UnauthorizedException('Can\'t change the study of a validated experiment')
+    if (experimentDB && experimentDB.project.id !== project.id) {
+      throw new UnauthorizedException('Can\'t change the project of a validated experiment');
     }
 
 
-    const newExperiment = new Experiment()
+    const newExperiment = new Experiment();
     newExperiment.id = labExperimentDto.id;
-    newExperiment.study = study;
+    newExperiment.project = project;
     newExperiment.label = labExperimentDto.data.title;
     newExperiment.description = labExperimentDto.data.description;
     newExperiment.createdAt = labExperimentDto.created_at;
@@ -50,8 +50,8 @@ export class ExperimentsService extends AbstractWithStatusService<Experiment, Ex
       // todo does not support status change
       return await this.updateWithCompare(newExperiment, experimentDB);
     } else {
-      newExperiment.labInstance = CurrentUserHelper.getLabInstance()
-      return this.createWithStatus(newExperiment, labExperimentDto.status)
+      newExperiment.labInstance = CurrentUserHelper.getLabInstance();
+      return this.createWithStatus(newExperiment, labExperimentDto.status);
     }
   }
 

@@ -3,8 +3,8 @@ import {Type} from 'class-transformer';
 import {LabInstance} from '../lab-instances/lab-instance.entity';
 import {EntityWithStatus} from '../core/model/entities/entity-with-status.entity';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
-import {Study} from '../studies/study.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
+import {Project} from '../projects/project.entity';
 
 /**
  * An experiment is executed in a lab to produce reports
@@ -31,8 +31,8 @@ export class Experiment extends EntityWithStatus<ExperimentStatusHistory> {
   labInstance: LabInstance;
 
   @BlNotUpdatable()
-  @Type(() => Study)
-  @ManyToOne(() => Study, {nullable: false})
-  study: Study;
+  @Type(() => Project)
+  @ManyToOne(() => Project, {nullable: false})
+  project: Project;
 
 }
