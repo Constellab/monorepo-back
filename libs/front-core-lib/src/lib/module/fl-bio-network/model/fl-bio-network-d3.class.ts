@@ -7,7 +7,7 @@ import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 /**
  * Data used to construct to d3 network
  */
-export class FlBioxNetworkD3 {
+export class FlBioNetworkD3 {
 
 
   constructor(public metabolites: FlBioNetworkD3Metabolite[],

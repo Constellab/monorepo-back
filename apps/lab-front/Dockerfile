@@ -1,7 +1,7 @@
 
 # Dockerfile used by the gitlab ci
 FROM nginx:alpine
-# Copy the dist front-pegase-manager
+# Copy the dist lab-front
 COPY dist/apps/lab-front /usr/share/nginx/html
 
 # Copy the default nginx.conf

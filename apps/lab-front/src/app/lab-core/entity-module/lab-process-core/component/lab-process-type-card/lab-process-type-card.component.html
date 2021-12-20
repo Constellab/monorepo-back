@@ -1,0 +1,88 @@
+<fl-card>
+  <fl-card-header>
+    {{processType.name}}
+
+    <fl-card-actions>
+      <ng-content></ng-content>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+    <div class="g-text-light base-info">
+      <p>{{'biox.process_type_type' | translate}} : {{processType.modelName}}</p>
+      <p *ngIf="processType.data.description">{{processType.data.description}}</p>
+    </div>
+
+    <div class="panel-container">
+      <!-- Inputs -->
+      <mat-expansion-panel *ngIf="processType.hasInputSpecs()" hideToggle [expanded]="true"
+                           class="g-expansion-disable-side-padding">
+        <mat-expansion-panel-header>
+          <mat-panel-title class="g-not-selectable">
+            <fl-text-icon>
+              <mat-icon>login</mat-icon>
+              {{'biox.node_inputs' | translate}}
+            </fl-text-icon>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <lab-process-ports-list [ports]="processType.getInputSpecs()"
+                                     class="panel-padding"></lab-process-ports-list>
+      </mat-expansion-panel>
+
+
+      <!-- Outputs -->
+      <mat-expansion-panel *ngIf="processType.hasOutputSpecs()" hideToggle [expanded]="true"
+                           class="g-expansion-disable-side-padding">
+        <mat-expansion-panel-header>
+          <mat-panel-title class="g-not-selectable">
+            <fl-text-icon>
+              <mat-icon>logout</mat-icon>
+              {{'biox.node_outputs' | translate}}
+            </fl-text-icon>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <lab-process-ports-list [ports]="processType.getOutputSpecs()"
+                                     class="panel-padding"></lab-process-ports-list>
+      </mat-expansion-panel>
+
+
+      <!-- Config -->
+      <mat-expansion-panel *ngIf="processType.hasConfigSpecs()" hideToggle [expanded]="true"
+                           class="g-expansion-disable-side-padding">
+        <mat-expansion-panel-header>
+          <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
+            <fl-text-icon>
+              <mat-icon>settings</mat-icon>
+              {{'biox.configuration' | translate}}
+            </fl-text-icon>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <fl-pretty-json [object]="processType.getConfigSpecs().record" dense
+                        [previewMaxTextLength]="30" class="panel-padding"></fl-pretty-json>
+      </mat-expansion-panel>
+
+
+      <!-- Documentation -->
+      <mat-expansion-panel *ngIf="processType.hasDocumentation()" hideToggle [expanded]="false"
+                           class="g-expansion-disable-side-padding">
+        <mat-expansion-panel-header>
+          <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
+            <fl-text-icon>
+              <mat-icon>description</mat-icon>
+              {{'documentation' | translate}}
+            </fl-text-icon>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <lab-process-doc [doc]="processType.data.doc" class="panel-padding">
+        </lab-process-doc>
+      </mat-expansion-panel>
+
+    </div>
+
+
+  </fl-card-body>
+
+  <fl-card-footer class="g-text-light g-text-small">
+    <fl-from-now [date]="processType.createdAt" [prefix]="'created' | translate"></fl-from-now>
+  </fl-card-footer>
+</fl-card>

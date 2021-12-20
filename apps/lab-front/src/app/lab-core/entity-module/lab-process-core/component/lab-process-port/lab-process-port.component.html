@@ -1,0 +1,16 @@
+<div fxLayout="row" fxLayoutAlign="start center">
+  <div class="color-container">
+    <div [style.backgroundColor]="specs | labProcessPortColor" class="color-round"></div>
+  </div>
+
+  <div fxFlex="35%" class="text">
+    {{name}}
+  </div>
+
+  <div fxFlex="auto" class="g-text-light g-text-small text">
+    <div *ngFor="let spec of specs.resource_types" [matTooltip]="spec.short_description">
+      {{spec.human_name}}
+    </div>
+  </div>
+</div>
+

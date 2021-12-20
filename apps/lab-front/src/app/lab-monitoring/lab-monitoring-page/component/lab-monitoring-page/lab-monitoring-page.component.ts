@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 
 @Component({
-  selector: 'gen-lab-monitoring-page',
+  selector: 'lab-monitoring-page',
   templateUrl: './lab-monitoring-page.component.html',
   styleUrls: ['./lab-monitoring-page.component.scss']
 })

@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.class';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlBioNetworkMetabolite, FlBioNetworkPathwaySelection} from '../model/fl-bio-network.class';
-import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
 import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
@@ -18,7 +18,7 @@ import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class'
 @Injectable()
 export class FlBioNetworkSelectionState implements OnDestroy {
 
-  private data: FlBioxNetworkD3;
+  private data: FlBioNetworkD3;
 
   private selection$: BehaviorSubject<FlBioNetworkSelectionEvent> = new BehaviorSubject({mode: 'none'});
 
@@ -33,7 +33,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   }
 
 
-  public init(data: FlBioxNetworkD3): void {
+  public init(data: FlBioNetworkD3): void {
     this.data = data;
     this.emitNone();
 

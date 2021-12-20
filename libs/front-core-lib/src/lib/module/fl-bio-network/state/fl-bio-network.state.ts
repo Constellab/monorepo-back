@@ -7,7 +7,7 @@ import {FlBioNetworkHelper} from '../utils/fl-bio-network.helper';
 import {debounceTime, map} from 'rxjs/operators';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 import {FlThemeService} from '../../../service/fl-theme.service';
-import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {FlFileHelper} from '../../../service/fl-file.helper';
 
@@ -20,7 +20,7 @@ export class FlBioNetworkState implements OnDestroy {
 
   public networks: FlBioNetwork[];
   private selectedNetwork$: BehaviorSubject<FlBioNetwork | null>;
-  private chartData$: BehaviorSubject<FlBioxNetworkD3 | null>;
+  private chartData$: BehaviorSubject<FlBioNetworkD3 | null>;
   private database$: BehaviorSubject<FlPathwayDatabase | null>;
 
   private pathways$: BehaviorSubject<FlBioNetworkPathwaySelection[]>;
@@ -117,7 +117,7 @@ export class FlBioNetworkState implements OnDestroy {
       this.chartData$.next(null);
       return;
     }
-    const chartData: FlBioxNetworkD3 = new FlBioNetworkFactory(this.themeService.getCurrentThemeDetail().greyHighContrast)
+    const chartData: FlBioNetworkD3 = new FlBioNetworkFactory(this.themeService.getCurrentThemeDetail().greyHighContrast)
       .convertPathwayToChartPathway(this.getSelectedNetwork(), pathwayIds, this.getDatabase());
 
     this.chartData$.next(chartData);
@@ -176,11 +176,11 @@ export class FlBioNetworkState implements OnDestroy {
 
 
   /////////////////////////////////////// CHART DATA /////////////////////////////////////////
-  public getChartData$(): Observable<FlBioxNetworkD3 | null> {
+  public getChartData$(): Observable<FlBioNetworkD3 | null> {
     return this.chartData$.asObservable();
   }
 
-  public getCurrentChartData(): FlBioxNetworkD3 | null {
+  public getCurrentChartData(): FlBioNetworkD3 | null {
     return this.chartData$.value;
   }
 
@@ -197,7 +197,7 @@ export class FlBioNetworkState implements OnDestroy {
   }
 
   public exportAllNetwork(): FlBioNetwork {
-    const d3Network: FlBioxNetworkD3 = this.chartData$.value;
+    const d3Network: FlBioNetworkD3 = this.chartData$.value;
     if (d3Network == null) return null;
     const network: FlBioNetwork = {
       metabolites: [],

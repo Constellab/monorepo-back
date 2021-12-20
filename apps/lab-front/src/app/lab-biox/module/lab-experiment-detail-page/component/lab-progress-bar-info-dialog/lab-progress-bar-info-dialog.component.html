@@ -1,0 +1,13 @@
+<fl-async-section [object]="progressBar$">
+
+  <ng-container *flSectionBody="let progressBar">
+    <fl-dialog-header>
+      <fl-status-chip [status]="progressBar.status"></fl-status-chip>
+    </fl-dialog-header>
+
+
+    <mat-dialog-content>
+      <lab-progress-bar-info [progressBar]="progressBar"></lab-progress-bar-info>
+    </mat-dialog-content>
+  </ng-container>
+</fl-async-section>

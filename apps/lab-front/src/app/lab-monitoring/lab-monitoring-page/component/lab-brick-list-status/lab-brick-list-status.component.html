@@ -13,7 +13,7 @@
           </mat-panel-title>
           <mat-panel-description>{{'monitoring.messages_count' | translate: {count: brick.countMessages()} }}</mat-panel-description>
         </mat-expansion-panel-header>
-        <gen-lab-brick-message-list [messages]="$any(brick.data.messages)"></gen-lab-brick-message-list>
+        <lab-brick-message-list [messages]="$any(brick.data.messages)"></lab-brick-message-list>
       </mat-expansion-panel>
     </mat-accordion>
   </ng-container>

@@ -1,0 +1,20 @@
+<div class="g-page-fixed" fxLayout="column">
+
+  <lab-biota-database-search-form (search)="onSearch($event)"></lab-biota-database-search-form>
+
+  <fl-async-section fxFlex="auto" [arrayObs]="biotaDatasource" emptyText="biota.no_entry" class="g-grow-max">
+
+    <ng-container *flSectionBody>
+
+      <div fxLayout="row" fxLayoutGap="1em" class="container">
+        <lab-biota-database-table class="table" fxFlex="auto" [datasource]="biotaDatasource" [columns]="columns"
+                                  (showDetail)="openDetail($event)"></lab-biota-database-table>
+
+        <div fxFlex="30%" fxHide.xs class="max-height g-scrollable-element">
+          <lab-biota-data-card class="g-full" *ngIf="selectedData" [biotaData]="selectedData"></lab-biota-data-card>
+        </div>
+      </div>
+    </ng-container>
+  </fl-async-section>
+
+</div>

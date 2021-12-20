@@ -19,6 +19,8 @@ Prefix: Cn
 ### Lab front
 The angular front app for the lab. One front is available per lab. 
 
+Prefix : Lab
+
 ### Hub front (da-documentation) : Da
 The hub angular app containing the documentation.
 

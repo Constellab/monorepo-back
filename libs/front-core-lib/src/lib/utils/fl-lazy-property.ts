@@ -62,7 +62,7 @@ export function FlLazyPropertyTransform<SERVICE, ENTITY>(serviceType: Type<any>,
  */
 export function flLazyPropertyTransformIdToClass<ENTITY>(id: string, serviceType: Type<FlGetById<ENTITY>>): FlLazyPropertyId<ENTITY> {
   if (flRootInjector == null) {
-    throw new Error('[FlLazyPropertyTransform] The flRootInjector was not initiated, please call setFlRootInjector in AppModule');
+    throw new Error('[FlLazyPropertyTransform] The flRootInjector was not initiated, please call setFlRootInjector in LabAppModule');
   }
   if (ClHelpService.isNullOrEmpty(id)) {
     return new FlLazyPropertyId<ENTITY>(id, of(null));
@@ -84,7 +84,7 @@ export function flLazyPropertyTransformToClass<SERVICE, ENTITY>(unconvertedObjec
                                                                 getObs?: (service: SERVICE, unconvertedObject: any)
                                                                   => Observable<ENTITY>): FlLazyProperty<ENTITY> {
   if (flRootInjector == null) {
-    throw new Error('[FlLazyPropertyTransform] The flRootInjector was not initiated, please call setFlRootInjector in AppModule');
+    throw new Error('[FlLazyPropertyTransform] The flRootInjector was not initiated, please call setFlRootInjector in LabAppModule');
   }
 
   // get the service instance

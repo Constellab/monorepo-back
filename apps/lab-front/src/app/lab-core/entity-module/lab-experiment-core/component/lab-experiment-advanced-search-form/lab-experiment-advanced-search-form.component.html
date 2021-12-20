@@ -1,0 +1,64 @@
+<div fxLayout="column" class="form" [formGroup]="formGp">
+
+  <div fxLayout="row wrap" fxLayoutGap="1em 0 grid" fxLayoutAlign="space-between center"
+       class="g-full">
+
+    <!--  Type  -->
+    <mat-form-field class="min-section-width">
+      <mat-label>{{'biox.experiment_type' | translate }}</mat-label>
+      <mat-select formControlName="type" [placeholder]="'biox.experiment_type' | translate">
+        <lab-experiment-type-options></lab-experiment-type-options>
+      </mat-select>
+    </mat-form-field>
+
+    <!--  status  -->
+    <mat-form-field class="min-section-width">
+      <mat-label>{{'status' | translate }}</mat-label>
+      <mat-select formControlName="status" [placeholder]="'status' | translate" multiple>
+        <lab-experiment-status-options></lab-experiment-status-options>
+      </mat-select>
+    </mat-form-field>
+
+    <!--  Tags  -->
+    <fl-form-field class="g-full">
+      <fl-tag-input formControlName="tags"></fl-tag-input>
+    </fl-form-field>
+
+    <!--  Text  -->
+    <mat-form-field class="g-full">
+      <mat-label>{{'biox.experiment_text' | translate }}</mat-label>
+      <input matInput formControlName="text" [placeholder]="'biox.experiment_text' | translate" autocomplete="off">
+    </mat-form-field>
+
+    <!--  Project  -->
+    <mat-form-field class="min-section-width">
+      <mat-label>{{'biox.project' | translate }}</mat-label>
+      <mat-select formControlName="project" multiple [placeholder]="'biox.project' | translate">
+        <lab-project-select-options></lab-project-select-options>
+      </mat-select>
+    </mat-form-field>
+
+    <!-------------------------------  Creation date  ---------------------------->
+    <div class="g-no-hint g-full g-compact-form">
+      <p class="g-text-small subtitle">{{'creation_date' | translate}}</p>
+      <fl-search-date-interval formGroupName="createdAt">
+      </fl-search-date-interval>
+    </div>
+
+    <!-------------------------------  Last modification date  ---------------------------->
+    <div class="g-no-hint g-full g-compact-form">
+      <p class="g-text-small subtitle">{{'last_modified_date' | translate}}</p>
+      <fl-search-date-interval formGroupName="lastModifiedAt">
+      </fl-search-date-interval>
+    </div>
+
+
+    <mat-checkbox formControlName="isArchived"
+                  class="checkbox g-mat-checkbox-wrap-text">{{'resource_include_archived' | translate }}</mat-checkbox>
+
+    <mat-checkbox formControlName="isValidated"
+                  class="checkbox g-mat-checkbox-wrap-text">{{'biox.experiment_include_validated' | translate }}</mat-checkbox>
+  </div>
+</div>
+
+

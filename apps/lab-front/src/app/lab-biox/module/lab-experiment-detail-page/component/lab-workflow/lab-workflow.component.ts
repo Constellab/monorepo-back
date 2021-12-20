@@ -1,0 +1,60 @@
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
+import {LabFlow} from '../../../../../lab-core/model/global/lab-connection.class';
+import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
+import {LabProtocol} from '../../../../../lab-core/model/entities/process/lab-protocol.entity';
+import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
+
+
+@Component({
+  selector: 'lab-workflow',
+  templateUrl: './lab-workflow.component.html',
+  styleUrls: ['./lab-workflow.component.scss']
+})
+export class LabWorkflowComponent implements OnInit, OnDestroy {
+
+  @ViewChild('workflow', {static: false}) container: ElementRef<HTMLElement>;
+
+  flowIsLoading: boolean = false;
+  error: boolean = false;
+
+  constructor(private workflowManagerState: LabWorkflowManagerState,
+              private actionState: LabWorkflowActionState,
+              private experimentState: LabExperimentDetailPageState) {
+  }
+
+  ngOnInit(): void {
+    this.loadExperimentFlow();
+  }
+
+
+  private loadExperimentFlow(): void {
+    this.flowIsLoading = true;
+    this.experimentState.getFlow$().subscribe(
+      flow => this.loadExperimentFlowSuccess(flow),
+      () => this.onError()
+    );
+  }
+
+  private loadExperimentFlowSuccess(flow: LabFlow<LabProtocol>): void {
+    this.workflowManagerState.init(this.container.nativeElement, flow, this.experimentState.currentExperiment);
+    this.actionState.listenToConnectionSelected();
+    this.flowIsLoading = false;
+  }
+
+
+  get experimentIsUpdatable(): boolean {
+    return this.experimentState.currentExperiment.isEditable();
+  }
+
+
+  private onError(): void {
+    this.flowIsLoading = false;
+    this.error = true;
+  }
+
+  ngOnDestroy(): void {
+    this.workflowManagerState.clear();
+  }
+
+}

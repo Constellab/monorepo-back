@@ -1,0 +1,25 @@
+<ng-container *ngIf="selectedResource$ | async as selectedResource">
+  <div *ngIf="selectedResource.status === 'success'">
+
+
+    <!-- A resource is selected -->
+    <lab-resource-card *ngIf="selectedResource.object; else noSelectedResource"
+                            [resource]="$any(selectedResource.object)"></lab-resource-card>
+    <!-- no selected resource -->
+    <ng-template #noSelectedResource>
+      <fl-error-text [errorMessage]="'no_selected_resource' | translate"></fl-error-text>
+    </ng-template>
+
+  </div>
+
+  <fl-error-text *ngIf="selectedResource.status === 'error'"
+                 [errorMessage]="'loaded_resource_error' | translate"></fl-error-text>
+</ng-container>
+
+<div class="select-button">
+  <button mat-stroked-button type="button"
+          (click)="openResourceSelection()" class="g-centered-forced">
+    {{'select_resource' | translate }}
+  </button>
+</div>
+

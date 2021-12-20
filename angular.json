@@ -207,7 +207,7 @@
       "projectType": "application",
       "root": "apps/lab-front",
       "sourceRoot": "apps/lab-front/src",
-      "prefix": "gen",
+      "prefix": "lab",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -239,12 +239,12 @@
             "styles": [
               "apps/lab-front/src/styles.scss",
               {
-                "input": "apps/lab-front/src/theme/light-theme.scss",
+                "input": "apps/lab-front/src/theme/lab-light-theme.scss",
                 "bundleName": "light-theme",
                 "inject": false
               },
               {
-                "input": "apps/lab-front/src/theme/dark-theme.scss",
+                "input": "apps/lab-front/src/theme/lab-dark-theme.scss",
                 "bundleName": "dark-theme",
                 "inject": false
               }
@@ -279,8 +279,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "apps/lab-front/src/environments/environment.ts",
-                  "with": "apps/lab-front/src/environments/environment.prod.ts"
+                  "replace": "apps/lab-front/src/environments/lab-environment.ts",
+                  "with": "apps/lab-front/src/environments/lab-environment.prod.ts"
                 }
               ],
               "optimization": true,

@@ -1,0 +1,23 @@
+<mat-drawer-container class="g-page page" [hasBackdrop]="false">
+
+  <!-- content of the page -->
+  <mat-drawer-content fxFlex="auto">
+    <fl-async-section [object]="experiment$" fxFlex="auto" class="section">
+
+      <ng-container *flSectionBody="let experiment">
+        <div fxLayout="column" class="g-full-height">
+          <lab-experiment-detail-card></lab-experiment-detail-card>
+
+          <!--    Workflow of experiment      -->
+          <lab-workflow fxFlex="auto"></lab-workflow>
+        </div>
+      </ng-container>
+
+    </fl-async-section>
+  </mat-drawer-content>
+
+  <mat-drawer mode="over" position="end" class="drawer">
+    <lab-workflow-drawer-action></lab-workflow-drawer-action>
+  </mat-drawer>
+
+</mat-drawer-container>

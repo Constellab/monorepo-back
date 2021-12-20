@@ -1,0 +1,52 @@
+<div fxLayout="column" class="form" [formGroup]="formGp">
+
+  <div fxLayout="row wrap" fxLayoutGap="1em 0 grid" fxLayoutAlign="space-between center"
+       class="g-full">
+
+    <!--  Resource Type  -->
+    <mat-form-field class="min-section-width">
+      <mat-label>{{'resource_type' | translate }}</mat-label>
+      <mat-select formControlName="resourceTypingName" multiple [placeholder]="'resource_type' | translate">
+        <lab-resource-type-select-options></lab-resource-type-select-options>
+      </mat-select>
+    </mat-form-field>
+
+
+    <!--  Origin  -->
+    <mat-form-field class="min-section-width">
+      <mat-label>{{'resource_origin' | translate }}</mat-label>
+      <mat-select formControlName="origin" [placeholder]="'resource_origin' | translate">
+        <lab-resource-origin-options></lab-resource-origin-options>
+      </mat-select>
+    </mat-form-field>
+
+    <!--  Name  -->
+    <mat-form-field class="g-full">
+      <mat-label>{{'name' | translate }}</mat-label>
+      <input matInput formControlName="name" [placeholder]="'name' | translate" autocomplete="off">
+    </mat-form-field>
+
+    <!--  Tags  -->
+    <fl-form-field class="g-full">
+      <fl-tag-input formControlName="tags"></fl-tag-input>
+    </fl-form-field>
+
+    <!--  Data  -->
+    <mat-form-field class="g-full">
+      <mat-label>{{'resource_data' | translate }}</mat-label>
+      <input matInput formControlName="data" [placeholder]="'resource_data' | translate" autocomplete="off">
+    </mat-form-field>
+
+    <!-------------------------------  Creation date  ---------------------------->
+    <div class="g-no-hint g-full g-compact-form">
+      <p class="g-text-small subtitle">{{'creation_date' | translate}}</p>
+      <fl-search-date-interval formGroupName="createdAt">
+      </fl-search-date-interval>
+    </div>
+
+    <mat-checkbox formControlName="isArchived"
+                  class="archived g-mat-checkbox-wrap-text">{{'resource_include_archived' | translate }}</mat-checkbox>
+  </div>
+</div>
+
+

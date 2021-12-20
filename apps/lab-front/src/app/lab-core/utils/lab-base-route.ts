@@ -1,0 +1,16 @@
+/**
+ * File that group all the base routes for the modules
+ */
+export const labConstBaseRoute = 'app';
+
+export const labConstBioxRoute = 'biox';
+export const labConstBiotaRoute = 'biota';
+export const labConstDataboxRoute = 'databox';
+export const labConstMonitoringRoute = 'monitoring';
+export const labConstLoginRoute = '/login';
+
+export const labConstBioxFullRoute = `/${labConstBaseRoute}/${labConstBioxRoute}`;
+export const labConstBiotaFullRoute = `/${labConstBaseRoute}/${labConstBiotaRoute}`;
+export const labConstDataboxFullRoute = `/${labConstBaseRoute}/${labConstDataboxRoute}`;
+export const labConstMonitoringFullRoute = `/${labConstBaseRoute}/${labConstMonitoringRoute}`;
+

@@ -11,7 +11,7 @@ import {FlBioNetworkState} from './fl-bio-network.state';
 import {FlBioNetworkSelectionState} from './fl-bio-network-selection.state';
 import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
 import {FlBioNetworkGridState} from './fl-bio-network-grid.state';
-import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Link, FlBioNetworkD3LinkPoint} from '../model/fl-bio-network-d3-link.class';
 import {flBioNetworkReactionMaxValue} from '../model/fl-bio-network-d3-reaction.class';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
@@ -38,7 +38,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
   private chartHeight: number;
   private chartWidth: number;
 
-  private data: FlBioxNetworkD3;
+  private data: FlBioNetworkD3;
 
   private svg: FlD3SelectionSimple;
 
@@ -86,7 +86,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
     ));
   }
 
-  private drawNetwork(chartData: FlBioxNetworkD3): void {
+  private drawNetwork(chartData: FlBioNetworkD3): void {
     // run the d3 rendering outside ng zone to avoir ng check
     this.ngZone.runOutsideAngular(() => {
 

@@ -7,7 +7,7 @@ import {flBioNetworkNodeTextClass} from '../model/fl-bio-network-d3-node.class';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 import {zoom, zoomIdentity} from 'd3';
-import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
 
 /**
  * Different threshold for D3 object levels
@@ -54,7 +54,7 @@ export class FlBioNetworkZoomState implements OnDestroy {
 
 
   public enableZoom(svg: FlD3SelectionSimple, zoomableElement: FlD3SelectionSimple,
-                    svgWidth: number, svgHeight: number, data: FlBioxNetworkD3): void {
+                    svgWidth: number, svgHeight: number, data: FlBioNetworkD3): void {
     this.zoomableElement = zoomableElement;
     this.svg = svg;
     this.svgWidth = svgWidth;

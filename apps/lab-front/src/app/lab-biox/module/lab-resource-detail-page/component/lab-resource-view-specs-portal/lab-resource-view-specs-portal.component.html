@@ -1,0 +1,11 @@
+<fl-portal class="portal">
+  <fl-portal-content>
+    <fl-async-section class="g-full content"
+                      [object]="views$" emptyText="biox.no_views_on_resource">
+
+      <ng-container *flSectionBody="let viewsByType">
+        <lab-resource-view-specs [viewsByType]="viewsByType"></lab-resource-view-specs>
+      </ng-container>
+    </fl-async-section>
+  </fl-portal-content>
+</fl-portal>

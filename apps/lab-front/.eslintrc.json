@@ -11,11 +11,11 @@
       "rules": {
         "@angular-eslint/directive-selector": [
           "error",
-          { "type": "attribute", "prefix": "gen", "style": "camelCase" }
+          { "type": "attribute", "prefix": "lab", "style": "camelCase" }
         ],
         "@angular-eslint/component-selector": [
           "error",
-          { "type": "element", "prefix": "gen", "style": "kebab-case" }
+          { "type": "element", "prefix": "lab", "style": "kebab-case" }
         ],
         "@angular-eslint/no-empty-lifecycle-method": "off",
         "@angular-eslint/no-input-rename": "off"

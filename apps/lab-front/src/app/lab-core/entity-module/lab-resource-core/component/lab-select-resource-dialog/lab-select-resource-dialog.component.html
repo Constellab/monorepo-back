@@ -1,0 +1,8 @@
+<fl-dialog-header>
+  {{'select_resource' | translate }}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <lab-resource-search [resourceSelectable]="true"
+                            (resourceSelected)="onResourceSelected($event)"></lab-resource-search>
+</mat-dialog-content>

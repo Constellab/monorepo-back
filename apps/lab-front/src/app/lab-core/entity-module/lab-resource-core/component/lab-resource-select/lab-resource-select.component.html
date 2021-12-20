@@ -1,0 +1,20 @@
+<div [formGroup]="formGp">
+
+  <mat-form-field class="g-full">
+    <mat-label>{{'biox.resource_type_select' | translate}}</mat-label>
+    <mat-select formControlName="resource_typing_name"
+                (selectionChange)="onResourceTypeChange()">
+      <lab-resource-type-select-options></lab-resource-type-select-options>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="g-full">
+    <mat-label>{{'biox.resource_select' | translate}}</mat-label>
+    <mat-select formControlName="resource_id"
+                (selectionChange)="onResourceChange()">
+      <lab-resource-select-options [ressourceType]="selectedType"
+                                        valueMode="id"></lab-resource-select-options>
+    </mat-select>
+  </mat-form-field>
+
+</div>

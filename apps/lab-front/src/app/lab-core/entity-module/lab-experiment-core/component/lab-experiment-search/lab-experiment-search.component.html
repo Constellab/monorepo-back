@@ -1,0 +1,29 @@
+<fl-search class="g-full-height">
+
+  <!-- Advanced section in the right in a drawer -->
+  <fl-search-advanced-form>
+    <lab-experiment-advanced-search-form></lab-experiment-advanced-search-form>
+  </fl-search-advanced-form>
+
+
+  <!--  Center header  -->
+  <fl-search-header fxLayout="row">
+
+    <div fxFlex="grow" class="saved-search-container">
+      <fl-search-saved-list></fl-search-saved-list>
+    </div>
+
+    <button mat-icon-button type="button" color="accent"
+            [matTooltip]="'biox.new_experiment' | translate" matTooltipPosition="before"
+            (click)="createExperiment()">
+      <mat-icon>add</mat-icon>
+    </button>
+  </fl-search-header>
+
+
+  <fl-search-result>
+    <lab-experiment-table [datasource]="datasource" [columns]="columns"></lab-experiment-table>
+  </fl-search-result>
+
+
+</fl-search>

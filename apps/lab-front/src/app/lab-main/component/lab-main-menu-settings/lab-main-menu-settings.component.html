@@ -1,0 +1,53 @@
+<!--  Settings button    -->
+<button mat-icon-button type="button" [matMenuTriggerFor]="menu">
+  <mat-icon>settings</mat-icon>
+</button>
+
+
+<!--   Menu for settings   -->
+<mat-menu #menu="matMenu">
+  <ng-template matMenuContent>
+    <a mat-menu-item [href]="codeServerUrl" target="_blank">
+      <mat-icon flIcon="code"></mat-icon>
+      <span>{{'vlab_link' | translate}}</span>
+    </a>
+
+    <lab-environment-toggle class="env-toggle"></lab-environment-toggle>
+
+    <ng-container *labEnvDev>
+      <button mat-menu-item (click)="resetDevEnvironment()">
+        <mat-icon>delete_forever</mat-icon>
+        <span>{{'reset_dev_env' | translate}}</span>
+      </button>
+
+      <button mat-menu-item (click)="stopDevServer()">
+        <mat-icon>stop</mat-icon>
+        <span>{{'stop_dev_api' | translate}}</span>
+      </button>
+    </ng-container>
+
+    <mat-divider></mat-divider>
+
+    <div class="documentation">{{'documentations_links' | translate}}</div>
+
+    <a mat-menu-item *ngFor="let documentation of documentationBricks"
+       target="_blank" [href]="documentation.url">
+      <mat-icon [flIcon]="documentation.icon"></mat-icon>
+      <span>{{documentation.label | translate}}</span>
+    </a>
+
+    <mat-divider></mat-divider>
+
+
+
+    <a mat-menu-item [routerLink]="monitoringRoute">
+      <mat-icon>monitor_heart</mat-icon>
+      <span>{{'monitoring.monitoring' | translate}}</span>
+    </a>
+
+    <button mat-menu-item type="button" (click)="logout()">
+      <mat-icon color="warn">logout</mat-icon>
+      <span class="g-warn-text">{{'flAuth.logout' | translate}}</span>
+    </button>
+  </ng-template>
+</mat-menu>

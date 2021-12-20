@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {LabSystemService} from '../../../../core/service/lab-system.service';
+import {LabSystemService} from '../../../../lab-core/service/lab-system.service';
 
 @Component({
-  selector: 'gen-lab-health-check',
+  selector: 'lab-health-check',
   templateUrl: './lab-health-check.component.html',
   styleUrls: ['./lab-health-check.component.scss']
 })

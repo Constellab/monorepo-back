@@ -4,7 +4,7 @@ import {FlBioNetworkRendererState} from '../../state/fl-bio-network-renderer.sta
 import {MatSliderChange} from '@angular/material/slider';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {filter} from 'rxjs/operators';
-import {FlBioxNetworkD3} from '../../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
 
 /**
  * Component inside the {@link FlBioNetworkComponent} to show the quick actions
@@ -46,7 +46,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
     );
   }
 
-  private onNewData(chartData: FlBioxNetworkD3): void {
+  private onNewData(chartData: FlBioNetworkD3): void {
     if (chartData) {
       this.linksMaxAbsValue = chartData.getLinksMaxAbsoluteValue();
       this.isReady = true;

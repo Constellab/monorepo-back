@@ -1,0 +1,29 @@
+import {LabWorkflowNode} from './lab-workflow-node.class';
+import {LabWorkflowPort} from './lab-workflow-port.class';
+import {LabInterfaceNode} from '../../../../lab-core/model/global/lab-connection.class';
+
+
+/**
+ * Node for the interfaces
+ */
+export class LabWorkflowNodeInterface extends LabWorkflowNode<LabInterfaceNode> {
+
+  constructor(interfaceNode: LabInterfaceNode, initialCoordX: number = 0, initialCoordY: number = 0) {
+    super(interfaceNode.name, interfaceNode.name, interfaceNode, initialCoordX, initialCoordY);
+  }
+
+  getClassName(): string {
+    return 'interface';
+  }
+
+  getHTML(): string {
+    return `<lab-workflow-node-interface name="${this.nodeName}"></lab-workflow-node-interface>`;
+  }
+
+  protected initPorts(): void {
+    // no input ports
+    this.inputPorts = [];
+    this.outputPorts = [new LabWorkflowPort(this.object.portName,
+      LabWorkflowPort.getOutputDrawflowName(1), this.object.portType)];
+  }
+}

@@ -10,7 +10,7 @@ import {FlBioNetworkD3Node, flBioNetworkGetCompartmentColor,} from '../model/fl-
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlBioNetworkHelper} from './fl-bio-network.helper';
 import {FlBioNetworkD3Metabolite} from '../model/fl-bio-network-d3-metabolite.class';
-import {FlBioxNetworkD3} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class';
 import {FlBioNetworkD3Cofactor} from '../model/fl-bio-network-d3-cofactor.class';
 import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
@@ -33,7 +33,7 @@ export class FlBioNetworkFactory {
 
 
   public convertPathwayToChartPathway(network: FlBioNetwork, selectedPathways: string[],
-                                      pathwayDatabase: FlPathwayDatabase): FlBioxNetworkD3 {
+                                      pathwayDatabase: FlPathwayDatabase): FlBioNetworkD3 {
 
     // set the reactions
     this.initReactionsNodes(network.reactions, selectedPathways, pathwayDatabase);
@@ -44,7 +44,7 @@ export class FlBioNetworkFactory {
     // create the links from the reactions
     this.initLinksAndCofactors(network.metabolites);
 
-    return new FlBioxNetworkD3(this.metabolites, this.reactions, this.cofactors, this.links);
+    return new FlBioNetworkD3(this.metabolites, this.reactions, this.cofactors, this.links);
   }
 
   /**

@@ -1,0 +1,73 @@
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {LabWorkflowNodeDetailState} from '../../state/lab-workflow-node-detail.state';
+import {Observable, Subscription} from 'rxjs';
+import {FlDialogService, FlStatusEvent} from '@monorepo/front-core-lib';
+import {LabResource} from '../../../../../lab-core/model/entities/resource/lab-resource.entity';
+import {
+  LabSelectResourceDialogComponent
+} from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
+import {LabWorkflowNodeSource} from '../../model/lab-workflow-node-source.class';
+import {LabRouterService} from '../../../../../lab-core/service/lab-router.service';
+
+/**
+ * Specific component to configure a task of type gws.plug.Source
+ *
+ * This allows the user to select a resource
+ */
+@Component({
+  selector: 'lab-task-source-config',
+  templateUrl: './lab-task-source-config.component.html',
+  styleUrls: ['./lab-task-source-config.component.scss']
+})
+export class LabTaskSourceConfigComponent implements OnInit, OnDestroy {
+
+  selectedResource$: Observable<FlStatusEvent<LabResource>>;
+
+  resourceRoute: string;
+
+  private node: LabWorkflowNodeSource;
+  private subscription: Subscription;
+
+
+  constructor(private nodeDetail: LabWorkflowNodeDetailState,
+              private dialogService: FlDialogService) {
+  }
+
+  ngOnInit(): void {
+    this.subscription = this.nodeDetail.getNode$().subscribe(
+      node => this.setNode(node as LabWorkflowNodeSource)
+    );
+  }
+
+  private setNode(node: LabWorkflowNodeSource): void {
+    // security to prevent not source node
+    // it can be called because the state change before the component is destroy
+    if (!(node instanceof LabWorkflowNodeSource)) return;
+    this.node = node;
+    this.selectedResource$ = node.getLoadedResource$();
+  }
+
+  getResourceRoute(resource: LabResource): string {
+    return LabRouterService.getResourceDetailRoute(resource.id);
+  }
+
+
+  openResourceSelection(): void {
+    this.dialogService.openBigDialog(LabSelectResourceDialogComponent).afterClosed().subscribe(
+      resource => this.onResourceSelectionClosed(resource)
+    );
+  }
+
+  private onResourceSelectionClosed(resource?: LabResource): void {
+    if (resource) {
+      this.nodeDetail.updateConfigValues({resource_id: resource.id});
+      this.node.setLoadedResource(resource);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
+
+
+}

@@ -36,7 +36,7 @@ export function initTranslateService(service: FlTranslateService): () => void {
 export class FlTranslateModule {
 
   /**
-   * Call this method only once on the AppModule
+   * Call this method only once on the LabAppModule
    *
    * Both forRoot method
    * For root method to export TranslateModule
@@ -59,7 +59,7 @@ export class FlTranslateModule {
   }
 
   /**
-   * Call this method only once on the AppModule
+   * Call this method only once on the LabAppModule
    *
    * Both forRoot method
    * For root method to export TranslateModule
