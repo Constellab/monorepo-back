@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DnCoreConfigService } from './dn-core-config.service';
+import {Test, TestingModule} from '@nestjs/testing';
+import {DnCoreConfigService} from './dn-core-config.service';
 
-describe('CoreConfigService', () => {
+describe('CnCoreConfigService', () => {
   let service: DnCoreConfigService;
 
   beforeEach(async () => {

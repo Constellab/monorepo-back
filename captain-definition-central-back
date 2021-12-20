@@ -1,4 +1,4 @@
  {
   "schemaVersion": 2,
-  "dockerfilePath": "./apps/central-back/Dockerfile"
+  "dockerfilePath": "./apps/cn-central-back/Dockerfile"
  }

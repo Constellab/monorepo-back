@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'central-back',
+  displayName: 'cn-central-back',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {

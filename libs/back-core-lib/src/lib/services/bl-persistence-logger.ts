@@ -1,7 +1,7 @@
 import {AdvancedConsoleLogger, QueryRunner} from 'typeorm';
 import {Logger} from '@nestjs/common';
 import {BlUser} from '../models/bl-user.class';
-import {CurrentUserHelper} from '../../../../../apps/central-back/src/app/core/utils/current-user.helper';
+import {BlCurrentUserHelper} from '../modules/bl-jwt/bl-current-user.helper';
 
 export type BlPersistenceAction = 'INSERT' | 'UPDATE' | 'DELETE';
 
@@ -67,7 +67,7 @@ export class BlPersistenceLogger extends AdvancedConsoleLogger {
 
 
   private getUserLog(): string {
-    const user: BlUser = CurrentUserHelper.getCurrentUser();
+    const user: BlUser = BlCurrentUserHelper.getCurrentUser();
     if (user != null) {
       return 'User : ' + user.email;
     } else {

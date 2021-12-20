@@ -40,7 +40,7 @@
     "front-core-lib": {
       "tags": ["front"]
     },
-    "central-back": {
+    "cn-central-back": {
       "tags": ["back"]
     },
     "core-lib": {

@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DnCoreConfigController } from './dn-core-config.controller';
+import {Test, TestingModule} from '@nestjs/testing';
+import {DnCoreConfigController} from './dn-core-config.controller';
 
-describe('CoreConfigController', () => {
+describe('CnCoreConfigController', () => {
   let controller: DnCoreConfigController;
 
   beforeEach(async () => {

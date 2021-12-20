@@ -398,11 +398,11 @@
         }
       }
     },
-    "central-back": {
-      "root": "apps/central-back",
-      "sourceRoot": "apps/central-back/src",
+    "cn-central-back": {
+      "root": "apps/cn-central-back",
+      "sourceRoot": "apps/cn-central-back/src",
       "projectType": "application",
-      "prefix": "central-back",
+      "prefix": "cn-central-back",
       "architect": {
         "build": {
           "builder": "@nrwl/node:build",
@@ -410,12 +410,12 @@
             "{options.outputPath}"
           ],
           "options": {
-            "outputPath": "dist/apps/central-back",
-            "main": "apps/central-back/src/main.ts",
-            "tsConfig": "apps/central-back/tsconfig.app.json",
+            "outputPath": "dist/apps/cn-central-back",
+            "main": "apps/cn-central-back/src/main.ts",
+            "tsConfig": "apps/cn-central-back/tsconfig.app.json",
             "assets": [
-              "apps/central-back/src/assets",
-              "apps/central-back/src/environments"
+              "apps/cn-central-back/src/assets",
+              "apps/cn-central-back/src/environments"
             ]
           },
           "configurations": {
@@ -425,8 +425,8 @@
               "inspect": false,
               "fileReplacements": [
                 {
-                  "replace": "apps/central-back/src/environments/environment.ts",
-                  "with": "apps/central-back/src/environments/environment.prod.ts"
+                  "replace": "apps/cn-central-back/src/environments/environment.ts",
+                  "with": "apps/cn-central-back/src/environments/environment.prod.ts"
                 }
               ]
             }
@@ -435,24 +435,24 @@
         "serve": {
           "builder": "@nrwl/node:execute",
           "options": {
-            "buildTarget": "central-back:build"
+            "buildTarget": "cn-central-back:build"
           }
         },
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
-              "apps/central-back/**/*.ts"
+              "apps/cn-central-back/**/*.ts"
             ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "outputs": [
-            "coverage/apps/central-back"
+            "coverage/apps/cn-central-back"
           ],
           "options": {
-            "jestConfig": "apps/central-back/jest.config.js",
+            "jestConfig": "apps/cn-central-back/jest.config.js",
             "passWithNoTests": true
           }
         }
