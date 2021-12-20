@@ -1,0 +1,21 @@
+<fl-async-section [object]="experiments$" emptyText="no_experiment">
+
+  <fl-section-header>
+    <fl-text-icon>
+      <mat-icon svgIcon="experiment"></mat-icon>
+      <h2>{{'experiments' | translate}}</h2>
+    </fl-text-icon>
+  </fl-section-header>
+
+
+  <ng-container *flSectionBody="let experiments">
+    <div fxLayout="row wrap" fxLayoutGap="1%" fxLayoutGap.lt-md="0">
+      <a class="experiment" *ngFor="let experiment of experiments; let i= index"
+         [routerLink]="'experiment/' + experiment.id"
+         fxFlex="24%" fxFlex.md="49%" fxFlex.lt-md="100%">
+        <ca-experiment-card [experiment]="experiment" fxFill></ca-experiment-card>
+      </a>
+    </div>
+  </ng-container>
+
+</fl-async-section>

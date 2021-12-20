@@ -1,0 +1,37 @@
+<a [routerLink]="labInstanceRoute">
+  <fl-card class="card">
+
+    <fl-card-header>
+      <!--  Title and logo    -->
+      <div fxLayout="row wrap" fxLayoutAlign="start center">
+        <mat-icon class="icon g-icon-big" *ngIf="mode === 'big'" svgIcon="lab"></mat-icon>
+        <p>{{labInstance.name}}</p>
+      </div>
+
+      <fl-card-actions>
+        <fl-status-chip class="status" [status]="labInstance.currentStatus.status"
+                         [mode]="statusChipMode"></fl-status-chip>
+      </fl-card-actions>
+    </fl-card-header>
+
+
+    <fl-card-body class="body">
+      <div class="g-text-light g-text-small">
+        {{labInstance.currentStatus.status.name | translate}} {{'since_the' | translate}}
+        {{labInstance.currentStatus.createdAt | flDate}}
+      </div>
+
+
+    </fl-card-body>
+
+    <fl-card-footer layoutGap="0.5em">
+      <a *ngIf="labInstance.isRunning()" [routerLink]="labIframeRoute" mat-button class="g-button-small">
+        <span>{{'go_to_lab' | translate}}</span>
+        <mat-icon>arrow_forward_ios</mat-icon>
+      </a>
+      <ca-lab-instance-start-stop [labInstance]="labInstance" (update)="onLabUpdate($event)">
+      </ca-lab-instance-start-stop>
+    </fl-card-footer>
+
+  </fl-card>
+</a>

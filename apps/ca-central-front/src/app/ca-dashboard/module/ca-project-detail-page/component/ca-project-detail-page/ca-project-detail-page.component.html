@@ -1,0 +1,14 @@
+<div>
+
+  <fl-section [isLoading]="isLoading" [object]="project">
+
+    <ng-template flSectionBody>
+      <ca-project-detail [project]="project"
+                          (projectUpdated)="onProjectUpdate($event)">
+      </ca-project-detail>
+
+
+      <ca-experiments-list class="experiments" [projectId]="project.id"></ca-experiments-list>
+    </ng-template>
+  </fl-section>
+</div>

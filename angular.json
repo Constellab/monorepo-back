@@ -1,24 +1,24 @@
 {
   "version": 1,
   "projects": {
-    "central-front": {
+    "ca-central-front": {
       "projectType": "application",
-      "root": "apps/central-front",
-      "sourceRoot": "apps/central-front/src",
-      "prefix": "gen",
+      "root": "apps/ca-central-front",
+      "sourceRoot": "apps/ca-central-front/src",
+      "prefix": "ca",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/central-front",
-            "index": "apps/central-front/src/index.html",
-            "main": "apps/central-front/src/main.ts",
-            "polyfills": "apps/central-front/src/polyfills.ts",
-            "tsConfig": "apps/central-front/tsconfig.app.json",
+            "outputPath": "dist/apps/ca-central-front",
+            "index": "apps/ca-central-front/src/index.html",
+            "main": "apps/ca-central-front/src/main.ts",
+            "polyfills": "apps/ca-central-front/src/polyfills.ts",
+            "tsConfig": "apps/ca-central-front/tsconfig.app.json",
             "aot": true,
             "assets": [
-              "apps/central-front/src/assets",
-              "apps/central-front/src/manifest.webmanifest",
+              "apps/ca-central-front/src/assets",
+              "apps/ca-central-front/src/manifest.webmanifest",
               {
                 "glob": "**/*",
                 "input": "libs/front-core-lib/src/assets/mat-icons",
@@ -36,14 +36,14 @@
               }
             ],
             "styles": [
-              "apps/central-front/src/styles.scss",
+              "apps/ca-central-front/src/styles.scss",
               {
-                "input": "apps/central-front/src/theme/light-theme.scss",
+                "input": "apps/ca-central-front/src/theme/ca-light-theme.scss",
                 "bundleName": "light-theme",
                 "inject": false
               },
               {
-                "input": "apps/central-front/src/theme/dark-theme.scss",
+                "input": "apps/ca-central-front/src/theme/ca-dark-theme.scss",
                 "bundleName": "dark-theme",
                 "inject": false
               }
@@ -63,7 +63,7 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "serviceWorker": true,
-              "ngswConfigPath": "apps/central-front/ngsw-config.json",
+              "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -80,8 +80,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "apps/central-front/src/environments/environment.ts",
-                  "with": "apps/central-front/src/environments/environment.prod.ts"
+                  "replace": "apps/ca-central-front/src/environments/ca-environment.ts",
+                  "with": "apps/ca-central-front/src/environments/ca-environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -92,7 +92,7 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "serviceWorker": true,
-              "ngswConfigPath": "apps/central-front/ngsw-config.json",
+              "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -109,8 +109,8 @@
             "preprod": {
               "fileReplacements": [
                 {
-                  "replace": "apps/central-front/src/environments/environment.ts",
-                  "with": "apps/central-front/src/environments/environment.preprod.ts"
+                  "replace": "apps/ca-central-front/src/environments/ca-environment.ts",
+                  "with": "apps/ca-central-front/src/environments/ca-environment.preprod.ts"
                 }
               ],
               "optimization": true,
@@ -121,7 +121,7 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "serviceWorker": true,
-              "ngswConfigPath": "apps/central-front/ngsw-config.json",
+              "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -140,56 +140,56 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "central-front:build"
+            "browserTarget": "ca-central-front:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "central-front:build:production"
+              "browserTarget": "ca-central-front:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "central-front:build"
+            "browserTarget": "ca-central-front:build"
           }
         },
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
-              "apps/central-front/src/**/*.ts",
-              "apps/central-front/src/**/*.html"
+              "apps/ca-central-front/src/**/*.ts",
+              "apps/ca-central-front/src/**/*.html"
             ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "outputs": [
-            "coverage/apps/central-front"
+            "coverage/apps/ca-central-front"
           ],
           "options": {
-            "jestConfig": "apps/central-front/jest.config.js",
+            "jestConfig": "apps/ca-central-front/jest.config.js",
             "passWithNoTests": true
           }
         }
       }
     },
-    "central-front-e2e": {
-      "root": "apps/central-front-e2e",
-      "sourceRoot": "apps/central-front-e2e/src",
+    "ca-central-front-e2e": {
+      "root": "apps/ca-central-front-e2e",
+      "sourceRoot": "apps/ca-central-front-e2e/src",
       "projectType": "application",
       "architect": {
         "e2e": {
           "builder": "@nrwl/cypress:cypress",
           "options": {
-            "cypressConfig": "apps/central-front-e2e/cypress.json",
-            "tsConfig": "apps/central-front-e2e/tsconfig.e2e.json",
-            "devServerTarget": "central-front:serve"
+            "cypressConfig": "apps/ca-central-front-e2e/cypress.json",
+            "tsConfig": "apps/ca-central-front-e2e/tsconfig.e2e.json",
+            "devServerTarget": "ca-central-front:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "central-front:serve:production"
+              "devServerTarget": "ca-central-front:serve:production"
             }
           }
         },
@@ -197,7 +197,7 @@
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
-              "apps/central-front-e2e/**/*.{js,ts}"
+              "apps/ca-central-front-e2e/**/*.{js,ts}"
             ]
           }
         }
@@ -600,12 +600,12 @@
             "styles": [
               "apps/da-documentation/src/da-styles.scss",
               {
-                "input": "apps/central-front/src/theme/light-theme.scss",
+                "input": "apps/ca-central-front/src/theme/light-theme.scss",
                 "bundleName": "light-theme",
                 "inject": false
               },
               {
-                "input": "apps/central-front/src/theme/dark-theme.scss",
+                "input": "apps/ca-central-front/src/theme/dark-theme.scss",
                 "bundleName": "dark-theme",
                 "inject": false
               }
@@ -655,7 +655,7 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "serviceWorker": true,
-              "ngswConfigPath": "apps/central-front/ngsw-config.json",
+              "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
               "budgets": [
                 {
                   "type": "initial",
@@ -786,5 +786,5 @@
       "style": "scss"
     }
   },
-  "defaultProject": "central-front"
+  "defaultProject": "ca-central-front"
 }

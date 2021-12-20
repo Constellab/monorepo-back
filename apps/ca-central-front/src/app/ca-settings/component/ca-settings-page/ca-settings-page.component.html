@@ -1,0 +1,17 @@
+<div class="g-page">
+
+  <h1 class="g-page-title">{{'settings' | translate}}</h1>
+
+  <ca-theme-selection></ca-theme-selection>
+
+  <ca-language-selection class="g-section"></ca-language-selection>
+
+
+  <div class="g-section">
+    <button mat-raised-button type="button" color="warn" (click)="logout()">
+      {{'flAuth.logout' | translate}}
+      <fl-button-loader *ngIf="logoutIsLoading"></fl-button-loader>
+    </button>
+  </div>
+</div>
+

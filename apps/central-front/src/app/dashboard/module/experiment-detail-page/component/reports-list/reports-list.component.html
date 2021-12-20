@@ -1,8 +1,0 @@
-
-<fl-async-section [arrayObs]="reportsArray" emptyText="no_report">
-  <ng-container *flSectionBody="let reports">
-    <div>
-      <gen-report-card *ngFor="let report of reports" [report]="report"></gen-report-card>
-    </div>
-  </ng-container>
-</fl-async-section>

@@ -1,6 +1,6 @@
 module.exports = {
   projects: [
-    '<rootDir>/apps/central-front',
+    '<rootDir>/apps/ca-central-front',
     '<rootDir>/apps/lab-front',
     '<rootDir>/libs/front-core-lib',
     '<rootDir>/apps/cn-central-back',

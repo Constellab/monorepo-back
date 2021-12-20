@@ -1,7 +1,0 @@
-<div fxLayout="row wrap" fxLayoutGap="1%">
-  <a *ngFor="let project of projects" class="card"
-     fxFlex="15em" fxFlex.xs="49%" [routerLink]="getProjectRoute(project)">
-    <gen-project-card [project]="project"></gen-project-card>
-  </a>
-</div>
-

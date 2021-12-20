@@ -1,0 +1,14 @@
+<fl-card class="g-full">
+
+  <fl-card-body>
+    <ca-experiment-info [experiment]="experiment"></ca-experiment-info>
+  </fl-card-body>
+
+  <fl-card-footer layoutGap="1em">
+    <a *ngIf="openInLabLink" [routerLink]="openInLabLink" [queryParams]="linkQueryParams"
+       mat-button>
+      {{'open_experiment_in_lab' | translate}}
+      <mat-icon>arrow_forward_ios</mat-icon>
+    </a>
+  </fl-card-footer>
+</fl-card>

@@ -1,0 +1,28 @@
+<div class="g-page">
+
+  <fl-async-section [arrayObs]="labInstancesDatasource" emptyText="no_lab_instance">
+
+    <fl-section-header class="g-page-title">
+      <fl-text-icon iconPosition="start">
+        <mat-icon class="g-icon-big" svgIcon="lab"></mat-icon>
+        <h1>{{'my_labs' | translate}}</h1>
+      </fl-text-icon>
+
+      <fl-section-actions>
+        <button mat-raised-button type="button" color="accent"
+                disabled class="g-button-small">
+          <mat-icon>add</mat-icon>
+        </button>
+
+      </fl-section-actions>
+    </fl-section-header>
+
+    <ng-container *flSectionBody="let labInstances">
+      <ca-lab-instances-list [labInstances]="labInstances"></ca-lab-instances-list>
+
+      <fl-infinite-load-more-result [datasource]="labInstancesDatasource"></fl-infinite-load-more-result>
+    </ng-container>
+
+  </fl-async-section>
+
+</div>

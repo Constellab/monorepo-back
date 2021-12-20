@@ -1,0 +1,89 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+  <!-- Name -->
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'name' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labInstance">
+      <a [routerLink]="getLabRoute(labInstance)" class="g-text-link">
+        <span>{{labInstance.name}}</span>
+      </a>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Owner -->
+  <ng-container matColumnDef="owner">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'owner' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labInstance">
+      <ca-user-inline [user]="labInstance.owner"></ca-user-inline>
+    </mat-cell>
+  </ng-container>
+
+
+  <!--  Todo voir si peut être géré en dynamic  -->
+  <!-- Current status -->
+  <ng-container matColumnDef="currentStatus">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'status' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labInstance">
+      <fl-status-chip [status]="labInstance.currentStatus.status"></fl-status-chip>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Created By -->
+  <ng-container matColumnDef="createdBy">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'created_by' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labInstance">
+      <ca-user-inline [user]="labInstance.createdBy"></ca-user-inline>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Server info -->
+  <ng-container matColumnDef="serverInfo">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'server_info' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labInstance">
+      <span>{{labInstance.serverInfo.host}} - {{labInstance.serverInfo.name}}</span>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Action -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labInstance">
+      <button mat-icon-button type="button" (click)="openUpdateDialog(labInstance)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button type="button" (click)="openStatusDialog(labInstance)"
+              [matTooltip]="'lab_check_status' | translate">
+        <mat-icon>info</mat-icon>
+      </button>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      <p class="g-table-cell">{{column.columnName | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labInstance">
+      <div class="g-table-cell">
+        <span>{{labInstance[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>
+

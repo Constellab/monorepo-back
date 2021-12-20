@@ -1,0 +1,44 @@
+import {Component, OnInit} from '@angular/core';
+import {CaProjectService} from '../../../ca-core/service-api/ca-project.service';
+import {CaProject, CaProjectDatasource} from '../../../ca-core/model/entities/ca-project.class';
+import {
+  DaProjectFormDialogComponent
+} from '../../../ca-core/entity-module/ca-project-core/component/ca-project-form-dialog/da-project-form-dialog.component';
+import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
+
+@Component({
+  selector: 'ca-my-projects-page',
+  templateUrl: './ca-my-projects-page.component.html',
+  styleUrls: ['./ca-my-projects-page.component.scss']
+})
+export class CaMyProjectsPageComponent implements OnInit {
+
+  projectsDatasource: CaProjectDatasource;
+
+  constructor(private projectService: CaProjectService,
+              private dialogService: FlDialogService) {
+  }
+
+  ngOnInit(): void {
+    this.projectsDatasource = this.projectService.getMyProjectsDatasource();
+  }
+
+  openCreateProjectDialog(): void {
+    const dialogInput: FlFormDialogInput = {
+      mode: 'create'
+    };
+    this.dialogService.openSmallDialog(DaProjectFormDialogComponent, {data: dialogInput})
+      .afterClosed().subscribe(
+      projects => this.onCreateProjectClosed(projects)
+    );
+  }
+
+  private onCreateProjectClosed(project?: CaProject): void {
+    if (project) {
+      // add the project at the beginning of the array
+      // and refresh the array
+      this.projectsDatasource.addItem(project, () => true);
+    }
+  }
+
+}

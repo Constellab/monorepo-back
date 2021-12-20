@@ -1,0 +1,19 @@
+<div class="g-page" fxLayout="column">
+
+  <fl-section [isLoading]="isLoading" [object]="labInstance" fxFlex="grow">
+    <ng-template flSectionBody>
+      <div fxLayout="column" fxFlex="grow">
+        <ca-lab-instance-detail [labInstance]="labInstance"
+                                 (update)="onLabUpdate($event)"></ca-lab-instance-detail>
+
+        <ca-server-info-card [serverInfo]="labInstance.serverInfo"
+                              class="section"></ca-server-info-card>
+
+        <ca-lab-instance-users-list class="g-section" [labInstanceId]="labInstance.id"></ca-lab-instance-users-list>
+
+<!--        <ca-lab-instance-iframe [labUrl]="labInstance.url" fxFlex="grow"-->
+<!--                                 class="section"></ca-lab-instance-iframe>-->
+      </div>
+    </ng-template>
+  </fl-section>
+</div>

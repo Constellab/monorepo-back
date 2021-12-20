@@ -1,0 +1,45 @@
+<mat-sidenav-container class="container" [ngClass]="{'container-mobile': sidenavMode === 'over'}">
+
+  <mat-sidenav [fixedInViewport]="true"
+               [mode]="sidenavMode"
+               [(opened)]="isOpen"
+               position="start"
+               class="sidenav g-primary-background">
+
+    <div fxLayout="column" class="column-container">
+
+      <!--      <div class="title g-warn-border-contrast g-text-big">-->
+      <!--        G-->
+      <!--      </div>-->
+      <!--      <img src="assets/images/logo.png"/>-->
+      <img src="assets/logo/logo_black.png" alt="Gencovery logo"
+           class="logo"/>
+      <!-- List of main menu links   -->
+      <div fxFlex="auto" class="menu" fxLayout="column">
+        <div class="buttons">
+          <div *ngFor="let link of accessibleLinks">
+            <a mat-icon-button [routerLink]="link.route"
+               class="nav-button" routerLinkActive="selected-menu"
+               [matTooltip]="link.label | translate" matTooltipPosition="after">
+              <mat-icon [flIcon]="link.icon"></mat-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!--  Authenticated user info  -->
+      <div class="user-container g-primary-boarder-contrast"
+           fxLayout="row" fxLayoutAlign="center">
+        <ca-authenticated-user-inline [showName]="false"></ca-authenticated-user-inline>
+      </div>
+    </div>
+
+  </mat-sidenav>
+
+  <mat-sidenav-content [ngClass]="{'no-margin' : sidenavMode == 'over'}"
+                       class="content">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>
+

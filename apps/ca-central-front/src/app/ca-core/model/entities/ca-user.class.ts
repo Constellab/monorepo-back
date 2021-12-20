@@ -1,0 +1,63 @@
+import {DateTime} from 'luxon';
+import {ClLuxonTransform, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {CaEntity} from './ca-entity.entity';
+import {CmUserCategory} from '@monorepo/common-model';
+
+export interface CaNewUser {
+  firstname: string;
+  lastname: string;
+  email: string;
+  category: CmUserCategory;
+  password: string;
+  repeatPassword: string;
+}
+
+export class CaUser extends CaEntity {
+  firstname: string;
+
+  lastname: string;
+
+  email: string;
+
+  category: CmUserCategory;
+
+  phone: string;
+
+  job: string;
+
+  lang: ClSupportedLanguage;
+
+  theme: ClTheme;
+
+  photo: string;
+
+  @ClLuxonTransform()
+  createdAt: DateTime;
+
+  get fullname(): string {
+    return (this.firstname || '') + ' ' + (this.lastname || '');
+  }
+
+  public toString(): string {
+    return this.fullname;
+  }
+
+  /**
+   * return the user profile picture if exist or a default image
+   */
+  public getPhotoWithDefault(): string {
+    return this.photo || 'assets/images/portrait.png';
+  }
+
+  public isAdmin(): boolean {
+    return this.category === CmUserCategory.ADMIN;
+  }
+
+  // return true if the user is one of the listed category
+  public isCategory(...categories: CmUserCategory[]): boolean {
+    if (categories == null || categories.length === 0) {
+      return true;
+    }
+    return categories.includes(this.category);
+  }
+}

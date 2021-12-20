@@ -23,12 +23,12 @@
     }
   },
   "projects": {
-    "central-front": {
+    "ca-central-front": {
       "tags": ["front"]
     },
-    "central-front-e2e": {
+    "ca-central-front-e2e": {
       "tags": ["test"],
-      "implicitDependencies": ["central-front"]
+      "implicitDependencies": ["ca-central-front"]
     },
     "lab-front": {
       "tags": ["front"]

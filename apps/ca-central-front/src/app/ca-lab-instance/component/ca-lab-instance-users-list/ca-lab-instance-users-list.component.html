@@ -1,0 +1,24 @@
+<fl-card>
+
+  <fl-card-header>
+    {{'lab_users' | translate}}
+
+    <fl-card-actions *caIsAdmin>
+      <button mat-icon-button type="button" (click)="openAddUserDialog()"
+              [matTooltip]="'lab_user_create' | translate">
+        <mat-icon>add</mat-icon>
+      </button>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+    <fl-async-section [arrayObs]="datasource">
+
+      <ng-container *flSectionBody>
+        <ca-lab-instance-users-table [datasource]="datasource" [columns]="column">
+        </ca-lab-instance-users-table>
+      </ng-container>
+
+    </fl-async-section>
+  </fl-card-body>
+</fl-card>
