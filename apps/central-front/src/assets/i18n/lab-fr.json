@@ -8,7 +8,6 @@
   "no_lab_instance": "Il n'y a pas de lab",
   "no_running_labs": "Il n'y a pas de lab allumé",
   "lab_not_running": "Le lab n'est pas allumé, il faut le démarrer",
-  "lab_must_run": "Le lab doit être allumé",
   "start_lab": "Démarrer",
   "stop_lab": "Arrêter",
   "lab_started": "Lab démarré",

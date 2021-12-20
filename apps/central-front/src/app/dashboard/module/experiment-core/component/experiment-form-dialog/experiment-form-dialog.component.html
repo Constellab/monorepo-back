@@ -15,18 +15,6 @@
           {{'label' | flErrorRequired}}
         </mat-error>
       </mat-form-field>
-
-      <!--  Lab Instance  -->
-      <mat-form-field fxFlex="49%" appearance="outline">
-        <mat-label>{{'lab_instance' | translate}}</mat-label>
-        <mat-select formControlName="labInstance" required
-                    placeholder="{{'lab_instance' | translate}}">
-          <gen-select-accessible-lab-instance-options></gen-select-accessible-lab-instance-options>
-        </mat-select>
-        <mat-error *ngIf="formGp.get('labInstance').hasError('required')">
-          {{'lab_instance' | flErrorRequired}}
-        </mat-error>
-      </mat-form-field>
     </div>
 
     <!--    Description      -->

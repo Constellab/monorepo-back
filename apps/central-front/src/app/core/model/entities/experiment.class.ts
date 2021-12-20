@@ -1,7 +1,6 @@
 import {BaseEntity} from './base-entity.class';
 import {LabInstance} from './lab-instance.class';
 import {StatusHistory} from './status-history.class';
-import {Protocol} from './protocol.entity';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
 
@@ -25,18 +24,11 @@ export class Experiment extends BaseEntity {
 
   description: string;
 
-  @Type(() => Protocol)
-  protocol: Protocol;
-
   @Type(() => LabInstance)
   labInstance: LabInstance;
 
   @Type(() => ExperimentStatusHistory)
   currentStatus: ExperimentStatusHistory;
-
-  hasProtocol(): boolean {
-    return this.protocol?.hasProtocol() ?? false;
-  }
 
   statusIsDraft(): boolean {
     return this.currentStatus.status.value === 'DRAFT';

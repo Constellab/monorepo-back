@@ -42,7 +42,7 @@ export class ExperimentsService extends AbstractWithStatusService<Experiment, Ex
     const newExperiment = new Experiment();
     newExperiment.id = labExperimentDto.id;
     newExperiment.project = project;
-    newExperiment.label = labExperimentDto.data.title;
+    newExperiment.title = labExperimentDto.data.title;
     newExperiment.description = labExperimentDto.data.description;
     newExperiment.createdAt = labExperimentDto.created_at;
     newExperiment.lastModifiedAt = labExperimentDto.last_modified_at;

@@ -15,7 +15,7 @@ import {Project} from '../projects/project.entity';
 export class Experiment extends EntityWithStatus<ExperimentStatusHistory> {
 
   @Column({nullable: false, length: 50})
-  label: string;
+  title: string;
 
   @Column({type: 'text', nullable: true})
   description: string;

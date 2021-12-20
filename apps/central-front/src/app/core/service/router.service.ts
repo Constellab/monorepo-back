@@ -3,8 +3,7 @@ import {
   constDashboardFullRoute,
   constLabInstancesFullRoute,
   constLabsConfigFullRoute,
-  constProjectsFullRoute,
-  constProtocolsFullRoute
+  constProjectsFullRoute
 } from '../utils/base-route';
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
@@ -55,11 +54,6 @@ export class RouterService {
   public static getMyLabsRoute(): string {
     return `${constLabsConfigFullRoute}`;
   }
-
-  public static getMyProtocolsRoute(): string {
-    return `${constProtocolsFullRoute}`;
-  }
-
 
   ////// Function to navigate to routes  //////
 

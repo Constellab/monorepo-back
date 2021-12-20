@@ -7,10 +7,6 @@ import {ExperimentService} from '../../../../service/experiment.service';
 import {Observable} from 'rxjs';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 
-export interface ExperimentFormDialogInput extends FlFormDialogInput<Experiment> {
-  projectId?: string;
-}
-
 /**
  * Dialog form to create or update an experiment
  */
@@ -22,7 +18,7 @@ export interface ExperimentFormDialogInput extends FlFormDialogInput<Experiment>
 export class ExperimentFormDialogComponent extends FlFormDialogAbstractDirective<Partial<Experiment>, Experiment>
   implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: ExperimentFormDialogInput,
+  constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: FlFormDialogInput<Experiment>,
               private experimentService: ExperimentService,
               snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<ExperimentFormDialogComponent>) {
@@ -38,12 +34,11 @@ export class ExperimentFormDialogComponent extends FlFormDialogAbstractDirective
       id: [null],
       label: [null, Validators.required],
       description: [null],
-      labInstance: [{value: null, disabled: this.isUpdateMode()}, Validators.required],
     });
   }
 
-  create(formValue: Partial<Experiment>): Observable<Experiment> {
-    return this.experimentService.create(formValue, this.dialogInput.projectId);
+  create(): Observable<Experiment> {
+    throw Error('Can\'t create an experiment');
   }
 
   update(formValue: Partial<Experiment>): Observable<Experiment> {

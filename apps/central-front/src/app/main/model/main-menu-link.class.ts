@@ -7,7 +7,6 @@ import {
   constLabInstancesFullRoute,
   constLabsConfig,
   constProjectsFullRoute,
-  constProtocolsRoute,
   constSettingsFullRoute
 } from '../../core/utils/base-route';
 import {CmUserCategory} from '@monorepo/common-model';
@@ -40,11 +39,6 @@ export const mainMenuLinks: MainMenuLink[] = [
     label: 'labs_catalog',
     icon: 'view_list',
     route: constLabsConfig
-  },
-  {
-    label: 'protocols',
-    icon: 'protocol',
-    route: constProtocolsRoute
   },
   {
     label: 'admin_dashboard',

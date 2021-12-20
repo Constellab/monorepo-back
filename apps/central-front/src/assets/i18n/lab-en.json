@@ -8,7 +8,6 @@
   "no_lab_instance": "There is no lab",
   "no_running_labs": "There is no running lab",
   "lab_not_running": "The lab is not running, please start it",
-  "lab_must_run": "The lab must be running",
   "start_lab": "Start",
   "stop_lab": "Stop",
   "lab_started": "Lab started",

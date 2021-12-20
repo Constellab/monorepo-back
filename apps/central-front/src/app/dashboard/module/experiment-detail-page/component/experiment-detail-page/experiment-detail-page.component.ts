@@ -18,8 +18,6 @@ export class ExperimentDetailPageComponent implements OnInit {
 
   experiment: Experiment;
 
-  showProtocolForm: boolean = false;
-
   isLoading: boolean = true;
 
   constructor(private route: ActivatedRoute,
@@ -48,7 +46,6 @@ export class ExperimentDetailPageComponent implements OnInit {
 
   onExperimentUpdate(experiment: Experiment): void {
     this.experiment = experiment;
-    this.showProtocolForm = experiment.statusIsDraft();
   }
 
   onLabInstanceUpdate(labInstance: LabInstance): void {

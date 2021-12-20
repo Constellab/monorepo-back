@@ -1,12 +1,10 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {AbstractSecurityLayer} from '../core/class/abstract-security.layer';
 import {Experiment} from './experiment.entity';
 import {AbstractCheckAuthorization} from '../core/security/abstract-check.authorization';
 import {ExperimentsService} from './experiments.service';
 import {RefuseAuthorization} from '../core/security/refuse.authorization';
 import {CreatedByAuthorization} from '../core/security/created-by.authorization';
-import {ExperimentStatus} from './experiment-status.enum';
-import {LabInstancesSecurityLayer} from '../lab-instances/lab-instances-security-layer.service';
 import {ExperimentStatusHistory} from './experiment-status-history.entity';
 import {LabExperimentDto} from './lab-experiment.dto';
 import {ProjectsSecurityLayer} from '../projects/projects-security.layer';
@@ -18,8 +16,7 @@ export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> 
   private createdByAuthorization: AbstractCheckAuthorization = new CreatedByAuthorization();
 
   constructor(private service: ExperimentsService,
-              private projectsSecurityLayer: ProjectsSecurityLayer,
-              private labInstanceSecurityLayer: LabInstancesSecurityLayer) {
+              private projectsSecurityLayer: ProjectsSecurityLayer) {
     super(service);
   }
 
@@ -37,26 +34,6 @@ export class ExperimentsSecurityLayer extends AbstractSecurityLayer<Experiment> 
 
   async isAuthorizedToUpdate(dbEntity: Experiment): Promise<boolean> {
     return this.createdByAuthorization.isAuthorized(dbEntity);
-  }
-
-
-  async createExperiment(experiment: Experiment, projectId: string): Promise<Experiment> {
-    // check that the user can update the project
-    experiment.project = await this.projectsSecurityLayer.getAndCheckAuthorizationToUpdateById(projectId);
-
-    // check that the user can update the lab instance
-    if (experiment.labInstance == null) {
-      throw new UnauthorizedException();
-    }
-    experiment.labInstance = await this.labInstanceSecurityLayer.getAndCheckAuthorizationToUpdateById(experiment.labInstance.id);
-
-    return this.service.create(experiment);
-  }
-
-  async updateCurrentStatus(status: ExperimentStatus, id: string): Promise<Experiment> {
-    const experiment: Experiment = await this.getAndCheckAuthorizationToUpdateById(id);
-
-    return this.service.updateCurrentStatusWithDbEntity(status, experiment);
   }
 
   async getExperimentsOfProject(projectId: string): Promise<Experiment[]> {
