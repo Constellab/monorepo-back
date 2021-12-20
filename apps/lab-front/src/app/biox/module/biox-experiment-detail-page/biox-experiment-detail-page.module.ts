@@ -47,7 +47,7 @@ import {
 import {
   BioxExperimentValidationDialogComponent
 } from './component/biox-experiment-validation-dialog/biox-experiment-validation-dialog.component';
-import {BioxStudyCoreModule} from '../../../core/entity-module/biox-study-core/biox-study-core.module';
+import {BioxProjectCoreModule} from '../../../core/entity-module/biox-project-core/biox-project-core.module';
 import {
   BioxWorkflowNodeSourceComponent
 } from './component/biox-workflow-node-source/biox-workflow-node-source.component';
@@ -83,7 +83,7 @@ import {
     BioxResourceCoreModule,
     BioxConfigCoreModule,
     BioxProcessCoreModule,
-    BioxStudyCoreModule,
+    BioxProjectCoreModule,
   ],
   providers: [
     // declare the state here otherwise the angular element can't access them

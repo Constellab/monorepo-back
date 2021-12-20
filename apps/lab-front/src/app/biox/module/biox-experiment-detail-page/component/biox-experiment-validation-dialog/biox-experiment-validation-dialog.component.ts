@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {BioxStudy} from '../../../../../core/model/entities/biox-study.class';
+import {BioxProject} from '../../../../../core/model/entities/biox-project.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormControl} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
@@ -9,11 +9,11 @@ import {BioxExperiment} from '../../../../../core/model/entities/biox-experiment
 
 export interface BioxExperimentValidationDialogInput {
   experimentId: string;
-  study?: BioxStudy;
+  project?: BioxProject;
 }
 
 /**
- * Small form dialog to validate an experiment, the user can select a study
+ * Small form dialog to validate an experiment, the user can select a project
  */
 @Component({
   selector: 'gen-biox-experiment-validation-dialog',
@@ -22,7 +22,7 @@ export interface BioxExperimentValidationDialogInput {
 })
 export class BioxExperimentValidationDialogComponent implements OnInit {
 
-  formControl: FormControl<BioxStudy>;
+  formControl: FormControl<BioxProject>;
 
   isLoading: boolean = false;
 
@@ -37,7 +37,7 @@ export class BioxExperimentValidationDialogComponent implements OnInit {
   }
 
   private initFormControl(): void {
-    this.formControl = new FormControl<BioxStudy>(this.dialogInput.study, Validators.required);
+    this.formControl = new FormControl<BioxProject>(this.dialogInput.project, Validators.required);
   }
 
   submit(): void {
@@ -47,8 +47,8 @@ export class BioxExperimentValidationDialogComponent implements OnInit {
     }
   }
 
-  private validateExperiment(study: BioxStudy): void {
-    this.experimentService.validateExperiment(this.dialogInput.experimentId, study).subscribe(
+  private validateExperiment(project: BioxProject): void {
+    this.experimentService.validateExperiment(this.dialogInput.experimentId, project).subscribe(
       experiment => this.validateSuccess(experiment),
       () => this.isLoading = false
     );

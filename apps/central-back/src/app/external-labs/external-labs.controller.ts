@@ -25,8 +25,8 @@ export class ExternalLabsController {
               private experimentSecurityLayer: ExperimentsSecurityLayer) {
   }
 
-  @Get('/user/:userId/studies')
-  getStudiesOfUser(
+  @Get('/user/:userId/projects')
+  getProjectsOfUser(
     @Param('userId', new ParseUUIDPipe()) userId: string): Promise<Project[]> {
     return this.projectSecurityLayer.getProjectsOfUser(userId);
   }

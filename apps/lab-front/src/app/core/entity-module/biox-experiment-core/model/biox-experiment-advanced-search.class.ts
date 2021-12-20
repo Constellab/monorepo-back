@@ -8,7 +8,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {BioxExperimentStatus, BioxExperimentType} from '../../../model/entities/biox-experiment.entity';
 import {Type} from 'class-transformer';
-import {BioxStudy} from '../../../model/entities/biox-study.class';
+import {BioxProject} from '../../../model/entities/biox-project.class';
 import {LabSearchConverter} from '../../../model/global/lab-search-converter.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 
@@ -19,7 +19,7 @@ export class BioxExperimentSearchFields {
   type: BioxExperimentType;
   status: BioxExperimentStatus;
   tags: FlTag[];
-  study: BioxStudy[];
+  project: BioxProject[];
 
   @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
@@ -39,7 +39,7 @@ export class BioxExperimentSearch {
     text: 'biox.experiment_text',
     type: 'biox.experiment_type',
     tags: 'flTag.tags',
-    study: 'biox.study',
+    project: 'biox.project',
     isArchived: 'is_archived',
     // group the creation date into one chip
     createdAt: 'creation_date',
@@ -56,7 +56,7 @@ export class BioxExperimentSearch {
     type: {key: 'type', operator: 'EQ'},
     status: {key: 'status', operator: 'IN'},
     tags: {key: 'tags', operator: 'EQ', convertValue: FlTagHelper.tagsToString},
-    study: {key: 'study', operator: 'IN', convertValue: FlSearchConverter.getEntitiesId},
+    project: {key: 'project', operator: 'IN', convertValue: FlSearchConverter.getEntitiesId},
     // Date
     createdAt: FlSearchConverter.dateInterval('created_at'),
     lastModifiedAt: FlSearchConverter.dateInterval('last_modified_at'),
@@ -85,7 +85,7 @@ export class BioxExperimentSearch {
         type: [null],
         status: [null],
         tags: [null],
-        study: [null],
+        project: [null],
         createdAt: new FormBuilder().group<FlSearchDateInterval>({
           from: [null],
           to: [null],

@@ -54,7 +54,7 @@ export class BioxExperimentDetailCardComponent implements OnInit {
     const experimentForm: ExperimentSimpleForm = {
       title: experiment.title,
       description: experiment.description,
-      study: experiment.study
+      project: experiment.project
     };
     const input: BioxExperimentFormDialogInput = {
       object: experimentForm,
@@ -72,7 +72,7 @@ export class BioxExperimentDetailCardComponent implements OnInit {
     const experiment: BioxExperiment = this.experimentState.currentExperiment;
 
     const input: BioxExperimentValidationDialogInput = {
-      experimentId: experiment.id, study: experiment.study
+      experimentId: experiment.id, project: experiment.project
     };
 
     this.dialogService.openSmallDialog(BioxExperimentValidationDialogComponent, {data: input}).afterClosed().subscribe(

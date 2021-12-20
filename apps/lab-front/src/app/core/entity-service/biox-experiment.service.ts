@@ -14,7 +14,7 @@ import {Workflow} from '../../biox/module/biox-experiment-detail-page/model/work
 import {BioxProtocolGraph} from '../model/entities/process/biox-protocol.entity';
 import {BioxExperimentFlowFactory} from '../utils/biox-experiment-flow.factory';
 import {mergeMap} from 'rxjs/operators';
-import {BioxStudy} from '../model/entities/biox-study.class';
+import {BioxProject} from '../model/entities/biox-project.class';
 import {BioxTag} from '../model/entities/biox-tag.entity';
 import {
   BioxExperimentSearch,
@@ -81,8 +81,8 @@ export class BioxExperimentService implements FlSearchService<BioxExperiment> {
     );
   }
 
-  public validateExperiment(experimentId: string, study: BioxStudy): Observable<BioxExperiment> {
-    return this.apiService.put(`${this.route}/${experimentId}/validate`, study, BioxExperiment);
+  public validateExperiment(experimentId: string, project: BioxProject): Observable<BioxExperiment> {
+    return this.apiService.put(`${this.route}/${experimentId}/validate`, project, BioxExperiment);
   }
 
   public saveTags(id: string, tags: FlTag[]): Observable<BioxTag[]> {

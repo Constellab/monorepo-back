@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {RouterService} from '../../../core/service/router.service';
 
 @Component({
   selector: 'gen-login-page',
@@ -6,6 +7,7 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./login-page.component.scss']
 })
 export class LoginPageComponent implements OnInit {
+  appRoute: string = RouterService.getAppRoute();
 
   constructor() {
   }

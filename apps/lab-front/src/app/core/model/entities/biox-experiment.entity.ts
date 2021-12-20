@@ -8,7 +8,7 @@ import {
   FlStatusTransform
 } from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
-import {BioxStudy} from './biox-study.class';
+import {BioxProject} from './biox-project.class';
 import {BioxTag} from './biox-tag.entity';
 import {LabBaseEntityWithUser} from './lab-user.entity';
 import {SecurityContext} from '@angular/core';
@@ -62,8 +62,8 @@ export class BioxExperiment extends LabBaseEntityWithUser {
   @Expose({name: 'is_validated'})
   isValidated: boolean;
 
-  @Type(() => BioxStudy)
-  study: BioxStudy;
+  @Type(() => BioxProject)
+  project: BioxProject;
 
   @Type(() => BioxTag)
   tags: BioxTag[];
@@ -84,5 +84,5 @@ export type BioxExperimentDatasource = FlEntityPaginatedDatasource<BioxExperimen
 export interface ExperimentSimpleForm {
   title: string;
   description: string;
-  study: BioxStudy;
+  project: BioxProject;
 }

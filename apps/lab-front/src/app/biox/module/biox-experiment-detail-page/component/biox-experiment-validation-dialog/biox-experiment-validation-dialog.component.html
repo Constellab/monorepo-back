@@ -5,11 +5,11 @@
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="validation-form">
 
-    <!--    Study      -->
+    <!--    Project      -->
     <mat-form-field class="g-form-input">
-      <mat-label>{{'biox.study' | translate}}</mat-label>
+      <mat-label>{{'biox.project' | translate}}</mat-label>
       <mat-select [formControl]="formControl">
-        <gen-biox-study-select-options></gen-biox-study-select-options>
+        <gen-biox-project-select-options></gen-biox-project-select-options>
       </mat-select>
       <mat-error *ngIf="formControl.hasError('required')">
         {{'required' | flErrorRequired}}

@@ -8,7 +8,7 @@ import {
   BioxExperimentFormDialogComponent
 } from './component/biox-experiment-form-dialog/biox-experiment-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {BioxStudyCoreModule} from '../biox-study-core/biox-study-core.module';
+import {BioxProjectCoreModule} from '../biox-project-core/biox-project-core.module';
 import {BioxExperimentSearchComponent} from './component/biox-experiment-search/biox-experiment-search.component';
 import {
   BioxExperimentAdvancedSearchFormComponent
@@ -47,7 +47,7 @@ import {
     ReactiveFormsModule,
 
     CoreModule,
-    BioxStudyCoreModule,
+    BioxProjectCoreModule,
   ]
 })
 export class BioxExperimentCoreModule {
