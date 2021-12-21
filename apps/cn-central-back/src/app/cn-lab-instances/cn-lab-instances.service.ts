@@ -151,7 +151,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     try {
       return await this.externalLabApiService.getSettings(lab);
     } catch {
-      throw new BadRequestException('Can\'t retrieve la settings');
+      throw new BadRequestException('Can\'t retrieve the settings');
     }
   }
 }
