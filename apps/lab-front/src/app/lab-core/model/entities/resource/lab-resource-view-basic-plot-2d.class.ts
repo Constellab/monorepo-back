@@ -26,9 +26,7 @@ export interface LabResourceViewChart2dSerie {
     x: number[];
     y: number[];
   };
-  x_column_name?: string;
-  y_column_name?: string;
-  column_name?: string;
+  name?: string;
 }
 
 /**
@@ -54,6 +52,7 @@ export function labBasicPlotToChart(view: LabResourceViewBasicPlot2d): FlChartCo
 function labResourceBuildBasicChart2d(view: LabResourceViewBasicPlot2d): FlChart2dMultiSerie<FlChart2dDatum> {
   const series: FlChart2dMultiSerie<FlChart2dDatum> = new FlChart2dMultiSerie();
 
+  let serieIndex: number = 1;
   for (const viewSerie of view.data.series) {
     const data: FlChart2dDatum[] = [];
 
@@ -61,7 +60,8 @@ function labResourceBuildBasicChart2d(view: LabResourceViewBasicPlot2d): FlChart
       data.push(new FlChart2dDatum(viewSerie.data.x[i], viewSerie.data.y[i]));
     }
 
-    series.addSerie(new FlChartSerie(data, viewSerie.y_column_name ?? viewSerie.column_name));
+    series.addSerie(new FlChartSerie(data, viewSerie.name ?? serieIndex.toString()));
+    serieIndex++;
   }
 
   // if there are some tick labels

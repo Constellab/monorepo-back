@@ -40,8 +40,9 @@ export interface LabResourceViewBoxPlotSerie {
 export function labBoxPlotToChart(view: LabResourceViewBoxPlot): FlChartConfig {
   const series: FlChartMultiSerie<FlChartBoxPlotData> = new FlChartMultiSerie();
 
+  let serieIndex: number = 1;
   for (const viewSerie of view.data.series) {
-    const serie = new FlChartBoxPlotSerie([], viewSerie.column_names.join(' '));
+    const serie = new FlChartBoxPlotSerie([], serieIndex.toString());
 
     for (let i = 0; i < viewSerie.data.max.length; i++) {
       serie.addData({
@@ -53,6 +54,8 @@ export function labBoxPlotToChart(view: LabResourceViewBoxPlot): FlChartConfig {
         lowerWhisker: viewSerie.data.lower_whisker[i],
         upperWhisker: viewSerie.data.upper_whisker[i],
       });
+
+      serieIndex++;
     }
 
     series.addSerie(serie);
