@@ -109,7 +109,7 @@ export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2
   public zoomTransitionDuration: number = 250;
 
   protected get margin(): any {
-    return {top: 10, right: 30, bottom: 30, left: 40};
+    return {top: 10, right: 30, bottom: 30, left: 50};
   }
 
   public initXAxis(axis: FlChartAxis): this {
