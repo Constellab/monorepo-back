@@ -1,7 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaLabInstance, CaLabInstanceDatasource} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstance} from '../../../../model/entities/ca-lab-instance.class';
 import {CaLabInstanceFormDialogComponent} from '../ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
 import {
+  FlArrayObs,
   FlConfirmDialogInput,
   FlConfirmDialogResult,
   FlDialogService,
@@ -22,7 +23,7 @@ import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.serv
 })
 export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabInstance> implements OnInit {
 
-  @Input() datasource: CaLabInstanceDatasource;
+  @Input() datasource: FlArrayObs<CaLabInstance>;
 
   constructor(private dialogService: FlDialogService,
               private labInstanceService: CaLabInstanceService) {
