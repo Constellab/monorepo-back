@@ -20,7 +20,7 @@ export class CaExperimentStatusHistory extends CaStatusHistory<CaExperimentStatu
 
 export class Experiment extends CaBaseEntity {
 
-  label: string;
+  title: string;
 
   description: string;
 
@@ -34,5 +34,4 @@ export class Experiment extends CaBaseEntity {
     return this.currentStatus.status.value === 'DRAFT';
   }
 }
-
 

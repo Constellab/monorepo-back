@@ -29,7 +29,7 @@ export class CnExperimentsSecurityLayer extends CnAbstractSecurityLayer<CnExperi
   }
 
   async isAuthorizedToFindOne(dbEntity: CnExperiment): Promise<boolean> {
-    return this.createdByAuthorization.isAuthorized(dbEntity);
+    return await this.projectsSecurityLayer.isAuthorizedToFindById(dbEntity.projectId)
   }
 
   async isAuthorizedToUpdate(dbEntity: CnExperiment): Promise<boolean> {

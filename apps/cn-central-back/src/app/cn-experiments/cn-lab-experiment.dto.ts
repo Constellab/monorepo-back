@@ -7,10 +7,8 @@ import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
  */
 export class CnLabExperimentDto {
   id: string;
-  data: {
-    title: string;
-    description: string
-  }
+  title: string;
+  description: string;
   status: CnExperimentStatus;
 
   @ClLuxonDateTimeTransform()

@@ -32,7 +32,7 @@ export class CaExperimentFormDialogComponent extends FlFormDialogAbstractDirecti
   buildForm(): FormGroup<Partial<Experiment>> {
     return new FormBuilder().group({
       id: [null],
-      label: [null, Validators.required],
+      title: [null, Validators.required],
       description: [null],
     });
   }

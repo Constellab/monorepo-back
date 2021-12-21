@@ -1,7 +1,7 @@
 import {ExecutionContext, SetMetadata} from '@nestjs/common';
 import {CustomDecorator} from '@nestjs/common/decorators/core/set-metadata.decorator';
 import {Reflector} from '@nestjs/core';
-import {BlReflectorHelper} from '@monorepo/back-core-lib';
+import {BlReflectorHelper} from '../utils/bl-reflector.helper';
 
 const publicMetadata = 'isPublic';
 

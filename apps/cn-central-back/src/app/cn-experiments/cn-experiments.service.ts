@@ -25,25 +25,24 @@ export class CnExperimentsService extends CnAbstractWithStatusService<CnExperime
   getExperimentsOfProject(projectId: string): Promise<CnExperiment[]> {
     return this.repository.find({
       where: {
-        project: {id: projectId}
+        projectId: projectId
       },
       order: {lastModifiedAt: 'DESC'}
     });
   }
 
   public async createLabExperiment(project: CnProject, labExperimentDto: CnLabExperimentDto): Promise<CnExperiment> {
-    const experimentDB: CnExperiment = await this.findById(labExperimentDto.id, {relations: ['project']});
+    const experimentDB: CnExperiment = await this.findById(labExperimentDto.id);
 
-    if (experimentDB && experimentDB.project.id !== project.id) {
+    if (experimentDB && experimentDB.projectId !== project.id) {
       throw new UnauthorizedException('Can\'t change the project of a validated experiment');
     }
 
-
     const newExperiment = new CnExperiment();
     newExperiment.id = labExperimentDto.id;
-    newExperiment.project = project;
-    newExperiment.title = labExperimentDto.data.title;
-    newExperiment.description = labExperimentDto.data.description;
+    newExperiment.projectId = project.id;
+    newExperiment.title = labExperimentDto.title;
+    newExperiment.description = labExperimentDto.description;
     newExperiment.createdAt = labExperimentDto.created_at;
     newExperiment.lastModifiedAt = labExperimentDto.last_modified_at;
     if (experimentDB) {

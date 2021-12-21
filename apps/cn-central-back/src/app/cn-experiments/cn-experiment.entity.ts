@@ -33,6 +33,9 @@ export class CnExperiment extends CnEntityWithStatus<CnExperimentStatusHistory> 
   @BlNotUpdatable()
   @Type(() => CnProject)
   @ManyToOne(() => CnProject, {nullable: false})
-  project: CnProject;
+  project: Promise<CnProject>;
+
+  @Column()
+  projectId: string;
 
 }

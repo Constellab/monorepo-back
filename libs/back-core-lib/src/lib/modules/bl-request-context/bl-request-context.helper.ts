@@ -1,6 +1,6 @@
 import {BlRequestContext} from './bl-request-context';
 import {Request} from 'express';
-import {BlCookieHelper} from '@monorepo/back-core-lib';
+import {BlCookieHelper} from '../../utils/bl-cookie.helper';
 
 /**
  * Request Context helper to access the current request
