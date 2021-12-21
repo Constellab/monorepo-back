@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnLabInstancesController} from './cn-lab-instances.controller';
 import {TypeOrmModule} from '@nestjs/typeorm';
@@ -8,6 +8,7 @@ import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entit
 import {CnLabInstancesSecurityLayer} from './cn-lab-instances-security.layer';
 import {CnExternalLabApiModule} from '../cn-external-lab-api/cn-external-lab-api.module';
 import {CnUsersModule} from '../cn-users/cn-users.module';
+import {CnExperimentsModule} from '../cn-experiments/cn-experiments.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import {CnUsersModule} from '../cn-users/cn-users.module';
     CnCoreModule,
     CnExternalLabApiModule,
     CnUsersModule,
+    forwardRef(() => CnExperimentsModule),
   ],
   providers: [CnLabInstancesService, CnLabInstancesSecurityLayer],
   controllers: [CnLabInstancesController],

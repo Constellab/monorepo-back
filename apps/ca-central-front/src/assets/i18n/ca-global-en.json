@@ -28,6 +28,7 @@
   "organization": "Organization",
   "save": "Save",
   "edit": "Edit",
+  "delete": "Delete",
   "error_end_date_before_start": "The ending date can't be prior to starting date",
   "input_max_length": "Max length {{count}}",
   "between_the_from": "From the",

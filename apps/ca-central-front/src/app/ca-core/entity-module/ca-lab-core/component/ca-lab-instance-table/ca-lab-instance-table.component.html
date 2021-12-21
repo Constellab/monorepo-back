@@ -57,16 +57,33 @@
 
   <!-- Action -->
   <ng-container matColumnDef="actions">
-    <mat-header-cell *matHeaderCellDef>
+    <mat-header-cell *matHeaderCellDef class="action-column">
     </mat-header-cell>
-    <mat-cell *matCellDef="let labInstance">
-      <button mat-icon-button type="button" (click)="openUpdateDialog(labInstance)">
-        <mat-icon>edit</mat-icon>
+    <mat-cell *matCellDef="let labInstance" class="action-column">
+
+      <!--   Mat menu containing action buttons   -->
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon>more_vert</mat-icon>
       </button>
-      <button mat-icon-button type="button" (click)="openStatusDialog(labInstance)"
-              [matTooltip]="'lab_check_status' | translate">
-        <mat-icon>info</mat-icon>
-      </button>
+      <mat-menu #menu="matMenu" xPosition="before">
+        <button mat-menu-item type="button" (click)="openUpdateDialog(labInstance)">
+          <mat-icon>edit</mat-icon>
+          <span>{{'edit' | translate}}</span>
+        </button>
+        <button mat-menu-item type="button" (click)="openStatusDialog(labInstance)"
+                [matTooltip]="'lab_check_status' | translate">
+          <mat-icon>info</mat-icon>
+          <span>{{'lab_check_status' | translate}}</span>
+        </button>
+
+        <button mat-menu-item type="button" (click)="openDeleteDialog(labInstance)"
+                [matTooltip]="'lab_check_status' | translate">
+          <mat-icon color="warn">delete</mat-icon>
+          <span class="g-warn-text">{{'delete' | translate}}</span>
+        </button>
+      </mat-menu>
+
+
     </mat-cell>
   </ng-container>
 

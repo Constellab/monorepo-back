@@ -10,14 +10,14 @@ export class CnLabInstanceStatusHistory extends CnStatusHistory<CnLabInstanceSta
 
   @Column({
     type: 'enum', enum: CnLabInstanceStatus, nullable: false,
-    default: CnLabInstanceStatus.RUNNING
+    default: CnLabInstanceStatus.RUNNING,
   })
   status: CnLabInstanceStatus;
 
   @Exclude()
   @BlNotUpdatable()
   @Type(() => CnLabInstance)
-  @ManyToOne(() => CnLabInstance, {})
+  @ManyToOne(() => CnLabInstance, {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
   entity: CnLabInstance;
 }
 

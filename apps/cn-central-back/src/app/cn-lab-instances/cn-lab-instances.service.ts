@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {ObjectLiteral, Repository} from 'typeorm';
+import {DeleteResult, EntityManager, ObjectLiteral, Repository} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabInstanceStatus} from './cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
@@ -20,6 +20,8 @@ import {AxiosResponse} from 'axios';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
+import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
+import {CnExperimentsService} from '../cn-experiments/cn-experiments.service';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
@@ -28,13 +30,24 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
               @InjectRepository(CnLabInstanceStatusHistory) statusHistoRepo: Repository<CnLabInstanceStatusHistory>,
               private externalLabUserService: CnExternalLabUserService,
               private externalLabApiService: CnExternalLabApiService,
-              private userService: CnUsersService) {
+              private userService: CnUsersService,
+              private experimentService: CnExperimentsService) {
     super(repository, CnLabInstance, statusHistoRepo, CnLabInstanceStatusHistory);
   }
 
 
   async create(entity: CnLabInstance): Promise<CnLabInstance> {
     return super.createWithStatus(entity, CnLabInstanceStatus.STOPPED);
+  }
+
+  async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
+    const experiments: CnExperiment[] = await this.experimentService.getExperimentOfLabInstance(id);
+
+    if (experiments?.length > 0) {
+      throw new BadRequestException('Can\'t delete the lab instance because some experiment are linked to it');
+    }
+
+    return super.deleteById(id, entityManager);
   }
 
   public getCurrentLabInstances(page: number, size: number): Promise<ClPageI<CnLabInstance>> {

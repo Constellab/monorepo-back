@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesSecurityLayer} from './cn-lab-instances-security.layer';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
@@ -18,14 +18,19 @@ export class CnLabInstancesController {
   @Post()
   async create(@Body(new BlParsePipe(CnLabInstanceDto)) labInstanceDto: CnLabInstanceDto): Promise<CnLabInstanceDto> {
     const labInstance = await this.securityLayer.createSecure(BlDtoHelper.fromDto(CnLabInstance, labInstanceDto));
-    return BlDtoHelper.toDto(CnLabInstanceDto,labInstance )
+    return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
   }
 
   // use the DTO to get the apiKey (which is excluded)
   @Put()
   async update(@Body(new BlParsePipe(CnLabInstanceDto)) labInstanceDto: CnLabInstanceDto): Promise<CnLabInstanceDto> {
     const labInstance = await this.securityLayer.updateSecure(BlDtoHelper.fromDto(CnLabInstance, labInstanceDto));
-    return BlDtoHelper.toDto(CnLabInstanceDto,labInstance )
+    return BlDtoHelper.toDto(CnLabInstanceDto, labInstance);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.securityLayer.deleteByIdSecure(id);
   }
 
   /**

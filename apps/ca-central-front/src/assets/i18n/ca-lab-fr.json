@@ -31,5 +31,8 @@
   "lab_name_updated": "Nom du lab modifié",
   "lab_type": "Type de lab",
   "lab_api_key": "Api key",
-  "lab_check_status": "Vérifier le statut"
+  "lab_check_status": "Vérifier le statut",
+  "delete_lab_instance": "Supprimer l'instance du lab",
+  "delete_lab_instance_confirmation": "Êtes-vous sûr l'instance du lab ? Tout l'historique sera supprimé et ne pourra pas être récupéré",
+  "lab_instance_deleted": "Lab instance supprimée"
 }

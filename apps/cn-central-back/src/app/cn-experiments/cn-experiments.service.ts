@@ -31,6 +31,15 @@ export class CnExperimentsService extends CnAbstractWithStatusService<CnExperime
     });
   }
 
+  getExperimentOfLabInstance(labInstanceId: string): Promise<CnExperiment[]> {
+    return this.repository.find({
+      where: {
+        labInstance: {id: labInstanceId}
+      },
+      order: {lastModifiedAt: 'DESC'}
+    });
+  }
+
   public async createLabExperiment(project: CnProject, labExperimentDto: CnLabExperimentDto): Promise<CnExperiment> {
     const experimentDB: CnExperiment = await this.findById(labExperimentDto.id);
 

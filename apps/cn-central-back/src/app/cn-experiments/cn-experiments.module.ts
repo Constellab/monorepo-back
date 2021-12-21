@@ -23,7 +23,7 @@ import {CnProjectsModule} from '../cn-projects/cn-projects.module';
   ],
   controllers: [CnExperimentsController],
   providers: [CnExperimentsService, CnExperimentsSecurityLayer],
-  exports: [CnExperimentsSecurityLayer]
+  exports: [CnExperimentsService, CnExperimentsSecurityLayer]
 })
 export class CnExperimentsModule {
 }

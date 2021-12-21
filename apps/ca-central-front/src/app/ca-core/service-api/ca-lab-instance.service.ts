@@ -29,6 +29,10 @@ export class CaLabInstanceService {
     return this.apiService.put(this.route, entity, CaLabInstance);
   }
 
+  public delete(id: string): Observable<CaLabInstance> {
+    return this.apiService.deleteById(this.route, id, CaLabInstance);
+  }
+
   public getCurrentLabInstance(): Observable<CaLabInstance[]> {
     return this.apiService.get(this.route + '/current', CaLabInstance);
   }
@@ -48,8 +52,9 @@ export class CaLabInstanceService {
   }
 
   private getCurrentLabInstanceMethod(): ClGetPageFunction<CaLabInstance> {
-    return (page: number, pageSize: number): Observable<ClPageI<CaLabInstance>> => this.apiService.get(`${this.route}/current`, CaLabInstance,
-      {resultIsPaginated: true, page: page, pageSize: pageSize});
+    return (page: number, pageSize: number): Observable<ClPageI<CaLabInstance>> =>
+      this.apiService.get(`${this.route}/current`, CaLabInstance,
+        {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
   public getCurrentRunningLabInstance(): Observable<CaLabInstance[]> {

@@ -1,11 +1,18 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaLabInstance} from '../../../../model/entities/ca-lab-instance.class';
+import {CaLabInstance, CaLabInstanceDatasource} from '../../../../model/entities/ca-lab-instance.class';
 import {CaLabInstanceFormDialogComponent} from '../ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
-import {FlArrayObs, FlDialogService, FlFormDialogInput, FlTableAbstractDirective} from '@monorepo/front-core-lib';
+import {
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDialogService,
+  FlFormDialogInput,
+  FlTableAbstractDirective
+} from '@monorepo/front-core-lib';
 import {CaRouterService} from '../../../../service/ca-router.service';
 import {
   CaLabInstanceStatusDialogComponent
 } from '../ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
+import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 
 
 @Component({
@@ -15,9 +22,10 @@ import {
 })
 export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabInstance> implements OnInit {
 
-  @Input() datasource: FlArrayObs<CaLabInstance>;
+  @Input() datasource: CaLabInstanceDatasource;
 
-  constructor(private dialogService: FlDialogService) {
+  constructor(private dialogService: FlDialogService,
+              private labInstanceService: CaLabInstanceService) {
     super(['name', 'owner', 'createdBy', 'currentStatus', 'serverInfo', 'createdBy', 'actions']);
   }
 
@@ -48,5 +56,25 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
     this.dialogService.openMediumDialog(CaLabInstanceStatusDialogComponent, {data: labInstance.id});
   }
 
+  openDeleteDialog(labInstance: CaLabInstance): void {
+    const input: FlConfirmDialogInput = {
+      title: 'delete_lab_instance',
+      content: 'delete_lab_instance_confirmation',
+      translateTitleAndContent: true,
+      observable: this.labInstanceService.delete(labInstance.id),
+      successMessage: 'lab_instance_deleted',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(input).afterClosed().subscribe(
+      result => this.onDeleteClosed(result, labInstance)
+    );
+  }
+
+  private onDeleteClosed(result: FlConfirmDialogResult<void>, labInstance: CaLabInstance): void {
+    if (result.choice) {
+      this.datasource.removeItem(labInstance);
+    }
+  }
 
 }

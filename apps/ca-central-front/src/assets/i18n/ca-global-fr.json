@@ -28,6 +28,7 @@
   "organization": "Entreprise",
   "save": "Enregistrer",
   "edit": "Modifier",
+  "delete": "Supprimer",
   "error_end_date_before_start": "La date de fin ne peut pas être antérieur à la date de début",
   "input_max_length": "Taille max {{count}}",
   "between_the_from": "Du",
