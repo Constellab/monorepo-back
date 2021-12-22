@@ -19,6 +19,9 @@ import {
 import {
   LabExperimentTypeOptionsComponent
 } from './component/lab-experiment-type-options/lab-experiment-type-options.component';
+import {
+  LabSelectExperimentDialogComponent
+} from './component/lab-select-experiment-dialog/lab-select-experiment-dialog.component';
 
 
 @NgModule({
@@ -30,6 +33,7 @@ import {
     LabExperimentAdvancedSearchFormComponent,
     LabExperimentStatusOptionsComponent,
     LabExperimentTypeOptionsComponent,
+    LabSelectExperimentDialogComponent,
   ],
   exports: [
     LabExperimentTableComponent,
@@ -39,6 +43,7 @@ import {
     LabExperimentAdvancedSearchFormComponent,
     LabExperimentStatusOptionsComponent,
     LabExperimentTypeOptionsComponent,
+    LabSelectExperimentDialogComponent,
   ],
   imports: [
     CommonModule,

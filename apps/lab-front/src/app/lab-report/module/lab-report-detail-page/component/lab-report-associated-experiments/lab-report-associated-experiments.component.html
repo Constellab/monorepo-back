@@ -1,0 +1,27 @@
+<fl-section [object]="experiments" [isLoading]="isLoading">
+
+  <fl-section-header>
+    <h3>{{'biox.report_associated_experiment' | translate}}</h3>
+
+    <fl-section-actions>
+      <button mat-icon-button type="button" [matTooltip]="'biox.report_associate_experiment' | translate"
+              (click)="associateExperiment()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </fl-section-actions>
+
+  </fl-section-header>
+
+  <ng-container *flSectionBody>
+    <div>
+      <div *ngFor="let experiment of experiments; let index = index" fxLayout="row" fxLayoutAlign="start center"
+           class="g-full">
+        <a [routerLink]="experiment | labDetailRoute" class="g-text-link" fxFlex="auto">{{experiment.title}}</a>
+        <button mat-icon-button type="button" (click)="disassociateExperiment(experiment, index)"
+                [matTooltip]="'biox.report_disassociate_experiment' | translate">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</fl-section>

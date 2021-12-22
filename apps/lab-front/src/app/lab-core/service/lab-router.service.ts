@@ -55,4 +55,8 @@ export class LabRouterService {
   public navigateToReportDetail(id: string): Promise<boolean> {
     return this.router.navigate([LabRouterService.getReportDetailRoute(id)]);
   }
+
+  public navigateToReportSearch(): Promise<boolean> {
+    return this.router.navigate([LabRouterService.getReportSearchRoute()]);
+  }
 }

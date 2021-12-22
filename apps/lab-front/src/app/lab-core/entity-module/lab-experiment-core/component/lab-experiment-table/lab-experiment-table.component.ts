@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlPaginatedTableAbstractDirective} from '@monorepo/front-core-lib';
 import {LabExperiment} from '../../../../model/entities/lab-experiment.entity';
-import {LabRouterService} from '../../../../service/lab-router.service';
+import {ClHelpService} from '@monorepo/core-lib';
 
 @Component({
   selector: 'lab-experiment-table',
@@ -11,14 +11,27 @@ import {LabRouterService} from '../../../../service/lab-router.service';
 export class LabExperimentTableComponent extends FlPaginatedTableAbstractDirective<LabExperiment>
   implements OnInit {
 
+  // when true, the row become clickable and resourceSelected event is trigger
+  @Input() rowSelectable: boolean = false;
+
+  @Output() experimentSelected: EventEmitter<LabExperiment> = new EventEmitter();
+
+
   constructor() {
-    super(['title', 'score', 'status', 'createdAt', 'tags']);
+    super(['score', 'status', 'createdAt', 'tags']);
   }
 
   ngOnInit(): void {
   }
 
-  getExperimentRoute(experiment: LabExperiment): string {
-    return LabRouterService.getExperimentDetailRoute(experiment.id);
+  rowClicked(experiment: LabExperiment): void {
+    if (this.rowSelectable) {
+      this.experimentSelected.next(experiment);
+    }
+  }
+
+  test(event: MouseEvent): void {
+    event.stopImmediatePropagation();
+    ClHelpService.stopEventPropagation(event);
   }
 }

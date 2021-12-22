@@ -28,7 +28,7 @@ export class LabReportService implements FlSearchService<LabReport> {
 
   public updateContent(id: string, content: LabReportContent): Observable<LabReport> {
     if (content == null) {
-      content = {};
+      content = {ops: []};
     }
     return this.apiService.put(`${this.route}/${id}/content`, content, LabReport);
   }
@@ -42,7 +42,11 @@ export class LabReportService implements FlSearchService<LabReport> {
   }
 
   public removeExperiment(reportId: string, experimentId: string): Observable<void> {
-    return this.apiService.put(`${this.route}/${reportId}/remove-experiment/${experimentId}`, null);
+    return this.apiService.delete(`${this.route}/${reportId}/remove-experiment/${experimentId}`, null);
+  }
+
+  public validate(reportId: string): Observable<LabReport> {
+    return this.apiService.put(`${this.route}/${reportId}/validate`, null, LabReport);
   }
 
   ///////////////////////////////////////////// GET /////////////////////////////////////////////
@@ -56,7 +60,7 @@ export class LabReportService implements FlSearchService<LabReport> {
   }
 
   public getExperimentByReports(reportId: string): Observable<LabExperiment[]> {
-    return this.apiService.get(`${this.route}/${reportId}/experiments`, LabReport);
+    return this.apiService.get(`${this.route}/${reportId}/experiments`, LabExperiment);
   }
 
   public advancedSearch(page: number, pageSize: number, filters: any): Observable<ClPageI<LabReport>> {

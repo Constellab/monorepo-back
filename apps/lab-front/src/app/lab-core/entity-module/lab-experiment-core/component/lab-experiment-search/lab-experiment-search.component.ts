@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   FL_SEARCH_CONFIG,
   FlDatasourcePaginated,
@@ -53,6 +53,10 @@ function searchConfig(searchService: FlSearchService<any>): FlSearchConfig {
 })
 export class LabExperimentSearchComponent implements OnInit {
 
+  @Input() experimentSelectable: boolean = false;
+
+  @Output() experimentSelected: EventEmitter<LabExperiment> = new EventEmitter();
+
   datasource: FlDatasourcePaginated<LabExperiment>;
 
   columns: FlTableColumn<LabExperiment>[] = ['title', 'status', 'tags', 'createdAt'];
@@ -79,5 +83,9 @@ export class LabExperimentSearchComponent implements OnInit {
     if (experiment) {
       this.routerService.navigateToExperimentDetail(experiment.id);
     }
+  }
+
+  selectExperiment(experiment: LabExperiment): void {
+    this.experimentSelected.next(experiment);
   }
 }

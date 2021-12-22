@@ -15,7 +15,6 @@ import {
   FlTagDialogService
 } from '@monorepo/front-core-lib';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
-import {LabRouterService} from '../../../../service/lab-router.service';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {LabResource, LabResourceDatasource} from '../../../../model/entities/resource/lab-resource.entity';
 import {ClHelpService} from '@monorepo/core-lib';
@@ -69,11 +68,6 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
     };
 
     this.dialogService.openMediumDialog(LabImportResourceDialogComponent, {data: input});
-  }
-
-
-  resourceRoute(resource: LabResource): string {
-    return LabRouterService.getResourceDetailRoute(resource.id);
   }
 
   deleteResource(resource: LabResource): void {

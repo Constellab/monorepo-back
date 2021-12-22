@@ -22,7 +22,9 @@
 
 
   <fl-search-result>
-    <lab-experiment-table [datasource]="datasource" [columns]="columns"></lab-experiment-table>
+    <lab-experiment-table [datasource]="datasource" [columns]="columns"
+                          [rowSelectable]="experimentSelectable"
+                          (experimentSelected)="selectExperiment($event)"></lab-experiment-table>
   </fl-search-result>
 
 

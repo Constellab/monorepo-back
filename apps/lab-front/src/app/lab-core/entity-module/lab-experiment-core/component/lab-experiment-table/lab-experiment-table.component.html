@@ -1,17 +1,5 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
 
-  <!-- Title -->
-  <ng-container matColumnDef="title">
-    <mat-header-cell *matHeaderCellDef>
-      <span>{{'title' | translate}}</span>
-    </mat-header-cell>
-    <mat-cell *matCellDef="let experiment">
-      <a [routerLink]="getExperimentRoute(experiment)" class="g-text-link">
-        <span>{{experiment.title}}</span>
-      </a>
-    </mat-cell>
-  </ng-container>
-
   <!-- score -->
   <ng-container matColumnDef="score">
     <mat-header-cell *matHeaderCellDef>
@@ -73,5 +61,16 @@
 
 
   <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+
+  <!-- Mode selectable -->
+  <ng-container *ngIf="rowSelectable; else notSelectable">
+    <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
+             (click)="rowClicked(row)"></mat-row>
+  </ng-container>
+
+  <!-- Mode link -->
+  <ng-template #notSelectable>
+    <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
+             [routerLink]="row | labDetailRoute"></mat-row>
+  </ng-template>
 </mat-table>

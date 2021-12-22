@@ -40,7 +40,6 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   @Input() mode: FlTextEditorMode;
 
-  @Input() readonly: boolean = false;
 
   @Input() placeholder: string;
 
@@ -62,7 +61,6 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
         modules: {
           toolbar: FlQuillConfig.defaultToolbarConfig,
         },
-        readOnly: this.readonly,
         placeholder: this.placeholder
       }
     );

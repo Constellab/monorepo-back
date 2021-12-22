@@ -1,0 +1,8 @@
+<fl-dialog-header>
+  {{'biox.experiment_select' | translate }}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <lab-experiment-search [experimentSelectable]="true"
+                         (experimentSelected)="onExperimentSelected($event)"></lab-experiment-search>
+</mat-dialog-content>
