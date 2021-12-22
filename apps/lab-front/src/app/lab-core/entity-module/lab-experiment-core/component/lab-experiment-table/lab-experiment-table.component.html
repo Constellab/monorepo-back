@@ -62,10 +62,10 @@
   <!-- Dynamic columns -->
   <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
     <mat-header-cell *matHeaderCellDef>
-      <p class="g-table-cell">{{column.columnName | translate}}</p>
+      <p>{{column.columnName | translate}}</p>
     </mat-header-cell>
     <mat-cell *matCellDef="let experiment">
-      <div class="g-table-cell">
+      <div>
         <span>{{experiment[column.accessor]}}</span>
       </div>
     </mat-cell>

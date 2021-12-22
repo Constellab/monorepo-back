@@ -17,3 +17,7 @@ export class FlQuillConfig {
     ['link', 'blockquote', 'clean'],
   ];
 }
+
+export interface FlQuillJson {
+  ops: any[];
+}

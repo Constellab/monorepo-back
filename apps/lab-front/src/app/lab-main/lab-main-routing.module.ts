@@ -5,7 +5,8 @@ import {
   labConstBiotaRoute,
   labConstBioxRoute,
   labConstDataboxRoute,
-  labConstMonitoringRoute
+  labConstMonitoringRoute,
+  labConstReportRoute
 } from '../lab-core/utils/lab-base-route';
 import {LabMainAppComponent} from './component/lab-main-app/lab-main-app.component';
 import {LabAutoLoginGuard} from './guard/lab-auto-login.guard';
@@ -44,6 +45,11 @@ const routes: Routes = [
       {
         path: labConstDataboxRoute,
         loadChildren: () => import('../lab-databox/lab-databox.module').then(m => m.LabDataboxModule)
+      },
+      //////////////////////// REPORT  /////////////////////////
+      {
+        path: labConstReportRoute,
+        loadChildren: () => import('../lab-report/lab-report.module').then(m => m.LabReportModule)
       },
       //////////////////////// MONITORING  /////////////////////////
       {

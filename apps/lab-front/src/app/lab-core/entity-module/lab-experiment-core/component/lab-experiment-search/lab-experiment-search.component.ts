@@ -19,7 +19,7 @@ import {LabRouterService} from '../../../../service/lab-router.service';
 
 // list of predefined search of the resources
 const savedSearch: FlSavedSearch[] = [{
-  searchName: 'biox-experiment',
+  searchName: 'lab-experiment',
   id: null,
   label: 'Experiments',
   color: flThemeDetailLight.primary,

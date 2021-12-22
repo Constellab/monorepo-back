@@ -1,12 +1,8 @@
 import {enableProdMode} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-
 import {LabAppModule} from './app/lab-app.module';
 import {environment} from './environments/lab-environment';
 import {LabEnvironmentSettings} from './environments/lab-environment.class';
-
-// import reflect to make class-transform work
-import 'reflect-metadata/Reflect';
 import {labLoadEnvironmentFromAssets} from './environments/lab-environment-loader';
 
 if (environment.production) {

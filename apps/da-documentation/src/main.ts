@@ -1,11 +1,8 @@
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import {enableProdMode} from '@angular/core';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-import { AppModule } from './app/da-app.module';
-import { environment } from './environments/da-environment';
-
-// import reflect to make class-transform work
-import 'reflect-metadata/Reflect';
+import {AppModule} from './app/da-app.module';
+import {environment} from './environments/da-environment';
 
 if (environment.production) {
   enableProdMode();

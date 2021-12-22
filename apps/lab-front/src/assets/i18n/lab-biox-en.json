@@ -92,6 +92,13 @@
     "resource_imported": "Resource imported",
     "resource_not_importable": "The resource doesn't support import",
     "resource_import_no_config": "No configuration required to import the resource",
-    "select_importer": "Select an importer"
+    "select_importer": "Select an importer",
+    "report_is_validated": "Validated",
+    "reports": "Reports",
+    "create_report": "Create report",
+    "report_created": "Report created",
+    "update_report": "Update report",
+    "report_updated": "Report updated",
+    "report_placeholder": "Write your report..."
   }
 }

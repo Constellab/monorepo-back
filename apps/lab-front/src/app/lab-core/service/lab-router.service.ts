@@ -1,5 +1,10 @@
 import {Injectable} from '@angular/core';
-import {labConstBaseRoute, labConstBioxFullRoute, labConstMonitoringFullRoute} from '../utils/lab-base-route';
+import {
+  labConstBaseRoute,
+  labConstBioxFullRoute,
+  labConstMonitoringFullRoute,
+  labConstReportFullRoute
+} from '../utils/lab-base-route';
 import {Router} from '@angular/router';
 
 /**
@@ -18,8 +23,8 @@ export class LabRouterService {
     return `/${labConstBaseRoute}`;
   }
 
-  public static getExperimentDetailRoute(bioxExperimentId: string): string {
-    return `${labConstBioxFullRoute}/experiment/${bioxExperimentId}`;
+  public static getExperimentDetailRoute(id: string): string {
+    return `${labConstBioxFullRoute}/experiment/${id}`;
   }
 
   public static getResourceDetailRoute(id: string): string {
@@ -30,12 +35,24 @@ export class LabRouterService {
     return `${labConstMonitoringFullRoute}`;
   }
 
-  /////////////////// NAVIGATE METHODS ///////////////////
-  public navigateToExperimentDetail(bioxExperimentId: string): Promise<boolean>{
-    return this.router.navigate([LabRouterService.getExperimentDetailRoute(bioxExperimentId)]);
+  public static getReportSearchRoute(): string {
+    return `${labConstReportFullRoute}`;
   }
 
-  public navigateToResourceDetail(id: string): Promise<boolean>{
+  public static getReportDetailRoute(id: string): string {
+    return `${labConstReportFullRoute}/${id}`;
+  }
+
+  /////////////////// NAVIGATE METHODS ///////////////////
+  public navigateToExperimentDetail(id: string): Promise<boolean> {
+    return this.router.navigate([LabRouterService.getExperimentDetailRoute(id)]);
+  }
+
+  public navigateToResourceDetail(id: string): Promise<boolean> {
     return this.router.navigate([LabRouterService.getResourceDetailRoute(id)]);
+  }
+
+  public navigateToReportDetail(id: string): Promise<boolean> {
+    return this.router.navigate([LabRouterService.getReportDetailRoute(id)]);
   }
 }

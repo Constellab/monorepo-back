@@ -57,3 +57,13 @@ body {
 .g-page-bottom-padding{
   padding-bottom: 2em;
 }
+
+// Class to use on page that directly uses a search component
+.g-page-search{
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--menu-toolbar-height));
+  max-height: calc(100vh - var(--menu-toolbar-height));
+}

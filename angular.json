@@ -36,7 +36,7 @@
               }
             ],
             "styles": [
-              "apps/ca-central-front/src/styles.scss",
+              "apps/ca-central-front/src/ca-styles.scss",
               {
                 "input": "apps/ca-central-front/src/theme/ca-light-theme.scss",
                 "bundleName": "light-theme",
@@ -237,7 +237,7 @@
               }
             ],
             "styles": [
-              "apps/lab-front/src/styles.scss",
+              "apps/lab-front/src/lab-styles.scss",
               {
                 "input": "apps/lab-front/src/theme/lab-light-theme.scss",
                 "bundleName": "light-theme",

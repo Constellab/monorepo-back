@@ -61,22 +61,8 @@ export class LabExperimentSearch {
     createdAt: FlSearchConverter.dateInterval('created_at'),
     lastModifiedAt: FlSearchConverter.dateInterval('last_modified_at'),
     isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.convertArchived},
-    isValidated: {key: 'is_validated', operator: 'EQ', convertValue: LabExperimentSearch.convertValidated},
+    isValidated: {key: 'is_validated', operator: 'EQ', convertValue: LabSearchConverter.convertValidated},
   };
-
-  /**
-   * Search converter for archived checkbox. If check, return no filter (search on archived and not archived)
-   * If null or false, only search on non archived objets
-   * @param archived
-   */
-  private static convertValidated(archived: boolean): boolean | null {
-    if (!archived) {
-      return false;
-    } else {
-      return null;
-    }
-  }
-
 
   public static getAdvancedSearchForm(): FormGroup<LabExperimentSearchFields> {
     return new FormBuilder().group(

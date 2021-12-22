@@ -1,0 +1,30 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
+
+
+  <!-- Datetime -->
+  <ng-container matColumnDef="createdAt">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'datetime' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let report">
+      <span>{{report.createdAt | flDate}}</span>
+    </mat-cell>
+  </ng-container>
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{column.columnName | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let obj">
+      <div>
+        <span>{{obj[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable" [routerLink]="row | labDetailRoute"></mat-row>
+</mat-table>

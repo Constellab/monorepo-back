@@ -1,0 +1,27 @@
+<div class="g-page">
+  <fl-section fxFlex="auto" [object]="report" [isLoading]="isLoading">
+
+    <ng-container *flSectionBody>
+
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <h2>{{report.title}}</h2>
+
+        <div>
+          <button mat-icon-button type="button" [matTooltip]="'biox.update_report'"
+                  (click)="saveReportContent()">
+            <mat-icon>save</mat-icon>
+            <fl-button-loader *ngIf="saveIsLoading" size="small"></fl-button-loader>
+          </button>
+
+          <button mat-icon-button type="button" [matTooltip]="'biox.update_report' | translate"
+                  (click)="updateReport()">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <fl-text-editor fxFlex="auto" [(ngModel)]="report.content" mode="JSON"
+                      class="g-max-article-width" [placeholder]="'biox.report_placeholder' | translate"></fl-text-editor>
+    </ng-container>
+  </fl-section>
+</div>

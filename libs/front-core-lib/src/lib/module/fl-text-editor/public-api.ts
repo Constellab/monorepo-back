@@ -6,4 +6,4 @@ export * from './fl-text-editor.module';
 export * from './component/fl-text-editor/fl-text-editor.component';
 
 // Models
-export * from './fl-quill-config';
+export * from './fl-quill.class';

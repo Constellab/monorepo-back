@@ -184,3 +184,8 @@ ul, ol {
 
 /**************************** Other *****************************/
 
+// Class to limit width of an element to keep it readable event it wide screes
+.g-max-article-width{
+  width: 60rem;
+  margin: auto;
+}

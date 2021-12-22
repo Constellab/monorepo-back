@@ -11,15 +11,23 @@ import {
   ViewChild
 } from '@angular/core';
 import Quill from 'quill';
-import {FlQuillConfig} from '../../fl-quill-config';
+import {FlQuillConfig, FlQuillJson} from '../../fl-quill.class';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {NgControl} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
 
 /**
+ * HTML --> Get HTML and generate HTML
+ * JSON --> Get JSON as Delta and generate JSON
+ */
+type FlTextEditorMode = 'HTML' | 'JSON'
+
+const Delta = Quill.import('delta');
+
+/**
  * Rich text editor (currently using quill)
  *
- * It support NgModels
+ * It supports NgModels
  */
 @Component({
   selector: 'fl-text-editor',
@@ -28,8 +36,14 @@ import {DomSanitizer} from '@angular/platform-browser';
 })
 export class FlTextEditorComponent extends FlFormFieldDirective<string> implements OnInit {
 
-
   @Input() config: any = FlQuillConfig.defaultToolbarConfig;
+
+  @Input() mode: FlTextEditorMode;
+
+  @Input() readonly: boolean = false;
+
+  @Input() placeholder: string;
+
   @Output() textChange: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild('editor', {static: true}) editorElement: ElementRef<HTMLElement>;
 
@@ -46,19 +60,21 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       {
         theme: 'bubble',
         modules: {
-          toolbar: FlQuillConfig.defaultToolbarConfig
-        }
+          toolbar: FlQuillConfig.defaultToolbarConfig,
+        },
+        readOnly: this.readonly,
+        placeholder: this.placeholder
       }
     );
 
     this.quill.on('text-change', () => {
-      this.setAndEmitValue(this.quill.root.innerHTML);
+      this.setAndEmitValue(this.getQuillValue());
     });
 
     // init the HTML with the value set
-    this.setHTML(this.value);
+    this.setQuillValue(this.value);
 
-    // init the disable
+    // init the disabled
     this.onDisableChange(this.disabled);
   }
 
@@ -68,19 +84,38 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   }
 
 
-  writeValue(html: string): void {
+  writeValue(value: any): void {
     if (this.quill) {
-      this.setHTML(html);
+      this.setQuillValue(value);
+    }
+    // if the quill editor does not exist only set the value
+    this.value = value;
+  }
+
+  private setQuillValue(value: any): void {
+    if (this.mode === 'HTML') {
+      this.setHTML(value);
     } else {
-      // if the quill editor does not exist only set the value
-      this.value = html;
+      this.setJsonDelta(value);
+    }
+  }
+
+  private getQuillValue(): any {
+    if (this.mode === 'HTML') {
+      return this.quill.root.innerHTML;
+    } else {
+      return this.quill.getContents();
     }
   }
 
   private setHTML(html: string): void {
     // sanitize the html to prevent xss and set inner html
     this.quill.root.innerHTML = this.sanitizer.sanitize(SecurityContext.HTML, html);
-    this.value = html;
+  }
+
+  private setJsonDelta(json: FlQuillJson): void {
+    const delta = json?.ops != null ? new Delta(json.ops) : [];
+    this.quill.setContents(delta);
   }
 
   onDisableChange(disable: boolean): void {
