@@ -1,0 +1,33 @@
+<fl-section [object]="reports" [isLoading]="isLoading" emptyText="biox.no_experiment_associated_report">
+
+  <fl-section-header>
+    <h3>{{'biox.experiment_associated_report' | translate}}</h3>
+
+    <fl-section-actions>
+      <button mat-icon-button type="button" [matTooltip]="'biox.experiment_associate_report' | translate"
+              (click)="associateExperiment()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </fl-section-actions>
+
+  </fl-section-header>
+
+  <ng-container *flSectionBody>
+    <div>
+      <div *ngFor="let report of reports; let index = index" fxLayout="row" fxLayoutAlign="start center"
+           class="g-full">
+        <fl-text-icon fxFlex="auto">
+          <mat-icon [matTooltip]="'biox.report_validated' | translate" *ngIf="report.isValidated">verified
+          </mat-icon>
+          <a [routerLink]="report | labDetailRoute" class="g-text-link">
+            {{report.title}}
+          </a>
+        </fl-text-icon>
+        <button mat-icon-button type="button" (click)="disassociateReport(report, index)"
+                [matTooltip]="'biox.report_disassociate_experiment' | translate">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</fl-section>

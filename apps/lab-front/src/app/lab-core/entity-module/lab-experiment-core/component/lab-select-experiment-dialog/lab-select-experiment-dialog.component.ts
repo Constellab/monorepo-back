@@ -5,7 +5,7 @@ import {LabExperiment} from '../../../../model/entities/lab-experiment.entity';
 /**
  * Dialog to search on experiment and select one
  *
- * The dialog is closed when a experiment is selected
+ * The dialog is closed when an experiment is selected
  */
 @Component({
   selector: 'lab-select-experiment-dialog',

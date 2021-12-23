@@ -44,6 +44,10 @@ import {
 import {LabProjectCoreModule} from '../../../lab-core/entity-module/lab-project-core/lab-project-core.module';
 import {LabWorkflowNodeSourceComponent} from './component/lab-workflow-node-source/lab-workflow-node-source.component';
 import {LabExperimentDetailComponent} from './component/lab-experiment-detail/lab-experiment-detail.component';
+import {
+  LabExperimentAssociatedReportsComponent
+} from './component/lab-experiment-associated-reports/lab-experiment-associated-reports.component';
+import {RouterModule} from '@angular/router';
 
 
 @NgModule({
@@ -66,11 +70,13 @@ import {LabExperimentDetailComponent} from './component/lab-experiment-detail/la
     LabExperimentValidationDialogComponent,
     LabWorkflowNodeSourceComponent,
     LabExperimentDetailComponent,
+    LabExperimentAssociatedReportsComponent,
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    RouterModule,
 
     LabCoreModule,
     LabExperimentCoreModule,

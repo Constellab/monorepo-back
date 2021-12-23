@@ -25,6 +25,9 @@
     "experiment_workflow": "Workflow",
     "experiment_save_description": "Sauvegarder la description",
     "experiment_description_placeholder": "Écrivez la description",
+    "experiment_associate_report": "Associer un rapport",
+    "no_experiment_associated_report": "Aucun rapport associé",
+    "experiment_associated_report": "Rapports associés",
     "score": "Score",
     "resource_view_json": "Afficher au format json",
     "resource_view_spreadsheet": "Afficher dans une feuille de calcul",
@@ -111,12 +114,14 @@
     "delete_report": "Supprimer le rapport",
     "delete_report_confirmation": "Êtes-vous sûr de vouloir supprimer le rapport ? Une fois supprimé il ne pourra pas être récupéré.",
     "report_deleted": "Rapport supprimé",
-    "report_associated_experiment": "Expérience associées",
+    "report_associated_experiment": "Expériences associées",
     "report_associate_experiment": "Associer une expérience",
     "no_report_associated_experiment": "Aucune experience associée",
     "report_disassociate_experiment": "Désassocier l'expérience",
     "report_disassociate_experiment_confirmation": "Voulez-vous désassocier l'expérience du rapport ?",
     "report_experiment_disassociated": "Expérience désassociée",
-    "save_report_content": "Sauvegarder le contenu du rapport"
+    "save_report_content": "Sauvegarder le contenu du rapport",
+    "report_select": "Sélectionner un rapport",
+    "report_include_validated": "Inclure les rapports validés"
   }
 }

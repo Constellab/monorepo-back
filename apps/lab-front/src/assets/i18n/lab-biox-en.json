@@ -25,6 +25,9 @@
     "experiment_workflow": "Workflow",
     "experiment_save_description": "Save description",
     "experiment_description_placeholder": "Write the description",
+    "experiment_associate_report": "Associate a report",
+    "no_experiment_associated_report": "No associated report",
+    "experiment_associated_report": "Associated reports",
     "score": "Score",
     "no_project": "No project",
     "resource_view_json": "View as json",
@@ -111,12 +114,14 @@
     "delete_report": "Delete report",
     "delete_report_confirmation": "Are-you sure you want to delete the report ? Once deleted it can't be recovered.",
     "report_deleted": "Report deleted",
-    "report_associated_experiment": "Associated experiment",
+    "report_associated_experiment": "Associated experiments",
     "report_associate_experiment": "Associate an experiment",
     "no_report_associated_experiment": "No associated experiment",
     "report_disassociate_experiment": "Disassociate experiment",
     "report_disassociate_experiment_confirmation": "Do you want to disassociate the experiment from the report ?",
     "report_experiment_disassociated": "Experiment disassociated",
-    "save_report_content": "Save report content"
+    "save_report_content": "Save report content",
+    "report_select": "Select a report",
+    "report_include_validated": "Include validated reports"
   }
 }

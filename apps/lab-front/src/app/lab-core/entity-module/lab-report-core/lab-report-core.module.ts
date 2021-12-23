@@ -9,19 +9,22 @@ import {LabReportTableComponent} from './component/lab-report-table/lab-report-t
 import {RouterModule} from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabReportFormDialogComponent} from './component/lab-report-form-dialog/lab-report-form-dialog.component';
+import {LabSelectReportDialogComponent} from './component/lab-select-report-dialog/lab-select-report-dialog.component';
 
 @NgModule({
   declarations: [
     LabReportSearchComponent,
     LabReportAdvancedSearchFormComponent,
     LabReportTableComponent,
-    LabReportFormDialogComponent
+    LabReportFormDialogComponent,
+    LabSelectReportDialogComponent
   ],
   exports: [
     LabReportSearchComponent,
     LabReportAdvancedSearchFormComponent,
     LabReportTableComponent,
-    LabReportFormDialogComponent
+    LabReportFormDialogComponent,
+    LabSelectReportDialogComponent
   ],
   imports: [
     CommonModule,

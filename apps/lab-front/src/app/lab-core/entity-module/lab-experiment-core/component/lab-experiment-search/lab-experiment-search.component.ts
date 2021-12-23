@@ -25,7 +25,7 @@ const savedSearch: FlSavedSearch[] = [{
   color: flThemeDetailLight.primary,
   version: 1,
   default: true,
-  filtersCriteria: {type: 'EXPERIMENT'} as Partial<LabExperimentSearchFields>
+  filtersCriteria: {type: 'EXPERIMENT', isValidated: false} as Partial<LabExperimentSearchFields>
 }];
 
 /**

@@ -22,7 +22,8 @@
 
 
   <fl-search-result>
-    <lab-report-table [datasource]="datasource" [columns]="columns"></lab-report-table>
+    <lab-report-table [datasource]="datasource" [columns]="columns"
+                      [rowSelectable]="reportSelectable" (reportSelected)="selectReport($event)"></lab-report-table>
   </fl-search-result>
 
 </fl-search>

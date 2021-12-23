@@ -17,8 +17,8 @@ export class LabSearchConverter {
   }
 
   /**
-   * Search converter for archived checkbox. If check, return no filter (search on archived and not archived)
-   * If null or false, only search on non archived objets
+   * Search converter for validated checkbox. If check, return no filter (search on validated and not validated)
+   * If null or false, only search on non-validated objets
    * @param archived
    */
   public static convertValidated(archived: boolean): boolean | null {

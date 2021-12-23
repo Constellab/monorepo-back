@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlPaginatedTableAbstractDirective} from '@monorepo/front-core-lib';
 import {LabReport} from '../../../../model/entities/lab-report.entity';
 
@@ -10,10 +10,22 @@ import {LabReport} from '../../../../model/entities/lab-report.entity';
 export class LabReportTableComponent extends FlPaginatedTableAbstractDirective<LabReport>
   implements OnInit {
 
+  // when true, the row become clickable and resourceSelected event is trigger
+  @Input() rowSelectable: boolean = false;
+
+  @Output() reportSelected: EventEmitter<LabReport> = new EventEmitter();
+
+
   constructor() {
-    super(['isValidated', 'createdAt'])
+    super(['isValidated', 'createdAt']);
   }
 
   ngOnInit(): void {
+  }
+
+  rowClicked(report: LabReport): void {
+    if (this.rowSelectable) {
+      this.reportSelected.next(report);
+    }
   }
 }

@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlPaginatedTableAbstractDirective} from '@monorepo/front-core-lib';
 import {LabExperiment} from '../../../../model/entities/lab-experiment.entity';
-import {ClHelpService} from '@monorepo/core-lib';
 
 @Component({
   selector: 'lab-experiment-table',
@@ -28,10 +27,5 @@ export class LabExperimentTableComponent extends FlPaginatedTableAbstractDirecti
     if (this.rowSelectable) {
       this.experimentSelected.next(experiment);
     }
-  }
-
-  test(event: MouseEvent): void {
-    event.stopImmediatePropagation();
-    ClHelpService.stopEventPropagation(event);
   }
 }

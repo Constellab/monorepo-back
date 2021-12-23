@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   FL_SEARCH_CONFIG,
   FlDatasourcePaginated,
@@ -26,7 +26,7 @@ const savedSearch: FlSavedSearch[] = [{
   color: flThemeDetailLight.primary,
   version: 1,
   default: true,
-  filtersCriteria: {} as Partial<LabReportSearchFields>
+  filtersCriteria: {isValidated: false} as Partial<LabReportSearchFields>
 }];
 
 /**
@@ -54,6 +54,10 @@ function searchConfig(searchService: FlSearchService<any>): FlSearchConfig {
   ]
 })
 export class LabReportSearchComponent implements OnInit {
+
+  @Input() reportSelectable: boolean = false;
+
+  @Output() reportSelected: EventEmitter<LabReport> = new EventEmitter();
 
   datasource: FlDatasourcePaginated<LabReport>;
 
@@ -83,5 +87,9 @@ export class LabReportSearchComponent implements OnInit {
     if (report) {
       this.routerService.navigateToReportDetail(report.id);
     }
+  }
+
+  selectReport(report: LabReport): void {
+    this.reportSelected.next(report);
   }
 }

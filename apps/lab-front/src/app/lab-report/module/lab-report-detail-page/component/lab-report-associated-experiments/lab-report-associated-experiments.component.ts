@@ -1,7 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LabReportService} from '../../../../../lab-core/entity-service/lab-report.service';
 import {
-  FlConfirmDialogInput,
   FlConfirmDialogResult,
   FlDialogService,
   FlPortalActionResult,
@@ -88,16 +87,7 @@ export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestro
   }
 
   disassociateExperiment(experiment: LabExperiment, index: number): void {
-    const input: FlConfirmDialogInput = {
-      title: 'biox.report_disassociate_experiment',
-      content: 'biox.report_disassociate_experiment_confirmation',
-      translateTitleAndContent: true,
-      observable: this.reportService.removeExperiment(this.state.getCurrentReport().id, experiment.id),
-      successMessage: 'biox.report_experiment_disassociated',
-      translateMessage: true
-    };
-
-    this.dialogService.openConfirmDialog(input).afterClosed().subscribe(
+    this.reportService.removeExperimentWithConfirmation(this.state.getCurrentReport().id, experiment.id).subscribe(
       result => this.disassociateClosed(result, index)
     );
   }

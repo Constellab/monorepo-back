@@ -38,6 +38,9 @@
         <mat-icon>save</mat-icon>
         <fl-button-loader *ngIf="saveDescriptionIsLoading" size="small"></fl-button-loader>
       </button>
+
+      <lab-experiment-associated-reports [experimentId]="experiment.id"
+                                         class="reports"></lab-experiment-associated-reports>
     </div>
   </div>
 </div>

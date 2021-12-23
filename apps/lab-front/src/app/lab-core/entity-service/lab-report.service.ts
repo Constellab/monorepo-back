@@ -1,5 +1,13 @@
 import {Injectable} from '@angular/core';
-import {FlAdvancedSearchInput, FlApiService, FlSearchConverter, FlSearchService} from '@monorepo/front-core-lib';
+import {
+  FlAdvancedSearchInput,
+  FlApiService,
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDialogService,
+  FlSearchConverter,
+  FlSearchService
+} from '@monorepo/front-core-lib';
 import {LabReport, LabReportContent, LabReportForm} from '../model/entities/lab-report.entity';
 import {Observable} from 'rxjs';
 import {ClPageI} from '@monorepo/core-lib';
@@ -11,7 +19,8 @@ export class LabReportService implements FlSearchService<LabReport> {
 
   private route: string = 'report';
 
-  constructor(private apiService: FlApiService) {
+  constructor(private apiService: FlApiService,
+              private dialogService: FlDialogService) {
   }
 
   public create(reportForm: LabReportForm): Observable<LabReport> {
@@ -43,6 +52,19 @@ export class LabReportService implements FlSearchService<LabReport> {
 
   public removeExperiment(reportId: string, experimentId: string): Observable<void> {
     return this.apiService.delete(`${this.route}/${reportId}/remove-experiment/${experimentId}`, null);
+  }
+
+  public removeExperimentWithConfirmation(reportId: string, experimentId: string): Observable<FlConfirmDialogResult<void>>{
+    const input: FlConfirmDialogInput = {
+      title: 'biox.report_disassociate_experiment',
+      content: 'biox.report_disassociate_experiment_confirmation',
+      translateTitleAndContent: true,
+      observable: this.removeExperiment(reportId, experimentId),
+      successMessage: 'biox.report_experiment_disassociated',
+      translateMessage: true
+    };
+
+    return this.dialogService.openConfirmDialog(input).afterClosed();
   }
 
   public validate(reportId: string): Observable<LabReport> {
