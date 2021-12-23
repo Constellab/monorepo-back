@@ -1,15 +1,17 @@
 import {Injectable} from '@nestjs/common';
 import {CnAbstractSecurityLayer} from '../cn-core/class/cn-abstract-security.layer';
-import {Report} from './cn-report.entity';
+import {CnReport} from './cn-report.entity';
 import {CnRefuseAuthorization} from '../cn-core/security/cn-refuse.authorization';
 import {CnReportsService} from './cn-reports.service';
-import {CnExperimentsSecurityLayer} from '../cn-experiments/cn-experiments-security-layer.service';
+import {CnProjectsSecurityLayer} from '../cn-projects/cn-projects-security.layer';
+import {CnCreateReportDto} from './cn-create-report.dto';
+import {CnProject} from '../cn-projects/cn-project.entity';
 
 @Injectable()
-export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<Report> {
+export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<CnReport> {
 
   constructor(private service: CnReportsService,
-              private experimentSecurityLayer: CnExperimentsSecurityLayer) {
+              private projectsSecurityLayer: CnProjectsSecurityLayer) {
     super(service);
   }
 
@@ -22,25 +24,24 @@ export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<Report> {
     return new CnRefuseAuthorization().isAuthorized();
   }
 
-  async isAuthorizedToFindOne(dbEntity: Report): Promise<boolean> {
-    return this.experimentSecurityLayer.isAuthorizedToFindById(dbEntity.experimentId);
+  async isAuthorizedToFindOne(dbEntity: CnReport): Promise<boolean> {
+    return await this.projectsSecurityLayer.isAuthorizedToFindById(dbEntity.projectId);
   }
 
   async isAuthorizedToUpdate(): Promise<boolean> {
     return new CnRefuseAuthorization().isAuthorized();
   }
 
-  // todo add security
-  async createReport(report: Report, experimentId: string): Promise<Report> {
-    report.experiment = await this.experimentSecurityLayer.findByIdAndCheck(experimentId);
-
-    return this.service.create(report);
+  async createReport(createReportDto: CnCreateReportDto, projectId: string): Promise<CnReport> {
+    const project: CnProject = await this.projectsSecurityLayer.getAndCheckAuthorizationToUpdateById(projectId);
+    return this.service.createReport(createReportDto, project);
   }
 
-  async getReportsByExperiment(experimentId: string): Promise<Report[]> {
-    await this.experimentSecurityLayer.getAndCheckAuthorizationToFindById(experimentId);
-
-    return this.service.getReportsByExperiment(experimentId);
+  async getReportsByExperiment(experimentId: string): Promise<CnReport[]> {
+    // await this.experimentSecurityLayer.getAndCheckAuthorizationToFindById(experimentId);
+    //
+    // return this.service.getReportsByExperiment(experimentId);
+    return null;
   }
 
 }

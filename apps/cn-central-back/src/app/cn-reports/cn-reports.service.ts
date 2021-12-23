@@ -1,19 +1,56 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
-import {Report} from './cn-report.entity';
+import {CnReport} from './cn-report.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
+import {CnCreateReportDto} from './cn-create-report.dto';
+import {CnExperimentsService} from '../cn-experiments/cn-experiments.service';
+import {CnProject} from '../cn-projects/cn-project.entity';
+import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 
 @Injectable()
-export class CnReportsService extends CnAbstractService<Report> {
+export class CnReportsService extends CnAbstractService<CnReport> {
 
-  constructor(@InjectRepository(Report) private repository: Repository<Report>) {
-    super(repository, Report);
+  constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
+              private experimentService: CnExperimentsService) {
+    super(repository, CnReport);
   }
 
-  getReportsByExperiment(experimentId: string): Promise<Report[]> {
-    return this.repository.find({
-      where: {experiment: experimentId}
-    });
+  getReportsByExperiment(experimentId: string): Promise<CnReport[]> {
+    // return this.repository.find({
+    //   where: {experiment: experimentId}
+    // });
+    return null;
+  }
+
+  async createReport(reportDTO: CnCreateReportDto, project: CnProject): Promise<CnReport> {
+    // get and check all experiment
+    const experiments: CnExperiment[] = [];
+    for (const experimentId of reportDTO.experimentIds) {
+      const experiment: CnExperiment = await this.experimentService.findById(experimentId);
+
+      if (experiment == null) {
+        throw new BadRequestException('Can\'t create the report because one of the linked experiment could not be found');
+      }
+
+      if (experiment.projectId !== project.id) {
+        throw new BadRequestException('Can\'t create the report because it is linked to an experiment of another project');
+      }
+      experiments.push(experiment);
+    }
+
+    const report = new CnReport();
+    report.id = reportDTO.id;
+    report.createdAt = reportDTO.createdAt;
+    report.createdBy = reportDTO.createdBy;
+    report.lastModifiedAt = reportDTO.lastModifiedAt;
+    report.lastModifiedBy = reportDTO.lastModifiedBy;
+    report.title = reportDTO.title;
+    report.content = reportDTO.content;
+    report.project = project;
+    report.experiments = experiments;
+
+    return await this.repository.save(report);
+
   }
 }

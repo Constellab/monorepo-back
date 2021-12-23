@@ -9,3 +9,8 @@ export abstract class BlEntityWithId {
   id: string;
 
 }
+
+
+export class BlEntityWithIdDTO{
+  id: string;
+}

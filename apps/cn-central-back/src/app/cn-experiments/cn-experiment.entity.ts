@@ -17,7 +17,7 @@ export class CnExperiment extends CnEntityWithStatus<CnExperimentStatusHistory> 
   @Column({nullable: false, length: 50})
   title: string;
 
-  @Column({type: 'text', nullable: true})
+  @Column({type: 'json', array: false, nullable: true})
   description: string;
 
   @Type(() => CnExperimentStatusHistory)
@@ -30,10 +30,9 @@ export class CnExperiment extends CnEntityWithStatus<CnExperimentStatusHistory> 
   @ManyToOne(() => CnLabInstance, {nullable: false, eager: true})
   labInstance: CnLabInstance;
 
-  @BlNotUpdatable()
   @Type(() => CnProject)
   @ManyToOne(() => CnProject, {nullable: false})
-  project: Promise<CnProject>;
+  project: CnProject;
 
   @Column()
   projectId: string;

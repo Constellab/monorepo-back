@@ -1,6 +1,6 @@
 import {Controller, Get, Param, ParseUUIDPipe} from '@nestjs/common';
 import {CnReportsSecurityLayer} from './cn-reports-security.layer';
-import {Report} from './cn-report.entity';
+import {CnReport} from './cn-report.entity';
 
 @Controller('reports')
 export class CnReportsController {
@@ -9,7 +9,7 @@ export class CnReportsController {
   }
 
   @Get('experiment/:experimentId')
-  getReportsByExperiment(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<Report[]> {
+  getReportsByExperiment(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnReport[]> {
     return this.securityLayer.getReportsByExperiment(experimentId);
   }
 

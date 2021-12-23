@@ -3,7 +3,7 @@ import {CnUser} from '../../../cn-users/cn-user.entity';
 import {Type} from 'class-transformer';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
-import {BlEntityWithId, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlEntityWithIdDTO, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../../utils/cn-current-user.helper';
 
 export abstract class CnBaseEntity extends BlEntityWithId {
@@ -34,5 +34,18 @@ export abstract class CnBaseEntity extends BlEntityWithId {
     this.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.lastModifiedAt = ClDateHelper.getDate();
   }
+}
 
+export class CnBaseEntityDTO extends BlEntityWithIdDTO {
+  @BlLuxonDateTimeColumn({nullable: false, update: false})
+  createdAt: DateTime;
+
+  @Type(() => CnUser)
+  createdBy: CnUser;
+
+  @BlLuxonDateTimeColumn()
+  lastModifiedAt: DateTime;
+
+  @Type(() => CnUser)
+  lastModifiedBy: CnUser;
 }

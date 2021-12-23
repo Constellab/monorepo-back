@@ -61,7 +61,7 @@ export class LabExperimentAssociatedReportsComponent implements OnInit, OnDestro
 
   private onAddAction(result: FlPortalActionResult<LabReport>): void {
     if (result.status === 'success') {
-      this.reports.push(result.result);
+      this.reports = [...this.reports, result.result];
     }
   }
 
@@ -92,6 +92,7 @@ export class LabExperimentAssociatedReportsComponent implements OnInit, OnDestro
   private disassociateClosed(result: FlConfirmDialogResult<void>, index: number): void {
     if (result.choice) {
       this.reports.splice(index, 1);
+      this.reports = [...this.reports];
     }
   }
 

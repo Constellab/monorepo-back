@@ -1,18 +1,26 @@
 import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
-import {Column, Entity, ManyToOne} from 'typeorm';
-import {Exclude, Type} from 'class-transformer';
+import {Column, Entity, JoinTable, ManyToMany, ManyToOne} from 'typeorm';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
-import {BlNotUpdatable} from '@monorepo/back-core-lib';
+import {Type} from 'class-transformer';
+import {CnProject} from '../cn-projects/cn-project.entity';
 
 @Entity('report')
-export class Report extends CnBaseEntity {
+export class CnReport extends CnBaseEntity {
 
-  @Exclude()
-  @BlNotUpdatable()
-  @Type(() => CnExperiment)
-  @ManyToOne(() => CnExperiment, {nullable: false})
-  experiment: CnExperiment;
+  @Column()
+  title: string;
 
-  @Column({nullable: false, update: false})
-  experimentId: string;
+  @Column({type: 'json', array: false, nullable: true})
+  content: string;
+
+  @Type(() => CnProject)
+  @ManyToOne(() => CnProject, {nullable: false})
+  project: CnProject;
+
+  @Column()
+  projectId: string;
+
+  @ManyToMany(() => CnExperiment)
+  @JoinTable({name: 'report_experiment'})
+  experiments: CnExperiment[];
 }
