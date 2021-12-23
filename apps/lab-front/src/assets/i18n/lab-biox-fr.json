@@ -112,6 +112,7 @@
     "no_report_associated_experiment": "Aucune experience associée",
     "report_disassociate_experiment": "Désassocier l'expérience",
     "report_disassociate_experiment_confirmation": "Voulez-vous désassocier l'expérience du rapport ?",
-    "report_experiment_disassociated": "Expérience désassociée"
+    "report_experiment_disassociated": "Expérience désassociée",
+    "save_report_content": "Sauvegarder le contenu du rapport"
   }
 }

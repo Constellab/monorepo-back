@@ -112,6 +112,7 @@
     "no_report_associated_experiment": "No associated experiment",
     "report_disassociate_experiment": "Disassociate experiment",
     "report_disassociate_experiment_confirmation": "Do you want to disassociate the experiment from the report ?",
-    "report_experiment_disassociated": "Experiment disassociated"
+    "report_experiment_disassociated": "Experiment disassociated",
+    "save_report_content": "Save report content"
   }
 }

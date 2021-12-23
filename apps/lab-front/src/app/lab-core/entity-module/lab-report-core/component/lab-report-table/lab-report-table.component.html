@@ -1,6 +1,17 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
 
 
+  <!-- Validated -->
+  <ng-container matColumnDef="isValidated">
+    <mat-header-cell *matHeaderCellDef class="validated-column">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let report" class="validated-column">
+      <mat-icon *ngIf="report.isValidated"
+                [matTooltip]="'biox.report_validated' | translate">verified
+      </mat-icon>
+    </mat-cell>
+  </ng-container>
+
   <!-- Datetime -->
   <ng-container matColumnDef="createdAt">
     <mat-header-cell *matHeaderCellDef>
@@ -26,5 +37,6 @@
 
 
   <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable" [routerLink]="row | labDetailRoute"></mat-row>
+  <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
+           [routerLink]="row | labDetailRoute"></mat-row>
 </mat-table>

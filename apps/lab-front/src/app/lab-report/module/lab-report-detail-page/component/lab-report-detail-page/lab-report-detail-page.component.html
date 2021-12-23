@@ -1,16 +1,19 @@
 <div class="g-page">
-  <fl-section fxFlex="auto" [object]="report" [isLoading]="isLoading">
+  <fl-async-section fxFlex="auto" [object]="report$">
 
-    <ng-container *flSectionBody>
+    <ng-container *flSectionBody="let report">
 
-      <div fxLayout="row" fxLayoutAlign="space-between center">
-        <h2>{{report.title}}</h2>
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <mat-icon [matTooltip]="'biox.report_validated' | translate"
+                  class="g-icon-big verified-icon" *ngIf="report.isValidated">verified
+        </mat-icon>
+        <h2 fxFlex="auto">{{report.title}}</h2>
 
         <div *ngIf="!report.isValidated">
-          <button mat-icon-button type="button" [matTooltip]="'biox.update_report' | translate"
+          <button mat-icon-button type="button" [matTooltip]="'biox.save_report_content' | translate"
                   (click)="saveReportContent()">
             <mat-icon>save</mat-icon>
-            <fl-button-loader *ngIf="saveIsLoading" size="small"></fl-button-loader>
+            <fl-button-loader *ngIf="saveContentIsLoading" size="small"></fl-button-loader>
           </button>
 
           <button mat-icon-button type="button" [matTooltip]="'biox.update_report' | translate"
@@ -36,15 +39,15 @@
 
         </div>
 
-        <fl-text-editor fxFlex="auto" [(ngModel)]="report.content" mode="JSON"
+        <fl-text-editor fxFlex="auto" [(ngModel)]="content" mode="JSON"
                         [disabled]="report.isValidated" class="g-max-article-width g-full-height"
                         [placeholder]="'biox.report_placeholder' | translate"></fl-text-editor>
         <div class="report-side experiments">
-          <lab-report-associated-experiments [reportId]="report.id"></lab-report-associated-experiments>
+          <lab-report-associated-experiments></lab-report-associated-experiments>
         </div>
       </div>
 
 
     </ng-container>
-  </fl-section>
+  </fl-async-section>
 </div>

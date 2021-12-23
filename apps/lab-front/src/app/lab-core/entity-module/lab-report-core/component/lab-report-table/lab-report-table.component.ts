@@ -11,7 +11,7 @@ export class LabReportTableComponent extends FlPaginatedTableAbstractDirective<L
   implements OnInit {
 
   constructor() {
-    super(['createdAt'])
+    super(['isValidated', 'createdAt'])
   }
 
   ngOnInit(): void {

@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LabReportService} from '../../../../../lab-core/entity-service/lab-report.service';
 import {
   FlConfirmDialogInput,
@@ -12,6 +12,7 @@ import {
 } from '../../../../../lab-core/entity-module/lab-experiment-core/component/lab-select-experiment-dialog/lab-select-experiment-dialog.component';
 import {LabExperiment} from '../../../../../lab-core/model/entities/lab-experiment.entity';
 import {Subscription} from 'rxjs';
+import {LabReportDetailPageState} from '../../lab-report-detail-page.state';
 
 /**
  * Component to list the associated experiment of a report with
@@ -24,21 +25,27 @@ import {Subscription} from 'rxjs';
 })
 export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestroy {
 
-  @Input() reportId: string;
-
   experiments: LabExperiment[] = [];
   isLoading: boolean = false;
+
+  canEdit: boolean = false;
 
   private readonly actionName: string = 'report-associate-experiment';
 
   private subscription: Subscription;
 
-  constructor(private reportService: LabReportService,
+  constructor(private state: LabReportDetailPageState,
+              private reportService: LabReportService,
               private dialogService: FlDialogService,
               private actionService: FlPortalActionsService) {
   }
 
   ngOnInit(): void {
+    // refresh the can edit bool
+    this.state.getReport$().subscribe(
+      report => this.canEdit = !report.isValidated
+    );
+
     this.getExperiments();
 
     this.subscription = this.actionService.getResult$(this.actionName).subscribe(
@@ -53,7 +60,7 @@ export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestro
   }
 
   private getExperiments(): void {
-    this.reportService.getExperimentByReports(this.reportId).subscribe(
+    this.reportService.getExperimentByReports(this.state.getCurrentReport().id).subscribe(
       experiments => this.getExperimentSuccess(experiments),
       () => this.isLoading = false
     );
@@ -74,7 +81,7 @@ export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestro
     if (experiment) {
       this.actionService.addAction({
         type: this.actionName,
-        action: this.reportService.addExperiment(this.reportId, experiment.id),
+        action: this.reportService.addExperiment(this.state.getCurrentReport().id, experiment.id),
         text: {text: 'biox.report_associate_experiment', translateText: true},
       }, true);
     }
@@ -85,7 +92,7 @@ export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestro
       title: 'biox.report_disassociate_experiment',
       content: 'biox.report_disassociate_experiment_confirmation',
       translateTitleAndContent: true,
-      observable: this.reportService.removeExperiment(this.reportId, experiment.id),
+      observable: this.reportService.removeExperiment(this.state.getCurrentReport().id, experiment.id),
       successMessage: 'biox.report_experiment_disassociated',
       translateMessage: true
     };
