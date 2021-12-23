@@ -273,6 +273,12 @@ mat-tree {
   flex: 1;
 }
 
+// set the mat-tab full height of the mat-tab-group
+// to be place on mat-tab-group
+.g-mat-tab-full-height .mat-tab-body-wrapper{
+  flex-grow: 1;
+}
+
 /************************************* MAT SELECT ***********************************/
 // capitalize selected value
 .g-mat-select-capitalize .mat-select-value-text {

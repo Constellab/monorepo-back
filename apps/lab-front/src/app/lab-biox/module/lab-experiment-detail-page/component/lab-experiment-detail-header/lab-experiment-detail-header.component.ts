@@ -22,20 +22,25 @@ import {
 } from '../lab-experiment-validation-dialog/lab-experiment-validation-dialog.component';
 import {LabExperimentService} from '../../../../../lab-core/entity-service/lab-experiment.service';
 import {LabRouterService} from '../../../../../lab-core/service/lab-router.service';
+import {LabReport} from '../../../../../lab-core/model/entities/lab-report.entity';
+import {
+  LabReportFormDialogComponent,
+  LabReportFormDialogInput
+} from '../../../../../lab-core/entity-module/lab-report-core/component/lab-report-form-dialog/lab-report-form-dialog.component';
+import {clRxjsDebug} from '@monorepo/core-lib';
 
 /**
- * Experiment card info for the experiment detail page
+ * Header for the experiment detail page
  */
 @Component({
-  selector: 'lab-experiment-detail-card',
-  templateUrl: './lab-experiment-detail-card.component.html',
-  styleUrls: ['./lab-experiment-detail-card.component.scss']
+  selector: 'lab-experiment-detail-header',
+  templateUrl: './lab-experiment-detail-header.component.html',
+  styleUrls: ['./lab-experiment-detail-header.component.scss']
 })
-export class LabExperimentDetailCardComponent implements OnInit {
+export class LabExperimentDetailHeaderComponent implements OnInit {
 
   experiment$: Observable<LabExperiment>;
 
-  showDetail: boolean = true;
 
   constructor(private experimentState: LabExperimentDetailPageState,
               private dialogService: FlDialogService,
@@ -53,7 +58,6 @@ export class LabExperimentDetailCardComponent implements OnInit {
 
     const experimentForm: LabExperimentSimpleForm = {
       title: experiment.title,
-      description: experiment.description,
       project: experiment.project
     };
     const input: LabExperimentFormDialogInput = {
@@ -90,18 +94,10 @@ export class LabExperimentDetailCardComponent implements OnInit {
     this.dialogService.openSmallDialog(LabProgressBarInfoDialogComponent,
       {
         data:
-          this.experimentState.getFlow$().pipe(
+          this.experimentState.getFlow$().pipe(clRxjsDebug(),
             map(flow => flow.object.progressBar)
           )
       });
-  }
-
-  toggleDetail(): void {
-    this.showDetail = !this.showDetail;
-  }
-
-  get expandIcon(): string {
-    return this.showDetail ? 'expand_less' : 'expand_more';
   }
 
   stopExperiment(): void {
@@ -159,6 +155,23 @@ export class LabExperimentDetailCardComponent implements OnInit {
   private onDuplicateClosed(result: FlConfirmDialogResult<LabExperiment>): void {
     if (result.choice) {
       this.routerService.navigateToExperimentDetail(result.result.id);
+    }
+  }
+
+  openCreateReport(): void {
+    const input: LabReportFormDialogInput = {
+      mode: 'create',
+      experimentId: this.experimentState.currentExperiment.id,
+    };
+
+    this.dialogService.openSmallDialog(LabReportFormDialogComponent, {data: input}).afterClosed().subscribe(
+      report => this.onReportCreateClosed(report)
+    );
+  }
+
+  private onReportCreateClosed(report?: LabReport): void {
+    if (report) {
+      this.routerService.navigateToReportDetail(report.id);
     }
   }
 

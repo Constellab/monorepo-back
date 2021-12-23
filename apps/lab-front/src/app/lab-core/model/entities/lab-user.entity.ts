@@ -10,7 +10,7 @@ export class LabUser implements FlEntity {
   @Expose({name: 'first_name'})
   firstname: string;
 
-  @Expose({name: 'first_name'})
+  @Expose({name: 'last_name'})
   lastname: string;
 
   get fullname(): string {

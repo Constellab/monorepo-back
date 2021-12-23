@@ -7,11 +7,13 @@ import {LabFlow} from '../../../../lab-core/model/global/lab-connection.class';
 import {LabProtocol} from '../../../../lab-core/model/entities/process/lab-protocol.entity';
 import {LabProtocolService} from '../../../../lab-core/entity-service/lab-protocol.service';
 import {LabTag} from '../../../../lab-core/model/entities/lab-tag.entity';
+import {FlQuillJson} from '@monorepo/front-core-lib';
 
 @Injectable()
 export class LabExperimentDetailPageState {
 
   private experiment$: BehaviorSubject<LabExperiment>;
+  private experimentDescription$: BehaviorSubject<FlQuillJson>;
 
   // flow of the experiment
   private flow$: BehaviorSubject<LabFlow<LabProtocol>>;
@@ -26,6 +28,7 @@ export class LabExperimentDetailPageState {
   public init(experimentId: string): void {
     this.ready = false;
     this.experiment$ = new BehaviorSubject(null);
+    this.experimentDescription$ = new BehaviorSubject(null);
     this.flow$ = new BehaviorSubject(null);
     this.experimentService.getExperiment(experimentId).subscribe(
       experiment => this.getExperimentSuccess(experiment),
@@ -36,7 +39,7 @@ export class LabExperimentDetailPageState {
   private getExperimentSuccess(experiment: LabExperiment): void {
     this.ready = true;
     this.experiment$.next(experiment);
-
+    this.experimentDescription$.next(experiment.description)
     // load flow
     this.loadFlow(experiment.protocol.id);
   }
@@ -64,17 +67,21 @@ export class LabExperimentDetailPageState {
     this.experiment$.value.tags = tags;
   }
 
+  public getDescription$(): Observable<FlQuillJson> {
+    return this.experimentDescription$.asObservable();
+  }
+
+  public updateDescription(description: FlQuillJson): void {
+    this.experimentDescription$.next(description);
+  }
+
   /////////////////////////////////// FLOW ////////////////////////////////////
 
   private loadFlow(protocolId: string): void {
     this.protocolService.getProtocolAsFlow(protocolId).subscribe(
-      flow => this.loadFlowSuccess(flow),
+      flow => this.flow$.next(flow),
       error => this.flow$.error(error)
     );
-  }
-
-  private loadFlowSuccess(flow: LabFlow<LabProtocol>): void {
-    this.flow$.next(flow);
   }
 
 
@@ -84,13 +91,10 @@ export class LabExperimentDetailPageState {
     );
   }
 
-  public getFlowPromise(): Promise<LabFlow<LabProtocol>> {
-    return this.getFlow$().toPromise();
-  }
-
   ////////////////////// OTHER ///////////////////////
   public clear(): void {
     this.experiment$.complete();
     this.flow$.complete();
+    this.experimentDescription$.complete();
   }
 }

@@ -3,8 +3,14 @@
   margin-right: 0.5em;
 }
 
-.report-side {
+.side {
   flex: 1;
+  max-width: 30rem;
+}
+
+.text-editor{
+  height: 100%;
+  flex: 2;
 }
 
 .experiments {
@@ -12,3 +18,5 @@
   box-sizing: border-box;
   padding-left: 1em;
 }
+
+

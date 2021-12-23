@@ -3,6 +3,7 @@ import {
   FlAdvancedSearchInput,
   FlApiService,
   FlEntityPaginatedDatasource,
+  FlQuillJson,
   FlSearchConverter,
   FlSearchService,
   FlTag
@@ -57,6 +58,10 @@ export class LabExperimentService implements FlSearchService<LabExperiment> {
   // update the experiment and the protocol inside if provided
   public update(experimentId: string, experiment: LabExperimentSimpleForm): Observable<LabExperiment> {
     return this.apiService.put(`${this.route}/${experimentId}`, experiment, LabExperiment);
+  }
+
+  public updateDescription(experimentId: string, description: FlQuillJson): Observable<LabExperiment> {
+    return this.apiService.put(`${this.route}/${experimentId}/description`, description, LabExperiment);
   }
 
   public updateExperimentProtocol(experimentId: string, workflow: LabWorkflow): Observable<LabExperiment> {

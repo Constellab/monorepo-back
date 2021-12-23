@@ -33,8 +33,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabWorkflowNodeDetailState} from './state/lab-workflow-node-detail.state';
 import {LabProcessCoreModule} from '../../../lab-core/entity-module/lab-process-core/lab-process-core.module';
 import {
-  LabExperimentDetailCardComponent
-} from './component/lab-experiment-detail-card/lab-experiment-detail-card.component';
+  LabExperimentDetailHeaderComponent
+} from './component/lab-experiment-detail-header/lab-experiment-detail-header.component';
 import {
   LabProgressBarInfoDialogComponent
 } from './component/lab-progress-bar-info-dialog/lab-progress-bar-info-dialog.component';
@@ -43,6 +43,7 @@ import {
 } from './component/lab-experiment-validation-dialog/lab-experiment-validation-dialog.component';
 import {LabProjectCoreModule} from '../../../lab-core/entity-module/lab-project-core/lab-project-core.module';
 import {LabWorkflowNodeSourceComponent} from './component/lab-workflow-node-source/lab-workflow-node-source.component';
+import {LabExperimentDetailComponent} from './component/lab-experiment-detail/lab-experiment-detail.component';
 
 
 @NgModule({
@@ -60,10 +61,11 @@ import {LabWorkflowNodeSourceComponent} from './component/lab-workflow-node-sour
     LabWorkflowNodeConfigComponent,
     LabProgressBarInfoComponent,
     LabTaskSourceConfigComponent,
-    LabExperimentDetailCardComponent,
+    LabExperimentDetailHeaderComponent,
     LabProgressBarInfoDialogComponent,
     LabExperimentValidationDialogComponent,
     LabWorkflowNodeSourceComponent,
+    LabExperimentDetailComponent,
   ],
   imports: [
     CommonModule,

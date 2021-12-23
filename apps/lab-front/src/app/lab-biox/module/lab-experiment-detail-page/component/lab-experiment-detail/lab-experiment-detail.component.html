@@ -1,0 +1,43 @@
+<div class="g-full-height container" fxLayout="row" fxLayoutAlign="center" *ngIf="experiment$| async as experiment">
+
+  <!-- Technical information -->
+  <div class="side">
+
+    <!--  Tags  -->
+    <fl-tag-list class="tag-list" [tags]="experiment.tags"></fl-tag-list>
+
+    <!--  Project  -->
+    <div *ngIf="experiment.project" class="separator">
+      {{'biox.project' | translate}} : <span class="g-text-light">{{experiment.project.title | translate}}</span>
+    </div>
+
+    <!--  Type  -->
+    <div class="separator">
+      {{'biox.experiment_type' | translate}} : <span class="g-text-light">{{experiment.type.name | translate}}</span>
+    </div>
+
+    <!--  Created by & Last modified bt  -->
+    <p class="g-text-small g-text-light separator">
+      {{'created_by'| translate}} {{experiment.createdBy.fullname}}
+      {{'the'| translate}} {{experiment.createdAt | flDate}}
+    </p>
+    <p class="g-text-small g-text-light">
+      {{'last_modified_by'| translate}} {{experiment.lastModifiedBy.fullname}}
+      {{'the'| translate}} {{experiment.lastModifiedAt | flDate}}
+    </p>
+  </div>
+
+  <fl-text-editor [(ngModel)]="description" mode="JSON"
+                  [disabled]="experiment.isValidated" class="g-max-article-width text-editor"
+                  [placeholder]="'biox.experiment_description_placeholder' | translate"></fl-text-editor>
+  <div class="side">
+
+    <div>
+      <button mat-icon-button type="button" [matTooltip]="'biox.experiment_save_description' | translate"
+              (click)="saveDescription()">
+        <mat-icon>save</mat-icon>
+        <fl-button-loader *ngIf="saveDescriptionIsLoading" size="small"></fl-button-loader>
+      </button>
+    </div>
+  </div>
+</div>

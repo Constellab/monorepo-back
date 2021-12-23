@@ -6,3 +6,9 @@
 .section{
   margin-bottom: 0;
 }
+
+::ng-deep{
+  .mat-tab-header{
+    background-color: var(--card-background);
+  }
+}

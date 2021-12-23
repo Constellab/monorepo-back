@@ -1,0 +1,49 @@
+<div *ngIf="experiment$ | async as experiment" fxLayout="row" fxLayoutAlign="start center">
+
+  <fl-text-icon fxFlex="auto">
+    <mat-icon *ngIf="experiment.isValidated" class="g-icon-big"
+              [matTooltip]="'biox.experiment_validated' | translate">
+      verified
+    </mat-icon>
+    <h1>{{experiment.title}}</h1>
+  </fl-text-icon>
+
+  <button mat-icon-button type="button" (click)="openCreateReport()"
+          [matTooltip]="'biox.create_report' | translate">
+    <mat-icon>content_paste</mat-icon>
+  </button>
+
+  <ng-container *ngIf="experiment.isEditable()">
+    <button *ngIf="experiment.isRunning()" mat-icon-button type="button" (click)="stopExperiment()"
+            [matTooltip]="'biox.stop_experiment' | translate">
+      <mat-icon>stop</mat-icon>
+    </button>
+
+    <button mat-icon-button type="button" (click)="openUpdateDialog()"
+            [matTooltip]="'biox.update_experiment' | translate">
+      <mat-icon>edit</mat-icon>
+    </button>
+
+    <button mat-icon-button type="button" (click)="openValidationDialog()"
+            [matTooltip]="'biox.validate_experiment' | translate">
+      <mat-icon>verified</mat-icon>
+    </button>
+
+    <button mat-icon-button type="button" (click)="openTagsFormDialog()"
+            [matTooltip]="'tags' | translate">
+      <mat-icon>local_offer</mat-icon>
+    </button>
+  </ng-container>
+
+  <button mat-icon-button type="button" (click)="openDuplicateConfirmation()"
+          [matTooltip]="'biox.clone_experiment' | translate">
+    <mat-icon>content_copy</mat-icon>
+  </button>
+
+
+  <fl-status-chip [status]="experiment.status" mode="iconText"
+                  class="status" (click)="openProgressInformation()"
+                  [ngClass]="{'g-clickable': experiment.status.value !== 'DRAFT'}"></fl-status-chip>
+
+
+</div>

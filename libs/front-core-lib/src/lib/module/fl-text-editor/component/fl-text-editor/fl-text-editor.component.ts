@@ -38,10 +38,12 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   @Input() config: any = FlQuillConfig.defaultToolbarConfig;
 
-  @Input() mode: FlTextEditorMode;
-
+  @Input() mode: FlTextEditorMode = 'HTML';
 
   @Input() placeholder: string;
+
+  // if true the text editor is focused on creation
+  @Input() autoFocus: boolean = false;
 
   @Output() textChange: EventEmitter<string> = new EventEmitter<string>();
   @ViewChild('editor', {static: true}) editorElement: ElementRef<HTMLElement>;
@@ -61,7 +63,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
         modules: {
           toolbar: FlQuillConfig.defaultToolbarConfig,
         },
-        placeholder: this.placeholder
+        placeholder: this.placeholder,
       }
     );
 
@@ -74,6 +76,10 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
     // init the disabled
     this.onDisableChange(this.disabled);
+
+    if (this.autoFocus && !this.disabled) {
+      this.quill.focus();
+    }
   }
 
 

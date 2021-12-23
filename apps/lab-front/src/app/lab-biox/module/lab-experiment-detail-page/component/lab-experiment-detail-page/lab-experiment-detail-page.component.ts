@@ -22,6 +22,7 @@ export class LabExperimentDetailPageComponent implements OnInit, OnDestroy {
 
   experiment$: Observable<LabExperiment>;
 
+
   constructor(private route: ActivatedRoute,
               private experimentState: LabExperimentDetailPageState,
               private dialogService: FlDialogService,

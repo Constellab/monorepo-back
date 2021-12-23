@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
 import {LabFlow} from '../../../../../lab-core/model/global/lab-connection.class';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
@@ -11,11 +11,11 @@ import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
   templateUrl: './lab-workflow.component.html',
   styleUrls: ['./lab-workflow.component.scss']
 })
-export class LabWorkflowComponent implements OnInit, OnDestroy {
+export class LabWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('workflow', {static: false}) container: ElementRef<HTMLElement>;
 
-  flowIsLoading: boolean = false;
+  flowIsLoading: boolean = true;
   error: boolean = false;
 
   constructor(private workflowManagerState: LabWorkflowManagerState,
@@ -24,12 +24,13 @@ export class LabWorkflowComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadExperimentFlow();
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => this.loadExperimentFlow(), 0);
+  }
 
   private loadExperimentFlow(): void {
-    this.flowIsLoading = true;
     this.experimentState.getFlow$().subscribe(
       flow => this.loadExperimentFlowSuccess(flow),
       () => this.onError()

@@ -1,7 +1,7 @@
 import {LabEntity} from '../global/lab-entity.entity';
 import {
   FlEntityPaginatedDatasource,
-  FlSanitizeTransform,
+  FlQuillJson,
   FlStatus,
   FlStatusDict,
   FlStatusHelper,
@@ -11,7 +11,6 @@ import {Expose, Type} from 'class-transformer';
 import {LabProject} from './lab-project.class';
 import {LabTag} from './lab-tag.entity';
 import {LabBaseEntityWithUser} from './lab-user.entity';
-import {SecurityContext} from '@angular/core';
 
 export type LabExperimentStatus = 'DRAFT' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
@@ -31,19 +30,15 @@ export const labExperimentTypeDict: FlStatusDict<LabExperimentType> = {
   EXPERIMENT: FlStatusHelper.getInfoStatus('EXPERIMENT', 'biox.experiment_type_experiment'),
   TRANSFORMER: FlStatusHelper.getInfoStatus('TRANSFORMER', 'biox.experiment_type_transformer', 'move_down'),
   IMPORTER: FlStatusHelper.getInfoStatus('IMPORTER', 'biox.experiment_type_importer'),
-}
+};
 
 export class LabExperiment extends LabBaseEntityWithUser {
-
-  @Expose({name: 'protocol_job_id'})
-  protocolJobId: string;
 
   score: any;
 
   title: string;
 
-  @FlSanitizeTransform(SecurityContext.HTML)
-  description: string;
+  description: FlQuillJson;
 
   data: void;
 
@@ -83,6 +78,5 @@ export type LabExperimentDatasource = FlEntityPaginatedDatasource<LabExperiment>
 // form object to create an experiment
 export interface LabExperimentSimpleForm {
   title: string;
-  description: string;
   project: LabProject;
 }

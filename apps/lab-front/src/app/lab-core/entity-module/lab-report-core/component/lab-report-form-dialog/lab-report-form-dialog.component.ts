@@ -9,6 +9,7 @@ import {LabReportService} from '../../../../entity-service/lab-report.service';
 
 export interface LabReportFormDialogInput extends FlFormDialogInput<LabReportForm> {
   reportId?: string;
+  experimentId?: string; // can be provided during create to associate the report directly to an experiment
 }
 
 @Component({
@@ -42,7 +43,11 @@ export class LabReportFormDialogComponent extends FlFormDialogAbstractDirective<
   }
 
   create(formValue: LabReportForm): Observable<LabReport> {
-    return this.reportService.create(formValue);
+    if (this.dialogInput.experimentId) {
+      return this.reportService.createForExperiment(formValue, this.dialogInput.experimentId);
+    } else {
+      return this.reportService.create(formValue);
+    }
   }
 
   update(formValue: LabReportForm): Observable<LabReport> {

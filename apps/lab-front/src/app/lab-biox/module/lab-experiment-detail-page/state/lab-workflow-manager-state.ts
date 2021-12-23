@@ -54,7 +54,6 @@ export class LabWorkflowManagerState {
               private actionsService: FlPortalActionsService,
               private resourceService: LabResourceService,
               private ngZone: NgZone) {
-    console.log('New workflow manager');
   }
 
   public init(element: HTMLElement, flow: LabFlow<LabProtocol>, experiment: LabExperiment): void {

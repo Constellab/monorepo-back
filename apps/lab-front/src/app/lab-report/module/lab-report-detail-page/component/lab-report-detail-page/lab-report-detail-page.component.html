@@ -34,15 +34,15 @@
       </div>
 
       <!--   Content   -->
-      <div fxFlex="auto" class="g-full" fxLayout="row">
-        <div class="report-side">
+      <div fxFlex="auto" class="g-full" fxLayout="row" fxLayoutAlign="center">
+        <div class="side">
 
         </div>
 
-        <fl-text-editor fxFlex="auto" [(ngModel)]="content" mode="JSON"
-                        [disabled]="report.isValidated" class="g-max-article-width g-full-height"
-                        [placeholder]="'biox.report_placeholder' | translate"></fl-text-editor>
-        <div class="report-side experiments">
+        <fl-text-editor [(ngModel)]="content" mode="JSON"
+                        [disabled]="report.isValidated" class="g-max-article-width text-editor"
+                        [placeholder]="'biox.report_placeholder' | translate" [autoFocus]="true"></fl-text-editor>
+        <div class="side experiments">
           <lab-report-associated-experiments></lab-report-associated-experiments>
         </div>
       </div>
