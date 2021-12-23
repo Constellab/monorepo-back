@@ -109,7 +109,7 @@
     "report_updated": "Report updated",
     "report_placeholder": "Write your report...",
     "validate_report": "Validate report",
-    "validate_report_confirmation": "Do you want to validate the report ? Once validated the report can't be updated nor deleted. If the report is associated with experiments, the experiments must be validated.",
+    "validate_report_help_text": "Once validated the report can't be updated nor deleted. If the report is associated with experiments, the experiments must be validated before. The report must be linked to a project to be validated",
     "report_validated": "Report validated",
     "delete_report": "Delete report",
     "delete_report_confirmation": "Are-you sure you want to delete the report ? Once deleted it can't be recovered.",

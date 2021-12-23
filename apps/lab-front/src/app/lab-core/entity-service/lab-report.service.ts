@@ -13,6 +13,7 @@ import {Observable} from 'rxjs';
 import {ClPageI} from '@monorepo/core-lib';
 import {LabExperiment} from '../model/entities/lab-experiment.entity';
 import {LabReportSearch} from '../entity-module/lab-report-core/model/lab-report-advanced-search.class';
+import {LabProject} from '../model/entities/lab-project.class';
 
 @Injectable({providedIn: 'root'})
 export class LabReportService implements FlSearchService<LabReport> {
@@ -54,7 +55,7 @@ export class LabReportService implements FlSearchService<LabReport> {
     return this.apiService.delete(`${this.route}/${reportId}/remove-experiment/${experimentId}`, null);
   }
 
-  public removeExperimentWithConfirmation(reportId: string, experimentId: string): Observable<FlConfirmDialogResult<void>>{
+  public removeExperimentWithConfirmation(reportId: string, experimentId: string): Observable<FlConfirmDialogResult<void>> {
     const input: FlConfirmDialogInput = {
       title: 'biox.report_disassociate_experiment',
       content: 'biox.report_disassociate_experiment_confirmation',
@@ -67,8 +68,8 @@ export class LabReportService implements FlSearchService<LabReport> {
     return this.dialogService.openConfirmDialog(input).afterClosed();
   }
 
-  public validate(reportId: string): Observable<LabReport> {
-    return this.apiService.put(`${this.route}/${reportId}/validate`, null, LabReport);
+  public validate(reportId: string, project: LabProject): Observable<LabReport> {
+    return this.apiService.put(`${this.route}/${reportId}/validate`, project, LabReport);
   }
 
   ///////////////////////////////////////////// GET /////////////////////////////////////////////

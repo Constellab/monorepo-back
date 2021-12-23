@@ -36,7 +36,10 @@
       <!--   Content   -->
       <div fxFlex="auto" class="g-full" fxLayout="row" fxLayoutAlign="center">
         <div class="side">
-
+          <!--  Project  -->
+          <div *ngIf="report.project" class="separator">
+            {{'biox.project' | translate}} : <span class="g-text-light">{{report.project.title | translate}}</span>
+          </div>
         </div>
 
         <fl-text-editor [(ngModel)]="content" mode="JSON"

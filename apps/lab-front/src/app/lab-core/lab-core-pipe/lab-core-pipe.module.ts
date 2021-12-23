@@ -13,4 +13,4 @@ import {LabDetailRoutePipe} from './lab-detail-route/lab-detail-route.pipe';
     CommonModule
   ]
 })
-export class CorePipeModule { }
+export class LabCorePipeModule { }

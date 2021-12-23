@@ -59,7 +59,7 @@ export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestro
   }
 
   private getExperiments(): void {
-    this.reportService.getExperimentByReports(this.state.getCurrentReport().id).subscribe(
+    this.reportService.getExperimentByReports(this.state.currentReport.id).subscribe(
       experiments => this.getExperimentSuccess(experiments),
       () => this.isLoading = false
     );
@@ -80,14 +80,14 @@ export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestro
     if (experiment) {
       this.actionService.addAction({
         type: this.actionName,
-        action: this.reportService.addExperiment(this.state.getCurrentReport().id, experiment.id),
+        action: this.reportService.addExperiment(this.state.currentReport.id, experiment.id),
         text: {text: 'biox.report_associate_experiment', translateText: true},
       }, true);
     }
   }
 
   disassociateExperiment(experiment: LabExperiment, index: number): void {
-    this.reportService.removeExperimentWithConfirmation(this.state.getCurrentReport().id, experiment.id).subscribe(
+    this.reportService.removeExperimentWithConfirmation(this.state.currentReport.id, experiment.id).subscribe(
       result => this.disassociateClosed(result, index)
     );
   }

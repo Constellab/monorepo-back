@@ -10,6 +10,11 @@ import {
 import {LabRouterService} from '../../../../../lab-core/service/lab-router.service';
 import {LabReportDetailPageState} from '../../lab-report-detail-page.state';
 import {Observable} from 'rxjs';
+import {
+  LabValidateObjectDialogComponent,
+  LabValidateObjectDialogInput
+} from '../../../../../lab-core/entity-module/lab-project-core/component/lab-validate-object-dialog/lab-validate-object-dialog.component';
+import {LabProject} from '../../../../../lab-core/model/entities/lab-project.class';
 
 @Component({
   selector: 'lab-report-detail-page',
@@ -47,7 +52,7 @@ export class LabReportDetailPageComponent implements OnInit {
 
 
   updateReport(): void {
-    const report: LabReport = this.state.getCurrentReport();
+    const report: LabReport = this.state.currentReport;
     const input: LabReportFormDialogInput = {
       mode: 'update',
       reportId: report.id,
@@ -70,7 +75,7 @@ export class LabReportDetailPageComponent implements OnInit {
   saveReportContent(): void {
     if (this.saveContentIsLoading) return;
     this.saveContentIsLoading = true;
-    this.reportService.updateContent(this.state.getCurrentReport().id, this.content).subscribe(
+    this.reportService.updateContent(this.state.currentReport.id, this.content).subscribe(
       () => this.saveContentSuccess(this.content),
       () => this.saveContentIsLoading = false
     );
@@ -82,23 +87,24 @@ export class LabReportDetailPageComponent implements OnInit {
   }
 
   validate(): void {
-    const input: FlConfirmDialogInput = {
+    const report = this.state.currentReport;
+
+    const input: LabValidateObjectDialogInput = {
       title: 'biox.validate_report',
-      content: 'biox.validate_report_confirmation',
-      translateTitleAndContent: true,
-      observable: this.reportService.validate(this.state.getCurrentReport().id),
-      successMessage: 'biox.report_validated',
-      translateMessage: true
+      validate: (project: LabProject): Observable<any> => this.reportService.validate(report.id, project),
+      project: report.project,
+      helpText: 'biox.validate_report_help_text',
+      successMessage: 'biox.report_validated'
     };
 
-    this.dialogService.openConfirmDialog(input).afterClosed().subscribe(
+    this.dialogService.openSmallDialog(LabValidateObjectDialogComponent, {data: input}).afterClosed().subscribe(
       result => this.validatedClosed(result)
     );
   }
 
-  private validatedClosed(result: FlConfirmDialogResult<LabReport>): void {
-    if (result.choice) {
-      this.state.updateReport(result.result);
+  private validatedClosed(report?: LabReport): void {
+    if (report) {
+      this.state.updateReport(report);
     }
   }
 
@@ -107,7 +113,7 @@ export class LabReportDetailPageComponent implements OnInit {
       title: 'biox.delete_report',
       content: 'biox.delete_report_confirmation',
       translateTitleAndContent: true,
-      observable: this.reportService.delete(this.state.getCurrentReport().id),
+      observable: this.reportService.delete(this.state.currentReport.id),
       successMessage: 'biox.report_deleted',
       translateMessage: true
     };

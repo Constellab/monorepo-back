@@ -1,6 +1,7 @@
 import {LabBaseEntityWithUser} from './lab-user.entity';
-import {Expose} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
 import {FlQuillJson} from '@monorepo/front-core-lib';
+import {LabProject} from './lab-project.class';
 
 export type LabReportContent = FlQuillJson;
 
@@ -12,6 +13,9 @@ export class LabReport extends LabBaseEntityWithUser {
 
   @Expose({name: 'is_validated'})
   isValidated: boolean;
+
+  @Type(() => LabProject)
+  project: LabProject;
 }
 
 export interface LabReportForm {

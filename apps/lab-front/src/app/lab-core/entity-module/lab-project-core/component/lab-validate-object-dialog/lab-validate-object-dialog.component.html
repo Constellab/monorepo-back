@@ -1,9 +1,11 @@
 <fl-dialog-header>
-  {{'biox.validate_experiment' | translate}}
+  {{title | translate}}
 </fl-dialog-header>
 
 <mat-dialog-content>
   <form (ngSubmit)="submit()" id="validation-form">
+
+    <p *ngIf="helpText" class="g-text-light help-text">{{helpText| translate}}</p>
 
     <!--    Project      -->
     <mat-form-field class="g-form-input">
@@ -22,7 +24,7 @@
 <div mat-dialog-actions>
   <button mat-raised-button color="primary" type="submit" form="validation-form"
           class="g-centered-forced">
-    {{'biox.validate_experiment' | translate}}
+    {{title | translate}}
     <fl-button-loader *ngIf="isLoading"></fl-button-loader>
   </button>
 </div>

@@ -25,7 +25,7 @@ export class LabReportDetailPageState implements OnDestroy {
     this.reportContent$.next(report.content);
   }
 
-  public getCurrentReport(): LabReport {
+  public get currentReport(): LabReport {
     return this.report$.value;
   }
 
@@ -38,7 +38,7 @@ export class LabReportDetailPageState implements OnDestroy {
   }
 
   public updateReport(report: LabReport): void {
-    const currentReport = this.getCurrentReport();
+    const currentReport = this.currentReport;
     currentReport.title = report.title;
     currentReport.isValidated = report.isValidated;
     this.report$.next(currentReport);

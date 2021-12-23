@@ -16,10 +16,6 @@ import {
   LabProgressBarInfoDialogComponent
 } from '../lab-progress-bar-info-dialog/lab-progress-bar-info-dialog.component';
 import {map} from 'rxjs/operators';
-import {
-  LabExperimentValidationDialogComponent,
-  LabExperimentValidationDialogInput
-} from '../lab-experiment-validation-dialog/lab-experiment-validation-dialog.component';
 import {LabExperimentService} from '../../../../../lab-core/entity-service/lab-experiment.service';
 import {LabRouterService} from '../../../../../lab-core/service/lab-router.service';
 import {LabReport} from '../../../../../lab-core/model/entities/lab-report.entity';
@@ -28,6 +24,11 @@ import {
   LabReportFormDialogInput
 } from '../../../../../lab-core/entity-module/lab-report-core/component/lab-report-form-dialog/lab-report-form-dialog.component';
 import {clRxjsDebug} from '@monorepo/core-lib';
+import {
+  LabValidateObjectDialogComponent,
+  LabValidateObjectDialogInput
+} from '../../../../../lab-core/entity-module/lab-project-core/component/lab-validate-object-dialog/lab-validate-object-dialog.component';
+import {LabProject} from '../../../../../lab-core/model/entities/lab-project.class';
 
 /**
  * Header for the experiment detail page
@@ -75,11 +76,15 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
   openValidationDialog(): void {
     const experiment: LabExperiment = this.experimentState.currentExperiment;
 
-    const input: LabExperimentValidationDialogInput = {
-      experimentId: experiment.id, project: experiment.project
+    const input: LabValidateObjectDialogInput = {
+      title: 'biox.validate_experiment',
+      validate: (project: LabProject): Observable<any> => this.experimentService.validateExperiment(experiment.id, project),
+      project: experiment.project,
+      helpText: 'biox.validate_experiment_help_text',
+      successMessage: 'biox.experiment_validated'
     };
 
-    this.dialogService.openSmallDialog(LabExperimentValidationDialogComponent, {data: input}).afterClosed().subscribe(
+    this.dialogService.openSmallDialog(LabValidateObjectDialogComponent, {data: input}).afterClosed().subscribe(
       result => this.onExperimentUpdate(result)
     );
   }

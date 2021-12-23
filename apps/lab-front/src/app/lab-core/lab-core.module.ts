@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {LabCustomMaterialModule} from './lab-custom-material/lab-custom-material.module';
 import {LabCustomLibraryModule} from './lab-custom-library/lab-custom-library.module';
 import {LabEnvDevDirective} from './directive/lab-env-dev.directive';
-import {CorePipeModule} from './core-pipe/core-pipe.module';
+import {LabCorePipeModule} from './lab-core-pipe/lab-core-pipe.module';
 
 
 @NgModule({
@@ -15,7 +15,7 @@ import {CorePipeModule} from './core-pipe/core-pipe.module';
   exports: [
     LabCustomMaterialModule,
     LabCustomLibraryModule,
-    CorePipeModule,
+    LabCorePipeModule,
 
     // Directives
     LabEnvDevDirective,
@@ -26,7 +26,7 @@ import {CorePipeModule} from './core-pipe/core-pipe.module';
 
     LabCustomMaterialModule,
     LabCustomLibraryModule,
-    CorePipeModule,
+    LabCorePipeModule,
   ],
 })
 export class LabCoreModule {

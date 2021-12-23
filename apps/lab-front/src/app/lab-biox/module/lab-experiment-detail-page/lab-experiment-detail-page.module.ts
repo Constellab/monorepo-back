@@ -38,9 +38,6 @@ import {
 import {
   LabProgressBarInfoDialogComponent
 } from './component/lab-progress-bar-info-dialog/lab-progress-bar-info-dialog.component';
-import {
-  LabExperimentValidationDialogComponent
-} from './component/lab-experiment-validation-dialog/lab-experiment-validation-dialog.component';
 import {LabProjectCoreModule} from '../../../lab-core/entity-module/lab-project-core/lab-project-core.module';
 import {LabWorkflowNodeSourceComponent} from './component/lab-workflow-node-source/lab-workflow-node-source.component';
 import {LabExperimentDetailComponent} from './component/lab-experiment-detail/lab-experiment-detail.component';
@@ -67,7 +64,6 @@ import {RouterModule} from '@angular/router';
     LabTaskSourceConfigComponent,
     LabExperimentDetailHeaderComponent,
     LabProgressBarInfoDialogComponent,
-    LabExperimentValidationDialogComponent,
     LabWorkflowNodeSourceComponent,
     LabExperimentDetailComponent,
     LabExperimentAssociatedReportsComponent,
