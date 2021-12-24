@@ -6,12 +6,14 @@ import {CnReportsService} from './cn-reports.service';
 import {CnProjectsSecurityLayer} from '../cn-projects/cn-projects-security.layer';
 import {CnCreateReportDto} from './cn-create-report.dto';
 import {CnProject} from '../cn-projects/cn-project.entity';
+import {CnExperimentsSecurityLayer} from '../cn-experiments/cn-experiments-security-layer.service';
 
 @Injectable()
 export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<CnReport> {
 
   constructor(private service: CnReportsService,
-              private projectsSecurityLayer: CnProjectsSecurityLayer) {
+              private projectsSecurityLayer: CnProjectsSecurityLayer,
+              private experimentSecurityLayer: CnExperimentsSecurityLayer) {
     super(service);
   }
 
@@ -38,10 +40,9 @@ export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<CnReport> {
   }
 
   async getReportsByExperiment(experimentId: string): Promise<CnReport[]> {
-    // await this.experimentSecurityLayer.getAndCheckAuthorizationToFindById(experimentId);
-    //
-    // return this.service.getReportsByExperiment(experimentId);
-    return null;
+    await this.experimentSecurityLayer.getAndCheckAuthorizationToFindById(experimentId);
+
+    return this.service.getReportsByExperiment(experimentId);
   }
 
 }

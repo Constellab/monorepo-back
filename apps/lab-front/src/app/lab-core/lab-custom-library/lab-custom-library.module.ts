@@ -1,5 +1,6 @@
 import {NgModule} from '@angular/core';
 import {
+  FlArticleModule,
   FlAuthModule,
   FlBioNetworkModule,
   FlCardModule,
@@ -68,6 +69,7 @@ import {
     FlTextEditorModule,
     FlFormInputsManagerModule,
     FlSearchModule,
+    FlArticleModule,
   ]
 })
 export class LabCustomLibraryModule {

@@ -4,8 +4,14 @@ import {FlDatePipe} from './pipe/fl-date/fl-date.pipe';
 import {FlFromNowPipe} from './pipe/fl-from-now/fl-from-now.pipe';
 import {FlDateRangeComponent} from './component/fl-date-range/fl-date-range.component';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
-import { FlFromNowComponent } from './component/fl-from-now/fl-from-now.component';
+import {FlFromNowComponent} from './component/fl-from-now/fl-from-now.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {FlCreationInfoComponent} from './component/fl-creation-info/fl-creation-info.component';
+import {
+  FlLastModificationInfoComponent
+} from './component/fl-last-modification-info/fl-last-modification-info.component';
+import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
+import {flDateI18n} from './i18n/fl-date.i18n';
 
 /**
  * Module regrouping component and pipe for dates
@@ -16,12 +22,16 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     FlDatePipe,
     FlFromNowPipe,
     FlFromNowComponent,
+    FlCreationInfoComponent,
+    FlLastModificationInfoComponent,
   ],
   exports: [
     FlDateRangeComponent,
     FlDatePipe,
     FlFromNowPipe,
     FlFromNowComponent,
+    FlCreationInfoComponent,
+    FlLastModificationInfoComponent,
   ],
   imports: [
     CommonModule,
@@ -32,4 +42,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
   ]
 })
 export class FlDateModule {
+  constructor(translateService: FlTranslateService) {
+    translateService.addModuleTranslation('FlDateModule', flDateI18n);
+  }
+
 }

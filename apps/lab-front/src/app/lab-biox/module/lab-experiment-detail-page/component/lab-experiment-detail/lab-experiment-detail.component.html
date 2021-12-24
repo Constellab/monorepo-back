@@ -1,7 +1,7 @@
-<div class="g-full-height container" fxLayout="row" fxLayoutAlign="center" *ngIf="experiment$| async as experiment">
+<fl-article-container class="g-full-height container" *ngIf="experiment$| async as experiment">
 
   <!-- Technical information -->
-  <div class="side">
+  <fl-article-left-side>
 
     <!--  Tags  -->
     <fl-tag-list class="tag-list" [tags]="experiment.tags"></fl-tag-list>
@@ -18,29 +18,30 @@
 
     <!--  Created by & Last modified bt  -->
     <p class="g-text-small g-text-light separator">
-      {{'created_by'| translate}} {{experiment.createdBy.fullname}}
-      {{'the'| translate}} {{experiment.createdAt | flDate}}
+      <fl-creation-info [createdBy]="experiment.createdBy.fullname"
+                        [createdAt]="experiment.createdAt"></fl-creation-info>
     </p>
     <p class="g-text-small g-text-light">
-      {{'last_modified_by'| translate}} {{experiment.lastModifiedBy.fullname}}
-      {{'the'| translate}} {{experiment.lastModifiedAt | flDate}}
+      <fl-last-modification-info [lastModifiedBy]="experiment.lastModifiedBy.fullname"
+                                 [lastModifiedAt]="experiment.lastModifiedAt"></fl-last-modification-info>
     </p>
-  </div>
+  </fl-article-left-side>
 
-  <fl-text-editor [(ngModel)]="description" mode="JSON"
-                  [disabled]="experiment.isValidated" class="g-max-article-width text-editor"
-                  [placeholder]="'biox.experiment_description_placeholder' | translate"></fl-text-editor>
-  <div class="side">
+  <fl-article>
+    <fl-text-editor [(ngModel)]="description" mode="JSON" [disabled]="experiment.isValidated" class="g-full-height"
+                    [placeholder]="'biox.experiment_description_placeholder' | translate"></fl-text-editor>
+  </fl-article>
 
-    <div>
+  <fl-article-right-side>
+    <div class="action-buttons">
       <button mat-icon-button type="button" [matTooltip]="'biox.experiment_save_description' | translate"
               (click)="saveDescription()">
         <mat-icon>save</mat-icon>
         <fl-button-loader *ngIf="saveDescriptionIsLoading" size="small"></fl-button-loader>
       </button>
-
-      <lab-experiment-associated-reports [experimentId]="experiment.id"
-                                         class="reports"></lab-experiment-associated-reports>
     </div>
-  </div>
-</div>
+
+    <lab-experiment-associated-reports [experimentId]="experiment.id"
+                                       class="reports"></lab-experiment-associated-reports>
+  </fl-article-right-side>
+</fl-article-container>

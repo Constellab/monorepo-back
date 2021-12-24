@@ -34,21 +34,31 @@
       </div>
 
       <!--   Content   -->
-      <div fxFlex="auto" class="g-full" fxLayout="row" fxLayoutAlign="center">
-        <div class="side">
+      <fl-article-container fxFlex="auto">
+        <fl-article-left-side>
           <!--  Project  -->
           <div *ngIf="report.project" class="separator">
             {{'biox.project' | translate}} : <span class="g-text-light">{{report.project.title | translate}}</span>
           </div>
-        </div>
 
-        <fl-text-editor [(ngModel)]="content" mode="JSON"
-                        [disabled]="report.isValidated" class="g-max-article-width text-editor"
-                        [placeholder]="'biox.report_placeholder' | translate" [autoFocus]="true"></fl-text-editor>
-        <div class="side experiments">
+          <!--  Created by & Last modified bt  -->
+          <p class="g-text-small g-text-light separator">
+            <fl-creation-info [createdBy]="report.createdBy.fullname"
+                              [createdAt]="report.createdAt"></fl-creation-info>
+          </p>
+          <p class="g-text-small g-text-light">
+            <fl-last-modification-info [lastModifiedBy]="report.lastModifiedBy.fullname"
+                                       [lastModifiedAt]="report.lastModifiedAt"></fl-last-modification-info>
+          </p>
+        </fl-article-left-side>
+        <fl-article>
+          <fl-text-editor [(ngModel)]="content" mode="JSON" [disabled]="report.isValidated" class="g-full-height"
+                          [placeholder]="'biox.report_placeholder' | translate" [autoFocus]="true"></fl-text-editor>
+        </fl-article>
+        <fl-article-right-side class="experiments">
           <lab-report-associated-experiments></lab-report-associated-experiments>
-        </div>
-      </div>
+        </fl-article-right-side>
+      </fl-article-container>
 
 
     </ng-container>

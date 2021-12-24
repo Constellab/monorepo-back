@@ -3,6 +3,7 @@ export * from './lib/abstract-directive/public-api';
 
 // Export the modules
 export * from './lib/module/fl-api/public-api';
+export * from './lib/module/fl-article/public-api';
 export * from './lib/module/fl-auth/public-api';
 export * from './lib/module/fl-bio-network/public-api';
 export * from './lib/module/fl-card/public-api';

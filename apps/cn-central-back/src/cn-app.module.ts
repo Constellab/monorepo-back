@@ -54,7 +54,8 @@ function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions
     synchronize: configService.isLocal(), // only activate synchronization in local
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
-    logger: BlPersistenceLogger.getInstance()
+    logger: BlPersistenceLogger.getInstance(),
+    logging: true // use to enable query logging, the logger must be disabled
   };
 }
 

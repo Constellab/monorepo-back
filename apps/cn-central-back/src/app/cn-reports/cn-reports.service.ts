@@ -16,11 +16,11 @@ export class CnReportsService extends CnAbstractService<CnReport> {
     super(repository, CnReport);
   }
 
-  getReportsByExperiment(experimentId: string): Promise<CnReport[]> {
-    // return this.repository.find({
-    //   where: {experiment: experimentId}
-    // });
-    return null;
+  async getReportsByExperiment(experimentId: string): Promise<CnReport[]> {
+    return await this.repository.createQueryBuilder('report')
+      .innerJoin('report_experiment', 'report_experiment',
+        'report_experiment.reportId = report.id and report_experiment.experimentId = :myId', {myId: experimentId})
+      .getMany();
   }
 
   async createReport(reportDTO: CnCreateReportDto, project: CnProject): Promise<CnReport> {

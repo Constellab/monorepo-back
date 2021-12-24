@@ -5,23 +5,16 @@
   box-sizing: border-box;
 }
 
-.side {
-  flex: 1;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
-  box-sizing: border-box;
-  max-width: 30rem;
-}
 
 .separator{
   margin-top: 1em;
 }
 
-.text-editor{
-  height: 100%;
-  flex: 2;
+.action-buttons{
+  text-align: right;
 }
 
 .reports{
   margin-top: 1em;
 }
+
