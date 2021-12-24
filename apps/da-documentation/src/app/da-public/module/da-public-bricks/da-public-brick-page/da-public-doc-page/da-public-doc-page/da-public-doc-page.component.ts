@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {Observable} from 'rxjs';
-import {DaDocumentation} from '../../../../da-core/da-model/da-entities/da-documentation.class';
-import {DaDocumentationService} from '../../../../da-core/da-service/da-documentation.service';
+import {DaDocumentation} from '../../../../../../da-core/da-model/da-entities/da-documentation.class';
+import {DaDocumentationService} from '../../../../../../da-core/da-service/da-documentation.service';
 
 @Component({
   selector: 'da-public-doc-page',
@@ -18,6 +18,7 @@ export class DaPublicDocPageComponent implements OnInit {
     private daDocumentationService: DaDocumentationService,
   ) {
   }
+
 
   ngOnInit(): void {
     this.activatedRoute.url.subscribe((url: UrlSegment[]) => {

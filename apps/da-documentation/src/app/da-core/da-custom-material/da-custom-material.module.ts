@@ -11,6 +11,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatTreeModule} from '@angular/material/tree';
 import {MatSelectModule} from '@angular/material/select';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatTabsModule} from '@angular/material/tabs';
 
 @NgModule({
   exports: [
@@ -24,7 +26,10 @@ import {MatSelectModule} from '@angular/material/select';
     MatTreeModule,
     MatSelectModule,
     FlexLayoutModule,
+    MatGridListModule,
+    MatTabsModule
   ],
+
   providers: [
     // form field default config
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: flMatFormFieldConfig},

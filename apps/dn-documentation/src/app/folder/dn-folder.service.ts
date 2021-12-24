@@ -19,7 +19,10 @@ export class DnFolderService {
 
   async create(createFolderRes: DnFolderResDTO, brickVersion: DnBrickVersion): Promise<DnFolder> {
 
-    const folder: DnFolder = await this.foldersRepository.findOne(createFolderRes.folderId);
+    let folder: DnFolder;
+    if(createFolderRes.folderId){
+      folder = await this.foldersRepository.findOne(createFolderRes.folderId);
+    }
 
     const createFolder = {
       title: createFolderRes.title,

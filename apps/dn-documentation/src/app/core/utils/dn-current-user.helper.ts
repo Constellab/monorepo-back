@@ -1,4 +1,4 @@
-import {BlCurrentUserHelper} from '@monorepo/back-core-lib';
+import {BlCurrentUserHelper, BlUser} from '@monorepo/back-core-lib';
 import {DnUser} from '../../users/dn-user.entity';
 
 export class DnCurrentUserHelper extends BlCurrentUserHelper {
@@ -15,7 +15,7 @@ export class DnCurrentUserHelper extends BlCurrentUserHelper {
    * if the user is not authenticated
    */
   static getAndCheckCurrentUser(): DnUser {
+
     return super.getAndCheckCurrentUser() as DnUser;
   }
-
 }

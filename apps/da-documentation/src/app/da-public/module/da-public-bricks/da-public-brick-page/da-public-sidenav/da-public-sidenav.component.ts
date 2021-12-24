@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import {Component, OnInit} from '@angular/core';
-import {DaAuthService} from '../../../da-core/da-service/da-auth.service';
-import {DaMateTreeFlatDataSource, DaNode} from '../../../da-core/da-model/da-entities/da-node.class';
+import {DaAuthService} from '../../../../../da-core/da-service/da-auth.service';
+import {DaMateTreeFlatDataSource, DaNode} from '../../../../../da-core/da-model/da-entities/da-node.class';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
-import {DaFolderService} from '../../../da-core/da-service/da-folder.service';
+import {DaFolderService} from '../../../../../da-core/da-service/da-folder.service';
 
 
 interface FlatNode {
@@ -22,6 +22,7 @@ interface FlatNode {
 export class DaPublicSidenavComponent implements OnInit {
 
   isConnected = false;
+
 
   private _transformer = (node: DaNode, level: number): any => {
     return {

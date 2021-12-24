@@ -1,9 +1,9 @@
-import {Body, Controller, Get, Param, Post, Query} from '@nestjs/common';
+import {Body, Controller, Get, Post, Query} from '@nestjs/common';
 import {DnBrickService} from './dn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {DnBrick, DnCreateBrickDTO} from './dn-brick.entity';
 import {DnNode} from '../folder/dn-folder.entity';
-import {DnBrickIdAndVersion} from '../brick-version/dn-brick-version.entity';
+import { DnBrickNameAndVersion} from '../brick-version/dn-brick-version.entity';
 
 @Controller('brick')
 export class DnBrickController {
@@ -12,7 +12,7 @@ export class DnBrickController {
 
   @BlPublic()
   @Get()
-  find(): Promise<DnBrick[]>{
+  find(): Promise<DnBrick[]> {
     return this.brickService.find();
   }
 
@@ -24,8 +24,8 @@ export class DnBrickController {
 
   @BlPublic()
   @Get('docs')
-  findDocsByBrickId(@Body(new BlParsePipe(DnBrickIdAndVersion)) brickIdAndVersion: DnBrickIdAndVersion): Promise<DnNode>{
-    return this.brickService.findDocsByBrickId(brickIdAndVersion);
+  findDocsByBrickName(@Body(new BlParsePipe(DnBrickNameAndVersion)) brickNameAndVersion: DnBrickNameAndVersion): Promise<DnNode> {
+    return this.brickService.findDocsByBrickName(brickNameAndVersion);
   }
 
   @Post()

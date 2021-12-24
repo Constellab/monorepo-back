@@ -3,19 +3,23 @@ import { CommonModule } from '@angular/common';
 import { DaPublicCoreModule } from './module/da-public-core/da-public-core.module';
 import { DaPublicRoutingModule } from './da-public-routing.module';
 import { CoreModule } from '@angular/flex-layout';
-import {DaPublicDocPageModule} from './module/da-public-doc-page/da-public-doc-page.module';
-import { DaPublicSidenavComponent } from './module/da-public-sidenav/da-public-sidenav.component';
+import {DaPublicDocPageModule} from './module/da-public-bricks/da-public-brick-page/da-public-doc-page/da-public-doc-page.module';
+import { DaPublicSidenavComponent } from './module/da-public-bricks/da-public-brick-page/da-public-sidenav/da-public-sidenav.component';
 import {DaCoreModule} from '../da-core/da-core.module';
+import {DaPublicBrickPageModule} from './module/da-public-bricks/da-public-brick-page/da-public-brick-page.module';
+import {DaPublicListBricksPageModule} from './module/da-public-bricks/da-public-list-bricks-page.module';
 
 
 
 @NgModule({
-  declarations: [DaPublicSidenavComponent],
+  declarations: [],
   imports: [
     CommonModule,
     DaPublicCoreModule,
     DaPublicRoutingModule,
     DaPublicDocPageModule,
+    DaPublicBrickPageModule,
+    DaPublicListBricksPageModule,
     CoreModule,
     DaCoreModule,
   ]

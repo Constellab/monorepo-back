@@ -3,8 +3,8 @@ import {DnBrick} from '../brick/dn-brick.entity';
 import {DnBaseEntity} from '../core/model/entities/dn-base.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 
-export class DnBrickIdAndVersion{
-  brickId: string;
+export class DnBrickNameAndVersion{
+  name: string;
   version?: number[];
 }
 

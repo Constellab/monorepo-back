@@ -1,11 +1,10 @@
 import {Injectable} from '@nestjs/common';
-import {DnBrick, DnBrickDTO, DnCreateBrickDTO} from './dn-brick.entity';
+import {DnBrick, DnCreateBrickDTO} from './dn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {DnFolderService} from '../folder/dn-folder.service';
 import {DnBrickVersionService} from '../brick-version/dn-brick-version.service';
 import {DnNode} from '../folder/dn-folder.entity';
-import {DnBrickIdAndVersion, DnBrickVersion} from '../brick-version/dn-brick-version.entity';
+import {DnBrickNameAndVersion, DnBrickVersion} from '../brick-version/dn-brick-version.entity';
 
 @Injectable()
 export class DnBrickService {
@@ -27,19 +26,19 @@ export class DnBrickService {
     return brick;
   }
 
-  async find(): Promise<DnBrick[]>{
+  async find(): Promise<DnBrick[]> {
     return this.bricksRepository.find();
   }
 
-  async findByName(name: string): Promise<DnBrick>{
-    return await this.bricksRepository.findOne({ where:{ name: name }});
+  async findByName(name: string): Promise<DnBrick> {
+    return await this.bricksRepository.findOne({where: {name: name}});
   }
 
-  async findDocsByBrickId(brickIdAndVersion: DnBrickIdAndVersion): Promise<DnNode>{
-    const brick: DnBrick = await this.bricksRepository.findOne(brickIdAndVersion.brickId);
-    if(brickIdAndVersion.version){
+  async findDocsByBrickName(brickNameAndVersion: DnBrickNameAndVersion): Promise<DnNode> {
+    const brick: DnBrick = await this.findByName(brickNameAndVersion.name);
+    if (brickNameAndVersion.version) {
       const brickVersion: DnBrickVersion =
-        await this.brickVersionService.findBrickVersionByBrickAndVersion(brick, brickIdAndVersion.version);
+        await this.brickVersionService.findBrickVersionByBrickAndVersion(brick, brickNameAndVersion.version);
       return this.brickVersionService.findBrickDocsTree(brickVersion);
     }
     const brickVersion: DnBrickVersion = await this.brickVersionService.findBrickVersionByBrickAndVersion(brick);

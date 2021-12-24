@@ -13,7 +13,7 @@ export abstract class DnBaseEntity extends BlEntityWithId {
 
   @Type(() => DnUser)
   @ManyToOne(() => DnUser, {eager: true, nullable: true})
-  createdBy: DnUser;
+  createdBy?: DnUser;
 
   @BlLuxonDateTimeColumn({nullable: true})
   lastModifiedAt: DateTime;
@@ -24,14 +24,14 @@ export abstract class DnBaseEntity extends BlEntityWithId {
 
   @BeforeInsert()
   setCreatedByUser(): void {
-    this.createdBy = DnCurrentUserHelper.getAndCheckCurrentUser();
+    this.createdBy = DnCurrentUserHelper.getCurrentUser();
     this.createdAt = ClDateHelper.getDate();
   }
 
   @BeforeInsert()
   @BeforeUpdate()
   setLastModifiedByUser(): void {
-    this.lastModifiedBy = DnCurrentUserHelper.getAndCheckCurrentUser();
+    this.lastModifiedBy = DnCurrentUserHelper.getCurrentUser();
     this.lastModifiedAt = ClDateHelper.getDate();
   }
 

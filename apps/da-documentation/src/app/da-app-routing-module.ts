@@ -1,19 +1,19 @@
-import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 
 const routes: Routes = [
   {
     path: 'admin',
-    loadChildren: ()=> import('./da-admin/da-admin.module').then(m => m.DaAdminModule)
+    loadChildren: () => import('./da-admin/da-admin.module').then(m => m.DaAdminModule)
   },
   {
-    path: 'docs',
-    loadChildren: ()=> import('./da-public/da-public.module').then(m => m.DaPublicModule)
+    path: 'bricks',
+    loadChildren: () => import('./da-public/da-public.module').then(m => m.DaPublicModule)
   },
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'docs'
+    redirectTo: 'bricks'
   },
 ];
 
@@ -33,4 +33,5 @@ const routes: Routes = [
     RouterModule
   ]
 })
-export class DaAppRoutingModule{}
+export class DaAppRoutingModule {
+}

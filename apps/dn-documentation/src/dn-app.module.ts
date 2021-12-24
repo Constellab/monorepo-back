@@ -26,6 +26,8 @@ import {DnFolderModule} from './app/folder/dn-folder.module';
 import {WinstonModule, WinstonModuleOptions} from 'nest-winston';
 import {I18nJsonParser, I18nModule} from 'nestjs-i18n';
 import {clDefaultLang} from '@monorepo/core-lib';
+import {DnBrickModule} from './app/brick/dn-brick.module';
+import {DnBrickVersionModule} from './app/brick-version/dn-brick-version.module';
 
 function typeOrmConfig(configService: DnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: DnDatabaseConfig = configService.getDatabaseConfig();
@@ -100,7 +102,8 @@ function configureJwtModule(configService: DnCoreConfigService, userService: DnU
     BlExternalApiModule,
 
     DnDocumentationModule,
-    DnVersionModule,
+    DnBrickModule,
+    DnBrickVersionModule,
     DnUserModule,
     DnAuthModule,
     DnFolderModule

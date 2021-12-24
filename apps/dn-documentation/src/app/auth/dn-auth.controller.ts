@@ -13,6 +13,7 @@ export class DnAuthController {
     private authService: DnAuthService,
     private configService: DnCoreConfigService
   ) {
+
   }
 
   @BlPublic()
