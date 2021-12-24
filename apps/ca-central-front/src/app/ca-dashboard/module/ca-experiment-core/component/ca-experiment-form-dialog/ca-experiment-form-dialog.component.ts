@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {Experiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Validators} from '@angular/forms';
@@ -15,10 +15,10 @@ import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} fro
   templateUrl: './ca-experiment-form-dialog.component.html',
   styleUrls: ['./ca-experiment-form-dialog.component.scss']
 })
-export class CaExperimentFormDialogComponent extends FlFormDialogAbstractDirective<Partial<Experiment>, Experiment>
+export class CaExperimentFormDialogComponent extends FlFormDialogAbstractDirective<Partial<CaExperiment>, CaExperiment>
   implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: FlFormDialogInput<Experiment>,
+  constructor(@Inject(MAT_DIALOG_DATA) protected dialogInput: FlFormDialogInput<CaExperiment>,
               private experimentService: CaExperimentService,
               snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<CaExperimentFormDialogComponent>) {
@@ -29,7 +29,7 @@ export class CaExperimentFormDialogComponent extends FlFormDialogAbstractDirecti
     this.init();
   }
 
-  buildForm(): FormGroup<Partial<Experiment>> {
+  buildForm(): FormGroup<Partial<CaExperiment>> {
     return new FormBuilder().group({
       id: [null],
       title: [null, Validators.required],
@@ -37,11 +37,11 @@ export class CaExperimentFormDialogComponent extends FlFormDialogAbstractDirecti
     });
   }
 
-  create(): Observable<Experiment> {
+  create(): Observable<CaExperiment> {
     throw Error('Can\'t create an experiment');
   }
 
-  update(formValue: Partial<Experiment>): Observable<Experiment> {
+  update(formValue: Partial<CaExperiment>): Observable<CaExperiment> {
     return this.experimentService.update(formValue);
   }
 

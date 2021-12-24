@@ -1,0 +1,24 @@
+<h1>{{report.title}}</h1>
+
+<fl-article-container>
+
+  <fl-article-left-side>
+    <!--  Created by & Last modified bt  -->
+    <p class="g-text-small g-text-light separator">
+      <fl-creation-info [createdBy]="report.createdBy.fullname"
+                        [createdAt]="report.createdAt"></fl-creation-info>
+    </p>
+    <p class="g-text-small g-text-light">
+      <fl-last-modification-info [lastModifiedBy]="report.lastModifiedBy.fullname"
+                                 [lastModifiedAt]="report.lastModifiedAt"></fl-last-modification-info>
+  </fl-article-left-side>
+
+  <fl-article>
+    <fl-text-editor [ngModel]="report.content" mode="JSON" [disabled]="true" class="g-full-height"></fl-text-editor>
+
+  </fl-article>
+
+  <fl-article-right-side>
+    <ca-experiments-list [experiments$]="experiments$"></ca-experiments-list>
+  </fl-article-right-side>
+</fl-article-container>

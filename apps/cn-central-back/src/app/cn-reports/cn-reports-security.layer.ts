@@ -1,10 +1,10 @@
-import {Injectable} from '@nestjs/common';
+import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import {CnAbstractSecurityLayer} from '../cn-core/class/cn-abstract-security.layer';
 import {CnReport} from './cn-report.entity';
 import {CnRefuseAuthorization} from '../cn-core/security/cn-refuse.authorization';
 import {CnReportsService} from './cn-reports.service';
 import {CnProjectsSecurityLayer} from '../cn-projects/cn-projects-security.layer';
-import {CnCreateReportDto} from './cn-create-report.dto';
+import {CnCreateReportDto} from './cn-report.dto';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperimentsSecurityLayer} from '../cn-experiments/cn-experiments-security-layer.service';
 
@@ -13,7 +13,7 @@ export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<CnReport> {
 
   constructor(private service: CnReportsService,
               private projectsSecurityLayer: CnProjectsSecurityLayer,
-              private experimentSecurityLayer: CnExperimentsSecurityLayer) {
+              @Inject(forwardRef(() => CnExperimentsSecurityLayer)) private experimentSecurityLayer: CnExperimentsSecurityLayer) {
     super(service);
   }
 
@@ -43,6 +43,13 @@ export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<CnReport> {
     await this.experimentSecurityLayer.getAndCheckAuthorizationToFindById(experimentId);
 
     return this.service.getReportsByExperiment(experimentId);
+  }
+
+  async getExperimentsByProject(projectId: string): Promise<CnReport[]> {
+    // check that the user can get the project
+    await this.projectsSecurityLayer.getAndCheckAuthorizationToFindById(projectId);
+
+    return this.service.getReportsByProject(projectId);
   }
 
 }

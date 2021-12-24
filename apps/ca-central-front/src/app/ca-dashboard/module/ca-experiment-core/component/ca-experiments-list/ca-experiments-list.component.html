@@ -1,0 +1,26 @@
+<fl-card>
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon svgIcon="experiment"></mat-icon>
+      <h2>{{'experiments' | translate}}</h2>
+    </fl-text-icon>
+  </fl-card-header>
+
+  <fl-card-body>
+    <fl-async-section [object]="experiments$" emptyText="no_experiment">
+      <ng-container *flSectionBody="let experiments">
+        <mat-nav-list>
+          <ng-container *ngFor="let experiment of experiments">
+            <a mat-list-item class="g-full g-full-height"
+               [routerLink]=" getExperimentRoute(experiment)">
+              {{ experiment.title }}
+            </a>
+            <mat-divider></mat-divider>
+          </ng-container>
+        </mat-nav-list>
+      </ng-container>
+    </fl-async-section>
+
+  </fl-card-body>
+
+</fl-card>

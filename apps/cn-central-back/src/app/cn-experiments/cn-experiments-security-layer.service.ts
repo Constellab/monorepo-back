@@ -6,9 +6,10 @@ import {CnExperimentsService} from './cn-experiments.service';
 import {CnRefuseAuthorization} from '../cn-core/security/cn-refuse.authorization';
 import {CnCreatedByAuthorization} from '../cn-core/security/cn-created-by.authorization';
 import {CnExperimentStatusHistory} from './cn-experiment-status-history.entity';
-import {CnLabExperimentDto} from './cn-lab-experiment.dto';
+import {CnLabExperimentDto} from './cn-experiment.dto';
 import {CnProjectsSecurityLayer} from '../cn-projects/cn-projects-security.layer';
 import {CnProject} from '../cn-projects/cn-project.entity';
+import {CnReportsSecurityLayer} from '../cn-reports/cn-reports-security.layer';
 
 @Injectable()
 export class CnExperimentsSecurityLayer extends CnAbstractSecurityLayer<CnExperiment> {
@@ -16,7 +17,8 @@ export class CnExperimentsSecurityLayer extends CnAbstractSecurityLayer<CnExperi
   private createdByAuthorization: CnAbstractCheckAuthorization = new CnCreatedByAuthorization();
 
   constructor(private service: CnExperimentsService,
-              private projectsSecurityLayer: CnProjectsSecurityLayer) {
+              private projectsSecurityLayer: CnProjectsSecurityLayer,
+              private reportSecurityLayer: CnReportsSecurityLayer) {
     super(service);
   }
 
@@ -29,18 +31,25 @@ export class CnExperimentsSecurityLayer extends CnAbstractSecurityLayer<CnExperi
   }
 
   async isAuthorizedToFindOne(dbEntity: CnExperiment): Promise<boolean> {
-    return await this.projectsSecurityLayer.isAuthorizedToFindById(dbEntity.projectId)
+    return await this.projectsSecurityLayer.isAuthorizedToFindById(dbEntity.projectId);
   }
 
   async isAuthorizedToUpdate(dbEntity: CnExperiment): Promise<boolean> {
     return this.createdByAuthorization.isAuthorized(dbEntity);
   }
 
-  async getExperimentsOfProject(projectId: string): Promise<CnExperiment[]> {
+  async getExperimentsByProject(projectId: string): Promise<CnExperiment[]> {
     // check that the user can get the project
     await this.projectsSecurityLayer.getAndCheckAuthorizationToFindById(projectId);
 
-    return this.service.getExperimentsOfProject(projectId);
+    return this.service.getExperimentsByProject(projectId);
+  }
+
+  async getExperimentsByReports(reportId: string): Promise<CnExperiment[]> {
+    // check that the user can get the project
+    await this.reportSecurityLayer.getAndCheckAuthorizationToFindById(reportId);
+
+    return this.service.getExperimentsByReport(reportId);
   }
 
   async getStatusHistory(id: string): Promise<CnExperimentStatusHistory[]> {
@@ -51,7 +60,6 @@ export class CnExperimentsSecurityLayer extends CnAbstractSecurityLayer<CnExperi
   }
 
   async createLabExperiment(projectId: string, labExperimentDto: CnLabExperimentDto): Promise<void> {
-
     // check that the user can update the project
     const project: CnProject = await this.projectsSecurityLayer.getAndCheckAuthorizationToUpdateById(projectId);
 

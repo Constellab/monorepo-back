@@ -41,7 +41,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   }
 
   async deleteById(id: string, entityManager?: EntityManager): Promise<DeleteResult> {
-    const experiments: CnExperiment[] = await this.experimentService.getExperimentOfLabInstance(id);
+    const experiments: CnExperiment[] = await this.experimentService.getExperimentsByLabInstance(id);
 
     if (experiments?.length > 0) {
       throw new BadRequestException('Can\'t delete the lab instance because some experiment are linked to it');

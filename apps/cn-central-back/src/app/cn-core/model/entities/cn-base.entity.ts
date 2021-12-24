@@ -48,4 +48,13 @@ export class CnBaseEntityDTO extends BlEntityWithIdDTO {
 
   @Type(() => CnUser)
   lastModifiedBy: CnUser;
+
+  copyEntity(entity: CnBaseEntity): this {
+    super.copyEntity(entity);
+    this.createdAt = entity.createdAt;
+    this.createdBy = entity.createdBy;
+    this.lastModifiedAt = entity.lastModifiedAt;
+    this.lastModifiedBy = entity.lastModifiedBy;
+    return this;
+  }
 }

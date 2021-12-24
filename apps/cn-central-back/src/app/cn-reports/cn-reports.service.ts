@@ -1,9 +1,9 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {BadRequestException, forwardRef, Inject, Injectable} from '@nestjs/common';
 import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
 import {CnReport} from './cn-report.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {CnCreateReportDto} from './cn-create-report.dto';
+import {CnCreateReportDto} from './cn-report.dto';
 import {CnExperimentsService} from '../cn-experiments/cn-experiments.service';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
@@ -12,15 +12,22 @@ import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 export class CnReportsService extends CnAbstractService<CnReport> {
 
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
-              private experimentService: CnExperimentsService) {
+              @Inject(forwardRef(() => CnExperimentsService)) private experimentService: CnExperimentsService) {
     super(repository, CnReport);
   }
 
+
   async getReportsByExperiment(experimentId: string): Promise<CnReport[]> {
-    return await this.repository.createQueryBuilder('report')
-      .innerJoin('report_experiment', 'report_experiment',
-        'report_experiment.reportId = report.id and report_experiment.experimentId = :myId', {myId: experimentId})
-      .getMany();
+    return (await this.experimentService.findByIdAndCheckWithReports(experimentId)).reports;
+  }
+
+  getReportsByProject(projectId: string): Promise<CnReport[]> {
+    return this.repository.find({
+      where: {
+        projectId: projectId
+      },
+      order: {lastModifiedAt: 'DESC'}
+    });
   }
 
   async createReport(reportDTO: CnCreateReportDto, project: CnProject): Promise<CnReport> {
@@ -51,6 +58,9 @@ export class CnReportsService extends CnAbstractService<CnReport> {
     report.experiments = experiments;
 
     return await this.repository.save(report);
+  }
 
+  findByIdAndCheckWithExperiments(id: string): Promise<CnReport> {
+    return this.findByIdAndCheck(id, {relations: ['experiments']});
   }
 }

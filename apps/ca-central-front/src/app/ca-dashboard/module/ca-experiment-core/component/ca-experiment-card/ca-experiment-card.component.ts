@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Experiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {CaLabIframeOptions, CaRouterService} from '../../../../../ca-core/service/ca-router.service';
 
 /**
@@ -12,9 +12,9 @@ import {CaLabIframeOptions, CaRouterService} from '../../../../../ca-core/servic
 })
 export class CaExperimentCardComponent implements OnInit {
 
-  @Input() experiment: Experiment;
+  @Input() experiment: CaExperiment;
 
-  @Output() update: EventEmitter<Experiment> = new EventEmitter<Experiment>();
+  @Output() update: EventEmitter<CaExperiment> = new EventEmitter<CaExperiment>();
 
   openInLabLink: string;
   linkQueryParams: CaLabIframeOptions;

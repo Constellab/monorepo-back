@@ -47,6 +47,14 @@ export class CaRouterService {
     return `${caConstProjectsFullRoute}`;
   }
 
+  public static getExperimentDetailRoute(projectId: string, experimentId: string): string {
+    return `${CaRouterService.getProjectDetailRoute(projectId)}/experiment/${experimentId}`;
+  }
+
+  public static getReportDetailRoute(projectId: string, reportId: string): string {
+    return `${CaRouterService.getProjectDetailRoute(projectId)}/report/${reportId}`;
+  }
+
   public static getMyLabInstancesRoute(): string {
     return `${caConstLabInstancesFullRoute}`;
   }

@@ -4,11 +4,14 @@
 
     <ng-template flSectionBody>
       <ca-project-detail [project]="project"
-                          (projectUpdated)="onProjectUpdate($event)">
+                         (projectUpdated)="onProjectUpdate($event)">
       </ca-project-detail>
 
+      <div class="list" fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="2em">
+        <ca-experiments-list [experiments$]="experiment$" fxFlex="auto"></ca-experiments-list>
 
-      <ca-experiments-list class="experiments" [projectId]="project.id"></ca-experiments-list>
+        <ca-reports-list [reports$]="reports$" fxFlex="auto"></ca-reports-list>
+      </div>
     </ng-template>
   </fl-section>
 </div>

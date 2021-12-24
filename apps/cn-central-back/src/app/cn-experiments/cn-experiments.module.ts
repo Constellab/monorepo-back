@@ -9,6 +9,7 @@ import {CnExperimentsSecurityLayer} from './cn-experiments-security-layer.servic
 import {CnLabInstancesModule} from '../cn-lab-instances/cn-lab-instances.module';
 import {CnExternalLabApiModule} from '../cn-external-lab-api/cn-external-lab-api.module';
 import {CnProjectsModule} from '../cn-projects/cn-projects.module';
+import {CnReportsModule} from '../cn-reports/cn-reports.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import {CnProjectsModule} from '../cn-projects/cn-projects.module';
     CnProjectsModule,
     CnLabInstancesModule,
     CnExternalLabApiModule,
+    CnReportsModule,
   ],
   controllers: [CnExperimentsController],
   providers: [CnExperimentsService, CnExperimentsSecurityLayer],

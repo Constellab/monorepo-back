@@ -1,7 +1,7 @@
 import {CaBaseEntity} from './ca-base-entity.class';
 import {CaLabInstance} from './ca-lab-instance.class';
 import {CaStatusHistory} from './ca-status-history.class';
-import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
+import {FlQuillJson, FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
 
 export type CaExperimentStatus = 'DRAFT' | 'SUCCESS' | 'ERROR' | 'ARCHIVED';
@@ -18,17 +18,19 @@ export class CaExperimentStatusHistory extends CaStatusHistory<CaExperimentStatu
   status: FlStatus<CaExperimentStatus>;
 }
 
-export class Experiment extends CaBaseEntity {
+export class CaExperiment extends CaBaseEntity {
 
   title: string;
 
-  description: string;
+  description: FlQuillJson;
 
   @Type(() => CaLabInstance)
   labInstance: CaLabInstance;
 
   @Type(() => CaExperimentStatusHistory)
   currentStatus: CaExperimentStatusHistory;
+
+  projectId: string;
 
   statusIsDraft(): boolean {
     return this.currentStatus.status.value === 'DRAFT';

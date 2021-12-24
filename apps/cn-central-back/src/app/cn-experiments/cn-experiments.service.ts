@@ -5,15 +5,17 @@ import {Repository} from 'typeorm';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
 import {CnExperimentStatus} from './cn-experiment-status.enum';
 import {CnExperimentStatusHistory} from './cn-experiment-status-history.entity';
-import {CnLabExperimentDto} from './cn-lab-experiment.dto';
+import {CnLabExperimentDto} from './cn-experiment.dto';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
+import {CnReportsService} from '../cn-reports/cn-reports.service';
 
 @Injectable()
 export class CnExperimentsService extends CnAbstractWithStatusService<CnExperiment, CnExperimentStatus> {
 
   constructor(@InjectRepository(CnExperiment) private repository: Repository<CnExperiment>,
-              @InjectRepository(CnExperimentStatusHistory) statusHistoRepo: Repository<CnExperimentStatusHistory>) {
+              @InjectRepository(CnExperimentStatusHistory) statusHistoRepo: Repository<CnExperimentStatusHistory>,
+              private reportService: CnReportsService) {
     super(repository, CnExperiment, statusHistoRepo, CnExperimentStatusHistory);
   }
 
@@ -22,7 +24,7 @@ export class CnExperimentsService extends CnAbstractWithStatusService<CnExperime
   }
 
 
-  getExperimentsOfProject(projectId: string): Promise<CnExperiment[]> {
+  getExperimentsByProject(projectId: string): Promise<CnExperiment[]> {
     return this.repository.find({
       where: {
         projectId: projectId
@@ -31,13 +33,17 @@ export class CnExperimentsService extends CnAbstractWithStatusService<CnExperime
     });
   }
 
-  getExperimentOfLabInstance(labInstanceId: string): Promise<CnExperiment[]> {
+  getExperimentsByLabInstance(labInstanceId: string): Promise<CnExperiment[]> {
     return this.repository.find({
       where: {
         labInstance: {id: labInstanceId}
       },
       order: {lastModifiedAt: 'DESC'}
     });
+  }
+
+  async getExperimentsByReport(reportId: string): Promise<CnExperiment[]> {
+    return (await this.reportService.findByIdAndCheckWithExperiments(reportId)).experiments;
   }
 
   public async createLabExperiment(project: CnProject, labExperimentDto: CnLabExperimentDto): Promise<CnExperiment> {
@@ -61,6 +67,10 @@ export class CnExperimentsService extends CnAbstractWithStatusService<CnExperime
       newExperiment.labInstance = CnCurrentUserHelper.getLabInstance();
       return this.createWithStatus(newExperiment, labExperimentDto.status);
     }
+  }
+
+  findByIdAndCheckWithReports(id: string): Promise<CnExperiment> {
+    return this.findByIdAndCheck(id, {relations: ['reports']});
   }
 
 }

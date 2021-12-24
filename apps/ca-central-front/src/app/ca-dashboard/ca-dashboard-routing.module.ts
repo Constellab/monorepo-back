@@ -12,6 +12,9 @@ import {
 import {
   CaDashboardModulePageComponent
 } from './module/ca-dashboard-page/component/ca-dashboard-module-page/ca-dashboard-module-page.component';
+import {
+  CaReportDetailPageComponent
+} from './module/ca-report-detail-page/component/ca-report-detail-page/ca-report-detail-page.component';
 
 const routes: Route[] = [
   {
@@ -19,6 +22,7 @@ const routes: Route[] = [
       {path: '', component: CaDashboardPageComponent},
       {path: 'project/:id', component: CaProjectDetailPageComponent, children: []},
       {path: 'project/:id/experiment/:id', component: CaExperimentDetailPageComponent},
+      {path: 'project/:id/report/:id', component: CaReportDetailPageComponent},
     ]
   }
 ];

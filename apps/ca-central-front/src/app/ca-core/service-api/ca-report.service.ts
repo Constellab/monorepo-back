@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {CaReport} from '../model/entities/ca-report.class';
-import {FlApiService, FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
+import {FlApiService} from '@monorepo/front-core-lib';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,15 @@ export class CaReportService {
   constructor(private apiService: FlApiService) {
   }
 
-  getReportsOfExperiment(experimentId: string): FlArrayObs<CaReport> {
-    return new FlEntityArrayObs(this.apiService.get(`${this.route}/experiment/${experimentId}`, CaReport));
+  getReportsByExperiment(experimentId: string): Observable<CaReport[]> {
+    return this.apiService.get(`${this.route}/experiment/${experimentId}`, CaReport);
+  }
+
+  getReportsByProject(projectId: string): Observable<CaReport[]> {
+    return this.apiService.get(`${this.route}/project/${projectId}`, CaReport);
+  }
+
+  getById(id: string): Observable<CaReport> {
+    return this.apiService.getById(this.route, id);
   }
 }

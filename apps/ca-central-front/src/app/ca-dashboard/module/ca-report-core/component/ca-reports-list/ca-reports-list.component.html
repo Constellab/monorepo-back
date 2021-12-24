@@ -1,0 +1,25 @@
+<fl-card>
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon>grading</mat-icon>
+      <h2>{{'reports' | translate}}</h2>
+    </fl-text-icon>
+  </fl-card-header>
+
+  <fl-card-body>
+    <fl-async-section [object]="reports$" emptyText="no_experiment">
+      <ng-container *flSectionBody="let reports">
+        <mat-nav-list>
+          <ng-container *ngFor="let report of reports">
+            <a mat-list-item class="g-full g-full-height" [routerLink]="getReportLink(report)">
+              {{ report.title }}
+            </a>
+            <mat-divider></mat-divider>
+          </ng-container>
+        </mat-nav-list>
+      </ng-container>
+    </fl-async-section>
+
+  </fl-card-body>
+
+</fl-card>

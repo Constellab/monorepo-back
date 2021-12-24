@@ -6,6 +6,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaDashboardPageModule} from './module/ca-dashboard-page/ca-dashboard-page.module';
 import {CaProjectDetailPageModule} from './module/ca-project-detail-page/ca-project-detail-page.module';
 import {CaExperimentDetailPageModule} from './module/ca-experiment-detail-page/ca-experiment-detail-page.module';
+import {CaReportDetailPageModule} from './module/ca-report-detail-page/ca-report-detail-page.module';
 
 /**
  * Module for the dashboard page
@@ -23,6 +24,7 @@ import {CaExperimentDetailPageModule} from './module/ca-experiment-detail-page/c
     CaDashboardPageModule,
     CaProjectDetailPageModule,
     CaExperimentDetailPageModule,
+    CaReportDetailPageModule,
 
     CaDashboardRoutingModule,
   ]

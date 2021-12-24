@@ -1,4 +1,4 @@
-import {Module} from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import {CnReportsService} from './cn-reports.service';
 import {CnReportsController} from './cn-reports.controller';
 import {CnCoreModule} from '../cn-core/cn-core.module';
@@ -13,12 +13,12 @@ import {CnProjectsModule} from '../cn-projects/cn-projects.module';
     TypeOrmModule.forFeature([CnReport]),
 
     CnCoreModule,
-    CnExperimentsModule,
     CnProjectsModule,
+    forwardRef(() => CnExperimentsModule),
   ],
   providers: [CnReportsService, CnReportsSecurityLayer],
   controllers: [CnReportsController],
-  exports: [CnReportsSecurityLayer]
+  exports: [CnReportsSecurityLayer, CnReportsService]
 })
 export class CnReportsModule {
 }

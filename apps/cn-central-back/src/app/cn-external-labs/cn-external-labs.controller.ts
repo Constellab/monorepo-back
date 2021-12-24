@@ -7,11 +7,11 @@ import {CnReportsSecurityLayer} from '../cn-reports/cn-reports-security.layer';
 import {CnReport} from '../cn-reports/cn-report.entity';
 import {BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
-import {CnLabExperimentDto} from '../cn-experiments/cn-lab-experiment.dto';
+import {CnLabExperimentDto} from '../cn-experiments/cn-experiment.dto';
 import {CnExperimentsSecurityLayer} from '../cn-experiments/cn-experiments-security-layer.service';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnProjectsSecurityLayer} from '../cn-projects/cn-projects-security.layer';
-import {CnCreateReportDto} from '../cn-reports/cn-create-report.dto';
+import {CnCreateReportDto} from '../cn-reports/cn-report.dto';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user

@@ -55,7 +55,7 @@ function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     logger: BlPersistenceLogger.getInstance(),
-    logging: true // use to enable query logging, the logger must be disabled
+    // logging: true // use to enable query logging, the logger must be disabled
   };
 }
 

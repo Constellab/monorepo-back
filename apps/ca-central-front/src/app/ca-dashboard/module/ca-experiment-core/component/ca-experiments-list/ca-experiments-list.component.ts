@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Experiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
-import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
+import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {Observable} from 'rxjs';
+import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
 
 /**
  * In the project detail page, show the list of experiments
@@ -13,14 +13,15 @@ import {Observable} from 'rxjs';
 })
 export class CaExperimentsListComponent implements OnInit {
 
-  @Input() projectId: string;
+  @Input() experiments$: Observable<CaExperiment[]>;
 
-  experiments$: Observable<Experiment[]>;
-
-  constructor(private experimentService: CaExperimentService) {
+  constructor() {
   }
 
   ngOnInit(): void {
-    this.experiments$ = this.experimentService.getExperimentsOfProject(this.projectId);
+  }
+
+  getExperimentRoute(experiment: CaExperiment): string {
+    return CaRouterService.getExperimentDetailRoute(experiment.projectId, experiment.id);
   }
 }

@@ -3,6 +3,7 @@ import {CnExperiment} from './cn-experiment.entity';
 import {CnExperimentsSecurityLayer} from './cn-experiments-security-layer.service';
 import {CnExperimentStatusHistory} from './cn-experiment-status-history.entity';
 import {BlParsePipe} from '@monorepo/back-core-lib';
+import {CnExperimentDTO} from './cn-experiment.dto';
 
 @Controller('experiments')
 export class CnExperimentsController {
@@ -27,9 +28,17 @@ export class CnExperimentsController {
    * Return the list of experiment of a project
    */
   @Get('project/:projectId')
-  public getExperimentOfProject(@Param('projectId', ParseUUIDPipe) projectId: string): Promise<CnExperiment[]> {
-    return this.securityLayer.getExperimentsOfProject(projectId);
+  public async getExperimentsByProject(@Param('projectId', ParseUUIDPipe) projectId: string): Promise<CnExperimentDTO[]> {
+    const experiments = await this.securityLayer.getExperimentsByProject(projectId);
+    return experiments.map(experiment => new CnExperimentDTO().copyEntity(experiment));
   }
+
+  @Get('report/:reportId')
+  async getExperimentsByReport(@Param('reportId', new ParseUUIDPipe()) reportId: string): Promise<CnExperimentDTO[]> {
+    const experiments = await this.securityLayer.getExperimentsByReports(reportId);
+    return experiments.map(experiment => new CnExperimentDTO().copyEntity(experiment));
+  }
+
 
   ////////////////////// STATUS ////////////////////
   /**

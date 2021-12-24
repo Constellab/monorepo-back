@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Experiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 
 @Component({
   selector: 'ca-experiment-info',
@@ -8,7 +8,7 @@ import {Experiment} from '../../../../../ca-core/model/entities/ca-experiment.cl
 })
 export class CaExperimentInfoComponent implements OnInit {
 
-  @Input() experiment: Experiment;
+  @Input() experiment: CaExperiment;
 
   constructor() { }
 

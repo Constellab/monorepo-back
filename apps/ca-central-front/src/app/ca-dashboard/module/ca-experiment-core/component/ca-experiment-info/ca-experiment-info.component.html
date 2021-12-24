@@ -1,4 +1,6 @@
-<div *ngIf="experiment.description; else noDesc" [innerHTML]="experiment.description"></div>
+<fl-text-editor *ngIf="experiment.description; else noDesc"
+                [ngModel]="experiment.description" [disabled]="true"
+                mode="JSON"></fl-text-editor>
 <ng-template #noDesc>
   <div class="g-text-centered g-text-light">
     <p>{{'no_description' | translate}}</p>

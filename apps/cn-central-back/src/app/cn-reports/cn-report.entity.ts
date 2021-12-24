@@ -10,8 +10,8 @@ export class CnReport extends CnBaseEntity {
   @Column()
   title: string;
 
-  @Column({type: 'json', array: false, nullable: true})
-  content: string;
+  @Column({name: 'content', type: 'simple-json', nullable: true})
+  content: Record<string, any>;
 
   @Type(() => CnProject)
   @ManyToOne(() => CnProject, {nullable: false})
@@ -20,7 +20,7 @@ export class CnReport extends CnBaseEntity {
   @Column()
   projectId: string;
 
-  @ManyToMany(() => CnExperiment)
+  @ManyToMany(() => CnExperiment, experiment => experiment.reports)
   @JoinTable({name: 'report_experiment'})
   experiments: CnExperiment[];
 }

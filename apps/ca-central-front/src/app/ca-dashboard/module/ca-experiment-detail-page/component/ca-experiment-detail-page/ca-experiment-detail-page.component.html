@@ -21,31 +21,20 @@
 
     <div fxLayout="row" fxLayoutAlign="start stretch" fxLayout.lt-md="column" fxLayoutGap="2em">
       <ca-experiment-card-detail [experiment]="experiment" (update)="onExperimentUpdate($event)"
-                                  class="flex">
+                                 class="flex">
       </ca-experiment-card-detail>
 
       <!--  Lab instance   -->
       <div class="flex">
         <ca-lab-instance-card [labInstance]="experiment.labInstance"
-                               (labInstanceUpdated)="onLabInstanceUpdate($event)"
-                               mode="big"></ca-lab-instance-card>
+                              (labInstanceUpdated)="onLabInstanceUpdate($event)"
+                              mode="big"></ca-lab-instance-card>
       </div>
     </div>
 
 
     <!--  Report  -->
-    <fl-card class="g-section">
-      <fl-card-header>
-        <fl-text-icon>
-          <mat-icon class="g-icon-big">assignment</mat-icon>
-          <p>{{'reports' | translate}}</p>
-        </fl-text-icon>
-      </fl-card-header>
-
-      <fl-card-body>
-        <ca-reports-list [experimentId]="experiment.id"></ca-reports-list>
-      </fl-card-body>
-    </fl-card>
+    <ca-reports-list class="g-section" [reports$]="reports$"></ca-reports-list>
 
   </ng-template>
 </fl-section>

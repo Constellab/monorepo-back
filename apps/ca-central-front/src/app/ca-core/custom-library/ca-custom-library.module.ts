@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {
   FlApiModule,
+  FlArticleModule,
   FlAuthModule,
   FlCardModule,
   FlCoreComponentModule,
@@ -52,6 +53,7 @@ import {
     FlDateModule,
     FlAuthModule,
     FlTextEditorModule,
+    FlArticleModule,
   ]
 })
 export class CaCustomLibraryModule {

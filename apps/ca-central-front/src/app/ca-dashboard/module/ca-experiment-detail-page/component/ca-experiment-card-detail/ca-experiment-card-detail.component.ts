@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Experiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {
   CaExperimentFormDialogComponent
 } from '../../../ca-experiment-core/component/ca-experiment-form-dialog/ca-experiment-form-dialog.component';
@@ -16,8 +16,8 @@ import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
 })
 export class CaExperimentCardDetailComponent implements OnInit {
 
-  @Input() experiment: Experiment;
-  @Output() update: EventEmitter<Experiment> = new EventEmitter<Experiment>();
+  @Input() experiment: CaExperiment;
+  @Output() update: EventEmitter<CaExperiment> = new EventEmitter<CaExperiment>();
 
   openInLabLink: string;
   linkQueryParams: CaLabIframeOptions;
@@ -34,7 +34,7 @@ export class CaExperimentCardDetailComponent implements OnInit {
 
 
   openUpdateExperimentDialog(): void {
-    const dialogInput: FlFormDialogInput<Experiment> = {
+    const dialogInput: FlFormDialogInput<CaExperiment> = {
       mode: 'update',
       object: this.experiment,
     };
@@ -43,7 +43,7 @@ export class CaExperimentCardDetailComponent implements OnInit {
     );
   }
 
-  private onUpdateDialogClosed(experiment: Experiment): void {
+  private onUpdateDialogClosed(experiment: CaExperiment): void {
     if (experiment) {
       this.update.emit(experiment);
     }

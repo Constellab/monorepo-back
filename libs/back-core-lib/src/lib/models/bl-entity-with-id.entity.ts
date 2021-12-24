@@ -11,6 +11,12 @@ export abstract class BlEntityWithId {
 }
 
 
-export class BlEntityWithIdDTO{
+export class BlEntityWithIdDTO {
   id: string;
+
+
+  copyEntity(entity: BlEntityWithId): this {
+    this.id = entity.id;
+    return this;
+  }
 }

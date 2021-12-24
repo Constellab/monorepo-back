@@ -6,7 +6,7 @@ import {CaProjectCoreModule} from '../../../ca-core/entity-module/ca-project-cor
 import {CaProjectDetailComponent} from './component/ca-project-detail/ca-project-detail.component';
 import {RouterModule} from '@angular/router';
 import {CaExperimentCoreModule} from '../ca-experiment-core/ca-experiment-core.module';
-import {CaExperimentsListComponent} from './component/ca-experiments-list/ca-experiments-list.component';
+import {CaReportCoreModule} from '../ca-report-core/ca-report-core.module';
 
 /**
  * Module for the project detail page
@@ -15,7 +15,6 @@ import {CaExperimentsListComponent} from './component/ca-experiments-list/ca-exp
   declarations: [
     CaProjectDetailPageComponent,
     CaProjectDetailComponent,
-    CaExperimentsListComponent,
   ],
   imports: [
     CommonModule,
@@ -24,6 +23,7 @@ import {CaExperimentsListComponent} from './component/ca-experiments-list/ca-exp
     CaCoreModule,
     CaProjectCoreModule,
     CaExperimentCoreModule,
+    CaReportCoreModule,
   ]
 })
 export class CaProjectDetailPageModule {

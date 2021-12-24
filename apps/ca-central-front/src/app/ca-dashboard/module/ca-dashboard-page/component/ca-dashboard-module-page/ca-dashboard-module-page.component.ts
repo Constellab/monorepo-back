@@ -7,7 +7,7 @@ import {Component, OnInit} from '@angular/core';
 })
 export class CaDashboardModulePageComponent implements OnInit {
 
-  breadcrumbPart: string[] = ['dashboard', 'project', 'experiment'];
+  breadcrumbPart: string[] = ['dashboard', 'project', 'experiment', 'report'];
 
   constructor() {
   }

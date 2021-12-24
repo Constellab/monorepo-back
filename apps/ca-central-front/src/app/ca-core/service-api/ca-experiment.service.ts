@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CaExperimentStatusHistory, Experiment} from '../model/entities/ca-experiment.class';
+import {CaExperiment, CaExperimentStatusHistory} from '../model/entities/ca-experiment.class';
 import {FlApiService, FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
 
 @Injectable({
@@ -13,17 +13,20 @@ export class CaExperimentService {
   constructor(private apiService: FlApiService) {
   }
 
-  public findById(id: string): Observable<Experiment> {
-    return this.apiService.get(`${this.route}/${id}`, Experiment);
+  public findById(id: string): Observable<CaExperiment> {
+    return this.apiService.get(`${this.route}/${id}`, CaExperiment);
   }
 
-  public getExperimentsOfProject(projectId: string): Observable<Experiment[]> {
-    return this.apiService.get(`${this.route}/project/${projectId}`, Experiment);
+  public getExperimentsByProject(projectId: string): Observable<CaExperiment[]> {
+    return this.apiService.get(`${this.route}/project/${projectId}`, CaExperiment);
   }
 
+  public getExperimentsByReport(reportId: string): Observable<CaExperiment[]> {
+    return this.apiService.get(`${this.route}/report/${reportId}`, CaExperiment);
+  }
 
-  public update(experiment: Partial<Experiment>): Observable<Experiment> {
-    return this.apiService.put(`${this.route}`, experiment, Experiment);
+  public update(experiment: Partial<CaExperiment>): Observable<CaExperiment> {
+    return this.apiService.put(`${this.route}`, experiment, CaExperiment);
   }
 
   ////////////////// STATUS ////////////////////

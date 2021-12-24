@@ -2,6 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {CaProjectService} from '../../../../../ca-core/service-api/ca-project.service';
 import {ActivatedRoute} from '@angular/router';
 import {CaProject} from '../../../../../ca-core/model/entities/ca-project.class';
+import {Observable} from 'rxjs';
+import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
+import {CaReportService} from '../../../../../ca-core/service-api/ca-report.service';
+import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 
 /**
  * Page for a project detail
@@ -15,16 +20,27 @@ export class CaProjectDetailPageComponent implements OnInit {
 
   project: CaProject;
 
+  experiment$: Observable<CaExperiment[]>;
+  reports$: Observable<CaReport[]>;
+
   isLoading: boolean = false;
 
   constructor(private projectService: CaProjectService,
+              private reportService: CaReportService,
+              private experimentService: CaExperimentService,
               private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
     this.route.params.subscribe(
-      params => this.getProject(params.id)
+      params => this.init(params.id)
     );
+  }
+
+  private init(id: string): void {
+    this.getProject(id);
+    this.experiment$ = this.experimentService.getExperimentsByProject(id)
+    this.reports$ = this.reportService.getReportsByProject(id)
   }
 
   private getProject(id: string): void {

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {Experiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 import {CaLabInstance} from '../../../../../ca-core/model/entities/ca-lab-instance.class';
 import {
@@ -8,6 +8,9 @@ import {
   StatusHistoryListDialogInput
 } from '../../../../../ca-core/module/ca-status/ca-status-history-list-dialog/ca-status-history-list-dialog.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
+import {Observable} from 'rxjs';
+import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
+import {CaReportService} from '../../../../../ca-core/service-api/ca-report.service';
 
 @Component({
   selector: 'ca-experiment-detail-page',
@@ -16,19 +19,27 @@ import {FlDialogService} from '@monorepo/front-core-lib';
 })
 export class CaExperimentDetailPageComponent implements OnInit {
 
-  experiment: Experiment;
+  experiment: CaExperiment;
 
   isLoading: boolean = true;
 
+  reports$: Observable<CaReport[]>;
+
   constructor(private route: ActivatedRoute,
               private experimentService: CaExperimentService,
+              private reportService: CaReportService,
               private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
     this.route.params.subscribe(
-      params => this.getExperiment(params.id)
+      params => this.init(params.id)
     );
+  }
+
+  private init(id: string): void {
+    this.getExperiment(id);
+    this.reports$ = this.reportService.getReportsByExperiment(id);
   }
 
   private getExperiment(id: string): void {
@@ -39,12 +50,12 @@ export class CaExperimentDetailPageComponent implements OnInit {
     );
   }
 
-  private getExperimentSuccess(experiment: Experiment): void {
+  private getExperimentSuccess(experiment: CaExperiment): void {
     this.onExperimentUpdate(experiment);
     this.isLoading = false;
   }
 
-  onExperimentUpdate(experiment: Experiment): void {
+  onExperimentUpdate(experiment: CaExperiment): void {
     this.experiment = experiment;
   }
 

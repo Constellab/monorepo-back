@@ -8,7 +8,6 @@ import {
 } from './component/ca-experiment-card-detail/ca-experiment-card-detail.component';
 import {CaCoreModule} from '../../../ca-core/ca-core.module';
 import {CaExperimentCoreModule} from '../ca-experiment-core/ca-experiment-core.module';
-import {CaReportsListComponent} from './component/ca-reports-list/ca-reports-list.component';
 import {CaReportCoreModule} from '../ca-report-core/ca-report-core.module';
 import {RouterModule} from '@angular/router';
 import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
@@ -19,7 +18,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
   declarations: [
     CaExperimentDetailPageComponent,
     CaExperimentCardDetailComponent,
-    CaReportsListComponent,
   ],
   imports: [
     CommonModule,
