@@ -20,6 +20,6 @@
   "update_project_status": "Update project's status",
   "open_experiment_in_lab": "Open experiment in lab",
   "reports": "Reports",
-  "no_report": "There is no report for this experiment",
+  "no_report": "No report",
   "url": "URL"
 }

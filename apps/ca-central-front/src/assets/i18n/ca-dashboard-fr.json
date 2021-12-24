@@ -20,6 +20,6 @@
   "update_project_status": "Modifier le statut du projet",
   "open_experiment_in_lab": "Ouvrir l'expérience dans le lab",
   "reports": "Rapports",
-  "no_report": "Il n'y a pas de rapport pour cette expérience",
+  "no_report": "Aucun rapport",
   "url": "URL"
 }

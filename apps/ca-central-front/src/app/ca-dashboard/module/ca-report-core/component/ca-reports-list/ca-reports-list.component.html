@@ -7,7 +7,7 @@
   </fl-card-header>
 
   <fl-card-body>
-    <fl-async-section [object]="reports$" emptyText="no_experiment">
+    <fl-async-section [object]="reports$" emptyText="no_report">
       <ng-container *flSectionBody="let reports">
         <mat-nav-list>
           <ng-container *ngFor="let report of reports">
