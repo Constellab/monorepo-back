@@ -40,6 +40,13 @@
             <mat-icon>local_offer</mat-icon>
             {{'tags' | translate}}
           </button>
+
+          <a mat-stroked-button type="button" *ngIf="resource.experimentId"
+             [routerLink]="resource.experimentId | labDetailRoute:'experiment'"
+             class="button g-button-small">
+            <mat-icon flIcon="vials"></mat-icon>
+            {{'experiment' | translate}}
+          </a>
         </fl-section-actions>
       </fl-section-header>
 
@@ -49,7 +56,7 @@
         <!--  Header    -->
         <div class="page-padding body">
           <lab-resource-view *ngIf="fullScreenView" [view]="fullScreenView"
-                                  [fullscreen]="true"></lab-resource-view>
+                             [fullscreen]="true"></lab-resource-view>
           <div *ngIf="showLoader" class="g-text-centered">
             <fl-loader size="medium"></fl-loader>
           </div>

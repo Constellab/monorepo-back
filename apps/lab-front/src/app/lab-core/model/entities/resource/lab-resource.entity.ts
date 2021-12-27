@@ -57,6 +57,9 @@ export class LabResource extends LabBaseEntityWithUser {
 
   name: string;
 
+  @Expose({name: 'experiment_id'})
+  experimentId?: string;
+
 
   isFile(): boolean {
     return this.fsNode != null && this.fsNode.isFile;
