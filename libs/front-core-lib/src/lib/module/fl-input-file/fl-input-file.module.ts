@@ -10,7 +10,7 @@ import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.modu
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flFileInputI18n} from './i18n/fl-input-file.i18n';
-import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
+import {FlIconModule} from '../fl-svg-icon/fl-icon.module';
 import {FlInputFileIconContainerComponent} from './fl-input-file-icon-container/fl-input-file-icon-container.component';
 import {MatRippleModule} from '@angular/material/core';
 
@@ -39,7 +39,7 @@ import {MatRippleModule} from '@angular/material/core';
 
     FlCoreDirectiveModule,
     FlTranslateModule,
-    FlSvgIconModule,
+    FlIconModule,
   ]
 })
 export class FlInputFileModule {

@@ -10,11 +10,11 @@ import {
   FlApiModule,
   FlAuthModule,
   FlDialogModule,
+  FlIconModule,
   FlPortalActionsModule,
   FlPortalModule,
   flSetRootInjector,
   FlSnackBarModule,
-  FlSvgIconModule,
   FlTagModule,
   FlThemeService,
   FlTranslateModule
@@ -65,7 +65,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlTranslateModule.forRoot2(),
 
     // configuration of Front library
-    FlSvgIconModule.forRoot({
+    FlIconModule.forRoot({
       iconFolder: 'assets/mat-icons/',
       iconsToRegister: labSvgIcons
     }),

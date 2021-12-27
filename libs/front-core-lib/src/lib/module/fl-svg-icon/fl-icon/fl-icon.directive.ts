@@ -1,6 +1,6 @@
 import {Directive, ElementRef, Host, Inject, Input, OnInit} from '@angular/core';
 import {MatIcon} from '@angular/material/icon';
-import {FlSvgIconConfig, LF_SVG_ICON_MODULE} from '../fl-svg-icon-config.class';
+import {FL_ICON_MODULE, FlIcon, FlIconConfig, FlMatIcon, FlSvgIcon} from '../fl-icon-config.class';
 
 /**
  * directive to be placed on a mat-icon. It set the icon and support both
@@ -18,7 +18,7 @@ export class FlIconDirective implements OnInit {
 
   constructor(@Host() private matIcon: MatIcon,
               private elementRef: ElementRef<HTMLElement>,
-              @Inject(LF_SVG_ICON_MODULE) private config: FlSvgIconConfig) {
+              @Inject(FL_ICON_MODULE) private config: FlIconConfig) {
   }
 
   ngOnInit(): void {
@@ -29,21 +29,31 @@ export class FlIconDirective implements OnInit {
     if (icon == null) {
       this.setMatIcon(null);
       this.setSvgIcon(null);
-    } else if (this.isSvgIcon(icon)) {
+      return;
+    }
+
+    const registerIcon: FlIcon = this.getRegisterIcon(icon);
+
+    // if this is an SVG icon
+    if (registerIcon && (registerIcon as FlSvgIcon).filename) {
       // set the svgIcon property of mat icon
       this.setMatIcon(null);
       this.matIcon.fontSet = null;
       this.setSvgIcon(icon);
     } else {
+
+      // if the mat icon is register use the mat icon name
+      const matIcon = (registerIcon as FlMatIcon)?.matIconName ?? icon;
       this.setSvgIcon(null);
       this.matIcon.fontSet = 'material-icons';
-      this.setMatIcon(icon);
+      this.setMatIcon(matIcon);
     }
   }
 
+
   // return true if this is an SVG icon and not a material icon
-  private isSvgIcon(icon: string): boolean {
-    return this.config.iconsToRegister.find(svgIcon => svgIcon.name === icon) != null;
+  private getRegisterIcon(icon: string): FlIcon {
+    return this.config.iconsToRegister.find(svgIcon => svgIcon.name === icon);
   }
 
   private setMatIcon(icon: string): void {

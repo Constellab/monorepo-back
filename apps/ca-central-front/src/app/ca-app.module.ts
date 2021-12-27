@@ -15,11 +15,11 @@ import {
   FlAuthModule,
   FlDialogModule,
   FlHttpInterceptorService,
+  FlIconModule,
   FlPortalModule,
   FlServiceWorkerService,
   flSetRootInjector,
   FlSnackBarModule,
-  FlSvgIconModule,
   FlThemeService,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
@@ -68,7 +68,7 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     FlTranslateModule.forRoot2(),
 
     // configuration of Front library
-    FlSvgIconModule.forRoot({
+    FlIconModule.forRoot({
       iconFolder: 'assets/mat-icons/',
       iconsToRegister: caSvgIcons
     }),

@@ -34,7 +34,7 @@ export const mainMenuLinks: MainMenuLink[] = [
   },
   {
     label: 'biox.reports',
-    icon: 'grading',
+    icon: 'report',
     route: labConstReportFullRoute
   },
   // {

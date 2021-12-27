@@ -5,7 +5,7 @@ import {FlMenuDynamicPortalComponent} from './component/fl-menu-dynamic-portal/f
 import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
-import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
+import {FlIconModule} from '../fl-svg-icon/fl-icon.module';
 
 /**
  * Module to create mat menu dynamically
@@ -22,7 +22,7 @@ import {FlSvgIconModule} from '../fl-svg-icon/fl-svg-icon.module';
     CommonModule,
 
     FlTranslateModule,
-    FlSvgIconModule,
+    FlIconModule,
 
     MatMenuModule,
     MatIconModule,

@@ -22,7 +22,7 @@ export const technicalBricks: Record<BrickTechnicalName, TechnicalBrick> = {
   },
   BIOX: {
     label: 'biox.biox',
-    icon: 'vials',
+    icon: 'experiment',
     technicalName: 'BIOX'
   },
   BIOTA: {

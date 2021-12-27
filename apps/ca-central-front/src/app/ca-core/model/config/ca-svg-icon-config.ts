@@ -1,11 +1,7 @@
 // define the list of svg icon
-import {FlSvgIcon} from '@monorepo/front-core-lib';
+import {FlIcon, flIconsDefault} from '@monorepo/front-core-lib';
 
-export const caSvgIcons: FlSvgIcon[] = [
-  {name: 'experiment', filename: 'flask-solid.svg'},
-  {name: 'protocol', filename: 'cogs-solid.svg'},
-  {name: 'lab', filename: 'microscope-solid.svg'},
-  {name: 'project', filename: 'briefcase-solid.svg'},
-  {name: 'archive', filename: 'archive-solid.svg'},
+export const caSvgIcons: FlIcon[] = [
+  ...flIconsDefault,
   {name: 'share_arrow', filename: 'share-solid.svg'},
 ];

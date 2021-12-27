@@ -1,7 +1,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
-import {FlSvgIconConfig, LF_SVG_ICON_MODULE} from './fl-svg-icon-config.class';
+import {FL_ICON_MODULE, FlIconConfig, FlSvgIcon} from './fl-icon-config.class';
 
 /**
  * Service to register custom svg icon to use them with <mat-icon> in html
@@ -10,7 +10,7 @@ import {FlSvgIconConfig, LF_SVG_ICON_MODULE} from './fl-svg-icon-config.class';
 export class FlSvgIconRegistryService {
 
   constructor(private matIconRegistry: MatIconRegistry, private domSanitizer: DomSanitizer,
-              @Inject(LF_SVG_ICON_MODULE) private config: FlSvgIconConfig) {
+              @Inject(FL_ICON_MODULE) private config: FlIconConfig) {
   }
 
   /**
@@ -18,7 +18,9 @@ export class FlSvgIconRegistryService {
    */
   public registerCustomIcons(): void {
     for (const icon of this.config.iconsToRegister) {
-      this.registerIcon(icon.name, icon.filename);
+      if ((icon as FlSvgIcon).filename) {
+        this.registerIcon(icon.name, (icon as FlSvgIcon).filename);
+      }
     }
   }
 
