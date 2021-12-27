@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {
   labConstBaseRoute,
   labConstBioxFullRoute,
+  labConstDataboxFullRoute,
   labConstMonitoringFullRoute,
   labConstReportFullRoute
 } from '../utils/lab-base-route';
@@ -28,7 +29,7 @@ export class LabRouterService {
   }
 
   public static getResourceDetailRoute(id: string): string {
-    return `${labConstBioxFullRoute}/resource/${id}`;
+    return `${labConstDataboxFullRoute}/resource/${id}`;
   }
 
   public static getMonitoringRoute(): string {

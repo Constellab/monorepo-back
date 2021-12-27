@@ -7,7 +7,7 @@ import {
 } from '../../../../model/entities/resource/lab-resource-view.entity';
 import {
   LabResourceDetailPageState
-} from '../../../../../lab-biox/module/lab-resource-detail-page/state/lab-resource-detail-page.state';
+} from '../../../../../lab-databox/module/lab-resource-detail-page/state/lab-resource-detail-page.state';
 
 /**
  * Component to view a resource as plain text
