@@ -1,6 +1,6 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
-import {FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
+import {FlDialogService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
 import {LabWorkflowNodeProcess} from '../../model/lab-workflow-node-process.class';
@@ -28,7 +28,6 @@ export class LabWorkflowNodeComponent implements OnInit {
 
   constructor(private workflowManager: LabWorkflowManagerState,
               private dialogService: FlDialogService,
-              private portalService: FlPortalService,
               private drawerState: LabWorkflowActionState) {
   }
 

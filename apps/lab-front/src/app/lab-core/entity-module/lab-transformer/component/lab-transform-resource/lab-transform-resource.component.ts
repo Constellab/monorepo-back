@@ -12,8 +12,11 @@ import {
 } from '../../../lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
 import {FormArray, FormBuilder, FormControl, FormGroup} from '@ngneat/reactive-forms';
 import {ControlContainer} from '@angular/forms';
-import {FlGlobalValidators} from '@monorepo/front-core-lib';
+import {FlGlobalValidators, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {LabTransformerWithConfig} from '../../../../model/global/lab-transformer.class';
+import {
+  LabProcessTypePortalComponent
+} from '../../../lab-process-core/component/lab-process-type-portal/lab-process-type-portal.component';
 
 interface LabSelectedTransformer {
   transformer: LabProcessType;
@@ -47,7 +50,8 @@ export class LabTransformResourceComponent implements OnInit {
 
   constructor(private taskTypeService: LabTaskService,
               private controlContainer: ControlContainer,
-              private cdr: ChangeDetectorRef) {
+              private cdr: ChangeDetectorRef,
+              private portalService: FlPortalService) {
   }
 
 
@@ -119,5 +123,14 @@ export class LabTransformResourceComponent implements OnInit {
 
   getFormGroup(index: number): FormGroup<LabTransformResourceForm> {
     return this.formArray.at(index) as any;
+  }
+
+  openTransformerDetail(transformer: LabProcessType, event: MouseEvent): void {
+    const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(event.target as any,
+      ['bottom', 'left', 'right', 'top'],
+      {disposeOnNavigation: true, elevation: true}
+    );
+
+    this.portalService.createPortal(LabProcessTypePortalComponent, portalConfig, transformer);
   }
 }

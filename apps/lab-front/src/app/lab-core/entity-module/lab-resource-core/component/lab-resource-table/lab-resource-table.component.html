@@ -47,7 +47,7 @@
     <mat-header-cell *matHeaderCellDef class="action-column">
     </mat-header-cell>
     <mat-cell *matCellDef="let resource" class="action-column">
-      <a mat-icon-button type="button" color="primary"
+      <a mat-icon-button type="button" color="primary" [routerLink]="resource | labDetailRoute"
          [matTooltip]="'biox.resource_preview' | translate">
         <mat-icon>preview</mat-icon>
       </a>

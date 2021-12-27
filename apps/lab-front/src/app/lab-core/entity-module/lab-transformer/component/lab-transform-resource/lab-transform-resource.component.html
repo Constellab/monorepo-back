@@ -4,10 +4,16 @@
 
     <ng-container *flSectionBody="let transformers">
       <div *ngFor="let transformer of transformers" fxLayout="row" fxLayoutAlign="space-between center"
-           class="g-full" [labProcessTypeHoverDetail]="transformer" [flMouseEnterDelay]="500">
+           class="g-full">
         <button mat-stroked-button type="button" (click)="addTransformer(transformer)"
                 class="g-button-small button">
           {{transformer.name}}
+        </button>
+
+        <button mat-icon-button type="button" class="g-button-icon-small"
+                (click)="openTransformerDetail(transformer, $event)"
+                [matTooltip]="'biox.transformer_view_detail' | translate">
+          <mat-icon>visibility</mat-icon>
         </button>
       </div>
     </ng-container>
@@ -36,8 +42,8 @@
           </mat-expansion-panel-header>
 
           <lab-configure-specs-form *ngIf="transformer.hasConfig; else noConfig"
-                                         [configData]="transformer.configData"
-                                         formGroupName="config"></lab-configure-specs-form>
+                                    [configData]="transformer.configData"
+                                    formGroupName="config"></lab-configure-specs-form>
 
 
           <ng-template #noConfig>
