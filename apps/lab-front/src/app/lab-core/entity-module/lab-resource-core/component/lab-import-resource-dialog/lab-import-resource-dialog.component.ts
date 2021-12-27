@@ -17,12 +17,16 @@ import {
 } from '../../../lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
 import {LabConfigData, LabConfigValues} from '../../../../model/entities/lab-config.entity';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {FlFormHelper, FlSnackBarService} from '@monorepo/front-core-lib';
+import {FlFormHelper, FlOverlayRef, FlPortalConfig, FlPortalService, FlSnackBarService} from '@monorepo/front-core-lib';
 import {LabRouterService} from '../../../../service/lab-router.service';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabProcessType} from '../../../../model/entities/lab-type/lab-process-type.entity';
 import {Validators} from '@angular/forms';
-import {MatSelectChange} from '@angular/material/select';
+import {LabResourceImporterType} from '../../../../model/entities/resource/lab-resource.dto';
+import {LabTypingName} from '../../../../model/entities/lab-typing-name.class';
+import {
+  LabProcessTypePortalComponent
+} from '../../../lab-process-core/component/lab-process-type-portal/lab-process-type-portal.component';
 
 export interface LabImportResourceDialogInput {
   resourceId: string;
@@ -48,7 +52,7 @@ export class LabImportResourceDialogComponent implements OnInit {
 
   @ViewChild('viewContainer', {static: false, read: ViewContainerRef}) viewContainer: ViewContainerRef;
 
-  importers: LabProcessType[];
+  groupImporters: LabResourceImporterType[];
 
   formGp: FormGroup<LabImportResourceDialogForm>;
   configData: LabConfigData;
@@ -62,32 +66,55 @@ export class LabImportResourceDialogComponent implements OnInit {
 
   private viewComponentRef: ComponentRef<LabConfigureSpecsFormComponent>;
 
+  private detailOverlayRef: FlOverlayRef;
+
   constructor(@Inject(MAT_DIALOG_DATA) private input: LabImportResourceDialogInput,
               private dialogRef: MatDialogRef<LabImportResourceDialogComponent>,
               private resourceService: LabResourceService,
               private routerService: LabRouterService,
               private snackBarService: FlSnackBarService,
               private cdr: ChangeDetectorRef,
-              private componentFactoryResolver: ComponentFactoryResolver) {
+              private componentFactoryResolver: ComponentFactoryResolver,
+              private portalService: FlPortalService) {
     this.resourceHumanName = input.resourceHumanName;
   }
 
   ngOnInit(): void {
     this.getIsLoading = true;
     this.resourceService.getImporters(this.input.resourceTypingName).subscribe(
-      importers => this.getImportersSuccess(importers),
+      groupImporters => this.getImportersSuccess(groupImporters),
       () => this.getImportersError()
     );
+
+    // on dialog close, close the overlay ref
+    this.dialogRef.beforeClosed().subscribe(() => this.detailOverlayRef?.dispose());
   }
 
-  private getImportersSuccess(importers: LabProcessType[]): void {
-    this.importers = importers;
+  private getImportersSuccess(groupImporters: LabResourceImporterType[]): void {
+    this.groupImporters = groupImporters;
     this.getIsLoading = false;
 
+    let defaultValue: LabProcessType = null;
+
+    if (this.input.resourceTypingName === LabTypingName.resource.tableFile) {
+      // find the importer of TableFile
+      const tablesImporters = groupImporters.find(group => group.resource.typingName == LabTypingName.resource.tableFile);
+      defaultValue = tablesImporters?.importers.find(importer => importer.typingName === LabTypingName.task.tableImporter) ?? null;
+    }
+
     this.formGp = new FormBuilder().group({
-      importer: [null, Validators.required],
+      importer: [defaultValue, Validators.required],
       config: [null]
     });
+
+    // let time to refresh the view to be able to access html container
+    setTimeout(() => {
+      if (defaultValue) {
+        this.selectImporter(defaultValue);
+      }
+      this.cdr.markForCheck();
+    }, 0);
+
     this.cdr.markForCheck();
   }
 
@@ -96,8 +123,7 @@ export class LabImportResourceDialogComponent implements OnInit {
     this.getIsLoading = false;
   }
 
-  selectImporter(selection: MatSelectChange): void {
-    const importer: LabProcessType = selection.value;
+  selectImporter(importer: LabProcessType): void {
     this.configData = LabConfigData.fromSpecs(importer.getConfigSpecs(), importer.getConfigSpecs().getDefaultConfig());
     this.formGp.setControl('config', LabConfigureSpecsFormComponent.buildFormGroup(this.configData));
     this.formGp.updateValueAndValidity();
@@ -140,4 +166,16 @@ export class LabImportResourceDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  openLabProcessTypeDetail(processType: LabProcessType, event: MouseEvent): void {
+    if (this.detailOverlayRef) return;
+
+    const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(event.target as any,
+      ['bottom', 'left', 'right', 'top'],
+      {disposeOnNavigation: true, elevation: true}
+    );
+
+    this.detailOverlayRef = this.portalService.createPortal(LabProcessTypePortalComponent, portalConfig, processType);
+
+    this.detailOverlayRef.detachments().subscribe(() => this.detailOverlayRef = null);
+  }
 }

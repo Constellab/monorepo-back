@@ -1,6 +1,6 @@
 import {LabIO, LabIOSpec, LabIOSpecResourceType} from '../entities/lab-io.entity';
 import {Exclude} from 'class-transformer';
-import {labTypingNameResource} from '../entities/lab-typing-name.py';
+import {LabTypingName} from '../entities/lab-typing-name.class';
 import {LabBaseEntityWithUser} from '../entities/lab-user.entity';
 
 export interface LabConnectionPart {
@@ -61,7 +61,7 @@ export abstract class LabNode extends LabBaseEntityWithUser {
 }
 
 const resourceSpec: LabIOSpecResourceType = {
-  typing_name: labTypingNameResource,
+  typing_name: LabTypingName.model.resource,
   human_name: 'Resource',
   short_description: 'Any resource'
 };

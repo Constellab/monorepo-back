@@ -5,7 +5,7 @@ import {Expose, Type} from 'class-transformer';
 import {LabIO} from '../lab-io.entity';
 import {LabProgressBar} from '../lab-progress-bar.entity';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
-import {labTaskSourceTypingName} from '../lab-typing-name.py';
+import {LabTypingName} from '../lab-typing-name.class';
 
 export interface LabProcessData {
   title: string;
@@ -79,9 +79,9 @@ export class LabProcess extends LabNode {
   }
 
 
-  // return true if the process is a of type Source
+  // return true if the process is of type Source
   isSource(): boolean {
-    return this.processTypingName === labTaskSourceTypingName;
+    return this.processTypingName === LabTypingName.task.source;
   }
 
   get title(): string {

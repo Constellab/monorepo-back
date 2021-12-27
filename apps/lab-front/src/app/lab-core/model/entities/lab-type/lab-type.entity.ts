@@ -10,8 +10,10 @@ export class LabTypeEntity extends LabBaseEntity {
   modelName: string;
 
   @Expose({name: 'human_name'})
-  humanName?: string;
+  humanName: string;
 
+  @Expose({name: 'short_description'})
+  shortDescription?: string;
 
   get name(): string {
     return this.humanName || this.modelName;

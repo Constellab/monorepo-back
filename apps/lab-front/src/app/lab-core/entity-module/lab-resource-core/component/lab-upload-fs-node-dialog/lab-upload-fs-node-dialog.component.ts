@@ -6,7 +6,7 @@ import {FormArray, FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {LabFileType} from '../../../../model/entities/resource/lab-file-type';
 import {Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
-import {labResourceFileTypingName} from '../../../../model/entities/lab-typing-name.py';
+import {LabTypingName} from '../../../../model/entities/lab-typing-name.class';
 
 export type UploadFsNodeMode = 'files' | 'folder'
 
@@ -83,7 +83,7 @@ export class LabUploadFsNodeDialogComponent implements OnInit {
         filesWithType.push({file: file, typingName: fileType.typingName});
       } else {
         // set the file as default typing name
-        filesWithType.push({file: file, typingName: labResourceFileTypingName});
+        filesWithType.push({file: file, typingName: LabTypingName.resource.file});
       }
 
     }

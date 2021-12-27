@@ -23,8 +23,7 @@ import {
 } from '../entity-module/lab-resource-core/model/lab-resource-advanced-search.class';
 import {LabCallTransformerParams} from '../model/global/lab-transformer.class';
 import {LabConfigValues} from '../model/entities/lab-config.entity';
-import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
-import {LabTaskType} from '../model/entities/lab-type/lab-task-type.entity';
+import {LabResourceImporterType} from '../model/entities/resource/lab-resource.dto';
 
 
 @Injectable({
@@ -119,11 +118,11 @@ export class LabResourceService implements FlSearchService<LabResource> {
   }
 
   //////////////////////////////////////// IMPORTER  ///////////////////////////////////////
-  public getImporters(resourceTypingName: string): Observable<LabProcessType[]> {
-    return this.apiService.get(`${this.resourceTypeRoute}/${resourceTypingName}/importer`, LabTaskType);
+  public getImporters(resourceTypingName: string): Observable<LabResourceImporterType[]> {
+    return this.apiService.get(`${this.resourceTypeRoute}/${resourceTypingName}/importer`, LabResourceImporterType);
   }
 
-  public callImporter(resourceId: string, importerType: string, config: LabConfigValues): Observable<LabResource>{
+  public callImporter(resourceId: string, importerType: string, config: LabConfigValues): Observable<LabResource> {
     return this.apiService.post(`${this.route}/${resourceId}/import/${importerType}`, config, LabResource);
   }
 }

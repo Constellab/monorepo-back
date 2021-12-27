@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {LabResourceService} from '../../../../../lab-core/entity-service/lab-resource.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {Observable, Subscription} from 'rxjs';
 import {LabResource} from '../../../../../lab-core/model/entities/resource/lab-resource.entity';
 import {LabResourceDetailPageState, LabResourceViewEvent} from '../../state/lab-resource-detail-page.state';
@@ -9,8 +8,7 @@ import {
   FlOverlayRef,
   FlPortalConfig,
   FlPortalService,
-  FlTagDialogService,
-  FlTranslateService
+  FlTagDialogService
 } from '@monorepo/front-core-lib';
 import {LabResourceView} from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {
@@ -46,12 +44,9 @@ export class LabResourceDetailPageComponent implements OnInit, OnDestroy {
   private transformerOverlay: FlOverlayRef;
   private subscription: Subscription;
 
-  constructor(private resourceService: LabResourceService,
-              private route: ActivatedRoute,
-              private router: Router,
+  constructor(private route: ActivatedRoute,
               private state: LabResourceDetailPageState,
               private portalService: FlPortalService,
-              private translateService: FlTranslateService,
               private tagDialogService: FlTagDialogService,
               private tagService: LabTagService,
               private dialogService: FlDialogService,
@@ -104,17 +99,16 @@ export class LabResourceDetailPageComponent implements OnInit, OnDestroy {
     this.viewOverlay.detachments().subscribe(() => this.viewOverlay = null);
   }
 
-  async openTransformerResource(event: MouseEvent): Promise<void> {
+  async openTransformerResource(): Promise<void> {
     if (this.transformerOverlay != null) return;
 
     const resource = await this.state.getResourcePromise();
 
-    const config: FlPortalConfig = this.portalService.configureRelativePortal(
-      event.target as any, ['right'],
+    const config: FlPortalConfig = this.portalService.configureAbsolutePortal(
+      {centerHorizontally: '0', top: '0'},
       {
         elevation: true,
         disposeOnNavigation: true,
-        viewPortMargin: 0,
         hasBackdrop: true,
         transparentBackdrop: true,
       });
@@ -156,6 +150,7 @@ export class LabResourceDetailPageComponent implements OnInit, OnDestroy {
 
     this.dialogService.openMediumDialog(LabImportResourceDialogComponent, {data: input});
   }
+
 
   async downloadFile(): Promise<void> {
     const resource = await this.state.getResourcePromise();

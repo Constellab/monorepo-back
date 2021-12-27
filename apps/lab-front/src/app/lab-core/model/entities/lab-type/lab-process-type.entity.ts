@@ -2,7 +2,7 @@ import {LabProcessData} from '../process/lab-process.entity';
 import {LabConfigSpecs} from '../lab-config-spec.entity';
 import {LabTypeEntity} from './lab-type.entity';
 import {LabIOSpec} from '../lab-io.entity';
-import {labTaskSourceTypingName} from '../lab-typing-name.py';
+import {LabTypingName} from '../lab-typing-name.class';
 
 
 export abstract class LabProcessType extends LabTypeEntity {
@@ -11,7 +11,7 @@ export abstract class LabProcessType extends LabTypeEntity {
 
   // return true if the process is a Source
   isPlugSource(): boolean {
-    return this.typingName === labTaskSourceTypingName;
+    return this.typingName === LabTypingName.task.source;
   }
 
   hasDocumentation(): boolean {
