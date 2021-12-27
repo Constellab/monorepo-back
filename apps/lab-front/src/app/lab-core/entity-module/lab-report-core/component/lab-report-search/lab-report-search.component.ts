@@ -57,6 +57,8 @@ export class LabReportSearchComponent implements OnInit {
 
   @Input() reportSelectable: boolean = false;
 
+  @Input() fullPageSearch: boolean = true;
+
   @Output() reportSelected: EventEmitter<LabReport> = new EventEmitter();
 
   datasource: FlDatasourcePaginated<LabReport>;
@@ -71,6 +73,7 @@ export class LabReportSearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.datasource = this.searchState.datasource;
+    this.searchState.init(this.fullPageSearch);
   }
 
   openCreateReportFormDialog(): void {

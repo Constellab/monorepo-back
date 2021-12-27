@@ -55,6 +55,8 @@ export class LabExperimentSearchComponent implements OnInit {
 
   @Input() experimentSelectable: boolean = false;
 
+  @Input() fullPageSearch: boolean = true;
+
   @Output() experimentSelected: EventEmitter<LabExperiment> = new EventEmitter();
 
   datasource: FlDatasourcePaginated<LabExperiment>;
@@ -69,6 +71,7 @@ export class LabExperimentSearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.datasource = this.searchState.datasource;
+    this.searchState.init(this.fullPageSearch);
   }
 
   createExperiment(): void {

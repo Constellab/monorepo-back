@@ -62,6 +62,8 @@ export class LabResourceSearchComponent implements OnInit {
 
   @Input() resourceSelectable: boolean = false;
 
+  @Input() fullPageSearch: boolean = true;
+
   @Output() resourceSelected: EventEmitter<LabResource> = new EventEmitter<LabResource>();
 
 
@@ -87,6 +89,7 @@ export class LabResourceSearchComponent implements OnInit {
     }
 
     this.datasource = this.searchState.datasource;
+    this.searchState.init(this.fullPageSearch);
   }
 
   selectResource(resource: LabResource): void {

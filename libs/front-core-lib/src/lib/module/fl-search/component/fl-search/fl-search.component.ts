@@ -28,7 +28,7 @@ export class FlSearchComponent implements OnInit {
   }
 
   toggleDrawer(): void {
-    this.searchState.toggleDrawer();
+    this.drawer.toggle();
   }
 
   loadMoreResults(): void {

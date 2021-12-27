@@ -37,6 +37,7 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
   private drawer: MatDrawer;
   private routeSubscription: Subscription;
 
+  private storeSearchInUrl: boolean = false;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -45,12 +46,24 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
     this.searchService = config.searchService;
     this.datasource = new FlEntityPaginatedDatasource(
       this.searchService.advancedSearch.bind(this.searchService), 20, false);
-
-    this.subscribeToNavigation();
   }
 
   public setDrawer(drawer: MatDrawer): void {
     this.drawer = drawer;
+  }
+
+  /**
+   * Init the search page and call first search
+   * @param storeSearchInUrl if true the url is modified
+   */
+  public init(storeSearchInUrl: boolean): void {
+    this.storeSearchInUrl = storeSearchInUrl;
+
+    if (storeSearchInUrl) {
+      this.subscribeToNavigation();
+    } else {
+      this.initFirstSearch();
+    }
   }
 
 
@@ -59,7 +72,10 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
     const advancedSearch: FlAdvancedSearchObject = this.callAdvancedSearch(this.advancedSearchFormGroup.getRawValue());
 
     const timestamp = this.generateSearchTimestamp();
-    this.saveAdvancedSearchInUrl(advancedSearch, timestamp);
+
+    if (this.storeSearchInUrl) {
+      this.saveAdvancedSearchInUrl(advancedSearch, timestamp);
+    }
   }
 
   // call advanced search from a saved search
@@ -68,7 +84,9 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
     this.patchAdvancedFormGroup(savedSearch.filtersCriteria);
 
     const timestamp = this.generateSearchTimestamp();
-    this.saveAdvancedSearchInUrl(advancedSearchObject, timestamp);
+    if (this.storeSearchInUrl) {
+      this.saveAdvancedSearchInUrl(advancedSearchObject, timestamp);
+    }
   }
 
   // call the advanced search from a URL change
@@ -116,7 +134,7 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
    * Else if there is a default saved advanced search, call it
    * Otherwise call the default search if it exists
    */
-  private initFirstSearch(params: FlSearchUrlObject): void {
+  private initFirstSearch(params?: FlSearchUrlObject): void {
     // call the advanced search from query params if they exists
     if (this.checkAndCallSearchFromUrl(params as any)) {
       return;
@@ -133,6 +151,8 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
    * if the search is called, it returns true
    */
   private checkAndCallSearchFromUrl(params: FlSearchUrlObject): boolean {
+    if (params == null) return false;
+
     // prevent calling the save search twice
     if (this.lastSearchTimestamp && params.timestamp === this.lastSearchTimestamp) {
       return false;
@@ -198,6 +218,7 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: searchUrl,
+        replaceUrl: true
       });
     }
   }
