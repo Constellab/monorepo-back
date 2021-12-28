@@ -58,7 +58,7 @@ export class FlDynamicFormHelper {
 
 
   public static generateFormControl(config: FlDynamicFieldConfig, value: any = null): FormControl {
-    const control = new FormControl(value ?? config.defaultValue, FlDynamicFormHelper.getControlValidators(config));
+    const control = new FormControl(value, FlDynamicFormHelper.getControlValidators(config));
 
     if (config.disabled) {
       control.disable();

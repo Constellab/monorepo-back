@@ -6,40 +6,44 @@
 
 
   <fl-portal-content>
-    <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
+    <fl-section [object]="configs" [isLoading]="isLoading">
+      <ng-container *flSectionBody>
+        <form (ngSubmit)="submit()" id="config-form" [formGroup]="formGp">
 
-      <!--  View configuration   -->
-      <lab-configure-specs-form [configData]="configs" formGroupName="viewConfig"></lab-configure-specs-form>
+          <!--  View configuration   -->
+          <lab-configure-specs-form [configData]="configs" formGroupName="viewConfig"></lab-configure-specs-form>
 
-      <mat-divider class="divider"></mat-divider>
+          <mat-divider class="divider"></mat-divider>
 
-      <!--  Transformers (called filter)  -->
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          {{'biox.transformers' | translate}}
-        </mat-expansion-panel-header>
+          <!--  Transformers (called filter)  -->
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              {{'biox.transformers' | translate}}
+            </mat-expansion-panel-header>
 
-        <lab-transform-resource class="transformers" formArrayName="transformers"
-                                     [resourceTypingName]="resourceTypingName"></lab-transform-resource>
-      </mat-expansion-panel>
-      <mat-divider class="divider"></mat-divider>
+            <lab-transform-resource class="transformers" formArrayName="transformers"
+                                    [resourceTypingName]="resourceTypingName"></lab-transform-resource>
+          </mat-expansion-panel>
+          <mat-divider class="divider"></mat-divider>
 
-      <!--  Full screen or dialog   -->
-      <div *ngIf="showDisplayModeControl" class="display-mode">
-        <label>{{'biox.resource_view_display_mode' | translate}}</label>
-        <mat-radio-group formControlName="displayMode" color="primary">
-          <mat-radio-button value="fullScreen"
-                            class="display-mode-label">{{'biox.resource_view_display_component' | translate}}</mat-radio-button>
-          <mat-radio-button value="portal"
-                            class="display-mode-label">{{'biox.resource_view_display_portal' | translate}}</mat-radio-button>
-        </mat-radio-group>
-      </div>
-    </form>
+          <!--  Full screen or dialog   -->
+          <div *ngIf="showDisplayModeControl" class="display-mode">
+            <label>{{'biox.resource_view_display_mode' | translate}}</label>
+            <mat-radio-group formControlName="displayMode" color="primary">
+              <mat-radio-button value="fullScreen"
+                                class="display-mode-label">{{'biox.resource_view_display_component' | translate}}</mat-radio-button>
+              <mat-radio-button value="portal"
+                                class="display-mode-label">{{'biox.resource_view_display_portal' | translate}}</mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </form>
 
-    <button mat-raised-button color="primary" type="submit" form="config-form"
-            class="g-centered-forced">
-      {{'biox.show_view' | translate}}
-    </button>
+        <button mat-raised-button color="primary" type="submit" form="config-form"
+                class="g-centered-forced">
+          {{'biox.show_view' | translate}}
+        </button>
+      </ng-container>
+    </fl-section>
   </fl-portal-content>
 </fl-portal>
 

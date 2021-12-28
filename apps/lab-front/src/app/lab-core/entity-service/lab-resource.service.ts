@@ -8,7 +8,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
 import {LabResource, LabResourceDatasource} from '../model/entities/resource/lab-resource.entity';
-import {ClPageI} from '@monorepo/core-lib';
+import {ClPageI, deserializeRecordWrapper} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
 import {LabTypeEntity} from '../model/entities/lab-type/lab-type.entity';
 import {
@@ -24,6 +24,7 @@ import {
 import {LabCallTransformerParams} from '../model/global/lab-transformer.class';
 import {LabConfigValues} from '../model/entities/lab-config.entity';
 import {LabResourceImporterType} from '../model/entities/resource/lab-resource.dto';
+import {LabConfigSpecBase, LabConfigSpecs} from '../model/entities/lab-config-spec.entity';
 
 
 @Injectable({
@@ -86,12 +87,17 @@ export class LabResourceService implements FlSearchService<LabResource> {
   //////////////////////////////////////// RESOURCE VIEWS  ///////////////////////////////////////
 
   public getResourceViews(type: string): Observable<LabResourceViewSpec[]> {
-    return this.apiService.get(`resource/${type}/views`, LabResourceViewSpec);
+    return this.apiService.get(`${this.route}/${type}/views`, LabResourceViewSpec);
   }
 
   public getResourceViewsByType(type: string): Observable<LabResourceViewSpecsByType[]> {
     return this.getResourceViews(type).pipe(
       map(views => labGroupResourceViewSpecsByType(views)));
+  }
+
+  public getResourceViewSpecs(id: string, viewName: string): Observable<LabConfigSpecs>{
+    return this.apiService.get(`${this.route}/${id}/views/${viewName}/specs`,
+      record => deserializeRecordWrapper(record, LabConfigSpecs, LabConfigSpecBase))
   }
 
   public callResourceView(id: string, viewName: string, config: Record<string, any>,
@@ -101,7 +107,7 @@ export class LabResourceService implements FlSearchService<LabResource> {
         delete config[key];
       }
     }
-    return this.apiService.post(`resource/${id}/views/${viewName}`, {
+    return this.apiService.post(`${this.route}/${id}/views/${viewName}`, {
       values: config,
       transformers: transformers
     });

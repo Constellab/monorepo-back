@@ -27,8 +27,8 @@ export interface FlDynamicFormGroupConfig extends FlDynamicFormConfigBase {
 export interface FlDynamicFormArrayConfig extends FlDynamicFormConfigBase {
   controlType: 'formArray';
   formGpConfig: FlDynamicFormGroupConfig;
-  minSize?: number; // if set the formArray must contains at least minSize number
-  maxSize?: number; // if set the formArray can't contains more than maxSize values
+  minSize?: number; // if set the formArray must contain at least minSize number
+  maxSize?: number; // if set the formArray can't contain more than maxSize values
 }
 
 
@@ -46,7 +46,6 @@ export interface FlDynamicFieldConfigBase extends FlDynamicFormConfigBase {
 
   disabled?: boolean;
   required?: boolean;
-  defaultValue?: any;
 }
 
 export interface FlDynamicFieldConfigMaterialInput extends FlDynamicFieldConfigBase {

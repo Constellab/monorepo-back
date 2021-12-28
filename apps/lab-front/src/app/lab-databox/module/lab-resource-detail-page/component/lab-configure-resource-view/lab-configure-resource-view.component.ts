@@ -1,7 +1,6 @@
-import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {
-  LabResourceViewConfig,
   LabResourceViewDisplayMode,
   LabResourceViewSpecWithConfig,
   LabResourceViewTypeInfo
@@ -18,12 +17,15 @@ import {
   LabTransformResourceComponent,
   LabTransformResourceForm
 } from '../../../../../lab-core/entity-module/lab-transformer/component/lab-transform-resource/lab-transform-resource.component';
+import {LabResourceService} from '../../../../../lab-core/entity-service/lab-resource.service';
+import {LabConfigSpecs} from '../../../../../lab-core/model/entities/lab-config-spec.entity';
 
 export interface LabConfigureResourceViewInput {
   title: string;
   viewSpecConfig: LabResourceViewSpecWithConfig;
   viewTypeInfo: LabResourceViewTypeInfo;
   resourceTypingName: string;
+  resourceId: string;
 }
 
 interface LabConfigureResourceViewForm {
@@ -31,6 +33,7 @@ interface LabConfigureResourceViewForm {
   viewConfig: LabConfigureSpecsForm;
   transformers: LabTransformResourceForm[];
 }
+
 
 /**
  * Portal to configure resource view spec
@@ -50,18 +53,31 @@ export class LabConfigureResourceViewComponent implements OnInit {
   showDisplayModeControl: boolean;
   resourceTypingName: string;
 
+  isLoading: boolean = true;
+
   constructor(@Inject(FL_PORTAL_DATA) private input: LabConfigureResourceViewInput,
-              private overlayRef: FlOverlayRef) {
+              private overlayRef: FlOverlayRef,
+              private resourceService: LabResourceService,
+              private cdr: ChangeDetectorRef) {
     this.title = input.title;
     this.resourceTypingName = input.resourceTypingName;
   }
 
   ngOnInit(): void {
-    this.initFormFieldConfig();
-    this.initFormGroup();
+    this.getViewSpecs();
   }
 
-  private initFormGroup(): void {
+  private getViewSpecs(): void {
+    this.resourceService.getResourceViewSpecs(this.input.resourceId, this.input.viewSpecConfig.viewSpec.methodName).subscribe(
+      specs => this.init(specs),
+      () => this.isLoading = false
+    );
+  }
+
+  private init(specs: LabConfigSpecs): void {
+    const viewSpecConfig = this.input.viewSpecConfig;
+    this.configs = LabConfigData.fromSpecs(specs, viewSpecConfig.viewConfigValues);
+
     this.formGp = new FormBuilder().group({
       displayMode: [this.input.viewSpecConfig.displayMode, Validators.required],
       viewConfig: LabConfigureSpecsFormComponent.buildFormGroup(this.configs),
@@ -69,12 +85,10 @@ export class LabConfigureResourceViewComponent implements OnInit {
     });
     // don't show the button mode if the view type support only one mode
     this.showDisplayModeControl = !this.input.viewTypeInfo.forceDefaultDisplayMode;
+    this.isLoading = false;
+    this.cdr.markForCheck();
   }
 
-  private initFormFieldConfig(): void {
-    const viewSpecConfig = this.input.viewSpecConfig;
-    this.configs = LabConfigData.fromSpecs(viewSpecConfig.viewSpec.specs, viewSpecConfig.viewConfig.configValues);
-  }
 
   submit(): void {
     if (this.formGp.valid) {
@@ -93,7 +107,7 @@ export class LabConfigureResourceViewComponent implements OnInit {
 
     return {
       viewSpec: this.input.viewSpecConfig.viewSpec,
-      viewConfig: new LabResourceViewConfig({...formValue.viewConfig.public, ...formValue.viewConfig.protected}),
+      viewConfigValues: {...formValue.viewConfig.public, ...formValue.viewConfig.protected},
       displayMode: formValue.displayMode,
       transformersWithConfig: transformers
     };

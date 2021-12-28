@@ -1,12 +1,12 @@
 import {Expose} from 'class-transformer';
-import {ClCsvJson, ClHelpService, ClRecordWrapperTransform} from '@monorepo/core-lib';
-import {LabConfigSpecBase, LabConfigSpecs} from '../lab-config-spec.entity';
+import {ClCsvJson} from '@monorepo/core-lib';
 import {LabResourceViewBoxPlot} from './lab-resource-view-box-plot.class';
 import {LabResourceViewBasicPlot2d} from './lab-resource-view-basic-plot-2d.class';
 import {LabResourceViewHeatMap} from './lab-resource-view-heat-map.class';
 import {LabResourceViewHistogram} from './lab-resource-view-histogram.class';
 import {LabResourceVennDiagram} from './lab-resource-venn-diagram.class';
 import {LabTransformerWithConfig} from '../../global/lab-transformer.class';
+import {LabConfigValues} from '../lab-config.entity';
 
 // list of available view type
 export type LabResourceViewType =
@@ -42,20 +42,6 @@ export class LabResourceViewSpec {
   @Expose({name: 'short_description'})
   shortDescription: string;
 
-  // object describing the type of the configs and default values of the view
-  @Expose({name: 'view_specs'})
-  @ClRecordWrapperTransform(LabConfigSpecs, LabConfigSpecBase)
-  viewSpecs: LabConfigSpecs;
-
-  // object describing the type of the configs and default values of the view methods
-  @Expose({name: 'method_specs'})
-  @ClRecordWrapperTransform(LabConfigSpecs, LabConfigSpecBase)
-  methodSpecs: LabConfigSpecs;
-
-  // object describing the type of the configs and default values of the view methods
-  @ClRecordWrapperTransform(LabConfigSpecs, LabConfigSpecBase)
-  specs: LabConfigSpecs;
-
   @Expose({name: 'default_view'})
   defaultView: boolean;
 
@@ -69,25 +55,10 @@ export class LabResourceViewSpec {
  */
 export interface LabResourceViewSpecWithConfig {
   viewSpec: LabResourceViewSpec;
-  viewConfig: LabResourceViewConfig;
+  viewConfigValues: LabConfigValues;
   displayMode: LabResourceViewDisplayMode;
   transformersWithConfig: LabTransformerWithConfig[];
 }
-
-export class LabResourceViewConfig {
-  @Expose({name: 'config_values'})
-  configValues: Record<string, any>;
-
-  constructor(config: Record<string, any> = {}) {
-    this.configValues = config;
-  }
-
-  public clone(): LabResourceViewConfig {
-    return new LabResourceViewConfig(ClHelpService.deepClone(this.configValues));
-  }
-
-}
-
 
 export interface LabResourceViewJson {
   type: 'json-view';

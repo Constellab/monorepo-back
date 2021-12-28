@@ -45,9 +45,12 @@ export class LabConfigSpecs extends ClRecordWrapper<LabConfigSpec> {
   private convertToAbstractConfig(spec: LabConfigSpec, defaultPlaceholder: string): FlDynamicFormAbstractControl {
     if (spec.type === 'param_set') {
       return {
-        controlType: 'formArray', formGpConfig: this.convertRecordToFieldConfigs(spec.param_set),
-        placeholder: spec.human_name ?? defaultPlaceholder, hint: spec.short_description,
-        minSize: spec.optional ? 0 : 1, maxSize: spec.max_number_of_occurrences > 0 ? spec.max_number_of_occurrences : null
+        controlType: 'formArray',
+        formGpConfig: this.convertRecordToFieldConfigs(spec.param_set),
+        placeholder: spec.human_name ?? defaultPlaceholder,
+        hint: spec.short_description,
+        minSize: spec.optional ? 0 : 1,
+        maxSize: spec.max_number_of_occurrences > 0 ? spec.max_number_of_occurrences : null
       };
     } else {
       return this.convertToControlConfig(spec, defaultPlaceholder);
@@ -94,7 +97,6 @@ export class LabConfigSpecs extends ClRecordWrapper<LabConfigSpec> {
       required: !spec.optional,
       placeholder: spec.human_name ?? defaultPlaceholder,
       hint: spec.short_description,
-      defaultValue: spec.default_value,
     };
   }
 

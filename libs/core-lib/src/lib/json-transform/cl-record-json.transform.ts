@@ -1,5 +1,11 @@
 import {Transform} from 'class-transformer';
-import {ClCoreJsonConvert, ClDeserializationRef, ClDeserializeItem, ClSerializeItem, ClTransformFnParams} from './cl-json.converter';
+import {
+  ClCoreJsonConvert,
+  ClDeserializationRef,
+  ClDeserializeItem,
+  ClSerializeItem,
+  ClTransformFnParams
+} from './cl-json.converter';
 import {ClRecordWrapper} from '../model/cl-record-wrapper.class';
 
 
@@ -22,14 +28,44 @@ export function ClRecordWrapperTransform<WRAPPER extends ClRecordWrapper<ITEM>, 
 
   // create date from string
   const transformToClass = Transform(
-    (params: ClTransformFnParams<Record<string, any>>) => deserializeRecordWrapper(wrapperReference, params.value,
-      (value: any) => ClCoreJsonConvert.deserializeObject(value, recordItemReference)),
+    (params: ClTransformFnParams<Record<string, any>>) => deserializeRecordWrapper(params.value, wrapperReference, recordItemReference),
     {toClassOnly: true});
 
   return (target: any, key: string): void => {
     transformToPlain(target, key);
     transformToClass(target, key);
   };
+}
+
+/**
+ * Function to serialize a record wrapper. It serializes only the record property
+ */
+function serializeRecordWrapper(recordWrapper: ClRecordWrapper<any>,
+                                serializeItem: ClSerializeItem<any>): Record<string, any> {
+  if (recordWrapper == null) {
+    return null;
+  }
+
+  // serialize only the record
+  return classToPlainRecord(recordWrapper.record, serializeItem);
+}
+
+/**
+ * Function to deserialize a record wrapper (class that wrap the record)
+ */
+export function deserializeRecordWrapper<T extends ClRecordWrapper<any>>(record: Record<string, any>,
+                                                                         wrapperReference: new() => T,
+                                                                         itemReference: new() => any): T {
+  if (record == null) {
+    return null;
+  }
+
+  const result: T = new wrapperReference();
+  // deserialize the record
+  result.record = deserializeRecord(record,
+    (item: any) => ClCoreJsonConvert.deserializeObject(item, itemReference));
+
+  return result;
 }
 
 
@@ -100,32 +136,4 @@ function deserializeRecord<T>(record: Record<string, any>, deserializeItem: ClDe
   return result;
 }
 
-/**
- * Function to serialize a record wrapper. It serialize only the record property
- */
-function serializeRecordWrapper(recordWrapper: ClRecordWrapper<any>,
-                                serializeItem: ClSerializeItem<any>): Record<string, any> {
-  if (recordWrapper == null) {
-    return null;
-  }
-
-  // serialize only the record
-  return classToPlainRecord(recordWrapper.record, serializeItem);
-}
-
-/**
- * Function to deserialize a record wrapper (class that wrap the record)
- */
-function deserializeRecordWrapper<T extends ClRecordWrapper<any>>(wrapperReference: new() => T, record: Record<string, any>,
-                                                                  deserializeItem: ClDeserializeItem<any>): T {
-  if (record == null) {
-    return null;
-  }
-
-  const result: T = new wrapperReference();
-  // deserialize the record
-  result.record = deserializeRecord(record, deserializeItem);
-
-  return result;
-}
 

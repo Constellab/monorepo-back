@@ -1,11 +1,10 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {ClCachedObservable} from '@monorepo/core-lib';
+import {ClCachedObservable, ClHelpService} from '@monorepo/core-lib';
 import {LabResourceService} from '../../../../lab-core/entity-service/lab-resource.service';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {
   labConstResourceViewTypeInfos,
   LabResourceView,
-  LabResourceViewConfig,
   LabResourceViewDisplayMode,
   LabResourceViewSpec,
   LabResourceViewSpecsByType,
@@ -29,6 +28,7 @@ import {
 import {
   LabResourceViewPortalComponent
 } from '../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-view-portal/lab-resource-view-portal.component';
+import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
 
 // Event on view loaded
 export interface LabResourceViewEvent {
@@ -111,7 +111,7 @@ export class LabResourceDetailPageState implements OnDestroy {
         {
           viewSpec: defaultView,
           displayMode: 'fullScreen',
-          viewConfig: new LabResourceViewConfig(),
+          viewConfigValues: {},
           transformersWithConfig: []
         },
         true);
@@ -142,7 +142,7 @@ export class LabResourceDetailPageState implements OnDestroy {
   private loadView(viewSpecConfigured: LabResourceViewSpecWithConfig, isDefaultView: boolean = false): void {
     const actionObs: Observable<LabResourceViewEvent> =
       this.callResourceView(viewSpecConfigured.viewSpec.methodName,
-        viewSpecConfigured.viewConfig, viewSpecConfigured.transformersWithConfig).pipe(
+        viewSpecConfigured.viewConfigValues, viewSpecConfigured.transformersWithConfig).pipe(
         map(view => ({
           view: view,
           displayMode: viewSpecConfigured.displayMode,
@@ -164,26 +164,26 @@ export class LabResourceDetailPageState implements OnDestroy {
    * Method to call the previous or next page of the view
    * @param pageConfig
    */
-  public callPagination(pageConfig: Record<string, any>): Observable<LabResourceView> {
-    const config: LabResourceViewConfig = this.selectedViewSpec$.value.viewConfig.clone();
+  public callPagination(pageConfig: LabConfigValues): Observable<LabResourceView> {
+    const configValues: LabConfigValues = ClHelpService.deepClone(this.selectedViewSpec$.value.viewConfigValues);
 
     // override the view config with page config
     for (const key of Object.keys(pageConfig)) {
-      config.configValues[key] = pageConfig[key];
+      configValues[key] = pageConfig[key];
     }
 
-    return this.callResourceView(this.selectedViewSpec$.value.viewSpec.methodName, config,
+    return this.callResourceView(this.selectedViewSpec$.value.viewSpec.methodName, configValues,
       this.selectedViewSpec$.value.transformersWithConfig);
   }
 
-  private callResourceView(methodName: string, config: LabResourceViewConfig,
+  private callResourceView(methodName: string, configValues: LabConfigValues,
                            transformers: LabTransformerWithConfig[]): Observable<LabResourceView> {
 
     const transformerParams: LabCallTransformerParams[] = transformers.map(transformer => ({
       typing_name: transformer.transformer.typingName,
       config_values: transformer.config
     }));
-    return this.resourceService.callResourceView(this.id, methodName, config.configValues, transformerParams);
+    return this.resourceService.callResourceView(this.id, methodName, configValues, transformerParams);
   }
 
   private openViewInPortal(view: LabResourceView): void {

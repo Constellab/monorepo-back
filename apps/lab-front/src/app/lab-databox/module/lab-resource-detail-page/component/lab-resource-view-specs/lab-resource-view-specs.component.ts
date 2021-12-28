@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {
-  LabResourceViewConfig,
   LabResourceViewSpec,
   LabResourceViewSpecsByType,
   LabResourceViewSpecWithConfig
@@ -67,7 +66,7 @@ export class LabResourceViewSpecsComponent implements OnInit {
       specWithConfig = {
         viewSpec: view,
         displayMode: viewByType.viewTypeInfo.defaultDisplayMode,
-        viewConfig: new LabResourceViewConfig(),
+        viewConfigValues: {},
         transformersWithConfig: []
       };
     }
@@ -76,7 +75,8 @@ export class LabResourceViewSpecsComponent implements OnInit {
       viewSpecConfig: specWithConfig,
       title: view.getName(),
       viewTypeInfo: viewByType.viewTypeInfo,
-      resourceTypingName: resource.resourceTypingName
+      resourceTypingName: resource.resourceTypingName,
+      resourceId: resource.id
     };
 
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
