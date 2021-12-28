@@ -8,7 +8,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
 import {LabResource, LabResourceDatasource} from '../model/entities/resource/lab-resource.entity';
-import {ClPageI, deserializeRecordWrapper} from '@monorepo/core-lib';
+import {clDeserializeRecordWrapper, ClPageI} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
 import {LabTypeEntity} from '../model/entities/lab-type/lab-type.entity';
 import {
@@ -97,7 +97,7 @@ export class LabResourceService implements FlSearchService<LabResource> {
 
   public getResourceViewSpecs(id: string, viewName: string): Observable<LabConfigSpecs>{
     return this.apiService.get(`${this.route}/${id}/views/${viewName}/specs`,
-      record => deserializeRecordWrapper(record, LabConfigSpecs, LabConfigSpecBase))
+      record => clDeserializeRecordWrapper(record, LabConfigSpecs, LabConfigSpecBase))
   }
 
   public callResourceView(id: string, viewName: string, config: Record<string, any>,
