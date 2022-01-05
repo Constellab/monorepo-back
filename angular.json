@@ -422,13 +422,7 @@
             "production": {
               "optimization": true,
               "extractLicenses": true,
-              "inspect": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/cn-central-back/src/environments/environment.ts",
-                  "with": "apps/cn-central-back/src/environments/environment.prod.ts"
-                }
-              ]
+              "inspect": false
             }
           }
         },

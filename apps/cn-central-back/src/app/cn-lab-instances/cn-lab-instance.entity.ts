@@ -9,7 +9,7 @@ import {CnLabInstanceStatus} from './cn-lab-instance-status.enum';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnEntityWithOwner} from '../cn-core/model/entities/cn-entity-with-owner.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
-import * as crypto from 'crypto';
+import {randomBytes} from 'crypto';
 
 
 /**
@@ -62,7 +62,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @BeforeInsert()
   generateApiKey(): void {
     if (this.apiKey == null) {
-      this.apiKey = crypto.randomBytes(48).toString('base64').replace(/\W/g, '');
+      this.apiKey = randomBytes(48).toString('base64').replace(/\W/g, '');
     }
     if (!this.name) {
       this.name = this.lab.label;
