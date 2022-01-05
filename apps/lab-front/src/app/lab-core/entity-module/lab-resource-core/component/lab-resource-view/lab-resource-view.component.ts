@@ -30,6 +30,7 @@ export function labResourceViewGetComponentType(viewType: LabResourceViewType): 
     case 'text-view':
       return LabResourceTextComponent;
     case 'table-view':
+    case 'dataset-view':
       return LabResourceSpreadsheetComponent;
     case 'network-view':
       return LabResourceNetworkComponent;

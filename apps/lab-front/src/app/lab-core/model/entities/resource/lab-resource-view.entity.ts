@@ -13,14 +13,11 @@ export type LabResourceViewType =
   'view'
   | 'json-view'
   | 'text-view'
-  | 'table-view'
+  | 'table-view' | 'dataset-view'
   | 'network-view'
   | 'image-view'
-  | 'scatter-plot-2d-view'
-  | 'line-plot-2d-view'
-  | 'bar-plot-view'
-  | 'stacked-bar-plot-view'
-  | 'histogram-view'
+  | 'scatter-plot-2d-view' | 'line-plot-2d-view'
+  | 'bar-plot-view' | 'stacked-bar-plot-view' | 'histogram-view'
   | 'box-plot-view'
   | 'multi-view'
   | 'venn-diagram-view'
@@ -85,7 +82,7 @@ export interface LabResourceViewText {
 }
 
 export interface LabResourceViewTable {
-  type: 'table-view';
+  type: 'table-view' | 'dataset-view';
   data: ClCsvJson;
 }
 
@@ -161,6 +158,12 @@ export const labConstResourceViewTypeInfos: Record<LabResourceViewType, LabResou
     forceDefaultDisplayMode: false
   },
   'table-view': {
+    icon: 'calendar_view_month',
+    text: 'biox.resource_view_spreadsheet',
+    defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: true
+  },
+  'dataset-view': {
     icon: 'calendar_view_month',
     text: 'biox.resource_view_spreadsheet',
     defaultDisplayMode: 'fullScreen',
