@@ -9,6 +9,7 @@ import {CnLabInstancesSecurityLayer} from './cn-lab-instances-security.layer';
 import {CnExternalLabApiModule} from '../cn-external-lab-api/cn-external-lab-api.module';
 import {CnUsersModule} from '../cn-users/cn-users.module';
 import {CnExperimentsModule} from '../cn-experiments/cn-experiments.module';
+import {CnLabManagerService} from './cn-lab-manager.service';
 
 @Module({
   imports: [
@@ -19,9 +20,16 @@ import {CnExperimentsModule} from '../cn-experiments/cn-experiments.module';
     CnUsersModule,
     forwardRef(() => CnExperimentsModule),
   ],
-  providers: [CnLabInstancesService, CnLabInstancesSecurityLayer],
+  providers: [
+    CnLabInstancesService,
+    CnLabInstancesSecurityLayer,
+    CnLabManagerService,
+  ],
+  exports: [
+    CnLabInstancesService,
+    CnLabInstancesSecurityLayer
+  ],
   controllers: [CnLabInstancesController],
-  exports: [CnLabInstancesService, CnLabInstancesSecurityLayer]
 })
 export class CnLabInstancesModule {
 }

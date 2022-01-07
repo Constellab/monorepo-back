@@ -11,11 +11,11 @@ import {
   CnExternalLabLoginResponse,
   CnExternalLabUser,
   CnExternalNewLabUser
-} from '../cn-external-lab-api/cn-external-lab-api.class';
+} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {CnLabInstanceToken} from './cn-lab-instance-token.class';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnUsersService} from '../cn-users/cn-users.service';
-import {CnExternalLabError} from '../cn-external-lab-api/cn-external-lab-error.class';
+import {CnExternalLabError} from '../cn-external-lab-api/model/cn-external-lab-error.class';
 import {AxiosResponse} from 'axios';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
@@ -85,7 +85,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public async login(labInstance: CnLabInstance): Promise<CnLabInstanceToken> {
     try {
       const labAuth: CnExternalLabLoginResponse =
-        await this.externalLabUserService.login(labInstance, CnCurrentUserHelper.getAndCheckCurrentUser());
+        await this.externalLabUserService.login(labInstance.getGlabApiInfo(), CnCurrentUserHelper.getAndCheckCurrentUser());
 
       return new CnLabInstanceToken(labInstance, 'Bearer ' + labAuth.access_token);
     } catch (e: any) {
@@ -106,7 +106,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public findLabByApiKey(apiKey: string): Promise<CnLabInstance> {
     return this.repository.findOne({
       where: {
-        apiKey: apiKey
+        glabApiKey: apiKey
       }
     });
   }
@@ -123,14 +123,14 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public async getLabUsers(labInstanceId: string): Promise<CnExternalLabUser[]> {
     const lab: CnLabInstance = await this.findByIdAndCheck(labInstanceId);
 
-    return this.externalLabUserService.getUsers(lab);
+    return this.externalLabUserService.getUsers(lab.getGlabApiInfo());
   }
 
   public async addUserToLab(labInstanceId: string, newUser: CnExternalNewLabUser): Promise<CnExternalLabUser> {
     const lab: CnLabInstance = await this.findByIdAndCheck(labInstanceId);
     const user: CnUser = await this.userService.findByIdAndCheck(newUser.userId);
 
-    return this.externalLabUserService.addUser(lab, user, newUser.group);
+    return this.externalLabUserService.addUser(lab.getGlabApiInfo(), user, newUser.group);
   }
 
   public async updateName(labInstanceId: string, name: string): Promise<CnLabInstance> {
@@ -143,13 +143,13 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     const lab: CnLabInstance = await this.findByIdAndCheck(labInstanceId);
 
     try {
-      await this.externalLabApiService.healthCheck(lab);
+      await this.externalLabApiService.healthCheck(lab.getGlabApiInfo());
     } catch {
       throw new BadRequestException('The lab is not running');
     }
 
     try {
-      return await this.externalLabApiService.getSettings(lab);
+      return await this.externalLabApiService.getSettings(lab.getGlabApiInfo());
     } catch {
       throw new BadRequestException('Can\'t retrieve the settings');
     }

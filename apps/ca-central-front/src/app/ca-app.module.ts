@@ -16,6 +16,7 @@ import {
   FlDialogModule,
   FlHttpInterceptorService,
   FlIconModule,
+  FlPortalActionsModule,
   FlPortalModule,
   FlServiceWorkerService,
   flSetRootInjector,
@@ -76,6 +77,7 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     FlSnackBarModule.forRoot(),
     FlPortalModule.forRoot(),
     FlAuthModule.forRoot(CaAuthenticationService, CaUserAccountsService),
+    FlPortalActionsModule.forRoot(),
 
     ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production}),
   ],

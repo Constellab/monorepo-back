@@ -10,7 +10,11 @@ export class BlDtoHelper {
 
   public static fromDto<T extends BlEntityWithId>(type: Type<T>, dto: BlEntityWithIdDto): T {
     const entity:  T = new type();
-    Object.assign(entity, dto)
+    for (const key of Object.keys(dto)) {
+      // useful to skip getter or functions
+      if(entity[key] !== undefined) continue
+      entity[key] = dto[key];
+    }
     return entity;
   }
 

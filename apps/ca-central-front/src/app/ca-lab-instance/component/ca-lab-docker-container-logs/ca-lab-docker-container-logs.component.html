@@ -1,0 +1,11 @@
+<fl-dialog-header>
+  {{containerName}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <fl-async-section [object]="logs$" [showErrorText]="true">
+    <ng-container *flSectionBody="let logs">
+      <p class="logs">{{logs}}</p>
+    </ng-container>
+  </fl-async-section>
+</mat-dialog-content>

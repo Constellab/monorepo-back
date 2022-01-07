@@ -1,9 +1,9 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {CnExternalLabApiService} from './cn-external-lab-api.service';
-import {CnLabServerInfo} from '../cn-core/model/config/cn-lab-server-info.class';
-import {CnExternalLabLoginResponse, CnExternalLabUser, CnExternalLabUserGroup} from './cn-external-lab-api.class';
+import {CnExternalLabLoginResponse, CnExternalLabUser, CnExternalLabUserGroup} from './model/cn-external-lab-api.class';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
+import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 
 
 /**
@@ -21,7 +21,7 @@ export class CnExternalLabUserService {
    * Log the user to the lab, it returns a one time token for the user
    * to open the lab. Then in the lab it will generate a JWT for the user
    */
-  public login(labInfo: CnLabServerInfo, user: CnUser): Promise<CnExternalLabLoginResponse> {
+  public login(labInfo: CnExternalApiInfo, user: CnUser): Promise<CnExternalLabLoginResponse> {
     const body: any = {
       id: user.id
     };
@@ -32,14 +32,14 @@ export class CnExternalLabUserService {
   /**
    * Retrieve the list of user in the lab
    */
-  public async getUsers(labInfo: CnLabServerInfo): Promise<CnExternalLabUser[]> {
+  public async getUsers(labInfo: CnExternalApiInfo): Promise<CnExternalLabUser[]> {
     return await this.externalLabApiService.get(labInfo, this.route).toPromise();
   }
 
   /**
    * Retrieve the list of user in the lab
    */
-  public getUser(labInfo: CnLabServerInfo, userId: string): Promise<CnExternalLabUser> {
+  public getUser(labInfo: CnExternalApiInfo, userId: string): Promise<CnExternalLabUser> {
     return this.externalLabApiService.get(labInfo, `${this.route}/${userId}`).toPromise();
   }
 
@@ -47,7 +47,7 @@ export class CnExternalLabUserService {
    * Add a user in the lab
    * Throw an exception if the user already exists in the lab
    */
-  public async addUser(labInfo: CnLabServerInfo, user: CnUser, group: CnExternalLabUserGroup): Promise<CnExternalLabUser> {
+  public async addUser(labInfo: CnExternalApiInfo, user: CnUser, group: CnExternalLabUserGroup): Promise<CnExternalLabUser> {
 
     const labUser: CnExternalLabUser = await this.getUser(labInfo, user.id);
 

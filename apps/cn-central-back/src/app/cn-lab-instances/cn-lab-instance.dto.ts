@@ -10,8 +10,11 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   lab: CnLab = undefined;
   owner: CnUser = undefined;
   currentStatus: CnLabInstanceStatusHistory = undefined;
+  virtualHost: string = undefined;
   apiUrl: string = undefined;
-  apiKey: string = undefined;
+  glabApiKey: string = undefined;
+  labManagerApiKey: string = undefined;
+  codelabToken: string = undefined;
   frontUrl: string = undefined;
   serverInfo: CnServerInfo = undefined;
 }

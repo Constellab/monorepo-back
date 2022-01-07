@@ -1,0 +1,50 @@
+<fl-card>
+
+  <fl-card-header>
+    {{'lab_manager' | translate}}
+
+    <fl-card-actions>
+      <button mat-icon-button type="button" (click)="refresh()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body>
+
+    <!--  Global status  -->
+    <fl-async-section [object]="labStatus$" [showErrorText]="true">
+      <ng-container *flSectionBody="let labStatus">
+        <ca-lab-instance-manager-status [labStatus]="labStatus"></ca-lab-instance-manager-status>
+      </ng-container>
+    </fl-async-section>
+
+    <!--  Action button  -->
+    <div class="action-buttons g-section">
+      <button mat-stroked-button type="button" color="primary"
+              class="g-button-small" (click)="initAll()">Init all</button>
+      <button mat-stroked-button type="button" color="primary"
+              class="g-button-small" (click)="upContainers()">Up containers</button>
+      <button mat-stroked-button type="button" color="primary"
+              class="g-button-small" (click)="restartContainers()">Restart containers</button>
+      <button mat-stroked-button type="button" color="primary"
+              class="g-button-small" (click)="pullBiotaDb()">Pull biota</button>
+      <button mat-stroked-button type="button" color="primary"
+              class="g-button-small" (click)="registryLogin()">Registry login</button>
+      <button mat-stroked-button type="button" color="warn"
+              class="g-button-small" (click)="downContainers()">Down containers</button>
+      <button mat-stroked-button type="button" color="warn"
+              class="g-button-small" (click)="stopCurrentTask()">Stop current task</button>
+    </div>
+
+    <!--  List of containers  -->
+    <fl-async-section [object]="containers$" [showErrorText]="true" class="g-section">
+      <ng-container *flSectionBody="let containers">
+        <ca-lab-docker-containers-list [labInstanceId]="labInstanceId"
+                                       [containers]="containers"></ca-lab-docker-containers-list>
+      </ng-container>
+    </fl-async-section>
+
+  </fl-card-body>
+
+</fl-card>

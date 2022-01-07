@@ -18,8 +18,8 @@ export class CaAdminLabInstancesListComponent implements OnInit {
 
   labInstances: FlArrayObs<CaLabInstance>;
 
-  displayedColumns: FlTableColumn<CaLabInstance>[] = ['name', 'owner', 'currentStatus', 'apiUrl',
-    'frontUrl', 'serverInfo', 'actions'];
+  displayedColumns: FlTableColumn<CaLabInstance>[] = ['name', 'owner', 'currentStatus',
+    {accessor: 'virtualHost', columnName: 'virtual_host'}, 'serverInfo', 'actions'];
 
   constructor(private labInstanceService: CaLabInstanceService,
               private dialogService: FlDialogService) {

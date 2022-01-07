@@ -18,6 +18,8 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatTableModule} from '@angular/material/table';
 import {FlLuxonDateAdapter, flLuxonDateFormat, flMatFormFieldConfig, flTooltipConfig} from '@monorepo/front-core-lib';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 /**
@@ -39,6 +41,8 @@ import {MatMenuModule} from '@angular/material/menu';
     MatChipsModule,
     MatTableModule,
     MatMenuModule,
+    MatExpansionModule,
+    MatCheckboxModule,
 
     MatDialogModule,
     MatSnackBarModule,

@@ -4,15 +4,19 @@
     <ng-template flSectionBody>
       <div fxLayout="column" fxFlex="grow">
         <ca-lab-instance-detail [labInstance]="labInstance"
-                                 (update)="onLabUpdate($event)"></ca-lab-instance-detail>
+                                (update)="onLabUpdate($event)"></ca-lab-instance-detail>
 
         <ca-server-info-card [serverInfo]="labInstance.serverInfo"
-                              class="section"></ca-server-info-card>
+                             class="section"></ca-server-info-card>
 
         <ca-lab-instance-users-list class="g-section" [labInstanceId]="labInstance.id"></ca-lab-instance-users-list>
 
-<!--        <ca-lab-instance-iframe [labUrl]="labInstance.url" fxFlex="grow"-->
-<!--                                 class="section"></ca-lab-instance-iframe>-->
+        <!--   Manager, only for admins     -->
+        <ca-lab-instance-manager *caIsAdmin [labInstanceId]="labInstance.id"
+                                 class="g-section"></ca-lab-instance-manager>
+
+        <!--        <ca-lab-instance-iframe [labUrl]="labInstance.url" fxFlex="grow"-->
+        <!--                                 class="section"></ca-lab-instance-iframe>-->
       </div>
     </ng-template>
   </fl-section>

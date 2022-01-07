@@ -26,6 +26,19 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   CaLabInstanceUpdateNameDialogComponent
 } from './component/ca-lab-instance-update-name-dialog/ca-lab-instance-update-name-dialog.component';
+import {CaLabInstanceManagerComponent} from './component/ca-lab-instance-manager/ca-lab-instance-manager.component';
+import {
+  CaLabDockerContainersListComponent
+} from './component/ca-lab-docker-containers-list/ca-lab-docker-containers-list.component';
+import {
+  CaLabDockerContainerLogsComponent
+} from './component/ca-lab-docker-container-logs/ca-lab-docker-container-logs.component';
+import {
+  CaLabInstanceManagerStatusComponent
+} from './component/ca-lab-instance-manager-status/ca-lab-instance-manager-status.component';
+import {
+  CaLabInstanceDockerUpFormComponent
+} from './component/ca-lab-instance-docker-up-form/ca-lab-instance-docker-up-form.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -41,6 +54,11 @@ import {
     CaLabInstanceUsersTableComponent,
     CaLabInstanceUserFormDialogComponent,
     CaLabInstanceUpdateNameDialogComponent,
+    CaLabInstanceManagerComponent,
+    CaLabDockerContainersListComponent,
+    CaLabDockerContainerLogsComponent,
+    CaLabInstanceManagerStatusComponent,
+    CaLabInstanceDockerUpFormComponent,
   ],
   imports: [
     CommonModule,

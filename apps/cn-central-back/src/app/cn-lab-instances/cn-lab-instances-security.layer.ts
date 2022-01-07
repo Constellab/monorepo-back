@@ -10,15 +10,22 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CnAdminAuthorization} from '../cn-core/security/cn-admin.authorization';
 import {CnOwnerAuthorization} from '../cn-core/security/cn-owner.authorization';
 import {CnCombinedAuthorization} from '../cn-core/security/cn-combined.authorization';
-import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/cn-external-lab-api.class';
+import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import {
+  CnLabComposeUpOptions,
+  CnLabDockerPs,
+  CnLabManagerStatus
+} from '../cn-external-lab-api/model/cn-lab-manager.class';
+import {CnLabManagerService} from './cn-lab-manager.service';
 
 
 @Injectable()
 export class CnLabInstancesSecurityLayer extends CnAbstractSecurityLayer<CnLabInstance> {
 
-  constructor(private service: CnLabInstancesService) {
+  constructor(private service: CnLabInstancesService,
+              private labManagerService: CnLabManagerService) {
     super(service);
   }
 
@@ -118,5 +125,60 @@ export class CnLabInstancesSecurityLayer extends CnAbstractSecurityLayer<CnLabIn
     return this.service.checkStatus(labInstanceId);
   }
 
+  //////////////////////////// LAB MANAGER ////////////////////////////////
+
+  public async getStatus(labId: string): Promise<CnLabManagerStatus> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.getLabStatus(labInstance);
+  }
+
+  public async listContainers(labId: string): Promise<CnLabDockerPs[]> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.listContainers(labInstance);
+  }
+
+  public async getLogs(labId: string, containerName: string): Promise<string> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.getLogs(labInstance, containerName);
+  }
+
+  public async initAll(labId: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.initAll(labInstance);
+  }
+
+  public async upContainers(labId: string, options?: CnLabComposeUpOptions): Promise<void> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.upContainers(labInstance, options);
+  }
+
+  public async restartContainers(labId: string, options?: CnLabComposeUpOptions): Promise<void> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.restartContainers(labInstance, options);
+  }
+
+  public async downContainers(labId: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.downContainers(labInstance);
+  }
+
+  public async pullBiota(labId: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.pullBiota(labInstance);
+  }
+
+  public async registryLogin(labId: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.registryLogin(labInstance);
+  }
+
+  public async stopCurrentTask(labId: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.stopCurrentTask(labInstance);
+  }
+
+  private checkAuthorizationLabManager(labId: string): Promise<CnLabInstance> {
+    return this.getAndCheckAuthorizationToUpdateById(labId);
+  }
 
 }

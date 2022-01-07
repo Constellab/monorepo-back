@@ -3,10 +3,15 @@ import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesSecurityLayer} from './cn-lab-instances-security.layer';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
 import {CnLabInstanceToken} from './cn-lab-instance-token.class';
-import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/cn-external-lab-api.class';
+import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlDtoHelper, BlParsePipe} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
 import {CnLabInstanceDto} from './cn-lab-instance.dto';
+import {
+  CnLabComposeUpOptions,
+  CnLabDockerPs,
+  CnLabManagerStatus
+} from '../cn-external-lab-api/model/cn-lab-manager.class';
 
 
 @Controller('lab-instances')
@@ -132,4 +137,57 @@ export class CnLabInstancesController {
     return this.securityLayer.checkStatus(id);
   }
 
+  //////////////////////////// LAB MANAGER ////////////////////////////////
+
+  @Get(':id/status')
+  async getContainersStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerStatus> {
+    return this.securityLayer.getStatus(id);
+  }
+
+  @Get(':id/containers')
+  async listContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabDockerPs[]> {
+    return await this.securityLayer.listContainers(id);
+  }
+
+  @Get(':id/:containerName/logs')
+  async getLogs(@Param('id', new ParseUUIDPipe()) id: string, @Param('containerName') containerName: string): Promise<string> {
+    return await this.securityLayer.getLogs(id, containerName);
+  }
+
+  @Post(':id/init-all')
+  async initAll(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.securityLayer.initAll(id);
+  }
+
+  @Post(':id/up-containers')
+  async upContainers(@Param('id', new ParseUUIDPipe()) id: string,
+                     @Body() options: CnLabComposeUpOptions): Promise<void> {
+    return await this.securityLayer.upContainers(id, options);
+  }
+
+  @Post(':id/restart-containers')
+  async restartContainers(@Param('id', new ParseUUIDPipe()) id: string,
+                          @Body() options: CnLabComposeUpOptions): Promise<void> {
+    return await this.securityLayer.restartContainers(id, options);
+  }
+
+  @Post(':id/down-containers')
+  async downContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.securityLayer.downContainers(id);
+  }
+
+  @Post(':id/pull-biota-db')
+  async pullBiotaDb(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.securityLayer.pullBiota(id);
+  }
+
+  @Post(':id/registry-login')
+  async registryLogin(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.securityLayer.registryLogin(id);
+  }
+
+  @Post(':id/stop-current-task')
+  public stopCurrentTask(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.securityLayer.stopCurrentTask(id);
+  }
 }

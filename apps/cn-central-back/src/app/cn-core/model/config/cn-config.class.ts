@@ -29,3 +29,11 @@ export const cnExternalLabUserHeader: string = 'User';
 export interface CnUserTokenPayload {
   id: string;
 }
+
+/**
+ * Information to call an external api
+ */
+export interface CnExternalApiInfo {
+  apiUrl: string;
+  apiKey: string;
+}

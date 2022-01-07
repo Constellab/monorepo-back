@@ -34,12 +34,13 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
   buildForm(): FormGroup<Partial<CaLabInstance>> {
     return new FormBuilder().group({
       id: [null],
-      name: [null, Validators.required],
-      apiUrl: [null, [Validators.required]],
-      frontUrl: [null, [Validators.required]],
+      name: [null],
+      virtualHost: [null, [Validators.required]],
       serverInfo: [null, [Validators.required]],
       owner: [null, Validators.required],
-      apiKey: [null, Validators.required],
+      glabApiKey: [null],
+      labManagerApiKey: [null],
+      codelabToken: [null],
       lab: [{value: null, disabled: this.isUpdateMode()}, Validators.required]
     });
   }

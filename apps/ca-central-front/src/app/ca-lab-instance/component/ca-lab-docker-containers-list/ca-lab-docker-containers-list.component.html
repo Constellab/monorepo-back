@@ -1,0 +1,30 @@
+<mat-accordion>
+  <mat-expansion-panel *ngFor="let container of containers">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <div fxLayout="row" fxLayoutAlign="space-between" class="g-full">
+
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
+            <fl-status-chip [status]="container.state"></fl-status-chip>
+            <span>{{container.names}}</span>
+          </div>
+
+          <button mat-icon-button type="button" (click)="viewContainerLogs(container, $event)"
+                  [matTooltip]="'lab_container_logs' | translate">
+            <mat-icon>description</mat-icon>
+          </button>
+        </div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <p>Status : <span class="g-text-light">{{container.status}}</span></p>
+    <p>Running for : <span class="g-text-light">{{container.runningFor}}</span></p>
+    <p>Image : <span class="g-text-light">{{container.image}}</span></p>
+    <p>Mounts : <span class="g-text-light">{{container.mounts}}</span></p>
+    <p>Networks : <span class="g-text-light">{{container.networks}}</span></p>
+    <p>Ports : <span class="g-text-light">{{container.ports}}</span></p>
+    <p>Size : <span class="g-text-light">{{container.size}}</span></p>
+    <p>Id : <span class="g-text-light">{{container.id}}</span></p>
+    <p>Command : <span class="g-text-light">{{container.command}}</span></p>
+  </mat-expansion-panel>
+</mat-accordion>

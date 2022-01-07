@@ -48,10 +48,15 @@ export class CaLabInstance extends CaBaseEntity {
   // front url of the lab
   frontUrl: string;
 
+  virtualHost: string;
+
   @Type(() => CaServerInfo)
   serverInfo: CaServerInfo;
 
-  apiKey?: string; // only provided when getting lab as admin
+  // only provided when getting lab as admin
+  glabApiKey?: string;
+  labManagerApiKey?: string;
+  codelabToken?: string;
 
   public isRunning(): boolean {
     return this.currentStatus.status.value === 'RUNNING';

@@ -4,6 +4,6 @@
  */
 export enum CnMailTemplate {
   account_locked = 'cn-account-locked',
-  signup = 'signup',
+  signup = 'cn-signup',
   password_forgotten = 'cn-password-forgotten'
 }

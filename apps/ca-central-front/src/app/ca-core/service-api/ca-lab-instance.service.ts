@@ -10,6 +10,12 @@ import {
 } from '../model/entities/ca-lab-instance.class';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
+import {
+  CaLabComposeUpOptions,
+  CaLabDockerPs,
+  CaLabTaskStatusInfo,
+  CnLabManagerStatus
+} from '../model/entities/ca-lab-manager.class';
 
 @Injectable({
   providedIn: 'root'
@@ -108,4 +114,50 @@ export class CaLabInstanceService {
     return this.apiService.get(`${this.route}/${id}/check-status`);
   }
 
+  //////////////////////////// LAB MANAGER ////////////////////////////////
+
+  public getLabManagerStatus(id: string): Observable<CnLabManagerStatus> {
+    return this.apiService.get(`${this.route}/${id}/status`, CnLabManagerStatus);
+  }
+
+  public getCurrentTask(id: string): Observable<CaLabTaskStatusInfo> {
+    return this.apiService.get(`${this.route}/${id}/current-task`);
+  }
+
+  public listContainers(id: string): Observable<CaLabDockerPs[]> {
+    return this.apiService.get(`${this.route}/${id}/containers`, CaLabDockerPs);
+  }
+
+  public getLogs(id: string, containerName: string): Observable<string> {
+    return this.apiService.get(`${this.route}/${id}/${containerName}/logs`, null,
+      {responseType: 'text'});
+  }
+
+  public initAll(id: string): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/init-all`, null);
+  }
+
+  public upContainers(id: string, options: CaLabComposeUpOptions): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/up-containers`, options);
+  }
+
+  public restartContainers(id: string, options: CaLabComposeUpOptions): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/restart-containers`, options);
+  }
+
+  public downContainers(id: string): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/down-containers`, null);
+  }
+
+  public pullBiotaDb(id: string): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/pull-biota-db`, null);
+  }
+
+  public registryLogin(id: string): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/registry-login`, null);
+  }
+
+  public stopCurrentTask(id: string): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/stop-current-task`, null);
+  }
 }
