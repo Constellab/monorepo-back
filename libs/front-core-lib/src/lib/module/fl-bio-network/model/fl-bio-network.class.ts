@@ -1,8 +1,8 @@
+import {FlCoord} from '../../../model/shared/fl-coord.class';
+
 /**
  * Complete Structured data of a pathway
  */
-import {FlCoord} from '../../../model/shared/fl-coord.class';
-
 export interface FlBioNetwork {
   name?: string;
   metabolites: FlBioNetworkMetabolite[];
@@ -49,7 +49,7 @@ export interface FlBioNetworkReactionLink {
 export interface FlBioNetworkEnzyme {
   title: string;
   ec_number: string;
-  pathway: FlBioNetworkPathways;
+  pathways: FlBioNetworkPathways;
 }
 
 // list of database ref for a pathway

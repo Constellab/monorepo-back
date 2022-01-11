@@ -82,7 +82,7 @@ export class FlBioNetworkHelper {
 
   // retrieve the pathway of a reaction of a specific database
   public static getReactionPathway(reaction: FlBioNetworkReaction, database: FlPathwayDatabase): FlBioNetworkPathwayDetail {
-    return (reaction.enzyme?.pathway ?? {})[database] ?? flDefaultPathway;
+    return (reaction.enzyme?.pathways ?? {})[database] ?? flDefaultPathway;
   }
 
   // retrieve the list of pathways of a reaction for a database
