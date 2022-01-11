@@ -24,7 +24,7 @@ export interface FlThemeDetail {
  * Light theme detail
  */
 export const flThemeDetailLight: FlThemeDetail = {
-  primary: '#44FFAE',
+  primary: '#BEFAE1',
   accent: '#8751F6',
   warn: '#E28773',
   background: '#F9F8F8',
@@ -46,7 +46,7 @@ export const flThemeDetailLight: FlThemeDetail = {
  * Dark theme detail
  */
 export const flThemeDetailDark: FlThemeDetail = {
-  primary: '#44FFAE',
+  primary: '#BEFAE1',
   accent: '#8751F6',
   warn: '#E28773',
   background: '#1B1919',

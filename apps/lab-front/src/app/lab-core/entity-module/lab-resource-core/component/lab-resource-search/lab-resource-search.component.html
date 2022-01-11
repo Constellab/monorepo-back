@@ -23,8 +23,8 @@
     <!--   Upload folders     -->
     <fl-input-file-icon-container [matTooltip]="'databox.upload_folder' | translate" icon="drive_folder_upload"
                                   class="upload-button">
-      <input flInputFile type="file" (fileChange)="uploadFolder($event)"
-             [(ngModel)]="files" webkitdirectory mozdirectory>
+      <input flInputFile type="file" (fileChange)="uploadFolder($event)" [multiple]="true"
+             [(ngModel)]="files" webkitdirectory mozdirectory [strictMode]="false">
     </fl-input-file-icon-container>
   </fl-search-header>
 
