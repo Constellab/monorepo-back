@@ -9,7 +9,8 @@
 
           <lab-experiment-detail-header class="g-card-background"></lab-experiment-detail-header>
 
-          <mat-tab-group fxFlex="auto" class="g-mat-tab-full-height">
+          <mat-tab-group fxFlex="auto" class="g-mat-tab-full-height"
+                         [(selectedIndex)]="selectedTabIndex" (selectedIndexChange)="tabIndexChange($event)">
             <mat-tab [label]="'biox.experiment_detail' | translate">
               <lab-experiment-detail></lab-experiment-detail>
             </mat-tab>
@@ -21,7 +22,6 @@
               </ng-template>
             </mat-tab>
           </mat-tab-group>
-
 
 
         </div>
