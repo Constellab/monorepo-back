@@ -8,45 +8,54 @@
 
 // Primary
 $custom-primary: (
-  100: #a3bdbd,
-  500: #018989,
+  500: #BEFAE1,
   contrast: (
-    100: black,
-    500: white,
+    500: #010202,
   )
 );
 $primary: mat-palette($custom-primary, 500, 500, 500, 500);
 
 // Secondary
 $custom-accent: (
-  500: #e0e0e0,
+  500: #8751F6,
   contrast: (
-    500: black,
+    500: #E5E5E5,
   )
 );
 
 $accent: mat-palette($custom-accent, 500, 500, 500, 500);
 
 // The warn palette is optional (defaults to red).
-$warn: mat-palette($mat-red, 800, A200, 800);
-// Create the theme object (a Sass map containing all of the palettes).
-//$light-theme: mat-light-theme($primary, $accent, $warn);
-
-$theme: mat-light-theme((
-  color: (
-    primary: $primary,
-    accent: $accent,
-    warn: $warn,
+// Warn
+$custom-warn: (
+  500: #E28773,
+  contrast: (
+    500: #E5E5E5,
   )
-));
+);
+$warn: mat-palette($custom-warn, 500, 500, 500, 500);
+
+
+// Create the theme object (a Sass map containing all of the palettes).
+$theme: mat-light-theme($primary, $accent, $warn);
+
+// define the background theme
+$background: map_merge($mat-light-theme-background, (background: #F9F8F8, card: #E9E9E9));
+// Set the background theme in the theme variable
+$theme: map_merge($theme, (background: $background));
+
+// define the foreground
+$foreground: map_merge($mat-light-theme-foreground, (base: #010202, icon: #010202, icons: #010202, text: #010202));
+// Set the background theme in the theme variable
+$theme: map_merge($theme, (foreground: $foreground));
+
 
 // Load all global classes link to theme
 @include _base-theme($theme);
 
 //////////////////// GLOBAL CSS VARIABLES ///////////////////////
-:root{
-  --light-color: rgba(0, 0, 0, .54);
-  --card-border-color: #ddd;
+:root {
+  --light-color: #3F3F3F;
 
   // different contrast of grey base on theme color (here white)
   --grey-low-contrast: #ddd;
@@ -64,13 +73,8 @@ $theme: mat-light-theme((
   color: var(--light-color);
 }
 
-.g-placeholder{
+.g-placeholder {
   color: var(--light-color);
-}
-
-.g-card-elevation{
-  border: 1px solid var(--card-border-color);
-  box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.05)
 }
 
 /* Used to have a fade in effect at the end of the div*/

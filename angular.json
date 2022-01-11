@@ -30,6 +30,11 @@
                 "output": "assets/logo"
               },
               {
+                "glob": "**/*",
+                "input": "libs/front-core-lib/src/assets/font",
+                "output": "assets/font"
+              },
+              {
                 "glob": "favicon.ico",
                 "input": "libs/front-core-lib/src/",
                 "output": "./"
@@ -229,6 +234,11 @@
                 "glob": "**/*",
                 "input": "libs/front-core-lib/src/assets/logo",
                 "output": "assets/logo"
+              },
+              {
+                "glob": "**/*",
+                "input": "libs/front-core-lib/src/assets/font",
+                "output": "assets/font"
               },
               {
                 "glob": "favicon.ico",
@@ -589,6 +599,11 @@
                 "glob": "favicon.ico",
                 "input": "libs/front-core-lib/src/",
                 "output": "./"
+              },
+              {
+                "glob": "**/*",
+                "input": "libs/front-core-lib/src/assets/font",
+                "output": "assets/font"
               }
             ],
             "styles": [

@@ -12,9 +12,6 @@ export interface FlThemeDetail {
   accentContrast: string;
   warnContrast: string;
 
-  primary100: string;
-  primary100Contrast: string;
-
   greyLowContrast: string;
   greyLowContrastText: string;
   greyContrast: string;
@@ -27,18 +24,15 @@ export interface FlThemeDetail {
  * Light theme detail
  */
 export const flThemeDetailLight: FlThemeDetail = {
-  primary: '#018989',
-  accent: '#e0e0e0',
-  warn: '#c62828',
-  background: '#fafafa',
-  foreground: '#000000',
+  primary: '#44FFAE',
+  accent: '#8751F6',
+  warn: '#E28773',
+  background: '#F9F8F8',
+  foreground: '#010202',
 
-  primaryContrast: '#ffffff',
-  accentContrast: '#000000',
-  warnContrast: '#ffffff',
-
-  primary100: '#a3bdbd',
-  primary100Contrast: '#000000',
+  primaryContrast: '#010202',
+  accentContrast: '#E5E5E5',
+  warnContrast: '#E5E5E5',
 
   greyLowContrast: '#ddd',
   greyLowContrastText: '#000000',
@@ -52,18 +46,15 @@ export const flThemeDetailLight: FlThemeDetail = {
  * Dark theme detail
  */
 export const flThemeDetailDark: FlThemeDetail = {
-  primary: '#018989',
-  accent: '#e0e0e0',
-  warn: '#c62828',
-  background: '#303030',
-  foreground: '#ffffff',
+  primary: '#44FFAE',
+  accent: '#8751F6',
+  warn: '#E28773',
+  background: '#1B1919',
+  foreground: '#E8E8E8',
 
-  primaryContrast: '#ffffff',
-  accentContrast: '#000000',
-  warnContrast: '#ffffff',
-
-  primary100: '#043e3e',
-  primary100Contrast: '#ffffff',
+  primaryContrast: '#010202',
+  accentContrast: '#E8E8E8',
+  warnContrast: '#010202',
 
   greyLowContrast: '#545454',
   greyLowContrastText: '#ffffff',

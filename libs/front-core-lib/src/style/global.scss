@@ -6,11 +6,19 @@
 
 /************************ Global override *************************/
 html {
-  font-size: 14px;
+  font-size: 15px;
+}
+
+@font-face {
+  font-family: "Manrope";
+  src: url("/assets/font/Manrope-Medium.woff2") format('woff');
+  font-style: normal;
+  font-weight: normal;
 }
 
 html, body {
   height: 100%;
+  font-family: "Manrope", Roboto, "Helvetica Neue", sans-serif;
 }
 
 body {
@@ -19,6 +27,7 @@ body {
 
 p {
   margin: 0;
+  color :var(--light-color)
 }
 
 a {
@@ -26,17 +35,32 @@ a {
   color: inherit;
 }
 
-h1, h2 {
-  margin: 0;
-  font-weight: normal;
-}
 
 h1 {
-  font-size: 1.5rem;
+  font-size: 22px;
+  text-transform: uppercase;
+  margin: 0;
+  font-weight: 900;
+}
+
+h2{
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 h3 {
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+h4 {
+  font-size: 13px;
+  font-weight: normal;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 ul, ol {
