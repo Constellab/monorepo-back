@@ -9,6 +9,9 @@ import {LabProcessPortsListComponent} from './component/lab-process-ports-list/l
 import {LabProcessTypePortalComponent} from './component/lab-process-type-portal/lab-process-type-portal.component';
 import {LabProcessTypeHoverDetailDirective} from './directive/lab-process-type-hover-detail.directive';
 import {LabProcessTypeTableComponent} from './component/lab-process-type-table/lab-process-type-table.component';
+import {
+  LabProcessTypeShowDetailButtonComponent
+} from './component/lab-process-type-show-detail-button/lab-process-type-show-detail-button.component';
 
 
 @NgModule({
@@ -24,6 +27,8 @@ import {LabProcessTypeTableComponent} from './component/lab-process-type-table/l
     LabProcessTypeHoverDetailDirective,
 
     LabProcessTypeTableComponent,
+
+    LabProcessTypeShowDetailButtonComponent,
   ],
   exports: [
     LabProcessDocComponent,
@@ -37,6 +42,8 @@ import {LabProcessTypeTableComponent} from './component/lab-process-type-table/l
     LabProcessTypeHoverDetailDirective,
 
     LabProcessTypeTableComponent,
+
+    LabProcessTypeShowDetailButtonComponent,
   ],
   imports: [
     CommonModule,

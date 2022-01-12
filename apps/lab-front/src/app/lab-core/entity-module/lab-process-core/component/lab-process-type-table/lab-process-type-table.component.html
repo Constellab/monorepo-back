@@ -5,10 +5,9 @@
     <mat-header-cell *matHeaderCellDef class="detail-column">
     </mat-header-cell>
     <mat-cell *matCellDef="let processType" class="detail-column">
-      <button mat-icon-button type="button" (click)="showDetail(processType, $event)"
-              [matTooltip]="'biox.process_type_view_detail' | translate">
-        <mat-icon>info</mat-icon>
-      </button>
+      <lab-process-type-show-detail-button [processTypingName]="processType.typingName"
+                                           (click)="stopEventPropagation($event)">
+      </lab-process-type-show-detail-button>
     </mat-cell>
   </ng-container>
 

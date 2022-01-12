@@ -17,16 +17,13 @@ import {
 } from '../../../lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
 import {LabConfigData, LabConfigValues} from '../../../../model/entities/lab-config.entity';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {FlFormHelper, FlOverlayRef, FlPortalConfig, FlPortalService, FlSnackBarService} from '@monorepo/front-core-lib';
+import {FlFormHelper, FlOverlayRef, FlSnackBarService} from '@monorepo/front-core-lib';
 import {LabRouterService} from '../../../../service/lab-router.service';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabProcessType} from '../../../../model/entities/lab-type/lab-process-type.entity';
 import {Validators} from '@angular/forms';
 import {LabResourceImporterType} from '../../../../model/entities/resource/lab-resource.dto';
 import {LabTypingName} from '../../../../model/entities/lab-typing-name.class';
-import {
-  LabProcessTypePortalComponent
-} from '../../../lab-process-core/component/lab-process-type-portal/lab-process-type-portal.component';
 
 export interface LabImportResourceDialogInput {
   resourceId: string;
@@ -74,8 +71,7 @@ export class LabImportResourceDialogComponent implements OnInit {
               private routerService: LabRouterService,
               private snackBarService: FlSnackBarService,
               private cdr: ChangeDetectorRef,
-              private componentFactoryResolver: ComponentFactoryResolver,
-              private portalService: FlPortalService) {
+              private componentFactoryResolver: ComponentFactoryResolver) {
     this.resourceHumanName = input.resourceHumanName;
   }
 
@@ -164,18 +160,5 @@ export class LabImportResourceDialogComponent implements OnInit {
     this.snackBarService.openSuccessMessage('biox.resource_imported', true);
     this.routerService.navigateToResourceDetail(resource.id);
     this.dialogRef.close();
-  }
-
-  openLabProcessTypeDetail(processType: LabProcessType, event: MouseEvent): void {
-    if (this.detailOverlayRef) return;
-
-    const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(event.target as any,
-      ['bottom', 'left', 'right', 'top'],
-      {disposeOnNavigation: true, elevation: true}
-    );
-
-    this.detailOverlayRef = this.portalService.createPortal(LabProcessTypePortalComponent, portalConfig, processType);
-
-    this.detailOverlayRef.detachments().subscribe(() => this.detailOverlayRef = null);
   }
 }

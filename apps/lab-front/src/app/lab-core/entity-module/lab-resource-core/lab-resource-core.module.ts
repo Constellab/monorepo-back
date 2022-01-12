@@ -37,6 +37,7 @@ import {
   LabImportResourceDialogComponent
 } from './component/lab-import-resource-dialog/lab-import-resource-dialog.component';
 import {LabConfigCoreModule} from '../lab-config-core/lab-config-core.module';
+import {LabProcessCoreModule} from '../lab-process-core/lab-process-core.module';
 
 
 @NgModule({
@@ -91,6 +92,7 @@ import {LabConfigCoreModule} from '../lab-config-core/lab-config-core.module';
     LabCoreModule,
     LabTransformerModule,
     LabConfigCoreModule,
+    LabProcessCoreModule,
   ],
 })
 export class LabResourceCoreModule {

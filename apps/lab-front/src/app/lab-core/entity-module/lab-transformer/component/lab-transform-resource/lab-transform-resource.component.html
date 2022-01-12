@@ -10,11 +10,8 @@
           {{transformer.name}}
         </button>
 
-        <button mat-icon-button type="button" class="g-button-icon-small"
-                (click)="openTransformerDetail(transformer, $event)"
-                [matTooltip]="'biox.process_type_view_detail' | translate">
-          <mat-icon>visibility</mat-icon>
-        </button>
+        <lab-process-type-show-detail-button [processTypingName]="transformer.typingName">
+        </lab-process-type-show-detail-button>
       </div>
     </ng-container>
   </fl-async-section>
