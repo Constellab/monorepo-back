@@ -29,9 +29,6 @@ export class LabWorkflowDrawerActionComponent implements OnInit {
   // set specific drawer width base on action
   private getDrawerWidth(action: LabWorkflowActionEvent): void {
     switch (action?.action ?? null) {
-      case 'processSelection':
-        this.drawerWidth = '40em';
-        return;
       default:
         this.drawerWidth = '25em';
         return;

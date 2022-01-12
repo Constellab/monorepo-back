@@ -3,8 +3,7 @@ import {LabWorkflowNodeInterface} from './lab-workflow-node-interface.class';
 import {LabWorkflowNodeOuterface} from './lab-workflow-node-outerface.class';
 
 
-export type LabWorkflowActionEvent = LabWorkflowActionSelectNode | LabWorkflowActionSelectInterface | LabWorkflowActionSelectOuterface
-  | LabWorkflowActionProcessSelection;
+export type LabWorkflowActionEvent = LabWorkflowActionSelectNode | LabWorkflowActionSelectInterface | LabWorkflowActionSelectOuterface;
 
 export interface LabWorkflowActionBase {
   action: string;
@@ -33,12 +32,5 @@ export interface LabWorkflowActionSelectInterface extends LabWorkflowActionBase 
 export interface LabWorkflowActionSelectOuterface extends LabWorkflowActionBase {
   action: 'selectOuterface';
   node: LabWorkflowNodeOuterface;
-}
-
-/**
- * Action called when selecting a workflow outerface
- */
-export interface LabWorkflowActionProcessSelection extends LabWorkflowActionBase {
-  action: 'processSelection';
 }
 

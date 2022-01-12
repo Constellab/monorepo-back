@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {LabProcessTypesTreeComponent} from './component/lab-process-types-tree/lab-process-types-tree.component';
 import {LabCoreModule} from '../../lab-core.module';
 import {LabProcessDocComponent} from './component/lab-process-doc/lab-process-doc.component';
 import {LabProcessTypeCardComponent} from './component/lab-process-type-card/lab-process-type-card.component';
@@ -14,7 +13,6 @@ import {LabProcessTypeTableComponent} from './component/lab-process-type-table/l
 
 @NgModule({
   declarations: [
-    LabProcessTypesTreeComponent,
     LabProcessDocComponent,
     LabProcessTypeCardComponent,
     LabProcessPortComponent,
@@ -28,7 +26,6 @@ import {LabProcessTypeTableComponent} from './component/lab-process-type-table/l
     LabProcessTypeTableComponent,
   ],
   exports: [
-    LabProcessTypesTreeComponent,
     LabProcessDocComponent,
     LabProcessTypeCardComponent,
     LabProcessPortComponent,

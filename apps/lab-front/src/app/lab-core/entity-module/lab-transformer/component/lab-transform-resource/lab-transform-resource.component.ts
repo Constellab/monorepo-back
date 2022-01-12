@@ -1,5 +1,4 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {LabTaskService} from '../../../../entity-service/lab-task.service';
 import {Observable} from 'rxjs';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
 import {LabConfigData} from '../../../../model/entities/lab-config.entity';
@@ -17,6 +16,7 @@ import {LabTransformerWithConfig} from '../../../../model/global/lab-transformer
 import {
   LabProcessTypePortalComponent
 } from '../../../lab-process-core/component/lab-process-type-portal/lab-process-type-portal.component';
+import {LabTypeService} from '../../../../entity-service/lab-type.service';
 
 interface LabSelectedTransformer {
   transformer: LabProcessType;
@@ -48,7 +48,7 @@ export class LabTransformResourceComponent implements OnInit {
 
   formArray: FormArray<LabTransformResourceForm>;
 
-  constructor(private taskTypeService: LabTaskService,
+  constructor(private typeService: LabTypeService,
               private controlContainer: ControlContainer,
               private cdr: ChangeDetectorRef,
               private portalService: FlPortalService) {
@@ -82,7 +82,7 @@ export class LabTransformResourceComponent implements OnInit {
       this.createSelectedTransformer(transformer.transformer);
     }
 
-    this.transformersList$ = this.taskTypeService.getTransformerByResourceType(this.resourceTypingName);
+    this.transformersList$ = this.typeService.getTransformerByResourceType(this.resourceTypingName);
   }
 
   addTransformer(transformer: LabProcessType): void {

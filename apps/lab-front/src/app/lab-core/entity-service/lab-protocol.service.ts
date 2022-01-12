@@ -7,9 +7,6 @@ import {LabFlow} from '../model/global/lab-connection.class';
 import {LabProtocol} from '../model/entities/process/lab-protocol.entity';
 import {LabProcess} from '../model/entities/process/lab-process.entity';
 import {LabTask} from '../model/entities/process/lab-task.entity';
-import {LabTypeEntity, LabTypeEntityTree} from '../model/entities/lab-type/lab-type.entity';
-import {labCreateTypedTree} from '../model/global/lab-typed-tree.class';
-import {LabProtocolType} from '../model/entities/lab-type/lab-protocol-type.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +14,6 @@ import {LabProtocolType} from '../model/entities/lab-type/lab-protocol-type.enti
 export class LabProtocolService {
 
   private readonly baseRoute: string = 'protocol';
-  private readonly typeRoute: string = 'protocol-type';
 
 
   constructor(private apiService: FlApiWithCacheService) {
@@ -61,14 +57,4 @@ export class LabProtocolService {
     return new LabFlow<LabProtocol>(protocol);
   }
 
-
-  //////////////////////////////////// TYPE ////////////////////////////
-
-  public getProtocolTypesTree(): Observable<LabTypeEntityTree[]> {
-    return this.apiService.get(`${this.typeRoute}/tree`, labCreateTypedTree(LabTypeEntity));
-  }
-
-  public getProtocolType(id: string): Observable<LabProtocolType> {
-    return this.apiService.getByIdWithCache(`${this.typeRoute}`, id, LabProtocolType);
-  }
 }

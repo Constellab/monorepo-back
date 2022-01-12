@@ -52,5 +52,10 @@ export class LabTypeService implements FlSearchService<LabTypeEntity> {
     });
   }
 
+  public getTransformerByResourceType(resourceTypingName: string): Observable<LabTypeEntity[]> {
+    return this.apiService.getWithCache(`${this.route}/transformers/${resourceTypingName}`,
+      LabTaskType);
+  }
+
 
 }

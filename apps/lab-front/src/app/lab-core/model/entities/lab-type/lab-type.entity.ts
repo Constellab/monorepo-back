@@ -1,6 +1,5 @@
 import {LabBaseEntity} from '../../global/lab-entity.entity';
 import {Expose} from 'class-transformer';
-import {LabTypedTree} from '../../global/lab-typed-tree.class';
 import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
 
 export type LabTypeObjectType = 'TASK' | 'RESOURCE' | 'PROTOCOL' | 'MODEL';
@@ -26,9 +25,5 @@ export class LabTypeEntity extends LabBaseEntity {
   }
 }
 
-/**
- * Tree that group the typed entities by model type
- */
-export type LabTypeEntityTree = LabTypedTree<LabTypeEntity>;
 export type LabTypeEntityDatasource = FlDatasourcePaginated<LabTypeEntity>;
 
