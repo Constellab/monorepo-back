@@ -2,8 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
 import {LabExperimentService} from '../../../../../lab-core/entity-service/lab-experiment.service';
 import {LabExperiment} from '../../../../../lab-core/model/entities/lab-experiment.entity';
-import {FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
+import {FlDialogService, FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
 import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
+import {
+  LabSelectProcessTypeDialogComponent
+} from '../../../../../lab-core/entity-module/lab-type-core/component/lab-select-process-type-dialog/lab-select-process-type-dialog.component';
+import {LabTypeEntity} from '../../../../../lab-core/model/entities/lab-type/lab-type.entity';
 
 /**
  * Actions button for the workflow
@@ -22,7 +26,8 @@ export class LabWorkflowActionsComponent implements OnInit {
               private experimentService: LabExperimentService,
               private snackBarService: FlSnackBarService,
               private actionState: LabWorkflowActionState,
-              private translateService: FlTranslateService) {
+              private translateService: FlTranslateService,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -33,10 +38,15 @@ export class LabWorkflowActionsComponent implements OnInit {
   }
 
   addProcess(): void {
-    this.actionState.newAction({
-      action: 'processSelection',
-      title: this.translateService.translate('biox.add_process')
-    });
+    this.dialogService.openBigDialog(LabSelectProcessTypeDialogComponent).afterClosed().subscribe(
+      processType => this.onSelectTypeClosed(processType)
+    );
+  }
+
+  private onSelectTypeClosed(processType ?: LabTypeEntity): void {
+    if (processType) {
+      this.workflowManager.addProcessNode(processType.typingName, processType.name);
+    }
   }
 
   addInterface(): void {

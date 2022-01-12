@@ -1,0 +1,36 @@
+<div fxLayout="column" class="form" [formGroup]="formGp">
+
+  <div fxLayout="row wrap" fxLayoutGap="1em 0 grid" fxLayoutAlign="space-between center"
+       class="g-full">
+
+    <!--  Text  -->
+    <mat-form-field class="g-full">
+      <mat-label>{{'name' | translate }}</mat-label>
+      <input matInput formControlName="text" [placeholder]="'name' | translate" autocomplete="off">
+    </mat-form-field>
+
+
+    <!--  Brick  -->
+    <mat-form-field class="g-search-field">
+      <mat-label>{{'brick' | translate }}</mat-label>
+      <mat-select [placeholder]="'brick' | translate" [multiple]="true" formControlName="brick">
+        <lab-bricks-select-options></lab-bricks-select-options>
+      </mat-select>
+    </mat-form-field>
+
+    <!--  Object sub type  -->
+    <mat-form-field class="g-search-field">
+      <mat-label>{{'biox.process_type_type' | translate }}</mat-label>
+      <mat-select [placeholder]="'biox.process_type_type' | translate" formControlName="objectSubType">
+        <mat-option value="TASK">Task</mat-option>
+        <mat-option value="PROTOCOL">Protocol</mat-option>
+        <mat-option value="IMPORTER">Importer</mat-option>
+        <mat-option value="EXPORTER">Exporter</mat-option>
+        <mat-option value="TRANSFORMER">Transformer</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </div>
+</div>
+
+

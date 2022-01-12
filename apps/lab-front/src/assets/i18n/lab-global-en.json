@@ -33,6 +33,7 @@
   "close": "Close",
   "error_required": "The field '{{field}}' is mandatory",
   "add_brick": "Add brick",
+  "brick": "Brick",
   "documentation": "Documentation",
   "documentations_links": "Documentations' links",
   "gws": "Web services",

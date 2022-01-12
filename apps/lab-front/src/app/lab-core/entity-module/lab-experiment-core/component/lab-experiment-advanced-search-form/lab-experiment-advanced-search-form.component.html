@@ -4,7 +4,7 @@
        class="g-full">
 
     <!--  Type  -->
-    <mat-form-field class="min-section-width">
+    <mat-form-field class="g-search-field">
       <mat-label>{{'biox.experiment_type' | translate }}</mat-label>
       <mat-select formControlName="type" [placeholder]="'biox.experiment_type' | translate">
         <lab-experiment-type-options></lab-experiment-type-options>
@@ -12,7 +12,7 @@
     </mat-form-field>
 
     <!--  status  -->
-    <mat-form-field class="min-section-width">
+    <mat-form-field class="g-search-field">
       <mat-label>{{'status' | translate }}</mat-label>
       <mat-select formControlName="status" [placeholder]="'status' | translate" multiple>
         <lab-experiment-status-options></lab-experiment-status-options>
@@ -31,7 +31,7 @@
     </mat-form-field>
 
     <!--  Project  -->
-    <mat-form-field class="min-section-width">
+    <mat-form-field class="g-search-field">
       <mat-label>{{'biox.project' | translate }}</mat-label>
       <mat-select formControlName="project" multiple [placeholder]="'biox.project' | translate">
         <lab-project-select-options></lab-project-select-options>

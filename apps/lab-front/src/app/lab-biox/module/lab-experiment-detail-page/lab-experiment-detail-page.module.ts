@@ -45,6 +45,7 @@ import {
   LabExperimentAssociatedReportsComponent
 } from './component/lab-experiment-associated-reports/lab-experiment-associated-reports.component';
 import {RouterModule} from '@angular/router';
+import {LabTypeCoreModule} from '../../../lab-core/entity-module/lab-type-core/lab-type-core.module';
 
 
 @NgModule({
@@ -80,6 +81,7 @@ import {RouterModule} from '@angular/router';
     LabConfigCoreModule,
     LabProcessCoreModule,
     LabProjectCoreModule,
+    LabTypeCoreModule,
   ],
   providers: [
     // declare the state here otherwise the angular element can't access them

@@ -45,4 +45,8 @@ export class FlOverlayRef {
   public backdropClick(): Observable<MouseEvent> {
     return this.overlayRef.backdropClick();
   }
+
+  public getPanelElement(): Element{
+    return (this.overlayRef as any)._pane
+  }
 }

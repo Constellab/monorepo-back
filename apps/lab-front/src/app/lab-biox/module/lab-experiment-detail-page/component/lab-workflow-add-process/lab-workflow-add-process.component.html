@@ -2,29 +2,31 @@
 
   <!-- Left section with task or protocol selection -->
   <div class="left-section">
-    <mat-tab-group class="g-mat-tab-flex">
-      <mat-tab [label]="'tasks' | translate">
-        <fl-async-section [object]="tasks$">
+<!--    <mat-tab-group class="g-mat-tab-flex">-->
+<!--      <mat-tab [label]="'tasks' | translate">-->
+<!--        <fl-async-section [object]="tasks$">-->
 
-          <ng-container *flSectionBody="let taskTypes">
-            <lab-process-types-tree [processTypesTree]="taskTypes"
-                                         (processTypeClick)="selectTask($event)"
-                                         (processTypeDblClick)="selectAndAddTask($event)"></lab-process-types-tree>
-          </ng-container>
-        </fl-async-section>
+<!--          <ng-container *flSectionBody="let taskTypes">-->
+<!--            <lab-process-types-tree [processTypesTree]="taskTypes"-->
+<!--                                         (processTypeClick)="selectTask($event)"-->
+<!--                                         (processTypeDblClick)="selectAndAddTask($event)"></lab-process-types-tree>-->
+<!--          </ng-container>-->
+<!--        </fl-async-section>-->
 
-      </mat-tab>
+<!--      </mat-tab>-->
 
-      <mat-tab [label]="'protocols' | translate">
-        <fl-async-section [object]="protocols$">
-          <ng-container *flSectionBody="let protocols">
-            <lab-process-types-tree [processTypesTree]="protocols"
-                                         (processTypeClick)="selectProtocol($event)"
-                                         (processTypeDblClick)="selectAndAddProtocol($event)"></lab-process-types-tree>
-          </ng-container>
-        </fl-async-section>
-      </mat-tab>
-    </mat-tab-group>
+<!--      <mat-tab [label]="'protocols' | translate">-->
+<!--        <fl-async-section [object]="protocols$">-->
+<!--          <ng-container *flSectionBody="let protocols">-->
+<!--            <lab-process-types-tree [processTypesTree]="protocols"-->
+<!--                                         (processTypeClick)="selectProtocol($event)"-->
+<!--                                         (processTypeDblClick)="selectAndAddProtocol($event)"></lab-process-types-tree>-->
+<!--          </ng-container>-->
+<!--        </fl-async-section>-->
+<!--      </mat-tab>-->
+<!--    </mat-tab-group>-->
+
+    <lab-type-search></lab-type-search>
   </div>
 
   <!-- Right section with process detail information -->

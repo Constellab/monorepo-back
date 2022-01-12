@@ -9,6 +9,7 @@ import {LabProcessPortComponent} from './component/lab-process-port/lab-process-
 import {LabProcessPortsListComponent} from './component/lab-process-ports-list/lab-process-ports-list.component';
 import {LabProcessTypePortalComponent} from './component/lab-process-type-portal/lab-process-type-portal.component';
 import {LabProcessTypeHoverDetailDirective} from './directive/lab-process-type-hover-detail.directive';
+import {LabProcessTypeTableComponent} from './component/lab-process-type-table/lab-process-type-table.component';
 
 
 @NgModule({
@@ -23,6 +24,8 @@ import {LabProcessTypeHoverDetailDirective} from './directive/lab-process-type-h
     LabProcessPortColorPipe,
 
     LabProcessTypeHoverDetailDirective,
+
+    LabProcessTypeTableComponent,
   ],
   exports: [
     LabProcessTypesTreeComponent,
@@ -35,6 +38,8 @@ import {LabProcessTypeHoverDetailDirective} from './directive/lab-process-type-h
     LabProcessPortColorPipe,
 
     LabProcessTypeHoverDetailDirective,
+
+    LabProcessTypeTableComponent,
   ],
   imports: [
     CommonModule,

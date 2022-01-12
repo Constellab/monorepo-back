@@ -171,18 +171,18 @@ export class FlPortalService {
     const overlayRef: FlOverlayRef = this.createOverlay(config.config);
 
     // manage the portal dispose
-    if (config.config.disposeOnBackdropClick || config.config.disposeOnNavigation) {
+    if (config.config.disposeOnBackdropClick || config.config.disposeOnNavigation || config.config.disposeOnOutsideClick) {
       this.managePortalDisposing(config, overlayRef);
     }
 
     // create the injector
     const injector = this.createInjector(data, overlayRef, config.config.customProviders);
 
-    // create the component with the inject
+    // create the component with the injector
     const componentPortal: ComponentPortal<T> =
       new ComponentPortal(component, null, injector);
 
-    // attache the component to the dom
+    // attach the component to the dom
     overlayRef.attach(componentPortal);
 
     // created the arrow if needed before the main portal so that it is under it
@@ -251,7 +251,7 @@ export class FlPortalService {
 
   private handleOutsideClick(event: MouseEvent, overlay: FlOverlayRef): void {
     const wrapper: FlEventWrapper = new FlEventWrapper(event);
-    if (!wrapper.parentHasClass('cdk-overlay-container')) {
+    if (!wrapper.elementIsParent(overlay.getPanelElement())) {
       overlay.dispose();
     }
   }

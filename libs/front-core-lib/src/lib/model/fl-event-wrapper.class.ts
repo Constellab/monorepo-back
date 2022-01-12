@@ -39,8 +39,8 @@ export class FlEventWrapper<T extends Event = Event> {
    * return true if the event target or the parent of this target is the element
    * @param element
    */
-  public elementIsParent(element: HTMLElement): boolean {
-    const targets: HTMLElement[] = this.event.composedPath() as HTMLElement[];
+  public elementIsParent(element: Element): boolean {
+    const targets: Element[] = this.event.composedPath() as Element[];
 
     for (const target of targets) {
       // we stop if we reach the element

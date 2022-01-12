@@ -1,4 +1,3 @@
-import {LabProcessData} from '../process/lab-process.entity';
 import {LabConfigSpecs} from '../lab-config-spec.entity';
 import {LabTypeEntity} from './lab-type.entity';
 import {LabIOSpec} from '../lab-io.entity';
@@ -7,7 +6,7 @@ import {LabTypingName} from '../lab-typing-name.class';
 
 export abstract class LabProcessType extends LabTypeEntity {
 
-  data: LabProcessData;
+  doc ?: string;
 
   // return true if the process is a Source
   isPlugSource(): boolean {
@@ -15,7 +14,7 @@ export abstract class LabProcessType extends LabTypeEntity {
   }
 
   hasDocumentation(): boolean {
-    return this.data.doc != null;
+    return this.doc != null;
   }
 
 

@@ -10,7 +10,7 @@
   <fl-card-body>
     <div class="g-text-light base-info">
       <p>{{'biox.process_type_type' | translate}} : {{processType.modelName}}</p>
-      <p *ngIf="processType.data.description">{{processType.data.description}}</p>
+      <p *ngIf="processType.shortDescription">{{processType.shortDescription}}</p>
     </div>
 
     <div class="panel-container">
@@ -73,7 +73,7 @@
             </fl-text-icon>
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <lab-process-doc [doc]="processType.data.doc" class="panel-padding">
+        <lab-process-doc [doc]="processType.doc" class="panel-padding">
         </lab-process-doc>
       </mat-expansion-panel>
 

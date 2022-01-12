@@ -1,0 +1,31 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+  <!-- Detail button -->
+  <ng-container matColumnDef="detail">
+    <mat-header-cell *matHeaderCellDef class="detail-column">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let processType" class="detail-column">
+      <button mat-icon-button type="button" (click)="showDetail(processType, $event)"
+              [matTooltip]="'biox.process_type_view_detail' | translate">
+        <mat-icon>info</mat-icon>
+      </button>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{column.columnName | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let obj">
+      <div>
+        <span>{{obj[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"
+           [ngClass]="{'g-table-row-selectable': rowSelectable}" (click)="rowClicked(row)"></mat-row>
+</mat-table>
+

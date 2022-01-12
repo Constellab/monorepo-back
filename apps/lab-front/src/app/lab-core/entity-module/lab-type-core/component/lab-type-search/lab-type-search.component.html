@@ -1,0 +1,25 @@
+<fl-search class="g-full-height">
+
+  <!-- Advanced section in the right in a drawer -->
+  <fl-search-advanced-form>
+    <lab-type-advanced-search-form></lab-type-advanced-search-form>
+  </fl-search-advanced-form>
+
+
+  <!--  Center header  -->
+  <fl-search-header fxLayout="row">
+
+    <div fxFlex="grow" class="saved-search-container">
+      <fl-search-saved-list></fl-search-saved-list>
+    </div>
+  </fl-search-header>
+
+
+  <fl-search-result>
+    <lab-process-type-table [datasource]="datasource" [columns]="columns"
+                            [rowSelectable]="true"
+                            (typeSelected)="selectType($event)"></lab-process-type-table>
+  </fl-search-result>
+
+
+</fl-search>

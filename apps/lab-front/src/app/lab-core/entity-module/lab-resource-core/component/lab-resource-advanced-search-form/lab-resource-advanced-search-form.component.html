@@ -4,7 +4,7 @@
        class="g-full">
 
     <!--  Resource Type  -->
-    <mat-form-field class="min-section-width">
+    <mat-form-field class="g-search-field">
       <mat-label>{{'resource_type' | translate }}</mat-label>
       <mat-select formControlName="resourceTypingName" multiple [placeholder]="'resource_type' | translate">
         <lab-resource-type-select-options></lab-resource-type-select-options>
@@ -13,7 +13,7 @@
 
 
     <!--  Origin  -->
-    <mat-form-field class="min-section-width">
+    <mat-form-field class="g-search-field">
       <mat-label>{{'resource_origin' | translate }}</mat-label>
       <mat-select formControlName="origin" [placeholder]="'resource_origin' | translate">
         <lab-resource-origin-options></lab-resource-origin-options>

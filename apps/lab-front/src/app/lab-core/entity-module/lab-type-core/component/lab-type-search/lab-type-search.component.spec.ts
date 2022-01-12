@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabResourceSelectComponent} from './lab-resource-select.component';
+import {LabTypeSearchComponent} from './lab-type-search.component';
 
-describe('BioxResourceSelectComponent', () => {
-  let component: LabResourceSelectComponent;
-  let fixture: ComponentFixture<LabResourceSelectComponent>;
+describe('LabTypeSearchComponent', () => {
+  let component: LabTypeSearchComponent;
+  let fixture: ComponentFixture<LabTypeSearchComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabResourceSelectComponent ]
+      declarations: [ LabTypeSearchComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabResourceSelectComponent);
+    fixture = TestBed.createComponent(LabTypeSearchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

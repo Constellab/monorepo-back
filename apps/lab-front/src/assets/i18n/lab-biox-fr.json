@@ -38,6 +38,7 @@
     "workflow_loading_error": "Erreur lors du chargement du protocol",
     "add_process": "Ajouter un process",
     "add_selected_process": "Ajouter le process",
+    "select_process": "Sélectionner un process",
     "node_inputs": "Inputs",
     "node_outputs": "Outputs",
     "open_node_detail": "Détail",

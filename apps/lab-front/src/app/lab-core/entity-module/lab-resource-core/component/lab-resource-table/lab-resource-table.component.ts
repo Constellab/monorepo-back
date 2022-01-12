@@ -93,7 +93,6 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
 
   rowClicked(resource: LabResource): void {
     if (this.selectableRow) {
-      console.log(resource);
       this.resourceSelected.next(resource);
     }
   }

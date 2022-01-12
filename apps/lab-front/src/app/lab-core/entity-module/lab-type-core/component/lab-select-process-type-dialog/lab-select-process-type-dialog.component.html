@@ -1,0 +1,8 @@
+<fl-dialog-header>
+  {{'biox.select_process' | translate }}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <lab-type-search [fullPageSearch]="false"
+                       (typeSelected)="onTypeSelected($event)"></lab-type-search>
+</mat-dialog-content>

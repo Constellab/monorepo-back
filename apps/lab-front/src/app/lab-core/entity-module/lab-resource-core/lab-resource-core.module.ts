@@ -8,14 +8,10 @@ import {RouterModule} from '@angular/router';
 import {LabResourceJsonComponent} from './component/lab-resource-json/lab-resource-json.component';
 import {LabResourceTextComponent} from './component/lab-resource-text/lab-resource-text.component';
 import {LabResourceImageComponent} from './component/lab-resource-image/lab-resource-image.component';
-import {LabResourceSelectComponent} from './component/lab-resource-select/lab-resource-select.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   LabResourceTypeSelectOptionsComponent
 } from './component/lab-resource-type-select-options/lab-resource-type-select-options.component';
-import {
-  LabResourceSelectOptionsComponent
-} from './component/lab-resource-select-options/lab-resource-select-options.component';
 import {LabResourceNetworkComponent} from './component/lab-resource-network/lab-resource-network.component';
 import {LabResourceChart2dComponent} from './component/lab-resource-chart-2d/lab-resource-chart2d.component';
 import {LabResourceViewPortalComponent} from './component/lab-resource-view-portal/lab-resource-view-portal.component';
@@ -51,9 +47,7 @@ import {LabConfigCoreModule} from '../lab-config-core/lab-config-core.module';
     LabResourceJsonComponent,
     LabResourceTextComponent,
     LabResourceImageComponent,
-    LabResourceSelectComponent,
     LabResourceTypeSelectOptionsComponent,
-    LabResourceSelectOptionsComponent,
     LabResourceNetworkComponent,
     LabResourceChart2dComponent,
     LabResourceViewPortalComponent,
@@ -75,9 +69,7 @@ import {LabConfigCoreModule} from '../lab-config-core/lab-config-core.module';
     LabResourceJsonComponent,
     LabResourceTextComponent,
     LabResourceImageComponent,
-    LabResourceSelectComponent,
     LabResourceTypeSelectOptionsComponent,
-    LabResourceSelectOptionsComponent,
     LabResourceNetworkComponent,
     LabResourceChart2dComponent,
     LabResourceViewPortalComponent,

@@ -32,8 +32,8 @@
     }
 
     &.task-source {
-      color: mat-color($primary, '100-contrast');
-      background-color: mat-color($primary, 100);
+      color: mat-color($primary, '500-contrast');
+      background-color: mat-color($primary);
     }
 
     // width and height of input and output port

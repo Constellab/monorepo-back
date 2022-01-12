@@ -1,5 +1,5 @@
-import {Expose, Type} from 'class-transformer';
-import {LabProtocolData} from '../process/lab-protocol.entity';
+import {Type} from 'class-transformer';
+import {LabProtocolGraph} from '../process/lab-protocol.entity';
 import {LabProcessType} from './lab-process-type.entity';
 import {LabConfigSpecs} from '../lab-config-spec.entity';
 import {LabProtocolLink, LabProtocolLinkPart} from '../lab-protocol-link.entity';
@@ -8,11 +8,8 @@ import {LabIOSpec} from '../lab-io.entity';
 
 export class LabProtocolType extends LabProcessType {
 
-  @Expose({name: 'model_type'})
-  modelType: string;
-
-  @Type(() => LabProtocolData)
-  data: LabProtocolData;
+  @Type(() => LabProtocolGraph)
+  graph: LabProtocolGraph;
 
   // the protocol does not have a config
   getConfigSpecs(): LabConfigSpecs {
@@ -22,14 +19,14 @@ export class LabProtocolType extends LabProcessType {
   getInputSpecs(): Record<string, LabIOSpec> {
     const inputSpecs: Record<string, LabIOSpec> = {};
     // we construct the input spec from the interface
-    const interfaces: Record<string, LabProtocolLink> = this.data.graph.interfaces ?? {};
+    const interfaces: Record<string, LabProtocolLink> = this.graph.interfaces ?? {};
 
     for (const key of Object.keys(interfaces)) {
       // to retrieve the specs, we have to check the node
       // we access the info of which no the interface is connected to
       const part: LabProtocolLinkPart = interfaces[key].to;
 
-      inputSpecs[key] = this.data.graph.nodes[part.nodeName].inputs[part.port].specs;
+      inputSpecs[key] = this.graph.nodes[part.nodeName].inputs[part.port].specs;
     }
 
     return inputSpecs;
@@ -38,7 +35,7 @@ export class LabProtocolType extends LabProcessType {
   getOutputSpecs(): Record<string, LabIOSpec> {
     const outputSpecs: Record<string, LabIOSpec> = {};
     // we construct the input spec from the interface
-    const outerfaces: Record<string, LabProtocolLink> = this.data.graph.outerfaces ?? {};
+    const outerfaces: Record<string, LabProtocolLink> = this.graph.outerfaces ?? {};
 
     for (const key of Object.keys(outerfaces)) {
       // to retrieve the specs, we have to check the node
@@ -46,7 +43,7 @@ export class LabProtocolType extends LabProcessType {
       const part: LabProtocolLinkPart = outerfaces[key].from;
 
       // retrieve the node and then the output spec of the node
-      outputSpecs[key] = this.data.graph.nodes[part.nodeName].outputs[part.port].specs;
+      outputSpecs[key] = this.graph.nodes[part.nodeName].outputs[part.port].specs;
     }
 
     return outputSpecs;
