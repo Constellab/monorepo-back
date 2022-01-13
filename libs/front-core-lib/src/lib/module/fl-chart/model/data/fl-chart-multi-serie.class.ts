@@ -10,10 +10,14 @@ export class FlChartMultiSerie<Data> implements FlChartDataContainer<Data> {
   series: FlChartSerie<Data>[];
 
   /**
-   * Function to format the x axis labels
+   * Function to format the x-axis labels
    */
   axisXLabelFormat: FlChartAxisTickFormat | null;
 
+  /**
+   * Function to format the y-axis labels
+   */
+  axisYLabelFormat: FlChartAxisTickFormat | null;
 
   constructor(series: FlChartSerie<Data>[] = []) {
     this.series = series;
@@ -82,12 +86,22 @@ export class FlChartMultiSerie<Data> implements FlChartDataContainer<Data> {
   }
 
   /**
-   * Set the list of x tick label for all the series. It define the axisXLabelFormat
+   * Set the list of x tick label for all the series. It defines the axisXLabelFormat
    * @param xTickLabels
    */
   public setXTickLabels(xTickLabels: string[]): void {
     if (xTickLabels) {
       this.axisXLabelFormat = (value) => (xTickLabels[value] ?? value).toString();
+    }
+  }
+
+  /**
+   * Set the list of y tick label for all the series. It defines the axisYLabelFormat
+   * @param yTickLabels
+   */
+  public setYTickLabels(yTickLabels: string[]): void {
+    if (yTickLabels) {
+      this.axisYLabelFormat = (value) => (yTickLabels[value] ?? value).toString();
     }
   }
 }

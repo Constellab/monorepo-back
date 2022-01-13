@@ -11,6 +11,7 @@ import {
 export interface LabResourceViewHeatMap {
   type: 'heatmap-view';
   data: ClCsvJson;
+  row_names: string[];
 }
 
 /**
@@ -24,11 +25,15 @@ export function labHeatMapToChart(view: LabResourceViewHeatMap): FlChartConfig {
   for (const columnName in view.data) {
     // convert all the column data into a 3d datum, where x = columnIndex, y = index of value and z = value as number
     const data: FlChart3dDatum[] = view.data[columnName].map(
-      (value, index) => new FlChart3dDatum(columnIndex, index, ClNumberHelper.fromString(value, 0))
+      (value, index) => new FlChart3dDatum(columnIndex, index, ClNumberHelper.fromString(value, 0), columnName, view.row_names[index])
     );
     series.addSerie(new FlChartSerie(data, columnName));
+
     columnIndex++;
   }
 
+  // x tick labels = columns names
+  series.setXTickLabels(Object.keys(view.data));
+  series.setYTickLabels(view.row_names);
   return new FlChartHeatMap(series);
 }

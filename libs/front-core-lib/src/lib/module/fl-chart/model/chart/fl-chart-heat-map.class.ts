@@ -41,12 +41,16 @@ export class FlChartHeatMap extends FlChartConfig {
     const xAxis: FlChartAxis = new FlChartAxisBand('bottom').setScale(xScale)
       .setSmartTickFormat(FlChartAxisBand.tickCharacterWidth * 3);
 
+    // todo fix x tick that overlap each other
+    // xAxis.setTickFormat(this.dataContainer.axisXLabelFormat);
+
     // Build Y axis
     const yScale: FlChartScaleBand = new FlChartScaleBand()
       .setInitialDomain(this.dataContainer.getDomainYComplete())
       .padding(0.01);
     const yAxis: FlChartAxis = new FlChartAxisBand('left').setScale(yScale)
       .setSmartTickFormat(FlChartAxisBand.tickTextHeight);
+    yAxis.setTickFormat(this.dataContainer.axisYLabelFormat);
 
     chartContainer
       .initXAxis(xAxis)

@@ -84,6 +84,7 @@ export interface LabResourceViewText {
 export interface LabResourceViewTable {
   type: 'table-view' | 'dataset-view';
   data: ClCsvJson;
+  row_names: string[]
 }
 
 export interface LabResourceViewNetwork {
