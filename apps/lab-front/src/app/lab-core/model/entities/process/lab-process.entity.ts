@@ -36,13 +36,11 @@ export class LabProcess extends LabNode {
 
   data: LabProcessData;
 
-  experiment: {
-    id: string;
-  };
+  @Expose({name: 'experiment_id'})
+  experimentId: string;
 
-  protocol: {
-    id: string;
-  };
+  @Expose({name: 'protocol_id'})
+  protocolId: string;
 
   @FlStatusTransform(labProcessStatusDict)
   status: FlStatus<LabProcessStatus>;

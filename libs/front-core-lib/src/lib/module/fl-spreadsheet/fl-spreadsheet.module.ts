@@ -11,9 +11,6 @@ import {FlCellHeaderPipe} from './pipe/fl-cell-header.pipe';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {MatMenuModule} from '@angular/material/menu';
 import {FlPortalModule} from '../fl-portal/fl-portal.module';
-import {
-  FlSpreadsheetContextMenuComponent
-} from './component/fl-spreadsheet-context-menu/fl-spreadsheet-context-menu.component';
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {MatIconModule} from '@angular/material/icon';
 import {FlIconModule} from '../fl-svg-icon/fl-icon.module';
@@ -44,6 +41,7 @@ import {
 } from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
+import {FlContextMenuModule} from '../fl-context-menu/fl-context-menu.module';
 
 
 @NgModule({
@@ -52,7 +50,6 @@ import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
     FlSpreadsheetCellComponent,
     FlSpreadsheetHeaderCellComponent,
     FlCellHeaderPipe,
-    FlSpreadsheetContextMenuComponent,
     FlSpreadsheetChartSelectionComponent,
     FlSpreadsheetSelectionInputComponent,
     FlSpreadsheetSelectionInputGroupDirective,
@@ -75,6 +72,7 @@ import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
     FlChartModule,
     FlMenuDynamicModule,
     FlTextIconModule,
+    FlContextMenuModule,
 
     ScrollingModule,
     MatMenuModule,

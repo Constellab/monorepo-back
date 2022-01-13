@@ -1,5 +1,6 @@
 import {DrawflowConnectionDetail, DrawflowNode} from 'drawflow';
 import {LabWorkflowPort} from './lab-workflow-port.class';
+import {FlCoord} from '@monorepo/front-core-lib';
 
 /**
  * Single node in the workflow
@@ -83,7 +84,7 @@ export abstract class LabWorkflowNode<T> {
     }
   }
 
-  public hasInputs(): boolean{
+  public hasInputs(): boolean {
     return this.countInputs() > 0;
   }
 
@@ -107,7 +108,7 @@ export abstract class LabWorkflowNode<T> {
     }
   }
 
-  public hasOutputs(): boolean{
+  public hasOutputs(): boolean {
     return this.countOutputs() > 0;
   }
 
@@ -159,7 +160,15 @@ export abstract class LabWorkflowNode<T> {
     }
   }
 
-  public destroy(): void{
+  public getNodeCoord(): FlCoord {
+    const drawflowNode: DrawflowNode = this.getDrawflowNode();
+    return {
+      x: drawflowNode.pos_x,
+      y: drawflowNode.pos_y
+    };
+  }
+
+  public destroy(): void {
 
   }
 

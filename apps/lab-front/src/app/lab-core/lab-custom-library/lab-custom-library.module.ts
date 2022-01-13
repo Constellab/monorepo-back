@@ -5,6 +5,7 @@ import {
   FlBioNetworkModule,
   FlCardModule,
   FlChartModule,
+  FlContextMenuModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
   FlCorePipeModule,
@@ -70,6 +71,7 @@ import {
     FlFormInputsManagerModule,
     FlSearchModule,
     FlArticleModule,
+    FlContextMenuModule,
   ]
 })
 export class LabCustomLibraryModule {

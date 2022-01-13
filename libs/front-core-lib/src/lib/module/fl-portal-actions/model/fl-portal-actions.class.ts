@@ -10,7 +10,7 @@ import {HttpEvent, HttpEventType} from '@angular/common/http';
 export interface FlPortalAction {
 
   /**
-   * Action as observable Observable to subscribe
+   * Action as observable to subscribe
    */
   action: Observable<any>;
 
@@ -29,6 +29,11 @@ export interface FlPortalAction {
    * If true the action must return a HttpEvent and the action will display a progress bar
    */
   trackHttpEvents?: boolean;
+
+  /**
+   * Additional information to return to the result
+   */
+  additionalInformation?: any;
 }
 
 /**
@@ -90,13 +95,23 @@ export class FlPortalActionDetail {
   }
 
   private emitSuccess(result: any): void {
-    this.actionSubject$.next({status: 'success', result: result, action: this.action});
+    this.actionSubject$.next({
+      status: 'success',
+      result: result,
+      action: this.action,
+      additionalInformation: this.action.additionalInformation
+    });
     this.actionSubject$.complete();
   }
 
 
   private emitError(error: any): void {
-    this.actionSubject$.next({status: 'error', result: error, action: this.action});
+    this.actionSubject$.next({
+      status: 'error',
+      result: error,
+      action: this.action,
+      additionalInformation: this.action.additionalInformation
+    });
     this.actionSubject$.complete();
   }
 
@@ -149,12 +164,13 @@ export interface FlPortalActionEmpty {
 export type FlPortalActionResult<T = any> = FlPortalActionSuccess<T> | FlPortalActionError;
 
 /**
- * Object emitted when a action ended in success
+ * Object emitted when an action ended in success
  */
 export interface FlPortalActionSuccess<T = any> {
   status: 'success';
   result: T;
   action: FlPortalAction;
+  additionalInformation?: any;
 }
 
 /**
@@ -164,5 +180,6 @@ export interface FlPortalActionError<T = any> {
   status: 'error';
   result: T;
   action: FlPortalAction;
+  additionalInformation?: any;
 }
 

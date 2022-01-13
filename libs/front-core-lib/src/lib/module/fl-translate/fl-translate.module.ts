@@ -7,6 +7,7 @@ import {FlMissingTranslationLogService} from './service/fl-missing-translation-l
 import {FlTranslateService} from './service/fl-translate.service';
 import {FL_TRANSLATE_MODULE_CONFIG, FlTranslateModuleConfig} from './model/fl-translate-module-config';
 import {CookieService} from 'ngx-cookie-service';
+import {FlTranslatableTextPipe} from './pipe/fl-translatable-text.pipe';
 
 // AoT requires an exported function for factories
 // load the translations
@@ -24,9 +25,10 @@ export function initTranslateService(service: FlTranslateService): () => void {
 
 
 @NgModule({
-  declarations: [],
+  declarations: [FlTranslatableTextPipe],
   exports: [
     TranslatePipe,
+    FlTranslatableTextPipe,
   ],
   imports: [
     CommonModule,

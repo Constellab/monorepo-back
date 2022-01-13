@@ -107,7 +107,7 @@ export class LabWorkflow {
   public createSubLayerIfNotExists(layerId: string, name: string, title: string, object: LabFlowManager): void {
     if (this.findLayerWithId(layerId) == null) {
       this.editor.addModule(layerId);
-      this.layers.push(this.currentLayer.createSubLayer(layerId, name, title, object))
+      this.layers.push(this.currentLayer.createSubLayer(layerId, name, title, object));
     }
 
     this.selectLayer(layerId);
@@ -119,7 +119,7 @@ export class LabWorkflow {
 
 
   // return the layer with the id
-  private findLayerWithId(layerId: string): LabWorkflowLayer {
+  public findLayerWithId(layerId: string): LabWorkflowLayer {
     return this.layers.find(layer => layer.id === layerId);
   }
 
@@ -143,8 +143,17 @@ export class LabWorkflow {
   }
 
   ////////////////////// NODE ///////////////////////////
-  public addNode(node: LabWorkflowNode<any>): void {
+  public addNodeToCurrentLayer(node: LabWorkflowNode<any>): void {
     this.currentLayer.addNode(node);
+  }
+
+  public addNodeToLayer(node: LabWorkflowNode<any>, layerId: string): void {
+    const layer: LabWorkflowLayer = this.findLayerWithId(layerId);
+    if (layer == null) {
+      console.error(`Can't add the node because the layer ${layerId} doesn't exist`);
+      return;
+    }
+    layer.addNode(node);
   }
 
   private onNodeRemoved(nodeId: number): void {
@@ -168,7 +177,7 @@ export class LabWorkflow {
 
   /**
    * Find (in the current layer) the node with the given name
-   * We must search in current layer because in multiple layer we can have the same same
+   * We must search in current layer because in multiple layer we can have the same
    */
   public findNodeWithNameInCurrentLayer(nodeName: string): LabWorkflowNode<any> {
     return this.currentLayer.findNodeWithName(nodeName);

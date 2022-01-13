@@ -51,5 +51,6 @@ export const flIconsDefault: FlIcon[] = [
   {name: 'lab', filename: 'microscope-solid.svg'},
   {name: 'project', filename: 'briefcase-solid.svg'},
   {name: 'archive', filename: 'archive-solid.svg'},
-  {name: 'report', matIconName: 'grading'}
+  {name: 'report', matIconName: 'grading'},
+  {name: 'resource', matIconName: 'folder'},
 ]

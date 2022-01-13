@@ -19,9 +19,11 @@ import {LabWorkflowNodeInterface} from '../model/lab-workflow-node-interface.cla
 import {LabWorkflowNodeOuterface} from '../model/lab-workflow-node-outerface.class';
 import {LabWorkflowPort} from '../model/lab-workflow-port.class';
 import {LabProtocol} from '../../../../lab-core/model/entities/process/lab-protocol.entity';
-import {FlPortalAction, FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
+import {FlCoord, FlPortalAction, FlPortalActionsService} from '@monorepo/front-core-lib';
 import {LabWorkflowNodeSource} from '../model/lab-workflow-node-source.class';
 import {LabResourceService} from '../../../../lab-core/entity-service/lab-resource.service';
+import {filter} from 'rxjs/operators';
+import {LabAddProcessWithLink, LabNodeRelativeCoord} from '../model/lab-workflow-action.class';
 
 /**
  * State for the workflow, it is created for the module and can only manage on state a the time
@@ -48,7 +50,8 @@ export class LabWorkflowManagerState {
   private subscription: Subscription;
 
   //  Name of the action to add a process for the ActionService
-  private readonly addProcessActionName: string = 'add-process';
+  private readonly addProcessAction: string = 'add-process';
+  private readonly addProcessWithConnectorAction: string = 'add-process-with-connector';
 
   constructor(private protocolService: LabProtocolService,
               private actionsService: FlPortalActionsService,
@@ -67,9 +70,19 @@ export class LabWorkflowManagerState {
     this.initFlow(flow);
 
     // listen to the new Process actions
-    this.subscription = this.actionsService.getResult$(this.addProcessActionName).subscribe(
-      result => this.onNewProcess(result)
-    );
+    this.subscription = this.actionsService.getResult$([this.addProcessAction, this.addProcessWithConnectorAction])
+      .pipe(filter(result => result.status === 'success')).subscribe(
+        result => {
+          switch (result.action.type) {
+            case this.addProcessAction:
+              this.onNewProcess(result.result, result.additionalInformation);
+              return;
+            case this.addProcessWithConnectorAction:
+              this.onNewProcessWithConnector(result.result, result.additionalInformation);
+              break;
+          }
+        }
+      );
   }
 
 
@@ -122,22 +135,77 @@ export class LabWorkflowManagerState {
         text: 'biox.adding_process', translateText: true,
         translateParam: {param: {processName: processName}}
       },
-      type: this.addProcessActionName,
+      type: this.addProcessAction,
       // create the process in the API and get the process
       action: this.protocolService.addProcessToProtocol(currentProtocol.id, processTypingName),
+      additionalInformation: this.workflow.currentLayer.id
     };
 
     this.actionsService.addAction(action, true);
   }
 
-  private onNewProcess(actionResult: FlPortalActionResult<LabProcess>): void {
-    if (actionResult.status === 'error') return;
+  public addSourceToProcessInput(processNodeName: string, inputPortName: string, resourceId: string,
+                                 resourceName: string): void {
+    // retrieve the protocol of the layer
+    const currentProtocol: LabProtocol = this.workflow.currentLayer.object as LabProtocol;
 
-    const process: LabProcess = actionResult.result;
+    // relative coord to place the source node before the process
+    const relativeCoord: LabNodeRelativeCoord = {
+      nodeName: processNodeName,
+      position: 'before',
+      layerId: this.workflow.currentLayer.id
+    };
+    // create an action to add this process
+    const action: FlPortalAction = {
+      text: {
+        text: 'biox.adding_source', translateText: true,
+        translateParam: {param: {resourceName: resourceName}}
+      },
+      type: this.addProcessWithConnectorAction,
+      // create the process in the API and get the process
+      action: this.protocolService.addSourceToProcessInput(currentProtocol.id, processNodeName, inputPortName, resourceId),
+      additionalInformation: relativeCoord
+    };
+
+    this.actionsService.addAction(action, true);
+  }
+
+  public addSinkToProcessOutput(processNodeName: string, outputPortName: string): void {
+    // retrieve the protocol of the layer
+    const currentProtocol: LabProtocol = this.workflow.currentLayer.object as LabProtocol;
+
+    // relative coord to place the source node before the process
+    const relativeCoord: LabNodeRelativeCoord = {
+      nodeName: processNodeName,
+      position: 'after',
+      layerId: this.workflow.currentLayer.id
+    };
+    // create an action to add this process
+    const action: FlPortalAction = {
+      text: {
+        text: 'biox.adding_sink', translateText: true,
+      },
+      type: this.addProcessWithConnectorAction,
+      // create the process in the API and get the process
+      action: this.protocolService.addSinkToProcessOutput(currentProtocol.id, processNodeName, outputPortName),
+      additionalInformation: relativeCoord
+    };
+
+    this.actionsService.addAction(action, true);
+  }
+
+  private onNewProcess(process: LabProcess, layerId: string, coordX: number = 0, coordY: number = 0): void {
     // convert to node
-    const node: LabWorkflowNode<any> = this.createNodeFromProcess(process, process.name);
+    const node: LabWorkflowNode<any> = this.createNodeFromProcess(process, process.name, coordX, coordY);
     // add the node to the workflow
-    this.addNode(node);
+
+    this.workflow.addNodeToLayer(node, layerId);
+  }
+
+  private onNewProcessWithConnector(processWithLink: LabAddProcessWithLink, relativeCoord: LabNodeRelativeCoord): void {
+    const coord = this.getRelativeNodePosition(relativeCoord);
+    this.onNewProcess(processWithLink.process, relativeCoord.layerId, coord.x, coord.y);
+    this.addConnection(processWithLink.link);
   }
 
   private createNodeFromProcess(process: LabProcess, name: string, coordX: number = 0, coordY: number = 0): LabWorkflowNode<any> {
@@ -161,11 +229,6 @@ export class LabWorkflowManagerState {
     // todo see pos
     this.addNodeOnPosition(outerfaceNode, 0, 0);
   }
-
-  private addNode(node: LabWorkflowNode<any>): void {
-    this.workflow.addNode(node);
-  }
-
 
   //////////////////////// GETS ////////////////////////////
 
@@ -253,7 +316,7 @@ export class LabWorkflowManagerState {
     }
 
     // and the node and mark it as added
-    this.addNode(workflowNode);
+    this.workflow.addNodeToCurrentLayer(workflowNode);
   }
 
   /**
@@ -288,6 +351,33 @@ export class LabWorkflowManagerState {
     this.workflow = null;
     this._layerIsLoading$.complete();
     this.subscription?.unsubscribe();
+  }
+
+  /**
+   * Return a relative node position based on another node
+   * @param relativeCoord
+   * @private
+   */
+  private getRelativeNodePosition(relativeCoord: LabNodeRelativeCoord): FlCoord {
+    const layer = this.workflow.findLayerWithId(relativeCoord.layerId);
+    if (layer == null) return {x: 0, y: 0};
+
+    const node: LabWorkflowNode<any> = layer.findNodeWithName(relativeCoord.nodeName);
+    if (node == null) return {x: 0, y: 0};
+
+    // calculate the X pos based on relative node
+    const baseNodeCoord = node.getNodeCoord();
+
+    let xCoord: number;
+    if (relativeCoord.position === 'before') {
+      xCoord = baseNodeCoord.x - (this.htmlNodeWidth + this.htmlDefaultNodeSpaceX);
+    } else {
+      xCoord = baseNodeCoord.x + (this.htmlNodeWidth + this.htmlDefaultNodeSpaceX);
+    }
+    return {
+      x: xCoord,
+      y: baseNodeCoord.y
+    };
   }
 
 }

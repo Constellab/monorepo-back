@@ -1,29 +1,12 @@
-/**
- * Config object for the Context menu of a spread sheet
- */
 import {Injectable} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
-import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
-import {FlSpreadsheetContextMenuComponent} from '../component/fl-spreadsheet-context-menu/fl-spreadsheet-context-menu.component';
 import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 import {FlSpreadsheetChartState} from './fl-spreadsheet-chart.state';
-import {FlPortalConnectedPosition} from '../../fl-portal/model/fl-portal.class';
 import {FlSpreadsheetClipboardState} from './fl-spreadsheet-clipboard.state';
+import {FlContextMenuService} from '../../fl-context-menu/fl-context-menu.service';
+import {FlContextMenuButton, FlContextMenuConfig} from '../../fl-context-menu/fl-context-menu.class';
 
-export interface FlContextMenuConfig {
-  buttons: FlContextMenuButton[];
-}
-
-/**
- * Configuration for one button in the Context Menu
- */
-export interface FlContextMenuButton {
-  text: string;
-  icon: string;
-  onClick: () => any;
-  divider?: boolean; // if true, it a a divider before the button
-}
 
 /**
  * State to handle context menu
@@ -35,36 +18,20 @@ export class FlSpreadsheetContextMenu {
               private portalService: FlPortalService,
               private action: FlSpreadsheetActions,
               private chartState: FlSpreadsheetChartState,
-              private clipboardState: FlSpreadsheetClipboardState) {
+              private clipboardState: FlSpreadsheetClipboardState,
+              private contextMenuService: FlContextMenuService) {
   }
 
   public openCellContextMenu(mouseEvent: MouseEvent): void {
-    const portalConfig: FlPortalConfig = this.getMenuPortalConfig(mouseEvent);
-    this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
-      this.getCellConfig());
+    this.contextMenuService.openContextMenu(this.getCellConfig(), mouseEvent.target as any);
   }
 
   public openHeaderColumnContextMenu(mouseEvent: MouseEvent): void {
-    const portalConfig: FlPortalConfig = this.getMenuPortalConfig(mouseEvent);
-    this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
-      this.getConfigForHeaderColumn());
+    this.contextMenuService.openContextMenu(this.getConfigForHeaderColumn(), mouseEvent.target as any);
   }
 
   public openHeaderRowContextMenu(mouseEvent: MouseEvent): void {
-    const portalConfig: FlPortalConfig = this.getMenuPortalConfig(mouseEvent);
-    this.portalService.createPortal(FlSpreadsheetContextMenuComponent, portalConfig,
-      this.getConfigForHeaderRow());
-  }
-
-  private getMenuPortalConfig(mouseEvent: MouseEvent): FlPortalConfig {
-    const positions: FlPortalConnectedPosition[] = ['right', 'top', 'left', 'bottom'];
-
-    return this.portalService.configureRelativePortal(mouseEvent.target as any, positions, {
-      panelClass: 'g-portal-background',
-      elevation: true,
-      disposeOnNavigation: true,
-      disposeOnOutsideClick: true,
-    });
+    this.contextMenuService.openContextMenu(this.getConfigForHeaderRow(), mouseEvent.target as any);
   }
 
   /**
@@ -77,13 +44,13 @@ export class FlSpreadsheetContextMenu {
         ...this.getCopyPasteConfig(),
         // button to create a column
         {
-          text: 'flSpreadsheet.add',
+          text: {text: 'flSpreadsheet.add', translateText: true},
           icon: 'add',
           onClick: () => this.action.addColumn()
         },
         // button to delete columns
         {
-          text: 'flSpreadsheet.delete',
+          text: {text: 'flSpreadsheet.delete', translateText: true},
           icon: 'delete',
           onClick: () => this.action.deleteColumns()
         },
@@ -101,14 +68,14 @@ export class FlSpreadsheetContextMenu {
         ...this.getCopyPasteConfig(),
         // button to create a row
         {
-          text: 'flSpreadsheet.add',
+          text: {text: 'flSpreadsheet.add', translateText: true},
           icon: 'add',
           onClick: () => this.action.addRow(),
           divider: true,
         },
         // button to delete rows
         {
-          text: 'flSpreadsheet.delete',
+          text: {text: 'flSpreadsheet.delete', translateText: true},
           icon: 'delete',
           onClick: () => this.action.deleteRows()
         },
@@ -131,7 +98,7 @@ export class FlSpreadsheetContextMenu {
 
   private getCreateChartConfig(): FlContextMenuButton {
     return {
-      text: 'flSpreadsheet.create_chart',
+      text: {text: 'flSpreadsheet.create_chart', translateText: true},
       icon: 'addchart',
       onClick: () => this.chartState.openChartSelectionPortal(),
       divider: true
@@ -141,12 +108,12 @@ export class FlSpreadsheetContextMenu {
   private getCopyPasteConfig(): FlContextMenuButton[] {
     return [
       {
-        text: 'flSpreadsheet.copy',
+        text: {text: 'flSpreadsheet.copy', translateText: true},
         icon: 'content_copy',
         onClick: () => this.clipboardState.copyCurrentSelectionToClipboard(),
       },
       {
-        text: 'flSpreadsheet.paste',
+        text: {text: 'flSpreadsheet.paste', translateText: true},
         icon: 'content_paste',
         onClick: () => this.clipboardState.pasteClipboardValueToSelection()
       },

@@ -89,7 +89,7 @@ export class FlPortalActionsService {
    * Subscribe to the result
    * @param type, if provided, only emit result for actions of type
    */
-  public getResult$(type?: string): Observable<FlPortalActionResult> {
+  public getResult$(type: string | string[] = []): Observable<FlPortalActionResult> {
     return this.actionsState.getResult$(type);
   }
 

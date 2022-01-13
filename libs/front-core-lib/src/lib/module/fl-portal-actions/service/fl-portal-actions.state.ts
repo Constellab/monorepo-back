@@ -78,9 +78,11 @@ export class FlPortalActionsState implements FlCleanableService {
    * Subscribe to the result
    * @param type, if provided, only emit result for actions of type
    */
-  public getResult$(type?: string): Observable<FlPortalActionResult> {
+  public getResult$(type: string | string[] = []): Observable<FlPortalActionResult> {
+    const types = ClHelpService.convertObjectOrArrayToArray(type);
+
     return this.results$.asObservable().pipe(
-      filter(result => type == null || result.action.type === type)
+      filter(result => types.length === 0 || types.includes(result.action.type))
     );
   }
 
