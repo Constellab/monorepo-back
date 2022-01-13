@@ -127,6 +127,11 @@
     "report_experiment_disassociated": "Experiment disassociated",
     "save_report_content": "Save report content",
     "report_select": "Select a report",
-    "report_include_validated": "Include validated reports"
+    "report_include_validated": "Include validated reports",
+    "process_sub_type_TASK": "Task",
+    "process_sub_type_PROTOCOL": "Protocol",
+    "process_sub_type_IMPORTER": "Importer",
+    "process_sub_type_EXPORTER": "Exporter",
+    "process_sub_type_TRANSFORMER": "Transformer"
   }
 }

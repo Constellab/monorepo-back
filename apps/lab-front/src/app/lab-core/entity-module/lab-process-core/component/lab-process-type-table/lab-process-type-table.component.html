@@ -1,5 +1,15 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource">
 
+  <!-- Sub type -->
+  <ng-container matColumnDef="objectSubType">
+    <mat-header-cell *matHeaderCellDef>
+      {{'biox.process_type_type' | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let processType">
+      {{'biox.process_sub_type_' + processType.objectSubType | translate}}
+    </mat-cell>
+  </ng-container>
+
   <!-- Detail button -->
   <ng-container matColumnDef="detail">
     <mat-header-cell *matHeaderCellDef class="detail-column">

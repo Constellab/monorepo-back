@@ -127,6 +127,11 @@
     "report_experiment_disassociated": "Expérience désassociée",
     "save_report_content": "Sauvegarder le contenu du rapport",
     "report_select": "Sélectionner un rapport",
-    "report_include_validated": "Inclure les rapports validés"
+    "report_include_validated": "Inclure les rapports validés",
+    "process_sub_type_TASK": "Tâche",
+    "process_sub_type_PROTOCOL": "Protocol",
+    "process_sub_type_IMPORTER": "Importeur",
+    "process_sub_type_EXPORTER": "Exporteur",
+    "process_sub_type_TRANSFORMER": "Transformeur"
   }
 }

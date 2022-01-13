@@ -4,6 +4,8 @@ import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
 
 export type LabTypeObjectType = 'TASK' | 'RESOURCE' | 'PROTOCOL' | 'MODEL';
 
+export type LabTypeObjectSubType = 'TASK' | 'PROTOCOL' | 'TRANSFORMER' | 'IMPORTER' | 'EXPORTER';
+
 export class LabTypeEntity extends LabBaseEntity {
   @Expose({name: 'object_type'})
   objectType: LabTypeObjectType;
@@ -19,6 +21,9 @@ export class LabTypeEntity extends LabBaseEntity {
 
   @Expose({name: 'short_description'})
   shortDescription?: string;
+
+  @Expose({name: 'object_sub_type'})
+  objectSubType: LabTypeObjectSubType;
 
   get name(): string {
     return this.humanName || this.modelName;

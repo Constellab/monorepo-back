@@ -20,7 +20,7 @@ const savedSearch: FlSavedSearch[] = [{
   color: flThemeDetailLight.primary,
   version: 1,
   default: true,
-  filtersCriteria: {brick:['gws_core']} as Partial<LabTypeSearchFields>
+  filtersCriteria: {brick: ['gws_core']} as Partial<LabTypeSearchFields>
 }];
 
 /**
@@ -53,10 +53,10 @@ export class LabTypeSearchComponent implements OnInit {
 
   @Output() typeSelected: EventEmitter<LabTypeEntity> = new EventEmitter();
 
-  columns: FlTableColumn<LabTypeEntity>[] = [{columnName: 'name', accessor: 'humanName'}, {
-    columnName: 'description',
-    accessor: 'shortDescription'
-  }, 'detail'];
+  columns: FlTableColumn<LabTypeEntity>[] = [
+    {columnName: 'name', accessor: 'humanName'},
+    {columnName: 'description', accessor: 'shortDescription'},
+    'objectSubType', 'detail'];
   datasource: LabTypeEntityDatasource;
 
   constructor(private searchState: FlSearchState<any>) {

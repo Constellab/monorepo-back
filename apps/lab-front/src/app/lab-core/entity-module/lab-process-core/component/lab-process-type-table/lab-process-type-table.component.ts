@@ -19,7 +19,7 @@ export class LabProcessTypeTableComponent extends FlTableAbstractDirective<LabTy
   @Output() typeSelected: EventEmitter<LabTypeEntity> = new EventEmitter<LabTypeEntity>();
 
   constructor() {
-    super(['detail']);
+    super(['detail', 'objectSubType']);
   }
 
   ngOnInit(): void {
