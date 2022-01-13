@@ -1,4 +1,4 @@
-import {BeforeInsert, Column, Entity, JoinColumn, ManyToOne, OneToOne} from 'typeorm';
+import {BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToOne} from 'typeorm';
 import {Exclude, Expose, Type} from 'class-transformer';
 import {CnLab} from '../cn-labs/cn-lab.entity';
 import {CnEntityWithStatus} from '../cn-core/model/entities/cn-entity-with-status.entity';
@@ -82,6 +82,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   // generate the apiKey
   @BeforeInsert()
+  @BeforeUpdate()
   generateApiKey(): void {
     if (!this.glabApiKey) {
       this.glabApiKey = randomBytes(48).toString('base64').replace(/\W/g, '');
