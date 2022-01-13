@@ -37,7 +37,7 @@ export class LabProtocolService {
    */
   public addProcessToProtocol(protocolId: string, process_typing_name: string): Observable<LabProcess> {
     return this.apiService.post(`${this.baseRoute}/${protocolId}/add-process/${process_typing_name}`, null,
-      labInstantiateProcess);
+      (result) => labInstantiateProcess(result));
   }
 
   private initProtocolFlow(protocol: LabProtocol): LabFlow<LabProtocol> {
