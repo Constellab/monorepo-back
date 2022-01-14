@@ -2,7 +2,6 @@
   "biox": {
     "biox": "Experiments",
     "configuration": "Configuration",
-    "add_object": "Add object",
     "interface": "Interface",
     "outerface": "Outerface",
     "new_experiment": "New experiment",
