@@ -15,4 +15,5 @@ export interface FlContextMenuButton {
   icon: string;
   onClick: (event: MouseEvent) => any;
   divider?: boolean; // if true, it adds a divider before the button
+  disabled?: boolean;
 }

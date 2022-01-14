@@ -57,6 +57,10 @@ export abstract class LabWorkflowNode<T> {
     return connection.length;
   }
 
+  // return true if the port is already connected
+  public inputPortIsConnected(portDrawflowName: string): boolean {
+    return this.countInputConnections(portDrawflowName) > 0;
+  }
 
   public countInputs(): number {
     return this.inputPorts.length;

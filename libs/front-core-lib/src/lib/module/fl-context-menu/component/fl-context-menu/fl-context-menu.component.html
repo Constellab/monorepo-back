@@ -1,6 +1,6 @@
 <ng-container *ngFor="let button of config.buttons">
   <mat-divider *ngIf="button.divider"></mat-divider>
-  <button mat-menu-item
+  <button mat-menu-item [disabled]="button.disabled"
           (click)="selectOption(button, $event)">
     <mat-icon [flIcon]="button.icon"></mat-icon>
     <span>{{button.text | flTranslatableText}}</span>

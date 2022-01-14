@@ -1,13 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, Renderer2} from '@angular/core';
 import {Observable} from 'rxjs';
 import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
 import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
 import {LabWorkflowNodeIO} from '../../model/lab-workflow-node-io.class';
 import {LabWorkflowNodeDirective} from '../lab-workflow-node/lab-workflow-node.directive';
-import {FlDialogService} from '@monorepo/front-core-lib';
-import {
-  LabResourceDetailDialogComponent
-} from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-detail-dialog/lab-resource-detail-dialog.component';
+import {FlContextMenuService, FlDialogService} from '@monorepo/front-core-lib';
 
 /**
  * Node of an experiment in the workflow specifically for the Source process
@@ -28,8 +25,11 @@ export class LabWorkflowNodeSourceComponent extends LabWorkflowNodeDirective imp
 
   constructor(workflowManager: LabWorkflowManagerState,
               drawerState: LabWorkflowActionState,
-              private dialogService: FlDialogService) {
-    super(workflowManager, drawerState);
+              dialogService: FlDialogService,
+              elementRef: ElementRef,
+              renderer: Renderer2,
+              contextMenuService: FlContextMenuService) {
+    super(workflowManager, drawerState, dialogService, elementRef, renderer, contextMenuService);
   }
 
   ngOnInit(): void {
@@ -37,9 +37,5 @@ export class LabWorkflowNodeSourceComponent extends LabWorkflowNodeDirective imp
 
     this.title$ = this.node.getTitle$();
     this.resourceId$ = this.node.getResourceId$();
-  }
-
-  openResourceDetail(resourceId: string): void {
-    this.dialogService.openBigDialog(LabResourceDetailDialogComponent, {data: resourceId});
   }
 }
