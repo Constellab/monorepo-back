@@ -21,15 +21,34 @@ import {
 import {ClHelpService} from '@monorepo/core-lib';
 
 // list of predefined search of the resources
-const savedSearch: FlSavedSearch[] = [{
-  searchName: 'biox-resource',
-  id: null,
-  label: 'Imported',
-  color: flThemeDetailLight.primary,
-  version: 1,
-  default: true,
-  filtersCriteria: {origin: 'IMPORTED'} as Partial<LabResourceSearchFields>
-}];
+const savedSearch: FlSavedSearch[] = [
+  {
+    searchName: 'biox-resource',
+    id: null,
+    label: 'All',
+    color: flThemeDetailLight.primary,
+    version: 1,
+    default: true,
+    filtersCriteria: {} as Partial<LabResourceSearchFields>
+  },
+  {
+    searchName: 'biox-resource',
+    id: null,
+    label: 'Uploaded',
+    color: flThemeDetailLight.primary,
+    version: 1,
+    default: false,
+    filtersCriteria: {origin: 'UPLOADED'} as Partial<LabResourceSearchFields>
+  },
+  {
+    searchName: 'biox-resource',
+    id: null,
+    label: 'Generated',
+    color: flThemeDetailLight.primary,
+    version: 1,
+    default: false,
+    filtersCriteria: {origin: 'GENERATED'} as Partial<LabResourceSearchFields>
+  }];
 
 /**
  * Configuration factory for the

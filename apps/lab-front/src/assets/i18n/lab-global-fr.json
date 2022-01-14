@@ -44,7 +44,7 @@
   "resource_info": "Info",
   "resource_type": "Type",
   "resource_origin": "Origine",
-  "resource_origin_imported": "Importée",
+  "resource_origin_imported": "Uploadée",
   "resource_origin_generated": "Générée",
   "resource_data": "Données",
   "resource_include_archived": "Inclure les ressources archivées",

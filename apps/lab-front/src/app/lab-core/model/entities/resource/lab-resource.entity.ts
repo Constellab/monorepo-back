@@ -26,7 +26,7 @@ export class LabFsNodeEntity extends LabEntity {
   }
 }
 
-export type LabResourceOrigin = 'IMPORTED' | 'GENERATED';
+export type LabResourceOrigin = 'UPLOADED' | 'GENERATED';
 
 export class LabResource extends LabBaseEntityWithUser {
   // typing name of the resource model
@@ -71,7 +71,7 @@ export class LabResource extends LabBaseEntityWithUser {
 
 
   isDeletable(): boolean {
-    return this.origin === 'IMPORTED';
+    return this.origin === 'UPLOADED';
   }
 
 }
