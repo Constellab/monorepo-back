@@ -47,8 +47,7 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
 
   showLoader: boolean = true;
 
-  private viewOverlay: FlOverlayRef;
-  private transformerOverlay: FlOverlayRef;
+  private overlayRef: FlOverlayRef;
   private subscription: Subscription;
 
   constructor(private state: LabResourceDetailState,
@@ -79,7 +78,8 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
 
 
   openViewSpecs(event: MouseEvent): void {
-    if (this.viewOverlay != null) return;
+    this.overlayRef?.dispose();
+
     const config: FlPortalConfig = this.portalService.configureRelativePortal(
       event.target as any, ['bottom'],
       {
@@ -92,13 +92,12 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
         disposeOnBackdropClick: true,
       });
 
-    this.viewOverlay = this.portalService.createPortal(LabResourceViewSpecsPortalComponent, config);
-
-    this.viewOverlay.detachments().subscribe(() => this.viewOverlay = null);
+    this.overlayRef = this.portalService.createPortal(LabResourceViewSpecsPortalComponent, config);
+    this.overlayRef.detachments().subscribe(() => this.overlayRef = null);
   }
 
   async openTransformerResource(): Promise<void> {
-    if (this.transformerOverlay != null) return;
+    this.overlayRef?.dispose();
 
     const resource = await this.state.getResourcePromise();
 
@@ -117,8 +116,8 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
       resourceId: resource.id
     };
 
-    this.transformerOverlay = this.portalService.createPortal(LabTransformResourcePortalComponent, config, input);
-    this.transformerOverlay.detachments().subscribe(() => this.transformerOverlay = null);
+    this.overlayRef = this.portalService.createPortal(LabTransformResourcePortalComponent, config, input);
+    this.overlayRef.detachments().subscribe(() => this.overlayRef = null);
   }
 
 
@@ -158,8 +157,7 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
 
   private clearComponent(): void {
     this.subscription?.unsubscribe();
-    this.viewOverlay?.dispose();
-    this.transformerOverlay?.dispose();
+    this.overlayRef?.dispose();
     this.state.clear();
     this.fullScreenView = null;
   }
