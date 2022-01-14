@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
-import {ClOnChange} from '@monorepo/core-lib';
-import {LabRouterService} from '../../../../service/lab-router.service';
+import {FlDialogService} from '@monorepo/front-core-lib';
+import {LabResourceDetailDialogComponent} from '../lab-resource-detail-dialog/lab-resource-detail-dialog.component';
 
 @Component({
   selector: 'lab-resource-card',
@@ -11,22 +11,16 @@ import {LabRouterService} from '../../../../service/lab-router.service';
 })
 export class LabResourceCardComponent implements OnInit {
 
-  // update the resource detail route on input change
-  @ClOnChange(function (this: LabResourceCardComponent, resource: LabResource) {
-    if (resource == null) {
-      this.resourceDetailRoute = null;
-    } else {
-      this.resourceDetailRoute = LabRouterService.getResourceDetailRoute(resource.id);
-    }
-  })
   @Input() resource: LabResource;
 
-  resourceDetailRoute: string;
-
-  constructor() {
+  constructor(private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
+  }
+
+  openResourceDetail(): void {
+    this.dialogService.openBigDialog(LabResourceDetailDialogComponent, {data: this.resource.id});
   }
 
 }

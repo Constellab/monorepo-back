@@ -3,11 +3,11 @@
     {{resource.name}}
 
     <fl-card-actions>
-      <a [routerLink]="resourceDetailRoute" mat-icon-button
+      <button mat-icon-button (click)="openResourceDetail()"
          type="button" color="primary"
          [matTooltip]="'biox.resource_preview' | translate">
-        <mat-icon>preview</mat-icon>
-      </a>
+        <mat-icon>visibility</mat-icon>
+      </button>
     </fl-card-actions>
   </fl-card-header>
 

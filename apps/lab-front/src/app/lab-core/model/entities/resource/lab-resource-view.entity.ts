@@ -47,6 +47,17 @@ export class LabResourceViewSpec {
   }
 }
 
+export class LabViewCallResult {
+  @Expose({name: 'view_human_name'})
+  viewHumanName: string;
+
+  @Expose({name: 'view_short_description'})
+  viewShortDescription: string;
+
+  @Expose({name: 'view_data'})
+  viewData: LabResourceView;
+}
+
 /**
  * Object that contains the resource view spec and its configuration
  */

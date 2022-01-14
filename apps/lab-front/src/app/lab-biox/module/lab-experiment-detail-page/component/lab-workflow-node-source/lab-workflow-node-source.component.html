@@ -1,9 +1,9 @@
-<div #container class="container">
+<div>
 
   <div fxLayout="column" fxLayoutAlign="space-between center">
 
     <!-- Title   -->
-    <div class="name">
+    <div class="name g- g-text-small">
       {{title$ | async}}
     </div>
 
@@ -15,7 +15,13 @@
         <mat-icon>info</mat-icon>
       </button>
 
-      <fl-status-chip mode="iconOnly" [status]="node.object.status"></fl-status-chip>
+      <!--      <fl-status-chip mode="iconOnly" [status]="node.object.status"></fl-status-chip>-->
+      <ng-container *ngIf="resourceId$ | async as resourceId">
+        <button *ngIf="resourceId" mat-icon-button (click)="openResourceDetail(resourceId)"
+                type="button" [matTooltip]="'biox.resource_preview' | translate">
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </ng-container>
     </div>
   </div>
 

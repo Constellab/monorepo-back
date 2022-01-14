@@ -1,0 +1,78 @@
+<fl-async-section [object]="resource$" fxLayout="column" class="g-full-height main-section">
+
+  <ng-container *flSectionBody="let resource">
+
+    <!--  Use an embed section to show header once the resource is loaded  -->
+    <fl-section fxFlex="auto" [object]="resource" class="section">
+
+      <fl-section-header class="header">
+        <h2 class="header-title">{{resource.name}} |
+          <span class="g-text-light">{{fullScreenViewName}}</span>
+        </h2>
+
+        <fl-section-actions>
+          <button mat-stroked-button type="button" *ngIf="resource.isImportable && !readOnly"
+                  (click)="openImportResource()" class="button g-button-small">
+            <mat-icon>system_update_alt</mat-icon>
+            {{'biox.import_resource' | translate}}
+          </button>
+
+          <button mat-stroked-button type="button"
+                  (click)="openViewSpecs($event)" class="button g-button-small">
+            <mat-icon>visibility</mat-icon>
+            {{'biox.view_specs' | translate}}
+          </button>
+
+          <button mat-stroked-button type="button" *ngIf="!readOnly"
+                  (click)="openTransformerResource()" class="button g-button-small">
+            <mat-icon>move_down</mat-icon>
+            {{'biox.transformers' | translate}}
+          </button>
+
+          <button mat-stroked-button type="button" *ngIf="resource.isDownloadable()"
+                  (click)="downloadFile()" class="button g-button-small">
+            <mat-icon>cloud_download</mat-icon>
+            <span>{{'biox.file_resource_download' | translate}}</span>
+          </button>
+
+          <button mat-stroked-button type="button"
+                  (click)="openTagFormDialog()" class="button g-button-small">
+            <mat-icon>local_offer</mat-icon>
+            {{'tags' | translate}}
+          </button>
+
+          <!--   Link to resource detail page only for readOnly       -->
+          <a mat-stroked-button type="button" *ngIf="readOnly"
+             [routerLink]="resourceId | labDetailRoute:'resource'"
+             class="button g-button-small">
+            <mat-icon flIcon="preview"></mat-icon>
+            {{'biox.open_resource_page' | translate}}
+          </a>
+
+          <a mat-stroked-button type="button" *ngIf="resource.experimentId"
+             [routerLink]="resource.experimentId | labDetailRoute:'experiment'"
+             class="button g-button-small">
+            <mat-icon flIcon="experiment"></mat-icon>
+            {{'experiment' | translate}}
+          </a>
+        </fl-section-actions>
+      </fl-section-header>
+
+
+      <ng-container *flSectionBody="let resource">
+
+        <!--  Header    -->
+        <div class="page-padding body">
+          <lab-resource-view *ngIf="fullScreenView" [view]="fullScreenView"
+                             [fullscreen]="true"></lab-resource-view>
+          <div *ngIf="showLoader" class="g-text-centered">
+            <fl-loader size="medium"></fl-loader>
+          </div>
+        </div>
+      </ng-container>
+
+    </fl-section>
+
+  </ng-container>
+
+</fl-async-section>

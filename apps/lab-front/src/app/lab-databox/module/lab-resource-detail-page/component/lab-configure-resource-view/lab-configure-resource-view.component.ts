@@ -68,7 +68,7 @@ export class LabConfigureResourceViewComponent implements OnInit {
   }
 
   private getViewSpecs(): void {
-    this.resourceService.getResourceViewSpecs(this.input.resourceId, this.input.viewSpecConfig.viewSpec.methodName).subscribe(
+    this.resourceService.getResourceViewSpecsDetail(this.input.resourceId, this.input.viewSpecConfig.viewSpec.methodName).subscribe(
       specs => this.init(specs),
       () => this.isLoading = false
     );

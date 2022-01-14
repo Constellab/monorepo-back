@@ -4,7 +4,7 @@ import {
   LabResourceViewSpecsByType,
   LabResourceViewSpecWithConfig
 } from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
-import {LabResourceDetailPageState} from '../../state/lab-resource-detail-page.state';
+import {LabResourceDetailState} from '../../state/lab-resource-detail-state.service';
 import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {
   LabConfigureResourceViewComponent,
@@ -26,7 +26,7 @@ export class LabResourceViewSpecsComponent implements OnInit {
   selectedView: LabResourceViewSpecWithConfig;
 
   constructor(private overlayRef: FlOverlayRef,
-              private state: LabResourceDetailPageState,
+              private state: LabResourceDetailState,
               private portalService: FlPortalService) {
   }
 
@@ -51,7 +51,6 @@ export class LabResourceViewSpecsComponent implements OnInit {
 
   selectView(view: LabResourceViewSpec, viewByType: LabResourceViewSpecsByType): void {
     this.openConfigPortal(view, viewByType);
-
   }
 
   // prepare the data and open the view configuration portal

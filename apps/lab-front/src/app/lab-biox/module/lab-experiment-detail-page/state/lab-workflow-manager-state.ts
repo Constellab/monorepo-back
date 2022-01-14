@@ -20,7 +20,7 @@ import {LabWorkflowNodeOuterface} from '../model/lab-workflow-node-outerface.cla
 import {LabWorkflowPort} from '../model/lab-workflow-port.class';
 import {LabProtocol} from '../../../../lab-core/model/entities/process/lab-protocol.entity';
 import {FlCoord, FlPortalAction, FlPortalActionsService} from '@monorepo/front-core-lib';
-import {LabWorkflowNodeSource} from '../model/lab-workflow-node-source.class';
+import {LabWorkflowNodeIO} from '../model/lab-workflow-node-io.class';
 import {LabResourceService} from '../../../../lab-core/entity-service/lab-resource.service';
 import {filter} from 'rxjs/operators';
 import {LabAddProcessWithLink, LabNodeRelativeCoord} from '../model/lab-workflow-action.class';
@@ -212,7 +212,9 @@ export class LabWorkflowManagerState {
     // create a specific node for the source
     if (process.isSource()) {
       const resourceId: string | null = process.config.data.values?.resource_id ?? null;
-      return new LabWorkflowNodeSource(process, name, this.resourceService.getById(resourceId), coordX, coordY);
+      return new LabWorkflowNodeIO(process, name, this.resourceService.getById(resourceId), coordX, coordY);
+    } else if (process.isSink()) {
+      return new LabWorkflowNodeIO(process, name, this.resourceService.getById(process.inputs['resource'].resource_id), coordX, coordY);
     } else {
       return new LabWorkflowNodeProcess(process, name, coordX, coordY);
     }

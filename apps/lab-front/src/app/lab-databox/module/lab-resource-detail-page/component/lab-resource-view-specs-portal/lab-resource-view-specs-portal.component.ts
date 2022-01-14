@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {LabResourceViewSpecsByType} from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {FlOverlayRef} from '@monorepo/front-core-lib';
-import {LabResourceDetailPageState} from '../../state/lab-resource-detail-page.state';
+import {LabResourceDetailState} from '../../state/lab-resource-detail-state.service';
 
 /**
  * Portal to list the view specs of a resource and possibility to select one
@@ -18,7 +18,7 @@ export class LabResourceViewSpecsPortalComponent implements OnInit {
   views$: Observable<LabResourceViewSpecsByType[]>;
 
   constructor(private overlayRef: FlOverlayRef,
-              private state: LabResourceDetailPageState) {
+              private state: LabResourceDetailState) {
   }
 
   ngOnInit(): void {

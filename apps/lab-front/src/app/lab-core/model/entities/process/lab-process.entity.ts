@@ -82,6 +82,11 @@ export class LabProcess extends LabNode {
     return this.processTypingName === LabTypingName.task.source;
   }
 
+  // return true if the process is of type Sink
+  isSink(): boolean {
+    return this.processTypingName === LabTypingName.task.sink;
+  }
+
   get title(): string {
     return this.data.title || this.name;
   }

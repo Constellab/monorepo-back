@@ -131,6 +131,8 @@
     "process_sub_type_PROTOCOL": "Protocol",
     "process_sub_type_IMPORTER": "Importeur",
     "process_sub_type_EXPORTER": "Exporteur",
-    "process_sub_type_TRANSFORMER": "Transformeur"
+    "process_sub_type_TRANSFORMER": "Transformeur",
+    "view_resource": "Ressource",
+    "open_resource_page": "Ouvrir la ressource"
   }
 }

@@ -13,9 +13,9 @@ import {map} from 'rxjs/operators';
 import {LabTypeEntity} from '../model/entities/lab-type/lab-type.entity';
 import {
   labGroupResourceViewSpecsByType,
-  LabResourceView,
   LabResourceViewSpec,
-  LabResourceViewSpecsByType
+  LabResourceViewSpecsByType,
+  LabViewCallResult
 } from '../model/entities/resource/lab-resource-view.entity';
 import {
   LabResourceSearch,
@@ -86,22 +86,22 @@ export class LabResourceService implements FlSearchService<LabResource> {
 
   //////////////////////////////////////// RESOURCE VIEWS  ///////////////////////////////////////
 
-  public getResourceViews(type: string): Observable<LabResourceViewSpec[]> {
-    return this.apiService.get(`${this.route}/${type}/views`, LabResourceViewSpec);
+  public getResourceViewsList(id: string): Observable<LabResourceViewSpec[]> {
+    return this.apiService.get(`${this.route}/${id}/views`, LabResourceViewSpec);
   }
 
-  public getResourceViewsByType(type: string): Observable<LabResourceViewSpecsByType[]> {
-    return this.getResourceViews(type).pipe(
+  public getResourceViewsListGrouped(id: string): Observable<LabResourceViewSpecsByType[]> {
+    return this.getResourceViewsList(id).pipe(
       map(views => labGroupResourceViewSpecsByType(views)));
   }
 
-  public getResourceViewSpecs(id: string, viewName: string): Observable<LabConfigSpecs>{
+  public getResourceViewSpecsDetail(id: string, viewName: string): Observable<LabConfigSpecs> {
     return this.apiService.get(`${this.route}/${id}/views/${viewName}/specs`,
-      record => clDeserializeRecordWrapper(record, LabConfigSpecs, LabConfigSpecBase))
+      record => clDeserializeRecordWrapper(record, LabConfigSpecs, LabConfigSpecBase));
   }
 
   public callResourceView(id: string, viewName: string, config: Record<string, any>,
-                          transformers: LabCallTransformerParams[]): Observable<LabResourceView> {
+                          transformers: LabCallTransformerParams[]): Observable<LabViewCallResult> {
     for (const key in config) {
       if (config[key] == null) {
         delete config[key];
@@ -110,7 +110,11 @@ export class LabResourceService implements FlSearchService<LabResource> {
     return this.apiService.post(`${this.route}/${id}/views/${viewName}`, {
       values: config,
       transformers: transformers
-    });
+    }, LabViewCallResult);
+  }
+
+  public callResourceDefaultView(id: string): Observable<LabViewCallResult> {
+    return this.apiService.post(`${this.route}/${id}/default-view`, {}, LabViewCallResult);
   }
 
   //////////////////////////////////////// TRANSFORMERS  ///////////////////////////////////////

@@ -38,6 +38,10 @@ import {
 } from './component/lab-import-resource-dialog/lab-import-resource-dialog.component';
 import {LabConfigCoreModule} from '../lab-config-core/lab-config-core.module';
 import {LabProcessCoreModule} from '../lab-process-core/lab-process-core.module';
+import {
+  LabResourceDetailDialogComponent
+} from './component/lab-resource-detail-dialog/lab-resource-detail-dialog.component';
+import {LabResourceDetailComponent} from './component/lab-resource-detail/lab-resource-detail.component';
 
 
 @NgModule({
@@ -62,6 +66,8 @@ import {LabProcessCoreModule} from '../lab-process-core/lab-process-core.module'
     LabResourceCardComponent,
     LabUploadFsNodeDialogComponent,
     LabImportResourceDialogComponent,
+    LabResourceDetailDialogComponent,
+    LabResourceDetailComponent,
   ],
   exports: [
     LabResourceInfoComponent,
@@ -82,6 +88,8 @@ import {LabProcessCoreModule} from '../lab-process-core/lab-process-core.module'
     LabSelectResourceDialogComponent,
     LabResourceCardComponent,
     LabImportResourceDialogComponent,
+    LabResourceDetailDialogComponent,
+    LabResourceDetailComponent,
   ],
   imports: [
     CommonModule,

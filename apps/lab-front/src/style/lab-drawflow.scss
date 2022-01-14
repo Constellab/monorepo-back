@@ -4,6 +4,7 @@
 
 @mixin drawflow-theme($theme) {
   $primary: map-get($theme, primary);
+  $warn: map-get($theme, warn);
 
   // style drawflow
   .drawflow .drawflow-node {
@@ -32,8 +33,13 @@
     }
 
     &.task-source {
-      color: mat-color($primary, '500-contrast');
+      color: mat-color($primary, default-contrast);
       background-color: mat-color($primary);
+    }
+
+    &.task-sink {
+      color: mat-color($warn, default-contrast);
+      background-color: mat-color($warn);
     }
 
     // width and height of input and output port

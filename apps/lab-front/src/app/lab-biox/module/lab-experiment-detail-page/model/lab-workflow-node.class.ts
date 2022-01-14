@@ -130,18 +130,30 @@ export abstract class LabWorkflowNode<T> {
    * set the port color based on port type
    */
   public initPortColors(): void {
-    // retrieve the node HTML element
-    const element: HTMLElement = this.getHTMLElement();
 
     for (const port of [...this.inputPorts, ...this.outputPorts]) {
       // find port element as child of the node
-      const portElement: Element = element.getElementsByClassName(port.drawFlowName)[0];
+      const portElement: HTMLElement = this.getPortElement(port.drawFlowName);
 
-      if (portElement && portElement instanceof HTMLElement) {
-        // set the color
-        portElement.style.backgroundColor = port.getColor();
+      if (portElement) {
+        this.setPortElementColor(portElement, port.getColor());
       }
     }
+  }
+
+  protected getPortElement(drawflowPortName: string): HTMLElement | null {
+    // retrieve the node HTML element
+    const element: HTMLElement = this.getHTMLElement();
+    if (element == null) return null;
+
+    const portElement: Element = element.getElementsByClassName(drawflowPortName)[0];
+
+    if (portElement == null || !(portElement instanceof HTMLElement)) return null;
+    return portElement;
+  }
+
+  protected setPortElementColor(portElement: HTMLElement, color: string): void {
+    portElement.style.backgroundColor = color;
   }
 
   /**

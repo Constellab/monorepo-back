@@ -6,7 +6,7 @@ import {LabResource} from '../../../../../lab-core/model/entities/resource/lab-r
 import {
   LabSelectResourceDialogComponent
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
-import {LabWorkflowNodeSource} from '../../model/lab-workflow-node-source.class';
+import {LabWorkflowNodeIO} from '../../model/lab-workflow-node-io.class';
 import {LabRouterService} from '../../../../../lab-core/service/lab-router.service';
 
 /**
@@ -25,7 +25,7 @@ export class LabTaskSourceConfigComponent implements OnInit, OnDestroy {
 
   resourceRoute: string;
 
-  private node: LabWorkflowNodeSource;
+  private node: LabWorkflowNodeIO;
   private subscription: Subscription;
 
 
@@ -35,14 +35,14 @@ export class LabTaskSourceConfigComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscription = this.nodeDetail.getNode$().subscribe(
-      node => this.setNode(node as LabWorkflowNodeSource)
+      node => this.setNode(node as LabWorkflowNodeIO)
     );
   }
 
-  private setNode(node: LabWorkflowNodeSource): void {
+  private setNode(node: LabWorkflowNodeIO): void {
     // security to prevent not source node
     // it can be called because the state change before the component is destroy
-    if (!(node instanceof LabWorkflowNodeSource)) return;
+    if (!(node instanceof LabWorkflowNodeIO)) return;
     this.node = node;
     this.selectedResource$ = node.getLoadedResource$();
   }

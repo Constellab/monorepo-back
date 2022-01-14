@@ -6,8 +6,8 @@ import {
   labResourceViewTextSpecPage
 } from '../../../../model/entities/resource/lab-resource-view.entity';
 import {
-  LabResourceDetailPageState
-} from '../../../../../lab-databox/module/lab-resource-detail-page/state/lab-resource-detail-page.state';
+  LabResourceDetailState
+} from '../../../../../lab-databox/module/lab-resource-detail-page/state/lab-resource-detail-state.service';
 
 /**
  * Component to view a resource as plain text
@@ -36,7 +36,7 @@ export class LabResourceTextComponent extends LabResourceViewDirective<LabResour
 
   isLoading: boolean = false;
 
-  constructor(private state: LabResourceDetailPageState,
+  constructor(private state: LabResourceDetailState,
               private cdr: ChangeDetectorRef) {
     super();
   }
@@ -59,7 +59,7 @@ export class LabResourceTextComponent extends LabResourceViewDirective<LabResour
     this.higherPage++;
     const paginationConfig = {[labResourceViewTextSpecPage]: this.higherPage};
     this.state.callPagination(paginationConfig).subscribe(
-      view => this.loadNextPageSuccess(view as any),
+      view => this.loadNextPageSuccess(view as LabResourceViewText),
       () => this.isLoading = false
     );
   }
@@ -76,7 +76,7 @@ export class LabResourceTextComponent extends LabResourceViewDirective<LabResour
     this.lowerPage--;
     const paginationConfig = {[labResourceViewTextSpecPage]: this.lowerPage};
     this.state.callPagination(paginationConfig).subscribe(
-      view => this.loadPreviousPageSuccess(view as any),
+      view => this.loadPreviousPageSuccess(view as LabResourceViewText),
       () => this.isLoading = false
     );
   }

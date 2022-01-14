@@ -1,13 +1,13 @@
-import {Component, ElementRef, Input, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
 import {FlContextMenuConfig, FlContextMenuService, FlDialogService, FlHtmlHelper} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
-import {LabWorkflowNodeProcess} from '../../model/lab-workflow-node-process.class';
 import {LabResource} from '../../../../../lab-core/model/entities/resource/lab-resource.entity';
 import {
   LabSelectResourceDialogComponent
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
+import {LabWorkflowNodeDirective} from './lab-workflow-node.directive';
 
 /**
  * Node of an experiment in the workflow
@@ -19,31 +19,23 @@ import {
   templateUrl: './lab-workflow-node.component.html',
   styleUrls: ['./lab-workflow-node.component.scss']
 })
-export class LabWorkflowNodeComponent implements OnInit, OnDestroy {
-
-  // Name of the node
-  @Input() name: string;
-
-  node: LabWorkflowNodeProcess;
+export class LabWorkflowNodeComponent extends LabWorkflowNodeDirective implements OnInit, OnDestroy {
 
   layerIsLoading$: Observable<boolean>;
 
   private listener: () => void;
 
-  constructor(private workflowManager: LabWorkflowManagerState,
+  constructor(workflowManager: LabWorkflowManagerState,
+              drawerState: LabWorkflowActionState,
               private dialogService: FlDialogService,
-              private drawerState: LabWorkflowActionState,
               private elementRef: ElementRef,
               private renderer: Renderer2,
               private contextMenuService: FlContextMenuService) {
+    super(workflowManager, drawerState);
   }
 
   ngOnInit(): void {
-    this.node = this.workflowManager.findNodeWithName(this.name) as LabWorkflowNodeProcess;
-    if (this.node == null) {
-      console.error('Couldn\'t find node with name : ' + this.name);
-    }
-
+    this.initNode();
     this.layerIsLoading$ = this.workflowManager.layerIsLoading$;
     this.listenToNodeClick();
   }
@@ -54,14 +46,6 @@ export class LabWorkflowNodeComponent implements OnInit, OnDestroy {
 
   zoomInProtocol(): void {
     return this.workflowManager.selectLayer(this.node.nodeId);
-  }
-
-  openNodeDetail(): void {
-    this.drawerState.newAction({
-      action: 'selectNode',
-      processNode: this.node,
-      title: this.node.title
-    });
   }
 
   showNodeStatus(): boolean {

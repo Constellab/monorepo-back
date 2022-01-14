@@ -6,13 +6,13 @@ import {
   labConstResourceViewTypeInfos,
   LabResourceView,
   LabResourceViewDisplayMode,
-  LabResourceViewSpec,
   LabResourceViewSpecsByType,
   LabResourceViewSpecWithConfig,
-  LabResourceViewTypeInfo
+  LabResourceViewTypeInfo,
+  LabViewCallResult
 } from '../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
-import {filter, map, mergeMap} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {
   FlPortalActionResult,
   FlPortalActionsService,
@@ -38,7 +38,7 @@ export interface LabResourceViewEvent {
 }
 
 @Injectable()
-export class LabResourceDetailPageState implements OnDestroy {
+export class LabResourceDetailState implements OnDestroy {
 
   private readonly actionType: string = 'view-loader';
 
@@ -61,17 +61,12 @@ export class LabResourceDetailPageState implements OnDestroy {
     this.resource$ = new ClCachedObservable(this.resourceService.getById(id));
 
     // load the views once the resource was found
-    this.viewSpecs$ = new ClCachedObservable(
-      this.resource$.getObs().pipe(
-        mergeMap(resource => this.resourceService.getResourceViewsByType(resource.resourceTypingName))
-      )
-    );
+    this.viewSpecs$ = new ClCachedObservable(this.resourceService.getResourceViewsListGrouped(id));
 
-    // load the views
-    this.viewSpecs$.getObs().subscribe(
-      views => this.onViewSpecsLoaded(views)
-    );
     this.selectedViewSpec$ = new BehaviorSubject(null);
+
+    // Call the default view
+    this.loadDefaultView();
 
     // subscribe to portal view to open them
     this.subscription = this.getView$('portal').subscribe(
@@ -96,28 +91,6 @@ export class LabResourceDetailPageState implements OnDestroy {
   }
 
   /////////////////////////////////// VIEW SPEC //////////////////////////////////////////
-
-  // when views are loaded, set default view
-  private onViewSpecsLoaded(views: LabResourceViewSpecsByType[]): void {
-    // find the default view
-    let defaultView: LabResourceViewSpec;
-    for (const viewType of views) {
-      defaultView = viewType.viewSpec.find(view => view.defaultView);
-      if (defaultView != null) break;
-    }
-
-    if (defaultView) {
-      this.selectViewSpec(
-        {
-          viewSpec: defaultView,
-          displayMode: 'fullScreen',
-          viewConfigValues: {},
-          transformersWithConfig: []
-        },
-        true);
-    }
-  }
-
   public getViewSpecs$(): Observable<LabResourceViewSpecsByType[]> {
     return this.viewSpecs$.getObs();
   }
@@ -133,6 +106,17 @@ export class LabResourceDetailPageState implements OnDestroy {
 
   /////////////////////////////////// VIEW //////////////////////////////////////////
 
+  private loadDefaultView(): void{
+    this.flActionService.addAction(
+      {
+        type: this.actionType,
+        text: 'Load default view',
+        action: this.resourceService.callResourceDefaultView(this.id),
+        additionalInformation: 'fullScreen' as LabResourceViewDisplayMode
+      },
+      true, false); // for the default view, don't show the action portal
+  }
+
   /**
    * From a configured view spec, it creates an action to call and open the view
    * @param viewSpecConfigured
@@ -140,21 +124,13 @@ export class LabResourceDetailPageState implements OnDestroy {
    * @private
    */
   private loadView(viewSpecConfigured: LabResourceViewSpecWithConfig, isDefaultView: boolean = false): void {
-    const actionObs: Observable<LabResourceViewEvent> =
-      this.callResourceView(viewSpecConfigured.viewSpec.methodName,
-        viewSpecConfigured.viewConfigValues, viewSpecConfigured.transformersWithConfig).pipe(
-        map(view => ({
-          view: view,
-          displayMode: viewSpecConfigured.displayMode,
-          viewName: viewSpecConfigured.viewSpec.humanName
-        }))
-      );
-
     this.flActionService.addAction(
       {
         type: this.actionType,
         text: viewSpecConfigured.viewSpec.getName(),
-        action: actionObs
+        action: this.callResourceView(viewSpecConfigured.viewSpec.methodName,
+          viewSpecConfigured.viewConfigValues, viewSpecConfigured.transformersWithConfig),
+        additionalInformation: viewSpecConfigured.displayMode
       },
       true,
       !isDefaultView); // for the default view, don't show the action portal
@@ -173,11 +149,13 @@ export class LabResourceDetailPageState implements OnDestroy {
     }
 
     return this.callResourceView(this.selectedViewSpec$.value.viewSpec.methodName, configValues,
-      this.selectedViewSpec$.value.transformersWithConfig);
+      this.selectedViewSpec$.value.transformersWithConfig).pipe(
+      map(result => result.viewData)
+    );
   }
 
   private callResourceView(methodName: string, configValues: LabConfigValues,
-                           transformers: LabTransformerWithConfig[]): Observable<LabResourceView> {
+                           transformers: LabTransformerWithConfig[]): Observable<LabViewCallResult> {
 
     const transformerParams: LabCallTransformerParams[] = transformers.map(transformer => ({
       typing_name: transformer.transformer.typingName,
@@ -205,19 +183,29 @@ export class LabResourceDetailPageState implements OnDestroy {
     return this.flActionService.getResult$(this.actionType).pipe(
       filter(actionResult => actionResult.status === 'success'),
       // convert the action result to LabResourceViewEvent
-      map((actionResult: FlPortalActionResult<LabResourceViewEvent>) => {
-        const viewEvent: LabResourceViewEvent = actionResult.result;
+      map((actionResult: FlPortalActionResult<LabViewCallResult>) => {
+        const viewResult: LabViewCallResult = actionResult.result;
 
         // if the view has a force display mode, use it. Otherwise, use the selected display mode
-        const viewTypeInfo: LabResourceViewTypeInfo = labConstResourceViewTypeInfos[viewEvent.view.type];
+        const viewTypeInfo: LabResourceViewTypeInfo = labConstResourceViewTypeInfos[viewResult.viewData.type];
+
+        const viewEvent: LabResourceViewEvent = {
+          view: viewResult.viewData,
+          viewName: viewResult.viewHumanName,
+          displayMode: actionResult.additionalInformation
+        };
+
         if (viewTypeInfo == null) {
           this.flSnackBarService.openErrorMessage('biox.view_type_node_supported', true);
-          return actionResult.result;
+          return viewEvent;
         }
 
-        viewEvent.displayMode = viewTypeInfo.forceDefaultDisplayMode ?
-          viewTypeInfo.defaultDisplayMode : actionResult.result.displayMode;
-        return actionResult.result;
+        // if the view has a force default display mode, set it
+        if(viewTypeInfo.forceDefaultDisplayMode){
+          viewEvent.displayMode = viewTypeInfo.defaultDisplayMode
+        }
+
+        return viewEvent;
       }),
       filter((viewEvent: LabResourceViewEvent) => viewEvent.displayMode === displayMode)
     );
