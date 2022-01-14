@@ -8,7 +8,8 @@
 
   <div class="g-section">
     <!----------------------------  Progress ---------------------------->
-    <mat-expansion-panel *ngIf="showProgress" hideToggle [expanded]="true">
+    <mat-expansion-panel *ngIf="showProgress" hideToggle [expanded]="true"
+                         class="g-scrollable-element progress-bar-expansion-panel">
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
@@ -48,7 +49,7 @@
         <mat-panel-title class="g-not-selectable">
           <fl-text-icon>
             <mat-icon>logout</mat-icon>
-             {{'biox.node_outputs' | translate}}
+            {{'biox.node_outputs' | translate}}
           </fl-text-icon>
         </mat-panel-title>
       </mat-expansion-panel-header>

@@ -38,9 +38,11 @@ export class FlStatusChipComponent implements OnInit {
 
   /**
    * If true the tooltip is disabled
-   * By default tooltip is disable in iconText and textOnly mode and enable in iconOnly mode
+   * By default tooltip is disabled in iconText and textOnly mode and enable in iconOnly mode
    */
   @Input() tooltipDisabled: boolean;
+
+  @Input() size: 'normal' | 'small' = 'normal';
 
   status$: Observable<FlStatus>;
 
@@ -61,6 +63,10 @@ export class FlStatusChipComponent implements OnInit {
 
   get gap(): string {
     return this.mode === 'iconText' ? '5px' : '0';
+  }
+
+  get iconClass(): string {
+    return this.size === 'normal' ? 'g-icon-small' : 'g-icon-tiny';
   }
 
   // get tooltip value, take input value if provided, otherwise disable if text is shown

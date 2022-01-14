@@ -1,8 +1,16 @@
 
-mat-panel-description{
+mat-panel-description {
   margin-right: 0;
 }
 
 mat-expansion-panel {
   margin-bottom: 1px;
+}
+
+// limit the height of the expansion panel
+::ng-deep .progress-bar-expansion-panel .mat-expansion-panel-content {
+  display: block;
+  max-height: 30rem;
+  overflow: auto;
+
 }

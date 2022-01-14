@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostBinding, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'fl-chip',
@@ -6,6 +6,9 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./fl-chip.component.scss']
 })
 export class FlChipComponent implements OnInit {
+
+  @HostBinding('class')
+  @Input() size: 'normal' | 'small' = 'normal';
 
   constructor() { }
 
