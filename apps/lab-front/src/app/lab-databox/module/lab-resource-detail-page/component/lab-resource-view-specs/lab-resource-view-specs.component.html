@@ -11,13 +11,13 @@
          class="view-box"
          (click)="selectView(view, viewByType)">
       <div fxLayout="row" fxLayoutAlign="space-between">
-        <p>{{view.getName()}}</p>
+        <div class="text">{{view.getName()}}</div>
         <mat-icon *ngIf="view.defaultView" color="primary"
                   [matTooltip]="'biox.default_view' | translate">done
         </mat-icon>
       </div>
 
-      <p class="g-text-small g-text-light">{{view.shortDescription}}</p>
+      <p class="text g-text-small g-text-tiny">{{view.shortDescription}}</p>
     </div>
   </div>
 </div>
