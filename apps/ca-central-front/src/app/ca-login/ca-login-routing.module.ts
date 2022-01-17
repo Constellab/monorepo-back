@@ -1,11 +1,11 @@
 import {RouterModule, Routes} from '@angular/router';
-import {DaLoginPageComponent} from './component/ca-login-page/da-login-page.component';
+import {CaLoginPageComponent} from './component/ca-login-page/ca-login-page.component';
 import {NgModule} from '@angular/core';
 import {CaLoginGuard} from './guard/ca-login.guard';
 import {FlResetPasswordPageComponent} from '@monorepo/front-core-lib';
 
 const loginRoutes: Routes = [
-  {path: 'login', component: DaLoginPageComponent, canActivate: [CaLoginGuard]},
+  {path: 'login', component: CaLoginPageComponent, canActivate: [CaLoginGuard]},
   {path: 'reset-password/:token', component: FlResetPasswordPageComponent},
 ];
 

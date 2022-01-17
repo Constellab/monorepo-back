@@ -1,7 +1,6 @@
-.login-form {
+.card {
   width: 30em;
   display: block;
-  padding: 2em;
   max-width: 100%;
   box-sizing: border-box;
 }
@@ -10,4 +9,11 @@
   .login-form {
     min-height: 100vh;
   }
+}
+
+
+.login{
+  padding-left: 1em;
+  padding-right: 1em;
+  display: block;
 }

@@ -5,10 +5,10 @@ import {CaRouterService} from '../../../ca-core/service/ca-router.service';
 
 @Component({
   selector: 'ca-login-page',
-  templateUrl: './da-login-page.component.html',
-  styleUrls: ['./da-login-page.component.scss']
+  templateUrl: './ca-login-page.component.html',
+  styleUrls: ['./ca-login-page.component.scss']
 })
-export class DaLoginPageComponent implements OnInit {
+export class CaLoginPageComponent implements OnInit {
 
   appRoute: string = CaRouterService.getAppRoute();
 

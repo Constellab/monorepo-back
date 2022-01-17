@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {DaLoginPageComponent} from './component/ca-login-page/da-login-page.component';
+import {CaLoginPageComponent} from './component/ca-login-page/ca-login-page.component';
 import {CaLoginRoutingModule} from './ca-login-routing.module';
 import {CaCoreModule} from '../ca-core/ca-core.module';
 
@@ -9,7 +9,7 @@ import {CaCoreModule} from '../ca-core/ca-core.module';
  */
 @NgModule({
   declarations: [
-    DaLoginPageComponent,
+    CaLoginPageComponent,
 
   ],
   imports: [
