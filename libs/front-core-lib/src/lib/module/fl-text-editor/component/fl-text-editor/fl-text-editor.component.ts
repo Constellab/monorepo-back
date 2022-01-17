@@ -45,7 +45,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   // if true the text editor is focused on creation
   @Input() autoFocus: boolean = false;
 
-  @Output() textChange: EventEmitter<string> = new EventEmitter<string>();
+  @Output() textChange: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('editor', {static: true}) editorElement: ElementRef<HTMLElement>;
 
   quill: Quill;
@@ -67,10 +67,6 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       }
     );
 
-    this.quill.on('text-change', () => {
-      this.setAndEmitValue(this.getQuillValue());
-    });
-
     // init the HTML with the value set
     this.setQuillValue(this.value);
 
@@ -80,13 +76,16 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     if (this.autoFocus && !this.disabled) {
       this.quill.focus();
     }
-  }
 
+    // use setTimeout prevent text-change on init value
+    setTimeout(() => {
+      this.quill.on('text-change', () => this.setAndEmitValue(this.getQuillValue()));
+    }, 0);
+  }
 
   callChangeEvent(value: string): void {
     this.textChange.next(value);
   }
-
 
   writeValue(value: any): void {
     if (this.quill) {

@@ -29,19 +29,12 @@
 
   <fl-article>
     <fl-text-editor [(ngModel)]="description" mode="JSON" [disabled]="experiment.isValidated" class="g-full-height"
-                    [placeholder]="'biox.experiment_description_placeholder' | translate"></fl-text-editor>
+                    [placeholder]="'biox.experiment_description_placeholder' | translate"
+                    (textChange)="onDescriptionChanged($event)"></fl-text-editor>
   </fl-article>
 
   <fl-article-right-side>
-    <div class="action-buttons">
-      <button mat-icon-button type="button" [matTooltip]="'biox.experiment_save_description' | translate"
-              (click)="saveDescription()">
-        <mat-icon>save</mat-icon>
-        <fl-button-loader *ngIf="saveDescriptionIsLoading" size="small"></fl-button-loader>
-      </button>
-    </div>
 
-    <lab-experiment-associated-reports [experimentId]="experiment.id"
-                                       class="reports"></lab-experiment-associated-reports>
+    <lab-experiment-associated-reports [experimentId]="experiment.id"></lab-experiment-associated-reports>
   </fl-article-right-side>
 </fl-article-container>
