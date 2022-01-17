@@ -1,6 +1,5 @@
 <fl-bio-network *ngIf="networks" [data]="networks" [fullscreen]="fullscreen"></fl-bio-network>
 
-<div *ngIf="error" class="g-text-centered g-text-light">
+<fl-error-text *ngIf="error">
   <p>{{'biox.resource_is_not_a_network' | translate}}</p>
-  <mat-icon>block</mat-icon>
-</div>
+</fl-error-text>

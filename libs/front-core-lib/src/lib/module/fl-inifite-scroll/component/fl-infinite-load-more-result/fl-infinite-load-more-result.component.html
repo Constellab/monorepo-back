@@ -10,6 +10,5 @@
   <div class="g-text-light g-text-centered end-result" *ngIf="datasource.page.last">
     <p *ngIf="datasource.page.totalElements > 0 ;else noElement">{{'no_more_result' | translate}}</p>
     <ng-template #noElement><p>{{'no_result' | translate}}</p></ng-template>
-    <mat-icon>block</mat-icon>
   </div>
 </ng-container>

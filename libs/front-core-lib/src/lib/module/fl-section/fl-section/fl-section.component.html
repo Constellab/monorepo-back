@@ -10,10 +10,9 @@
     </div>
 
     <ng-template #notLoading>
-      <div *ngIf="objectIsNullOrEmpty" class="g-text-centered g-text-light">
+      <fl-error-text *ngIf="objectIsNullOrEmpty">
         <p>{{emptyText | translate}}</p>
-        <mat-icon>block</mat-icon>
-      </div>
+      </fl-error-text>
     </ng-template>
 
     <!--  Render the body  -->

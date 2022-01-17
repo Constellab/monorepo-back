@@ -2,8 +2,7 @@
                 [ngModel]="experiment.description" [disabled]="true"
                 mode="JSON"></fl-text-editor>
 <ng-template #noDesc>
-  <div class="g-text-centered g-text-light">
+  <fl-error-text>
     <p>{{'no_description' | translate}}</p>
-    <mat-icon>block</mat-icon>
-  </div>
+  </fl-error-text>
 </ng-template>
