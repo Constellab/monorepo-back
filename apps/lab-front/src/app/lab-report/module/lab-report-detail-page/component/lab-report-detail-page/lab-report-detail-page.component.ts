@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LabReport, LabReportContent} from '../../../../../lab-core/model/entities/lab-report.entity';
 import {LabReportService} from '../../../../../lab-core/entity-service/lab-report.service';
 import {ActivatedRoute} from '@angular/router';
-import {FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService} from '@monorepo/front-core-lib';
+import {FlConfirmDialogInput, FlConfirmDialogResult, FlDebouncer, FlDialogService} from '@monorepo/front-core-lib';
 import {
   LabReportFormDialogComponent,
   LabReportFormDialogInput
@@ -22,12 +22,12 @@ import {LabProject} from '../../../../../lab-core/model/entities/lab-project.cla
   styleUrls: ['./lab-report-detail-page.component.scss'],
   providers: [LabReportDetailPageState]
 })
-export class LabReportDetailPageComponent implements OnInit {
+export class LabReportDetailPageComponent implements OnInit, OnDestroy {
 
   report$: Observable<LabReport>;
   content: LabReportContent;
 
-  saveContentIsLoading: boolean = false;
+  private contentDebouncer: FlDebouncer<LabReportContent>;
 
   constructor(private reportService: LabReportService,
               private state: LabReportDetailPageState,
@@ -39,6 +39,12 @@ export class LabReportDetailPageComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(
       params => this.init(params.id)
+    );
+
+    // create a debouncer to save the description after x second of idle
+    this.contentDebouncer = new FlDebouncer(FlDebouncer.AUTO_SAVE_DEBOUNCE_TIME);
+    this.contentDebouncer.getDebouncedValue().subscribe(
+      value => this.saveContent(value)
     );
   }
 
@@ -72,17 +78,17 @@ export class LabReportDetailPageComponent implements OnInit {
     }
   }
 
-  saveReportContent(): void {
-    if (this.saveContentIsLoading) return;
-    this.saveContentIsLoading = true;
-    this.reportService.updateContent(this.state.currentReport.id, this.content).subscribe(
-      () => this.saveContentSuccess(this.content),
-      () => this.saveContentIsLoading = false
+  onContentUpdate(content: LabReportContent): void {
+    this.contentDebouncer.setValue(content);
+  }
+
+  saveContent(content: LabReportContent): void {
+    this.reportService.updateContent(this.state.currentReport.id, content).subscribe(
+      (value) => this.saveContentSuccess(value.content),
     );
   }
 
   private saveContentSuccess(content: LabReportContent): void {
-    this.saveContentIsLoading = false;
     this.state.updateContent(content);
   }
 
@@ -128,4 +134,10 @@ export class LabReportDetailPageComponent implements OnInit {
       this.routerService.navigateToReportSearch();
     }
   }
+
+  ngOnDestroy(): void {
+    this.contentDebouncer.complete();
+  }
+
+
 }

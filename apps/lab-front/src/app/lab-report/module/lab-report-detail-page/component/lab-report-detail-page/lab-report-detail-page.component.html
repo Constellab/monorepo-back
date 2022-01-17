@@ -10,12 +10,6 @@
         <h2 fxFlex="auto">{{report.title}}</h2>
 
         <div *ngIf="!report.isValidated">
-          <button mat-icon-button type="button" [matTooltip]="'biox.save_report_content' | translate"
-                  (click)="saveReportContent()">
-            <mat-icon>save</mat-icon>
-            <fl-button-loader *ngIf="saveContentIsLoading" size="small"></fl-button-loader>
-          </button>
-
           <button mat-icon-button type="button" [matTooltip]="'biox.update_report' | translate"
                   (click)="updateReport()">
             <mat-icon>edit</mat-icon>
@@ -53,6 +47,7 @@
         </fl-article-left-side>
         <fl-article>
           <fl-text-editor [(ngModel)]="content" mode="JSON" [disabled]="report.isValidated" class="g-full-height"
+                          (textChange)="onContentUpdate($event)"
                           [placeholder]="'biox.report_placeholder' | translate" [autoFocus]="true"></fl-text-editor>
         </fl-article>
         <fl-article-right-side class="experiments">
