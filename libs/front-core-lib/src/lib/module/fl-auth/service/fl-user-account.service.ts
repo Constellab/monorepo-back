@@ -21,4 +21,6 @@ export abstract class FlUserAccountService {
    * Route with a token to reset the user password
    */
   public abstract resetPassword(password: string, token: string): Observable<void> ;
+
 }
+

@@ -1,7 +1,25 @@
-.centered{
+.centered {
   margin: auto;
 }
 
-mat-form-field{
+mat-form-field {
   margin-bottom: 5px;
 }
+
+
+.cgu-container {
+  width: 100%;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+.fl-signup-cgu {
+  margin-left: 1em;
+}
+
+// style the link inside the innerHTML
+::ng-deep .fl-signup-cgu a {
+  text-decoration: underline;
+  cursor: pointer;
+}
+

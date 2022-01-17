@@ -25,6 +25,7 @@ import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.modu
 import {MatSelectModule} from '@angular/material/select';
 import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
 import {FlLoginDialogComponent} from './component/fl-login-dialog/fl-login-dialog.component';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 /**
  * Module containing component for authentication, sign up, password reset
@@ -56,6 +57,7 @@ import {FlLoginDialogComponent} from './component/fl-login-dialog/fl-login-dialo
     FlexLayoutModule,
     MatIconModule,
     MatSelectModule,
+    MatCheckboxModule,
 
     FlCoreComponentModule,
     FlCorePipeModule,

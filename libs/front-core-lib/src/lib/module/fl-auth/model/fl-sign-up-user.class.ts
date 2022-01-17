@@ -7,4 +7,5 @@ export interface FlSignUpUser {
   category: CmUserCategory;
   password: string;
   repeatPassword: string;
+  validateCGU: boolean;
 }

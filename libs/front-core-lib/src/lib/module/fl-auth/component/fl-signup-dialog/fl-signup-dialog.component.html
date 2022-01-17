@@ -79,6 +79,20 @@
     </mat-form-field>
 
 
+    <!--   CGU/CGV  -->
+    <div>
+      <div fxLayout="row" fxLayoutAlign="start center" class="cgu-container">
+        <mat-checkbox formControlName="validateCGU" [disableRipple]="true">
+        </mat-checkbox>
+        <div class="fl-signup-cgu" fxFlex="auto" [innerHTML]="'flAuth.accept_cgu_cgv_text' | translate"></div>
+      </div>
+
+      <div *ngIf="formGp.get('validateCGU').hasError('differentValue') && formGp.get('validateCGU').touched"
+           class="g-warn-text g-text-small">
+        {{'flAuth.accept_cgu_cgv_error' | translate}}
+      </div>
+    </div>
+
   </form>
 </mat-dialog-content>
 

@@ -114,5 +114,24 @@ export class FlGlobalValidators {
     };
   }
 
+  /**
+   * Validator that check if the form value is equal from a value (using ===)
+   * @param compareValue value to compare with form value
+   * @return Error {differentValue: true} if the value is not the same as the one in params
+   */
+  public static isValue(compareValue: any): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value: any = control.value;
+      if (value == null || value.length === 0) {
+        return null;  // don't validate empty values to allow optional controls
+      }
+
+      if (value === compareValue) {
+        return null;
+      } else {
+        return {differentValue: true};
+      }
+    };
+  }
 
 }

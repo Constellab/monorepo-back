@@ -40,12 +40,15 @@ export class FlSignupDialogComponent implements OnInit {
       repeatPassword: [null, [Validators.required,
         FlGlobalValidators.repeatPasswordValidator('password')]],
       category: [null, Validators.required],
+      validateCGU: [false, FlGlobalValidators.isValue(true)]
     });
   }
 
   submit(): void {
     if (this.formGp.valid && !this.isLoading) {
       this.signupUser(this.formGp.getRawValue());
+    } else {
+      this.formGp.get('validateCGU').markAsTouched();
     }
   }
 
@@ -65,8 +68,7 @@ export class FlSignupDialogComponent implements OnInit {
   }
 
   // update the repeat password validity on password change
-  updateRepeatPasswordValidity(): void{
+  updateRepeatPasswordValidity(): void {
     this.formGp.get('repeatPassword').updateValueAndValidity();
   }
-
 }
