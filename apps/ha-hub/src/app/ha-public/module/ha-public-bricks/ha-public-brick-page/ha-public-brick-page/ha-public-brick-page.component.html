@@ -1,0 +1,21 @@
+<mat-toolbar>
+  <span>Gencovery hub</span>
+</mat-toolbar>
+
+<fl-async-section [object]="brick$" class="full-w">
+
+  <ng-container *flSectionBody="let brick">
+    <div class="brickCard">
+      <h1>
+        {{ brick.name }}
+      </h1>
+      <p>
+        {{brick.description}}
+      </p>
+    </div>
+<!--    <ha-public-sidenav [brickId]="brick.id"></ha-public-sidenav>-->
+    <router-outlet></router-outlet>
+  </ng-container>
+
+</fl-async-section>
+

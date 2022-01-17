@@ -1,0 +1,11 @@
+<p>ha-public-list-bricks-page works!</p>
+
+
+<mat-grid-list cols="3" rowHeight="26vh" gutterSize="20" style="">
+  <ng-container *ngFor="let brick of bricks">
+    <mat-grid-tile style="background-color: var(--primary-color)" [routerLink]="brick.name">
+      <h1>{{brick.name}}</h1>
+    </mat-grid-tile>
+  </ng-container>
+</mat-grid-list>
+

@@ -512,11 +512,11 @@
         }
       }
     },
-    "dn-documentation": {
-      "root": "apps/dn-documentation",
-      "sourceRoot": "apps/dn-documentation/src",
+    "hn-hub": {
+      "root": "apps/hn-hub",
+      "sourceRoot": "apps/hn-hub/src",
       "projectType": "application",
-      "prefix": "dn-documentation",
+      "prefix": "hn-hub",
       "architect": {
         "build": {
           "builder": "@nrwl/node:build",
@@ -524,12 +524,12 @@
             "{options.outputPath}"
           ],
           "options": {
-            "outputPath": "dist/apps/dn-documentation",
-            "main": "apps/dn-documentation/src/main.ts",
-            "tsConfig": "apps/dn-documentation/tsconfig.app.json",
+            "outputPath": "dist/apps/hn-hub",
+            "main": "apps/hn-hub/src/main.ts",
+            "tsConfig": "apps/hn-hub/tsconfig.app.json",
             "assets": [
-              "apps/dn-documentation/src/assets",
-              "apps/dn-documentation/src/environments"
+              "apps/hn-hub/src/assets",
+              "apps/hn-hub/src/environments"
             ]
           },
           "configurations": {
@@ -539,8 +539,8 @@
               "inspect": false,
               "fileReplacements": [
                 {
-                  "replace": "apps/dn-documentation/src/environments/environment.ts",
-                  "with": "apps/dn-documentation/src/environments/environment.prod.ts"
+                  "replace": "apps/hn-hub/src/environments/environment.ts",
+                  "with": "apps/hn-hub/src/environments/environment.prod.ts"
                 }
               ]
             }
@@ -549,47 +549,47 @@
         "serve": {
           "builder": "@nrwl/node:execute",
           "options": {
-            "buildTarget": "dn-documentation:build"
+            "buildTarget": "hn-hub:build"
           }
         },
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
-              "apps/dn-documentation/**/*.ts"
+              "apps/hn-hub/**/*.ts"
             ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "outputs": [
-            "coverage/apps/dn-documentation"
+            "coverage/apps/hn-hub"
           ],
           "options": {
-            "jestConfig": "apps/dn-documentation/jest.config.js",
+            "jestConfig": "apps/hn-hub/jest.config.js",
             "passWithNoTests": true
           }
         }
       }
     },
-    "da-documentation": {
+    "ha-hub": {
       "projectType": "application",
-      "root": "apps/da-documentation",
-      "sourceRoot": "apps/da-documentation/src",
+      "root": "apps/ha-hub",
+      "sourceRoot": "apps/ha-hub/src",
       "prefix": "da",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/da-documentation",
-            "index": "apps/da-documentation/src/index.html",
-            "main": "apps/da-documentation/src/main.ts",
-            "polyfills": "apps/da-documentation/src/polyfills.ts",
-            "tsConfig": "apps/da-documentation/tsconfig.app.json",
+            "outputPath": "dist/apps/ha-hub",
+            "index": "apps/ha-hub/src/index.html",
+            "main": "apps/ha-hub/src/main.ts",
+            "polyfills": "apps/ha-hub/src/polyfills.ts",
+            "tsConfig": "apps/ha-hub/tsconfig.app.json",
             "aot": true,
             "assets": [
-              "apps/da-documentation/src/favicon.ico",
-              "apps/da-documentation/src/assets",
+              "apps/ha-hub/src/favicon.ico",
+              "apps/ha-hub/src/assets",
               {
                 "glob": "**/*",
                 "input": "libs/front-core-lib/src/assets/logo",
@@ -607,14 +607,14 @@
               }
             ],
             "styles": [
-              "apps/da-documentation/src/da-styles.scss",
+              "apps/ha-hub/src/ha-styles.scss",
               {
-                "input": "apps/ca-central-front/src/theme/light-theme.scss",
+                "input": "apps/ca-central-front/src/theme/ca-light-theme.scss",
                 "bundleName": "light-theme",
                 "inject": false
               },
               {
-                "input": "apps/ca-central-front/src/theme/dark-theme.scss",
+                "input": "apps/ca-central-front/src/theme/ca-dark-theme.scss",
                 "bundleName": "dark-theme",
                 "inject": false
               }
@@ -625,8 +625,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "apps/da-documentation/src/environments/da-environment.ts",
-                  "with": "apps/da-documentation/src/environments/da-environment.prod.ts"
+                  "replace": "apps/ha-hub/src/environments/ha-environment.ts",
+                  "with": "apps/ha-hub/src/environments/ha-environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -652,8 +652,8 @@
             "preprod": {
               "fileReplacements": [
                 {
-                  "replace": "apps/da-documentation/src/environments/da-environment.ts",
-                  "with": "apps/da-documentation/src/environments/da-environment.preprod.ts"
+                  "replace": "apps/ha-hub/src/environments/ha-environment.ts",
+                  "with": "apps/ha-hub/src/environments/ha-environment.preprod.ts"
                 }
               ],
               "optimization": true,
@@ -683,56 +683,56 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "da-documentation:build"
+            "browserTarget": "ha-hub:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "da-documentation:build:production"
+              "browserTarget": "ha-hub:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "da-documentation:build"
+            "browserTarget": "ha-hub:build"
           }
         },
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
-              "apps/da-documentation/src/**/*.ts",
-              "apps/da-documentation/src/**/*.html"
+              "apps/ha-hub/src/**/*.ts",
+              "apps/ha-hub/src/**/*.html"
             ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "outputs": [
-            "coverage/apps/da-documentation"
+            "coverage/apps/ha-hub"
           ],
           "options": {
-            "jestConfig": "apps/da-documentation/jest.config.js",
+            "jestConfig": "apps/ha-hub/jest.config.js",
             "passWithNoTests": true
           }
         }
       }
     },
-    "da-documentation-e2e": {
-      "root": "apps/da-documentation-e2e",
-      "sourceRoot": "apps/da-documentation-e2e/src",
+    "ha-hub-e2e": {
+      "root": "apps/ha-hub-e2e",
+      "sourceRoot": "apps/ha-hub-e2e/src",
       "projectType": "application",
       "architect": {
         "e2e": {
           "builder": "@nrwl/cypress:cypress",
           "options": {
-            "cypressConfig": "apps/da-documentation-e2e/cypress.json",
-            "tsConfig": "apps/da-documentation-e2e/tsconfig.e2e.json",
-            "devServerTarget": "da-documentation:serve"
+            "cypressConfig": "apps/ha-hub-e2e/cypress.json",
+            "tsConfig": "apps/ha-hub-e2e/tsconfig.e2e.json",
+            "devServerTarget": "ha-hub:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "da-documentation:serve:production"
+              "devServerTarget": "ha-hub:serve:production"
             }
           }
         },
@@ -740,7 +740,7 @@
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
-              "apps/da-documentation-e2e/**/*.{js,ts}"
+              "apps/ha-hub-e2e/**/*.{js,ts}"
             ]
           }
         }

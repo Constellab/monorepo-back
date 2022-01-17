@@ -1,0 +1,47 @@
+import {ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common';
+import {AuthGuard} from '@nestjs/passport';
+import {Reflector} from '@nestjs/core';
+import {ErrorText} from '../model/config/hn-error-text.class';
+import {blIsDecoratedWithPublic} from '@monorepo/back-core-lib';
+
+/**
+ * Guard to check if the user has a authentication token
+ * Methods and classes annotated with @Public decorator
+ * don't need to check if authentication token exists
+ *
+ * Methods and classes annotated with @LabAuth are manager by the {@link LabAuthGuard}
+ *
+ * Others uses JWT authentication with {@link BlJwtStrategy}
+ */
+@Injectable()
+export class HnJwtAuthGuard extends AuthGuard('jwt') {
+  constructor(private reflector: Reflector) {
+    super();
+  }
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    // Check if the route is annotated with @Public
+    // if yes, don't check the authorization
+    if (this.contextIsPublic(context)) {
+      return true;
+    }
+
+
+    // jwt authentication
+    try {
+      return await (super.canActivate(context) as Promise<boolean>);
+    } catch (error) {
+      throw new UnauthorizedException(ErrorText.WRONG_TOKEN);
+    }
+  }
+
+  /**
+   * Return true if the context method or class is annotated with the @Public decorator
+   */
+  private contextIsPublic(context: ExecutionContext): boolean {
+    // Check if the route is annotated with @Public
+    return blIsDecoratedWithPublic(this.reflector, context);
+  }
+
+
+}

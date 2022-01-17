@@ -1,0 +1,44 @@
+.container {
+  position: absolute;
+  left: 0;
+  top: 20%;
+  width: 100%;
+  height: 80%;
+  background-color: var(--main-background);
+}
+
+.sidenav-content {
+  height: 100%;
+  z-index: 5;
+}
+
+.sidenav {
+  width: 20em;
+  height: 100%;
+}
+
+.tree{
+  width: 100%;
+  height: auto;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.tree-node{
+  padding: 0;
+  margin: 0;
+}
+
+.item{
+  box-sizing: border-box;
+}
+
+.item:hover{
+  color: var(--primary-color);
+}
+
+.active{
+
+  color: var(--primary-color);
+}
+

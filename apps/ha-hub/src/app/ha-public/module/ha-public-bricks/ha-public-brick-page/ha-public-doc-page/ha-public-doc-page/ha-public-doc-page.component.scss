@@ -1,0 +1,23 @@
+.contentEditor{
+  height: 100%;
+  border: none;
+}
+
+.doc-sections{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+#documentation-form{
+  width: 90%;
+  max-width: 90%;
+}
+
+.buttonsSection{
+  width: 10%;
+}
+
+.contentEditor{
+  width: 100%;
+}

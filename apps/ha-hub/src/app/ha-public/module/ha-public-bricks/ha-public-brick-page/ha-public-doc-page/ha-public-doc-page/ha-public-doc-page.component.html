@@ -1,0 +1,22 @@
+<fl-async-section [object]="documentation$">
+
+  <ng-container *flSectionBody="let documentation">
+    <div class="doc-sections">
+      <form id="documentation-form" [formGroup]="formGp" class="g-max-article-width"> <!--  ngSubmit -->
+        <fl-text-editor matInput formControlName="content" mode="JSON" [disabled]="!isEditing" class="contentEditor"></fl-text-editor>
+      </form>
+      <div class="buttonsSection">
+        <button mat-raised-button color="primary" (click)="startEditing()" *ngIf="!isEditing" class="g-centered-forced">
+          {{'edit' | translate}}
+        </button>
+        <button mat-raised-button color="primary" (click)="cancelEditing(documentation)" *ngIf="isEditing" class="g-centered-forced">
+          {{'cancel' | translate}}
+        </button>
+        <button mat-raised-button color="primary" (click)="saveContent()" *ngIf="isEditing" class="g-centered-forced">
+          {{'save' | translate}}
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+</fl-async-section>

@@ -49,15 +49,15 @@
     "common-model": {
       "tags": ["ts-core"]
     },
-    "dn-documentation": {
+    "hn-hub": {
       "tags": []
     },
-    "da-documentation": {
+    "ha-hub": {
       "tags": []
     },
-    "da-documentation-e2e": {
+    "ha-hub-e2e": {
       "tags": [],
-      "implicitDependencies": ["da-documentation"]
+      "implicitDependencies": ["ha-hub"]
     },
     "back-core-lib": {
       "tags": ["back"]

@@ -21,15 +21,15 @@ The angular front app for the lab. One front is available per lab.
 
 Prefix : Lab
 
-### Hub front (da-documentation) : Da
+### Hub front (ha-hub) : Da
 The hub angular app containing the documentation.
 
-Prefix : Da
+Prefix : Ha
 
-### Hub back (dn-documentation) : Dn
+### Hub back (hn-hub) : Dn
 The hub nest app containing the documentation.
 
-Prefix : Dn
+Prefix : Hn
 
 ## Libraries
 

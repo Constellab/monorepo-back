@@ -1,0 +1,8 @@
+<button mat-raised-button color="primary" [routerLink]="backToListLink" class="bt-back-to-list">
+  Back to list
+</button>
+<ha-admin-doc-form [documentation]="doc" *ngIf="loaded; else elseBlock"></ha-admin-doc-form>
+<ng-template #elseBlock>
+    <fl-loader></fl-loader>
+</ng-template>
+
