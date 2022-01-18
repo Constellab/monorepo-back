@@ -174,4 +174,25 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     );
   }
 
+  deleteExperiment(): void {
+    const data: FlConfirmDialogInput = {
+      title: 'biox.delete_experiment',
+      content: 'biox.delete_experiment_confirmation',
+      translateTitleAndContent: true,
+      observable: this.experimentService.deleteExperiment(this.experimentState.currentExperiment.id),
+      successMessage: 'biox.experiment_deleted',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(data).afterClosed().subscribe(
+      result => this.onDeleteSuccess(result)
+    );
+  }
+
+  private onDeleteSuccess(result: FlConfirmDialogResult): void {
+    if (result.choice) {
+      this.routerService.navigateToExperimentListRoute();
+    }
+  }
+
 }

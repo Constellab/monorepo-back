@@ -112,4 +112,8 @@ export class LabExperimentService implements FlSearchService<LabExperiment> {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
   }
+
+  public deleteExperiment(id: string): Observable<void> {
+    return this.apiService.deleteById(this.route, id);
+  }
 }
