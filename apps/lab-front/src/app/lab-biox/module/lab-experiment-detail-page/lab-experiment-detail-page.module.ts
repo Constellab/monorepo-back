@@ -45,7 +45,7 @@ import {
 } from './component/lab-experiment-associated-reports/lab-experiment-associated-reports.component';
 import {RouterModule} from '@angular/router';
 import {LabTypeCoreModule} from '../../../lab-core/entity-module/lab-type-core/lab-type-core.module';
-import {LabWorkflowNodeSinkComponent} from './component/lab-workflow-node-sink/lab-workflow-node-sink.component';
+import {LabWorkflowNodeOutputComponent} from './component/lab-workflow-node-output/lab-workflow-node-output.component';
 
 
 @NgModule({
@@ -67,7 +67,7 @@ import {LabWorkflowNodeSinkComponent} from './component/lab-workflow-node-sink/l
     LabWorkflowNodeSourceComponent,
     LabExperimentDetailComponent,
     LabExperimentAssociatedReportsComponent,
-    LabWorkflowNodeSinkComponent,
+    LabWorkflowNodeOutputComponent,
   ],
   imports: [
     CommonModule,
@@ -109,9 +109,9 @@ export class LabExperimentDetailPageModule {
       }));
 
     // declare the LabWorkflowNodeInterfaceComponent as angular element to make the tag
-    // lab-workflow-node-sink work natively
-    customElements.define('lab-workflow-node-sink',
-      createCustomElement(LabWorkflowNodeSinkComponent, {
+    // lab-workflow-node-output work natively
+    customElements.define('lab-workflow-node-output',
+      createCustomElement(LabWorkflowNodeOutputComponent, {
         injector,
       }));
 

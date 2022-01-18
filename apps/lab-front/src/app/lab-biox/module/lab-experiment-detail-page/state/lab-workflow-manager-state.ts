@@ -170,7 +170,7 @@ export class LabWorkflowManagerState {
     this.actionsService.addAction(action, true);
   }
 
-  public addSinkToProcessOutput(processNodeName: string, outputPortName: string): void {
+  public addTaskOutput(processNodeName: string, outputPortName: string): void {
     // retrieve the protocol of the layer
     const currentProtocol: LabProtocol = this.workflow.currentLayer.object as LabProtocol;
 
@@ -183,11 +183,11 @@ export class LabWorkflowManagerState {
     // create an action to add this process
     const action: FlPortalAction = {
       text: {
-        text: 'biox.adding_sink', translateText: true,
+        text: 'biox.adding_output', translateText: true,
       },
       type: this.addProcessWithConnectorAction,
       // create the process in the API and get the process
-      action: this.protocolService.addSinkToProcessOutput(currentProtocol.id, processNodeName, outputPortName),
+      action: this.protocolService.addTaskOutput(currentProtocol.id, processNodeName, outputPortName),
       additionalInformation: relativeCoord
     };
 
@@ -213,7 +213,7 @@ export class LabWorkflowManagerState {
     if (process.isSource()) {
       const resourceId: string | null = process.config.data.values?.resource_id ?? null;
       return new LabWorkflowNodeIO(process, name, this.resourceService.getById(resourceId), coordX, coordY);
-    } else if (process.isSink()) {
+    } else if (process.isOutput()) {
       return new LabWorkflowNodeIO(process, name, this.resourceService.getById(process.inputs['resource'].resource_id), coordX, coordY);
     } else {
       return new LabWorkflowNodeProcess(process, name, coordX, coordY);

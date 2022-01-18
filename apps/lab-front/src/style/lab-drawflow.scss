@@ -37,7 +37,7 @@
       background-color: mat-color($primary);
     }
 
-    &.task-sink {
+    &.task-output {
       color: mat-color($warn, default-contrast);
       background-color: mat-color($warn);
     }

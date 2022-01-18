@@ -12,7 +12,7 @@ export class LabTypingName {
 
   public static task = {
     source: 'TASK.gws_core.Source',
-    sink: 'TASK.gws_core.Sink',
+    output: 'TASK.gws_core.Sink',
     tableImporter:  'TASK.gws_core.TableImporter'
   };
 

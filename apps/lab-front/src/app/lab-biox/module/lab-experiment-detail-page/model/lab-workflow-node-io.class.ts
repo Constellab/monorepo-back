@@ -9,7 +9,7 @@ import {map} from 'rxjs/operators';
 
 
 /**
- * Representation of a Source or Sink process
+ * Representation of a Source or Output process
  */
 export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
 
@@ -35,7 +35,7 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
     if (this.object.isSource()) {
       return `<lab-workflow-node-source name="${this.nodeName}"></lab-workflow-node-source>`;
     } else {
-      return `<lab-workflow-node-sink name="${this.nodeName}"></lab-workflow-node-sink>`;
+      return `<lab-workflow-node-output name="${this.nodeName}"></lab-workflow-node-output>`;
 
     }
   }
@@ -44,7 +44,7 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
     if (this.object.isSource()) {
       return 'task-source';
     } else {
-      return 'task-sink';
+      return 'task-output';
     }
   }
 
@@ -95,7 +95,7 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
     }
   }
 
-  // return the only port (output for source and input for sink)
+  // return the only port (output for source and input for output)
   private getPort(): LabWorkflowPort {
     if (this.object.isSource()) {
       return this.outputPorts[0];

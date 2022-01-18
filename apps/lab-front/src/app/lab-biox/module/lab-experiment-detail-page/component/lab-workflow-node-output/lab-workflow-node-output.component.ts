@@ -7,16 +7,16 @@ import {LabWorkflowNodeIO} from '../../model/lab-workflow-node-io.class';
 import {FlContextMenuService, FlDialogService} from '@monorepo/front-core-lib';
 
 /**
- * Node of an experiment in the workflow specifically for the Sink process
+ * Node of an experiment in the workflow specifically for the Output process
  *
  * This component is converted to an angular element to be injectable in html
  */
 @Component({
-  selector: 'lab-workflow-node-sink',
-  templateUrl: './lab-workflow-node-sink.component.html',
-  styleUrls: ['./lab-workflow-node-sink.component.scss']
+  selector: 'lab-workflow-node-output',
+  templateUrl: './lab-workflow-node-output.component.html',
+  styleUrls: ['./lab-workflow-node-output.component.scss']
 })
-export class LabWorkflowNodeSinkComponent extends LabWorkflowNodeDirective implements OnInit {
+export class LabWorkflowNodeOutputComponent extends LabWorkflowNodeDirective implements OnInit {
 
   title$: Observable<string>;
   resourceId$: Observable<string>;

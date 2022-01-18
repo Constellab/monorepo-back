@@ -52,8 +52,8 @@ export class LabProtocolService {
       null, LabAddProcessWithLink);
   }
 
-  public addSinkToProcessOutput(protocolId: string, processName: string,
-                                outputPortName: string): Observable<LabAddProcessWithLink> {
+  public addTaskOutput(protocolId: string, processName: string,
+                       outputPortName: string): Observable<LabAddProcessWithLink> {
     return this.apiService.post(`${this.baseRoute}/${protocolId}/add-sink/${processName}/${outputPortName}`,
       null, LabAddProcessWithLink);
   }

@@ -117,8 +117,8 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
       resource.id, resource.name);
   }
 
-  private addSink(outputPortName: string): void {
-    this.workflowManager.addSinkToProcessOutput(this.node.nodeName, outputPortName);
+  private addTaskOutput(outputPortName: string): void {
+    this.workflowManager.addTaskOutput(this.node.nodeName, outputPortName);
   }
 
   private getInputPortContextMenuConfig(port: LabWorkflowPort): FlContextMenuConfig {
@@ -143,9 +143,9 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
     return {
       buttons: [
         {
-          text: {text: 'biox.add_sink', translateText: true},
+          text: {text: 'biox.add_output', translateText: true},
           icon: 'output',
-          onClick: () => this.addSink(portName),
+          onClick: () => this.addTaskOutput(portName),
         },
         this.getResourceDetailContextButton(resourceId)
       ]
