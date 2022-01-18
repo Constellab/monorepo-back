@@ -14,6 +14,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatMenuModule} from '@angular/material/menu';
 
 @NgModule({
   exports: [
@@ -29,7 +30,8 @@ import {MatToolbarModule} from '@angular/material/toolbar';
     FlexLayoutModule,
     MatGridListModule,
     MatTabsModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatMenuModule
   ],
 
   providers: [

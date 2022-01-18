@@ -8,7 +8,8 @@ import {
   FlLoaderModule, FlPortalModule,
   FlSectionModule,
   FlSnackBarModule, FlTextEditorModule,
-  FlTranslateModule
+  FlTranslateModule,
+  FlContextMenuModule, FlIconModule
 } from '@monorepo/front-core-lib';
 
 @NgModule({
@@ -23,7 +24,9 @@ import {
     FlTranslateModule,
     FlSectionModule,
     FlAuthModule,
-    FlTextEditorModule
+    FlTextEditorModule,
+    FlContextMenuModule,
+    FlIconModule
   ]
 })
 export class HaCustomLibraryModule {

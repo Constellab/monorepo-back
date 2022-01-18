@@ -6,15 +6,18 @@ import {CoreModule} from '@angular/flex-layout';
 import {HaPublicDocPageModule} from './ha-public-doc-page/ha-public-doc-page.module';
 import {HaPublicSidenavComponent} from './ha-public-sidenav/ha-public-sidenav.component';
 import {CommonModule} from "@angular/common";
+import { HaPublicSidenavCreateFormDialogComponent } from './ha-public-sidenav/ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
-  declarations: [HaPublicBrickPageComponent, HaPublicSidenavComponent],
+  declarations: [HaPublicBrickPageComponent, HaPublicSidenavComponent, HaPublicSidenavCreateFormDialogComponent],
     imports: [
         HaPublicCoreModule,
         HaCoreModule,
         HaPublicDocPageModule,
         CoreModule,
         CommonModule,
+        ReactiveFormsModule,
     ]
 })
 export class HaPublicBrickPageModule {

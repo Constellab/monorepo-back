@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post, Query} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Query} from '@nestjs/common';
 import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
@@ -31,6 +31,13 @@ export class HnBrickController {
     }
     brickIdAndVersion.version = 1; // A modif
     return this.brickService.findDocsByBrickAndVersion(await this.brickService.findById(brickIdAndVersion.id), brickIdAndVersion.version);
+  }
+
+  @BlPublic()
+  @Post('root-folder')
+  async findRootFolderId(@Body(new BlParsePipe(HnBrickIdAndVersion)) brickIdAndVersion: HnBrickIdAndVersion): Promise<{id: string}> {
+    const id: string = await this.brickService.findRootFolderId(await this.brickService.findById(brickIdAndVersion.id), brickIdAndVersion.version);
+    return {id: id};
   }
 
   @BlPublic()

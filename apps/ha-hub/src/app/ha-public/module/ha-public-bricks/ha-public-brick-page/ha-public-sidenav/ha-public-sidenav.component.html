@@ -1,11 +1,11 @@
 <mat-drawer-container class="container" autosize="true">
   <mat-drawer class="sidenav" mode="side" [opened]="true" >
-    <div class="g-full-height" (contextmenu)="onRightClick($event)">
+    <div class="g-full-height" (contextmenu)="onRightClick($event, true)">
 
       <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree item">
         <!-- This is the tree node template for leaf nodes -->
         <mat-tree-node *matTreeNodeDef="let node">
-          <mat-nav-list class="line" *ngIf="node.id != null">
+          <mat-nav-list class="line" *ngIf="node.id != null" (contextmenu)="onRightClick($event, false, node.id)">
             <a matTreeNodePadding matTreeNodePaddingIndent="15px" class="item" mat-list-item
                            [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
                             [routerLink]="node.completePath" routerLinkActive="active"
@@ -17,11 +17,14 @@
           </mat-nav-list>
         </mat-tree-node>
 
+        <mat-menu></mat-menu>
+
         <!-- This is the tree node template for expandable nodes -->
         <mat-tree-node *matTreeNodeDef="let node;when: hasChild">
           <mat-nav-list class="nav-list line">
             <mat-list-item class="item" matTreeNodePadding matTreeNodePaddingIndent="15px"
-                           [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}">
+                           [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
+                           (contextmenu)="onRightClick($event, true, node.id)">
               <a mat-icon-button matTreeNodeToggle
                       [attr.aria-label]="'Toggle ' + node.name">
                 <mat-icon class="mat-icon-rtl-mirror">

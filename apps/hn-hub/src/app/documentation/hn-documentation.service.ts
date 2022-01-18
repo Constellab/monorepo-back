@@ -3,6 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationContentDTO, HnDocumentationDTO} from './hn-documentation.entity';
 import {HnBrickVersion} from '../brick-version/hn-brick-version.entity';
+import {HnNodeDTO} from '../folder/hn-folder.entity';
 
 @Injectable()
 export class HnDocumentationService {
@@ -36,9 +37,12 @@ export class HnDocumentationService {
     return this.documentationsRepository.findOne(id, {relations: ['folder']});
   }
 
-  update(updateDocumentation: HnDocumentation): Promise<HnDocumentation> {
-
-    return this.documentationsRepository.save(updateDocumentation);
+  async update(updatedDocumentation: HnNodeDTO): Promise<HnDocumentation> {
+    const doc: HnDocumentation = await this.documentationsRepository.findOne(updatedDocumentation.id, {relations: ['folder']});
+    doc.path = updatedDocumentation.path;
+    doc.title = updatedDocumentation.title;
+    doc.completePath = doc.folder.completePath + updatedDocumentation.path + '/';
+    return this.documentationsRepository.save(doc);
   }
 
   async remove(id: string): Promise<void> {

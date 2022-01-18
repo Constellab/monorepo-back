@@ -36,5 +36,4 @@ export class HaFolderDTO extends HaEntity {
   folderId: string;
 
   order: number;
-
 }

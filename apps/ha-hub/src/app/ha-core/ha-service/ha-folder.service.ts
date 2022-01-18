@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { FlApiService } from '@monorepo/front-core-lib'
 import { Observable } from 'rxjs';
 import {HaFolder, HaFolderDTO} from '../ha-model/ha-entities/ha-folder.class';
-import {HaNode} from '../ha-model/ha-entities/ha-node.class';
+import {HaNode, HaNodeDTO} from '../ha-model/ha-entities/ha-node.class';
+import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
 
 /**
  * Service to manage documentation entity
@@ -21,8 +22,16 @@ export class HaFolderService {
    * Call http create
    * @param object json object
    */
-  public create(object: Partial<HaFolderDTO>): Observable<HaFolder> {
-    return this.apiService.post(this.route, object, HaFolderDTO);
+  public create(object: Partial<HaNodeDTO>): Observable<HaFolder> {
+    return this.apiService.post(this.route, object, HaNodeDTO);
+  }
+
+  /**
+   * Call http createDocumentation
+   * @param object json object
+   */
+  public createDocumentation(object: Partial<HaNodeDTO>): Observable<HaDocumentation> {
+    return this.apiService.post(this.route + '/doc', object, HaNodeDTO);
   }
 
   /**
@@ -44,8 +53,8 @@ export class HaFolderService {
    * Call http update
    * @param object json object
    */
-  public update(object: Partial<HaFolderDTO>): Observable<HaFolder> {
-    return this.apiService.put(this.route, object, HaFolderDTO);
+  public update(object: Partial<HaNodeDTO>): Observable<HaFolder> {
+    return this.apiService.put(this.route, object, HaFolder);
   }
 
   /**

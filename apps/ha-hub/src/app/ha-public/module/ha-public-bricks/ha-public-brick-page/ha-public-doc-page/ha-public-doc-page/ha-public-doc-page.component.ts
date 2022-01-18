@@ -59,12 +59,14 @@ export class HaPublicDocPageComponent implements OnInit {
   }
 
   private getDocumentationByPath(url: UrlSegment[]): void {
+
     let path: string;
     if(url.length == 0){
       path = 'getting-started/';
     } else {
-      path = url[0].path + '/';
+      path = url.join('/') + '/';
     }
+    console.log(path);
     this.documentation$ = this.brickService.getDocByPath(this.brick.id, path);
     this.documentation$.subscribe((doc: HaDocumentation) => {
       this.buildForm();

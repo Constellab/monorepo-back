@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { FlApiService } from '@monorepo/front-core-lib'
 import { Observable } from 'rxjs';
 import {HaDocumentation, HaDocumentationDTO} from '../ha-model/ha-entities/ha-documentation.class';
+import {HaNodeDTO} from '../ha-model/ha-entities/ha-node.class';
 
 /**
  * Service to manage documentation entity
@@ -55,8 +56,8 @@ export class HaDocumentationService {
    * Call http update
    * @param object json object
    */
-    public update(object: Partial<HaDocumentation>): Observable<HaDocumentation> {
-      return this.apiService.put('folder/doc', object, HaDocumentation);
+    public update(object: Partial<HaNodeDTO>): Observable<HaDocumentation> {
+      return this.apiService.put(this.route, object, HaDocumentation);
     }
 
     /**

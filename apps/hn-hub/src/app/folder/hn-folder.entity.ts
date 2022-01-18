@@ -2,7 +2,7 @@ import {Column, Entity, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent, Un
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {HnBrickVersion} from '../brick-version/hn-brick-version.entity';
-import {BlNotUpdatable} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlNotUpdatable} from '@monorepo/back-core-lib';
 
 @Unique(['folder', 'order'])
 @Entity('Folder')
@@ -33,6 +33,26 @@ export class HnFolder extends HnBaseEntity {
 
   @OneToMany(() => HnDocumentation, doc => doc.folder)
   documentations: HnDocumentation[];
+
+  nextOrder(): number{
+    let maxOrder:number = 0;
+    console.log(this.folders, this.documentations);
+    if(typeof this.folders !== 'undefined'){
+      this.folders.map(f => {
+        if(f.order >= maxOrder){
+          maxOrder = f.order+1;
+        }
+      });
+    }
+    if(typeof this.documentations !== 'undefined'){
+      this.documentations.map(d => {
+        if(d.order >= maxOrder){
+          maxOrder = d.order+1;
+        }
+      });
+    }
+    return maxOrder;
+  }
 }
 
 export class HnFolderResDTO extends HnBaseEntity {
@@ -80,4 +100,14 @@ export class HnNode extends HnBaseEntity {
       this.children = children;
     }
   }
+}
+
+export class HnNodeDTO extends BlEntityWithId{
+  title: string;
+  path: string;
+  folderId?: string;
+  isFolder: boolean;
+  order?: number;
+
+
 }

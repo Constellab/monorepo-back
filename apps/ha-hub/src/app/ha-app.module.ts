@@ -8,7 +8,7 @@ import {
   FlSnackBarModule,
   FlDialogModule,
   FlAuthModule,
-  FlHttpInterceptorService, FlPortalModule
+  FlHttpInterceptorService, FlPortalModule, FlIconModule
 } from '@monorepo/front-core-lib';
 import {DaApiServiceConfig} from './ha-core/ha-model/ha-config/ha-api-module.config';
 import {HaApiErrorService} from './ha-core/ha-model/ha-config/ha-api-error.service';
@@ -17,6 +17,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { HaAppRoutingModule } from './ha-app-routing-module';
 import { HaCoreModule } from './ha-core/ha-core.module';
 import {HaAuthService} from './ha-core/ha-service/ha-auth.service';
+import {caSvgIcons} from '../../../ca-central-front/src/app/ca-core/model/config/ca-svg-icon-config';
 
 @NgModule({
   declarations: [AppComponent],
@@ -45,6 +46,11 @@ import {HaAuthService} from './ha-core/ha-service/ha-auth.service';
     FlDialogModule.forRoot(),
 
     FlPortalModule.forRoot(),
+
+    FlIconModule.forRoot({
+      iconFolder: 'assets/mat-icons/',
+      iconsToRegister: caSvgIcons
+    })
 
   ],
   providers: [{

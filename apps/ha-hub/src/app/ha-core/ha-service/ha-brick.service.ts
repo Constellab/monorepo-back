@@ -34,7 +34,6 @@ export class HaBrickService {
    * Call http post to get the brick current doc
    */
   public getDocByPath(brickId: string, path: string, version: number = 1): Observable<HaDocumentation> {
-    console.log({id: brickId, path: path, version: version});
     return this.apiService.post(`${this.route}/doc`, {id: brickId, path: path, version: version});
   }
 
@@ -51,5 +50,9 @@ export class HaBrickService {
    */
   public getByName(name: string): Observable<HaBrick> {
     return this.apiService.get(`${this.route}/name?name=${name}`, HaBrick);
+  }
+
+  public getRootFolderId(brickId: string): Observable<any>{
+    return this.apiService.post(this.route + '/root-folder', {id: brickId, version: 1});
   }
 }
