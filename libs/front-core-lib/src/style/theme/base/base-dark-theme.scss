@@ -7,7 +7,7 @@
 
 // Primary
 $custom-primary: (
-  500: #00C8AF,
+  500: #94EBD1,
   contrast: (
     500: #010202,
   )
@@ -38,9 +38,10 @@ $warn: mat-palette($custom-warn, 500, 500, 500, 500);
 $theme: mat-dark-theme($primary, $accent, $warn);
 
 // define the background theme
-$background: map_merge($mat-dark-theme-background, (background: #1B1919, card: #222222, dialog:#222222));
+//$background: map_merge($mat-dark-theme-background, (background: #1B1919, card: #222222, dialog:#222222));
+$background: $mat-dark-theme-background;
 // Set the background theme in the theme variable
-$theme: map_merge($theme, (background: $background));
+//$theme: map_merge($theme, (background: $background));
 
 // define the foreground
 $foreground: map_merge($mat-dark-theme-foreground, (base: #E8E8E8, icon: #E8E8E8, icons: #E8E8E8, text: #E8E8E8));
