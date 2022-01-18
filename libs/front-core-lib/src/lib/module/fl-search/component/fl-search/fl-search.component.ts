@@ -6,7 +6,7 @@ import {MatDrawer} from '@angular/material/sidenav';
 /**
  * Search component with a header, a drawer search on the right and result in table on bottom
  *
- * The FlSearchState must be provided and configured and the Fl_SeARCH_CONFIG must also be provided.
+ * The FlSearchState must be provided and configured and the Fl_SEARCH_CONFIG must also be provided.
  */
 @Component({
   selector: 'fl-search',

@@ -162,6 +162,11 @@
 
 /***************************** Table *****************************/
 
+// force the mat table to take the color of the background
+.mat-table {
+  background: initial;
+}
+
 .mat-header-cell {
   padding-right: 5px;
   box-sizing: border-box;

@@ -22,7 +22,7 @@ export class LabMainAppComponent implements OnInit {
 
   get toolbarColor(): Observable<ThemePalette> {
     return this.labEnvManager.getLabEnvironment$().pipe(
-      map(env => env === 'prod' ? 'primary' : 'accent')
+      map(env => env === 'prod' ? null : 'accent')
     );
   }
 

@@ -4,8 +4,9 @@
   padding: 1em 0.3em;
 }
 
-.drawer-content {
-  background-color: var(--card-background);
+// take the color of the parent
+.drawer-container {
+  background-color: initial;
 }
 
 .saved-search-container {
