@@ -10,6 +10,9 @@ import {FlDialogService, FlPortalActionsService} from '@monorepo/front-core-lib'
 import {
   CaLabInstanceDockerUpFormComponent
 } from '../ca-lab-instance-docker-up-form/ca-lab-instance-docker-up-form.component';
+import {
+  CaLabInstanceStatusDialogComponent
+} from '../../../ca-core/entity-module/ca-lab-core/component/ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
 
 /**
  * Component only accessible by the admin
@@ -47,6 +50,10 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
   refresh(): void {
     this.labStatus$ = this.labInstanceService.getLabManagerStatus(this.labInstanceId);
     this.containers$ = this.labInstanceService.listContainers(this.labInstanceId);
+  }
+
+  openStatusDialog(): void {
+    this.dialogService.openMediumDialog(CaLabInstanceStatusDialogComponent, {data: this.labInstanceId});
   }
 
   initAll(): void {
@@ -93,6 +100,14 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
     this.actionService.addAction({
       action: this.labInstanceService.downContainers(this.labInstanceId),
       text: 'Down containers',
+      type: this.actionType
+    });
+  }
+
+  pullContainers(): void {
+    this.actionService.addAction({
+      action: this.labInstanceService.pullContainers(this.labInstanceId),
+      text: 'Pull containers',
       type: this.actionType
     });
   }

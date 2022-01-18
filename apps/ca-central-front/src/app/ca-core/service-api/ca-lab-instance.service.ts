@@ -149,6 +149,10 @@ export class CaLabInstanceService {
     return this.apiService.post(`${this.route}/${id}/down-containers`, null);
   }
 
+  public pullContainers(id: string): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/pull-containers`, null);
+  }
+
   public pullBiotaDb(id: string): Observable<void> {
     return this.apiService.post(`${this.route}/${id}/pull-biota-db`, null);
   }

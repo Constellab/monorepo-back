@@ -27,7 +27,7 @@ body {
 
 p {
   margin: 0;
-  color :var(--light-color)
+  color: var(--light-color)
 }
 
 a {
@@ -43,7 +43,7 @@ h1 {
   font-weight: 900;
 }
 
-h2{
+h2 {
   font-size: 20px;
   font-weight: bold;
   text-transform: uppercase;
@@ -205,7 +205,7 @@ ul, ol {
 
 
 /**************************** Flex *****************************/
-.g-grow-max{
+.g-grow-max-height {
   // use to force the max height of the grow element
   min-height: 0;
 }
@@ -213,6 +213,6 @@ ul, ol {
 /**************************** Other *****************************/
 
 // Class to limit width of an element to keep it readable event it wide screes
-.g-max-article-width{
+.g-max-article-width {
   max-width: 60rem;
 }

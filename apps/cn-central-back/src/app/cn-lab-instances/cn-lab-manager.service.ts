@@ -61,6 +61,10 @@ export class CnLabManagerService {
     return this.labManagerApiService.downContainers(labInstance.getLabManagerApiInfo());
   }
 
+  public async pullContainers(labInstance: CnLabInstance): Promise<void> {
+    return this.labManagerApiService.pullContainers(labInstance.getLabManagerApiInfo());
+  }
+
   public async pullBiota(labInstance: CnLabInstance): Promise<void> {
     return this.labManagerApiService.pullBiota(labInstance.getLabManagerApiInfo());
   }

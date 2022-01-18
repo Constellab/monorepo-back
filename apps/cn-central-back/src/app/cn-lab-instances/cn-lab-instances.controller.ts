@@ -176,6 +176,11 @@ export class CnLabInstancesController {
     return await this.securityLayer.downContainers(id);
   }
 
+  @Post(':id/pull-containers')
+  async pullContainers(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return await this.securityLayer.pullContainers(id);
+  }
+
   @Post(':id/pull-biota-db')
   async pullBiotaDb(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.securityLayer.pullBiota(id);

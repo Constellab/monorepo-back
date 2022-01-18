@@ -162,6 +162,11 @@ export class CnLabInstancesSecurityLayer extends CnAbstractSecurityLayer<CnLabIn
     return this.labManagerService.downContainers(labInstance);
   }
 
+  public async pullContainers(labId: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.pullContainers(labInstance);
+  }
+
   public async pullBiota(labId: string): Promise<void> {
     const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
     return this.labManagerService.pullBiota(labInstance);

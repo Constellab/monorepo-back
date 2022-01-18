@@ -37,6 +37,7 @@
   "frontUrl": "Front url",
   "virtual_host": "Virtual host",
   "lab_check_status": "Check status",
+  "lab_manager_refresh": "Refresh",
   "delete_lab_instance": "Delete lab instance",
   "delete_lab_instance_confirmation": "Are you sure you want to delete the lab instance ? All the history will be deleted and can't be recovered",
   "lab_instance_deleted": "Lab instance deleted",

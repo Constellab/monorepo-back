@@ -57,6 +57,10 @@ export class CnExternalLabManagerApiService {
     return this.post(apiInfo, `${this.baseLabRoute}/down-containers`, null).toPromise();
   }
 
+  public async pullContainers(apiInfo: CnExternalApiInfo): Promise<void> {
+    return this.post(apiInfo, `${this.baseLabRoute}/pull-containers`, null).toPromise();
+  }
+
   public async pullBiota(apiInfo: CnExternalApiInfo): Promise<void> {
     return this.post(apiInfo, `${this.baseLabRoute}/pull-biota-db`, null).toPromise();
   }

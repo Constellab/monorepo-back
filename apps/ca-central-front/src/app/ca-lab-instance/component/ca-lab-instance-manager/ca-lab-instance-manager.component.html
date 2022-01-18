@@ -3,9 +3,16 @@
   <fl-card-header>
     <h2>{{'lab_manager' | translate}}</h2>
 
-    <fl-card-actions>
-      <button mat-icon-button type="button" (click)="refresh()">
+    <fl-card-actions class="action-buttons">
+
+      <button mat-stroked-button type="button" class="g-button-small" (click)="openStatusDialog()">
+        <mat-icon>info</mat-icon>
+        <span>{{'lab_check_status' | translate}}</span>
+      </button>
+
+      <button mat-stroked-button type="button" class="g-button-small button" (click)="refresh()">
         <mat-icon>refresh</mat-icon>
+        <span>{{'lab_manager_refresh' | translate}}</span>
       </button>
     </fl-card-actions>
   </fl-card-header>
@@ -27,6 +34,8 @@
               class="g-button-small" (click)="upContainers()">Up containers</button>
       <button mat-stroked-button type="button" color="primary"
               class="g-button-small" (click)="restartContainers()">Restart containers</button>
+      <button mat-stroked-button type="button" color="warn"
+              class="g-button-small" (click)="pullContainers()">Pull containers</button>
       <button mat-stroked-button type="button" color="primary"
               class="g-button-small" (click)="pullBiotaDb()">Pull biota</button>
       <button mat-stroked-button type="button" color="primary"
