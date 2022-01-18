@@ -28,18 +28,6 @@
 
     <mat-divider></mat-divider>
 
-    <div class="documentation">{{'documentations_links' | translate}}</div>
-
-    <a mat-menu-item *ngFor="let documentation of documentationBricks"
-       target="_blank" [href]="documentation.url">
-      <mat-icon [flIcon]="documentation.icon"></mat-icon>
-      <span>{{documentation.label | translate}}</span>
-    </a>
-
-    <mat-divider></mat-divider>
-
-
-
     <a mat-menu-item [routerLink]="monitoringRoute">
       <mat-icon>monitor_heart</mat-icon>
       <span>{{'monitoring.monitoring' | translate}}</span>

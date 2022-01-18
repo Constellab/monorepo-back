@@ -34,8 +34,6 @@
   "error_required": "Le champ '{{field}}' est obligatoire",
   "add_brick": "Ajouter une brique",
   "brick": "Brique",
-  "documentation": "Documentation",
-  "documentations_links": "Liens des documentations",
   "gws": "Web services",
   "input_max_length": "Taille max {{count}}",
   "open_resource_detail": "ouvrir le détail",

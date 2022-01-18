@@ -34,8 +34,6 @@
   "error_required": "The field '{{field}}' is mandatory",
   "add_brick": "Add brick",
   "brick": "Brick",
-  "documentation": "Documentation",
-  "documentations_links": "Documentations' links",
   "gws": "Web services",
   "input_max_length": "Max length {{count}}",
   "open_resource_detail": "Open detail",

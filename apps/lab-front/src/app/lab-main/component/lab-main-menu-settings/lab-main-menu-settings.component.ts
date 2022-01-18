@@ -4,7 +4,6 @@ import {FlConfirmDialogInput, FlDialogService} from '@monorepo/front-core-lib';
 import {LabAuthenticationService} from '../../../lab-core/service/lab-authentication.service';
 import {Router} from '@angular/router';
 import {LabSystemService} from '../../../lab-core/service/lab-system.service';
-import {DocumentationBrick, getDocumentationBricks} from '../../utils/lab-documentation-link.class';
 import {LabEnvironmentHelper} from '../../../lab-core/utils/lab-environment.helper';
 import {LabRouterService} from '../../../lab-core/service/lab-router.service';
 
@@ -18,7 +17,6 @@ import {LabRouterService} from '../../../lab-core/service/lab-router.service';
 })
 export class LabMainMenuSettingsComponent implements OnInit {
 
-  documentationBricks: DocumentationBrick[];
 
   codeServerUrl: string;
 
@@ -31,7 +29,6 @@ export class LabMainMenuSettingsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.documentationBricks = getDocumentationBricks();
     this.codeServerUrl = LabEnvironmentHelper.getCodelabFullUrl();
   }
 
