@@ -2,12 +2,18 @@ import {Component, OnInit} from '@angular/core';
 import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
 import {LabExperimentService} from '../../../../../lab-core/entity-service/lab-experiment.service';
 import {LabExperiment} from '../../../../../lab-core/model/entities/lab-experiment.entity';
-import {FlDialogService, FlSnackBarService, FlTranslateService} from '@monorepo/front-core-lib';
-import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
+import {
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDialogService,
+  FlSnackBarService
+} from '@monorepo/front-core-lib';
 import {
   LabSelectProcessTypeDialogComponent
 } from '../../../../../lab-core/entity-module/lab-type-core/component/lab-select-process-type-dialog/lab-select-process-type-dialog.component';
 import {LabTypeEntity} from '../../../../../lab-core/model/entities/lab-type/lab-type.entity';
+import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
+import {Observable} from 'rxjs';
 
 /**
  * Actions button for the workflow
@@ -22,15 +28,18 @@ export class LabWorkflowActionsComponent implements OnInit {
   saveIsLoading: boolean = false;
   startIsLoading: boolean = false;
 
+  experiment$: Observable<LabExperiment>;
+
   constructor(private workflowManager: LabWorkflowManagerState,
               private experimentService: LabExperimentService,
               private snackBarService: FlSnackBarService,
-              private actionState: LabWorkflowActionState,
-              private translateService: FlTranslateService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private experimentState: LabExperimentDetailPageState) {
   }
 
   ngOnInit(): void {
+    this.experiment$ = this.experimentState.getExperiment$();
+
   }
 
   get isLoading(): boolean {
@@ -89,5 +98,28 @@ export class LabWorkflowActionsComponent implements OnInit {
     this.snackBarService.openSuccessMessage('biox.experiment_started', true);
     this.startIsLoading = false;
   }
+
+  stopExperiment(): void {
+    const data: FlConfirmDialogInput = {
+      title: 'biox.stop_experiment',
+      content: 'biox.stop_experiment_confirmation',
+      translateTitleAndContent: true,
+      observable: this.experimentService.stopExperiment(this.experimentState.currentExperiment.id),
+      successMessage: 'biox.experiment_stopped',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(data).afterClosed().subscribe(
+      result => this.onUpdateExperimentClosed(result)
+    );
+  }
+
+
+  private onUpdateExperimentClosed(result: FlConfirmDialogResult<LabExperiment>): void {
+    if (result?.choice) {
+      this.experimentState.updateExperiment(result.result);
+    }
+  }
+
 
 }

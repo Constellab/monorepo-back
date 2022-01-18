@@ -8,37 +8,46 @@
     <h1>{{experiment.title}}</h1>
   </fl-text-icon>
 
-  <button mat-icon-button type="button" (click)="openCreateReport()"
-          [matTooltip]="'biox.create_report' | translate">
-    <mat-icon>post_add</mat-icon>
+  <button mat-icon-button type="button" [matMenuTriggerFor]="menu">
+    <mat-icon>more_vert</mat-icon>
   </button>
 
-  <ng-container *ngIf="experiment.isEditable()">
-    <button *ngIf="experiment.isRunning()" mat-icon-button type="button" (click)="stopExperiment()"
-            [matTooltip]="'biox.stop_experiment' | translate">
-      <mat-icon>stop</mat-icon>
+  <mat-menu #menu>
+    <button mat-menu-item type="button" (click)="openCreateReport()">
+      <mat-icon>post_add</mat-icon>
+      {{'biox.create_report' | translate}}
     </button>
 
-    <button mat-icon-button type="button" (click)="openUpdateDialog()"
-            [matTooltip]="'biox.update_experiment' | translate">
-      <mat-icon>edit</mat-icon>
-    </button>
+    <!--  Update buttons  -->
+    <ng-container *ngIf="experiment.isEditable()">
+      <button mat-menu-item type="button" (click)="openUpdateDialog()">
+        <mat-icon>edit</mat-icon>
+        {{'biox.update_experiment' | translate}}
+      </button>
 
-    <button mat-icon-button type="button" (click)="openValidationDialog()"
-            [matTooltip]="'biox.validate_experiment' | translate">
-      <mat-icon>verified</mat-icon>
-    </button>
+      <button mat-menu-item type="button" (click)="openValidationDialog()">
+        <mat-icon>verified</mat-icon>
+        {{'biox.validate_experiment' | translate}}
+      </button>
 
-    <button mat-icon-button type="button" (click)="openTagsFormDialog()"
-            [matTooltip]="'tags' | translate">
+      <button mat-menu-item type="button" (click)="resetExperiment()">
+        <mat-icon>restart_alt</mat-icon>
+        {{'biox.reset_experiment' | translate}}
+      </button>
+    </ng-container>
+
+    <button mat-menu-item type="button" (click)="openTagsFormDialog()">
       <mat-icon>local_offer</mat-icon>
+      {{'tags' | translate}}
     </button>
-  </ng-container>
 
-  <button mat-icon-button type="button" (click)="openDuplicateConfirmation()"
-          [matTooltip]="'biox.clone_experiment' | translate">
-    <mat-icon>content_copy</mat-icon>
-  </button>
+    <button mat-menu-item type="button" (click)="openDuplicateConfirmation()">
+      <mat-icon>content_copy</mat-icon>
+      {{'biox.clone_experiment' | translate}}
+    </button>
+
+
+  </mat-menu>
 
 
   <fl-status-chip [status]="experiment.status" mode="iconText"

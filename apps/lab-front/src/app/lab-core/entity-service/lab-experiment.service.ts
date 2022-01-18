@@ -80,6 +80,11 @@ export class LabExperimentService implements FlSearchService<LabExperiment> {
     return this.apiService.post(`${this.route}/${experimentId}/stop`, null, LabExperiment);
   }
 
+  // stop (kill) an experiment
+  public resetExperiment(experimentId: string): Observable<LabExperiment> {
+    return this.apiService.put(`${this.route}/${experimentId}/reset`, null, LabExperiment);
+  }
+
   public saveAndStartExperiment(experimentId: string, workflow: LabWorkflow): Observable<LabExperiment> {
     return this.updateExperimentProtocol(experimentId, workflow).pipe(
       mergeMap(() => this.startExperiment(experimentId))

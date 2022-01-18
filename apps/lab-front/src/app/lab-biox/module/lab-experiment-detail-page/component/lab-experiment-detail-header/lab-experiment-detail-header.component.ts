@@ -105,27 +105,6 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
       });
   }
 
-  stopExperiment(): void {
-    const data: FlConfirmDialogInput = {
-      title: 'biox.stop_experiment',
-      content: 'biox.stop_experiment_confirmation',
-      translateTitleAndContent: true,
-      observable: this.experimentService.stopExperiment(this.experimentState.currentExperiment.id),
-      successMessage: 'biox.experiment_stopped',
-      translateMessage: true
-    };
-
-    this.dialogService.openConfirmDialog(data).afterClosed().subscribe(
-      result => this.onStopExperimentClosed(result)
-    );
-  }
-
-  private onStopExperimentClosed(result: FlConfirmDialogResult<LabExperiment>): void {
-    if (result?.choice) {
-      this.experimentState.updateExperiment(result.result);
-    }
-  }
-
   openTagsFormDialog(): void {
     const experiment = this.experimentState.currentExperiment;
     this.tagDialogService.openUpdateTagDialog({
@@ -178,6 +157,21 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     if (report) {
       this.routerService.navigateToReportDetail(report.id);
     }
+  }
+
+  resetExperiment(): void{
+    const data: FlConfirmDialogInput = {
+      title: 'biox.reset_experiment',
+      content: 'biox.reset_experiment_confirmation',
+      translateTitleAndContent: true,
+      observable: this.experimentService.resetExperiment(this.experimentState.currentExperiment.id),
+      successMessage: 'biox.experiment_reset',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(data).afterClosed().subscribe(
+      (result: FlConfirmDialogResult) => this.onExperimentUpdate(result.result)
+    );
   }
 
 }

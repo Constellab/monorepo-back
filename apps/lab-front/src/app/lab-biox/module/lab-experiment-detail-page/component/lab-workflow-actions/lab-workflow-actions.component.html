@@ -1,4 +1,5 @@
-<div fxLayout="row wrap" fxLayoutGap="1em">
+<div fxLayout="row wrap" fxLayoutGap="1em"
+     *ngIf="experiment$ | async as experiment">
 
   <!-- Add object button  -->
   <button mat-icon-button type="button"
@@ -16,9 +17,17 @@
   </button>
 
   <button mat-icon-button type="button" (click)="start()"
+          *ngIf="!experiment.isRunning(); else isRunning"
           [matTooltip]="'biox.experiment_start' | translate" matTooltipPosition="below"
           [disabled]="isLoading">
     <mat-icon>play_arrow</mat-icon>
     <fl-button-loader *ngIf="startIsLoading"></fl-button-loader>
   </button>
+
+  <ng-template #isRunning>
+    <button mat-icon-button type="button" color="warn"
+            (click)="stopExperiment()" [matTooltip]="'biox.update_experiment' | translate">
+      <mat-icon>stop</mat-icon>
+    </button>
+  </ng-template>
 </div>
