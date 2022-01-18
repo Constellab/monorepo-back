@@ -5,8 +5,9 @@
       <!--  Title and logo    -->
       <div fxLayout="row wrap" fxLayoutAlign="start center">
         <mat-icon class="icon g-icon-big" *ngIf="mode === 'big'" svgIcon="lab"></mat-icon>
-        <p>{{labInstance.name}}</p>
+        <h2>{{labInstance.name}}</h2>
       </div>
+
 
       <fl-card-actions>
         <fl-status-chip class="status" [status]="labInstance.currentStatus.status"

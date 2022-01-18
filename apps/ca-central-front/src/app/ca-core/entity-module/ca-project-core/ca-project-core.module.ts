@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {DaProjectCardComponent} from './component/ca-project-card/da-project-card.component';
+import {CaProjectCardComponent} from './component/ca-project-card/ca-project-card.component';
 import {DaProjectFormDialogComponent} from './component/ca-project-form-dialog/da-project-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaCoreModule} from '../../ca-core.module';
@@ -14,14 +14,14 @@ import {RouterModule} from '@angular/router';
 @NgModule({
   declarations: [
     // Component
-    DaProjectCardComponent,
+    CaProjectCardComponent,
     DaProjectFormDialogComponent,
     DaProjectsListComponent,
     DaProjectInfoComponent,
   ],
   exports: [
     // Component
-    DaProjectCardComponent,
+    CaProjectCardComponent,
     DaProjectFormDialogComponent,
     DaProjectsListComponent,
     DaProjectInfoComponent,
