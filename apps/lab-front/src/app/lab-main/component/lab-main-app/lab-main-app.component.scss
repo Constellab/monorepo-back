@@ -5,6 +5,7 @@
 
 .toolbar {
   height: var(--menu-toolbar-height);
+  border-bottom: var(--grey-low-contrast) 1px solid;
 }
 
 .nav-button {
