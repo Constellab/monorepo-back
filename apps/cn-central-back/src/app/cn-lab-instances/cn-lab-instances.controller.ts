@@ -195,4 +195,9 @@ export class CnLabInstancesController {
   public stopCurrentTask(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.securityLayer.stopCurrentTask(id);
   }
+
+  @Post(':id/system-prune')
+  public systemPrune(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
+    return this.securityLayer.systemPrune(id);
+  }
 }

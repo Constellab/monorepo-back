@@ -73,6 +73,10 @@ export class CnExternalLabManagerApiService {
     return this.post(apiInfo, `${this.baseLabRoute}/stop-current-task`, null).toPromise();
   }
 
+  public async systemPrune(apiInfo: CnExternalApiInfo): Promise<void> {
+    return this.post(apiInfo, `${this.baseLabRoute}/system-prune`, null).toPromise();
+  }
+
 
   /**
    * Make an http post with the ip of the lab and the API key of the lab in header

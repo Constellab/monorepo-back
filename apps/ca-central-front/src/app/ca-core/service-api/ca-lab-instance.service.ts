@@ -164,4 +164,8 @@ export class CaLabInstanceService {
   public stopCurrentTask(id: string): Observable<void> {
     return this.apiService.post(`${this.route}/${id}/stop-current-task`, null);
   }
+
+  public systemPrune(id: string): Observable<void> {
+    return this.apiService.post(`${this.route}/${id}/system-prune`, null);
+  }
 }

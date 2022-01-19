@@ -45,6 +45,7 @@ export class CaLabDockerPs {
 
 export interface CaLabComposeUpOptions {
   updateBricks?: boolean;
+  updateContainers?: boolean;
 }
 
 export type CaLabTaskStatus = 'RUNNING' | 'SUCCESS' | 'ERROR';

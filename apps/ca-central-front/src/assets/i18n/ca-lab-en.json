@@ -55,5 +55,6 @@
   "lab_manager_no_task": "No task",
   "lab_manager_compose_up_form": "Option to up the lab",
   "lab_update_bricks": "Update bricks",
+  "lab_update_containers": "Update containers",
   "lab_start_container": "Start lab"
 }

@@ -136,6 +136,14 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
     });
   }
 
+  systemPrune(): void {
+    this.actionService.addAction({
+      action: this.labInstanceService.systemPrune(this.labInstanceId),
+      text: 'System prune',
+      type: this.actionType
+    });
+  }
+
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();

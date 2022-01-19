@@ -182,6 +182,11 @@ export class CnLabInstancesSecurityLayer extends CnAbstractSecurityLayer<CnLabIn
     return this.labManagerService.stopCurrentTask(labInstance);
   }
 
+  public async systemPrune(labId: string): Promise<void> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.systemPrune(labInstance);
+  }
+
   private checkAuthorizationLabManager(labId: string): Promise<CnLabInstance> {
     return this.getAndCheckAuthorizationToUpdateById(labId);
   }

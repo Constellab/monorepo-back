@@ -23,6 +23,7 @@ export interface CnLabDockerPs {
 
 export interface CnLabComposeUpOptions {
   updateBricks?: boolean;
+  updateContainers?: boolean;
 }
 
 export type CnLabTaskStatus = 'RUNNING' | 'SUCCESS' | 'ERROR';

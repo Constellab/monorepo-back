@@ -76,4 +76,8 @@ export class CnLabManagerService {
   public async stopCurrentTask(labInstance: CnLabInstance): Promise<void> {
     return this.labManagerApiService.stopCurrentTask(labInstance.getLabManagerApiInfo());
   }
+
+  public async systemPrune(labInstance: CnLabInstance): Promise<void> {
+    return this.labManagerApiService.systemPrune(labInstance.getLabManagerApiInfo());
+  }
 }

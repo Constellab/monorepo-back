@@ -55,5 +55,6 @@
   "lab_manager_no_task": "Aucune tâche",
   "lab_manager_compose_up_form": "Option pour démarrer le lab",
   "lab_update_bricks": "Mettre à jour les briques",
+  "lab_update_containers": "Mettre à jour les conteneurs",
   "lab_start_container": "Démarrer le lab"
 }
