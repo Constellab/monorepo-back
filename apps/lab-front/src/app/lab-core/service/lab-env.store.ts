@@ -3,6 +3,7 @@ import {FlCleanableService, FlCleanerService, FlLocalStorageService} from '@mono
 import {LabEnvironment} from '../model/global/lab-environment.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {LabEnvironmentHelper} from '../utils/lab-environment.helper';
+import {map} from 'rxjs/operators';
 
 /**
  * Class to manage the env and jwt, store it and clean it
@@ -116,12 +117,12 @@ export class LabEnvStore implements FlCleanableService {
     return this._labEnvironment$.value;
   }
 
-  public isDev(): boolean {
-    return this.getLabEnvironment() === 'dev';
+  public isDev$(): Observable<boolean> {
+    return this.getLabEnvironment$().pipe(map(env => env === 'dev'));
   }
 
-  public isProd(): boolean {
-    return this.getLabEnvironment() === 'prod';
+  public isProd$(): Observable<boolean> {
+    return this.getLabEnvironment$().pipe(map(env => env === 'prod'));
   }
 
   /**

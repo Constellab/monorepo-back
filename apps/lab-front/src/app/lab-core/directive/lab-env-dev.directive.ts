@@ -1,14 +1,13 @@
 import {Directive, OnDestroy, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
 import {FlAbstractIfDirective} from '@monorepo/front-core-lib';
 import {LabEnvStore} from '../service/lab-env.store';
-import {Subscription} from 'rxjs';
+import {Observable} from 'rxjs';
 
 @Directive({
   selector: '[labEnvDev]'
 })
 export class LabEnvDevDirective extends FlAbstractIfDirective implements OnInit, OnDestroy {
 
-  private subscription: Subscription;
 
   constructor(templateRef: TemplateRef<any>,
               viewContainer: ViewContainerRef,
@@ -17,18 +16,15 @@ export class LabEnvDevDirective extends FlAbstractIfDirective implements OnInit,
   }
 
   ngOnInit(): void {
-    this.subscription = this.labEnvStore.getLabEnvironment$().subscribe(
-      () => this.updateView()
-    );
+    super.ngOnInit();
   }
 
-
-  protected showView(): boolean {
-    return this.labEnvStore.isDev();
+  protected showView(): Observable<boolean> {
+    return this.labEnvStore.isDev$();
   }
 
   ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
+    super.ngOnDestroy();
   }
 
 }

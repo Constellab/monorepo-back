@@ -1,11 +1,12 @@
-import {Directive, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, OnDestroy, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Observable, Subscription} from 'rxjs';
 
 /**
  * Abstract class to simplify creation of structural directive that
  * work like ngIf (directive to show or hide content based on condition).
  */
 @Directive()
-export abstract class FlAbstractIfDirective {
+export abstract class FlAbstractIfDirective implements OnInit, OnDestroy {
 
   /**
    * Current status of the view
@@ -22,40 +23,65 @@ export abstract class FlAbstractIfDirective {
    */
   protected elseTemplateRef: TemplateRef<any>;
 
+  private subscription: Subscription;
+
   protected constructor(
     protected templateRef: TemplateRef<any>,
-    protected viewContainer: ViewContainerRef
-  ) {
+    protected viewContainer: ViewContainerRef) {
   }
+
+  ngOnInit(): void {
+    this.updateView();
+  }
+
 
   /**
    * Method to update the view (hide or show content)
-   *
-   * Call this method when the inputs changed
    */
-  protected updateView(): void {
-    if (this.showView()) {
-      // check is it's hidden or not
-      if (this.currentMode !== 'show') {
-        // create the view
-        this.viewContainer.createEmbeddedView(this.templateRef);
-        this.currentMode = 'show';
-      }
+  private updateView(): void {
+    const showView: boolean | Observable<boolean> = this.showView();
+
+    if (showView instanceof Observable) {
+      this.subscription = showView.subscribe(
+        result => this.toggleView(result)
+      );
     } else {
-      // check the new mode of display (if the else template exists)
-      const newMode = this.elseTemplateRef == null ? 'none' : 'else';
+      this.toggleView(showView);
+    }
+  }
 
-      // check that the mode has changed otherwise do nothing
-      if (newMode !== this.currentMode) {
-        this.viewContainer.clear();
+  private toggleView(showView: boolean): void {
+    if (showView) {
+      this.createTemplate();
+    } else {
+      this.destroyTemplate();
+    }
+  }
 
-        // if an else template exists create the else view
-        if (newMode === 'else') {
-          this.viewContainer.createEmbeddedView(this.elseTemplateRef);
-        }
 
-        this.currentMode = newMode;
+  private createTemplate(): void {
+    // check if it's hidden or not
+    if (this.currentMode !== 'show') {
+      // create the view
+      this.viewContainer.createEmbeddedView(this.templateRef);
+      this.currentMode = 'show';
+    }
+  }
+
+  private destroyTemplate(): void {
+    // check the new mode of display (if the else template exists)
+    const newMode = this.elseTemplateRef == null ? 'none' : 'else';
+
+    // check that the mode has changed otherwise do nothing
+    if (newMode !== this.currentMode) {
+      this.viewContainer.clear();
+
+      // if an else template exists create the else view
+      if (newMode === 'else') {
+        this.viewContainer.createEmbeddedView(this.elseTemplateRef);
       }
+
+      this.currentMode = newMode;
     }
   }
 
@@ -64,5 +90,11 @@ export abstract class FlAbstractIfDirective {
    *
    * If returns true, the view is created otherwise it is hidden
    */
-  protected abstract showView(): boolean;
+  protected abstract showView(): boolean | Observable<boolean>;
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
+
+
 }

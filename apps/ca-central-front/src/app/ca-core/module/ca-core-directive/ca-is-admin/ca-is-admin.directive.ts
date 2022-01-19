@@ -1,4 +1,4 @@
-import {Directive, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, OnDestroy, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
 import {FlAbstractIfDirective} from '@monorepo/front-core-lib';
 import {CaAuthenticatedUserService} from '../../../service-api/ca-authenticated-user.service';
 
@@ -8,7 +8,7 @@ import {CaAuthenticatedUserService} from '../../../service-api/ca-authenticated-
 @Directive({
   selector: '[caIsAdmin]'
 })
-export class CaIsAdminDirective extends FlAbstractIfDirective implements OnInit{
+export class CaIsAdminDirective extends FlAbstractIfDirective implements OnInit, OnDestroy {
 
   constructor(templateRef: TemplateRef<any>,
               viewContainer: ViewContainerRef,
@@ -17,7 +17,7 @@ export class CaIsAdminDirective extends FlAbstractIfDirective implements OnInit{
   }
 
   ngOnInit(): void {
-    this.updateView();
+    super.ngOnInit();
   }
 
 
@@ -25,5 +25,7 @@ export class CaIsAdminDirective extends FlAbstractIfDirective implements OnInit{
     return this.authenticatedUserService.isAdmin();
   }
 
-
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+  }
 }

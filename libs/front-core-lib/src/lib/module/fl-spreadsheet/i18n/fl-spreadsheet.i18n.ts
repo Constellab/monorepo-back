@@ -76,7 +76,7 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     chart_nb_of_bins_error: 'The number of classes must be an integer higher than 1',
     chart_serie_required_error: 'You must define at least 1 serie',
     chart_update: 'Update selection',
-    chart_refresh: 'Rafraichir',
+    chart_refresh: 'Refresh',
     cell_value_object: 'Object',
     open_cell_object_in_sheet: 'Open in a sheet',
     sheet: 'Sheet'
