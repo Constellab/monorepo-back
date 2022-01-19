@@ -22,14 +22,14 @@ export class HnBrickVersion extends HnBaseEntity {
   @ManyToOne(() => HnBrick, {eager: true})
   brick: HnBrick;
 
-  @Column()
-  major: number = 1;
+  @Column({default: 1})
+  major: number;
 
-  @Column()
-  minor: number = 0;
+  @Column({default: 0})
+  minor: number;
 
-  @Column()
-  patch: number = 0;
+  @Column({default: 0})
+  patch: number;
 
   @Column()
   isLatest: boolean = true;
@@ -39,10 +39,9 @@ export class HnBrickVersion extends HnBaseEntity {
     return [this.major, this.minor, this.patch].join('.');
   }
 
-  constructor(brick: HnBrick, version: number[] = []) {
-    super();
+  initialize(brick: HnBrick, version?: number[]){
     this.brick = brick;
-    if(version.length == 3) {
+    if(version && version.length == 3){
       this.major = version[0];
       this.minor = version[1];
       this.patch = version[2];

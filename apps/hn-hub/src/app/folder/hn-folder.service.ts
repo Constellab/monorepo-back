@@ -29,7 +29,7 @@ export class HnFolderService {
       path: createFolderRes.path,
       completePath: folder ? (folder.completePath ? folder.completePath : '') + createFolderRes.path + '/' : null,
       brickVersion: brickVersion ? brickVersion : folder.brickVersion,
-      order: !(typeof createFolderRes.order === 'undefined') ? createFolderRes.order : folder.nextOrder()
+      order: createFolderRes.order ? createFolderRes.order : folder.nextOrder()
   }
 
     return this.foldersRepository.save(createFolder);
@@ -92,13 +92,13 @@ export class HnFolderService {
       new HnNode(folder.id, folder.title, folder.path, folder.completePath, folder.order, [], folder.folder ? folder.folder.id : null);
 
     if (folder.documentations != null) {
-      folder.documentations.map(doc => {
+      folder.documentations.forEach(doc => {
         currentChild.push(new HnNode(doc.id, doc.title, doc.path, doc.completePath, doc.order));
       });
     }
 
     if (folder.folders != null) {
-      folder.folders.map(f => {
+      folder.folders.forEach(f => {
         currentChild.push(this.createTree(f));
       })
     }
@@ -118,7 +118,7 @@ export class HnFolderService {
     let arrayChildFolder: HnFolder[] = [];
 
     folder.folders.sort((a, b) => a.order - b.order);
-    folder.folders.map(f => {
+    folder.folders.forEach(f => {
       arrayChildFolder = arrayChildFolder.concat(this.TreeToArray(f));
     });
     array = array.concat(arrayChildFolder);
@@ -169,7 +169,6 @@ export class HnFolderService {
   //   return folder;
   // }
 
-  //TODO: Check the remove, it doesn't work
   async remove(id: string): Promise<void> {
     const folderToDelete: HnFolder = await this.foldersRepository.findOne(id, {relations: ['documentations', 'folders']});
     if (folderToDelete.documentations.length <= 0 && folderToDelete.folders.length <= 0) {

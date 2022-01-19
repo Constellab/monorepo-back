@@ -38,9 +38,6 @@ export class HnDocumentation extends HnBaseEntity {
     return newDoc;
   }
 
-  constructor() {
-    super();
-  }
 }
 
 export class HnDocumentationDTO {

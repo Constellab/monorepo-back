@@ -36,6 +36,7 @@
   "email_invalid": "The email address is not valid",
   "no_user": "No user",
   "not_authorized": "Not authorized",
+  "login": "Login",
   "connection_lost": "The connection has been lost",
   "session_expired": "Session expired",
   "order_form_error": "The value must be an integer over or equal to 0",

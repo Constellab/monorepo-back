@@ -30,13 +30,10 @@ export class HnBrick extends HnBaseEntity{
   @Column()
   isCertified: boolean;
 
-  constructor(brickDTO: HnBrickDTO) {
-    super();
-    if(brickDTO != null){
-      this.name = brickDTO.name;
-      this.description = brickDTO.description;
-      this.isCertified = false;
-    }
+  initialize(name: string, description: string, isCertified: boolean){
+    this.name = name;
+    this.description = description;
+    this.isCertified = isCertified;
   }
 
 }

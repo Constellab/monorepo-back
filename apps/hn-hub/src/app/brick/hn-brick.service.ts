@@ -20,7 +20,10 @@ export class HnBrickService {
   }
 
   async create(createdBrick: HnCreateBrickDTO): Promise<HnBrick> {
-    let brick: HnBrick = new HnBrick(createdBrick);
+    let brick: HnBrick = new HnBrick();
+    if(createdBrick != null){
+      brick.initialize(createdBrick.name, createdBrick.description, false);
+    }
 
     brick = await this.bricksRepository.save(brick);
 

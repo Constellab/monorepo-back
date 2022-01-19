@@ -45,9 +45,13 @@ const routes: Route[] = [
         path: 'doc',
         component: HaPublicSidenavComponent,
         children: [{
-            path: '**',
+          path: '**',
           component: HaPublicDocPageComponent
         }]
+      },
+      {
+        path: '',
+        redirectTo: 'doc'
       }
     ]
   },

@@ -19,7 +19,8 @@ export class HnBrickVersionService {
   }
 
   async create(brick: HnBrick, version?: number[]): Promise<void> {
-    let brickVersion: HnBrickVersion = new HnBrickVersion(brick, version);
+    let brickVersion: HnBrickVersion = new HnBrickVersion();
+    brickVersion.initialize(brick, version);
     brickVersion = await this.brickVersionsRepository.save(brickVersion);
 
     await this.folderService.createMainFolders(brickVersion);

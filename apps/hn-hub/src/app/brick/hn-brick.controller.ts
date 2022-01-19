@@ -18,9 +18,9 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Get('name')
-  findOneByName(@Query() query: any): Promise<HnBrick> {
-    return this.brickService.findByName(query.name);
+  @Get('name/:name')
+  findOneByName(@Param('name') name: string): Promise<HnBrick> {
+    return this.brickService.findByName(name);
   }
 
   @BlPublic()

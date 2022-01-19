@@ -49,7 +49,7 @@ export class HaBrickService {
    * @param name name of the entity
    */
   public getByName(name: string): Observable<HaBrick> {
-    return this.apiService.get(`${this.route}/name?name=${name}`, HaBrick);
+    return this.apiService.get(`${this.route}/name/${name}`, HaBrick);
   }
 
   public getRootFolderId(brickId: string): Observable<any>{
