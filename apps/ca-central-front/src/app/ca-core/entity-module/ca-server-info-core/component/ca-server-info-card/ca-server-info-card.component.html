@@ -4,19 +4,43 @@
   </fl-card-header>
 
   <fl-card-body>
-
-    <p><span class="g-text-light">{{'host' | translate}} :</span> {{serverInfo.host}}</p>
-    <p><span class="g-text-light">{{'name' | translate}} :</span> {{serverInfo.name}}</p>
-    <p><span class="g-text-light">{{'diskSpace' | translate}} :</span> {{serverInfo.diskSpace}}</p>
-    <p><span class="g-text-light">{{'diskType' | translate}} :</span> {{serverInfo.diskType}}</p>
-    <p><span class="g-text-light">{{'cpuCount' | translate}} :</span> {{serverInfo.cpuCount}}</p>
-    <p><span class="g-text-light">{{'cpuType' | translate}} :</span> {{serverInfo.cpuType}}</p>
+    <fl-key-value>
+      <fl-key>{{'host' | translate}}</fl-key>
+      {{serverInfo.host}}
+    </fl-key-value>
+    <fl-key-value>
+      <fl-key>{{'name' | translate}}</fl-key>
+      {{serverInfo.name}}
+    </fl-key-value>
+    <fl-key-value>
+      <fl-key>{{'diskSpace' | translate}}</fl-key>
+      {{serverInfo.diskSpace}}
+    </fl-key-value>
+    <fl-key-value>
+      <fl-key>{{'diskType' | translate}}</fl-key>
+      {{serverInfo.diskType}}
+    </fl-key-value>
+    <fl-key-value>
+      <fl-key>{{'cpuCount' | translate}}</fl-key>
+      {{serverInfo.cpuCount}}
+    </fl-key-value>
+    <fl-key-value>
+      <fl-key>{{'cpuType' | translate}}</fl-key>
+      {{serverInfo.cpuType}}
+    </fl-key-value>
 
     <!--  If there is a GPU  -->
     <ng-container *ngIf="serverInfo.gpuType">
-      <p><span class="g-text-light">{{'gpuCount'}} :</span>{{serverInfo.gpuCount}}</p>
-      <p><span class="g-text-light">{{'gpuType'}} :</span>{{serverInfo.gpuType}}</p>
+      <fl-key-value>
+        <fl-key>{{'gpuCount'}}</fl-key>
+        {{serverInfo.gpuCount}}
+      </fl-key-value>
+      <fl-key-value>
+        <fl-key>{{'gpuType'}}</fl-key>
+        {{serverInfo.gpuType}}
+      </fl-key-value>
     </ng-container>
+
   </fl-card-body>
 
 </fl-card>

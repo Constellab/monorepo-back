@@ -14,6 +14,7 @@ import {
   FlImageModule,
   FlInfiniteScrollModule,
   FlJsonEditorModule,
+  FlKeyValueModule,
   FlLoaderModule,
   FlPortalActionsModule,
   FlSectionModule,
@@ -56,6 +57,7 @@ import {
     FlTextEditorModule,
     FlArticleModule,
     FlPortalActionsModule,
+    FlKeyValueModule,
   ]
 })
 export class CaCustomLibraryModule {

@@ -18,7 +18,7 @@
       </button>
 
       <fl-status-chip [status]="labInstance.currentStatus.status"
-                       class="g-text-big">
+                      class="g-text-big">
       </fl-status-chip>
     </div>
   </div>
@@ -29,18 +29,19 @@
 
       <!--   Lab url   -->
       <fl-text-icon iconPosition="end">
-        <p>
-          <span class="g-text-light">{{'url' | translate}} : </span>
+        <fl-key-value>
+          <fl-key>{{'url' | translate}}</fl-key>
           <a [href]="labInstance.frontUrl" target="_blank" class="g-text-link"
              [matTooltip]="'open_lab_in_new_tab' | translate">
             {{labInstance.frontUrl}}
           </a>
-        </p>
-        <mat-icon class="g-icon-small">launch</mat-icon>
+        </fl-key-value>
       </fl-text-icon>
 
       <!--  Lab Type    -->
-      <p><span class="g-text-light">{{'lab_type' | translate}} : </span>{{labInstance.lab.label}}</p>
+      <fl-key-value>
+        <fl-key>{{'lab_type' | translate}}</fl-key>
+        {{labInstance.lab.label}}</fl-key-value>
     </fl-card-body>
 
     <fl-card-footer layoutGap="0.5em">
@@ -51,7 +52,7 @@
       </a>
 
       <ca-lab-instance-start-stop [labInstance]="labInstance" (update)="onLabUpdate($event)"
-                                   class="g-button-action">
+                                  class="g-button-action">
       </ca-lab-instance-start-stop>
 
       <button mat-button type="button" color="primary" disabled

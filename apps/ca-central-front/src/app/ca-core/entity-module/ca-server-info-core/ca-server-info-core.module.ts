@@ -25,7 +25,7 @@ import {
     CaServerInfoFormDialogComponent,
     CaSelectServerInfoHostOptionsComponent,
     CaSelectDiskTypeOptionsComponent,
-    CaSelectServerInfoOptionsComponent
+    CaSelectServerInfoOptionsComponent,
   ],
   exports: [
     CaServerInfoCardComponent,
