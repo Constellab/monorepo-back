@@ -62,7 +62,10 @@
     "hn-hub:build": "nx run hn-hub:build",
     "hn-hub:build-image-dev": "docker build -f apps/hn-hub/Dockerfile -t hn-hub .",
     "hn-hub:caprover-deploy-pre-prod": "caprover deploy --host https://captain.constellab-pre-prod.gencovery.com --appName hub-back-pre-prod --branch develop",
-    "hn-hub:caprover-deploy-prod": "caprover deploy --host https://captain.constellab.gencovery.com/ --appName hub-back --branch master"
+    "hn-hub:caprover-deploy-prod": "caprover deploy --host https://captain.constellab.gencovery.com/ --appName hub-back --branch master",
+    "sn-smart-db:serve": "nx run sn-smart-db:serve",
+    "sn-smart-db:build": "nx run sn-smart-db:build",
+    "sn-smart-db:serve-prod": "node dist/main"
   },
   "private": true,
   "dependencies": {
@@ -79,9 +82,11 @@
     "@angular/platform-browser-dynamic": "~11.0.2",
     "@angular/router": "~11.0.2",
     "@angular/service-worker": "~11.0.2",
+    "@elastic/elasticsearch": "^7.16.0",
     "@nestjs/common": "^7.0.0",
     "@nestjs/config": "^0.5.0",
     "@nestjs/core": "^7.0.0",
+    "@nestjs/elasticsearch": "^8.0.0",
     "@nestjs/jwt": "^7.1.0",
     "@nestjs/passport": "^7.1.0",
     "@nestjs/platform-express": "^7.0.0",
@@ -140,6 +145,7 @@
     "@types/jest": "^26.0.20",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/luxon": "^1.25.0",
+    "@types/multer": "^1.4.7",
     "@types/node": "12.12.38",
     "@types/nodemailer": "^6.4.0",
     "@types/passport-jwt": "^3.0.3",

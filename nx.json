@@ -50,16 +50,19 @@
       "tags": ["ts-core"]
     },
     "hn-hub": {
-      "tags": []
+      "tags": ["back"]
     },
     "ha-hub": {
-      "tags": []
+      "tags": ["front"]
     },
     "ha-hub-e2e": {
       "tags": [],
       "implicitDependencies": ["ha-hub"]
     },
     "back-core-lib": {
+      "tags": ["back"]
+    },
+    "sn-smart-db": {
       "tags": ["back"]
     }
   }

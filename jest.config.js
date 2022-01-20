@@ -10,5 +10,6 @@ module.exports = {
     '<rootDir>/apps/ha-hub',
     '<rootDir>/apps/documentation-back',
     '<rootDir>/libs/back-core-lib',
+    '<rootDir>/apps/sn-smart-db',
   ],
 };
