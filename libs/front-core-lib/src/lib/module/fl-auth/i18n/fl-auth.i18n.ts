@@ -23,7 +23,7 @@ const flAuthI18nFr: FlLangTranslation = {
     repeat_password_error: 'Le mot de passe répété dest différent',
     signup_link: 'Vous n\'avez pas de compte? Inscrivez-vous',
     account_created: 'Compte créé, nous vous avons envoyé un mail pour l\'activer',
-    accept_cgu_cgv_text: `J'accepte les <a href="https://gamma.gencovery.com" target="_blank">Conditions générales d'utilisation</a>, les <a href="https://gamma.gencovery.com" target="_blank">Conditions générales</a> de vente et la <a href="https://gamma.gencovery.com" target="_blank">politique de confidentialité</a>`,
+    accept_cgu_cgv_text: `J'accepte les <a href="https://gamma.gencovery.com/cgu-cgv" target="_blank">Conditions générales d'utilisation</a>, les <a href="https://gamma.gencovery.com/cgu-cgv" target="_blank">Conditions générales</a> de vente et la <a href="https://gamma.gencovery.com/cgu-cgv" target="_blank">politique de confidentialité</a>`,
     accept_cgu_cgv_error: 'Vous devez accepter les conditions pour créer un compte'
   }
 };
@@ -45,7 +45,7 @@ const flAuthI18nEn: FlLangTranslation = {
     repeat_password_error: 'The repeat password is not the same',
     signup_link: 'Doesn\'t have an account? Sign up',
     account_created: 'Account created, we sent you an email to activate your account',
-    accept_cgu_cgv_text: `I agree to the website <a href="https://gamma.gencovery.com" target="_blank">Terms of Use Agreement</a>, <a href="https://gamma.gencovery.com" target="_blank">Terms of Sales</a> and <a href="https://gamma.gencovery.com" target="_blank">Privacy Policy</a>`,
+    accept_cgu_cgv_text: `I agree to the website <a href="https://gamma.gencovery.com/cgu-cgv" target="_blank">Terms of Use Agreement</a>, <a href="https://gamma.gencovery.com/cgu-cgv" target="_blank">Terms of Sales</a> and <a href="https://gamma.gencovery.com/cgu-cgv" target="_blank">Privacy Policy</a>`,
     accept_cgu_cgv_error: 'You must agree to the conditions to create an account'
   }
 };
