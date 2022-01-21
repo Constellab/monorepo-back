@@ -1,4 +1,4 @@
-import {ClassSerializerInterceptor, Module} from '@nestjs/common';
+import {ClassSerializerInterceptor, MiddlewareConsumer, Module, RequestMethod} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
 import {TypeOrmModule, TypeOrmModuleOptions} from '@nestjs/typeorm';
@@ -15,7 +15,7 @@ import {
   BlExternalApiModule,
   BlJwtConfig,
   BlJwtModule,
-  BlLoggerConfig
+  BlLoggerConfig, BlRequestContextMiddleware
 } from '@monorepo/back-core-lib';
 import {HnCoreModule} from './app/core/hn-core.module';
 import {HnUserService} from './app/users/hn-user.service';
@@ -123,4 +123,10 @@ function configureJwtModule(configService: HnCoreConfigService, userService: HnU
   ]
 })
 export class AppModule {
+  configure(consumer: MiddlewareConsumer): any {
+    consumer
+      // register the RequestContextMiddleware to be able to access the request anywhere
+      .apply(BlRequestContextMiddleware)
+      .forRoutes({path: '*', method: RequestMethod.ALL});
+  }
 }

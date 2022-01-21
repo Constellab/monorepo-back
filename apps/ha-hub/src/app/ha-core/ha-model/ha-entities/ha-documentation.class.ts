@@ -1,6 +1,4 @@
 import {HaEntity} from './ha-entity.class';
-import {HaFolder} from './ha-folder.class';
-import {Type} from 'class-transformer';
 
 export class HaDocumentation extends HaEntity {
 
@@ -11,8 +9,6 @@ export class HaDocumentation extends HaEntity {
   path: string;
 
   completePath: string;
-
-  folder: HaFolder;
 
   folderId: string;
 

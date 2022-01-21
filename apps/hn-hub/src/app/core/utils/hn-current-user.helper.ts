@@ -1,21 +1,22 @@
 import {BlCurrentUserHelper, BlUser} from '@monorepo/back-core-lib';
-import {DnUser} from '../../users/hn-user.entity';
+import {HnUser} from '../../users/hn-user.entity';
 
 export class HnCurrentUserHelper extends BlCurrentUserHelper {
 
   /**
    * returns the current authenticated user or null if not authenticated
    */
-  static getCurrentUser(): DnUser | null {
-    return super.getCurrentUser() as DnUser;
+  static getCurrentUser(): HnUser | null {
+    const user: HnUser = super.getCurrentUser() as HnUser;
+    return user;
   }
 
   /**
    * returns the current authenticated user or throw a Unauthorized exception
    * if the user is not authenticated
    */
-  static getAndCheckCurrentUser(): DnUser {
+  static getAndCheckCurrentUser(): HnUser {
 
-    return super.getAndCheckCurrentUser() as DnUser;
+    return super.getAndCheckCurrentUser() as HnUser;
   }
 }

@@ -7,27 +7,29 @@ import {
   FlCookieService
 } from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {HaUser} from '../ha-model/ha-entities/ha-user';
 import {tap} from 'rxjs/operators';
 import {CmCredentials} from '@monorepo/common-model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class HaAuthService extends FlAuthService{
+export class HaAuthService extends FlAuthService {
   private readonly route: string = 'auth';
+
   constructor(
     private apiService: FlApiService,
     private cookieService: FlCookieService
-  ) { super(); }
+  ) {
+    super();
+  }
 
-  public login(credentials: CmCredentials): Observable<{ expiresIn: number }>{
+  public login(credentials: CmCredentials): Observable<{ expiresIn: number }> {
     return this.apiService.post(`${this.route}/login`, credentials).pipe(
       tap(expiresIn => this.setAuthExpirationCookie(expiresIn))
     );
   }
 
-  public logout(): Observable<void>{
+  public logout(): Observable<void> {
     return this.apiService.post(`${this.route}/logout`, null).pipe(
       tap(() => this.clearAuthExpirationCookie()),
       tap(() => this.clearServices())

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Params, UrlSegment} from '@angular/router';
 import {Observable} from 'rxjs';
 import {
@@ -10,23 +10,28 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {HaDocumentationService} from '../../../../../../ha-core/ha-service/ha-documentation.service';
 import {HaBrick} from '../../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
+import {LabReportContent} from '../../../../../../../../../lab-front/src/app/lab-core/model/entities/lab-report.entity';
+import {FlDebouncer} from '@monorepo/front-core-lib';
+import {HaAuthenticatedUserService} from '../../../../../../ha-core/ha-service/ha-authenticated-user.service';
 
 @Component({
   selector: 'ha-public-doc-page',
   templateUrl: './ha-public-doc-page.component.html',
   styleUrls: ['./ha-public-doc-page.component.scss']
 })
-export class HaPublicDocPageComponent implements OnInit {
+export class HaPublicDocPageComponent implements OnInit, OnDestroy {
 
+  private contentDebouncer: FlDebouncer<Record<string, any>>;
   documentation$: Observable<HaDocumentation>;
   brick: HaBrick;
   formGp: FormGroup<Partial<HaDocumentationContentFormDTO>>;
-  currentContent: Record<string, any>;
-  isEditing: boolean = false;
+  isAdmin: Observable<boolean> = this.authUserService.isAdmin();
+  canEdit: boolean = false;
 
   constructor(
     private brickService: HaBrickService,
     private documentationService: HaDocumentationService,
+    private authUserService: HaAuthenticatedUserService,
     private route: ActivatedRoute
   ) {
   }
@@ -36,6 +41,12 @@ export class HaPublicDocPageComponent implements OnInit {
     this.route.parent.parent.url.subscribe(url => {
       this.getBrick(url[0].path);
     });
+
+    // create a debouncer to save the description after x second of idle
+    this.contentDebouncer = new FlDebouncer(FlDebouncer.AUTO_SAVE_DEBOUNCE_TIME);
+    this.contentDebouncer.getDebouncedValue().subscribe(
+      value => this.saveContent(value)
+    );
   }
 
   private getBrick(path: string): void{
@@ -66,7 +77,6 @@ export class HaPublicDocPageComponent implements OnInit {
     } else {
       path = url.join('/') + '/';
     }
-    console.log(path);
     this.documentation$ = this.brickService.getDocByPath(this.brick.id, path);
     this.documentation$.subscribe((doc: HaDocumentation) => {
       this.buildForm();
@@ -74,24 +84,20 @@ export class HaPublicDocPageComponent implements OnInit {
     });
   }
 
+  onContentUpdate(content: LabReportContent): void {
+    this.contentDebouncer.setValue(content);
+  }
+
   private setFormGroupValue(doc: HaDocumentationContentFormDTO): void {
     this.formGp.patchValue(doc);
   }
 
-  private startEditing(): void{
-    this.isEditing = true;
-    this.currentContent = this.formGp.value.content;
+  private saveContent(value: Record<string, any>): void{
+    this.formGp.value.content = value;
+    this.documentationService.updateContent(this.formGp.value);
   }
 
-  private cancelEditing(doc: HaDocumentation): void{
-    this.isEditing = false;
-    this.formGp.patchValue(doc);
-  }
-
-  private saveContent(): void{
-    this.documentationService.updateContent(this.formGp.value).subscribe((doc: HaDocumentation) => {
-      this.setFormGroupValue(doc);
-      this.isEditing = false;
-    });
+  ngOnDestroy() {
+    this.contentDebouncer.complete();
   }
 }

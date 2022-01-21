@@ -1,23 +1,31 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppComponent} from './ha-app.component';
 import {
   FlApiModule,
-  FlTranslateModule,
-  FlSnackBarModule,
-  FlDialogModule,
   FlAuthModule,
-  FlHttpInterceptorService, FlPortalModule, FlIconModule
+  FlDialogModule,
+  FlHttpInterceptorService,
+  FlIconModule,
+  FlPortalModule,
+  FlSnackBarModule,
+  FlThemeService,
+  FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {DaApiServiceConfig} from './ha-core/ha-model/ha-config/ha-api-module.config';
 import {HaApiErrorService} from './ha-core/ha-model/ha-config/ha-api-error.service';
-import { ClSupportedLanguage } from '@monorepo/core-lib';
+import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import { HaAppRoutingModule } from './ha-app-routing-module';
-import { HaCoreModule } from './ha-core/ha-core.module';
+import {HaAppRoutingModule} from './ha-app-routing-module';
+import {HaCoreModule} from './ha-core/ha-core.module';
 import {HaAuthService} from './ha-core/ha-service/ha-auth.service';
 import {caSvgIcons} from '../../../ca-central-front/src/app/ca-core/model/config/ca-svg-icon-config';
+import {HaAuthenticatedUserService} from './ha-core/ha-service/ha-authenticated-user.service';
+
+function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): () => void {
+  return (): void => authenticatedUserService.init();
+}
 
 @NgModule({
   declarations: [AppComponent],
@@ -57,7 +65,10 @@ import {caSvgIcons} from '../../../ca-central-front/src/app/ca-core/model/config
     provide: HTTP_INTERCEPTORS,
     useClass: FlHttpInterceptorService,
     multi: true
-  },],
+  },
+    {provide: APP_INITIALIZER, useFactory: loadUserOnInit, deps: [HaAuthenticatedUserService], multi: true},
+  ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+}

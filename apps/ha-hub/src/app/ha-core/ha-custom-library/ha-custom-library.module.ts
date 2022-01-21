@@ -27,7 +27,7 @@ import {
     FlTextEditorModule,
     FlContextMenuModule,
     FlIconModule,
-    FlArticleModule
+    FlArticleModule,
   ]
 })
 export class HaCustomLibraryModule {

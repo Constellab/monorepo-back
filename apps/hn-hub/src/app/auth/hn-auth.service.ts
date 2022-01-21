@@ -3,7 +3,7 @@ import {HnUserService} from '../users/hn-user.service';
 import {CmCredentials} from '@monorepo/common-model';
 import {BlExternalApiService, BlJwtService} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
-import {DnUser} from '../users/hn-user.entity';
+import {HnUser} from '../users/hn-user.entity';
 
 @Injectable()
 export class HnAuthService {
@@ -18,7 +18,7 @@ export class HnAuthService {
 
   async login(credentials: CmCredentials): Promise<string> {
     const userCentral = await this.checkCredentialsAndUser(credentials);
-    const user: DnUser = await this.createOrUpdateUser(userCentral);
+    const user: HnUser = await this.createOrUpdateUser(userCentral);
 
     return this.jwtService.generateToken(user.id, user.email);
   }
@@ -39,8 +39,8 @@ export class HnAuthService {
     }
   }
 
-  async createOrUpdateUser(userFromCentral: any): Promise<DnUser> {
-    const user: DnUser = new DnUser();
+  async createOrUpdateUser(userFromCentral: any): Promise<HnUser> {
+    const user: HnUser = new HnUser();
     user.id = userFromCentral.id;
     user.firstname = userFromCentral.firstname;
     user.lastname = userFromCentral.lastname;

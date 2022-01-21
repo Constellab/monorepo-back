@@ -3,22 +3,14 @@
   <ng-container *flSectionBody="let documentation">
     <div class="sidenavBody">
       <div class="content g-max-article-width">
-        <form id="documentation-form" [formGroup]="formGp"> <!--  ngSubmit -->
-          <fl-text-editor matInput formControlName="content" mode="JSON" [disabled]="!isEditing"
-                          class="contentEditor {{isEditing ? 'contentEditorBorder' : ''}}"></fl-text-editor>
+        <form class="documentation-form" [formGroup]="formGp">
+          <fl-text-editor formControlName="content" mode="JSON"
+                          class="contentEditor contentEditorBorder"
+                          (textChange)="onContentUpdate($event)" [disabled]="!(isAdmin | async)"></fl-text-editor>
         </form>
       </div>
       <div class="side">
-        <button mat-flat-button color="primary" (click)="startEditing()" *ngIf="!isEditing" class="g-centered-forced">
-          {{'edit' | translate}}
-        </button>
-        <button mat-flat-button color="primary" (click)="cancelEditing(documentation)" *ngIf="isEditing"
-                class="g-centered-forced">
-          {{'cancel' | translate}}
-        </button>
-        <button mat-flat-button color="primary" (click)="saveContent()" *ngIf="isEditing" class="g-centered-forced">
-          {{'save' | translate}}
-        </button>
+
       </div>
     </div>
   </ng-container>

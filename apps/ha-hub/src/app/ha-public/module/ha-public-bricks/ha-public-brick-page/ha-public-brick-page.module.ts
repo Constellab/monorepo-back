@@ -8,6 +8,7 @@ import {HaPublicSidenavComponent} from './ha-public-sidenav/ha-public-sidenav.co
 import {CommonModule} from "@angular/common";
 import { HaPublicSidenavCreateFormDialogComponent } from './ha-public-sidenav/ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import {HaPublicLoginModule} from '../ha-public-login/ha-public-login.module';
 
 @NgModule({
   declarations: [HaPublicBrickPageComponent, HaPublicSidenavComponent, HaPublicSidenavCreateFormDialogComponent],
@@ -18,6 +19,7 @@ import {ReactiveFormsModule} from "@angular/forms";
         CoreModule,
         CommonModule,
         ReactiveFormsModule,
+        HaPublicLoginModule
     ]
 })
 export class HaPublicBrickPageModule {

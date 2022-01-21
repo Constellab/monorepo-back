@@ -1,22 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {DnUser} from './hn-user.entity';
+import {HnUser} from './hn-user.entity';
 import {BlUserService} from '@monorepo/back-core-lib';
+import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 
 @Injectable()
 export class HnUserService implements BlUserService{
 
   constructor(
-    @InjectRepository(DnUser)
-    private userRepository: Repository<DnUser>,
+    @InjectRepository(HnUser)
+    private userRepository: Repository<HnUser>
   ){}
 
-  createOrUpdate(user: DnUser): Promise<DnUser>{
+  createOrUpdate(user: HnUser): Promise<HnUser>{
     return this.userRepository.save(user);
   }
 
-  findOne(id: string): Promise<DnUser> {
-    return this.userRepository.findOne(id);
+  async findOne(id: string): Promise<HnUser> {
+    const user:HnUser = await this.userRepository.findOne(id);
+    return user;
+  }
+
+  async getCurrent(): Promise<HnUser>{
+    return HnCurrentUserHelper.getCurrentUser();
   }
 }

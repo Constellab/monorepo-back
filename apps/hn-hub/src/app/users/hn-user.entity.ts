@@ -5,7 +5,7 @@ import {ClDateHelper, clDefaultLang, ClSupportedLanguage} from '@monorepo/core-l
 import {CmUserCategory} from '@monorepo/common-model';
 
 @Entity('User')
-export class DnUser extends BlEntityWithId{
+export class HnUser extends BlEntityWithId{
 
   @Column({nullable: false, length: 50})
   firstname: string;

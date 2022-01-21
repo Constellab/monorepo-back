@@ -2,7 +2,7 @@
   <span class="title">Gencovery hub</span>
   <span class="option"><a [routerLink]="'../../'">Bricks list</a></span>
   <span class="spacer"></span>
-  <button mat-flat-button color="primary" [routerLink]="'../../../admin/login'" *ngIf="!isConnected" class="g-centered-forced">
+  <button mat-flat-button color="primary" *ngIf="!(isConnected | async)" class="g-centered-forced" (click)="openLoginDialog()">
     {{'login' | translate}}
   </button>
 </mat-toolbar>
