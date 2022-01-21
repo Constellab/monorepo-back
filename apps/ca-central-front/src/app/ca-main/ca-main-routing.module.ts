@@ -8,7 +8,8 @@ import {
   caConstLabInstancesRoute,
   caConstLabsConfig,
   caConstProjectsRoute,
-  caConstSettingsRoute
+  caConstSettingsRoute,
+  caConstSmartDbRoute
 } from '../ca-core/utils/ca-base-route';
 import {CaLoadUserGuard} from './guard/ca-load-user.guard';
 import {CaAdminGuard} from '../ca-core/guard/ca-admin-guard.service';
@@ -45,6 +46,12 @@ const routes: Route[] = [
       {
         path: caConstLabsConfig,
         loadChildren: () => import('../ca-lab/ca-lab.module').then(m => m.CaLabModule)
+      },
+
+      //////////////////////// SMART DB /////////////////////////
+      {
+        path: caConstSmartDbRoute,
+        loadChildren: () => import('../ca-smart-db/ca-smart-db.module').then(m => m.CaSmartDbModule)
       },
       //////////////////////// Admin /////////////////////////
       {

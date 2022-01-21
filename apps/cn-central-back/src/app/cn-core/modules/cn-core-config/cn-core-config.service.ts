@@ -1,10 +1,13 @@
 import {Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
-import {CnDatabaseConfig, CnEnvironmentProfile} from '../../model/config/cn-config.class';
+import {
+  CN_ENVIRONMENT_PROFILE_KEY,
+  CN_ENVIRONMENT_PROFILE_PROD_VALUE,
+  CnDatabaseConfig,
+  CnEnvironmentProfile
+} from '../../model/config/cn-config.class';
 import {BlMailConfig} from '@monorepo/back-core-lib';
 
-export const ENVIRONMENT_PROFILE_KEY = 'ENVIRONMENT_PROFILE';
-export const ENVIRONMENT_PROFILE_PROD_VALUE = 'prod';
 
 @Injectable()
 export class CnCoreConfigService {
@@ -13,11 +16,11 @@ export class CnCoreConfigService {
   }
 
   public getEnvironmentProfile(): CnEnvironmentProfile {
-    return this.configService.get(ENVIRONMENT_PROFILE_KEY);
+    return this.configService.get(CN_ENVIRONMENT_PROFILE_KEY);
   }
 
   public isProduction(): boolean {
-    return this.getEnvironmentProfile() === ENVIRONMENT_PROFILE_PROD_VALUE;
+    return this.getEnvironmentProfile() === CN_ENVIRONMENT_PROFILE_PROD_VALUE;
   }
 
   public isLocal(): boolean {

@@ -131,17 +131,47 @@ export class ClStringHelper {
    * @param str special regex characters to escape (or normal characters, it will be ignored)
    */
   public static regexEscapeCharacters(str: string): string {
-    const regex = new RegExp(/[-/\\^$*+?.()|[\]{}]/g);
+    const regex = new RegExp(/[-/\\^$*+?.()|[\]{}]/gi);
     return str.replace(regex, '\\$&');
   }
 
   /**
    * Generate an UUID v4, it is not a simple uuid ID and must not used for encryption
    */
-  public static generateUUID(): string{
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+  public static generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
+  }
+
+  /**
+   * Return all the indexes of the search str in str
+   * From: https://stackoverflow.com/questions/3410464/how-to-find-indices-of-all-occurrences-of-one-string-in-another-in-javascript
+   * @param searchStr sub string to search in str
+   * @param str
+   * @param caseSensitive
+   */
+  public static getIndicesOf(searchStr: string, str: string, caseSensitive: boolean = false): number[] {
+    const searchStrLen = searchStr.length;
+    if (searchStrLen == 0) {
+      return [];
+    }
+    let startIndex = 0;
+    let index = 0;
+    const indices = [];
+    if (!caseSensitive) {
+      str = str.toLowerCase();
+      searchStr = searchStr.toLowerCase();
+    }
+    while ((index = str.indexOf(searchStr, startIndex)) > -1) {
+      indices.push(index);
+      startIndex = index + searchStrLen;
+    }
+    return indices;
+  }
+
+  public static replaceAt(str: string, index: number, replacementLength: number, replacement: string): string {
+    return str.substr(0, index) + replacement + str.substr(index + replacementLength);
   }
 }

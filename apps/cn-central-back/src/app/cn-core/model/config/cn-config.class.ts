@@ -3,6 +3,9 @@
  */
 export type CnEnvironmentProfile = 'dev' | 'docker' | 'preprod' | 'prod' | 'test';
 
+export const CN_ENVIRONMENT_PROFILE_KEY = 'ENVIRONMENT_PROFILE';
+export const CN_ENVIRONMENT_PROFILE_PROD_VALUE = 'prod';
+
 
 /**
  * Object containing info for database connexion

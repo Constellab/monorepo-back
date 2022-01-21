@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3001/',
+  smartDbApiUrl: 'http://localhost:3340/',
   // apiUrl: 'https://pre-prod-back.gws.gencovery.com/',
 };
 

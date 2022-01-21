@@ -11,7 +11,7 @@ export class FlAutofocusDirective implements AfterViewInit {
   /**
    * Delay in ms before the focus is executed
    */
-  @Input() flAutofocus: number = 0;
+  @Input() flAutofocus: number  = 0;
 
   constructor(private elementRef: ElementRef<HTMLElement>) {
   }

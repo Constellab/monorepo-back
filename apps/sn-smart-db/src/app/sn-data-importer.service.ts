@@ -1,6 +1,6 @@
 import {BadRequestException, Injectable, Logger} from '@nestjs/common';
 import {SnCsvImporter, SnDocument} from './model/sn-document.class';
-import {SnAppService} from './sn-app.service';
+import {SnDocElasticsearchService} from './sn-doc-elasticsearch.service';
 
 @Injectable()
 export class SnDataImporterService {
@@ -9,16 +9,16 @@ export class SnDataImporterService {
 
   private readonly SEPARATOR = ';';
 
-  constructor(private appService: SnAppService) {
+  constructor(private docElasticsearchService: SnDocElasticsearchService) {
   }
 
-  public async uploadDataFromFile(file: any): Promise<SnDocument[]> {
+  public async importDataFromFile(file: any): Promise<SnDocument[]> {
     const data: SnCsvImporter[] = this.readDataFromCsv(file);
 
     const documents: SnDocument[] = this.convertDataToDocument(data);
 
     for (const document of documents) {
-      await this.appService.createDocument(document);
+      await this.docElasticsearchService.createDocument(document);
     }
 
     return documents;
@@ -29,7 +29,7 @@ export class SnDataImporterService {
       throw new BadRequestException('Only supporting csv files');
     }
 
-    const content = file.buffer.toString();
+    const content = file.buffer.toString('utf-8');
 
     const rows: string[] = content.split('\r\n');
     rows.shift(); // remove the first line with false column name
@@ -52,6 +52,7 @@ export class SnDataImporterService {
     return convertedElements;
   }
 
+
   private convertDataToDocument(data: SnCsvImporter[]): SnDocument[] {
     // list of the document with key = doi
     const documents: Record<string, SnDocument> = {};
@@ -68,7 +69,7 @@ export class SnDataImporterService {
           doi: d.doi,
           date: d.date,
           content: d.sentence,
-          urlPath: d.urlPath,
+          urlPath: d.url_path,
           sentences: []
         };
       }

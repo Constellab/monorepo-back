@@ -4,7 +4,8 @@ import {
   caConstLabInstancesFullRoute,
   caConstLabsConfig,
   caConstProjectsFullRoute,
-  caConstSettingsFullRoute
+  caConstSettingsFullRoute,
+  caConstSmartDbRoute
 } from '../../ca-core/utils/ca-base-route';
 import {CmUserCategory} from '@monorepo/common-model';
 
@@ -39,6 +40,11 @@ export const caMainMenuLinks: CaMainMenuLink[] = [
     label: 'labs_catalog',
     icon: 'view_list',
     route: caConstLabsConfig
+  },
+  {
+    label: 'smart_db.smart_db',
+    icon: 'search',
+    route: caConstSmartDbRoute
   },
   {
     label: 'admin_dashboard',

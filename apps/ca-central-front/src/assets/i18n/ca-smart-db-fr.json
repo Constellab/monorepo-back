@@ -1,0 +1,10 @@
+{
+  "smart_db": {
+    "smart_db": "Smart DB",
+    "search_field": "Recherche",
+    "search": "Search",
+    "source": "Source",
+    "doi": "Doi",
+    "count_result": "{{count}} Résultats"
+  }
+}

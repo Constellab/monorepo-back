@@ -1,0 +1,13 @@
+
+.result {
+  padding: 1em;
+}
+
+::ng-deep {
+  mark {
+    padding-left: 0.1em;
+    padding-right: 0.1em;
+    border-radius: 5px;
+    background-color: #bdb45d;
+  }
+}

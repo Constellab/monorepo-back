@@ -63,8 +63,8 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     // Setup translate module
     FlTranslateModule.forRoot({
       defaultLang: ClSupportedLanguage.en,
-      availableLang: [ClSupportedLanguage.en],
-      filenames: ['ca-global-', 'ca-dashboard-', 'ca-settings-', 'ca-server-info-', 'ca-lab-']
+      availableLang: [ClSupportedLanguage.en, ClSupportedLanguage.fr],
+      filenames: ['ca-global-', 'ca-dashboard-', 'ca-settings-', 'ca-server-info-', 'ca-lab-', 'ca-smart-db-']
     }),
     FlTranslateModule.forRoot2(),
 

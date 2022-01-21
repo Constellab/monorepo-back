@@ -1,0 +1,28 @@
+<fl-card *ngIf="doc$ | async as doc">
+
+  <fl-card-header>
+    <h3>{{doc.title.value}}</h3>
+  </fl-card-header>
+
+  <fl-card-body>
+
+    <fl-key-value>
+      <fl-key>{{'smart_db.source' | translate}}</fl-key>
+      {{doc.source}}</fl-key-value>
+    <fl-key-value>
+      <fl-key>{{'smart_db.doi' | translate}}</fl-key>
+      {{doc.doi}}</fl-key-value>
+
+    <fl-text-icon iconPosition="end">
+      <a [href]="doc.urlPath" target="_blank" class="g-text-link">{{doc.urlPath}}</a>
+      <mat-icon class="g-icon-small">launch</mat-icon>
+    </fl-text-icon>
+
+
+    <ca-smart-db-result-content [doc]="doc" class="text"></ca-smart-db-result-content>
+  </fl-card-body>
+
+  <fl-card-footer>
+    <p class="g-text-small g-text-light">{{doc.date}} | {{doc.authors}}</p>
+  </fl-card-footer>
+</fl-card>
