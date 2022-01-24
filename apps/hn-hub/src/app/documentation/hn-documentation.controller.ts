@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
 import {HnDocumentation, HnDocumentationContentDTO, HnDocumentationDTO} from './hn-documentation.entity';
 import {HnDocumentationService} from './hn-documentation.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';

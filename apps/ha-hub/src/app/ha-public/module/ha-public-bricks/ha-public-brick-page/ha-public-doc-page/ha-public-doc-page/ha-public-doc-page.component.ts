@@ -93,8 +93,9 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
   }
 
   private saveContent(value: Record<string, any>): void{
+    console.log('Save')
     this.formGp.value.content = value;
-    this.documentationService.updateContent(this.formGp.value);
+    this.documentationService.updateContent(this.formGp.value as HaDocumentationContentFormDTO).subscribe();
   }
 
   ngOnDestroy() {

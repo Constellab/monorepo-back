@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { FlApiService } from '@monorepo/front-core-lib'
 import { Observable } from 'rxjs';
-import {HaDocumentation, HaDocumentationDTO} from '../ha-model/ha-entities/ha-documentation.class';
+import {
+  HaDocumentation,
+  HaDocumentationContentFormDTO,
+  HaDocumentationDTO
+} from '../ha-model/ha-entities/ha-documentation.class';
 import {HaNodeDTO} from '../ha-model/ha-entities/ha-node.class';
 
 /**
@@ -41,8 +45,13 @@ export class HaDocumentationService {
       return this.apiService.get(`${this.route}/path/?path=${path}`, HaDocumentation);
     }
 
-    public updateContent(object: any): Observable<HaDocumentation>{
-      return this.apiService.put(this.route + '/content', object, HaDocumentation);
+  /**
+   * Call http updateContent
+   * @param object json object
+   */
+    public updateContent(object: HaDocumentationContentFormDTO): Observable<HaDocumentation>{
+      console.log(this.apiService);
+      return this.apiService.put(this.route + '/content', object);
     }
 
     /**
