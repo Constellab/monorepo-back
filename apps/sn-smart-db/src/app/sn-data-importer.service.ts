@@ -1,5 +1,5 @@
 import {BadRequestException, Injectable, Logger} from '@nestjs/common';
-import {SnCsvImporter, SnDocument} from './model/sn-document.class';
+import {SnCsvImporter, SnDocument, SnDocumentSentence, SnEffect} from './model/sn-document.class';
 import {SnDocElasticsearchService} from './sn-doc-elasticsearch.service';
 
 @Injectable()
@@ -63,6 +63,7 @@ export class SnDataImporterService {
       // create the document if it doesn't exist
       if (documents[d.doi] == null) {
         documents[d.doi] = {
+          id: null,
           title: d.title,
           source: d.source,
           authors: d.authors,
@@ -76,16 +77,34 @@ export class SnDataImporterService {
 
       const doc: SnDocument = documents[d.doi];
 
-      doc.sentences.push({
-        subject: this.convertColumnToArray(d.subject, 'subject', i),
-        verb: d.verb,
-        object: this.convertColumnToArray(d.object, 'object', i),
-        context: this.convertColumnToArray(d.context, 'context', i),
-        type: this.convertColumnToArray(d.type, 'type', i) as any,
+      // create and add the sentence
+      const sentence: SnDocumentSentence = {
         sentence: d.sentence,
-        humanValidated: false
-      });
+        context: this.convertColumnToArray(d.context, 'context', i),
+        parts: []
+      };
+      doc.sentences.push(sentence);
 
+      // create and add the sentences parts
+      const objects: string[] = this.convertColumnToArray(d.object, 'object', i);
+
+      if (objects.length === 0) {
+        this.logger.warn(`Warning while parsing the column 'object' of row ${i + 3}, empty object`);
+      }
+
+      const subjects: string[] = this.convertColumnToArray(d.subject, 'subject', i);
+      const type: SnEffect[] = this.convertColumnToArray(d.type, 'type', i) as any;
+
+
+      for (let i = 0; i < objects.length; i++) {
+        sentence.parts.push({
+          subject: subjects,
+          verb: d.verb,
+          object: objects[i],
+          type: type[i],
+          humanValidated: false,
+        });
+      }
     }
 
     return Object.values(documents);

@@ -3,7 +3,8 @@ import {
   caConstDashboardFullRoute,
   caConstLabInstancesFullRoute,
   caConstLabsConfigFullRoute,
-  caConstProjectsFullRoute
+  caConstProjectsFullRoute,
+  caConstSmartDbFullRoute
 } from '../utils/ca-base-route';
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
@@ -61,6 +62,10 @@ export class CaRouterService {
 
   public static getMyLabsRoute(): string {
     return `${caConstLabsConfigFullRoute}`;
+  }
+
+  public static getSmartDbDocDetail(id: string): string {
+    return `${caConstSmartDbFullRoute}/${id}`;
   }
 
   ////// Function to navigate to routes  //////

@@ -12,6 +12,11 @@ export class SnAppController {
               private dataImporter: SnDataImporterService) {
   }
 
+  @Get(':id')
+  findById(@Param('id') id: string): Promise<SnDocSearchResult> {
+    return this.appService.findByIdAndCheck(id);
+  }
+
 
   @Get('/search/:search')
   search(@Param('search') text: string,

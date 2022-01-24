@@ -1,5 +1,5 @@
-
-export interface SnDocumentBase<T> {
+interface SnDocumentBase<T> {
+  id: string;
   title: T;
   source: 'PubMed';
   authors: string;
@@ -11,13 +11,18 @@ export interface SnDocumentBase<T> {
 }
 
 export type SnEffect = 'Positive' | 'Negative' | 'Neutral';
-export interface SnDocumentSentenceBase<T> {
+
+interface SnDocumentSentenceBase<T> {
+  parts: SnDocumentSentencePart[];
+  context: string[];
+  sentence: T;
+}
+
+export interface SnDocumentSentencePart {
   subject: string[];
   verb: string;
-  object: string[];
-  context: string[];
-  type: SnEffect[];
-  sentence: T;
+  object: string;
+  type: SnEffect;
   humanValidated: boolean;
 }
 
@@ -25,7 +30,10 @@ export interface SnDocumentSentenceBase<T> {
 export type SnDocument = SnDocumentBase<string>;
 export type SnDocumentSentence = SnDocumentSentenceBase<string>;
 
-export type SnDocSearchResult = SnDocumentBase<SnSearchStringHighlight>;
+export interface SnDocSearchResult extends SnDocumentBase<SnSearchStringHighlight> {
+  contentHighlight: string[];
+}
+
 export type SnDocSentenceSearchResult = SnDocumentSentenceBase<SnSearchStringHighlight>;
 
 
@@ -38,13 +46,13 @@ export interface SnSearchStringHighlight {
   highlights: SnMatchPosition[];
 }
 
-export interface SnMatchPosition{
+export interface SnMatchPosition {
   offset: number;
   length: number;
 }
 
 
-export interface SnCsvImporter{
+export interface SnCsvImporter {
   subject: string;
   verb: string;
   object: string;

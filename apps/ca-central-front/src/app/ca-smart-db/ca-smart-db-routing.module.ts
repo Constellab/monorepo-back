@@ -1,11 +1,15 @@
 import {Route, RouterModule} from '@angular/router';
 import {NgModule} from '@angular/core';
-import {CaSmartDbPageComponent} from './component/ca-smart-db-page/ca-smart-db-page.component';
+import {
+  CaSmartDbSearchPageComponent
+} from './ca-smart-db-search-page/component/ca-smart-db-search-page/ca-smart-db-search-page.component';
+import {
+  CaSmartDbDocPageComponent
+} from './ca-smart-db-doc-page/component/ca-smart-db-doc-page/ca-smart-db-doc-page.component';
 
 const routes: Route[] = [
-  {
-    path: '', component: CaSmartDbPageComponent,
-  }
+  {path: '', component: CaSmartDbSearchPageComponent},
+  {path: ':id', component: CaSmartDbDocPageComponent}
 ];
 
 @NgModule({

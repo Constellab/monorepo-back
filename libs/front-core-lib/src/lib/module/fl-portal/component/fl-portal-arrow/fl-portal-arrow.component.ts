@@ -37,7 +37,7 @@ export class FlPortalArrowComponent implements OnInit, OnDestroy {
 
     // arrow white by default
     if (!data.arrowColor) {
-      this.arrowColor = '#FFFFFF';
+      this.arrowColor = 'var(--card-background)';
     } else {
       this.arrowColor = data.arrowColor;
     }

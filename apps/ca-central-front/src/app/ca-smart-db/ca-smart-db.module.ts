@@ -1,31 +1,25 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CaSmartDbPageComponent} from './component/ca-smart-db-page/ca-smart-db-page.component';
-import {CaSmartDbDocResultComponent} from './component/ca-smart-db-doc-result/ca-smart-db-doc-result.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaCoreModule} from '../ca-core/ca-core.module';
 import {CaSmartDbRoutingModule} from './ca-smart-db-routing.module';
-import {CaSmartDbHighlightPipe} from './ca-smart-db-highlight.pipe';
-import {CaSmartDbSelectedDocComponent} from './component/ca-smart-db-selected-doc/ca-smart-db-selected-doc.component';
-import {
-  CaSmartDbResultContentComponent
-} from './component/ca-smart-db-result-content/ca-smart-db-result-content.component';
+import {CaSmartDbCoreModule} from './ca-smart-db-core/ca-smart-db-core.module';
+import {CaSmartDbSearchPageModule} from './ca-smart-db-search-page/ca-smart-db-search-page.module';
+import {CaSmartDbDocPageModule} from './ca-smart-db-doc-page/ca-smart-db-doc-page.module';
 
 
 @NgModule({
-  declarations: [
-    CaSmartDbPageComponent,
-    CaSmartDbDocResultComponent,
-    CaSmartDbHighlightPipe,
-    CaSmartDbSelectedDocComponent,
-    CaSmartDbResultContentComponent
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
 
     CaCoreModule,
+
+    CaSmartDbCoreModule,
+    CaSmartDbSearchPageModule,
+    CaSmartDbDocPageModule,
 
     CaSmartDbRoutingModule,
   ]

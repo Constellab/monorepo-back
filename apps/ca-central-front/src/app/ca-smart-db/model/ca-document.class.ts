@@ -2,7 +2,7 @@ import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
 import {ClGetPageFunction} from '@monorepo/core-lib';
 
 export interface CaSmartDbDoc {
-  // id: string;
+  id: string;
   title: CaSearchStringHighlight;
   source: 'PubMed';
   authors: string;
@@ -11,20 +11,26 @@ export interface CaSmartDbDoc {
   urlPath: string;
   content: CaSearchStringHighlight;
   sentences: CaSmartDbSentence[];
+  contentHighlight: string[];
 }
+
+export interface CaSmartDbSentence {
+  parts: CaSmartDbSentencePart[];
+  context: string[];
+  sentence: CaSearchStringHighlight;
+}
+
 
 export type CaSmartDbEffect = 'Positive' | 'Negative' | 'Neutral';
 
-export interface CaSmartDbSentence {
-  // id: string;
+export interface CaSmartDbSentencePart {
   subject: string[];
   verb: string;
-  object: string[];
-  context: string[];
-  type: CaSmartDbEffect[];
-  sentence: CaSearchStringHighlight;
+  object: string;
+  type: CaSmartDbEffect;
   humanValidated: boolean;
 }
+
 
 /**
  * Object to store a string along with the list of words that matched the string

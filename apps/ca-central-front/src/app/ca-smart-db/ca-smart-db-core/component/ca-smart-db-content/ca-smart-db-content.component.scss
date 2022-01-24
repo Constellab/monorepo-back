@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+.text{
+  word-break: break-word;
+  text-align: justify;
+}
+
+::ng-deep {
+  ca-smart-db-content mark {
+    background-color: initial;
+    text-decoration: underline;
+    cursor: pointer;
+    color: inherit;
+
+    &.selected{
+      border-radius: 5px;
+      background-color: #bdb45d;
+      color: black;
+    }
+  }
+
+
+}

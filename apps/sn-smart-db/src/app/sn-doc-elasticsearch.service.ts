@@ -1,8 +1,9 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import {ElasticsearchService} from '@nestjs/elasticsearch';
-import {SnDocument} from './model/sn-document.class';
+import {SnDocSearchResult, SnDocument} from './model/sn-document.class';
 import {ClPageI} from '@monorepo/core-lib';
-import {SnElasticsearchResult} from './model/sn-elasticsearch.class';
+import {SnElasticsearchHit, SnElasticsearchResult} from './model/sn-elasticsearch.class';
+import {SnDocResultConvertHelper} from './model/sn-doc-result-convert.helper';
 
 
 @Injectable()
@@ -20,7 +21,34 @@ export class SnDocElasticsearchService {
     });
   }
 
-  async search(text: string, page: number, pageSize: number): Promise<ClPageI<SnDocument>> {
+  async findById(id: string): Promise<SnDocSearchResult | null> {
+    const {body} = await this.elasticSearchService.search({
+      index: SnDocElasticsearchService.DOCUMENT_INDEX,
+      body: {
+        query: {
+          terms: {
+            _id: [id]
+          }
+        }
+      }
+    });
+
+    const hit: SnElasticsearchHit = body.hits.hits[0];
+    if (hit == null) return null;
+
+    return SnDocResultConvertHelper.convertHitToDocSearch(hit);
+  }
+
+  async findByIdAndCheck(id: string): Promise<SnDocSearchResult> {
+    const doc = await this.findById(id);
+
+    if (doc == null) {
+      throw new NotFoundException('Document not found');
+    }
+    return doc;
+  }
+
+  async search(text: string, page: number, pageSize: number): Promise<ClPageI<SnDocSearchResult>> {
     const {body} = await this.elasticSearchService.search<SnElasticsearchResult<SnDocument>>({
       index: SnDocElasticsearchService.DOCUMENT_INDEX,
       from: page * pageSize,
@@ -42,26 +70,20 @@ export class SnDocElasticsearchService {
             // }
           }
         },
-        // highlight: {
-        //   type: 'plain',
-        //   fragment_size: 0,
-        //   number_of_fragments: 100,
-        //   fragmenter: 'simple',
-        //   pre_tags: [''],
-        //   post_tags: [''],
-        //   fields: {
-        //     title: {},
-        //     content: {},
-        //   }
-        // }
+        highlight: {
+          // type: 'plain',
+          fragment_size: 150,
+          number_of_fragments: 2,
+          pre_tags: ['<mark>'],
+          post_tags: ['</mark>'],
+          fields: {
+            content: {},
+          }
+        }
       }
     });
-    const results: SnDocument[] = [];
-
-    for (const hit of body.hits.hits) {
-      const doc: SnDocument = hit._source;
-      results.push(doc);
-    }
+    const results: SnDocSearchResult[] = SnDocResultConvertHelper.convertHitsToDocsSearch(
+      body.hits.hits, text.split(' '));
 
     const total: number = body.hits.total.value;
     return {
@@ -94,13 +116,17 @@ export class SnDocElasticsearchService {
           content: {type: 'text'},
           sentences: {
             properties: {
-              subject: {type: 'text'},
-              verb: {type: 'text'},
-              object: {type: 'text'},
-              context: {type: 'text'},
-              type: {type: 'text'},
               sentence: {type: 'text'},
-              humanValidated: {type: 'boolean'},
+              parts: {
+                properties: {
+                  subject: {type: 'text'},
+                  verb: {type: 'text'},
+                  object: {type: 'text'},
+                  context: {type: 'text'},
+                  type: {type: 'text'},
+                  humanValidated: {type: 'boolean'},
+                }
+              },
             }
           }
         }

@@ -15,6 +15,12 @@ export class CaSmartDbService {
   constructor(private apiService: FlApiService) {
   }
 
+  public findById(id: string): Observable<CaSmartDbDoc> {
+    return this.apiService.get(`${this.route}/${id}`, null, {
+      overrideApiUrl: environment.smartDbApiUrl
+    });
+  }
+
   public search(search: string, page: number, pageSize: number): Observable<ClPage<CaSmartDbDoc>> {
     return this.apiService.get(`${this.route}/search/${search}`, null, {
       resultIsPaginated: true, page: page, pageSize: pageSize, overrideApiUrl: environment.smartDbApiUrl

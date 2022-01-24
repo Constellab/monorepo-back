@@ -17,6 +17,7 @@ import {
   FlKeyValueModule,
   FlLoaderModule,
   FlPortalActionsModule,
+  FlPortalModule,
   FlSectionModule,
   FlSnackBarModule,
   FlStatusModule,
@@ -57,6 +58,7 @@ import {
     FlTextEditorModule,
     FlArticleModule,
     FlPortalActionsModule,
+    FlPortalModule,
     FlKeyValueModule,
   ]
 })

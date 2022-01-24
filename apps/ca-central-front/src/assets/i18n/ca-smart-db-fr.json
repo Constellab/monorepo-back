@@ -5,6 +5,8 @@
     "search": "Search",
     "source": "Source",
     "doi": "Doi",
-    "count_result": "{{count}} Résultats"
+    "count_result": "{{count}} Résultats",
+    "no_context": "Aucun contexte",
+    "detail_link": "Détail"
   }
 }

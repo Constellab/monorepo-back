@@ -9,4 +9,5 @@ export interface SnElasticsearchHit<T = any> {
   _score: number;
   _source: T;
   highlight: Record<keyof T, string[]>;
+  _id: string;
 }
