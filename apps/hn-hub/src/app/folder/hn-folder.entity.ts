@@ -34,20 +34,20 @@ export class HnFolder extends HnBaseEntity {
   @OneToMany(() => HnDocumentation, doc => doc.folder)
   documentations: HnDocumentation[];
 
-  nextOrder(): number{
-    let maxOrder:number = 0;
+  nextOrder(): number {
+    let maxOrder: number = 0;
     console.log(this.folders, this.documentations);
-    if(typeof this.folders !== 'undefined'){
+    if (typeof this.folders !== 'undefined') {
       this.folders.map(f => {
-        if(f.order >= maxOrder){
-          maxOrder = f.order+1;
+        if (f.order >= maxOrder) {
+          maxOrder = f.order + 1;
         }
       });
     }
-    if(typeof this.documentations !== 'undefined'){
+    if (typeof this.documentations !== 'undefined') {
       this.documentations.map(d => {
-        if(d.order >= maxOrder){
-          maxOrder = d.order+1;
+        if (d.order >= maxOrder) {
+          maxOrder = d.order + 1;
         }
       });
     }
@@ -102,9 +102,10 @@ export class HnNode extends HnBaseEntity {
   }
 }
 
-export class HnNodeDTO extends BlEntityWithId{
+export class HnNodeDTO extends BlEntityWithId {
   title: string;
   path: string;
+  folder?: HnFolder;
   folderId?: string;
   isFolder: boolean;
   order?: number;

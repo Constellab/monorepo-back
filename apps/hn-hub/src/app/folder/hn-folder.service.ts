@@ -29,10 +29,10 @@ export class HnFolderService {
       path: createFolderRes.path,
       completePath: folder ? (folder.completePath ? folder.completePath : '') + createFolderRes.path + '/' : null,
       brickVersion: brickVersion ? brickVersion : folder.brickVersion,
-      order: createFolderRes.order ? createFolderRes.order : folder.nextOrder()
+      order: createFolderRes.order != null ? createFolderRes.order : folder.nextOrder()
   }
 
-    return this.foldersRepository.save(createFolder);
+    return await this.foldersRepository.save(createFolder);
   }
 
   async createMainFolders(brickVersion: HnBrickVersion): Promise<void>{
@@ -45,7 +45,7 @@ export class HnFolderService {
 
     const mainFolder = await this.create(createMainFolder, brickVersion);
     const gettingStartedDoc: HnNodeDTO = new HnNodeDTO();
-    gettingStartedDoc.folderId = mainFolder.id;
+    gettingStartedDoc.folder = mainFolder;
     gettingStartedDoc.path = 'getting-started';
     gettingStartedDoc.title = 'Getting Started';
     gettingStartedDoc.isFolder = false;
@@ -53,15 +53,15 @@ export class HnFolderService {
   }
 
   async createDoc(createDocumentationRes: HnNodeDTO): Promise<HnDocumentation> {
-    const folder = await this.foldersRepository.findOne(createDocumentationRes.folderId, {relations: ['documentations', 'folders']});
+    createDocumentationRes.folder = await this.foldersRepository.findOne(createDocumentationRes.folderId, {relations: ['documentations', 'folders']});
 
     const createDocumentation = new HnDocumentation();
 
     createDocumentation.title = createDocumentationRes.title;
     createDocumentation.path = createDocumentationRes.path;
-    createDocumentation.completePath = folder.completePath != null ? folder.completePath + createDocumentationRes.path + '/' : createDocumentationRes.path + '/';
-    createDocumentation.folder = folder;
-    createDocumentation.order = folder.nextOrder();
+    createDocumentation.completePath = createDocumentationRes.folder.completePath != null ? createDocumentationRes.folder.completePath + createDocumentationRes.path + '/' : createDocumentationRes.path + '/';
+    createDocumentation.folder = createDocumentationRes.folder;
+    createDocumentation.order = createDocumentationRes.folder.nextOrder();
 
     return await this.documentationService.create(createDocumentation);
   }
