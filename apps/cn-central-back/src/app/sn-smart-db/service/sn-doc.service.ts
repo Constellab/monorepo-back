@@ -14,6 +14,7 @@ export class SnDocService {
               private dataImporter: SnDataImporterService) {
   }
 
+
   async findByIdAndCheck(id: string): Promise<SnDocSearchResult> {
     return this.docElasticsearchService.findByIdAndCheck(id);
   }

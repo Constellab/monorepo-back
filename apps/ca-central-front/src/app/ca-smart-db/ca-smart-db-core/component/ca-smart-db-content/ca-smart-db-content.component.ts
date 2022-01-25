@@ -38,7 +38,7 @@ export class CaSmartDbContentComponent implements OnInit {
   }
 
   private findSentenceCurrentDoc(sentence: string): CaSmartDbSentence | null {
-    return this.doc.sentences.find(s => s.sentence.value === sentence);
+    return this.doc.sentences.find(s => s.sentence === sentence);
   }
 
   private openSentenceDetail(element: HTMLElement, sentence: CaSmartDbSentence): void {

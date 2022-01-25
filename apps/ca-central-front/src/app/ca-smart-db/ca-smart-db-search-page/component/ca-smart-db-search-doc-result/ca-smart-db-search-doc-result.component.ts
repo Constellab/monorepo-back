@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaSmartDbDoc} from '../../../model/ca-document.class';
+import {CaSmartDbDocSearchResult} from '../../../model/ca-document.class';
 import {CaSmartDbSearchPageState} from '../../ca-smart-db-search-page.state';
 
 @Component({
@@ -9,7 +9,7 @@ import {CaSmartDbSearchPageState} from '../../ca-smart-db-search-page.state';
 })
 export class CaSmartDbSearchDocResultComponent implements OnInit {
 
-  @Input() doc: CaSmartDbDoc;
+  @Input() doc: CaSmartDbDocSearchResult;
 
   highlights: string[];
 
@@ -22,7 +22,7 @@ export class CaSmartDbSearchDocResultComponent implements OnInit {
       highlights = this.doc.contentHighlight;
     } else {
       highlights = this.doc.sentences.slice(0, 2).map(sentence => {
-        const text = sentence.sentence.value;
+        const text = sentence.sentence;
         // truncate the long sentences
         if (text.length > 160) {
           return text.substr(0, 150) + '...';

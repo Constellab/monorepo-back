@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {CaSmartDbService} from '../../../service/ca-smart-db.service';
-import {CaSmartDbDoc, CaSmartDbDocDatasource} from '../../../model/ca-document.class';
+import {CaSmartDbDocSearchDatasource, CaSmartDbDocSearchResult} from '../../../model/ca-document.class';
 import {CaSmartDbSearchPageState} from '../../ca-smart-db-search-page.state';
 import {Observable} from 'rxjs';
 import {CaRouterService} from '../../../../ca-core/service/ca-router.service';
@@ -16,9 +16,9 @@ export class CaSmartDbSearchPageComponent implements OnInit {
 
   formControl: FormControl;
 
-  datasource: CaSmartDbDocDatasource;
+  datasource: CaSmartDbDocSearchDatasource;
 
-  selectedDoc$: Observable<CaSmartDbDoc>;
+  selectedDoc$: Observable<CaSmartDbDocSearchResult>;
 
   adminRoute = CaRouterService.getSmartDbAdminRoute();
 

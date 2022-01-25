@@ -1,21 +1,30 @@
 import {FlEntity, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
 export interface CaSmartDbDoc extends FlEntity {
-  title: CaSearchStringHighlight;
+  title: string;
   source: 'PubMed';
   authors: string[];
   date: string;
   doi: string;
   urlPath: string;
-  content: CaSearchStringHighlight;
+  content: string;
   sentences: CaSmartDbSentence[];
+}
+
+export interface CaSmartDbDocSearchResult extends CaSmartDbDoc {
   contentHighlight: string[];
+  titleHighlights: CaMatchPosition[];
+  sentences: CaSmartDbSentenceSearchResult[];
 }
 
 export interface CaSmartDbSentence {
   parts: CaSmartDbSentencePart[];
   context: string[];
-  sentence: CaSearchStringHighlight;
+  sentence: string;
+}
+
+export interface CaSmartDbSentenceSearchResult extends CaSmartDbSentence {
+  sentenceHighlights: CaMatchPosition[];
 }
 
 
@@ -29,20 +38,10 @@ export interface CaSmartDbSentencePart {
   humanValidated: boolean;
 }
 
-
-/**
- * Object to store a string along with the list of words that matched the string
- */
-export interface CaSearchStringHighlight {
-  value: string;
-  // list of words that matched the value
-  highlights: CaMatchPosition[];
-}
-
 export interface CaMatchPosition {
   offset: number;
   length: number;
 }
 
 
-export type CaSmartDbDocDatasource = FlEntityPaginatedDatasource<CaSmartDbDoc>;
+export type CaSmartDbDocSearchDatasource = FlEntityPaginatedDatasource<CaSmartDbDocSearchResult>;

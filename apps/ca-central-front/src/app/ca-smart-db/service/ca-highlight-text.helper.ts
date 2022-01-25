@@ -1,13 +1,13 @@
 import {ClStringHelper} from '@monorepo/core-lib';
-import {CaSearchStringHighlight} from '../model/ca-document.class';
+import {CaMatchPosition} from '../model/ca-document.class';
 
 
 export class CaHighlightTextHelper {
 
-  public static highlightStringHighlightObject(strHighlight: CaSearchStringHighlight): string {
-    let html: string = strHighlight.value;
+  public static highlightStringFromPositions(text: string, matchPositions: CaMatchPosition[]): string {
+    let html: string = text;
 
-    for (const highlight of strHighlight.highlights.reverse()) {
+    for (const highlight of matchPositions.reverse()) {
       html = CaHighlightTextHelper.highlightTextFromPosition(html, highlight.offset, highlight.length);
     }
 

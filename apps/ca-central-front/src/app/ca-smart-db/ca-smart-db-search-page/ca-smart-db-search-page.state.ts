@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {CaSmartDbDoc, CaSmartDbDocDatasource} from '../model/ca-document.class';
+import {CaSmartDbDocSearchDatasource, CaSmartDbDocSearchResult} from '../model/ca-document.class';
 import {CaSmartDbService} from '../service/ca-smart-db.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {map} from 'rxjs/operators';
@@ -13,7 +13,7 @@ export class CaSmartDbSearchPageState implements OnDestroy {
   private selectedResult$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   private search$: Subject<string> = new Subject();
 
-  private datasource: CaSmartDbDocDatasource;
+  private datasource: CaSmartDbDocSearchDatasource;
 
   private queryParams: FlQueryParamHandler<{ search: string, selectedDoc: string }>;
 
@@ -54,11 +54,11 @@ export class CaSmartDbSearchPageState implements OnDestroy {
     return this.search$.asObservable();
   }
 
-  public getDatasource(): CaSmartDbDocDatasource {
+  public getDatasource(): CaSmartDbDocSearchDatasource {
     return this.datasource;
   }
 
-  public getSelectedResult$(): Observable<CaSmartDbDoc | null> {
+  public getSelectedResult$(): Observable<CaSmartDbDocSearchResult | null> {
     // to retrieve the selected result, we get the ids from the selected doc
     // and search it in the data source object
     return combineLatest([

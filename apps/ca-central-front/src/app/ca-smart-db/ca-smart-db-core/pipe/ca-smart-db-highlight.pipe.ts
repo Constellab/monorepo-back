@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {CaSearchStringHighlight} from '../../model/ca-document.class';
+import {CaMatchPosition} from '../../model/ca-document.class';
 import {CaHighlightTextHelper} from '../../service/ca-highlight-text.helper';
 
 @Pipe({
@@ -7,10 +7,10 @@ import {CaHighlightTextHelper} from '../../service/ca-highlight-text.helper';
 })
 export class CaSmartDbHighlightPipe implements PipeTransform {
 
-  transform(value: CaSearchStringHighlight): string {
+  transform(value: string, matchPositions: CaMatchPosition[]): string {
     if (value == null) return null;
 
-    return CaHighlightTextHelper.highlightStringHighlightObject(value);
+    return CaHighlightTextHelper.highlightStringFromPositions(value, matchPositions);
   }
 
 }

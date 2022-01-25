@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {CaSmartDbDoc} from '../model/ca-document.class';
+import {CaSmartDbDoc, CaSmartDbDocSearchResult} from '../model/ca-document.class';
 import {ClPage} from '@monorepo/core-lib';
 
 @Injectable({
@@ -18,7 +18,7 @@ export class CaSmartDbService {
     return this.apiService.get(`${this.route}/${id}`, null);
   }
 
-  public search(search: string, page: number, pageSize: number): Observable<ClPage<CaSmartDbDoc>> {
+  public search(search: string, page: number, pageSize: number): Observable<ClPage<CaSmartDbDocSearchResult>> {
     return this.apiService.get(`${this.route}/search/${search}`, null, {
       resultIsPaginated: true, page: page, pageSize: pageSize
     });

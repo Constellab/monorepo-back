@@ -11,8 +11,8 @@ import {CaHighlightTextHelper} from '../../service/ca-highlight-text.helper';
 export class CaSmartDbHighlightContentPipe implements PipeTransform {
 
   transform(doc: CaSmartDbDoc): string {
-    return CaHighlightTextHelper.highlightTexts(doc.content.value,
-      doc.sentences.map(sentence => sentence.sentence.value));
+    return CaHighlightTextHelper.highlightTexts(doc.content,
+      doc.sentences.map(sentence => sentence.sentence));
   }
 
 }
