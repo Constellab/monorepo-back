@@ -1,8 +1,8 @@
 import {Directive, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {MediaObserver} from '@angular/flex-layout';
-import {FlMediaAlias} from '../../../../model/fl-media-alias.class';
 import {MatDrawer, MatDrawerMode} from '@angular/material/sidenav';
+import {FlMediaAlias} from '../../../../model/fl-media-alias.class';
 
 /**
  * Directive that work on mat-drawer and mat-sidenav to change the mode base on screen size.

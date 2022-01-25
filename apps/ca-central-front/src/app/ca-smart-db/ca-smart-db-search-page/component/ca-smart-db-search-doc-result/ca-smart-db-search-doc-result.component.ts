@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaSmartDbDoc, CaSmartDbSentence} from '../../../model/ca-document.class';
+import {CaSmartDbDoc} from '../../../model/ca-document.class';
 import {CaSmartDbSearchPageState} from '../../ca-smart-db-search-page.state';
-import {CaHighlightTextHelper} from '../../../service/ca-highlight-text.helper';
 
 @Component({
   selector: 'ca-smart-db-search-doc-result',
@@ -18,16 +17,44 @@ export class CaSmartDbSearchDocResultComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    let highlights: string[];
     if (this.doc.contentHighlight?.length > 0) {
-      this.highlights = this.doc.contentHighlight;
+      highlights = this.doc.contentHighlight;
     } else {
-      const sentences: CaSmartDbSentence[] = this.doc.sentences.slice(0,2);
-      this.highlights = sentences.map(sentence => CaHighlightTextHelper.highlightStringHighlightObject(sentence.sentence));
+      highlights = this.doc.sentences.slice(0, 2).map(sentence => {
+        const text = sentence.sentence.value;
+        // truncate the long sentences
+        if (text.length > 160) {
+          return text.substr(0, 150) + '...';
+        }
+        return text;
+      });
     }
+
+
+    // add '...' for truncate sentences
+    for (let i = 0; i < highlights.length; i++) {
+      let highlight = highlights[i];
+
+      // if the first letter is not a uppercase, add '...' if front.
+      if (highlight[0].toUpperCase() !== highlight[0]) {
+        highlight = '...' + highlight;
+      }
+
+      // if the last letter is not '.' add '...' at the end
+      if (highlight[highlight.length - 1] !== '.') {
+        highlight = highlight + '...';
+      }
+
+      highlights[i] = highlight;
+    }
+
+    this.highlights = highlights;
+
   }
 
   selectDoc(): void {
-    this.state.selectResult(this.doc);
+    this.state.selectResult(this.doc.id);
   }
 
 

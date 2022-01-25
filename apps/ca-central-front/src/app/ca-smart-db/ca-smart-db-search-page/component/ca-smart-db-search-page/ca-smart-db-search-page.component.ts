@@ -4,7 +4,6 @@ import {CaSmartDbService} from '../../../service/ca-smart-db.service';
 import {CaSmartDbDoc, CaSmartDbDocDatasource} from '../../../model/ca-document.class';
 import {CaSmartDbSearchPageState} from '../../ca-smart-db-search-page.state';
 import {Observable} from 'rxjs';
-import {clRxjsDebug} from '@monorepo/core-lib';
 
 @Component({
   selector: 'ca-smart-db-search-page',
@@ -27,7 +26,7 @@ export class CaSmartDbSearchPageComponent implements OnInit {
   ngOnInit(): void {
     this.formControl = new FormControl(null);
 
-    this.state.onNewSearch().pipe(clRxjsDebug()).subscribe(
+    this.state.onNewSearch().subscribe(
       search => this.formControl.patchValue(search)
     );
     this.state.init();

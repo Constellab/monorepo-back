@@ -1,8 +1,6 @@
-import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
-import {ClGetPageFunction} from '@monorepo/core-lib';
+import {FlEntity, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 
-export interface CaSmartDbDoc {
-  id: string;
+export interface CaSmartDbDoc extends FlEntity {
   title: CaSearchStringHighlight;
   source: 'PubMed';
   authors: string;
@@ -47,13 +45,4 @@ export interface CaMatchPosition {
 }
 
 
-export class CaSmartDbDocDatasource extends FlDatasourcePaginated<CaSmartDbDoc> {
-
-  constructor(getPageFunction: ClGetPageFunction<CaSmartDbDoc>) {
-    super(getPageFunction, 20, false);
-  }
-
-  protected equals(a: CaSmartDbDoc, b: CaSmartDbDoc): boolean {
-    return a.doi === b.doi;
-  }
-}
+export type CaSmartDbDocDatasource = FlEntityPaginatedDatasource<CaSmartDbDoc>;

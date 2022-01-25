@@ -11,6 +11,8 @@ export * from './fl-event-wrapper.class';
 export * from './fl-flat-tree-control.class';
 export * from './fl-form.class';
 export * from './fl-form-helper';
+export * from './fl-media-alias.class';
+export * from './fl-query-param-handler.class';
 export * from './fl-renderer-listener-obs.class';
 export * from './fl-resize-observable.class';
 export * from './fl-status-event.class';
