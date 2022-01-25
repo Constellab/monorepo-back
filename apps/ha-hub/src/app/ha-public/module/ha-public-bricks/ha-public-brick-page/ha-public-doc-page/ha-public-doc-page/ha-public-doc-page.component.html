@@ -5,7 +5,7 @@
       <div class="content g-max-article-width">
         <form class="documentation-form" [formGroup]="formGp">
           <fl-text-editor formControlName="content" mode="JSON"
-                          class="contentEditor contentEditorBorder g-scrollable-element"
+                          class="content-editor"
                           (textChange)="onContentUpdate($event)" [disabled]="!(isAdmin | async)"></fl-text-editor>
         </form>
       </div>
