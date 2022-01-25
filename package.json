@@ -62,10 +62,7 @@
     "hn-hub:build": "nx run hn-hub:build",
     "hn-hub:build-image-dev": "docker build -f apps/hn-hub/Dockerfile -t hn-hub .",
     "hn-hub:caprover-deploy-pre-prod": "caprover deploy --host https://captain.constellab-pre-prod.gencovery.com --appName hub-back-pre-prod --branch develop",
-    "hn-hub:caprover-deploy-prod": "caprover deploy --host https://captain.constellab.gencovery.com/ --appName hub-back --branch master",
-    "sn-smart-db:serve": "nx run sn-smart-db:serve",
-    "sn-smart-db:build": "nx run sn-smart-db:build",
-    "sn-smart-db:serve-prod": "node dist/main"
+    "hn-hub:caprover-deploy-prod": "caprover deploy --host https://captain.constellab.gencovery.com/ --appName hub-back --branch master"
   },
   "private": true,
   "dependencies": {

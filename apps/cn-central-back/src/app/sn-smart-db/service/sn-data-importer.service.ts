@@ -1,5 +1,5 @@
 import {BadRequestException, Injectable, Logger} from '@nestjs/common';
-import {SnCsvImporter, SnDocument, SnDocumentSentence, SnEffect} from './model/sn-document.class';
+import {SnCsvImporter, SnDocument, SnDocumentSentence, SnEffect} from '../model/sn-document.class';
 import {SnDocElasticsearchService} from './sn-doc-elasticsearch.service';
 
 @Injectable()

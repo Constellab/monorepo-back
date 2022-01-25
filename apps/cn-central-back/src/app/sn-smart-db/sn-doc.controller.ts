@@ -1,13 +1,13 @@
 import {Controller, Delete, Get, Param, ParseIntPipe, Post, Query, UploadedFile, UseInterceptors} from '@nestjs/common';
 
-import {SnDocService} from './sn-doc.service';
 import {FileInterceptor} from '@nestjs/platform-express';
-import {SnDataImporterService} from './sn-data-importer.service';
 import {ClPageI} from '@monorepo/core-lib';
 import {SnDocSearchResult} from './model/sn-document.class';
+import {SnDocService} from './service/sn-doc.service';
+import {SnDataImporterService} from './service/sn-data-importer.service';
 
-@Controller('app')
-export class SnAppController {
+@Controller('smart-db/doc')
+export class SnDocController {
   constructor(private readonly appService: SnDocService,
               private dataImporter: SnDataImporterService) {
   }

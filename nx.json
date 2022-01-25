@@ -61,9 +61,6 @@
     },
     "back-core-lib": {
       "tags": ["back"]
-    },
-    "sn-smart-db": {
-      "tags": ["back"]
     }
   }
 }

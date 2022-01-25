@@ -1,9 +1,9 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {ElasticsearchService} from '@nestjs/elasticsearch';
-import {SnDocSearchResult, SnDocument} from './model/sn-document.class';
 import {ClPageI} from '@monorepo/core-lib';
-import {SnElasticsearchHit, SnElasticsearchResult} from './model/sn-elasticsearch.class';
-import {SnDocResultConvertHelper} from './model/sn-doc-result-convert.helper';
+import {SnDocSearchResult, SnDocument} from '../model/sn-document.class';
+import {SnElasticsearchHit, SnElasticsearchResult} from '../model/sn-elasticsearch.class';
+import {SnDocResultConvertHelper} from '../model/sn-doc-result-convert.helper';
 
 
 @Injectable()

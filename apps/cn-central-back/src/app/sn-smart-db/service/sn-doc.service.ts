@@ -1,8 +1,8 @@
 import {Injectable} from '@nestjs/common';
-import {SnDocSearchResult, SnDocument} from './model/sn-document.class';
 import {ClPageI} from '@monorepo/core-lib';
 import {SnDocElasticsearchService} from './sn-doc-elasticsearch.service';
 import {SnDataImporterService} from './sn-data-importer.service';
+import {SnDocSearchResult, SnDocument} from '../model/sn-document.class';
 
 @Injectable()
 export class SnDocService {

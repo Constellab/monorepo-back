@@ -746,60 +746,6 @@
           }
         }
       }
-    },
-    "sn-smart-db": {
-      "root": "apps/sn-smart-db",
-      "sourceRoot": "apps/sn-smart-db/src",
-      "projectType": "application",
-      "prefix": "sn-smart-db",
-      "architect": {
-        "build": {
-          "builder": "@nrwl/node:build",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "dist/apps/sn-smart-db",
-            "main": "apps/sn-smart-db/src/main.ts",
-            "tsConfig": "apps/sn-smart-db/tsconfig.app.json",
-            "assets": [
-              "apps/sn-smart-db/src/assets",
-              "apps/sn-smart-db/src/environments"
-            ]
-          },
-          "configurations": {
-            "production": {
-              "optimization": true,
-              "extractLicenses": true,
-              "inspect": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/sn-smart-db/src/environments/environment.ts",
-                  "with": "apps/sn-smart-db/src/environments/environment.prod.ts"
-                }
-              ]
-            }
-          }
-        },
-        "serve": {
-          "builder": "@nrwl/node:execute",
-          "options": {
-            "buildTarget": "sn-smart-db:build"
-          }
-        },
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/sn-smart-db/**/*.ts"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/sn-smart-db"],
-          "options": {
-            "jestConfig": "apps/sn-smart-db/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
     }
   },
   "cli": {

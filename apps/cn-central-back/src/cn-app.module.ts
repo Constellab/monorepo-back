@@ -1,7 +1,7 @@
 import {ClassSerializerInterceptor, MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
 import {CnUsersModule} from './app/cn-users/cn-users.module';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {CnAuthModule} from './app/cn-auth/cnAuthModule';
+import {CnAuthModule} from './app/cn-auth/cn-auth.module';
 import {ConfigModule} from '@nestjs/config';
 import {CnCoreModule} from './app/cn-core/cn-core.module';
 import {CnProjectsModule} from './app/cn-projects/cn-projects.module';
@@ -41,6 +41,7 @@ import {cnJwtConfig} from './app/cn-auth/cn-jwt.config';
 import {Request} from 'express';
 import {CnUsersService} from './app/cn-users/cn-users.service';
 import {CnDatabaseConfig} from './app/cn-core/model/config/cn-config.class';
+import {SnSmartDbModule} from './app/sn-smart-db/sn-smart-db.module';
 
 function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -148,6 +149,7 @@ function configureMailModule(configService: CnCoreConfigService): BlMailModuleCo
     CnServersInfoModule,
     CnReportsModule,
     CnFrontErrorsModule,
+    SnSmartDbModule,
   ],
   controllers: [],
   providers: [
