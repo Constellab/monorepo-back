@@ -12,13 +12,15 @@ import {
   FlConfirmDialogResult,
   FlContextMenuConfig,
   FlContextMenuService,
-  FlDialogService, FlFormDialogInput
+  FlDialogService,
+  FlFormDialogInput
 } from '@monorepo/front-core-lib';
 import {HaDocumentationService} from '../../../../../ha-core/ha-service/ha-documentation.service';
-import {HaFolder, HaFolderDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-folder.class';
-import {HaAdminListPageFormDialogComponent} from '../../../../../ha-admin/module/ha-admin-list-page/ha-admin-list-page-form-dialog/ha-admin-list-page-form-dialog.component';
+import {HaFolder} from '../../../../../ha-core/ha-model/ha-entities/ha-folder.class';
 import {HaPublicSidenavCreateFormDialogComponent} from './ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
 import {HaDocumentation} from '../../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
+import {CdkDragDrop, CdkDragStart} from '@angular/cdk/drag-drop';
+import {SelectionModel} from '@angular/cdk/collections';
 
 
 interface FlatNode {
@@ -81,6 +83,15 @@ export class HaPublicSidenavComponent implements OnInit {
 
   hasChild = (_: number, node: FlatNode): boolean => node.expandable;
 
+  // expansion model tracks expansion state
+  mainFolderId: string;
+  expansionModel = new SelectionModel<FlatNode>(true);
+  previousData: HaNode[];
+  changedData: HaNode[];
+  dragging = false;
+  expandDelay = 1000;
+  validateDrop = false;
+
   ngOnInit(): void {
     this.isConnected = this.authService.hasAuthorizationCookie();
 
@@ -90,6 +101,10 @@ export class HaPublicSidenavComponent implements OnInit {
 
         this.brickService.getBrickDocs(this.brickId).subscribe((data) => {
           this.dataSource.data = data.children;
+
+          if (this.dataSource.data.length > 0) {
+            this.mainFolderId = this.dataSource.data[0].parentId;
+          }
         });
       });
     });
@@ -103,30 +118,25 @@ export class HaPublicSidenavComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
     let element: HTMLElement = event.target as any;
-    if(!id){
+    if (!id) {
       this.brickService.getRootFolderId(this.brickId).subscribe(res => {
-        console.log(res.id);
-        this.contextMenuService.openContextMenu(this.getContextMenuConfig(isFolder, res.id), element);
+        this.contextMenuService.openContextMenu(this.getContextMenuConfig(isFolder, res.id, true), element);
       });
     } else {
-      console.log(id);
       this.contextMenuService.openContextMenu(this.getContextMenuConfig(isFolder, id), element);
     }
-
   }
 
-  private openResourceEditDoc(id: string): void {
-    console.log('edit doc');
-  }
-
-  private openResourceEditFolder(id: string): void {
-    console.log('edit folder');
-  }
-
-  private getContextMenuConfig(isFolder: boolean, id?: string): FlContextMenuConfig {
+  private getContextMenuConfig(isFolder: boolean, id?: string, isRoot: boolean = false): FlContextMenuConfig {
     if (isFolder) {
       return {
-        buttons: [
+        buttons: isRoot ? [
+          {
+            text: {text: 'create', translateText: true},
+            icon: 'add',
+            onClick: () => this.openCreateDialog(id)
+          }
+        ] : [
           {
             text: {text: 'create', translateText: true},
             icon: 'add',
@@ -179,7 +189,7 @@ export class HaPublicSidenavComponent implements OnInit {
   private onCloseConfirmDialog(res: FlConfirmDialogResult): void {
     if (res.choice) {
       this.brickService.getBrickDocs(this.brickId).subscribe((data) => {
-        this.dataSource.data = data.children;
+        this.rebuildTreeForData(data.children);
       });
     }
   }
@@ -195,11 +205,16 @@ export class HaPublicSidenavComponent implements OnInit {
         folderId: folderId
       } as HaNodeDTO
     };
+
+    this.openSmallDialog(input);
+  }
+
+  private openSmallDialog(input: any): void {
     this.dialogService.openSmallDialog(HaPublicSidenavCreateFormDialogComponent, {data: input}).afterClosed().subscribe(
       (res: HaNodeDTO) => {
         if (res != null) {
           this.brickService.getBrickDocs(this.brickId).subscribe((data) => {
-            this.dataSource.data = data.children;
+            this.rebuildTreeForData(data.children);
           });
         }
       }
@@ -207,7 +222,7 @@ export class HaPublicSidenavComponent implements OnInit {
   }
 
   private preparEditDialog(id: string, isFolder: boolean): void {
-    if(isFolder){
+    if (isFolder) {
       this.folderService.getById(id).subscribe(f => {
         this.createEditDialog(isFolder, f);
       });
@@ -218,7 +233,7 @@ export class HaPublicSidenavComponent implements OnInit {
     }
   }
 
-  private createEditDialog(isFolder: boolean, object: HaFolder | HaDocumentation){
+  private createEditDialog(isFolder: boolean, object: HaFolder | HaDocumentation) {
     let node: HaNodeDTO = new HaNodeDTO();
     node.id = object.id;
     node.path = object.path;
@@ -230,15 +245,140 @@ export class HaPublicSidenavComponent implements OnInit {
       object: node
     };
 
-    this.dialogService.openSmallDialog(HaPublicSidenavCreateFormDialogComponent, {data: input}).afterClosed().subscribe(
-      (res: HaNodeDTO) => {
-        if (res != null) {
-          this.brickService.getBrickDocs(this.brickId).subscribe((data) => {
-            this.dataSource.data = data.children;
-          });
-        }
+    this.openSmallDialog(input);
+  }
+
+  addExpandedChildren(node: HaNode, expanded: FlatNode[], result: HaNode[]): HaNode[] {
+    result.push(node);
+    const n: FlatNode = this.treeControl.dataNodes.find(n => n.id == node.id);
+    if (node.children && this.treeControl.isExpanded(n)) {
+      node.children.map((child) => this.addExpandedChildren(child, expanded, result));
+    }
+    return result
+  }
+
+  visibleNodes(): HaNode[] {
+    let result: HaNode[] = [];
+
+    this.dataSource.data.forEach((node) => {
+      result = this.addExpandedChildren(node, this.expansionModel.selected, result);
+    });
+    return result;
+  }
+
+  // recursive find function to find siblings of node
+  findNodeSiblings(arr: HaNode[], node: HaNode): HaNode[] {
+    let result, subResult;
+    arr.forEach((item, i) => {
+      if (item.id === node.id) {
+        result = arr;
+      } else if (item.children) {
+        subResult = this.findNodeSiblings(item.children, node);
+        if (subResult) result = subResult;
       }
-    );
+    });
+    return result;
+
+  }
+
+  drop($event: CdkDragDrop<HaNode[]>) {
+
+    // ignore drops outside of the tree
+    if (!$event.isPointerOverContainer) return;
+
+    // construct a list of visible nodes, this will match the DOM.
+    // the cdkDragDrop event.currentIndex jives with visible nodes.
+    // it calls rememberExpandedTreeNodes to persist expand state
+    const visibleNodes = this.visibleNodes();
+
+    // deep clone the data source so we can mutate it
+    this.changedData = JSON.parse(JSON.stringify(this.dataSource.data));
+
+    // determine where to insert the node
+    const nodeAtDest = visibleNodes[$event.currentIndex];
+    const newSiblings = this.findNodeSiblings(this.changedData, nodeAtDest);
+    if (!newSiblings) return;
+    const insertIndex = newSiblings.findIndex(s => s.id === nodeAtDest.id);
+
+    // remove the node from its old place
+    const node = $event.item.data;
+    const siblings = this.findNodeSiblings(this.changedData, node);
+    const siblingIndex = siblings.findIndex(n => n.id === node.id);
+    const nodeToInsert: HaNode = siblings.splice(siblingIndex, 1)[0];
+    if (nodeAtDest.id === nodeToInsert.id) return;
+
+    // insert node
+    newSiblings.splice(insertIndex, 0, nodeToInsert);
+
+    // rebuild tree with mutated data
+    this.rebuildTreeForData(this.changedData);
+    this.saveTreeData(this.changedData);
+  }
+
+  saveTreeData(nodes: HaNode[]): void {
+    nodes = this.updatedTree(nodes, 0);
+    this.folderService.updateTree(nodes).subscribe();
+  }
+
+  updatedTree(nodes: HaNode[], levelTheo: number): HaNode[] {
+    nodes.forEach(n => {
+      const newIndex: number = nodes.findIndex(node => node.id == n.id)
+      n.order = n.order != newIndex ? newIndex : n.order;
+
+      const nf: FlatNode = this.treeControl.dataNodes.find(value => value.id == n.id);
+      n.parentId = this.getParentId(nf, levelTheo);
+
+      if (n.children) {
+        n.children = this.updatedTree(n.children, levelTheo + 1);
+      }
+    });
+    return nodes;
+  }
+
+  getParentId(node: FlatNode, levelTheo: number): string {
+    const currentLevel = node.level;
+
+    if (currentLevel == 0) {
+      return this.mainFolderId;
+    }
+
+    const parentIndex = currentLevel - 1;
+    const parent: FlatNode = this.treeControl.dataNodes
+      .find(p => p.level == parentIndex && this.treeControl.getDescendants(p).includes(node));
+    return parent.id;
+  }
+
+
+  dragHover(node: FlatNode) {
+    if (this.dragging) {
+      // this.treeControl.expand(node);
+    }
+  }
+
+  dragHoverEnd() {
+  }
+
+  dragStart($event?: CdkDragStart<FlatNode>) {
+    this.dragging = true;
+    this.previousData = this.dataSource.data;
+    if ($event) {
+      const node: FlatNode = $event.source.data;
+      if (this.treeControl.isExpanded(node)) {
+        this.treeControl.collapse(node);
+      }
+    }
+  }
+
+  dragEnd() {
+    this.dragging = false;
+  }
+
+  rebuildTreeForData(data: HaNode[]) {
+    this.dataSource.data = data;
+    this.expansionModel.selected.forEach((node) => {
+      const n = this.treeControl.dataNodes.find((n) => n.id == node.id);
+      this.treeControl.expand(n);
+    });
   }
 }
 

@@ -50,8 +50,7 @@ export class HaDocumentationService {
    * @param object json object
    */
     public updateContent(object: HaDocumentationContentFormDTO): Observable<HaDocumentation>{
-      console.log(this.apiService);
-      return this.apiService.put(this.route + '/content', object);
+      return this.apiService.put(this.route + '/content/' + object.id, object.content);
     }
 
     /**

@@ -1,12 +1,3 @@
-<mat-toolbar class="nav-bar">
-  <span class="title">Gencovery hub</span>
-  <span class="option"><a [routerLink]="'../../'">Bricks list</a></span>
-  <span class="spacer"></span>
-  <button mat-flat-button color="primary" *ngIf="!(isConnected | async)" class="g-centered-forced" (click)="openLoginDialog()">
-    {{'login' | translate}}
-  </button>
-</mat-toolbar>
-
 <fl-async-section [object]="brick$" class="full-w">
 
   <ng-container *flSectionBody="let brick">

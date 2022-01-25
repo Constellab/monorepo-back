@@ -3,7 +3,6 @@ import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 
-@Unique(['folder', 'order'])
 @Entity('Documentation')
 export class HnDocumentation extends HnBaseEntity {
 

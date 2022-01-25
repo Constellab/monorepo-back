@@ -5,7 +5,8 @@
 }
 
 .contentEditorBorder{
-  border: solid 2px var(--card-background);
+  background-color: var(--card-background);
+  height: 100%;
 }
 
 .documentation-form{
@@ -18,7 +19,7 @@
 }
 
 .content{
-  height: 100%;
+  height: 90%;
   flex: 1;
 }
 

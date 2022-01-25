@@ -2,9 +2,11 @@
   <div class="sidenav">
     <div class="g-full-height" (contextmenu)="onRightClick($event, true)">
 
-      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree item">
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree item g-full-height"
+      cdkDropList (cdkDropListDropped)="drop($event)">
         <!-- This is the tree node template for leaf nodes -->
-        <mat-tree-node *matTreeNodeDef="let node">
+        <mat-tree-node *matTreeNodeDef="let node" cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)"
+                       (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
           <mat-nav-list class="line" *ngIf="node.id != null" (contextmenu)="onRightClick($event, false, node.id)">
             <a matTreeNodePadding matTreeNodePaddingIndent="15px" class="item" mat-list-item
                [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
@@ -20,13 +22,14 @@
         <mat-menu></mat-menu>
 
         <!-- This is the tree node template for expandable nodes -->
-        <mat-tree-node *matTreeNodeDef="let node;when: hasChild">
+        <mat-tree-node *matTreeNodeDef="let node;when: hasChild" cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)"
+                       (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart($event)" (cdkDragReleased)="dragEnd()">
           <mat-nav-list class="nav-list line">
             <mat-list-item class="item" matTreeNodePadding matTreeNodePaddingIndent="15px"
                            [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
                            (contextmenu)="onRightClick($event, true, node.id)">
               <a mat-icon-button matTreeNodeToggle
-                 [attr.aria-label]="'Toggle ' + node.name">
+                 [attr.aria-label]="'Toggle ' + node.name" (click)="expansionModel.toggle(node)">
                 <mat-icon class="mat-icon-rtl-mirror">
                   {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                 </mat-icon>

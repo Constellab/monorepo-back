@@ -4,7 +4,6 @@ import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {HnBrickVersion} from '../brick-version/hn-brick-version.entity';
 import {BlEntityWithId, BlNotUpdatable} from '@monorepo/back-core-lib';
 
-@Unique(['folder', 'order'])
 @Entity('Folder')
 @Tree('materialized-path')
 export class HnFolder extends HnBaseEntity {
@@ -87,16 +86,15 @@ export class HnNode extends HnBaseEntity {
 
   children?: HnNode[];
 
-  constructor(id: string, name: string, path: string, completePath: string, o: number, children?: HnNode[], parentId?: string) {
+  constructor(id: string, name: string, path: string, completePath: string, o: number, parentId?: string, children?: HnNode[]) {
     super();
     this.id = id;
     this.name = name;
     this.order = o;
     this.path = path;
-    if (parentId)
-      this.parentId = parentId;
+    this.parentId = parentId ? parentId : null;
     this.completePath = completePath;
-    if (children) {
+    if (children && children.length > 0) {
       this.children = children;
     }
   }

@@ -1,0 +1,11 @@
+<mat-toolbar class="nav-bar">
+  <span>Gencovery hub</span>
+  <span class="option"><a routerLink="../">Bricks list</a></span>
+  <span class="spacer"></span>
+  <button mat-flat-button color="primary" *ngIf="!(userConnected | async)" class="g-centered-forced" (click)="openLoginDialog()">
+    {{'login' | translate}}
+  </button>
+  <span class="g-centered-forced" *ngIf="userConnected | async">{{ (userConnected | async).firstname}} {{(userConnected | async).lastname}}</span>
+</mat-toolbar>
+
+<router-outlet></router-outlet>

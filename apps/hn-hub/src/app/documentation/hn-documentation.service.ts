@@ -45,6 +45,10 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
+  async updatePosition(updatedDocumentation: HnDocumentation): Promise<HnDocumentation>{
+    return await this.documentationsRepository.save(updatedDocumentation);
+  }
+
   async remove(id: string): Promise<void> {
     await this.documentationsRepository.delete(id);
   }
@@ -64,9 +68,9 @@ export class HnDocumentationService {
     return currentDoc;
   }
 
-  async updateContent(updateContentDoc: HnDocumentationContentDTO): Promise<HnDocumentation>{
-    const doc:HnDocumentation = await this.documentationsRepository.findOne(updateContentDoc.id);
-    doc.content = updateContentDoc.content;
+  async updateContent(id: string, updateContentDoc: Record<string, any>): Promise<HnDocumentation>{
+    const doc:HnDocumentation = await this.documentationsRepository.findOne(id);
+    doc.content = updateContentDoc;
     return this.documentationsRepository.save(doc);
   }
 }

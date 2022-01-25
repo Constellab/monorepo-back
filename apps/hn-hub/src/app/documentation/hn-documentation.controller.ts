@@ -15,9 +15,10 @@ export class HnDocumentationController {
     return await this.documentationService.findAll();
   }
 
-  @Put('content')
-  async updateContent(@Body(new BlParsePipe(HnDocumentationContentDTO)) updateContentDoc: HnDocumentationContentDTO): Promise<HnDocumentation> {
-    return await this.documentationService.updateContent(updateContentDoc);
+  @Put('content/:id')
+  async updateContent(@Param('id') id: string,
+                      @Body() updateContentDoc: Record<string, any>): Promise<HnDocumentation> {
+    return await this.documentationService.updateContent(id, updateContentDoc);
   }
 
   @BlPublic()

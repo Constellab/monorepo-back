@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {HaPublicLoginComponent} from './ha-public-login.component';
+import {HaMainLoginComponent} from './ha-main-login.component';
 
 
 describe('DaAdminLoginComponent', () => {
-  let component: HaPublicLoginComponent;
-  let fixture: ComponentFixture<HaPublicLoginComponent>;
+  let component: HaMainLoginComponent;
+  let fixture: ComponentFixture<HaMainLoginComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [HaPublicLoginComponent]
+      declarations: [HaMainLoginComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HaPublicLoginComponent);
+    fixture = TestBed.createComponent(HaMainLoginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

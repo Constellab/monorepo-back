@@ -80,7 +80,7 @@ export class HnFolderService {
 
   async findBrickDocsTree(mainFolder: HnFolder): Promise<HnNode>{
     const brickDocs: HnFolder =
-      await this.foldersTreeRepository.findDescendantsTree(mainFolder, {relations: ['documentations', 'folders'] });
+      await this.foldersTreeRepository.findDescendantsTree(mainFolder, {relations: ['documentations', 'folders', 'folder'] });
     return this.createTree(brickDocs);
   }
 
@@ -89,11 +89,11 @@ export class HnFolderService {
     const currentChild: HnNode[] = [];
 
     const currentParent: HnNode =
-      new HnNode(folder.id, folder.title, folder.path, folder.completePath, folder.order, [], folder.folder ? folder.folder.id : null);
+      new HnNode(folder.id, folder.title, folder.path, folder.completePath, folder.order, folder.folder ? folder.folder.id : null, []);
 
     if (folder.documentations != null) {
       folder.documentations.forEach(doc => {
-        currentChild.push(new HnNode(doc.id, doc.title, doc.path, doc.completePath, doc.order));
+        currentChild.push(new HnNode(doc.id, doc.title, doc.path, doc.completePath, doc.order, folder ? folder.id : null));
       });
     }
 
@@ -103,9 +103,9 @@ export class HnFolderService {
       })
     }
 
-    if (currentChild.length == 0) {
-      currentChild[0] = new HnNode(null, null, null, null, 0);
-    }
+    // if (currentChild.length == 0) {
+    //   currentChild[0] = new HnNode(null, null, null, null, 0);
+    // }
 
     currentParent.children = currentChild;
     currentParent.children.sort((a, b) => a.order - b.order);
@@ -148,6 +148,36 @@ export class HnFolderService {
     folder.title = updatedFolder.title;
     folder.completePath = folder.folder.completePath + updatedFolder.path + '/';
     return await this.foldersRepository.save(folder);
+  }
+
+  async updateTree(updatedTree: HnNode[]): Promise<HnNode[]>{
+    for (const node of updatedTree){
+      let isUpdated = false;
+      if(node.children) {
+        const f: HnFolder = await this.foldersRepository.findOne(node.id, {relations:  ['folder']});
+        if (f.order != node.order || f.folder.id != node.parentId) {
+          isUpdated = true;
+          f.order = node.order;
+          f.folder.id = node.parentId;
+        }
+        if(isUpdated){
+          await this.foldersRepository.save(f);
+        }
+        await this.updateTree(node.children);
+      } else {
+        const d: HnDocumentation = await this.documentationService.findOne(node.id);
+        if(d.order != node.order || d.folder.id != node.parentId) {
+          isUpdated = true;
+          d.order = node.order;
+          d.folder.id = node.parentId;
+        }
+        if(isUpdated){
+          await this.documentationService.updatePosition(d);
+        }
+      }
+    }
+
+    return updatedTree;
   }
 
   // private updateChildrenPath(folder: HnFolder): HnFolder {
