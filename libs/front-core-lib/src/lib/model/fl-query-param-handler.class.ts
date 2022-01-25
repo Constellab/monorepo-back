@@ -30,12 +30,15 @@ export class FlQueryParamHandler<T extends Params = Params> {
    * @param replaceUrl When true, navigates while replacing the current state in history.
    */
   public mergeQueryParams(params: Partial<T>, replaceUrl: boolean = true): void {
-    // save the criteria list in the url as query params
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: params,
-      replaceUrl: replaceUrl,
-      queryParamsHandling: 'merge'
-    });
+    // use a time otherwise it does not work correctly if it's called multiple time quickly
+    setTimeout(() => {
+      // save the criteria list in the url as query params
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: params,
+        replaceUrl: replaceUrl,
+        queryParamsHandling: 'merge'
+      });
+    }, 0);
   }
 }

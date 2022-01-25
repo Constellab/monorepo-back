@@ -75,9 +75,7 @@ export class CaSmartDbSearchPageState implements OnDestroy {
   public selectResult(docId: string): void {
     this.selectedResult$.next(docId);
 
-    setTimeout(() => {
-      this.queryParams.mergeQueryParams({selectedDoc: docId});
-    });
+    this.queryParams.mergeQueryParams({selectedDoc: docId});
   }
 
   ngOnDestroy(): void {
