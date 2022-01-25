@@ -2,7 +2,8 @@ import {Injectable} from '@nestjs/common';
 import {ClPageI} from '@monorepo/core-lib';
 import {SnDocElasticsearchService} from './sn-doc-elasticsearch.service';
 import {SnDataImporterService} from './sn-data-importer.service';
-import {SnDocSearchResult, SnDocument, SnSmartDbExport} from '../model/sn-document.class';
+import {SnDocSearchResult, SnSmartDbExport} from '../model/sn-document.class';
+import {CnAdminAuthorization} from '../../cn-core/security/cn-admin.authorization';
 
 @Injectable()
 export class SnDocService {
@@ -11,11 +12,6 @@ export class SnDocService {
 
   constructor(private docElasticsearchService: SnDocElasticsearchService,
               private dataImporter: SnDataImporterService) {
-  }
-
-  // todo admin security
-  async createDocument(document: SnDocument): Promise<any> {
-    return this.docElasticsearchService.createDocument(document);
   }
 
   async findByIdAndCheck(id: string): Promise<SnDocSearchResult> {
@@ -27,38 +23,45 @@ export class SnDocService {
       Math.min(pageSize, SnDocService.MAX_PAGE_SIZE));
   }
 
-  // todo admin security
   async createIndex(): Promise<any> {
-    return this.docElasticsearchService.addMapping();
+    this.checkIsAdmin();
+
+    return this.docElasticsearchService.createIndex();
   }
 
-  // todo admin security
   async getIndex(index?: string): Promise<any> {
+    this.checkIsAdmin();
+
     return this.docElasticsearchService.getIndex(index);
   }
 
-  // todo admin security
   async deleteIndex(): Promise<any> {
+    this.checkIsAdmin();
+
     return this.docElasticsearchService.deleteIndex();
   }
 
-  // todo admin security
   public async init(file: any): Promise<any> {
+    this.checkIsAdmin();
     try {
       await this.docElasticsearchService.deleteIndex();
     } catch (_) {
     }
 
-    await this.docElasticsearchService.addMapping();
+    await this.docElasticsearchService.createIndex();
     return await this.dataImporter.importDataFromFile(file);
   }
 
-  // todo ADMIN security
   public async exportData(): Promise<SnSmartDbExport> {
+    this.checkIsAdmin();
     const docs = await this.docElasticsearchService.findAll();
     return {
       version: 0,
       documents: docs
     };
+  }
+
+  private checkIsAdmin(): void {
+    new CnAdminAuthorization().checkAuthorization();
   }
 }
