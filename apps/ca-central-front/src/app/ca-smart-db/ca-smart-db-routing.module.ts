@@ -6,10 +6,15 @@ import {
 import {
   CaSmartDbDocPageComponent
 } from './ca-smart-db-doc-page/component/ca-smart-db-doc-page/ca-smart-db-doc-page.component';
+import {
+  CaSmartDbAdminPageComponent
+} from './ca-smart-db-admin-page/component/ca-smart-db-admin-page/ca-smart-db-admin-page.component';
+import {CaAdminGuard} from '../ca-core/guard/ca-admin-guard.service';
 
 const routes: Route[] = [
   {path: '', component: CaSmartDbSearchPageComponent},
-  {path: ':id', component: CaSmartDbDocPageComponent}
+  {path: 'doc/:id', component: CaSmartDbDocPageComponent},
+  {path: 'admin', component: CaSmartDbAdminPageComponent, canActivate: [CaAdminGuard]}
 ];
 
 @NgModule({

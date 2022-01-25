@@ -16,7 +16,6 @@ import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {Observable, Subscription} from 'rxjs';
 import {first} from 'rxjs/operators';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
-import {clRxjsDebug} from '@monorepo/core-lib';
 
 /**
  * Component to wrap around a custom form field to handle form error status like mat-form-field
@@ -80,8 +79,7 @@ export class FlFormFieldComponent implements OnInit, DoCheck, OnDestroy {
       submitObservable = this.formGroupDirective.ngSubmit;
     }
 
-    this.subscription = submitObservable?.pipe(clRxjsDebug(),
-      first()).subscribe(
+    this.subscription = submitObservable?.pipe(first()).subscribe(
       () => this.submitted = true
     );
   }

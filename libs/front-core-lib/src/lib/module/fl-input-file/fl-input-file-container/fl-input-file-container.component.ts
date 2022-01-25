@@ -34,10 +34,6 @@ const _FlInputFileContainerComponentMixinBase =
  * <fl-input-file-container color="primary" placeholder="Select multiple pdf files">
  *  <input flInputFile multiple type="file" required [strictMode]="true"
  *         formControlName="file" accept="application/pdf">
- *
- *         <mat-error *ngIf="formGroup.get('file').hasError('required')">
- *            File is required
- *         </mat-error>
  * </fl-input-file-container>
  */
 @Component({

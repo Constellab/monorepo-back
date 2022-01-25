@@ -3,7 +3,7 @@ import {FlEntity, FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 export interface CaSmartDbDoc extends FlEntity {
   title: CaSearchStringHighlight;
   source: 'PubMed';
-  authors: string;
+  authors: string[];
   date: string;
   doi: string;
   urlPath: string;

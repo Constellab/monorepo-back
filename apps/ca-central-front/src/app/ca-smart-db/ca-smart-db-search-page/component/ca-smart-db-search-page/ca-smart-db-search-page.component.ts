@@ -4,6 +4,7 @@ import {CaSmartDbService} from '../../../service/ca-smart-db.service';
 import {CaSmartDbDoc, CaSmartDbDocDatasource} from '../../../model/ca-document.class';
 import {CaSmartDbSearchPageState} from '../../ca-smart-db-search-page.state';
 import {Observable} from 'rxjs';
+import {CaRouterService} from '../../../../ca-core/service/ca-router.service';
 
 @Component({
   selector: 'ca-smart-db-search-page',
@@ -18,6 +19,8 @@ export class CaSmartDbSearchPageComponent implements OnInit {
   datasource: CaSmartDbDocDatasource;
 
   selectedDoc$: Observable<CaSmartDbDoc>;
+
+  adminRoute = CaRouterService.getSmartDbAdminRoute();
 
   constructor(private smartDbService: CaSmartDbService,
               private state: CaSmartDbSearchPageState) {

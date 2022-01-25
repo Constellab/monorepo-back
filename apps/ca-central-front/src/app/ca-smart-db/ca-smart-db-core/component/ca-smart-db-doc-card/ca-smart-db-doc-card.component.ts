@@ -20,7 +20,7 @@ export class CaSmartDbDocCardComponent implements OnInit {
   }
 
   get detailLink(): string {
-    return CaRouterService.getSmartDbDocDetail(this.doc?.id);
+    return CaRouterService.getSmartDbDocDetailRoute(this.doc?.id);
   }
 
 }

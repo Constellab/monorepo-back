@@ -7,6 +7,15 @@
     "doi": "Doi",
     "count_result": "{{count}} Résultats",
     "no_context": "Aucun contexte",
-    "detail_link": "Détail"
+    "detail_link": "Détail",
+    "admin": "Admin",
+    "download": "Télécharger la BD complète",
+    "upload_data": "Upload data",
+    "upload_data_help_text": "Uploader les data dans la smartDB. Le fichier doit être le soit le fichier généré par le script python soit un export de la base smartDB",
+    "upload_data_select_json": "Sélectionner un fichier json",
+    "upload_data_file_required_error": "Le fichier est obligatoire",
+    "upload_data_with_reset": "Si coché, la base de donnée smartDB sera effacée avant l'upload (toutes les données actuelles seront supprimées). Merci de télécharger la base avant.",
+    "upload_data_success": "Données mis à jour",
+    "management": "Management"
   }
 }

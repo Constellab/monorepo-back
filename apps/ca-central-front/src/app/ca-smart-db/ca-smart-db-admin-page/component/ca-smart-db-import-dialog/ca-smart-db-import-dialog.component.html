@@ -1,0 +1,36 @@
+<fl-dialog-header>
+  <h2>{{'smart_db.upload_data' | translate}}</h2>
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="smartdb-upload-form" [formGroup]="formGp">
+
+    <p class="g-text-small g-text-light help-text">{{'smart_db.upload_data_help_text' | translate}}</p>
+
+    <div>
+      <fl-form-field>
+        <fl-input-file-container color="primary" [placeholder]="'smart_db.upload_data_select_json' | translate">
+          <input flInputFile type="file" [required]="true" [strictMode]="true"
+                 formControlName="file" accept="application/json">
+        </fl-input-file-container>
+        <mat-error *ngIf="formGp.get('file').hasError('required')">
+          {{'smart_db.upload_data_file_required_error' | translate}}
+        </mat-error>
+      </fl-form-field>
+    </div>
+
+    <div class="checkbox">
+      <mat-checkbox formControlName="resetData" class="g-mat-checkbox-wrap-text">
+        {{'smart_db.upload_data_with_reset' | translate}}
+      </mat-checkbox>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-flat-button color="primary" type="submit" form="smartdb-upload-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+  </button>
+</div>

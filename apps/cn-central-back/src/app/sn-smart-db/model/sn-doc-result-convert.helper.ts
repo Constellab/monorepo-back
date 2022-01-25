@@ -19,8 +19,7 @@ export class SnDocResultConvertHelper{
     return Object.assign(document, {
       id: hit._id,
       title: this.convertStringToStringMatch(document.title, words),
-      // todo use the real content
-      content: this.convertStringToStringMatch(document.sentences.map(sentence => sentence.sentence).join(), words),
+      content: this.convertStringToStringMatch(document.content, words),
       sentences: document.sentences.map(sentence => this.convertDocSentenceToDocSentenceSearch(sentence, words)),
       contentHighlight: hit.highlight?.content ?? []
     });

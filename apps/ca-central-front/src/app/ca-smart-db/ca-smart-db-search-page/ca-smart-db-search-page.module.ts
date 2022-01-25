@@ -7,6 +7,7 @@ import {CaSmartDbSearchPageComponent} from './component/ca-smart-db-search-page/
 import {
   CaSmartDbSearchDocResultComponent
 } from './component/ca-smart-db-search-doc-result/ca-smart-db-search-doc-result.component';
+import {RouterModule} from '@angular/router';
 
 
 @NgModule({
@@ -19,6 +20,7 @@ import {
     CaCoreModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule,
 
     CaSmartDbCoreModule,
   ]

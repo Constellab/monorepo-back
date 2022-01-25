@@ -1,20 +1,47 @@
-import {Controller, Delete, Get, Param, ParseIntPipe, Post, Query, UploadedFile, UseInterceptors} from '@nestjs/common';
-
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+  Res,
+  UploadedFile,
+  UseInterceptors
+} from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {ClPageI} from '@monorepo/core-lib';
 import {SnDocSearchResult} from './model/sn-document.class';
 import {SnDocService} from './service/sn-doc.service';
 import {SnDataImporterService} from './service/sn-data-importer.service';
+import {Response} from 'express';
 
 @Controller('smart-db/doc')
 export class SnDocController {
-  constructor(private readonly appService: SnDocService,
+  constructor(private readonly docService: SnDocService,
               private dataImporter: SnDataImporterService) {
+  }
+
+  @Get('download')
+  async download(@Res() response: Response): Promise<void> {
+    const exportStr = JSON.stringify(await this.docService.exportData());
+
+    // create a file to be downloaded
+    //tell the browser to download this
+    response.setHeader('Content-disposition', 'attachment; filename=smartdb.json');
+    response.setHeader('Content-type', 'application/json');
+
+    //convert to a buffer and send to client
+    const fileContents = Buffer.from(exportStr, 'utf-8');
+
+    // send file to download
+    response.send(fileContents);
   }
 
   @Get(':id')
   findById(@Param('id') id: string): Promise<SnDocSearchResult> {
-    return this.appService.findByIdAndCheck(id);
+    return this.docService.findByIdAndCheck(id);
   }
 
 
@@ -22,27 +49,27 @@ export class SnDocController {
   search(@Param('search') text: string,
          @Query('page', ParseIntPipe) page: number,
          @Query('size', ParseIntPipe) size: number): Promise<ClPageI<SnDocSearchResult>> {
-    return this.appService.search(text, page, size);
+    return this.docService.search(text, page, size);
   }
 
   @Post('add-mapping')
   addMapping(): Promise<any> {
-    return this.appService.createIndex();
+    return this.docService.createIndex();
   }
 
   @Get('index')
   getIndexes(): Promise<any> {
-    return this.appService.getIndex();
+    return this.docService.getIndex();
   }
 
   @Get('index/:name')
   getIndex(@Param('name') name: string): Promise<any> {
-    return this.appService.getIndex(name);
+    return this.docService.getIndex(name);
   }
 
   @Delete('index')
   deleteIndexes(): Promise<any> {
-    return this.appService.deleteIndex();
+    return this.docService.deleteIndex();
   }
 
   @Post('upload')
@@ -51,15 +78,9 @@ export class SnDocController {
     return this.dataImporter.importDataFromFile(file);
   }
 
-  @Post('read-csv')
-  @UseInterceptors(FileInterceptor('file'))
-  readCsv(@UploadedFile() file: any): any {
-    return this.dataImporter.readDataFromCsv(file);
-  }
-
   @Post('init')
   @UseInterceptors(FileInterceptor('file'))
   init(@UploadedFile() file: any): any {
-    return this.appService.init(file);
+    return this.docService.init(file);
   }
 }

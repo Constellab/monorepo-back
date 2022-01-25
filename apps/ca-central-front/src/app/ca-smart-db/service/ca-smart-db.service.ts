@@ -23,4 +23,20 @@ export class CaSmartDbService {
       resultIsPaginated: true, page: page, pageSize: pageSize
     });
   }
+
+  public getDownloadSmartDbLink(): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/download`);
+  }
+
+  public init(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.apiService.post(`${this.route}/init`, formData);
+  }
+
+  public uploadData(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.apiService.post(`${this.route}/upload`, formData);
+  }
 }

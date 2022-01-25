@@ -48,6 +48,21 @@ export class SnDocElasticsearchService {
     return doc;
   }
 
+  async findAll(): Promise<SnDocument[]> {
+    const {body} = await this.elasticSearchService.search({
+      index: SnDocElasticsearchService.DOCUMENT_INDEX,
+      body: {
+        query: {
+          match_all: {}
+        }
+      }
+    });
+
+    const hits: SnElasticsearchHit<SnDocument>[] = body.hits.hits;
+    // set the id
+    return hits.map(hit => Object.assign(hit._source, {id: hit._id}));
+  }
+
   async search(text: string, page: number, pageSize: number): Promise<ClPageI<SnDocSearchResult>> {
     const {body} = await this.elasticSearchService.search<SnElasticsearchResult<SnDocument>>({
       index: SnDocElasticsearchService.DOCUMENT_INDEX,
@@ -98,11 +113,23 @@ export class SnDocElasticsearchService {
   }
 
   async addMapping(): Promise<any> {
-    await this.elasticSearchService.create({
-      id: SnDocElasticsearchService.DOCUMENT_INDEX,
-      index: SnDocElasticsearchService.DOCUMENT_INDEX,
-      body: {},
+    // await this.elasticSearchService.create({
+    //   id: SnDocElasticsearchService.DOCUMENT_INDEX,
+    //   index: SnDocElasticsearchService.DOCUMENT_INDEX,
+    //   body: {},
+    // });
+    await this.elasticSearchService.indices.create({
+      index: SnDocElasticsearchService.DOCUMENT_INDEX
     });
+    // await this.elasticSearchService.index({
+    //   index: SnDocElasticsearchService.DOCUMENT_INDEX,
+    //   body: {}
+    // })
+
+    // await this.elasticSearchService.indices.put_alias({
+    //   index: SnDocElasticsearchService.DOCUMENT_INDEX
+    // })
+
     await this.elasticSearchService.indices.putMapping({
       index: SnDocElasticsearchService.DOCUMENT_INDEX,
       body: {
