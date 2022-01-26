@@ -16,6 +16,18 @@
     "upload_data_file_required_error": "The file is mandatory",
     "upload_data_with_reset": "If check, the smartDB database is cleared before upload (all the current data will be deleted). Please download data first",
     "upload_data_success": "Data uploaded",
-    "management": "Management"
+    "management": "Management",
+    "verification": "Verification",
+    "mark_as_verified": "Mark as verified",
+    "doc_saved": "Doc saved",
+    "all_docs_to_verify": "All documents are verified",
+    "doc_to_validate": "Number of document to verify : {{count}}",
+    "sentences": "Sentences",
+    "verb": "Verb",
+    "subject": "Subject",
+    "object": "Object",
+    "type": "Type",
+    "refresh": "Refresh",
+    "delete": "Delete"
   }
 }

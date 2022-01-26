@@ -9,6 +9,7 @@ import {
   FlCorePipeModule,
   FlDateModule,
   FlDialogModule,
+  FlDynamicFieldModule,
   FlFormModule,
   FlIconModule,
   FlImageModule,
@@ -62,6 +63,7 @@ import {
     FlPortalModule,
     FlKeyValueModule,
     FlInputFileModule,
+    FlDynamicFieldModule,
   ]
 })
 export class CaCustomLibraryModule {

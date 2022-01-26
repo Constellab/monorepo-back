@@ -1,0 +1,35 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="sentence">
+  <p fxFlex class="g-text-small">{{sentence.sentence}}</p>
+  <button mat-icon-button type="button" (click)="deleteSentence()"
+          [matTooltip]="'smart_db.delete' | translate">
+    <mat-icon>clear</mat-icon>
+  </button>
+</div>
+
+<div *ngFor="let part of sentence.parts; let index = index" class="g-compact-form"
+     fxLayout="row" fxLayoutAlign="start center">
+
+  <div class="part-section subject">
+    <div *ngFor="let subject of part.subject">{{subject}}</div>
+  </div>
+
+  <div class="part-section verb" fxLayout="column">
+    {{part.verb}}
+
+    <mat-form-field class="g-no-hint">
+      <mat-select [placeholder]="'smart_db.type' | translate" [(ngModel)]="part.type">
+        <mat-option value="Positive" class="g-success-text">Positive</mat-option>
+        <mat-option value="Negative" class="g-warn-text">Negative</mat-option>
+        <mat-option value="Neutral">Neutral</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+
+  <div class="part-section object">{{part.object}}</div>
+
+  <button mat-icon-button type="button" (click)="deletePart(index)"
+          [matTooltip]="'smart_db.delete' | translate" class="delete-part">
+    <mat-icon>clear</mat-icon>
+  </button>
+</div>

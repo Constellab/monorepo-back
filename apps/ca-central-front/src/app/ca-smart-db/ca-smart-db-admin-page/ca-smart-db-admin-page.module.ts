@@ -8,9 +8,13 @@ import {
   CaSmartDbImportDialogComponent
 } from './component/ca-smart-db-import-dialog/ca-smart-db-import-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {CaSmartDbVerificationComponent} from './component/ca-smart-db-verification/ca-smart-db-verification.component';
+import {
+  CaSmartDbVerifySentenceComponent
+} from './component/ca-smart-db-verify-sentence/ca-smart-db-verify-sentence.component';
 
 @NgModule({
-  declarations: [CaSmartDbAdminPageComponent, CaSmartDbManagementComponent, CaSmartDbImportDialogComponent],
+  declarations: [CaSmartDbAdminPageComponent, CaSmartDbManagementComponent, CaSmartDbImportDialogComponent, CaSmartDbVerificationComponent, CaSmartDbVerifySentenceComponent],
   imports: [
     CommonModule,
     FormsModule,

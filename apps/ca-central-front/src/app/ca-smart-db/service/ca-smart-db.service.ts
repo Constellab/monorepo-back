@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {CaSmartDbDoc, CaSmartDbDocSearchResult} from '../model/ca-document.class';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPage, ClPageI} from '@monorepo/core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -38,5 +38,16 @@ export class CaSmartDbService {
     const formData = new FormData();
     formData.append('file', file);
     return this.apiService.post(`${this.route}/upload`, formData);
+  }
+
+  public validateDoc(doc: CaSmartDbDoc): Observable<CaSmartDbDoc> {
+    return this.apiService.put(this.route + '/validate', doc);
+  }
+
+  // use to get the list of not validated by a user
+  public getNotValidated(page: number, pageSize: number): Observable<ClPageI<CaSmartDbDoc>>{
+    return this.apiService.get(`${this.route}/not-validated`, null, {
+      resultIsPaginated: true, page: page, pageSize: pageSize
+    });
   }
 }

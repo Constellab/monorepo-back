@@ -16,6 +16,18 @@
     "upload_data_file_required_error": "Le fichier est obligatoire",
     "upload_data_with_reset": "Si coché, la base de donnée smartDB sera effacée avant l'upload (toutes les données actuelles seront supprimées). Merci de télécharger la base avant.",
     "upload_data_success": "Données mis à jour",
-    "management": "Management"
+    "management": "Management",
+    "verification": "Vérification",
+    "mark_as_verified": "Marqué comme vérifié",
+    "doc_saved": "Document enregistré",
+    "all_docs_to_verify": "Tous les documents sont vérifiés",
+    "doc_to_validate": "Nombre de documents à vérifier : {{count}}",
+    "sentences": "Phrases",
+    "verb": "Verbe",
+    "subject": "Sujet",
+    "object": "Objet",
+    "type": "Type",
+    "refresh": "Refresh",
+    "delete": "Supprimer"
   }
 }

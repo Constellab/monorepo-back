@@ -5,16 +5,16 @@ import {
   SnDocumentSentence,
   SnMatchPosition
 } from './sn-document.class';
-import {ClStringHelper} from '@monorepo/core-lib';
+import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
 import {SnElasticsearchHit} from './sn-elasticsearch.class';
 
 
 export class SnDocResultConvertHelper {
-  public static convertHitsToDocsSearch(hits: SnElasticsearchHit<SnDocument>[], words: string[] = []): SnDocSearchResult[] {
+  public static convertHitsToDocsSearch(hits: SnElasticsearchHit<SnDocument>[], words: string[]): SnDocSearchResult[] {
     return hits.map(hit => this.convertHitToDocSearch(hit, words));
   }
 
-  public static convertHitToDocSearch(hit: SnElasticsearchHit<SnDocument>, words: string[] = []): SnDocSearchResult {
+  public static convertHitToDocSearch(hit: SnElasticsearchHit<SnDocument>, words: string[]): SnDocSearchResult {
     const document = hit._source;
     return Object.assign(document, {
       id: hit._id,
@@ -46,5 +46,27 @@ export class SnDocResultConvertHelper {
     }
 
     return matches;
+  }
+
+  public static convertHitsToDocs(hits: SnElasticsearchHit<SnDocument>[]): SnDocument[] {
+    return hits.map(hit => this.convertHitToDoc(hit));
+  }
+
+  public static convertHitToDoc(hit: SnElasticsearchHit<SnDocument>): SnDocument {
+    return Object.assign(hit._source, {
+      id: hit._id,
+    });
+  }
+
+  public static convertToPage<T>(objects: T[], page: number, pageSize: number, total: number): ClPageI<T> {
+    return {
+      pageSize: pageSize,
+      first: page === 0,
+      currentPage: page,
+      // compare the last element position with the total number
+      last: (page + 1) * pageSize >= total,
+      totalElements: total,
+      objects: objects
+    };
   }
 }

@@ -1,0 +1,60 @@
+<fl-card>
+
+  <fl-card-header>
+    <h2>{{'smart_db.verification' | translate}}</h2>
+
+    <fl-card-actions>
+      <button mat-stroked-button type="button" class="g-button-small" (click)="getNextDocument()">
+        <mat-icon>refresh</mat-icon>
+        <span>{{'smart_db.refresh' | translate}}</span>
+      </button>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body class="card-body">
+
+    <div *ngIf="getIsLoading; else notLoading" class="g-text-centered">
+      <fl-loader size="medium"></fl-loader>
+    </div>
+
+    <ng-template #notLoading>
+
+      <div *ngIf="totalNumber > 0 && doc; else allVerified">
+
+        <p>{{'smart_db.doc_to_validate' | translate: {count: totalNumber}  }}</p>
+
+
+        <!--    Section with the doc card on the left and sentences on the right    -->
+        <div fxLayout="row" fxLayoutGap="1em">
+          <ca-smart-db-doc-card [doc]="doc" fxFlex="40%"></ca-smart-db-doc-card>
+
+
+          <div fxFlex="60%">
+            <h3>{{'smart_db.sentences' | translate}}</h3>
+
+
+            <div *ngFor="let sentence of doc.sentences; let index = index" fxLayout="column">
+              <div class="sentence-container">
+                <ca-smart-db-verify-sentence [sentence]="sentence"
+                                             (deleteClicked)="deleteSentence(index)"></ca-smart-db-verify-sentence>
+              </div>
+              <mat-divider></mat-divider>
+            </div>
+
+            <div class="validate-button">
+              <button mat-flat-button type="button" color="primary" (click)="validateDoc()">
+                {{'smart_db.mark_as_verified' | translate}}
+                <fl-button-loader *ngIf="validateIsLoading"></fl-button-loader>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <ng-template #allVerified>
+        <p class="g-text-big g-text-centered">{{'smart_db.all_docs_to_verify' | translate}}</p>
+      </ng-template>
+    </ng-template>
+  </fl-card-body>
+</fl-card>

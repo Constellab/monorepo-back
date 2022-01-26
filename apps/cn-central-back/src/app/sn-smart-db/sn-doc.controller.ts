@@ -1,10 +1,12 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   Res,
   UploadedFile,
@@ -12,7 +14,7 @@ import {
 } from '@nestjs/common';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {ClPageI} from '@monorepo/core-lib';
-import {SnDocSearchResult} from './model/sn-document.class';
+import {SnDocSearchResult, SnDocument} from './model/sn-document.class';
 import {SnDocService} from './service/sn-doc.service';
 import {SnDataImporterService} from './service/sn-data-importer.service';
 import {Response} from 'express';
@@ -39,11 +41,21 @@ export class SnDocController {
     response.send(fileContents);
   }
 
+  @Get('not-validated')
+  findNotValidates(@Query('page', ParseIntPipe) page: number,
+                   @Query('size', ParseIntPipe) size: number): Promise<ClPageI<SnDocument>> {
+    return this.docService.findNotValidated(page, size);
+  }
+
   @Get(':id')
-  findById(@Param('id') id: string): Promise<SnDocSearchResult> {
+  findById(@Param('id') id: string): Promise<SnDocument> {
     return this.docService.findByIdAndCheck(id);
   }
 
+  @Put('validate')
+  async validate(@Body() doc: SnDocument): Promise<SnDocument> {
+    return this.docService.validateDoc(doc);
+  }
 
   @Get('/search/:search')
   search(@Param('search') text: string,

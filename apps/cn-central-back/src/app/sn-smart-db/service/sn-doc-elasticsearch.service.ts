@@ -21,7 +21,22 @@ export class SnDocElasticsearchService {
     });
   }
 
-  async findById(id: string): Promise<SnDocSearchResult | null> {
+  async updateDocument(document: SnDocument): Promise<SnDocument> {
+    const id = document.id;
+    delete document.id;
+    await this.elasticSearchService.index({
+      index: SnDocElasticsearchService.DOCUMENT_INDEX,
+      id: id,
+      body: document,
+
+    });
+
+    // force to refresh the index to have data up to date
+    await this.elasticSearchService.indices.refresh({index: SnDocElasticsearchService.DOCUMENT_INDEX})
+    return Object.assign(document, {id: id});
+  }
+
+  async findById(id: string): Promise<SnDocument | null> {
     const {body} = await this.elasticSearchService.search({
       index: SnDocElasticsearchService.DOCUMENT_INDEX,
       body: {
@@ -36,16 +51,37 @@ export class SnDocElasticsearchService {
     const hit: SnElasticsearchHit = body.hits.hits[0];
     if (hit == null) return null;
 
-    return SnDocResultConvertHelper.convertHitToDocSearch(hit);
+    return SnDocResultConvertHelper.convertHitToDoc(hit);
   }
 
-  async findByIdAndCheck(id: string): Promise<SnDocSearchResult> {
+  async findByIdAndCheck(id: string): Promise<SnDocument> {
     const doc = await this.findById(id);
 
     if (doc == null) {
       throw new NotFoundException('Document not found');
     }
     return doc;
+  }
+
+  async findNotValidated(page: number, pageSize: number): Promise<ClPageI<SnDocument>> {
+    const {body} = await this.elasticSearchService.search<SnElasticsearchResult<SnDocument>>({
+      index: SnDocElasticsearchService.DOCUMENT_INDEX,
+      from: page * pageSize,
+      size: pageSize,
+      body: {
+        query: {
+          bool: {
+            must: {
+              match: {'sentences.parts.humanValidated': false}
+            },
+          }
+        }
+      }
+    });
+    const results: SnDocument[] = SnDocResultConvertHelper.convertHitsToDocs(body.hits.hits);
+
+    const total: number = body.hits.total.value;
+    return SnDocResultConvertHelper.convertToPage(results, page, pageSize, total);
   }
 
   async findAll(): Promise<SnDocument[]> {
@@ -59,8 +95,8 @@ export class SnDocElasticsearchService {
     });
 
     const hits: SnElasticsearchHit<SnDocument>[] = body.hits.hits;
-    // set the id
-    return hits.map(hit => Object.assign(hit._source, {id: hit._id}));
+
+    return SnDocResultConvertHelper.convertHitsToDocs(hits);
   }
 
   async search(text: string, page: number, pageSize: number): Promise<ClPageI<SnDocSearchResult>> {
@@ -101,15 +137,7 @@ export class SnDocElasticsearchService {
       body.hits.hits, text.split(' '));
 
     const total: number = body.hits.total.value;
-    return {
-      pageSize: pageSize,
-      first: page === 0,
-      currentPage: page,
-      // compare the last element position with the total number
-      last: (page + 1) * pageSize >= total,
-      totalElements: total,
-      objects: results
-    };
+    return SnDocResultConvertHelper.convertToPage(results, page, pageSize, total);
   }
 
   async createIndex(): Promise<any> {
