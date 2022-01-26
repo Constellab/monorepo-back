@@ -52,27 +52,32 @@ export class FlPortalService {
   /**
    * Configure the portal to be relative to an element
    * @param element host element for the position of the portal
-   * @param position positions of the portal with the element. If multiple positions are provided, its uses
+   * @param positions positions of the portal with the element. If multiple positions are provided, its uses
    * the next position if the previous one is off the screen. Or use default position
    * @param configuration configuration for the overlay
    */
   public configureRelativePortal(element: Element | ElementRef,
-                                 position: FlPortalConnectedPosition[],
+                                 positions: FlPortalConnectedPosition[] | FlexibleConnectedPositionStrategy,
                                  configuration: FlRelativeOverlayConfig = {}): FlPortalConfig {
 
     // save the element to the config
     const hostElement = this.convertToElementRef(element);
     const config: FlRelativePortalConfig = new FlRelativePortalConfig(hostElement).configureOverlay(configuration);
 
-    // convert position to ConnectedPosition[]
-    const positions: ConnectedPosition[] = this.convertPositionToConnectedPosition(position);
+    // create the connected strategy only if
+    let strategy: FlexibleConnectedPositionStrategy;
+    if (positions instanceof FlexibleConnectedPositionStrategy) {
+      strategy = positions;
+    } else {
+      strategy = this.getFlexiblePositionStrategy(element, positions, configuration.viewPortMargin);
+    }
 
     // set the position strategy
-    config.setPositionStrategy(this.getFlexiblePositionStrategy(element, positions, configuration.viewPortMargin));
+    config.setPositionStrategy(strategy);
 
     // if we show the arrow
     if (config.config.showArrow) {
-      this.configureOffset(positions, config);
+      this.configureOffset(strategy.positions, config);
     }
 
     return config;
@@ -84,19 +89,40 @@ export class FlPortalService {
    * @param positions position of the portal compare to element
    * @param viewPortMargin margin on the border
    */
-  public getFlexiblePositionStrategy(element: Element | ElementRef, positions: ConnectedPosition[],
+  public getFlexiblePositionStrategy(element: Element | ElementRef, positions: FlPortalConnectedPosition[],
                                      viewPortMargin: number = 20)
     : FlexibleConnectedPositionStrategy {
     const elementRef: ElementRef = this.convertToElementRef(element);
 
+    const connectedPositions: ConnectedPosition[] = this.convertPositionToConnectedPosition(positions);
+
     // set the portal position relative to the element with a margin of 10 for the viewport
     return this.overlay.position().flexibleConnectedTo(elementRef)
-      .withPositions(positions).withViewportMargin(viewPortMargin);
+      .withPositions(connectedPositions).withViewportMargin(viewPortMargin);
+  }
+
+  /**
+   * Configure a portal at the mouse position, but uses element position if there is not enough space
+   * @param mouseEvent
+   * @param positions
+   * @param configuration
+   */
+  public configureRelativePortalFromMouseEvent(mouseEvent: MouseEvent,
+                                               positions: FlPortalConnectedPosition[],
+                                               configuration: FlRelativeOverlayConfig = {}): FlPortalConfig {
+    const element: Element = mouseEvent.target as any;
+
+    const strategy = this.getFlexiblePositionStrategy(element, positions)
+      // calculate the offset position to be on click event position, using a relative portal
+      .withDefaultOffsetX(-(element.clientWidth - mouseEvent.offsetX))
+      .withDefaultOffsetY(-(element.clientHeight - mouseEvent.offsetY));
+
+    return this.configureRelativePortal(element, strategy, configuration);
   }
 
   /**
    * Configure an absolute portal form the position of a mouse event
-   * This portal is not linked to an host element
+   * This portal is not linked to a host element
    */
   public configureAbsolutePortalFromMouseEvent(mouseEvent: MouseEvent, configuration: FlOverlayConfig = {}): FlPortalConfig {
     return this.configureAbsolutePortal({top: mouseEvent.pageY + 'px', left: mouseEvent.pageX + 'px'}, configuration);
@@ -104,7 +130,7 @@ export class FlPortalService {
 
   /**
    * Configure an absolute portal form top and left position
-   * This portal is not linked to an host element
+   * This portal is not linked to a host element
    */
   public configureAbsolutePortal(position: PortalAbsolutePosition, configuration: FlOverlayConfig = {}): FlPortalConfig {
     // save the element to the config

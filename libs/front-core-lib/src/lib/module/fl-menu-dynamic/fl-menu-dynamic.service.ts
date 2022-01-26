@@ -1,6 +1,6 @@
 import {ElementRef, Injectable} from '@angular/core';
 import {FlPortalService} from '../fl-portal/service/fl-portal.service';
-import {FlPortalConnectedPosition, PortalAbsolutePosition} from '../fl-portal/model/fl-portal.class';
+import {FlOverlayConfig, FlPortalConnectedPosition} from '../fl-portal/model/fl-portal.class';
 import {FlMenuDynamic} from './model/fl-menu-dynamic.class';
 import {FlOverlayRef} from '../fl-portal/model/fl-overlay-ref.class';
 import {FlPortalConfig} from '../fl-portal/model/fl-portal-config.class';
@@ -11,33 +11,43 @@ import {FlMenuDynamicPortalComponent} from './component/fl-menu-dynamic-portal/f
 })
 export class FlMenuDynamicService {
 
+  private readonly overlayConfig: FlOverlayConfig = {
+    disposeOnOutsideClick: true,
+    disposeOnNavigation: true
+  };
+
+  private readonly positions: FlPortalConnectedPosition[] = [
+    {originX: 'end', originY: 'bottom', overlayX: 'start', overlayY: 'top'},
+    'right', 'top', 'left', 'bottom'];
+
   constructor(private portalService: FlPortalService) {
   }
 
+  /**
+   * Open the menu portal relative to the element
+   */
   public openDynamicMenuRelative(menu: FlMenuDynamic[],
                                  element: Element | ElementRef,
-                                 position: FlPortalConnectedPosition[]): FlOverlayRef {
-    const config: FlPortalConfig = this.portalService.configureRelativePortal(element, position);
+                                 position: FlPortalConnectedPosition[] = this.positions): FlOverlayRef {
+    const config: FlPortalConfig = this.portalService.configureRelativePortal(element, position, this.overlayConfig);
 
     return this.createPortal(menu, config);
   }
 
+  /**
+   * Open the menu portal relative to the element on mouse position
+   */
   public openDynamicMenuFromMouseEvent(menu: FlMenuDynamic[],
-                                       mouseEvent: MouseEvent): FlOverlayRef {
-    const config: FlPortalConfig = this.portalService.configureAbsolutePortalFromMouseEvent(mouseEvent);
+                                       mouseEvent: MouseEvent,
+                                       position: FlPortalConnectedPosition[] = this.positions): FlOverlayRef {
+    const config: FlPortalConfig = this.portalService.configureRelativePortalFromMouseEvent(mouseEvent,
+      position, this.overlayConfig);
 
     return this.createPortal(menu, config);
   }
 
-  public openDynamicMenuAbsolute(menu: FlMenuDynamic[],
-                                 position: PortalAbsolutePosition): FlOverlayRef {
-    const config: FlPortalConfig = this.portalService.configureAbsolutePortal(position);
-
-    return this.createPortal(menu, config);
-  }
 
   private createPortal(menu: FlMenuDynamic[], config: FlPortalConfig): FlOverlayRef {
-    config.config.hasBackdrop = false;
     return this.portalService.createPortal(FlMenuDynamicPortalComponent, config, menu);
   }
 }

@@ -4,8 +4,8 @@ import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
 import {FlSpreadsheetActions} from './fl-spreadsheet-actions.state';
 import {FlSpreadsheetChartState} from './fl-spreadsheet-chart.state';
 import {FlSpreadsheetClipboardState} from './fl-spreadsheet-clipboard.state';
-import {FlContextMenuService} from '../../fl-context-menu/fl-context-menu.service';
-import {FlContextMenuButton, FlContextMenuConfig} from '../../fl-context-menu/fl-context-menu.class';
+import {FlMenuDynamicService} from '../../fl-menu-dynamic/fl-menu-dynamic.service';
+import {FlMenuDynamic} from '../../fl-menu-dynamic/model/fl-menu-dynamic.class';
 
 
 /**
@@ -19,84 +19,78 @@ export class FlSpreadsheetContextMenu {
               private action: FlSpreadsheetActions,
               private chartState: FlSpreadsheetChartState,
               private clipboardState: FlSpreadsheetClipboardState,
-              private contextMenuService: FlContextMenuService) {
+              private menuDynamicService: FlMenuDynamicService) {
   }
 
   public openCellContextMenu(mouseEvent: MouseEvent): void {
-    this.contextMenuService.openContextMenu(this.getCellConfig(), mouseEvent.target as any);
+    this.menuDynamicService.openDynamicMenuFromMouseEvent(this.getCellConfig(), mouseEvent);
   }
 
   public openHeaderColumnContextMenu(mouseEvent: MouseEvent): void {
-    this.contextMenuService.openContextMenu(this.getConfigForHeaderColumn(), mouseEvent.target as any);
+    this.menuDynamicService.openDynamicMenuFromMouseEvent(this.getConfigForHeaderColumn(), mouseEvent);
   }
 
   public openHeaderRowContextMenu(mouseEvent: MouseEvent): void {
-    this.contextMenuService.openContextMenu(this.getConfigForHeaderRow(), mouseEvent.target as any);
+    this.menuDynamicService.openDynamicMenuFromMouseEvent(this.getConfigForHeaderRow(), mouseEvent);
   }
 
   /**
    * Get config for the header column based on a selection
    */
-  public getConfigForHeaderColumn(): FlContextMenuConfig {
+  public getConfigForHeaderColumn(): FlMenuDynamic[] {
 
-    return {
-      buttons: [
-        ...this.getCopyPasteConfig(),
-        // button to create a column
-        {
-          text: {text: 'flSpreadsheet.add', translateText: true},
-          icon: 'add',
-          onClick: () => this.action.addColumn()
-        },
-        // button to delete columns
-        {
-          text: {text: 'flSpreadsheet.delete', translateText: true},
-          icon: 'delete',
-          onClick: () => this.action.deleteColumns()
-        },
-        this.getCreateChartConfig()
-      ]
-    };
+    return [
+      ...this.getCopyPasteConfig(),
+      // button to create a column
+      {
+        text: {text: 'flSpreadsheet.add', translateText: true},
+        icon: 'add',
+        onClick: () => this.action.addColumn()
+      },
+      // button to delete columns
+      {
+        text: {text: 'flSpreadsheet.delete', translateText: true},
+        icon: 'delete',
+        onClick: () => this.action.deleteColumns()
+      },
+      this.getCreateChartConfig()
+    ];
   }
 
   /**
    * Get config for the header row based on a selection
    */
-  public getConfigForHeaderRow(): FlContextMenuConfig {
-    return {
-      buttons: [
-        ...this.getCopyPasteConfig(),
-        // button to create a row
-        {
-          text: {text: 'flSpreadsheet.add', translateText: true},
-          icon: 'add',
-          onClick: () => this.action.addRow(),
-          divider: true,
-        },
-        // button to delete rows
-        {
-          text: {text: 'flSpreadsheet.delete', translateText: true},
-          icon: 'delete',
-          onClick: () => this.action.deleteRows()
-        },
-        this.getCreateChartConfig()
-      ]
-    };
+  public getConfigForHeaderRow(): FlMenuDynamic[] {
+    return [
+      ...this.getCopyPasteConfig(),
+      // button to create a row
+      {
+        text: {text: 'flSpreadsheet.add', translateText: true},
+        icon: 'add',
+        onClick: () => this.action.addRow(),
+        divider: true,
+      },
+      // button to delete rows
+      {
+        text: {text: 'flSpreadsheet.delete', translateText: true},
+        icon: 'delete',
+        onClick: () => this.action.deleteRows()
+      },
+      this.getCreateChartConfig()
+    ];
   }
 
   /**
    * Get config for the header row based on a selection
    */
-  public getCellConfig(): FlContextMenuConfig {
-    return {
-      buttons: [
-        ...this.getCopyPasteConfig(),
-        this.getCreateChartConfig()
-      ]
-    };
+  public getCellConfig(): FlMenuDynamic[] {
+    return [
+      ...this.getCopyPasteConfig(),
+      this.getCreateChartConfig()
+    ];
   }
 
-  private getCreateChartConfig(): FlContextMenuButton {
+  private getCreateChartConfig(): FlMenuDynamic {
     return {
       text: {text: 'flSpreadsheet.create_chart', translateText: true},
       icon: 'addchart',
@@ -105,7 +99,7 @@ export class FlSpreadsheetContextMenu {
     };
   }
 
-  private getCopyPasteConfig(): FlContextMenuButton[] {
+  private getCopyPasteConfig(): FlMenuDynamic[] {
     return [
       {
         text: {text: 'flSpreadsheet.copy', translateText: true},

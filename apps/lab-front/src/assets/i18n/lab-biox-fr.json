@@ -97,6 +97,7 @@
     "clone_experiment": "Dupliquer l'expérience",
     "clone_experiment_confirmation": "Voulez-vous dupliquer l'expérience ? Les process et configurations seront copiées mais pas les resources.",
     "experiment_cloned": "Expérience dupliquée",
+    "experiment": "Expérience",
     "transformers": "Transformeurs",
     "transform_resource": "Transformer {{resourceName}}",
     "add_transformer": "Ajouter un transformeur",

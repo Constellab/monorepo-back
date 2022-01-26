@@ -5,13 +5,7 @@ import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
 import {
   LabResourceDetailDialogComponent
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-detail-dialog/lab-resource-detail-dialog.component';
-import {
-  FlContextMenuButton,
-  FlContextMenuConfig,
-  FlContextMenuService,
-  FlDialogService,
-  FlHtmlHelper
-} from '@monorepo/front-core-lib';
+import {FlDialogService, FlHtmlHelper, FlMenuDynamic, FlMenuDynamicService} from '@monorepo/front-core-lib';
 import {LabWorkflowPort} from '../../model/lab-workflow-port.class';
 import {
   LabSelectResourceDialogComponent
@@ -36,7 +30,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
                         protected dialogService: FlDialogService,
                         protected elementRef: ElementRef,
                         protected renderer: Renderer2,
-                        protected contextMenuService: FlContextMenuService) {
+                        protected menuDynamicService: FlMenuDynamicService) {
   }
 
   protected initNode(): void {
@@ -93,14 +87,14 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
   }
 
   private onInputClick(port: LabWorkflowPort, element: Element): void {
-    const contextConfig = this.getInputPortContextMenuConfig(port);
-    this.contextMenuService.openContextMenu(contextConfig, element);
+    const dynamicMenu = this.getInputPortContextMenuConfig(port);
+    this.menuDynamicService.openDynamicMenuRelative(dynamicMenu, element);
 
   }
 
   private onOutputClick(portName: string, element: Element): void {
-    const contextConfig = this.getOutputPortContextMenuConfig(portName);
-    this.contextMenuService.openContextMenu(contextConfig, element);
+    const dynamicMenu = this.getOutputPortContextMenuConfig(portName);
+    this.menuDynamicService.openDynamicMenuRelative(dynamicMenu, element);
   }
 
 
@@ -121,38 +115,34 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
     this.workflowManager.addTaskOutput(this.node.nodeName, outputPortName);
   }
 
-  private getInputPortContextMenuConfig(port: LabWorkflowPort): FlContextMenuConfig {
+  private getInputPortContextMenuConfig(port: LabWorkflowPort): FlMenuDynamic[] {
     const resourceId: string = this.node.object.inputs[port.name]?.resource_id ?? null;
 
-    return {
-      buttons: [
-        {
-          text: {text: 'biox.add_source', translateText: true},
-          icon: 'resource',
-          onClick: () => this.openResourceSelection(port.name),
-          disabled: this.node.inputPortIsConnected(port.drawFlowName)
-        },
-        this.getResourceDetailContextButton(resourceId)
-      ]
-    };
+    return [
+      {
+        text: {text: 'biox.add_source', translateText: true},
+        icon: 'resource',
+        onClick: () => this.openResourceSelection(port.name),
+        disabled: this.node.inputPortIsConnected(port.drawFlowName)
+      },
+      this.getResourceDetailContextButton(resourceId)
+    ];
   }
 
-  private getOutputPortContextMenuConfig(portName: string): FlContextMenuConfig {
+  private getOutputPortContextMenuConfig(portName: string): FlMenuDynamic[] {
     const resourceId: string = this.node.object.outputs[portName]?.resource_id ?? null;
 
-    return {
-      buttons: [
-        {
-          text: {text: 'biox.add_output', translateText: true},
-          icon: 'output',
-          onClick: () => this.addTaskOutput(portName),
-        },
-        this.getResourceDetailContextButton(resourceId)
-      ]
-    };
+    return [
+      {
+        text: {text: 'biox.add_output', translateText: true},
+        icon: 'output',
+        onClick: () => this.addTaskOutput(portName),
+      },
+      this.getResourceDetailContextButton(resourceId)
+    ];
   }
 
-  private getResourceDetailContextButton(resourceId: string | null): FlContextMenuButton {
+  private getResourceDetailContextButton(resourceId: string | null): FlMenuDynamic {
     return {
       text: {text: 'biox.view_resource', translateText: true},
       icon: 'visibility',

@@ -1,6 +1,6 @@
 import {Component, ElementRef, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
-import {FlContextMenuService, FlDialogService} from '@monorepo/front-core-lib';
+import {FlDialogService, FlMenuDynamicService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
 import {LabWorkflowNodeDirective} from './lab-workflow-node.directive';
@@ -24,8 +24,8 @@ export class LabWorkflowNodeComponent extends LabWorkflowNodeDirective implement
               dialogService: FlDialogService,
               elementRef: ElementRef,
               renderer: Renderer2,
-              contextMenuService: FlContextMenuService) {
-    super(workflowManager, drawerState, dialogService, elementRef, renderer, contextMenuService);
+              menuDynamicService: FlMenuDynamicService) {
+    super(workflowManager, drawerState, dialogService, elementRef, renderer, menuDynamicService);
   }
 
   ngOnInit(): void {

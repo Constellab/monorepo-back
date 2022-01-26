@@ -97,6 +97,7 @@
     "clone_experiment": "Duplicate experiment",
     "clone_experiment_confirmation": "Do you want to duplicate the experiment ? The processes and the configurations will be copied but not the resources.",
     "experiment_cloned": "Experiment duplicated",
+    "experiment": "Experiment",
     "transformers": "Transformers",
     "transform_resource": "Transform {{resourceName}}",
     "add_transformer": "Add transformer",

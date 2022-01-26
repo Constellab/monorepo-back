@@ -41,7 +41,6 @@ import {
 } from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
-import {FlContextMenuModule} from '../fl-context-menu/fl-context-menu.module';
 
 
 @NgModule({
@@ -72,7 +71,6 @@ import {FlContextMenuModule} from '../fl-context-menu/fl-context-menu.module';
     FlChartModule,
     FlMenuDynamicModule,
     FlTextIconModule,
-    FlContextMenuModule,
 
     ScrollingModule,
     MatMenuModule,

@@ -6,6 +6,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatIconModule} from '@angular/material/icon';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlIconModule} from '../fl-svg-icon/fl-icon.module';
+import {MatDividerModule} from '@angular/material/divider';
 
 /**
  * Module to create mat menu dynamically
@@ -26,6 +27,7 @@ import {FlIconModule} from '../fl-svg-icon/fl-icon.module';
 
     MatMenuModule,
     MatIconModule,
+    MatDividerModule,
   ],
 })
 export class FlMenuDynamicModule {

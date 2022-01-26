@@ -1,14 +1,19 @@
 import {Injectable} from '@angular/core';
 import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
 import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
-import {FlSpreadsheetChartSelectionComponent} from '../component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-selection.component';
+import {
+  FlSpreadsheetChartSelectionComponent
+} from '../component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-selection.component';
 import {FlOverlayRef} from '../../fl-portal/model/fl-overlay-ref.class';
 import {FlChartPortalService} from '../../fl-chart/service/fl-chart-portal.service';
 import {FlChartPortalConfig} from '../../fl-chart/model/fl-chart.class';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlSheetChartSelection} from '../model/chart/fl-sheet-chart-selection.class';
 import {FlMenuDynamic} from '../../fl-menu-dynamic/model/fl-menu-dynamic.class';
-import {FlSheetChartSelectionResult, FlSpreadsheetChartSelectionInput} from '../model/chart/fl-sheet-chart-selection-form.class';
+import {
+  FlSheetChartSelectionResult,
+  FlSpreadsheetChartSelectionInput
+} from '../model/chart/fl-sheet-chart-selection-form.class';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {FlSpreadsheetChartSelectionFactory} from '../utils/fl-spreadsheet-chart-selection.factory';
 
@@ -155,13 +160,13 @@ export class FlSpreadsheetChartState {
     return [
       // button refresh the chart data
       {
-        name: 'flSpreadsheet.chart_refresh',
+        text: 'flSpreadsheet.chart_refresh',
         icon: 'refresh',
         onClick: () => this.refreshChart(selectionId)
       },
       // button to edit the chart and reopen data selection
       {
-        name: 'flSpreadsheet.chart_update',
+        text: 'flSpreadsheet.chart_update',
         icon: 'edit',
         onClick: () => this.openUpdateChartSelectionPortal(selectionId)
       }

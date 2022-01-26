@@ -22,10 +22,6 @@ export class FlMenuDynamicComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  translateMenu(menu: FlMenuDynamic): boolean {
-    return menu.translateName == null || menu.translateName;
-  }
-
   callItem(menuItem: FlMenuDynamic, event: MouseEvent): void {
     if (menuItem.onClick) {
       menuItem.onClick(event);
