@@ -20,7 +20,7 @@ export const labExperimentStatusDict: FlStatusDict<LabExperimentStatus> = {
   SUCCESS: FlStatusHelper.getSuccessStatus('SUCCESS'),
   ERROR: FlStatusHelper.getErrorStatus('ERROR'),
   RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
-  WAITING_FOR_CLI_PROCESS: FlStatusHelper.getSuccessStatus('WAITING_FOR_CLI_PROCESS', 'biox.experiment_waiting_for_cli', 'cached'),
+  WAITING_FOR_CLI_PROCESS: FlStatusHelper.getInfoStatus('WAITING_FOR_CLI_PROCESS', 'biox.experiment_waiting_for_cli'),
 };
 
 

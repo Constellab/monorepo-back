@@ -7,11 +7,10 @@ import {LabWorkflowManagerState} from './lab-workflow-manager-state';
 import {LabWorkflowConnection} from '../model/lab-workflow-connection.class';
 import {LabConnection} from '../../../../lab-core/model/global/lab-connection.class';
 import {LabProtocolLink} from '../../../../lab-core/model/entities/lab-protocol-link.entity';
-import {ConnectedPosition} from '@angular/cdk/overlay';
-import {FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
+import {FlDialogService} from '@monorepo/front-core-lib';
 import {
-  LabResourcePortalComponent
-} from '../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-portal/lab-resource-portal.component';
+  LabResourceDetailDialogComponent
+} from '../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-detail-dialog/lab-resource-detail-dialog.component';
 
 /**
  * State to manager the drawer of the workflow to show detail like NodeDetail
@@ -24,7 +23,7 @@ export class LabWorkflowActionState {
 
   constructor(private nodeDetailState: LabWorkflowNodeDetailState,
               private workflowManagerState: LabWorkflowManagerState,
-              private portalService: FlPortalService) {
+              private dialogService: FlDialogService) {
   }
 
   public init(drawer: MatDrawer): void {
@@ -68,24 +67,7 @@ export class LabWorkflowActionState {
       if (connectionHtmlElement == null) {
         return;
       }
-
-      const position: ConnectedPosition[] = [{
-        originX: 'center',
-        originY: 'top',
-        overlayX: 'center',
-        overlayY: 'bottom',
-        offsetY: -20
-      }];
-      const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(connectionHtmlElement, position, {
-        panelClass: 'g-portal-background',
-        elevation: true,
-        disposeOnNavigation: true,
-        size: 'small',
-        disposeOnOutsideClick: true,
-        scrollStrategy: this.portalService.getCloseOnScrollStrategy()
-      });
-
-      this.portalService.createPortal(LabResourcePortalComponent, portalConfig, connection.resource_id);
+      this.dialogService.openBigDialog(LabResourceDetailDialogComponent, {data: connection.resource_id});
     }
   }
 }

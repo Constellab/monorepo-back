@@ -51,7 +51,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
   }
 
   openResourceDetail(resourceId: string): void {
-    this.dialogService.openBigDialog(LabResourceDetailDialogComponent, {data: resourceId, closeOnNavigation: true});
+    this.dialogService.openBigDialog(LabResourceDetailDialogComponent, {data: resourceId});
   }
 
   protected listenToNodeClick(): void {

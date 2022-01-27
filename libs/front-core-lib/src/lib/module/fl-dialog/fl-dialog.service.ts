@@ -120,6 +120,11 @@ export class FlDialogService {
 
     config.panelClass = this.addPanelClass(config.panelClass, panelClass);
 
+    // by default, we activate the clone on navigation
+    if(config.closeOnNavigation == null){
+      config.closeOnNavigation = true;
+    }
+
     const dialogRef: MatDialogRef<T> = this.dialog.open(componentOrTemplateRef, config);
 
     // manage the dialog closing

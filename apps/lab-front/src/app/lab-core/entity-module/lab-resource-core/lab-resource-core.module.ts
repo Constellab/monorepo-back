@@ -2,7 +2,6 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {LabResourceInfoComponent} from './component/lab-resource-info/lab-resource-info.component';
 import {LabCoreModule} from '../../lab-core.module';
-import {LabResourcePortalComponent} from './component/lab-resource-portal/lab-resource-portal.component';
 import {LabResourceSpreadsheetComponent} from './component/lab-resource-spreadsheet/lab-resource-spreadsheet.component';
 import {RouterModule} from '@angular/router';
 import {LabResourceJsonComponent} from './component/lab-resource-json/lab-resource-json.component';
@@ -48,7 +47,6 @@ import {LabUpdateResourceTypeComponent} from './component/lab-update-resource-ty
 @NgModule({
   declarations: [
     LabResourceInfoComponent,
-    LabResourcePortalComponent,
     LabResourceSpreadsheetComponent,
     LabResourceJsonComponent,
     LabResourceTextComponent,
@@ -73,7 +71,6 @@ import {LabUpdateResourceTypeComponent} from './component/lab-update-resource-ty
   ],
   exports: [
     LabResourceInfoComponent,
-    LabResourcePortalComponent,
     LabResourceSpreadsheetComponent,
     LabResourceJsonComponent,
     LabResourceTextComponent,
