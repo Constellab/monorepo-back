@@ -74,6 +74,12 @@
           <span>{{'update_tags' | translate }}</span>
         </button>
 
+        <button mat-menu-item type="button" (click)="updateResourceType(resource)"
+                *ngIf="resource.isUpdatable()">
+          <mat-icon>edit</mat-icon>
+          <span>{{'biox.update_resource_type' | translate}}</span>
+        </button>
+
         <button mat-menu-item type="button" (click)="deleteResource(resource)" class="g-warn-text"
                 *ngIf="resource.isDeletable()">
           <mat-icon color="warn">delete</mat-icon>

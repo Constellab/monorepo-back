@@ -24,6 +24,7 @@ import {
   LabImportResourceDialogComponent,
   LabImportResourceDialogInput
 } from '../lab-import-resource-dialog/lab-import-resource-dialog.component';
+import {LabUpdateResourceTypeComponent} from '../lab-update-resource-type/lab-update-resource-type.component';
 
 /**
  * Table to show resource with possibility actions on resource and a select mode
@@ -117,4 +118,15 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
     ClHelpService.stopEventPropagation(event);
   }
 
+  updateResourceType(resource: LabResource): void {
+    this.dialogService.openSmallDialog(LabUpdateResourceTypeComponent, {data: resource}).afterClosed().subscribe(
+      updatedResource => this.onUpdateResourceClosed(updatedResource)
+    );
+  }
+
+  private onUpdateResourceClosed(resource?: LabResource): void {
+    if (resource) {
+      this.datasource.updateItem(resource);
+    }
+  }
 }

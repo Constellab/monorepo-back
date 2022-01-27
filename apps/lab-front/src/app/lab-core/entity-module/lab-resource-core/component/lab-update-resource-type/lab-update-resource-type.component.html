@@ -1,0 +1,41 @@
+<fl-dialog-header>
+  {{'biox.update_resource_type' | translate}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+
+  <p class="g-text-light help-text">{{'biox.update_resource_type_help' | translate}}</p>
+
+  <fl-async-section [object]="fileTypes$">
+
+    <ng-container *flSectionBody="let fileTypes">
+
+      <form (ngSubmit)="submit()" id="resource-type-form">
+
+        <!--  File type  -->
+        <mat-form-field class="g-form-input">
+          <mat-label>{{'biox.resource_type' | translate}}</mat-label>
+          <mat-select [formControl]="formControl" placeholder="{{'biox.resource_type' | translate}}"
+                      required>
+            <mat-option *ngFor="let fileType of fileTypes" [value]="fileType.typingName">
+              {{fileType.name}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="formControl.hasError('required')">
+            {{'biox.resource_type' | flErrorRequired}}
+          </mat-error>
+        </mat-form-field>
+
+      </form>
+    </ng-container>
+
+  </fl-async-section>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-flat-button color="primary" type="submit" form="resource-type-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+  </button>
+</div>

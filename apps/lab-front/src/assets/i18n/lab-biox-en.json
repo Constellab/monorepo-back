@@ -140,6 +140,10 @@
     "process_sub_type_EXPORTER": "Exporter",
     "process_sub_type_TRANSFORMER": "Transformer",
     "view_resource": "Resource",
-    "open_resource_page": "Open resource"
+    "open_resource_page": "Open resource",
+    "update_resource_type": "Update resource type",
+    "update_resource_type_help": "You can update the type of the resource only if the resource is not used in an experiment",
+    "resource_type_updated": "Resource type updated",
+    "resource_type": "Resource type"
   }
 }

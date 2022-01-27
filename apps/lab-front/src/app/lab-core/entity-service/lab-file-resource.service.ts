@@ -75,7 +75,7 @@ export class LabFileResourceService {
 
 
   public updateFileType(id: string, fileType: string): Observable<LabResource> {
-    return this.apiService.put(`${this.route}/${id}/${fileType}`, LabResource);
+    return this.apiService.put(`${this.route}/${id}/type/${fileType}`, null, LabResource);
   }
 
 

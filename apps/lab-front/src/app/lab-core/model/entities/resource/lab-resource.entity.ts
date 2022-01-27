@@ -69,6 +69,9 @@ export class LabResource extends LabBaseEntityWithUser {
     return this.isFile();
   }
 
+  isUpdatable(): boolean {
+    return this.origin === 'UPLOADED';
+  }
 
   isDeletable(): boolean {
     return this.origin === 'UPLOADED';
