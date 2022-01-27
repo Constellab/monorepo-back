@@ -47,10 +47,6 @@
     <mat-header-cell *matHeaderCellDef class="action-column">
     </mat-header-cell>
     <mat-cell *matCellDef="let resource" class="action-column">
-      <a mat-icon-button type="button" color="primary" [routerLink]="resource | labDetailRoute"
-         [matTooltip]="'biox.resource_preview' | translate">
-        <mat-icon>preview</mat-icon>
-      </a>
 
       <!--   Mat menu containing action buttons   -->
       <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventPropagation($event)">
@@ -104,7 +100,17 @@
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: _columns;"
-           [ngClass]="{'g-table-row-selectable': selectableRow}" (click)="rowClicked(row)"></mat-row>
+
+  <!-- Mode selectable -->
+  <ng-container *ngIf="selectableRow; else notSelectable">
+    <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
+             (click)="rowClicked(row)"></mat-row>
+  </ng-container>
+
+  <!-- Mode link -->
+  <ng-template #notSelectable>
+    <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
+             [routerLink]="row | labDetailRoute"></mat-row>
+  </ng-template>
 </mat-table>
 
