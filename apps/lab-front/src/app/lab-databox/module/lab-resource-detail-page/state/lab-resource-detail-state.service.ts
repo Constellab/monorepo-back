@@ -32,9 +32,12 @@ import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.en
 
 // Event on view loaded
 export interface LabResourceViewEvent {
-  view: LabResourceView;
-  displayMode?: LabResourceViewDisplayMode; // mode to where show the view when success
-  viewName: string;
+  status: 'success' | 'error';
+  viewEvent?: {
+    view: LabResourceView;
+    displayMode?: LabResourceViewDisplayMode; // mode to where show the view when success
+    viewName: string;
+  };
 }
 
 @Injectable()
@@ -69,7 +72,10 @@ export class LabResourceDetailState implements OnDestroy {
     this.loadDefaultView();
 
     // subscribe to portal view to open them
-    this.subscription = this.getView$('portal').subscribe(
+    this.subscription = this.getView$().pipe(
+      filter(viewEvent => viewEvent.status === 'success' && viewEvent.viewEvent.displayMode === 'portal'),
+      map(viewEvent => viewEvent.viewEvent)
+    ).subscribe(
       viewEvent => this.openViewInPortal(viewEvent.view)
     );
   }
@@ -106,7 +112,7 @@ export class LabResourceDetailState implements OnDestroy {
 
   /////////////////////////////////// VIEW //////////////////////////////////////////
 
-  private loadDefaultView(): void{
+  private loadDefaultView(): void {
     this.flActionService.addAction(
       {
         type: this.actionType,
@@ -179,20 +185,29 @@ export class LabResourceDetailState implements OnDestroy {
    * Get the view to display
    * @param displayMode
    */
-  public getView$(displayMode: LabResourceViewDisplayMode): Observable<LabResourceViewEvent> {
+  public getView$(): Observable<LabResourceViewEvent> {
     return this.flActionService.getResult$(this.actionType).pipe(
-      filter(actionResult => actionResult.status === 'success'),
       // convert the action result to LabResourceViewEvent
       map((actionResult: FlPortalActionResult<LabViewCallResult>) => {
+
+        if (actionResult.status === 'error') {
+          return {
+            status: 'error'
+          };
+        }
+
         const viewResult: LabViewCallResult = actionResult.result;
 
         // if the view has a force display mode, use it. Otherwise, use the selected display mode
         const viewTypeInfo: LabResourceViewTypeInfo = labConstResourceViewTypeInfos[viewResult.viewData.type];
 
         const viewEvent: LabResourceViewEvent = {
-          view: viewResult.viewData,
-          viewName: viewResult.viewHumanName,
-          displayMode: actionResult.additionalInformation
+          status: 'success',
+          viewEvent: {
+            view: viewResult.viewData,
+            viewName: viewResult.viewHumanName,
+            displayMode: actionResult.additionalInformation
+          }
         };
 
         if (viewTypeInfo == null) {
@@ -201,13 +216,12 @@ export class LabResourceDetailState implements OnDestroy {
         }
 
         // if the view has a force default display mode, set it
-        if(viewTypeInfo.forceDefaultDisplayMode){
-          viewEvent.displayMode = viewTypeInfo.defaultDisplayMode
+        if (viewTypeInfo.forceDefaultDisplayMode) {
+          viewEvent.viewEvent.displayMode = viewTypeInfo.defaultDisplayMode;
         }
 
         return viewEvent;
-      }),
-      filter((viewEvent: LabResourceViewEvent) => viewEvent.displayMode === displayMode)
+      })
     );
   }
 

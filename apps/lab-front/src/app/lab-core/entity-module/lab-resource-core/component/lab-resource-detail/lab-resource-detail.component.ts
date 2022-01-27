@@ -63,7 +63,7 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
     this.resource$ = this.state.getResource$();
 
     // subscribe to fullscreen view
-    this.subscription = this.state.getView$('fullScreen').subscribe(
+    this.subscription = this.state.getView$().subscribe(
       view => this.showFullScreenView(view)
     );
   }
@@ -72,8 +72,10 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
   private showFullScreenView(viewEvent: LabResourceViewEvent): void {
     this.showLoader = false;
 
-    this.fullScreenView = viewEvent.view;
-    this.fullScreenViewName = viewEvent.viewName;
+    if (viewEvent.viewEvent && viewEvent.viewEvent.displayMode === 'fullScreen') {
+      this.fullScreenView = viewEvent.viewEvent.view;
+      this.fullScreenViewName = viewEvent.viewEvent.viewName;
+    }
   }
 
 
