@@ -12,9 +12,9 @@ import {FlMenuDynamicPortalComponent} from './component/fl-menu-dynamic-portal/f
 export class FlMenuDynamicService {
 
   private readonly overlayConfig: FlOverlayConfig = {
-    disposeOnOutsideClick: true,
     disposeOnNavigation: true
   };
+
 
   private readonly positions: FlPortalConnectedPosition[] = [
     {originX: 'end', originY: 'bottom', overlayX: 'start', overlayY: 'top'},
@@ -42,6 +42,17 @@ export class FlMenuDynamicService {
                                        position: FlPortalConnectedPosition[] = this.positions): FlOverlayRef {
     const config: FlPortalConfig = this.portalService.configureRelativePortalFromMouseEvent(mouseEvent,
       position, this.overlayConfig);
+
+    return this.createPortal(menu, config);
+  }
+
+  /**
+   * Open the menu on absolute position. BE CAREFUL, it can appear outside the screen. To use when openDynamicMenuFromMouseEvent
+   * does not work correct
+   */
+  public openDynamicMenuAbsolute(menu: FlMenuDynamic[],
+                                 event: MouseEvent): FlOverlayRef {
+    const config: FlPortalConfig = this.portalService.configureAbsolutePortalFromMouseEvent(event);
 
     return this.createPortal(menu, config);
   }

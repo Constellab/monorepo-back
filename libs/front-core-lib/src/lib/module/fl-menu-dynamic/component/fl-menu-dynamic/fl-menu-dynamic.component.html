@@ -1,25 +1,27 @@
-<mat-menu [overlapTrigger]="true">
-  <ng-container *ngFor="let item of menuItems">
-    <mat-divider *ngIf="item.divider"></mat-divider>
+<mat-menu [overlapTrigger]="true" [hasBackdrop]="hasBackdrop">
+  <div [ngClass]="containerClass">
+    <ng-container *ngFor="let item of menuItems">
+      <mat-divider *ngIf="item.divider"></mat-divider>
 
-    <!-- Handle branch node menu items -->
-    <span *ngIf="item.children?.length > 0 ; else leaf">
+      <!-- Handle branch node menu items -->
+      <span *ngIf="item.children?.length > 0 ; else leaf">
       <button mat-menu-item [matMenuTriggerFor]="subMenu.menu" (click)="callItem(item, $event)"
               [disabled]="item.disabled">
         <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
         {{item.text | flTranslatableText}}
       </button>
-      <fl-menu-dynamic #subMenu [menuItems]="item.children"></fl-menu-dynamic>
+      <fl-menu-dynamic #subMenu [menuItems]="item.children" [hasBackdrop]="hasBackdrop"></fl-menu-dynamic>
     </span>
 
-    <!-- Handle leaf node menu items -->
-    <ng-template #leaf>
+      <!-- Handle leaf node menu items -->
+      <ng-template #leaf>
     <span>
       <button mat-menu-item (click)="callItem(item, $event)" [disabled]="item.disabled">
         <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
         {{item.text | flTranslatableText}}
       </button>
     </span>
-    </ng-template>
-  </ng-container>
+      </ng-template>
+    </ng-container>
+  </div>
 </mat-menu>

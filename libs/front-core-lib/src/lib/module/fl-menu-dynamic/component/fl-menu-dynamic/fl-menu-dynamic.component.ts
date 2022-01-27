@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {FlMenuDynamic} from '../../model/fl-menu-dynamic.class';
-import {MatMenu} from '@angular/material/menu';
+import {MatMenu, MatMenuTrigger} from '@angular/material/menu';
 
 @Component({
   selector: 'fl-menu-dynamic',
@@ -10,11 +10,19 @@ import {MatMenu} from '@angular/material/menu';
 })
 export class FlMenuDynamicComponent implements OnInit {
 
+  public static readonly containerClass = 'fl-dynamic-menu';
+
   @Input() menuItems: FlMenuDynamic[];
+
+  @Input() hasBackdrop: boolean = true;
 
   // use to access the MatMenu from outside
   // use the [matMenuTriggerFor]="menuComponent.menu" with this value to open the menu
   @ViewChild(MatMenu, {static: true}) public menu: MatMenu;
+
+  @ViewChild(MatMenuTrigger, {static: false}) menuTrigger: MatMenuTrigger;
+
+  containerClass = FlMenuDynamicComponent.containerClass;
 
   constructor() {
   }

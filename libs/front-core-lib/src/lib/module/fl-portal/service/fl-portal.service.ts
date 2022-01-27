@@ -276,6 +276,7 @@ export class FlPortalService {
   }
 
   private handleOutsideClick(event: MouseEvent, overlay: FlOverlayRef): void {
+    console.log('Check outside')
     const wrapper: FlEventWrapper = new FlEventWrapper(event);
     if (!wrapper.elementIsParent(overlay.getPanelElement())) {
       overlay.dispose();

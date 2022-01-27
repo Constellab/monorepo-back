@@ -128,7 +128,7 @@ export class FlChartComponent implements OnInit, OnDestroy {
       menu.push(...this.contextMenuItems);
     }
 
-    this.menuService.openDynamicMenuFromMouseEvent(menu, mouseEvent);
+    this.menuService.openDynamicMenuAbsolute(menu, mouseEvent);
   }
 
   ngOnDestroy(): void {
