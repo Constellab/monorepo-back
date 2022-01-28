@@ -28,7 +28,6 @@ export class HaAdminDocFormComponent implements OnInit {
     private daDocumentationService: HaDocumentationService,
     private daFolderService: HaFolderService,
     private snackBarService: FlSnackBarService,
-    private router: Router
   ) {
   }
 

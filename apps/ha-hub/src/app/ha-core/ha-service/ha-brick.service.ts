@@ -19,8 +19,9 @@ export class HaBrickService {
    * Call http create
    * @param object json object
    */
-  public create(object: Partial<HaBrickDTO>): Observable<HaBrick> {
-    return this.apiService.post(this.route, object, HaBrickDTO);
+  public create(object: any): Observable<HaBrick> {
+    object.version = '1.0.0';
+    return this.apiService.post(this.route, object, HaBrick);
   }
 
   /**
@@ -42,6 +43,14 @@ export class HaBrickService {
    */
   public get(): Observable<HaBrick[]> {
     return this.apiService.get(this.route, HaBrick);
+  }
+
+  /**
+   * Call http get
+   * @param name name of the entity
+   */
+  public getById(id: string): Observable<HaBrick> {
+    return this.apiService.get(`${this.route}/${name}`, HaBrick);
   }
 
   /**

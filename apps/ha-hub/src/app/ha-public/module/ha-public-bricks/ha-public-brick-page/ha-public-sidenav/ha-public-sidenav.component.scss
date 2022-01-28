@@ -10,7 +10,7 @@
 }
 
 .sidenav-content {
-
+  margin-left: 1em;
   height: 100%;
   flex: auto;
 }
@@ -20,13 +20,17 @@
   box-sizing: border-box;
   width: 25rem;
   background-color: var(--main-background);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidenav-empty-space{
+  flex: auto;
 }
 
 .tree{
   width: 100%;
   height: auto;
-  padding-bottom: 15px;
-  margin-bottom: 15px;
 }
 
 .tree-node{
@@ -51,4 +55,13 @@
 
 .line{
   width: 100%;
+}
+
+.custom-placeholder{
+  width: 100%;
+  border-bottom: 2px dashed var(--primary-color);
+}
+
+.placeholder-level{
+  max-width: 100%;
 }

@@ -11,9 +11,10 @@ import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,
   FlContextMenuConfig,
-  FlContextMenuService,
   FlDialogService,
-  FlFormDialogInput
+  FlFormDialogInput,
+  FlMenuDynamic,
+  FlMenuDynamicService, FlOverlayRef
 } from '@monorepo/front-core-lib';
 import {HaDocumentationService} from '../../../../../ha-core/ha-service/ha-documentation.service';
 import {HaFolder} from '../../../../../ha-core/ha-model/ha-entities/ha-folder.class';
@@ -21,6 +22,8 @@ import {HaPublicSidenavCreateFormDialogComponent} from './ha-public-sidenav-crea
 import {HaDocumentation} from '../../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {CdkDragDrop, CdkDragStart} from '@angular/cdk/drag-drop';
 import {SelectionModel} from '@angular/cdk/collections';
+import {Observable} from 'rxjs';
+import {HaAuthenticatedUserService} from '../../../../../ha-core/ha-service/ha-authenticated-user.service';
 
 
 interface FlatNode {
@@ -37,9 +40,13 @@ interface FlatNode {
 })
 export class HaPublicSidenavComponent implements OnInit {
 
-  isConnected = false;
+  isAdmin: Observable<boolean> = this.authUserService.isAdmin();
   brickId: string;
   currentDocUrl: string = null;
+  overNodeLevel: number = 0;
+
+  menuOpen: boolean;
+  openedMenu: FlOverlayRef;
 
   docContextMenuConfig: FlContextMenuConfig;
 
@@ -72,9 +79,9 @@ export class HaPublicSidenavComponent implements OnInit {
 
   constructor(
     private brickService: HaBrickService,
-    private authService: HaAuthService,
+    private authUserService: HaAuthenticatedUserService,
     private route: ActivatedRoute,
-    private contextMenuService: FlContextMenuService,
+    private contextMenuService: FlMenuDynamicService,
     private documentationService: HaDocumentationService,
     private folderService: HaFolderService,
     private dialogService: FlDialogService,
@@ -93,7 +100,6 @@ export class HaPublicSidenavComponent implements OnInit {
   validateDrop = false;
 
   ngOnInit(): void {
-    this.isConnected = this.authService.hasAuthorizationCookie();
 
     this.route.parent.url.subscribe(url => {
       this.brickService.getByName(url[0].path).subscribe(brick => {
@@ -117,58 +123,59 @@ export class HaPublicSidenavComponent implements OnInit {
   onRightClick(event: MouseEvent, isFolder: boolean, id?: string): void {
     event.preventDefault();
     event.stopPropagation();
-    let element: HTMLElement = event.target as any;
+    if(this.menuOpen){
+      this.openedMenu.overlayRef.detach();
+    }
     if (!id) {
       this.brickService.getRootFolderId(this.brickId).subscribe(res => {
-        this.contextMenuService.openContextMenu(this.getContextMenuConfig(isFolder, res.id, true), element);
+        this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, res.id, true), event);
       });
     } else {
-      this.contextMenuService.openContextMenu(this.getContextMenuConfig(isFolder, id), element);
+      this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id), event);
     }
+    this.menuOpen = true;
   }
 
-  private getContextMenuConfig(isFolder: boolean, id?: string, isRoot: boolean = false): FlContextMenuConfig {
+  private getContextMenuConfig(isFolder: boolean, id?: string, isRoot: boolean = false,): FlMenuDynamic[] {
     if (isFolder) {
-      return {
-        buttons: isRoot ? [
-          {
-            text: {text: 'create', translateText: true},
-            icon: 'add',
-            onClick: () => this.openCreateDialog(id)
+      return isRoot ? [
+        {
+          text: {text: 'create', translateText: true},
+          icon: 'add',
+          onClick: () => {
+            this.openCreateDialog(id)
           }
-        ] : [
-          {
-            text: {text: 'create', translateText: true},
-            icon: 'add',
-            onClick: () => this.openCreateDialog(id)
-          },
-          {
-            text: {text: 'edit', translateText: true},
-            icon: 'edit',
-            onClick: () => this.preparEditDialog(id, isFolder)
-          },
-          {
-            text: {text: 'delete', translateText: true},
-            icon: 'delete',
-            onClick: () => this.openResourceDelete(id, isFolder),
-          },
-        ]
-      };
-    }
-    return {
-      buttons: [
+        }
+      ] : [
+        {
+          text: {text: 'create', translateText: true},
+          icon: 'add',
+          onClick: (event) => this.openCreateDialog(id)
+        },
         {
           text: {text: 'edit', translateText: true},
           icon: 'edit',
-          onClick: () => this.preparEditDialog(id, isFolder)
+          onClick: (event) => this.preparEditDialog(id, isFolder)
         },
         {
           text: {text: 'delete', translateText: true},
           icon: 'delete',
-          onClick: () => this.openResourceDelete(id, isFolder)
-        },
+          onClick: (event) => this.openResourceDelete(id, isFolder),
+        }
       ]
-    };
+    }
+    return [
+      {
+        text: {text: 'edit', translateText: true},
+        icon: 'edit',
+        onClick: (event) => this.preparEditDialog(id, isFolder)
+      },
+      {
+        text: {text: 'delete', translateText: true},
+        icon: 'delete',
+        onClick: (event) => this.openResourceDelete(id, isFolder)
+      }
+    ];
   }
 
   openResourceDelete(id: string, isFolder: boolean): void {
@@ -351,7 +358,7 @@ export class HaPublicSidenavComponent implements OnInit {
 
   dragHover(node: FlatNode) {
     if (this.dragging) {
-      // this.treeControl.expand(node);
+      this.overNodeLevel = node.level;
     }
   }
 

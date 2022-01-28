@@ -5,6 +5,7 @@ import {HaPublicBrickPageComponent}
   from './module/ha-public-bricks/ha-public-brick-page/ha-public-brick-page/ha-public-brick-page.component';
 import {HaPublicSidenavComponent} from './module/ha-public-bricks/ha-public-brick-page/ha-public-sidenav/ha-public-sidenav.component';
 import {HaPublicDocPageComponent} from './module/ha-public-bricks/ha-public-brick-page/ha-public-doc-page/ha-public-doc-page/ha-public-doc-page.component';
+import {HaPublicEditBrickPageComponent} from './module/ha-public-bricks/ha-public-list-bricks-page/ha-public-edit-brick-page/ha-public-edit-brick-page.component';
 
 
 
@@ -22,6 +23,10 @@ const routes: Route[] = [
   {
     path: '',
     component: HaPublicListBricksPageComponent,
+  },
+  {
+    path: 'edit',
+    component: HaPublicEditBrickPageComponent
   },
   // {
   //   path: ':brickName/:brickVersion',

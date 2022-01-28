@@ -1,15 +1,19 @@
 import {NgModule} from '@angular/core';
 import {
+  FlArticleModule,
   FlAuthModule,
   FlCoreDirectiveModule,
   FlCorePipeModule,
   FlDialogModule,
   FlFormModule,
-  FlLoaderModule, FlPortalModule,
+  FlIconModule,
+  FlLoaderModule,
+  FlMenuDynamicModule,
+  FlPortalModule,
   FlSectionModule,
-  FlSnackBarModule, FlTextEditorModule,
-  FlTranslateModule,
-  FlContextMenuModule, FlIconModule, FlArticleModule
+  FlSnackBarModule,
+  FlTextEditorModule,
+  FlTranslateModule
 } from '@monorepo/front-core-lib';
 
 @NgModule({
@@ -25,7 +29,7 @@ import {
     FlSectionModule,
     FlAuthModule,
     FlTextEditorModule,
-    FlContextMenuModule,
+    FlMenuDynamicModule,
     FlIconModule,
     FlArticleModule,
   ]
