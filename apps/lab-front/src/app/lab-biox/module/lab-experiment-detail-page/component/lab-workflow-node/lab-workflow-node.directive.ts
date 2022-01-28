@@ -123,7 +123,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
         text: {text: 'biox.add_source', translateText: true},
         icon: 'resource',
         onClick: () => this.openResourceSelection(port.name),
-        disabled: this.node.inputPortIsConnected(port.drawFlowName)
+        disabled: this.node.inputPortIsConnected(port.drawFlowName) || !this.experimentIsEditable
       },
       this.getResourceDetailContextButton(resourceId)
     ];
@@ -137,6 +137,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
         text: {text: 'biox.add_output', translateText: true},
         icon: 'output',
         onClick: () => this.addTaskOutput(portName),
+        disabled: !this.experimentIsEditable
       },
       this.getResourceDetailContextButton(resourceId)
     ];
@@ -151,9 +152,14 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
     };
   }
 
+  private get experimentIsEditable(): boolean {
+    return this.workflowManager.getExperiment().isEditable();
+  }
+
   ngOnDestroy(): void {
     if (this.listener) {
       this.listener();
     }
   }
 }
+
