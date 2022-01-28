@@ -92,9 +92,9 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       const error: CnExternalLabError = (e.response as AxiosResponse)?.data ?? '';
 
       switch (error.code) {
-        case 'gws.WRONG_CREDENTIALS_USER_NOT_ACTIVATED' :
+        case 'gws_core.WRONG_CREDENTIALS_USER_NOT_ACTIVATED' :
           throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_ACTIVATED);
-        case 'gws.WRONG_CREDENTIALS_USER_NOT_FOUND' :
+        case 'gws_core.WRONG_CREDENTIALS_USER_NOT_FOUND' :
           throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_FOUND);
         default:
           throw new BadRequestException(CnErrorText.LAB_AUTH_ERROR);

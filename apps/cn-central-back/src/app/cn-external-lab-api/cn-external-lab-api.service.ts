@@ -32,7 +32,7 @@ export class CnExternalLabApiService {
    */
   public post(labInfo: CnExternalApiInfo, route: string, body: any, classReference?: ClDeserializationRef,
               options: BlExternalApiHttpOption = {}): Observable<any> {
-    return this.apiService.post(this.constructRoute(labInfo.apiUrl, route), body,
+    return this.apiService.post(this.constructRoute('http://localhost:3000', route), body,
       classReference, this.getRequestOptions(labInfo.apiKey, options));
   }
 
