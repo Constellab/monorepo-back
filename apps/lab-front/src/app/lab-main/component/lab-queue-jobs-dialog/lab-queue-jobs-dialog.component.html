@@ -1,0 +1,26 @@
+<fl-dialog-header>
+  <h2>{{'queue_jobs' | translate}}</h2>
+</fl-dialog-header>
+
+<mat-dialog-content>
+
+  <fl-section [object]="jobs" [isLoading]="isLoading" emptyText="empty_queue">
+
+    <ng-container *flSectionBody>
+      <mat-list>
+        <mat-list-item *ngFor="let job of jobs; let index = index">
+          <h3 matLine> {{job.experiment.title}} </h3>
+          <p matLine>
+            <span> {{job.user.fullname}} </span>
+          </p>
+
+          <button mat-icon-button type="button" color="warn" (click)="removeExperimentFromQueue(job, index)"
+                  [matTooltip]="'biox.remove_experiment_from_queue' | translate">
+            <mat-icon>stop</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+    </ng-container>
+  </fl-section>
+
+</mat-dialog-content>

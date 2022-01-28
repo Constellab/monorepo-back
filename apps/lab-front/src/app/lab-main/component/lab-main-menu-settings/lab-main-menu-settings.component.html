@@ -33,9 +33,15 @@
       <span>{{'monitoring.monitoring' | translate}}</span>
     </a>
 
+    <button mat-menu-item type="button" (click)="openQueueJobsDialog()">
+      <mat-icon>format_list_numbered</mat-icon>
+      <span>{{'queue_jobs' | translate}}</span>
+    </button>
+
     <button mat-menu-item type="button" (click)="logout()">
       <mat-icon color="warn">logout</mat-icon>
       <span class="g-warn-text">{{'flAuth.logout' | translate}}</span>
     </button>
+
   </ng-template>
 </mat-menu>

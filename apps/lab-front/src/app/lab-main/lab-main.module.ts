@@ -8,6 +8,7 @@ import {RouterModule} from '@angular/router';
 import {LabEnvironmentToggleComponent} from './component/lab-environment-toggle/lab-environment-toggle.component';
 import {LabErrorDetailComponent} from './component/lab-error-detail/lab-error-detail.component';
 import {LabMainMenuSettingsComponent} from './component/lab-main-menu-settings/lab-main-menu-settings.component';
+import {LabQueueJobsDialogComponent} from './component/lab-queue-jobs-dialog/lab-queue-jobs-dialog.component';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import {LabMainMenuSettingsComponent} from './component/lab-main-menu-settings/l
     LabMainAppComponent,
     LabEnvironmentToggleComponent,
     LabErrorDetailComponent,
-    LabMainMenuSettingsComponent
+    LabMainMenuSettingsComponent,
+    LabQueueJobsDialogComponent
   ],
   imports: [
     CommonModule,
@@ -27,4 +29,6 @@ import {LabMainMenuSettingsComponent} from './component/lab-main-menu-settings/l
     LabMainRoutingModule
   ]
 })
-export class LabMainModule { }
+
+export class LabMainModule {
+}

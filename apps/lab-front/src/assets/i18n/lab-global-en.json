@@ -77,5 +77,8 @@
   "begin_date": "Start date",
   "end_date": "End date",
   "search": "Search",
-  "count_result": "{{count}} Results"
+  "count_result": "{{count}} Results",
+  "queue_jobs": "Execution queue",
+  "empty_queue": "There is no experiment in the execution queue"
 }
+

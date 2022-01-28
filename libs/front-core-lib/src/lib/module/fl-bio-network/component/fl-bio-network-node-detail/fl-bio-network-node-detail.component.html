@@ -5,7 +5,6 @@
 </div>
 
 <ng-template #noNode>
-  <fl-error-text>
-    <div>{{'flBioNetwork.select_node_help_text' | translate}}</div>
+  <fl-error-text [errorMessage]="'flBioNetwork.select_node_help_text' | translate">
   </fl-error-text>
 </ng-template>

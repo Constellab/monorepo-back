@@ -29,9 +29,7 @@
       <div class="description">
         <div *ngIf="project.description; else noDesc" [innerHTML]="project.description"></div>
         <ng-template #noDesc>
-          <fl-error-text>
-            <p>{{'no_description' | translate}}</p>
-          </fl-error-text>
+          <fl-error-text [errorMessage]="'no_description' | translate"></fl-error-text>
         </ng-template>
       </div>
 

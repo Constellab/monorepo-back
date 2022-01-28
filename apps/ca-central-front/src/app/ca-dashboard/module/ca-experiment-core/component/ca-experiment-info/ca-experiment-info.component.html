@@ -2,7 +2,5 @@
                 [ngModel]="experiment.description" [disabled]="true"
                 mode="JSON"></fl-text-editor>
 <ng-template #noDesc>
-  <fl-error-text>
-    <p>{{'no_description' | translate}}</p>
-  </fl-error-text>
+  <fl-error-text [errorMessage]="'no_description' | translate"></fl-error-text>
 </ng-template>
