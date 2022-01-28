@@ -39,7 +39,7 @@ export class LabExperimentDetailPageState {
   private getExperimentSuccess(experiment: LabExperiment): void {
     this.ready = true;
     this.experiment$.next(experiment);
-    this.experimentDescription$.next(experiment.description)
+    this.experimentDescription$.next(experiment.description);
     // load flow
     this.loadFlow(experiment.protocol.id);
   }
@@ -60,6 +60,7 @@ export class LabExperimentDetailPageState {
   }
 
   public updateExperiment(experiment: LabExperiment): void {
+    if (experiment == null) return;
     this.experiment$.next(experiment);
   }
 

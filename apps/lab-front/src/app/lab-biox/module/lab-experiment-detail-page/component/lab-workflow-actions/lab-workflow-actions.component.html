@@ -1,33 +1,33 @@
 <div fxLayout="row wrap" fxLayoutGap="1em"
      *ngIf="experiment$ | async as experiment">
 
-  <!-- Add object button  -->
-  <button mat-icon-button type="button"
-          [matTooltip]="'biox.add_process' | translate" matTooltipPosition="below"
-          (click)="addProcess()">
-    <mat-icon>add</mat-icon>
-  </button>
 
-
-  <button mat-icon-button type="button"
-          [matTooltip]="'biox.experiment_save' | translate" matTooltipPosition="below"
-          (click)="save()" [disabled]="isLoading">
-    <mat-icon>save</mat-icon>
-    <fl-button-loader *ngIf="saveIsLoading"></fl-button-loader>
-  </button>
-
-  <button mat-icon-button type="button" (click)="start()"
-          *ngIf="!experiment.isRunning(); else isRunning"
-          [matTooltip]="'biox.experiment_start' | translate" matTooltipPosition="below"
-          [disabled]="isLoading">
-    <mat-icon>play_arrow</mat-icon>
-    <fl-button-loader *ngIf="startIsLoading"></fl-button-loader>
-  </button>
-
-  <ng-template #isRunning>
-    <button mat-icon-button type="button" color="warn"
-            (click)="stopExperiment()" [matTooltip]="'biox.update_experiment' | translate">
-      <mat-icon>stop</mat-icon>
+  <ng-container *ngIf="experiment.isEditable()">
+    <!-- Add object button  -->
+    <button mat-icon-button type="button"
+            [matTooltip]="'biox.add_process' | translate" matTooltipPosition="below"
+            (click)="addProcess()">
+      <mat-icon>add</mat-icon>
     </button>
-  </ng-template>
+
+
+    <button mat-icon-button type="button"
+            [matTooltip]="'biox.experiment_save' | translate" matTooltipPosition="below"
+            (click)="save()" [disabled]="isLoading">
+      <mat-icon>save</mat-icon>
+      <fl-button-loader *ngIf="saveIsLoading"></fl-button-loader>
+    </button>
+
+    <button mat-icon-button type="button" (click)="start()"
+            [matTooltip]="'biox.experiment_start' | translate" matTooltipPosition="below"
+            [disabled]="isLoading">
+      <mat-icon>play_arrow</mat-icon>
+      <fl-button-loader *ngIf="startIsLoading"></fl-button-loader>
+    </button>
+  </ng-container>
+
+  <button mat-icon-button type="button" color="warn" *ngIf="experiment.isRunning()"
+          (click)="stopExperiment()" [matTooltip]="'biox.update_experiment' | translate">
+    <mat-icon>stop</mat-icon>
+  </button>
 </div>

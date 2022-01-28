@@ -46,6 +46,12 @@
       {{'biox.clone_experiment' | translate}}
     </button>
 
+    <button mat-menu-item type="button" (click)="removeExperimentFromQueue()"
+            class="g-warn-text" *ngIf="experiment.status.value === 'IN_QUEUE'">
+      <mat-icon color="warn">stop</mat-icon>
+      {{'biox.remove_experiment_from_queue' | translate}}
+    </button>
+
     <button mat-menu-item type="button" (click)="deleteExperiment()"
             *ngIf="experiment.isEditable()" class="g-warn-text">
       <mat-icon color="warn">delete</mat-icon>

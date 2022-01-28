@@ -12,15 +12,17 @@ import {LabProject} from './lab-project.class';
 import {LabTag} from './lab-tag.entity';
 import {LabBaseEntityWithUser} from './lab-user.entity';
 
-export type LabExperimentStatus = 'DRAFT' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
+export type LabExperimentStatus = 'DRAFT' | 'IN_QUEUE' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
 // const to list the experiment status translation texts
 export const labExperimentStatusDict: FlStatusDict<LabExperimentStatus> = {
   DRAFT: FlStatusHelper.getDraftStatus('DRAFT'),
+  IN_QUEUE: FlStatusHelper.getInfoStatus('IN_QUEUE', 'biox.experiment_in_queue', FlStatusHelper.draftIcon),
   SUCCESS: FlStatusHelper.getSuccessStatus('SUCCESS'),
   ERROR: FlStatusHelper.getErrorStatus('ERROR'),
   RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
-  WAITING_FOR_CLI_PROCESS: FlStatusHelper.getInfoStatus('WAITING_FOR_CLI_PROCESS', 'biox.experiment_waiting_for_cli'),
+  WAITING_FOR_CLI_PROCESS: FlStatusHelper.getInfoStatus('WAITING_FOR_CLI_PROCESS', 'biox.experiment_waiting_for_cli',
+    FlStatusHelper.draftIcon),
 };
 
 
@@ -63,9 +65,8 @@ export class LabExperiment extends LabBaseEntityWithUser {
   @Type(() => LabTag)
   tags: LabTag[];
 
-
   isEditable(): boolean {
-    return !this.isArchived && !this.isValidated;
+    return !this.isArchived && !this.isValidated && !this.isRunning() && this.status.value !== 'IN_QUEUE' ;
   }
 
   isRunning(): boolean {

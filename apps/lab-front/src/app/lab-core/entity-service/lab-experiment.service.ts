@@ -72,7 +72,7 @@ export class LabExperimentService implements FlSearchService<LabExperiment> {
 
   // launch an experiment
   public startExperiment(experimentId: string): Observable<LabExperiment> {
-    return this.apiService.post(`${this.route}/${experimentId}/start`, LabExperiment);
+    return this.apiService.post(`${this.route}/${experimentId}/start`, null, LabExperiment);
   }
 
   // stop (kill) an experiment

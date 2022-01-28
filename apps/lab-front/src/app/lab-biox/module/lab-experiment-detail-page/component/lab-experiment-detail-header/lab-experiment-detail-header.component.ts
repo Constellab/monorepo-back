@@ -29,6 +29,7 @@ import {
   LabValidateObjectDialogInput
 } from '../../../../../lab-core/entity-module/lab-project-core/component/lab-validate-object-dialog/lab-validate-object-dialog.component';
 import {LabProject} from '../../../../../lab-core/model/entities/lab-project.class';
+import {LabQueueService} from '../../../../../lab-core/entity-service/lab-queue.service';
 
 /**
  * Header for the experiment detail page
@@ -47,7 +48,8 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
               private dialogService: FlDialogService,
               private experimentService: LabExperimentService,
               private tagDialogService: FlTagDialogService,
-              private routerService: LabRouterService) {
+              private routerService: LabRouterService,
+              private queueService: LabQueueService) {
   }
 
   ngOnInit(): void {
@@ -87,6 +89,29 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     this.dialogService.openSmallDialog(LabValidateObjectDialogComponent, {data: input}).afterClosed().subscribe(
       result => this.onExperimentUpdate(result)
     );
+  }
+
+  removeExperimentFromQueue(): void {
+    const experiment: LabExperiment = this.experimentState.currentExperiment;
+
+    const input: FlConfirmDialogInput = {
+      title: 'biox.remove_experiment_from_queue',
+      content: 'biox.remove_experiment_from_queue_confirmation',
+      translateTitleAndContent: true,
+      observable: this.queueService.removeExperimentFromQueue(experiment.id),
+      successMessage: 'biox.experiment_removed_from_queue',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(input).afterClosed().subscribe(
+      result => this.onConfirmUpdateClosed(result)
+    );
+  }
+
+  private onConfirmUpdateClosed(result: FlConfirmDialogResult<LabExperiment>): void {
+    if (result.choice) {
+      this.experimentState.updateExperiment(result.result);
+    }
   }
 
   private onExperimentUpdate(experiment?: LabExperiment): void {
@@ -159,7 +184,7 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     }
   }
 
-  resetExperiment(): void{
+  resetExperiment(): void {
     const data: FlConfirmDialogInput = {
       title: 'biox.reset_experiment',
       content: 'biox.reset_experiment_confirmation',
