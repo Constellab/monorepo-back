@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {LabExperimentService} from '../../../../lab-core/entity-service/lab-experiment.service';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {LabExperiment} from '../../../../lab-core/model/entities/lab-experiment.entity';
-import {filter} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {LabFlow} from '../../../../lab-core/model/global/lab-connection.class';
 import {LabProtocol} from '../../../../lab-core/model/entities/process/lab-protocol.entity';
 import {LabProtocolService} from '../../../../lab-core/entity-service/lab-protocol.service';
@@ -54,6 +54,9 @@ export class LabExperimentDetailPageState {
     return this.experiment$.value;
   }
 
+  public isEditable$(): Observable<boolean> {
+    return this.getExperiment$().pipe(map(experiment => experiment.isEditable()));
+  }
 
   public isEditable(): boolean {
     return this.currentExperiment.isEditable();

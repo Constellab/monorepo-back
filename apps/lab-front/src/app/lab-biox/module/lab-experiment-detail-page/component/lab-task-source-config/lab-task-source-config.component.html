@@ -16,7 +16,7 @@
                  [errorMessage]="'loaded_resource_error' | translate"></fl-error-text>
 </ng-container>
 
-<div class="select-button">
+<div class="select-button" *ngIf="isEditable$ | async">
   <button mat-stroked-button type="button"
           (click)="openResourceSelection()" class="g-centered-forced">
     {{'select_resource' | translate }}

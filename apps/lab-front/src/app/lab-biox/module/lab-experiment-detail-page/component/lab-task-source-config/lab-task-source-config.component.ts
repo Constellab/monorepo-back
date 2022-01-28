@@ -8,6 +8,7 @@ import {
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
 import {LabWorkflowNodeIO} from '../../model/lab-workflow-node-io.class';
 import {LabRouterService} from '../../../../../lab-core/service/lab-router.service';
+import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
 
 /**
  * Specific component to configure a task of type gws.plug.Source
@@ -25,18 +26,23 @@ export class LabTaskSourceConfigComponent implements OnInit, OnDestroy {
 
   resourceRoute: string;
 
+  isEditable$: Observable<boolean>;
+
   private node: LabWorkflowNodeIO;
   private subscription: Subscription;
 
 
   constructor(private nodeDetail: LabWorkflowNodeDetailState,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private experimentState: LabExperimentDetailPageState) {
   }
 
   ngOnInit(): void {
     this.subscription = this.nodeDetail.getNode$().subscribe(
       node => this.setNode(node as LabWorkflowNodeIO)
     );
+
+    this.isEditable$ = this.experimentState.isEditable$();
   }
 
   private setNode(node: LabWorkflowNodeIO): void {
