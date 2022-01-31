@@ -91,6 +91,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
       return new CnLabInstanceToken(labInstance, 'Bearer ' + labAuth.access_token);
     } catch (e: any) {
+      this.logger.error(e);
       if (e.stack) {
         this.logger.error(e.stack);
       }
