@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
+import {BadRequestException, Injectable, Logger, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {DeleteResult, EntityManager, ObjectLiteral, Repository} from 'typeorm';
@@ -25,6 +25,8 @@ import {CnExperimentsService} from '../cn-experiments/cn-experiments.service';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
+
+  private readonly logger = new Logger(CnLabInstancesService.name);
 
   constructor(@InjectRepository(CnLabInstance) private repository: Repository<CnLabInstance>,
               @InjectRepository(CnLabInstanceStatusHistory) statusHistoRepo: Repository<CnLabInstanceStatusHistory>,
@@ -89,6 +91,10 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
       return new CnLabInstanceToken(labInstance, 'Bearer ' + labAuth.access_token);
     } catch (e: any) {
+      if (e.stack) {
+        this.logger.error(e.stack);
+      }
+
       const error: CnExternalLabError = (e.response as AxiosResponse)?.data ?? '';
 
       switch (error.code) {
@@ -98,7 +104,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
           throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_FOUND);
         default:
           throw new BadRequestException(CnErrorText.LAB_AUTH_ERROR);
-
       }
     }
   }
