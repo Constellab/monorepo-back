@@ -48,7 +48,5 @@ export class HaPublicEditBrickFormComponent implements OnInit {
         this.router.navigateByUrl('/bricks/' + brick.name);
       });
     }
-
   }
-
 }

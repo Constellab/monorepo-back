@@ -6,7 +6,7 @@
       <!-- This is the tree node template for leaf nodes -->
       <mat-tree-node *matTreeNodeDef="let node" cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)"
                      (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
-        <mat-nav-list class="line" *ngIf="node.id != null" (contextmenu)="isAdmin ? onRightClick($event, false, node.id) : null">
+        <mat-nav-list class="line" *ngIf="node.id != null" (contextmenu)="isAdmin ? onRightClick($event, false, false, node.id) : null">
           <a matTreeNodePadding matTreeNodePaddingIndent="15px" class="item" mat-list-item
              [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
              [routerLink]="node.completePath" routerLinkActive="active"
@@ -30,7 +30,7 @@
         <mat-nav-list class="nav-list line">
           <mat-list-item class="item" matTreeNodePadding matTreeNodePaddingIndent="15px"
                          [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
-                         (contextmenu)="isAdmin ? onRightClick($event, true, node.id):null"
+                         (contextmenu)="isAdmin ? onRightClick($event, true, isNotEmpty(node), node.id):null"
                          (click)="expansionModel.toggle(node)" matTreeNodeToggle>
             <mat-icon class="mat-icon-rtl-mirror">
               {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}

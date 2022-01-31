@@ -116,11 +116,16 @@ export class HaPublicSidenavComponent implements OnInit {
     });
   }
 
+  isNotEmpty(node: FlatNode): boolean{
+    const n: HaNode = this.dataSource.data.find(n => n.id == node.id);
+    return n.children != null && n.children.length > 0;
+  }
+
   changeCurrentDoc(completeUrl: string): void {
     this.currentDocUrl = completeUrl;
   }
 
-  onRightClick(event: MouseEvent, isFolder: boolean, id?: string): void {
+  onRightClick(event: MouseEvent, isFolder: boolean, hasChild: boolean = false, id?: string): void {
     event.preventDefault();
     event.stopPropagation();
     if(this.menuOpen){
@@ -131,12 +136,12 @@ export class HaPublicSidenavComponent implements OnInit {
         this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, res.id, true), event);
       });
     } else {
-      this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id), event);
+      this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, false, hasChild), event);
     }
     this.menuOpen = true;
   }
 
-  private getContextMenuConfig(isFolder: boolean, id?: string, isRoot: boolean = false,): FlMenuDynamic[] {
+  private getContextMenuConfig(isFolder: boolean, id?: string, isRoot: boolean = false, hasChild: boolean = false): FlMenuDynamic[] {
     if (isFolder) {
       return isRoot ? [
         {
@@ -161,6 +166,7 @@ export class HaPublicSidenavComponent implements OnInit {
           text: {text: 'delete', translateText: true},
           icon: 'delete',
           onClick: (event) => this.openResourceDelete(id, isFolder),
+          disabled: hasChild
         }
       ]
     }
