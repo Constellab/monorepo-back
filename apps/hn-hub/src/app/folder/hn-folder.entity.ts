@@ -12,7 +12,7 @@ export class HnFolder extends HnBaseEntity {
   title: string;
 
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrickVersion, {eager: true})
+  @ManyToOne(() => HnBrickVersion, {eager: true, onDelete: "CASCADE"})
   brickVersion: HnBrickVersion;
 
   @Column({nullable: true})
@@ -24,7 +24,7 @@ export class HnFolder extends HnBaseEntity {
   @Column()
   order: number;
 
-  @TreeParent()
+  @TreeParent({onDelete: "CASCADE"})
   folder: HnFolder;
 
   @TreeChildren()
@@ -35,7 +35,6 @@ export class HnFolder extends HnBaseEntity {
 
   nextOrder(): number {
     let maxOrder: number = 0;
-    console.log(this.folders, this.documentations);
     if (typeof this.folders !== 'undefined') {
       this.folders.map(f => {
         if (f.order >= maxOrder) {

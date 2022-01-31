@@ -5,7 +5,6 @@ import {Repository} from 'typeorm';
 import {HnFolderService} from '../folder/hn-folder.service';
 import {HnBrick} from '../brick/hn-brick.entity';
 import {HnNode} from '../folder/hn-folder.entity';
-import {HnDocumentationService} from '../documentation/hn-documentation.service';
 
 @Injectable()
 export class HnBrickVersionService {
@@ -14,7 +13,6 @@ export class HnBrickVersionService {
     @InjectRepository(HnBrickVersion)
     private brickVersionsRepository: Repository<HnBrickVersion>,
     private folderService: HnFolderService,
-    private documentationService: HnDocumentationService
   ) {
   }
 
@@ -35,7 +33,7 @@ export class HnBrickVersionService {
     return await this.folderService.findBrickDocsTree(mainFolder);
   }
 
-  async findRootFolderId(brickVersion: HnBrickVersion): Promise<string>{
+  async findRootFolderId(brickVersion: HnBrickVersion): Promise<string> {
     const mainFolder = await this.folderService.findFolderByBrickVersion(brickVersion);
     return mainFolder.id;
   }

@@ -21,7 +21,7 @@ export class HnDocumentation extends HnBaseEntity {
   @Column()
   order: number;
 
-  @ManyToOne(() => HnFolder)
+  @ManyToOne(() => HnFolder, {onDelete: "CASCADE"})
   folder: HnFolder;
 
   static newDoc(pId: string, pTitle: string, pPath: string

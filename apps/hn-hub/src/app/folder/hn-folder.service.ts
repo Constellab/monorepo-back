@@ -44,6 +44,7 @@ export class HnFolderService {
     createMainFolder.order = 0;
 
     const mainFolder = await this.create(createMainFolder, brickVersion);
+
     const gettingStartedDoc: HnNodeDTO = new HnNodeDTO();
     gettingStartedDoc.folder = mainFolder;
     gettingStartedDoc.path = 'getting-started';
@@ -53,7 +54,9 @@ export class HnFolderService {
   }
 
   async createDoc(createDocumentationRes: HnNodeDTO): Promise<HnDocumentation> {
-    createDocumentationRes.folder = await this.foldersRepository.findOne(createDocumentationRes.folderId, {relations: ['documentations', 'folders']});
+    createDocumentationRes.folder =
+      await this.foldersRepository.findOne(createDocumentationRes.folder ? createDocumentationRes.folder.id : createDocumentationRes.folderId, {relations: ['documentations', 'folders']});
+
 
     const createDocumentation = new HnDocumentation();
 

@@ -62,5 +62,10 @@ export class HnBrickService {
     const brickVersion: HnBrickVersion = await this.brickVersionService.findBrickVersionByBrickAndVersion(brick, versionMajor);
     return await this.documentationService.findCurrentDoc(brickVersion, path);
   }
+
+  async deleteBrickById(id: string): Promise<void>{
+    const brick: HnBrick = await this.bricksRepository.findOne(id);
+    await this.bricksRepository.delete(brick);
+  }
 }
 

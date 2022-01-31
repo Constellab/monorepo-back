@@ -19,7 +19,7 @@ export class HnBrickPathVersion{
 export class HnBrickVersion extends HnBaseEntity {
 
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrick, {eager: true})
+  @ManyToOne(() => HnBrick, {eager: true, onDelete: "CASCADE"})
   brick: HnBrick;
 
   @Column({default: 1})

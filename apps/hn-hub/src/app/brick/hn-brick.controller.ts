@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Post, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Query} from '@nestjs/common';
 import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
@@ -27,7 +27,7 @@ export class HnBrickController {
   @Post('docs')
   async findDocsByBrick(@Body(new BlParsePipe(HnBrickIdAndVersion)) brickIdAndVersion: HnBrickIdAndVersion): Promise<HnNode> {
     if(!brickIdAndVersion.version){
-      // TODO fuction to get the latest version
+      // TODO function to get the latest version
     }
     brickIdAndVersion.version = 1; // A modif
     return this.brickService.findDocsByBrickAndVersion(await this.brickService.findById(brickIdAndVersion.id), brickIdAndVersion.version);
@@ -49,5 +49,10 @@ export class HnBrickController {
   @Post()
   create(@Body(new BlParsePipe(HnCreateBrickDTO)) createBrick: HnCreateBrickDTO): Promise<HnBrick> {
     return this.brickService.create(createBrick);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string): Promise<void>{
+    return this.brickService.deleteBrickById(id);
   }
 }
