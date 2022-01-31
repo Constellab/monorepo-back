@@ -9,4 +9,5 @@ export * from './component/fl-last-modification-info/fl-last-modification-info.c
 
 // Pipes
 export * from './pipe/fl-date/fl-date.pipe';
+export * from './pipe/fl-duration/fl-duration.pipe';
 export * from './pipe/fl-from-now/fl-from-now.pipe';

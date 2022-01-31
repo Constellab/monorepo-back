@@ -12,6 +12,7 @@ import {
 } from './component/fl-last-modification-info/fl-last-modification-info.component';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flDateI18n} from './i18n/fl-date.i18n';
+import {FlDurationPipe} from './pipe/fl-duration/fl-duration.pipe';
 
 /**
  * Module regrouping component and pipe for dates
@@ -24,6 +25,7 @@ import {flDateI18n} from './i18n/fl-date.i18n';
     FlFromNowComponent,
     FlCreationInfoComponent,
     FlLastModificationInfoComponent,
+    FlDurationPipe,
   ],
   exports: [
     FlDateRangeComponent,
@@ -32,6 +34,7 @@ import {flDateI18n} from './i18n/fl-date.i18n';
     FlFromNowComponent,
     FlCreationInfoComponent,
     FlLastModificationInfoComponent,
+    FlDurationPipe,
   ],
   imports: [
     CommonModule,
