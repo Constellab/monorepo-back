@@ -91,11 +91,6 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
       return new CnLabInstanceToken(labInstance, 'Bearer ' + labAuth.access_token);
     } catch (e: any) {
-      this.logger.error(e);
-      if (e.stack) {
-        this.logger.error(e.stack);
-      }
-
       const error: CnExternalLabError = (e.response as AxiosResponse)?.data ?? '';
 
       switch (error.code) {
@@ -104,6 +99,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
         case 'gws_core.WRONG_CREDENTIALS_USER_NOT_FOUND' :
           throw new UnauthorizedException(CnErrorText.LAB_USER_NOT_FOUND);
         default:
+          this.logger.error(e);
           throw new BadRequestException(CnErrorText.LAB_AUTH_ERROR);
       }
     }
