@@ -49,7 +49,7 @@
             {{'biox.open_resource_page' | translate}}
           </a>
 
-          <a mat-stroked-button type="button" *ngIf="resource.experimentId"
+          <a mat-stroked-button type="button" *ngIf="resource.experimentId && !readOnly"
              [routerLink]="resource.experimentId | labDetailRoute:'experiment'"
              class="button g-button-small">
             <mat-icon flIcon="experiment"></mat-icon>
