@@ -82,7 +82,7 @@ export class SnDataImporterService {
           id: undefined,
           title: d.title,
           source: d.source,
-          authors: d.authors.split(', '),
+          authors: d.authors?.split(', ') ?? [],
           doi: d.doi,
           date: d.date,
           content: d.text,
