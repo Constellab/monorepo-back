@@ -167,7 +167,7 @@ export const labConstResourceViewTypeInfos: Record<LabResourceViewType, LabResou
     icon: 'text_snippet',
     text: 'biox.resource_view_text',
     defaultDisplayMode: 'fullScreen',
-    forceDefaultDisplayMode: false
+    forceDefaultDisplayMode: true
   },
   'table-view': {
     icon: 'calendar_view_month',
