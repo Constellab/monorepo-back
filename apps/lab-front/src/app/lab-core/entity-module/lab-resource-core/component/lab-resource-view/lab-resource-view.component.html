@@ -1,3 +1,7 @@
+<div class="title">
+  <h3 *ngIf="_view.title">{{_view.title}}</h3>
+  <p *ngIf="_view.caption" class="g-text-small">{{_view.caption}}</p>
+</div>
 <ng-template #viewContainer></ng-template>
 
 <fl-error-text *ngIf="viewNotSupportedError"

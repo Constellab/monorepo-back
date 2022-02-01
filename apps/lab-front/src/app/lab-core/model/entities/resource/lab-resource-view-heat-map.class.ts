@@ -6,9 +6,10 @@ import {
   FlChartHeatMap,
   FlChartSerie
 } from '@monorepo/front-core-lib';
+import {LabResourceViewBase} from './lab-resource-view.entity';
 
 
-export interface LabResourceViewHeatMap {
+export interface LabResourceViewHeatMap extends LabResourceViewBase {
   type: 'heatmap-view';
   data: ClCsvJson;
   row_names: string[];

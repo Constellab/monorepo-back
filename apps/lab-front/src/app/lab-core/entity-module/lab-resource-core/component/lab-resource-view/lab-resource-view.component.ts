@@ -70,7 +70,7 @@ export class LabResourceViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _view: LabResourceView;
+  _view: LabResourceView;
 
   @Input() fullscreen: boolean = false;
 

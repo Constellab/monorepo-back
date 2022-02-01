@@ -5,8 +5,9 @@ import {
   FlChartConfig,
   FlChartMultiSerie
 } from '@monorepo/front-core-lib';
+import {LabResourceViewBase} from './lab-resource-view.entity';
 
-export interface LabResourceViewBoxPlot {
+export interface LabResourceViewBoxPlot extends LabResourceViewBase{
   type: 'box-plot-view';
   data: LabResourceViewBoxPlotData;
 }

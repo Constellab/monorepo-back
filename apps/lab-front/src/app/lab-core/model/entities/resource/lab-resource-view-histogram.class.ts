@@ -5,8 +5,9 @@ import {
   FlChartHistogram,
   FlChartSerie
 } from '@monorepo/front-core-lib';
+import {LabResourceViewBase} from './lab-resource-view.entity';
 
-export interface LabResourceViewHistogram {
+export interface LabResourceViewHistogram extends LabResourceViewBase{
   type: 'histogram-view';
   data: LabResourceViewHistogramData;
 }

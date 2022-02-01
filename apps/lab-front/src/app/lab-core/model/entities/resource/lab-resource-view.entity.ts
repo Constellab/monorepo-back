@@ -68,7 +68,14 @@ export interface LabResourceViewSpecWithConfig {
   transformersWithConfig: LabTransformerWithConfig[];
 }
 
-export interface LabResourceViewJson {
+export interface LabResourceViewBase {
+  type: LabResourceViewType;
+  data: any;
+  title?: string;
+  caption?: string;
+}
+
+export interface LabResourceViewJson extends LabResourceViewBase{
   type: 'json-view';
   data: Record<string, any>;
 }
@@ -76,7 +83,7 @@ export interface LabResourceViewJson {
 // Spec name of the page on view text
 export const labResourceViewTextSpecPage: string = 'page';
 
-export interface LabResourceViewText {
+export interface LabResourceViewText extends LabResourceViewBase{
   type: 'text-view';
   data: {
     text: string
@@ -92,23 +99,23 @@ export interface LabResourceViewText {
   };
 }
 
-export interface LabResourceViewTable {
+export interface LabResourceViewTable extends LabResourceViewBase {
   type: 'table-view' | 'dataset-view';
   data: ClCsvJson;
-  row_names: string[]
+  row_names: string[];
 }
 
-export interface LabResourceViewNetwork {
+export interface LabResourceViewNetwork extends LabResourceViewBase{
   type: 'network-view';
   data: any;
 }
 
-export interface LabResourceViewImage {
+export interface LabResourceViewImage extends LabResourceViewBase{
   type: 'image-view';
   data: any;
 }
 
-export interface LabResourceViewMulti {
+export interface LabResourceViewMulti extends LabResourceViewBase{
   type: 'multi-view';
   data: LabResourceViewMultiData;
 }

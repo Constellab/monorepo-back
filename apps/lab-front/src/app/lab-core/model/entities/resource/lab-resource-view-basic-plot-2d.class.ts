@@ -8,8 +8,9 @@ import {
   FlChartSerie,
   FlChartStackedBar
 } from '@monorepo/front-core-lib';
+import {LabResourceViewBase} from './lab-resource-view.entity';
 
-export interface LabResourceViewBasicPlot2d {
+export interface LabResourceViewBasicPlot2d extends LabResourceViewBase{
   type: 'scatter-plot-2d-view' | 'line-plot-2d-view' | 'bar-plot-view' | 'stacked-bar-plot-view';
   data: LabResourceViewChart2dData;
 }

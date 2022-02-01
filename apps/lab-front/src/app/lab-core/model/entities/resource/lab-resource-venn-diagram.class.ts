@@ -1,6 +1,7 @@
 import {FlChartConfig, FlChartVennData, FlChartVennDiagram} from '@monorepo/front-core-lib';
+import {LabResourceViewBase} from './lab-resource-view.entity';
 
-export interface LabResourceVennDiagram {
+export interface LabResourceVennDiagram extends LabResourceViewBase{
   type: 'venn-diagram-view';
   data: LabResourceVennDiagramData;
 }
