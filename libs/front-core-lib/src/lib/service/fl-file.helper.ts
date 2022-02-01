@@ -194,12 +194,14 @@ export class FlFileHelper {
    * @param url url of the file to download
    * @param filename the complete name of the file
    */
-  public static downloadUrl(url: string, filename: string): void {
+  public static downloadUrl(url: string, filename?: string): void {
     // create an <a> tag to download the file
     const a = document.createElement('a');
 
     a.href = url;
-    a.download = filename;
+    if (filename) {
+      a.download = filename;
+    }
     document.body.appendChild(a);
 
     // trigger a click event on the tag

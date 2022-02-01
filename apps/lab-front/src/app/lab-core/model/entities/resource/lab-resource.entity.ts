@@ -53,6 +53,9 @@ export class LabResource extends LabBaseEntityWithUser {
   @Expose({name: 'is_importable'})
   isImportable: boolean;
 
+  @Expose({name: 'is_downloadable'})
+  isDownloadable: boolean;
+
   origin: LabResourceOrigin;
 
   name: string;
@@ -61,12 +64,12 @@ export class LabResource extends LabBaseEntityWithUser {
   experimentId?: string;
 
 
-  isFile(): boolean {
-    return this.fsNode != null && this.fsNode.isFile;
+  isFsNode(): boolean {
+    return this.fsNode != null;
   }
 
-  isDownloadable(): boolean {
-    return this.isFile();
+  isFile(): boolean {
+    return this.isFsNode() && this.fsNode.isFile;
   }
 
   isUpdatable(): boolean {

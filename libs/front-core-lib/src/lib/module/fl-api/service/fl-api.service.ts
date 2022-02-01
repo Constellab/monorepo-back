@@ -351,4 +351,19 @@ export class FlApiService {
       throw e;
     }
   }
+
+  /**
+   * Simple method to convert a json object to url param like 'lastname=test&firstname=bob'
+   * @param record
+   * @private
+   */
+  public convertRecordToURLParams(record: Record<string, any>): string {
+    const params = new URLSearchParams();
+    for (const key in record) {
+      if (record[key] != null) {
+        params.set(key, record[key]);
+      }
+    }
+    return params.toString();
+  }
 }

@@ -3,6 +3,7 @@ import {
   FlAdvancedSearchInput,
   FlApiService,
   FlEntityPaginatedDatasource,
+  FlFileHelper,
   FlSearchConverter,
   FlSearchService
 } from '@monorepo/front-core-lib';
@@ -25,6 +26,8 @@ import {LabCallTransformerParams} from '../model/global/lab-transformer.class';
 import {LabConfigValues} from '../model/entities/lab-config.entity';
 import {LabResourceImporterType} from '../model/entities/resource/lab-resource.dto';
 import {LabConfigSpecBase, LabConfigSpecs} from '../model/entities/lab-config-spec.entity';
+import {LabTypeService} from './lab-type.service';
+import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
 
 
 @Injectable({
@@ -134,5 +137,28 @@ export class LabResourceService implements FlSearchService<LabResource> {
 
   public callImporter(resourceId: string, importerType: string, config: LabConfigValues): Observable<LabResource> {
     return this.apiService.post(`${this.route}/${resourceId}/import/${importerType}`, config, LabResource);
+  }
+
+  //////////////////////////////////////// EXPORTER  ///////////////////////////////////////
+
+  public getResourceExporterConfig(resourceTypingName: string): Observable<LabProcessType> {
+    return this.apiService.get(`${this.route}/${resourceTypingName}/exporter`, LabTypeService.deserializeTyping);
+  }
+
+  public downloadResource(resourceId: string, exporterTypingName: string, config: LabConfigValues): Observable<void> {
+    // get the download file url
+    return this.getDownloadFileUrl(resourceId, exporterTypingName).pipe(
+      map(url => {
+        // create the download url, with config params
+        const fullUrl = this.apiService.getBaseRouteUrl(url) + '?' +
+          this.apiService.convertRecordToURLParams(config);
+
+        FlFileHelper.downloadUrl(fullUrl);
+      })
+    );
+  }
+
+  private getDownloadFileUrl(resourceId: string, exporterTypingName: string): Observable<string> {
+    return this.apiService.get(`${this.route}/${resourceId}/${exporterTypingName}/get-download-url`);
   }
 }

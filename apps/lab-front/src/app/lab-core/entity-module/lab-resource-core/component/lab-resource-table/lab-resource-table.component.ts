@@ -14,7 +14,6 @@ import {
   FlTableAbstractDirective,
   FlTagDialogService
 } from '@monorepo/front-core-lib';
-import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {LabResource, LabResourceDatasource} from '../../../../model/entities/resource/lab-resource.entity';
 import {ClHelpService} from '@monorepo/core-lib';
@@ -25,6 +24,7 @@ import {
   LabImportResourceDialogInput
 } from '../lab-import-resource-dialog/lab-import-resource-dialog.component';
 import {LabUpdateResourceTypeComponent} from '../lab-update-resource-type/lab-update-resource-type.component';
+import {LabResourceDownloadService} from '../../../../entity-service/lab-resource-download.service';
 
 /**
  * Table to show resource with possibility actions on resource and a select mode
@@ -45,12 +45,12 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
 
   @Output() resourceSelected: EventEmitter<LabResource> = new EventEmitter<LabResource>();
 
-  constructor(private fileService: LabFileResourceService,
-              private resourceService: LabResourceService,
+  constructor(private resourceService: LabResourceService,
               private dialogService: FlDialogService,
               private tagDialogService: FlTagDialogService,
               private tagService: LabTagService,
-              private cdr: ChangeDetectorRef) {
+              private cdr: ChangeDetectorRef,
+              private resourceDownloadService: LabResourceDownloadService) {
     super(['createdAt', 'action', 'name', 'info', 'tags']);
   }
 
@@ -58,7 +58,7 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
   }
 
   downloadFile(resource: LabResource): void {
-    this.fileService.downloadFile(resource.id, resource.name).subscribe();
+    this.resourceDownloadService.downloadResource(resource);
   }
 
   openImportResource(resource: LabResource): void {

@@ -53,10 +53,10 @@
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu" xPosition="before">
-        <button mat-menu-item type="button" *ngIf="resource.isDownloadable()"
+        <button mat-menu-item type="button" *ngIf="resource.isDownloadable"
                 (click)="downloadFile(resource)">
           <mat-icon>cloud_download</mat-icon>
-          <span>{{'biox.file_resource_download' | translate}}</span>
+          <span>{{'biox.download_resource' | translate}}</span>
         </button>
 
         <button mat-menu-item type="button" *ngIf="resource.isImportable"

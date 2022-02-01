@@ -7,6 +7,11 @@ import {
   LabConfigureSpecsFormComponent
 } from '../lab-configure-specs-form/lab-configure-specs-form.component';
 
+export interface LabConfigureSpecsFormDialogInput {
+  configData: LabConfigData;
+  title: string;
+  submitButtonText: string;
+}
 
 /**
  * Dialog to create a config based on a config spec
@@ -20,15 +25,22 @@ export class LabConfigureSpecsFormDialogComponent implements OnInit {
 
   formGp: FormGroup;
 
+  input: LabConfigureSpecsFormDialogInput;
   configData: LabConfigData;
 
-  constructor(@Inject(MAT_DIALOG_DATA) input: LabConfigData,
+
+  constructor(@Inject(MAT_DIALOG_DATA) input: LabConfigureSpecsFormDialogInput,
               private dialogRef: MatDialogRef<LabConfigureSpecsFormDialogComponent>) {
-    this.configData = input;
+    this.input = input;
   }
 
   ngOnInit(): void {
-    this.formGp = LabConfigureSpecsFormComponent.buildFormGroup(this.configData);
+    this.buildFormGp(this.input.configData);
+  }
+
+  private buildFormGp(configData: LabConfigData): void {
+    this.formGp = LabConfigureSpecsFormComponent.buildFormGroup(configData);
+    this.configData = configData;
   }
 
   submit(): void {

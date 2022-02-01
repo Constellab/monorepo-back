@@ -47,13 +47,13 @@ export class LabFileResourceService {
   }
 
 
-  public downloadFile(id: string, filename: string): Observable<void> {
+  public downloadFile(id: string): Observable<void> {
     // get the download file url
     return this.getDownloadFileUrl(id).pipe(
       map(url => {
         // download the file from the url
         const fullUrl = this.apiService.getBaseRouteUrl(url);
-        FlFileHelper.downloadUrl(fullUrl, filename);
+        FlFileHelper.downloadUrl(fullUrl);
       })
     );
   }

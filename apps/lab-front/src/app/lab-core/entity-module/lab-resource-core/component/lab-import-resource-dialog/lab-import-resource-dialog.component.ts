@@ -120,7 +120,7 @@ export class LabImportResourceDialogComponent implements OnInit {
   }
 
   selectImporter(importer: LabProcessType): void {
-    this.configData = LabConfigData.fromSpecs(importer.getConfigSpecs(), importer.getConfigSpecs().getDefaultConfig());
+    this.configData = LabConfigData.fromSpecs(importer.getConfigSpecs());
     this.formGp.setControl('config', LabConfigureSpecsFormComponent.buildFormGroup(this.configData));
     this.formGp.updateValueAndValidity();
 

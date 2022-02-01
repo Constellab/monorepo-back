@@ -4,7 +4,8 @@ import {LabProcess} from '../../../../../lab-core/model/entities/process/lab-pro
 import {LabConfig} from '../../../../../lab-core/model/entities/lab-config.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {
-  LabConfigureSpecsFormDialogComponent
+  LabConfigureSpecsFormDialogComponent,
+  LabConfigureSpecsFormDialogInput
 } from '../../../../../lab-core/entity-module/lab-config-core/component/lab-configure-specs-form-dialog/lab-configure-specs-form-dialog.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
@@ -55,8 +56,14 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
   openConfig(event: MouseEvent, panel: MatExpansionPanel): void {
     ClHelpService.stopEventPropagation(event);
 
+    const input: LabConfigureSpecsFormDialogInput = {
+      configData: this.config.data,
+      title: 'biox.configuration',
+      submitButtonText: 'save'
+    };
+
     this.dialogService.openMediumDialog(LabConfigureSpecsFormDialogComponent,
-      {data: this.config.data}).afterClosed().subscribe(
+      {data: input}).afterClosed().subscribe(
       config => this.onConfigDialogClosed(config)
     );
 

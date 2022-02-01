@@ -14,7 +14,6 @@ import {
   FlTagDialogService
 } from '@monorepo/front-core-lib';
 import {LabTagService} from '../../../../entity-service/lab-tag.service';
-import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
 import {
   LabResourceViewSpecsPortalComponent
 } from '../../../../../lab-databox/module/lab-resource-detail-page/component/lab-resource-view-specs-portal/lab-resource-view-specs-portal.component';
@@ -27,6 +26,7 @@ import {
   LabImportResourceDialogComponent,
   LabImportResourceDialogInput
 } from '../lab-import-resource-dialog/lab-import-resource-dialog.component';
+import {LabResourceDownloadService} from '../../../../entity-service/lab-resource-download.service';
 
 @Component({
   selector: 'lab-resource-detail',
@@ -55,7 +55,7 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
               private tagDialogService: FlTagDialogService,
               private tagService: LabTagService,
               private dialogService: FlDialogService,
-              private fileService: LabFileResourceService) {
+              private resourceDownloadService: LabResourceDownloadService) {
   }
 
   ngOnInit(): void {
@@ -153,7 +153,7 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
 
   async downloadFile(): Promise<void> {
     const resource = await this.state.getResourcePromise();
-    this.fileService.downloadFile(resource.id, resource.name).subscribe();
+    this.resourceDownloadService.downloadResource(resource);
   }
 
 

@@ -29,10 +29,10 @@
             {{'biox.transformers' | translate}}
           </button>
 
-          <button mat-stroked-button type="button" *ngIf="resource.isDownloadable()"
+          <button mat-stroked-button type="button" *ngIf="resource.isDownloadable"
                   (click)="downloadFile()" class="button g-button-small">
             <mat-icon>cloud_download</mat-icon>
-            <span>{{'biox.file_resource_download' | translate}}</span>
+            <span>{{'biox.download_resource' | translate}}</span>
           </button>
 
           <button mat-stroked-button type="button"

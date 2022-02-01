@@ -20,11 +20,12 @@ export class LabConfigData {
 
   /**
    * Create a ConfigData with defined specs and empty params
+   * if the values are not provided, use the default config
    */
-  public static fromSpecs(specs: LabConfigSpecs, values: LabConfigValues = {}): LabConfigData {
+  public static fromSpecs(specs: LabConfigSpecs, values?: LabConfigValues): LabConfigData {
     const config = new LabConfigData();
     config.specs = specs;
-    config.values = values;
+    config.values = values ?? specs.getDefaultConfig();
     return config;
   }
 
@@ -57,12 +58,6 @@ export class LabConfig extends LabBaseEntity {
   // object containing the current configuration values
   @Type(() => LabConfigData)
   data: LabConfigData;
-
-  public static fromSpecs(specs: LabConfigSpecs): LabConfig {
-    const config = new LabConfig();
-    config.data = LabConfigData.fromSpecs(specs);
-    return config;
-  }
 }
 
 

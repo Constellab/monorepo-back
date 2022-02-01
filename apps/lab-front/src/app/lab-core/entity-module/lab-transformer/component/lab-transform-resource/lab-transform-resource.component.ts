@@ -94,8 +94,7 @@ export class LabTransformResourceComponent implements OnInit {
   }
 
   private createSelectedTransformer(transformer: LabProcessType): LabSelectedTransformer {
-    const configData = LabConfigData.fromSpecs(transformer.getConfigSpecs(),
-      transformer.getConfigSpecs().getDefaultConfig());
+    const configData = LabConfigData.fromSpecs(transformer.getConfigSpecs());
 
     const selectedTransformer: LabSelectedTransformer = {
       transformer: transformer,
