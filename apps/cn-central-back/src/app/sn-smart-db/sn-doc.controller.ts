@@ -16,13 +16,11 @@ import {FileInterceptor} from '@nestjs/platform-express';
 import {ClPageI} from '@monorepo/core-lib';
 import {SnDocSearchResult, SnDocument} from './model/sn-document.class';
 import {SnDocService} from './service/sn-doc.service';
-import {SnDataImporterService} from './service/sn-data-importer.service';
 import {Response} from 'express';
 
 @Controller('smart-db/doc')
 export class SnDocController {
-  constructor(private readonly docService: SnDocService,
-              private dataImporter: SnDataImporterService) {
+  constructor(private readonly docService: SnDocService) {
   }
 
   @Get('download')
@@ -87,7 +85,7 @@ export class SnDocController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: any): any {
-    return this.dataImporter.importDataFromFile(file);
+    return this.docService.importDataFromFile(file);
   }
 
   @Post('init')

@@ -63,6 +63,29 @@ export class SnDocService {
     return this.docElasticsearchService.deleteIndex();
   }
 
+  /**
+   * Create the document in DB if it doesn't exist, do nothing otherwise
+   */
+  public async createDocumentIfNotExist(document: SnDocument): Promise<SnDocument> {
+    const docDb: SnDocument = await this.docElasticsearchService.findByUrlPath(document.urlPath);
+
+    if (docDb == null) {
+      return this.docElasticsearchService.createDocument(document);
+    }
+
+    return docDb;
+  }
+
+  public async importDataFromFile(file: any): Promise<SnDocument[]> {
+    const documents: SnDocument[] = this.dataImporter.importDataFromFile(file);
+
+    for (const document of documents) {
+      await this.createDocumentIfNotExist(document);
+    }
+
+    return documents;
+  }
+
   public async init(file: any): Promise<any> {
     this.checkIsAdmin();
     try {
@@ -71,7 +94,7 @@ export class SnDocService {
     }
 
     await this.docElasticsearchService.createIndex();
-    return await this.dataImporter.importDataFromFile(file);
+    return await this.importDataFromFile(file);
   }
 
   public async exportData(): Promise<SnSmartDbExport> {

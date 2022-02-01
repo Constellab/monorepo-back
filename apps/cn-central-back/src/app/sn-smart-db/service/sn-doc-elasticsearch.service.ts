@@ -32,26 +32,12 @@ export class SnDocElasticsearchService {
     });
 
     // force to refresh the index to have data up to date
-    await this.elasticSearchService.indices.refresh({index: SnDocElasticsearchService.DOCUMENT_INDEX})
+    await this.elasticSearchService.indices.refresh({index: SnDocElasticsearchService.DOCUMENT_INDEX});
     return Object.assign(document, {id: id});
   }
 
   async findById(id: string): Promise<SnDocument | null> {
-    const {body} = await this.elasticSearchService.search({
-      index: SnDocElasticsearchService.DOCUMENT_INDEX,
-      body: {
-        query: {
-          terms: {
-            _id: [id]
-          }
-        }
-      }
-    });
-
-    const hit: SnElasticsearchHit = body.hits.hits[0];
-    if (hit == null) return null;
-
-    return SnDocResultConvertHelper.convertHitToDoc(hit);
+    return this.findOne({_id: id})
   }
 
   async findByIdAndCheck(id: string): Promise<SnDocument> {
@@ -61,6 +47,10 @@ export class SnDocElasticsearchService {
       throw new NotFoundException('Document not found');
     }
     return doc;
+  }
+
+  async findByUrlPath(urlPath: string): Promise<SnDocument | null> {
+    return this.findOne({urlPath: {value: urlPath}})
   }
 
   async findNotValidated(page: number, pageSize: number): Promise<ClPageI<SnDocument>> {
@@ -150,11 +140,11 @@ export class SnDocElasticsearchService {
       body: {
         properties: {
           title: {type: 'text'},
-          source: {type: 'text'},
+          source: {type: 'keyword'},
           authors: {type: 'text'},
           date: {type: 'text'},
-          doi: {type: 'text'},
-          urlPath: {type: 'text'},
+          doi: {type: 'keyword'},
+          urlPath: {type: 'keyword'},
           content: {type: 'text'},
           sentences: {
             properties: {
@@ -186,6 +176,22 @@ export class SnDocElasticsearchService {
 
   async deleteIndex(): Promise<any> {
     return this.elasticSearchService.indices.delete({index: SnDocElasticsearchService.DOCUMENT_INDEX});
+  }
+
+  private async findOne(filters: Record<string, any>): Promise<SnDocument | null>{
+    const {body} = await this.elasticSearchService.search({
+      index: SnDocElasticsearchService.DOCUMENT_INDEX,
+      body: {
+        query: {
+          term: filters
+        }
+      }
+    });
+
+    const hit: SnElasticsearchHit = body.hits.hits[0];
+    if (hit == null) return null;
+
+    return SnDocResultConvertHelper.convertHitToDoc(hit);
   }
 
 }

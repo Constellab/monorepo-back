@@ -19,7 +19,7 @@ export class SnDataImporterService {
   constructor(private docElasticsearchService: SnDocElasticsearchService) {
   }
 
-  public async importDataFromFile(file: any): Promise<SnDocument[]> {
+  public importDataFromFile(file: any): SnDocument[] {
     const data: SnFileImportContent = this.readDataFromJsonFile(file);
 
     let documents: SnDocument[];
@@ -30,10 +30,6 @@ export class SnDataImporterService {
     } else {
       // if the data comes from the python script, convert the data to document before
       documents = this.convertDataToDocument(data.fileContent.data);
-    }
-
-    for (const document of documents) {
-      await this.docElasticsearchService.createDocument(document);
     }
 
     return documents;
