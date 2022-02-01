@@ -42,6 +42,12 @@ import {
 } from './component/lab-resource-detail-dialog/lab-resource-detail-dialog.component';
 import {LabResourceDetailComponent} from './component/lab-resource-detail/lab-resource-detail.component';
 import {LabUpdateResourceTypeComponent} from './component/lab-update-resource-type/lab-update-resource-type.component';
+import {
+  LabUpdateResourceNameDialogComponent
+} from './component/lab-update-resource-name-dialog/lab-update-resource-name-dialog.component';
+import {
+  LabResourceActionsMenuComponent
+} from './component/lab-resource-actions-menu/lab-resource-actions-menu.component';
 
 
 @NgModule({
@@ -68,6 +74,8 @@ import {LabUpdateResourceTypeComponent} from './component/lab-update-resource-ty
     LabResourceDetailDialogComponent,
     LabResourceDetailComponent,
     LabUpdateResourceTypeComponent,
+    LabUpdateResourceNameDialogComponent,
+    LabResourceActionsMenuComponent,
   ],
   exports: [
     LabResourceInfoComponent,
@@ -90,6 +98,8 @@ import {LabUpdateResourceTypeComponent} from './component/lab-update-resource-ty
     LabResourceDetailDialogComponent,
     LabResourceDetailComponent,
     LabUpdateResourceTypeComponent,
+    LabUpdateResourceNameDialogComponent,
+    LabResourceActionsMenuComponent,
   ],
   imports: [
     CommonModule,

@@ -6,14 +6,7 @@ import {
 import {Observable, Subscription} from 'rxjs';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
-import {
-  FlDialogService,
-  FlOverlayRef,
-  FlPortalConfig,
-  FlPortalService,
-  FlTagDialogService
-} from '@monorepo/front-core-lib';
-import {LabTagService} from '../../../../entity-service/lab-tag.service';
+import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {
   LabResourceViewSpecsPortalComponent
 } from '../../../../../lab-databox/module/lab-resource-detail-page/component/lab-resource-view-specs-portal/lab-resource-view-specs-portal.component';
@@ -22,11 +15,7 @@ import {
   LabTransformResourcePortalInput
 } from '../../../lab-transformer/component/lab-transform-resource-portal/lab-transform-resource-portal.component';
 import {LabTag} from '../../../../model/entities/lab-tag.entity';
-import {
-  LabImportResourceDialogComponent,
-  LabImportResourceDialogInput
-} from '../lab-import-resource-dialog/lab-import-resource-dialog.component';
-import {LabResourceDownloadService} from '../../../../entity-service/lab-resource-download.service';
+import {LabRouterService} from '../../../../service/lab-router.service';
 
 @Component({
   selector: 'lab-resource-detail',
@@ -52,10 +41,7 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
 
   constructor(private state: LabResourceDetailState,
               private portalService: FlPortalService,
-              private tagDialogService: FlTagDialogService,
-              private tagService: LabTagService,
-              private dialogService: FlDialogService,
-              private resourceDownloadService: LabResourceDownloadService) {
+              private routerService: LabRouterService) {
   }
 
   ngOnInit(): void {
@@ -123,37 +109,18 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
   }
 
 
-  async openTagFormDialog(): Promise<void> {
-    const resource = await this.state.getResourcePromise();
-
-    this.tagDialogService.openUpdateTagDialog({
-      tags: resource.tags,
-      updateMethod: (tags) => this.tagService.saveTags(resource.typingName, resource.id, tags)
-    }).afterClosed().subscribe(
-      (newTags: LabTag[]) => {
-        if (newTags != null) {
-          this.state.setTags(newTags);
-        }
-      }
-    );
+  onUpdate(resource: LabResource): void {
+    this.state.updateResource(resource);
   }
 
-  async openImportResource(): Promise<void> {
-    const resource = await this.state.getResourcePromise();
-
-    const input: LabImportResourceDialogInput = {
-      resourceId: resource.id,
-      resourceHumanName: resource.resourceTypeHumanName,
-      resourceTypingName: resource.resourceTypingName
-    };
-
-    this.dialogService.openMediumDialog(LabImportResourceDialogComponent, {data: input});
+  onUpdateTags(tags: LabTag[]): void {
+    if (tags != null) {
+      this.state.setTags(tags);
+    }
   }
 
-
-  async downloadFile(): Promise<void> {
-    const resource = await this.state.getResourcePromise();
-    this.resourceDownloadService.downloadResource(resource);
+  onDelete(): void {
+    this.routerService.navigateToDatabox();
   }
 
 

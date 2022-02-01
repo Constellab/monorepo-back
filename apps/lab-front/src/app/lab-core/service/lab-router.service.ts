@@ -28,6 +28,10 @@ export class LabRouterService {
     return `${labConstBioxFullRoute}`;
   }
 
+  public static getDataboxRoute(): string {
+    return `${labConstDataboxFullRoute}`;
+  }
+
   public static getExperimentDetailRoute(id: string): string {
     return `${labConstBioxFullRoute}/experiment/${id}`;
   }
@@ -51,6 +55,10 @@ export class LabRouterService {
   /////////////////// NAVIGATE METHODS ///////////////////
   public navigateToExperimentListRoute(): Promise<boolean> {
     return this.router.navigate([LabRouterService.getExperimentListRoute()]);
+  }
+
+  public navigateToDatabox(): Promise<boolean> {
+    return this.router.navigate([LabRouterService.getDataboxRoute()]);
   }
 
   public navigateToExperimentDetail(id: string): Promise<boolean> {

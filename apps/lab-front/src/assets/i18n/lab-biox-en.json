@@ -54,6 +54,8 @@
     "resource_previous_text_load": "Load previous text",
     "resource_type_select": "Select a resource type",
     "resource_select": "Select a resource",
+    "update_resource_name": "Update name",
+    "resource_name_updated": "Name updated",
     "process_type_type": "Type",
     "execution_time": "Execution time",
     "error_empty_experience": "The experiment is empty",

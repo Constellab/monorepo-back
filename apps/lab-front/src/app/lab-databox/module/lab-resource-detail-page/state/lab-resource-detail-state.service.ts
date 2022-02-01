@@ -47,7 +47,7 @@ export class LabResourceDetailState implements OnDestroy {
 
   private id: string;
 
-  private resource$: ClCachedObservable<LabResource>;
+  private resource$: BehaviorSubject<LabResource>;
   private viewSpecs$: ClCachedObservable<LabResourceViewSpecsByType[]>;
   private selectedViewSpec$: BehaviorSubject<LabResourceViewSpecWithConfig>;
 
@@ -61,7 +61,11 @@ export class LabResourceDetailState implements OnDestroy {
 
   public init(id: string): void {
     this.id = id;
-    this.resource$ = new ClCachedObservable(this.resourceService.getById(id));
+    this.resource$ = new BehaviorSubject<LabResource>(null);
+    this.resourceService.getById(id).subscribe(
+      resource => this.resource$.next(resource),
+      error => this.resource$.error(error)
+    );
 
     // load the views once the resource was found
     this.viewSpecs$ = new ClCachedObservable(this.resourceService.getResourceViewsListGrouped(id));
@@ -81,7 +85,7 @@ export class LabResourceDetailState implements OnDestroy {
   }
 
   public getResource$(): Observable<LabResource> {
-    return this.resource$.getObs();
+    return this.resource$.asObservable().pipe(filter(resource => resource != null));
   }
 
   public getCurrentResource(): LabResource {
@@ -90,6 +94,12 @@ export class LabResourceDetailState implements OnDestroy {
 
   public getResourcePromise(): Promise<LabResource> {
     return this.resource$.toPromise();
+  }
+
+  public updateResource(resource: LabResource): void {
+    this.resource$.next(resource);
+    // reload the views
+    this.viewSpecs$ = new ClCachedObservable(this.resourceService.getResourceViewsListGrouped(resource.id));
   }
 
   public setTags(tags: LabTag[]): void {
@@ -232,5 +242,6 @@ export class LabResourceDetailState implements OnDestroy {
   public clear(): void {
     this.selectedViewSpec$?.complete();
     this.subscription?.unsubscribe();
+    this.resource$?.complete();
   }
 }

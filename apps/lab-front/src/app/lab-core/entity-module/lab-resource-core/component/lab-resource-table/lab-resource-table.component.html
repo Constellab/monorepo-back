@@ -48,41 +48,11 @@
     </mat-header-cell>
     <mat-cell *matCellDef="let resource" class="action-column">
 
-      <!--   Mat menu containing action buttons   -->
-      <button mat-icon-button [matMenuTriggerFor]="menu" (click)="stopEventPropagation($event)">
-        <mat-icon>more_vert</mat-icon>
-      </button>
-      <mat-menu #menu="matMenu" xPosition="before">
-        <button mat-menu-item type="button" *ngIf="resource.isDownloadable"
-                (click)="downloadFile(resource)">
-          <mat-icon>cloud_download</mat-icon>
-          <span>{{'biox.download_resource' | translate}}</span>
-        </button>
-
-        <button mat-menu-item type="button" *ngIf="resource.isImportable"
-                (click)="openImportResource(resource)">
-          <mat-icon>system_update_alt</mat-icon>
-          <span>{{'biox.import_resource' | translate}}</span>
-        </button>
-
-        <button mat-menu-item type="button" (click)="openTagFormDialog(resource)">
-          <mat-icon>local_offer</mat-icon>
-          <span>{{'update_tags' | translate }}</span>
-        </button>
-
-        <button mat-menu-item type="button" (click)="updateResourceType(resource)"
-                *ngIf="resource.isUpdatable()">
-          <mat-icon>edit</mat-icon>
-          <span>{{'biox.update_resource_type' | translate}}</span>
-        </button>
-
-        <button mat-menu-item type="button" (click)="deleteResource(resource)" class="g-warn-text"
-                *ngIf="resource.isDeletable()">
-          <mat-icon color="warn">delete</mat-icon>
-          <span>{{'databox.delete_resource' | translate}}</span>
-        </button>
-      </mat-menu>
-
+      <lab-resource-actions-menu [resource]="resource" (update)="onUpdate($event)"
+                                 (updateTags)="onUpdateTags(resource, $event)"
+                                 (delete)="onDelete(resource)"
+                                 (click)="stopEventPropagation($event)">
+      </lab-resource-actions-menu>
 
     </mat-cell>
   </ng-container>

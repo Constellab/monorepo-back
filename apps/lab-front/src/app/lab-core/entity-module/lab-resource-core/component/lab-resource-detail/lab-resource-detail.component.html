@@ -11,50 +11,37 @@
         </h2>
 
         <fl-section-actions>
-          <button mat-stroked-button type="button" *ngIf="resource.isImportable && !readOnly"
-                  (click)="openImportResource()" class="button g-button-small">
-            <mat-icon>system_update_alt</mat-icon>
-            {{'biox.import_resource' | translate}}
-          </button>
+            <button mat-stroked-button type="button"
+                    (click)="openViewSpecs($event)" class="button g-button-small">
+              <mat-icon>visibility</mat-icon>
+              {{'biox.view_specs' | translate}}
+            </button>
 
-          <button mat-stroked-button type="button"
-                  (click)="openViewSpecs($event)" class="button g-button-small">
-            <mat-icon>visibility</mat-icon>
-            {{'biox.view_specs' | translate}}
-          </button>
+            <button mat-stroked-button type="button" *ngIf="!readOnly"
+                    (click)="openTransformerResource()" class="button g-button-small">
+              <mat-icon>move_down</mat-icon>
+              {{'biox.transformers' | translate}}
+            </button>
 
-          <button mat-stroked-button type="button" *ngIf="!readOnly"
-                  (click)="openTransformerResource()" class="button g-button-small">
-            <mat-icon>move_down</mat-icon>
-            {{'biox.transformers' | translate}}
-          </button>
+            <!--   Link to resource detail page only for readOnly       -->
+            <a mat-stroked-button type="button" *ngIf="readOnly"
+               [routerLink]="resourceId | labDetailRoute:'resource'"
+               class="button g-button-small">
+              <mat-icon flIcon="preview"></mat-icon>
+              {{'biox.open_resource_page' | translate}}
+            </a>
 
-          <button mat-stroked-button type="button" *ngIf="resource.isDownloadable"
-                  (click)="downloadFile()" class="button g-button-small">
-            <mat-icon>cloud_download</mat-icon>
-            <span>{{'biox.download_resource' | translate}}</span>
-          </button>
+            <a mat-stroked-button type="button" *ngIf="resource.experimentId && !readOnly"
+               [routerLink]="resource.experimentId | labDetailRoute:'experiment'"
+               class="button g-button-small">
+              <mat-icon flIcon="experiment"></mat-icon>
+              {{'biox.experiment' | translate}}
+            </a>
 
-          <button mat-stroked-button type="button"
-                  (click)="openTagFormDialog()" class="button g-button-small">
-            <mat-icon>local_offer</mat-icon>
-            {{'tags' | translate}}
-          </button>
-
-          <!--   Link to resource detail page only for readOnly       -->
-          <a mat-stroked-button type="button" *ngIf="readOnly"
-             [routerLink]="resourceId | labDetailRoute:'resource'"
-             class="button g-button-small">
-            <mat-icon flIcon="preview"></mat-icon>
-            {{'biox.open_resource_page' | translate}}
-          </a>
-
-          <a mat-stroked-button type="button" *ngIf="resource.experimentId && !readOnly"
-             [routerLink]="resource.experimentId | labDetailRoute:'experiment'"
-             class="button g-button-small">
-            <mat-icon flIcon="experiment"></mat-icon>
-            {{'biox.experiment' | translate}}
-          </a>
+          <lab-resource-actions-menu *ngIf="!readOnly" [resource]="resource" (update)="onUpdate($event)"
+                                     (updateTags)="onUpdateTags($event)"
+                                     (delete)="onDelete()">
+          </lab-resource-actions-menu>
         </fl-section-actions>
       </fl-section-header>
 
