@@ -12,6 +12,7 @@
     "download_file": "Télécharger le fichier",
     "select_file_types": "Sélectionner le type des fichiers",
     "select_file_type": "Type du fichier",
+    "select_folder_type": "Type du dossier",
     "delete_resource": "Supprimer la resource",
     "delete_resource_confirmation": "Êtes-vous sûr de vouloir supprimer cette ressource ? Si la ressource est utilisée dans une experiment, elle ne pourra pas être supprimé.",
     "resource_deleted": "Ressource supprimé"

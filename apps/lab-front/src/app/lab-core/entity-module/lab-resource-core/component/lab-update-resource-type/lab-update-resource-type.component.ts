@@ -3,9 +3,10 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
 import {FormControl, Validators} from '@angular/forms';
-import {LabFileType} from '../../../../model/entities/resource/lab-file-type';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
+import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
+import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 
 /**
  * Dialog to update the type of a file
@@ -19,19 +20,25 @@ export class LabUpdateResourceTypeComponent implements OnInit {
 
   formControl: FormControl;
 
-  fileTypes$: Observable<LabFileType[]>;
+  fsNodeTypes: Observable<LabTypeEntity[]>;
 
   isLoading: boolean = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) private resource: LabResource,
               private dialogRef: MatDialogRef<LabUpdateResourceTypeComponent>,
               private labFileService: LabFileResourceService,
+              private resourceService: LabResourceService,
               private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {
     this.formControl = new FormControl(this.resource.resourceTypingName, [Validators.required]);
-    this.fileTypes$ = this.labFileService.getFileTypes();
+
+    if (this.resource.isFile()) {
+      this.fsNodeTypes = this.labFileService.getFileTypes();
+    } else {
+      this.fsNodeTypes = this.labFileService.getFolderTypes();
+    }
   }
 
 
@@ -43,7 +50,7 @@ export class LabUpdateResourceTypeComponent implements OnInit {
 
   private updateType(type: string): void {
     this.isLoading = true;
-    this.labFileService.updateFileType(this.resource.id, type).subscribe(
+    this.resourceService.updateResourceType(this.resource.id, type).subscribe(
       resource => this.updateTypeSuccess(resource),
       () => this.isLoading = false
     );

@@ -4,42 +4,43 @@
 
 <mat-dialog-content>
 
-  <fl-section [object]="fileTypes" [isLoading]="getFileTypeIsLoading">
 
-    <ng-container *flSectionBody>
-
-      <form (ngSubmit)="submit()" id="file-type-form" [formGroup]="formGp">
+  <form (ngSubmit)="submit()" id="file-type-form" [formGroup]="formGp">
 
 
-        <!--     When uploading a folder, we show 2 options  -->
-        <div *ngIf="selectedNodes === 'folder'" class="folder-mode">
-          <mat-radio-group class="g-mat-radio-wrap-text" formControlName="uploadMode">
-            <mat-radio-button value="files">{{'databox.folder_upload_files_options' | translate }}</mat-radio-button>
-            <mat-radio-button value="folder"
-                              class="radio-button">{{'databox.folder_upload_folder_options' | translate }}</mat-radio-button>
-          </mat-radio-group>
-        </div>
+    <!--     When uploading a folder, we show 2 options  -->
+    <div *ngIf="selectedNodes === 'folder'" class="folder-mode">
+      <mat-radio-group class="g-mat-radio-wrap-text" formControlName="uploadMode"
+                       (change)="onUploadModeChange($event.value)">
+        <mat-radio-button value="files">{{'databox.folder_upload_files_options' | translate }}</mat-radio-button>
+        <mat-radio-button value="folder"
+                          class="radio-button">{{'databox.folder_upload_folder_options' | translate }}</mat-radio-button>
+      </mat-radio-group>
+    </div>
 
-        <!--    Selection of the folder types    -->
-        <ng-container *ngIf="showSelectFileTypes" formArrayName="files">
+    <!--    Selection of the folder types    -->
+    <fl-async-section [object]="resourceTypes$">
+
+      <ng-container *flSectionBody="let resourceTypes">
+        <ng-container formArrayName="files">
           <div *ngFor="let control of formArray.controls; index as i" [formGroupName]="i">
 
             <div fxLayout="row" fxLayoutAlign="space-between">
 
 
-              <p fxFlex="39%" class="filename">{{control.get('file').value.name}}</p>
+              <p fxFlex="40%" class="filename" *ngIf="control.get('file').value">{{control.get('file').value.name}}</p>
 
               <!--  File type  -->
-              <mat-form-field fxFlex="59%">
-                <mat-label>{{'databox.select_file_type' | translate}}</mat-label>
-                <mat-select formControlName="typingName" placeholder="{{'databox.select_file_type' | translate}}"
+              <mat-form-field fxFlex="auto">
+                <mat-label>{{typePlaceholder | translate}}</mat-label>
+                <mat-select formControlName="typingName" placeholder="{{typePlaceholder | translate}}"
                             required>
-                  <mat-option *ngFor="let fileType of fileTypes" [value]="fileType.typingName">
-                    {{fileType.name}}
+                  <mat-option *ngFor="let resourceType of resourceTypes" [value]="resourceType.typingName">
+                    {{resourceType.name}}
                   </mat-option>
                 </mat-select>
                 <mat-error *ngIf="control.get('typingName').hasError('required')">
-                  {{'databox.select_file_type' | flErrorRequired}}
+                  {{typePlaceholder | flErrorRequired}}
                 </mat-error>
               </mat-form-field>
             </div>
@@ -47,9 +48,9 @@
             <mat-divider class="divider"></mat-divider>
           </div>
         </ng-container>
-      </form>
-    </ng-container>
-  </fl-section>
+      </ng-container>
+    </fl-async-section>
+  </form>
 </mat-dialog-content>
 
 <div mat-dialog-actions>

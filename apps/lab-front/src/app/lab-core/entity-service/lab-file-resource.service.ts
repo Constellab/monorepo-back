@@ -15,7 +15,6 @@ export class LabFileResourceService {
   public static readonly uploadFileActon = 'uploadFile';
 
   private readonly route: string = 'fs-node';
-  private readonly fileTypeRoute: string = 'file-type';
 
   constructor(private apiService: FlApiService) {
   }
@@ -38,11 +37,11 @@ export class LabFileResourceService {
   /**
    * Upload a folder to the serveur. This watch the http events to follow progress.
    */
-  public uploadFolder(files: File[]): Observable<LabResource> {
+  public uploadFolder(folderTypingName: string, files: File[]): Observable<LabResource> {
     const formData: FormData = new FormData();
     files.forEach(file => formData.append('files', file));
 
-    return this.apiService.post(`${this.route}/upload-folder`, formData, null,
+    return this.apiService.post(`${this.route}/upload-folder/${folderTypingName}`, formData, null,
       {observe: 'events', reportProgress: true});
   }
 
@@ -73,15 +72,14 @@ export class LabFileResourceService {
       20, true);
   }
 
-
-  public updateFileType(id: string, fileType: string): Observable<LabResource> {
-    return this.apiService.put(`${this.route}/${id}/type/${fileType}`, null, LabResource);
-  }
-
-
   //////////////////////////////////////////// FILE TYPE ////////////////////////////////////////
   // return the list of all file types
   public getFileTypes(): Observable<LabFileType[]> {
-    return this.apiService.get(this.fileTypeRoute, LabFileType);
+    return this.apiService.get(`${this.route}/file-type`, LabFileType);
+  }
+
+  // return the list of all folder types
+  public getFolderTypes(): Observable<LabFileType[]> {
+    return this.apiService.get(`${this.route}/folder-type`, LabFileType);
   }
 }

@@ -72,6 +72,11 @@ export class LabResourceService implements FlSearchService<LabResource> {
     return this.apiService.put(`${this.route}/${id}/name/${name}`, null, LabResource);
   }
 
+  public updateResourceType(id: string, resourceTypingName: string): Observable<LabResource> {
+    return this.apiService.put(`${this.route}/${id}/type/${resourceTypingName}`, null, LabResource);
+  }
+
+
   public advancedSearch(page: number, pageSize: number, filters?: LabResourceSearchFields): Observable<ClPageI<LabResource>> {
     const data: FlAdvancedSearchInput = {
       filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, LabResourceSearch.advancedSearchConverter),
