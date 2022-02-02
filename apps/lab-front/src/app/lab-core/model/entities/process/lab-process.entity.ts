@@ -90,4 +90,12 @@ export class LabProcess extends LabNode {
   get title(): string {
     return this.data.title || this.name;
   }
+
+  isFinished(): boolean {
+    return this.status.value === 'SUCCESS' || this.status.value === 'ERROR';
+  }
+
+  isRunning(): boolean {
+    return this.status.value === 'RUNNING';
+  }
 }

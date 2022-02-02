@@ -4,25 +4,28 @@ import {LabWorkflowPort} from './lab-workflow-port.class';
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 import {LabWorkflowNodeProcess} from './lab-workflow-node-process.class';
 import {LabFlowManager} from '../../../../lab-core/model/global/lab-connection.class';
+import {LabEntity} from '../../../../lab-core/model/global/lab-entity.entity';
 
 /**
  * One layer of the workflow, it contains the list of nodes
  */
 export class LabWorkflowLayer {
 
+  public readonly id: string;
+
   public readonly children: Record<string, LabWorkflowLayer> = {};
 
-  public readonly nodes: LabWorkflowNode<any>[] = [];
+  public readonly nodes: LabWorkflowNode<LabEntity>[] = [];
 
   public readonly connections: LabWorkflowConnection[] = [];
 
   constructor(private readonly editor: Drawflow,
               // generated unique id of the layer
-              public readonly id: string,
               public readonly name: string,
               // Flow object corresponding to this layer
-              public readonly object: LabFlowManager,
+              public object: LabFlowManager,
               public readonly parentLayer: LabWorkflowLayer) {
+    this.id = object.id;
   }
 
   // function to call when this layer is selected
@@ -134,8 +137,8 @@ export class LabWorkflowLayer {
 
   ///////////////////////// OTHER //////////////////////////
 
-  public createSubLayer(layerId: string, name: string, title: string, object: LabFlowManager): LabWorkflowLayer {
-    const subLayer: LabWorkflowLayer = new LabWorkflowLayer(this.editor, layerId, title, object, this);
+  public createSubLayer(name: string, title: string, object: LabFlowManager): LabWorkflowLayer {
+    const subLayer: LabWorkflowLayer = new LabWorkflowLayer(this.editor, title, object, this);
     this.children[name] = subLayer;
     return subLayer;
   }

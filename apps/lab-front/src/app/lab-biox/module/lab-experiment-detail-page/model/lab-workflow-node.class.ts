@@ -1,6 +1,7 @@
 import {DrawflowConnectionDetail, DrawflowNode} from 'drawflow';
 import {LabWorkflowPort} from './lab-workflow-port.class';
 import {FlCoord} from '@monorepo/front-core-lib';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 /**
  * Single node in the workflow
@@ -15,14 +16,17 @@ export abstract class LabWorkflowNode<T> {
   // method to access the drawflow node
   private getDrawflowNodeMethod: (id: string) => DrawflowNode;
 
+  private object$: BehaviorSubject<T>;
+
   protected constructor(
     // unique node name in the layer
     public readonly nodeName: string,
     public readonly title: string,
-    public readonly object: T,
+    object: T,
     public readonly initialCoordX: number = 0,
     public readonly initialCoordY: number = 0) {
-    this.initPorts();
+    this.object$ = new BehaviorSubject<T>(object);
+    this.initPorts(object);
   }
 
   public initNode(nodeId: string, getDrawflowNodeMethod: (id: string) => DrawflowNode): void {
@@ -31,12 +35,26 @@ export abstract class LabWorkflowNode<T> {
     this.initPortColors();
   }
 
-  protected abstract initPorts(): void;
+  protected abstract initPorts(object: T): void;
 
   public abstract getHTML(): string;
 
   public abstract getClassName(): string;
 
+
+  /////////////////////////////// OBJECT //////////////////////////////
+
+  public get currentObject(): T {
+    return this.object$.value;
+  }
+
+  public getObject$(): Observable<T> {
+    return this.object$.asObservable();
+  }
+
+  public updateObject(object: T): void {
+    this.object$.next(object);
+  }
 
   /////////////////////////////// INPUT //////////////////////////////
 
@@ -185,7 +203,7 @@ export abstract class LabWorkflowNode<T> {
   }
 
   public destroy(): void {
-
+    this.object$.complete();
   }
 
 

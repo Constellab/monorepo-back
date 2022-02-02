@@ -24,6 +24,9 @@ import {LabWorkflowNodeIO} from '../model/lab-workflow-node-io.class';
 import {LabResourceService} from '../../../../lab-core/entity-service/lab-resource.service';
 import {filter} from 'rxjs/operators';
 import {LabAddProcessWithLink, LabNodeRelativeCoord} from '../model/lab-workflow-action.class';
+import {LabExperimentService} from '../../../../lab-core/entity-service/lab-experiment.service';
+import {LabExperimentDetailPageState} from './lab-experiment-detail-page.state';
+import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
 
 /**
  * State for the workflow, it is created for the module and can only manage on state a the time
@@ -41,36 +44,40 @@ export class LabWorkflowManagerState {
   private readonly htmlOffsetY: number = 10;
 
 
-  private experiment: LabExperiment = null;
+  private experimentState: LabExperimentDetailPageState;
 
   private idGenerator: number = 0;
 
   // emit to true when loading
   private _layerIsLoading$: Subject<boolean> = new BehaviorSubject(false);
-  private subscription: Subscription;
+  private actionSubscription: Subscription;
 
   //  Name of the action to add a process for the ActionService
   private readonly addProcessAction: string = 'add-process';
   private readonly addProcessWithConnectorAction: string = 'add-process-with-connector';
 
+  private refreshInterval: any;
+  private refreshIntervalDuration: number = 2000;
+
   constructor(private protocolService: LabProtocolService,
+              private experimentService: LabExperimentService,
               private actionsService: FlPortalActionsService,
               private resourceService: LabResourceService,
               private ngZone: NgZone) {
   }
 
-  public init(element: HTMLElement, flow: LabFlow<LabProtocol>, experiment: LabExperiment): void {
-    this.experiment = experiment;
+  public init(element: HTMLElement, mainFlow: LabFlow<LabProtocol>, experimentState: LabExperimentDetailPageState): void {
+    this.experimentState = experimentState;
 
-    this.workflow = new LabWorkflow(element, experiment.title ?? 'Experiment', flow.object, 'edit', this.ngZone);
+    this.workflow = new LabWorkflow(element, experimentState.currentExperiment.title ?? 'Experiment', mainFlow.object, 'edit', this.ngZone);
 
     this.workflow.start();
 
     // init the nodes with the job list
-    this.initFlow(flow);
+    this.initFlow(mainFlow);
 
     // listen to the new Process actions
-    this.subscription = this.actionsService.getResult$([this.addProcessAction, this.addProcessWithConnectorAction])
+    this.actionSubscription = this.actionsService.getResult$([this.addProcessAction, this.addProcessWithConnectorAction])
       .pipe(filter(result => result.status === 'success')).subscribe(
         result => {
           switch (result.action.type) {
@@ -83,45 +90,81 @@ export class LabWorkflowManagerState {
           }
         }
       );
+
+    experimentState.getFlowUpdate$().subscribe(
+      flow => this.refreshFlow(flow)
+    );
   }
 
 
   //////////////////////// LAYER ////////////////////////////
 
-  public selectLayer(nodeId: string): void {
-    if (this.workflow.hasLayer(nodeId)) {
-      this.workflow.selectLayer(nodeId);
+  public selectLayer(layerId: string): void {
+    if (this.workflow.hasLayer(layerId)) {
+      this.workflow.selectLayer(layerId);
     } else {
-      this.loadNodeLayer(nodeId);
+      this.loadNodeLayer(layerId);
     }
   }
 
-  private loadNodeLayer(nodeId: string): void {
+  private loadNodeLayer(layerId: string): void {
     this._layerIsLoading$.next(true);
-    const node: LabWorkflowNode<any> = this.workflow.findNodeWithId(nodeId);
-    this.protocolService.getProtocolAsFlow(node.object.id).subscribe(
-      protocol => this.onLoadLayerSuccess(protocol, nodeId),
-      () => this._layerIsLoading$.next(false)
-    );
-  }
-
-  private onLoadLayerSuccess(flow: LabFlow<LabProtocol>, nodeId: string): void {
-    this._layerIsLoading$.next(false);
-    this.addProtocolLayer(flow, nodeId);
-  }
-
-  /**
-   * Create a new layer and init it with the protocol information
-   */
-  private addProtocolLayer(flow: LabFlow<LabProtocol>, nodeId: string): void {
-    this.workflow.createSubLayerIfNotExists(nodeId, flow.object.name, flow.object.title, flow.object);
-    this.initFlow(flow);
+    this.experimentState.loadFlow(layerId);
   }
 
 
   public get layerIsLoading$(): Observable<boolean> {
     return this._layerIsLoading$.asObservable();
   }
+
+  public startRefreshing(): void {
+    this.clearInterval();
+    // todo need to stop interval when protocol is finished
+    this.experimentState.loadFlow(this.workflow.currentLayer.id);
+    this.refreshInterval = setInterval(() => this.experimentState.loadFlow(this.workflow.currentLayer.id), this.refreshIntervalDuration);
+  }
+
+
+  private refreshFlow(flow: LabFlow<LabProtocol>): void {
+    this._layerIsLoading$.next(false);
+
+    const layer = this.workflow.findLayerWithId(flow.object.id);
+    if (!layer) {
+      this.addProtocolLayer(flow);
+    } else {
+      this.refreshLayerNodeObjects(layer, flow);
+    }
+  }
+
+  /**
+   * Create a new layer and init it with the protocol information
+   */
+  private addProtocolLayer(flow: LabFlow<LabProtocol>): void {
+    this.workflow.createSubLayerIfNotExists(flow.object.name, flow.object.title, flow.object);
+    this.initFlow(flow);
+  }
+
+
+  /**
+   * Refresh the layer node objects with flow object
+   */
+  private refreshLayerNodeObjects(layer: LabWorkflowLayer, flow: LabFlow<LabProtocol>): void {
+    // update the layer object
+    layer.object = flow.object;
+    for (const workflowNode of layer.nodes) {
+      const node: LabNode = flow.getAllNodesArray().find(n => n.id === workflowNode.currentObject.id);
+
+      if (node == null) continue;
+      if (workflowNode instanceof LabWorkflowNodeProcess && node instanceof LabProcess) {
+        workflowNode.updateObject(node);
+      } else if (workflowNode instanceof LabWorkflowNodeInterface && node instanceof LabInterfaceNode) {
+        workflowNode.updateObject(node);
+      } else if (workflowNode instanceof LabWorkflowNodeOuterface && node instanceof LabOuterfaceNode) {
+        workflowNode.updateObject(node);
+      }
+    }
+  }
+
 
   //////////////////////// NODE ////////////////////////////
 
@@ -210,11 +253,11 @@ export class LabWorkflowManagerState {
 
   private createNodeFromProcess(process: LabProcess, name: string, coordX: number = 0, coordY: number = 0): LabWorkflowNode<any> {
     // create a specific node for the source
+    const getResource = (id: string): Observable<LabResource> => this.resourceService.getById(id);
     if (process.isSource()) {
-      const resourceId: string | null = process.config.data.values?.resource_id ?? null;
-      return new LabWorkflowNodeIO(process, name, this.resourceService.getById(resourceId), coordX, coordY);
+      return new LabWorkflowNodeIO(process, name, getResource, coordX, coordY);
     } else if (process.isOutput()) {
-      return new LabWorkflowNodeIO(process, name, this.resourceService.getById(process.inputs['resource'].resource_id), coordX, coordY);
+      return new LabWorkflowNodeIO(process, name, getResource, coordX, coordY);
     } else {
       return new LabWorkflowNodeProcess(process, name, coordX, coordY);
     }
@@ -336,10 +379,11 @@ export class LabWorkflowManagerState {
     this.workflow.addConnection(workflowConnectionLink);
   }
 
+
   //////////////////////// OTHER ////////////////////////////
 
   public getExperiment(): LabExperiment {
-    return this.experiment;
+    return this.experimentState.currentExperiment;
   }
 
   private generateId(prefix: string = ''): string {
@@ -348,11 +392,17 @@ export class LabWorkflowManagerState {
 
   public clear(): void {
     this.idGenerator = 0;
-    this.experiment = null;
     this.workflow?.destroy();
     this.workflow = null;
     this._layerIsLoading$.complete();
-    this.subscription?.unsubscribe();
+    this.actionSubscription?.unsubscribe();
+    this.clearInterval();
+  }
+
+  private clearInterval(): void {
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+    }
   }
 
   /**

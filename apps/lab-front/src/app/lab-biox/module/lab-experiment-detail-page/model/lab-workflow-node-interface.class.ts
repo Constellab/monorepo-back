@@ -20,10 +20,10 @@ export class LabWorkflowNodeInterface extends LabWorkflowNode<LabInterfaceNode> 
     return `<lab-workflow-node-interface name="${this.nodeName}"></lab-workflow-node-interface>`;
   }
 
-  protected initPorts(): void {
+  protected initPorts(object: LabInterfaceNode): void {
     // no input ports
     this.inputPorts = [];
-    this.outputPorts = [new LabWorkflowPort(this.object.portName,
-      LabWorkflowPort.getOutputDrawflowName(1), this.object.portType)];
+    this.outputPorts = [new LabWorkflowPort(object.portName,
+      LabWorkflowPort.getOutputDrawflowName(1), object.portType)];
   }
 }

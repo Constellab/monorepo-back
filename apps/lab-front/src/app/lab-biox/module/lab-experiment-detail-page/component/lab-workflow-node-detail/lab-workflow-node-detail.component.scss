@@ -7,6 +7,11 @@ mat-expansion-panel {
   margin-bottom: 1px;
 }
 
+
+.progress-bar-expansion-panel {
+  margin-top: 2em;
+}
+
 // limit the height of the expansion panel
 ::ng-deep .progress-bar-expansion-panel .mat-expansion-panel-content {
   display: block;

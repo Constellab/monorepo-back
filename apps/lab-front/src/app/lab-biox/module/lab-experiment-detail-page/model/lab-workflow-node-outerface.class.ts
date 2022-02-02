@@ -21,9 +21,10 @@ export class LabWorkflowNodeOuterface extends LabWorkflowNode<LabOuterfaceNode> 
   }
 
 
-  protected initPorts(): void {
-    this.inputPorts = [new LabWorkflowPort(this.object.portName, LabWorkflowPort.getInputDrawflowName(1),
-      this.object.portType)];
+  protected initPorts(object: LabOuterfaceNode): void {
+    this.inputPorts = [new LabWorkflowPort(object.portName,
+      LabWorkflowPort.getInputDrawflowName(1),
+      object.portType)];
     // no input ports
     this.outputPorts = [];
   }

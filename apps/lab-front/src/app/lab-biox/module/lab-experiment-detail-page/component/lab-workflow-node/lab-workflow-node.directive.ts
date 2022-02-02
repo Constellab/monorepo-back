@@ -116,7 +116,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
   }
 
   private getInputPortContextMenuConfig(port: LabWorkflowPort): FlMenuDynamic[] {
-    const resourceId: string = this.node.object.inputs[port.name]?.resource_id ?? null;
+    const resourceId: string = this.node.currentObject.inputs[port.name]?.resource_id ?? null;
 
     return [
       {
@@ -130,7 +130,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
   }
 
   private getOutputPortContextMenuConfig(portName: string): FlMenuDynamic[] {
-    const resourceId: string = this.node.object.outputs[portName]?.resource_id ?? null;
+    const resourceId: string = this.node.currentObject.outputs[portName]?.resource_id ?? null;
 
     return [
       {

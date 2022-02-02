@@ -11,7 +11,7 @@
     <!--  actions -->
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
       <!--   Only for protocol, possibility to zoom in   -->
-      <button *ngIf="nodeIsProtocol()" (click)="zoomInProtocol()"
+      <button *ngIf="isProtocol$ | async" (click)="zoomInProtocol()"
               mat-icon-button type="button" [disabled]="layerIsLoading$ | async">
         <mat-icon>loupe</mat-icon>
       </button>
@@ -21,7 +21,7 @@
         <mat-icon>info</mat-icon>
       </button>
 
-      <fl-status-chip mode="iconOnly" [status]="this.node.object.status"></fl-status-chip>
+      <fl-status-chip mode="iconOnly" [status]="status$"></fl-status-chip>
     </div>
   </div>
 

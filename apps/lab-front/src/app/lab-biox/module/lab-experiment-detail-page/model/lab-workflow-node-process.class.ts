@@ -2,6 +2,7 @@ import {LabWorkflowNode} from './lab-workflow-node.class';
 import {LabWorkflowPort} from './lab-workflow-port.class';
 import {LabProcess} from '../../../../lab-core/model/entities/process/lab-process.entity';
 import {LabIO} from '../../../../lab-core/model/entities/lab-io.entity';
+import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
 
 /**
  * Representation of a process (protocol or task)
@@ -22,9 +23,9 @@ export class LabWorkflowNodeProcess extends LabWorkflowNode<LabProcess> {
     return `<lab-workflow-node name="${this.nodeName}"></lab-workflow-node>`;
   }
 
-  protected initPorts(): void {
-    this.inputPorts = this.generatePorts(this.object.inputs, 'input');
-    this.outputPorts = this.generatePorts(this.object.outputs, 'output');
+  protected initPorts(object: LabProcess): void {
+    this.inputPorts = this.generatePorts(object.inputs, 'input');
+    this.outputPorts = this.generatePorts(object.outputs, 'output');
   }
 
   // generate ports base on input or output spec
@@ -46,5 +47,11 @@ export class LabWorkflowNodeProcess extends LabWorkflowNode<LabProcess> {
     }
 
     return ports;
+  }
+
+  public updateConfig(configValues: LabConfigValues): void {
+    this.currentObject.config.data.values = configValues;
+    // emit the current object
+    this.updateObject(this.currentObject);
   }
 }

@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {LabWorkflowNode} from '../model/lab-workflow-node.class';
 import {LabProcess} from '../../../../lab-core/model/entities/process/lab-process.entity';
-import {map} from 'rxjs/operators';
+import {switchMap} from 'rxjs/operators';
 import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
+import {LabWorkflowNodeProcess} from '../model/lab-workflow-node-process.class';
 
 /**
  * State to manage the selected node to show it in the drawer
@@ -11,39 +11,32 @@ import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.en
 @Injectable()
 export class LabWorkflowNodeDetailState {
 
-  private node$: BehaviorSubject<LabWorkflowNode<LabProcess>>;
+  private node$: BehaviorSubject<LabWorkflowNodeProcess>;
 
   constructor() {
   }
 
   public init(): void {
-    this.node$ = new BehaviorSubject<LabWorkflowNode<LabProcess>>(null);
+    this.node$ = new BehaviorSubject(null);
   }
 
-
-  public setNode(node: LabWorkflowNode<LabProcess>): void {
+  public setNode(node: LabWorkflowNodeProcess): void {
     this.node$.next(node);
   }
 
-  public getNode$(): Observable<LabWorkflowNode<LabProcess>> {
+  public getNode$(): Observable<LabWorkflowNodeProcess> {
     return this.node$.asObservable();
   }
 
   public getProcess$(): Observable<LabProcess> {
-    return this.getNode$().pipe(map(n => n.object));
+    return this.getNode$().pipe(switchMap(node => node.getObject$()));
   }
 
   public clear(): void {
     this.node$.complete();
   }
 
-  public updateConfigValues(config: LabConfigValues): void{
-    this.node$.value.object.config.data.values = config;
-    this.emitCurrentNode();
+  public updateConfigValues(config: LabConfigValues): void {
+    this.node$.value.updateConfig(config);
   }
-
-  private emitCurrentNode(): void{
-    this.node$.next(this.node$.value);
-  }
-
 }

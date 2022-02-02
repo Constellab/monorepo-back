@@ -1,7 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {LabWorkflowNode} from '../../model/lab-workflow-node.class';
-import {LabProcess} from '../../../../../lab-core/model/entities/process/lab-process.entity';
-import {LabConfig} from '../../../../../lab-core/model/entities/lab-config.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {
   LabConfigureSpecsFormDialogComponent,
@@ -11,6 +8,10 @@ import {FlDialogService} from '@monorepo/front-core-lib';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
 import {MatExpansionPanel} from '@angular/material/expansion';
 import {LabWorkflowNodeDetailState} from '../../state/lab-workflow-node-detail.state';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {LabWorkflowNodeProcess} from '../../model/lab-workflow-node-process.class';
+import {LabProcess} from '../../../../../lab-core/model/entities/process/lab-process.entity';
 
 @Component({
   selector: 'lab-workflow-node-detail',
@@ -19,7 +20,13 @@ import {LabWorkflowNodeDetailState} from '../../state/lab-workflow-node-detail.s
 })
 export class LabWorkflowNodeDetailComponent implements OnInit {
 
-  node: LabWorkflowNode<LabProcess>;
+  labProcess$: Observable<LabProcess>;
+  node$: Observable<LabWorkflowNodeProcess>;
+
+  configMode$: Observable<'config' | 'source' | null>;
+  showProgress$: Observable<boolean>;
+
+  isEditable$: Observable<boolean>;
 
   constructor(private dialogService: FlDialogService,
               private experimentState: LabExperimentDetailPageState,
@@ -27,37 +34,32 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.nodeDetailState.getNode$().subscribe(
-      node => this.node = node
+    this.labProcess$ = this.nodeDetailState.getProcess$();
+    this.node$ = this.nodeDetailState.getNode$();
+
+    this.configMode$ = this.nodeDetailState.getProcess$().pipe(map(
+      process => this.getConfigMode(process)
+    ));
+    this.showProgress$ = this.nodeDetailState.getProcess$().pipe(
+      map(process => process.progressBar != null && process.progressBar.wasStarted())
     );
+    this.isEditable$ = this.experimentState.isEditable$();
   }
 
-  get config(): LabConfig | null {
-    const object: LabProcess = this.node.object;
-
-    // don't show config for source
-    if (object.isSource()) {
-      return null;
+  private getConfigMode(process: LabProcess): 'config' | 'source' | null {
+    if (process.isSource()) {
+      return 'source';
     }
-    // the config is only for process node
-    return object instanceof LabProcess && object.hasConfig() ?
-      object.config : null;
+
+    return process.hasConfig() ? 'config' : null;
   }
 
-  get isEditable(): boolean {
-    return this.experimentState.isEditable();
-  }
-
-  // show the progress section if the progress bar has started
-  get showProgress(): boolean {
-    return this.node.object.progressBar != null && this.node.object.progressBar.wasStarted();
-  }
-
-  openConfig(event: MouseEvent, panel: MatExpansionPanel): void {
+  openConfig(event: MouseEvent, panel: MatExpansionPanel,
+             node: LabWorkflowNodeProcess): void {
     ClHelpService.stopEventPropagation(event);
 
     const input: LabConfigureSpecsFormDialogInput = {
-      configData: this.config.data,
+      configData: node.currentObject.config.data,
       title: 'biox.configuration',
       submitButtonText: 'save'
     };
@@ -68,10 +70,6 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
     );
 
     panel.open();
-  }
-
-  get isSource(): boolean {
-    return this.node.object.isSource();
   }
 
   private onConfigDialogClosed(config?: any): void {

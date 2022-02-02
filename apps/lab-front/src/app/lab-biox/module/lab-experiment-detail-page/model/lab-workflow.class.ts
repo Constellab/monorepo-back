@@ -37,14 +37,15 @@ export class LabWorkflow {
               private ngZone: NgZone) {
 
     this.editor = new Drawflow(element);
-
     this.editor.zoom_value = 0.1;
+
+
 
     // set edit or readonly mode
     this.setMode(mode);
 
     // init layers
-    const currentLayer: LabWorkflowLayer = new LabWorkflowLayer(this.editor, 'Home', name, object, null);
+    const currentLayer: LabWorkflowLayer = new LabWorkflowLayer(this.editor, name, object, null);
     this.layers = [currentLayer];
 
     // init subject
@@ -73,6 +74,9 @@ export class LabWorkflow {
     // run the start outside angular to prevent all drawflow event from triggering change detection
     this.ngZone.runOutsideAngular(() => {
       this.editor.start();
+      // create and selection the default module
+      this.editor.addModule(this.currentLayer.id);
+      this.editor.changeModule(this.currentLayer.id);
     });
   }
 
@@ -104,13 +108,13 @@ export class LabWorkflow {
     layer.selectLayer();
   }
 
-  public createSubLayerIfNotExists(layerId: string, name: string, title: string, object: LabFlowManager): void {
-    if (this.findLayerWithId(layerId) == null) {
-      this.editor.addModule(layerId);
-      this.layers.push(this.currentLayer.createSubLayer(layerId, name, title, object));
+  public createSubLayerIfNotExists(name: string, title: string, object: LabFlowManager): void {
+    if (this.findLayerWithId(object.id) == null) {
+      this.editor.addModule(object.id);
+      this.layers.push(this.currentLayer.createSubLayer(name, title, object));
     }
 
-    this.selectLayer(layerId);
+    this.selectLayer(object.id);
   }
 
   public hasLayer(layerId: string): boolean {
@@ -122,7 +126,6 @@ export class LabWorkflow {
   public findLayerWithId(layerId: string): LabWorkflowLayer {
     return this.layers.find(layer => layer.id === layerId);
   }
-
 
   public getCurrentLayerHierarchy(): Observable<LabWorkflowLayer[]> {
     return this.currentLayer$.asObservable().pipe(

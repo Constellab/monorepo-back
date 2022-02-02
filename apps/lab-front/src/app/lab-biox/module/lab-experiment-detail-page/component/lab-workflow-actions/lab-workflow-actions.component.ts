@@ -68,7 +68,7 @@ export class LabWorkflowActionsComponent implements OnInit {
 
 
   save(): void {
-    const experiment: LabExperiment = this.workflowManager.getExperiment();
+    const experiment: LabExperiment = this.experimentState.currentExperiment;
     this.saveIsLoading = true;
     this.experimentService.updateExperimentProtocol(experiment.id, this.workflowManager.workflow).subscribe(
       newExp => this.onSaveSuccess(newExp),
@@ -84,7 +84,7 @@ export class LabWorkflowActionsComponent implements OnInit {
   }
 
   start(): void {
-    const experiment: LabExperiment = this.workflowManager.getExperiment();
+    const experiment: LabExperiment = this.experimentState.currentExperiment;
 
     this.startIsLoading = true;
     this.experimentService.saveAndStartExperiment(experiment.id, this.workflowManager.workflow).subscribe(
@@ -97,6 +97,7 @@ export class LabWorkflowActionsComponent implements OnInit {
     this.snackBarService.openSuccessMessage('biox.experiment_started', true);
     this.startIsLoading = false;
     this.experimentState.updateExperiment(experiment);
+    this.workflowManager.startRefreshing();
   }
 
   stopExperiment(): void {

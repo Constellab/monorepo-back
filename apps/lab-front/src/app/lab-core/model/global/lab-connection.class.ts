@@ -121,6 +121,8 @@ export class LabOuterfaceNode extends LabNode {
 
 export interface LabFlowManager {
 
+  id: string;
+
   // list of interface as nodes
   interfaceNodes: Record<string, LabNode>;
 

@@ -23,7 +23,6 @@ import {
   LabReportFormDialogComponent,
   LabReportFormDialogInput
 } from '../../../../../lab-core/entity-module/lab-report-core/component/lab-report-form-dialog/lab-report-form-dialog.component';
-import {clRxjsDebug} from '@monorepo/core-lib';
 import {
   LabValidateObjectDialogComponent,
   LabValidateObjectDialogInput
@@ -120,11 +119,11 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     }
   }
 
-  async openProgressInformation(): Promise<void> {
+  openProgressInformation(): void {
     this.dialogService.openSmallDialog(LabProgressBarInfoDialogComponent,
       {
         data:
-          this.experimentState.getFlow$().pipe(clRxjsDebug(),
+          this.experimentState.getMainFlow$().pipe(
             map(flow => flow.object.progressBar)
           )
       });

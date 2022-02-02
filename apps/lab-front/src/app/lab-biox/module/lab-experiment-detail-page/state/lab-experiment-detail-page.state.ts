@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {LabExperimentService} from '../../../../lab-core/entity-service/lab-experiment.service';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {LabExperiment} from '../../../../lab-core/model/entities/lab-experiment.entity';
 import {filter, map} from 'rxjs/operators';
 import {LabFlow} from '../../../../lab-core/model/global/lab-connection.class';
@@ -16,7 +16,12 @@ export class LabExperimentDetailPageState {
   private experimentDescription$: BehaviorSubject<FlQuillJson>;
 
   // flow of the experiment
-  private flow$: BehaviorSubject<LabFlow<LabProtocol>>;
+  private mainFlow$: BehaviorSubject<LabFlow<LabProtocol>>;
+  // observable where flow are emitted when there are retrieved form DB
+  private flowChange$: Subject<LabFlow<LabProtocol>>;
+
+  // save the list of sub flow where the key is the protocol id
+  private subflows: Record<string, LabFlow<LabProtocol>>;
 
   // does not emit experiment until ready is true
   private ready: boolean = false;
@@ -29,7 +34,9 @@ export class LabExperimentDetailPageState {
     this.ready = false;
     this.experiment$ = new BehaviorSubject(null);
     this.experimentDescription$ = new BehaviorSubject(null);
-    this.flow$ = new BehaviorSubject(null);
+    this.mainFlow$ = new BehaviorSubject(null);
+    this.flowChange$ = new Subject();
+    this.subflows = {};
     this.experimentService.getExperiment(experimentId).subscribe(
       experiment => this.getExperimentSuccess(experiment),
       error => this.experiment$.error(error)
@@ -58,10 +65,6 @@ export class LabExperimentDetailPageState {
     return this.getExperiment$().pipe(map(experiment => experiment.isEditable()));
   }
 
-  public isEditable(): boolean {
-    return this.currentExperiment.isEditable();
-  }
-
   public updateExperiment(experiment: LabExperiment): void {
     if (experiment == null) return;
     this.experiment$.next(experiment);
@@ -79,26 +82,58 @@ export class LabExperimentDetailPageState {
     this.experimentDescription$.next(description);
   }
 
-  /////////////////////////////////// FLOW ////////////////////////////////////
-
-  private loadFlow(protocolId: string): void {
-    this.protocolService.getProtocolAsFlow(protocolId).subscribe(
-      flow => this.flow$.next(flow),
-      error => this.flow$.error(error)
+  private refreshExperiment(): void {
+    this.experimentService.getExperiment(this.currentExperiment.id).subscribe(
+      experiment => this.updateExperiment(experiment)
     );
   }
 
+  /////////////////////////////////// FLOW ////////////////////////////////////
 
-  public getFlow$(): Observable<LabFlow<LabProtocol>> {
-    return this.flow$.asObservable().pipe(
+  public loadFlow(protocolId: string): void {
+    this.protocolService.getProtocolAsFlow(protocolId).subscribe(
+      flow => this.getFlowSuccess(flow),
+      error => this.mainFlow$.error(error)
+    );
+  }
+
+  private getFlowSuccess(flow: LabFlow<LabProtocol>): void {
+    // if this is the main flow
+    if (this.mainFlow$.value == null || this.mainFlow$.value.object.id === flow.object.id) {
+
+      // if the main flow is finished, refresh the experiment
+      if (this.mainFlow$.value && flow.object.isFinished()) {
+        this.refreshExperiment();
+      }
+
+      this.mainFlow$.next(flow);
+
+    } else {
+      // save the sub flow
+      this.subflows[flow.object.id] = flow;
+    }
+    this.flowChange$.next(flow);
+  }
+
+
+  public getMainFlow$(): Observable<LabFlow<LabProtocol>> {
+    return this.mainFlow$.asObservable().pipe(
       filter(flow => flow != null)
     );
+  }
+
+  /**
+   * Notify each time of flow is retrieved
+   */
+  public getFlowUpdate$(): Observable<LabFlow<LabProtocol>> {
+    return this.flowChange$.asObservable();
   }
 
   ////////////////////// OTHER ///////////////////////
   public clear(): void {
     this.experiment$.complete();
-    this.flow$.complete();
+    this.mainFlow$.complete();
+    this.flowChange$.complete();
     this.experimentDescription$.complete();
   }
 }

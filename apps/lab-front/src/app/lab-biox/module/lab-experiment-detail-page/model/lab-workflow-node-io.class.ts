@@ -5,7 +5,7 @@ import {LabResource} from '../../../../lab-core/model/entities/resource/lab-reso
 import {FlStatusEvent} from '@monorepo/front-core-lib';
 import {LabWorkflowPort} from './lab-workflow-port.class';
 import {labGetTypingNameColor} from '../../../../lab-core/entity-module/lab-process-core/utils/lab-process-port-color';
-import {map} from 'rxjs/operators';
+import {map, switchMap} from 'rxjs/operators';
 
 
 /**
@@ -18,21 +18,31 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
   constructor(process: LabProcess,
               processName: string,
               // observable of the resource defined in the config
-              loadedResource: Observable<LabResource>,
+              private loadResource: (id: string) => Observable<LabResource>,
               initialCoordX: number = 0, initialCoordY: number = 0) {
     super(process, processName, initialCoordX, initialCoordY);
-    this.initLoadedResource(loadedResource);
+    this.initLoadedResource();
   }
 
-  private initLoadedResource(loadedResource$: Observable<LabResource>): void {
-    loadedResource$.subscribe(
+  private getResourceId(process: LabProcess): string | null {
+    if (this.currentObject.isSource()) {
+      return process.config.data.values?.resource_id ?? null;
+    } else {
+      return process.inputs['resource'].resource_id;
+    }
+  }
+
+  private initLoadedResource(): void {
+    this.getObject$().pipe(
+      switchMap(process => this.loadResource(this.getResourceId(process)))
+    ).subscribe(
       resource => this.setLoadedResource(resource),
       error => this.loadedResource$.next({status: 'error', error: error})
     );
   }
 
   getHTML(): string {
-    if (this.object.isSource()) {
+    if (this.currentObject.isSource()) {
       return `<lab-workflow-node-source name="${this.nodeName}"></lab-workflow-node-source>`;
     } else {
       return `<lab-workflow-node-output name="${this.nodeName}"></lab-workflow-node-output>`;
@@ -41,7 +51,7 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
   }
 
   getClassName(): string {
-    if (this.object.isSource()) {
+    if (this.currentObject.isSource()) {
       return 'task-source';
     } else {
       return 'task-output';
@@ -68,7 +78,7 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
     );
   }
 
-  public getResourceId$(): Observable<string>{
+  public getResourceId$(): Observable<string> {
     return this.getLoadedResource$().pipe(
       map(resourceStatus => resourceStatus.status === 'success' && resourceStatus.object ? resourceStatus.object.id : null)
     );
@@ -97,7 +107,7 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
 
   // return the only port (output for source and input for output)
   private getPort(): LabWorkflowPort {
-    if (this.object.isSource()) {
+    if (this.currentObject.isSource()) {
       return this.outputPorts[0];
     } else {
       return this.inputPorts[0];

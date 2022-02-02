@@ -1,9 +1,10 @@
 import {Component, ElementRef, OnDestroy, OnInit, Renderer2} from '@angular/core';
 import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
-import {FlDialogService, FlMenuDynamicService} from '@monorepo/front-core-lib';
+import {FlDialogService, FlMenuDynamicService, FlStatus} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
 import {LabWorkflowNodeDirective} from './lab-workflow-node.directive';
+import {map} from 'rxjs/operators';
 
 /**
  * Node of an experiment in the workflow
@@ -18,6 +19,9 @@ import {LabWorkflowNodeDirective} from './lab-workflow-node.directive';
 export class LabWorkflowNodeComponent extends LabWorkflowNodeDirective implements OnInit, OnDestroy {
 
   layerIsLoading$: Observable<boolean>;
+  status$: Observable<FlStatus>;
+
+  isProtocol$: Observable<boolean>;
 
   constructor(workflowManager: LabWorkflowManagerState,
               drawerState: LabWorkflowActionState,
@@ -31,18 +35,12 @@ export class LabWorkflowNodeComponent extends LabWorkflowNodeDirective implement
   ngOnInit(): void {
     this.initNode();
     this.layerIsLoading$ = this.workflowManager.layerIsLoading$;
-  }
-
-  nodeIsProtocol(): boolean {
-    return this.node.object.isProtocol;
+    this.isProtocol$ = this.node.getObject$().pipe(map(process => process.isProtocol));
+    this.status$ = this.node.getObject$().pipe(map(process => process.status));
   }
 
   zoomInProtocol(): void {
-    return this.workflowManager.selectLayer(this.node.nodeId);
-  }
-
-  showNodeStatus(): boolean {
-    return this.node.object.status.value !== 'DRAFT';
+    this.workflowManager.selectLayer(this.node.currentObject.id);
   }
 
   ngOnDestroy(): void {

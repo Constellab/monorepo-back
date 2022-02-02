@@ -26,7 +26,7 @@ export class LabExperimentFlowFactory {
 
     // get nodes
     for (const node of layer.getProcessNodes()) {
-      const process: LabProcess = node.object;
+      const process: LabProcess = node.currentObject;
 
       if (layer.children[process.name] != null) {
         process.data.graph = LabExperimentFlowFactory.convertWorkflowToProtocolGraphRecur(layer.children[process.name]);

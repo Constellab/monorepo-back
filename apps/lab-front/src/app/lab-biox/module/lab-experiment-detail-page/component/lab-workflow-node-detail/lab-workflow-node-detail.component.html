@@ -1,64 +1,65 @@
-<div>
+<div *ngIf="node$ | async as node" flDisableAnimationInit>
 
-  <div class="g-text-light">
-    <p>{{'biox.node_process_name' | translate}} : {{node.object.name}}</p>
-    <p>{{'biox.node_type' | translate}} : {{node.object.processTypingName}}</p>
-    <p *ngIf="node.object.data.description">{{node.object.data.description}}</p>
-  </div>
+  <ng-container *ngIf="labProcess$ | async as process">
+    <div class="g-text-light">
+      <p>{{'biox.node_process_name' | translate}} : {{process.name}}</p>
+      <p>{{'biox.node_type' | translate}} : {{process.processTypingName}}</p>
+      <p *ngIf="process.data.description">{{process.data.description}}</p>
+    </div>
 
-  <div class="g-section">
     <!----------------------------  Progress ---------------------------->
-    <mat-expansion-panel *ngIf="showProgress" hideToggle [expanded]="true"
-                         class="g-scrollable-element progress-bar-expansion-panel">
+    <mat-expansion-panel *ngIf="showProgress$ | async" hideToggle [expanded]="process.status.value === 'RUNNING'"
+                         class="g-scrollable-element">
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
-            <fl-status-chip [status]="node.object.progressBar.status"></fl-status-chip>
+            <fl-status-chip [status]="process.progressBar.status"></fl-status-chip>
           </fl-text-icon>
         </mat-panel-title>
 
         <!--    Show the progress if it's running    -->
         <mat-panel-description>
-          <div *ngIf="node.object.status.value === 'RUNNING'">
-            {{node.object.progressBar.getProgress()}} %
+          <div *ngIf="process.status.value === 'RUNNING'">
+            {{process.progressBar.getProgress()}} %
           </div>
         </mat-panel-description>
       </mat-expansion-panel-header>
 
-      <lab-progress-bar-info [progressBar]="node.object.progressBar"></lab-progress-bar-info>
+      <lab-progress-bar-info [progressBar]="process.progressBar"></lab-progress-bar-info>
     </mat-expansion-panel>
+  </ng-container>
+
+  <!---------------------------- Inputs ---------------------------->
+  <mat-expansion-panel *ngIf="node.hasInputs()" hideToggle [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="g-not-selectable">
+        <fl-text-icon>
+          <mat-icon>login</mat-icon>
+          {{'biox.node_inputs' | translate}}
+        </fl-text-icon>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <lab-workflow-ports-list [ports]="node.inputPorts"></lab-workflow-ports-list>
+  </mat-expansion-panel>
 
 
-    <!---------------------------- Inputs ---------------------------->
-    <mat-expansion-panel *ngIf="node.hasInputs()" hideToggle [expanded]="true">
-      <mat-expansion-panel-header>
-        <mat-panel-title class="g-not-selectable">
-          <fl-text-icon>
-            <mat-icon>login</mat-icon>
-            {{'biox.node_inputs' | translate}}
-          </fl-text-icon>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <lab-workflow-ports-list [ports]="node.inputPorts"></lab-workflow-ports-list>
-    </mat-expansion-panel>
+  <!---------------------------- Outputs ---------------------------->
+  <mat-expansion-panel *ngIf="node.hasOutputs()" hideToggle [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="g-not-selectable">
+        <fl-text-icon>
+          <mat-icon>logout</mat-icon>
+          {{'biox.node_outputs' | translate}}
+        </fl-text-icon>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <lab-workflow-ports-list [ports]="node.outputPorts"></lab-workflow-ports-list>
+  </mat-expansion-panel>
 
 
-    <!---------------------------- Outputs ---------------------------->
-    <mat-expansion-panel *ngIf="node.hasOutputs()" hideToggle [expanded]="true">
-      <mat-expansion-panel-header>
-        <mat-panel-title class="g-not-selectable">
-          <fl-text-icon>
-            <mat-icon>logout</mat-icon>
-            {{'biox.node_outputs' | translate}}
-          </fl-text-icon>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <lab-workflow-ports-list [ports]="node.outputPorts"></lab-workflow-ports-list>
-    </mat-expansion-panel>
-
-
-    <!---------------------------- Config ---------------------------->
-    <mat-expansion-panel *ngIf="config" hideToggle [expanded]="true" #configPanel>
+  <!---------------------------- Config ---------------------------->
+  <ng-container [ngSwitch]="configMode$ | async">
+    <mat-expansion-panel *ngSwitchCase="'config'" hideToggle [expanded]="true" #configPanel>
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
@@ -66,9 +67,9 @@
             {{'biox.configuration' | translate}}
           </fl-text-icon>
         </mat-panel-title>
-        <mat-panel-description fxLayout="row" fxLayoutAlign="end" *ngIf="isEditable">
+        <mat-panel-description fxLayout="row" fxLayoutAlign="end" *ngIf="isEditable$ | async">
           <button mat-icon-button type="button" class="g-default-color-text"
-                  (click)="openConfig($event, configPanel)">
+                  (click)="openConfig($event, configPanel, node)">
             <mat-icon>edit</mat-icon>
           </button>
         </mat-panel-description>
@@ -77,7 +78,7 @@
     </mat-expansion-panel>
 
     <!-------------------------- Specific to Source ---------------------------->
-    <mat-expansion-panel *ngIf="isSource" hideToggle [expanded]="true">
+    <mat-expansion-panel *ngSwitchCase="'source'" hideToggle [expanded]="true">
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
@@ -88,8 +89,5 @@
       </mat-expansion-panel-header>
       <lab-task-source-config></lab-task-source-config>
     </mat-expansion-panel>
-
-
-    <mat-divider></mat-divider>
-  </div>
+  </ng-container>
 </div>
