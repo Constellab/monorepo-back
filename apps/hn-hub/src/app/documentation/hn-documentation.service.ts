@@ -1,9 +1,11 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationContentDTO, HnDocumentationDTO} from './hn-documentation.entity';
 import {HnBrickVersion} from '../brick-version/hn-brick-version.entity';
 import {HnNodeDTO} from '../folder/hn-folder.entity';
+import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
+import {HnUser} from '../users/hn-user.entity';
 
 @Injectable()
 export class HnDocumentationService {
@@ -71,6 +73,10 @@ export class HnDocumentationService {
   async updateContent(id: string, updateContentDoc: Record<string, any>): Promise<HnDocumentation>{
     const doc:HnDocumentation = await this.documentationsRepository.findOne(id);
     doc.content = updateContentDoc;
+    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+    if(!currentUser.category.includes('ADMIN')){
+      throw new UnauthorizedException();
+    }
     return this.documentationsRepository.save(doc);
   }
 }

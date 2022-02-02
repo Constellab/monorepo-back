@@ -27,6 +27,7 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
   formGp: FormGroup<Partial<HaDocumentationContentFormDTO>>;
   isAdmin: Observable<boolean> = this.authUserService.isAdmin();
   canEdit: boolean = false;
+  titles: any[] = [];
 
   constructor(
     private brickService: HaBrickService,
@@ -81,6 +82,15 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
     this.documentation$.subscribe((doc: HaDocumentation) => {
       this.buildForm();
       this.setFormGroupValue(doc);
+
+      this.titles = [];
+
+      const contentData: any[] = doc.content.ops;
+      contentData.forEach((c, i) => {
+        if(contentData[i+1] && contentData[i+1].attributes && contentData[i+1].attributes.header && (contentData[i+1].attributes.header == 1 || contentData[i+1].attributes.header == 2)){
+          this.titles.push([contentData[i+1].attributes.header, c.insert]);
+        }
+      });
     });
   }
 

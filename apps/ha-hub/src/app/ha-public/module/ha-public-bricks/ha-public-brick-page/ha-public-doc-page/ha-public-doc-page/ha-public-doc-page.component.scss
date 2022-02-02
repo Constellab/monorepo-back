@@ -12,7 +12,10 @@
 }
 
 .side{
+  margin-left: 1em;
   width: 25rem;
+  padding-left: 0.5em;
+  border-left: 2px solid var(--card-background);
 }
 
 .content{

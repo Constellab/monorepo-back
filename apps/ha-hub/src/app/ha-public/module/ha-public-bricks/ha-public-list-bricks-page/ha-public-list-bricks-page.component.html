@@ -1,12 +1,14 @@
-<button mat-raised-button color="primary" routerLink="edit" *haIsAdmin>
+<button mat-raised-button color="primary" routerLink="edit" *haIsAdmin class="button-create">
   Create
 </button>
 
-<mat-grid-list cols="3" rowHeight="26vh" gutterSize="20">
-  <ng-container *ngFor="let brick of bricks">
-    <mat-grid-tile class="brick" [routerLink]="brick.name">
-      <h1>{{brick.name}}</h1>
-    </mat-grid-tile>
-  </ng-container>
-</mat-grid-list>
+<div class="brick-list">
+  <mat-grid-list cols="3" rowHeight="26vh" gutterSize="20">
+    <ng-container *ngFor="let brick of bricks">
+      <mat-grid-tile class="brick" [routerLink]="brick.name">
+        <h1>{{brick.name}}</h1>
+      </mat-grid-tile>
+    </ng-container>
+  </mat-grid-list>
+</div>
 
