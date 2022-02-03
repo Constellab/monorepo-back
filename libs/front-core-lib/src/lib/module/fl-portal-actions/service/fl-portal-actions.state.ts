@@ -46,7 +46,7 @@ export class FlPortalActionsState implements FlCleanableService {
     }
 
     // append new actions to current actions
-    const allActions: FlPortalActionDetail[] = [...this.currentActions, ...newActions];
+    const allActions: FlPortalActionDetail[] = [...newActions, ...this.currentActions];
 
     this.actions$.next(allActions);
   }

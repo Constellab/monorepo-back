@@ -125,18 +125,18 @@ ul, ol {
 }
 
 /* width and height */
-.g-scrollable-element ::-webkit-scrollbar {
+.g-scrollable-element::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 /* Handle */
-.g-scrollable-element ::-webkit-scrollbar-thumb {
+.g-scrollable-element::-webkit-scrollbar-thumb {
   background: #E9EAEF;
 }
 
 /* Handle on hover */
-.g-scrollable-element ::-webkit-scrollbar-thumb:hover {
+.g-scrollable-element::-webkit-scrollbar-thumb:hover {
   background: #c4c4c4;
 }
 
