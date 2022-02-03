@@ -5,7 +5,7 @@ import {LabResource} from '../../../../lab-core/model/entities/resource/lab-reso
 import {FlStatusEvent} from '@monorepo/front-core-lib';
 import {LabWorkflowPort} from './lab-workflow-port.class';
 import {labGetTypingNameColor} from '../../../../lab-core/entity-module/lab-process-core/utils/lab-process-port-color';
-import {map, switchMap} from 'rxjs/operators';
+import {distinct, map, switchMap} from 'rxjs/operators';
 
 
 /**
@@ -34,7 +34,9 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
 
   private initLoadedResource(): void {
     this.getObject$().pipe(
-      switchMap(process => this.loadResource(this.getResourceId(process)))
+      map(process => this.getResourceId(process)),
+      distinct(),
+      switchMap(resourceId => this.loadResource(resourceId))
     ).subscribe(
       resource => this.setLoadedResource(resource),
       error => this.loadedResource$.next({status: 'error', error: error})
@@ -80,8 +82,13 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
 
   public getResourceId$(): Observable<string> {
     return this.getLoadedResource$().pipe(
-      map(resourceStatus => resourceStatus.status === 'success' && resourceStatus.object ? resourceStatus.object.id : null)
+      map(resourceStatus => resourceStatus?.status === 'success' && resourceStatus.object ? resourceStatus.object.id : null)
     );
+  }
+
+  private getCurrentResourceId(): string | null {
+    const resourceStatus = this.loadedResource$.value;
+    return resourceStatus?.status === 'success' && resourceStatus.object ? resourceStatus.object.id : null;
   }
 
   public setLoadedResource(resource: LabResource): void {

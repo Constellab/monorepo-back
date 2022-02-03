@@ -51,13 +51,12 @@ export class LabWorkflowManagerState {
   // emit to true when loading
   private _layerIsLoading$: Subject<boolean> = new BehaviorSubject(false);
   private actionSubscription: Subscription;
+  private flowsSubscription: Subscription;
 
   //  Name of the action to add a process for the ActionService
   private readonly addProcessAction: string = 'add-process';
   private readonly addProcessWithConnectorAction: string = 'add-process-with-connector';
 
-  private refreshInterval: any;
-  private refreshIntervalDuration: number = 2000;
 
   constructor(private protocolService: LabProtocolService,
               private experimentService: LabExperimentService,
@@ -91,7 +90,7 @@ export class LabWorkflowManagerState {
         }
       );
 
-    experimentState.getFlowUpdate$().subscribe(
+    this.flowsSubscription = experimentState.getFlowUpdate$().subscribe(
       flow => this.refreshFlow(flow)
     );
   }
@@ -103,25 +102,14 @@ export class LabWorkflowManagerState {
     if (this.workflow.hasLayer(layerId)) {
       this.workflow.selectLayer(layerId);
     } else {
-      this.loadNodeLayer(layerId);
+      // load a new layer
+      this._layerIsLoading$.next(true);
+      this.experimentState.loadFlow(layerId);
     }
   }
 
-  private loadNodeLayer(layerId: string): void {
-    this._layerIsLoading$.next(true);
-    this.experimentState.loadFlow(layerId);
-  }
-
-
   public get layerIsLoading$(): Observable<boolean> {
     return this._layerIsLoading$.asObservable();
-  }
-
-  public startRefreshing(): void {
-    this.clearInterval();
-    // todo need to stop interval when protocol is finished
-    this.experimentState.loadFlow(this.workflow.currentLayer.id);
-    this.refreshInterval = setInterval(() => this.experimentState.loadFlow(this.workflow.currentLayer.id), this.refreshIntervalDuration);
   }
 
 
@@ -396,13 +384,7 @@ export class LabWorkflowManagerState {
     this.workflow = null;
     this._layerIsLoading$.complete();
     this.actionSubscription?.unsubscribe();
-    this.clearInterval();
-  }
-
-  private clearInterval(): void {
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-    }
+    this.flowsSubscription?.unsubscribe();
   }
 
   /**

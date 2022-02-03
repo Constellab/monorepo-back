@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {LabExperimentService} from '../../../../lab-core/entity-service/lab-experiment.service';
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, merge, Observable, Subject, Subscription} from 'rxjs';
 import {LabExperiment} from '../../../../lab-core/model/entities/lab-experiment.entity';
 import {filter, map} from 'rxjs/operators';
 import {LabFlow} from '../../../../lab-core/model/global/lab-connection.class';
@@ -25,6 +25,11 @@ export class LabExperimentDetailPageState {
 
   // does not emit experiment until ready is true
   private ready: boolean = false;
+
+  // refresh time : 15sec
+  private refreshIntervalDuration: number = 15000;
+  private timeout: any;
+  private refreshSubscription: Subscription;
 
   constructor(private experimentService: LabExperimentService,
               private protocolService: LabProtocolService) {
@@ -88,6 +93,61 @@ export class LabExperimentDetailPageState {
     );
   }
 
+
+  /**
+   * Check if the experiment is waiting or running and start to refresh the flow if yes
+   */
+  public checkAndStartRefreshFlow(): void {
+    this.timeout = setTimeout(() => {
+
+      const mainFlow = this.mainFlow$.value;
+      const experiment = this.currentExperiment;
+      // Stop refresh if experiment is not running (including queue) and the main flow is finished
+      if ((!experiment.isRunning() && experiment.status.value !== 'IN_QUEUE') || mainFlow.object.isFinished()) return;
+
+      // retrieve all not finished protocols
+      const notFinishedFlowIds: string[] = [
+        mainFlow.object.id,
+        ...Object.values(this.subflows).filter(flow => !flow.object.isFinished()).map(flow => flow.object.id)
+      ];
+      this.refreshFlowsTick(notFinishedFlowIds);
+    }, this.refreshIntervalDuration);
+  }
+
+  /**
+   * Start to refresh the flow
+   */
+  public startFlowsRefresh(): void {
+    // retrieve all not finished protocols
+    const allFlows: string[] = [
+      this.mainFlow$.value.object.id,
+      ...Object.values(this.subflows).map(flow => flow.object.id)
+    ];
+    this.refreshFlowsTick(allFlows);
+  }
+
+  /**
+   * One tick to refresh the flow, after getting all flow, it calls get flow again
+   * @param flowIds
+   * @private
+   */
+  private refreshFlowsTick(flowIds: string[]): void {
+    const obs: Observable<LabFlow<LabProtocol>>[] = flowIds.map(id => this.protocolService.getProtocolAsFlow(id));
+    this.refreshSubscription = merge(...obs).subscribe(
+      (flow) => this.getFlowSuccess(flow),
+      () => console.error('Error during refresh'),
+      () => this.checkAndStartRefreshFlow()
+    );
+  }
+
+  public stopFlowsRefresh(): void {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
+    this.refreshSubscription?.unsubscribe();
+  }
+
   /////////////////////////////////// FLOW ////////////////////////////////////
 
   public loadFlow(protocolId: string): void {
@@ -135,5 +195,6 @@ export class LabExperimentDetailPageState {
     this.mainFlow$.complete();
     this.flowChange$.complete();
     this.experimentDescription$.complete();
+    this.stopFlowsRefresh();
   }
 }

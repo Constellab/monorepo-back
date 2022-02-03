@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
 import {LabExperimentService} from '../../../../../lab-core/entity-service/lab-experiment.service';
 import {LabExperiment} from '../../../../../lab-core/model/entities/lab-experiment.entity';
@@ -23,7 +23,7 @@ import {Observable} from 'rxjs';
   templateUrl: './lab-workflow-actions.component.html',
   styleUrls: ['./lab-workflow-actions.component.scss']
 })
-export class LabWorkflowActionsComponent implements OnInit {
+export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
 
   saveIsLoading: boolean = false;
   startIsLoading: boolean = false;
@@ -39,7 +39,7 @@ export class LabWorkflowActionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.experiment$ = this.experimentState.getExperiment$();
-
+    this.experimentState.checkAndStartRefreshFlow();
   }
 
   get isLoading(): boolean {
@@ -97,7 +97,7 @@ export class LabWorkflowActionsComponent implements OnInit {
     this.snackBarService.openSuccessMessage('biox.experiment_started', true);
     this.startIsLoading = false;
     this.experimentState.updateExperiment(experiment);
-    // this.workflowManager.startRefreshing();
+    this.experimentState.startFlowsRefresh();
   }
 
   stopExperiment(): void {
@@ -120,6 +120,10 @@ export class LabWorkflowActionsComponent implements OnInit {
     if (result?.choice) {
       this.experimentState.updateExperiment(result.result);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.experimentState.stopFlowsRefresh();
   }
 
 
