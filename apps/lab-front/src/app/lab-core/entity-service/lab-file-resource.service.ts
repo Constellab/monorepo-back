@@ -35,6 +35,18 @@ export class LabFileResourceService {
   }
 
   /**
+   * Upload a file to the serveur. This watch the http events to follow progress.
+   */
+  public uploadFile(file: File, typingName?: string): Observable<HttpEvent<any>> {
+    const formData: FormData = new FormData();
+    formData.append('file', file);
+    formData.append('typing_name', typingName);
+
+    return this.apiService.post(`${this.route}/upload-file`, formData, null,
+      {observe: 'events', reportProgress: true});
+  }
+
+  /**
    * Upload a folder to the serveur. This watch the http events to follow progress.
    */
   public uploadFolder(folderTypingName: string, files: File[]): Observable<LabResource> {

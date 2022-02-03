@@ -128,41 +128,78 @@ export class LabUploadFsNodeDialogComponent implements OnInit {
 
   submit(): void {
     if (this.formGp.valid) {
-      this.uploadFiles(this.formGp.getRawValue());
+
+      const formValue = this.formGp.getRawValue();
+
+      if (formValue.uploadMode === 'files') {
+        this.uploadFiles(formValue.files);
+      } else {
+        this.uploadFolder(formValue.files);
+      }
+
+      this.dialogRef.close();
     }
   }
 
-  private uploadFiles(formValue: UploadForm): void {
-    let text: string;
-    let obs: Observable<any>;
+  private uploadFiles(files: FsNodeWithType[]): void {
 
-    // mode when uploading all the file separately
-    if (formValue.uploadMode === 'files') {
-      text = formValue.files.length > 1 ?
-        this.translateService.translate('databox.uploading_files', {param: {nbFiles: formValue.files.length}}) :
-        formValue.files[0].file.name;
+    for (const file of files) {
+      const action: FlPortalAction = {
+        text: file.file.name,
+        type: LabFileResourceService.uploadFileActon,
+        action: this.fileResourceService.uploadFile(file.file, file.typingName),
+        trackHttpEvents: true,
+      };
 
-      obs = this.fileResourceService.uploadFiles(formValue.files.map(file => file.file),
-        formValue.files.map(fileType => fileType.typingName));
-    } else {
-      // mode when uploading only one folder with everything
-      text = this.translateService.translate('databox.uploading_folder');
-      // in folder mode, there is only on element in array, corresponding to the folder
-      const folderTypingName = formValue.files[0].typingName;
-      obs = this.fileResourceService.uploadFolder(folderTypingName, this.input.files);
+      this.actionsService.addAction(action, false);
     }
+  }
 
+  private uploadFolder(files: FsNodeWithType[]): void {
+    // in folder mode, there is only on element in array, corresponding to the folder
+    const folderTypingName = files[0].typingName;
 
     const action: FlPortalAction = {
-      text: text,
+      text: {text: 'databox.uploading_folder', translateText: true},
       type: LabFileResourceService.uploadFileActon,
-      action: obs,
+      action: this.fileResourceService.uploadFolder(folderTypingName, this.input.files),
       trackHttpEvents: true,
     };
 
     this.actionsService.addAction(action, false);
     this.dialogRef.close();
   }
+
+  // private uploadFiles(formValue: UploadForm): void {
+  //   let text: string;
+  //   let obs: Observable<any>;
+  //
+  //   // mode when uploading all the file separately
+  //   if (formValue.uploadMode === 'files') {
+  //     text = formValue.files.length > 1 ?
+  //       this.translateService.translate('databox.uploading_files', {param: {nbFiles: formValue.files.length}}) :
+  //       formValue.files[0].file.name;
+  //
+  //     obs = this.fileResourceService.uploadFiles(formValue.files.map(file => file.file),
+  //       formValue.files.map(fileType => fileType.typingName));
+  //   } else {
+  //     // mode when uploading only one folder with everything
+  //     text = this.translateService.translate('databox.uploading_folder');
+  //     // in folder mode, there is only on element in array, corresponding to the folder
+  //     const folderTypingName = formValue.files[0].typingName;
+  //     obs = this.fileResourceService.uploadFolder(folderTypingName, this.input.files);
+  //   }
+  //
+  //
+  //   const action: FlPortalAction = {
+  //     text: text,
+  //     type: LabFileResourceService.uploadFileActon,
+  //     action: obs,
+  //     trackHttpEvents: true,
+  //   };
+  //
+  //   this.actionsService.addAction(action, false);
+  // }
 
   get title(): string {
     return this.selectedNodes === 'files' ? 'databox.select_file_types' : 'databox.upload_folder';
