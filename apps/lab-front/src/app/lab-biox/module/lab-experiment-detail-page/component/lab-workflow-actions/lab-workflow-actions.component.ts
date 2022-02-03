@@ -97,7 +97,7 @@ export class LabWorkflowActionsComponent implements OnInit {
     this.snackBarService.openSuccessMessage('biox.experiment_started', true);
     this.startIsLoading = false;
     this.experimentState.updateExperiment(experiment);
-    this.workflowManager.startRefreshing();
+    // this.workflowManager.startRefreshing();
   }
 
   stopExperiment(): void {
