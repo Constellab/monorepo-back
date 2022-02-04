@@ -82,6 +82,7 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
     this.documentation$.subscribe((doc: HaDocumentation) => {
       this.buildForm();
       this.setFormGroupValue(doc);
+      this.titles = [];
       if(doc.content){
         this.updateTitles(doc.content.ops)
       }
