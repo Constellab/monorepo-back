@@ -5,12 +5,12 @@
               cdkDropList (cdkDropListDropped)="drop($event)">
       <!-- This is the tree node template for leaf nodes -->
       <mat-tree-node *matTreeNodeDef="let node" cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)"
-                     (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
-        <mat-nav-list class="line" *ngIf="node.id != null" (contextmenu)="isAdmin ? onRightClick($event, false, false, node.id) : null">
+                     (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()"
+                      [cdkDragDisabled]="!(isAdmin | async) || node.name == null">
+        <mat-nav-list class="line" *ngIf="node.id != null" (contextmenu)="onRightClick($event, false, false, node.id)">
           <a matTreeNodePadding matTreeNodePaddingIndent="15px" class="item" mat-list-item
              [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
-             [routerLink]="node.completePath" routerLinkActive="active"
-             (click)="changeCurrentDoc(node.completePath)">
+             [routerLink]="node.completePath" routerLinkActive="active">
             <div matLine>
               {{node.name}}
             </div>
@@ -26,11 +26,12 @@
       <!-- This is the tree node template for expandable nodes -->
       <mat-tree-node *matTreeNodeDef="let node;when: hasChild" cdkDrag [cdkDragData]="node"
                      (mouseenter)="dragHover(node)"
-                     (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart($event)" (cdkDragReleased)="dragEnd()">
+                     (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart($event)" (cdkDragReleased)="dragEnd()"
+                     [cdkDragDisabled]="!(isAdmin | async)">
         <mat-nav-list class="nav-list line">
           <mat-list-item class="item" matTreeNodePadding matTreeNodePaddingIndent="15px"
                          [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
-                         (contextmenu)="isAdmin ? onRightClick($event, true, isNotEmpty(node), node.id):null"
+                         (contextmenu)="onRightClick($event, true, isNotEmpty(node), node.id)"
                          (click)="expansionModel.toggle(node)" matTreeNodeToggle>
             <mat-icon class="mat-icon-rtl-mirror">
               {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
@@ -46,7 +47,7 @@
         </mat-nav-list>
       </mat-tree-node>
     </mat-tree>
-    <div class="sidenav-empty-space" (contextmenu)="isAdmin ? onRightClick($event, true): null"></div>
+    <div class="sidenav-empty-space" (contextmenu)="onRightClick($event, true)"></div>
   </div>
 
   <div class="sidenav-content">

@@ -22,7 +22,7 @@ export class HaMainComponent implements OnInit {
   }
 
   openLoginDialog(): void {
-    this.dialogService.openMediumDialog(HaMainLoginComponent).afterClosed().subscribe(() => {
+    this.dialogService.openSmallDialog(HaMainLoginComponent).afterClosed().subscribe(() => {
     });
   }
 }

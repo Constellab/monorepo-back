@@ -108,12 +108,16 @@ export class HnFolderService {
       })
     }
 
-    // if (currentChild.length == 0) {
-    //   currentChild[0] = new HnNode(null, null, null, null, 0);
+    // if(currentChild.length ==  0){
+    //   currentChild.push(new HnNode(null, null, null, null, 0, null));
     // }
+
+
 
     currentParent.children = currentChild;
     currentParent.children.sort((a, b) => a.order - b.order);
+
+    console.log(currentChild);
 
     return currentParent;
   }

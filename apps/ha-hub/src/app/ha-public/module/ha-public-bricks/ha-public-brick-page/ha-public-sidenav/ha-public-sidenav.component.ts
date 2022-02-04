@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import {Component, OnInit} from '@angular/core';
-import {HaAuthService} from '../../../../../ha-core/ha-service/ha-auth.service';
 import {HaMateTreeFlatDataSource, HaNode, HaNodeDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-node.class';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
@@ -14,7 +13,8 @@ import {
   FlDialogService,
   FlFormDialogInput,
   FlMenuDynamic,
-  FlMenuDynamicService, FlOverlayRef
+  FlMenuDynamicService,
+  FlOverlayRef
 } from '@monorepo/front-core-lib';
 import {HaDocumentationService} from '../../../../../ha-core/ha-service/ha-documentation.service';
 import {HaFolder} from '../../../../../ha-core/ha-model/ha-entities/ha-folder.class';
@@ -42,7 +42,6 @@ export class HaPublicSidenavComponent implements OnInit {
 
   isAdmin: Observable<boolean> = this.authUserService.isAdmin();
   brickId: string;
-  currentDocUrl: string = null;
   overNodeLevel: number = 0;
 
   menuOpen: boolean;
@@ -116,29 +115,29 @@ export class HaPublicSidenavComponent implements OnInit {
     });
   }
 
-  isNotEmpty(node: FlatNode): boolean{
+  isNotEmpty(node: FlatNode): boolean {
     const n: HaNode = this.dataSource.data.find(n => n.id == node.id);
     return n.children != null && n.children.length > 0;
   }
 
-  changeCurrentDoc(completeUrl: string): void {
-    this.currentDocUrl = completeUrl;
-  }
-
   onRightClick(event: MouseEvent, isFolder: boolean, hasChild: boolean = false, id?: string): void {
-    event.preventDefault();
-    event.stopPropagation();
-    if(this.menuOpen){
-      this.openedMenu.overlayRef.detach();
-    }
-    if (!id) {
-      this.brickService.getRootFolderId(this.brickId).subscribe(res => {
-        this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, res.id, true), event);
-      });
-    } else {
-      this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, false, hasChild), event);
-    }
-    this.menuOpen = true;
+    this.isAdmin.subscribe(isAdmin => {
+      if (isAdmin) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (this.menuOpen) {
+          this.openedMenu.overlayRef.detach();
+        }
+        if (!id) {
+          this.brickService.getRootFolderId(this.brickId).subscribe(res => {
+            this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, res.id, true), event);
+          });
+        } else {
+          this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, false, hasChild), event);
+        }
+        this.menuOpen = true;
+      }
+    })
   }
 
   private getContextMenuConfig(isFolder: boolean, id?: string, isRoot: boolean = false, hasChild: boolean = false): FlMenuDynamic[] {
@@ -304,6 +303,7 @@ export class HaPublicSidenavComponent implements OnInit {
     // it calls rememberExpandedTreeNodes to persist expand state
     const visibleNodes = this.visibleNodes();
 
+
     // deep clone the data source so we can mutate it
     this.changedData = JSON.parse(JSON.stringify(this.dataSource.data));
 
@@ -323,10 +323,37 @@ export class HaPublicSidenavComponent implements OnInit {
     // insert node
     newSiblings.splice(insertIndex, 0, nodeToInsert);
 
+    //this.changedData = this.updateEmptyNodes(this.changedData);
     // rebuild tree with mutated data
     this.rebuildTreeForData(this.changedData);
     this.saveTreeData(this.changedData);
   }
+
+  private deleteEmptyNode(nodes: HaNode[]): HaNode[]{
+    console.log(nodes);
+    let index: number;
+    index = nodes.findIndex(n => n.name == null);
+    if(index){
+      nodes.splice(index, 1);
+    }
+    return nodes;
+  }
+
+  private updateEmptyNodes(nodes: HaNode[]): HaNode[]{
+    nodes.forEach(node => {
+      if(node.children){
+        if(node.children.length > 0){
+          if(node.children.length > 1) {
+            node.children = this.deleteEmptyNode(node.children);
+          }
+        } else {
+          node.children.push(new HaNode(null, null, null,  null, null, null));
+        }
+      }
+    });
+    return nodes;
+  }
+
 
   saveTreeData(nodes: HaNode[]): void {
     nodes = this.updatedTree(nodes, 0);
@@ -342,7 +369,11 @@ export class HaPublicSidenavComponent implements OnInit {
       n.parentId = this.getParentId(nf, levelTheo);
 
       if (n.children) {
-        n.children = this.updatedTree(n.children, levelTheo + 1);
+        if (n.children.length == 1 && n.children[0].id == null) {
+          n.children.splice(0);
+        } else {
+          n.children = this.updatedTree(n.children, levelTheo + 1);
+        }
       }
     });
     return nodes;

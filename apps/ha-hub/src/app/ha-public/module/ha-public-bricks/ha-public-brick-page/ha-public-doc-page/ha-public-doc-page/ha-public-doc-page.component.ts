@@ -82,20 +82,25 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
     this.documentation$.subscribe((doc: HaDocumentation) => {
       this.buildForm();
       this.setFormGroupValue(doc);
+      if(doc.content){
+        this.updateTitles(doc.content.ops)
+      }
+    });
+  }
 
-      this.titles = [];
-
-      const contentData: any[] = doc.content.ops;
-      contentData.forEach((c, i) => {
-        if(contentData[i+1] && contentData[i+1].attributes && contentData[i+1].attributes.header && (contentData[i+1].attributes.header == 1 || contentData[i+1].attributes.header == 2)){
-          this.titles.push([contentData[i+1].attributes.header, c.insert]);
-        }
-      });
+  updateTitles(ops: any): void{
+    this.titles = [];
+    const contentData: any[] = ops;
+    contentData.forEach((c, i) => {
+      if(contentData[i+1] && contentData[i+1].attributes && contentData[i+1].attributes.header && (contentData[i+1].attributes.header == 1 || contentData[i+1].attributes.header == 2)){
+        this.titles.push([contentData[i+1].attributes.header, c.insert]);
+      }
     });
   }
 
   onContentUpdate(content: LabReportContent): void {
     this.contentDebouncer.setValue(content);
+    this.updateTitles(this.formGp.value.content.ops);
   }
 
   private setFormGroupValue(doc: HaDocumentationContentFormDTO): void {

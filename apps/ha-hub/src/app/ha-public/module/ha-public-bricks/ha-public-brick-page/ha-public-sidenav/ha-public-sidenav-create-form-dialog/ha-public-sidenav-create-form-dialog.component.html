@@ -6,7 +6,7 @@
   <form (ngSubmit)="submit()" id="edit-form" [formGroup]="formGp" fxLayout="column">
 
     <!--  type  -->
-    <mat-form-field class="g-form-input" appearance="fill" *ngIf="!isUpdate">
+    <mat-form-field class="g-form-input" *ngIf="!isUpdate">
       <mat-label>Type</mat-label>
       <mat-select formControlName="isFolder" name="type">
         <mat-option [value]="true">
@@ -32,7 +32,7 @@
     </mat-form-field>
 
     <!--  path  -->
-    <mat-form-field class="g-form-input" appearance="fill">
+    <mat-form-field class="g-form-input">
       <mat-label>{{'path' | translate}}</mat-label>
       <input matInput formControlName="path" required flInputMaxLength="50"
              placeholder="{{'path' | translate}}">
