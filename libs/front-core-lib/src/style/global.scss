@@ -216,3 +216,26 @@ ul, ol {
 .g-max-article-width {
   max-width: 60rem;
 }
+
+
+/**************************** Print media query *****************************/
+
+// classes to focus the print on a single element marked with g-section-to-print
+@media print {
+  body.g-activate-print * {
+    visibility: hidden;
+  }
+  .g-section-to-print, .g-section-to-print * {
+    visibility: visible !important;
+  }
+  .g-section-to-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 0;
+    border: none !important;
+    overflow: auto;
+    height: initial;
+    max-height: initial;
+  }
+}

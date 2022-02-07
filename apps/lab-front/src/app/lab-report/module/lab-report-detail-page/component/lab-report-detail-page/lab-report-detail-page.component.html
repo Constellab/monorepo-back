@@ -47,7 +47,7 @@
         </fl-article-left-side>
         <fl-article>
           <fl-text-editor [(ngModel)]="content" mode="JSON" [disabled]="report.isValidated" class="g-full-height"
-                          (textChange)="onContentUpdate($event)"
+                          (textChange)="onContentUpdate($event)" flPrint
                           [placeholder]="'biox.report_placeholder' | translate" [autoFocus]="true"></fl-text-editor>
         </fl-article>
         <fl-article-right-side class="experiments">
