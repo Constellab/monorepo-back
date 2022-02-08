@@ -4,7 +4,6 @@ import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesService} from './cn-lab-instances.service';
 import {CnCreatedByAuthorization} from '../cn-core/security/cn-created-by.authorization';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
-import {CnLabInstanceToken} from './cn-lab-instance-token.class';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnAdminAuthorization} from '../cn-core/security/cn-admin.authorization';
@@ -71,7 +70,7 @@ export class CnLabInstancesSecurityLayer extends CnAbstractSecurityLayer<CnLabIn
     return this.service.stopInstance(id);
   }
 
-  async login(id: string): Promise<CnLabInstanceToken> {
+  async login(id: string): Promise<string> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(id);
 
     // check that the lab is running

@@ -30,6 +30,22 @@ export class CnExternalLabUserService {
   }
 
   /**
+   * Log the user to the lab, it returns a one time token for the user
+   * to open the lab. Then in the lab it will generate a JWT for the user
+   */
+  public generateTempAccess(labInfo: CnExternalApiInfo, user: CnUser): Promise<string> {
+    const body: any = {
+      id: user.id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      theme: user.theme
+    };
+
+    return this.externalLabApiService.post(labInfo, `${this.route}/generate-temp-access`, body).toPromise();
+  }
+
+  /**
    * Retrieve the list of user in the lab
    */
   public async getUsers(labInfo: CnExternalApiInfo): Promise<CnExternalLabUser[]> {

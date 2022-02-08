@@ -2,7 +2,6 @@ import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post,
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesSecurityLayer} from './cn-lab-instances-security.layer';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
-import {CnLabInstanceToken} from './cn-lab-instance-token.class';
 import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlDtoHelper, BlParsePipe} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
@@ -92,7 +91,7 @@ export class CnLabInstancesController {
    * return the labInstance
    */
   @Post(':id/login')
-  public login(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceToken> {
+  public login(@Param('id', new ParseUUIDPipe()) id: string): Promise<string> {
     return this.securityLayer.login(id);
   }
 
