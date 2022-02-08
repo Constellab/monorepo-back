@@ -38,7 +38,7 @@
               {{'biox.experiment' | translate}}
             </a>
 
-          <lab-resource-actions-menu *ngIf="!readOnly" [resource]="resource" (update)="onUpdate($event)"
+          <lab-resource-actions-menu [readOnly]="readOnly" [resource]="resource" (update)="onUpdate($event)"
                                      (updateTags)="onUpdateTags($event)"
                                      (delete)="onDelete()">
           </lab-resource-actions-menu>
