@@ -23,8 +23,6 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
   public data: FlBioNetworkReaction;
   public pathwayIds: string[]; // list of pathway for the reaction
 
-  readonly svgShape = 'rect';
-
   constructor(id: string, name: string, fillColor: string, strokeColor: string,
               data: FlBioNetworkReaction, pathwayIds: string[]) {
     super(id, name, 'reaction', fillColor, strokeColor, data);
@@ -82,7 +80,7 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
 
   // The level of the reaction is the lowest level of connected metabolites
   // Exclude connected FlBioNetworkD3Reaction to avoid infinite loop
-  _getLevel(): FlBioNetworkMetaboliteLevel {
+  protected _getLevel(): FlBioNetworkMetaboliteLevel {
     if (this.data.level) return this.data.level;
 
 

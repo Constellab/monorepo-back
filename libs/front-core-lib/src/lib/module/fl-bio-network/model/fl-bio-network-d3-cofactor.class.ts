@@ -53,15 +53,13 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
     };
   }
 
-  _getLevel(): FlBioNetworkMetaboliteLevel {
+  protected _getLevel(): FlBioNetworkMetaboliteLevel {
     return this.data.level ?? FlBioNetworkMetaboliteLevel.COFACTOR;
   }
 
   isInPathway(id: string): boolean {
-    const nodes = [...this.getNextNodes(), ...this.getPreviousNodes()];
-
     // check if any connected reaction is in the pathway
-    return nodes.filter(n => n instanceof FlBioNetworkD3Reaction).some(n => n.isInPathway(id));
+    return this.getConnectedNodes().filter(n => n instanceof FlBioNetworkD3Reaction).some(n => n.isInPathway(id));
   }
 
 

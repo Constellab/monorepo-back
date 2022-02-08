@@ -47,15 +47,14 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
     return this._getLevel() === FlBioNetworkMetaboliteLevel.MAJOR;
   }
 
-  _getLevel(): FlBioNetworkMetaboliteLevel {
+  protected _getLevel(): FlBioNetworkMetaboliteLevel {
     return this.data.level ?? FlBioNetworkMetaboliteLevel.MINOR;
   }
 
   isInPathway(id: string): boolean {
-    const nodes = [...this.getNextNodes(), ...this.getPreviousNodes()];
 
     // check if any connected reaction is in the pathway
-    return nodes.filter(n => n instanceof FlBioNetworkD3Reaction).some(n => n.isInPathway(id));
+    return this.getConnectedNodes().filter(n => n instanceof FlBioNetworkD3Reaction).some(n => n.isInPathway(id));
   }
 
   private getRadius(): number {

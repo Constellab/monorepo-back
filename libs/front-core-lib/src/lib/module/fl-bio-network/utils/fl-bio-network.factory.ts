@@ -45,6 +45,8 @@ export class FlBioNetworkFactory {
     // create the links from the reactions
     this.initLinksAndCofactors(network.metabolites);
 
+    this.initReactionPositions();
+
     return new FlBioNetworkD3(this.metabolites, this.reactions, this.cofactors, this.links);
   }
 
@@ -178,4 +180,25 @@ export class FlBioNetworkFactory {
     return flBioNetworkGetCompartmentColor(metabolite.compartment);
   }
 
+  // calculate position of reactions that are not set if possible
+  private initReactionPositions(): void {
+    for (const reaction of this.reactions) {
+      if (!reaction.hasPositions()) {
+        // get the connected nodes sorted by level
+        let nodes = reaction.getConnectedNodes().filter(n => n.hasPositions());
+
+        nodes = nodes.sort((a, b) => a.getLevel() - b.getLevel());
+
+        // if there are at least 2 link nodes with position, set the reaction in the center of the 2
+        if (nodes.length >= 2) {
+          const firstPosition = nodes[0].getCenter();
+          const secondPosition = nodes[1].getCenter();
+          reaction.setCenter({
+            x: (firstPosition.x + secondPosition.x) / 2,
+            y: (firstPosition.y + secondPosition.y) / 2
+          });
+        }
+      }
+    }
+  }
 }

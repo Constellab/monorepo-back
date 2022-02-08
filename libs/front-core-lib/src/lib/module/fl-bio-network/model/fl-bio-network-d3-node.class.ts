@@ -52,7 +52,7 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
   }
 
 
-  public abstract _getLevel(): FlBioNetworkMetaboliteLevel;
+  protected abstract _getLevel(): FlBioNetworkMetaboliteLevel;
 
   ///////////////////////////////////////////// DRAW  ////////////////////////////////
   // draw the node element using d3 js
