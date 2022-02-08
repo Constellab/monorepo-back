@@ -23,6 +23,8 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
   public data: FlBioNetworkReaction;
   public pathwayIds: string[]; // list of pathway for the reaction
 
+  readonly svgShape = 'rect';
+
   constructor(id: string, name: string, fillColor: string, strokeColor: string,
               data: FlBioNetworkReaction, pathwayIds: string[]) {
     super(id, name, 'reaction', fillColor, strokeColor, data);

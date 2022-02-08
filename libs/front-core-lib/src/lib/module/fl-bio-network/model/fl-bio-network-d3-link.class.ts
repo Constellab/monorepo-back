@@ -206,4 +206,10 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
     // the link takes the highest level of the connected nodes
     return Math.max(this.source.getLevel(), this.target.getLevel());
   }
+
+  public isInPathway(id: string): boolean {
+    return this.target.isInPathway(id) || this.source.isInPathway(id);
+  }
+
+
 }

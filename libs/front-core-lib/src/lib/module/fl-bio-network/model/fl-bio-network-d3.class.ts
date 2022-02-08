@@ -117,4 +117,6 @@ export abstract class FlBioNetworkD3Object {
   // the lower the level, the most important the node is
   // level for the zoom
   protected abstract _getLevel(): FlBioNetworkMetaboliteLevel;
+
+  public abstract isInPathway(id: string): boolean;
 }

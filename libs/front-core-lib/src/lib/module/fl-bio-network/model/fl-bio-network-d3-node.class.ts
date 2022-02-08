@@ -29,14 +29,13 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
   fx?: number;
   fy?: number;
 
-
   visible: boolean = true;
 
   public departureLinks: FlBioNetworkD3Link[] = [];
   public arrivalLinks: FlBioNetworkD3Link[] = [];
 
   // list of nodes that are linked to this node
-  // It means that when this node moves, all the linked node moves
+  // It means that when this node moves, all the linked nodes move
   public childNodes: FlBioNetworkD3Node[] = [];
 
 

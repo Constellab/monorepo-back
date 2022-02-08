@@ -3,6 +3,7 @@ import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
+import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
 
 
 // radius of the metabolite round
@@ -50,6 +51,12 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
     return this.data.level ?? FlBioNetworkMetaboliteLevel.MINOR;
   }
 
+  isInPathway(id: string): boolean {
+    const nodes = [...this.getNextNodes(), ...this.getPreviousNodes()];
+
+    // check if any connected reaction is in the pathway
+    return nodes.filter(n => n instanceof FlBioNetworkD3Reaction).some(n => n.isInPathway(id));
+  }
 
   private getRadius(): number {
     return this.isMajor() ? flBioNetworkMajorMetaboliteRadius : flBioNetworkMinorMetaboliteRadius;
