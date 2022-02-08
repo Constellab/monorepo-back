@@ -142,11 +142,13 @@ export class FlBioNetworkFactory {
 
         // right side of the link
         if (reactionLink.stoich > 0) {
-          this.links.push(new FlBioNetworkD3Link(reactionD3, metaboliteNode, estimate, reactionLink.points));
+          this.links.push(new FlBioNetworkD3Link(reactionD3, metaboliteNode,
+            estimate, reactionLink.points, this.themeDetail.greyLowContrast));
         }
         // left side of the link
         else {
-          this.links.push(new FlBioNetworkD3Link(metaboliteNode, reactionD3, estimate, reactionLink.points));
+          this.links.push(new FlBioNetworkD3Link(metaboliteNode, reactionD3,
+            estimate, reactionLink.points, this.themeDetail.greyLowContrast));
         }
       }
     }

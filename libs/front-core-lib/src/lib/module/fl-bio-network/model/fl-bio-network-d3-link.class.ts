@@ -57,7 +57,8 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
   groupElement: SVGGElement;
 
   constructor(source: FlBioNetworkD3Node, target: FlBioNetworkD3Node,
-              public estimate: FlBioNetworkReactionEstimate, points: FlCoord[]) {
+              public estimate: FlBioNetworkReactionEstimate, points: FlCoord[],
+              public color: string) {
     super();
     this.source = source;
     this.target = target;

@@ -118,8 +118,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
         if (this.data.getNodes(FlBioNetworkMetaboliteLevel.MAJOR).length > 0) {
           this.toggleShowMinors(this.showMinors);
-        }
-        else{
+        } else {
           // if there is no major, force minor to show
           this.toggleShowMinors(true);
         }
@@ -246,7 +245,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .attr('d', (d: FlBioNetworkD3Link) => d.getPathAttr())
       .attr('stroke-opacity', 0.9)
       .attr('stroke-width', (d: FlBioNetworkD3Link) => d.getLinkWidth())
-      .attr('fill', 'transparent')
+      .attr('fill', d => d.color)
       // define the arrow marker, no marker for link of cofactors
       .attr('marker-end', (d: FlBioNetworkD3Link) => d.isLinkedToCofactor() ? `url(#${this.smallArrowId})` : `url(#${this.arrowId})`)
       .each(d => d.visible = true)

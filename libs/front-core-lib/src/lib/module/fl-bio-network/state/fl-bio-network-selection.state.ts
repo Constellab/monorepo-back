@@ -156,7 +156,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
       links.style('stroke', pathway.color);
       nodeSelection.style('fill', pathway.color);
     } else {
-      links.style('stroke', 'grey'); // todo this color is not correct
+      links.style('stroke', link => link.color);
       nodeSelection.style('fill', node => node.fillColor);
     }
     pathway.highlighted = !pathway.highlighted;
