@@ -71,7 +71,7 @@ export class FlBioNetworkZoomState implements OnDestroy {
     if (this.currentZoom) {
       this.zoomHandler.transform(svg, this.currentZoom);
     } else {
-      this.updateObjectVisibility(1);
+      // this.updateObjectVisibility(1);
       this.firstZoom = false;
     }
 
@@ -85,7 +85,7 @@ export class FlBioNetworkZoomState implements OnDestroy {
   private onZoom(transform: ZoomTransform): void {
     this.zoomableElement.attr('transform', transform.toString());
 
-    this.updateObjectVisibility(transform.k);
+    // this.updateObjectVisibility(transform.k);
 
     // emit the zoom
     this.zoom$.next(transform);

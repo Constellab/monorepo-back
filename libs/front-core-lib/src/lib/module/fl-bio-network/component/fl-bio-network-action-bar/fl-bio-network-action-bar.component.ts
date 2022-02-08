@@ -25,6 +25,8 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   // if true the link colors switch to logarithm
   linkColorLogarithm: boolean = false;
   showCofactor: boolean = false;
+  showMinors: boolean = false;
+  showText: boolean = false;
 
   constructor(private cdr: ChangeDetectorRef,
               private state: FlBioNetworkState,
@@ -34,7 +36,9 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   ngOnInit(): void {
     this.linkColorLogarithm = this.rendererState.getLinkColorLogarithm();
-    this.showCofactor = this.rendererState.getShowCofactor();
+    this.showCofactor = this.rendererState.getShowCofactors();
+    this.showMinors = this.rendererState.getShowMinors();
+    this.showText = this.rendererState.getShowTexts()
     this.state.getChartData$().subscribe(
       chartData => this.onNewData(chartData)
     );
@@ -66,6 +70,14 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   toggleShowCofactor(): void {
     this.rendererState.toggleCofactors(this.showCofactor);
+  }
+
+  toggleShowTexts(): void {
+    this.rendererState.toggleShowTexts(this.showText);
+  }
+
+  toggleShowMinors(): void {
+    this.rendererState.toggleShowMinors(this.showMinors);
   }
 
   // set opacity to 0.1 to link where abs value is lower than slider value

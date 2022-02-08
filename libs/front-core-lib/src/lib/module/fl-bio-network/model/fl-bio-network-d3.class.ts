@@ -3,6 +3,7 @@ import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
 import {FlBioNetworkD3Cofactor} from './fl-bio-network-d3-cofactor.class';
 import {FlBioNetworkD3Link} from './fl-bio-network-d3-link.class';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
+import {FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
 
 /**
  * Data used to construct to d3 network
@@ -20,7 +21,7 @@ export class FlBioNetworkD3 {
    * return all the nodes
    */
   public getAllNodes(): FlBioNetworkD3Node[] {
-    return [...this.getMetabolitesNodes(), ...this.reactions];
+    return [...this.getMetaboliteAndCofactors(), ...this.reactions];
   }
 
   public getMetabolitesAndReactions(): FlBioNetworkD3Node[] {
@@ -30,25 +31,24 @@ export class FlBioNetworkD3 {
   /**
    * return all the metabolites nodes
    */
-  public getMetabolitesNodes(): (FlBioNetworkD3Metabolite | FlBioNetworkD3Cofactor)[] {
+  public getMetaboliteAndCofactors(): FlBioNetworkD3Node[] {
     return [...this.metabolites, ...this.cofactors];
+  }
+
+  // return all the nodes of a level
+  public getNodes(level: FlBioNetworkMetaboliteLevel): FlBioNetworkD3Node[] {
+    return this.getAllNodes().filter(link => link.getLevel() === level);
+  }
+
+  // return all the link of a level
+  public getLinks(level: FlBioNetworkMetaboliteLevel): FlBioNetworkD3Link[] {
+    return this.links.filter(link => link.getLevel() === level);
   }
 
   // return all the reaction of a pathway
   public getReactionsOfPathway(pathwayId: string): FlBioNetworkD3Reaction[] {
     return this.reactions.filter(reaction => reaction.isInPathway(pathwayId));
   }
-
-  // return all the link except for link to cofactors
-  public getMetaboliteLinks(): FlBioNetworkD3Link[] {
-    return this.links.filter(link => !link.isLinkedToCofactor());
-  }
-
-  // return all the link that are link to cofactors
-  public getCofactorLinks(): FlBioNetworkD3Link[] {
-    return this.links.filter(link => link.isLinkedToCofactor());
-  }
-
 
   // return the min and max value of all links
   public getLinksDomain(): [number, number] {
@@ -81,7 +81,7 @@ export class FlBioNetworkD3 {
 
   public hasPosition(): boolean {
     return this.metabolites.every(metabolite => metabolite.x != null && metabolite.y != null) &&
-    this.reactions.every(reaction  => reaction.x != null && reaction.y != null)
+      this.reactions.every(reaction => reaction.x != null && reaction.y != null);
     // true if the node have a position, in this case, no need to launch simulation
     // return this.metabolites[0]?.x != null && this.metabolites[0]?.x !== 0;
   }
@@ -95,14 +95,26 @@ export class FlBioNetworkD3 {
   }
 
   // return the lowest level of objects
-  public getLowestLevel(): number{
-    return Math.min(...this.getAllNodes().map(node => node.getLevel()))
+  public getLowestLevel(): number {
+    return Math.min(...this.getAllNodes().map(node => node.getLevel()));
   }
 }
 
 // Any D3 object in the network
-export interface FlBioNetworkD3Object {
+export abstract class FlBioNetworkD3Object {
   visible: boolean; // true if the element is visible on the network
 
-  getLevel(): number; // level for the zoom
+  // use to store the level if there is some calculation
+  protected _level: number;
+
+  public getLevel(): FlBioNetworkMetaboliteLevel {
+    if (this._level == null) {
+      this._level = this._getLevel();
+    }
+    return this._level;
+  }
+
+  // the lower the level, the most important the node is
+  // level for the zoom
+  protected abstract _getLevel(): FlBioNetworkMetaboliteLevel;
 }

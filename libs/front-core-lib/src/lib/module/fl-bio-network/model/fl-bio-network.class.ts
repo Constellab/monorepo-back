@@ -12,7 +12,17 @@ export interface FlBioNetwork {
 
 // Level of the metabolite 3 = cofactor
 // The lower the level, the more important the metabolite is
-export type FlBioNetworkMetaboliteLevel = 1 | 2 | 3
+export enum FlBioNetworkMetaboliteLevel {
+  MAJOR = 1,
+  MINOR = 2,
+  COFACTOR = 3
+}
+
+export const flBioNetworkMetaboliteMaxLevel = FlBioNetworkMetaboliteLevel.COFACTOR;
+export const flBioNetworkMetaboliteLevels = [
+  FlBioNetworkMetaboliteLevel.MAJOR, FlBioNetworkMetaboliteLevel.MINOR,
+  FlBioNetworkMetaboliteLevel.COFACTOR
+];
 
 export interface FlBioNetworkMetabolite {
   id: string;

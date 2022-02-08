@@ -1,5 +1,5 @@
 import {select, SimulationNodeDatum} from 'd3';
-import {FlBioNetworkMetabolite, FlBioNetworkReaction} from './fl-bio-network.class';
+import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel, FlBioNetworkReaction} from './fl-bio-network.class';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {FlBioNetworkD3Link} from './fl-bio-network-d3-link.class';
@@ -12,7 +12,7 @@ export const flBioNetworkNodeTextClass: string = 'node-text';
 
 export type FlBioNetworkD3NodeType = 'metabolite' | 'reaction' | 'cofactor';
 
-export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNetworkD3Object {
+export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements SimulationNodeDatum {
 
   // the following properties are set by d3
   // Node’s zero-based index into nodes array. This property is set during the initialization process of a simulation.
@@ -42,6 +42,7 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
 
   protected constructor(public id: string, public name: string, public type: FlBioNetworkD3NodeType, public color: string,
                         public data: FlBioNetworkMetabolite | FlBioNetworkReaction) {
+    super();
     if (data.position != null && data.position.x != null && data.position.y != null) {
       this.setCenter(data.position);
       // set the fixed positions
@@ -51,7 +52,7 @@ export abstract class FlBioNetworkD3Node implements SimulationNodeDatum, FlBioNe
   }
 
 
-  public abstract getLevel(): number;
+  public abstract _getLevel(): FlBioNetworkMetaboliteLevel;
 
   ///////////////////////////////////////////// DRAW  ////////////////////////////////
   // draw the node element using d3 js

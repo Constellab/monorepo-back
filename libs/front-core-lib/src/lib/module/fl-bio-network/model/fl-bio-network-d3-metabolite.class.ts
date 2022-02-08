@@ -1,13 +1,13 @@
 import {select} from 'd3';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
-import {FlBioNetworkMetabolite} from './fl-bio-network.class';
+import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 
 // radius of the metabolite round
-export const flBioNetworkMinorMetaboliteRadius: number = 7;
-export const flBioNetworkMajorMetaboliteRadius: number = 13;
+export const flBioNetworkMinorMetaboliteRadius: number = 4.5;
+export const flBioNetworkMajorMetaboliteRadius: number = 6;
 
 export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
 
@@ -24,9 +24,9 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
       .append('circle')
       .join('circle')
       .attr('r', this.getRadius())
-      .attr('stroke', (d: FlBioNetworkD3Node) => d.color)
-      .attr('stroke-width', 1)
-      .attr('fill', 'white') as FlD3SelectionSimple<FlBioNetworkD3Node>;
+      .attr('stroke', 'white')
+      .attr('stroke-width', 0.5)
+      .attr('fill', (d: FlBioNetworkD3Node) => d.color) as FlD3SelectionSimple<FlBioNetworkD3Node>;
   }
 
 
@@ -43,11 +43,11 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
   }
 
   isMajor(): boolean {
-    return this.getLevel() === 1;
+    return this._getLevel() === FlBioNetworkMetaboliteLevel.MAJOR;
   }
 
-  getLevel(): number {
-    return this.data.level ?? 2;
+  _getLevel(): FlBioNetworkMetaboliteLevel {
+    return this.data.level ?? FlBioNetworkMetaboliteLevel.MINOR;
   }
 
 

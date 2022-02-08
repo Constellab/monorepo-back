@@ -214,7 +214,7 @@ export class FlBioNetworkState implements OnDestroy {
     for (const cofactorD3 of d3Network.cofactors) {
       const cofactor = cofactorD3.data;
       if (network.metabolites.findIndex(metabolite => metabolite.id === cofactor.id) === -1) {
-        network.metabolites.push(cofactor);
+        network.metabolites.push(cofactor as any);
       }
     }
 

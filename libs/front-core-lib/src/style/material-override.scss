@@ -164,7 +164,7 @@
 
 // force all the child mat table to take the color of the main background
 // useful for search page
-.g-mat-table-main-background .mat-table{
+.g-mat-table-main-background .mat-table {
   background-color: var(--main-background);
 }
 
@@ -281,7 +281,7 @@ mat-tree {
 
 // set the mat-tab full height of the mat-tab-group
 // to be place on mat-tab-group
-.g-mat-tab-full-height .mat-tab-body-wrapper{
+.g-mat-tab-full-height .mat-tab-body-wrapper {
   flex-grow: 1;
 }
 
@@ -306,6 +306,11 @@ mat-tree {
   }
 }
 
+// to place on a mat-checkbox to include the bottom section of it to avoid overflow
+.g-mat-checkbox-include-bottom {
+  padding-bottom: 8px;
+}
+
 /************************************* MAT RADIO BUTTON ***********************************/
 .g-mat-radio-wrap-text {
   .mat-radio-label {
@@ -321,7 +326,7 @@ mat-tree {
 
 /************************************* MAT OPTION ***********************************/
 // class to hide the checkbox on multiple seletable mat options
-.g-mat-option-hide-checkbox .mat-pseudo-checkbox{
+.g-mat-option-hide-checkbox .mat-pseudo-checkbox {
   display: none;
 }
 

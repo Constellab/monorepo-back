@@ -1,5 +1,5 @@
 import {curveCatmullRom, line, select, SimulationLinkDatum} from 'd3';
-import {FlBioNetworkReactionEstimate} from './fl-bio-network.class';
+import {FlBioNetworkMetaboliteLevel, FlBioNetworkReactionEstimate} from './fl-bio-network.class';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 import {FlBioNetworkD3Cofactor} from './fl-bio-network-d3-cofactor.class';
 import {FlBioNetworkD3Metabolite} from './fl-bio-network-d3-metabolite.class';
@@ -40,7 +40,8 @@ export class FlBioNetworkD3LinkPoint implements FlCoord {
 }
 
 
-export class FlBioNetworkD3Link implements SimulationLinkDatum<FlBioNetworkD3Node>, FlBioNetworkD3Object {
+export class FlBioNetworkD3Link extends FlBioNetworkD3Object
+  implements SimulationLinkDatum<FlBioNetworkD3Node> {
 
   private static id: number = 0;
 
@@ -58,6 +59,7 @@ export class FlBioNetworkD3Link implements SimulationLinkDatum<FlBioNetworkD3Nod
 
   constructor(source: FlBioNetworkD3Node, target: FlBioNetworkD3Node,
               public estimate: FlBioNetworkReactionEstimate, points: FlCoord[]) {
+    super();
     this.source = source;
     this.target = target;
     this.id = FlBioNetworkD3Link.id++;
@@ -149,7 +151,10 @@ export class FlBioNetworkD3Link implements SimulationLinkDatum<FlBioNetworkD3Nod
       this.pointPositions.push(point);
     } else {
       // get all points including the source and target
-      const points: FlCoord[] = [{x: this.source.x, y: this.source.y}, ...this.pointPositions, {x: this.target.x, y: this.target.y}];
+      const points: FlCoord[] = [{x: this.source.x, y: this.source.y}, ...this.pointPositions, {
+        x: this.target.x,
+        y: this.target.y
+      }];
       // we have to insert the point at a logical position
       let minDist = Infinity;
       let minDistIndex = -1;
@@ -210,7 +215,7 @@ export class FlBioNetworkD3Link implements SimulationLinkDatum<FlBioNetworkD3Nod
   }
 
 
-  getLevel(): number {
+  protected _getLevel(): FlBioNetworkMetaboliteLevel {
     // the link takes the highest level of the connected nodes
     return Math.max(this.source.getLevel(), this.target.getLevel());
   }

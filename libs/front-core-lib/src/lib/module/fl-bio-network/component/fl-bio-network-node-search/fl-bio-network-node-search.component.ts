@@ -5,7 +5,8 @@ import {Observable, Subscription} from 'rxjs';
 import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Metabolite} from '../../model/fl-bio-network-d3-metabolite.class';
 import {FormControl} from '@ngneat/reactive-forms';
-import {map, startWith} from 'rxjs/operators';
+import {debounceTime, map, startWith} from 'rxjs/operators';
+import {FlBioNetworkD3Node} from '../../model/fl-bio-network-d3-node.class';
 
 /**
  * Component to search on metabolite and select a metabolite
@@ -18,10 +19,10 @@ import {map, startWith} from 'rxjs/operators';
 })
 export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
 
-  metabolites: FlBioNetworkD3Metabolite[];
-  filteredMetabolite: Observable<FlBioNetworkD3Metabolite[]>;
+  metabolites: FlBioNetworkD3Node[];
+  filteredMetabolite: Observable<FlBioNetworkD3Node[]>;
 
-  searchControl: FormControl<string | FlBioNetworkD3Metabolite> = new FormControl();
+  searchControl: FormControl<string | FlBioNetworkD3Node> = new FormControl();
 
   private subscription: Subscription;
 
@@ -36,6 +37,7 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
     this.filteredMetabolite = this.searchControl.valueChanges
       .pipe(
         startWith(''),
+        debounceTime(250),
         map((value: string | FlBioNetworkD3Metabolite) => typeof value === 'string' ? value : value.name),
         map(name => name ? this.filter(name) : this.metabolites.slice())
       );
@@ -62,14 +64,14 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
   }
 
   selectMetabolite(): void {
-    const metabolite: string | FlBioNetworkD3Metabolite = this.searchControl.value;
+    const metabolite: string | FlBioNetworkD3Node = this.searchControl.value;
     if (metabolite == null || !(metabolite instanceof FlBioNetworkD3Metabolite)) return;
 
     this.selectionState.selectNodeAndDirectLinks(metabolite, true);
   }
 
   // method to filter metabolites based on string
-  private filter(name: string): FlBioNetworkD3Metabolite[] {
+  private filter(name: string): FlBioNetworkD3Node[] {
     const filterValue = name.toLowerCase();
     return this.metabolites.filter(metabolite => metabolite.name.toLowerCase().includes(filterValue));
   }

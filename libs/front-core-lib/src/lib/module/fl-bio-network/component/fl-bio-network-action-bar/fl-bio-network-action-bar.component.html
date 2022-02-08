@@ -20,13 +20,23 @@
   <fl-bio-network-compartments></fl-bio-network-compartments>
 
   <div fxLayout="column">
-    <mat-checkbox [(ngModel)]="linkColorLogarithm" (change)="setLinksColors()" color="primary">
-      {{'flBioNetwork.link_color_log' | translate}}
+
+    <mat-checkbox [(ngModel)]="showMinors" (change)="toggleShowMinors()" color="primary">
+      {{'flBioNetwork.toggle_show_minor' | translate}}
     </mat-checkbox>
 
     <mat-checkbox [(ngModel)]="showCofactor" (change)="toggleShowCofactor()" color="primary">
       {{'flBioNetwork.toggle_show_cofactor' | translate}}
     </mat-checkbox>
+
+    <mat-checkbox [(ngModel)]="showText" (change)="toggleShowTexts()" color="primary"
+                  class="g-mat-checkbox-include-bottom">
+      {{'flBioNetwork.toggle_show_texts' | translate}}
+    </mat-checkbox>
+
+    <!--    <mat-checkbox [(ngModel)]="linkColorLogarithm" (change)="setLinksColors()" color="primary">-->
+    <!--      {{'flBioNetwork.link_color_log' | translate}}-->
+    <!--    </mat-checkbox>-->
   </div>
 
   <fl-bio-network-selection-info class="g-full-height"></fl-bio-network-selection-info>

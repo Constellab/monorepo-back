@@ -1,11 +1,12 @@
-import {FlBioNetworkMetabolite} from './fl-bio-network.class';
+import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {select} from 'd3';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 // size for the cofactor losange
-export const flBioNetworkCofactorSize: number = 5;
+const flBioNetworkCofactorSize: number = 3.5;
+const flBioNetworkCofactorBorderRadius: number = 0.5;
 
 export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
   public type: 'cofactor';
@@ -23,8 +24,8 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
       .append('rect')
       .attr('width', flBioNetworkCofactorSize)
       .attr('height', flBioNetworkCofactorSize)
-      .attr('rx', 1) // round corner
-      .attr('ry', 1)
+      .attr('rx', flBioNetworkCofactorBorderRadius) // round corner
+      .attr('ry', flBioNetworkCofactorBorderRadius)
       .attr('transform', 'translate(2.5, -1) rotate(45)')
       .attr('stroke', (d: FlBioNetworkD3Node) => d.color)
       .attr('stroke-width', 1)
@@ -51,7 +52,7 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
     };
   }
 
-  getLevel(): number {
-    return this.data.level ?? 3;
+  _getLevel(): FlBioNetworkMetaboliteLevel {
+    return this.data.level ?? FlBioNetworkMetaboliteLevel.COFACTOR;
   }
 }

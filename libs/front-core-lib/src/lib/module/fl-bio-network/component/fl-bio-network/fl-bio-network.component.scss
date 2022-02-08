@@ -11,7 +11,7 @@
 }
 
 ///////////////////////// GRID //////////////////////
-::ng-deep {
+::ng-deep fl-bio-network{
   .axis path {
     display: none;
   }
@@ -20,6 +20,14 @@
     stroke-opacity: 0.2;
     shape-rendering: crispEdges;
     stroke-width: 0.3;
+  }
+
+  .hide-text svg text{
+    display: none;
+  }
+
+  svg .hide-group{
+    display: none;
   }
 }
 

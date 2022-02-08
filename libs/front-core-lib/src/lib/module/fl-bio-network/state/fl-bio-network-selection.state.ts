@@ -116,7 +116,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     }
 
     // get all the metabolites indexes in the compartments
-    const nodeIds: string[] = this.data.getMetabolitesNodes().filter(
+    const nodeIds: string[] = this.data.getMetaboliteAndCofactors().filter(
       (node) =>
         compartments.includes((node.data as FlBioNetworkMetabolite).compartment)
     ).map(node => node.id);
@@ -150,7 +150,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     const reactionsIds: string[] = reactions.map(reaction => reaction.id);
 
     const links: FlD3SelectionSimple<FlBioNetworkD3Link> =
-      this.groupState.links.filter((link: FlBioNetworkD3Link) => link.isLinkedToAnyNode(reactionsIds));
+      this.groupState.allLinks.filter((link: FlBioNetworkD3Link) => link.isLinkedToAnyNode(reactionsIds));
     const reactionSelection: FlD3SelectionSimple<FlBioNetworkD3Node> =
       this.allNodes.filter((node: FlBioNetworkD3Node) => reactionsIds.includes(node.id));
 

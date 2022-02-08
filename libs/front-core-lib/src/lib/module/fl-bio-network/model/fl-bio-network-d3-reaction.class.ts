@@ -1,13 +1,18 @@
-import {FlBioNetworkReaction} from './fl-bio-network.class';
+import {
+  FlBioNetworkMetaboliteLevel,
+  flBioNetworkMetaboliteLevels,
+  flBioNetworkMetaboliteMaxLevel,
+  FlBioNetworkReaction
+} from './fl-bio-network.class';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {select} from 'd3';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
-import {FlBioNetworkD3Metabolite} from './fl-bio-network-d3-metabolite.class';
 
 // size for the reaction rect
-export const flBioNetworkReactionWidth: number = 8;
-export const flBioNetworkReactionHeight: number = 8;
+export const flBioNetworkReactionWidth: number = 5;
+export const flBioNetworkReactionHeight: number = 5;
+export const flBioNetworkReactionBorderRadius: number = 1;
 
 // maximum value of a reaction in a pathway
 export const flBioNetworkReactionMaxValue: number = 1000;
@@ -31,11 +36,11 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
       .join('rect')
       .attr('width', flBioNetworkReactionWidth)
       .attr('height', flBioNetworkReactionHeight)
-      .attr('rx', 3) // round corner
-      .attr('ry', 3)
-      .attr('stroke', this.color)
-      .attr('stroke-width', 1)
-      .attr('fill', 'white') as FlD3SelectionSimple<FlBioNetworkD3Node>;
+      .attr('rx', flBioNetworkReactionBorderRadius) // round corner
+      .attr('ry', flBioNetworkReactionBorderRadius)
+      .attr('stroke', 'white')
+      .attr('stroke-width', 0.25)
+      .attr('fill', this.color) as FlD3SelectionSimple<FlBioNetworkD3Node>;
   }
 
   // draw the text for reaction inside the rect
@@ -74,14 +79,25 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
 
   // The level of the reaction is the lowest level of connected metabolites
   // Exclude connected FlBioNetworkD3Reaction to avoid infinite loop
-  getLevel(): number {
+  _getLevel(): FlBioNetworkMetaboliteLevel {
     if (this.data.level) return this.data.level;
 
 
-    // if the level is not defined, take the linked metabolite with the lowest level
-    return Math.min(3, ...this.getConnectedNodes()
-      .filter(node => node instanceof FlBioNetworkD3Metabolite)
+    const count = {};
+    // get the list of level of linked nodes
+    this.getConnectedNodes()
+      .filter(node => !(node instanceof FlBioNetworkD3Reaction))
       .map(node => node.getLevel())
-    );
+      .forEach(level => count[level] = count[level] ? count[level] + 1 : 1);
+
+
+    // return the lowest level where there is at least 2 nodes link to this reaction
+    for (const nodeLevel of flBioNetworkMetaboliteLevels) {
+      if (count[nodeLevel] >= 2) {
+        return nodeLevel;
+      }
+    }
+
+    return flBioNetworkMetaboliteMaxLevel;
   }
 }
