@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Inject,
   Input,
   OnInit,
   Optional,
@@ -15,6 +16,8 @@ import {FlQuillConfig, FlQuillJson} from '../../fl-quill.class';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {NgControl} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
+import {DOCUMENT} from '@angular/common';
+import {ScrollDispatcher} from '@angular/cdk/overlay';
 
 /**
  * HTML --> Get HTML and generate HTML
@@ -51,7 +54,10 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   quill: Quill;
 
   constructor(@Optional() @Self() ngControl: NgControl,
-              private sanitizer: DomSanitizer) {
+              private sanitizer: DomSanitizer,
+              @Inject(DOCUMENT) private document: Document,
+              private scrollDispatcher: ScrollDispatcher,
+              private elementRef: ElementRef) {
     super(ngControl);
   }
 
@@ -64,8 +70,10 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
           toolbar: FlQuillConfig.defaultToolbarConfig,
         },
         placeholder: this.placeholder,
+        scrollingContainer: this.getScrollingContainer()
       }
     );
+
 
     // init the HTML with the value set
     this.setQuillValue(this.value);
@@ -131,5 +139,17 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     }
   }
 
+  // retrieve the first parent that is scrollable
+  private getScrollingContainer(): HTMLElement {
+    // retrieve scrollable parents
+    const scrollableElements = this.scrollDispatcher.getAncestorScrollContainers(this.elementRef);
+    // if there are some scrollable parent, use the first one
+    if (scrollableElements.length > 0) {
+      return scrollableElements[0].getElementRef().nativeElement;
+    }
+
+    // otherwise, use document as scrolling container
+    return this.document.documentElement;
+  }
 
 }
