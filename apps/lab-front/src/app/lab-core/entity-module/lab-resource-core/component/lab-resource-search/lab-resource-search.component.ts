@@ -1,8 +1,9 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {
   FL_SEARCH_CONFIG,
   FlDatasourcePaginated,
   FlDialogService,
+  FlPortalActionsService,
   FlSavedSearch,
   FlSearchConfig,
   FlSearchService,
@@ -18,7 +19,9 @@ import {
   UploadFsNodeDialogInput,
   UploadFsNodeMode
 } from '../lab-upload-fs-node-dialog/lab-upload-fs-node-dialog.component';
-import {ClHelpService} from '@monorepo/core-lib';
+import {ClCoreJsonConvert, ClHelpService} from '@monorepo/core-lib';
+import {Subscription} from 'rxjs';
+import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
 
 // list of predefined search of the resources
 const savedSearch: FlSavedSearch[] = [
@@ -77,7 +80,7 @@ function searchConfig(searchService: FlSearchService<any>): FlSearchConfig {
   ]
 
 })
-export class LabResourceSearchComponent implements OnInit {
+export class LabResourceSearchComponent implements OnInit, OnDestroy {
 
   @Input() resourceSelectable: boolean = false;
 
@@ -96,9 +99,11 @@ export class LabResourceSearchComponent implements OnInit {
 
   files: File[];
 
+  private actionSubscription: Subscription;
 
   constructor(private searchState: FlSearchState<any>,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private actionService: FlPortalActionsService) {
   }
 
   ngOnInit(): void {
@@ -109,6 +114,7 @@ export class LabResourceSearchComponent implements OnInit {
 
     this.datasource = this.searchState.datasource;
     this.searchState.init(this.fullPageSearch);
+    this.listenToUploadAction();
   }
 
   selectResource(resource: LabResource): void {
@@ -140,4 +146,20 @@ export class LabResourceSearchComponent implements OnInit {
     // clear the list of files
     this.files = [];
   }
+
+  public listenToUploadAction(): void {
+    this.actionSubscription = this.actionService.getResult$(LabFileResourceService.uploadFileActon).subscribe(
+      result => {
+        if (result.status == 'success') {
+          this.datasource.addItem(ClCoreJsonConvert.deserialize(result.result, LabResource), () => true);
+        }
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.actionSubscription?.unsubscribe();
+  }
+
+
 }
