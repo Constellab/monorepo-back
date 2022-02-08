@@ -14,6 +14,7 @@ import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class';
 import {FlBioNetworkD3Cofactor} from '../model/fl-bio-network-d3-cofactor.class';
 import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
+import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 
 export class FlBioNetworkFactory {
 
@@ -28,7 +29,7 @@ export class FlBioNetworkFactory {
   private links: FlBioNetworkD3Link[] = [];
 
 
-  constructor(private grey: string) {
+  constructor(private themeDetail: FlThemeDetail) {
   }
 
 
@@ -64,7 +65,7 @@ export class FlBioNetworkFactory {
         // add the reaction
         reactionNodes.push(new FlBioNetworkD3Reaction(reaction.id,
           reaction.name ? reaction.name : reaction.id,
-          this.grey, reaction, reactionPathways
+          this.themeDetail.greyHighContrast, this.themeDetail.foreground, reaction, reactionPathways
         ));
       }
     }
@@ -98,7 +99,8 @@ export class FlBioNetworkFactory {
         if (this.metabolites.findIndex(node => node.id === metaboliteId) === -1) {
           this.metabolites.push(new FlBioNetworkD3Metabolite(metabolite.id,
             metabolite.name ? metabolite.name : metabolite.id,
-            this.getMetaboliteColor(metabolite),
+            this.getMetaboliteColor(metabolite), this.themeDetail.foreground,
+
             metabolite
           ));
         }
@@ -162,6 +164,7 @@ export class FlBioNetworkFactory {
     // create a new object with the new created id
     const cofactor = new FlBioNetworkD3Cofactor(cofactorId,
       metabolite.name ? metabolite.name : metabolite.id,
+      this.themeDetail.foreground,
       metabolite
     );
     this.cofactors.push(cofactor);

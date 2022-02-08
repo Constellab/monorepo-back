@@ -17,7 +17,7 @@
   }
 
   .axis line {
-    stroke-opacity: 0.2;
+    stroke-opacity: 0.1;
     shape-rendering: crispEdges;
     stroke-width: 0.3;
   }
@@ -26,8 +26,15 @@
     display: none;
   }
 
-  svg .hide-group{
-    display: none;
+
+  svg {
+    .hide-group{
+      display: none;
+    }
+
+    .node-2, .node-3, .link-2, .link-3{
+      opacity: 0.7;
+    }
   }
 }
 

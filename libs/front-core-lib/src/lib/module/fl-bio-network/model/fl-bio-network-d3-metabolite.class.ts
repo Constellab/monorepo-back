@@ -14,8 +14,8 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
   public type: 'metabolite';
   public data: FlBioNetworkMetabolite;
 
-  constructor(id: string, name: string, color: string, data: FlBioNetworkMetabolite) {
-    super(id, name, 'metabolite', color, data);
+  constructor(id: string, name: string, fillColor: string, strokeColor: string, data: FlBioNetworkMetabolite) {
+    super(id, name, 'metabolite', fillColor, strokeColor, data);
   }
 
 
@@ -24,9 +24,9 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
       .append('circle')
       .join('circle')
       .attr('r', this.getRadius())
-      .attr('stroke', 'white')
+      .attr('stroke', this.strokeColor)
       .attr('stroke-width', 0.5)
-      .attr('fill', (d: FlBioNetworkD3Node) => d.color) as FlD3SelectionSimple<FlBioNetworkD3Node>;
+      .attr('fill', this.fillColor) as FlD3SelectionSimple<FlBioNetworkD3Node>;
   }
 
 

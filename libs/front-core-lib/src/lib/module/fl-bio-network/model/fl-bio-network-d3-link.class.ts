@@ -2,7 +2,6 @@ import {curveCatmullRom, line, select, SimulationLinkDatum} from 'd3';
 import {FlBioNetworkMetaboliteLevel, FlBioNetworkReactionEstimate} from './fl-bio-network.class';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 import {FlBioNetworkD3Cofactor} from './fl-bio-network-d3-cofactor.class';
-import {FlBioNetworkD3Metabolite} from './fl-bio-network-d3-metabolite.class';
 import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
 import {FlBioNetworkD3Object} from './fl-bio-network-d3.class';
 import {FlCoord, FlCoordHelper} from '../../../model/shared/fl-coord.class';
@@ -111,21 +110,9 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
   }
 
   getLinkWidth(): number {
-    return this.absLog10Value + 1;
+    const level = this.getLevel();
+    return level === FlBioNetworkMetaboliteLevel.MAJOR ? this.absLog10Value + 1 : this.absLog10Value + 0.5;
   }
-
-  // return true if the link is linked to one major metabolite and to a reaction linked to another metabolite
-  isMajor(): boolean {
-    // cas when the source is a Metabolite and the target a reaction
-    return (this.source instanceof FlBioNetworkD3Metabolite && this.target instanceof FlBioNetworkD3Reaction
-        && this.source.isMajor() &&
-        this.target.getNextNodes().some(node => node instanceof FlBioNetworkD3Metabolite && node.isMajor())) ||
-      // cas when the source is a Reaction and the target a metabolite
-      (this.target instanceof FlBioNetworkD3Metabolite && this.source instanceof FlBioNetworkD3Reaction
-        && this.target.isMajor() &&
-        this.source.getPreviousNodes().some(node => node instanceof FlBioNetworkD3Metabolite && node.isMajor()));
-  }
-
 
   ////////////////////////////////////// POINTS //////////////////////////////////////
   public getPathAttr(): string {

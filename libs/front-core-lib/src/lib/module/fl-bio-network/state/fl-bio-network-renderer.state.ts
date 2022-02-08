@@ -66,7 +66,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
   private readonly smallArrowId: string = 'small-arrow';
 
 
-  constructor(themeService: FlThemeService, private drawerState: FlBioNetworkDrawerState,
+  constructor(private themeService: FlThemeService, private drawerState: FlBioNetworkDrawerState,
               private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState,
               private zoomState: FlBioNetworkZoomState, private gridState: FlBioNetworkGridState,
               private groupState: FlBioNetworkGroupState,
@@ -116,7 +116,13 @@ export class FlBioNetworkRendererState implements OnDestroy {
         this.gridState.initGrid(mainGroup);
         this.groupState.initGroups(mainGroup);
 
-        this.toggleShowMinors(this.showMinors);
+        if (this.data.getNodes(FlBioNetworkMetaboliteLevel.MAJOR).length > 0) {
+          this.toggleShowMinors(this.showMinors);
+        }
+        else{
+          // if there is no major, force minor to show
+          this.toggleShowMinors(true);
+        }
         this.toggleShowTexts(this.showTexts);
 
         // draw major nodes and links
@@ -388,7 +394,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .append('path')
       .attr('d', line()([[0, 0], [0, size], [size, ref]]))
       .attr('stroke', 'none')
-      .attr('fill', 'black'); // TODO fix color theme
+      .attr('fill', this.themeService.getCurrentThemeDetail().foreground);
   }
 
 
@@ -417,8 +423,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
       );
     });
 
-    // todo voir ce que c'est a appeler au onDestroy?
-    // invalidation.then(() => simulation.stop());
   }
 
   // disable all force so the user can move the node independently
@@ -517,6 +521,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.simulation?.stop();
   }
 }
 

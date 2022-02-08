@@ -40,7 +40,8 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
   public childNodes: FlBioNetworkD3Node[] = [];
 
 
-  protected constructor(public id: string, public name: string, public type: FlBioNetworkD3NodeType, public color: string,
+  protected constructor(public id: string, public name: string, public type: FlBioNetworkD3NodeType,
+                        public fillColor: string, public strokeColor: string,
                         public data: FlBioNetworkMetabolite | FlBioNetworkReaction) {
     super();
     if (data.position != null && data.position.x != null && data.position.y != null) {

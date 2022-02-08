@@ -151,16 +151,16 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
     const links: FlD3SelectionSimple<FlBioNetworkD3Link> =
       this.groupState.allLinks.filter((link: FlBioNetworkD3Link) => link.isLinkedToAnyNode(reactionsIds));
-    const reactionSelection: FlD3SelectionSimple<FlBioNetworkD3Node> =
+    const nodeSelection: FlD3SelectionSimple<FlBioNetworkD3Node> =
       this.allNodes.filter((node: FlBioNetworkD3Node) => reactionsIds.includes(node.id));
 
     // if the pathway was not highlighted
     if (!pathway.highlighted) {
       links.style('stroke', pathway.color);
-      reactionSelection.style('stroke', pathway.color);
+      nodeSelection.style('stroke', pathway.color);
     } else {
       links.style('stroke', 'grey'); // todo this color is not correct
-      reactionSelection.style('stroke', node => node.color);
+      nodeSelection.style('stroke', node => node.fillColor);
     }
     pathway.highlighted = !pathway.highlighted;
   }
