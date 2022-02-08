@@ -6,12 +6,11 @@ import {
   FlLoginDialogInput,
   FlLoginDialogResult
 } from '@monorepo/front-core-lib';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {LabEnvironmentHelper} from '../utils/lab-environment.helper';
 import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {LabEnvStore} from './lab-env.store';
-import {LabLoginResponse} from '../model/global/lab-login-response.class';
 
 /**
  * Service to manage the DEV environment
@@ -40,7 +39,6 @@ export class LabDevEnvironmentService {
           if (isLogged) {
             this.labEnvManager.setLabEnvironment('dev');
           } else {
-            this.labEnvManager.clearUserJWTAndData('onlyDev');
             this.labEnvManager.clearLabEnvironmentStorage();
           }
           return;
@@ -61,19 +59,10 @@ export class LabDevEnvironmentService {
 
   // return true if user is logged to the dev api
   public userIsLoggedInDev(): Observable<boolean> {
-    const devToken: string = this.labEnvManager.getToken('dev');
-
-    if (devToken == null) return of(false);
-
-    const header: HttpHeaders = new HttpHeaders({
-      Authorization: this.labEnvManager.getToken('prod'),
-    });
-    return this.httpClient.get(LabEnvironmentHelper.getDevCoreApiUrl() + 'check-token', {headers: header}).pipe(
+    return this.httpClient.get(LabEnvironmentHelper.getDevCoreApiUrl() + 'check-token').pipe(
       map(() => true),
-      catchError(() => {
-        this.labEnvManager.clearUserJWTAndData('onlyDev');
-        return of(false);
-      }),
+      catchError(() => of(false)
+      ),
     );
   }
 
@@ -98,15 +87,11 @@ export class LabDevEnvironmentService {
 
   /**
    * Log the user to the dev environment using the production token
-   * It success, its returns the token for dev env
+   * If success, its returns the token for dev env
    */
   private logUserInDevEnv(): Observable<boolean> {
-    const header: HttpHeaders = new HttpHeaders({
-      Authorization: this.labEnvManager.getToken('prod'),
-    });
-
-    return this.httpClient.post(LabEnvironmentHelper.getDevCoreApiUrl() + 'dev-login', null, {headers: header}).pipe(
-      tap((token: LabLoginResponse) => this.devLoginSuccess(token)),
+    return this.httpClient.post(LabEnvironmentHelper.getDevCoreApiUrl() + 'dev-login', null).pipe(
+      tap(() => this.devLoginSuccess()),
       map(() => true),
       catchError(() => this.openDevLoginDialog()),
     );
@@ -125,7 +110,7 @@ export class LabDevEnvironmentService {
       map((result: FlLoginDialogResult) => {
         // if the login was successful, save the token
         if (result?.success) {
-          this.devLoginSuccess(result.response);
+          this.devLoginSuccess();
           return true;
           // if the login wasn't successful, reset to prod mode
         } else {
@@ -137,9 +122,8 @@ export class LabDevEnvironmentService {
   }
 
   // store the dev token and switch env to dev
-  private devLoginSuccess(token: LabLoginResponse): void {
+  private devLoginSuccess(): void {
     this.labEnvManager.setLabEnvironment('dev');
-    this.labEnvManager.storeUserJWT(`Bearer ${token.access_token}`);
   }
 
 

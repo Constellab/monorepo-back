@@ -5,11 +5,12 @@ import {LabAppComponent} from './lab-app.component';
 import {LabMainModule} from './lab-main/lab-main.module';
 import {LabCoreModule} from './lab-core/lab-core.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {
   FlApiModule,
   FlAuthModule,
   FlDialogModule,
+  FlHttpInterceptorService,
   FlIconModule,
   FlPortalActionsModule,
   FlPortalModule,
@@ -24,15 +25,9 @@ import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {LabLoginModule} from './lab-login/lab-login.module';
 import {LabAuthenticationService} from './lab-core/service/lab-authentication.service';
 import {LabApiErrorService} from './lab-core/service/lab-api-error.service';
-import {LabEnvStore} from './lab-core/service/lab-env.store';
 import {LabApiServiceConfig} from './lab-core/service/lab-api-module.config';
 import {LabAppRoutingModule} from './lab-app-routing.module';
 import {LabTagService} from './lab-core/entity-service/lab-tag.service';
-
-
-function loadTokenFromLocalStorage(jwtManager: LabEnvStore): () => void {
-  return (): void => jwtManager.loadTokenFromLocalStorage();
-}
 
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
@@ -81,8 +76,8 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
   ],
   providers: [
     {
-      provide: APP_INITIALIZER, useFactory: loadTokenFromLocalStorage,
-      deps: [LabEnvStore],
+      provide: HTTP_INTERCEPTORS,
+      useClass: FlHttpInterceptorService,
       multi: true
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},

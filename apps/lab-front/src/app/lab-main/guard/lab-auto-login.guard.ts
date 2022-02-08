@@ -1,9 +1,11 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, UrlTree} from '@angular/router';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {labConstBaseRoute} from '../../lab-core/utils/lab-base-route';
 import {FlLabRoute} from '@monorepo/front-core-lib';
-import {LabEnvStore} from '../../lab-core/service/lab-env.store';
+import {LabAuthenticationService} from '../../lab-core/service/lab-authentication.service';
+import {LabRouterService} from '../../lab-core/service/lab-router.service';
+import {catchError, map} from 'rxjs/operators';
 
 /**
  * Guard to get the token from the query param named 'token', store it locally
@@ -15,7 +17,7 @@ import {LabEnvStore} from '../../lab-core/service/lab-env.store';
 })
 export class LabAutoLoginGuard implements CanActivate {
 
-  constructor(private router: Router, private jwtManager: LabEnvStore) {
+  constructor(private router: Router, private authenticateService: LabAuthenticationService) {
   }
 
   canActivate(
@@ -25,10 +27,13 @@ export class LabAutoLoginGuard implements CanActivate {
 
     if (token) {
       // store the token in the
-      this.jwtManager.storeUserJWT(token);
+      return this.authenticateService.autoLogin(token).pipe(
+        map(() => this.router.parseUrl('/' + labConstBaseRoute)),
+        catchError(() => of(this.router.parseUrl(LabRouterService.getLoginRoute())))
+      );
+    } else {
+      return this.router.parseUrl(LabRouterService.getLoginRoute());
     }
-
-    return this.router.parseUrl('/' + labConstBaseRoute);
   }
 
 }

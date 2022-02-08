@@ -60,12 +60,6 @@ export class LabApiServiceConfig extends FlApiServiceConfig {
   }
 
   getHeaders(): Record<string, string> {
-    const token = this.labEnvStore.getToken();
-
-    if (token) {
-      return {Authorization: this.labEnvStore.getToken()};
-    }
-
     return {};
   }
 

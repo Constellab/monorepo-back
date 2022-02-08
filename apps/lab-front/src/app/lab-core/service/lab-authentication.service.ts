@@ -1,10 +1,18 @@
 import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {FlApiService, FlAuthService, FlCleanerService} from '@monorepo/front-core-lib';
+import {Observable} from 'rxjs';
+import {
+  FlApiService,
+  flAuthExpiredCookie,
+  FlAuthService,
+  FlCleanerService,
+  FlCookieService
+} from '@monorepo/front-core-lib';
 import {CmCredentials} from '@monorepo/common-model';
 import {tap} from 'rxjs/operators';
-import {LabEnvStore} from './lab-env.store';
-import {LabLoginResponse} from '../model/global/lab-login-response.class';
+
+interface ExpiresIn {
+  expiresIn: number;
+}
 
 /**
  * Service to handle login and logout and store cookie to check if user is connected
@@ -16,7 +24,7 @@ export class LabAuthenticationService extends FlAuthService {
 
 
   constructor(private apiService: FlApiService,
-              private jwtManager: LabEnvStore) {
+              private cookieService: FlCookieService) {
     super();
   }
 
@@ -25,19 +33,54 @@ export class LabAuthenticationService extends FlAuthService {
    * The JWT is returned in a HTTPOnly cookie and is not accessible from JS
    * @param credentials username and password
    */
-  public login(credentials: CmCredentials): Observable<LabLoginResponse> {
+  public login(credentials: CmCredentials): Observable<ExpiresIn> {
     return this.apiService.post('login', credentials).pipe(
-      tap((response: LabLoginResponse) => this.jwtManager.storeUserJWT(`Bearer ${response.access_token}`))
+      tap(expiresIn => this.setAuthExpirationCookie(expiresIn))
     );
   }
 
+  public autoLogin(tempToken: string): Observable<ExpiresIn> {
+    return this.apiService.post(`login-temp-access/${tempToken}`, null).pipe(
+      tap(expiresIn => this.setAuthExpirationCookie(expiresIn))
+    );
+  }
+
+  private setAuthExpirationCookie(expiresIn: ExpiresIn): void {
+    // get the date in expiresIn milliseconds
+    const date = new Date(new Date().getTime() + (expiresIn.expiresIn * 1000));
+    // clear the millisecond to get closer to real expiration
+    date.setMilliseconds(0);
+    this.cookieService.setCookie(flAuthExpiredCookie, date.getTime(),
+      {expires: date, sameSite: 'Strict', path: '/', secure: false});
+  }
+
+  private clearAuthExpirationCookie(): void {
+    this.cookieService.removeCookie(flAuthExpiredCookie,
+      {sameSite: 'Strict', path: '/', secure: false});
+  }
 
   /**
    * Remove the JWT from the memory and localstorage, clear the user data
    */
   public logout(): Observable<void> {
-    // clear all the services
+    return this.apiService.post('logout', null).pipe(
+      tap(() => this.clearAuthExpirationCookie()),
+      tap(() => this.clearServices())
+    );
+  }
+
+  /**
+   * Return true if the cookie 'Auth_Expiration' exists
+   */
+  public hasAuthorizationCookie(): boolean {
+    return this.cookieService.check(flAuthExpiredCookie);
+  }
+
+  /**
+   * Clear the store data in the services
+   * @private
+   */
+  private clearServices(): void {
     FlCleanerService.getInstance().cleanServices();
-    return of(null);
   }
 }

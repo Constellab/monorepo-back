@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {
   FlApiErrorService,
+  flAuthExpiredCookie,
+  FlCookieService,
   FlDialogService,
   FlLoginSavedRoute,
   FlServerError,
@@ -23,7 +25,8 @@ export class LabApiErrorService extends FlApiErrorService {
               translateService: FlTranslateService,
               private dialogService: FlDialogService,
               private labEnvManager: LabEnvStore,
-              private router: Router) {
+              private router: Router,
+              private cookieService: FlCookieService) {
     super(snackBarService, translateService);
   }
 
@@ -82,13 +85,13 @@ export class LabApiErrorService extends FlApiErrorService {
   private logoutUser(): void {
     const env: LabEnvironment = this.labEnvManager.getLabEnvironment();
 
-    // for security clear the authentication expiration cookie
-    // to assure the user is disconnect
-    this.labEnvManager.clearUserJWTAndData(env === 'prod' ? 'all' : 'onlyDev');
-
     if (env === 'dev') {
       //switch to prod environment
       this.labEnvManager.setLabEnvironment('prod');
+    } else {
+      // for security clear the authentication expiration cookie
+      // to assure the user is disconnected
+      this.cookieService.removeCookie(flAuthExpiredCookie);
     }
 
     // save the current url for rerouting after login

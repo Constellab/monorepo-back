@@ -3,8 +3,7 @@
  */
 
 export interface CnExternalLabLoginResponse {
-  access_token: string;
-  token_type: string;
+  temp_token: string;
 }
 
 export type CnExternalLabUserGroup = 'ADMIN' | 'USER';

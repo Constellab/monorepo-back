@@ -85,7 +85,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       const token =
         await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(), CnCurrentUserHelper.getAndCheckCurrentUser());
 
-      return new CnLabInstanceToken(labInstance, token);
+      return new CnLabInstanceToken(labInstance, token.temp_token);
     } catch (e: any) {
       const error: CnExternalLabError = (e.response as AxiosResponse)?.data ?? '';
 

@@ -52,6 +52,10 @@ export class LabRouterService {
     return `${labConstReportFullRoute}/${id}`;
   }
 
+  public static getLoginRoute(): string {
+    return `/login`;
+  }
+
   /////////////////// NAVIGATE METHODS ///////////////////
   public navigateToExperimentListRoute(): Promise<boolean> {
     return this.router.navigate([LabRouterService.getExperimentListRoute()]);
