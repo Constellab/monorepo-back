@@ -135,6 +135,12 @@ export class LabReportDetailPageComponent implements OnInit, OnDestroy {
     }
   }
 
+  printReport(): void {
+    if (window) {
+      window.print();
+    }
+  }
+
   ngOnDestroy(): void {
     this.contentDebouncer.complete();
   }

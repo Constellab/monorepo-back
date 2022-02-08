@@ -20,6 +20,12 @@
             <mat-icon>verified</mat-icon>
           </button>
 
+          <button mat-icon-button type="button" [matTooltip]="'biox.print_report' | translate"
+                  (click)="printReport()">
+            <mat-icon>print</mat-icon>
+          </button>
+
+
           <button mat-icon-button type="button" [matTooltip]="'biox.delete_report' | translate"
                   color="warn" (click)="delete()">
             <mat-icon>delete</mat-icon>

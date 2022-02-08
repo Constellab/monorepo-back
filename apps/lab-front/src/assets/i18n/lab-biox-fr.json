@@ -152,6 +152,7 @@
     "update_resource_type": "Modifier le type de la resource",
     "update_resource_type_help": "Vous pouvez modifier le type de la resource seulement si cette resource n'est pas utilisée dans une expérience",
     "resource_type_updated": "Type de la resource modifié",
-    "resource_type": "Type de la resource"
+    "resource_type": "Type de la resource",
+    "print_report": "Imprimer le rapport"
   }
 }
