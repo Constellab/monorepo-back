@@ -8,6 +8,7 @@ import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-sta
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
 import {CnExternalLabUserService} from '../cn-external-lab-api/cn-external-lab-user.service';
 import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
+import {CnLabInstanceToken} from './cn-lab-instance-token.class';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnUsersService} from '../cn-users/cn-users.service';
 import {CnExternalLabError} from '../cn-external-lab-api/model/cn-external-lab-error.class';
@@ -79,10 +80,12 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     return this.updateCurrentStatus(CnLabInstanceStatus.STOPPED, id);
   }
 
-  public async login(labInstance: CnLabInstance): Promise<string> {
+  public async login(labInstance: CnLabInstance): Promise<CnLabInstanceToken> {
     try {
-      return await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(),
-        CnCurrentUserHelper.getAndCheckCurrentUser());
+      const token =
+        await this.externalLabUserService.generateTempAccess(labInstance.getGlabApiInfo(), CnCurrentUserHelper.getAndCheckCurrentUser());
+
+      return new CnLabInstanceToken(labInstance, token);
     } catch (e: any) {
       const error: CnExternalLabError = (e.response as AxiosResponse)?.data ?? '';
 

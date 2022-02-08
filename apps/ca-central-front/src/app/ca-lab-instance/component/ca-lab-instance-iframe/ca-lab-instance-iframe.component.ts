@@ -15,7 +15,7 @@ export class CaLabInstanceIframeComponent implements OnInit {
 
   @Input() labUrl: string;
 
-  @Input() token: string;
+  @Input() tempToken: string;
 
   @Input() iframeOption: CaLabIframeOptions;
 
@@ -25,7 +25,7 @@ export class CaLabInstanceIframeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.safeUrl = this.labIframeService.getLoginSafeUrl(this.labUrl, this.token, this.iframeOption);
+    this.safeUrl = this.labIframeService.getLoginSafeUrl(this.labUrl, this.tempToken, this.iframeOption);
   }
 
 }

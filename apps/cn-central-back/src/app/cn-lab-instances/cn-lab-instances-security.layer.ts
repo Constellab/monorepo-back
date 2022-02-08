@@ -18,6 +18,7 @@ import {
   CnLabManagerStatus
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabManagerService} from './cn-lab-manager.service';
+import {CnLabInstanceToken} from './cn-lab-instance-token.class';
 
 
 @Injectable()
@@ -70,7 +71,7 @@ export class CnLabInstancesSecurityLayer extends CnAbstractSecurityLayer<CnLabIn
     return this.service.stopInstance(id);
   }
 
-  async login(id: string): Promise<string> {
+  async login(id: string): Promise<CnLabInstanceToken> {
     const labInstance: CnLabInstance = await this.getAndCheckAuthorizationToFindById(id);
 
     // check that the lab is running

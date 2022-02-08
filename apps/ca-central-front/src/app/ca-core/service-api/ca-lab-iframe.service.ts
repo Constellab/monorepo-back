@@ -19,11 +19,11 @@ export class CaLabIframeService {
   /**
    * return the login route to open a lab
    * @param labUrl url of the lab
-   * @param loginToken single use token for the login
+   * @param tempToken single use token for the login
    * @param iframeOption additional option to open the iframe
    */
-  public getLoginSafeUrl(labUrl: string, loginToken: string, iframeOption ?: CaLabIframeOptions): SafeUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(labUrl + '/' + FlLabRoute.autoLogin.getRoute(loginToken));
+  public getLoginSafeUrl(labUrl: string, tempToken: string, iframeOption ?: CaLabIframeOptions): SafeUrl {
+    return this.sanitizer.bypassSecurityTrustResourceUrl(labUrl + '/' + FlLabRoute.autoLogin.getRoute(tempToken));
   }
 
 }

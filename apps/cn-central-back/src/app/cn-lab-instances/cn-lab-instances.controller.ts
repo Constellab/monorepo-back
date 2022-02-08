@@ -11,6 +11,7 @@ import {
   CnLabDockerPs,
   CnLabManagerStatus
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
+import {CnLabInstanceToken} from './cn-lab-instance-token.class';
 
 
 @Controller('lab-instances')
@@ -91,7 +92,7 @@ export class CnLabInstancesController {
    * return the labInstance
    */
   @Post(':id/login')
-  public login(@Param('id', new ParseUUIDPipe()) id: string): Promise<string> {
+  public login(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceToken> {
     return this.securityLayer.login(id);
   }
 
