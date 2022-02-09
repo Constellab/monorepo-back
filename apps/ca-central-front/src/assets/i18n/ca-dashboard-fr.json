@@ -21,5 +21,6 @@
   "reports": "Rapports validés",
   "no_report": "Aucun rapport validé",
   "report": "Rapport validé",
-  "url": "URL"
+  "url": "URL",
+  "print_report": "Imprimer"
 }

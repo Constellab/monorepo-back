@@ -14,11 +14,15 @@
   </fl-article-left-side>
 
   <fl-article>
-    <fl-text-editor [ngModel]="report.content" mode="JSON" [disabled]="true" class="g-full-height"></fl-text-editor>
+    <fl-text-editor [ngModel]="report.content" mode="JSON" [disabled]="true" class="g-full-height" flPrint></fl-text-editor>
 
   </fl-article>
 
   <fl-article-right-side>
+    <button mat-stroked-button (click)="printReport()" class="g-button-small print-button">
+      {{'print_report' | translate}}
+      <mat-icon>print</mat-icon>
+    </button>
     <ca-experiments-list [experiments$]="experiments$"></ca-experiments-list>
   </fl-article-right-side>
 </fl-article-container>

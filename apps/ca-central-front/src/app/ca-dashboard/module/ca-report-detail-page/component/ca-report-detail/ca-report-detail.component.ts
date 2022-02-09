@@ -22,4 +22,9 @@ export class CaReportDetailComponent implements OnInit {
     this.experiments$ = this.experimentService.getExperimentsByReport(this.report.id);
   }
 
+  printReport(): void {
+    if (window) {
+      window.print();
+    }
+  }
 }
