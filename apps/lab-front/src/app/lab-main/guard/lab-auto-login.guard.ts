@@ -1,11 +1,8 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, UrlTree} from '@angular/router';
-import {Observable, of} from 'rxjs';
-import {labConstBaseRoute} from '../../lab-core/utils/lab-base-route';
-import {FlLabRoute} from '@monorepo/front-core-lib';
+import {Observable} from 'rxjs';
 import {LabAuthenticationService} from '../../lab-core/service/lab-authentication.service';
 import {LabRouterService} from '../../lab-core/service/lab-router.service';
-import {catchError, map} from 'rxjs/operators';
 
 /**
  * Guard to get the token from the query param named 'token', store it locally
@@ -20,17 +17,19 @@ export class LabAutoLoginGuard implements CanActivate {
   constructor(private router: Router, private authenticateService: LabAuthenticationService) {
   }
 
-  canActivate(
-    route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-    const token: string = route.queryParams[FlLabRoute.autoLogin.tokenQueryParam];
+    let expiresIn: number;
+    try {
+      expiresIn = parseInt(route.queryParams['expiresIn']);
+    } catch (e) {
+      expiresIn = null;
+    }
 
-    if (token) {
+    if (expiresIn) {
       // store the token in the
-      return this.authenticateService.autoLogin(token).pipe(
-        map(() => this.router.parseUrl('/' + labConstBaseRoute)),
-        catchError(() => of(this.router.parseUrl(LabRouterService.getLoginRoute())))
-      );
+      this.authenticateService.setAuthExpirationCookie(expiresIn);
+      return this.router.parseUrl(LabRouterService.getLoginRoute());
     } else {
       return this.router.parseUrl(LabRouterService.getLoginRoute());
     }

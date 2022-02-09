@@ -15,7 +15,7 @@ import {LabLoadEnvironmentGuard} from './guard/lab-load-environment.guard';
 
 const routes: Routes = [
   {
-    path: '', redirectTo: labConstBaseRoute, pathMatch: 'full'
+    path: '', redirectTo: 'login', pathMatch: 'full'
   },
   {
     // route to get the token from url and auto-log the user

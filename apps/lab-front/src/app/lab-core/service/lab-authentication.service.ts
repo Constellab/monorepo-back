@@ -35,19 +35,19 @@ export class LabAuthenticationService extends FlAuthService {
    */
   public login(credentials: CmCredentials): Observable<ExpiresIn> {
     return this.apiService.post('login', credentials).pipe(
-      tap(expiresIn => this.setAuthExpirationCookie(expiresIn))
+      tap((expiresIn: ExpiresIn) => this.setAuthExpirationCookie(expiresIn.expiresIn))
     );
   }
 
   public autoLogin(tempToken: string): Observable<ExpiresIn> {
     return this.apiService.post(`login-temp-access/${tempToken}`, null).pipe(
-      tap(expiresIn => this.setAuthExpirationCookie(expiresIn))
+      tap((expiresIn: ExpiresIn) => this.setAuthExpirationCookie(expiresIn.expiresIn))
     );
   }
 
-  private setAuthExpirationCookie(expiresIn: ExpiresIn): void {
+  public setAuthExpirationCookie(expiresIn: number): void {
     // get the date in expiresIn milliseconds
-    const date = new Date(new Date().getTime() + (expiresIn.expiresIn * 1000));
+    const date = new Date(new Date().getTime() + (expiresIn * 1000));
     // clear the millisecond to get closer to real expiration
     date.setMilliseconds(0);
     this.cookieService.setCookie(flAuthExpiredCookie, date.getTime(),
