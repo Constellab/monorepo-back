@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query, Res} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstancesSecurityLayer} from './cn-lab-instances-security.layer';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
@@ -11,7 +11,6 @@ import {
   CnLabDockerPs,
   CnLabManagerStatus
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
-import {Response} from 'express';
 
 @Controller('lab-instances')
 export class CnLabInstancesController {
@@ -87,15 +86,14 @@ export class CnLabInstancesController {
   }
 
   /**
-   * Log the current user to the lab instance
+   * Get the url to log into the lab
    * return the labInstance
    */
-  @Post(':id/login')
-  public async login(@Param('id', new ParseUUIDPipe()) id: string,
-                     @Res() response: Response): Promise<void> {
+  @Get(':id/login')
+  public async login(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
     const result = await this.securityLayer.login(id);
     // redirect to lab auto login page
-    response.redirect(result.labInstance.getGlabApiInfo().apiUrl + '/auto-login?token=' + result.token);
+    return {url: result.labInstance.getGlabApiInfo().apiUrl + '/core-api/login-temp-access/' + result.token};
   }
 
   /**

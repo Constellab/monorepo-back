@@ -4,7 +4,6 @@ import {
   CaLabInstance,
   CaLabInstanceDatasource,
   CaLabInstanceStatusHistory,
-  CaLabInstanceToken,
   CaLabInstanceUser,
   CaLabInstanceUserForm
 } from '../model/entities/ca-lab-instance.class';
@@ -86,8 +85,8 @@ export class CaLabInstanceService {
   /**
    * Log the user to the lab instance and return the authentication in the cookie
    */
-  public logUserToLab(id: string): Observable<CaLabInstanceToken> {
-    return this.apiService.post(`${this.route}/${id}/login`, null);
+  public logUserToLab(id: string): Observable<{ url: string }> {
+    return this.apiService.get(`${this.route}/${id}/login`);
   }
 
   public getAll(): FlArrayObs<CaLabInstance> {

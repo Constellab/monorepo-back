@@ -4,8 +4,6 @@ import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance
 import {ActivatedRoute, Params} from '@angular/router';
 import {combineLatest} from 'rxjs';
 import {CaLabIframeOptions} from '../../../ca-core/service/ca-router.service';
-import {FlSnackBarService} from '@monorepo/front-core-lib';
-import {CaLabIframeService} from '../../../ca-core/service-api/ca-lab-iframe.service';
 
 /**
  * Page for the lab instance iframe
@@ -26,9 +24,7 @@ export class CaLabInstanceIframePageComponent implements OnInit {
   isLoading: boolean = false;
 
   constructor(private labInstanceService: CaLabInstanceService,
-              private route: ActivatedRoute,
-              private snackBarService: FlSnackBarService,
-              private labIframeService: CaLabIframeService) {
+              private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
@@ -48,16 +44,16 @@ export class CaLabInstanceIframePageComponent implements OnInit {
   private logUserToLab(id: string): void {
     this.isLoading = true;
     this.labInstanceService.logUserToLab(id).subscribe(
-      labInstance => this.loginSuccess(labInstance),
+      login => this.loginSuccess(login.url),
       () => this.isLoading = false
     );
   }
 
-  private loginSuccess(labInstanceToken: CaLabInstanceToken): void {
+  private loginSuccess(loginUrl: string): void {
     this.isLoading = false;
 
     // redirect to lab front
-    window.location.replace(this.labIframeService.getLoginUrl(labInstanceToken.labInstance.frontUrl, labInstanceToken.token));
+    window.location.replace(loginUrl);
 
     // if (!labInstanceToken.labInstance.isRunning()) {
     //   this.snackBarService.openErrorMessage('lab_not_running', true);
