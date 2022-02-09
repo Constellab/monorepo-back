@@ -1,6 +1,7 @@
 import {FlEntity} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {LabBaseEntity} from '../global/lab-entity.entity';
+import {ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 
 export class LabUser implements FlEntity {
   id: string;
@@ -12,6 +13,10 @@ export class LabUser implements FlEntity {
 
   @Expose({name: 'last_name'})
   lastname: string;
+
+  theme: ClTheme;
+
+  lang: ClSupportedLanguage;
 
   get fullname(): string {
     return (this.firstname || '') + ' ' + (this.lastname || '');

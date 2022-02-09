@@ -53,7 +53,7 @@ export class CaAuthenticatedUserService implements FlCleanableService {
   private storeUserAuthenticated(user: CaUser): CaUser {
 
     // check the user language
-    this.checkAndChangeUserLanguage(user.lang);
+    this.translateService.changeAppLanguage(user.lang);
 
     // set the user theme
     this.themeService.changeTheme(user.theme);
@@ -69,15 +69,6 @@ export class CaAuthenticatedUserService implements FlCleanableService {
     this.userSubject.next(this.userAuthenticated);
   }
 
-  // change the lang of the user
-  private checkAndChangeUserLanguage(lang: ClSupportedLanguage): void {
-    // if the language has changed
-    if (this.translateService.getUserLanguageCookie() !== lang) {
-      this.translateService.changeAppLanguage(lang);
-    }
-  }
-
-
   /////////////////////////////// METHOD ON AUTHENTICATED USER //////////////////////////
 
   public changeLanguage(lang: ClSupportedLanguage): Observable<void> {
@@ -87,7 +78,7 @@ export class CaAuthenticatedUserService implements FlCleanableService {
   }
 
   private changeLanguageSuccess(lang: ClSupportedLanguage): void {
-    this.checkAndChangeUserLanguage(lang);
+    this.translateService.changeAppLanguage(lang);
     if (this.userAuthenticated) {
       this.userAuthenticated.lang = lang;
       this.notifyUserChange();

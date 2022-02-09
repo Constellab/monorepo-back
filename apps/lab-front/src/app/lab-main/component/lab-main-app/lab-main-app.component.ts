@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {LabEnvStore} from '../../../lab-core/service/lab-env.store';
 import {LabEnvironmentHelper} from '../../../lab-core/utils/lab-environment.helper';
+import {LabAuthenticatedUserService} from '../../../lab-core/service/lab-authenticated-user.service';
 
 @Component({
   selector: 'lab-main-app',
@@ -16,11 +17,13 @@ export class LabMainAppComponent implements OnInit {
 
   centralAppUrl: string;
 
-  constructor(private labEnvManager: LabEnvStore) {
+  constructor(private labEnvManager: LabEnvStore,
+              private authenticatedUserService: LabAuthenticatedUserService) {
   }
 
   ngOnInit(): void {
     this.centralAppUrl = LabEnvironmentHelper.getCentralFrontAppUrl();
+    this.authenticatedUserService.loadAuthenticatedUser();
   }
 
   get toolbarColorClass(): Observable<string> {

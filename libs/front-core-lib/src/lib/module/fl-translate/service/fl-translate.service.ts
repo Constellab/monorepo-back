@@ -7,7 +7,7 @@ import {FL_TRANSLATE_MODULE_CONFIG, FlTranslateModuleConfig} from '../model/fl-t
 import {CookieService} from 'ngx-cookie-service';
 import {DateAdapter} from '@angular/material/core';
 import {Settings} from 'luxon';
-import {ClDateHelper, ClStringHelper, ClSupportedLanguage} from '@monorepo/core-lib';
+import {ClDateHelper, clLangIsSupported, ClStringHelper, ClSupportedLanguage} from '@monorepo/core-lib';
 import {FlPlatformService} from '../../../service/fl-plateform.service';
 
 @Injectable()
@@ -185,6 +185,11 @@ export class FlTranslateService {
    * @param lang the language of the user
    */
   public changeAppLanguage(lang: ClSupportedLanguage): void {
+    if (!clLangIsSupported(lang)) return;
+
+    // do nothing if the lang didn't change
+    if (this.getUserLanguageCookie() === lang) return;
+
     // set the language in the cookies
     this.cookieService.set(this.cookieKey, lang,
       this.getDateInTenYears(), '/', null, false

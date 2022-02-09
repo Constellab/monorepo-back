@@ -27,7 +27,8 @@ export class CnExternalLabUserService {
       firstname: user.firstname,
       lastname: user.lastname,
       email: user.email,
-      theme: user.theme
+      theme: user.theme,
+      lang: user.lang
     };
 
     return this.externalLabApiService.post(labInfo, `${this.route}/generate-temp-access`, body).toPromise();
