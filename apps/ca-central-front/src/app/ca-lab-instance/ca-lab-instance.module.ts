@@ -8,10 +8,6 @@ import {
 import {CaLabInstanceDetailComponent} from './component/ca-lab-instance-detail/ca-lab-instance-detail.component';
 import {CaLabCoreModule} from '../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
 import {CaServerInfoCoreModule} from '../ca-core/entity-module/ca-server-info-core/ca-server-info-core.module';
-import {CaLabInstanceIframeComponent} from './component/ca-lab-instance-iframe/ca-lab-instance-iframe.component';
-import {
-  CaLabInstanceIframePageComponent
-} from './component/ca-lab-instance-iframe-page/ca-lab-instance-iframe-page.component';
 import {CaMyLabInstancesPageComponent} from './component/ca-my-lab-instances-page/ca-my-lab-instances-page.component';
 import {
   CaLabInstanceUsersListComponent
@@ -47,8 +43,6 @@ import {
   declarations: [
     CaLabInstanceDetailPageComponent,
     CaLabInstanceDetailComponent,
-    CaLabInstanceIframeComponent,
-    CaLabInstanceIframePageComponent,
     CaMyLabInstancesPageComponent,
     CaLabInstanceUsersListComponent,
     CaLabInstanceUsersTableComponent,

@@ -23,6 +23,7 @@ import {CaLabFormDialogComponent} from './component/ca-lab-form-dialog/ca-lab-fo
 import {
   CaLabInstanceStatusDialogComponent
 } from './component/ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
+import {CaLabLoginButtonComponent} from './component/ca-lab-login-button/ca-lab-login-button.component';
 
 /**
  * Core module for Lab and LabInstance
@@ -40,6 +41,7 @@ import {
     CaLabTableComponent,
     CaLabFormDialogComponent,
     CaLabInstanceStatusDialogComponent,
+    CaLabLoginButtonComponent,
   ],
   exports: [
     CaLabCardComponent,
@@ -52,6 +54,7 @@ import {
     CaSelectLabOptionsComponent,
     CaLabTableComponent,
     CaLabFormDialogComponent,
+    CaLabLoginButtonComponent,
   ],
   imports: [
     CommonModule,

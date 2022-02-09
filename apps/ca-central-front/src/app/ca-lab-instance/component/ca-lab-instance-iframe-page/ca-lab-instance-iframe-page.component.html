@@ -1,9 +1,0 @@
-<fl-section class="full-page" [isLoading]="isLoading" [object]="labInstanceToken" [emptyText]="errorText">
-
-  <ng-template flSectionBody>
-    <ca-lab-instance-iframe [labUrl]="labInstanceToken.labInstance.frontUrl"
-                             [tempToken]="labInstanceToken.token"
-                             [iframeOption]="iframeOptions"></ca-lab-instance-iframe>
-  </ng-template>
-
-</fl-section>
