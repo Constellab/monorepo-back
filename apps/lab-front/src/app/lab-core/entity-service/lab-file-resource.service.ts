@@ -5,7 +5,6 @@ import {LabFileType} from '../model/entities/resource/lab-file-type';
 import {ClPageI} from '@monorepo/core-lib';
 import {LabResource, LabResourceDatasource} from '../model/entities/resource/lab-resource.entity';
 import {HttpEvent} from '@angular/common/http';
-import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -58,19 +57,13 @@ export class LabFileResourceService {
   }
 
 
-  public downloadFile(id: string): Observable<void> {
-    // get the download file url
-    return this.getDownloadFileUrl(id).pipe(
-      map(url => {
-        // download the file from the url
-        const fullUrl = this.apiService.getBaseRouteUrl(url);
-        FlFileHelper.downloadUrl(fullUrl);
-      })
-    );
+  public downloadFile(id: string): void {
+    // download the file from the url
+    FlFileHelper.downloadUrl(this.getDownloadFileUrl(id));
   }
 
-  public getDownloadFileUrl(id: string): Observable<string> {
-    return this.apiService.get(`${this.route}/${id}/get-download-url`);
+  public getDownloadFileUrl(id: string): string {
+    return this.apiService.getBaseRouteUrl(`fs-node/${id}/download`);
   }
 
 

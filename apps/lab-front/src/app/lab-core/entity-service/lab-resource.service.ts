@@ -154,20 +154,12 @@ export class LabResourceService implements FlSearchService<LabResource> {
     return this.apiService.get(`${this.route}/${resourceTypingName}/exporter`, LabTypeService.deserializeTyping);
   }
 
-  public downloadResource(resourceId: string, exporterTypingName: string, config: LabConfigValues): Observable<void> {
-    // get the download file url
-    return this.getDownloadFileUrl(resourceId, exporterTypingName).pipe(
-      map(url => {
-        // create the download url, with config params
-        const fullUrl = this.apiService.getBaseRouteUrl(url) + '?' +
-          this.apiService.convertRecordToURLParams(config);
+  public downloadResource(resourceId: string, exporterTypingName: string, config: LabConfigValues): void {
+    // create the download url, with config params
+    const fullUrl = this.apiService.getBaseRouteUrl(`resource/${resourceId}/download/${exporterTypingName}`) + '?' +
+      this.apiService.convertRecordToURLParams(config);
 
-        FlFileHelper.downloadUrl(fullUrl);
-      })
-    );
+    FlFileHelper.downloadUrl(fullUrl);
   }
 
-  private getDownloadFileUrl(resourceId: string, exporterTypingName: string): Observable<string> {
-    return this.apiService.get(`${this.route}/${resourceId}/${exporterTypingName}/get-download-url`);
-  }
 }

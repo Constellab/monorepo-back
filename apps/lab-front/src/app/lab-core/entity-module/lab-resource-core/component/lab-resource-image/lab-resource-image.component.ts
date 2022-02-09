@@ -2,7 +2,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
-import {Observable} from 'rxjs';
 
 /**
  * Component to view resource as image
@@ -16,7 +15,7 @@ export class LabResourceImageComponent implements OnInit {
 
   @Input() resource: LabResource;
 
-  downloadLink$: Observable<string>;
+  downloadLink: string;
 
   // todo improve svg support to use it directly in src attribute
   svg: SafeHtml;
@@ -37,7 +36,7 @@ export class LabResourceImageComponent implements OnInit {
       if (this.resource.fsNode.getExtension() === 'svg') {
         // this.svg = this.sanitizer.bypassSecurityTrustHtml(this.resource.data);
       } else {
-        this.downloadLink$ = this.resourceFileService.getDownloadFileUrl(this.resource.id);
+        this.downloadLink = this.resourceFileService.getDownloadFileUrl(this.resource.id);
       }
     }
   }

@@ -9,8 +9,8 @@ import {
   LabConfigureSpecsFormDialogInput
 } from '../entity-module/lab-config-core/component/lab-configure-specs-form-dialog/lab-configure-specs-form-dialog.component';
 import {LabConfigData, LabConfigValues} from '../model/entities/lab-config.entity';
-import {Observable, throwError} from 'rxjs';
-import {mergeMap} from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
+import {mergeMap, tap} from 'rxjs/operators';
 
 /**
  * Service to download any downloadable resource
@@ -31,19 +31,17 @@ export class LabResourceDownloadService {
    * @param resource
    */
   public downloadResource(resource: LabResource): void {
-    let obs: Observable<void>;
 
     // if it's a fsNode, directly download it, otherwise, call exporter
     if (resource.isFsNode()) {
-      obs = this.fileService.downloadFile(resource.id);
-    } else {
-      obs = this.downloadBasicResource(resource);
+      this.fileService.downloadFile(resource.id);
+      return;
     }
 
     this.actionService.addAction({
       type: this.downloadAction,
       text: {text: 'biox.preparing_resource_download', translateText: true},
-      action: obs
+      action: this.downloadBasicResource(resource)
     }, true);
   }
 
@@ -59,11 +57,12 @@ export class LabResourceDownloadService {
    * @param exporterType
    * @private
    */
-  private openExporterConfig(resource: LabResource, exporterType: LabProcessType): Observable<any> {
+  private openExporterConfig(resource: LabResource, exporterType: LabProcessType): Observable<void> {
 
     // if there is no config, call it directly without config
     if (!exporterType.hasConfigSpecs()) {
-      return this.callDownloadResource(resource.id, exporterType.typingName, {});
+      this.callDownloadResource(resource.id, exporterType.typingName, {});
+      return of(null);
     }
 
     const input: LabConfigureSpecsFormDialogInput = {
@@ -75,17 +74,17 @@ export class LabResourceDownloadService {
     // open the configuration dialog
     return this.dialogService.openMediumDialog(LabConfigureSpecsFormDialogComponent, {data: input})
       .afterClosed().pipe(
-        mergeMap(config => this.callDownloadResource(resource.id, exporterType.typingName, config))
+        tap(config => this.callDownloadResource(resource.id, exporterType.typingName, config))
       );
   }
 
   // on dialog closed, download the resource with the configuration (if it exists)
-  private callDownloadResource(resourceId: string, exporterTypingName: string, config?: LabConfigValues): Observable<any> {
+  private callDownloadResource(resourceId: string, exporterTypingName: string, config?: LabConfigValues): void {
     // cancel the process
     if (config == null) {
-      return throwError('Canceled');
+      throw Error('Canceled');
     }
 
-    return this.resourceService.downloadResource(resourceId, exporterTypingName, config);
+    this.resourceService.downloadResource(resourceId, exporterTypingName, config);
   }
 }
