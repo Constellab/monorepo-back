@@ -37,6 +37,14 @@ export class LabEnvironmentHelper {
     return `${LabEnvironmentHelper.getDevBaseApiUrl()}${LabEnvironmentHelper.coreApiRoute}/`;
   }
 
+  public static getCentralFrontUrl(): string {
+    return LabEnvironmentHelper.getEnv().settings.centralFrontUrl;
+  }
+
+  public static getCentralFrontAppUrl(): string {
+    return LabEnvironmentHelper.getCentralFrontUrl() + '/app';
+  }
+
   public static getEnv(): Environment {
     return environment;
   }

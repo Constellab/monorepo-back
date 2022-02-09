@@ -1,21 +1,37 @@
-<div class="page">
+<mat-sidenav-container class="page">
+  <mat-sidenav [fixedInViewport]="true" mode="side" [opened]="true" position="start"
+               class="sidenav" [ngClass]="toolbarColorClass | async">
 
-  <mat-toolbar fxLayout="row" fxLayoutAlign="space-between center" class="g-card-background toolbar"
-               [color]="toolbarColor | async">
-    <div fxLayout="row" fxLayoutGap="2em">
-      <a *ngFor="let link of accessibleLinks" mat-button [routerLink]="link.route"
-         class="nav-button" routerLinkActive="selected-menu">
-        <mat-icon [flIcon]="link.icon"></mat-icon>
-        {{link.label | translate}}
-      </a>
+    <div fxLayout="column" class="column-container">
+
+      <img src="assets/logo/logo_black.png" alt="Gencovery logo"
+           class="logo"/>
+      <!-- List of main menu links   -->
+      <div fxFlex="auto" class="menu" fxLayout="column">
+        <a mat-icon-button [href]="centralAppUrl"
+           class="nav-button" routerLinkActive="selected-menu"
+           [matTooltip]="'Dashboard' | translate" matTooltipPosition="after">
+          <mat-icon>dashboard</mat-icon>
+        </a>
+
+        <a *ngFor="let link of accessibleLinks" mat-icon-button [routerLink]="link.route"
+           class="nav-button" routerLinkActive="selected-menu"
+           [matTooltip]="link.label | translate" matTooltipPosition="after">
+          <mat-icon [flIcon]="link.icon"></mat-icon>
+        </a>
+      </div>
+
+      <!--  Authenticated user info  -->
+      <div fxLayout="row" fxLayoutAlign="center">
+        <lab-main-menu-settings></lab-main-menu-settings>
+      </div>
+
     </div>
 
-    <div>
-      <lab-main-menu-settings></lab-main-menu-settings>
-    </div>
-  </mat-toolbar>
+  </mat-sidenav>
 
-  <div class="page-content">
+  <mat-sidenav-content class="content">
     <router-outlet></router-outlet>
-  </div>
-</div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

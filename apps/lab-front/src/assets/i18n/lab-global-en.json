@@ -79,6 +79,7 @@
   "search": "Search",
   "count_result": "{{count}} Results",
   "queue_jobs": "Execution queue",
-  "empty_queue": "There is no experiment in the execution queue"
+  "empty_queue": "There is no experiment in the execution queue",
+  "dashboard": "Dashboard"
 }
 

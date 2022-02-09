@@ -79,5 +79,6 @@
   "search": "Rechercher",
   "count_result": "{{count}} Résultats",
   "queue_jobs": "Queue d'exécution",
-  "empty_queue": "Aucune expérience n'est dans la queue d'exécution"
+  "empty_queue": "Aucune expérience n'est dans la queue d'exécution",
+  "dashboard": "Dashboard"
 }

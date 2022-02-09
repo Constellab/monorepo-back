@@ -25,6 +25,8 @@ export interface LabEnvironmentSettings {
   // domain name of the server
   virtualHost: string;
 
+  // url of the central front
+  centralFrontUrl: string;
 }
 
 // Path of the environment json file created during the docker run (used in production)

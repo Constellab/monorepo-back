@@ -23,10 +23,6 @@ body {
   margin: 0;
 }
 
-// list of global variable
-:root {
-  --menu-toolbar-height: 58px
-}
 
 .g-page, .g-page-fixed {
   padding: 2em 2em 0 2em;
@@ -38,13 +34,13 @@ body {
 
 // full page with possibility to grow
 .g-page, .g-page-height {
-  min-height: calc(100vh - var(--menu-toolbar-height));
+  min-height: 100vh;
 }
 
 // 100% height max
 .g-page-fixed {
-  height: calc(100vh - var(--menu-toolbar-height));
-  max-height: calc(100vh - var(--menu-toolbar-height));
+  height: 100vh;
+  max-height: 100vh;
 }
 
 @media (max-width: 600px) {
@@ -63,8 +59,8 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--menu-toolbar-height));
-  max-height: calc(100vh - var(--menu-toolbar-height));
+  height: 100vh;
+  max-height: 100vh;
 }
 
 // when a flex element has this class, it takes al the width in the advanced search

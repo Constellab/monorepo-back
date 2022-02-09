@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {MainMenuLink, mainMenuLinks} from '../../utils/lab-main-menu-link.class';
 import {Observable} from 'rxjs';
-import {ThemePalette} from '@angular/material/core';
 import {map} from 'rxjs/operators';
 import {LabEnvStore} from '../../../lab-core/service/lab-env.store';
+import {LabEnvironmentHelper} from '../../../lab-core/utils/lab-environment.helper';
 
 @Component({
   selector: 'lab-main-app',
@@ -14,15 +14,18 @@ export class LabMainAppComponent implements OnInit {
 
   accessibleLinks: MainMenuLink[] = mainMenuLinks;
 
+  centralAppUrl: string;
+
   constructor(private labEnvManager: LabEnvStore) {
   }
 
   ngOnInit(): void {
+    this.centralAppUrl = LabEnvironmentHelper.getCentralFrontAppUrl();
   }
 
-  get toolbarColor(): Observable<ThemePalette> {
+  get toolbarColorClass(): Observable<string> {
     return this.labEnvManager.getLabEnvironment$().pipe(
-      map(env => env === 'prod' ? null : 'accent')
+      map(env => env === 'prod' ? 'g-card-background' : 'g-accent-background')
     );
   }
 
