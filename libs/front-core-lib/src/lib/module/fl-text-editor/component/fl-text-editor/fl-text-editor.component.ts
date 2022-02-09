@@ -145,7 +145,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     const scrollableElements = this.scrollDispatcher.getAncestorScrollContainers(this.elementRef);
     // if there are some scrollable parent, use the first one
     if (scrollableElements.length > 0) {
-      return scrollableElements[0].getElementRef().nativeElement;
+      return scrollableElements[scrollableElements.length - 1].getElementRef().nativeElement;
     }
 
     // otherwise, use document as scrolling container
