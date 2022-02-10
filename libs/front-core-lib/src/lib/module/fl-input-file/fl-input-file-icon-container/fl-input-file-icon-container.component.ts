@@ -26,6 +26,10 @@ export class FlInputFileIconContainerComponent implements OnInit {
 
   @Input() color: ThemePalette;
 
+  @Input() border: boolean = false;
+
+  @Input() size: 'normal' | 'small' = 'normal';
+
   // retrieve the injected directive in the ng content
   @ContentChild(FlInputFileDirective, {static: true, read: ElementRef}) private inputFile: ElementRef<HTMLInputElement>;
 

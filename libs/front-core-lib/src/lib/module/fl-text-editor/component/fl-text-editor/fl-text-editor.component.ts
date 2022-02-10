@@ -4,6 +4,8 @@ import {
   EventEmitter,
   Inject,
   Input,
+  NgZone,
+  OnDestroy,
   OnInit,
   Optional,
   Output,
@@ -11,14 +13,24 @@ import {
   Self,
   ViewChild
 } from '@angular/core';
-import Quill from 'quill';
 import {FlQuillConfig, FlQuillJson} from '../../fl-quill.class';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {NgControl} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
 import {DOCUMENT} from '@angular/common';
 import {ScrollDispatcher} from '@angular/cdk/overlay';
+import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
+import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
+import {
+  FlTextEditorBlockAddButtonComponent
+} from '../fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
+import {FlTextEditorState} from '../../fl-text-editor.state';
+import {FlTextEditorImageBlot} from '../../fl-text-editor-image.class';
+import hljs from 'highlight.js';
+import python from 'highlight.js/lib/languages/python';
+import Quill, {BoundsStatic, RangeStatic} from 'quill';
 
+hljs.registerLanguage('python', python);
 /**
  * HTML --> Get HTML and generate HTML
  * JSON --> Get JSON as Delta and generate JSON
@@ -26,6 +38,10 @@ import {ScrollDispatcher} from '@angular/cdk/overlay';
 type FlTextEditorMode = 'HTML' | 'JSON'
 
 const Delta = Quill.import('delta');
+const Block = Quill.import('blots/block');
+
+Quill.register(FlTextEditorImageBlot, true);
+
 
 /**
  * Rich text editor (currently using quill)
@@ -35,9 +51,10 @@ const Delta = Quill.import('delta');
 @Component({
   selector: 'fl-text-editor',
   templateUrl: './fl-text-editor.component.html',
-  styleUrls: ['./fl-text-editor.component.scss']
+  styleUrls: ['./fl-text-editor.component.scss'],
+  providers: [FlTextEditorState]
 })
-export class FlTextEditorComponent extends FlFormFieldDirective<string> implements OnInit {
+export class FlTextEditorComponent extends FlFormFieldDirective<string> implements OnInit, OnDestroy {
 
   @Input() config: any = FlQuillConfig.defaultToolbarConfig;
 
@@ -53,26 +70,37 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   quill: Quill;
 
+  private blockAddButtonOverlay?: FlOverlayRef;
+
   constructor(@Optional() @Self() ngControl: NgControl,
               private sanitizer: DomSanitizer,
               @Inject(DOCUMENT) private document: Document,
               private scrollDispatcher: ScrollDispatcher,
-              private elementRef: ElementRef) {
+              private elementRef: ElementRef,
+              private portalService: FlPortalService,
+              private zone: NgZone,
+              private state: FlTextEditorState) {
     super(ngControl);
   }
 
   ngOnInit(): void {
+    const a = hljs;
     // create and configure quill
     this.quill = new Quill(this.editorElement.nativeElement,
       {
         theme: 'bubble',
         modules: {
+          syntax: {
+            highlight: (text: string) => hljs.highlight( text, {language: 'python'}).value
+          },              // Include syntax module
           toolbar: FlQuillConfig.defaultToolbarConfig,
         },
         placeholder: this.placeholder,
         scrollingContainer: this.getScrollingContainer()
       }
     );
+
+    this.state.init(this.quill);
 
 
     // init the HTML with the value set
@@ -89,6 +117,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     setTimeout(() => {
       this.quill.on('text-change', () => this.setAndEmitValue(this.getQuillValue()));
     }, 0);
+
+    this.quill.on('editor-change', (changeEvent: any, obj: any) => this.onEditorChange(changeEvent, obj));
   }
 
   callChangeEvent(value: string): void {
@@ -152,4 +182,49 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     return this.document.documentElement;
   }
 
+  private onEditorChange(changeEvent: 'text-change' | 'selection-change', obj: any): void {
+    if (changeEvent === 'selection-change') {
+      this.onSelectionChange(obj);
+    }
+  }
+
+  private onSelectionChange(range: RangeStatic): void {
+    if (range == null) return;
+
+    this.zone.run(() => {
+
+      this.closeBlockAddButtonOverlay();
+      if (range.length === 0) {
+        const scroll: any = this.quill.scroll;
+        const [block, offset] = scroll.descendant(Block, range.index);
+        if (block != null && block.domNode.firstChild instanceof HTMLBRElement) {
+          const lineBounds: BoundsStatic = this.quill.getBounds(range.index, range.length);
+          this.showBlockAddButton(lineBounds);
+          // this.quill.removeFormat(range.index, 0)
+        }
+      } else {
+      }
+
+    });
+  }
+
+  private showBlockAddButton(lineBounds: BoundsStatic): void {
+    const editorPosition = this.editorElement.nativeElement.getBoundingClientRect();
+    const config = this.portalService.configureAbsolutePortal({
+      top: (editorPosition.top + lineBounds.top - 7) + 'px',
+      left: (editorPosition.left + lineBounds.left - 50) + 'px'
+    }, {
+      customProviders: [{provide: FlTextEditorState, useValue: this.state}]
+    });
+
+    this.blockAddButtonOverlay = this.portalService.createPortal(FlTextEditorBlockAddButtonComponent, config);
+  }
+
+  private closeBlockAddButtonOverlay(): void {
+    this.blockAddButtonOverlay?.dispose();
+  }
+
+  ngOnDestroy(): void {
+    this.closeBlockAddButtonOverlay();
+  }
 }

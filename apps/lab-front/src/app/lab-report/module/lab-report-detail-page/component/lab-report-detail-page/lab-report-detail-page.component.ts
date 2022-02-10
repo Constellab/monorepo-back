@@ -2,7 +2,13 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LabReport, LabReportContent} from '../../../../../lab-core/model/entities/lab-report.entity';
 import {LabReportService} from '../../../../../lab-core/entity-service/lab-report.service';
 import {ActivatedRoute} from '@angular/router';
-import {FlConfirmDialogInput, FlConfirmDialogResult, FlDebouncer, FlDialogService} from '@monorepo/front-core-lib';
+import {
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDebouncer,
+  FlDialogService,
+  FlTextEditorImageService
+} from '@monorepo/front-core-lib';
 import {
   LabReportFormDialogComponent,
   LabReportFormDialogInput
@@ -15,12 +21,15 @@ import {
   LabValidateObjectDialogInput
 } from '../../../../../lab-core/entity-module/lab-project-core/component/lab-validate-object-dialog/lab-validate-object-dialog.component';
 import {LabProject} from '../../../../../lab-core/model/entities/lab-project.class';
+import {LabObjectStorageService} from '../../../../../lab-core/entity-service/lab-object-storage.service';
 
 @Component({
   selector: 'lab-report-detail-page',
   templateUrl: './lab-report-detail-page.component.html',
   styleUrls: ['./lab-report-detail-page.component.scss'],
-  providers: [LabReportDetailPageState]
+  providers: [LabReportDetailPageState, {
+    provide: FlTextEditorImageService, useExisting: LabObjectStorageService
+  }]
 })
 export class LabReportDetailPageComponent implements OnInit, OnDestroy {
 

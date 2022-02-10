@@ -126,6 +126,10 @@
   line-height: 2.0em !important;
 }
 
+.g-button-icon-border {
+  border: 1px solid !important;
+}
+
 
 @mixin g-button-icon-size($button-size, $icon-size) {
   &.mat-icon-button {

@@ -98,6 +98,7 @@
     "document-register-element": "^1.7.2",
     "drawflow": "0.0.40",
     "form-data": "^3.0.0",
+    "highlight.js": "^11.4.0",
     "luxon": "^2.3.0",
     "mysql": "^2.18.1",
     "nest-winston": "^1.5.0",

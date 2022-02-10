@@ -1,0 +1,26 @@
+<div (flOutsideClick)="closeMenu()">
+  <button mat-icon-button (click)="toggleMenu()" class="g-button-icon-border g-button-icon-small">
+    <mat-icon>{{icon}}</mat-icon>
+  </button>
+
+
+  <ng-container *ngIf="showMenu">
+    <!--   Upload files     -->
+    <fl-input-file-icon-container icon="image" class="menu-button" [border]="true"
+                                  size="small">
+      <input flInputFile [strictMode]="true" accept="image/*" type="file"
+             (fileChange)="uploadImage($event)">
+    </fl-input-file-icon-container>
+
+    <button mat-icon-button class="menu-button g-button-icon-border g-button-icon-small"
+            (click)="insertCode()">
+      <mat-icon>code</mat-icon>
+    </button>
+
+    <button mat-icon-button class="menu-button g-button-icon-border g-button-icon-small"
+            (click)="insertBlockquote()">
+      <mat-icon>format_quote</mat-icon>
+    </button>
+
+  </ng-container>
+</div>
