@@ -45,9 +45,7 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
     super();
     if (data.position != null && data.position.x != null && data.position.y != null) {
       this.setCenter(data.position);
-      // set the fixed positions
-      this.fx = this.x;
-      this.fy = this.y;
+      this.freezePosition();
     }
   }
 
@@ -170,6 +168,11 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
     }
   }
 
+  // set the fixed positions = positions
+  public freezePosition(): void {
+    this.fx = this.x;
+    this.fy = this.y;
+  }
 
   ///////////////////////////////////////////// NODES ////////////////////////////////////////////
   public addChildNode(node: FlBioNetworkD3Node): void {

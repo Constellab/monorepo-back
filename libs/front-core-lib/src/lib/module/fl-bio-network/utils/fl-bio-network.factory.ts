@@ -197,6 +197,8 @@ export class FlBioNetworkFactory {
             x: (firstPosition.x + secondPosition.x) / 2,
             y: (firstPosition.y + secondPosition.y) / 2
           });
+          // set the fixed positions
+          reaction.freezePosition();
         }
       }
     }
