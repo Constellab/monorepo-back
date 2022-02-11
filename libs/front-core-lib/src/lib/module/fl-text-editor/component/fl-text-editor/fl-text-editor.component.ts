@@ -13,7 +13,7 @@ import {
   Self,
   ViewChild
 } from '@angular/core';
-import {FlQuillConfig, FlQuillJson} from '../../fl-quill.class';
+import {FlQuillConfig, FlQuillJson, FlTextEditorConfig} from '../../fl-text-editor.class';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {NgControl} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -56,7 +56,7 @@ Quill.register(FlTextEditorFigureBlot, true);
 })
 export class FlTextEditorComponent extends FlFormFieldDirective<string> implements OnInit, OnDestroy {
 
-  @Input() config: any = FlQuillConfig.defaultToolbarConfig;
+  @Input() config: FlTextEditorConfig = 'complete';
 
   @Input() mode: FlTextEditorMode = 'HTML';
 
@@ -92,7 +92,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
           syntax: {
             highlight: (text: string) => hljs.highlight(text, {language: 'python'}).value
           },              // Include syntax module
-          toolbar: FlQuillConfig.defaultToolbarConfig,
+          toolbar: FlQuillConfig.getToolbarConfig(this.config),
         },
         placeholder: this.placeholder,
         scrollingContainer: this.getScrollingContainer()
@@ -183,12 +183,12 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
   private onEditorChange(changeEvent: 'text-change' | 'selection-change', obj: any): void {
     if (changeEvent === 'selection-change') {
-      this.onSelectionChange(obj);
+      this.showAddButton(obj);
     }
   }
 
-  private onSelectionChange(range: RangeStatic): void {
-    if (range == null || this.disabled) return;
+  private showAddButton(range: RangeStatic): void {
+    if (range == null || this.disabled || !FlQuillConfig.showAddButton(this.config)) return;
 
     this.zone.run(() => {
 

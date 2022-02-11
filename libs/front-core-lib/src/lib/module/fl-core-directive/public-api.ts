@@ -13,5 +13,5 @@ export * from './fl-print/fl-print.directive';
 export * from './fl-resize/fl-resize.directive';
 
 // Export the models
-export * from '../fl-text-editor/fl-quill.class';
+export * from '../fl-text-editor/fl-text-editor.class';
 export * from './fl-drag-hover/fl-drop-file-event.class';

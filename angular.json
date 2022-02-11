@@ -54,7 +54,7 @@
               }
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": ["class-transformer"]
+            "allowedCommonJsDependencies": ["class-transformer", "highlight.js"]
           },
           "configurations": {
             "dev": {
@@ -254,7 +254,7 @@
               }
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": ["class-transformer"]
+            "allowedCommonJsDependencies": ["class-transformer", "highlight.js"]
           },
           "configurations": {
             "dev": {

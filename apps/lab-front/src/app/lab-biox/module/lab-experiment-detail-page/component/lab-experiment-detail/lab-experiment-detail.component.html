@@ -15,7 +15,6 @@
     <div class="separator">
       {{'biox.experiment_type' | translate}} : <span class="g-text-light">{{experiment.type.name | translate}}</span>
     </div>
-
     <!--  Created by & Last modified bt  -->
     <p class="g-text-small g-text-light separator">
       <fl-creation-info [createdBy]="experiment.createdBy.fullname"
@@ -30,7 +29,7 @@
   <fl-article>
     <fl-text-editor [(ngModel)]="description" mode="JSON" [disabled]="experiment.isValidated" class="g-full-height"
                     [placeholder]="'biox.experiment_description_placeholder' | translate"
-                    (textChange)="onDescriptionChanged($event)"></fl-text-editor>
+                    (textChange)="onDescriptionChanged($event)" config="simple"></fl-text-editor>
   </fl-article>
 
   <fl-article-right-side>
