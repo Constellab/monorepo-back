@@ -1,4 +1,13 @@
-import {ElementRef, Injectable, Injector, Renderer2, RendererFactory2, StaticProvider} from '@angular/core';
+import {
+  ElementRef,
+  Injectable,
+  Injector,
+  Renderer2,
+  RendererFactory2,
+  StaticProvider,
+  TemplateRef,
+  ViewContainerRef
+} from '@angular/core';
 import {
   BlockScrollStrategy,
   CloseScrollStrategy,
@@ -9,7 +18,7 @@ import {
   Overlay,
   OverlayRef
 } from '@angular/cdk/overlay';
-import {ComponentPortal} from '@angular/cdk/portal';
+import {ComponentPortal, TemplatePortal} from '@angular/cdk/portal';
 import {NavigationStart, Router} from '@angular/router';
 import {filter, first, map} from 'rxjs/operators';
 import {merge, Observable} from 'rxjs';
@@ -219,6 +228,35 @@ export class FlPortalService {
     return overlayRef;
   }
 
+  /**
+   * Create the portal on the dom with the configuration
+   * @param template template ref to put in portal
+   * @param config the portal configuration
+   * @param viewContainerRef
+   */
+  public createPortalTemplate(template: TemplateRef<any>, config: FlPortalConfig, viewContainerRef: ViewContainerRef): FlOverlayRef{
+    // we create the overlay
+    const overlayRef: FlOverlayRef = this.createOverlay(config.config);
+
+    // manage the portal dispose
+    if (config.config.disposeOnBackdropClick || config.config.disposeOnNavigation || config.config.disposeOnOutsideClick) {
+      this.managePortalDisposing(config, overlayRef);
+    }
+
+    // create the component with the injector
+    const componentPortal: TemplatePortal = new TemplatePortal(template, viewContainerRef);
+
+    // attach the component to the dom
+    overlayRef.attach(componentPortal);
+
+    // created the arrow if needed before the main portal so that it is under it
+    if (config instanceof FlRelativePortalConfig && config.config.showArrow) {
+      this.createArrowPortal(config, overlayRef);
+    }
+
+    return overlayRef;
+  }
+
   private createOverlay(config: FlOverlayConfig): FlOverlayRef {
     // we create the overlay
     const ref: OverlayRef = this.overlay.create(config);
@@ -276,7 +314,6 @@ export class FlPortalService {
   }
 
   private handleOutsideClick(event: MouseEvent, overlay: FlOverlayRef): void {
-    console.log('Check outside')
     const wrapper: FlEventWrapper = new FlEventWrapper(event);
     if (!wrapper.elementIsParent(overlay.getPanelElement())) {
       overlay.dispose();

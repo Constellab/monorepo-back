@@ -25,7 +25,7 @@ import {
   FlTextEditorBlockAddButtonComponent
 } from '../fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
 import {FlTextEditorState} from '../../fl-text-editor.state';
-import {FlTextEditorImageBlot} from '../../fl-text-editor-image.class';
+import {FlTextEditorFigureBlot} from '../../fl-text-editor-image.class';
 import hljs from 'highlight.js';
 import python from 'highlight.js/lib/languages/python';
 import Quill, {BoundsStatic, RangeStatic} from 'quill';
@@ -40,7 +40,7 @@ type FlTextEditorMode = 'HTML' | 'JSON'
 const Delta = Quill.import('delta');
 const Block = Quill.import('blots/block');
 
-Quill.register(FlTextEditorImageBlot, true);
+Quill.register(FlTextEditorFigureBlot, true);
 
 
 /**
@@ -84,14 +84,13 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   }
 
   ngOnInit(): void {
-    const a = hljs;
     // create and configure quill
     this.quill = new Quill(this.editorElement.nativeElement,
       {
         theme: 'bubble',
         modules: {
           syntax: {
-            highlight: (text: string) => hljs.highlight( text, {language: 'python'}).value
+            highlight: (text: string) => hljs.highlight(text, {language: 'python'}).value
           },              // Include syntax module
           toolbar: FlQuillConfig.defaultToolbarConfig,
         },
@@ -189,18 +188,17 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   }
 
   private onSelectionChange(range: RangeStatic): void {
-    if (range == null) return;
+    if (range == null || this.disabled) return;
 
     this.zone.run(() => {
 
       this.closeBlockAddButtonOverlay();
       if (range.length === 0) {
         const scroll: any = this.quill.scroll;
-        const [block, offset] = scroll.descendant(Block, range.index);
+        const [block] = scroll.descendant(Block, range.index);
         if (block != null && block.domNode.firstChild instanceof HTMLBRElement) {
           const lineBounds: BoundsStatic = this.quill.getBounds(range.index, range.length);
           this.showBlockAddButton(lineBounds);
-          // this.quill.removeFormat(range.index, 0)
         }
       } else {
       }

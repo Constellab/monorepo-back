@@ -45,10 +45,10 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
   @Input() flDisabled: boolean;
 
   /**
-   * When provided the event are ignore if the mouse enter from the element or leave to the element
-   * If a string it provided, it check the classes of the element
+   * When provided the event are ignores if the mouse enter from the element or leave to the element
+   * It checks the classes of the element
    */
-  @Input() flExcludeElement: HTMLElement | string;
+  @Input() flExcludeElement: string;
 
   /**
    * @ignore
@@ -76,7 +76,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
 
     // if an excluded element is provided, ignore if the mouse enters from the excluded element
     const fromElement: HTMLElement = (event as any).fromElement;
-    if (this.flExcludeElement && fromElement && FlHtmlHelper.isChildOf(fromElement, this.flExcludeElement)) {
+    if (this.flExcludeElement && fromElement && FlHtmlHelper.isChildOf(fromElement, {class: this.flExcludeElement})) {
       return;
     }
 
@@ -103,7 +103,7 @@ export abstract class FlMouseHoverAbstractDirective implements OnDestroy {
 
     // if an excluded element is provided, ignore if the mouse leaves to the excluded element
     const toElement: HTMLElement = (event as any).toElement;
-    if (this.flExcludeElement && toElement && FlHtmlHelper.isChildOf(toElement, this.flExcludeElement)) {
+    if (this.flExcludeElement && toElement && FlHtmlHelper.isChildOf(toElement, {class: this.flExcludeElement})) {
       return;
     }
 

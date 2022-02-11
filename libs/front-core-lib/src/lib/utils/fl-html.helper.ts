@@ -47,23 +47,25 @@ export class FlHtmlHelper {
    * @param element
    * @param parent if string, it compares with the classe
    */
-  public static isChildOf(element: HTMLElement, parent: HTMLElement | string): boolean {
+  public static isChildOf(element: HTMLElement, parent: { element?: HTMLElement, class?: string, tag?: string }): boolean {
     return FlHtmlHelper.getParent(element, parent) != null;
   }
 
   /**
    * return the parent element that satisfy the condition. If not return null
    * @param element
-   * @param parent if string, it compares with the classe
+   * @param parent provide one of the field to search
    */
-  public static getParent(element: HTMLElement, parent: HTMLElement | string): HTMLElement | null {
+  public static getParent(element: HTMLElement, parent: { element?: HTMLElement, class?: string, tag?: string }): HTMLElement | null {
     let current: HTMLElement = element;
 
     while (current != null && current.tagName !== 'BODY') {
-      if (parent instanceof HTMLElement) {
-        if (current === parent) return current;
-      } else {
-        if (current.classList.contains(parent)) return current;
+      if (parent.element) {
+        if (current === parent.element) return current;
+      } else if (parent.tag) {
+        if (current.tagName === parent.tag.toUpperCase()) return current;
+      } else if (parent.class) {
+        if (current.classList.contains(parent.class)) return current;
       }
       current = current.parentElement;
     }

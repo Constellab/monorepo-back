@@ -1,0 +1,39 @@
+<figure contenteditable="false" #figure>
+  <div flResize="both" class="image-container" (flResizeChanged)="onImageResize($event)"
+       [style.width]="width + 'px'" [style.height]="height + 'px'">
+    <img [src]="sanitizedUrl"
+         [alt]="imageTitle" class="image">
+  </div>
+  <figcaption class="caption g-text-light g-text-small"
+              (click)="openPortal()"><strong>{{imageTitle}}</strong> | {{caption}}</figcaption>
+</figure>
+
+<ng-template #templatePortalContent>
+  <fl-portal class="portal">
+
+    <fl-portal-content>
+      <form (ngSubmit)="closeOverlay()">
+        <div fxLayout="column">
+          <mat-form-field>
+            <mat-label>{{'flTextEditor.title' | translate}}</mat-label>
+            <input matInput [(ngModel)]="imageTitle" [placeholder]="'flTextEditor.title' | translate"
+                   name="title" flInputMaxLength="50">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>{{'flTextEditor.caption' | translate}}</mat-label>
+            <textarea matInput [(ngModel)]="caption" [placeholder]="'flTextEditor.caption' | translate"
+                      name="caption" rows="4">
+            </textarea>
+          </mat-form-field>
+          <div class="g-text-centered">
+            <button mat-stroked-button type="submit" class="g-button-small">
+              {{'flTextEditor.ok' | translate}}
+            </button>
+          </div>
+        </div>
+      </form>
+    </fl-portal-content>
+
+  </fl-portal>
+</ng-template>

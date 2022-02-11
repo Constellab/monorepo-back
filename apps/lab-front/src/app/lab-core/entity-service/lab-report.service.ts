@@ -6,7 +6,9 @@ import {
   FlConfirmDialogResult,
   FlDialogService,
   FlSearchConverter,
-  FlSearchService
+  FlSearchService,
+  FlTextEditorImageService,
+  FlTextEditorUploadedImage
 } from '@monorepo/front-core-lib';
 import {LabReport, LabReportContent, LabReportForm} from '../model/entities/lab-report.entity';
 import {Observable} from 'rxjs';
@@ -14,14 +16,16 @@ import {ClPageI} from '@monorepo/core-lib';
 import {LabExperiment} from '../model/entities/lab-experiment.entity';
 import {LabReportSearch} from '../entity-module/lab-report-core/model/lab-report-advanced-search.class';
 import {LabProject} from '../model/entities/lab-project.class';
+import {map} from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
-export class LabReportService implements FlSearchService<LabReport> {
+export class LabReportService extends FlTextEditorImageService implements FlSearchService<LabReport> {
 
   private route: string = 'report';
 
   constructor(private apiService: FlApiService,
               private dialogService: FlDialogService) {
+    super();
   }
 
   public create(reportForm: LabReportForm): Observable<LabReport> {
@@ -94,6 +98,34 @@ export class LabReportService implements FlSearchService<LabReport> {
     return this.apiService.post(`${this.route}/advanced-search`, data, LabReport, {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
+  }
+
+  ///////////////////////////////////////////// IMAGE /////////////////////////////////////////////
+
+
+  public getFilePath(filename: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/image/${filename}`);
+  }
+
+
+  deleteImage(filename: string): Observable<void> {
+    return this.apiService.delete(`${this.route}/image/${filename}`);
+  }
+
+  uploadImage(file: File): Observable<FlTextEditorUploadedImage> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.apiService.post(`${this.route}/image`, formData).pipe(
+      map(
+        (uploadedFile: any) => {
+          return {
+            url: this.getFilePath(uploadedFile.filename),
+            width: uploadedFile.width,
+            height: uploadedFile.height,
+          };
+        }
+      )
+    );
   }
 
 

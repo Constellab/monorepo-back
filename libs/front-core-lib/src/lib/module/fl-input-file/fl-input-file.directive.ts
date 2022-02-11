@@ -74,8 +74,11 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
     const files: File[] = FlFileHelper.convertFileListToArray(fileList);
 
     if (this.strictMode) {
+      const filteredFiles = this.filterInputFiles(files);
+
+      if (filteredFiles.length === 0) return;
       // if we are in strict mode we filter the files
-      this.addOrReplaceValue(this.filterInputFiles(files));
+      this.addOrReplaceValue(filteredFiles);
     } else {
       this.addOrReplaceValue(files);
     }

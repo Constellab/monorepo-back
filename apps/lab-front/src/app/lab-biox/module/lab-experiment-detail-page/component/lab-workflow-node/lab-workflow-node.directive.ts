@@ -56,7 +56,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
 
   protected listenToNodeClick(): void {
     // retrieve the drawflow element that wrap the node
-    const parent: HTMLElement = FlHtmlHelper.getParent(this.elementRef.nativeElement, 'parent-node');
+    const parent: HTMLElement = FlHtmlHelper.getParent(this.elementRef.nativeElement, {class: 'parent-node'});
 
     if (parent == null) return;
 

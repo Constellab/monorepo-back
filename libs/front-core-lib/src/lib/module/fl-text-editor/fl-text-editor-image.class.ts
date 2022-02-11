@@ -1,51 +1,59 @@
 import Quill from 'quill';
-import {flRootInjector} from '../../utils/fl-root-injector';
-import {DomSanitizer} from '@angular/platform-browser';
-import {SecurityContext} from '@angular/core';
 
 const BlockEmbed = Quill.import('blots/block/embed');
 
-export interface FlTextEditorImage {
-  alt: string;
+/**
+ * Object representing the value stored to create a figur
+ */
+export interface FlTextEditorFigure {
   url: string;
-  naturalWidth?: number;
-  naturalHeight?: number;
+  title?: string;
+  caption?: string;
+  width: number;
+  height: number;
+  naturalWidth: number;
+  naturalHeight: number;
 }
 
-export class FlTextEditorImageBlot extends BlockEmbed {
+export class FlTextEditorFigureBlot extends BlockEmbed {
 
-  static blotName = 'image';
-  static tagName = 'img';
+  static blotName = 'figure';
+  static tagName = 'fl-text-editor-figure';
 
+  private domNode: HTMLElement;
 
-  static create(value: FlTextEditorImage): any {
-    const node: HTMLImageElement = super.create();
+  private readonly naturalImageWidth: number;
+  private readonly naturalImageHeight: number;
 
-    const sanitizer: DomSanitizer = flRootInjector.get(DomSanitizer);
+  static create(value: FlTextEditorFigure): any {
+    const node: HTMLElement = super.create();
+    node.setAttribute('src', value.url);
+    node.setAttribute('width', value.width?.toString() ?? '100');
+    node.setAttribute('height', value.height?.toString() ?? '100');
+    node.setAttribute('image-title', value.title ?? '');
+    node.setAttribute('caption', value.caption ?? '');
 
-    node.setAttribute('alt', value.alt);
-    node.setAttribute('src', sanitizer.sanitize(SecurityContext.URL, value.url));
-
-    if (value.naturalWidth && value.naturalHeight) {
-      node.width = value.naturalWidth;
-      node.height = value.naturalHeight;
-    }
     return node;
   }
 
-
-  static value(node: HTMLImageElement): FlTextEditorImage {
-    return {
-      alt: node.getAttribute('alt'),
-      url: node.getAttribute('src'),
-      naturalWidth: node.naturalWidth,
-      naturalHeight: node.naturalHeight
-    };
+  constructor(node: Node, value: FlTextEditorFigure) {
+    super(node, value);
+    this.naturalImageWidth = value.naturalWidth;
+    this.naturalImageHeight = value.naturalHeight;
   }
 
-  remove(): void {
-    super.remove();
-    console.log('Remove');
+  value(): { figure: FlTextEditorFigure } {
+    return {
+      figure: {
+        url: this.domNode.getAttribute('src'),
+        width: parseInt(this.domNode.getAttribute('width')),
+        height: parseInt(this.domNode.getAttribute('height')),
+        title: this.domNode.getAttribute('image-title'),
+        caption: this.domNode.getAttribute('caption'),
+        naturalWidth: this.naturalImageWidth,
+        naturalHeight: this.naturalImageHeight
+      }
+    };
   }
 }
 

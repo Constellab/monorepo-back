@@ -21,14 +21,13 @@ import {
   LabValidateObjectDialogInput
 } from '../../../../../lab-core/entity-module/lab-project-core/component/lab-validate-object-dialog/lab-validate-object-dialog.component';
 import {LabProject} from '../../../../../lab-core/model/entities/lab-project.class';
-import {LabObjectStorageService} from '../../../../../lab-core/entity-service/lab-object-storage.service';
 
 @Component({
   selector: 'lab-report-detail-page',
   templateUrl: './lab-report-detail-page.component.html',
   styleUrls: ['./lab-report-detail-page.component.scss'],
   providers: [LabReportDetailPageState, {
-    provide: FlTextEditorImageService, useExisting: LabObjectStorageService
+    provide: FlTextEditorImageService, useExisting: LabReportService
   }]
 })
 export class LabReportDetailPageComponent implements OnInit, OnDestroy {
