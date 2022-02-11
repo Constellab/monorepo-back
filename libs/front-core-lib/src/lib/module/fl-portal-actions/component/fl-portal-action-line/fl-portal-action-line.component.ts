@@ -2,7 +2,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FlPortalActionDetail, FlPortalActionDetailStatusEvent} from '../../model/fl-portal-actions.class';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
 import {Observable} from 'rxjs';
-import {clRxjsDebug} from '@monorepo/core-lib';
 
 /**
  * Component inside {@link FlPortalActionsComponent} that subscribe
@@ -27,7 +26,7 @@ export class FlPortalActionLineComponent implements OnInit {
   ngOnInit(): void {
     // translate the text if necessary
     this.text = this.translateService.translatableText(this.action.text);
-    this.statusEvent$ = this.action.getStatusEvent$().pipe(clRxjsDebug());
+    this.statusEvent$ = this.action.getStatusEvent$();
   }
 
 }

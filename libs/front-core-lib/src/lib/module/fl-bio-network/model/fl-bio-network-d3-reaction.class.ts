@@ -1,6 +1,5 @@
 import {
   FlBioNetworkMetaboliteLevel,
-  flBioNetworkMetaboliteLevels,
   flBioNetworkMetaboliteMaxLevel,
   FlBioNetworkReaction
 } from './fl-bio-network.class';
@@ -84,19 +83,14 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
     if (this.data.level) return this.data.level;
 
 
-    const count = {};
-    // get the list of level of linked nodes
-    this.getConnectedNodes()
+    const levels: number[] = this.getConnectedNodes()
       .filter(node => !(node instanceof FlBioNetworkD3Reaction))
-      .map(node => node.getLevel())
-      .forEach(level => count[level] = count[level] ? count[level] + 1 : 1);
+      .map(node => node.getLevel()).sort();
 
-
-    // return the lowest level where there is at least 2 nodes link to this reaction
-    for (const nodeLevel of flBioNetworkMetaboliteLevels) {
-      if (count[nodeLevel] >= 2) {
-        return nodeLevel;
-      }
+    // return the second-lowest level, this mean that there is at least 2 metabolites linked
+    // to this reaction with the level or lower
+    if (levels.length >= 2) {
+      return levels[1];
     }
 
     return flBioNetworkMetaboliteMaxLevel;
