@@ -7,6 +7,7 @@ import {CnProjectsSecurityLayer} from '../cn-projects/cn-projects-security.layer
 import {CnCreateReportDto} from './cn-report.dto';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperimentsSecurityLayer} from '../cn-experiments/cn-experiments-security-layer.service';
+import {BlFile} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<CnReport> {
@@ -34,9 +35,9 @@ export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<CnReport> {
     return new CnRefuseAuthorization().isAuthorized();
   }
 
-  async createReport(createReportDto: CnCreateReportDto, projectId: string): Promise<CnReport> {
+  async createReport(createReportDto: CnCreateReportDto, projectId: string, files: BlFile[]): Promise<CnReport> {
     const project: CnProject = await this.projectsSecurityLayer.getAndCheckAuthorizationToUpdateById(projectId);
-    return this.service.createReport(createReportDto, project);
+    return this.service.createReport(createReportDto, project, files);
   }
 
   async getReportsByExperiment(experimentId: string): Promise<CnReport[]> {

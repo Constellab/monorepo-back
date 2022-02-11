@@ -34,6 +34,8 @@ import {
   BlLoggerConfig,
   BlMailModule,
   BlMailModuleConfig,
+  BlObjectStorageModule,
+  BlObjectStorageModuleConfig,
   BlPersistenceLogger,
   BlRequestContextMiddleware
 } from '@monorepo/back-core-lib';
@@ -84,6 +86,10 @@ function configureMailModule(configService: CnCoreConfigService): BlMailModuleCo
   };
 }
 
+function configureObjectStorageModule(configService: CnCoreConfigService): BlObjectStorageModuleConfig {
+  return configService.getObjectStorageConfig();
+}
+
 @Module({
   imports: [
     // let the config module on top of the imports
@@ -131,6 +137,12 @@ function configureMailModule(configService: CnCoreConfigService): BlMailModuleCo
     BlMailModule.forRootAsync({
       imports: [CnCoreModule],
       useFactory: configureMailModule,
+      inject: [CnCoreConfigService]
+    }),
+
+    BlObjectStorageModule.forRootAsync({
+      imports: [CnCoreModule],
+      useFactory: configureObjectStorageModule,
       inject: [CnCoreConfigService]
     }),
 

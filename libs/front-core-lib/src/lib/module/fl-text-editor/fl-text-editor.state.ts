@@ -1,8 +1,8 @@
 import {Injectable, Optional} from '@angular/core';
 import Quill from 'quill';
 import {FlTextEditorImageService, FlTextEditorUploadedImage} from './fl-text-editor-image.service';
-import {FlTextEditorFigure} from './fl-text-editor-figure.class';
 import {FlHtmlHelper} from '../../utils/fl-html.helper';
+import {CmRichTextFigure} from '@monorepo/common-model';
 
 
 @Injectable()
@@ -41,13 +41,13 @@ export class FlTextEditorState {
 
   public insertImageFromUrl(image: FlTextEditorUploadedImage, index: number): void {
     this.quill.insertEmbed(index, 'figure', {
-      alt: '',
       url: image.url,
+      filename: image.filename,
       width: image.width,
       height: image.height,
       naturalWidth: image.width,
       naturalHeight: image.height
-    } as FlTextEditorFigure, Quill.sources.USER);
+    } as CmRichTextFigure, Quill.sources.USER);
   }
 
   public insertCodeBlock(): void {

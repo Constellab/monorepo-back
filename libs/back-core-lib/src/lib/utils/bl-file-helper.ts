@@ -1,0 +1,71 @@
+
+export class BlFileHelper{
+  /**
+   * @param file filename or full file path
+   * @return return the filename name of a file without the extension
+   */
+  public static getFilenameWithoutExtension(file: string): string {
+    if (!file) return null;
+    return BlFileHelper.extractFilenameFromFullPath(file)
+      .split('.')
+      .slice(0, -1)
+      .join('.');
+  }
+
+  /**
+   * @param file filename or full file path
+   * @return the file extension without the .
+   */
+  public static getFileExtension(file: string): string {
+    if (!file) return null;
+    return BlFileHelper.extractFilenameFromFullPath(file)
+      .split('.')
+      .slice(-1)
+      .join('.');
+  }
+
+  /**
+   * @param fullPath full path of the file
+   * @return the filename of a path with the extension
+   */
+  public static extractFilenameFromFullPath(fullPath: string): string {
+    // use a new RegExp otherwise the ngc build doesn't works
+    const regex = new RegExp(/^.*[/]/);
+    return fullPath.replace(regex, '');
+  }
+
+
+  public static isPDF(file: string): boolean {
+    return BlFileHelper.extensionIsPDF(BlFileHelper.getFileExtension(file));
+  }
+
+  public static isWord(file: string): boolean {
+    return BlFileHelper.extensionIsWord(BlFileHelper.getFileExtension(file));
+  }
+
+  public static isExcel(file: string): boolean {
+    return BlFileHelper.extensionIsExcel(BlFileHelper.getFileExtension(file));
+  }
+
+  public static isImage(file: string): boolean {
+    return BlFileHelper.extensionIsImage(BlFileHelper.getFileExtension(file));
+  }
+
+  public static extensionIsPDF(extension: string): boolean {
+    return extension === 'pdf';
+  }
+
+  public static extensionIsWord(extension: string): boolean {
+    return extension === 'doc' || extension === 'docx';
+  }
+
+  public static extensionIsExcel(extension: string): boolean {
+    return extension === 'xls' || extension === 'xlsx';
+  }
+
+  public static extensionIsImage(extension: string): boolean {
+    return extension === 'png' || extension === 'jpg' || extension === 'jpeg' ||
+      extension === 'gif' || extension === 'webp' || extension === 'svg';
+  }
+
+}

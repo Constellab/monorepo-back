@@ -2,6 +2,7 @@ import {Observable} from 'rxjs';
 
 export interface FlTextEditorUploadedImage {
   url: string;
+  filename: string;
   width: number;
   height: number;
 }

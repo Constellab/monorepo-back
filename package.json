@@ -79,6 +79,7 @@
     "@angular/platform-browser-dynamic": "~11.0.2",
     "@angular/router": "~11.0.2",
     "@angular/service-worker": "~11.0.2",
+    "@aws-sdk/client-s3": "^3.50.0",
     "@elastic/elasticsearch": "^7.16.0",
     "@nestjs/common": "^7.0.0",
     "@nestjs/config": "^0.5.0",

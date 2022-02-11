@@ -6,7 +6,7 @@ import {
   CnDatabaseConfig,
   CnEnvironmentProfile
 } from '../../model/config/cn-config.class';
-import {BlMailConfig} from '@monorepo/back-core-lib';
+import {BlMailConfig, BlObjectStorageModuleConfig} from '@monorepo/back-core-lib';
 
 
 @Injectable()
@@ -65,6 +65,14 @@ export class CnCoreConfigService {
       sender: this.configService.get('MAIL_SENDER')
     };
   }
+
+  public getObjectStorageConfig(): BlObjectStorageModuleConfig {
+    return {
+      endpoint: this.configService.get('OBJECT_STORAGE_ENDPOINT'),
+      region: this.configService.get('OBJECT_STORAGE_REGION'),
+    };
+  }
+
 
   public getFailedLoginLock(): number {
     return this.getConfigNumber('FAILED_LOGIN_LOCK');

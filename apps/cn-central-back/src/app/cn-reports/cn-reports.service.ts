@@ -7,12 +7,17 @@ import {CnCreateReportDto} from './cn-report.dto';
 import {CnExperimentsService} from '../cn-experiments/cn-experiments.service';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
+import {BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {CmRichText} from '@monorepo/common-model';
 
 @Injectable()
 export class CnReportsService extends CnAbstractService<CnReport> {
 
+  private readonly reportBucket: string = 'constellab-pre-prod';
+
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
-              @Inject(forwardRef(() => CnExperimentsService)) private experimentService: CnExperimentsService) {
+              @Inject(forwardRef(() => CnExperimentsService)) private experimentService: CnExperimentsService,
+              private objectStorageService: BlObjectStorageService) {
     super(repository, CnReport);
   }
 
@@ -30,7 +35,7 @@ export class CnReportsService extends CnAbstractService<CnReport> {
     });
   }
 
-  async createReport(reportDTO: CnCreateReportDto, project: CnProject): Promise<CnReport> {
+  async createReport(reportDTO: CnCreateReportDto, project: CnProject, files: BlFile[]): Promise<CnReport> {
     // get and check all experiment
     const experiments: CnExperiment[] = [];
     for (const experimentId of reportDTO.experimentIds) {
@@ -45,6 +50,14 @@ export class CnReportsService extends CnAbstractService<CnReport> {
       }
       experiments.push(experiment);
     }
+
+    const quillJson = new CmRichText(reportDTO.content);
+    for (const file of files) {
+      const filename = await this.objectStorageService.uploadObject(file, this.reportBucket);
+
+      quillJson.updateFigure(file.originalname, {filename: filename, url: ''});
+    }
+
 
     const report = new CnReport();
     report.id = reportDTO.id;

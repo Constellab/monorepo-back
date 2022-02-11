@@ -1,9 +1,10 @@
 import {CnBaseEntityDTO} from '../cn-core/model/entities/cn-base.entity';
 import {CnReport} from './cn-report.entity';
+import {CmRichTextI} from '@monorepo/common-model';
 
 export class CnCreateReportDto extends CnBaseEntityDTO {
   title: string;
-  content: Record<string, any>;
+  content: CmRichTextI;
 
   experimentIds: string[];
 }
