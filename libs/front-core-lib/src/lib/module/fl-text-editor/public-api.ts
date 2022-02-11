@@ -9,5 +9,5 @@ export * from './component/fl-text-editor-figure/fl-text-editor-figure.component
 // Models
 export * from './fl-quill.class';
 export * from './fl-text-editor.state';
-export * from './fl-text-editor-image.class';
+export * from './fl-text-editor-figure.class';
 export * from './fl-text-editor-image.service';

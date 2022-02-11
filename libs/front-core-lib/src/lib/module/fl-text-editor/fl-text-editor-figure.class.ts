@@ -22,8 +22,7 @@ export class FlTextEditorFigureBlot extends BlockEmbed {
 
   private domNode: HTMLElement;
 
-  private readonly naturalImageWidth: number;
-  private readonly naturalImageHeight: number;
+  private readonly storedValue: FlTextEditorFigure;
 
   static create(value: FlTextEditorFigure): any {
     const node: HTMLElement = super.create();
@@ -38,21 +37,18 @@ export class FlTextEditorFigureBlot extends BlockEmbed {
 
   constructor(node: Node, value: FlTextEditorFigure) {
     super(node, value);
-    this.naturalImageWidth = value.naturalWidth;
-    this.naturalImageHeight = value.naturalHeight;
+    this.storedValue = value;
   }
 
   value(): { figure: FlTextEditorFigure } {
+    const value: FlTextEditorFigure = Object.assign(this.storedValue, {
+      width: parseInt(this.domNode.getAttribute('width')),
+      height: parseInt(this.domNode.getAttribute('height')),
+      title: this.domNode.getAttribute('image-title'),
+      caption: this.domNode.getAttribute('caption'),
+    });
     return {
-      figure: {
-        url: this.domNode.getAttribute('src'),
-        width: parseInt(this.domNode.getAttribute('width')),
-        height: parseInt(this.domNode.getAttribute('height')),
-        title: this.domNode.getAttribute('image-title'),
-        caption: this.domNode.getAttribute('caption'),
-        naturalWidth: this.naturalImageWidth,
-        naturalHeight: this.naturalImageHeight
-      }
+      figure: value
     };
   }
 }

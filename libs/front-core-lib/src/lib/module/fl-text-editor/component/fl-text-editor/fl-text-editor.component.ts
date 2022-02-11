@@ -25,7 +25,7 @@ import {
   FlTextEditorBlockAddButtonComponent
 } from '../fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
 import {FlTextEditorState} from '../../fl-text-editor.state';
-import {FlTextEditorFigureBlot} from '../../fl-text-editor-image.class';
+import {FlTextEditorFigureBlot} from '../../fl-text-editor-figure.class';
 import hljs from 'highlight.js';
 import python from 'highlight.js/lib/languages/python';
 import Quill, {BoundsStatic, RangeStatic} from 'quill';

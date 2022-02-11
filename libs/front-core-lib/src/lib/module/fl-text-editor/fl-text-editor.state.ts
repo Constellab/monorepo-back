@@ -1,7 +1,7 @@
 import {Injectable, Optional} from '@angular/core';
 import Quill from 'quill';
 import {FlTextEditorImageService, FlTextEditorUploadedImage} from './fl-text-editor-image.service';
-import {FlTextEditorFigure} from './fl-text-editor-image.class';
+import {FlTextEditorFigure} from './fl-text-editor-figure.class';
 import {FlHtmlHelper} from '../../utils/fl-html.helper';
 
 
