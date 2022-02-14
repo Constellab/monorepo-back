@@ -128,10 +128,11 @@
 
 .g-button-icon-border {
   border: 1px solid !important;
+  box-sizing: content-box !important;
 }
 
 
-@mixin g-button-icon-size($button-size, $icon-size) {
+@mixin g-button-icon-size($button-size, $icon-size, $icon-font-size) {
   &.mat-icon-button {
     width: $button-size;
     height: $button-size;
@@ -140,18 +141,18 @@
     mat-icon {
       height: $icon-size;
       width: $icon-size;
-      font-size: $icon-size;
-      line-height: $icon-size;
+      font-size: $icon-font-size;
+      line-height: $icon-font-size;
     }
   }
 }
 
 .g-button-icon-small {
-  @include g-button-icon-size(30px, 18px)
+  @include g-button-icon-size(30px, 20px, 18px)
 }
 
 .g-button-icon-tiny {
-  @include g-button-icon-size(20px, 15px)
+  @include g-button-icon-size(20px, 16px, 15px)
 }
 
 .g-button-hide-text span, .g-button-hide-text mat-icon {
