@@ -32,7 +32,7 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
   @Output() resourceSelected: EventEmitter<LabResource> = new EventEmitter<LabResource>();
 
   constructor(private cdr: ChangeDetectorRef) {
-    super(['createdAt', 'action', 'name', 'info', 'tags']);
+    super(['created', 'action', 'name', 'info', 'tags']);
   }
 
   ngOnInit(): void {

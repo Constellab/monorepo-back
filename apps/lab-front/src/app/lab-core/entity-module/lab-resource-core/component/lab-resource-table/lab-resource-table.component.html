@@ -1,12 +1,16 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource">
 
-  <!-- CreatedAt -->
-  <ng-container matColumnDef="createdAt">
+  <!-- Created -->
+  <ng-container matColumnDef="created">
     <mat-header-cell *matHeaderCellDef>
-      <span> {{'creation_date' | translate}}</span>
+      <span> {{'creation_info' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let resource">
-      <fl-from-now [date]="resource.createdAt"></fl-from-now>
+      <fl-creation-info [createdAt]="resource.createdAt"
+                        [createdBy]="resource.createdBy.fullname"
+                        class="g-text-small">
+      </fl-creation-info>
+      <!--      <fl-from-now [date]="resource.createdAt"></fl-from-now>-->
     </mat-cell>
   </ng-container>
 
@@ -16,7 +20,15 @@
       <span> {{'name' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let resource">
-      {{resource.name}}
+      <div>
+        <div class="name" [matTooltip]="resource.name"
+             [matTooltipShowDelay]="1000" matTooltipPosition="after">{{resource.name}}</div>
+        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="resource.experiment"
+                      gap="0">
+          <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
+          {{resource.experiment.title}}
+        </fl-text-icon>
+      </div>
     </mat-cell>
   </ng-container>
 
@@ -60,7 +72,7 @@
   <!-- Dynamic columns -->
   <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{column.columnName | translate}}</p>
+      {{column.columnName | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let user">
       <div>
