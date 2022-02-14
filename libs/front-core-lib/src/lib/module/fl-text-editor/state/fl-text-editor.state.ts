@@ -3,7 +3,6 @@ import Quill from 'quill';
 import {FlTextEditorImageService, FlTextEditorUploadedImage} from '../fl-text-editor-image.service';
 import {CmRichTextFigure} from '@monorepo/common-model';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {clRxjsDebug} from '@monorepo/core-lib';
 
 
 @Injectable()
@@ -71,7 +70,7 @@ export class FlTextEditorState implements OnDestroy {
   }
 
   public getDisabled$(): Observable<boolean> {
-    return this.disabled$.asObservable().pipe(clRxjsDebug());
+    return this.disabled$.asObservable();
   }
 
   ngOnDestroy(): void {
