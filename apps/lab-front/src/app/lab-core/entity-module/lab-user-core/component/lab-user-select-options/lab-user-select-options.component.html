@@ -1,0 +1,3 @@
+<mat-option *ngFor="let user of users$ | async" [value]="user.id">
+  {{user.fullname}}
+</mat-option>

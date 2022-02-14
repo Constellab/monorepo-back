@@ -48,6 +48,7 @@ import {
 import {
   LabResourceActionsMenuComponent
 } from './component/lab-resource-actions-menu/lab-resource-actions-menu.component';
+import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
 
 
 @NgModule({
@@ -111,6 +112,7 @@ import {
     LabTransformerModule,
     LabConfigCoreModule,
     LabProcessCoreModule,
+    LabUserCoreModule,
   ],
 })
 export class LabResourceCoreModule {

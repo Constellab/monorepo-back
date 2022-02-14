@@ -23,6 +23,9 @@ export class LabResourceSearchFields {
 
   @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
+
+  createdBy: string[];
+
   isArchived: boolean;
 }
 
@@ -54,6 +57,7 @@ export class LabResourceSearch {
     data: {key: 'data', operator: 'MATCH'},
     // Date
     createdAt: FlSearchConverter.dateInterval('created_at'),
+    createdBy: {key: 'created_by', operator: 'IN'},
     isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.convertArchived},
   };
 
@@ -72,6 +76,7 @@ export class LabResourceSearch {
         origin: [null],
         data: [null],
         createdAt: createAtFormGroup,
+        createdBy: [null],
         isArchived: [null]
       }
     );
