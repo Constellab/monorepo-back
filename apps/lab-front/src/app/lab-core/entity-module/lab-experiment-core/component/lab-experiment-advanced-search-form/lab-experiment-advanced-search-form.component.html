@@ -38,14 +38,22 @@
       </mat-select>
     </mat-form-field>
 
-    <!-------------------------------  Creation date  ---------------------------->
+    <!--  Created by  -->
+    <mat-form-field class="g-full">
+      <mat-label>{{'created_by' | translate }}</mat-label>
+      <mat-select formControlName="createdBy" [placeholder]="'created_by' | translate" [multiple]="true">
+        <lab-user-select-options></lab-user-select-options>
+      </mat-select>
+    </mat-form-field>
+
+    <!--  Creation date  -->
     <div class="g-no-hint g-full g-compact-form">
       <p class="g-text-small subtitle">{{'creation_date' | translate}}</p>
       <fl-search-date-interval formGroupName="createdAt">
       </fl-search-date-interval>
     </div>
 
-    <!-------------------------------  Last modification date  ---------------------------->
+    <!-- Last modification date  -->
     <div class="g-no-hint g-full g-compact-form">
       <p class="g-text-small subtitle">{{'last_modified_date' | translate}}</p>
       <fl-search-date-interval formGroupName="lastModifiedAt">

@@ -12,6 +12,8 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 export class LabReportSearchFields {
   title: string;
 
+  createdBy: string[];
+
   @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
 
@@ -31,6 +33,7 @@ export class LabReportSearch {
     title: 'title',
     // group the creation date into one chip
     createdAt: 'creation_date',
+    createdBy: 'created_by',
     lastModifiedAt: 'last_modified_date',
     isValidated: 'biox.report_is_validated',
     isArchived: 'is_archived',
@@ -43,6 +46,7 @@ export class LabReportSearch {
   public static advancedSearchConverter: FlSearchCriteriaConverter<LabReportSearchFields> = {
     title: {key: 'title', operator: 'CONTAINS'},
     // Date
+    createdBy: {key: 'created_by', operator: 'IN'},
     createdAt: FlSearchConverter.dateInterval('created_at'),
     lastModifiedAt: FlSearchConverter.dateInterval('last_modified_at'),
     isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.convertArchived},
@@ -54,6 +58,7 @@ export class LabReportSearch {
     return new FormBuilder().group(
       {
         title: [null],
+        createdBy: [null],
         createdAt: new FormBuilder().group<FlSearchDateInterval>({
           from: [null],
           to: [null],

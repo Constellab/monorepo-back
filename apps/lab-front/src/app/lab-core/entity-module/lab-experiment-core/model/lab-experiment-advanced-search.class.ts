@@ -24,6 +24,8 @@ export class LabExperimentSearchFields {
   @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
 
+  createdBy: string[];
+
   @Type(() => FlSearchDateInterval)
   lastModifiedAt: FlSearchDateInterval;
   isValidated: boolean;
@@ -43,6 +45,7 @@ export class LabExperimentSearch {
     isArchived: 'is_archived',
     // group the creation date into one chip
     createdAt: 'creation_date',
+    createdBy: 'created_by',
     lastModifiedAt: 'last_modified_date',
     isValidated: 'biox.experiment_is_validated',
   };
@@ -58,6 +61,7 @@ export class LabExperimentSearch {
     tags: {key: 'tags', operator: 'EQ', convertValue: FlTagHelper.tagsToString},
     project: {key: 'project', operator: 'IN', convertValue: FlSearchConverter.getEntitiesId},
     // Date
+    createdBy: {key: 'created_by', operator: 'IN'},
     createdAt: FlSearchConverter.dateInterval('created_at'),
     lastModifiedAt: FlSearchConverter.dateInterval('last_modified_at'),
     isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.convertArchived},
@@ -72,6 +76,7 @@ export class LabExperimentSearch {
         status: [null],
         tags: [null],
         project: [null],
+        createdBy: [],
         createdAt: new FormBuilder().group<FlSearchDateInterval>({
           from: [null],
           to: [null],

@@ -10,6 +10,7 @@ import {RouterModule} from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabReportFormDialogComponent} from './component/lab-report-form-dialog/lab-report-form-dialog.component';
 import {LabSelectReportDialogComponent} from './component/lab-select-report-dialog/lab-select-report-dialog.component';
+import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import {LabSelectReportDialogComponent} from './component/lab-select-report-dial
     FormsModule,
 
     LabCoreModule,
+    LabUserCoreModule,
   ],
 })
 export class LabReportCoreModule {

@@ -43,6 +43,7 @@ export class LabResourceSearch {
     isArchived: 'is_archived',
     // group the creation date into one chip
     createdAt: 'creation_date',
+    createdBy: 'created_by',
   };
 
 
