@@ -26,12 +26,13 @@ import {
 } from '../fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
 import {FlTextEditorState} from '../../state/fl-text-editor.state';
 import {FlTextEditorFigureBlot} from '../../fl-text-editor-figure.class';
-import hljs from 'highlight.js';
+import hljs from 'highlight.js/lib/core';
 import python from 'highlight.js/lib/languages/python';
 import Quill, {BoundsStatic, RangeStatic} from 'quill';
 import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.state';
 
 hljs.registerLanguage('python', python);
+
 /**
  * HTML --> Get HTML and generate HTML
  * JSON --> Get JSON as Delta and generate JSON
