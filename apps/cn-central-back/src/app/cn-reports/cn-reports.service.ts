@@ -9,15 +9,16 @@ import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {CmRichText} from '@monorepo/common-model';
+import {IncomingMessage} from 'http';
+import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
 export class CnReportsService extends CnAbstractService<CnReport> {
 
-  private readonly reportBucket: string = 'constellab-pre-prod';
-
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
               @Inject(forwardRef(() => CnExperimentsService)) private experimentService: CnExperimentsService,
-              private objectStorageService: BlObjectStorageService) {
+              private objectStorageService: BlObjectStorageService,
+              private configService: CnCoreConfigService) {
     super(repository, CnReport);
   }
 
@@ -53,9 +54,9 @@ export class CnReportsService extends CnAbstractService<CnReport> {
 
     const quillJson = new CmRichText(reportDTO.content);
     for (const file of files) {
-      const filename = await this.objectStorageService.uploadObject(file, this.reportBucket);
+      const filename = await this.objectStorageService.uploadObject(file, this.getReportBucket());
 
-      quillJson.updateFigure(file.originalname, {filename: filename, url: ''});
+      quillJson.updateFigure(file.originalname, {filename: filename});
     }
 
 
@@ -66,7 +67,7 @@ export class CnReportsService extends CnAbstractService<CnReport> {
     report.lastModifiedAt = reportDTO.lastModifiedAt;
     report.lastModifiedBy = reportDTO.lastModifiedBy;
     report.title = reportDTO.title;
-    report.content = reportDTO.content;
+    report.content = quillJson.getContent();
     report.project = project;
     report.experiments = experiments;
 
@@ -75,5 +76,13 @@ export class CnReportsService extends CnAbstractService<CnReport> {
 
   findByIdAndCheckWithExperiments(id: string): Promise<CnReport> {
     return this.findByIdAndCheck(id, {relations: ['experiments']});
+  }
+
+  async getImage(filename: string): Promise<IncomingMessage> {
+    return await this.objectStorageService.getObject(filename, this.getReportBucket());
+  }
+
+  private getReportBucket(): string {
+    return this.configService.getReportObjectStorageBucket();
   }
 }

@@ -21,6 +21,7 @@ import {
   FlServiceWorkerService,
   flSetRootInjector,
   FlSnackBarModule,
+  FlTextEditorImageService,
   FlThemeService,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
@@ -30,6 +31,7 @@ import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {CaAuthenticationService} from './ca-login/service/ca-authentication.service';
 import {CaUserAccountsService} from './ca-core/service-api/ca-user-accounts.service';
 import {CaApiErrorService} from './ca-core/service/ca-api-error.service';
+import {CaReportService} from './ca-core/service-api/ca-report.service';
 
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
@@ -89,6 +91,7 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},
     {provide: APP_INITIALIZER, useFactory: checkSWWebsiteVersion, deps: [FlServiceWorkerService], multi: true},
+    {provide: FlTextEditorImageService, useExisting: CaReportService},
     CookieService,
   ],
   bootstrap: [CaAppComponent]

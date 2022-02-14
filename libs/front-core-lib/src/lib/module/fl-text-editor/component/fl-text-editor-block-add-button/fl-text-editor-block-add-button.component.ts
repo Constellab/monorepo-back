@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FlTextEditorState} from '../../fl-text-editor.state';
+import {FlTextEditorState} from '../../state/fl-text-editor.state';
 
 @Component({
   selector: 'fl-text-editor-block-add-button',

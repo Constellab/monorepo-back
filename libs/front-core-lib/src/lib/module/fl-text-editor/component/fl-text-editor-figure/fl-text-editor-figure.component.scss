@@ -12,8 +12,15 @@
 
 
 .caption{
-  text-align: center;
   margin-top: 0.5em;
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+}
+
+.edit-button{
+  cursor: pointer;
+  vertical-align: middle;
 }
 
 .portal{

@@ -9,7 +9,6 @@ export interface CmRichTextI {
  */
 export interface CmRichTextFigure {
   filename: string;
-  url: string;
   title?: string;
   caption?: string;
   width: number;
@@ -21,14 +20,14 @@ export interface CmRichTextFigure {
 
 export class CmRichText {
 
-  constructor(private quillJson: CmRichTextI) {
+  constructor(private richText: CmRichTextI) {
   }
 
   /**
    * Get the list of figure in the json
    */
   public getFigures(): CmRichTextFigure[] {
-    return this.quillJson.ops.filter(
+    return this.richText.ops.filter(
       op => op.insert.figure !== null && typeof op.insert.figure === 'object',
     ).map(
       op => op.insert.figure
@@ -50,5 +49,9 @@ export class CmRichText {
     if (oldFigure == null) return;
 
     Object.assign(oldFigure, figure);
+  }
+
+  public getContent(): CmRichTextI {
+    return this.richText;
   }
 }

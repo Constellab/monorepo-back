@@ -16,7 +16,7 @@ export class FlTextEditorFigureBlot extends BlockEmbed {
 
   static create(value: CmRichTextFigure): any {
     const node: HTMLElement = super.create();
-    node.setAttribute('src', value.url);
+    node.setAttribute('filename', value.filename);
     node.setAttribute('width', value.width?.toString() ?? '100');
     node.setAttribute('height', value.height?.toString() ?? '100');
     node.setAttribute('image-title', value.title ?? '');

@@ -4,8 +4,14 @@
     <img [src]="sanitizedUrl"
          [alt]="imageTitle" class="image">
   </div>
-  <figcaption class="caption g-text-light g-text-small"
-              (click)="openPortal()"><strong>{{imageTitle}}</strong> | {{caption}}</figcaption>
+
+  <figcaption class="caption g-text-light g-text-small">
+    <ng-container *ngIf="imageTitle || caption"><strong>{{imageTitle}}</strong> | {{caption}}</ng-container>
+    <mat-icon *ngIf="(disabled$ | async) === false" class="g-icon-tiny edit-button"
+              (click)="openPortal()">edit
+    </mat-icon>
+  </figcaption>
+
 </figure>
 
 <ng-template #templatePortalContent>

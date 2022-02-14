@@ -4,7 +4,11 @@ import {BlFileHelper} from '../../utils/bl-file-helper';
 import {DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client} from '@aws-sdk/client-s3';
 import {BL_OBJECT_STORAGE_CONFIG_PROVIDER, BlObjectStorageModuleConfig} from './bl-object-storage.class';
 import {BlFile} from '../../models/bl-file.class';
+import {IncomingMessage} from 'http';
 
+/**
+ * Service to communicate with an object storage s3 to store files.
+ */
 @Injectable()
 export class BlObjectStorageService {
 
@@ -27,17 +31,18 @@ export class BlObjectStorageService {
       filename = obj.originalname;
     }
 
-    const results = await s3Client.send(new PutObjectCommand({
+    await s3Client.send(new PutObjectCommand({
       Bucket: bucket, Key: filename, Body: obj.buffer, ContentType: obj.mimetype
     }));
 
     return filename;
   }
 
-  public async getObject(objectName: string, bucket: string): Promise<any> {
+  public async getObject(objectName: string, bucket: string): Promise<IncomingMessage> {
     const s3Client = this.getClient();
 
-    return await s3Client.send(new GetObjectCommand({Bucket: bucket, Key: objectName}));
+    const result = await s3Client.send(new GetObjectCommand({Bucket: bucket, Key: objectName}));
+    return result.Body as IncomingMessage;
   }
 
   public async deleteObject(objectName: string, bucket: string): Promise<void> {

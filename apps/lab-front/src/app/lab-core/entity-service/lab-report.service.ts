@@ -129,5 +129,11 @@ export class LabReportService extends FlTextEditorImageService implements FlSear
     );
   }
 
+  getImageUrl(filename: string): string {
+    return this.getFilePath(filename);
+  }
+
+
+
 
 }

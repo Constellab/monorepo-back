@@ -8,6 +8,7 @@ import {CnCreateReportDto} from './cn-report.dto';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperimentsSecurityLayer} from '../cn-experiments/cn-experiments-security-layer.service';
 import {BlFile} from '@monorepo/back-core-lib';
+import {IncomingMessage} from 'http';
 
 @Injectable()
 export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<CnReport> {
@@ -51,6 +52,10 @@ export class CnReportsSecurityLayer extends CnAbstractSecurityLayer<CnReport> {
     await this.projectsSecurityLayer.getAndCheckAuthorizationToFindById(projectId);
 
     return this.service.getReportsByProject(projectId);
+  }
+
+  getImage(filename: string): Promise<IncomingMessage>{
+    return this.service.getImage(filename);
   }
 
 }

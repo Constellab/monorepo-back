@@ -1,7 +1,8 @@
-import {Controller, Get, Param, ParseUUIDPipe} from '@nestjs/common';
+import {Controller, Get, Param, ParseUUIDPipe, Res} from '@nestjs/common';
 import {CnReportsSecurityLayer} from './cn-reports-security.layer';
 import {CnReportDTO} from './cn-report.dto';
 import {CnReport} from './cn-report.entity';
+import {Response} from 'express';
 
 @Controller('reports')
 export class CnReportsController {
@@ -29,5 +30,14 @@ export class CnReportsController {
     return reports.map(report => new CnReportDTO().copyEntity(report));
   }
 
+  /**
+   * Return an image of the report
+   */
+  @Get('image/:filename')
+  public async get(@Param('filename') filename: string,
+                   @Res() response: Response): Promise<any> {
+    const file = await this.securityLayer.getImage(filename);
+    file.pipe(response);
+  }
 
 }

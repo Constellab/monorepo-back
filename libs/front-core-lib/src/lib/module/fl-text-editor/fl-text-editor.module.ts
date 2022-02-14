@@ -60,6 +60,5 @@ export class FlTextEditorModule {
     FlTextEditorModule.registered = true;
 
     translateService.addModuleTranslation('FlTextEditorModule', flTextEditorI18n);
-
   }
 }

@@ -24,11 +24,12 @@ import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
 import {
   FlTextEditorBlockAddButtonComponent
 } from '../fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
-import {FlTextEditorState} from '../../fl-text-editor.state';
+import {FlTextEditorState} from '../../state/fl-text-editor.state';
 import {FlTextEditorFigureBlot} from '../../fl-text-editor-figure.class';
 import hljs from 'highlight.js';
 import python from 'highlight.js/lib/languages/python';
 import Quill, {BoundsStatic, RangeStatic} from 'quill';
+import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.state';
 
 hljs.registerLanguage('python', python);
 /**
@@ -79,8 +80,10 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
               private elementRef: ElementRef,
               private portalService: FlPortalService,
               private zone: NgZone,
-              private state: FlTextEditorState) {
+              private state: FlTextEditorState,
+              private managerState: FlTextEditorsManagerState) {
     super(ngControl);
+    managerState.registerTextEditor(elementRef.nativeElement, state);
   }
 
   ngOnInit(): void {
@@ -99,7 +102,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       }
     );
 
-    this.state.init(this.quill);
+    this.state.init(this.quill, this.disabled);
 
 
     // init the HTML with the value set
@@ -222,7 +225,13 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     this.blockAddButtonOverlay?.dispose();
   }
 
+  setDisabledState(isDisabled: boolean): void {
+    this.state.setDisabled(isDisabled);
+  }
+
+
   ngOnDestroy(): void {
     this.closeBlockAddButtonOverlay();
+    this.managerState.unregisterTextEditor(this.editorElement.nativeElement);
   }
 }
