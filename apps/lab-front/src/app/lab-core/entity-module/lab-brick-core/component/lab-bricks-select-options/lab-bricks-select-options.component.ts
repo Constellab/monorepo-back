@@ -21,7 +21,6 @@ export class LabBricksSelectOptionsComponent extends FlEmbeddedOptionsAbstractDi
   }
 
   ngOnInit(): void {
-    this.overrideCompareWithOnIds(this.select);
     this.bricks$ = this.brickService.getAllBricks();
   }
 
