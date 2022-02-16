@@ -5,6 +5,9 @@
     "lab_not_running": "Le lab est arrêté",
     "lab_no_brick_message": "Aucun message",
     "brick_list": "Briques",
-    "messages_count": "{{count}} message(s)"
+    "messages_count": "{{count}} message(s)",
+    "version": "Version",
+    "repo_type": "Type de repository",
+    "remo_commit": "Commit"
   }
 }

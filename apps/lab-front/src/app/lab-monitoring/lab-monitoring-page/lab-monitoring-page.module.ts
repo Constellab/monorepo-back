@@ -5,6 +5,7 @@ import {LabMonitoringPageComponent} from './component/lab-monitoring-page/lab-mo
 import {LabBrickListStatusComponent} from './component/lab-brick-list-status/lab-brick-list-status.component';
 import {LabHealthCheckComponent} from './component/lab-health-check/lab-health-check.component';
 import {LabBrickMessageListComponent} from './component/lab-brick-message-list/lab-brick-message-list.component';
+import {LabBrickInfoComponent} from './component/lab-brick-info/lab-brick-info.component';
 
 
 @NgModule({
@@ -12,7 +13,8 @@ import {LabBrickMessageListComponent} from './component/lab-brick-message-list/l
     LabMonitoringPageComponent,
     LabBrickListStatusComponent,
     LabHealthCheckComponent,
-    LabBrickMessageListComponent
+    LabBrickMessageListComponent,
+    LabBrickInfoComponent
   ],
   imports: [
     CommonModule,

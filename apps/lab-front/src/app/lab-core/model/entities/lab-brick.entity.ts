@@ -1,6 +1,6 @@
 import {LabEntity} from '../global/lab-entity.entity';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
-import {Type} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
 
 export type LabBrickMessageStatus = 'INFO' | 'ERROR'  | 'CRITICAL'| 'WARNING'
 
@@ -42,6 +42,14 @@ export class LabBrickEntity extends LabEntity {
 
   @Type(() => LabBrickData)
   data: LabBrickData;
+
+  version: string;
+
+  @Expose({name: 'repo_type'})
+  repoType: 'app'
+
+  @Expose({name: 'repo_commit'})
+  repoCommit?: string
 
   hasMessages(): boolean {
     return this.countMessages() > 0;

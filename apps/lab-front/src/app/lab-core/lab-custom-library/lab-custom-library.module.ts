@@ -18,6 +18,7 @@ import {
   FlInfiniteScrollModule,
   FlInputFileModule,
   FlJsonEditorModule,
+  FlKeyValueModule,
   FlLoaderModule,
   FlPortalActionsModule,
   FlPortalModule,
@@ -70,6 +71,7 @@ import {
     FlFormInputsManagerModule,
     FlSearchModule,
     FlArticleModule,
+    FlKeyValueModule,
   ]
 })
 export class LabCustomLibraryModule {
