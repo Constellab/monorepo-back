@@ -3,11 +3,6 @@ import {ActivatedRoute} from '@angular/router';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 import {CaLabInstance} from '../../../../../ca-core/model/entities/ca-lab-instance.class';
-import {
-  CaStatusHistoryListDialogComponent,
-  StatusHistoryListDialogInput
-} from '../../../../../ca-core/module/ca-status/ca-status-history-list-dialog/ca-status-history-list-dialog.component';
-import {FlDialogService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
 import {CaReportService} from '../../../../../ca-core/service-api/ca-report.service';
@@ -27,8 +22,7 @@ export class CaExperimentDetailPageComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private experimentService: CaExperimentService,
-              private reportService: CaReportService,
-              private dialogService: FlDialogService) {
+              private reportService: CaReportService) {
   }
 
   ngOnInit(): void {
@@ -61,13 +55,6 @@ export class CaExperimentDetailPageComponent implements OnInit {
 
   onLabInstanceUpdate(labInstance: CaLabInstance): void {
     this.experiment.labInstance = labInstance;
-  }
-
-  openStatusHistory(): void {
-    const dialogInput: StatusHistoryListDialogInput = {
-      statusHistoriesObs: this.experimentService.getStatusHistories(this.experiment.id),
-    };
-    this.dialogService.openSmallDialog(CaStatusHistoryListDialogComponent, {data: dialogInput});
   }
 
 }

@@ -8,11 +8,7 @@
       </fl-text-icon>
 
       <div fxLayout="row" fxLayoutAlign="start center">
-        <button mat-icon-button type="button" (click)="openStatusHistory()"
-                [matTooltip]="'status_history' | translate">
-          <mat-icon>history</mat-icon>
-        </button>
-        <fl-status-chip [status]="experiment.currentStatus.status"
+        <fl-status-chip [status]="experiment.status"
                         class="g-text-big">
         </fl-status-chip>
       </div>

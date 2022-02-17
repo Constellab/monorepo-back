@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CaExperiment, CaExperimentStatusHistory} from '../model/entities/ca-experiment.class';
-import {FlApiService, FlArrayObs, FlEntityArrayObs} from '@monorepo/front-core-lib';
+import {CaExperiment} from '../model/entities/ca-experiment.class';
+import {FlApiService} from '@monorepo/front-core-lib';
 
 @Injectable({
   providedIn: 'root'
@@ -27,11 +27,5 @@ export class CaExperimentService {
 
   public update(experiment: Partial<CaExperiment>): Observable<CaExperiment> {
     return this.apiService.put(`${this.route}`, experiment, CaExperiment);
-  }
-
-  ////////////////// STATUS ////////////////////
-
-  public getStatusHistories(id: string): FlArrayObs<CaExperimentStatusHistory> {
-    return new FlEntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, CaExperimentStatusHistory));
   }
 }

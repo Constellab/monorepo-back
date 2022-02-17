@@ -27,13 +27,13 @@ export class CaExperiment extends CaBaseEntity {
   @Type(() => CaLabInstance)
   labInstance: CaLabInstance;
 
-  @Type(() => CaExperimentStatusHistory)
-  currentStatus: CaExperimentStatusHistory;
+  @FlStatusTransform(caExperimentStatusDict)
+  status: FlStatus<CaExperimentStatus>;
 
   projectId: string;
 
   statusIsDraft(): boolean {
-    return this.currentStatus.status.value === 'DRAFT';
+    return this.status.value === 'DRAFT';
   }
 }
 
