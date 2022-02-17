@@ -9,7 +9,6 @@ import {CnLabConfigDto} from './cn-lab-config.dto';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
 import {CnBrickVersionDto} from '../cn-bricks/cn-brick.dto';
-import {CnRepoType} from '../cn-bricks/cn-brick-version.entity';
 
 @Injectable()
 export class CnLabConfigsService extends CnAbstractService<CnLabConfig> {
@@ -81,7 +80,7 @@ export class CnLabConfigsService extends CnAbstractService<CnLabConfig> {
         name: version.name,
         version: version.version,
         repoType: version.repo_type,
-        commit: version.repo_type === CnRepoType.GIT ? version.repo_commit : undefined
+        commit: version.repo_commit ? version.repo_commit : undefined
       })
     );
 

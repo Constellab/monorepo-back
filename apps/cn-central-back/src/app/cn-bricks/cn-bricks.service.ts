@@ -3,7 +3,7 @@ import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
 import {CnBrick} from './cn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
-import {CnBrickVersion} from './cn-brick-version.entity';
+import {CnBrickVersion, CnRepoType} from './cn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
 import {CnBrickVersionDto} from './cn-brick.dto';
 
@@ -53,7 +53,7 @@ export class CnBricksService extends CnAbstractService<CnBrick> {
     brickVersion.minor = version.minor;
     brickVersion.patch = version.patch;
     brickVersion.commitRef = brickVersionDto.repo_commit;
-    brickVersion.repoType = brickVersionDto.repo_type as any;
+    brickVersion.repoType = brickVersionDto.repo_type === 'git' ? CnRepoType.GIT : CnRepoType.PIP;
 
     return entityManager.save(brickVersion);
   }
