@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CaLabFormDialogComponent} from './ca-lab-form-dialog.component';
+import {CaLabConfigTableComponent} from './ca-lab-config-table.component';
 
-describe('LabFormDialogComponent', () => {
-  let component: CaLabFormDialogComponent;
-  let fixture: ComponentFixture<CaLabFormDialogComponent>;
+describe('LabTableComponent', () => {
+  let component: CaLabConfigTableComponent;
+  let fixture: ComponentFixture<CaLabConfigTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CaLabFormDialogComponent ]
+      declarations: [ CaLabConfigTableComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CaLabFormDialogComponent);
+    fixture = TestBed.createComponent(CaLabConfigTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

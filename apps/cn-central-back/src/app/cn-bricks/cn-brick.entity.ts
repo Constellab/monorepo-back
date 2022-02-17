@@ -1,17 +1,19 @@
-import {Column, Entity, ManyToOne} from 'typeorm';
-import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
-import {CnLab} from '../cn-labs/cn-lab.entity';
+import {Column, Entity} from 'typeorm';
+import {BlEntityWithId} from '@monorepo/back-core-lib';
 
 /**
  * A brick is a functionality in a Lab
  * A lab is configured with multiple bricks
  */
 @Entity('brick')
-export class CnBrick extends CnBaseEntity {
+export class CnBrick extends BlEntityWithId {
 
-  @Column({nullable: false})
-  label: string;
+  @Column({nullable: false, unique: true})
+  name: string;
 
-  @ManyToOne(() => CnLab, (lab: CnLab) => lab.bricks)
-  lab: CnLab;
+  @Column({nullable: true})
+  pipRepo: string;
+
+  @Column({nullable: true})
+  gitRepo: string;
 }

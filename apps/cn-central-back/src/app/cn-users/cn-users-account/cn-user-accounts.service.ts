@@ -9,7 +9,7 @@ import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {CnGroupSingleUser} from '../../cn-groups/cn-group.entity';
 import {CnGroupType} from '../../cn-groups/cn-group-type.enum';
 import {TokenExpiredError} from 'jsonwebtoken';
-import * as argon2 from 'argon2';
+import {hash} from 'argon2';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 import {BlMailService, BlTokenHelper} from '@monorepo/back-core-lib';
 import {CnUserTokenPayload} from '../../cn-core/model/config/cn-config.class';
@@ -173,7 +173,7 @@ export class CnUserAccountsService {
   }
 
   private hashPassword(password: string): Promise<string> {
-    return argon2.hash(password);
+    return hash(password);
   }
 
   public async adminActivation(userId: string): Promise<CnUser> {

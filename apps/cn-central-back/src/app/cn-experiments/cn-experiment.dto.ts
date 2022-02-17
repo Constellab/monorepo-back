@@ -2,9 +2,16 @@ import {CnExperimentStatus} from './cn-experiment-status.enum';
 import {DateTime} from 'luxon';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {CnBaseEntityDTO} from '../cn-core/model/entities/cn-base.entity';
-import {CnExperimentStatusHistory} from './cn-experiment-status-history.entity';
-import {Type} from 'class-transformer';
-import {CnExperiment} from './cn-experiment.entity';
+import {CnExperiment, CnExperimentProtocol} from './cn-experiment.entity';
+import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
+import {CmRichTextI} from '@monorepo/common-model';
+
+export class CnCreateLabExperimentDto {
+  experiment: CnLabExperimentDto;
+  protocol: CnExperimentProtocol;
+  lab_config: CnLabConfigDto;
+}
+
 
 /**
  * Experiment object from the Lab
@@ -12,7 +19,7 @@ import {CnExperiment} from './cn-experiment.entity';
 export class CnLabExperimentDto {
   id: string;
   title: string;
-  description: Record<string, any>;
+  description: CmRichTextI;
   status: CnExperimentStatus;
 
   @ClLuxonDateTimeTransform()
@@ -26,8 +33,7 @@ export class CnLabExperimentDto {
 export class CnExperimentDTO extends CnBaseEntityDTO {
   title: string;
 
-  @Type(() => CnExperimentStatusHistory)
-  currentStatus: CnExperimentStatusHistory;
+  status: CnExperimentStatus;
 
   projectId: string;
 
@@ -35,8 +41,8 @@ export class CnExperimentDTO extends CnBaseEntityDTO {
   copyEntity(entity: CnExperiment): this {
     super.copyEntity(entity);
     this.title = entity.title;
-    this.currentStatus = entity.currentStatus;
     this.projectId = entity.projectId;
+    this.status = entity.status;
     return this;
   }
 }

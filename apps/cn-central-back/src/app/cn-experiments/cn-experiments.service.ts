@@ -2,27 +2,21 @@ import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {CnExperiment} from './cn-experiment.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
-import {CnExperimentStatus} from './cn-experiment-status.enum';
-import {CnExperimentStatusHistory} from './cn-experiment-status-history.entity';
-import {CnLabExperimentDto} from './cn-experiment.dto';
+import {CnCreateLabExperimentDto} from './cn-experiment.dto';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnReportsService} from '../cn-reports/cn-reports.service';
+import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
+import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 
 @Injectable()
-export class CnExperimentsService extends CnAbstractWithStatusService<CnExperiment, CnExperimentStatus> {
+export class CnExperimentsService extends CnAbstractService<CnExperiment> {
 
   constructor(@InjectRepository(CnExperiment) private repository: Repository<CnExperiment>,
-              @InjectRepository(CnExperimentStatusHistory) statusHistoRepo: Repository<CnExperimentStatusHistory>,
-              private reportService: CnReportsService) {
-    super(repository, CnExperiment, statusHistoRepo, CnExperimentStatusHistory);
+              private reportService: CnReportsService,
+              private labConfigService: CnLabConfigsService) {
+    super(repository, CnExperiment);
   }
-
-  async create(experiment: CnExperiment): Promise<CnExperiment> {
-    return this.createWithStatus(experiment, CnExperimentStatus.DRAFT);
-  }
-
 
   getExperimentsByProject(projectId: string): Promise<CnExperiment[]> {
     return this.repository.find({
@@ -46,26 +40,32 @@ export class CnExperimentsService extends CnAbstractWithStatusService<CnExperime
     return (await this.reportService.findByIdAndCheckWithExperiments(reportId)).experiments;
   }
 
-  public async createLabExperiment(project: CnProject, labExperimentDto: CnLabExperimentDto): Promise<CnExperiment> {
-    const experimentDB: CnExperiment = await this.findById(labExperimentDto.id);
+  public async createLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto): Promise<CnExperiment> {
+    const experimentDB: CnExperiment = await this.findById(createLabExperimentDto.experiment.id);
 
     if (experimentDB && experimentDB.projectId !== project.id) {
       throw new UnauthorizedException('Can\'t change the project of a validated experiment');
     }
 
-    const newExperiment = new CnExperiment();
-    newExperiment.id = labExperimentDto.id;
-    newExperiment.projectId = project.id;
-    newExperiment.title = labExperimentDto.title;
-    newExperiment.description = labExperimentDto.description;
-    newExperiment.createdAt = labExperimentDto.created_at;
-    newExperiment.lastModifiedAt = labExperimentDto.last_modified_at;
+    const labConfig = await this.labConfigService.getOrCreateLabConfig(createLabExperimentDto.lab_config);
+
+    const labExperimentDto = createLabExperimentDto.experiment;
+    const experiment = new CnExperiment();
+    experiment.id = labExperimentDto.id;
+    experiment.projectId = project.id;
+    experiment.title = labExperimentDto.title;
+    experiment.description = labExperimentDto.description;
+    experiment.createdAt = labExperimentDto.created_at;
+    experiment.lastModifiedAt = labExperimentDto.last_modified_at;
+    experiment.status = labExperimentDto.status;
+    experiment.labConfig = labConfig;
+    experiment.protocol = createLabExperimentDto.protocol;
+
     if (experimentDB) {
-      // todo does not support status change
-      return await this.updateWithCompare(newExperiment, experimentDB);
+      return await this.updateWithCompare(experiment, experimentDB);
     } else {
-      newExperiment.labInstance = CnCurrentUserHelper.getLabInstance();
-      return this.createWithStatus(newExperiment, labExperimentDto.status);
+      experiment.labInstance = CnCurrentUserHelper.getLabInstance();
+      return this.create(experiment);
     }
   }
 

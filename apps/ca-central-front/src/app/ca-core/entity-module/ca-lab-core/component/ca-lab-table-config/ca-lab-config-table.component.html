@@ -21,18 +21,6 @@
     </mat-cell>
   </ng-container>
 
-  <!-- Actions -->
-  <ng-container matColumnDef="actions">
-    <mat-header-cell class="g-table-icon-button-cell" *matHeaderCellDef>
-    </mat-header-cell>
-    <mat-cell class="g-table-icon-button-cell" *matCellDef="let lab">
-      <button mat-icon-button type="button"
-              (click)="openUpdateLabDialog(lab)">
-        <mat-icon>edit</mat-icon>
-      </button>
-    </mat-cell>
-  </ng-container>
-
 
   <!-- Dynamic columns -->
   <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">

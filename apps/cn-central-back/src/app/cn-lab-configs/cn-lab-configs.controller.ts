@@ -1,22 +1,20 @@
 import {Controller, Get} from '@nestjs/common';
-import {CnLab} from './cn-lab.entity';
+import {CnLabConfig} from './cn-lab-config.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
-import {CnLabsSecurityLayer} from './cn-labs-security.layer';
-import {CnAbstractSecureController} from '../cn-core/class/cn-abstract-secure.controller';
+import {CnLabConfigsSecurityLayer} from './cn-lab-configs-security-layer.service';
 import {CmUserCategory} from '@monorepo/common-model';
 
-@Controller('labs')
-export class CnLabsController extends CnAbstractSecureController<CnLab> {
+@Controller('lab-configs')
+export class CnLabConfigsController {
 
-  constructor(private securityLayer: CnLabsSecurityLayer) {
-    super(securityLayer, CnLab);
+  constructor(private securityLayer: CnLabConfigsSecurityLayer) {
   }
 
   /**
    * return the list of labs created by the current user
    */
   @Get('current')
-  public getCurrentLabs(): Promise<CnLab[]> {
+  public getCurrentLabs(): Promise<CnLabConfig[]> {
     return this.securityLayer.getCurrentLabs();
   }
 
@@ -25,7 +23,7 @@ export class CnLabsController extends CnAbstractSecureController<CnLab> {
    */
   @CnUserCategories(CmUserCategory.ADMIN)
   @Get('')
-  public findAll(): Promise<CnLab[]> {
+  public findAll(): Promise<CnLabConfig[]> {
     return this.securityLayer.findAll();
   }
 }

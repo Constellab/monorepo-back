@@ -6,7 +6,6 @@ import {
   caConstBaseRoute,
   caConstDashboardRoute,
   caConstLabInstancesRoute,
-  caConstLabsConfig,
   caConstProjectsRoute,
   caConstSettingsRoute,
   caConstSmartDbRoute
@@ -40,12 +39,6 @@ const routes: Route[] = [
       {
         path: caConstProjectsRoute,
         loadChildren: () => import('../ca-project/ca-project.module').then(m => m.CaProjectModule)
-      },
-
-      //////////////////////// LAB /////////////////////////
-      {
-        path: caConstLabsConfig,
-        loadChildren: () => import('../ca-lab/ca-lab.module').then(m => m.CaLabModule)
       },
 
       //////////////////////// SMART DB /////////////////////////

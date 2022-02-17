@@ -3,13 +3,15 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {CnBrick} from './cn-brick.entity';
 import {CnBricksService} from './cn-bricks.service';
 import {CnBricksController} from './cn-bricks.controller';
+import {CnBrickVersion} from './cn-brick-version.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CnBrick])
+    TypeOrmModule.forFeature([CnBrick, CnBrickVersion])
   ],
   providers: [CnBricksService],
-  controllers: [CnBricksController]
+  controllers: [CnBricksController],
+  exports: [CnBricksService]
 })
 export class CnBricksModule {
 }

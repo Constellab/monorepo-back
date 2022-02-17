@@ -1,6 +1,6 @@
 import {BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToOne} from 'typeorm';
 import {Exclude, Expose, Type} from 'class-transformer';
-import {CnLab} from '../cn-labs/cn-lab.entity';
+import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnEntityWithStatus} from '../cn-core/model/entities/cn-entity-with-status.entity';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
 import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
@@ -22,9 +22,9 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   name: string;
 
   @BlNotUpdatable()
-  @Type(() => CnLab)
-  @ManyToOne(() => CnLab, {eager: true, nullable: false})
-  lab: CnLab;
+  @Type(() => CnLabConfig)
+  @ManyToOne(() => CnLabConfig, {eager: true, nullable: true})
+  lab: CnLabConfig;
 
   // owner of the lab, can be different from create by
   @Type(() => CnUser)
@@ -92,9 +92,6 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     }
     if (!this.codelabToken) {
       this.codelabToken = randomBytes(48).toString('base64').replace(/\W/g, '');
-    }
-    if (!this.name) {
-      this.name = this.lab.label;
     }
   }
 

@@ -4,7 +4,6 @@ import {CaDashboardPageComponent} from './component/ca-dashboard-page/ca-dashboa
 import {CaCoreModule} from '../../../ca-core/ca-core.module';
 import {CaProjectCoreModule} from '../../../ca-core/entity-module/ca-project-core/ca-project-core.module';
 import {RouterModule} from '@angular/router';
-import {CaLabsCatalogComponent} from './component/ca-labs-catalog/ca-labs-catalog.component';
 import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
 import {CaDashboardModulePageComponent} from './component/ca-dashboard-module-page/ca-dashboard-module-page.component';
 import {CaDashboardProjectsComponent} from './component/ca-dashboard-projects/ca-dashboard-projects.component';
@@ -18,7 +17,6 @@ import {
 @NgModule({
   declarations: [
     CaDashboardPageComponent,
-    CaLabsCatalogComponent,
     CaDashboardModulePageComponent,
     CaDashboardProjectsComponent,
     CaDashboardLabInstancesComponent,

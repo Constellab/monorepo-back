@@ -11,7 +11,7 @@ import {TypeOrmModuleOptions} from '@nestjs/typeorm/dist/interfaces/typeorm-opti
 import {CnCoreConfigModule} from './app/cn-core/modules/cn-core-config/cn-core-config.module';
 import {I18nJsonParser, I18nModule} from 'nestjs-i18n';
 import {join} from 'path';
-import {CnLabsModule} from './app/cn-labs/cn-labs.module';
+import {CnLabConfigsModule} from './app/cn-lab-configs/cn-lab-configs.module';
 import {CnExperimentsModule} from './app/cn-experiments/cn-experiments.module';
 import {CnBricksModule} from './app/cn-bricks/cn-bricks.module';
 import {CnGroupsModule} from './app/cn-groups/cn-groups.module';
@@ -151,7 +151,7 @@ function configureObjectStorageModule(configService: CnCoreConfigService): BlObj
     CnUsersModule,
     CnAuthModule,
     CnProjectsModule,
-    CnLabsModule,
+    CnLabConfigsModule,
     CnExperimentsModule,
     CnBricksModule,
     CnGroupsModule,

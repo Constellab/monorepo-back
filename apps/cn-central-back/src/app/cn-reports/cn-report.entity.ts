@@ -3,6 +3,7 @@ import {Column, Entity, JoinTable, ManyToMany, ManyToOne} from 'typeorm';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {Type} from 'class-transformer';
 import {CnProject} from '../cn-projects/cn-project.entity';
+import {CmRichTextI} from '@monorepo/common-model';
 
 @Entity('report')
 export class CnReport extends CnBaseEntity {
@@ -10,8 +11,8 @@ export class CnReport extends CnBaseEntity {
   @Column()
   title: string;
 
-  @Column({name: 'content', type: 'simple-json', nullable: true})
-  content: Record<string, any>;
+  @Column({type: 'simple-json', nullable: true})
+  content: CmRichTextI;
 
   @Type(() => CnProject)
   @ManyToOne(() => CnProject, {nullable: false})

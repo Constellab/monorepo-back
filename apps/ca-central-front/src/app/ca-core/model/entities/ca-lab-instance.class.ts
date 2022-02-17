@@ -1,5 +1,4 @@
 import {CaBaseEntity} from './ca-base-entity.class';
-import {CaLab} from './ca-lab.class';
 import {CaStatusHistory} from './ca-status-history.class';
 import {CaServerInfo} from './ca-server-info.class';
 import {CaUser} from './ca-user.class';
@@ -32,9 +31,6 @@ export class CaLabInstanceStatusHistory extends CaStatusHistory<CaLabInstanceSta
 export class CaLabInstance extends CaBaseEntity {
 
   name: string;
-
-  @Type(() => CaLab)
-  lab: CaLab = null;
 
   @Type(() => CaUser)
   owner: CaUser = null;

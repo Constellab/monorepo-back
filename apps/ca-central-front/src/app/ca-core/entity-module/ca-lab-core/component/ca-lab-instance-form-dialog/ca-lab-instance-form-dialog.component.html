@@ -17,7 +17,7 @@
     <mat-form-field class="g-form-input">
       <mat-label>{{'virtual_host' | translate}}</mat-label>
       <input matInput formControlName="virtualHost" required flInputMaxLength="255"
-             placeholder="{{'virtual_host' | translate}}" >
+             placeholder="{{'virtual_host' | translate}}">
       <mat-error *ngIf="formGp.get('virtualHost').hasError('required')">
         {{'virtual_host' | flErrorRequired}}
       </mat-error>
@@ -31,17 +31,6 @@
       </mat-select>
       <mat-error *ngIf="formGp.get('serverInfo').hasError('required')">
         {{'server_info' | flErrorRequired}}
-      </mat-error>
-    </mat-form-field>
-
-    <!--  Lab  -->
-    <mat-form-field class="g-form-input">
-      <mat-label>{{'lab' | translate}}</mat-label>
-      <mat-select placeholder="{{'lab' | translate}}" formControlName="lab" required>
-        <ca-select-lab-options></ca-select-lab-options>
-      </mat-select>
-      <mat-error *ngIf="formGp.get('lab').hasError('required')">
-        {{'lab' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 

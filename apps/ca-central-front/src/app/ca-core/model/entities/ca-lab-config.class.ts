@@ -1,6 +1,6 @@
 import {CaBaseEntity} from './ca-base-entity.class';
 
-export class CaLab extends CaBaseEntity {
+export class CaLabConfig extends CaBaseEntity {
 
   label: string;
 }

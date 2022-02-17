@@ -2,7 +2,6 @@ import {
   caConstAdminRoute,
   caConstDashboardFullRoute,
   caConstLabInstancesFullRoute,
-  caConstLabsConfig,
   caConstProjectsFullRoute,
   caConstSettingsFullRoute,
   caConstSmartDbRoute
@@ -35,11 +34,6 @@ export const caMainMenuLinks: CaMainMenuLink[] = [
     label: 'my_labs',
     icon: 'lab',
     route: caConstLabInstancesFullRoute
-  },
-  {
-    label: 'labs_catalog',
-    icon: 'view_list',
-    route: caConstLabsConfig
   },
   {
     label: 'smart_db.smart_db',

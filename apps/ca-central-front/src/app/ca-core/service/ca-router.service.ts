@@ -2,7 +2,6 @@ import {
   caConstBaseRoute,
   caConstDashboardFullRoute,
   caConstLabInstancesFullRoute,
-  caConstLabsConfigFullRoute,
   caConstProjectsFullRoute,
   caConstSmartDbFullRoute
 } from '../utils/ca-base-route';
@@ -58,10 +57,6 @@ export class CaRouterService {
 
   public static getMyLabInstancesRoute(): string {
     return `${caConstLabInstancesFullRoute}`;
-  }
-
-  public static getMyLabsRoute(): string {
-    return `${caConstLabsConfigFullRoute}`;
   }
 
   public static getSmartDbDocDetailRoute(id: string): string {

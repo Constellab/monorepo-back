@@ -1,13 +1,13 @@
 import {TestBed} from '@angular/core/testing';
 
-import {CaLabService} from './ca-lab.service';
+import {CaLabConfigService} from './ca-lab-config.service';
 
 describe('LabService', () => {
-  let service: CaLabService;
+  let service: CaLabConfigService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(CaLabService);
+    service = TestBed.inject(CaLabConfigService);
   });
 
   it('should be created', () => {
