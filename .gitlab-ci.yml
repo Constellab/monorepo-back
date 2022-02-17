@@ -16,6 +16,8 @@ stages:
 build-lab:
   image: node:14-alpine
   stage: build-lab
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - docker  manifest inspect registry.gitlab.com/gencovery/core/monorepo/lab-front:11ac0a0042acc90452feb2207a92145cd190cb40 > /dev/null && exit || true
     - npm ci
