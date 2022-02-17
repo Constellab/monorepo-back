@@ -17,6 +17,7 @@ build-lab:
   image: node:14-alpine
   stage: build-lab
   script:
+    - docker  manifest inspect registry.gitlab.com/gencovery/core/monorepo/lab-front:11ac0a0042acc90452feb2207a92145cd190cb40 > /dev/null && exit || true
     - npm ci
     - npm run lab-front:build-prod
   artifacts:
@@ -24,7 +25,7 @@ build-lab:
     paths:
       - dist/apps/lab-front/
   only:
-    - master
+    - ben
 
 # Push lab-front image to the docker registry using Dockerfile of the lab-front
 deploy-lab:
@@ -40,6 +41,6 @@ deploy-lab:
     - docker push $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:$VERSION
     - docker push $CI_REGISTRY_IMAGE/$LAB_FRONT_IMAGE:latest
   only:
-    - master
+    - ben
 
 
