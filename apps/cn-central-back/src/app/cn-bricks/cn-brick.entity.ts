@@ -1,5 +1,6 @@
-import {Column, Entity} from 'typeorm';
+import {Column, Entity, OneToMany} from 'typeorm';
 import {BlEntityWithId} from '@monorepo/back-core-lib';
+import {CnBrickVersion} from './cn-brick-version.entity';
 
 /**
  * A brick is a functionality in a Lab
@@ -16,4 +17,8 @@ export class CnBrick extends BlEntityWithId {
 
   @Column({nullable: true})
   gitRepo: string;
+
+  @OneToMany(() => CnBrickVersion,
+    (brickVersion: CnBrickVersion) => brickVersion.brick)
+  versions: CnBrickVersion[];
 }

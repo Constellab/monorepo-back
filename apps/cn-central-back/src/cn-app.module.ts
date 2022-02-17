@@ -44,6 +44,7 @@ import {Request} from 'express';
 import {CnUsersService} from './app/cn-users/cn-users.service';
 import {CnDatabaseConfig} from './app/cn-core/model/config/cn-config.class';
 import {SnSmartDbModule} from './app/sn-smart-db/sn-smart-db.module';
+import {CnLabFrontVersionsModule} from './app/cn-lab-front-versions/cn-lab-front-versions.module';
 
 function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -161,6 +162,7 @@ function configureObjectStorageModule(configService: CnCoreConfigService): BlObj
     CnServersInfoModule,
     CnReportsModule,
     CnFrontErrorsModule,
+    CnLabFrontVersionsModule,
     SnSmartDbModule,
   ],
   controllers: [],

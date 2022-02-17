@@ -1,6 +1,7 @@
 import {Column, Entity, ManyToOne} from 'typeorm';
 import {BlEntityWithId, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnBrick} from './cn-brick.entity';
+import {CmVersion} from '@monorepo/common-model';
 
 export enum CnRepoType {
   PIP = 'PIP',
@@ -31,7 +32,7 @@ export class CnBrickVersion extends BlEntityWithId {
   @Column({nullable: false})
   commitRef: string;
 
-  getVersion(): string {
-    return [this.major, this.minor, this.patch].join('.');
+  public get version(): CmVersion {
+    return new CmVersion(this.major, this.minor, this.patch);
   }
 }

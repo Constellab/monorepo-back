@@ -3,7 +3,6 @@ export class CmVersion {
   constructor(public major: number, public minor: number, public patch: number) {
   }
 
-
   public static fromString(version: string): CmVersion {
     if (version == null || version.length < 5) {
       throw new Error(`Version '${version}' is invalid`);
@@ -24,4 +23,9 @@ export class CmVersion {
 
     return new CmVersion(major, minor, patch);
   }
+
+  public toString(): string {
+    return [this.major, this.minor, this.patch].join('.');
+  }
+
 }

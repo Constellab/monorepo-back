@@ -71,4 +71,22 @@ export class CnBricksService extends CnAbstractService<CnBrick> {
         relations: ['brick']
       });
   }
+
+  public getAllBricks(): Promise<CnBrick[]> {
+    return this.brickRepo.find({relations: ['versions']});
+  }
+
+  public getBrickVersions(brickName: string): Promise<CnBrickVersion[]> {
+    return this.brickVersionRepo.find({
+      where: {
+        brick: {name: brickName},
+      },
+      order: {
+        major: 'DESC',
+        minor: 'DESC',
+        patch: 'DESC'
+      },
+      relations: ['brick']
+    });
+  }
 }
