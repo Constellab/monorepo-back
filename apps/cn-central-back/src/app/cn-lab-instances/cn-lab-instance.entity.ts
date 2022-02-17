@@ -73,7 +73,6 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     return `https://lab-manager.${this.virtualHost}`;
   }
 
-  @BlNotUpdatable()
   @Type(() => CnServerInfo)
   @ManyToOne(() => CnServerInfo,
     (serverInfo: CnServerInfo) => serverInfo.labInstances,
