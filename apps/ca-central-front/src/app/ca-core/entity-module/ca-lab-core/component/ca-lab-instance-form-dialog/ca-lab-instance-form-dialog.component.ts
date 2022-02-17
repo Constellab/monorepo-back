@@ -34,7 +34,7 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
   buildForm(): FormGroup<Partial<CaLabInstance>> {
     return new FormBuilder().group({
       id: [null],
-      name: [null],
+      name: [null, [Validators.required]],
       virtualHost: [null, [Validators.required]],
       serverInfo: [null, [Validators.required]],
       owner: [null, Validators.required],
