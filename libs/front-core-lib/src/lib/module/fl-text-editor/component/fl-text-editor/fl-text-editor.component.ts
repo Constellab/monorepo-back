@@ -172,19 +172,6 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     }
   }
 
-  // retrieve the first parent that is scrollable
-  private getScrollingContainer(): HTMLElement {
-    // retrieve scrollable parents
-    const scrollableElements = this.scrollDispatcher.getAncestorScrollContainers(this.elementRef);
-    // if there are some scrollable parent, use the first one
-    if (scrollableElements.length > 0) {
-      return scrollableElements[scrollableElements.length - 1].getElementRef().nativeElement;
-    }
-
-    // otherwise, use document as scrolling container
-    return this.document.documentElement;
-  }
-
   private onEditorChange(changeEvent: 'text-change' | 'selection-change', obj: any): void {
     if (changeEvent === 'selection-change') {
       this.showAddButton(obj);
@@ -229,6 +216,20 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   setDisabledState(isDisabled: boolean): void {
     this.state.setDisabled(isDisabled);
   }
+
+  // retrieve the first parent that is scrollable
+  private getScrollingContainer(): HTMLElement {
+    // retrieve scrollable parents
+    const scrollableElements = this.scrollDispatcher.getAncestorScrollContainers(this.elementRef);
+    // if there are some scrollable parent, use the first one
+    if (scrollableElements.length > 0) {
+      return scrollableElements[scrollableElements.length - 1].getElementRef().nativeElement;
+    }
+
+    // otherwise, use document as scrolling container
+    return this.document.documentElement;
+  }
+
 
 
   ngOnDestroy(): void {
