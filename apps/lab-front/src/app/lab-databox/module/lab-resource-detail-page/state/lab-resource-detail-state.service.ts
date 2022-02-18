@@ -12,7 +12,7 @@ import {
   LabViewCallResult
 } from '../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
-import {filter, map} from 'rxjs/operators';
+import {filter, first, map} from 'rxjs/operators';
 import {
   FlPortalActionResult,
   FlPortalActionsService,
@@ -47,9 +47,9 @@ export class LabResourceDetailState implements OnDestroy {
 
   private id: string;
 
-  private resource$: BehaviorSubject<LabResource>;
+  private resource$: BehaviorSubject<LabResource> = new BehaviorSubject<LabResource>(null);
   private viewSpecs$: ClCachedObservable<LabResourceViewSpecsByType[]>;
-  private selectedViewSpec$: BehaviorSubject<LabResourceViewSpecWithConfig>;
+  private selectedViewSpec$: BehaviorSubject<LabResourceViewSpecWithConfig> = new BehaviorSubject(null);
 
   private subscription: Subscription;
 
@@ -61,7 +61,7 @@ export class LabResourceDetailState implements OnDestroy {
 
   public init(id: string): void {
     this.id = id;
-    this.resource$ = new BehaviorSubject<LabResource>(null);
+    this.resource$.next(null);
     this.resourceService.getById(id).subscribe(
       resource => this.resource$.next(resource),
       error => this.resource$.error(error)
@@ -70,7 +70,7 @@ export class LabResourceDetailState implements OnDestroy {
     // load the views once the resource was found
     this.viewSpecs$ = new ClCachedObservable(this.resourceService.getResourceViewsListGrouped(id));
 
-    this.selectedViewSpec$ = new BehaviorSubject(null);
+    this.selectedViewSpec$.next(null);
 
     // Call the default view
     this.loadDefaultView();
@@ -93,7 +93,7 @@ export class LabResourceDetailState implements OnDestroy {
   }
 
   public getResourcePromise(): Promise<LabResource> {
-    return this.resource$.toPromise();
+    return this.getResource$().pipe(first()).toPromise();
   }
 
   public updateResource(resource: LabResource): void {

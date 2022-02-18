@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {LabResourceDetailState} from '../../state/lab-resource-detail-state.service';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'lab-resource-detail-page',
@@ -10,15 +12,15 @@ import {LabResourceDetailState} from '../../state/lab-resource-detail-state.serv
 })
 export class LabResourceDetailPageComponent implements OnInit {
 
-  resourceId: string;
+  resourceId$: Observable<string>;
 
 
   constructor(private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe(
-      params => this.resourceId = params.id
+    this.resourceId$ = this.route.params.pipe(
+      map(params => params.id)
     );
   }
 }

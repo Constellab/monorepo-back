@@ -9,6 +9,11 @@
         <h2 class="header-title">{{resource.name}} |
           <span class="g-text-light">{{fullScreenViewName}}</span>
         </h2>
+        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="resource.experiment"
+                      gap="0">
+          <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
+          {{resource.experiment.title}}
+        </fl-text-icon>
 
         <fl-section-actions>
             <button mat-stroked-button type="button"

@@ -25,7 +25,7 @@ import {LabRouterService} from '../../../../service/lab-router.service';
 })
 export class LabResourceDetailComponent implements OnInit, OnDestroy {
 
-  @Input() resourceId: string;
+  @Input() resourceId: string | Observable<string>;
 
   // when true, the transform, import button are deactivate
   @Input() readOnly: boolean = false;
@@ -45,7 +45,11 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.state.init(this.resourceId);
+    if (this.resourceId instanceof Observable) {
+      this.resourceId.subscribe(resourceId => this.state.init(resourceId));
+    } else {
+      this.state.init(this.resourceId);
+    }
     this.resource$ = this.state.getResource$();
 
     // subscribe to fullscreen view
