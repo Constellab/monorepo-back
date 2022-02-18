@@ -3,6 +3,7 @@ import {Type} from 'class-transformer';
 
 
 export class CnSaveLabFrontVersionDTO {
+  id: string;
   version: string;
 
   @Type(() => CnBrickVersion)

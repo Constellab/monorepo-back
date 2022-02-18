@@ -1,3 +1,6 @@
+import {Transform} from 'class-transformer';
+import {ClTransformFnParams} from '@monorepo/core-lib';
+
 export class CmVersion {
 
   constructor(public major: number, public minor: number, public patch: number) {
@@ -28,4 +31,21 @@ export class CmVersion {
     return [this.major, this.minor, this.patch].join('.');
   }
 
+}
+
+export function CmVersionTransform(): PropertyDecorator {
+  // convert Version to string
+  const transformToPlain = Transform(
+    (params: ClTransformFnParams<CmVersion>) => params.value?.toString() ?? null,
+    {toPlainOnly: true});
+
+  // create string to Version
+  const transformToClass = Transform(
+    (params: ClTransformFnParams<string | null>) => params.value == null ? null : CmVersion.fromString(params.value),
+    {toClassOnly: true});
+
+  return (target: any, key: string): void => {
+    transformToPlain(target, key);
+    transformToClass(target, key);
+  };
 }

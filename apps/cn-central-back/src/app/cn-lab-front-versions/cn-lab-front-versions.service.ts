@@ -17,6 +17,7 @@ export class CnLabFrontVersionsService extends CnAbstractService<CnLabFrontVersi
   public async saveVersion(versionDTO: CnSaveLabFrontVersionDTO): Promise<CnLabFrontVersion> {
     const version = CmVersion.fromString(versionDTO.version);
     const frontVersion = new CnLabFrontVersion();
+    frontVersion.id = versionDTO.id ? versionDTO.id: undefined;
     frontVersion.gwsCoreBrickVersion = versionDTO.gwsCoreBrickVersion;
     frontVersion.version = version;
     return this.save(frontVersion);
@@ -29,14 +30,15 @@ export class CnLabFrontVersionsService extends CnAbstractService<CnLabFrontVersi
   }
 
   private async checkBeforeSave(entity: CnLabFrontVersion): Promise<void> {
-    if (await this.findByVersion(entity.major, entity.minor, entity.patch)) {
+    const existing = await this.findByVersion(entity.major, entity.minor, entity.patch);
+    if (existing && entity.id !== existing.id) {
       throw new BadRequestException(`The front version '${entity.version}' already exists`);
     }
 
-    const existing = await this.findByGwsCoreVersion(entity.gwsCoreBrickVersion.id);
-    if (existing && entity.id !== existing.id) {
+    const existing2 = await this.findByGwsCoreVersion(entity.gwsCoreBrickVersion.id);
+    if (existing2 && entity.id !== existing2.id) {
       // eslint-disable-next-line max-len
-      throw new BadRequestException(`The gws core version '${entity.gwsCoreBrickVersion.version}' is already attached to the front '${existing.version}'`);
+      throw new BadRequestException(`The gws core version '${entity.gwsCoreBrickVersion.version}' is already attached to the front '${existing2.version}'`);
     }
   }
 

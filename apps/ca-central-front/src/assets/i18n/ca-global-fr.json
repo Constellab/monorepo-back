@@ -81,5 +81,18 @@
   "owner": "Propriétaire",
   "language": "Langage",
   "user": "Utilisateur",
-  "organization_name": "Nom de l'organisation"
+  "organization_name": "Nom de l'organisation",
+  "lab_front_version_list": "Versions du lab front",
+  "no_lab_front_version": "Aucune version",
+  "create_lab_front_version": "Créer une version du lab front",
+  "update_lab_front_version": "Modifier la version",
+  "lab_front_version_created": "Version créée",
+  "lab_front_version_updated": "Version modifiée",
+  "delete_lab_front_version": "Supprimer la version",
+  "delete_lab_front_version_confirmation": "Êtes-vous sûr de vouloir supprimer la version du lab front ?",
+  "lab_front_version_deleted": "Version supprimée",
+  "version": "Version",
+  "gws_core_brick_version": "Version de la brique gws_core",
+  "creation_info": "Creation info",
+  "last_modification_info": "Last modification info"
 }

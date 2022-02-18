@@ -81,5 +81,18 @@
   "owner": "Owner",
   "language": "Language",
   "user": "User",
-  "organization_name": "Organization's name"
+  "organization_name": "Organization's name",
+  "lab_front_version_list": "Lab front versions",
+  "no_lab_front_version": "No version",
+  "create_lab_front_version": "Create front lab version",
+  "update_lab_front_version": "Update version",
+  "lab_front_version_created": "Version created",
+  "lab_front_version_updated": "Version updated",
+  "delete_lab_front_version": "Delete version",
+  "delete_lab_front_version_confirmation": "Are you sure you want to delete the lab front version ?",
+  "lab_front_version_deleted": "Version deleted",
+  "version": "Version",
+  "gws_core_brick_version": "gws_core brick version",
+  "creation_info": "Info de création",
+  "last_modification_info": "Info de dernière modification"
 }

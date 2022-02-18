@@ -19,7 +19,7 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
               dialogRef: MatDialogRef<CaLabInstanceFormDialogComponent>,
               @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaLabInstance>,
               private labInstanceService: CaLabInstanceService) {
-    super(dialogInput, snackBarService, dialogRef, 'create_lab_instance', 'update_lab_instance');
+    super(dialogInput, snackBarService, dialogRef, 'lab_instance_created', 'lab_instance_updated');
   }
 
   ngOnInit(): void {

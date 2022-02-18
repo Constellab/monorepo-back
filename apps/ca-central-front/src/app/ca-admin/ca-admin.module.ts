@@ -17,6 +17,12 @@ import {
   CaAdminLabInstancesListComponent
 } from './component/ca-admin-lab-instances-list/ca-admin-lab-instances-list.component';
 import {CaLabCoreModule} from '../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
+import {
+  CaAdminLabFrontVersionListComponent
+} from './component/ca-admin-lab-front-version-list/ca-admin-lab-front-version-list.component';
+import {
+  CaLabFrontVersionCoreModule
+} from '../ca-core/entity-module/ca-lab-front-version-core/ca-lab-front-version-core.module';
 
 /**
  * Module only accessible by the admins
@@ -27,7 +33,8 @@ import {CaLabCoreModule} from '../ca-core/entity-module/ca-lab-core/ca-lab-core.
     CaAdminAccountsActivationComponent,
     CaAdminAccountActivationButtonComponent,
     CaAdminServerInfoListComponent,
-    CaAdminLabInstancesListComponent
+    CaAdminLabInstancesListComponent,
+    CaAdminLabFrontVersionListComponent,
   ],
   imports: [
     CommonModule,
@@ -35,6 +42,7 @@ import {CaLabCoreModule} from '../ca-core/entity-module/ca-lab-core/ca-lab-core.
     CaCoreModule,
     CaServerInfoCoreModule,
     CaLabCoreModule,
+    CaLabFrontVersionCoreModule,
 
     CaAdminRoutingModule,
   ]

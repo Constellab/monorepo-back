@@ -1,8 +1,8 @@
 import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
 import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {CnBrickVersion} from '../cn-bricks/cn-brick-version.entity';
-import {CmVersion} from '@monorepo/common-model';
-import {Exclude} from 'class-transformer';
+import {CmVersion, CmVersionTransform} from '@monorepo/common-model';
+import {Exclude, Expose} from 'class-transformer';
 
 /**
  * Entity to store the different version of the lab front.
@@ -25,9 +25,11 @@ export class CnLabFrontVersion extends CnBaseEntity {
   @Column({default: 0})
   patch: number;
 
-  @ManyToOne(() => CnBrickVersion, {nullable: false})
+  @ManyToOne(() => CnBrickVersion, {nullable: false, eager: true})
   gwsCoreBrickVersion: CnBrickVersion;
 
+  @CmVersionTransform()
+  @Expose()
   public get version(): CmVersion {
     return new CmVersion(this.major, this.minor, this.patch);
   }
