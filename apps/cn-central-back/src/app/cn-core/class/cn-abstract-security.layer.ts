@@ -13,13 +13,13 @@ export abstract class CnAbstractSecurityLayer<T extends BlEntityWithId> {
   /**
    * Abstract Methods to check the CRUD authorization and return a boolean
    */
-  public abstract async isAuthorizedToCreate(newEntity: T): Promise<boolean>;
+  public abstract isAuthorizedToCreate(newEntity: T): Promise<boolean>;
 
-  public abstract async isAuthorizedToUpdate(dbEntity: T): Promise<boolean>;
+  public abstract isAuthorizedToUpdate(dbEntity: T): Promise<boolean>;
 
-  public abstract async isAuthorizedToDelete(dbEntity: T): Promise<boolean>;
+  public abstract isAuthorizedToDelete(dbEntity: T): Promise<boolean>;
 
-  public abstract async isAuthorizedToFindOne(dbEntity: T): Promise<boolean> ;
+  public abstract isAuthorizedToFindOne(dbEntity: T): Promise<boolean> ;
 
   // same method with the id (this does a find one before calling the method with the entity)
   public async isAuthorizedToUpdateById(id: string): Promise<boolean> {

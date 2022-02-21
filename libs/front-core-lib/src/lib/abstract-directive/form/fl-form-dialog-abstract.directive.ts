@@ -53,7 +53,7 @@ export abstract class FlFormDialogAbstractDirective<FORM_TYPE, ENTITY = FORM_TYP
     if (this.formGp.valid && !this.isLoading) {
       this.isLoading = true;
 
-      const formValue: FORM_TYPE = this.formGp.getRawValue();
+      const formValue: any = this.formGp.getRawValue();
 
       if (this.dialogInput.mode === 'create') {
         this.callCreate(formValue);
