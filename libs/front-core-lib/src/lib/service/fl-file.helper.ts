@@ -181,12 +181,8 @@ export class FlFileHelper {
    * @param filename the complete name of the file
    */
   public static downloadBlob(file: Blob, filename: string): void {
-    if (window.navigator.msSaveOrOpenBlob) { // IE10+
-      window.navigator.msSaveOrOpenBlob(file, filename);
-    } else { // Others
-      const url = URL.createObjectURL(file);
-      FlFileHelper.downloadUrl(url, filename);
-    }
+    const url = URL.createObjectURL(file);
+    FlFileHelper.downloadUrl(url, filename);
   }
 
   /**

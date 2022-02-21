@@ -1,0 +1,151 @@
+{
+  "projectType": "application",
+  "root": "apps/lab-front",
+  "sourceRoot": "apps/lab-front/src",
+  "prefix": "lab",
+  "architect": {
+    "build": {
+      "builder": "@angular-devkit/build-angular:browser",
+      "options": {
+        "outputPath": "dist/apps/lab-front",
+        "index": "apps/lab-front/src/index.html",
+        "main": "apps/lab-front/src/main.ts",
+        "polyfills": "apps/lab-front/src/polyfills.ts",
+        "tsConfig": "apps/lab-front/tsconfig.app.json",
+        "assets": [
+          "apps/lab-front/src/assets",
+          {
+            "glob": "**/*",
+            "input": "libs/front-core-lib/src/assets/mat-icons",
+            "output": "assets/mat-icons"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/front-core-lib/src/assets/logo",
+            "output": "assets/logo"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/front-core-lib/src/assets/font",
+            "output": "assets/font"
+          },
+          {
+            "glob": "favicon.ico",
+            "input": "libs/front-core-lib/src/",
+            "output": "./"
+          }
+        ],
+        "styles": [
+          "apps/lab-front/src/lab-styles.scss",
+          {
+            "input": "apps/lab-front/src/theme/lab-light-theme.scss",
+            "bundleName": "light-theme",
+            "inject": false
+          },
+          {
+            "input": "apps/lab-front/src/theme/lab-dark-theme.scss",
+            "bundleName": "dark-theme",
+            "inject": false
+          }
+        ],
+        "scripts": [],
+        "allowedCommonJsDependencies": [
+          "class-transformer",
+          "highlight.js"
+        ]
+      },
+      "configurations": {
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb",
+              "maximumError": "10kb"
+            }
+          ]
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/lab-front/src/environments/lab-environment.ts",
+              "with": "apps/lab-front/src/environments/lab-environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "buildOptimizer": true,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb",
+              "maximumError": "10kb"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "builder": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "browserTarget": "lab-front:build"
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "lab-front:build:production"
+        },
+        "development": {
+          "browserTarget": "lab-front:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "builder": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "lab-front:build"
+      }
+    },
+    "lint": {
+      "builder": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/lab-front/src/**/*.ts",
+          "apps/lab-front/src/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "builder": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/apps/lab-front"
+      ],
+      "options": {
+        "jestConfig": "apps/lab-front/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": [
+    "front"
+  ]
+}

@@ -1,7 +1,10 @@
 import {Injectable} from '@angular/core';
 import {SwUpdate} from '@angular/service-worker';
 import {FlSnackBarService} from '../module/fl-snack-bar/fl-snack-bar.service';
-import {FlNewWebsiteVersionComponent} from '../module/fl-core-component/component/fl-new-website-version/fl-new-website-version.component';
+import {
+  FlNewWebsiteVersionComponent
+} from '../module/fl-core-component/component/fl-new-website-version/fl-new-website-version.component';
+import {filter} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,10 +17,9 @@ export class FlServiceWorkerService {
 
   // check the version of the service worker
   public checkForNewVersion(): void {
-    this.swUpdate.available.subscribe(event => {
-      console.log('Service Worker : current version is', event.current);
-      console.log('Service Worker : available version is', event.available);
-
+    this.swUpdate.versionUpdates.pipe(
+      filter(versionEvent => versionEvent.type === 'VERSION_READY')
+    ).subscribe(() => {
       this.snackBarService.openSnackBar(FlNewWebsiteVersionComponent);
     });
   }

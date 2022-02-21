@@ -1,4 +1,3 @@
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {TrackByFunction} from '@angular/core';
 
 /**
@@ -135,7 +134,7 @@ export class ClHelpService {
    * Return true if value is '' or 'true' or true
    */
   public static coerceBooleanOrEmptyProperty(value: any): boolean {
-    return value === '' || coerceBooleanProperty(value);
+    return value === '' || value === true || value === 'true';
   }
 
   /**
@@ -198,12 +197,11 @@ export class ClHelpService {
 
     for (const key of Object.keys(value)) {
       if (!ClHelpService.isNullOrEmpty(value[key])) {
-        return true
+        return true;
       }
     }
     return false;
   }
-
 
 
   /**

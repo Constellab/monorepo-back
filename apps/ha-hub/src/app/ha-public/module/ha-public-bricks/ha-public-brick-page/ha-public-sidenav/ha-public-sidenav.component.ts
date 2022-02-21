@@ -9,7 +9,6 @@ import {ActivatedRoute} from '@angular/router';
 import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,
-  FlContextMenuConfig,
   FlDialogService,
   FlFormDialogInput,
   FlMenuDynamic,
@@ -18,7 +17,9 @@ import {
 } from '@monorepo/front-core-lib';
 import {HaDocumentationService} from '../../../../../ha-core/ha-service/ha-documentation.service';
 import {HaFolder} from '../../../../../ha-core/ha-model/ha-entities/ha-folder.class';
-import {HaPublicSidenavCreateFormDialogComponent} from './ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
+import {
+  HaPublicSidenavCreateFormDialogComponent
+} from './ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
 import {HaDocumentation} from '../../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {CdkDragDrop, CdkDragStart} from '@angular/cdk/drag-drop';
 import {SelectionModel} from '@angular/cdk/collections';
@@ -46,8 +47,6 @@ export class HaPublicSidenavComponent implements OnInit {
 
   menuOpen: boolean;
   openedMenu: FlOverlayRef;
-
-  docContextMenuConfig: FlContextMenuConfig;
 
   private _transformer = (node: HaNode, level: number): any => {
     return {
@@ -137,7 +136,7 @@ export class HaPublicSidenavComponent implements OnInit {
         }
         this.menuOpen = true;
       }
-    })
+    });
   }
 
   private getContextMenuConfig(isFolder: boolean, id?: string, isRoot: boolean = false, hasChild: boolean = false): FlMenuDynamic[] {
@@ -147,7 +146,7 @@ export class HaPublicSidenavComponent implements OnInit {
           text: {text: 'create', translateText: true},
           icon: 'add',
           onClick: () => {
-            this.openCreateDialog(id)
+            this.openCreateDialog(id);
           }
         }
       ] : [
@@ -167,7 +166,7 @@ export class HaPublicSidenavComponent implements OnInit {
           onClick: (event) => this.openResourceDelete(id, isFolder),
           disabled: hasChild
         }
-      ]
+      ];
     }
     return [
       {
@@ -191,11 +190,11 @@ export class HaPublicSidenavComponent implements OnInit {
       observable: isFolder ? this.folderService.deleteById(id) : this.documentationService.deleteById(id),
       successMessage: isFolder ? 'folder_deleted' : 'documentation_deleted',
       translateMessage: true
-    }
+    };
 
     this.dialogService.openConfirmDialog(input).afterClosed().subscribe(res => {
       this.onCloseConfirmDialog(res);
-    })
+    });
   }
 
   private onCloseConfirmDialog(res: FlConfirmDialogResult): void {
@@ -266,7 +265,7 @@ export class HaPublicSidenavComponent implements OnInit {
     if (node.children && this.treeControl.isExpanded(n)) {
       node.children.map((child) => this.addExpandedChildren(child, expanded, result));
     }
-    return result
+    return result;
   }
 
   visibleNodes(): HaNode[] {
@@ -329,25 +328,25 @@ export class HaPublicSidenavComponent implements OnInit {
     this.saveTreeData(this.changedData);
   }
 
-  private deleteEmptyNode(nodes: HaNode[]): HaNode[]{
+  private deleteEmptyNode(nodes: HaNode[]): HaNode[] {
     console.log(nodes);
     let index: number;
     index = nodes.findIndex(n => n.name == null);
-    if(index){
+    if (index) {
       nodes.splice(index, 1);
     }
     return nodes;
   }
 
-  private updateEmptyNodes(nodes: HaNode[]): HaNode[]{
+  private updateEmptyNodes(nodes: HaNode[]): HaNode[] {
     nodes.forEach(node => {
-      if(node.children){
-        if(node.children.length > 0){
-          if(node.children.length > 1) {
+      if (node.children) {
+        if (node.children.length > 0) {
+          if (node.children.length > 1) {
             node.children = this.deleteEmptyNode(node.children);
           }
         } else {
-          node.children.push(new HaNode(null, null, null,  null, null, null));
+          node.children.push(new HaNode(null, null, null, null, null, null));
         }
       }
     });
@@ -362,7 +361,7 @@ export class HaPublicSidenavComponent implements OnInit {
 
   updatedTree(nodes: HaNode[], levelTheo: number): HaNode[] {
     nodes.forEach(n => {
-      const newIndex: number = nodes.findIndex(node => node.id == n.id)
+      const newIndex: number = nodes.findIndex(node => node.id == n.id);
       n.order = n.order != newIndex ? newIndex : n.order;
 
       const nf: FlatNode = this.treeControl.dataNodes.find(value => value.id == n.id);

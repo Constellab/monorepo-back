@@ -1,0 +1,177 @@
+{
+  "projectType": "application",
+  "root": "apps/ha-hub",
+  "sourceRoot": "apps/ha-hub/src",
+  "prefix": "da",
+  "architect": {
+    "build": {
+      "builder": "@angular-devkit/build-angular:browser",
+      "options": {
+        "outputPath": "dist/apps/ha-hub",
+        "index": "apps/ha-hub/src/index.html",
+        "main": "apps/ha-hub/src/main.ts",
+        "polyfills": "apps/ha-hub/src/polyfills.ts",
+        "tsConfig": "apps/ha-hub/tsconfig.app.json",
+        "assets": [
+          "apps/ha-hub/src/favicon.ico",
+          "apps/ha-hub/src/assets",
+          {
+            "glob": "**/*",
+            "input": "libs/front-core-lib/src/assets/logo",
+            "output": "assets/logo"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/front-core-lib/src/assets/mat-icons",
+            "output": "assets/mat-icons"
+          },
+          {
+            "glob": "favicon.ico",
+            "input": "libs/front-core-lib/src/",
+            "output": "./"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/front-core-lib/src/assets/font",
+            "output": "assets/font"
+          }
+        ],
+        "styles": [
+          "apps/ha-hub/src/ha-styles.scss",
+          {
+            "input": "apps/ca-central-front/src/theme/ca-light-theme.scss",
+            "bundleName": "light-theme",
+            "inject": false
+          },
+          {
+            "input": "apps/ca-central-front/src/theme/ca-dark-theme.scss",
+            "bundleName": "dark-theme",
+            "inject": false
+          }
+        ],
+        "scripts": []
+      },
+      "configurations": {
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb",
+              "maximumError": "10kb"
+            }
+          ]
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/ha-hub/src/environments/ha-environment.ts",
+              "with": "apps/ha-hub/src/environments/ha-environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "buildOptimizer": true,
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb",
+              "maximumError": "10kb"
+            }
+          ]
+        },
+        "preprod": {
+          "fileReplacements": [
+            {
+              "replace": "apps/ha-hub/src/environments/ha-environment.ts",
+              "with": "apps/ha-hub/src/environments/ha-environment.preprod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "buildOptimizer": true,
+          "serviceWorker": true,
+          "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb",
+              "maximumError": "10kb"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "builder": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "browserTarget": "ha-hub:build"
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "ha-hub:build:production"
+        },
+        "development": {
+          "browserTarget": "ha-hub:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "builder": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "ha-hub:build"
+      }
+    },
+    "lint": {
+      "builder": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/ha-hub/src/**/*.ts",
+          "apps/ha-hub/src/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "builder": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/apps/ha-hub"
+      ],
+      "options": {
+        "jestConfig": "apps/ha-hub/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": [
+    "front"
+  ]
+}

@@ -3,16 +3,16 @@
   "affected": {
     "defaultBase": "master"
   },
+  "cli": {
+    "defaultCollection": "@nrwl/angular",
+    "packageManager": "npm"
+  },
   "implicitDependencies": {
-    "angular.json": "*",
     "package.json": {
       "dependencies": "*",
       "devDependencies": "*"
     },
-    "tsconfig.base.json": "*",
-    "tslint.json": "*",
-    ".eslintrc.json": "*",
-    "nx.json": "*"
+    ".eslintrc.json": "*"
   },
   "tasksRunnerOptions": {
     "default": {
@@ -22,45 +22,28 @@
       }
     }
   },
-  "projects": {
-    "ca-central-front": {
-      "tags": ["front"]
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
+    ]
+  },
+  "generators": {
+    "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "cypress"
     },
-    "ca-central-front-e2e": {
-      "tags": ["test"],
-      "implicitDependencies": ["ca-central-front"]
+    "@nrwl/angular:library": {
+      "linter": "eslint",
+      "unitTestRunner": "jest"
     },
-    "lab-front": {
-      "tags": ["front"]
-    },
-    "lab-front-e2e": {
-      "tags": ["test"],
-      "implicitDependencies": ["lab-front"]
-    },
-    "front-core-lib": {
-      "tags": ["front"]
-    },
-    "cn-central-back": {
-      "tags": ["back"]
-    },
-    "core-lib": {
-      "tags": ["ts-core"]
-    },
-    "common-model": {
-      "tags": ["ts-core"]
-    },
-    "hn-hub": {
-      "tags": ["back"]
-    },
-    "ha-hub": {
-      "tags": ["front"]
-    },
-    "ha-hub-e2e": {
-      "tags": [],
-      "implicitDependencies": ["ha-hub"]
-    },
-    "back-core-lib": {
-      "tags": ["back"]
+    "@nrwl/angular:component": {
+      "style": "scss"
     }
-  }
+  },
+  "defaultProject": "ca-central-front"
 }

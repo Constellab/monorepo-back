@@ -1,0 +1,183 @@
+{
+  "projectType": "application",
+  "root": "apps/ca-central-front",
+  "sourceRoot": "apps/ca-central-front/src",
+  "prefix": "ca",
+  "architect": {
+    "build": {
+      "builder": "@angular-devkit/build-angular:browser",
+      "options": {
+        "outputPath": "dist/apps/ca-central-front",
+        "index": "apps/ca-central-front/src/index.html",
+        "main": "apps/ca-central-front/src/main.ts",
+        "polyfills": "apps/ca-central-front/src/polyfills.ts",
+        "tsConfig": "apps/ca-central-front/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/ca-central-front/src/assets",
+          "apps/ca-central-front/src/manifest.webmanifest",
+          {
+            "glob": "**/*",
+            "input": "libs/front-core-lib/src/assets/mat-icons",
+            "output": "assets/mat-icons"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/front-core-lib/src/assets/logo",
+            "output": "assets/logo"
+          },
+          {
+            "glob": "**/*",
+            "input": "libs/front-core-lib/src/assets/font",
+            "output": "assets/font"
+          },
+          {
+            "glob": "favicon.ico",
+            "input": "libs/front-core-lib/src/",
+            "output": "./"
+          }
+        ],
+        "styles": [
+          "apps/ca-central-front/src/ca-styles.scss",
+          {
+            "input": "apps/ca-central-front/src/theme/ca-light-theme.scss",
+            "bundleName": "light-theme",
+            "inject": false
+          },
+          {
+            "input": "apps/ca-central-front/src/theme/ca-dark-theme.scss",
+            "bundleName": "dark-theme",
+            "inject": false
+          }
+        ],
+        "scripts": [],
+        "allowedCommonJsDependencies": [
+          "class-transformer",
+          "highlight.js"
+        ]
+      },
+      "configurations": {
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true,
+          "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb",
+              "maximumError": "10kb"
+            }
+          ]
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/ca-central-front/src/environments/ca-environment.ts",
+              "with": "apps/ca-central-front/src/environments/ca-environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "buildOptimizer": true,
+          "serviceWorker": true,
+          "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb",
+              "maximumError": "10kb"
+            }
+          ]
+        },
+        "preprod": {
+          "fileReplacements": [
+            {
+              "replace": "apps/ca-central-front/src/environments/ca-environment.ts",
+              "with": "apps/ca-central-front/src/environments/ca-environment.preprod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "buildOptimizer": true,
+          "serviceWorker": true,
+          "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "2mb",
+              "maximumError": "5mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "6kb",
+              "maximumError": "10kb"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "builder": "@angular-devkit/build-angular:dev-server",
+      "options": {
+        "browserTarget": "ca-central-front:build"
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "ca-central-front:build:production"
+        },
+        "development": {
+          "browserTarget": "ca-central-front:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "builder": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "ca-central-front:build"
+      }
+    },
+    "lint": {
+      "builder": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/ca-central-front/src/**/*.ts",
+          "apps/ca-central-front/src/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "builder": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/apps/ca-central-front"
+      ],
+      "options": {
+        "jestConfig": "apps/ca-central-front/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["front"]
+}

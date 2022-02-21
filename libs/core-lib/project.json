@@ -1,0 +1,26 @@
+{
+  "root": "libs/core-lib",
+  "sourceRoot": "libs/core-lib/src",
+  "projectType": "library",
+  "architect": {
+    "lint": {
+      "builder": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/core-lib/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "builder": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/libs/core-lib"
+      ],
+      "options": {
+        "jestConfig": "libs/core-lib/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["ts-core"]
+}
