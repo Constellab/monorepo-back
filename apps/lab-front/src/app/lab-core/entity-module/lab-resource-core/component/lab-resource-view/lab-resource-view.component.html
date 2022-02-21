@@ -1,8 +1,11 @@
 <div class="title">
-  <h3 *ngIf="_view.title">{{_view.title}}</h3>
-  <p *ngIf="_view.caption" class="g-text-small">{{_view.caption}}</p>
+  <h3>{{_view.title}}</h3>
+  <p class="g-text-small">{{_view.caption}}</p>
 </div>
-<ng-template #viewContainer></ng-template>
 
-<fl-error-text *ngIf="viewNotSupportedError"
-               [errorMessage]="'biox.view_type_node_supported' | translate"></fl-error-text>
+<div class="chart-content">
+  <ng-template #viewContainer></ng-template>
+
+  <fl-error-text *ngIf="viewNotSupportedError"
+                 [errorMessage]="'biox.view_type_node_supported' | translate"></fl-error-text>
+</div>
