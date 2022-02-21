@@ -33,6 +33,12 @@
           <input matInput formControlName="dataRange" placeholder="{{'flSpreadsheet.chart_data_range' | translate}}">
           <fl-spreadsheet-selection-input matSuffix
                                           [inputFormControl]="formGp.get('dataRange')"></fl-spreadsheet-selection-input>
+
+          <button matSuffix mat-icon-button type="button" [color]="splitButtonColor"
+                  [matTooltip]="splitButtonTooltip | translate"
+                  (click)="toggleSplitSelection()">
+            <mat-icon>pivot_table_chart</mat-icon>
+          </button>
           <mat-error *ngIf="formGp.get('dataRange').hasError('invalidFormat')">
             {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
           </mat-error>
@@ -41,6 +47,7 @@
             : {{formGp.get('dataRange').getError('selectionOutOfBound')}}
           </mat-error>
         </mat-form-field>
+
 
         <!-- Series name range-->
         <mat-form-field appearance="outline" class="g-full">

@@ -1,4 +1,5 @@
 import {ClSupportedLanguage} from '@monorepo/core-lib';
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
 
 
@@ -40,7 +41,9 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     chart_refresh: 'Rafraichir',
     cell_value_object: 'Objet',
     open_cell_object_in_sheet: 'Ouvrir dans une feuille',
-    sheet: 'Feuille'
+    sheet: 'Feuille',
+    split_selection_by_rows: 'Séparer la sélection par lignes',
+    split_selection_by_columns: 'Séparer la sélection par colonnes'
   }
 };
 
@@ -79,7 +82,9 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     chart_refresh: 'Refresh',
     cell_value_object: 'Object',
     open_cell_object_in_sheet: 'Open in a sheet',
-    sheet: 'Sheet'
+    sheet: 'Sheet',
+    split_selection_by_rows: 'Split selection by rows',
+    split_selection_by_columns: 'Split selection by columns'
   }
 };
 

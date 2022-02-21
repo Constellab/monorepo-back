@@ -4,7 +4,10 @@ import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
-import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../../model/selection/fl-sheet-single-selection.class';
+import {
+  FlSheetSingleSelection,
+  FlSheetSingleSelectionFull
+} from '../../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlSheetMultiSelection} from '../../model/selection/fl-sheet-multi-selection.class';
 import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
@@ -19,17 +22,21 @@ import {
 } from '../../model/chart/fl-sheet-chart-selection-form.class';
 import {FlPortalConfig} from '../../../fl-portal/model/fl-portal-config.class';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
-import {FlSpreadsheetChartSerieSelectionComponent,} from '../fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
+import {
+  FlSpreadsheetChartSerieSelectionComponent,
+} from '../fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
 import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {debounceTime, skip} from 'rxjs/operators';
 import {merge} from 'rxjs';
 import {
   FlSpreadsheetChartSelectionFactory,
-  FlSpreadsheetChartSerieSelectionInput
+  FlSpreadsheetChartSerieSelectionInput,
+  FlSpreadsheetSplitSelectionMode
 } from '../../utils/fl-spreadsheet-chart-selection.factory';
 import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
 import {flChartGetDefaultNumberOfBins} from '../../../fl-chart/model/data/fl-chart-data-bin.class';
+import {ThemePalette} from '@angular/material/core';
 
 
 /**
@@ -55,6 +62,9 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
   private readonly hideElementClass: string = 'g-hide-element';
 
   private subscriptions: ClSubscriptionHandler = new ClSubscriptionHandler();
+
+  // use to change the select split into series
+  splitSelection: FlSpreadsheetSplitSelectionMode = 'column';
 
   constructor(private selectionState: FlSpreadsheetSelectionState,
               private state: FlSpreadsheetState,
@@ -276,7 +286,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     const dataSelection: FlSheetMultiSelection = this.getMultiSelectionFromString(dataRange);
     const serieNames: string[] = this.getSerieNameSelectionValues();
     const series: FlSheetChart2dSerieSelectionForm[] =
-      FlSpreadsheetChartSelectionFactory.createSerieFromDataRange(chartType, dataSelection, serieNames);
+      FlSpreadsheetChartSelectionFactory.createSerieFromDataRange(chartType, dataSelection, serieNames, this.splitSelection);
 
     this.formGp.get('series').patchValue(series);
     this.cdr.markForCheck();
@@ -352,6 +362,18 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     return this.input.mode === 'create' ? 'flSpreadsheet.create_chart' : 'flSpreadsheet.update_chart';
   }
 
+  toggleSplitSelection(): void {
+    this.splitSelection = this.splitSelection === 'row' ? 'column' : 'row';
+    this.createSerieFromDataRange();
+  }
+
+  get splitButtonColor(): ThemePalette {
+    return this.splitSelection === 'row' ? 'primary' : null;
+  }
+
+  get splitButtonTooltip(): string {
+    return this.splitSelection === 'row' ? 'flSpreadsheet.split_selection_by_columns' : 'flSpreadsheet.split_selection_by_rows';
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

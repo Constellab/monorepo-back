@@ -31,6 +31,9 @@ export type FlSheetSelectionMode = 'single' | 'multi'
 // on onlyY mode, there is no input to select X abscisse data
 export type FlSpreadsheetSelectSerieMode = 'full' | 'onlyY';
 
+// define how to split the data selection
+export type FlSpreadsheetSplitSelectionMode = 'row' | 'column';
+
 
 export interface FlSpreadsheetChartSerieSelectionInput {
   mode: FlSpreadsheetSelectSerieMode;
@@ -49,19 +52,20 @@ export class FlSpreadsheetChartSelectionFactory {
    * Create the series based on chart type and data selection
    */
   public static createSerieFromDataRange(chartType: FlChartType, dataSelection: FlSheetMultiSelection,
-                                         serieNames: string[]): FlSheetChart2dSerieSelectionForm[] {
+                                         serieNames: string[], splitSelection: FlSpreadsheetSplitSelectionMode):
+    FlSheetChart2dSerieSelectionForm[] {
     let series: FlSheetChart2dSerieSelectionForm[];
 
     switch (chartType) {
       case FlChartType.SCATTER_PLOT:
-        series = FlSpreadsheetChartSelectionFactory.createMultipleSeriesForXAndY(dataSelection);
+        series = FlSpreadsheetChartSelectionFactory.createMultipleSeriesForXAndY(dataSelection, splitSelection);
         break;
       case FlChartType.LINE:
       case FlChartType.BAR_PLOT:
       case FlChartType.STACKED_PLOT:
       case FlChartType.BOX_PLOT:
       case FlChartType.HEAT_MAP:
-        series = FlSpreadsheetChartSelectionFactory.createMultiplesSeriesForY(dataSelection);
+        series = FlSpreadsheetChartSelectionFactory.createMultiplesSeriesForY(dataSelection, splitSelection);
         break;
       case FlChartType.HISTOGRAM:
         series = FlSpreadsheetChartSelectionFactory.createSingleSerieForY(dataSelection);
@@ -79,8 +83,9 @@ export class FlSpreadsheetChartSelectionFactory {
   }
 
   // if there is multiple selections, take the first one as X selections
-  private static createMultipleSeriesForXAndY(dataSelection: FlSheetMultiSelection): FlSheetChart2dSerieSelectionForm[] {
-    const selections: FlSheetSingleSelection[] = dataSelection.splitToColumnSelections();
+  private static createMultipleSeriesForXAndY(dataSelection: FlSheetMultiSelection, splitSelection: FlSpreadsheetSplitSelectionMode):
+    FlSheetChart2dSerieSelectionForm[] {
+    const selections: FlSheetSingleSelection[] = FlSpreadsheetChartSelectionFactory.splitSelection(dataSelection, splitSelection);
     if (selections.length > 1) {
       const x: string = selections.shift().toString();
 
@@ -90,7 +95,7 @@ export class FlSpreadsheetChartSelectionFactory {
 
     } else {
       // if there is only one column selected, use it a an serie with Y
-      return FlSpreadsheetChartSelectionFactory.createMultiplesSeriesForY(dataSelection);
+      return FlSpreadsheetChartSelectionFactory.createMultiplesSeriesForY(dataSelection, splitSelection);
     }
   }
 
@@ -100,12 +105,22 @@ export class FlSpreadsheetChartSelectionFactory {
   }
 
   // create one serie for each column selection only for Y
-  private static createMultiplesSeriesForY(dataSelection: FlSheetMultiSelection): FlSheetChart2dSerieSelectionForm[] {
-    const selections: FlSheetSingleSelection[] = dataSelection.splitToColumnSelections();
+  private static createMultiplesSeriesForY(dataSelection: FlSheetMultiSelection,
+                                           splitSelection: FlSpreadsheetSplitSelectionMode): FlSheetChart2dSerieSelectionForm[] {
+    const selections: FlSheetSingleSelection[] = FlSpreadsheetChartSelectionFactory.splitSelection(dataSelection, splitSelection);
 
     return selections.map(selection => {
       return {y: selection.toString()};
     });
+  }
+
+  private static splitSelection(dataSelection: FlSheetMultiSelection,
+                                splitSelection: FlSpreadsheetSplitSelectionMode): FlSheetSingleSelection[] {
+    if (splitSelection === 'row') {
+      return dataSelection.splitToRowSelections();
+    } else {
+      return dataSelection.splitToColumnSelections();
+    }
   }
 
 

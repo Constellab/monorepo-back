@@ -58,6 +58,15 @@ export class FlSheetMultiSelection implements FlSheetSelection {
     return columnSelection;
   }
 
+  /**
+   * Split all the selection into multiple column selection and flatten the result
+   */
+  public splitToRowSelections(): FlSheetSingleSelection[] {
+    const columnSelection: FlSheetSingleSelection[] = [];
+    this.selections.forEach(selection => columnSelection.push(...selection.splitToRowSelections()));
+    return columnSelection;
+  }
+
   // return all selection as text like B2:G5,B5:T4 (separated by ',')
   public toString(): string {
     let test: string = '';
