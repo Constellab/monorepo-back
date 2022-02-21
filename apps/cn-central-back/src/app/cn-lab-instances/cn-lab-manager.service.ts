@@ -2,11 +2,14 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
+  CnLabManagerConfigDTO,
   CnLabManagerInitConfig,
-  CnLabManagerStatus
+  CnLabManagerStatus,
+  CnLabManagerUpdateConfigDTO
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnExternalLabManagerApiService} from '../cn-external-lab-api/cn-external-lab-manager-api.service';
 import {CnLabInstance} from './cn-lab-instance.entity';
+import {CnBricksService} from '../cn-bricks/cn-bricks.service';
 
 /**
  * Service to call the api of the lab manager
@@ -15,7 +18,8 @@ import {CnLabInstance} from './cn-lab-instance.entity';
 export class CnLabManagerService {
 
 
-  constructor(private labManagerApiService: CnExternalLabManagerApiService) {
+  constructor(private labManagerApiService: CnExternalLabManagerApiService,
+              private brickService: CnBricksService) {
   }
 
   public async healthCheck(labManagerUrl: string): Promise<boolean> {
@@ -79,5 +83,27 @@ export class CnLabManagerService {
 
   public async systemPrune(labInstance: CnLabInstance): Promise<void> {
     return this.labManagerApiService.systemPrune(labInstance.getLabManagerApiInfo());
+  }
+
+  public async updateConfig(labInstance: CnLabInstance, config: CnLabManagerUpdateConfigDTO): Promise<void> {
+    return this.labManagerApiService.updateConfig(labInstance.getLabManagerApiInfo(), config);
+  }
+
+  public async getConfig(labInstance: CnLabInstance): Promise<CnLabManagerConfigDTO> {
+    return await this.labManagerApiService.getConfig(labInstance.getLabManagerApiInfo());
+
+    // const labInstanceConfig: CnLabInstanceConfigDTO = {
+    //   brickVersions: []
+    // };
+    // for (const brick of labManagerConfig.bricks) {
+    //   const version = await this.brickService.getBrickVersion(brick.name, CmVersion.fromString(brick.version));
+    //
+    //   if (version == null) {
+    //     throw new BadRequestException(`The version '${brick.version}' of the brick '${brick.name}' is not referenced in central`);
+    //   }
+    //   labInstanceConfig.brickVersions.push(version);
+    // }
+    //
+    // return labInstanceConfig;
   }
 }

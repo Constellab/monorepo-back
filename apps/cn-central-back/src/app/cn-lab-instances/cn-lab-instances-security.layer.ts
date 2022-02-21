@@ -15,7 +15,9 @@ import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
-  CnLabManagerStatus
+  CnLabManagerConfigDTO,
+  CnLabManagerStatus,
+  CnLabManagerUpdateConfigDTO
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnLabInstanceToken} from './cn-lab-instance-token.class';
@@ -186,6 +188,17 @@ export class CnLabInstancesSecurityLayer extends CnAbstractSecurityLayer<CnLabIn
     const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
     return this.labManagerService.systemPrune(labInstance);
   }
+
+  public async updateConfig(labId: string, config: CnLabManagerUpdateConfigDTO): Promise<void> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.updateConfig(labInstance, config);
+  }
+
+  public async getConfig(labId: string): Promise<CnLabManagerConfigDTO> {
+    const labInstance: CnLabInstance = await this.checkAuthorizationLabManager(labId);
+    return this.labManagerService.getConfig(labInstance);
+  }
+
 
   private checkAuthorizationLabManager(labId: string): Promise<CnLabInstance> {
     return this.getAndCheckAuthorizationToUpdateById(labId);

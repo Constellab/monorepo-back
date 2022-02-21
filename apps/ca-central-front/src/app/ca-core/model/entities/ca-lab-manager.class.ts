@@ -64,10 +64,24 @@ export class CaLabTaskStatusInfo {
   info?: string;
 }
 
-export class CnLabManagerStatus {
+export class CaLabManagerStatus {
   @Type(() => CaLabContainerStatusInfo)
   containersStatus: CaLabContainerStatusInfo;
 
   @Type(() => CaLabTaskStatusInfo)
   currentTask?: CaLabTaskStatusInfo;
+}
+
+export class CaLabManagerBrickVersionDTO {
+  name: string;
+  repo: string;
+  repoType: 'PIP' | 'GIT';
+  version: string;
+  commit?: string;
+  branch?: string;
+  isHidden: boolean;
+}
+
+export class CaLabInstanceConfig {
+  bricks: CaLabManagerBrickVersionDTO[];
 }

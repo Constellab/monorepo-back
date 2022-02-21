@@ -42,7 +42,25 @@ export interface CnLabManagerStatus {
 /**
  * Object to config the lab manager required on init
  */
-export interface CnLabManagerInitConfig{
+export interface CnLabManagerInitConfig {
   centralApiKey: string;
   codelabToken: string;
+}
+
+export interface CnLabManagerUpdateConfigDTO {
+  bricks: CnLabManagerBrickVersionDTO[];
+}
+
+export interface CnLabManagerBrickVersionDTO {
+  name: string;
+  repo: string;
+  repoType: 'PIP' | 'GIT';
+  version: string;
+  commit?: string;
+  branch?: string;
+  isHidden: boolean;
+}
+
+export interface CnLabManagerConfigDTO {
+  bricks: CnLabManagerBrickVersionDTO[];
 }

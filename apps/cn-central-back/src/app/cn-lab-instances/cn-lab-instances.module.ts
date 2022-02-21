@@ -10,6 +10,7 @@ import {CnExternalLabApiModule} from '../cn-external-lab-api/cn-external-lab-api
 import {CnUsersModule} from '../cn-users/cn-users.module';
 import {CnExperimentsModule} from '../cn-experiments/cn-experiments.module';
 import {CnLabManagerService} from './cn-lab-manager.service';
+import {CnBricksModule} from '../cn-bricks/cn-bricks.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import {CnLabManagerService} from './cn-lab-manager.service';
     CnExternalLabApiModule,
     CnUsersModule,
     forwardRef(() => CnExperimentsModule),
+    CnBricksModule,
   ],
   providers: [
     CnLabInstancesService,

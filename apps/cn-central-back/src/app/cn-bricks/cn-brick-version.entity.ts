@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne} from 'typeorm';
+import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {BlEntityWithId, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnBrick} from './cn-brick.entity';
 import {CmVersion, CmVersionTransform} from '@monorepo/common-model';
@@ -9,6 +9,7 @@ export enum CnRepoType {
   GIT = 'GIT'
 }
 
+@Unique(['major', 'minor', 'patch'])
 @Entity('brick_version')
 export class CnBrickVersion extends BlEntityWithId {
   @BlNotUpdatable()

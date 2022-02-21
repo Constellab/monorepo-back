@@ -35,6 +35,13 @@ import {
 import {
   CaLabInstanceDockerUpFormComponent
 } from './component/ca-lab-instance-docker-up-form/ca-lab-instance-docker-up-form.component';
+import {CaLabInstanceConfigComponent} from './component/ca-lab-instance-config/ca-lab-instance-config.component';
+import {
+  CaLabInstanceConfigFormComponent
+} from './component/ca-lab-instance-config-form/ca-lab-instance-config-form.component';
+import {
+  CaLabInstanceConfigBrickComponent
+} from './component/ca-lab-instance-config-brick/ca-lab-instance-config-brick.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -53,6 +60,9 @@ import {
     CaLabDockerContainerLogsComponent,
     CaLabInstanceManagerStatusComponent,
     CaLabInstanceDockerUpFormComponent,
+    CaLabInstanceConfigComponent,
+    CaLabInstanceConfigFormComponent,
+    CaLabInstanceConfigBrickComponent,
   ],
   imports: [
     CommonModule,

@@ -12,8 +12,9 @@ import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 import {
   CaLabComposeUpOptions,
   CaLabDockerPs,
-  CaLabTaskStatusInfo,
-  CnLabManagerStatus
+  CaLabInstanceConfig,
+  CaLabManagerStatus,
+  CaLabTaskStatusInfo
 } from '../model/entities/ca-lab-manager.class';
 
 @Injectable({
@@ -115,8 +116,8 @@ export class CaLabInstanceService {
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
 
-  public getLabManagerStatus(id: string): Observable<CnLabManagerStatus> {
-    return this.apiService.get(`${this.route}/${id}/status`, CnLabManagerStatus);
+  public getLabManagerStatus(id: string): Observable<CaLabManagerStatus> {
+    return this.apiService.get(`${this.route}/${id}/status`, CaLabManagerStatus);
   }
 
   public getCurrentTask(id: string): Observable<CaLabTaskStatusInfo> {
@@ -166,5 +167,13 @@ export class CaLabInstanceService {
 
   public systemPrune(id: string): Observable<void> {
     return this.apiService.post(`${this.route}/${id}/system-prune`, null);
+  }
+
+  public updateConfig(id: string, config: CaLabInstanceConfig): Observable<void> {
+    return this.apiService.put(`${this.route}/${id}/config`, config, CaLabInstanceConfig);
+  }
+
+  public getConfig(id: string): Observable<CaLabInstanceConfig> {
+    return this.apiService.get(`${this.route}/${id}/config`, CaLabInstanceConfig);
   }
 }

@@ -10,8 +10,10 @@ import {
 import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
+  CnLabManagerConfigDTO,
   CnLabManagerInitConfig,
-  CnLabManagerStatus
+  CnLabManagerStatus,
+  CnLabManagerUpdateConfigDTO
 } from './model/cn-lab-manager.class';
 
 /**
@@ -77,6 +79,14 @@ export class CnExternalLabManagerApiService {
     return this.post(apiInfo, `${this.baseLabRoute}/system-prune`, null).toPromise();
   }
 
+  public async updateConfig(apiInfo: CnExternalApiInfo, config: CnLabManagerUpdateConfigDTO): Promise<void> {
+    return this.put(apiInfo, `${this.baseLabRoute}/config`, config).toPromise();
+  }
+
+  public async getConfig(apiInfo: CnExternalApiInfo): Promise<CnLabManagerConfigDTO> {
+    return this.get(apiInfo, `${this.baseLabRoute}/config`).toPromise();
+  }
+
 
   /**
    * Make an http post with the ip of the lab and the API key of the lab in header
@@ -106,7 +116,7 @@ export class CnExternalLabManagerApiService {
   }
 
   private constructRoute(labUrl: string, route: string): string {
-    return `${labUrl}/${route}`;
+    return `http://localhost:3010/${route}`;
   }
 
 

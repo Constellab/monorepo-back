@@ -56,5 +56,7 @@
   "lab_manager_compose_up_form": "Option to up the lab",
   "lab_update_bricks": "Update bricks",
   "lab_update_containers": "Update containers",
-  "lab_start_container": "Start lab"
+  "lab_start_container": "Start lab",
+  "lab_instance_config": "Lab config",
+  "lab_instance_config_updated": "Config saved. Need to restart the lab to apply changes"
 }

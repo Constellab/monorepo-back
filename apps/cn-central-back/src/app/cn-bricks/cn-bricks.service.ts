@@ -5,7 +5,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
 import {CnBrickVersion, CnRepoType} from './cn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
-import {CnBrickVersionDto} from './cn-brick.dto';
+import {CnBrickVersionLabDto} from './cn-brick.dto';
 
 @Injectable()
 export class CnBricksService extends CnAbstractService<CnBrick> {
@@ -33,7 +33,7 @@ export class CnBricksService extends CnAbstractService<CnBrick> {
     return entityManager.save(brick);
   }
 
-  public async getOrCreateVersion(brickVersionDto: CnBrickVersionDto, entityManager: EntityManager): Promise<CnBrickVersion> {
+  public async getOrCreateVersion(brickVersionDto: CnBrickVersionLabDto, entityManager: EntityManager): Promise<CnBrickVersion> {
     // check if the brick version exists
     const version = CmVersion.fromString(brickVersionDto.version);
     const brickVersion = await this.getBrickVersion(brickVersionDto.name, version);
@@ -42,7 +42,7 @@ export class CnBricksService extends CnAbstractService<CnBrick> {
     return this.createBrickVersion(brickVersionDto, entityManager);
   }
 
-  private async createBrickVersion(brickVersionDto: CnBrickVersionDto, entityManager: EntityManager): Promise<CnBrickVersion> {
+  private async createBrickVersion(brickVersionDto: CnBrickVersionLabDto, entityManager: EntityManager): Promise<CnBrickVersion> {
     const version = CmVersion.fromString(brickVersionDto.version);
 
     const brick = await this.getOrCreateByName(brickVersionDto.name, entityManager);
@@ -58,8 +58,7 @@ export class CnBricksService extends CnAbstractService<CnBrick> {
     return entityManager.save(brickVersion);
   }
 
-  private getBrickVersion(name: string, version: CmVersion): Promise<CnBrickVersion | null> {
-
+  public getBrickVersion(name: string, version: CmVersion): Promise<CnBrickVersion | null> {
     return this.brickVersionRepo.findOne(
       {
         where: {

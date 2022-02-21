@@ -29,25 +29,38 @@
     <!--  Action button  -->
     <div class="action-buttons g-section">
       <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="initAll()">Init all</button>
+              class="g-button-small" (click)="initAll()">Init all
+      </button>
       <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="upContainers()">Up containers</button>
+              class="g-button-small" (click)="upContainers()">Up containers
+      </button>
       <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="restartContainers()">Restart containers</button>
+              class="g-button-small" (click)="restartContainers()">Restart containers
+      </button>
       <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="pullContainers()">Pull containers</button>
+              class="g-button-small" (click)="pullContainers()">Pull containers
+      </button>
       <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="pullBiotaDb()">Pull biota</button>
+              class="g-button-small" (click)="pullBiotaDb()">Pull biota
+      </button>
       <button mat-stroked-button type="button" color="primary"
-              class="g-button-small" (click)="registryLogin()">Registry login</button>
+              class="g-button-small" (click)="registryLogin()">Registry login
+      </button>
       <button mat-stroked-button type="button" color="warn"
-              class="g-button-small" (click)="downContainers()">Down containers</button>
+              class="g-button-small" (click)="downContainers()">Down containers
+      </button>
       <button mat-stroked-button type="button" color="warn"
-              class="g-button-small" (click)="stopCurrentTask()">Stop current task</button>
+              class="g-button-small" (click)="stopCurrentTask()">Stop current task
+      </button>
       <button mat-stroked-button type="button" color="warn"
-              class="g-button-small" (click)="systemPrune()">System prune</button>
+              class="g-button-small" (click)="systemPrune()">System prune
+      </button>
     </div>
 
+    <ca-lab-instance-config [labInstanceId]="labInstanceId"
+                            class="g-section content"></ca-lab-instance-config>
+
+    <mat-divider></mat-divider>
     <!--  List of containers  -->
     <fl-async-section [object]="containers$" [showErrorText]="true" class="g-section">
       <ng-container *flSectionBody="let containers">

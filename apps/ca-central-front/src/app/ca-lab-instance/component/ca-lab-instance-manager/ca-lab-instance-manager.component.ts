@@ -4,7 +4,7 @@ import {Observable, Subscription} from 'rxjs';
 import {
   CaLabComposeUpOptions,
   CaLabDockerPs,
-  CnLabManagerStatus
+  CaLabManagerStatus
 } from '../../../ca-core/model/entities/ca-lab-manager.class';
 import {FlDialogService, FlPortalActionsService} from '@monorepo/front-core-lib';
 import {
@@ -26,7 +26,7 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   @Input() labInstanceId: string;
 
-  labStatus$: Observable<CnLabManagerStatus>;
+  labStatus$: Observable<CaLabManagerStatus>;
   containers$: Observable<CaLabDockerPs[]>;
 
   private readonly actionType = 'lab-manager';

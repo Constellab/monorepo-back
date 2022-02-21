@@ -1,6 +1,6 @@
-import {CnBrickVersionDto} from '../cn-bricks/cn-brick.dto';
+import {CnBrickVersionLabDto} from '../cn-bricks/cn-brick.dto';
 
 export class CnLabConfigDto {
   version: number;
-  brick_versions: CnBrickVersionDto[];
+  brick_versions: CnBrickVersionLabDto[];
 }

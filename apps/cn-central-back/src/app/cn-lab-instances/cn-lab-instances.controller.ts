@@ -9,7 +9,9 @@ import {CnLabInstanceDto} from './cn-lab-instance.dto';
 import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
-  CnLabManagerStatus
+  CnLabManagerConfigDTO,
+  CnLabManagerStatus,
+  CnLabManagerUpdateConfigDTO
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 
 @Controller('lab-instances')
@@ -200,4 +202,16 @@ export class CnLabInstancesController {
   public systemPrune(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.securityLayer.systemPrune(id);
   }
+
+  @Put(':id/config')
+  async updateConfig(@Param('id', new ParseUUIDPipe()) id: string,
+                     @Body() config: CnLabManagerUpdateConfigDTO): Promise<void> {
+    return await this.securityLayer.updateConfig(id, config);
+  }
+
+  @Get(':id/config')
+  async getConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerConfigDTO> {
+    return await this.securityLayer.getConfig(id);
+  }
+
 }

@@ -1,0 +1,9 @@
+<form [formGroup]="formGp">
+
+  <ng-container formArrayName="bricks">
+
+    <div *ngFor="let control of formArray.controls ; index as i" [formGroupName]="i">
+      {{control.get('name').value}}
+    </div>
+  </ng-container>
+</form>

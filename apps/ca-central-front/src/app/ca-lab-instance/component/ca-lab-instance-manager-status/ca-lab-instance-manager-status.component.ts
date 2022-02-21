@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CnLabManagerStatus} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {CaLabManagerStatus} from '../../../ca-core/model/entities/ca-lab-manager.class';
 
 /**
  * Simple component to display the lab status via the manager
@@ -11,7 +11,7 @@ import {CnLabManagerStatus} from '../../../ca-core/model/entities/ca-lab-manager
 })
 export class CaLabInstanceManagerStatusComponent implements OnInit {
 
-  @Input() labStatus: CnLabManagerStatus;
+  @Input() labStatus: CaLabManagerStatus;
 
   constructor() {
   }

@@ -56,5 +56,7 @@
   "lab_manager_compose_up_form": "Option pour démarrer le lab",
   "lab_update_bricks": "Mettre à jour les briques",
   "lab_update_containers": "Mettre à jour les conteneurs",
-  "lab_start_container": "Démarrer le lab"
+  "lab_start_container": "Démarrer le lab",
+  "lab_instance_config": "Configuration du lab",
+  "lab_instance_config_updated": "Configuration sauvegardée. Il faut redémarrer le lab pour que les changements soient appliqués"
 }

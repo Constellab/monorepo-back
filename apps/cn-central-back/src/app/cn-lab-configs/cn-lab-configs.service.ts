@@ -8,7 +8,7 @@ import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnLabConfigDto} from './cn-lab-config.dto';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
-import {CnBrickVersionDto} from '../cn-bricks/cn-brick.dto';
+import {CnBrickVersionLabDto} from '../cn-bricks/cn-brick.dto';
 
 @Injectable()
 export class CnLabConfigsService extends CnAbstractService<CnLabConfig> {
@@ -73,7 +73,7 @@ export class CnLabConfigsService extends CnAbstractService<CnLabConfig> {
     });
   }
 
-  private async hashBrickVersion(brickVersions: CnBrickVersionDto[]): Promise<number> {
+  private async hashBrickVersion(brickVersions: CnBrickVersionLabDto[]): Promise<number> {
     // create an object that is always formatted the same to create a hash
     const sortedVersions = ClHelpService.sortAlphabeticalOrder(brickVersions, a => a.name).map(
       version => ({
