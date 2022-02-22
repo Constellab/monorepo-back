@@ -160,13 +160,13 @@ export class FlSpreadsheetChartState {
     return [
       // button refresh the chart data
       {
-        text: 'flSpreadsheet.chart_refresh',
+        text: {text: 'flSpreadsheet.chart_refresh', translateText: true},
         icon: 'refresh',
         onClick: () => this.refreshChart(selectionId)
       },
       // button to edit the chart and reopen data selection
       {
-        text: 'flSpreadsheet.chart_update',
+        text: {text: 'flSpreadsheet.chart_update', translateText: true},
         icon: 'edit',
         onClick: () => this.openUpdateChartSelectionPortal(selectionId)
       }
