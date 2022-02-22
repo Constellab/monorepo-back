@@ -33,6 +33,7 @@ export class HnBrickVersionService {
     return await this.folderService.findBrickDocsTree(mainFolder);
   }
 
+
   async findRootFolderId(brickVersion: HnBrickVersion): Promise<string> {
     const mainFolder = await this.folderService.findFolderByBrickVersion(brickVersion);
     return mainFolder.id;

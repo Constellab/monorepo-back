@@ -48,6 +48,8 @@ export class HaPublicSidenavComponent implements OnInit {
   menuOpen: boolean;
   openedMenu: FlOverlayRef;
 
+
+
   private _transformer = (node: HaNode, level: number): any => {
     return {
       expandable: !!node.children,

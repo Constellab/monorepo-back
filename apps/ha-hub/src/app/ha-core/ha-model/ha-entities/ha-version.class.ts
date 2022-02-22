@@ -1,6 +1,22 @@
 import {HaEntity} from './ha-entity.class';
+import {HaBrick} from './ha-brick.class';
+
+export enum HaRepoType {
+  PIP = 'PIP',
+  GIT = 'GIT'
+}
 
 export class HaVersion extends HaEntity {
 
   version: string;
+}
+
+export class HaNewVersionDTO {
+  brickId: string;
+
+  version: string;
+
+  commit?: string;
+
+  repoType: HaRepoType;
 }

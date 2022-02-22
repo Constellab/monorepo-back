@@ -30,6 +30,12 @@ export class HnBrick extends HnBaseEntity{
   @Column()
   isCertified: boolean;
 
+  @Column({nullable: true})
+  pipRepo: string;
+
+  @Column({nullable: true})
+  gitRepo: string;
+
   initialize(name: string, description: string, isCertified: boolean){
     this.name = name;
     this.description = description;
