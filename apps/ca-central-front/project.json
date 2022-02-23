@@ -85,14 +85,13 @@
               "with": "apps/ca-central-front/src/environments/ca-environment.prod.ts"
             }
           ],
-          "optimization": true,
-          "outputHashing": "all",
-          "sourceMap": false,
-          "namedChunks": false,
-          "extractLicenses": true,
-          "vendorChunk": false,
-          "buildOptimizer": true,
           "serviceWorker": true,
+          "optimization": {
+            "styles": {
+              "inlineCritical": false
+            }
+          },
+          "outputHashing": "all",
           "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
           "budgets": [
             {
@@ -114,13 +113,11 @@
               "with": "apps/ca-central-front/src/environments/ca-environment.preprod.ts"
             }
           ],
-          "optimization": true,
-          "outputHashing": "all",
-          "sourceMap": false,
-          "namedChunks": false,
-          "extractLicenses": true,
-          "vendorChunk": false,
-          "buildOptimizer": true,
+          "optimization": {
+            "styles": {
+              "inlineCritical": false
+            }
+          },
           "serviceWorker": true,
           "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
           "budgets": [
@@ -179,5 +176,7 @@
       }
     }
   },
-  "tags": ["front"]
+  "tags": [
+    "front"
+  ]
 }
