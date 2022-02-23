@@ -7,7 +7,6 @@ import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
 import {CnLabInstanceStatus} from './cn-lab-instance-status.enum';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnEntityWithOwner} from '../cn-core/model/entities/cn-entity-with-owner.entity';
-import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
 
@@ -21,7 +20,6 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   @Column({nullable: false, length: 50})
   name: string;
 
-  @BlNotUpdatable()
   @Type(() => CnLabConfig)
   @ManyToOne(() => CnLabConfig, {eager: true, nullable: true})
   labConfig: CnLabConfig;

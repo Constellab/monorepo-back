@@ -18,6 +18,8 @@ import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnExternalLabApiService} from '../cn-external-lab-api/cn-external-lab-api.service';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {CnExperimentsService} from '../cn-experiments/cn-experiments.service';
+import {CnLabInstanceStartDTO} from './cn-lab-instance.dto';
+import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
@@ -29,7 +31,8 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
               private externalLabUserService: CnExternalLabUserService,
               private externalLabApiService: CnExternalLabApiService,
               private userService: CnUsersService,
-              private experimentService: CnExperimentsService) {
+              private experimentService: CnExperimentsService,
+              private labConfigService: CnLabConfigsService) {
     super(repository, CnLabInstance, statusHistoRepo, CnLabInstanceStatusHistory);
   }
 
@@ -151,5 +154,18 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     } catch {
       throw new BadRequestException('Can\'t retrieve the settings');
     }
+  }
+
+  /**
+   * Called by the lab to tell central it has started
+   */
+  public async onStart(labStart: CnLabInstanceStartDTO): Promise<void> {
+    const labConfig = await this.labConfigService.getOrCreateLabConfig(labStart.lab_config);
+
+    const labInstance = CnCurrentUserHelper.getAndCheckCurrentLabInstance();
+
+    labInstance.labConfig = labConfig;
+    await this.update(labInstance);
+    // await this.startInstance(labInstance.id)
   }
 }

@@ -1,12 +1,9 @@
 import {Body, Controller, Get, Param, ParseUUIDPipe, Put, UploadedFiles, UseInterceptors} from '@nestjs/common';
-import {CnLabInstanceStatus} from '../cn-lab-instances/cn-lab-instance-status.enum';
-import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
 import {CnLabInstancesService} from '../cn-lab-instances/cn-lab-instances.service';
 import {ClLabGuard} from '../cn-core/decorators/cn-lab-guard.decorator';
 import {CnReportsSecurityLayer} from '../cn-reports/cn-reports-security.layer';
 import {CnReport} from '../cn-reports/cn-report.entity';
-import {BlFile, BlParseEnumPipe, BlParsePipe} from '@monorepo/back-core-lib';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import {BlFile, BlParsePipe} from '@monorepo/back-core-lib';
 import {CnCreateLabExperimentDto} from '../cn-experiments/cn-experiment.dto';
 import {CnExperimentsSecurityLayer} from '../cn-experiments/cn-experiments-security-layer.service';
 import {CnProject} from '../cn-projects/cn-project.entity';
@@ -14,6 +11,7 @@ import {CnProjectsSecurityLayer} from '../cn-projects/cn-projects-security.layer
 import {CnCreateReportDto} from '../cn-reports/cn-report.dto';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
+import {CnLabInstanceStartDTO} from '../cn-lab-instances/cn-lab-instance.dto';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -28,16 +26,16 @@ export class CnExternalLabsController {
               private experimentSecurityLayer: CnExperimentsSecurityLayer) {
   }
 
+  // route called on the lab start
+  @Put('start')
+  onLabStart(@Body() labStart: CnLabInstanceStartDTO): Promise<void> {
+    return this.labInstanceService.onStart(labStart);
+  }
+
   @Get('/user/:userId/projects')
   getProjectsOfUser(
     @Param('userId', new ParseUUIDPipe()) userId: string): Promise<CnProject[]> {
     return this.projectSecurityLayer.getProjectsOfUser(userId);
-  }
-
-  @Put('/lab-instance/status/:status')
-  updateLabInstanceStatus(
-    @Param('status', new BlParseEnumPipe(CnLabInstanceStatus)) status: CnLabInstanceStatus): Promise<CnLabInstance> {
-    return this.labInstanceService.updateCurrentStatus(status, CnCurrentUserHelper.getAndCheckCurrentLabInstance().id);
   }
 
 
