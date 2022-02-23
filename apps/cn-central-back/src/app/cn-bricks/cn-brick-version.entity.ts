@@ -13,7 +13,7 @@ export enum CnRepoType {
 @Entity('brick_version')
 export class CnBrickVersion extends BlEntityWithId {
   @BlNotUpdatable()
-  @ManyToOne(() => CnBrick, {eager: false, onDelete: 'CASCADE'})
+  @ManyToOne(() => CnBrick, {onDelete: 'CASCADE'})
   brick: CnBrick;
 
   @Exclude()

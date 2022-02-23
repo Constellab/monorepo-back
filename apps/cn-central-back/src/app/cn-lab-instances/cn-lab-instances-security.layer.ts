@@ -20,6 +20,7 @@ import {
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnLabInstanceToken} from './cn-lab-instance-token.class';
 import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
+import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 
 
 @Injectable()
@@ -124,6 +125,12 @@ export class CnLabInstancesSecurityLayer extends CnAbstractSecurityLayer<CnLabIn
     await this.getAndCheckAuthorizationToFindById(labInstanceId);
 
     return this.service.checkStatus(labInstanceId);
+  }
+
+  public async getLabInstanceConfig(labInstanceId: string): Promise<CnLabConfig> {
+    await this.getAndCheckAuthorizationToFindById(labInstanceId);
+
+    return this.service.getLabConfig(labInstanceId);
   }
 
   //////////////////////////// LAB MANAGER ////////////////////////////////

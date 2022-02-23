@@ -20,6 +20,7 @@ import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {CnExperimentsService} from '../cn-experiments/cn-experiments.service';
 import {CnLabInstanceStartDTO} from './cn-lab-instance.dto';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
+import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 
 @Injectable()
 export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInstance, CnLabInstanceStatus> {
@@ -167,5 +168,15 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     labInstance.labConfig = labConfig;
     await this.update(labInstance);
     // await this.startInstance(labInstance.id)
+  }
+
+  public async getLabConfig(labInstanceId: string): Promise<CnLabConfig> {
+    const labInstance = await this.findByIdAndCheck(labInstanceId, {
+      join: {
+        alias: 'test',
+        leftJoinAndSelect: {'labConfig': 'test.labConfig', 'brickVersions': 'labConfig.brickVersions', 'brick': 'brickVersions.brick'}
+      }
+    });
+    return labInstance.labConfig;
   }
 }

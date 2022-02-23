@@ -21,7 +21,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
   name: string;
 
   @Type(() => CnLabConfig)
-  @ManyToOne(() => CnLabConfig, {eager: true, nullable: true})
+  @ManyToOne(() => CnLabConfig, {nullable: true})
   labConfig: CnLabConfig;
 
   // owner of the lab, can be different from create by

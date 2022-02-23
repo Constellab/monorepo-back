@@ -11,6 +11,7 @@ import {
   CnLabDockerPs,
   CnLabManagerStatus
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
+import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 
 @Controller('lab-instances')
 export class CnLabInstancesController {
@@ -135,6 +136,14 @@ export class CnLabInstancesController {
   @Get(':id/check-status')
   public checkStatus(@Param('id', new ParseUUIDPipe()) id: string): Promise<any> {
     return this.securityLayer.checkStatus(id);
+  }
+
+  /**
+   * Check the lab status and returns settings if ok
+   */
+  @Get(':id/la-config')
+  public getLabInstanceConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabConfig> {
+    return this.securityLayer.getLabInstanceConfig(id);
   }
 
   //////////////////////////// LAB MANAGER ////////////////////////////////
