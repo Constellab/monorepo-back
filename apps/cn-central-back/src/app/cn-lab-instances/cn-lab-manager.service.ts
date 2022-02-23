@@ -11,6 +11,8 @@ import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
 import {CmVersion} from '@monorepo/common-model';
+import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
+import {CnLabFrontVersionsService} from '../cn-lab-front-versions/cn-lab-front-versions.service';
 
 /**
  * Service to call the api of the lab manager
@@ -20,7 +22,8 @@ export class CnLabManagerService {
 
 
   constructor(private labManagerApiService: CnExternalLabManagerApiService,
-              private brickService: CnBricksService) {
+              private brickService: CnBricksService,
+              private labFrontService: CnLabFrontVersionsService) {
   }
 
   public async healthCheck(labManagerUrl: string): Promise<boolean> {
@@ -87,7 +90,22 @@ export class CnLabManagerService {
   }
 
   public async updateConfig(labInstance: CnLabInstance, config: CnLabInstanceConfigDTO): Promise<void> {
+    // check if the gws core is in the brick list
+    const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name === CnBrickGWS.GWS_CORE);
+
+    if (gwsCore == null) {
+      throw new BadRequestException(`The brick '${CnBrickGWS.GWS_CORE}' must be set in the config`);
+    }
+
+    // retrieve the lab front version
+    const gwsCoreVersion = CmVersion.fromString(gwsCore.version);
+    const frontVersion = await this.labFrontService.findByGwsCoreVersion(gwsCoreVersion.major, gwsCoreVersion.minor, gwsCoreVersion.patch);
+    if (frontVersion == null) {
+      throw new BadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCore.version}'`);
+    }
+
     const labManagerConfig: CnLabManagerUpdateConfigDTO = {
+      frontVersion: frontVersion.version.toString(),
       bricks: []
     };
 

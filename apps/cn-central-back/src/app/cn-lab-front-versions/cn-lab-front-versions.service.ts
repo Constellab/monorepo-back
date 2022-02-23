@@ -40,7 +40,7 @@ export class CnLabFrontVersionsService extends CnAbstractService<CnLabFrontVersi
       throw new BadRequestException(`The front version '${entity.version}' already exists`);
     }
 
-    const existing2 = await this.findByGwsCoreVersion(entity.gwsCoreBrickVersion.id);
+    const existing2 = await this.findByGwsCoreVersionId(entity.gwsCoreBrickVersion.id);
     if (existing2 && entity.id !== existing2.id) {
       // eslint-disable-next-line max-len
       throw new BadRequestException(`The gws core version '${entity.gwsCoreBrickVersion.version}' is already attached to the front '${existing2.version}'`);
@@ -57,11 +57,24 @@ export class CnLabFrontVersionsService extends CnAbstractService<CnLabFrontVersi
     });
   }
 
-  public findByGwsCoreVersion(gwsCoreBrickVersionId: string): Promise<CnLabFrontVersion | null> {
+  private findByGwsCoreVersionId(gwsCoreBrickVersionId: string): Promise<CnLabFrontVersion | null> {
     return this.repository.findOne({
       where: {
         gwsCoreBrickVersion: gwsCoreBrickVersionId,
       }
+    });
+  }
+
+  public findByGwsCoreVersion(major: number, minor: number, patch: number): Promise<CnLabFrontVersion | null> {
+    return this.repository.findOne({
+      where: {
+        gwsCoreBrickVersion: {
+          major: major,
+          minor: minor,
+          patch: patch
+        },
+      },
+      relations: ['gwsCoreBrickVersion']
     });
   }
 

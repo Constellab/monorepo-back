@@ -11,6 +11,7 @@ import {CnUsersModule} from '../cn-users/cn-users.module';
 import {CnExperimentsModule} from '../cn-experiments/cn-experiments.module';
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnBricksModule} from '../cn-bricks/cn-bricks.module';
+import {CnLabFrontVersionsModule} from '../cn-lab-front-versions/cn-lab-front-versions.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import {CnBricksModule} from '../cn-bricks/cn-bricks.module';
     CnUsersModule,
     forwardRef(() => CnExperimentsModule),
     CnBricksModule,
+    CnLabFrontVersionsModule,
   ],
   providers: [
     CnLabInstancesService,

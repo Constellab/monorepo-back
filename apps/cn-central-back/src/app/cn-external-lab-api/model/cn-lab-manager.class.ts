@@ -47,7 +47,11 @@ export interface CnLabManagerInitConfig {
   codelabToken: string;
 }
 
+/**
+ * Object to communicate with lab manager to update the config
+ */
 export interface CnLabManagerUpdateConfigDTO {
+  frontVersion: string;
   bricks: CnLabManagerBrickVersionDTO[];
 }
 
