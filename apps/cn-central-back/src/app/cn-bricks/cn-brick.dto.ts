@@ -1,11 +1,4 @@
-export class CnBrickVersionLabDto {
-  name: string;
-  version: string;
-  repo_type: 'git' | 'pip';
-  repo_commit: string;
-}
-
-export interface CnBrickVersionDTO{
+export interface CnBrickVersionDTO {
   name: string;
   version: string;
   isHidden: boolean,

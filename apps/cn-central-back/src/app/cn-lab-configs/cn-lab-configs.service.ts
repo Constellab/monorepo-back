@@ -8,7 +8,8 @@ import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnLabConfigDto} from './cn-lab-config.dto';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
-import {CnBrickVersionLabDto} from '../cn-bricks/cn-brick.dto';
+import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
+import {CmVersion} from '@monorepo/common-model';
 
 @Injectable()
 export class CnLabConfigsService extends CnAbstractService<CnLabConfig> {
@@ -56,13 +57,11 @@ export class CnLabConfigsService extends CnAbstractService<CnLabConfig> {
     return await getManager().transaction(async entityManager => {
 
       for (const version of labConfigDto.brick_versions) {
-        const brickVersion = await this.brickService.getOrCreateVersion(version, entityManager);
+        const brickVersion = await this.brickService.getBrickVersionAndCheck(version.name, CmVersion.fromString(version.version));
         labConfig.brickVersions.push(brickVersion);
       }
 
       await entityManager.save(labConfig);
-
-
       return labConfig;
     });
   }
@@ -73,14 +72,12 @@ export class CnLabConfigsService extends CnAbstractService<CnLabConfig> {
     });
   }
 
-  private async hashBrickVersion(brickVersions: CnBrickVersionLabDto[]): Promise<number> {
+  private async hashBrickVersion(brickVersions: CnBrickVersionDTO[]): Promise<number> {
     // create an object that is always formatted the same to create a hash
     const sortedVersions = ClHelpService.sortAlphabeticalOrder(brickVersions, a => a.name).map(
       version => ({
         name: version.name,
-        version: version.version,
-        repoType: version.repo_type,
-        commit: version.repo_commit ? version.repo_commit : undefined
+        version: version.version
       })
     );
 
