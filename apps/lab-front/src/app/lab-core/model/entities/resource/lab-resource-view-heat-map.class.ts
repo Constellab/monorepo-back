@@ -1,18 +1,19 @@
-import {ClCsvJson, ClNumberHelper} from '@monorepo/core-lib';
-import {
-  FlChart2dMultiSerie,
-  FlChart3dDatum,
-  FlChartConfig,
-  FlChartHeatMap,
-  FlChartSerie
-} from '@monorepo/front-core-lib';
+import {ClHelpService, ClNumberHelper} from '@monorepo/core-lib';
+import {FlChart3dDatum, FlChartConfig, FlChartHeatMap, FlChartHeatMapDataContainer} from '@monorepo/front-core-lib';
 import {LabResourceViewBase} from './lab-resource-view.entity';
 
 
 export interface LabResourceViewHeatMap extends LabResourceViewBase {
   type: 'heatmap-view';
-  data: ClCsvJson;
+  data: any[][];
   row_names: string[];
+  rows: LabResourceViewHeaderMapHeader[];
+  columns: LabResourceViewHeaderMapHeader[];
+}
+
+export interface LabResourceViewHeaderMapHeader {
+  name: string;
+  tags: Record<string, string>;
 }
 
 /**
@@ -20,21 +21,32 @@ export interface LabResourceViewHeatMap extends LabResourceViewBase {
  * @param view
  */
 export function labHeatMapToChart(view: LabResourceViewHeatMap): FlChartConfig {
-  const series: FlChart2dMultiSerie<FlChart3dDatum> = new FlChart2dMultiSerie();
+  const viewData = ClHelpService.transpose2dArray(view.data);
+  const chartData: FlChart3dDatum[][] = [];
 
-  let columnIndex: number = 0;
-  for (const columnName in view.data) {
+  for (let column = 0; column < viewData.length; column++) {
+    const columnName: string = view.columns[column].name ?? column.toString();
     // convert all the column data into a 3d datum, where x = columnIndex, y = index of value and z = value as number
-    const data: FlChart3dDatum[] = view.data[columnName].map(
-      (value, index) => new FlChart3dDatum(columnIndex, index, ClNumberHelper.fromString(value, 0), columnName, view.row_names[index])
-    );
-    series.addSerie(new FlChartSerie(data, columnName));
+    const data: FlChart3dDatum[] = [];
 
-    columnIndex++;
+    for (let row = 0; row < viewData[column].length; row++) {
+      const rowName: string = view.rows[row].name ?? row.toString();
+      const value = ClNumberHelper.fromString(viewData[column][row], 0);
+      data.push(new FlChart3dDatum(column, row, value, columnName, rowName));
+    }
+    chartData.push(data);
   }
 
+  console.log(chartData)
+  const dataContainer = new FlChartHeatMapDataContainer(chartData);
+
   // x tick labels = columns names
-  series.setXTickLabels(Object.keys(view.data));
-  series.setYTickLabels(view.row_names);
-  return new FlChartHeatMap(series);
+  dataContainer.setXTickLabels(Object.keys(view.data));
+
+  if (!ClHelpService.isNullOrEmpty(view.rows)) {
+    dataContainer.setYTickLabels(view.rows.map(row => row.name));
+  }
+
+  return new FlChartHeatMap(dataContainer);
 }
+

@@ -64,9 +64,9 @@ export class FlSpreadsheetChartSelectionFactory {
       case FlChartType.BAR_PLOT:
       case FlChartType.STACKED_PLOT:
       case FlChartType.BOX_PLOT:
-      case FlChartType.HEAT_MAP:
         series = FlSpreadsheetChartSelectionFactory.createMultiplesSeriesForY(dataSelection, splitSelection);
         break;
+      case FlChartType.HEAT_MAP:
       case FlChartType.HISTOGRAM:
         series = FlSpreadsheetChartSelectionFactory.createSingleSerieForY(dataSelection);
         break;
@@ -199,6 +199,7 @@ export class FlSpreadsheetChartSelectionFactory {
   public static getNbMaxOfSeries(chartType: FlChartType): number {
     switch (chartType) {
       case FlChartType.HISTOGRAM:
+      case FlChartType.HEAT_MAP:
         return 1;
       default:
         return Infinity;

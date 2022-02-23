@@ -2,14 +2,74 @@ import {FlChartConfig} from '../fl-chart-config.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
 import {FlChartLegend} from '../legend/fl-chart-legend.class';
 import {FlChartBrush} from '../drawer/fl-chart-brush.class';
-import {FlChart2dMultiSerie} from '../data/fl-chart-multi-serie.class';
-import {FlChart3dDatum} from '../data/fl-chart-data.class';
+import {FlChart3dDatum, FlChartAxisTickFormat, FlChartDataContainer} from '../data/fl-chart-data.class';
 import {FlChartScaleColor, FlChartScaleColorLinear} from '../scale/fl-chart-scale-color.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
 import {FlChartLegendHeatMap} from '../legend/fl-chart-legend-heat-map.class';
 import {FlChartScaleBand} from '../scale/fl-chart-scale.class';
 import {FlChartAxis, FlChartAxisBand} from '../drawer/fl-chart-axis.class';
 import {FlChartRendererHeatMap} from '../../renderer/fl-chart-renderer-heat-map.plot';
+
+/**
+ * Data container for heat map data
+ */
+export class FlChartHeatMapDataContainer implements FlChartDataContainer<FlChart3dDatum> {
+
+  /**
+   * Function to format the x-axis labels
+   */
+  axisXLabelFormat: FlChartAxisTickFormat | null;
+
+  /**
+   * Function to format the y-axis labels
+   */
+  axisYLabelFormat: FlChartAxisTickFormat | null;
+
+  constructor(private data: FlChart3dDatum[][]) {
+  }
+
+  getColumnCount(): number {
+    return this.data.length;
+  }
+
+  getRowCount(): number {
+    return Math.max(...this.data.map(d => d.length));
+  }
+
+  getData(): FlChart3dDatum[] {
+    const data: FlChart3dDatum[] = [];
+    this.data.forEach(d => data.push(...d));
+    return data;
+  }
+
+  getDomainXComplete(): number[] {
+    return FlChartDomain.getCompleteDomain(this.getData().map(data => data.getX()));
+  }
+
+  getDomainYComplete(): number[] {
+    return FlChartDomain.getCompleteDomain(this.getData().map(data => data.getY()));
+  }
+
+  /**
+   * Set the list of x tick label for all the series. It defines the axisXLabelFormat
+   * @param xTickLabels
+   */
+  public setXTickLabels(xTickLabels: string[]): void {
+    if (xTickLabels) {
+      this.axisXLabelFormat = (value) => (xTickLabels[value] ?? value).toString();
+    }
+  }
+
+  /**
+   * Set the list of y tick label for all the series. It defines the axisYLabelFormat
+   * @param yTickLabels
+   */
+  public setYTickLabels(yTickLabels: string[]): void {
+    if (yTickLabels) {
+      this.axisYLabelFormat = (value) => (yTickLabels[value] ?? value).toString();
+    }
+  }
+}
 
 export class FlChartHeatMap extends FlChartConfig {
 
@@ -20,7 +80,7 @@ export class FlChartHeatMap extends FlChartConfig {
   private readonly rectSize = 15;
 
 
-  constructor(protected dataContainer: FlChart2dMultiSerie<FlChart3dDatum>) {
+  constructor(protected dataContainer: FlChartHeatMapDataContainer) {
     super();
 
     // build color scale
@@ -31,8 +91,6 @@ export class FlChartHeatMap extends FlChartConfig {
   }
 
   getChartContainer(): FlChartContainer<any> {
-    const chartContainer: FlChartContainer2Axis<FlChart2dMultiSerie<FlChart3dDatum>> =
-      new FlChartContainer2Axis();
 
     // Build X axis
     const xScale: FlChartScaleBand = new FlChartScaleBand()
@@ -52,6 +110,8 @@ export class FlChartHeatMap extends FlChartConfig {
       .setSmartTickFormat(FlChartAxisBand.tickTextHeight);
     yAxis.setTickFormat(this.dataContainer.axisYLabelFormat);
 
+    const chartContainer: FlChartContainer2Axis<FlChartHeatMapDataContainer> =
+      new FlChartContainer2Axis();
     chartContainer
       .initXAxis(xAxis)
       .initAxisY(yAxis)
@@ -59,8 +119,8 @@ export class FlChartHeatMap extends FlChartConfig {
       .initData(this.dataContainer);
 
     // force the size of the chart so the heat map rect are squares
-    const width = this.rectSize * this.dataContainer.series.length;
-    const height = this.rectSize * this.dataContainer.maxSerieDataCount();
+    const width = this.rectSize * this.dataContainer.getColumnCount();
+    const height = this.rectSize * this.dataContainer.getRowCount();
     chartContainer.setChartRendererSize(width, height);
 
     return chartContainer;

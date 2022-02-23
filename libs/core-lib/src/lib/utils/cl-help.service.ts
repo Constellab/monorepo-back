@@ -265,4 +265,11 @@ export class ClHelpService {
     return flatArray;
   }
 
+  /**
+   * Simple 2d array transpose.
+   * @param array
+   */
+  public static transpose2dArray(array: any[][]): any[][]{
+    return array[0].map((col, i) => array.map(row => row[i]));
+  }
 }

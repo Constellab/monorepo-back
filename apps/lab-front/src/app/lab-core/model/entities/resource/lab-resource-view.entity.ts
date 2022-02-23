@@ -1,5 +1,4 @@
 import {Expose} from 'class-transformer';
-import {ClCsvJson} from '@monorepo/core-lib';
 import {LabResourceViewBoxPlot} from './lab-resource-view-box-plot.class';
 import {LabResourceViewBasicPlot2d} from './lab-resource-view-basic-plot-2d.class';
 import {LabResourceViewHeatMap} from './lab-resource-view-heat-map.class';
@@ -75,7 +74,7 @@ export interface LabResourceViewBase {
   caption?: string;
 }
 
-export interface LabResourceViewJson extends LabResourceViewBase{
+export interface LabResourceViewJson extends LabResourceViewBase {
   type: 'json-view';
   data: Record<string, any>;
 }
@@ -83,7 +82,7 @@ export interface LabResourceViewJson extends LabResourceViewBase{
 // Spec name of the page on view text
 export const labResourceViewTextSpecPage: string = 'page';
 
-export interface LabResourceViewText extends LabResourceViewBase{
+export interface LabResourceViewText extends LabResourceViewBase {
   type: 'text-view';
   data: {
     text: string
@@ -101,21 +100,28 @@ export interface LabResourceViewText extends LabResourceViewBase{
 
 export interface LabResourceViewTable extends LabResourceViewBase {
   type: 'table-view' | 'dataset-view';
-  data: ClCsvJson;
-  row_names: string[];
+  data: any[][];
+  rows: LabResourceViewTableHeader[];
+  columns: LabResourceViewTableHeader[];
 }
 
-export interface LabResourceViewNetwork extends LabResourceViewBase{
+export interface LabResourceViewTableHeader {
+  name: string;
+  tags: Record<string, string>;
+}
+
+
+export interface LabResourceViewNetwork extends LabResourceViewBase {
   type: 'network-view';
   data: any;
 }
 
-export interface LabResourceViewImage extends LabResourceViewBase{
+export interface LabResourceViewImage extends LabResourceViewBase {
   type: 'image-view';
   data: any;
 }
 
-export interface LabResourceViewMulti extends LabResourceViewBase{
+export interface LabResourceViewMulti extends LabResourceViewBase {
   type: 'multi-view';
   data: LabResourceViewMultiData;
 }
