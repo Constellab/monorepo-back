@@ -172,10 +172,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
   public async getLabConfig(labInstanceId: string): Promise<CnLabConfig> {
     const labInstance = await this.findByIdAndCheck(labInstanceId, {
-      join: {
-        alias: 'test',
-        leftJoinAndSelect: {'labConfig': 'test.labConfig', 'brickVersions': 'labConfig.brickVersions', 'brick': 'brickVersions.brick'}
-      }
+      relations: ['labConfig', 'labConfig.brickVersions', 'labConfig.brickVersions.brick']
     });
     return labInstance.labConfig;
   }
