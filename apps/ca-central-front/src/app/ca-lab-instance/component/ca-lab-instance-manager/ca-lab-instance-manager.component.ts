@@ -1,11 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
 import {Observable, Subscription} from 'rxjs';
-import {
-  CaLabComposeUpOptions,
-  CaLabDockerPs,
-  CaLabManagerStatus
-} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {CaLabComposeUpOptions, CaLabManagerStatus} from '../../../ca-core/model/entities/ca-lab-manager.class';
 import {FlDialogService, FlPortalActionsService} from '@monorepo/front-core-lib';
 import {
   CaLabInstanceDockerUpFormComponent
@@ -27,7 +23,6 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
   @Input() labInstanceId: string;
 
   labStatus$: Observable<CaLabManagerStatus>;
-  containers$: Observable<CaLabDockerPs[]>;
 
   private readonly actionType = 'lab-manager';
 
@@ -49,7 +44,6 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
 
   refresh(): void {
     this.labStatus$ = this.labInstanceService.getLabManagerStatus(this.labInstanceId);
-    this.containers$ = this.labInstanceService.listContainers(this.labInstanceId);
   }
 
   openStatusDialog(): void {
