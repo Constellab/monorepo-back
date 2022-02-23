@@ -57,7 +57,7 @@ export class LabUpdateResourceTypeComponent implements OnInit {
   }
 
   private updateTypeSuccess(resource: LabResource): void {
-    this.snackBarService.openSuccessMessage('biox.resource_type_updated', true);
+    this.snackBarService.openSuccessMessage({text:'biox.resource_type_updated',  translateText: true});
     this.dialogRef.close(resource);
     this.isLoading = false;
   }

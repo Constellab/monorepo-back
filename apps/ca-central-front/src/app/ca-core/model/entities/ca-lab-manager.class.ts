@@ -72,16 +72,12 @@ export class CaLabManagerStatus {
   currentTask?: CaLabTaskStatusInfo;
 }
 
-export class CaLabManagerBrickVersionDTO {
+export class CaBrickVersionDTO {
   name: string;
-  repo: string;
-  repoType: 'PIP' | 'GIT';
   version: string;
-  commit?: string;
-  branch?: string;
   isHidden: boolean;
 }
 
 export class CaLabInstanceConfig {
-  bricks: CaLabManagerBrickVersionDTO[];
+  brickVersions: CaBrickVersionDTO[];
 }

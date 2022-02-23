@@ -35,7 +35,7 @@ export class CaAdminAccountActivationButtonComponent implements OnInit {
   }
 
   private activateUserSuccess(user: CaUser): void {
-    this.snackBarService.openSuccessMessage('admin_account_activated', true);
+    this.snackBarService.openSuccessMessage({text: 'admin_account_activated', translateText: true});
     this.isLoading = false;
     this.accountActivated.emit(user);
   }

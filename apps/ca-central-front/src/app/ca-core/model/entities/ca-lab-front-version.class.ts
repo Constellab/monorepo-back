@@ -18,6 +18,6 @@ export type CaLabFrontVersionDatasource = FlEntityPaginatedDatasource<CaLabFront
 export interface CaSaveLabFrontVersionDTO {
   id: string;
   version: string;
-  gwsCoreBrickVersion: CaBrickVersion;
+  gwsCoreBrickVersion: string;
 }
 

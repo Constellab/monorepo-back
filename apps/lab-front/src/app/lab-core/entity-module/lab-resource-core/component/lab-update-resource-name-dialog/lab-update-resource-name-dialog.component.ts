@@ -42,7 +42,7 @@ export class LabUpdateResourceNameDialogComponent implements OnInit {
   }
 
   private updateNameSuccess(resource: LabResource): void {
-    this.snackBarService.openSuccessMessage('biox.resource_name_updated', true);
+    this.snackBarService.openSuccessMessage({text:'biox.resource_name_updated',  translateText: true});
     this.dialogRef.close(resource);
     this.isLoading = false;
   }

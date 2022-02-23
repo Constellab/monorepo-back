@@ -1,9 +1,32 @@
-<form [formGroup]="formGp">
+<fl-section [object]="labConfig">
 
-  <ng-container formArrayName="bricks">
+  <fl-section-header>
+    <h2>{{'lab_instance_config' | translate}}</h2>
 
-    <div *ngFor="let control of formArray.controls ; index as i" [formGroupName]="i">
-      {{control.get('name').value}}
-    </div>
+    <fl-section-actions>
+      <button mat-stroked-button type="button" class="g-button-small" (click)="openBrickVersionForm()">
+        {{'lab_instance_add_brick' | translate}}
+      </button>
+    </fl-section-actions>
+  </fl-section-header>
+
+  <ng-container *flSectionBody>
+    <mat-list class="g-mat-list-dense">
+      <mat-list-item *ngFor="let brickVersion of labConfig.brickVersions">
+        <div matLine>{{brickVersion.name}} : {{brickVersion.version}}</div>
+        <p matLine class="g-text-small">{{'lab_instance_brick_hidden' | translate}} : {{brickVersion.isHidden | flYesNo}}</p>
+
+        <button mat-icon-button type="button" class="g-button-small" (click)="openBrickVersionForm(brickVersion)"
+                [matTooltip]="'lab_instance_update_brick' | translate">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-list>
+
+
+    <button mat-flat-button color="primary" type="button" (click)="save()" class="g-centered-forced">
+      {{'save' | translate}}
+      <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+    </button>
   </ng-container>
-</form>
+</fl-section>

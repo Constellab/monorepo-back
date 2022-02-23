@@ -69,7 +69,7 @@ export class LabValidateObjectDialogComponent implements OnInit {
 
   private validateSuccess(object: any): void {
     this.isLoading = false;
-    this.snackBarService.openSuccessMessage(this.dialogInput.successMessage, true);
+    this.snackBarService.openSuccessMessage({text:this.dialogInput.successMessage,  translateText: true});
     this.dialogRef.close(object);
   }
 

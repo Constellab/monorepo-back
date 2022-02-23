@@ -1,9 +1,13 @@
 import {Injectable} from '@angular/core';
 import {MatSnackBar, MatSnackBarConfig, MatSnackBarRef} from '@angular/material/snack-bar';
 import {ComponentType} from '@angular/cdk/overlay';
-import {FlSnackBarAdditionalConfig, flSnackBarAdditionalConfigDefault, FlSnackBarInfoInput} from './model/fl-snack-bar.class';
+import {
+  FlSnackBarAdditionalConfig,
+  flSnackBarAdditionalConfigDefault,
+  FlSnackBarInfoInput
+} from './model/fl-snack-bar.class';
 import {FlSnackBarInfoComponent} from './component/fl-snack-bar-info/fl-snack-bar-info.component';
-import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
+import {FlTranslatableText} from '../fl-translate/model/fl-translate-param';
 
 /**
  * Snack bar service to create snack bar
@@ -11,31 +15,22 @@ import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 @Injectable()
 export class FlSnackBarService {
 
-  constructor(private matSnackBar: MatSnackBar,
-              private translateService: FlTranslateService) {
+  constructor(private matSnackBar: MatSnackBar) {
   }
 
 
   /**
    * Show a success snack bar message (primary color)
    * @param message the message to display (supports HTML)
-   * @param translate if true the text is translated
    * @param duration the duration in millisecond of the snackbar
    * @param additionalConfig additional config
    */
-  public openSuccessMessage(message: string, translate: boolean = false, duration: number = 3000,
+  public openSuccessMessage(message: FlTranslatableText, duration: number = 3000,
                             additionalConfig: FlSnackBarAdditionalConfig = flSnackBarAdditionalConfigDefault)
     : MatSnackBarRef<FlSnackBarInfoComponent> {
-    let msg: string;
-    if (translate) {
-      msg = this.translateService.translate(message);
-    } else {
-      msg = message;
-    }
-
     return this.openSnackBarInfo({
       mode: 'success',
-      text: msg,
+      text: message,
       additionalConfig: additionalConfig,
     }, 'g-primary-background', duration);
   }
@@ -43,28 +38,17 @@ export class FlSnackBarService {
   /**
    * Show a error snack bar message (warn color)
    * @param message the message to display (supports HTML)
-   * @param translate if true the text is translated
    * @param duration the duration in millisecond of the snackbar
    * @param additionalConfig additional config
    */
-  public openErrorMessage(message: string, translate: boolean = false, duration: number = 3000,
+  public openErrorMessage(message: FlTranslatableText, duration: number = 3000,
                           additionalConfig: FlSnackBarAdditionalConfig = flSnackBarAdditionalConfigDefault)
     : MatSnackBarRef<FlSnackBarInfoComponent> {
-    let msg: string;
-    if (translate) {
-      msg = this.translateService.translate(message);
-    } else {
-      msg = message;
-    }
-
     return this.openSnackBarInfo({
-        mode: 'error',
-        text: msg,
-        additionalConfig: additionalConfig,
-      },
-      'g-warn-background',
-      duration
-    );
+      mode: 'error',
+      text: message,
+      additionalConfig: additionalConfig,
+    }, 'g-warn-background', duration);
   }
 
   private openSnackBarInfo(data: FlSnackBarInfoInput, panelClass: string, duration: number)

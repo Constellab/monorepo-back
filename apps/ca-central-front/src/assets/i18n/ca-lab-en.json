@@ -51,6 +51,7 @@
   "lab_container_running": "Running",
   "lab_container_exited": "Exited",
   "lab_container_logs": "View logs",
+  "lab_containers": "Containers",
   "lab_manager_task": "Task",
   "lab_manager_no_task": "No task",
   "lab_manager_compose_up_form": "Option to up the lab",
@@ -58,5 +59,11 @@
   "lab_update_containers": "Update containers",
   "lab_start_container": "Start lab",
   "lab_instance_config": "Lab config",
-  "lab_instance_config_updated": "Config saved. Need to restart the lab to apply changes"
+  "lab_instance_config_updated": "Config saved. Need to restart the lab to apply changes",
+  "lab_instance_add_brick": "Add brick",
+  "lab_instance_update_brick": "Update brick",
+  "lab_instance_brick_hidden": "Hide brick",
+  "lab_instance_brick_already_exists": "The brick {{brickName}} already exists in the lab",
+  "brick": "Brick",
+  "brick_version": "Brick version"
 }

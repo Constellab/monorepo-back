@@ -1,10 +1,15 @@
 import {AfterViewInit, Component, Host, Input, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {MatSelect} from '@angular/material/select';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {CaBrickVersion} from '../../../../model/entities/ca-brick.class';
 import {CaBrickService} from '../../../../service-api/ca-brick.service';
+import {map} from 'rxjs/operators';
+import {CmVersion} from '@monorepo/common-model';
 
+/**
+ * Automatically search for available brick version and use version string as value
+ */
 @Component({
   selector: 'ca-brick-version-select-options',
   templateUrl: './ca-brick-version-select-options.component.html',
@@ -13,7 +18,14 @@ import {CaBrickService} from '../../../../service-api/ca-brick.service';
 export class CaBrickVersionSelectOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit {
 
-  @Input() brickName: string;
+  @Input() set brickName(brickName: string) {
+    this.loadVersions(brickName);
+  }
+
+  /**
+   * If provided only the version higher or equal than this version are shown
+   */
+  @Input() minVersion?: string;
 
   versions$: Observable<CaBrickVersion[]>;
 
@@ -23,12 +35,26 @@ export class CaBrickVersionSelectOptionsComponent extends FlEmbeddedOptionsAbstr
   }
 
   ngOnInit(): void {
-    if (this.brickName == null) {
-      console.error('[CaBrickVersionSelectOptionsComponent] no brick name provided');
-    }
-    this.overrideCompareWithOnIds(this.select);
-    this.versions$ = this.brickService.getBrickVersions(this.brickName);
   }
+
+  private loadVersions(brickName: string): void {
+    if (brickName) {
+      this.versions$ = this.brickService.getBrickVersions(brickName).pipe(
+        map(brickVersions => this.filterVersions(brickVersions))
+      );
+    } else {
+      this.versions$ = of([]);
+    }
+  }
+
+  private filterVersions(brickVersions: CaBrickVersion[]): CaBrickVersion[] {
+    if (this.minVersion == null) return brickVersions;
+
+    const minVersion = CmVersion.fromString(this.minVersion);
+
+    return brickVersions.filter(brickVersion => brickVersion.isEqualOrHigher(minVersion));
+  }
+
 
   ngAfterViewInit(): void {
     this.initOptions();

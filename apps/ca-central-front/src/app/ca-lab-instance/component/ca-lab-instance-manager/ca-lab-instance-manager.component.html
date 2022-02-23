@@ -63,6 +63,9 @@
     <mat-divider></mat-divider>
     <!--  List of containers  -->
     <fl-async-section [object]="containers$" [showErrorText]="true" class="g-section">
+      <fl-section-header>
+        <h2>{{'lab_containers' | translate}}</h2>
+      </fl-section-header>
       <ng-container *flSectionBody="let containers">
         <ca-lab-docker-containers-list [labInstanceId]="labInstanceId"
                                        [containers]="containers"></ca-lab-docker-containers-list>

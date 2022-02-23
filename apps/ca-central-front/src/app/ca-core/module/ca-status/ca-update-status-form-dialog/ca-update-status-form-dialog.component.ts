@@ -60,7 +60,7 @@ export class CaUpdateStatusFormDialogComponent implements OnInit {
   }
 
   private updateStatusSuccess(entity: any): void {
-    this.snackBarService.openSuccessMessage('status_updated', true);
+    this.snackBarService.openSuccessMessage({text: 'status_updated', translateText: true});
 
     this.isLoading = false;
     this.dialogRef.close(entity);

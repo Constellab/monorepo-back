@@ -61,7 +61,7 @@ export class FlSignupDialogComponent implements OnInit {
   }
 
   private onSignupSuccess(): void {
-    this.snackBarService.openSuccessMessage('flAuth.account_created', true, 10000);
+    this.snackBarService.openSuccessMessage({text:'flAuth.account_created',  translateText: true}, 10000);
 
     this.dialogRef.close();
     this.isLoading = false;

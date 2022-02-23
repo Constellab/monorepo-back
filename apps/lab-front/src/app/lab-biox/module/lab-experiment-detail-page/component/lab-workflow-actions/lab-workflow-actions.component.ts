@@ -78,7 +78,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
 
 
   private onSaveSuccess(experiment: LabExperiment): void {
-    this.snackBarService.openSuccessMessage('biox.experiment_saved', true);
+    this.snackBarService.openSuccessMessage({text: 'biox.experiment_saved', translateText: true});
     this.saveIsLoading = false;
     this.experimentState.updateExperiment(experiment);
   }
@@ -94,7 +94,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
   }
 
   private onStartSuccess(experiment: LabExperiment): void {
-    this.snackBarService.openSuccessMessage('biox.experiment_started', true);
+    this.snackBarService.openSuccessMessage({text: 'biox.experiment_started', translateText: true});
     this.startIsLoading = false;
     this.experimentState.updateExperiment(experiment);
     this.experimentState.startFlowsRefresh();

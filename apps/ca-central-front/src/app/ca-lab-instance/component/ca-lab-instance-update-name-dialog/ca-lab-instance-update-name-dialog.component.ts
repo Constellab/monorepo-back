@@ -45,7 +45,7 @@ export class CaLabInstanceUpdateNameDialogComponent implements OnInit {
   }
 
   private onSuccess(labInstance: CaLabInstance): void {
-    this.snackbarService.openSuccessMessage('lab_name_updated', true);
+    this.snackbarService.openSuccessMessage({text: 'lab_name_updated', translateText: true});
     this.isLoading = false;
     this.dialogRef.close(labInstance);
   }

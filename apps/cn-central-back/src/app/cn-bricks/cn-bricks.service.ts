@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
 import {CnBrick} from './cn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
@@ -69,6 +69,16 @@ export class CnBricksService extends CnAbstractService<CnBrick> {
         },
         relations: ['brick']
       });
+  }
+
+  public async getBrickVersionAndCheck(name: string, version: CmVersion): Promise<CnBrickVersion> {
+    const brickVersion = await this.getBrickVersion(name, version);
+
+    if (brickVersion == null) {
+      throw new BadRequestException(`The brick ${name} does not have a version version ${version.toString()} does not exist`);
+    }
+
+    return brickVersion;
   }
 
   public getAllBricks(): Promise<CnBrick[]> {

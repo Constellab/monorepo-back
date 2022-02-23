@@ -346,3 +346,11 @@ mat-tree {
 .mat-tooltip {
   font-size: 0.8rem
 }
+
+/************************************* MAT LiST ***********************************/
+
+.g-mat-list-dense {
+  &.mat-list-base .mat-list-item.mat-2-line, &.mat-list-base .mat-list-option.mat-2-line {
+    height: 45px !important;
+  }
+}

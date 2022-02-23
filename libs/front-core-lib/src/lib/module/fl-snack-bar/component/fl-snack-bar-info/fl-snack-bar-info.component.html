@@ -3,7 +3,7 @@
   <div>
     <!--  The text color depend on the background  -->
     <div [ngClass]="{'g-primary-contrast': mode === 'success', 'g-warn-contrast': mode === 'error'}"
-         class="message" [innerHTML]="text">
+         class="message" [innerHTML]="text | flTranslatableText">
     </div>
   </div>
 
@@ -14,6 +14,6 @@
 
   <button *ngIf="showCloseButton" class="button"
           mat-button type="button" (click)="closeSnackBar()">
-        {{'ok' | translate}}
+    {{'ok' | translate}}
   </button>
 </div>

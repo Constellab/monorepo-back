@@ -1,6 +1,8 @@
 /**
  * Input for the snack bar info
  */
+import {FlTranslatableText} from '../../fl-translate/model/fl-translate-param';
+
 export interface FlSnackBarInfoInput {
   /**
    * The mode of the snack bar
@@ -10,7 +12,7 @@ export interface FlSnackBarInfoInput {
   /**
    * The text of the snack bar
    */
-  text: string;
+  text: FlTranslatableText;
 
   /**
    * additional config

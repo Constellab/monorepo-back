@@ -29,9 +29,9 @@ export class CaLoginPageComponent implements OnInit {
     // use a timeout to let the translation load
     setTimeout(() => {
       if (params.error) {
-        this.snackBarService.openErrorMessage(params.error, true);
+        this.snackBarService.openErrorMessage({text: params.error, translateText: true});
       } else if (params.success) {
-        this.snackBarService.openSuccessMessage(params.success, true);
+        this.snackBarService.openSuccessMessage({text: params.success, translateText: true});
       }
     }, 300);
   }

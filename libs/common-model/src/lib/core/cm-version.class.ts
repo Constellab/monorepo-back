@@ -27,8 +27,16 @@ export class CmVersion {
     return new CmVersion(major, minor, patch);
   }
 
+  public isEqualOrHigher(other: CmVersion): boolean {
+    return this.getVersionAsNumber() >= other.getVersionAsNumber();
+  }
+
   public toString(): string {
     return [this.major, this.minor, this.patch].join('.');
+  }
+
+  private getVersionAsNumber(): number {
+    return parseInt('' + this.major + this.minor + this.patch);
   }
 
 }

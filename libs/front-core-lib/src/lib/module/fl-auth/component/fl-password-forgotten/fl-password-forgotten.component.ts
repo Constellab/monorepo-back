@@ -44,7 +44,7 @@ export class FlPasswordForgottenComponent implements OnInit {
   }
 
   private onSuccess(): void {
-    this.snackBarService.openSuccessMessage('flAuth.password_forgotten_mail_sent', true, 7000);
+    this.snackBarService.openSuccessMessage({text:'flAuth.password_forgotten_mail_sent',  translateText: true}, 7000);
 
     this.dialogRef.close();
   }

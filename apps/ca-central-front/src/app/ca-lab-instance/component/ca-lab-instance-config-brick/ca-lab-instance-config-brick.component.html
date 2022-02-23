@@ -1,1 +1,45 @@
-<p>lab-instance-config-brick works!</p>
+<fl-dialog-header>
+  {{title | translate}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="lab-user-form" [formGroup]="formGp">
+
+    <!--  Brick  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'brick' | translate}}</mat-label>
+      <mat-select placeholder="{{'brick' | translate}}" formControlName="name">
+        <ca-brick-select-options></ca-brick-select-options>
+      </mat-select>
+      <mat-error *ngIf="formGp.get('name').hasError('required')">
+        {{'brick' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+
+    <!--  Brick  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'brick_version' | translate}}</mat-label>
+      <mat-select placeholder="{{'brick_version' | translate}}" formControlName="version">
+        <ca-brick-version-select-options [brickName]="formGp.getRawValue().name"
+                                         [minVersion]="minVersion"></ca-brick-version-select-options>
+      </mat-select>
+      <mat-error *ngIf="formGp.get('version').hasError('required')">
+        {{'brick_version' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  Is hidden  -->
+    <mat-checkbox formControlName="isHidden" class="g-mat-checkbox-include-bottom">
+      {{'lab_instance_brick_hidden' | translate}}
+    </mat-checkbox>
+
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-flat-button color="primary" type="submit" form="lab-user-form"
+          class="g-centered-forced">
+    {{'ok' | translate}}
+  </button>
+</div>

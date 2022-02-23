@@ -47,7 +47,7 @@ export class CaLabInstanceStartStopComponent implements OnInit {
   }
 
   private onLabUpdate(lab: CaLabInstance, successTest: string): void {
-    this.snackBarService.openSuccessMessage(successTest, true);
+    this.snackBarService.openSuccessMessage({text: successTest, translateText: true});
     this.update.emit(lab);
     this.isLoading = false;
   }

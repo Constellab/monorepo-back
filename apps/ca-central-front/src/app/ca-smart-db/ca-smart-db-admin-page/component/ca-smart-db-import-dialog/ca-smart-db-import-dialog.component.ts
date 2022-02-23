@@ -61,7 +61,7 @@ export class CaSmartDbImportDialogComponent implements OnInit {
   }
 
   private uploadSuccess(): void {
-    this.snackBarService.openSuccessMessage('smart_db.upload_data_success', true);
+    this.snackBarService.openSuccessMessage({text: 'smart_db.upload_data_success', translateText: true});
     this.dialogRef.close();
   }
 

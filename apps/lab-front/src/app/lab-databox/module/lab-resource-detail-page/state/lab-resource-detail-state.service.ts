@@ -193,7 +193,6 @@ export class LabResourceDetailState implements OnDestroy {
 
   /**
    * Get the view to display
-   * @param displayMode
    */
   public getView$(): Observable<LabResourceViewEvent> {
     return this.flActionService.getResult$(this.actionType).pipe(
@@ -221,7 +220,7 @@ export class LabResourceDetailState implements OnDestroy {
         };
 
         if (viewTypeInfo == null) {
-          this.flSnackBarService.openErrorMessage('biox.view_type_node_supported', true);
+          this.flSnackBarService.openErrorMessage({text: 'biox.view_type_node_supported', translateText :true});
           return viewEvent;
         }
 

@@ -5,13 +5,11 @@ import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entit
 import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlDtoHelper, BlParsePipe} from '@monorepo/back-core-lib';
 import {ClPage} from '@monorepo/core-lib';
-import {CnLabInstanceDto} from './cn-lab-instance.dto';
+import {CnLabInstanceConfigDTO, CnLabInstanceDto} from './cn-lab-instance.dto';
 import {
   CnLabComposeUpOptions,
   CnLabDockerPs,
-  CnLabManagerConfigDTO,
-  CnLabManagerStatus,
-  CnLabManagerUpdateConfigDTO
+  CnLabManagerStatus
 } from '../cn-external-lab-api/model/cn-lab-manager.class';
 
 @Controller('lab-instances')
@@ -205,12 +203,12 @@ export class CnLabInstancesController {
 
   @Put(':id/config')
   async updateConfig(@Param('id', new ParseUUIDPipe()) id: string,
-                     @Body() config: CnLabManagerUpdateConfigDTO): Promise<void> {
+                     @Body() config: CnLabInstanceConfigDTO): Promise<void> {
     return await this.securityLayer.updateConfig(id, config);
   }
 
   @Get(':id/config')
-  async getConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabManagerConfigDTO> {
+  async getConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabInstanceConfigDTO> {
     return await this.securityLayer.getConfig(id);
   }
 

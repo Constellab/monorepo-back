@@ -63,7 +63,7 @@ export class FlResetPasswordPageComponent implements OnInit {
   }
 
   private resetSuccess(): void {
-    this.snackBarService.openSuccessMessage('flAuth.password_changed', true);
+    this.snackBarService.openSuccessMessage({text:'flAuth.password_changed',  translateText: true});
 
     this.isLoading = false;
     this.router.navigate(['/']);

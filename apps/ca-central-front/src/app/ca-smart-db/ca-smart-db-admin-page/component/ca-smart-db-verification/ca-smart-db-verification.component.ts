@@ -57,7 +57,7 @@ export class CaSmartDbVerificationComponent implements OnInit {
   }
 
   private validateDocSuccess(): void {
-    this.snackBarService.openSuccessMessage('smart_db.doc_saved', true);
+    this.snackBarService.openSuccessMessage({text: 'smart_db.doc_saved', translateText: true});
     this.validateIsLoading = false;
 
     this.getNextDocument();

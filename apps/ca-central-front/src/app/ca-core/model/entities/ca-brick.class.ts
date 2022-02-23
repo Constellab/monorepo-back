@@ -1,4 +1,5 @@
 import {CaEntity} from './ca-entity.entity';
+import {CmVersion} from '@monorepo/common-model';
 
 /**
  * List of basic gws bricks
@@ -34,5 +35,10 @@ export class CaBrickVersion extends CaEntity {
   repoType: CaRepoType;
 
   commitRef?: string;
+
+  isEqualOrHigher(version: CmVersion): boolean {
+    const currentVersion = CmVersion.fromString(this.version);
+    return currentVersion.isEqualOrHigher(version);
+  }
 }
 

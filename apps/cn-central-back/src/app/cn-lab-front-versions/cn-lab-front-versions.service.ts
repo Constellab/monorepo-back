@@ -6,19 +6,24 @@ import {Repository} from 'typeorm';
 import {CnSaveLabFrontVersionDTO} from './cn-lab-front-version.dto';
 import {CmVersion} from '@monorepo/common-model';
 import {ClPageI} from '@monorepo/core-lib';
+import {CnBricksService} from '../cn-bricks/cn-bricks.service';
+import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
 
 @Injectable()
 export class CnLabFrontVersionsService extends CnAbstractService<CnLabFrontVersion> {
 
-  constructor(@InjectRepository(CnLabFrontVersion) private repository: Repository<CnLabFrontVersion>) {
+  constructor(@InjectRepository(CnLabFrontVersion) private repository: Repository<CnLabFrontVersion>,
+              private brickService: CnBricksService) {
     super(repository, CnLabFrontVersion);
   }
 
   public async saveVersion(versionDTO: CnSaveLabFrontVersionDTO): Promise<CnLabFrontVersion> {
     const version = CmVersion.fromString(versionDTO.version);
+    const gwsCoreVersion = CmVersion.fromString(versionDTO.gwsCoreBrickVersion);
     const frontVersion = new CnLabFrontVersion();
-    frontVersion.id = versionDTO.id ? versionDTO.id: undefined;
-    frontVersion.gwsCoreBrickVersion = versionDTO.gwsCoreBrickVersion;
+    frontVersion.id = versionDTO.id ? versionDTO.id : undefined;
+
+    frontVersion.gwsCoreBrickVersion = await this.brickService.getBrickVersionAndCheck(CnBrickGWS.GWS_CORE, gwsCoreVersion);
     frontVersion.version = version;
     return this.save(frontVersion);
   }

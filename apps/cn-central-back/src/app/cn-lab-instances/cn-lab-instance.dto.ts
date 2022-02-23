@@ -3,7 +3,7 @@ import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
 import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
 import {BlBaseEntityDto} from '@monorepo/back-core-lib';
-import {CnBrickVersion} from '../cn-bricks/cn-brick-version.entity';
+import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
 
 
 export class CnLabInstanceDto extends BlBaseEntityDto {
@@ -22,5 +22,5 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
 
 
 export interface CnLabInstanceConfigDTO {
-  brickVersions: CnBrickVersion[];
+  brickVersions: CnBrickVersionDTO[];
 }

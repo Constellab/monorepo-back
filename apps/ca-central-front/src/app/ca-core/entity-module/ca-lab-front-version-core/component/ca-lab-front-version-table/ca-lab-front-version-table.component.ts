@@ -35,7 +35,7 @@ export class CaLabFrontVersionTableComponent extends FlTableAbstractDirective<Ca
     const versionDTO: CaSaveLabFrontVersionDTO = {
       id: frontVersion.id,
       version: frontVersion.version,
-      gwsCoreBrickVersion: frontVersion.gwsCoreBrickVersion
+      gwsCoreBrickVersion: frontVersion.gwsCoreBrickVersion.version
     };
 
     const input: FlFormDialogInput = {

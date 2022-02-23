@@ -4,7 +4,6 @@ import {Validators} from '@angular/forms';
 import {HaDocumentation, HaDocumentationFormDTO} from '../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {HaDocumentationService} from '../../../../ha-core/ha-service/ha-documentation.service';
 import {FlGlobalValidators, FlSnackBarService} from '@monorepo/front-core-lib';
-import {Router} from '@angular/router';
 import {HaFolderService} from '../../../../ha-core/ha-service/ha-folder.service';
 import {HaFolder} from '../../../../ha-core/ha-model/ha-entities/ha-folder.class';
 
@@ -47,7 +46,7 @@ export class HaAdminDocFormComponent implements OnInit {
       folderId: [null, Validators.required],
       path: [null, [Validators.required, Validators.pattern('^[a-z0-9A-Z-]+$')]],
       order: [null, [Validators.required, Validators.min(0), FlGlobalValidators.isInteger()]]
-    })
+    });
     if (this.documentation) {
       this.setFormGroupValue(this.documentation);
       this.isUpdate = true;
@@ -79,13 +78,13 @@ export class HaAdminDocFormComponent implements OnInit {
   }
 
   private creationSuccess(): void {
-    this.snackBarService.openSuccessMessage('documentation_created', true);
+    this.snackBarService.openSuccessMessage({text: 'documentation_created', translateText: true});
     this.isLoading = false;
   }
 
   private update(formValue: Partial<HaDocumentationFormDTO>): void {
     this.daDocumentationService.update(formValue).subscribe(() => {
-        this.snackBarService.openSuccessMessage('documentation_uptated', true);
+        this.snackBarService.openSuccessMessage({text: 'documentation_uptated', translateText: true});
         this.isLoading = false;
       },
       () => this.isLoading = false);

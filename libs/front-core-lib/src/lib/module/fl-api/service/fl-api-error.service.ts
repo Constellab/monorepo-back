@@ -77,7 +77,7 @@ export abstract class FlApiErrorService {
       duration = this.defaultApiErrorDuration ?? 5000;
     }
 
-    this.snackBarService.openErrorMessage(message, false, duration,
+    this.snackBarService.openErrorMessage(message, duration,
       {
         showCloseButton: true, detailButton: detailButton
       });

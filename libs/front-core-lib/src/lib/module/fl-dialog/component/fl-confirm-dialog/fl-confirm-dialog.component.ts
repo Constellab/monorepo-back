@@ -65,7 +65,7 @@ export class FlConfirmDialogComponent implements OnInit {
     // otherwise, return the choice with a null result
     else {
       if (choice && this.inputData.successMessage) {
-        this.snackBarService.openSuccessMessage(this.inputData.successMessage, this.inputData.translateMessage);
+        this.snackBarService.openSuccessMessage({text: this.inputData.successMessage, translateText: this.inputData.translateMessage});
       }
 
       const response: FlConfirmDialogResult = {
@@ -88,7 +88,7 @@ export class FlConfirmDialogComponent implements OnInit {
   // on observable success
   private success(result: any): void {
     if (this.inputData.successMessage) {
-      this.snackBarService.openSuccessMessage(this.inputData.successMessage, this.inputData.translateMessage);
+      this.snackBarService.openSuccessMessage({text: this.inputData.successMessage, translateText: this.inputData.translateMessage});
     }
 
     // return the result and close the dialog

@@ -1,11 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {CaBrick, CaRepoType} from '../../../ca-core/model/entities/ca-brick.class';
+import {Component, Inject, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
+import {CaBrickVersionDTO} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Validators} from '@angular/forms';
 
-export interface CaLabInstanceConfigBrickForm{
-  brick: CaBrick;
-  repoType: CaRepoType;
-
-}
 
 @Component({
   selector: 'ca-lab-instance-config-brick',
@@ -14,9 +12,43 @@ export interface CaLabInstanceConfigBrickForm{
 })
 export class CaLabInstanceConfigBrickComponent implements OnInit {
 
-  constructor() { }
+  formGp: FormGroup<CaBrickVersionDTO>;
+
+  minVersion: string;
+
+  private isUpdate: boolean;
+
+  constructor(@Inject(MAT_DIALOG_DATA) private brickVersionDTO: CaBrickVersionDTO,
+              private dialogRef: MatDialogRef<CaLabInstanceConfigBrickComponent>) {
+  }
 
   ngOnInit(): void {
+    this.isUpdate = this.brickVersionDTO != null;
+    this.initForm();
+  }
+
+  private initForm(): void {
+    this.formGp = new FormBuilder().group({
+      name: [null, Validators.required],
+      version: [null, Validators.required],
+      isHidden: [false]
+    });
+
+    if (this.brickVersionDTO) {
+      this.formGp.patchValue(this.brickVersionDTO);
+      this.formGp.get('name').disable();
+      this.minVersion = this.brickVersionDTO.version;
+    }
+  }
+
+  submit(): void {
+    if (this.formGp.valid) {
+      this.dialogRef.close(this.formGp.getRawValue());
+    }
+  }
+
+  get title(): string {
+    return this.isUpdate ? 'lab_instance_update_brick' : 'lab_instance_add_brick';
   }
 
 }

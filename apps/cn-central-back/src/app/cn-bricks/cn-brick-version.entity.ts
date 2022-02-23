@@ -9,7 +9,7 @@ export enum CnRepoType {
   GIT = 'GIT'
 }
 
-@Unique(['major', 'minor', 'patch'])
+@Unique(['brick', 'major', 'minor', 'patch'])
 @Entity('brick_version')
 export class CnBrickVersion extends BlEntityWithId {
   @BlNotUpdatable()
@@ -35,7 +35,7 @@ export class CnBrickVersion extends BlEntityWithId {
   repoType: CnRepoType;
 
   @Column({nullable: true})
-  commitRef: string;
+  commitRef: string; // provided if repoType === GIT
 
   @CmVersionTransform()
   @Expose()
@@ -47,5 +47,9 @@ export class CnBrickVersion extends BlEntityWithId {
     this.major = version.major;
     this.minor = version.minor;
     this.patch = version.patch;
+  }
+
+  public getRepo(): string {
+    return this.repoType === CnRepoType.PIP ? this.brick.pipRepo : this.brick.gitRepo;
   }
 }

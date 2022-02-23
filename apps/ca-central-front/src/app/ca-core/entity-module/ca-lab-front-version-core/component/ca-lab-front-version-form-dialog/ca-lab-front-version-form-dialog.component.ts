@@ -20,7 +20,7 @@ export class CaLabFrontVersionFormDialogComponent extends FlFormDialogAbstractDi
 
   constructor(snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<CaLabFrontVersionFormDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaLabFrontVersion>,
+              @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaSaveLabFrontVersionDTO>,
               private labInstanceService: CaLabFrontVersionService) {
     super(dialogInput, snackBarService, dialogRef, 'lab_front_version_created', 'lab_front_version_updated');
   }

@@ -157,7 +157,7 @@ export class LabImportResourceDialogComponent implements OnInit {
   }
 
   private callImportSuccess(resource: LabResource): void {
-    this.snackBarService.openSuccessMessage('biox.resource_imported', true);
+    this.snackBarService.openSuccessMessage({text:'biox.resource_imported',  translateText: true});
     this.routerService.navigateToResourceDetail(resource.id);
     this.dialogRef.close();
   }

@@ -1,9 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {Validators} from '@angular/forms';
 import {CaLabInstanceService} from '../../../ca-core/service-api/ca-lab-instance.service';
-import {FlSnackBarService} from '@monorepo/front-core-lib';
-import {CaLabInstanceConfig, CaLabManagerBrickVersionDTO} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {FlDialogService, FlSnackBarService} from '@monorepo/front-core-lib';
+import {CaBrickVersionDTO, CaLabInstanceConfig} from '../../../ca-core/model/entities/ca-lab-manager.class';
+import {
+  CaLabInstanceConfigBrickComponent
+} from '../ca-lab-instance-config-brick/ca-lab-instance-config-brick.component';
 
 /**
  * Form to update the lab instance config
@@ -18,43 +19,52 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
 
   @Input() labConfig: CaLabInstanceConfig;
 
-  formGp: FormGroup<CaLabInstanceConfig>;
-  formArray: FormArray<CaLabManagerBrickVersionDTO>;
-
   isLoading: boolean = false;
 
   constructor(private labInstanceService: CaLabInstanceService,
-              private snackBarService: FlSnackBarService) {
+              private snackBarService: FlSnackBarService,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
-    this.initForm();
   }
 
-  private initForm(): void {
-    const formArray: FormArray<CaLabManagerBrickVersionDTO> = new FormArray([]);
-    for (const brick of this.labConfig.bricks) {
-      const formGp: FormGroup<CaLabManagerBrickVersionDTO> = new FormBuilder().group({
-        name: [{value: brick.name, disabled: true}, [Validators.required]],
-        repo: [{value: brick.repo, disabled: true}, [Validators.required]],
-        repoType: [brick.repoType, [Validators.required]],
-        version: [brick.version, [Validators.required]],
-        commit: [brick.commit, [Validators.required]],
-        branch: [brick.branch, [Validators.required]],
-        isHidden: [brick.isHidden, [Validators.required]],
-      });
-      formArray.push(formGp);
+
+  openBrickVersionForm(brickVersionDTO?: CaBrickVersionDTO): void {
+
+    this.dialogService.openSmallDialog(CaLabInstanceConfigBrickComponent, {data: brickVersionDTO}).afterClosed().subscribe(
+      brickVersion => this.onBrickDialogClosed(brickVersionDTO == null ? 'add' : 'update', brickVersion)
+    );
+  }
+
+
+  private onBrickDialogClosed(mode: 'add' | 'update', brickVersionDTO?: CaBrickVersionDTO,): void {
+    if (!brickVersionDTO) return;
+
+    const brick = this.labConfig.brickVersions.find(brickVersion => brickVersion.name === brickVersionDTO.name);
+    if (mode === 'add') {
+      if (brick) {
+        this.snackBarService.openErrorMessage({
+          text: 'lab_instance_brick_already_exists',
+          translateText: true, translateParam: {param: {brickName: brickVersionDTO.name}}
+        });
+      }
     }
 
-    this.formArray = formArray;
-    this.formGp = new FormBuilder().group({
-      bricks: this.formArray
-    });
+
+    // if this is an update
+    if (brick) {
+      brick.version = brickVersionDTO.version;
+      brick.isHidden = brickVersionDTO.isHidden;
+    } else {
+      this.labConfig.brickVersions.push(brickVersionDTO);
+    }
+
   }
 
-  submit(): void {
-    if (!this.isLoading && this.formGp.valid) {
-      this.updateConfig(this.formGp.getRawValue());
+  save(): void {
+    if (!this.isLoading) {
+      this.updateConfig(this.labConfig);
     }
   }
 
@@ -68,6 +78,6 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
 
   private updateConfigSuccess(): void {
     this.isLoading = false;
-    this.snackBarService.openSuccessMessage('lab_instance_config_updated', true);
+    this.snackBarService.openSuccessMessage({text: 'lab_instance_config_updated', translateText: true});
   }
 }

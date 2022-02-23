@@ -42,6 +42,7 @@ import {
 import {
   CaLabInstanceConfigBrickComponent
 } from './component/ca-lab-instance-config-brick/ca-lab-instance-config-brick.component';
+import {CaBrickCoreModule} from '../ca-core/entity-module/ca-brick-core/ca-brick-core.module';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -72,6 +73,7 @@ import {
     CaCoreModule,
     CaLabCoreModule,
     CaServerInfoCoreModule,
+    CaBrickCoreModule,
 
     CaLabInstanceRoutingModule,
   ]

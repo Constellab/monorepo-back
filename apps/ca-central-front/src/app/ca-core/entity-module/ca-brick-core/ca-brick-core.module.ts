@@ -4,14 +4,17 @@ import {
   CaBrickVersionSelectOptionsComponent
 } from './component/ca-brick-version-select-options/ca-brick-version-select-options.component';
 import {CaCoreModule} from '../../ca-core.module';
+import {CaBrickSelectOptionsComponent} from './component/ca-brick-select-options/ca-brick-select-options.component';
 
 
 @NgModule({
   declarations: [
-    CaBrickVersionSelectOptionsComponent
+    CaBrickVersionSelectOptionsComponent,
+    CaBrickSelectOptionsComponent
   ],
   exports: [
-    CaBrickVersionSelectOptionsComponent
+    CaBrickVersionSelectOptionsComponent,
+    CaBrickSelectOptionsComponent
   ],
   imports: [
     CommonModule,

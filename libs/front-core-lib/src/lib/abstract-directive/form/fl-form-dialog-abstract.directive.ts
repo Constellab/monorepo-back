@@ -78,7 +78,7 @@ export abstract class FlFormDialogAbstractDirective<FORM_TYPE, ENTITY = FORM_TYP
   }
 
   protected onSaveSuccess(entity: ENTITY, successText: string): void {
-    this.snackBarService.openSuccessMessage(successText, true);
+    this.snackBarService.openSuccessMessage({text:successText,  translateText: true});
 
     this.dialogRef.close(entity);
     this.isLoading = false;
