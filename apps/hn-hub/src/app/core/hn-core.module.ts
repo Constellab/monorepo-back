@@ -1,6 +1,7 @@
-import {HttpModule, Module} from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import {HnCoreConfigModule} from './modules/core-config/hn-core-config.module';
 import {BlRequestContextModule} from '@monorepo/back-core-lib';
+import {HttpModule} from '@nestjs/axios';
 
 /**
  * Core module of the app, export all modules

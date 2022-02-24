@@ -1,7 +1,8 @@
-import {HttpModule, Module} from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import {CnCoreConfigModule} from './modules/cn-core-config/cn-core-config.module';
 import {CnFrontService} from './services/cn-front/cn-front.service';
 import {BlExternalApiModule, BlRequestContextModule, BlTranslateModule} from '@monorepo/back-core-lib';
+import {HttpModule} from '@nestjs/axios';
 
 /**
  * Core module of the app, export all modules

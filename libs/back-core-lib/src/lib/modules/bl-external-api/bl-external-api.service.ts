@@ -1,10 +1,11 @@
-import {HttpService, Injectable} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {BlExternalApiHttpOption, BlExternalApiHttpOptionObserve} from './bl-external-api.class';
 import {ClCoreJsonConvert, ClDeserializationRef, ClPageI} from '@monorepo/core-lib';
 import {BlExternalApiErrorService} from './bl-external-api-error.service';
 import {AxiosResponse} from 'axios';
+import {HttpService} from '@nestjs/axios';
 
 @Injectable()
 export class BlExternalApiService {

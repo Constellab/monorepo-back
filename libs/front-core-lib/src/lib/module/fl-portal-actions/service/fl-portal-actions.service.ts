@@ -19,7 +19,7 @@ export class FlPortalActionsService {
 
   private autoClose: boolean = false;
   private autoCloseDelay: number = 3000;
-  private autoCloseTimer: number = null;
+  private autoCloseTimer: any = null;
 
 
   constructor(private portalService: FlPortalService,
