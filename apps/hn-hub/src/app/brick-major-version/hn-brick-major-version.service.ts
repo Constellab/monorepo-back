@@ -19,7 +19,7 @@ export class HnBrickMajorVersionService {
   ) {
   }
 
-  async create(brick: HnBrick, version?: number[]): Promise<void> {
+  async create(brick: HnBrick, version: number[]): Promise<void> {
     let brickMajorVersion: HnBrickMajorVersion = new HnBrickMajorVersion();
     brickMajorVersion.initialize(brick, version[0]);
     brickMajorVersion = await this.brickMajorVersionsRepository.save(brickMajorVersion);

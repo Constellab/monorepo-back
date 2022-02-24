@@ -5,9 +5,10 @@ import {Repository} from 'typeorm';
 import {HnNode} from '../folder/hn-folder.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
+
+import {HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnBrickMajorVersionService} from '../brick-major-version/hn-brick-major-version.service';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 
 @Injectable()
 export class HnBrickService {
@@ -28,7 +29,7 @@ export class HnBrickService {
 
     brick = await this.bricksRepository.save(brick);
 
-    await this.brickMajorVersionService.create(brick, createdBrick.version);
+    await this.brickMajorVersionService.create(brick, [1, 0, 0]);
 
     return brick;
   }
