@@ -116,7 +116,7 @@ export class CnLabManagerService {
         name: brickVersion.brick.name,
         version: brickVersion.version.toString(),
         isHidden: brick.isHidden,
-        repo: brickVersion.repoType,
+        repo: brickVersion.getRepo(),
         commit: brickVersion.commitRef,
         repoType: brickVersion.repoType,
       });
