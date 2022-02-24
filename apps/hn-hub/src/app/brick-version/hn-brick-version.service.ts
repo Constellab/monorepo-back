@@ -1,41 +1,42 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {HnBrickVersion} from './hn-brick-version.entity';
+import {HnBrickVersion, HnNewVersionDTO} from './hn-brick-version.entity';
 import {Repository} from 'typeorm';
-import {HnFolderService} from '../folder/hn-folder.service';
 import {HnBrick} from '../brick/hn-brick.entity';
 import {HnNode} from '../folder/hn-folder.entity';
+import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 
 @Injectable()
 export class HnBrickVersionService {
 
   constructor(
     @InjectRepository(HnBrickVersion)
-    private brickVersionsRepository: Repository<HnBrickVersion>,
-    private folderService: HnFolderService,
+    private brickVersionsRepository: Repository<HnBrickVersion>
   ) {
   }
 
-  async create(brick: HnBrick, version?: number[]): Promise<void> {
-    let brickVersion: HnBrickVersion = new HnBrickVersion();
-    brickVersion.initialize(brick, version);
-    brickVersion = await this.brickVersionsRepository.save(brickVersion);
-
-    await this.folderService.createMainFolders(brickVersion);
+  async create(brickVersion: HnBrickVersion): Promise<HnBrickVersion> {
+    return await this.brickVersionsRepository.save(brickVersion);
   }
 
   async findBrickVersionByBrickAndVersion(brick: HnBrick, versionmajor: number): Promise<HnBrickVersion> {
-    return await this.brickVersionsRepository.findOne({where: {brick: brick, major: versionmajor}});
+    return null
   }
 
   async findBrickDocsTree(brickVersion: HnBrickVersion): Promise<HnNode> {
-    const mainFolder = await this.folderService.findFolderByBrickVersion(brickVersion);
-    return await this.folderService.findBrickDocsTree(mainFolder);
+    return null;
   }
+
 
   async findRootFolderId(brickVersion: HnBrickVersion): Promise<string> {
-    const mainFolder = await this.folderService.findFolderByBrickVersion(brickVersion);
-    return mainFolder.id;
+    return null;
   }
 
+
+  async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO): Promise<void>{
+    const newBrickVersion: HnBrickVersion = new HnBrickVersion();
+    let version: number[] = newVersion.version.split('.').map(x=>+x)
+    newBrickVersion.initialize(brickMajorVersion, version, newVersion.repoType, newVersion.commit);
+    await this.brickVersionsRepository.save(newBrickVersion);
+  }
 }

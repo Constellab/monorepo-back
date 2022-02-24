@@ -1,9 +1,9 @@
-import {Body, Controller, Delete, Get, Param, Post, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post} from '@nestjs/common';
 import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {HnNode} from '../folder/hn-folder.entity';
-import {HnBrickIdAndVersion, HnBrickPathVersion} from '../brick-version/hn-brick-version.entity';
+import {HnBrickPathVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 
 @Controller('brick')
@@ -24,26 +24,22 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Post('docs')
-  async findDocsByBrick(@Body(new BlParsePipe(HnBrickIdAndVersion)) brickIdAndVersion: HnBrickIdAndVersion): Promise<HnNode> {
-    if(!brickIdAndVersion.version){
-      // TODO function to get the latest version
-    }
-    brickIdAndVersion.version = 1; // A modif
-    return this.brickService.findDocsByBrickAndVersion(await this.brickService.findById(brickIdAndVersion.id), brickIdAndVersion.version);
+  @Get('docs/:brickId/:version')
+  async findDocsByBrick(@Param('brickId') brickId: string, @Param('version') version: string): Promise<HnNode> {
+    return this.brickService.findDocsByBrickAndVersion(await this.brickService.findById(brickId), version);
   }
 
   @BlPublic()
-  @Post('root-folder')
-  async findRootFolderId(@Body(new BlParsePipe(HnBrickIdAndVersion)) brickIdAndVersion: HnBrickIdAndVersion): Promise<{id: string}> {
-    const id: string = await this.brickService.findRootFolderId(await this.brickService.findById(brickIdAndVersion.id), brickIdAndVersion.version);
+  @Get('root-folder/:brickId/:version')
+  async findRootFolderId(@Param('brickId') brickId: string, @Param('version') version: string): Promise<{ id: string }> {
+    const id: string = await this.brickService.findRootFolderId(await this.brickService.findById(brickId), version);
     return {id: id};
   }
 
   @BlPublic()
-  @Post('doc')
-  async findCurrentDoc(@Body(new BlParsePipe(HnBrickPathVersion)) brickPathVersion: HnBrickPathVersion): Promise<HnDocumentation> {
-    return this.brickService.findCurrentDoc(await this.brickService.findById(brickPathVersion.id), brickPathVersion.path, brickPathVersion.version);
+  @Get('doc/:brickId/:version/:path')
+  async findCurrentDoc(@Param('brickId') brickId: string, @Param('version') version: string, @Param('path') path: string): Promise<HnDocumentation> {
+    return this.brickService.findCurrentDoc(await this.brickService.findById(brickId), path, version);
   }
 
   @Post()
@@ -52,7 +48,12 @@ export class HnBrickController {
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string): Promise<void>{
+  delete(@Param('id') id: string): Promise<void> {
     return this.brickService.deleteBrickById(id);
+  }
+
+  @Post('new-version')
+  createNewVersion(@Body(new BlParsePipe(HnNewVersionDTO)) newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO>{
+    return this.brickService.createNewVersion(newVersion);
   }
 }

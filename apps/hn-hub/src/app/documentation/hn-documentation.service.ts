@@ -1,11 +1,11 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {HnDocumentation, HnDocumentationContentDTO, HnDocumentationDTO} from './hn-documentation.entity';
-import {HnBrickVersion} from '../brick-version/hn-brick-version.entity';
+import {HnDocumentation, HnDocumentationDTO} from './hn-documentation.entity';
 import {HnNodeDTO} from '../folder/hn-folder.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnUser} from '../users/hn-user.entity';
+import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 
 @Injectable()
 export class HnDocumentationService {
@@ -47,7 +47,7 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
-  async updatePosition(updatedDocumentation: HnDocumentation): Promise<HnDocumentation>{
+  async updatePosition(updatedDocumentation: HnDocumentation): Promise<HnDocumentation> {
     return await this.documentationsRepository.save(updatedDocumentation);
   }
 
@@ -55,26 +55,26 @@ export class HnDocumentationService {
     await this.documentationsRepository.delete(id);
   }
 
-  async findCurrentDoc(brickVersion: HnBrickVersion, path: string): Promise<HnDocumentation>{
+  async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
     let currentDoc: HnDocumentation = null;
     const docs: HnDocumentation[] = await this.documentationsRepository.find(
       {
-        where: {completePath: path},
+        where: {completePath: path + '/'},
         relations: ['folder']
       });
     docs.map((doc: HnDocumentation) => {
-      if(doc.folder.brickVersion.id == brickVersion.id){
+      if (doc.folder.brickMajorVersion.id == brickMajorVersion.id) {
         currentDoc = doc;
       }
     });
     return currentDoc;
   }
 
-  async updateContent(id: string, updateContentDoc: Record<string, any>): Promise<HnDocumentation>{
-    const doc:HnDocumentation = await this.documentationsRepository.findOne(id);
+  async updateContent(id: string, updateContentDoc: Record<string, any>): Promise<HnDocumentation> {
+    const doc: HnDocumentation = await this.documentationsRepository.findOne(id);
     doc.content = updateContentDoc;
     const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
-    if(!currentUser.category.includes('ADMIN')){
+    if (!currentUser.category.includes('ADMIN')) {
       throw new UnauthorizedException();
     }
     return this.documentationsRepository.save(doc);

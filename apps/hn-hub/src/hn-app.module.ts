@@ -28,6 +28,7 @@ import {I18nJsonParser, I18nModule} from 'nestjs-i18n';
 import {clDefaultLang} from '@monorepo/core-lib';
 import {HnBrickModule} from './app/brick/hn-brick.module';
 import {HnBrickVersionModule} from './app/brick-version/hn-brick-version.module';
+import {HnBrickMajorVersionModule} from './app/brick-major-version/hn-brick-major-version.module';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: DnDatabaseConfig = configService.getDatabaseConfig();
@@ -104,6 +105,7 @@ function configureJwtModule(configService: HnCoreConfigService, userService: HnU
     HnDocumentationModule,
     HnBrickModule,
     HnBrickVersionModule,
+    HnBrickMajorVersionModule,
     HnUserModule,
     HnAuthModule,
     HnFolderModule

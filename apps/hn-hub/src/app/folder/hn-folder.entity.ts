@@ -1,8 +1,8 @@
 import {Column, Entity, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent, Unique} from 'typeorm';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
-import {HnBrickVersion} from '../brick-version/hn-brick-version.entity';
 import {BlEntityWithId, BlNotUpdatable} from '@monorepo/back-core-lib';
+import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 
 @Entity('Folder')
 @Tree('materialized-path')
@@ -12,8 +12,8 @@ export class HnFolder extends HnBaseEntity {
   title: string;
 
   @BlNotUpdatable()
-  @ManyToOne(() => HnBrickVersion, {eager: true, onDelete: "CASCADE"})
-  brickVersion: HnBrickVersion;
+  @ManyToOne(() => HnBrickMajorVersion, {eager: true, onDelete: "CASCADE"})
+  brickMajorVersion: HnBrickMajorVersion;
 
   @Column({nullable: true})
   path: string;

@@ -1,0 +1,48 @@
+<fl-dialog-header>
+  Add Version
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="add-version-form" [formGroup]="formGp" fxLayout="column">
+
+    <!--  version  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>Version</mat-label>
+      <input matInput formControlName="version" required flInputMaxLength="50"
+             placeholder="Version">
+      <mat-error *ngIf="formGp.get('version').hasError('required')">
+        {{'title' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  version  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>Version</mat-label>
+      <mat-select placeholder="Type of repository" required formControlName="repoType" value="GIT">
+        <mat-option value="GIT" >Git</mat-option>
+        <mat-option value="PIP">Pip</mat-option>
+      </mat-select>
+      <mat-error *ngIf="formGp.get('repoType').hasError('required')">
+        {{'title' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  commit  -->
+    <mat-form-field class="g-no-hint" *ngIf="formGp.value.repoType == 'GIT'">
+      <mat-label>Commit Hash</mat-label>
+      <input matInput formControlName="commit" required flInputMaxLength="50"
+             placeholder="Commit">
+      <mat-error *ngIf="formGp.get('commit').hasError('required')">
+        {{'title' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" form="add-version-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+  </button>
+</div>

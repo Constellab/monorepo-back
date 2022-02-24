@@ -24,6 +24,7 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
   private contentDebouncer: FlDebouncer<Record<string, any>>;
   documentation$: Observable<HaDocumentation>;
   brick: HaBrick;
+  brickVersion: string;
   formGp: FormGroup<Partial<HaDocumentationContentFormDTO>>;
   isAdmin: Observable<boolean> = this.authUserService.isAdmin();
   canEdit: boolean = false;
@@ -41,6 +42,7 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.parent.parent.url.subscribe(url => {
       this.getBrick(url[0].path);
+      this.brickVersion = url[1].path;
     });
 
     // create a debouncer to save the description after x second of idle
@@ -50,8 +52,8 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
     );
   }
 
-  private getBrick(path: string): void{
-    this.brickService.getByName(path).subscribe(brick => {
+  private getBrick(namebrick: string): void{
+    this.brickService.getByName(namebrick).subscribe(brick => {
       this.brick = brick;
       this.getActiveDoc();
     });
@@ -78,7 +80,7 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
     } else {
       path = url.join('/') + '/';
     }
-    this.documentation$ = this.brickService.getDocByPath(this.brick.id, path);
+    this.documentation$ = this.brickService.getDocByPath(this.brick.id, path, this.brickVersion);
     this.documentation$.subscribe((doc: HaDocumentation) => {
       this.buildForm();
       this.setFormGroupValue(doc);

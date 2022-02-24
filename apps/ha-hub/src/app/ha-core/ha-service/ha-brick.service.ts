@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {HaBrickDTO, HaBrick} from '../ha-model/ha-entities/ha-brick.class';
 import {HaNode} from '../ha-model/ha-entities/ha-node.class';
 import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
+import {HaNewVersionDTO} from '../ha-model/ha-entities/ha-version.class';
 
 @Injectable({
   providedIn: 'root'
@@ -25,17 +26,17 @@ export class HaBrickService {
   }
 
   /**
-   * Call http post to get the brick documentations
+   * Call http get to get the brick documentations
    */
-  public getBrickDocs(brickId: string): Observable<HaNode> {
-    return this.apiService.post(`${this.route}/docs`, {id: brickId, version: 1});
+  public getBrickDocs(brickId: string, version: string): Observable<HaNode> {
+    return this.apiService.get(`${this.route}/docs/${brickId}/${version}`);
   }
 
   /**
-   * Call http post to get the brick current doc
+   * Call http get to get the brick current doc
    */
-  public getDocByPath(brickId: string, path: string, version: number = 1): Observable<HaDocumentation> {
-    return this.apiService.post(`${this.route}/doc`, {id: brickId, path: path, version: version});
+  public getDocByPath(brickId: string, path: string, version: string): Observable<HaDocumentation> {
+    return this.apiService.get(`${this.route}/doc/${brickId}/${version}/${path}`);
   }
 
   /**
@@ -50,7 +51,7 @@ export class HaBrickService {
    * @param name name of the entity
    */
   public getById(id: string): Observable<HaBrick> {
-    return this.apiService.get(`${this.route}/${name}`, HaBrick);
+    return this.apiService.get(`${this.route}/${id}`, HaBrick);
   }
 
   /**
@@ -61,7 +62,11 @@ export class HaBrickService {
     return this.apiService.get(`${this.route}/name/${name}`, HaBrick);
   }
 
-  public getRootFolderId(brickId: string): Observable<any>{
-    return this.apiService.post(this.route + '/root-folder', {id: brickId, version: 1});
+  public getRootFolderId(brickId: string, version: string): Observable<any>{
+    return this.apiService.get(this.route + `/root-folder/${brickId}/${version}`);
+  }
+
+  public createNewVersion(newVersion: Partial<HaNewVersionDTO>): Observable<any>{
+    return this.apiService.post(this.route + '/new-version', newVersion);
   }
 }

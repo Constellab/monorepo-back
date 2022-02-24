@@ -9,9 +9,10 @@ import {CommonModule} from "@angular/common";
 import { HaPublicSidenavCreateFormDialogComponent } from './ha-public-sidenav/ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {HaMainLoginModule} from '../../../../ha-main/ha-main-login/ha-main-login.module';
+import { HaPublicAddVersionDialogComponent } from './ha-public-brick-page/ha-public-add-version-dialog/ha-public-add-version-dialog.component';
 
 @NgModule({
-  declarations: [HaPublicBrickPageComponent, HaPublicSidenavComponent, HaPublicSidenavCreateFormDialogComponent],
+  declarations: [HaPublicBrickPageComponent, HaPublicSidenavComponent, HaPublicSidenavCreateFormDialogComponent, HaPublicAddVersionDialogComponent],
     imports: [
         HaPublicCoreModule,
         HaCoreModule,
