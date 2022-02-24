@@ -10,7 +10,7 @@
         <p>
           {{brick.description}}
         </p>
-        <button mat-flat-button color="primary" *haIsAdmin class="button-add-version">
+        <button mat-flat-button color="primary" *haIsAdmin class="button-add-version" (click)="openNewVersionDialog(brick.id)">
           Add Version
         </button>
       </fl-article>

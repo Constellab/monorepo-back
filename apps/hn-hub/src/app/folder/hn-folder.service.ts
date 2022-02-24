@@ -7,6 +7,7 @@ import {HnDocumentationService} from '../documentation/hn-documentation.service'
 import {HnBrickVersion} from '../brick-version/hn-brick-version.entity';
 import {HnUser} from '../users/hn-user.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
+import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 
 @Injectable()
 export class HnFolderService {
@@ -19,7 +20,7 @@ export class HnFolderService {
   ) {
   }
 
-  async create(createFolderRes: HnNodeDTO, brickVersion?: HnBrickVersion): Promise<HnFolder> {
+  async create(createFolderRes: HnNodeDTO, brickMajorVersion?: HnBrickMajorVersion): Promise<HnFolder> {
 
     let folder: HnFolder;
     if(createFolderRes.folderId){
@@ -30,14 +31,14 @@ export class HnFolderService {
       folder: folder ? folder : null,
       path: createFolderRes.path,
       completePath: folder ? (folder.completePath ? folder.completePath : '') + createFolderRes.path + '/' : null,
-      brickVersion: brickVersion ? brickVersion : folder.brickVersion,
+      brickMajorVersion: brickMajorVersion ? brickMajorVersion : folder.brickMajorVersion,
       order: createFolderRes.order != null ? createFolderRes.order : folder.nextOrder()
   }
 
     return await this.foldersRepository.save(createFolder);
   }
 
-  async createMainFolders(brickVersion: HnBrickVersion): Promise<void>{
+  async createMainFolders(brickMajorVersion: HnBrickMajorVersion): Promise<void>{
 
     const createMainFolder: HnNodeDTO = new HnNodeDTO();
     createMainFolder.isFolder = true;
@@ -45,7 +46,7 @@ export class HnFolderService {
     createMainFolder.title = null;
     createMainFolder.order = 0;
 
-    const mainFolder = await this.create(createMainFolder, brickVersion);
+    const mainFolder = await this.create(createMainFolder, brickMajorVersion);
 
     const gettingStartedDoc: HnNodeDTO = new HnNodeDTO();
     gettingStartedDoc.folder = mainFolder;
@@ -76,9 +77,9 @@ export class HnFolderService {
     return this.TreeToArray(tree[0]);
   }
 
-  async findFolderByBrickVersion(brickVersion: HnBrickVersion): Promise<HnFolder>{
+  async findFolderByBrickMajorVersion(brickMajorVersion: HnBrickMajorVersion): Promise<HnFolder>{
     return this.foldersRepository.findOne({
-      where : { brickVersion: brickVersion, completePath: null },
+      where : { brickMajorVersion: brickMajorVersion, completePath: null },
       relations: ['documentations']
     });
   }

@@ -43,6 +43,7 @@ export class HaPublicSidenavComponent implements OnInit {
 
   isAdmin: Observable<boolean> = this.authUserService.isAdmin();
   brickId: string;
+  brickVersion: string;
   overNodeLevel: number = 0;
 
   menuOpen: boolean;
@@ -104,8 +105,9 @@ export class HaPublicSidenavComponent implements OnInit {
     this.route.parent.url.subscribe(url => {
       this.brickService.getByName(url[0].path).subscribe(brick => {
         this.brickId = brick.id;
+        this.brickVersion = url[1].path;
 
-        this.brickService.getBrickDocs(this.brickId).subscribe((data) => {
+        this.brickService.getBrickDocs(this.brickId, this.brickVersion).subscribe((data) => {
           this.dataSource.data = data.children;
 
           if (this.dataSource.data.length > 0) {
@@ -130,7 +132,7 @@ export class HaPublicSidenavComponent implements OnInit {
           this.openedMenu.overlayRef.detach();
         }
         if (!id) {
-          this.brickService.getRootFolderId(this.brickId).subscribe(res => {
+          this.brickService.getRootFolderId(this.brickId, this.brickVersion).subscribe(res => {
             this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, res.id, true), event);
           });
         } else {
@@ -201,7 +203,7 @@ export class HaPublicSidenavComponent implements OnInit {
 
   private onCloseConfirmDialog(res: FlConfirmDialogResult): void {
     if (res.choice) {
-      this.brickService.getBrickDocs(this.brickId).subscribe((data) => {
+      this.brickService.getBrickDocs(this.brickId, this.brickVersion).subscribe((data) => {
         this.rebuildTreeForData(data.children);
       });
     }
@@ -226,7 +228,7 @@ export class HaPublicSidenavComponent implements OnInit {
     this.dialogService.openSmallDialog(HaPublicSidenavCreateFormDialogComponent, {data: input}).afterClosed().subscribe(
       (res: HaNodeDTO) => {
         if (res != null) {
-          this.brickService.getBrickDocs(this.brickId).subscribe((data) => {
+          this.brickService.getBrickDocs(this.brickId, this.brickVersion).subscribe((data) => {
             this.rebuildTreeForData(data.children);
           });
         }

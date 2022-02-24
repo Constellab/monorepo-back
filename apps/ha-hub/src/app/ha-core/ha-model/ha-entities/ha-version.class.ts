@@ -1,5 +1,4 @@
 import {HaEntity} from './ha-entity.class';
-import {HaBrick} from './ha-brick.class';
 
 export enum HaRepoType {
   PIP = 'PIP',
@@ -7,7 +6,6 @@ export enum HaRepoType {
 }
 
 export class HaVersion extends HaEntity {
-
   version: string;
 }
 

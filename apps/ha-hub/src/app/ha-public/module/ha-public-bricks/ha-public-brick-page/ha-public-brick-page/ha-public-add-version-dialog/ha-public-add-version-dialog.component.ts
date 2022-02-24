@@ -1,11 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 import {HaBrickService} from '../../../../../../ha-core/ha-service/ha-brick.service';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {HaNewVersionDTO} from '../../../../../../ha-core/ha-model/ha-entities/ha-version.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {Validators} from '@angular/forms';
+import {HaBrick} from '../../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 
 @Component({
   selector: 'ha-public-add-version-dialog',
@@ -16,8 +17,10 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
 
   isLoading: boolean = false;
   brickId: string;
+  isUpdate: boolean = false;
 
   constructor(
+    @Inject(MAT_DIALOG_DATA)
     protected dialogInput: FlFormDialogInput<HaNewVersionDTO>,
     private brickService: HaBrickService,
     snackBarService: FlSnackBarService,
@@ -27,23 +30,23 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
   }
 
   ngOnInit(): void {
+    this.isUpdate = this.dialogInput.mode == 'update';
     this.init();
     this.brickId = this.dialogInput.object.brickId;
   }
 
   buildForm(): FormGroup<Partial<HaNewVersionDTO>> {
     return new FormBuilder().group({
-      version: [null, Validators.required],
-      commit: [null],
-      brickId: [null, Validators.required],
+      version: [null, [Validators.required, Validators.pattern('^[0-9]+\.[0-9]+\.[0-9]+$')]],
+      commit: [null, [Validators.pattern('^[0-9a-fA-F]{40}$')]],
+      brickId: [this.dialogInput.object.brickId, Validators.required],
       repoType: [null, Validators.required]
     });
   }
 
   create(formValue: Partial<HaNewVersionDTO>): Observable<Partial<HaNewVersionDTO>> {
-    this.formGp.value.brickId = this.brickId;
-    console.log(this.formGp.value);
-    return undefined;
+    formValue.brickId = this.brickId;
+    return this.brickService.createNewVersion(formValue);
   }
 
   update(formValue: Partial<HaNewVersionDTO>): Observable<Partial<HaNewVersionDTO>> {

@@ -43,7 +43,7 @@ const routes: Route[] = [
   //   ]
   // },
   {
-    path: ':brickName/latest',
+    path: ':brickName/:version',
     component: HaPublicBrickPageComponent,
     children: [
       {
