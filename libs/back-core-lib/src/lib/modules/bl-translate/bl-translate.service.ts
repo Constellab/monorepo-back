@@ -1,8 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {I18nService} from 'nestjs-i18n';
 import {BlTranslateOptions} from './bl-translate-options.class';
-import {Observable} from 'rxjs';
-import {fromPromise} from 'rxjs/internal-compatibility';
+import {from, Observable} from 'rxjs';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {BlCurrentUserHelper} from '../bl-jwt/bl-current-user.helper';
 
@@ -25,6 +24,6 @@ export class BlTranslateService {
   }
 
   public translateObs(key: string, options: BlTranslateOptions = {}): Observable<string> {
-    return fromPromise(this.translate(key, options));
+    return from(this.translate(key, options));
   }
 }

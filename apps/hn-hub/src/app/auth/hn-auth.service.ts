@@ -4,6 +4,7 @@ import {CmCredentials} from '@monorepo/common-model';
 import {BlExternalApiService, BlJwtService} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {HnUser} from '../users/hn-user.entity';
+import {lastValueFrom} from 'rxjs';
 
 @Injectable()
 export class HnAuthService {
@@ -25,8 +26,8 @@ export class HnAuthService {
 
   async checkCredentialsAndUser(credentials: CmCredentials): Promise<any> {
     try {
-      const userCentral = await this.blExternalApiService
-        .post(this.coreConfigService.getCentralApiUrl() + 'auth/check-credentials/ADMIN', credentials).toPromise();
+      const userCentral = await lastValueFrom(this.blExternalApiService
+        .post(this.coreConfigService.getCentralApiUrl() + 'auth/check-credentials/ADMIN', credentials));
       if (!userCentral) {
         throw new UnauthorizedException('Wrong mail or passord');
       }

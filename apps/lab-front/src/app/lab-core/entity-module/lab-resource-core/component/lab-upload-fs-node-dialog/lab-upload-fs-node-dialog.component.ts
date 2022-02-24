@@ -91,7 +91,7 @@ export class LabUploadFsNodeDialogComponent implements OnInit {
   private async initFormFiles(): Promise<void> {
     this.resourceTypes$ = this.fileTypes$.getObs();
 
-    const fileTypes = await this.fileTypes$.toPromise();
+    const fileTypes = await  this.fileTypes$.toPromise();
     const filesWithType: FsNodeWithType[] = [];
     // detect the typing name automatically
     for (const file of this.input.files) {

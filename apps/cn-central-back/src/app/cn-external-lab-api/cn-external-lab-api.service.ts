@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {Observable} from 'rxjs';
+import {lastValueFrom, Observable} from 'rxjs';
 import {ClDeserializationRef} from '@monorepo/core-lib';
 import {BlExternalApiHttpOption, BlExternalApiService} from '@monorepo/back-core-lib';
 import {
@@ -19,12 +19,12 @@ export class CnExternalLabApiService {
   constructor(private apiService: BlExternalApiService) {
   }
 
-  public async healthCheck(labInfo: CnExternalApiInfo): Promise<boolean>{
-    return this.get( labInfo,`health-check`).toPromise();
+  public async healthCheck(labInfo: CnExternalApiInfo): Promise<boolean> {
+    return lastValueFrom(this.get(labInfo, `health-check`));
   }
 
-  public async getSettings(labInfo: CnExternalApiInfo): Promise<any>{
-    return this.get(labInfo, `settings`).toPromise();
+  public async getSettings(labInfo: CnExternalApiInfo): Promise<any> {
+    return lastValueFrom(this.get(labInfo, `settings`));
   }
 
   /**

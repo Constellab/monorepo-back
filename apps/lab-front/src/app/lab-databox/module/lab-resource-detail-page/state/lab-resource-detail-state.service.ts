@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {ClCachedObservable, ClHelpService} from '@monorepo/core-lib';
 import {LabResourceService} from '../../../../lab-core/entity-service/lab-resource.service';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, Observable, Subscription} from 'rxjs';
 import {
   labConstResourceViewTypeInfos,
   LabResourceView,
@@ -12,7 +12,7 @@ import {
   LabViewCallResult
 } from '../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
-import {filter, first, map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import {
   FlPortalActionResult,
   FlPortalActionsService,
@@ -93,7 +93,7 @@ export class LabResourceDetailState implements OnDestroy {
   }
 
   public getResourcePromise(): Promise<LabResource> {
-    return this.getResource$().pipe(first()).toPromise();
+    return firstValueFrom(this.getResource$());
   }
 
   public updateResource(resource: LabResource): void {
@@ -220,7 +220,7 @@ export class LabResourceDetailState implements OnDestroy {
         };
 
         if (viewTypeInfo == null) {
-          this.flSnackBarService.openErrorMessage({text: 'biox.view_type_node_supported', translateText :true});
+          this.flSnackBarService.openErrorMessage({text: 'biox.view_type_node_supported', translateText: true});
           return viewEvent;
         }
 

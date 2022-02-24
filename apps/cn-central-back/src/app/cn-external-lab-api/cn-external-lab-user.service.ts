@@ -4,6 +4,7 @@ import {CnExternalLabLoginResponse, CnExternalLabUser, CnExternalLabUserGroup} f
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
+import {lastValueFrom} from 'rxjs';
 
 
 /**
@@ -31,21 +32,21 @@ export class CnExternalLabUserService {
       lang: user.lang
     };
 
-    return this.externalLabApiService.post(labInfo, `${this.route}/generate-temp-access`, body).toPromise();
+    return lastValueFrom(this.externalLabApiService.post(labInfo, `${this.route}/generate-temp-access`, body));
   }
 
   /**
    * Retrieve the list of user in the lab
    */
   public async getUsers(labInfo: CnExternalApiInfo): Promise<CnExternalLabUser[]> {
-    return await this.externalLabApiService.get(labInfo, this.route).toPromise();
+    return lastValueFrom(this.externalLabApiService.get(labInfo, this.route));
   }
 
   /**
    * Retrieve the list of user in the lab
    */
   public getUser(labInfo: CnExternalApiInfo, userId: string): Promise<CnExternalLabUser> {
-    return this.externalLabApiService.get(labInfo, `${this.route}/${userId}`).toPromise();
+    return lastValueFrom(this.externalLabApiService.get(labInfo, `${this.route}/${userId}`));
   }
 
   /**
@@ -71,6 +72,6 @@ export class CnExternalLabUserService {
       is_admin: group === 'ADMIN'
     };
 
-    return this.externalLabApiService.post(labInfo, this.route, newLabUser).toPromise();
+    return lastValueFrom(this.externalLabApiService.post(labInfo, this.route, newLabUser));
   }
 }

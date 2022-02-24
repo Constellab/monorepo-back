@@ -1,4 +1,4 @@
-import {Observable, of, Subject, throwError} from 'rxjs';
+import {lastValueFrom, Observable, of, Subject, throwError} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
 
@@ -58,7 +58,7 @@ export class ClCachedObservable<T> {
   }
 
   toPromise(): Promise<T> {
-    return this.getObs().toPromise();
+    return lastValueFrom(this.getObs());
   }
 
 

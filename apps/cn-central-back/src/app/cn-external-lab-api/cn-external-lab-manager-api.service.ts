@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {BlExternalApiHttpOption, BlExternalApiService} from '@monorepo/back-core-lib';
 import {ClDeserializationRef} from '@monorepo/core-lib';
-import {Observable} from 'rxjs';
+import {lastValueFrom, Observable} from 'rxjs';
 import {
   CnExternalApiInfo,
   cnExternalLabApiKeyHeader,
@@ -28,63 +28,63 @@ export class CnExternalLabManagerApiService {
   }
 
   public async healthCheck(labUrl: string): Promise<boolean> {
-    return this.apiService.get(this.constructRoute(labUrl, `health-check`)).toPromise();
+    return lastValueFrom(this.apiService.get(this.constructRoute(labUrl, `health-check`)));
   }
 
   public async getStatus(apiInfo: CnExternalApiInfo): Promise<CnLabManagerStatus> {
-    return this.get(apiInfo, `${this.baseLabRoute}/status`).toPromise();
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/status`));
   }
 
   public async listContainers(apiInfo: CnExternalApiInfo): Promise<CnLabDockerPs[]> {
-    return this.get(apiInfo, `${this.baseLabRoute}/containers`).toPromise();
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/containers`));
   }
 
   public async getLogs(apiInfo: CnExternalApiInfo, containerName: string): Promise<string> {
-    return this.get(apiInfo, `${this.baseLabRoute}/${containerName}/logs`).toPromise();
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/${containerName}/logs`));
   }
 
   public async initAll(apiInfo: CnExternalApiInfo, initConfig: CnLabManagerInitConfig): Promise<void> {
-    return this.post(apiInfo, `${this.baseLabRoute}/init-all`, initConfig).toPromise();
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/init-all`, initConfig));
   }
 
   public async upContainers(apiInfo: CnExternalApiInfo, options?: CnLabComposeUpOptions): Promise<void> {
-    return this.post(apiInfo, `${this.baseLabRoute}/up-containers`, options).toPromise();
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/up-containers`, options));
   }
 
   public async restartContainers(apiInfo: CnExternalApiInfo, options?: CnLabComposeUpOptions): Promise<void> {
-    return this.post(apiInfo, `${this.baseLabRoute}/restart-containers`, options).toPromise();
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/restart-containers`, options));
   }
 
   public async downContainers(apiInfo: CnExternalApiInfo): Promise<void> {
-    return this.post(apiInfo, `${this.baseLabRoute}/down-containers`, null).toPromise();
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/down-containers`, null));
   }
 
   public async pullContainers(apiInfo: CnExternalApiInfo): Promise<void> {
-    return this.post(apiInfo, `${this.baseLabRoute}/pull-containers`, null).toPromise();
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-containers`, null));
   }
 
   public async pullBiota(apiInfo: CnExternalApiInfo): Promise<void> {
-    return this.post(apiInfo, `${this.baseLabRoute}/pull-biota-db`, null).toPromise();
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/pull-biota-db`, null));
   }
 
   public async registryLogin(apiInfo: CnExternalApiInfo): Promise<void> {
-    return this.post(apiInfo, `${this.baseLabRoute}/registry-login`, null).toPromise();
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/registry-login`, null));
   }
 
   public async stopCurrentTask(apiInfo: CnExternalApiInfo): Promise<void> {
-    return this.post(apiInfo, `${this.baseLabRoute}/stop-current-task`, null).toPromise();
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/stop-current-task`, null));
   }
 
   public async systemPrune(apiInfo: CnExternalApiInfo): Promise<void> {
-    return this.post(apiInfo, `${this.baseLabRoute}/system-prune`, null).toPromise();
+    return lastValueFrom(this.post(apiInfo, `${this.baseLabRoute}/system-prune`, null));
   }
 
   public async updateConfig(apiInfo: CnExternalApiInfo, config: CnLabManagerUpdateConfigDTO): Promise<void> {
-    return this.put(apiInfo, `${this.baseLabRoute}/config`, config).toPromise();
+    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/config`, config));
   }
 
   public async getConfig(apiInfo: CnExternalApiInfo): Promise<CnLabManagerConfigDTO> {
-    return this.get(apiInfo, `${this.baseLabRoute}/config`).toPromise();
+    return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/config`));
   }
 
 
