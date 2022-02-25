@@ -19,7 +19,9 @@ export const BL_CLIENT_PROXY_NAME = 'CLIENT_SERVICE';
  * Function to build the RabbitMQ url from information
  */
 export function blGetRabbitMQUrl(username: string, password: string, url: string, port: number | string): string {
-  return `amqp://${username}:${password}@${url}:${port}`;
+  const fullUrl = `amqp://${username}:${password}@${url}:${port}`;
+  console.log(fullUrl);
+  return fullUrl;
 }
 
 export const blTransportQueueHub = 'hub_queue';
