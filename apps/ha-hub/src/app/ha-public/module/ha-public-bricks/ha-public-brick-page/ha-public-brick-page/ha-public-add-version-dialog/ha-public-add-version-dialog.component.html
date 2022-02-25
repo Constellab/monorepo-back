@@ -7,33 +7,33 @@
 
     <!--  version  -->
     <mat-form-field class="g-form-input">
-      <mat-label>Version</mat-label>
+      <mat-label>{{'version' | translate}}</mat-label>
       <input matInput formControlName="version" required flInputMaxLength="50"
-             placeholder="Version">
+             placeholder="{{'version' | translate}}">
       <mat-error *ngIf="formGp.get('version').hasError('required')">
-        {{'title' | flErrorRequired}}
+        {{'version' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
     <!--  version  -->
     <mat-form-field class="g-form-input">
-      <mat-label>Version</mat-label>
-      <mat-select placeholder="Type of repository" required formControlName="repoType" value="GIT">
+      <mat-label>{{'type_of_repository' | translate}}</mat-label>
+      <mat-select placeholder="{{'type_of_repository' | translate}}" required formControlName="repoType" value="GIT">
         <mat-option value="GIT" >Git</mat-option>
         <mat-option value="PIP">Pip</mat-option>
       </mat-select>
       <mat-error *ngIf="formGp.get('repoType').hasError('required')">
-        {{'title' | flErrorRequired}}
+        {{'type_of_repository' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
 
     <!--  commit  -->
     <mat-form-field class="g-no-hint" *ngIf="formGp.value.repoType == 'GIT'">
-      <mat-label>Commit Hash</mat-label>
+      <mat-label>{{'commit_hash' | translate}}</mat-label>
       <input matInput formControlName="commit" required flInputMaxLength="50"
-             placeholder="Commit">
+             placeholder="{{'commit_hash' | translate}}">
       <mat-error *ngIf="formGp.get('commit').hasError('required')">
-        {{'title' | flErrorRequired}}
+        {{'commit_hash' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
   </form>
