@@ -98,6 +98,7 @@
     "amqplib": "^0.8.0",
     "argon2": "^0.28.4",
     "asyncctx": "^2.0.18",
+    "axios": "^0.26.0",
     "class-transformer": "^0.5.1",
     "d3": "7.3.0",
     "document-register-element": "^1.7.2",
