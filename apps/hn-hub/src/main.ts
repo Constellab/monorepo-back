@@ -1,7 +1,7 @@
 import {NestFactory} from '@nestjs/core';
 import {AppModule} from './hn-app.module';
 import {blGetCorsConfig} from '@monorepo/back-core-lib';
-import {ENVIRONMENT_PROFILE_KEY, ENVIRONMENT_PROFILE_PROD_VALUE} from './app/core/modules/core-config/hn-core-config.service';
+import {HN_ENVIRONMENT_PROFILE_KEY, HN_ENVIRONMENT_PROFILE_PROD_VALUE} from './app/core/model/config/hn-config.class';
 
 async function bootstrap(): Promise<void> {
 
@@ -10,7 +10,7 @@ async function bootstrap(): Promise<void> {
   // enable cors
   app.enableCors(blGetCorsConfig(
     'gencovery.com',
-    process.env[ENVIRONMENT_PROFILE_KEY] !== ENVIRONMENT_PROFILE_PROD_VALUE)
+    process.env[HN_ENVIRONMENT_PROFILE_KEY] !== HN_ENVIRONMENT_PROFILE_PROD_VALUE)
   );
 
   const port = process.env.port || 3333;

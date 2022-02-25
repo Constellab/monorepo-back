@@ -10,6 +10,12 @@ export enum CnRepoType {
   GIT = 'GIT'
 }
 
+export enum CnVersionState {
+  STABLE = 'STABLE',
+  LATEST = 'LATEST',
+  NEXT = 'NEXT'
+}
+
 @Unique(['brick', 'major', 'minor', 'patch'])
 @Entity('brick_version')
 export class CnBrickVersion extends BlEntityWithId {
@@ -29,8 +35,8 @@ export class CnBrickVersion extends BlEntityWithId {
   @Column({default: 0})
   patch: number;
 
-  @Column()
-  isLatest: boolean = true;
+  @Column({type: 'enum', enum: CnVersionState, nullable: false, default: CnVersionState.STABLE})
+  versionState: CnVersionState;
 
   @Column({type: 'enum', enum: CnRepoType, nullable: false})
   repoType: CnRepoType;

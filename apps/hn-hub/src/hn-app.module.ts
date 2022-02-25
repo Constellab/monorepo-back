@@ -15,7 +15,10 @@ import {
   BlExternalApiModule,
   BlJwtConfig,
   BlJwtModule,
-  BlLoggerConfig, BlRequestContextMiddleware
+  BlLoggerConfig,
+  BlRequestContextMiddleware,
+  BlTransportModule,
+  BlTransportModuleConfig
 } from '@monorepo/back-core-lib';
 import {HnCoreModule} from './app/core/hn-core.module';
 import {HnUserService} from './app/users/hn-user.service';
@@ -63,6 +66,10 @@ function configureJwtModule(configService: HnCoreConfigService, userService: HnU
   };
 }
 
+function configureTransportModule(configService: HnCoreConfigService): BlTransportModuleConfig {
+  return configService.getTransportModuleConfig();
+}
+
 @Module({
   imports: [
     // let the config module on top of the imports
@@ -97,6 +104,12 @@ function configureJwtModule(configService: HnCoreConfigService, userService: HnU
       imports: [HnCoreModule, HnUserModule],
       useFactory: configureJwtModule,
       inject: [HnCoreConfigService, HnUserService]
+    }),
+
+    BlTransportModule.forRootAsync({
+      useFactory: configureTransportModule,
+      imports: [HnCoreModule],
+      inject: [HnCoreConfigService]
     }),
 
     HnCoreModule,

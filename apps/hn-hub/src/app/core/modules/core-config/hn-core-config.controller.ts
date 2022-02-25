@@ -1,5 +1,5 @@
 import {Controller, Get, Logger} from '@nestjs/common';
-import {EnvironmentProfile} from '../../model/config/hn-config.class';
+import {HnEnvironmentProfile} from '../../model/config/hn-config.class';
 import {HnCoreConfigService} from './hn-core-config.service';
 
 @Controller('core-config')
@@ -13,7 +13,7 @@ export class HnCoreConfigController {
 
 
   @Get('environment-profile')
-  getEnvironmentProfile(): EnvironmentProfile {
+  getEnvironmentProfile(): HnEnvironmentProfile {
     return this.coreConfigService.getEnvironmentProfile();
   }
 }

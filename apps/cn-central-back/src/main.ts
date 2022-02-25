@@ -1,11 +1,16 @@
 import {NestFactory} from '@nestjs/core';
 import {CnAppModule} from './cn-app.module';
 import {WINSTON_MODULE_NEST_PROVIDER} from 'nest-winston';
-import {blGetCorsConfig} from '@monorepo/back-core-lib';
+import {blGetCorsConfig, blGetRabbitMQUrl, blTransportQueueHub} from '@monorepo/back-core-lib';
 import {
   CN_ENVIRONMENT_PROFILE_KEY,
-  CN_ENVIRONMENT_PROFILE_PROD_VALUE
+  CN_ENVIRONMENT_PROFILE_PROD_VALUE,
+  CN_RABBITMQ_PASSWORD_KEY,
+  CN_RABBITMQ_PORT_KEY,
+  CN_RABBITMQ_URL_KEY,
+  CN_RABBITMQ_USER_KEY
 } from './app/cn-core/model/config/cn-config.class';
+import {Transport} from '@nestjs/microservices';
 
 async function bootstrap(): Promise<void> {
 
@@ -19,6 +24,20 @@ async function bootstrap(): Promise<void> {
   // enable custom logger using winston
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
+  // activate a micro service to enable transport listening
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      // eslint-disable-next-line max-len
+      urls: [blGetRabbitMQUrl(process.env[CN_RABBITMQ_USER_KEY], process.env[CN_RABBITMQ_PASSWORD_KEY], process.env[CN_RABBITMQ_URL_KEY], process.env[CN_RABBITMQ_PORT_KEY])],
+      queue: blTransportQueueHub,
+      queueOptions: {
+        durable: false
+      },
+    },
+  });
+
+  await app.startAllMicroservices();
   const port = 3001;
   await app.listen(port, () => {
     console.log('Listening at http://localhost:' + port + '/');

@@ -37,7 +37,9 @@ import {
   BlObjectStorageModule,
   BlObjectStorageModuleConfig,
   BlPersistenceLogger,
-  BlRequestContextMiddleware
+  BlRequestContextMiddleware,
+  BlTransportModule,
+  BlTransportModuleConfig
 } from '@monorepo/back-core-lib';
 import {cnJwtConfig} from './app/cn-auth/cn-jwt.config';
 import {Request} from 'express';
@@ -88,7 +90,11 @@ function configureMailModule(configService: CnCoreConfigService): BlMailModuleCo
 }
 
 function configureObjectStorageModule(configService: CnCoreConfigService): BlObjectStorageModuleConfig {
-  return configService.getObjectStorageConfig();
+  return configService.getObjectStorageModuleConfig();
+}
+
+function configureTransportModule(configService: CnCoreConfigService): BlTransportModuleConfig {
+  return configService.getTransportModuleConfig();
 }
 
 @Module({
@@ -125,9 +131,6 @@ function configureObjectStorageModule(configService: CnCoreConfigService): BlObj
       inject: [CnCoreConfigService],
     }),
 
-    // JwtModule.register({
-    //   secret: 'jhkjh',
-    // }),
 
     BlJwtModule.forRootAsync({
       imports: [CnCoreModule, CnUsersModule],
@@ -144,6 +147,12 @@ function configureObjectStorageModule(configService: CnCoreConfigService): BlObj
     BlObjectStorageModule.forRootAsync({
       imports: [CnCoreModule],
       useFactory: configureObjectStorageModule,
+      inject: [CnCoreConfigService]
+    }),
+
+    BlTransportModule.forRootAsync({
+      useFactory: configureTransportModule,
+      imports: [CnCoreModule],
       inject: [CnCoreConfigService]
     }),
 

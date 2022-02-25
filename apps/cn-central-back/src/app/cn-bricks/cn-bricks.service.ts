@@ -5,6 +5,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {CnBrickVersion} from './cn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
+import {CnBrickSaveDTO} from './cn-brick.dto';
 
 @Injectable()
 export class CnBricksService extends CnAbstractService<CnBrick> {
@@ -12,6 +13,32 @@ export class CnBricksService extends CnAbstractService<CnBrick> {
   constructor(@InjectRepository(CnBrick) private brickRepo: Repository<CnBrick>,
               @InjectRepository(CnBrickVersion) private brickVersionRepo: Repository<CnBrickVersion>) {
     super(brickRepo, CnBrick);
+  }
+
+
+  public async saveBrick(brickSaveDTO: CnBrickSaveDTO): Promise<void> {
+    console.log('NEww')
+    // create or update the brick
+    let brick: CnBrick = new CnBrick();
+    brick.id = brickSaveDTO.id;
+    brick.name = brickSaveDTO.name;
+    brick.pipRepo = brickSaveDTO.pipRepo;
+    brick.gitRepo = brickSaveDTO.gitRepo;
+    brick = await this.brickRepo.save(brickSaveDTO);
+
+    // create or update brick version
+    for (const versionDTO of brickSaveDTO.versions) {
+      const brickVersion = new CnBrickVersion();
+      brickVersion.id = versionDTO.id;
+      brickVersion.major = versionDTO.major;
+      brickVersion.minor = versionDTO.minor;
+      brickVersion.patch = versionDTO.patch;
+      brickVersion.versionState = versionDTO.versionState;
+      brickVersion.repoType = versionDTO.repoType;
+      brickVersion.commitRef = versionDTO.commitRef;
+      brickVersion.brick = brick;
+      await this.brickVersionRepo.save(brickVersion);
+    }
   }
 
   public findByName(name: string): Promise<CnBrick> {

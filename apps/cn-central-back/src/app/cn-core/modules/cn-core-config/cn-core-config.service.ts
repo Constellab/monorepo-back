@@ -3,10 +3,19 @@ import {ConfigService} from '@nestjs/config';
 import {
   CN_ENVIRONMENT_PROFILE_KEY,
   CN_ENVIRONMENT_PROFILE_PROD_VALUE,
+  CN_RABBITMQ_PASSWORD_KEY,
+  CN_RABBITMQ_PORT_KEY,
+  CN_RABBITMQ_URL_KEY,
+  CN_RABBITMQ_USER_KEY,
   CnDatabaseConfig,
   CnEnvironmentProfile
 } from '../../model/config/cn-config.class';
-import {BlMailConfig, BlObjectStorageModuleConfig} from '@monorepo/back-core-lib';
+import {
+  BlMailConfig,
+  BlObjectStorageModuleConfig,
+  BlTransportModuleConfig,
+  blTransportQueueHub
+} from '@monorepo/back-core-lib';
 
 
 @Injectable()
@@ -66,10 +75,20 @@ export class CnCoreConfigService {
     };
   }
 
-  public getObjectStorageConfig(): BlObjectStorageModuleConfig {
+  public getObjectStorageModuleConfig(): BlObjectStorageModuleConfig {
     return {
       endpoint: this.configService.get('OBJECT_STORAGE_ENDPOINT'),
       region: this.configService.get('OBJECT_STORAGE_REGION'),
+    };
+  }
+
+  public getTransportModuleConfig(): BlTransportModuleConfig {
+    return {
+      queue: blTransportQueueHub,
+      username: this.configService.get(CN_RABBITMQ_USER_KEY),
+      password: this.configService.get(CN_RABBITMQ_PASSWORD_KEY),
+      url: this.configService.get(CN_RABBITMQ_URL_KEY),
+      port: this.configService.get(CN_RABBITMQ_PORT_KEY),
     };
   }
 

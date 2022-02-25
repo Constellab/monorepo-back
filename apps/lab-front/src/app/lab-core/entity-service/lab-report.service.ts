@@ -119,7 +119,6 @@ export class LabReportService extends FlTextEditorImageService implements FlSear
       map(
         (uploadedFile: any) => {
           return {
-            url: this.getFilePath(uploadedFile.filename),
             filename: uploadedFile.filename,
             width: uploadedFile.width,
             height: uploadedFile.height,

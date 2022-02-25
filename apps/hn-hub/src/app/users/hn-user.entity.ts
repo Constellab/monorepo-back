@@ -5,7 +5,7 @@ import {ClDateHelper, clDefaultLang, ClSupportedLanguage} from '@monorepo/core-l
 import {CmUserCategory} from '@monorepo/common-model';
 
 @Entity('User')
-export class HnUser extends BlEntityWithId{
+export class HnUser extends BlEntityWithId {
 
   @Column({nullable: false, length: 50})
   firstname: string;
@@ -26,7 +26,11 @@ export class HnUser extends BlEntityWithId{
   lang: ClSupportedLanguage;
 
   @BeforeInsert()
-  initValues(): void{
+  initValues(): void {
     this.createdAt = ClDateHelper.getDate();
+  }
+
+  isAdmin(): boolean {
+    return this.category === CmUserCategory.ADMIN;
   }
 }

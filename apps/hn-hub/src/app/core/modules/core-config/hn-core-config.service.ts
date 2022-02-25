@@ -1,10 +1,16 @@
 import {Injectable, LogLevel} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
-import {EnvironmentProfile} from '../../model/config/hn-config.class';
+import {
+  HN_ENVIRONMENT_PROFILE_KEY,
+  HN_ENVIRONMENT_PROFILE_PROD_VALUE,
+  HN_RABBITMQ_PASSWORD_KEY,
+  HN_RABBITMQ_PORT_KEY,
+  HN_RABBITMQ_URL_KEY,
+  HN_RABBITMQ_USER_KEY,
+  HnEnvironmentProfile
+} from '../../model/config/hn-config.class';
 import {DnDatabaseConfig} from '../../model/config/hn-database-config.class';
-
-export const ENVIRONMENT_PROFILE_KEY = 'ENVIRONMENT_PROFILE';
-export const ENVIRONMENT_PROFILE_PROD_VALUE = 'prod';
+import {BlTransportModuleConfig, blTransportQueueHub} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class HnCoreConfigService {
@@ -12,12 +18,12 @@ export class HnCoreConfigService {
   constructor(protected configService: ConfigService) {
   }
 
-  public getEnvironmentProfile(): EnvironmentProfile {
-    return this.configService.get(ENVIRONMENT_PROFILE_KEY);
+  public getEnvironmentProfile(): HnEnvironmentProfile {
+    return this.configService.get(HN_ENVIRONMENT_PROFILE_KEY);
   }
 
   public isProduction(): boolean {
-    return this.getEnvironmentProfile() === ENVIRONMENT_PROFILE_PROD_VALUE;
+    return this.getEnvironmentProfile() === HN_ENVIRONMENT_PROFILE_PROD_VALUE;
   }
 
   public getJwtSecret(): string {
@@ -25,7 +31,7 @@ export class HnCoreConfigService {
   }
 
   public isLocal(): boolean {
-    const env: EnvironmentProfile = this.getEnvironmentProfile();
+    const env: HnEnvironmentProfile = this.getEnvironmentProfile();
     return env === 'dev' || env === 'docker' || env === 'test';
   }
 
@@ -40,6 +46,16 @@ export class HnCoreConfigService {
       username: this.configService.get('DATABASE_USER'),
       password: this.configService.get('DATABASE_PASSWORD'),
       database: this.configService.get('DATABASE')
+    };
+  }
+
+  public getTransportModuleConfig(): BlTransportModuleConfig {
+    return {
+      queue: blTransportQueueHub,
+      username: this.configService.get(HN_RABBITMQ_USER_KEY),
+      password: this.configService.get(HN_RABBITMQ_PASSWORD_KEY),
+      url: this.configService.get(HN_RABBITMQ_URL_KEY),
+      port: this.configService.get(HN_RABBITMQ_PORT_KEY),
     };
   }
 
