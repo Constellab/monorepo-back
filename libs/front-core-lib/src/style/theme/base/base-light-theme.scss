@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @import "./base-theme";
 
 /**
@@ -13,7 +14,7 @@ $custom-primary: (
     500: #010202,
   )
 );
-$primary: mat-palette($custom-primary, 500, 500, 500, 500);
+$primary: mat.define-palette($custom-primary, 500, 500, 500, 500);
 
 // Secondary
 $custom-accent: (
@@ -23,7 +24,7 @@ $custom-accent: (
   )
 );
 
-$accent: mat-palette($custom-accent, 500, 500, 500, 500);
+$accent: mat.define-palette($custom-accent, 500, 500, 500, 500);
 
 // The warn palette is optional (defaults to red).
 // Warn
@@ -33,19 +34,19 @@ $custom-warn: (
     500: #E5E5E5,
   )
 );
-$warn: mat-palette($custom-warn, 500, 500, 500, 500);
+$warn: mat.define-palette($custom-warn, 500, 500, 500, 500);
 
 
 // Create the theme object (a Sass map containing all of the palettes).
-$theme: mat-light-theme($primary, $accent, $warn);
+$theme: mat.define-light-theme((color: (primary: $primary, accent: $accent, warn: $warn)));
 
 // define the background theme
-$background: map_merge($mat-light-theme-background, (background: #F9F8F8, card: #E9E9E9, dialog:#E9E9E9));
+$background: map_merge(mat.$light-theme-background-palette, (background: #F9F8F8, card: #E9E9E9, dialog:#E9E9E9));
 // Set the background theme in the theme variable
 $theme: map_merge($theme, (background: $background));
 
 // define the foreground
-$foreground: map_merge($mat-light-theme-foreground, (base: #010202, icon: #010202, icons: #010202, text: #010202));
+$foreground: map_merge(mat.$light-theme-foreground-palette, (base: #010202, icon: #010202, icons: #010202, text: #010202));
 // Set the background theme in the theme variable
 $theme: map_merge($theme, (foreground: $foreground));
 

@@ -1,6 +1,6 @@
 // Import drawflow style
+@use '@angular/material' as mat;
 @import "~drawflow/dist/drawflow.min.css";
-@import '~@angular/material/theming';
 
 @mixin drawflow-theme($theme) {
   $primary: map-get($theme, primary);
@@ -33,13 +33,13 @@
     }
 
     &.task-source {
-      color: mat-color($primary, default-contrast);
-      background-color: mat-color($primary);
+      color: mat.get-color-from-palette($primary, default-contrast);
+      background-color: mat.get-color-from-palette($primary);
     }
 
     &.task-output {
-      color: mat-color($warn, default-contrast);
-      background-color: mat-color($warn);
+      color: mat.get-color-from-palette($warn, default-contrast);
+      background-color: mat.get-color-from-palette($warn);
     }
 
     // width and height of input and output port

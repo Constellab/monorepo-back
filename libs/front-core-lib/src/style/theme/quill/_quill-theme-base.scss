@@ -1,4 +1,4 @@
-@import '~@angular/material/theming';
+@use '@angular/material' as mat;
 
 
 @mixin _quill-theme-base($mat-theme) {
@@ -6,14 +6,14 @@
   $warn: map-get($mat-theme, warn);
   $foreground: map-get($mat-theme, foreground);
   $background: map-get($mat-theme, background);
-  $foreground-color: mat-color($foreground, text);
-  $background-color: mat-color($background, background);
-  $divider: mat-color($foreground, dividers);
+  $foreground-color: mat.get-color-from-palette($foreground, text);
+  $background-color: mat.get-color-from-palette($background, background);
+  $divider: mat.get-color-from-palette($foreground, dividers);
 
   // set quill editor in red when the editor is invalid
   .core-form-field-invalid .ql-toolbar,
   .core-form-field-invalid .ql-container {
-    border-color: mat-color($warn) !important;
+    border-color: mat.get-color-from-palette($warn) !important;
   }
 
   .ql-toolbar,
@@ -58,7 +58,7 @@
   .ql-snow .ql-toolbar .ql-picker-item:hover,
   .ql-snow.ql-toolbar .ql-picker-item.ql-selected,
   .ql-snow .ql-toolbar .ql-picker-item.ql-selected {
-    color: mat-color($primary) !important;
+    color: mat.get-color-from-palette($primary) !important;
   }
   .ql-snow.ql-toolbar button:hover .ql-fill,
   .ql-snow .ql-toolbar button:hover .ql-fill,
@@ -88,7 +88,7 @@
   .ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke.ql-fill,
   .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke.ql-fill,
   .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke.ql-fill {
-    fill: mat-color($primary) !important;
+    fill: mat.get-color-from-palette($primary) !important;
   }
   .ql-snow.ql-toolbar button:hover .ql-stroke,
   .ql-snow .ql-toolbar button:hover .ql-stroke,
@@ -118,7 +118,7 @@
   .ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke-miter,
   .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter,
   .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter {
-    stroke: mat-color($primary) !important;
+    stroke: mat.get-color-from-palette($primary) !important;
   }
 
   .ql-snow .ql-picker-options {

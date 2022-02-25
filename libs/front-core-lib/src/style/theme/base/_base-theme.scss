@@ -1,5 +1,5 @@
-@import 'node_modules/@angular/material/theming';
 // Import input-file style
+@use '@angular/material' as mat;
 @import "libs/front-core-lib/src/lib/module/fl-input-file/fl-input-file-container/fl-input-file-theme";
 
 
@@ -13,27 +13,27 @@
   $warn: map-get($mat-theme, warn);
   $foreground: map-get($mat-theme, foreground);
   $background: map-get($mat-theme, background);
-  $foreground-color: mat-color($foreground, text);
-  $background-color: mat-color($background, background);
-  $divider: mat-color($foreground, dividers);
+  $foreground-color: mat.get-color-from-palette($foreground, text);
+  $background-color: mat.get-color-from-palette($background, background);
+  $divider: mat.get-color-from-palette($foreground, dividers);
 
   $color-success: #22B252;
   $color-warning: orange;
-  $color-error: mat-color($warn);
+  $color-error: mat.get-color-from-palette($warn);
 
-  // define the material theme
-  @include angular-material-theme($mat-theme);
+  // apply the material theme
+  @include mat.all-component-themes($mat-theme);
 
   // call input file mixin
   @include _file-input-color($mat-theme);
 
   :root {
-    --primary-color: #{mat-color($primary)};
-    --accent-color: #{mat-color($accent)};
-    --warn-color: #{mat-color($warn)};
+    --primary-color: #{mat.get-color-from-palette($primary)};
+    --accent-color: #{mat.get-color-from-palette($accent)};
+    --warn-color: #{mat.get-color-from-palette($warn)};
     --success-color: #{$color-success};
     --warning-color: #{$color-warning};
-    --card-background: #{mat-color($background, card)};
+    --card-background: #{mat.get-color-from-palette($background, card)};
     --color-foreground: #{$foreground-color};
     --main-background: #{$background-color}
   }
@@ -47,67 +47,67 @@
    Text with the colors of the palettes
    */
   .g-primary-text {
-    color: mat-color($primary);
+    color: mat.get-color-from-palette($primary);
   }
 
   .g-accent-text {
-    color: mat-color($accent);
+    color: mat.get-color-from-palette($accent);
   }
 
   .g-warn-text {
-    color: mat-color($warn);
+    color: mat.get-color-from-palette($warn);
   }
 
   /**
    Background color based on the theme and set the text color
    */
   .g-primary-background {
-    background-color: mat-color($primary);
-    color: mat-color($primary, default-contrast);
+    background-color: mat.get-color-from-palette($primary);
+    color: mat.get-color-from-palette($primary, default-contrast);
   }
 
   .g-accent-background {
-    background-color: mat-color($accent);
-    color: mat-color($accent, default-contrast);
+    background-color: mat.get-color-from-palette($accent);
+    color: mat.get-color-from-palette($accent, default-contrast);
   }
 
   .g-warn-background {
-    background-color: mat-color($warn);
-    color: mat-color($warn, default-contrast);
+    background-color: mat.get-color-from-palette($warn);
+    color: mat.get-color-from-palette($warn, default-contrast);
   }
 
   /**
     Contrast text for palette. The best color (white or black) depending on the background
    */
   .g-primary-contrast {
-    color: mat-color($primary, default-contrast);
+    color: mat.get-color-from-palette($primary, default-contrast);
   }
 
   .g-accent-contrast {
-    color: mat-color($accent, default-contrast);
+    color: mat.get-color-from-palette($accent, default-contrast);
   }
 
   .g-warn-contrast {
-    color: mat-color($warn, default-contrast);
+    color: mat.get-color-from-palette($warn, default-contrast);
   }
 
   /**
     Text with other primary colors
    */
   .g-primary-text-extra-light {
-    color: mat-color($primary, 50);
+    color: mat.get-color-from-palette($primary, 50);
   }
 
   .g-primary-text-light {
-    color: mat-color($primary, 200);
+    color: mat.get-color-from-palette($primary, 200);
   }
 
   .g-primary-text-dark {
-    color: mat-color($primary, 600);
+    color: mat.get-color-from-palette($primary, 600);
   }
 
   .g-primary-text-extra-dark {
-    color: mat-color($primary, 800);
+    color: mat.get-color-from-palette($primary, 800);
   }
 
 
@@ -115,23 +115,23 @@
    Background color based on the theme and set the text color
    */
   .g-primary-background-extra-light {
-    background-color: mat-color($primary, 50);
-    color: mat-color($primary, default-contrast, 50);
+    background-color: mat.get-color-from-palette($primary, 50);
+    color: mat.get-color-from-palette($primary, default-contrast, 50);
   }
 
   .g-primary-background-light {
-    background-color: mat-color($primary, 200);
-    color: mat-color($primary, default-contrast, 200);
+    background-color: mat.get-color-from-palette($primary, 200);
+    color: mat.get-color-from-palette($primary, default-contrast, 200);
   }
 
   .g-primary-background-dark {
-    background-color: mat-color($primary, 600);
-    color: mat-color($primary, default-contrast, 600);
+    background-color: mat.get-color-from-palette($primary, 600);
+    color: mat.get-color-from-palette($primary, default-contrast, 600);
   }
 
   .g-primary-background-extra-dark {
-    background-color: mat-color($primary, 800);
-    color: mat-color($primary, default-contrast, 800);
+    background-color: mat.get-color-from-palette($primary, 800);
+    color: mat.get-color-from-palette($primary, default-contrast, 800);
   }
 
 
@@ -139,30 +139,30 @@
     Contrast border for palette. The best color (white or black) depending on the background
    */
   .g-primary-border-contrast {
-    border-color: mat-color($primary, default-contrast);
+    border-color: mat.get-color-from-palette($primary, default-contrast);
   }
 
   .g-accent-border-contrast {
-    color: mat-color($accent, default-contrast);
+    color: mat.get-color-from-palette($accent, default-contrast);
   }
 
   .g-warn-border-contrast {
-    color: mat-color($warn, default-contrast);
+    color: mat.get-color-from-palette($warn, default-contrast);
   }
 
   /**
   * Border theme color
   */
   .g-primary-border {
-    border-color: mat-color($primary);
+    border-color: mat.get-color-from-palette($primary);
   }
 
   .g-accent-border {
-    color: mat-color($accent);
+    color: mat.get-color-from-palette($accent);
   }
 
   .g-warn-border {
-    color: mat-color($warn);
+    color: mat.get-color-from-palette($warn);
   }
 
 
@@ -176,7 +176,7 @@
 
   //////////////// OTHER /////////////////////
   .g-card-background {
-    background-color: mat-color($background, card);
+    background-color: mat.get-color-from-palette($background, card);
   }
 
   .g-default-color-text {
