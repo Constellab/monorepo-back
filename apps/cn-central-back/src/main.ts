@@ -37,7 +37,9 @@ async function bootstrap(): Promise<void> {
     },
   });
 
-  await app.startAllMicroservices();
+  // await app.startAllMicroservices();
+  app.startAllMicroservices().then(() => console.log('Successfully init microservice'))
+    .catch(err => `Error during microservice init. Error : ${err}`);
   const port = 3001;
   await app.listen(port, () => {
     console.log('Listening at http://localhost:' + port + '/');

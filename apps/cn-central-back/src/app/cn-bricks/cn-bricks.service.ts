@@ -17,7 +17,6 @@ export class CnBricksService extends CnAbstractService<CnBrick> {
 
 
   public async saveBrick(brickSaveDTO: CnBrickSaveDTO): Promise<void> {
-    console.log('NEww')
     // create or update the brick
     let brick: CnBrick = new CnBrick();
     brick.id = brickSaveDTO.id;
