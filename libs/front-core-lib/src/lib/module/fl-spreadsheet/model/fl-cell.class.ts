@@ -1,7 +1,5 @@
 import {BehaviorSubject, Observable} from 'rxjs';
-import {FlSheetRange} from './selection/fl-sheet-range.class';
 
-export type FlCellSelectionChange = false | FlSheetRange;
 
 export type FlCellEditChange = { edit: false, value: void } | { edit: true, value: string };
 
@@ -14,7 +12,6 @@ export abstract class FlCell {
   private _value$: BehaviorSubject<any>;
   private _edit$: BehaviorSubject<FlCellEditChange> = new BehaviorSubject<FlCellEditChange>({edit: false, value: null});
 
-  private selected$: BehaviorSubject<FlCellSelectionChange> = new BehaviorSubject<FlCellSelectionChange>(false);
 
   protected constructor(value: any = null) {
     this.id = FlCell.idGenerator++;
@@ -57,25 +54,6 @@ export abstract class FlCell {
     return this._edit$.asObservable();
   }
 
-
-  get selected(): FlCellSelectionChange {
-    return this.selected$.value;
-  }
-
-  public getSelected$(): Observable<FlCellSelectionChange> {
-    return this.selected$.asObservable();
-  }
-
-  public select(range: FlCellSelectionChange): void {
-    this.selected$.next(range);
-  }
-
-  public unselect(): void {
-    if (this.selected !== false) {
-      this.selected$.next(false);
-    }
-  }
-
   public isEditable(): boolean {
     return !this.valueIsObject();
   }
@@ -87,7 +65,6 @@ export abstract class FlCell {
   public destroy(): void {
     this._value$.complete();
     this._edit$.complete();
-    this.selected$.complete();
   }
 
 }

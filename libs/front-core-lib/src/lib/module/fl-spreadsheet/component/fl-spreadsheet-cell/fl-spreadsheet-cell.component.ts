@@ -11,9 +11,13 @@ import {
   Renderer2,
   ViewChild
 } from '@angular/core';
-import {columnIdAttributeName, FlCell, FlCellEditChange, FlCellSelectionChange, rowIdAttributeName} from '../../model/fl-cell.class';
+import {columnIdAttributeName, FlCell, FlCellEditChange, rowIdAttributeName} from '../../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
-import {FlCellCoord, FlCellWithCoord} from '../../model/selection/fl-sheet-single-selection.class';
+import {
+  FlCellCoord,
+  FlCellWithCoord,
+  FlSheetSingleSelection
+} from '../../model/selection/fl-sheet-single-selection.class';
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
 import {FlSpreadsheetActions} from '../../state/fl-spreadsheet-actions.state';
 import {FlKeyboardHelper, FlKeyboardKey} from '../../../../utils/fl-keyboard.helper';
@@ -94,19 +98,20 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
   }
 
 
-/////////////////////////////// SELECTION ///////////////////////////////
+  /////////////////////////////// SELECTION ///////////////////////////////
 
   private subscribeToSelection(): void {
-    this.subscription.add(this.cell.getSelected$().subscribe(
-      selected => this.onSelectionChange(selected)
+    this.subscription.add(this.selectionState.getSelection$().subscribe(
+      selection => this.onSelectionChange(selection)
     ));
   }
 
-  private onSelectionChange(selected: FlCellSelectionChange): void {
-    if (selected === false) {
-      this.unSelectCell();
+  private onSelectionChange(selection: FlSheetSingleSelection): void {
+    // check if the current cell is selected
+    if (selection && selection.coordIsSelected({row: this.row, column: this.column})) {
+      this.selectCell(selection);
     } else {
-      this.selectCell(selected);
+      this.unSelectCell();
     }
   }
 
@@ -246,7 +251,7 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
     }
   }
 
-  openCellValueIsNewSheet(): void{
+  openCellValueIsNewSheet(): void {
     this.state.openCellInNewSheet(this.cell);
   }
 
