@@ -20,7 +20,7 @@ export enum CnVersionState {
 @Entity('brick_version')
 export class CnBrickVersion extends BlEntityWithId {
   @BlNotUpdatable()
-  @ManyToOne(() => CnBrick, {onDelete: 'CASCADE'})
+  @ManyToOne(() => CnBrick, {onDelete: 'CASCADE', nullable: false})
   brick: CnBrick;
 
   @Exclude()

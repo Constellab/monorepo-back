@@ -23,7 +23,7 @@ export class CnBricksService extends CnAbstractService<CnBrick> {
     brick.name = brickSaveDTO.name;
     brick.pipRepo = brickSaveDTO.pipRepo;
     brick.gitRepo = brickSaveDTO.gitRepo;
-    brick = await this.brickRepo.save(brickSaveDTO);
+    brick = await this.brickRepo.save(brick);
 
     // create or update brick version
     for (const versionDTO of brickSaveDTO.versions) {
