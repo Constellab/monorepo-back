@@ -1,0 +1,20 @@
+.group{
+  min-width: 5em;
+  max-width: 15em;
+}
+
+.value-list{
+  max-height: 10em;
+}
+
+.tag{
+  margin-bottom: 0.3em;
+  cursor: pointer;
+  min-height: 1.7em;
+}
+
+.color{
+  width: 1.7em;
+  height: 1.7em;
+  border-radius: 50%;
+}

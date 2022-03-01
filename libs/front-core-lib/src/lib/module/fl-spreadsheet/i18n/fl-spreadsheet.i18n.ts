@@ -43,7 +43,11 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     open_cell_object_in_sheet: 'Ouvrir dans une feuille',
     sheet: 'Feuille',
     split_selection_by_rows: 'Séparer la sélection par lignes',
-    split_selection_by_columns: 'Séparer la sélection par colonnes'
+    split_selection_by_columns: 'Séparer la sélection par colonnes',
+    column_filters: 'Filtres sur colonnes',
+    column_filters_no_tags: 'Aucun tags sur les colonnes',
+    row_filters: 'Filtres sur lignes',
+    row_filters_no_tags: 'Aucun tags sur les lignes',
   }
 };
 
@@ -84,7 +88,11 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     open_cell_object_in_sheet: 'Open in a sheet',
     sheet: 'Sheet',
     split_selection_by_rows: 'Split selection by rows',
-    split_selection_by_columns: 'Split selection by columns'
+    split_selection_by_columns: 'Split selection by columns',
+    column_filters: 'Column filters',
+    column_filters_no_tags: 'No tags on columns',
+    row_filters: 'Row filters',
+    row_filters_no_tags: 'No tags on rows',
   }
 };
 

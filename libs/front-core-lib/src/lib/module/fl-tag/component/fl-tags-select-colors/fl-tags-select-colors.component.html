@@ -1,0 +1,27 @@
+<div fxLayout="row" fxLayoutGap="1em">
+  <div *ngFor="let tagGroup of tagGroups; let groupIndex = index" class="group">
+
+    <div class="g-full" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5em">
+      <div>{{tagGroup.key}}</div>
+
+      <button type="button" mat-icon-button class="g-button-icon-small"
+              [color]="groupColor(tagGroup)" (click)="toggleGroupColor(tagGroup)">
+        <mat-icon>colorize</mat-icon>
+      </button>
+    </div>
+    <div class="g-text-small value-list g-scrollable-element">
+      <fl-chip *ngFor="let tagValue of tagGroup.tags"
+               fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5em"
+               size="small" class="tag"
+               (click)="toggleTagColor(tagValue)">
+        <div>{{tagValue.value}}</div>
+
+        <div *ngIf="tagValue.activeColor" [style.background-color]="tagValue.color" class="color"
+             (click)="openColorSelector(tagValue, $event)" [(flColorSelector)]="tagValue.color" (flColorSelectorChange)="emitColors()"></div>
+
+      </fl-chip>
+    </div>
+  </div>
+
+</div>
+

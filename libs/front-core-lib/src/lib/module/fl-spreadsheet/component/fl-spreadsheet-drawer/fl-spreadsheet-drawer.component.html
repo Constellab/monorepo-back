@@ -1,0 +1,51 @@
+<div flMouseHover (flMouseLeave)="closeDrawer()" [flMouseLeaveDelay]="300"
+     [flDisabled]="pinnedDrawer" [flExcludeElement]="cdkContainerClass"
+     class="container">
+
+  <fl-section [object]="'aa'">
+
+    <fl-section-header>
+      <fl-section-actions>
+        <button mat-icon-button type="button" class="g-button-icon-small"
+                (click)="togglePin()" [matTooltip]="pinToggleText | translate">
+          <mat-icon [fontSet]="pinToggleIcon">push_pin</mat-icon>
+        </button>
+
+        <button mat-icon-button type="button" tabindex="-1" (click)="closeDrawer()"
+                [matTooltip]="'close' | translate" class="g-button-icon-small">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </fl-section-actions>
+    </fl-section-header>
+
+
+    <ng-container *flSectionBody>
+      <div class="drawer-content">
+        <fl-async-section [object]="columnTags$" emptyText="flSpreadsheet.column_filters_no_tags">
+          <fl-section-header>
+            <h2>{{'flSpreadsheet.column_filters' | translate}}</h2>
+          </fl-section-header>
+
+          <ng-container *flSectionBody>
+            <fl-tags-select-colors [tags]="columnTags$ | async"
+                                   (colorChange)="updateColumnTagColors($event)"></fl-tags-select-colors>
+          </ng-container>
+        </fl-async-section>
+
+        <fl-async-section [object]="rowTags$" emptyText="flSpreadsheet.row_filters_no_tags"
+                          class="g-section">
+          <fl-section-header>
+            <h2>{{'flSpreadsheet.row_filters' | translate}}</h2>
+          </fl-section-header>
+
+          <ng-container *flSectionBody>
+            <fl-tags-select-colors [tags]="rowTags$ | async"
+                                   (colorChange)="updateRowTagColors($event)"></fl-tags-select-colors>
+          </ng-container>
+        </fl-async-section>
+
+      </div>
+    </ng-container>
+  </fl-section>
+
+</div>

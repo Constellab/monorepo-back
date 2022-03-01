@@ -1,0 +1,19 @@
+.placeholder {
+  margin-bottom: 1em;
+}
+
+.color-square {
+  width: 1.7em;
+  height: 1.7em;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-right: 1em;
+}
+
+.disable {
+  background-color: var(--grey-low-contrast) !important;
+  cursor: default;
+}

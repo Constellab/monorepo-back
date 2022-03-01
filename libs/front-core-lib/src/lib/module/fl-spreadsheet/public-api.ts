@@ -6,6 +6,7 @@ export * from './component/fl-spreadsheet/fl-spreadsheet.component';
 export * from './component/fl-spreadsheet-cell/fl-spreadsheet-cell.component';
 export * from './component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-selection.component';
 export * from './component/fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
+export * from './component/fl-spreadsheet-drawer/fl-spreadsheet-drawer.component';
 export * from './component/fl-spreadsheet-header-cell/fl-spreadsheet-header-cell.component';
 export * from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
 export * from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
@@ -27,6 +28,7 @@ export * from './state/fl-spreadsheet-keyboard-manager.state';
 export * from './state/fl-spreadsheet-mouse-manager.state';
 export * from './state/fl-spreadsheet-scroll.state';
 export * from './state/fl-spreadsheet-selection.state';
+export * from './state/fl-spreadsheet-renderer-state.service';
 
 // Export the models
 // Action

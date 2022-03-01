@@ -1,0 +1,21 @@
+<div>
+  <p *ngIf="placeholder" class="g-text-light placeholder">
+    {{placeholder}}
+    <ng-container *ngIf="required"> *</ng-container>
+  </p>
+
+  <div fxLayout="row wrap">
+    <div *ngFor="let color of availableColor"
+         class="color-square g-text-not-selectable"
+         (click)="selectColor(color)"
+         [style.backgroundColor]="color"
+         [style.borderColor]="boxBorderColor"
+         fxLayoutAlign="center center"
+         [ngClass]="{'disable': disabled}">
+      <mat-icon *ngIf="isSelected(color)" [style.color]="checkSelectedColor"
+                class="g-icon-small">
+        check
+      </mat-icon>
+    </div>
+  </div>
+</div>

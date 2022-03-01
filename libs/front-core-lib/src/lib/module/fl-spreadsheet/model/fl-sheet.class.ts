@@ -2,7 +2,16 @@ import {FlBasicCell, FlCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
 import {FlCellCoord} from './selection/fl-sheet-single-selection.class';
-import {FlSheetRow} from './fl-sheet-row.class';
+import {FlSheetHeader, FlSheetRow} from './fl-sheet-row.class';
+import {FlTagHelper} from '../../fl-tag/fl-tag.class';
+
+/**
+ * Information about a row or a column in the sheet
+ */
+export interface FlSheetHeaderInfo {
+  name?: string;
+  tags?: Record<string, string>;
+}
 
 /**
  * Class to manage one sheet of a spreadsheet
@@ -24,6 +33,9 @@ export class FlSheet {
 
   private rowsCount: number = 0;
   private columnsCount: number = 0;
+
+  public rowsInfo: FlSheetHeaderInfo[];
+  public columnsInfo: FlSheetHeaderInfo[];
 
 
   constructor(name: string) {
@@ -72,6 +84,10 @@ export class FlSheet {
     for (let i = 0; i < this.rowsCount; i++) {
       this.insertCell(i, position);
     }
+
+    if (this.columnsInfo?.length > 0) {
+      this.columnsInfo.splice(position, 0, {name: null, tags: {}});
+    }
     this.columnsCount++;
   }
 
@@ -92,6 +108,10 @@ export class FlSheet {
       this.insertColumn(0);
     }
 
+    if (this.columnsInfo?.length > 0) {
+      this.columnsInfo.splice(fromIndex, deleteCount);
+    }
+
     this.emitCellChange();
     this.emitColumnsChange();
   }
@@ -106,6 +126,35 @@ export class FlSheet {
     );
   }
 
+  public getColumnsTags(): Record<string, string[]> {
+    return FlTagHelper.groupTagsByKey(this.columnsInfo.map(columnInfo => columnInfo.tags));
+  }
+
+  public getColumnInfo(columnIndex: number): FlSheetHeaderInfo {
+    return this.getHeaderInfo(this.columnsInfo, columnIndex);
+  }
+
+  public getColumnTags(columnIndex: number): Record<string, string> {
+    return this.columnsInfo ? this.columnsInfo[columnIndex].tags : {};
+  }
+
+  public getColumns$(): Observable<FlSheetHeader[]> {
+    return this.getColumnsCount$().pipe(
+      map((count) => {
+        const columns: FlSheetHeader[] = [];
+
+        for (let i = 0; i < count; i++) {
+          const columnInfo = this.getColumnInfo(i);
+          columns.push({
+            index: i,
+            name: columnInfo.name,
+            tags: columnInfo.tags
+          });
+        }
+        return columns;
+      })
+    );
+  }
 
   ////////////////////////////// ROW ///////////////////////////////
   public appendMultipleRows(count: number): void {
@@ -145,6 +194,10 @@ export class FlSheet {
     for (let i = 0; i < this.columnsCount; i++) {
       this.insertCell(position, i);
     }
+
+    if (this.rowsInfo?.length > 0) {
+      this.rowsInfo.splice(position, 0, {name: null, tags: {}});
+    }
     this.rowsCount++;
   }
 
@@ -163,6 +216,11 @@ export class FlSheet {
       this.insertRow(0);
     }
 
+    if (this.rowsInfo?.length > 0) {
+      this.rowsInfo.splice(fromIndex, deleteCount);
+    }
+
+
     this.emitCellChange();
     this.emitRowsChange();
   }
@@ -177,32 +235,32 @@ export class FlSheet {
     );
   }
 
-  public getRows(fromRow: number, toRow: number): FlSheetRow[] {
-    const rows: FlSheetRow[] = [];
+  public getRows$(): Observable<FlSheetRow[]> {
+    return this.getRowsCount$().pipe(
+      map(count => {
+        const rows: FlSheetRow[] = [];
 
-    // prevent from returning rows outside the sheet
-    fromRow = Math.max(fromRow, 0);
-    toRow = Math.min(toRow, this.rowsCount - 1);
+        for (let i = 0; i < count; i++) {
+          const info = this.getRowInfo(i);
+          rows.push({
+            cells: this.cells[i],
+            index: i,
+            name: info.name,
+            tags: info.tags
+          });
+        }
+        return rows;
+      })
+    );
 
-    for (let row = fromRow; row <= toRow; row++) {
-      rows.push({
-        rowId: row,
-        cells: this.cells[row]
-      });
-    }
-
-    return rows;
   }
 
-  public getRows$(): Observable<FlSheetRow[]> {
-    return this.getCells().pipe(
-      map(cells => cells.map((row, index) => {
-        return {
-          rowId: index,
-          cells: row
-        };
-      }))
-    );
+  public getRowsTags(): Record<string, string[]> {
+    return FlTagHelper.groupTagsByKey(this.rowsInfo.map(rowInfo => rowInfo.tags));
+  }
+
+  public getRowInfo(rowIndex: number): FlSheetHeaderInfo {
+    return this.getHeaderInfo(this.rowsInfo, rowIndex);
   }
 
   ////////////////////////////// CELL ///////////////////////////////
@@ -212,7 +270,7 @@ export class FlSheet {
     this.cells[rowIndex].splice(columnIndex, 0, new FlBasicCell());
   }
 
-  public getCells(): Observable<FlCell[][]> {
+  public getCells$(): Observable<FlCell[][]> {
     return this.cellsChanged.asObservable().pipe(
       debounceTime(50),
       map(() => this.cells)
@@ -323,6 +381,14 @@ export class FlSheet {
   public coordIsValid(coord: FlCellCoord): boolean {
     return coord.row >= 0 && coord.row < this.rowsCount &&
       coord.column >= 0 && coord.column < this.columnsCount;
+  }
+
+  private getHeaderInfo(headerInfos: FlSheetHeaderInfo[], index: number): FlSheetHeaderInfo {
+    // if it doesn't exist, return a default value
+    if (!headerInfos || headerInfos[index] == null) {
+      return {name: null, tags: {}};
+    }
+    return headerInfos[index];
   }
 
   public destroy(): void {

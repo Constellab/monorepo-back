@@ -19,6 +19,11 @@ import {FlTagDialogService} from './fl-tag-dialog.service';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {FlTagListComponent} from './component/fl-tag-list/fl-tag-list.component';
+import {FlTagsSelectColorsComponent} from './component/fl-tags-select-colors/fl-tags-select-colors.component';
+import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
+import {FlColorModule} from '../fl-color/fl-color.module';
 
 
 @NgModule({
@@ -26,13 +31,15 @@ import {FlTagListComponent} from './component/fl-tag-list/fl-tag-list.component'
     FlTagInputComponent,
     FlTagComponent,
     FlTagFormDialogComponent,
-    FlTagListComponent
+    FlTagListComponent,
+    FlTagsSelectColorsComponent
   ],
   exports: [
     FlTagInputComponent,
     FlTagComponent,
     FlTagFormDialogComponent,
     FlTagListComponent,
+    FlTagsSelectColorsComponent,
   ],
   imports: [
     CommonModule,
@@ -45,11 +52,15 @@ import {FlTagListComponent} from './component/fl-tag-list/fl-tag-list.component'
     MatIconModule,
     DragDropModule,
     MatButtonModule,
+    FlexLayoutModule,
 
     FlTranslateModule,
     FlDialogModule,
     FlLoaderModule,
     FlCoreDirectiveModule,
+    FlCorePipeModule,
+    FlCoreComponentModule,
+    FlColorModule,
   ],
 })
 export class FlTagModule {

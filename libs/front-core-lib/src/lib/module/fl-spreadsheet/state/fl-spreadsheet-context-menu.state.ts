@@ -54,7 +54,6 @@ export class FlSpreadsheetContextMenu {
         onClick: () => this.action.deleteColumns()
       },
       this.getCreateChartConfig(),
-      {text: 'super', children: [{text: 'nick'}]}
     ];
   }
 

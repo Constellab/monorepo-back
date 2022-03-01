@@ -41,6 +41,11 @@ import {
 } from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {FlDrawerModule} from '../fl-drawer/fl-drawer.module';
+import {FlSpreadsheetDrawerComponent} from './component/fl-spreadsheet-drawer/fl-spreadsheet-drawer.component';
+import {FlSectionModule} from '../fl-section/fl-section.module';
+import {FlTagModule} from '../fl-tag/fl-tag.module';
 
 
 @NgModule({
@@ -54,6 +59,7 @@ import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
     FlSpreadsheetSelectionInputGroupDirective,
     FlSpreadsheetChartSerieSelectionComponent,
     FlSpreadsheetSheetSelectionComponent,
+    FlSpreadsheetDrawerComponent,
   ],
   exports: [
     FlSpreadsheetComponent,
@@ -71,6 +77,9 @@ import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
     FlChartModule,
     FlMenuDynamicModule,
     FlTextIconModule,
+    FlDrawerModule,
+    FlSectionModule,
+    FlTagModule,
 
     ScrollingModule,
     MatMenuModule,
@@ -84,6 +93,7 @@ import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
     MatDividerModule,
     MatMenuModule,
     MatButtonToggleModule,
+    MatSidenavModule,
   ],
 })
 export class FlSpreadsheetModule {

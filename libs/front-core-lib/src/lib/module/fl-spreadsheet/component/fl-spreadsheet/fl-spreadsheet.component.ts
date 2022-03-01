@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   Input,
@@ -10,7 +9,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {FlSpreadsheet} from '../../model/fl-spreadsheet.class';
-import {FlCell, FlColumnHeaderCell} from '../../model/fl-cell.class';
+import {FlCell} from '../../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlSpreadsheetContextMenu} from '../../state/fl-spreadsheet-context-menu.state';
@@ -19,12 +18,13 @@ import {FlSpreadsheetMouseManagerState} from '../../state/fl-spreadsheet-mouse-m
 import {FlSpreadsheetClipboardState} from '../../state/fl-spreadsheet-clipboard.state';
 import {FlSpreadsheetActions} from '../../state/fl-spreadsheet-actions.state';
 import {FlSpreadsheetActionStore} from '../../state/fl-spreadsheet-action.store';
-import {ClSubscriptionHandler} from '@monorepo/core-lib';
 import {FlSpreadsheetChartState} from '../../state/fl-spreadsheet-chart.state';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {FlSpreadsheetScrollState} from '../../state/fl-spreadsheet-scroll.state';
 import {Observable} from 'rxjs';
-import {FlSheetRow} from '../../model/fl-sheet-row.class';
+import {FlSheetHeader, FlSheetRow} from '../../model/fl-sheet-row.class';
+import {FlSpreadsheetRendererState} from '../../state/fl-spreadsheet-renderer-state.service';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'fl-spreadsheet',
@@ -41,6 +41,7 @@ import {FlSheetRow} from '../../model/fl-sheet-row.class';
     FlSpreadsheetActions,
     FlSpreadsheetChartState,
     FlSpreadsheetScrollState,
+    FlSpreadsheetRendererState,
     FlPortalService, // providers to access the state in portal
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -55,17 +56,15 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
   headerColumns: FlCell[];
 
+  columns$: Observable<FlSheetHeader[]>;
   rows$: Observable<FlSheetRow[]>;
 
-
-  private subscriptions: ClSubscriptionHandler = new ClSubscriptionHandler();
 
   constructor(private state: FlSpreadsheetState,
               private selectionState: FlSpreadsheetSelectionState,
               private keyboardState: FlSpreadsheetKeyboardManagerState,
               private mouseState: FlSpreadsheetMouseManagerState,
-              private scrollState: FlSpreadsheetScrollState,
-              private cdr: ChangeDetectorRef) {
+              private scrollState: FlSpreadsheetScrollState) {
   }
 
   ngOnInit(): void {
@@ -74,31 +73,19 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
     this.keyboardState.init();
     this.mouseState.init();
     this.scrollState.init(this.tableContainer, this.scroller, this.heightSimulator);
-    this.subscribeToHeader();
 
+    this.columns$ = this.state.getCurrentSheetColumns$().pipe(
+      // add the first column corresponding to the row header
+      map(columns => [{index: -1, name: '', tags: {}}, ...columns])
+    );
     this.rows$ = this.scrollState.getRowsToDisplay$();
   }
 
-  private subscribeToHeader(): void {
-    this.subscriptions.add(this.state.getCurrentSheetColumnsCount().subscribe(
-      columnsCount => this.onNewHeader(columnsCount)
-    ));
-  }
-
-  private onNewHeader(columnsCounts: number): void {
-    this.headerColumns = this.generateColumnHeaderCells(columnsCounts);
-    this.cdr.detectChanges();
-  }
-
-  private generateColumnHeaderCells(columnsCount: number): FlCell[] {
-    return Array(columnsCount + 1).fill(null).map((value: null, index: number) => new FlColumnHeaderCell(index));
-  }
-
-  trackByRowsId: TrackByFunction<FlSheetRow> = (index: number, row: FlSheetRow) => row.rowId;
+  trackRowById: TrackByFunction<FlSheetRow> = (index: number, header: FlSheetHeader) => header.index;
+  trackHeaderById: TrackByFunction<FlSheetHeader> = (index: number, header: FlSheetHeader) => header.index;
 
 
   ngOnDestroy(): void {
-    this.subscriptions?.unsubscribe();
     this.scrollState.clear();
   }
 }

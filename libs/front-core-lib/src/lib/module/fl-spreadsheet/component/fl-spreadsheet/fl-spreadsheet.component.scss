@@ -37,8 +37,9 @@
 
 .table fl-spreadsheet-header-cell,
 .table fl-spreadsheet-cell {
+  --table-row-height: 24px;
   border: 1px solid var(--grey-high-contrast);
-  height: 24px;
+  height: var(--table-row-height);
   box-sizing: border-box;
 }
 
@@ -48,9 +49,9 @@
   width: 100px;
 }
 
-.header-cell:first-child{
-  width: 40px;
-}
+//.header-cell:first-child{
+//  width: 40px;
+//}
 
 
 //Scrolling bar on the right

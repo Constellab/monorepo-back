@@ -5,6 +5,7 @@ import {Observable} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
 import {FlSpreadsheetFactory} from '../utils/fl-spreadsheet.factory';
 import {FlCell} from '../model/fl-cell.class';
+import {FlSheetHeader, FlSheetRow} from '../model/fl-sheet-row.class';
 
 /**
  * Unique state shared across the spreadsheet to store the current spreadsheet
@@ -43,21 +44,21 @@ export class FlSpreadsheetState implements OnDestroy {
     return this._spreadsheet.getCurrentSheet$();
   }
 
-  // emit the columns count
+  // emit the columns
   // each time the current sheet change or the columns of current sheet change
   // it's working well thanks to the behaviour subjects
-  public getCurrentSheetColumnsCount(): Observable<number> {
+  public getCurrentSheetColumns$(): Observable<FlSheetHeader[]> {
     return this.currentSheet$.pipe(
-      mergeMap(sheet => sheet.getColumnsCount$())
+      mergeMap(sheet => sheet.getColumns$())
     );
   }
 
-  // emit the rows count
+  // emit the rows
   // each time the current sheet change or the rows of current sheet change
   // it's working well thanks to the behaviour subjects
-  public getCurrentSheetRowsCount(): Observable<number> {
+  public getCurrentSheetRows$(): Observable<FlSheetRow[]> {
     return this.currentSheet$.pipe(
-      mergeMap(sheet => sheet.getRowsCount$())
+      mergeMap(sheet => sheet.getRows$())
     );
   }
 

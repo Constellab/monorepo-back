@@ -1,41 +1,57 @@
-<div class="table-container" fxLayout="column">
+<mat-drawer-container class="g-full g-full-height" [hasBackdrop]="false">
 
-  <div class="table-container" fxLayout="row" #tableContainer>
-    <div class="horizontal-scroll">
-      <table class="table">
+  <mat-drawer #drawer mode="over" position="end">
+    <fl-spreadsheet-drawer></fl-spreadsheet-drawer>
+  </mat-drawer>
 
-        <!--   Header columns cells     -->
-        <thead>
-        <tr>
-          <fl-spreadsheet-header-cell *ngFor="let column of headerColumns; let index = index"
-                                      [index]="index - 1" type="column" class="header-cell g-not-selectable"
-                                      flResize="width">
-          </fl-spreadsheet-header-cell>
-        </tr>
-        </thead>
+  <mat-drawer-content>
+    <div fxLayout="row" class="g-full-height">
+
+      <div class="table-container" fxLayout="column">
+
+        <div class="table-container" fxLayout="row" #tableContainer>
+          <div class="horizontal-scroll">
+            <table class="table">
+
+              <!--   Header columns cells     -->
+              <thead>
+              <tr>
+                <fl-spreadsheet-header-cell *ngFor="let column of columns$ | async; trackBy: trackHeaderById"
+                                            [index]="column.index" [header]="column" type="column"
+                                            class="header-cell g-not-selectable"
+                                            flResize="width">
+                </fl-spreadsheet-header-cell>
+              </tr>
+              </thead>
 
 
-        <tbody>
-        <tr *ngFor="let row of rows$ | async; trackBy: trackByRowsId">
-          <!--  Row header cells  -->
-          <fl-spreadsheet-header-cell [index]="row.rowId" type="row"
-                                      class="g-not-selectable"></fl-spreadsheet-header-cell>
-          <fl-spreadsheet-cell *ngFor="let cell of row.cells; let columnIndex = index" [cell]="cell"
-                               [row]="row.rowId" [column]="columnIndex" class="g-not-selectable"></fl-spreadsheet-cell>
+              <tbody>
+              <tr *ngFor="let row of rows$ | async; trackBy: trackRowById">
+                <!--  Row header cells  -->
+                <fl-spreadsheet-header-cell [index]="row.index" [header]="row" type="row"
+                                            class="g-not-selectable"></fl-spreadsheet-header-cell>
+                <fl-spreadsheet-cell *ngFor="let cell of row.cells; let columnIndex = index" [cell]="cell"
+                                     [row]="row.index" [column]="columnIndex"
+                                     class="g-not-selectable"></fl-spreadsheet-cell>
+              </tr>
+              </tbody>
 
-        </tr>
-        </tbody>
+            </table>
+          </div>
 
-      </table>
+          <!-- Manage the scroll -->
+          <div class="g-scrollable-element scroll-container" #scroller>
+            <div class="scroller" #heightSimulator></div>
+          </div>
+
+
+        </div>
+
+        <fl-spreadsheet-sheet-selection></fl-spreadsheet-sheet-selection>
+      </div>
+      <!--   Drawer opener   -->
+      <fl-drawer-opener [drawer]="drawer"></fl-drawer-opener>
+
     </div>
-
-    <!-- Manage the scroll -->
-    <div class="scroll-container" #scroller>
-      <div class="scroller" #heightSimulator></div>
-    </div>
-
-
-  </div>
-
-  <fl-spreadsheet-sheet-selection></fl-spreadsheet-sheet-selection>
-</div>
+  </mat-drawer-content>
+</mat-drawer-container>

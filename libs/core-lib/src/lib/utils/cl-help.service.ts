@@ -158,7 +158,7 @@ export class ClHelpService {
    * @param value value to check
    */
   public static isEmptyObject(value: any): boolean {
-    return typeof value === 'object' && value.length === 0;
+    return typeof value === 'object' && Object.keys(value).length === 0;
   }
 
   /**

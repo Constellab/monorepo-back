@@ -1,6 +1,5 @@
 import {ElementRef, Injectable, NgZone, Renderer2} from '@angular/core';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
-import {FlSheet} from '../model/fl-sheet.class';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {debounceTime, filter, startWith} from 'rxjs/operators';
 import {FlSheetRow} from '../model/fl-sheet-row.class';
@@ -74,11 +73,11 @@ export class FlSpreadsheetScrollState {
       this.windowsResizeListener = new FlRendererListenerObs(this.renderer, 'window', 'resize');
 
       this.subscriptions.add(combineLatest([
-        this.state.getCurrentSheetRowsCount(),
+        this.state.getCurrentSheetRows$(),
         this.scrollListener.onEvent$().pipe(startWith('')),
         this.windowsResizeListener.onEvent$().pipe(startWith(''), debounceTime(100))
       ]).subscribe(
-        ([number]) => this.refreshRowsToDisplay(number)
+        ([rows]) => this.refreshRowsToDisplay(rows)
       ));
     });
   }
@@ -94,12 +93,12 @@ export class FlSpreadsheetScrollState {
 
   /**
    * Function that recalculate the scroller height and then return the row to display
-   * @param totalRowCount
+   * @param rows
    * @private
    */
-  private refreshRowsToDisplay(totalRowCount: number): void {
+  private refreshRowsToDisplay(rows: FlSheetRow[]): void {
     // refresh scroller height
-    this.recalculateScrollerHeight(totalRowCount);
+    this.recalculateScrollerHeight(rows.length);
 
     // calculate the fist and last row to display
     const scrollerHeight: number = this.scroller.offsetHeight;
@@ -107,14 +106,10 @@ export class FlSpreadsheetScrollState {
 
     const scrollTop: number = this.scroller.scrollTop;
     const firstCell: number = Math.trunc(scrollTop / this.cellHeight);
-    // -1 because the number of cell include the first and last cells
-    // we are still 1 more cell because of the header cells
-    const lastCell: number = firstCell + numberOfCell - 1;
+    const lastCell: number = firstCell + numberOfCell ;
+    const subRows: FlSheetRow[] = rows.slice(firstCell, lastCell);
 
-    const sheet: FlSheet = this.state.currentSheet;
-    const rows: FlSheetRow[] = sheet.getRows(firstCell, lastCell);
-
-    this.rowsToDisplay$.next(rows);
+    this.rowsToDisplay$.next(subRows);
   }
 
   /**
@@ -124,11 +119,11 @@ export class FlSpreadsheetScrollState {
    */
   private recalculateScrollerHeight(rowCount: number): void {
     // define the height of the spreadsheet
-    // + 1 is to include to header row
-    // + 3 is to have little margin the fully display the last row
+    // + 2 is to include to header row and the last row
     this.renderer.setStyle(this.heightSimulator, 'height',
-      (this.cellHeight * (rowCount + 1)) + 3 + 'px');
+      (this.cellHeight * (rowCount + 2))  + 'px');
   }
+
 
   public getRowsToDisplay$(): Observable<FlSheetRow[]> {
     return this.rowsToDisplay$.asObservable().pipe(
@@ -194,10 +189,10 @@ export class FlSpreadsheetScrollState {
     const rows: FlSheetRow[] = this.rowsToDisplay;
 
     return {
-      from: rows[0].rowId,
+      from: rows[0].index,
       // we consider the last row as not visible because it is often cut
       // so we do a - 1
-      to: rows[rows.length - 1].rowId - 1
+      to: rows[rows.length - 1].index - 1
     };
   }
 }

@@ -41,13 +41,38 @@ export class FlColorHelper {
     // color for color blind : https://jfly.uni-koeln.de/color/
     return ['#e69f00', '#56b4e9', '#009e73', '#f0e442',
       FlColorHelper.blue, FlColorHelper.red, '#cc79a7'];
+
+    // return ['#004949', '#ff6db6', '#490092', '#006ddb',
+    //   '#920000', '#924900', '#24ff24', '#ffff6d',
+    //   '#009292', '#ffb6db', '#b6dbff',  '#db6d00',
+    //   '#b66dff', '#6db6ff'];
   }
 
-  public static get blue(): string{
-    return '#0072b2'
+  public static getColorFromIndex(index: number): string {
+    const colors = FlColorHelper.getColorList();
+
+    return colors[index % colors.length];
   }
 
-  public static get red(): string{
-    return '#d55c00'
+  public static getColorsGroups(): string[][] {
+    // return [
+    //   ['#ffcdd2', '#ef9a9a', '#e57373'],
+    //   ['#bbdefb', '#90caf9', '#64b5f6'],
+    //   ['#f0f4c3', '#e6ee9c', '#dce775'],
+    // ]
+    return [
+      ['#4a148c', '#6a1b9a', '#7b1fa2'],
+      ['#303f9f', '#283593', '#1a237e'],
+      ['#00796b', '#00695c', '#004d40'],
+    ];
+  }
+
+
+  public static get blue(): string {
+    return '#0072b2';
+  }
+
+  public static get red(): string {
+    return '#d55c00';
   }
 }

@@ -78,9 +78,9 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
   }
 
   ngDoCheck(): void {
-    if (this.id === 0) {
-      console.log('Check');
-    }
+    // if (this.id === 0) {
+    //   console.log('Check');
+    // }
   }
 
   /////////////////////////////// VALUE ///////////////////////////////

@@ -133,7 +133,7 @@
 
 
 @mixin g-button-icon-size($button-size, $icon-size, $icon-font-size) {
-  &.mat-icon-button {
+  &.mat-icon-button, & .mat-icon-button {
     width: $button-size;
     height: $button-size;
     line-height: $button-size;

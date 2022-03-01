@@ -16,6 +16,15 @@ export interface FlTagEntity {
   values: string[];
 }
 
+/**
+ * Simple tag object with a color
+ */
+export interface FlTagWithColor {
+  key: string;
+  value: string;
+  color: string;
+}
+
 
 export class FlTagHelper {
 
@@ -54,6 +63,29 @@ export class FlTagHelper {
     if (!tag) return null;
 
     return `${tag.key}${FlTagHelper.KEY_VALUE_SEPARATOR}${tag.value}`;
+  }
+
+  /**
+   * Group a list of tag by keys
+   * @param tagsList
+   */
+  public static groupTagsByKey(tagsList: Record<string, string>[]): Record<string, string[]> {
+    const tags = {};
+
+    if (tagsList) {
+      for (const t of tagsList) {
+        for (const key of Object.keys(t)) {
+          if (tags[key] == null) {
+            tags[key] = [];
+          }
+          if (tags[key].includes(t[key])) continue;
+
+          tags[key].push(t[key]);
+          tags[key] = tags[key].sort();
+        }
+      }
+    }
+    return tags;
   }
 }
 
