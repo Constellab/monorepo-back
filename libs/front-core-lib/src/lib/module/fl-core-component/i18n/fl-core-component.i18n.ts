@@ -1,4 +1,5 @@
 import {ClSupportedLanguage} from '@monorepo/core-lib';
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
 
 
@@ -14,6 +15,8 @@ const flCoreComponentI18nFr: FlLangTranslation = {
     kilo_byte_symbole: 'KB',
     mega_byte_symbole: 'MB',
     giga_byte_symbole: 'GB',
+    pin: 'Épingler',
+    unpin: 'Désépingler',
   }
 };
 
@@ -25,6 +28,8 @@ const flCoreComponentI18nEn: FlLangTranslation = {
     kilo_byte_symbole: 'Ko',
     mega_byte_symbole: 'Mo',
     giga_byte_symbole: 'Go',
+    pin: 'Pin',
+    unpin: 'Unpin',
   }
 };
 

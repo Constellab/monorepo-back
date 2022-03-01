@@ -1,4 +1,5 @@
 import {ClSupportedLanguage} from '@monorepo/core-lib';
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
 
 
@@ -20,8 +21,6 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     network: 'Réseau',
     select_node_help_text: 'Sélectionner un node pour voir le détail ici',
     compartments: 'Compartiments',
-    pin_drawer: 'Épingler',
-    unpin_drawer: 'Désépingler',
     metabolites_count : '{{count}} métabolites',
     cofactors_count : '{{count}} cofacteurs',
     reactions_count : '{{count}} réactions',
@@ -52,8 +51,6 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     network: 'Network',
     select_node_help_text: 'Select a node to view detail here',
     compartments: 'Compartments',
-    pin_drawer: 'Pin',
-    unpin_drawer: 'Unpin',
     metabolites_count : '{{count}} metabolites',
     cofactors_count : '{{count}} cofactors',
     reactions_count : '{{count}} reactions',

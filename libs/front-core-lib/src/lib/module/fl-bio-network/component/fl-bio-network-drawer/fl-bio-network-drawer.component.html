@@ -11,11 +11,8 @@
     </mat-tab>
   </mat-tab-group>
 
-  <div fxLayout="row" fxLayoutAlign="end center" class="buttons">
-    <button mat-icon-button type="button" class="g-button-icon-small"
-            (click)="togglePin()" [matTooltip]="pinToggleText | translate">
-      <mat-icon [fontSet]="pinToggleIcon">push_pin</mat-icon>
-    </button>
+  <div fxLayout="row" fxLayoutAlign="end center" class="buttons g-button-icon-small">
+    <fl-pin-unpin-button [(pin)]="pinnedDrawer"></fl-pin-unpin-button>
 
     <button mat-icon-button type="button" tabindex="-1" (click)="closeDrawer()"
             [matTooltip]="'close' | translate" class="g-button-icon-small">

@@ -14,13 +14,18 @@ import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.modu
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {FlLoaderModule} from '../fl-loader/fl-loader.module';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
-import {FlSelectLanguageOptionsComponent} from './component/fl-select-language-options/fl-select-language-options.component';
+import {
+  FlSelectLanguageOptionsComponent
+} from './component/fl-select-language-options/fl-select-language-options.component';
 import {MatOptionModule} from '@angular/material/core';
 import {FlExternalLinkComponent} from './component/fl-external-link/fl-external-link.component';
-import {FlSelectUserCategoryOptionComponent} from './component/fl-select-user-category-option/fl-select-user-category-option.component';
+import {
+  FlSelectUserCategoryOptionComponent
+} from './component/fl-select-user-category-option/fl-select-user-category-option.component';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flCoreComponentI18n} from './i18n/fl-core-component.i18n';
 import {FlErrorTextComponent} from './component/fl-error-text/fl-error-text.component';
+import {FlPinUnpinButtonComponent} from './component/fl-pin-unpin-button/fl-pin-unpin-button.component';
 
 /**
  * Core modules containing components
@@ -35,6 +40,7 @@ import {FlErrorTextComponent} from './component/fl-error-text/fl-error-text.comp
     FlExternalLinkComponent,
     FlSelectUserCategoryOptionComponent,
     FlErrorTextComponent,
+    FlPinUnpinButtonComponent,
   ],
   exports: [
     FlBreadcrumbComponent,
@@ -44,6 +50,7 @@ import {FlErrorTextComponent} from './component/fl-error-text/fl-error-text.comp
     FlExternalLinkComponent,
     FlSelectUserCategoryOptionComponent,
     FlErrorTextComponent,
+    FlPinUnpinButtonComponent,
   ],
   imports: [
     CommonModule,

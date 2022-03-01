@@ -50,18 +50,6 @@ export class FlBioNetworkDrawerComponent implements OnInit, OnDestroy {
     this.drawerState.closeDrawer();
   }
 
-  togglePin(): void {
-    this.pinnedDrawer = !this.pinnedDrawer;
-  }
-
-  get pinToggleText(): string {
-    return this.pinnedDrawer ? 'flBioNetwork.unpin_drawer' : 'flBioNetwork.pin_drawer';
-  }
-
-  get pinToggleIcon(): string {
-    return this.pinnedDrawer ? 'material-icons' : 'material-icons-outlined';
-  }
-
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }

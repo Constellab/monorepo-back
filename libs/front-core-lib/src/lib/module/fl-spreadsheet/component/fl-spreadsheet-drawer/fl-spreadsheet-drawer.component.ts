@@ -15,7 +15,7 @@ import {FlTagWithColor} from '../../../fl-tag/fl-tag.class';
 })
 export class FlSpreadsheetDrawerComponent implements OnInit {
 
-  pinnedDrawer: boolean = false;
+  pinDrawer: boolean = false;
 
   columnTags$: Observable<Record<string, string[]>>;
   rowTags$: Observable<Record<string, string[]>>;
@@ -35,19 +35,6 @@ export class FlSpreadsheetDrawerComponent implements OnInit {
     this.rowTags$ = this.state.currentSheet$.pipe(
       map(sheet => sheet.getRowsTags())
     );
-  }
-
-  togglePin(): void {
-    this.pinnedDrawer = !this.pinnedDrawer;
-  }
-
-  get pinToggleText(): string {
-    // todo voir la trad
-    return this.pinnedDrawer ? 'flBioNetwork.unpin_drawer' : 'flBioNetwork.pin_drawer';
-  }
-
-  get pinToggleIcon(): string {
-    return this.pinnedDrawer ? 'material-icons' : 'material-icons-outlined';
   }
 
   updateRowTagColors(tags: FlTagWithColor[]): void {

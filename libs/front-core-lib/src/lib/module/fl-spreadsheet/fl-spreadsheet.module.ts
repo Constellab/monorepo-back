@@ -46,6 +46,7 @@ import {FlDrawerModule} from '../fl-drawer/fl-drawer.module';
 import {FlSpreadsheetDrawerComponent} from './component/fl-spreadsheet-drawer/fl-spreadsheet-drawer.component';
 import {FlSectionModule} from '../fl-section/fl-section.module';
 import {FlTagModule} from '../fl-tag/fl-tag.module';
+import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
 
 
 @NgModule({
@@ -80,6 +81,7 @@ import {FlTagModule} from '../fl-tag/fl-tag.module';
     FlDrawerModule,
     FlSectionModule,
     FlTagModule,
+    FlCoreComponentModule,
 
     ScrollingModule,
     MatMenuModule,
