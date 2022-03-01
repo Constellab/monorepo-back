@@ -20,9 +20,12 @@ export class FlSpreadsheetState implements OnDestroy {
   // list of sheet of cell objects
   private cellObjectSheets: Map<number, FlSheet> = new Map();
 
-  public init(spreadsheet: FlSpreadsheet): void {
+  public readOnly: boolean = false;
+
+  public init(spreadsheet: FlSpreadsheet, readOnly: boolean): void {
     this._spreadsheet = spreadsheet;
     this.lastSheetId = spreadsheet.sheets.length;
+    this.readOnly = readOnly;
   }
 
   public get spreadsheet(): FlSpreadsheet {

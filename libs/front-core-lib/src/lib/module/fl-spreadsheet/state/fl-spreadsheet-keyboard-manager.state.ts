@@ -7,6 +7,7 @@ import {FlSpreadsheetActionStore} from './fl-spreadsheet-action.store';
 import {FlSpreadsheetScrollState} from './fl-spreadsheet-scroll.state';
 import {FlDeviceHelper} from '../../../utils/fl-device.helper';
 import {FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
+import {FlSpreadsheetState} from './fl-spreadsheet.state';
 
 /**
  * Unique state shared across the spreadsheet to handle spreadsheet keyboard events
@@ -16,7 +17,8 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
 
   private keyboardListener: () => void;
 
-  constructor(private selectionState: FlSpreadsheetSelectionState,
+  constructor(private state: FlSpreadsheetState,
+              private selectionState: FlSpreadsheetSelectionState,
               private renderer: Renderer2, private ngZone: NgZone,
               private clipboardState: FlSpreadsheetClipboardState,
               private actionState: FlSpreadsheetActions,
@@ -105,6 +107,7 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
 
   // Handler for the DELETE key
   private handleDeleteKey(): void {
+    if (this.readOnly) return;
     const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
     if (selection != null) {
@@ -118,6 +121,7 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
   // Handler for printable keys
   // we pass the selected cell to the edit mode if not already
   private handlePrintableKeys(key: string): void {
+    if (this.readOnly) return;
     const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
     if (selection != null) {
@@ -131,14 +135,17 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
   }
 
   private handlePaste(): void {
+    if (this.readOnly) return;
     this.clipboardState.pasteClipboardValueToSelection();
   }
 
   private handleUndo(): void {
+    if (this.readOnly) return;
     this.actionStore.rollbackLastAction();
   }
 
   private handleRedo(): void {
+    if (this.readOnly) return;
     this.actionStore.redoLastAction();
   }
 
@@ -148,6 +155,10 @@ export class FlSpreadsheetKeyboardManagerState implements OnDestroy {
 
   private handleShiftArrow(rowShift: number, columnShift: number): void {
     this.selectionState.expandSelectionWithShift(rowShift, columnShift);
+  }
+
+  private get readOnly(): boolean {
+    return this.state.readOnly;
   }
 
   ngOnDestroy(): void {

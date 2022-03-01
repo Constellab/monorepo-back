@@ -1,8 +1,18 @@
 import {ElementRef, Injectable, NgZone, OnDestroy, Renderer2} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
-import {columnIdAttributeName, FlCell, headerIndexAttributeName, headerTypeAttributeName, rowIdAttributeName} from '../model/fl-cell.class';
-import {FlCellCoord, FlHeaderCellType, FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
+import {
+  columnIdAttributeName,
+  FlCell,
+  headerIndexAttributeName,
+  headerTypeAttributeName,
+  rowIdAttributeName
+} from '../model/fl-cell.class';
+import {
+  FlCellCoord,
+  FlHeaderCellType,
+  FlSheetSingleSelection
+} from '../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetContextMenu} from './fl-spreadsheet-context-menu.state';
 import {FlMouseButton} from '../../../utils/fl-keyboard.helper';
 import {FlSpreadsheetScrollState} from './fl-spreadsheet-scroll.state';
@@ -151,7 +161,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     const coord: FlCellCoord = this.mouseEventCellToCoord(cellEvent, currentSelection);
 
     // prevent row change if set
-    if(lockRow){
+    if (lockRow) {
       coord.row = currentSelection.endRow;
     }
 
@@ -188,6 +198,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
   }
 
   private onMouseDblClick(event: MouseEvent): void {
+    if (this.readOnly) return;
     const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
 
     if (cellEvent == null) {
@@ -314,6 +325,10 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     } else {
       return 0;
     }
+  }
+
+  private get readOnly(): boolean {
+    return this.state.readOnly;
   }
 
   ngOnDestroy(): void {

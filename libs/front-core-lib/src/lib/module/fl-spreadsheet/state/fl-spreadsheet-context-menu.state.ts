@@ -6,6 +6,7 @@ import {FlSpreadsheetChartState} from './fl-spreadsheet-chart.state';
 import {FlSpreadsheetClipboardState} from './fl-spreadsheet-clipboard.state';
 import {FlMenuDynamicService} from '../../fl-menu-dynamic/fl-menu-dynamic.service';
 import {FlMenuDynamic} from '../../fl-menu-dynamic/model/fl-menu-dynamic.class';
+import {FlSpreadsheetState} from './fl-spreadsheet.state';
 
 
 /**
@@ -14,7 +15,8 @@ import {FlMenuDynamic} from '../../fl-menu-dynamic/model/fl-menu-dynamic.class';
 @Injectable()
 export class FlSpreadsheetContextMenu {
 
-  constructor(private selectionState: FlSpreadsheetSelectionState,
+  constructor(private state: FlSpreadsheetState,
+              private selectionState: FlSpreadsheetSelectionState,
               private portalService: FlPortalService,
               private action: FlSpreadsheetActions,
               private chartState: FlSpreadsheetChartState,
@@ -38,54 +40,63 @@ export class FlSpreadsheetContextMenu {
    * Get config for the header column based on a selection
    */
   public getConfigForHeaderColumn(): FlMenuDynamic[] {
+    const readOnly = this.state.readOnly;
+    const menu = this.getCopyPasteConfig(readOnly);
 
-    return [
-      ...this.getCopyPasteConfig(),
-      // button to create a column
-      {
-        text: {text: 'flSpreadsheet.add', translateText: true},
-        icon: 'add',
-        onClick: () => this.action.addColumn()
-      },
-      // button to delete columns
-      {
-        text: {text: 'flSpreadsheet.delete', translateText: true},
-        icon: 'delete',
-        onClick: () => this.action.deleteColumns()
-      },
-      this.getCreateChartConfig(),
-    ];
+    if (!readOnly) {
+      menu.push(  // button to create a row
+        // button to create a column
+        {
+          text: {text: 'flSpreadsheet.add', translateText: true},
+          icon: 'add',
+          onClick: () => this.action.addColumn()
+        },
+        // button to delete columns
+        {
+          text: {text: 'flSpreadsheet.delete', translateText: true},
+          icon: 'delete',
+          onClick: () => this.action.deleteColumns()
+        }
+      );
+    }
+
+    menu.push(this.getCreateChartConfig());
+    return menu;
   }
 
   /**
    * Get config for the header row based on a selection
    */
   public getConfigForHeaderRow(): FlMenuDynamic[] {
-    return [
-      ...this.getCopyPasteConfig(),
-      // button to create a row
-      {
-        text: {text: 'flSpreadsheet.add', translateText: true},
-        icon: 'add',
-        onClick: () => this.action.addRow(),
-        divider: true,
-      },
-      // button to delete rows
-      {
-        text: {text: 'flSpreadsheet.delete', translateText: true},
-        icon: 'delete',
-        onClick: () => this.action.deleteRows()
-      },
-      this.getCreateChartConfig()
-    ];
+    const readOnly = this.state.readOnly;
+    const menu = this.getCopyPasteConfig(readOnly);
+
+    if (!readOnly) {
+      menu.push(  // button to create a row
+        {
+          text: {text: 'flSpreadsheet.add', translateText: true},
+          icon: 'add',
+          onClick: () => this.action.addRow(),
+          divider: true,
+        },
+        // button to delete rows
+        {
+          text: {text: 'flSpreadsheet.delete', translateText: true},
+          icon: 'delete',
+          onClick: () => this.action.deleteRows()
+        });
+    }
+
+    menu.push(this.getCreateChartConfig());
+    return menu;
   }
 
   /**
    * Get config for the header row based on a selection
    */
-  public getCellConfig(): FlMenuDynamic[] {
+  private getCellConfig(): FlMenuDynamic[] {
     return [
-      ...this.getCopyPasteConfig(),
+      ...this.getCopyPasteConfig(this.state.readOnly),
       this.getCreateChartConfig()
     ];
   }
@@ -99,20 +110,22 @@ export class FlSpreadsheetContextMenu {
     };
   }
 
-  private getCopyPasteConfig(): FlMenuDynamic[] {
-    return [
-      {
-        text: {text: 'flSpreadsheet.copy', translateText: true},
-        icon: 'content_copy',
-        onClick: () => this.clipboardState.copyCurrentSelectionToClipboard(),
-      },
-      {
+  private getCopyPasteConfig(readOnly: boolean): FlMenuDynamic[] {
+    const menu: FlMenuDynamic[] = [{
+      text: {text: 'flSpreadsheet.copy', translateText: true},
+      icon: 'content_copy',
+      onClick: () => this.clipboardState.copyCurrentSelectionToClipboard(),
+    }];
+
+    if (!readOnly) {
+      menu.push({
         text: {text: 'flSpreadsheet.paste', translateText: true},
         icon: 'content_paste',
         onClick: () => this.clipboardState.pasteClipboardValueToSelection()
-      },
+      });
+    }
 
-    ];
+    return menu;
   }
 
 

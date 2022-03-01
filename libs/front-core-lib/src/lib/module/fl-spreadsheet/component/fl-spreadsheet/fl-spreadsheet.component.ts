@@ -50,6 +50,8 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
   @Input() spreadsheet: FlSpreadsheet;
 
+  @Input() readOnly: boolean = false;
+
   @ViewChild('tableContainer', {static: true}) tableContainer: ElementRef<HTMLElement>;
   @ViewChild('scroller', {static: true}) scroller: ElementRef<HTMLElement>;
   @ViewChild('heightSimulator', {static: true}) heightSimulator: ElementRef<HTMLElement>;
@@ -68,7 +70,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.state.init(this.spreadsheet);
+    this.state.init(this.spreadsheet, this.readOnly);
     this.selectionState.init();
     this.keyboardState.init();
     this.mouseState.init();
