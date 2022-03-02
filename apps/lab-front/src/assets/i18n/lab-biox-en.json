@@ -155,6 +155,7 @@
     "update_resource_type_help": "You can update the type of the resource only if the resource is not used in an experiment",
     "resource_type_updated": "Resource type updated",
     "resource_type": "Resource type",
-    "print_report": "Print report"
+    "print_report": "Print report",
+    "documentation": "Documentation"
   }
 }
