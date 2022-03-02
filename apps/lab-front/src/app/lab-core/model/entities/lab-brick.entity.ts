@@ -59,3 +59,11 @@ export class LabBrickEntity extends LabEntity {
     return this.data?.messages.length ?? 0;
   }
 }
+
+/**
+ * List of basic gws bricks
+ */
+export enum LabBrickGWS {
+  GWS_CORE = 'gws_core'
+}
+

@@ -33,8 +33,7 @@ export class LabTypeSearch {
   public static getAdvancedSearchForm(): FormGroup<LabTypeSearchFields> {
     return new FormBuilder().group(
       {
-        brick: [null],
-        objectTypes: [null],
+        brick: [[]],
         text: [null],
         objectSubType: [null],
       }

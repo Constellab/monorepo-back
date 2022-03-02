@@ -11,17 +11,29 @@ import {
 import {LabTypeSearch, LabTypeSearchFields} from '../../model/lab-type-advanced-search.class';
 import {LabTypeEntity, LabTypeEntityDatasource} from '../../../../model/entities/lab-type/lab-type.entity';
 import {LabTypeService} from '../../../../entity-service/lab-type.service';
+import {LabBrickGWS} from '../../../../model/entities/lab-brick.entity';
 
 // list of predefined search of the resources
-const savedSearch: FlSavedSearch[] = [{
-  searchName: 'biox-resource',
-  id: null,
-  label: 'Core',
-  color: flThemeDetailLight.primary,
-  version: 1,
-  default: true,
-  filtersCriteria: {brick: ['gws_core']} as Partial<LabTypeSearchFields>
-}];
+const savedSearch: FlSavedSearch[] = [
+  {
+    searchName: 'biox-resource',
+    id: null,
+    label: 'All',
+    color: flThemeDetailLight.primary,
+    version: 1,
+    default: true,
+    filtersCriteria: {} as Partial<LabTypeSearchFields>
+  },
+  {
+    searchName: 'biox-resource',
+    id: null,
+    label: 'Core',
+    color: flThemeDetailLight.primary,
+    version: 1,
+    default: false,
+    filtersCriteria: {brick: [LabBrickGWS.GWS_CORE]} as Partial<LabTypeSearchFields>
+  }
+];
 
 /**
  * Configuration factory for the
