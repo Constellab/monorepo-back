@@ -1,0 +1,20 @@
+<fl-portal>
+
+  <fl-portal-content >
+
+    <fl-key-value *ngIf="hasTitle()">
+      <fl-key>{{'flSpreadsheet.header_name' | translate}}</fl-key>
+      {{headerInfo.name}}
+    </fl-key-value>
+
+    <div *ngIf="hasTags()" class="tags">
+      {{'flSpreadsheet.header_tags' | translate}}
+      <div *ngFor="let key of headerInfo.tags | flObjectKeys" class="g-text-small">
+        <fl-key-value>
+          <fl-key>{{key}}</fl-key>
+          {{headerInfo.tags[key]}}
+        </fl-key-value>
+      </div>
+    </div>
+  </fl-portal-content>
+</fl-portal>

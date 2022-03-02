@@ -42,7 +42,7 @@ export class FlTextEditorsManagerState {
   }
 
   public getState(element: HTMLElement): FlTextEditorState | null {
-    const parentElement = FlHtmlHelper.getParent(element, {tag: 'fl-text-editor'});
+    const parentElement = FlHtmlHelper.getParent(element, {tagName: 'fl-text-editor'});
 
     if (parentElement == null) return null;
 

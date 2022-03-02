@@ -1,5 +1,6 @@
 <div class="g-not-selectable g-text-centered container"
-     fxLayout="row" fxLayoutAlign="start center">
+     fxLayout="row" fxLayoutAlign="start center"
+     flMouseHover [flMouseEnterDelay]="500" (flMouseEnter)="openHeaderPortal()" (flMouseLeave)="closePortal()">
   <div class="index">{{index | flCellHeader:type}}</div>
 
   <div fxLayout="column" class="header-info">

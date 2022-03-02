@@ -48,6 +48,8 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     column_filters_no_tags: 'Aucun tags sur les colonnes',
     row_filters: 'Filtres sur lignes',
     row_filters_no_tags: 'Aucun tags sur les lignes',
+    header_name: 'Nom',
+    header_tags: 'Tags'
   }
 };
 
@@ -93,6 +95,8 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     column_filters_no_tags: 'No tags on columns',
     row_filters: 'Row filters',
     row_filters_no_tags: 'No tags on rows',
+    header_name: 'Name',
+    header_tags: 'Tags'
   }
 };
 

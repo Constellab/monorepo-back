@@ -47,6 +47,10 @@ import {FlSpreadsheetDrawerComponent} from './component/fl-spreadsheet-drawer/fl
 import {FlSectionModule} from '../fl-section/fl-section.module';
 import {FlTagModule} from '../fl-tag/fl-tag.module';
 import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
+import {
+  FlSpreadsheetHeaderInfoComponent
+} from './component/fl-spreadsheet-header-info/fl-spreadsheet-header-info.component';
+import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
 
 
 @NgModule({
@@ -61,6 +65,7 @@ import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.modu
     FlSpreadsheetChartSerieSelectionComponent,
     FlSpreadsheetSheetSelectionComponent,
     FlSpreadsheetDrawerComponent,
+    FlSpreadsheetHeaderInfoComponent,
   ],
   exports: [
     FlSpreadsheetComponent,
@@ -82,6 +87,7 @@ import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.modu
     FlSectionModule,
     FlTagModule,
     FlCoreComponentModule,
+    FlKeyValueModule,
 
     ScrollingModule,
     MatMenuModule,

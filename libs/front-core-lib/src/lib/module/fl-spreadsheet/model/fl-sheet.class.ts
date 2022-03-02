@@ -4,6 +4,7 @@ import {debounceTime, map} from 'rxjs/operators';
 import {FlCellCoord} from './selection/fl-sheet-single-selection.class';
 import {FlSheetHeader, FlSheetRow} from './fl-sheet-row.class';
 import {FlTagHelper} from '../../fl-tag/fl-tag.class';
+import {ClHelpService} from '@monorepo/core-lib';
 
 /**
  * Information about a row or a column in the sheet
@@ -134,8 +135,8 @@ export class FlSheet {
     return this.getHeaderInfo(this.columnsInfo, columnIndex);
   }
 
-  public getColumnTags(columnIndex: number): Record<string, string> {
-    return this.columnsInfo ? this.columnsInfo[columnIndex].tags : {};
+  public columnHasInfo(columnIndex: number): boolean {
+    return !this.headerInfoIsEmpty(this.columnsInfo[columnIndex] ?? {});
   }
 
   public getColumns$(): Observable<FlSheetHeader[]> {
@@ -261,6 +262,10 @@ export class FlSheet {
 
   public getRowInfo(rowIndex: number): FlSheetHeaderInfo {
     return this.getHeaderInfo(this.rowsInfo, rowIndex);
+  }
+
+  public rowHasInfo(rowIndex: number): boolean {
+    return !this.headerInfoIsEmpty(this.rowsInfo[rowIndex] ?? {});
   }
 
   ////////////////////////////// CELL ///////////////////////////////
@@ -389,6 +394,10 @@ export class FlSheet {
       return {name: null, tags: {}};
     }
     return headerInfos[index];
+  }
+
+  private headerInfoIsEmpty(headerInfo: FlSheetHeaderInfo): boolean {
+    return ClHelpService.isNullOrEmpty(headerInfo.name) && ClHelpService.isNullOrEmpty(headerInfo.tags);
   }
 
   public destroy(): void {

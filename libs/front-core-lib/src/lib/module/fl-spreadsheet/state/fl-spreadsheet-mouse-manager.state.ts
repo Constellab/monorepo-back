@@ -16,6 +16,7 @@ import {
 import {FlSpreadsheetContextMenu} from './fl-spreadsheet-context-menu.state';
 import {FlMouseButton} from '../../../utils/fl-keyboard.helper';
 import {FlSpreadsheetScrollState} from './fl-spreadsheet-scroll.state';
+import {FlHtmlHelper} from '../../../utils/fl-html.helper';
 
 type MouseEventCell = CellEvent | HeaderCellEvent;
 
@@ -23,12 +24,14 @@ interface CellEvent {
   type: 'cell';
   coord: FlCellCoord;
   cell: FlCell;
+  element: HTMLElement;
 }
 
 interface HeaderCellEvent {
   type: 'header';
   headerType: FlHeaderCellType;
   index: number;
+  element: HTMLElement;
 }
 
 /**
@@ -63,6 +66,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
 
     // run event listener outside angular zone to prevent automatic change detection
     this.ngZone.runOutsideAngular(() => {
+
       this.mouseDownListener = this.renderer.listen(this.elementRef.nativeElement, 'mousedown',
         (event: MouseEvent) => this.onMouseDown(event));
 
@@ -250,27 +254,24 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     }
   }
 
-
   private getCellFromMouseEventTarget(event: MouseEvent): MouseEventCell | null {
-    const targets: Element[] = event.composedPath() as any;
+    // search if this is a cell
+    let element = FlHtmlHelper.getParent(event.target as any, {tagName: 'FL-SPREADSHEET-CELL'});
+    if (element) {
+      return this.getCellFromHTMLElement(element);
+    }
 
-    for (const target of targets) {
-      if (target.tagName === 'TABLE') {
-        break;
-      }
-
-      if (target.tagName === 'FL-SPREADSHEET-CELL') {
-        return this.getCellFromHTMLElement(target);
-      } else if (target.tagName === 'FL-SPREADSHEET-HEADER-CELL') {
-        return this.getHeaderCellFromHTMLElement(target);
-      }
+    // search if this is a header cell
+    element = FlHtmlHelper.getParent(event.target as any, {tagName: 'FL-SPREADSHEET-HEADER-CELL'});
+    if (element) {
+      return this.getHeaderCellFromHTMLElement(element);
     }
 
     return null;
   }
 
   // returns cell based on a html element : FL-SPREADSHEET-CELL
-  private getCellFromHTMLElement(element: Element): CellEvent {
+  private getCellFromHTMLElement(element: HTMLElement): CellEvent {
     const row: number = parseInt(element.getAttribute(rowIdAttributeName));
     const column: number = parseInt(element.getAttribute(columnIdAttributeName));
 
@@ -280,12 +281,13 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
       coord: {
         row: row,
         column: column
-      }
+      },
+      element: element
     };
   }
 
   // returns header cell info based on a html element : FL-SPREADSHEET-HEADER-CELL
-  private getHeaderCellFromHTMLElement(element: Element): HeaderCellEvent {
+  private getHeaderCellFromHTMLElement(element: HTMLElement): HeaderCellEvent {
     const index: number = parseInt(element.getAttribute(headerIndexAttributeName));
     const type: FlHeaderCellType = element.getAttribute(headerTypeAttributeName) as FlHeaderCellType;
 
@@ -293,6 +295,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
       type: 'header',
       headerType: type,
       index: index,
+      element: element
     };
   }
 

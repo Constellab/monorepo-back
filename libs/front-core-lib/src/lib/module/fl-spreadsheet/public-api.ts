@@ -8,6 +8,7 @@ export * from './component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-s
 export * from './component/fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
 export * from './component/fl-spreadsheet-drawer/fl-spreadsheet-drawer.component';
 export * from './component/fl-spreadsheet-header-cell/fl-spreadsheet-header-cell.component';
+export * from './component/fl-spreadsheet-header-info/fl-spreadsheet-header-info.component'
 export * from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
 export * from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
 

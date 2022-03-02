@@ -56,16 +56,17 @@ export class FlHtmlHelper {
    * @param element
    * @param parent provide one of the field to search
    */
-  public static getParent(element: HTMLElement, parent: { element?: HTMLElement, class?: string, tag?: string }): HTMLElement | null {
+  public static getParent(element: HTMLElement,
+                          parent: { element?: HTMLElement, className?: string, tagName?: string }): HTMLElement | null {
     let current: HTMLElement = element;
 
     while (current != null && current.tagName !== 'BODY') {
       if (parent.element) {
         if (current === parent.element) return current;
-      } else if (parent.tag) {
-        if (current.tagName === parent.tag.toUpperCase()) return current;
-      } else if (parent.class) {
-        if (current.classList.contains(parent.class)) return current;
+      } else if (parent.tagName) {
+        if (current.tagName === parent.tagName.toUpperCase()) return current;
+      } else if (parent.className) {
+        if (current.classList.contains(parent.className)) return current;
       }
       current = current.parentElement;
     }
