@@ -1,20 +1,14 @@
 import {LabConfigSpecs} from '../lab-config-spec.entity';
 import {LabTypeEntity} from './lab-type.entity';
 import {LabIOSpec} from '../lab-io.entity';
-import {LabTypingName} from '../lab-typing-name.class';
 
 
 export abstract class LabProcessType extends LabTypeEntity {
 
-  doc ?: string;
-
-  // return true if the process is a Source
-  isPlugSource(): boolean {
-    return this.typingName === LabTypingName.task.source;
-  }
+  type: LabProcessTypeDetail;
 
   hasDocumentation(): boolean {
-    return this.doc != null;
+    return this.type?.doc != null ?? false;
   }
 
 
@@ -34,11 +28,27 @@ export abstract class LabProcessType extends LabTypeEntity {
     return config != null && config.hasConfigs();
   }
 
-  abstract getInputSpecs(): Record<string, LabIOSpec>;
+  getConfigSpecs(): LabConfigSpecs {
+    return this.type?.getConfigSpecs() ?? LabConfigSpecs.empty();
+  }
 
-  abstract getOutputSpecs(): Record<string, LabIOSpec>;
+  getInputSpecs(): Record<string, LabIOSpec> {
+    return this.type?.getInputSpecs() ?? {};
+  }
 
-  abstract getConfigSpecs(): LabConfigSpecs;
+  getOutputSpecs(): Record<string, LabIOSpec> {
+    return this.type?.getOutputSpecs() ?? {};
+  }
 
 }
 
+export interface LabProcessTypeDetail {
+
+  doc?: string;
+
+  getInputSpecs(): Record<string, LabIOSpec>;
+
+  getOutputSpecs(): Record<string, LabIOSpec>;
+
+  getConfigSpecs(): LabConfigSpecs;
+}

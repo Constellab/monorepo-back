@@ -6,6 +6,8 @@ export type LabTypeObjectType = 'TASK' | 'RESOURCE' | 'PROTOCOL' | 'MODEL';
 
 export type LabTypeObjectSubType = 'TASK' | 'PROTOCOL' | 'TRANSFORMER' | 'IMPORTER' | 'EXPORTER';
 
+export type LabTypeObjectStatus = 'SUCCESS' | 'TYPE_UNAVAILABLE';
+
 export class LabTypeEntity extends LabBaseEntity {
   @Expose({name: 'object_type'})
   objectType: LabTypeObjectType;
@@ -24,6 +26,8 @@ export class LabTypeEntity extends LabBaseEntity {
 
   @Expose({name: 'object_sub_type'})
   objectSubType: LabTypeObjectSubType;
+
+  status: LabTypeObjectStatus;
 
   get name(): string {
     return this.humanName || this.modelName;

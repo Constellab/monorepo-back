@@ -1,12 +1,11 @@
 import {Type} from 'class-transformer';
 import {LabProtocolGraph} from '../process/lab-protocol.entity';
-import {LabProcessType} from './lab-process-type.entity';
+import {LabProcessType, LabProcessTypeDetail} from './lab-process-type.entity';
 import {LabConfigSpecs} from '../lab-config-spec.entity';
 import {LabProtocolLink, LabProtocolLinkPart} from '../lab-protocol-link.entity';
 import {LabIOSpec} from '../lab-io.entity';
 
-
-export class LabProtocolType extends LabProcessType {
+export class LabProtocolTypeDetail implements LabProcessTypeDetail {
 
   @Type(() => LabProtocolGraph)
   graph: LabProtocolGraph;
@@ -48,6 +47,11 @@ export class LabProtocolType extends LabProcessType {
 
     return outputSpecs;
   }
+}
+
+export class LabProtocolType extends LabProcessType {
+  @Type(() => LabProtocolTypeDetail)
+  type: LabProtocolTypeDetail;
 }
 
 

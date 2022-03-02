@@ -17,6 +17,12 @@ import {LabConfigValues} from './lab-config.entity';
 export class LabConfigSpecs extends ClRecordWrapper<LabConfigSpec> {
   record: Record<string, LabConfigSpec>;
 
+  public static empty(): LabConfigSpecs {
+    const config = new LabConfigSpecs();
+    config.record = {};
+    return config;
+  }
+
   /**
    * Method to convert the ConfigSpec to a FlDynamicFormFieldConfig to create a form
    */
