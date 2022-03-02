@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ComponentFactoryResolver,
   ComponentRef,
   Input,
   OnDestroy,
@@ -37,12 +36,11 @@ export class FlDynamicAbstractFormComponent implements OnInit, OnDestroy {
   private viewComponentRef: ComponentRef<FlDynamicAbstractFormDirective>;
 
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) {
+  constructor() {
   }
 
   ngOnInit(): void {
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.getComponentType());
-    this.viewComponentRef = this.viewContainer.createComponent(componentFactory);
+    this.viewComponentRef = this.viewContainer.createComponent(this.getComponentType());
     this.viewComponentRef.instance.config = this.config;
     this.viewComponentRef.instance.control = this.control;
   }

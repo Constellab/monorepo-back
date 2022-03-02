@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  ComponentFactoryResolver,
   ComponentRef,
   Inject,
   OnInit,
@@ -70,8 +69,7 @@ export class LabImportResourceDialogComponent implements OnInit {
               private resourceService: LabResourceService,
               private routerService: LabRouterService,
               private snackBarService: FlSnackBarService,
-              private cdr: ChangeDetectorRef,
-              private componentFactoryResolver: ComponentFactoryResolver) {
+              private cdr: ChangeDetectorRef) {
     this.resourceHumanName = input.resourceHumanName;
   }
 
@@ -126,8 +124,7 @@ export class LabImportResourceDialogComponent implements OnInit {
 
     // build the component manually for force it to reload
     this.viewComponentRef?.destroy();
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(LabConfigureSpecsFormComponent);
-    this.viewComponentRef = this.viewContainer.createComponent(componentFactory);
+    this.viewComponentRef = this.viewContainer.createComponent(LabConfigureSpecsFormComponent);
     this.viewComponentRef.instance.configData = this.configData;
   }
 
@@ -157,7 +154,7 @@ export class LabImportResourceDialogComponent implements OnInit {
   }
 
   private callImportSuccess(resource: LabResource): void {
-    this.snackBarService.openSuccessMessage({text:'biox.resource_imported',  translateText: true});
+    this.snackBarService.openSuccessMessage({text: 'biox.resource_imported', translateText: true});
     this.routerService.navigateToResourceDetail(resource.id);
     this.dialogRef.close();
   }

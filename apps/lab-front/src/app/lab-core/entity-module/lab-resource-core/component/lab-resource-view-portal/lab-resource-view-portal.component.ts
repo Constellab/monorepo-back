@@ -1,4 +1,4 @@
-import {Component, ComponentFactoryResolver, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {FL_PORTAL_DATA, FlCoord} from '@monorepo/front-core-lib';
 import {Subject} from 'rxjs';
@@ -18,11 +18,10 @@ export class LabResourceViewPortalComponent implements OnInit {
 
   private size$ = new Subject<FlCoord>();
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver,
-              @Inject(FL_PORTAL_DATA) private input: LabResourceView) {
+  constructor(@Inject(FL_PORTAL_DATA) private input: LabResourceView) {
     this.view = input;
 
-    if(input.type === 'multi-view'){
+    if (input.type === 'multi-view') {
       this.width = 'min(1000px, 90vw)';
       this.height = 'min(1000px, 90vh)';
     }
@@ -33,7 +32,7 @@ export class LabResourceViewPortalComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.size$.next({x: 400, y: 400})
+    this.size$.next({x: 400, y: 400});
   }
 
 }

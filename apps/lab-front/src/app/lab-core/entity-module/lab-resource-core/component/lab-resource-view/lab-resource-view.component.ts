@@ -1,13 +1,4 @@
-import {
-  Component,
-  ComponentFactoryResolver,
-  ComponentRef,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  ViewContainerRef
-} from '@angular/core';
+import {Component, ComponentRef, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {
   labConstResourceViewTypeInfos,
   LabResourceView,
@@ -83,7 +74,7 @@ export class LabResourceViewComponent implements OnInit, OnDestroy {
   viewNotSupportedError: boolean = false;
 
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) {
+  constructor() {
   }
 
   ngOnInit(): void {
@@ -104,8 +95,7 @@ export class LabResourceViewComponent implements OnInit, OnDestroy {
     }
     this.viewNotSupportedError = false;
 
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
-    this.viewComponentRef = this.viewContainer.createComponent(componentFactory);
+    this.viewComponentRef = this.viewContainer.createComponent(componentType);
     this.viewComponentRef.instance.view = view;
     this.viewComponentRef.instance.fullscreen = this.fullscreen;
   }
