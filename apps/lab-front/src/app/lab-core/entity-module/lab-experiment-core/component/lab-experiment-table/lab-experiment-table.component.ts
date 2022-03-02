@@ -17,7 +17,7 @@ export class LabExperimentTableComponent extends FlPaginatedTableAbstractDirecti
 
 
   constructor() {
-    super(['score', 'status', 'createdAt', 'tags']);
+    super(['title', 'score', 'status', 'createdAt', 'tags']);
   }
 
   ngOnInit(): void {

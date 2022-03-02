@@ -1,6 +1,23 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
 
-  <!-- score -->
+  <!-- Title -->
+  <ng-container matColumnDef="title">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'title' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let experiment">
+      <div>
+        <div class="name">{{experiment.title}}</div>
+        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="experiment.project"
+                      gap="0">
+          <mat-icon flIcon="project" class="g-icon-tiny"></mat-icon>
+          {{experiment.project.title}}
+        </fl-text-icon>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- score-->
   <ng-container matColumnDef="score">
     <mat-header-cell *matHeaderCellDef>
       <span>{{'biox.score' | translate}}</span>
@@ -26,13 +43,16 @@
     </mat-cell>
   </ng-container>
 
-  <!-- Datetime -->
+  <!-- Created -->
   <ng-container matColumnDef="createdAt">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'datetime' | translate}}</span>
+      <span>{{'creation_info' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let experiment">
-      <span>{{experiment.createdAt | flDate}}</span>
+      <fl-creation-info [createdAt]="experiment.createdAt"
+                        [createdBy]="experiment.createdBy.fullname"
+                        class="g-text-small">
+      </fl-creation-info>
     </mat-cell>
   </ng-container>
 

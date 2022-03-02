@@ -8,7 +8,6 @@ import {
   FlStatusTransform
 } from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
-import {LabProject} from './lab-project.class';
 import {LabTag} from './lab-tag.entity';
 import {LabBaseEntityWithUser} from './lab-user.entity';
 
@@ -59,14 +58,16 @@ export class LabExperiment extends LabBaseEntityWithUser {
   @Expose({name: 'is_validated'})
   isValidated: boolean;
 
-  @Type(() => LabProject)
-  project: LabProject;
+  project: {
+    id: string;
+    title: string;
+  };
 
   @Type(() => LabTag)
   tags: LabTag[];
 
   isEditable(): boolean {
-    return !this.isArchived && !this.isValidated && !this.isRunning() && this.status.value !== 'IN_QUEUE' ;
+    return !this.isArchived && !this.isValidated && !this.isRunning() && this.status.value !== 'IN_QUEUE';
   }
 
   isRunning(): boolean {
@@ -79,5 +80,5 @@ export type LabExperimentDatasource = FlEntityPaginatedDatasource<LabExperiment>
 // form object to create an experiment
 export interface LabExperimentSimpleForm {
   title: string;
-  project: LabProject;
+  project: LabEntity;
 }

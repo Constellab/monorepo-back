@@ -6,6 +6,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabExperimentService} from '../../../../entity-service/lab-experiment.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {Validators} from '@angular/forms';
+import {LabEntity} from '../../../../model/global/lab-entity.entity';
 
 export interface LabValidateObjectDialogInput {
   title: string;
@@ -16,7 +17,7 @@ export interface LabValidateObjectDialogInput {
 
   successMessage: string;
 
-  project?: LabProject;
+  project?: LabEntity;
 }
 
 /**
@@ -33,7 +34,7 @@ export class LabValidateObjectDialogComponent implements OnInit {
   title: string;
   helpText: string;
 
-  formControl: FormControl<LabProject>;
+  formControl: FormControl;
 
   isLoading: boolean = false;
 
@@ -50,7 +51,7 @@ export class LabValidateObjectDialogComponent implements OnInit {
   }
 
   private initFormControl(): void {
-    this.formControl = new FormControl<LabProject>(this.dialogInput.project, Validators.required);
+    this.formControl = new FormControl(this.dialogInput.project, Validators.required);
   }
 
   submit(): void {
@@ -69,7 +70,7 @@ export class LabValidateObjectDialogComponent implements OnInit {
 
   private validateSuccess(object: any): void {
     this.isLoading = false;
-    this.snackBarService.openSuccessMessage({text:this.dialogInput.successMessage,  translateText: true});
+    this.snackBarService.openSuccessMessage({text: this.dialogInput.successMessage, translateText: true});
     this.dialogRef.close(object);
   }
 
