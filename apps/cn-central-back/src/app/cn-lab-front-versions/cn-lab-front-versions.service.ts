@@ -35,26 +35,11 @@ export class CnLabFrontVersionsService extends CnAbstractService<CnLabFrontVersi
   }
 
   private async checkBeforeSave(entity: CnLabFrontVersion): Promise<void> {
-    const existing = await this.findByVersion(entity.major, entity.minor, entity.patch);
+    const existing = await this.findByGwsCoreVersionId(entity.gwsCoreBrickVersion.id);
     if (existing && entity.id !== existing.id) {
-      throw new BadRequestException(`The front version '${entity.version}' already exists`);
-    }
-
-    const existing2 = await this.findByGwsCoreVersionId(entity.gwsCoreBrickVersion.id);
-    if (existing2 && entity.id !== existing2.id) {
       // eslint-disable-next-line max-len
-      throw new BadRequestException(`The gws core version '${entity.gwsCoreBrickVersion.version}' is already attached to the front '${existing2.version}'`);
+      throw new BadRequestException(`The gws core version '${entity.gwsCoreBrickVersion.version}' is already attached to the front '${existing.version}'`);
     }
-  }
-
-  private findByVersion(major: number, minor: number, patch: number): Promise<CnLabFrontVersion | null> {
-    return this.repository.findOne({
-      where: {
-        major: major,
-        minor: minor,
-        patch: patch
-      }
-    });
   }
 
   private findByGwsCoreVersionId(gwsCoreBrickVersionId: string): Promise<CnLabFrontVersion | null> {

@@ -9,7 +9,6 @@ import {Exclude, Expose} from 'class-transformer';
  * The version is linked to the gws_core brick version. This is managed by admins
  */
 @Unique(['gwsCoreBrickVersion'])
-@Unique(['major', 'minor', 'patch'])
 @Entity('lab_front_version')
 export class CnLabFrontVersion extends CnBaseEntity {
 
