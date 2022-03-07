@@ -1,6 +1,7 @@
 .brickCard{
   height: 10em;
-  padding-top: 1em;
+  width: 100%;
+  padding-top: 0.5em;
   background-color: var(--card-background);
 }
 
@@ -19,4 +20,12 @@
 
 .button-add-version{
   float: right;
+}
+
+.test{
+  height: 3em
+}
+
+.articleSec{
+  height: 7em;
 }

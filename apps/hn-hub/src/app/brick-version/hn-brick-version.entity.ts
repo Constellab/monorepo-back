@@ -21,8 +21,6 @@ export class HnNewVersionDTO {
 
   version: string;
 
-  commit?: string;
-
   repoType: HnRepoType;
 }
 
@@ -39,26 +37,14 @@ export class HnBrickVersion extends HnBaseEntity {
   @Column({type: 'enum', enum: HnRepoType, nullable: false})
   repoType: HnRepoType;
 
-  @Column({nullable: true})
-  commitRef: string;
-
   @BlNotUpdatable()
   @ManyToOne(() => HnBrickMajorVersion, {eager: true, onDelete: "CASCADE"})
   brickMajorVersion: HnBrickMajorVersion;
 
-  initialize(brickMajorVersion: HnBrickMajorVersion, version: number[], repoType?: HnRepoType, commitRef?: string): void{
+  initialize(brickMajorVersion: HnBrickMajorVersion, version: number[], repoType?: HnRepoType): void{
     this.brickMajorVersion = brickMajorVersion;
     this.version = new CmVersion(version[0], version[1], version[2]);
-    if(repoType){
-      this.repoType = repoType;
-      if(this.repoType == HnRepoType.GIT){
-        if(commitRef){
-          this.commitRef = commitRef;
-        } else {
-          throw new BadRequestException('Could not create a new git version without commit ref.')
-        }
-      }
-    }
+    this.repoType = repoType;
   }
 
   // Default : '1.0.0'

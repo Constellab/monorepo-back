@@ -26,16 +26,6 @@
         {{'type_of_repository' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
-
-    <!--  commit  -->
-    <mat-form-field class="g-no-hint" *ngIf="formGp.value.repoType == 'GIT'">
-      <mat-label>{{'commit_hash' | translate}}</mat-label>
-      <input matInput formControlName="commit" required flInputMaxLength="50"
-             placeholder="{{'commit_hash' | translate}}">
-      <mat-error *ngIf="formGp.get('commit').hasError('required')">
-        {{'commit_hash' | flErrorRequired}}
-      </mat-error>
-    </mat-form-field>
   </form>
 </mat-dialog-content>
 

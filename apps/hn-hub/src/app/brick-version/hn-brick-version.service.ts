@@ -5,18 +5,22 @@ import {Repository} from 'typeorm';
 import {HnBrick} from '../brick/hn-brick.entity';
 import {HnNode} from '../folder/hn-folder.entity';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {BlTransportService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlTransportService} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
+import {ClPageI} from '@monorepo/core-lib';
+import {HnBrickService} from '../brick/hn-brick.service';
 
 @Injectable()
-export class HnBrickVersionService {
+export class HnBrickVersionService extends BlAbstractService<HnBrickVersion>{
 
   constructor(
     @InjectRepository(HnBrickVersion)
     private brickVersionsRepository: Repository<HnBrickVersion>,
     private transportService: BlTransportService
+
   ) {
+    super(brickVersionsRepository, HnBrickVersion);
   }
 
   async create(brickVersion: HnBrickVersion): Promise<HnBrickVersion> {
@@ -44,7 +48,7 @@ export class HnBrickVersionService {
   async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO): Promise<void> {
     const newBrickVersion: HnBrickVersion = new HnBrickVersion();
     let version: number[] = newVersion.version.split('.').map(x => +x);
-    newBrickVersion.initialize(brickMajorVersion, version, newVersion.repoType, newVersion.commit);
+    newBrickVersion.initialize(brickMajorVersion, version, newVersion.repoType);
     await this.create(newBrickVersion);
   }
 
@@ -97,10 +101,28 @@ export class HnBrickVersionService {
         minor: brickVersion.minor,
         patch: brickVersion.patch,
         versionState: brickVersion.brickMajorVersion.versionState,
-        repoType: brickVersion.repoType,
-        commitRef: brickVersion.commitRef,
+        repoType: brickVersion.repoType
       }]
     };
     this.transportService.emit('brick', brick);
   }
+
+  async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>>{
+    console.log(brickId);
+    return this.findPaginated(page, size, {
+      where: {
+        brickMajorVersion: {
+          brick : {
+            id: brickId
+          },
+        }
+      },
+      order: {
+        lastModifiedBy: 'DESC'
+      },
+      relations: ['brickMajorVersion']
+    }
+  );
+  }
+
 }

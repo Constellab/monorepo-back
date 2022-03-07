@@ -17,5 +17,4 @@ export interface HnBrickVersionTransportDto {
   patch: number;
   versionState: HnVersionState;
   repoType: HnRepoType;
-  commitRef: string; // provided if repoType === GIT
 }

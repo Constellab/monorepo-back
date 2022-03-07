@@ -1,0 +1,33 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+
+  <!-- GWS_CORE -->
+  <ng-container matColumnDef="version">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'gws_core_brick_version' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let version">
+      <div>
+        {{version.brickMajorVersion.major}}.{{version.minor}}.{{version.patch}}
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Last modified -->
+  <ng-container matColumnDef="lastModified">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'last_modification_info' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let labFrontVersion">
+      <fl-last-modification-info [lastModifiedBy]="labFrontVersion.lastModifiedBy?.fullname"
+                                 [lastModifiedAt]="labFrontVersion.lastModifiedAt">
+      </fl-last-modification-info>
+    </mat-cell>
+  </ng-container>
+
+
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: _columns;"></mat-row>
+</mat-table>
+
