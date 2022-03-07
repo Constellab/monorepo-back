@@ -1,5 +1,4 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
-import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
 import {CnLabFrontVersion} from './cn-lab-front-version.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
@@ -8,9 +7,10 @@ import {CmVersion} from '@monorepo/common-model';
 import {ClPageI} from '@monorepo/core-lib';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
 import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
+import {BlAbstractService} from '@monorepo/back-core-lib';
 
 @Injectable()
-export class CnLabFrontVersionsService extends CnAbstractService<CnLabFrontVersion> {
+export class CnLabFrontVersionsService extends BlAbstractService<CnLabFrontVersion> {
 
   constructor(@InjectRepository(CnLabFrontVersion) private repository: Repository<CnLabFrontVersion>,
               private brickService: CnBricksService) {

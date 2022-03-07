@@ -1,5 +1,4 @@
 import {BadRequestException, forwardRef, Inject, Injectable} from '@nestjs/common';
-import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
 import {CnReport} from './cn-report.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
@@ -7,13 +6,13 @@ import {CnCreateReportDto} from './cn-report.dto';
 import {CnExperimentsService} from '../cn-experiments/cn-experiments.service';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
-import {BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {CmRichText} from '@monorepo/common-model';
 import {IncomingMessage} from 'http';
 import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
-export class CnReportsService extends CnAbstractService<CnReport> {
+export class CnReportsService extends BlAbstractService<CnReport> {
 
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
               @Inject(forwardRef(() => CnExperimentsService)) private experimentService: CnExperimentsService,

@@ -6,11 +6,11 @@ import {CnCreateLabExperimentDto} from './cn-experiment.dto';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnReportsService} from '../cn-reports/cn-reports.service';
-import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
 import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
+import {BlAbstractService} from '@monorepo/back-core-lib';
 
 @Injectable()
-export class CnExperimentsService extends CnAbstractService<CnExperiment> {
+export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
   constructor(@InjectRepository(CnExperiment) private repository: Repository<CnExperiment>,
               private reportService: CnReportsService,

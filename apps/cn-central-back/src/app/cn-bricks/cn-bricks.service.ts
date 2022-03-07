@@ -1,14 +1,14 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
-import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
 import {CnBrick} from './cn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {CnBrickVersion} from './cn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
 import {CnBrickSaveDTO} from './cn-brick.dto';
+import {BlAbstractService} from '@monorepo/back-core-lib';
 
 @Injectable()
-export class CnBricksService extends CnAbstractService<CnBrick> {
+export class CnBricksService extends BlAbstractService<CnBrick> {
 
   constructor(@InjectRepository(CnBrick) private brickRepo: Repository<CnBrick>,
               @InjectRepository(CnBrickVersion) private brickVersionRepo: Repository<CnBrickVersion>) {

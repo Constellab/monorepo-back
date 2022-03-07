@@ -1,11 +1,11 @@
 import {Injectable} from '@nestjs/common';
-import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
 import {CnGroup} from './cn-group.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
+import {BlAbstractService} from '@monorepo/back-core-lib';
 
 @Injectable()
-export class CnGroupsService extends CnAbstractService<CnGroup> {
+export class CnGroupsService extends BlAbstractService<CnGroup> {
 
   constructor(@InjectRepository(CnGroup) private repository: Repository<CnGroup>) {
     super(repository, CnGroup);

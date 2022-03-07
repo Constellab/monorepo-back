@@ -2,14 +2,13 @@ import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnUser} from './cn-user.entity';
 import {Repository} from 'typeorm';
-import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {clLangIsSupported, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
-import {BlUserService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlUserService} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
-export class CnUsersService extends CnAbstractService<CnUser> implements BlUserService {
+export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService {
 
   constructor(
     @InjectRepository(CnUser) private repository: Repository<CnUser>) {

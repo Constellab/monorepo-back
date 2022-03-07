@@ -1,12 +1,13 @@
-import {CnAbstractService} from './cn-abstract.service';
 import {Body, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
-import {BlEntityWithId, BlParsePipe} from '@monorepo/back-core-lib';
+import {BlParsePipe} from '../pipes/bl-parse-pipe.service';
+import {BlAbstractService} from './bl-abstract.service';
+import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
 
 export abstract class CnAbstractController<T extends BlEntityWithId> {
 
   private readonly parsePipe: BlParsePipe<T>;
 
-  protected constructor(private abstractService: CnAbstractService<T>,
+  protected constructor(private abstractService: BlAbstractService<T>,
                         private classReference: new() => T) {
     this.parsePipe = new BlParsePipe<T>(classReference);
   }

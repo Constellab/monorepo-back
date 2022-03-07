@@ -2,16 +2,12 @@ import {DeleteResult, EntityManager, Repository} from 'typeorm';
 import {BadRequestException, NotFoundException} from '@nestjs/common';
 import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
 import {FindManyOptions} from 'typeorm/find-options/FindManyOptions';
-import {CnErrorText} from '../model/config/cn-error-text.class';
-import {
-  BlEntityWithId,
-  BlPersistenceAction,
-  BlPersistenceLogger,
-  blPropertyIsNotUpdatable
-} from '@monorepo/back-core-lib';
 import {ClPage, ClPageI} from '@monorepo/core-lib';
+import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
+import {BlPersistenceAction, BlPersistenceLogger} from './bl-persistence-logger';
+import {blPropertyIsNotUpdatable} from '../decorators/bl-not-updatable.decorator';
 
-export abstract class CnAbstractService<T extends BlEntityWithId> {
+export abstract class BlAbstractService<T extends BlEntityWithId> {
 
   private readonly maxPageSize: number = 50;
 
@@ -80,7 +76,7 @@ export abstract class CnAbstractService<T extends BlEntityWithId> {
 
   findById(id: string, options?: FindOneOptions<T>, entityManager?: EntityManager): Promise<T | null> {
     if (id == null) {
-      throw new BadRequestException(CnErrorText.ID_NOT_PROVIDED);
+      throw new BadRequestException('Id not provided');
     }
 
     return this.getEntityManager(entityManager).findOne(this.entityClass, id, options);

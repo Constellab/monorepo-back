@@ -1,5 +1,4 @@
 import {Injectable} from '@nestjs/common';
-import {CnAbstractService} from '../cn-core/class/cn-abstract.service';
 import {CnLabConfig} from './cn-lab-config.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {getManager, Repository} from 'typeorm';
@@ -10,9 +9,10 @@ import {ClHelpService} from '@monorepo/core-lib';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
 import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
 import {CmVersion} from '@monorepo/common-model';
+import {BlAbstractService} from '@monorepo/back-core-lib';
 
 @Injectable()
-export class CnLabConfigsService extends CnAbstractService<CnLabConfig> {
+export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
   constructor(@InjectRepository(CnLabConfig) private repository: Repository<CnLabConfig>,
               private brickService: CnBricksService) {

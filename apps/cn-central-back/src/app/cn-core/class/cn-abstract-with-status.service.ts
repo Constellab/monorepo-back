@@ -1,17 +1,17 @@
 import {CnStatusHistory} from '../model/entities/cn-status-history.entity';
 import {EntityManager, getManager, Repository} from 'typeorm';
-import {CnAbstractService} from './cn-abstract.service';
 import {CnEntityWithStatus} from '../model/entities/cn-entity-with-status.entity';
 import {BadRequestException} from '@nestjs/common';
 import {CnErrorText} from '../model/config/cn-error-text.class';
 import {ClDateHelper} from '@monorepo/core-lib';
+import {BlAbstractService} from '@monorepo/back-core-lib';
 
 /**
  * Service for {@link CnEntityWithStatus}
  * It contains a method to update the current status of the entity
  */
 export abstract class CnAbstractWithStatusService<T extends CnEntityWithStatus<CnStatusHistory<S>>, S>
-  extends CnAbstractService<T> {
+  extends BlAbstractService<T> {
 
   protected constructor(private entityRepo: Repository<T>,
                         entityClass: new() => T,
