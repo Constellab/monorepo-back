@@ -18,7 +18,9 @@ import {
   BlLoggerConfig,
   BlRequestContextMiddleware,
   BlTransportModule,
-  BlTransportModuleConfig
+  BlTransportModuleConfig,
+  BlObjectStorageModule,
+  BlObjectStorageModuleConfig,
 } from '@monorepo/back-core-lib';
 import {HnCoreModule} from './app/core/hn-core.module';
 import {HnUserService} from './app/users/hn-user.service';
@@ -70,6 +72,10 @@ function configureTransportModule(configService: HnCoreConfigService): BlTranspo
   return configService.getTransportModuleConfig();
 }
 
+function configureObjectStorageModule(configService: HnCoreConfigService): BlObjectStorageModuleConfig {
+  return configService.getObjectStorageConfig();
+}
+
 @Module({
   imports: [
     // let the config module on top of the imports
@@ -113,6 +119,14 @@ function configureTransportModule(configService: HnCoreConfigService): BlTranspo
     }),
 
     HnCoreModule,
+
+    BlObjectStorageModule.forRootAsync({
+      imports: [HnCoreModule],
+      useFactory: configureObjectStorageModule,
+      inject: [HnCoreConfigService]
+    }),
+
+
     BlExternalApiModule,
 
     HnDocumentationModule,

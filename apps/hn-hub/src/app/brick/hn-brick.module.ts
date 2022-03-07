@@ -11,9 +11,10 @@ import {HnDocumentationService} from '../documentation/hn-documentation.service'
 import {HnBrickMajorVersionService} from '../brick-major-version/hn-brick-major-version.service';
 import {HnBrickMajorVersionModule} from '../brick-major-version/hn-brick-major-version.module';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
+import {HnCoreModule} from '../core/hn-core.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnBrick]), HnBrickMajorVersionModule, HnBrickVersionModule, HnFolderModule, HnDocumentationModule],
+  imports: [TypeOrmModule.forFeature([HnBrick]), HnBrickMajorVersionModule, HnBrickVersionModule, HnFolderModule, HnDocumentationModule, HnCoreModule],
   exports: [TypeOrmModule],
   controllers: [HnBrickController],
   providers: [HnBrickService, HnBrickMajorVersionService, HnBrickVersionService, HnFolderService, HnDocumentationService]

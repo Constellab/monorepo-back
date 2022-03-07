@@ -54,7 +54,6 @@ export class HaAdminDocFormComponent implements OnInit {
   }
 
   submit(): void {
-    console.log(this.formGp.value.content);
     if (this.formGp.valid) {
       this.isLoading = true;
 

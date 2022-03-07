@@ -162,7 +162,7 @@ export class HaPublicSidenavComponent implements OnInit {
         {
           text: {text: 'edit', translateText: true},
           icon: 'edit',
-          onClick: (event) => this.preparEditDialog(id, isFolder)
+          onClick: (event) => this.prepareEditDialog(id, isFolder)
         },
         {
           text: {text: 'delete', translateText: true},
@@ -176,7 +176,7 @@ export class HaPublicSidenavComponent implements OnInit {
       {
         text: {text: 'edit', translateText: true},
         icon: 'edit',
-        onClick: (event) => this.preparEditDialog(id, isFolder)
+        onClick: (event) => this.prepareEditDialog(id, isFolder)
       },
       {
         text: {text: 'delete', translateText: true},
@@ -236,7 +236,7 @@ export class HaPublicSidenavComponent implements OnInit {
     );
   }
 
-  private preparEditDialog(id: string, isFolder: boolean): void {
+  private prepareEditDialog(id: string, isFolder: boolean): void {
     if (isFolder) {
       this.folderService.getById(id).subscribe(f => {
         this.createEditDialog(isFolder, f);
@@ -333,7 +333,6 @@ export class HaPublicSidenavComponent implements OnInit {
   }
 
   private deleteEmptyNode(nodes: HaNode[]): HaNode[] {
-    console.log(nodes);
     let index: number;
     index = nodes.findIndex(n => n.name == null);
     if (index) {

@@ -118,8 +118,6 @@ export class HnFolderService {
     currentParent.children = currentChild;
     currentParent.children.sort((a, b) => a.order - b.order);
 
-    console.log(currentChild);
-
     return currentParent;
   }
 

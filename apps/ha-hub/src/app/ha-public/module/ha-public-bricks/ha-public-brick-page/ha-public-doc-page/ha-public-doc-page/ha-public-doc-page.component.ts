@@ -11,8 +11,9 @@ import {Validators} from '@angular/forms';
 import {HaDocumentationService} from '../../../../../../ha-core/ha-service/ha-documentation.service';
 import {HaBrick} from '../../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {LabReportContent} from '../../../../../../../../../lab-front/src/app/lab-core/model/entities/lab-report.entity';
-import {FlDebouncer} from '@monorepo/front-core-lib';
+import {FlApiService, FlDebouncer, FlTextEditorImageService, FlTextEditorUploadedImage} from '@monorepo/front-core-lib';
 import {HaAuthenticatedUserService} from '../../../../../../ha-core/ha-service/ha-authenticated-user.service';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'ha-public-doc-page',
@@ -118,4 +119,5 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.contentDebouncer.complete();
   }
+
 }

@@ -10,7 +10,7 @@ import {
   HnEnvironmentProfile
 } from '../../model/config/hn-config.class';
 import {DnDatabaseConfig} from '../../model/config/hn-database-config.class';
-import {BlTransportModuleConfig, blTransportQueueHub} from '@monorepo/back-core-lib';
+import {BlObjectStorageModuleConfig, BlTransportModuleConfig, blTransportQueueHub} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class HnCoreConfigService {
@@ -57,6 +57,17 @@ export class HnCoreConfigService {
       url: this.configService.get(HN_RABBITMQ_URL_KEY),
       port: this.configService.get(HN_RABBITMQ_PORT_KEY),
     };
+  }
+
+  public getObjectStorageConfig(): BlObjectStorageModuleConfig {
+    return {
+      endpoint: this.configService.get('OBJECT_STORAGE_ENDPOINT'),
+      region: this.configService.get('OBJECT_STORAGE_REGION'),
+    };
+  }
+
+  public getReportObjectStorageBucket(): string {
+    return this.isProduction() ? 'hub-documentation-prod' : 'hub-documentation-pre-prod';
   }
 
   protected getConfigNumber(configName: string): number {

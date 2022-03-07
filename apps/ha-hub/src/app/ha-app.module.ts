@@ -10,7 +10,7 @@ import {
   FlIconModule,
   FlPortalModule,
   FlSnackBarModule,
-  FlThemeService,
+  FlTextEditorImageService,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {DaApiServiceConfig} from './ha-core/ha-model/ha-config/ha-api-module.config';
@@ -22,6 +22,7 @@ import {HaCoreModule} from './ha-core/ha-core.module';
 import {HaAuthService} from './ha-core/ha-service/ha-auth.service';
 import {caSvgIcons} from '../../../ca-central-front/src/app/ca-core/model/config/ca-svg-icon-config';
 import {HaAuthenticatedUserService} from './ha-core/ha-service/ha-authenticated-user.service';
+import {HaDocumentationService} from './ha-core/ha-service/ha-documentation.service';
 
 function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): () => void {
   return (): void => authenticatedUserService.init();
@@ -67,6 +68,7 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
     multi: true
   },
     {provide: APP_INITIALIZER, useFactory: loadUserOnInit, deps: [HaAuthenticatedUserService], multi: true},
+    {provide: FlTextEditorImageService, useExisting: HaDocumentationService},
   ],
   bootstrap: [AppComponent],
 })

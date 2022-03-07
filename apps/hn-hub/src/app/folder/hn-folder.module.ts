@@ -6,9 +6,10 @@ import { HnFolder } from './hn-folder.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
 import {HnDocumentationModule} from '../documentation/hn-documentation.module';
 import {forwardRef} from '@angular/core';
+import {HnCoreModule} from '../core/hn-core.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnFolder]), HnDocumentationModule],
+  imports: [TypeOrmModule.forFeature([HnFolder]), HnDocumentationModule, HnCoreModule],
   exports: [TypeOrmModule],
   controllers: [HnFolderController],
   providers: [HnFolderService, HnDocumentationService]

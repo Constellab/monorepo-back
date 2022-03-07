@@ -6,12 +6,26 @@ import {HnNodeDTO} from '../folder/hn-folder.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnUser} from '../users/hn-user.entity';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
+import {BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
+import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
+import {IncomingMessage} from 'http';
+import {FlTextEditorUploadedImage} from '@monorepo/front-core-lib';
+import {doc} from 'prettier';
+import imageSize from 'image-size';
+
+class HnDocImage implements FlTextEditorUploadedImage{
+  filename: string;
+  width: number;
+  height: number;
+}
 
 @Injectable()
 export class HnDocumentationService {
   constructor(
     @InjectRepository(HnDocumentation)
     private documentationsRepository: Repository<HnDocumentation>,
+    private objectStorageService: BlObjectStorageService,
+    private configService: HnCoreConfigService
   ) {
   }
 
@@ -78,5 +92,25 @@ export class HnDocumentationService {
       throw new UnauthorizedException();
     }
     return this.documentationsRepository.save(doc);
+  }
+
+  async saveImage(files: BlFile[]): Promise<HnDocImage>{
+    let docImage: HnDocImage = new HnDocImage();
+    for(const file of files){
+      const imSize = imageSize(file.buffer);
+      docImage.filename = await this.objectStorageService.uploadObject(file, this.getReportBucket(), true);
+      docImage.width = imSize.width;
+      docImage.height = imSize.height;
+    }
+    return docImage;
+  }
+
+  async getImage(filename: string): Promise<IncomingMessage> {
+    return await this.objectStorageService.getObject(filename, this.getReportBucket());
+  }
+
+  private getReportBucket(): string {
+    let bucket = this.configService.getReportObjectStorageBucket();
+    return bucket;
   }
 }

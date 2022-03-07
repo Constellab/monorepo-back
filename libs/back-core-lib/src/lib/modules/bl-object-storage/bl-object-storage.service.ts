@@ -17,7 +17,7 @@ export class BlObjectStorageService {
 
   public generateRandomFileName(filename: string): string {
     const extension = BlFileHelper.getFileExtension(filename);
-    return ClStringHelper.generateUUID() + '_' + new Date().getTime() + extension;
+    return ClStringHelper.generateUUID() + '_' + new Date().getTime() + '.' + extension;
   }
 
   public async uploadObject(obj: BlFile, bucket: string,

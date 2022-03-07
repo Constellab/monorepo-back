@@ -9,9 +9,10 @@ import {HnDocumentationService} from '../documentation/hn-documentation.service'
 import {HnDocumentationModule} from '../documentation/hn-documentation.module';
 import {HnBrickVersionModule} from '../brick-version/hn-brick-version.module';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
+import {HnCoreModule} from '../core/hn-core.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnBrickMajorVersion]), HnBrickVersionModule, HnFolderModule, HnDocumentationModule],
+  imports: [TypeOrmModule.forFeature([HnBrickMajorVersion]), HnBrickVersionModule, HnFolderModule, HnDocumentationModule, HnCoreModule],
   exports: [TypeOrmModule],
   controllers: [HnBrickMajorVersionController],
   providers: [HnBrickMajorVersionService, HnBrickVersionService, HnFolderService, HnDocumentationService]

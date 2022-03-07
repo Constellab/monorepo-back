@@ -1,8 +1,22 @@
-import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
-import {HnDocumentation, HnDocumentationContentDTO, HnDocumentationDTO} from './hn-documentation.entity';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Put,
+  Res,
+  UploadedFiles,
+  UseInterceptors
+} from '@nestjs/common';
+import {HnDocumentation, HnDocumentationDTO} from './hn-documentation.entity';
 import {HnDocumentationService} from './hn-documentation.service';
-import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
+import {BlFile, BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnNodeDTO} from '../folder/hn-folder.entity';
+import {FilesInterceptor} from '@nestjs/platform-express';
+import {Response} from 'express';
+import {FlTextEditorUploadedImage} from '@monorepo/front-core-lib';
 
 @Controller('documentation')
 export class HnDocumentationController {
@@ -35,5 +49,21 @@ export class HnDocumentationController {
   @Put()
   update(@Body(new BlParsePipe(HnNodeDTO)) updatedDoc: HnNodeDTO): Promise<HnDocumentation> {
     return this.documentationService.update(updatedDoc);
+  }
+
+  @UseInterceptors(FilesInterceptor('file'))
+  @Put('/image')
+  saveImage(@UploadedFiles() files: BlFile[]): Promise<any> {
+    return this.documentationService.saveImage(files);
+  }
+
+  /**
+   * Return an image of the report
+   */
+  @Get('image/:filename')
+  public async get(@Param('filename') filename: string,
+                   @Res() response: Response): Promise<any> {
+    const file = await this.documentationService.getImage(filename);
+    file.pipe(response);
   }
 }

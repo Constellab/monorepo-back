@@ -104,6 +104,7 @@
     "document-register-element": "^1.7.2",
     "drawflow": "0.0.55",
     "highlight.js": "^11.4.0",
+    "image-size": "^1.0.1",
     "luxon": "^2.3.0",
     "mysql": "^2.18.1",
     "nest-winston": "^1.6.2",
