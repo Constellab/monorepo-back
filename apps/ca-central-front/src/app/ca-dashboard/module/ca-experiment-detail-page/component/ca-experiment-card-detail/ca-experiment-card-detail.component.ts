@@ -14,11 +14,15 @@ export class CaExperimentCardDetailComponent implements OnInit {
   @Input() experiment: CaExperiment;
   @Output() update: EventEmitter<CaExperiment> = new EventEmitter<CaExperiment>();
 
+  experimentRoute: string;
+
   constructor() {
   }
 
   ngOnInit(): void {
     if (this.experiment.labInstance.isRunning()) {
+      this.experimentRoute =
+        `${this.experiment.labInstance.frontUrl}/app/biox/experiment/${this.experiment.id}`;
     }
   }
 }
