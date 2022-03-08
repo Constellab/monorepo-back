@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CaLabInstance} from '../../../../model/entities/ca-lab-instance.class';
-import {CaRouterService} from '../../../../service/ca-router.service';
 import {FlStatusChipMode} from '@monorepo/front-core-lib';
 
 /**
@@ -19,7 +18,6 @@ export class CaLabInstanceCardComponent implements OnInit {
 
   @Output() labInstanceUpdated: EventEmitter<CaLabInstance> = new EventEmitter<CaLabInstance>();
 
-  labIframeRoute: string;
 
   isLoading: boolean = false;
 
@@ -27,7 +25,6 @@ export class CaLabInstanceCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.labIframeRoute = CaRouterService.getLabIframeRoute(this.labInstance.id);
 
   }
 
