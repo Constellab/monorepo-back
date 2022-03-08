@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {DaProjectsListComponent} from './da-projects-list.component';
+import {CaSmartDbListComponent} from './ca-smart-db-list.component';
 
-describe('ProjectsListComponent', () => {
-  let component: DaProjectsListComponent;
-  let fixture: ComponentFixture<DaProjectsListComponent>;
+describe('CaSmartDbListComponent', () => {
+  let component: CaSmartDbListComponent;
+  let fixture: ComponentFixture<CaSmartDbListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DaProjectsListComponent ]
+      declarations: [ CaSmartDbListComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DaProjectsListComponent);
+    fixture = TestBed.createComponent(CaSmartDbListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

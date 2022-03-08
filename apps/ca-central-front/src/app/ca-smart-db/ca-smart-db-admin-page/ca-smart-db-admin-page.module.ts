@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CaSmartDbCoreModule} from '../ca-smart-db-core/ca-smart-db-core.module';
+import {CaSmartDbDocCoreModule} from '../ca-smart-db-doc-core/ca-smart-db-doc-core.module';
 import {CaSmartDbAdminPageComponent} from './component/ca-smart-db-admin-page/ca-smart-db-admin-page.component';
 import {CaSmartDbManagementComponent} from './component/ca-smart-db-management/ca-smart-db-management.component';
 import {CaCoreModule} from '../../ca-core/ca-core.module';
@@ -14,7 +14,13 @@ import {
 } from './component/ca-smart-db-verify-sentence/ca-smart-db-verify-sentence.component';
 
 @NgModule({
-  declarations: [CaSmartDbAdminPageComponent, CaSmartDbManagementComponent, CaSmartDbImportDialogComponent, CaSmartDbVerificationComponent, CaSmartDbVerifySentenceComponent],
+  declarations: [
+    CaSmartDbAdminPageComponent,
+    CaSmartDbManagementComponent,
+    CaSmartDbImportDialogComponent,
+    CaSmartDbVerificationComponent,
+    CaSmartDbVerifySentenceComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -22,7 +28,7 @@ import {
 
     CaCoreModule,
 
-    CaSmartDbCoreModule,
+    CaSmartDbDocCoreModule,
   ]
 })
 export class CaSmartDbAdminPageModule {

@@ -8,7 +8,7 @@ import {
   SnSmartDbScriptDoc,
   SnSmartDbScriptResult
 } from '../model/sn-document.class';
-import {SnDocElasticsearchService} from './sn-doc-elasticsearch.service';
+import {BlFile} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class SnDataImporterService {
@@ -16,10 +16,10 @@ export class SnDataImporterService {
   private readonly logger = new Logger(SnDataImporterService.name);
 
 
-  constructor(private docElasticsearchService: SnDocElasticsearchService) {
+  constructor() {
   }
 
-  public importDataFromFile(file: any): SnDocument[] {
+  public importDataFromFile(file: BlFile): SnDocument[] {
     const data: SnFileImportContent = this.readDataFromJsonFile(file);
 
     let documents: SnDocument[];
@@ -35,7 +35,7 @@ export class SnDataImporterService {
     return documents;
   }
 
-  public readDataFromJsonFile(file: any): SnFileImportContent {
+  public readDataFromJsonFile(file: BlFile): SnFileImportContent {
     if (file.mimetype !== 'application/json') {
       throw new BadRequestException('Only supporting json files');
     }

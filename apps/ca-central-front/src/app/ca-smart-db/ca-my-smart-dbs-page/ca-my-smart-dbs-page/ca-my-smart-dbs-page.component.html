@@ -1,0 +1,20 @@
+<div class="g-page">
+
+  <fl-async-section [arrayObs]="smartDbs$" emptyText="no_project">
+
+    <fl-section-header class="g-page-title">
+      <fl-text-icon iconPosition="start">
+        <mat-icon class="g-icon-big" flIcon="smart_db"></mat-icon>
+        <h1>{{'my_smart_db' | translate}}</h1>
+      </fl-text-icon>
+    </fl-section-header>
+
+    <ng-container *flSectionBody="let smartDbs">
+      <ca-smart-db-list [smartDbs]="smartDbs"></ca-smart-db-list>
+
+      <fl-infinite-load-more-result [datasource]="smartDbs$"></fl-infinite-load-more-result>
+    </ng-container>
+
+  </fl-async-section>
+
+</div>

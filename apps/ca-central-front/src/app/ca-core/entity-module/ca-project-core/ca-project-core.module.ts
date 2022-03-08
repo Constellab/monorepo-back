@@ -5,7 +5,7 @@ import {DaProjectFormDialogComponent} from './component/ca-project-form-dialog/d
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaCoreModule} from '../../ca-core.module';
 import {DaProjectInfoComponent} from './component/ca-project-info/da-project-info.component';
-import {DaProjectsListComponent} from './component/ca-projects-list/da-projects-list.component';
+import {CaProjectsListComponent} from './component/ca-projects-list/ca-projects-list.component';
 import {RouterModule} from '@angular/router';
 
 /**
@@ -16,14 +16,14 @@ import {RouterModule} from '@angular/router';
     // Component
     CaProjectCardComponent,
     DaProjectFormDialogComponent,
-    DaProjectsListComponent,
+    CaProjectsListComponent,
     DaProjectInfoComponent,
   ],
   exports: [
     // Component
     CaProjectCardComponent,
     DaProjectFormDialogComponent,
-    DaProjectsListComponent,
+    CaProjectsListComponent,
     DaProjectInfoComponent,
   ],
   imports: [

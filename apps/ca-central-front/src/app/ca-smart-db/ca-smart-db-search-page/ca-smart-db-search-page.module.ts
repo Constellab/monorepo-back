@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CaSmartDbCoreModule} from '../ca-smart-db-core/ca-smart-db-core.module';
+import {CaSmartDbDocCoreModule} from '../ca-smart-db-doc-core/ca-smart-db-doc-core.module';
 import {CaCoreModule} from '../../ca-core/ca-core.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaSmartDbSearchPageComponent} from './component/ca-smart-db-search-page/ca-smart-db-search-page.component';
@@ -22,7 +22,7 @@ import {RouterModule} from '@angular/router';
     ReactiveFormsModule,
     RouterModule,
 
-    CaSmartDbCoreModule,
+    CaSmartDbDocCoreModule,
   ]
 })
 export class CaSmartDbSearchPageModule {

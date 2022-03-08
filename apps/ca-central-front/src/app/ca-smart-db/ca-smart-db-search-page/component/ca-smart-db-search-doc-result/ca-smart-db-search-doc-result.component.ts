@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaSmartDbDocSearchResult} from '../../../model/ca-document.class';
+import {CaSmartDbDocSearchResult} from '../../../model/ca-smart-db-doc.class';
 import {CaSmartDbSearchPageState} from '../../ca-smart-db-search-page.state';
 
 @Component({

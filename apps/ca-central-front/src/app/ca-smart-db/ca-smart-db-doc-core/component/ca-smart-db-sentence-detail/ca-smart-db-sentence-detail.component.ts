@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {CaSmartDbSentence} from '../../../model/ca-document.class';
+import {CaSmartDbSentence} from '../../../model/ca-smart-db-doc.class';
 import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
 
 /**

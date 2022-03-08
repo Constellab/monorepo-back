@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {CaSmartDbDoc} from '../../../model/ca-document.class';
-import {CaSmartDbService} from '../../../service/ca-smart-db.service';
+import {CaSmartDbDoc} from '../../../model/ca-smart-db-doc.class';
+import {CaSmartDbService} from '../../../../ca-core/service-api/ca-smart-db.service';
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
@@ -11,6 +11,8 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class CaSmartDbDocPageComponent implements OnInit {
 
+  smartDbId: string;
+
   doc$: Observable<CaSmartDbDoc>;
 
   constructor(private route: ActivatedRoute,
@@ -19,12 +21,13 @@ export class CaSmartDbDocPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(
-      params => this.init(params.id)
+      params => this.init(params.smartDbId, params.docId)
     );
   }
 
-  private init(id: string): void {
-    this.doc$ = this.smartDbService.findById(id);
+  private init(smartDbId: string, id: string): void {
+    this.smartDbId = smartDbId;
+    this.doc$ = this.smartDbService.findDocById(smartDbId, id);
   }
 
 }

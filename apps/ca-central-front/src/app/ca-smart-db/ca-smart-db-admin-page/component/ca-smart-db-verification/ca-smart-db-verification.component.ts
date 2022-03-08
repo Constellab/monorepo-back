@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {CaSmartDbService} from '../../../service/ca-smart-db.service';
+import {Component, Input, OnInit} from '@angular/core';
+import {CaSmartDbService} from '../../../../ca-core/service-api/ca-smart-db.service';
 import {ClPageI} from '@monorepo/core-lib';
-import {CaSmartDbDoc} from '../../../model/ca-document.class';
+import {CaSmartDbDoc} from '../../../model/ca-smart-db-doc.class';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 
 /**
@@ -13,6 +13,8 @@ import {FlSnackBarService} from '@monorepo/front-core-lib';
   styleUrls: ['./ca-smart-db-verification.component.scss']
 })
 export class CaSmartDbVerificationComponent implements OnInit {
+
+  @Input() smartDbId: string;
 
   doc: CaSmartDbDoc;
   totalNumber: number;
@@ -31,10 +33,10 @@ export class CaSmartDbVerificationComponent implements OnInit {
   getNextDocument(): void {
     if (this.isLoading) return;
     this.getIsLoading = true;
-    this.smartDbService.getNotValidated(0, 1).subscribe(
-      doc => this.getNextDocumentSuccess(doc),
-      () => this.getIsLoading = false
-    );
+    this.smartDbService.getNotValidated(this.smartDbId, 0, 1).subscribe({
+      next: (doc) => this.getNextDocumentSuccess(doc),
+      error: () => this.getIsLoading = false
+    });
   }
 
   private getNextDocumentSuccess(documents: ClPageI<CaSmartDbDoc>): void {
@@ -50,10 +52,10 @@ export class CaSmartDbVerificationComponent implements OnInit {
     if (this.validateIsLoading) return;
 
     this.validateIsLoading = true;
-    this.smartDbService.validateDoc(this.doc).subscribe(
-      () => this.validateDocSuccess(),
-      () => this.validateIsLoading = false
-    );
+    this.smartDbService.validateDoc(this.smartDbId, this.doc).subscribe({
+      next: () => this.validateDocSuccess(),
+      error: () => this.validateIsLoading = false
+    });
   }
 
   private validateDocSuccess(): void {

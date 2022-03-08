@@ -28,6 +28,8 @@
     "object": "Object",
     "type": "Type",
     "refresh": "Refresh",
-    "delete": "Delete"
+    "delete": "Delete",
+    "type_public": "Public",
+    "type_private": "Private"
   }
 }

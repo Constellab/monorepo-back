@@ -1,5 +1,5 @@
 import {Component, Input, OnInit, Renderer2} from '@angular/core';
-import {CaSmartDbDoc, CaSmartDbSentence} from '../../../model/ca-document.class';
+import {CaSmartDbDoc, CaSmartDbSentence} from '../../../model/ca-smart-db-doc.class';
 import {FlPortalService} from '@monorepo/front-core-lib';
 import {CaSmartDbSentenceDetailComponent} from '../ca-smart-db-sentence-detail/ca-smart-db-sentence-detail.component';
 

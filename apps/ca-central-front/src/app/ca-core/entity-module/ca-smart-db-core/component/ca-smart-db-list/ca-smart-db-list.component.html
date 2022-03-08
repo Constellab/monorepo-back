@@ -1,0 +1,7 @@
+<div fxLayout="row wrap" fxLayoutGap="1%">
+  <a *ngFor="let smartDb of smartDbs" class="card"
+     fxFlex="15em" fxFlex.xs="49%" [routerLink]="smartDb | caDetailRoute">
+    <ca-smart-db-card [smartDb]="smartDb"></ca-smart-db-card>
+  </a>
+</div>
+

@@ -1,13 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {CaSmartDbService} from '../../../service/ca-smart-db.service';
+import {CaSmartDbService} from '../../../../ca-core/service-api/ca-smart-db.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Validators} from '@angular/forms';
 
 interface Form {
   file: File;
   resetData: boolean;
+}
+
+export interface CaSmartDbImportDialogInput {
+  smartDbId: string;
 }
 
 @Component({
@@ -21,7 +25,8 @@ export class CaSmartDbImportDialogComponent implements OnInit {
 
   isLoading: boolean = false;
 
-  constructor(private smartDbService: CaSmartDbService,
+  constructor(@Inject(MAT_DIALOG_DATA) private input: CaSmartDbImportDialogInput,
+              private smartDbService: CaSmartDbService,
               private snackBarService: FlSnackBarService,
               private dialogRef: MatDialogRef<CaSmartDbImportDialogComponent>) {
   }
@@ -47,14 +52,14 @@ export class CaSmartDbImportDialogComponent implements OnInit {
   }
 
   private uploadData(file: File): void {
-    this.smartDbService.uploadData(file).subscribe(
+    this.smartDbService.uploadData(this.input.smartDbId, file).subscribe(
       () => this.uploadSuccess(),
       () => this.isLoading = false
     );
   }
 
   private initData(file: File): void {
-    this.smartDbService.init(file).subscribe(
+    this.smartDbService.init(this.input.smartDbId, file).subscribe(
       () => this.uploadSuccess(),
       () => this.isLoading = false
     );

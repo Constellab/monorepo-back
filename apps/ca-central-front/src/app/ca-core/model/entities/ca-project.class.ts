@@ -17,8 +17,8 @@ export type CaProjectStatus = 'ACTIVE' | 'IN_PROGRESS' | 'ARCHIVED';
 
 export const caProjectStatusDict: FlStatusDict<CaProjectStatus> = {
   ACTIVE: FlStatusHelper.getInfoStatus('ACTIVE', 'ACTIVE', 'done'),
-  IN_PROGRESS: FlStatusHelper.getInfoStatus('ACTIVE', 'IN_PROGRESS', FlStatusHelper.runningIcon),
-  ARCHIVED: FlStatusHelper.getArchivedStatus('ACTIVE'),
+  IN_PROGRESS: FlStatusHelper.getInfoStatus('IN_PROGRESS', 'IN_PROGRESS', FlStatusHelper.runningIcon),
+  ARCHIVED: FlStatusHelper.getArchivedStatus('ARCHIVED'),
 };
 
 export class CaProjectStatusHistory extends CaStatusHistory<CaProjectStatus> {

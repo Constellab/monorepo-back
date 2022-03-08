@@ -7,10 +7,10 @@ import {CaRouterService} from '../../../../service/ca-router.service';
  */
 @Component({
   selector: 'ca-projects-list',
-  templateUrl: './da-projects-list.component.html',
-  styleUrls: ['./da-projects-list.component.scss']
+  templateUrl: './ca-projects-list.component.html',
+  styleUrls: ['./ca-projects-list.component.scss']
 })
-export class DaProjectsListComponent implements OnInit {
+export class CaProjectsListComponent implements OnInit {
 
   @Input() projects: CaProject[];
 

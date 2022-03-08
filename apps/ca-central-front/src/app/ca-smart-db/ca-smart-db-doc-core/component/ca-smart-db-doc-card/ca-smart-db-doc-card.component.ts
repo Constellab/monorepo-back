@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaSmartDbDoc} from '../../../model/ca-document.class';
+import {CaSmartDbDoc} from '../../../model/ca-smart-db-doc.class';
 import {CaRouterService} from '../../../../ca-core/service/ca-router.service';
 
 @Component({
@@ -8,6 +8,8 @@ import {CaRouterService} from '../../../../ca-core/service/ca-router.service';
   styleUrls: ['./ca-smart-db-doc-card.component.scss']
 })
 export class CaSmartDbDocCardComponent implements OnInit {
+
+  @Input() smartDbId: string
 
   @Input() doc: CaSmartDbDoc;
 
@@ -20,7 +22,7 @@ export class CaSmartDbDocCardComponent implements OnInit {
   }
 
   get detailLink(): string {
-    return CaRouterService.getSmartDbDocDetailRoute(this.doc?.id);
+    return CaRouterService.getSmartDbDocDetailRoute(this.smartDbId, this.doc?.id);
   }
 
 }

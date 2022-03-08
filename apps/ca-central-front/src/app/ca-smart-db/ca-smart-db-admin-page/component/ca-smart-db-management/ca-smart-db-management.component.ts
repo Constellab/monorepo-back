@@ -1,7 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {CaSmartDbService} from '../../../service/ca-smart-db.service';
+import {Component, Input, OnInit} from '@angular/core';
+import {CaSmartDbService} from '../../../../ca-core/service-api/ca-smart-db.service';
 import {FlDialogService} from '@monorepo/front-core-lib';
-import {CaSmartDbImportDialogComponent} from '../ca-smart-db-import-dialog/ca-smart-db-import-dialog.component';
+import {
+  CaSmartDbImportDialogComponent,
+  CaSmartDbImportDialogInput
+} from '../ca-smart-db-import-dialog/ca-smart-db-import-dialog.component';
 
 /**
  * Component to manage the smart DB (export, import)
@@ -13,6 +16,8 @@ import {CaSmartDbImportDialogComponent} from '../ca-smart-db-import-dialog/ca-sm
 })
 export class CaSmartDbManagementComponent implements OnInit {
 
+  @Input() smartDbId: string;
+
   downloadUrl: string;
 
   constructor(private smartDbService: CaSmartDbService,
@@ -20,11 +25,12 @@ export class CaSmartDbManagementComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.downloadUrl = this.smartDbService.getDownloadSmartDbLink();
+    this.downloadUrl = this.smartDbService.getDownloadSmartDbLink(this.smartDbId);
   }
 
   openUploadDialog(): void {
-    this.dialogService.openSmallDialog(CaSmartDbImportDialogComponent);
+    const data: CaSmartDbImportDialogInput = {smartDbId: this.smartDbId};
+    this.dialogService.openSmallDialog(CaSmartDbImportDialogComponent, {data: data});
   }
 
 }

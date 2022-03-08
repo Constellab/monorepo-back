@@ -2,6 +2,8 @@
   "welcome_message": "Welcome back, {{firstname}}",
   "my_projects": "My projects",
   "no_project": "No project",
+  "my_smart_db": "My smartDB",
+  "no_smart_db": "No smartDB",
   "ACTIVE": "Active",
   "IN_PROGRESS": "In progress",
   "RUNNING": "Running",

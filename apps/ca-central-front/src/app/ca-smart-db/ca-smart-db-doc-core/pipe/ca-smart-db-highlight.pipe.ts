@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {CaMatchPosition} from '../../model/ca-document.class';
+import {CaMatchPosition} from '../../model/ca-smart-db-doc.class';
 import {CaHighlightTextHelper} from '../../service/ca-highlight-text.helper';
 
 @Pipe({

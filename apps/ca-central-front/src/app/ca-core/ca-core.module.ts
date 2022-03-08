@@ -7,6 +7,7 @@ import {CaStatusModule} from './module/ca-status/ca-status.module';
 import {CaUserCoreModule} from './entity-module/ca-user-core/ca-user-core.module';
 import {CaCustomLibraryModule} from './custom-library/ca-custom-library.module';
 import {CaCoreDirectiveModule} from './module/ca-core-directive/ca-core-directive.module';
+import {CaCorePipeModule} from './module/ca-core-pipe/ca-core-pipe.module';
 
 /**
  * Core module of the app containing, component, services, directives and pipes
@@ -21,6 +22,7 @@ import {CaCoreDirectiveModule} from './module/ca-core-directive/ca-core-directiv
     // export all core modules
     CaCoreComponentModule,
     CaCoreDirectiveModule,
+    CaCorePipeModule,
 
     // other modules
     CaCoreSelectModule,

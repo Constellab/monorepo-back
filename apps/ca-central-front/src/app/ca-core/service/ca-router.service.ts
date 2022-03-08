@@ -59,12 +59,20 @@ export class CaRouterService {
     return `${caConstLabInstancesFullRoute}`;
   }
 
-  public static getSmartDbDocDetailRoute(id: string): string {
-    return `${caConstSmartDbFullRoute}/doc/${id}`;
+  public static getMySmartDbsRoute(): string {
+    return `${caConstSmartDbFullRoute}`;
   }
 
-  public static getSmartDbAdminRoute(): string {
-    return `${caConstSmartDbFullRoute}/admin`;
+  public static getSmartDbDetailRoute(id: string): string {
+    return `${caConstSmartDbFullRoute}/${id}`;
+  }
+
+  public static getSmartDbDocDetailRoute(smartDbId: string, id: string): string {
+    return `${caConstSmartDbFullRoute}/${smartDbId}/doc/${id}`;
+  }
+
+  public static getSmartDbAdminRoute(smartDbId: string): string {
+    return `${caConstSmartDbFullRoute}/${smartDbId}/admin`;
   }
 
   ////// Function to navigate to routes  //////

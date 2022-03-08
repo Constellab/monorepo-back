@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CaSmartDbCoreModule} from '../ca-smart-db-core/ca-smart-db-core.module';
+import {CaSmartDbDocCoreModule} from '../ca-smart-db-doc-core/ca-smart-db-doc-core.module';
 import {CaCoreModule} from '../../ca-core/ca-core.module';
 import {CaSmartDbDocPageComponent} from './component/ca-smart-db-doc-page/ca-smart-db-doc-page.component';
 
@@ -11,7 +11,7 @@ import {CaSmartDbDocPageComponent} from './component/ca-smart-db-doc-page/ca-sma
 
     CaCoreModule,
 
-    CaSmartDbCoreModule,
+    CaSmartDbDocCoreModule,
   ]
 })
 export class CaSmartDbDocPageModule {

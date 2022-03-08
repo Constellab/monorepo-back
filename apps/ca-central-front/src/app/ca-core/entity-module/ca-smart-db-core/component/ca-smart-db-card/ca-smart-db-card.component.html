@@ -1,0 +1,18 @@
+<fl-card class="card">
+  <fl-card-header>
+    <h2>{{smartDb.name}}</h2>
+
+    <fl-card-actions>
+      <fl-status-chip [status]="smartDb.type"
+                      mode="iconOnly">
+      </fl-status-chip>
+    </fl-card-actions>
+  </fl-card-header>
+
+
+  <fl-card-body>
+    <div>
+      <p>{{smartDb.group.label}}</p>
+    </div>
+  </fl-card-body>
+</fl-card>

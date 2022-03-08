@@ -13,8 +13,6 @@ export class CaProjectCardComponent implements OnInit {
 
   @Input() project: CaProject;
 
-  projectDetailRoute: string;
-
   constructor() {
   }
 

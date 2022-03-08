@@ -1,4 +1,14 @@
-import {ChildEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, TableInheritance} from 'typeorm';
+import {
+  ChildEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+  TableInheritance
+} from 'typeorm';
 import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
 import {CnGroupType} from './cn-group-type.enum';
 import {CnOrganization} from '../cn-organizations/cn-organization.entity';
@@ -49,9 +59,29 @@ export class CnGroupSingleUser extends CnGroup {
 @ChildEntity(CnGroupType.USERS)
 export class CnGroupUsers extends CnGroup {
 
-  @ManyToMany(() => CnUser, (user: CnUser) => user.groups)
-  @JoinTable({name: 'user_group'})
-  users: CnUser[];
+  // @Exclude()
+  // @ManyToMany(() => CnUser, (user: CnUser) => user.groups)
+  // @JoinTable({name: 'user_group'})
+  // users: CnUser[];
+
+  @OneToMany(() => CnUserGroup, userGroup => userGroup.group)
+  users!: CnUserGroup[];
 
   type: CnGroupType.USERS;
+}
+
+@Entity('user_group')
+export class CnUserGroup {
+
+  @PrimaryColumn({type: 'varchar', length: 36})
+  userId: string;
+
+  @ManyToOne(() => CnUser)
+  user: CnUser;
+
+  @PrimaryColumn({type: 'varchar', length: 36})
+  groupId: string;
+
+  @ManyToOne(() => CnGroupUsers, group => group.users)
+  group: CnGroupUsers;
 }

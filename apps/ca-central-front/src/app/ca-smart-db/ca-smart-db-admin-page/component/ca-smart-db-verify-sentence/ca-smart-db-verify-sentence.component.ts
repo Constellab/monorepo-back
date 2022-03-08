@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {CaSmartDbSentence} from '../../../model/ca-document.class';
+import {CaSmartDbSentence} from '../../../model/ca-smart-db-doc.class';
 
 /**
  * Component to verify the sentence and modify it. It directly modifies the object

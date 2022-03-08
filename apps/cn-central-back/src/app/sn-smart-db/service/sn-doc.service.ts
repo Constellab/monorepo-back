@@ -3,7 +3,7 @@ import {ClPageI} from '@monorepo/core-lib';
 import {SnDocElasticsearchService} from './sn-doc-elasticsearch.service';
 import {SnDataImporterService} from './sn-data-importer.service';
 import {SnDocSearchResult, SnDocument, SnSmartDbExport} from '../model/sn-document.class';
-import {CnAdminAuthorization} from '../../cn-core/security/cn-admin.authorization';
+import {BlFile} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class SnDocService {
@@ -14,11 +14,9 @@ export class SnDocService {
               private dataImporter: SnDataImporterService) {
   }
 
-  async validateDoc(doc: SnDocument): Promise<SnDocument> {
-    this.checkIsAdmin();
-
+  async validateDoc(index: string, doc: SnDocument): Promise<SnDocument> {
     // check that the doc exits
-    await this.findByIdAndCheck(doc.id);
+    await this.findByIdAndCheck(index, doc.id);
 
     for (const sentence of doc.sentences) {
       for (const part of sentence.parts) {
@@ -26,87 +24,63 @@ export class SnDocService {
       }
     }
 
-    return this.docElasticsearchService.updateDocument(doc);
+    return this.docElasticsearchService.updateDocument(index, doc);
   }
 
 
-  async findByIdAndCheck(id: string): Promise<SnDocument> {
-    return this.docElasticsearchService.findByIdAndCheck(id);
+  async findByIdAndCheck(index: string, docId: string): Promise<SnDocument> {
+    return this.docElasticsearchService.findByIdAndCheck(index, docId);
   }
 
-  async search(text: string, page: number, pageSize: number): Promise<ClPageI<SnDocSearchResult>> {
-    return this.docElasticsearchService.search(text, page,
+  async search(index: string, text: string, page: number, pageSize: number): Promise<ClPageI<SnDocSearchResult>> {
+    return this.docElasticsearchService.search(index, text, page,
       Math.min(pageSize, SnDocService.MAX_PAGE_SIZE));
   }
 
-  async findNotValidated(page: number, pageSize: number): Promise<ClPageI<SnDocument>> {
-    this.checkIsAdmin();
-
-    return this.docElasticsearchService.findNotValidated(page, pageSize);
-  }
-
-  async createIndex(): Promise<any> {
-    this.checkIsAdmin();
-
-    return this.docElasticsearchService.createIndex();
+  async findNotValidated(index: string, page: number, pageSize: number): Promise<ClPageI<SnDocument>> {
+    return this.docElasticsearchService.findNotValidated(index, page, pageSize);
   }
 
   async getIndex(index?: string): Promise<any> {
-    this.checkIsAdmin();
-
     return this.docElasticsearchService.getIndex(index);
-  }
-
-  async deleteIndex(): Promise<any> {
-    this.checkIsAdmin();
-
-    return this.docElasticsearchService.deleteIndex();
   }
 
   /**
    * Create the document in DB if it doesn't exist, do nothing otherwise
    */
-  public async createDocumentIfNotExist(document: SnDocument): Promise<SnDocument> {
-    const docDb: SnDocument = await this.docElasticsearchService.findByUrlPath(document.urlPath);
+  public async createDocumentIfNotExist(index: string, document: SnDocument): Promise<SnDocument> {
+    const docDb: SnDocument = await this.docElasticsearchService.findByUrlPath(index, document.urlPath);
 
     if (docDb == null) {
-      return this.docElasticsearchService.createDocument(document);
+      return this.docElasticsearchService.createDocument(index, document);
     }
 
     return docDb;
   }
 
-  public async importDataFromFile(file: any): Promise<SnDocument[]> {
+  public async importDataFromFile(index: string, file: BlFile): Promise<SnDocument[]> {
     const documents: SnDocument[] = this.dataImporter.importDataFromFile(file);
 
     for (const document of documents) {
-      await this.createDocumentIfNotExist(document);
+      await this.createDocumentIfNotExist(index, document);
     }
 
     return documents;
   }
 
-  public async init(file: any): Promise<any> {
-    this.checkIsAdmin();
-    try {
-      await this.docElasticsearchService.deleteIndex();
-    } catch (_) {
+  public async init(index: string, file: any): Promise<any> {
+    if (await this.docElasticsearchService.indexExists(index)) {
+      await this.docElasticsearchService.deleteIndex(index);
     }
-
-    await this.docElasticsearchService.createIndex();
-    return await this.importDataFromFile(file);
+    await this.docElasticsearchService.createIndex(index);
+    return await this.importDataFromFile(index, file);
   }
 
-  public async exportData(): Promise<SnSmartDbExport> {
-    this.checkIsAdmin();
-    const docs = await this.docElasticsearchService.findAll();
+  public async exportData(index: string): Promise<SnSmartDbExport> {
+    const docs = await this.docElasticsearchService.findAll(index);
     return {
       version: 0,
       documents: docs
     };
-  }
-
-  private checkIsAdmin(): void {
-    new CnAdminAuthorization().checkAuthorization();
   }
 }

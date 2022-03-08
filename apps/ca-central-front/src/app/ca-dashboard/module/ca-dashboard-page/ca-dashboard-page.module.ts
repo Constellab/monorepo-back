@@ -10,6 +10,8 @@ import {CaDashboardProjectsComponent} from './component/ca-dashboard-projects/ca
 import {
   CaDashboardLabInstancesComponent
 } from './component/ca-dashboard-lab-instances/ca-dashboard-lab-instances.component';
+import {CaDashboardSmartDbsComponent} from './component/ca-dashboard-smart-dbs/ca-dashboard-smart-dbs.component';
+import {CaSmartDbCoreModule} from '../../../ca-core/entity-module/ca-smart-db-core/ca-smart-db-core.module';
 
 /**
  * Module for the dashboard page
@@ -20,6 +22,7 @@ import {
     CaDashboardModulePageComponent,
     CaDashboardProjectsComponent,
     CaDashboardLabInstancesComponent,
+    CaDashboardSmartDbsComponent,
   ],
   imports: [
     CommonModule,
@@ -28,6 +31,7 @@ import {
     CaCoreModule,
     CaProjectCoreModule,
     CaLabCoreModule,
+    CaSmartDbCoreModule
   ]
 })
 export class CaDashboardPageModule {

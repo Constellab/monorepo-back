@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {CaSmartDbEffect} from '../../model/ca-document.class';
+import {CaSmartDbEffect} from '../../model/ca-smart-db-doc.class';
 
 /**
  * Pipe to color the verb of a SmartDb sentence based on Effect

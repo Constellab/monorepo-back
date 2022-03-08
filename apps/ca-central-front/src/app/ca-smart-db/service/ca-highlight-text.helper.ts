@@ -1,5 +1,5 @@
 import {ClStringHelper} from '@monorepo/core-lib';
-import {CaMatchPosition} from '../model/ca-document.class';
+import {CaMatchPosition} from '../model/ca-smart-db-doc.class';
 
 
 export class CaHighlightTextHelper {

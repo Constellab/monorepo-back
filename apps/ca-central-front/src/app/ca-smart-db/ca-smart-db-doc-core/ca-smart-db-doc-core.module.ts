@@ -36,5 +36,5 @@ import {RouterModule} from '@angular/router';
     CaCoreModule,
   ]
 })
-export class CaSmartDbCoreModule {
+export class CaSmartDbDocCoreModule {
 }

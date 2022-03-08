@@ -1,14 +1,19 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {CaSmartDbDocSearchDatasource, CaSmartDbDocSearchResult} from '../model/ca-document.class';
-import {CaSmartDbService} from '../service/ca-smart-db.service';
+import {CaSmartDbDocSearchDatasource, CaSmartDbDocSearchResult} from '../model/ca-smart-db-doc.class';
+import {CaSmartDbService} from '../../ca-core/service-api/ca-smart-db.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {map} from 'rxjs/operators';
 import {FlEntityPaginatedDatasource, FlQueryParamHandler} from '@monorepo/front-core-lib';
+import {ClCachedObservable} from '@monorepo/core-lib';
+import {CaSmartDb} from '../../ca-core/model/entities/ca-smart-db.entity';
 
 
 @Injectable()
 export class CaSmartDbSearchPageState implements OnDestroy {
+
+  private smartDbId: string;
+  private smartDb$: ClCachedObservable<CaSmartDb>;
 
   private selectedResult$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   private search$: Subject<string> = new Subject();
@@ -23,9 +28,11 @@ export class CaSmartDbSearchPageState implements OnDestroy {
     this.queryParams = new FlQueryParamHandler(router, route);
   }
 
-  public init(): void {
+  public init(smartDbId: string): void {
+    this.smartDb$ = new ClCachedObservable(this.smartDbService.findById(smartDbId), true);
+    this.smartDbId = smartDbId;
     this.datasource = new FlEntityPaginatedDatasource(
-      (page, pageSize, search: string) => this.smartDbService.search(search, page, pageSize),
+      (page, pageSize, search: string) => this.smartDbService.search(smartDbId, search, page, pageSize),
       20, false);
 
     this.queryParams.getFirstQueryParams().subscribe(
@@ -76,6 +83,10 @@ export class CaSmartDbSearchPageState implements OnDestroy {
     this.selectedResult$.next(docId);
 
     this.queryParams.mergeQueryParams({selectedDoc: docId});
+  }
+
+  public getSmartDb$(): Observable<CaSmartDb> {
+    return this.smartDb$.getObs();
   }
 
   ngOnDestroy(): void {

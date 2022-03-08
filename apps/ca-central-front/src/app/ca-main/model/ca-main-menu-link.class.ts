@@ -36,8 +36,8 @@ export const caMainMenuLinks: CaMainMenuLink[] = [
     route: caConstLabInstancesFullRoute
   },
   {
-    label: 'smart_db.smart_db',
-    icon: 'search',
+    label: 'my_smart_db',
+    icon: 'smart_db',
     route: caConstSmartDbRoute
   },
   {

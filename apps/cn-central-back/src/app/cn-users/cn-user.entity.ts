@@ -1,4 +1,4 @@
-import {BeforeInsert, Column, Entity, ManyToMany, OneToOne} from 'typeorm';
+import {BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToOne} from 'typeorm';
 import {Exclude} from 'class-transformer';
 import {CnGroupSingleUser, CnGroupUsers} from '../cn-groups/cn-group.entity';
 import * as argon2 from 'argon2';
@@ -6,6 +6,7 @@ import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClThem
 import {DateTime} from 'luxon';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
 import {BlEntityWithId, BlLuxonDateTimeColumn, BlUser} from '@monorepo/back-core-lib';
+import {CnOrganization} from '../cn-organizations/cn-organization.entity';
 
 
 @Entity('user')
@@ -57,6 +58,12 @@ export class CnUser extends BlEntityWithId implements BlUser {
 
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
+
+  @ManyToOne(() => CnOrganization, {nullable: true})
+  organization: CnOrganization;
+
+  @Column({ nullable: true })
+  organizationId: string
 
   //////////////////// TRANSIENT METHODS //////////////////
 
