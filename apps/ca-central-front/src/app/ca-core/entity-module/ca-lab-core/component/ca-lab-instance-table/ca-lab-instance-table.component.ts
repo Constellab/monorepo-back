@@ -9,7 +9,6 @@ import {
   FlFormDialogInput,
   FlTableAbstractDirective
 } from '@monorepo/front-core-lib';
-import {CaRouterService} from '../../../../service/ca-router.service';
 import {
   CaLabInstanceStatusDialogComponent
 } from '../ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
@@ -47,10 +46,6 @@ export class CaLabInstanceTableComponent extends FlTableAbstractDirective<CaLabI
     if (labInstance) {
       this.datasource.updateItem(labInstance);
     }
-  }
-
-  getLabRoute(lab: CaLabInstance): string {
-    return CaRouterService.getLabInstanceDetailRoute(lab.id);
   }
 
   openStatusDialog(labInstance: CaLabInstance): void {

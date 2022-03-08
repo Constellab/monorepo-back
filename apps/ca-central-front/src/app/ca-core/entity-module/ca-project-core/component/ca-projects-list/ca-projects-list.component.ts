@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaProject} from '../../../../model/entities/ca-project.class';
-import {CaRouterService} from '../../../../service/ca-router.service';
 
 /**
  * List of the current user projects
@@ -18,10 +17,6 @@ export class CaProjectsListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
-
-  getProjectRoute(project: CaProject): string {
-    return CaRouterService.getProjectDetailRoute(project.id);
   }
 
 }

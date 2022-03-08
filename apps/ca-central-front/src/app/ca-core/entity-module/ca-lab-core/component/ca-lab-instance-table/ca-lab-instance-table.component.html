@@ -6,7 +6,7 @@
       <span>{{'name' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let labInstance">
-      <a [routerLink]="getLabRoute(labInstance)" class="g-text-link">
+      <a [routerLink]="labInstance | caDetailRoute" class="g-text-link">
         <span>{{labInstance.name}}</span>
       </a>
     </mat-cell>

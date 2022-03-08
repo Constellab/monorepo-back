@@ -19,7 +19,6 @@ export class CaLabInstanceCardComponent implements OnInit {
 
   @Output() labInstanceUpdated: EventEmitter<CaLabInstance> = new EventEmitter<CaLabInstance>();
 
-  labInstanceRoute: string;
   labIframeRoute: string;
 
   isLoading: boolean = false;
@@ -28,7 +27,6 @@ export class CaLabInstanceCardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.labInstanceRoute = CaRouterService.getLabInstanceDetailRoute(this.labInstance.id);
     this.labIframeRoute = CaRouterService.getLabIframeRoute(this.labInstance.id);
 
   }
