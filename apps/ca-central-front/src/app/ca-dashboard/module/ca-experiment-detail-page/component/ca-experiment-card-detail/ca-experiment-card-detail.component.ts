@@ -1,10 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
-import {
-  CaExperimentFormDialogComponent
-} from '../../../ca-experiment-core/component/ca-experiment-form-dialog/ca-experiment-form-dialog.component';
 import {CaLabIframeOptions, CaRouterService} from '../../../../../ca-core/service/ca-router.service';
-import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
 
 /**
  * Detail card of the experiment used in the experiment page
@@ -22,30 +18,13 @@ export class CaExperimentCardDetailComponent implements OnInit {
   openInLabLink: string;
   linkQueryParams: CaLabIframeOptions;
 
-  constructor(private dialogService: FlDialogService) {
+  constructor() {
   }
 
   ngOnInit(): void {
     if (this.experiment.labInstance.isRunning()) {
       this.openInLabLink = CaRouterService.getLabIframeRoute(this.experiment.labInstance.id);
       this.linkQueryParams = {objectType: 'experiment', objectId: this.experiment.id};
-    }
-  }
-
-
-  openUpdateExperimentDialog(): void {
-    const dialogInput: FlFormDialogInput<CaExperiment> = {
-      mode: 'update',
-      object: this.experiment,
-    };
-    this.dialogService.openSmallDialog(CaExperimentFormDialogComponent, {data: dialogInput}).afterClosed().subscribe(
-      newExp => this.onUpdateDialogClosed(newExp)
-    );
-  }
-
-  private onUpdateDialogClosed(experiment: CaExperiment): void {
-    if (experiment) {
-      this.update.emit(experiment);
     }
   }
 }
