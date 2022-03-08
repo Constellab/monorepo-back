@@ -29,5 +29,4 @@ export interface CnBrickVersionSaveDTO {
   patch: number;
   versionState: CnVersionState;
   repoType: CnRepoType;
-  commitRef: string; // provided if repoType === GIT
 }

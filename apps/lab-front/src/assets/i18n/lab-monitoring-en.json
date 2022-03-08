@@ -8,6 +8,6 @@
     "messages_count": "{{count}} message(s)",
     "version": "Version",
     "repo_type": "Repository type",
-    "remo_commit": "Commit"
+    "repo_commit": "Commit"
   }
 }

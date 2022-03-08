@@ -41,9 +41,6 @@ export class CnBrickVersion extends BlEntityWithId {
   @Column({type: 'enum', enum: CnRepoType, nullable: false})
   repoType: CnRepoType;
 
-  @Column({nullable: true})
-  commitRef: string; // provided if repoType === GIT
-
   @CmVersionTransform()
   @Expose()
   public get version(): CmVersion {

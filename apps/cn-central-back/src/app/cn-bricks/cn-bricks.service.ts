@@ -34,7 +34,6 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
       brickVersion.patch = versionDTO.patch;
       brickVersion.versionState = versionDTO.versionState;
       brickVersion.repoType = versionDTO.repoType;
-      brickVersion.commitRef = versionDTO.commitRef;
       brickVersion.brick = brick;
       await this.brickVersionRepo.save(brickVersion);
     }

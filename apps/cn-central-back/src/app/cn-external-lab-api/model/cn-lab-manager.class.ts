@@ -60,7 +60,6 @@ export interface CnLabManagerBrickVersionDTO {
   repo: string;
   repoType: 'PIP' | 'GIT';
   version: string;
-  commit?: string;
   isHidden: boolean;
 }
 
