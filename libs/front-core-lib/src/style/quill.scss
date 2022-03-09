@@ -7,9 +7,9 @@
 
 // make the editor scrollable
 .ql-editor{
-  overflow: auto;
-  max-height: inherit;
+  overflow: initial;
 }
+
 
 // set background color for tooltip containing button
 .ql-bubble .ql-tooltip {

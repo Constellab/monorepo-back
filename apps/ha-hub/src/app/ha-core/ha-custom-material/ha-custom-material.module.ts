@@ -16,6 +16,7 @@ import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatMenuModule} from '@angular/material/menu';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {ScrollingModule} from '@angular/cdk/scrolling';
 
 @NgModule({
   exports: [
@@ -33,7 +34,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     MatTabsModule,
     MatToolbarModule,
     MatMenuModule,
-    DragDropModule
+    DragDropModule,
+    ScrollingModule,
   ],
 
   providers: [

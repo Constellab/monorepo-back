@@ -3,9 +3,8 @@
   <ng-container *flSectionBody="let documentation">
     <div class="sidenavBody">
       <div class="content g-max-article-width">
-        <form class="documentation-form" [formGroup]="formGp">
-          <fl-text-editor formControlName="content" mode="JSON"
-                          class="content-editor"
+        <form class="documentation-form g-scrollable-element" [formGroup]="formGp" cdkScrollable>
+          <fl-text-editor class="content-editor" formControlName="content" mode="JSON"
                           (textChange)="onContentUpdate($event)" [disabled]="!(isAdmin | async)"></fl-text-editor>
         </form>
       </div>
