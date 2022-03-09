@@ -15,12 +15,13 @@
 .side{
   margin-left: 1em;
   width: 25rem;
+  height: 98%;
   padding-left: 0.5em;
   border-left: 2px solid var(--card-background);
 }
 
 .content{
-  height: 90%;
+  height: 98%;
   flex: 1;
 }
 
