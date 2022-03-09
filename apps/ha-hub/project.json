@@ -2,7 +2,7 @@
   "projectType": "application",
   "root": "apps/ha-hub",
   "sourceRoot": "apps/ha-hub/src",
-  "prefix": "da",
+  "prefix": "ha",
   "architect": {
     "build": {
       "builder": "@angular-devkit/build-angular:browser",

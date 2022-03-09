@@ -67,6 +67,12 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   // if true the text editor is focused on creation
   @Input() autoFocus: boolean = false;
 
+  /**
+   * If auto it will find the parent scrollable element (use cdkScrollable),
+   * otherwise it uses the child .ql-editor as scrollable
+   */
+  @Input() scrollContainer: 'auto' | 'child' = 'auto';
+
   @Output() textChange: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('editor', {static: true}) editorElement: ElementRef<HTMLElement>;
 
@@ -218,7 +224,11 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   }
 
   // retrieve the first parent that is scrollable
-  private getScrollingContainer(): HTMLElement {
+  private getScrollingContainer(): HTMLElement | string {
+    if (this.scrollContainer === 'child') {
+      return '.ql-editor';
+    }
+
     // retrieve scrollable parents
     const scrollableElements = this.scrollDispatcher.getAncestorScrollContainers(this.elementRef);
     // if there are some scrollable parent, use the first one
@@ -229,7 +239,6 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     // otherwise, use document as scrolling container
     return this.document.documentElement;
   }
-
 
 
   ngOnDestroy(): void {
