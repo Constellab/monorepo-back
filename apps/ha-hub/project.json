@@ -39,12 +39,12 @@
         "styles": [
           "apps/ha-hub/src/ha-styles.scss",
           {
-            "input": "apps/ca-central-front/src/theme/ca-light-theme.scss",
+            "input": "apps/ha-hub/src/theme/ha-light-theme.scss",
             "bundleName": "light-theme",
             "inject": false
           },
           {
-            "input": "apps/ca-central-front/src/theme/ca-dark-theme.scss",
+            "input": "apps/ha-hub/src/theme/ha-dark-theme.scss",
             "bundleName": "dark-theme",
             "inject": false
           }
@@ -113,7 +113,7 @@
           },
           "serviceWorker": true,
           "outputHashing": "all",
-          "ngswConfigPath": "apps/ca-central-front/ngsw-config.json",
+          "ngswConfigPath": "apps/ha-hub/ngsw-config.json",
           "budgets": [
             {
               "type": "initial",

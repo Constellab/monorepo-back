@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import {HaBrickVersionDataSource} from '../../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
+import {Component, OnInit} from '@angular/core';
+import {
+  HaBrickVersion,
+  HaBrickVersionDataSource
+} from '../../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
 import {HaBrickVersionService} from '../../../../../ha-core/ha-service/ha-brick-version.service';
 import {ActivatedRoute} from '@angular/router';
 import {HaBrickService} from '../../../../../ha-core/ha-service/ha-brick.service';
 import {FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
-import {CaLabFrontVersion} from '../../../../../../../../ca-central-front/src/app/ca-core/model/entities/ca-lab-front-version.class';
 import {HaNewVersionDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-version.class';
 import {HaPublicAddVersionDialogComponent} from './ha-public-add-version-dialog/ha-public-add-version-dialog.component';
 import {HaNodeDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-node.class';
@@ -18,7 +20,7 @@ export class HaPublicVersionsPageComponent implements OnInit {
 
   brickVersions: HaBrickVersionDataSource;
   brickId: string;
-  displayedColumns: FlTableColumn<CaLabFrontVersion>[] = ['version', 'repoType', 'lastModified'];
+  displayedColumns: FlTableColumn<HaBrickVersion>[] = ['version', 'repoType', 'lastModified'];
 
   constructor(
     private brickVersionService: HaBrickVersionService,
@@ -41,7 +43,7 @@ export class HaPublicVersionsPageComponent implements OnInit {
     this.brickVersions = this.brickVersionService.getDataSource(this.brickId);
   }
 
-  private openNewVersionDialog(brickId: string): void {
+  openNewVersionDialog(brickId: string): void {
     const input: FlFormDialogInput<HaNewVersionDTO> = {
       mode: 'create',
       object: {

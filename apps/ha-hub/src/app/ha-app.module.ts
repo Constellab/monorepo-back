@@ -8,6 +8,7 @@ import {
   FlDialogModule,
   FlHttpInterceptorService,
   FlIconModule,
+  flIconsDefault,
   FlPortalModule,
   FlSnackBarModule,
   FlTextEditorImageService,
@@ -20,7 +21,6 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {HaAppRoutingModule} from './ha-app-routing-module';
 import {HaCoreModule} from './ha-core/ha-core.module';
 import {HaAuthService} from './ha-core/ha-service/ha-auth.service';
-import {caSvgIcons} from '../../../ca-central-front/src/app/ca-core/model/config/ca-svg-icon-config';
 import {HaAuthenticatedUserService} from './ha-core/ha-service/ha-authenticated-user.service';
 import {HaDocumentationService} from './ha-core/ha-service/ha-documentation.service';
 
@@ -58,7 +58,7 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
 
     FlIconModule.forRoot({
       iconFolder: 'assets/mat-icons/',
-      iconsToRegister: caSvgIcons
+      iconsToRegister: flIconsDefault
     })
 
   ],
@@ -67,8 +67,8 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
     useClass: FlHttpInterceptorService,
     multi: true
   },
-    {provide: APP_INITIALIZER, useFactory: loadUserOnInit, deps: [HaAuthenticatedUserService], multi: true},
-    {provide: FlTextEditorImageService, useExisting: HaDocumentationService},
+  {provide: APP_INITIALIZER, useFactory: loadUserOnInit, deps: [HaAuthenticatedUserService], multi: true},
+  {provide: FlTextEditorImageService, useExisting: HaDocumentationService},
   ],
   bootstrap: [AppComponent],
 })
