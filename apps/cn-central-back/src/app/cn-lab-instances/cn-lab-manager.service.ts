@@ -89,6 +89,14 @@ export class CnLabManagerService {
     return this.labManagerApiService.systemPrune(labInstance.getLabManagerApiInfo());
   }
 
+  public async startAdminer(labInstance: CnLabInstance): Promise<boolean> {
+    return this.labManagerApiService.startAdminer(labInstance.getLabManagerApiInfo());
+  }
+
+  public async stopAdminer(labInstance: CnLabInstance): Promise<boolean> {
+    return this.labManagerApiService.stopAdminer(labInstance.getLabManagerApiInfo());
+  }
+
   public async updateConfig(labInstance: CnLabInstance, config: CnLabInstanceConfigDTO): Promise<void> {
     // check if the gws core is in the brick list
     const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name === CnBrickGWS.GWS_CORE);

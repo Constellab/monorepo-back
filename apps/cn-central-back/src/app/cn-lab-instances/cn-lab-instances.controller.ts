@@ -221,4 +221,14 @@ export class CnLabInstancesController {
     return await this.securityLayer.getConfig(id);
   }
 
+  @Put(':id/adminer/start')
+  async startAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
+    return await this.securityLayer.startAdminer(id);
+  }
+
+  @Put(':id/adminer/stop')
+  async stopAdminer(@Param('id', new ParseUUIDPipe()) id: string): Promise<boolean> {
+    return await this.securityLayer.stopAdminer(id);
+  }
+
 }

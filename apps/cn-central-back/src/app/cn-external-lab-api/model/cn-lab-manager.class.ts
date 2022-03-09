@@ -37,6 +37,7 @@ export interface CnLabTaskStatusInfo {
 export interface CnLabManagerStatus {
   containersStatus: CnLabContainerStatusInfo;
   currentTask?: CnLabTaskStatusInfo;
+  adminerIsRunning: boolean;
 }
 
 /**

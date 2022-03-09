@@ -17,3 +17,10 @@
 <ng-template #noTask>
   {{'lab_manager_no_task' | translate}}
 </ng-template>
+
+<!-- Lab taAdminer runnings -->
+<fl-text-icon *ngIf="labStatus.adminerIsRunning" class="g-text-big g-warn-text">
+  <mat-icon>warnings</mat-icon>
+  {{'lab_manager_adminer_running' | translate}}
+
+</fl-text-icon>

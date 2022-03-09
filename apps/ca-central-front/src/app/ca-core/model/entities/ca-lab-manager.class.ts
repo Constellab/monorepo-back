@@ -70,6 +70,8 @@ export class CaLabManagerStatus {
 
   @Type(() => CaLabTaskStatusInfo)
   currentTask?: CaLabTaskStatusInfo;
+
+  adminerIsRunning: boolean;
 }
 
 export class CaBrickVersionDTO {

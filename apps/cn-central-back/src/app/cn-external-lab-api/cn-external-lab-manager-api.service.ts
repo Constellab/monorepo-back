@@ -87,6 +87,14 @@ export class CnExternalLabManagerApiService {
     return lastValueFrom(this.get(apiInfo, `${this.baseLabRoute}/config`));
   }
 
+  public async startAdminer(apiInfo: CnExternalApiInfo): Promise<boolean> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/adminer/start`, null));
+  }
+
+  public async stopAdminer(apiInfo: CnExternalApiInfo): Promise<boolean> {
+    return lastValueFrom(this.put(apiInfo, `${this.baseLabRoute}/adminer/stop`, null));
+  }
+
 
   /**
    * Make an http post with the ip of the lab and the API key of the lab in header
@@ -116,9 +124,9 @@ export class CnExternalLabManagerApiService {
   }
 
   private constructRoute(labUrl: string, route: string): string {
-    return `${labUrl}/${route}`;
+    // return `${labUrl}/${route}`;
     // uncomment for local host tests
-    // return `http://localhost:3010/${route}`;
+    return `http://localhost:3010/${route}`;
   }
 
 

@@ -176,4 +176,12 @@ export class CaLabInstanceService {
   public getConfig(id: string): Observable<CaLabInstanceConfig> {
     return this.apiService.get(`${this.route}/${id}/config`, CaLabInstanceConfig);
   }
+
+  public startAdminer(id: string): Observable<boolean> {
+    return this.apiService.put(`${this.route}/${id}/adminer/start`, null);
+  }
+
+  public stopAdminer(id: string): Observable<boolean> {
+    return this.apiService.put(`${this.route}/${id}/adminer/stop`, null);
+  }
 }

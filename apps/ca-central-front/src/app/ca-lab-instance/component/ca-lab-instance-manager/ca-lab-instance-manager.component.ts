@@ -138,6 +138,22 @@ export class CaLabInstanceManagerComponent implements OnInit, OnDestroy {
     });
   }
 
+  startAdminer(): void {
+    this.actionService.addAction({
+      action: this.labInstanceService.startAdminer(this.labInstanceId),
+      text: 'Start adminer',
+      type: this.actionType
+    });
+  }
+
+  stopAdminer(): void {
+    this.actionService.addAction({
+      action: this.labInstanceService.stopAdminer(this.labInstanceId),
+      text: 'Stop adminer',
+      type: this.actionType
+    });
+  }
+
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
