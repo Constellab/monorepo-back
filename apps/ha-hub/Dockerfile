@@ -11,7 +11,7 @@ COPY /package.json /package-lock.json ./
 #COPY ./nginx.conf /app/
 
 # Install dependencies
-RUN npm i
+RUN npm ci
 
 # Copy the workspace and build the app
 COPY / .
