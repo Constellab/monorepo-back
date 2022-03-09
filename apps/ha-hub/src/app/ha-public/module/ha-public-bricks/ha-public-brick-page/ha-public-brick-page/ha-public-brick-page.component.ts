@@ -4,10 +4,7 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {HaBrick} from '../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {Observable} from 'rxjs';
 import {HaAuthService} from '../../../../../ha-core/ha-service/ha-auth.service';
-import {HaNodeDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-node.class';
-import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
-import {HaNewVersionDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-version.class';
-import {HaPublicAddVersionDialogComponent} from './ha-public-add-version-dialog/ha-public-add-version-dialog.component';
+import {FlDialogService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'ha-public-list-bricks-page',
@@ -24,7 +21,6 @@ export class HaPublicBrickPageComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private authService: HaAuthService,
-    private dialogService: FlDialogService,
   ) {
   }
 
@@ -33,27 +29,7 @@ export class HaPublicBrickPageComponent implements OnInit {
       this.brick$ = this.brickService.getByName(params.brickName);
     });
     this.activatedRoute.children[0].url.subscribe((sectionUrl) =>
-      this.activeLink = sectionUrl[0].path
-    );
-  }
-
-  private openNewVersionDialog(brickId: string): void {
-    const input: FlFormDialogInput<HaNewVersionDTO> = {
-      mode: 'create',
-      object: {
-        version: null,
-        repoType: null,
-        commit: null,
-        brickId: brickId
-      } as HaNewVersionDTO
-    };
-
-    this.dialogService.openSmallDialog(HaPublicAddVersionDialogComponent, {data: input}).afterClosed().subscribe(
-      (res: HaNodeDTO) => {
-        if (res != null) {
-
-        }
-      }
+      this.activeLink = sectionUrl[0] ? sectionUrl[0].path : '.'
     );
   }
 }

@@ -1,13 +1,25 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource">
 
-  <!-- GWS_CORE -->
+  <!-- Version -->
   <ng-container matColumnDef="version">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{'gws_core_brick_version' | translate}}</p>
+      <p>{{'version' | translate}}</p>
     </mat-header-cell>
     <mat-cell *matCellDef="let version">
       <div>
         {{version.brickMajorVersion.major}}.{{version.minor}}.{{version.patch}}
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Repo type -->
+  <ng-container matColumnDef="repoType">
+    <mat-header-cell *matHeaderCellDef>
+      <p>{{'repo_type' | translate}}</p>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let version">
+      <div>
+        {{version.repoType}}
       </div>
     </mat-cell>
   </ng-container>
@@ -17,9 +29,9 @@
     <mat-header-cell *matHeaderCellDef>
       <p>{{'last_modification_info' | translate}}</p>
     </mat-header-cell>
-    <mat-cell *matCellDef="let labFrontVersion">
-      <fl-last-modification-info [lastModifiedBy]="labFrontVersion.lastModifiedBy?.fullname"
-                                 [lastModifiedAt]="labFrontVersion.lastModifiedAt">
+    <mat-cell *matCellDef="let version">
+      <fl-last-modification-info [lastModifiedBy]="version.lastModifiedBy?.fullname"
+                                 [lastModifiedAt]="version.lastModifiedAt">
       </fl-last-modification-info>
     </mat-cell>
   </ng-container>

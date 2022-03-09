@@ -1,0 +1,9 @@
+<fl-async-section [object]="brick$" class="h100">
+  <ng-container *flSectionBody="let brick">
+    <mat-card class="brick-description">
+      {{brick.description}}
+      <br>
+      <fl-creation-info [createdAt]="brick.create"></fl-creation-info>
+    </mat-card>
+  </ng-container>
+</fl-async-section>

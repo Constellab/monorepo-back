@@ -9,14 +9,16 @@ import {CommonModule} from "@angular/common";
 import { HaPublicSidenavCreateFormDialogComponent } from './ha-public-sidenav/ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {HaMainLoginModule} from '../../../../ha-main/ha-main-login/ha-main-login.module';
-import { HaPublicAddVersionDialogComponent } from './ha-public-brick-page/ha-public-add-version-dialog/ha-public-add-version-dialog.component';
+import { HaPublicAddVersionDialogComponent } from './ha-public-versions-page/ha-public-add-version-dialog/ha-public-add-version-dialog.component';
 import { HaPublicVersionsPageComponent } from './ha-public-versions-page/ha-public-versions-page.component';
 import { HaPublicBrickVersionsTableComponent } from './ha-public-versions-page/ha-public-brick-versions-table/ha-public-brick-versions-table.component';
 import {MatTableModule} from "@angular/material/table";
 import {FlDateModule} from '@monorepo/front-core-lib';
+import { HaPublicBrickDescriptionPageComponent } from './ha-public-brick-description-page/ha-public-brick-description-page.component';
+import {MatCardModule} from '@angular/material/card';
 
 @NgModule({
-  declarations: [HaPublicBrickPageComponent, HaPublicSidenavComponent, HaPublicSidenavCreateFormDialogComponent, HaPublicAddVersionDialogComponent, HaPublicVersionsPageComponent, HaPublicBrickVersionsTableComponent],
+  declarations: [HaPublicBrickPageComponent, HaPublicSidenavComponent, HaPublicSidenavCreateFormDialogComponent, HaPublicAddVersionDialogComponent, HaPublicVersionsPageComponent, HaPublicBrickVersionsTableComponent, HaPublicBrickDescriptionPageComponent],
   imports: [
     HaPublicCoreModule,
     HaCoreModule,
@@ -26,7 +28,8 @@ import {FlDateModule} from '@monorepo/front-core-lib';
     ReactiveFormsModule,
     HaMainLoginModule,
     MatTableModule,
-    FlDateModule
+    FlDateModule,
+    MatCardModule
   ]
 })
 export class HaPublicBrickPageModule {

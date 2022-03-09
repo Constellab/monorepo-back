@@ -111,5 +111,7 @@
   "owner": "Owner",
   "language": "Language",
   "user": "User",
-  "organization_name": "Organization's name"
+  "organization_name": "Organization's name",
+  "last_modification_info": "Last modification info",
+  "repo_type": "Type of repository"
 }

@@ -1,0 +1,15 @@
+.user-icon{
+  font-size: 0.75em;
+  height: 3em;
+  width: 3em;
+  padding: 0;
+  text-align: center;
+  line-height: 3em;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--primary-color);
+}
+
+.user-icon:hover{
+  cursor: pointer;
+}

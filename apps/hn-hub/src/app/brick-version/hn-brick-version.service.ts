@@ -108,7 +108,6 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion>{
   }
 
   async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>>{
-    console.log(brickId);
     return this.findPaginated(page, size, {
       where: {
         brickMajorVersion: {
@@ -118,7 +117,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion>{
         }
       },
       order: {
-        lastModifiedBy: 'DESC'
+        lastModifiedAt: 'DESC'
       },
       relations: ['brickMajorVersion']
     }

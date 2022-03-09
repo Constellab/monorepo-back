@@ -1,5 +1,5 @@
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
-import {Column, Entity} from 'typeorm';
+import {Column, Entity, Unique} from 'typeorm';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 
 export class HnCreateBrickDTO {
@@ -8,6 +8,7 @@ export class HnCreateBrickDTO {
   version?: number[];
 }
 
+@Unique(['name'])
 @Entity('Brick')
 export class HnBrick extends HnBaseEntity {
   @BlNotUpdatable()

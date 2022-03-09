@@ -3,7 +3,7 @@ import {HaEntity} from './ha-entity.class';
 export class HaBrick extends HaEntity {
   name: string;
 
-  desciption: string;
+  description: string;
 
   isCertified: boolean;
 }

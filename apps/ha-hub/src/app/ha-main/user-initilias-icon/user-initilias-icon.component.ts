@@ -19,7 +19,6 @@ export class UserInitiliasIconComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log(this.userConnected);
     this.initials = (this.userConnected.firstname.charAt(0) + this.userConnected.lastname.charAt(0)).toUpperCase();
   }
 
