@@ -14,6 +14,7 @@ import {CnGroupType} from './cn-group-type.enum';
 import {CnOrganization} from '../cn-organizations/cn-organization.entity';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {Exclude} from 'class-transformer';
+import {BadRequestException} from '@nestjs/common';
 
 @TableInheritance({column: {type: 'enum', enum: CnGroupType, name: 'type'}})
 @Entity('group')
@@ -30,7 +31,7 @@ export class CnGroup extends CnBaseEntity {
 @ChildEntity(CnGroupType.ORGANIZATION)
 export class CnGroupOrganization extends CnGroup {
 
-  @OneToOne(() => CnOrganization)
+  @OneToOne(() => CnOrganization, {onDelete: 'CASCADE'})
   @JoinColumn()
   organization: CnOrganization;
 
@@ -65,9 +66,16 @@ export class CnGroupUsers extends CnGroup {
   // users: CnUser[];
 
   @OneToMany(() => CnUserGroup, userGroup => userGroup.group)
-  users!: CnUserGroup[];
+  users: CnUserGroup[];
 
   type: CnGroupType.USERS;
+
+  public userIsInGroup(userId: string): boolean {
+    if (!this.users) {
+      throw new BadRequestException('The user are not loaded');
+    }
+    return this.users.find(userGroup => userGroup.userId === userId) !== null;
+  }
 }
 
 @Entity('user_group')

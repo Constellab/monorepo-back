@@ -2,23 +2,23 @@ import {Injectable} from '@nestjs/common';
 import {CnAbstractSecurityLayer} from '../cn-core/class/cn-abstract-security.layer';
 import {CnOrganization} from './cn-organization.entity';
 import {CnOrganizationsService} from './cn-organizations.service';
-import {CnRefuseAuthorization} from '../cn-core/security/cn-refuse.authorization';
 import {CnAcceptAuthorization} from '../cn-core/security/cn-accept.authorization';
+import {CnAdminAuthorization} from '../cn-core/security/cn-admin.authorization';
 
 
 @Injectable()
-export class CnOrganizationSecurityLayer extends CnAbstractSecurityLayer<CnOrganization>{
+export class CnOrganizationSecurityLayer extends CnAbstractSecurityLayer<CnOrganization> {
 
   constructor(private service: CnOrganizationsService) {
     super(service);
   }
 
   async isAuthorizedToCreate(): Promise<boolean> {
-    return new CnAcceptAuthorization().isAuthorized();
+    return new CnAdminAuthorization().isAuthorized();
   }
 
   async isAuthorizedToDelete(): Promise<boolean> {
-    return new CnRefuseAuthorization().isAuthorized();
+    return new CnAdminAuthorization().isAuthorized();
   }
 
   async isAuthorizedToFindOne(): Promise<boolean> {
@@ -26,7 +26,7 @@ export class CnOrganizationSecurityLayer extends CnAbstractSecurityLayer<CnOrgan
   }
 
   async isAuthorizedToUpdate(): Promise<boolean> {
-    return new CnRefuseAuthorization().isAuthorized();
+    return new CnAdminAuthorization().isAuthorized();
   }
 
 

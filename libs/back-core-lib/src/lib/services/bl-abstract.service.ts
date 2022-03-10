@@ -121,7 +121,7 @@ export abstract class BlAbstractService<T extends BlEntityWithId> {
     return size < 0 ? 10 : (size > this.maxPageSize ? this.maxPageSize : size)
   }
 
-  private getEntityManager(entityManager?: EntityManager): EntityManager {
+  protected getEntityManager(entityManager?: EntityManager): EntityManager {
     return entityManager ?? this.repo.manager;
   }
 }

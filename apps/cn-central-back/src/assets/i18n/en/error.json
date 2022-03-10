@@ -24,5 +24,7 @@
   "id_not_provided": "Can't search for object with empty id",
   "lab_user_not_activated": "The lab user is not activated",
   "lab_user_not_found": "You user does not exists in the lab, please request the administrator to add your user to the lab",
-  "project_already_shared_with_group": "The project is already shared with this group"
+  "project_already_shared_with_group": "The project is already shared with this group",
+  "user_already_in_group": "The user already is in the group",
+  "user_not_in_group": "The user is not in the group"
 }
