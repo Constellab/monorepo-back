@@ -3,7 +3,7 @@ import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {HnNode} from '../folder/hn-folder.entity';
-import {HnBrickPathVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
+import {HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 
 @Controller('brick')
@@ -37,9 +37,11 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Get('doc/:brickId/:version/:path')
-  async findCurrentDoc(@Param('brickId') brickId: string, @Param('version') version: string, @Param('path') path: string): Promise<HnDocumentation> {
-    return this.brickService.findCurrentDoc(await this.brickService.findById(brickId), path, version);
+  @Post('doc/:brickId/:version')
+  async findCurrentDoc(@Param('brickId') brickId: string,
+                       @Param('version') version: string,
+                       @Body() body: any): Promise<HnDocumentation> {
+    return this.brickService.findCurrentDoc(await this.brickService.findById(brickId), body.path, version);
   }
 
   @Post()

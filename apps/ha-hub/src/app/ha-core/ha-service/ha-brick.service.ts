@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {HaBrickDTO, HaBrick} from '../ha-model/ha-entities/ha-brick.class';
+import {HaBrick} from '../ha-model/ha-entities/ha-brick.class';
 import {HaNode} from '../ha-model/ha-entities/ha-node.class';
 import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
 import {HaNewVersionDTO} from '../ha-model/ha-entities/ha-version.class';
@@ -33,10 +33,10 @@ export class HaBrickService {
   }
 
   /**
-   * Call http get to get the brick current doc
+   * Call http post to get the brick current doc
    */
   public getDocByPath(brickId: string, path: string, version: string): Observable<HaDocumentation> {
-    return this.apiService.get(`${this.route}/doc/${brickId}/${version}/${path}`);
+    return this.apiService.post(`${this.route}/doc/${brickId}/${version}`, {path: path});
   }
 
   /**
@@ -48,7 +48,7 @@ export class HaBrickService {
 
   /**
    * Call http get
-   * @param name name of the entity
+   * @param id id of the entity
    */
   public getById(id: string): Observable<HaBrick> {
     return this.apiService.get(`${this.route}/${id}`, HaBrick);

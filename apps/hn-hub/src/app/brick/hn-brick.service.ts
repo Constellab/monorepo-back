@@ -51,17 +51,20 @@ export class HnBrickService {
   }
 
   async findDocsByBrickAndVersion(brick: HnBrick, version: string): Promise<HnNode> {
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     return this.brickMajorVersionService.findBrickDocsTree(brickMajorVersion);
   }
 
   async findRootFolderId(brick: HnBrick, version: string): Promise<string> {
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     return this.brickMajorVersionService.findRootFolderId(brickMajorVersion);
   }
 
   async findCurrentDoc(brick: HnBrick, path: string, version: string): Promise<HnDocumentation> {
-    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     return await this.documentationService.findCurrentDoc(brickMajorVersion, path);
   }
 

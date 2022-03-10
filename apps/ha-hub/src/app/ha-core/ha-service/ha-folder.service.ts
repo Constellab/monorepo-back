@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { FlApiService } from '@monorepo/front-core-lib'
-import { Observable } from 'rxjs';
-import {HaFolder, HaFolderDTO} from '../ha-model/ha-entities/ha-folder.class';
+import {Injectable} from '@angular/core';
+import {FlApiService} from '@monorepo/front-core-lib'
+import {Observable} from 'rxjs';
+import {HaFolder} from '../ha-model/ha-entities/ha-folder.class';
 import {HaNode, HaNodeDTO} from '../ha-model/ha-entities/ha-node.class';
 import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
 

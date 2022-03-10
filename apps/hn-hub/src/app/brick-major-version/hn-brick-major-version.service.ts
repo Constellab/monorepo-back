@@ -24,7 +24,7 @@ export class HnBrickMajorVersionService {
     brickMajorVersion.initialize(brick, version[0]);
     brickMajorVersion = await this.brickMajorVersionsRepository.save(brickMajorVersion);
 
-    let brickVersion: HnBrickVersion = new HnBrickVersion();
+    const brickVersion: HnBrickVersion = new HnBrickVersion();
     brickVersion.initialize(brickMajorVersion, version);
     await this.brickVersionService.create(brickVersion);
 
@@ -32,11 +32,20 @@ export class HnBrickMajorVersionService {
   }
 
   async findBrickMajorVersionByBrickAndVersion(brick: HnBrick, version: string): Promise<HnBrickMajorVersion> {
-    if(version != 'latest'){
+    let major: string;
+
+    if (version != 'latest') {
       version = version.slice();
-      let major = version.split('.')[0]
+      major = version.split('.')[0]
+      return await this.brickMajorVersionsRepository.findOne({where: {brick: brick, major: major}})
     }
-    return await this.brickMajorVersionsRepository.findOne({where: {brick: brick, versionState: HnVersionState.LATEST}});
+
+    return await this.brickMajorVersionsRepository.findOne({
+      where: {
+        brick: brick,
+        versionState: HnVersionState.LATEST
+      }
+    });
   }
 
   async findBrickDocsTree(brickMajorVersion: HnBrickMajorVersion): Promise<HnNode> {
@@ -55,10 +64,15 @@ export class HnBrickMajorVersionService {
   //   newBrickMajorVersion.initialize(brick, newMajor);
   // }
 
-  async createNewVersion(brick: HnBrick, newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO>{
-    let newMajor = newVersion.version.split('.')[0];
-    let brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({where: {brick: brick, major: newMajor}});
-    if(brickMajorVersion == null){
+  async createNewVersion(brick: HnBrick, newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
+    const newMajor = newVersion.version.split('.')[0];
+    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
+      where: {
+        brick: brick,
+        major: newMajor
+      }
+    });
+    if (brickMajorVersion == null) {
       throw new BadRequestException('Impossible to create a new major version')
       //let brickMajorVersion: HnBrickMajorVersion = await this.createNewBrickMajorVersion(+newMajor, brick);
     }
