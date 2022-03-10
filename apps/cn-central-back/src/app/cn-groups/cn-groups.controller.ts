@@ -8,8 +8,9 @@ export class CnGroupsController {
   constructor(private service: CnGroupsService) {
   }
 
-  @Get()
-  public test(): Promise<CnGroup[]> {
+  @Get('current')
+  public getCurrentGroups(): Promise<CnGroup[]> {
     return this.service.getCurrentUserGroups();
   }
+
 }

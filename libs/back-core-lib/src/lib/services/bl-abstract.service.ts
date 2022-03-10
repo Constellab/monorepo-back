@@ -94,22 +94,16 @@ export abstract class BlAbstractService<T extends BlEntityWithId> {
                       entityManager?: EntityManager): Promise<ClPageI<T>> {
     const manager: EntityManager = this.getEntityManager(entityManager);
 
-    // must be a positive number
-    const safePage: number = page < 0 ? 0 : page;
-    // must be a positive number and be lower than maxPageSize
-    const safeSize: number = size < 0 ? 10 : (size > this.maxPageSize ? this.maxPageSize : size);
+    const safePage: number = this.getSafePage(page);
+    const safeSize: number = this.getSafePageSize(size);
 
     // build the options with the paginated filters
     const pageOptions: FindManyOptions<T> = {...options, skip: safePage * safeSize, take: safeSize};
 
-    // count the total number of result
-    const totalElements: number = await manager.count(this.entityClass, options);
+    // get and count the total number of result
+    const [result, totalElements] = await manager.findAndCount(this.entityClass, pageOptions);
 
-    // get the results limited by page
-    const result: T[] = await manager.find(this.entityClass, pageOptions);
-
-    return new ClPage(safePage === 0, ((safePage + 1) * safeSize) >= totalElements, totalElements,
-      safePage, safeSize, result);
+    return ClPage.fromPagination(safePage, safeSize, totalElements, result);
   }
 
   // use to log persistence
@@ -117,6 +111,15 @@ export abstract class BlAbstractService<T extends BlEntityWithId> {
     this.persistenceLogger.logPersistence(actionName, entityId, this.entityClass.name);
   }
 
+  protected getSafePage(page: number): number{
+    // must be a positive number
+    return Math.max(page, 0)
+  }
+
+  protected getSafePageSize(size: number): number{
+    // must be a positive number and be lower than maxPageSize
+    return size < 0 ? 10 : (size > this.maxPageSize ? this.maxPageSize : size)
+  }
 
   private getEntityManager(entityManager?: EntityManager): EntityManager {
     return entityManager ?? this.repo.manager;

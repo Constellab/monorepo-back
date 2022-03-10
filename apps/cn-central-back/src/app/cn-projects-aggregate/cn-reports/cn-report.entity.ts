@@ -1,4 +1,4 @@
-import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
+import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
 import {Column, Entity, JoinTable, ManyToMany, ManyToOne} from 'typeorm';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {Type} from 'class-transformer';

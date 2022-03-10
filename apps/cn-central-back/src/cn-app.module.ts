@@ -4,7 +4,7 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {CnAuthModule} from './app/cn-auth/cn-auth.module';
 import {ConfigModule} from '@nestjs/config';
 import {CnCoreModule} from './app/cn-core/cn-core.module';
-import {CnProjectsModule} from './app/cn-projects/cn-projects.module';
+import {CnProjectsModule} from './app/cn-projects-aggregate/cn-projects/cn-projects.module';
 import {APP_FILTER, APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
 import {CnCoreConfigService} from './app/cn-core/modules/cn-core-config/cn-core-config.service';
 import {TypeOrmModuleOptions} from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
@@ -12,7 +12,7 @@ import {CnCoreConfigModule} from './app/cn-core/modules/cn-core-config/cn-core-c
 import {I18nJsonParser, I18nModule} from 'nestjs-i18n';
 import {join} from 'path';
 import {CnLabConfigsModule} from './app/cn-lab-configs/cn-lab-configs.module';
-import {CnExperimentsModule} from './app/cn-experiments/cn-experiments.module';
+import {CnExperimentsModule} from './app/cn-projects-aggregate/cn-experiments/cn-experiments.module';
 import {CnBricksModule} from './app/cn-bricks/cn-bricks.module';
 import {CnGroupsModule} from './app/cn-groups/cn-groups.module';
 import {CnOrganizationsModule} from './app/cn-organizations/cn-organizations.module';
@@ -22,7 +22,7 @@ import {CnUserCategoryGuard} from './app/cn-core/guards/cn-user-category-guard.s
 import {CnExternalLabsModule} from './app/cn-external-labs/cn-external-labs.module';
 import {CnServersInfoModule} from './app/cn-servers-info/cn-servers-info.module';
 import {CnCoreExceptionHandlerFilter} from './app/cn-core/filters/cn-core-exception-handler.filter';
-import {CnReportsModule} from './app/cn-reports/cn-reports.module';
+import {CnReportsModule} from './app/cn-projects-aggregate/cn-reports/cn-reports.module';
 import {clDefaultLang} from '@monorepo/core-lib';
 import {CnFrontErrorsModule} from './app/cn-front-errors/cn-front-errors.module';
 import {WinstonModule, WinstonModuleOptions} from 'nest-winston';
@@ -47,6 +47,7 @@ import {CnUsersService} from './app/cn-users/cn-users.service';
 import {CnDatabaseConfig} from './app/cn-core/model/config/cn-config.class';
 import {SnSmartDbModule} from './app/sn-smart-db/sn-smart-db.module';
 import {CnLabFrontVersionsModule} from './app/cn-lab-front-versions/cn-lab-front-versions.module';
+import {CnProjectsAggregateModule} from './app/cn-projects-aggregate/cn-project-aggregate.module';
 
 function typeOrmConfig(configService: CnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: CnDatabaseConfig = configService.getDatabaseConfig();
@@ -160,16 +161,17 @@ function configureTransportModule(configService: CnCoreConfigService): BlTranspo
     // Entities module
     CnUsersModule,
     CnAuthModule,
-    CnProjectsModule,
     CnLabConfigsModule,
+    CnProjectsAggregateModule,
     CnExperimentsModule,
+    CnProjectsModule,
+    CnReportsModule,
     CnBricksModule,
     CnGroupsModule,
     CnOrganizationsModule,
     CnLabInstancesModule,
     CnExternalLabsModule,
     CnServersInfoModule,
-    CnReportsModule,
     CnFrontErrorsModule,
     CnLabFrontVersionsModule,
     SnSmartDbModule,

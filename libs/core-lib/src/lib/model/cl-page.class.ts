@@ -15,8 +15,14 @@ export interface ClPageI<T> {
 }
 
 export class ClPage<T> implements ClPageI<T> {
+
   constructor(public first: boolean, public last: boolean, public totalElements: number,
               public currentPage: number, public pageSize: number, public objects: T[]) {
+  }
+
+  public static fromPagination<T>(page: number, pageSize: number, totalElements: number, objects: T[]): ClPage<T> {
+    return new ClPage(page === 0, ((page + 1) * pageSize) >= totalElements, totalElements,
+      page, pageSize, objects);
   }
 }
 

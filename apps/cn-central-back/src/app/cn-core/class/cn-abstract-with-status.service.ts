@@ -36,7 +36,7 @@ export abstract class CnAbstractWithStatusService<T extends CnEntityWithStatus<C
     return await this.createAndSetCurrentStatus(dbEntity, status, transaction);
   }
 
-  protected async updateWithCompare(newEntity: T, dbEntity: T, entityManager?: EntityManager): Promise<T> {
+  public async updateWithCompare(newEntity: T, dbEntity: T, entityManager?: EntityManager): Promise<T> {
     newEntity.currentStatus = dbEntity.currentStatus;
     return super.updateWithCompare(newEntity, dbEntity, entityManager);
   }

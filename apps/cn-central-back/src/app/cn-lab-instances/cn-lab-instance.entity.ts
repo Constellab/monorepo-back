@@ -39,7 +39,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
 
   // api key shared with the glab instance API
   @Exclude()
-  @Column({nullable: false, length: 255})
+  @Column({nullable: false, length: 255, unique: true})
   glabApiKey: string;
 
   // api key shared with the lab manager API

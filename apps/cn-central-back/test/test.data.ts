@@ -1,7 +1,7 @@
 /**
  * Class containing data useful for tests
  */
-import {CnProject} from '../src/app/cn-projects/cn-project.entity';
+import {CnProject} from '../src/app/cn-projects-aggregate/cn-projects/cn-project.entity';
 import {ClDateHelper} from '@monorepo/core-lib';
 
 export class TestData {

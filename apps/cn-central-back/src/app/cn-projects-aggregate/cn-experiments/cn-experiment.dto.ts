@@ -1,9 +1,9 @@
 import {CnExperimentStatus} from './cn-experiment-status.enum';
 import {DateTime} from 'luxon';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
-import {CnBaseEntityDTO} from '../cn-core/model/entities/cn-base.entity';
+import {CnBaseEntityDTO} from '../../cn-core/model/entities/cn-base.entity';
 import {CnExperiment, CnExperimentProtocol} from './cn-experiment.entity';
-import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
+import {CnLabConfigDto} from '../../cn-lab-configs/cn-lab-config.dto';
 import {CmRichTextI} from '@monorepo/common-model';
 
 export class CnCreateLabExperimentDto {

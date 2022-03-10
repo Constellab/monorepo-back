@@ -3,6 +3,7 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {CnGroup, CnGroupOrganization, CnGroupSingleUser, CnGroupUsers, CnUserGroup} from './cn-group.entity';
 import {CnGroupsService} from './cn-groups.service';
 import {CnGroupsController} from './cn-groups.controller';
+import {CnUsersModule} from '../cn-users/cn-users.module';
 
 @Module({
   imports: [
@@ -12,7 +13,9 @@ import {CnGroupsController} from './cn-groups.controller';
       CnGroupOrganization,
       CnGroupUsers,
       CnUserGroup,
-    ])
+    ]),
+
+    CnUsersModule,
   ],
   providers: [CnGroupsService],
   controllers: [CnGroupsController],

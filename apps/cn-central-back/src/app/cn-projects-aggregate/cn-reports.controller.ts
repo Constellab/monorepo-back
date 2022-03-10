@@ -1,23 +1,23 @@
 import {Controller, Get, Param, ParseUUIDPipe, Res} from '@nestjs/common';
-import {CnReportsSecurityLayer} from './cn-reports-security.layer';
-import {CnReportDTO} from './cn-report.dto';
-import {CnReport} from './cn-report.entity';
+import {CnReportDTO} from './cn-reports/cn-report.dto';
+import {CnReport} from './cn-reports/cn-report.entity';
 import {Response} from 'express';
+import {CnProjectAggregateService} from './cn-project-aggregate.service';
 
 @Controller('reports')
 export class CnReportsController {
 
-  constructor(private securityLayer: CnReportsSecurityLayer) {
+  constructor(private projectAggregator: CnProjectAggregateService) {
   }
 
   @Get(':id')
   async findById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnReport> {
-    return await this.securityLayer.findByIdAndCheck(id);
+    return await this.projectAggregator.findReport(id);
   }
 
   @Get('experiment/:experimentId')
   async getReportsByExperiment(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnReportDTO[]> {
-    const reports = await this.securityLayer.getReportsByExperiment(experimentId);
+    const reports = await this.projectAggregator.getReportAssociatedToExperiment(experimentId);
     return reports.map(report => new CnReportDTO().copyEntity(report));
   }
 
@@ -25,8 +25,8 @@ export class CnReportsController {
    * Return the list of reports of a project
    */
   @Get('project/:projectId')
-  public async getExperimentByProject(@Param('projectId', ParseUUIDPipe) projectId: string): Promise<CnReportDTO[]> {
-    const reports = await this.securityLayer.getExperimentsByProject(projectId);
+  public async getReportByProject(@Param('projectId', ParseUUIDPipe) projectId: string): Promise<CnReportDTO[]> {
+    const reports = await this.projectAggregator.getReportsByProject(projectId);
     return reports.map(report => new CnReportDTO().copyEntity(report));
   }
 
@@ -36,7 +36,7 @@ export class CnReportsController {
   @Get('image/:filename')
   public async get(@Param('filename') filename: string,
                    @Res() response: Response): Promise<any> {
-    const file = await this.securityLayer.getImage(filename);
+    const file = await this.projectAggregator.getReportImage(filename);
     file.pipe(response);
   }
 

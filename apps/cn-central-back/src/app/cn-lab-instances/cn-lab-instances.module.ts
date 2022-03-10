@@ -8,7 +8,7 @@ import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entit
 import {CnLabInstancesSecurityLayer} from './cn-lab-instances-security.layer';
 import {CnExternalLabApiModule} from '../cn-external-lab-api/cn-external-lab-api.module';
 import {CnUsersModule} from '../cn-users/cn-users.module';
-import {CnExperimentsModule} from '../cn-experiments/cn-experiments.module';
+import {CnExperimentsModule} from '../cn-projects-aggregate/cn-experiments/cn-experiments.module';
 import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnBricksModule} from '../cn-bricks/cn-bricks.module';
 import {CnLabFrontVersionsModule} from '../cn-lab-front-versions/cn-lab-front-versions.module';

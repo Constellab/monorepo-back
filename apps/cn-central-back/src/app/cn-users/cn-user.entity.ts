@@ -62,8 +62,8 @@ export class CnUser extends BlEntityWithId implements BlUser {
   @ManyToOne(() => CnOrganization, {nullable: true})
   organization: CnOrganization;
 
-  @Column({ nullable: true })
-  organizationId: string
+  @Column({nullable: true})
+  organizationId: string;
 
   //////////////////// TRANSIENT METHODS //////////////////
 
@@ -99,4 +99,7 @@ export class CnUser extends BlEntityWithId implements BlUser {
     return this.category === CmUserCategory.ADMIN;
   }
 
+  hasOrganization(): boolean {
+    return this.organizationId != null;
+  }
 }

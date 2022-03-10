@@ -3,17 +3,15 @@ import {CnExperiment} from './cn-experiment.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {CnCreateLabExperimentDto} from './cn-experiment.dto';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
-import {CnReportsService} from '../cn-reports/cn-reports.service';
-import {CnLabConfigsService} from '../cn-lab-configs/cn-lab-configs.service';
+import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {BlAbstractService} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
   constructor(@InjectRepository(CnExperiment) private repository: Repository<CnExperiment>,
-              private reportService: CnReportsService,
               private labConfigService: CnLabConfigsService) {
     super(repository, CnExperiment);
   }
@@ -34,10 +32,6 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
       },
       order: {lastModifiedAt: 'DESC'}
     });
-  }
-
-  async getExperimentsByReport(reportId: string): Promise<CnExperiment[]> {
-    return (await this.reportService.findByIdAndCheckWithExperiments(reportId)).experiments;
   }
 
   public async createLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto): Promise<CnExperiment> {

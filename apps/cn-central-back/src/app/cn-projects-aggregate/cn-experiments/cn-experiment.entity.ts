@@ -1,12 +1,12 @@
 import {Column, Entity, ManyToMany, ManyToOne} from 'typeorm';
 import {Type} from 'class-transformer';
-import {CnLabInstance} from '../cn-lab-instances/cn-lab-instance.entity';
+import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnReport} from '../cn-reports/cn-report.entity';
 import {CnExperimentStatus} from './cn-experiment-status.enum';
-import {CnBaseEntity} from '../cn-core/model/entities/cn-base.entity';
-import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
+import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
+import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 
 export interface CnExperimentProtocol {
