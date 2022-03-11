@@ -24,9 +24,10 @@
   "id_not_provided": "L'objet ne peut pas être recherché avec l'id vide",
   "lab_user_not_activated": "L'utilisateur dans le lab n'est pas activé",
   "lab_user_not_found": "Votre utilisateur n'existe pas dans le lab, il faut qu'un administrateur du lab ajoute votre utilisateur",
-  "project_already_shared_with_group": "Le projet est déjà partagé sur ce groupe",
+  "project_already_shared_with_group": "Le projet est déjà partagé avec ce groupe",
+  "project_not_shared_with_group": "Le projet n'est pas partagé avec ce groupe",
   "user_already_in_group": "L'utilisateur est déjà dans le groupe",
   "user_not_in_group": "L'utilisateur n'est pas dans le groupe",
-  "user_already_in_organization": "l'utilisateur est déjà dans l'organisation"
-
+  "user_already_in_organization": "l'utilisateur est déjà dans l'organisation",
+  "project_must_have_a_group": "Le projet doit être partagé par au moins un group"
 }

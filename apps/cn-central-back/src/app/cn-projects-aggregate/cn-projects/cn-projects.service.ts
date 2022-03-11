@@ -11,6 +11,7 @@ import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnUsersService} from '../../cn-users/cn-users.service';
+import {CnGroup} from '../../cn-groups/cn-group.entity';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
@@ -63,13 +64,23 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     return ClPage.fromPagination(page, size, totalElements, result);
   }
 
-  public async shareProject(project: CnProject, groupId: string): Promise<void> {
+  public async shareProject(project: CnProject, groupId: string): Promise<CnGroup> {
     if (project.isSharedToGroup(groupId)) {
       throw new BadRequestException(CnErrorText.PROJECT_ALREADY_SHARED_WITH_GROUP);
     }
 
     const group = await this.groupService.findByIdAndCheck(groupId);
     project.sharedGroups.push(group);
+    await this.update(project);
+    return group;
+  }
+
+  public async unshareProject(project: CnProject, groupId: string): Promise<void> {
+    if (!project.isSharedToGroup(groupId)) {
+      throw new BadRequestException(CnErrorText.PROJECT_NOT_SHARED_WITH_GROUP);
+    }
+
+    project.removeSharedGroup(groupId);
     await this.update(project);
   }
 

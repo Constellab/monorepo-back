@@ -24,5 +24,6 @@
   "no_report": "Aucun rapport validé",
   "report": "Rapport validé",
   "url": "URL",
-  "print_report": "Imprimer"
+  "print_report": "Imprimer",
+  "project_shared_groups" : "Partage"
 }

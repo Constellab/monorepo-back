@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {CnProjectsService} from './cn-projects/cn-projects.service';
 import {CnProjectsAggregateSecurity} from './cn-projects-aggregate.security';
 import {CnProject} from './cn-projects/cn-project.entity';
@@ -15,6 +15,8 @@ import {CnCreateReportDto} from './cn-reports/cn-report.dto';
 import {BlFile} from '@monorepo/back-core-lib';
 import {CnReport} from './cn-reports/cn-report.entity';
 import {IncomingMessage} from 'http';
+import {CnGroupsService} from '../cn-groups/cn-groups.service';
+import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -23,7 +25,8 @@ export class CnProjectAggregateService {
   constructor(private projectService: CnProjectsService,
               private projectSecurity: CnProjectsAggregateSecurity,
               private experimentService: CnExperimentsService,
-              private reportService: CnReportsService) {
+              private reportService: CnReportsService,
+              private groupService: CnGroupsService) {
   }
 
   /////////////////////////////////////// PROJECT //////////////////////////////////
@@ -49,10 +52,26 @@ export class CnProjectAggregateService {
     return this.projectService.getProjectsOfUserId(userId);
   }
 
-  public async shareProject(projectId: string, groupId: string): Promise<void> {
+  public async shareProject(projectId: string, groupId: string): Promise<CnGroup> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
+    // the user must be an admin or be in the group he shared the project
+    const user = CnCurrentUserHelper.getAndCheckCurrentUser();
+    if (!user.isAdmin() && !(await this.groupService.currentUserIsInGroup(groupId))) {
+      throw new UnauthorizedException();
+    }
+
     return this.projectService.shareProject(project, groupId);
+  }
+
+  public async unshareProject(projectId: string, groupId: string): Promise<void> {
+    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    if (project.sharedGroups.length <= 1) {
+      throw new BadRequestException(CnErrorText.PROJECT_MUST_HAVE_A_GROUP);
+    }
+
+    return this.projectService.unshareProject(project, groupId);
   }
 
   public async getProjectSharedGroups(projectId: string): Promise<CnGroup[]> {

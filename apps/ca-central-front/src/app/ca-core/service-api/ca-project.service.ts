@@ -8,6 +8,7 @@ import {
 import {Observable} from 'rxjs';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource,} from '@monorepo/front-core-lib';
 import {ClGetPageFunction} from '@monorepo/core-lib';
+import {CaGroup} from '../model/entities/ca-group.entity';
 
 /**
  * Service to manage project entity
@@ -78,5 +79,17 @@ export class CaProjectService {
 
   public getStatusHistories(id: string): FlArrayObs<CaProjectStatusHistory> {
     return new FlEntityArrayObs(this.apiService.get(`${this.route}/${id}/status-history`, CaProjectStatusHistory));
+  }
+
+  public getProjectSharedGroups(id: string): Observable<CaGroup[]> {
+    return this.apiService.get(`${this.route}/${id}/shared-groups`, CaGroup);
+  }
+
+  public shareProject(id: string, groupId: string): Observable<CaGroup> {
+    return this.apiService.put(`${this.route}/${id}/share/${groupId}`, null, CaGroup);
+  }
+
+  public unshareProject(id: string, groupId: string): Observable<void> {
+    return this.apiService.delete(`${this.route}/${id}/unshare/${groupId}`);
   }
 }

@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Put, Query} from '@nestjs/common';
 import {CnProject} from './cn-projects/cn-project.entity';
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.entity';
@@ -48,8 +48,14 @@ export class CnProjectsController {
 
   @Put(':id/share/:groupId')
   shareProject(@Param('id', new ParseUUIDPipe()) id: string,
-               @Param('groupId', new ParseUUIDPipe()) groupId: string): Promise<void> {
+               @Param('groupId', new ParseUUIDPipe()) groupId: string): Promise<CnGroup> {
     return this.projectAggregate.shareProject(id, groupId);
+  }
+
+  @Delete(':id/unshare/:groupId')
+  unshareProject(@Param('id', new ParseUUIDPipe()) id: string,
+                 @Param('groupId', new ParseUUIDPipe()) groupId: string): Promise<void> {
+    return this.projectAggregate.unshareProject(id, groupId);
   }
 
   /**

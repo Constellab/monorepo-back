@@ -48,4 +48,12 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
     const groupIds = ClHelpService.convertObjectOrArrayToArray(groupId);
     return this.sharedGroups.find(group => groupIds.includes(group.id)) != null;
   }
+
+  public removeSharedGroup(groupId: string): void {
+    const index = this.sharedGroups.findIndex(group => group.id === groupId);
+
+    if (index >= 0) {
+      this.sharedGroups.splice(index, 1);
+    }
+  }
 }

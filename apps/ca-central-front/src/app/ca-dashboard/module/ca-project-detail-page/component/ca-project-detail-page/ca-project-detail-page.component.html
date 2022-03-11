@@ -3,6 +3,7 @@
   <fl-section [isLoading]="isLoading" [object]="project">
 
     <ng-template flSectionBody>
+
       <ca-project-detail [project]="project"
                          (projectUpdated)="onProjectUpdate($event)">
       </ca-project-detail>
@@ -12,6 +13,8 @@
 
         <ca-reports-list [reports$]="reports$" fxFlex="auto"></ca-reports-list>
       </div>
+
+
     </ng-template>
   </fl-section>
 </div>

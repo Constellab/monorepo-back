@@ -7,6 +7,10 @@ import {CaProjectDetailComponent} from './component/ca-project-detail/ca-project
 import {RouterModule} from '@angular/router';
 import {CaExperimentCoreModule} from '../ca-experiment-core/ca-experiment-core.module';
 import {CaReportCoreModule} from '../ca-report-core/ca-report-core.module';
+import {CaGroupCoreModule} from '../../../ca-core/entity-module/ca-group-core/ca-group-core.module';
+import {
+  CaProjectSharedGroupsListComponent
+} from './component/ca-project-shared-groups-list/ca-project-shared-groups-list.component';
 
 /**
  * Module for the project detail page
@@ -15,6 +19,7 @@ import {CaReportCoreModule} from '../ca-report-core/ca-report-core.module';
   declarations: [
     CaProjectDetailPageComponent,
     CaProjectDetailComponent,
+    CaProjectSharedGroupsListComponent,
   ],
   imports: [
     CommonModule,
@@ -24,6 +29,7 @@ import {CaReportCoreModule} from '../ca-report-core/ca-report-core.module';
     CaProjectCoreModule,
     CaExperimentCoreModule,
     CaReportCoreModule,
+    CaGroupCoreModule,
   ]
 })
 export class CaProjectDetailPageModule {

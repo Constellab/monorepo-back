@@ -28,7 +28,9 @@ export enum CnErrorText {
   LAB_USER_NOT_ACTIVATED = 'error.lab_user_not_activated',
   LAB_USER_NOT_FOUND = 'error.lab_user_not_found',
   PROJECT_ALREADY_SHARED_WITH_GROUP = 'error.project_already_shared_with_group',
+  PROJECT_NOT_SHARED_WITH_GROUP = 'error.project_not_shared_with_group',
   USER_ALREADY_IN_GROUP = 'error.user_already_in_group',
   USER_NOT_IN_GROUP = 'error.user_not_in_group',
-  USER_ALREADY_IN_ORGANIZATION = 'error.user_already_in_organization'
+  USER_ALREADY_IN_ORGANIZATION = 'error.user_already_in_organization',
+  PROJECT_MUST_HAVE_A_GROUP ='error.project_must_have_a_group'
 }

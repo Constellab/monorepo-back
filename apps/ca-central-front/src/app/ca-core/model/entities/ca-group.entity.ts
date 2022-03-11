@@ -6,6 +6,13 @@ export enum CaGroupType{
   ORGANIZATION = 'ORGANIZATION'
 }
 
+
+export const caGroupTypeIcons: {[K in CaGroupType]: string} = {
+  [CaGroupType.SINGLE_USER]: 'person',
+  [CaGroupType.ORGANIZATION]: 'organization',
+  [CaGroupType.USERS]: 'group'
+}
+
 export class CaGroup extends CaBaseEntity{
   label: string;
 

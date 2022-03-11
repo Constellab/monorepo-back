@@ -1,0 +1,30 @@
+<fl-async-section [arrayObs]="groupsArray" class="g-full-height">
+
+  <ng-container *flSectionBody="let groups">
+
+    <fl-card class="g-full-height">
+      <fl-card-header>
+        <h2>{{'project_shared_groups' | translate}}</h2>
+
+        <fl-card-actions>
+          <button mat-stroked-button type="button" (click)="openShareDialog()">
+            <mat-icon svgIcon="share_arrow"></mat-icon>
+            <span>{{'share' | translate}}</span>
+          </button>
+        </fl-card-actions>
+      </fl-card-header>
+
+      <fl-card-body>
+        <div *ngFor="let group of groups" fxLayout="row" fxLayoutAlign="space-between center">
+          <ca-group-inline [group]="group"></ca-group-inline>
+
+          <button mat-icon-button type="button" (click)="openUnshareDialog(group)"
+                  [matTooltip]="'unshare' | translate">
+            <mat-icon>clear</mat-icon>
+          </button>
+        </div>
+      </fl-card-body>
+    </fl-card>
+  </ng-container>
+
+</fl-async-section>

@@ -73,6 +73,10 @@
   "no_result": "No result",
   "show_more_result": "Show more results",
   "share": "Share",
+  "object_shared": "Object shared",
+  "unshare": "Remove sharing",
+  "unshare_confirmation": "Are you sure you want to remove the sharing ?",
+  "unshared": "Sharing removed",
   "admin_dashboard": "Admin dashboard",
   "admin_account_activation": "Accounts activation",
   "activate_account": "Activate account",
@@ -108,5 +112,6 @@
   "organization_user_added": "User added",
   "organization_remove_user": "Remove user from organization",
   "organization_remove_user_confirmation": "Are you sure you want to remove this user form the organization ? He will not be able to access organization's objects",
-  "organization_user_removed": "User removed from organization"
+  "organization_user_removed": "User removed from organization",
+  "group": "Group"
 }

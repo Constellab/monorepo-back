@@ -73,6 +73,10 @@
   "no_result": "Aucun résultat",
   "show_more_result": "Afficher plus de résultat",
   "share": "Partager",
+  "object_shared": "Object partagé",
+  "unshare": "Supprimer le partage",
+  "unshare_confirmation": "Êtes-vous sûr de vouloir supprimer le partage ?",
+  "unshared": "Partage supprimé",
   "admin_dashboard": "Dashboard admin",
   "admin_account_activation": "Activation de comptes",
   "activate_account": "Activer le compte",
@@ -108,5 +112,6 @@
   "organization_user_added": "Utilisateur ajouté",
   "organization_remove_user": "Retirer l'utilisateur de l'organisation",
   "organization_remove_user_confirmation": "Êtes-vous sûr de vouloir retirer l'utilisateur de l'organisation ? Il ne pourra plus accéder aux objects de l'organisation",
-  "organization_user_removed": "Utilisateur retirer de l'organisation"
+  "organization_user_removed": "Utilisateur retirer de l'organisation",
+  "group": "Groupe"
 }

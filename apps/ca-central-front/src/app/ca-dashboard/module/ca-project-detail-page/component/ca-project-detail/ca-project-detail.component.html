@@ -14,42 +14,47 @@
     </div>
   </div>
 
-  <fl-card>
-    <fl-card-header>
-      <h2>{{project.title}}</h2>
-    </fl-card-header>
+  <div fxLayout="row" fxLayoutAlign="start stretch" fxLayoutGap="2em" fxLayout.xs="column">
 
-    <fl-card-body>
-      <fl-text-icon class="dates">
-        <mat-icon>date_range</mat-icon>
-        <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate">
-        </fl-date-range>
-      </fl-text-icon>
+    <fl-card fxFlex="70%">
+      <fl-card-header>
+        <h2>{{project.title}}</h2>
+      </fl-card-header>
 
-      <div class="description">
-        <div *ngIf="project.description; else noDesc" [innerHTML]="project.description"></div>
-        <ng-template #noDesc>
-          <fl-error-text [errorMessage]="'no_description' | translate"></fl-error-text>
-        </ng-template>
-      </div>
+      <fl-card-body>
+        <fl-text-icon class="dates">
+          <mat-icon>date_range</mat-icon>
+          <fl-date-range [startingDate]="project.startingDate" [endingDate]="project.endingDate">
+          </fl-date-range>
+        </fl-text-icon>
 
-    </fl-card-body>
+        <div class="description">
+          <div *ngIf="project.description; else noDesc" [innerHTML]="project.description"></div>
+          <ng-template #noDesc>
+            <fl-error-text [errorMessage]="'no_description' | translate"></fl-error-text>
+          </ng-template>
+        </div>
 
-    <fl-card-footer layoutGap="0.5em">
-      <button mat-button type="button" color="primary" (click)="openUpdateStatusDialog()"
-              class="button">
-        {{'update_status' | translate}}
-      </button>
-      <button mat-button type="button" color="primary" (click)="openUpdateProjectDialog()"
-              class="button">
-        <mat-icon>edit</mat-icon>
-        <span>{{'edit' | translate}}</span>
-      </button>
-      <button mat-button type="button" color="primary" disabled
-              class="button">
-        <mat-icon svgIcon="share_arrow"></mat-icon>
-        <span>{{'share' | translate}}</span>
-      </button>
-    </fl-card-footer>
-  </fl-card>
+      </fl-card-body>
+
+      <fl-card-footer layoutGap="0.5em">
+        <button mat-button type="button" color="primary" (click)="openUpdateStatusDialog()"
+                class="button">
+          {{'update_status' | translate}}
+        </button>
+        <button mat-button type="button" color="primary" (click)="openUpdateProjectDialog()"
+                class="button">
+          <mat-icon>edit</mat-icon>
+          <span>{{'edit' | translate}}</span>
+        </button>
+      </fl-card-footer>
+    </fl-card>
+
+
+    <!--  List the shared groups  -->
+    <ca-project-shared-groups-list fxFlex="30%" [projectId]="project.id"></ca-project-shared-groups-list>
+
+  </div>
+
+
 </div>
