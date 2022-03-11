@@ -6,7 +6,6 @@ import {HaNewVersionDTO} from '../../../../../../ha-core/ha-model/ha-entities/ha
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {Validators} from '@angular/forms';
-import {HaBrick} from '../../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 
 @Component({
   selector: 'ha-public-add-version-dialog',
@@ -37,7 +36,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
 
   buildForm(): FormGroup<Partial<HaNewVersionDTO>> {
     return new FormBuilder().group({
-      version: [null, [Validators.required, Validators.pattern('^[0-9]+\.[0-9]+\.[0-9]+$')]],
+      version: [null, [Validators.required, Validators.pattern( new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]],
       brickId: [this.dialogInput.object.brickId, Validators.required],
       repoType: [null, Validators.required]
     });

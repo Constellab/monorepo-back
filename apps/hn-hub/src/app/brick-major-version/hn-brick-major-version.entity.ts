@@ -1,10 +1,7 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToMany, Unique} from 'typeorm';
+import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {HnBrick} from '../brick/hn-brick.entity';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
-import {CmVersion, CmVersionTransform} from '@monorepo/common-model';
-import {HnBrickVersion} from '../brick-version/hn-brick-version.entity';
-import {Expose} from 'class-transformer';
 
 export class HnBrickIdAndVersion {
   id: string;
@@ -37,7 +34,7 @@ export class HnBrickMajorVersion extends HnBaseEntity {
   @Column({type: 'enum', enum: HnVersionState, nullable: false, default: HnVersionState.STABLE})
   versionState: HnVersionState;
 
-  initialize(brick: HnBrick, major: number) {
+  initialize(brick: HnBrick, major: number): void {
     this.brick = brick;
     this.versionState = HnVersionState.LATEST;
     this.major = major;

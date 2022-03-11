@@ -3,7 +3,7 @@ import {HaBrick} from '../../../../../ha-core/ha-model/ha-entities/ha-brick.clas
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {HaBrickService} from '../../../../../ha-core/ha-service/ha-brick.service';
-import {Route, Router} from '@angular/router';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'ha-public-edit-brick-form',
@@ -33,7 +33,8 @@ export class HaPublicEditBrickFormComponent implements OnInit {
     this.formGp = new FormBuilder().group({
       id: [null],
       name: [null, Validators.required],
-      description: [null, Validators.required]
+      description: [null, Validators.required],
+      version: [null, [Validators.required, Validators.pattern( new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]]
     });
   }
 

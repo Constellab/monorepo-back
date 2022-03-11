@@ -1,18 +1,13 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {
-  FlFormDialogAbstractDirective,
-  FlFormDialogInput,
-  FlGlobalValidators,
-  FlSnackBarService
-} from '@monorepo/front-core-lib';
-import {HaFolder, HaFolderDTO} from '../../../../../../ha-core/ha-model/ha-entities/ha-folder.class';
+import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
+import {HaFolder} from '../../../../../../ha-core/ha-model/ha-entities/ha-folder.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {HaFolderService} from '../../../../../../ha-core/ha-service/ha-folder.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {HaDocumentationService} from '../../../../../../ha-core/ha-service/ha-documentation.service';
-import {HaNode, HaNodeDTO} from '../../../../../../ha-core/ha-model/ha-entities/ha-node.class';
+import {HaNodeDTO} from '../../../../../../ha-core/ha-model/ha-entities/ha-node.class';
 import {HaDocumentation} from '../../../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 
 @Component({
@@ -45,7 +40,6 @@ export class HaPublicSidenavCreateFormDialogComponent extends FlFormDialogAbstra
     return new FormBuilder().group({
       id: [null],
       title: [null, Validators.required],
-      path: [null, [Validators.required, Validators.pattern('^[a-z0-9A-Z-]+$')]],
       isFolder: [null, Validators.required]
     });
   }

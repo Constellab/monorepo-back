@@ -1,5 +1,5 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Params, UrlSegment} from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, UrlSegment} from '@angular/router';
 import {Observable} from 'rxjs';
 import {
   HaDocumentation,
@@ -10,10 +10,9 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {HaDocumentationService} from '../../../../../../ha-core/ha-service/ha-documentation.service';
 import {HaBrick} from '../../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
-import {LabReportContent} from '../../../../../../../../../lab-front/src/app/lab-core/model/entities/lab-report.entity';
-import {FlApiService, FlDebouncer, FlTextEditorImageService, FlTextEditorUploadedImage} from '@monorepo/front-core-lib';
+import {FlDebouncer} from '@monorepo/front-core-lib';
 import {HaAuthenticatedUserService} from '../../../../../../ha-core/ha-service/ha-authenticated-user.service';
-import {map} from 'rxjs/operators';
+import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 
 @Component({
   selector: 'ha-public-doc-page',
@@ -30,6 +29,7 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
   isAdmin: Observable<boolean> = this.authUserService.isAdmin();
   canEdit: boolean = false;
   titles: any[] = [];
+  richText: CmRichText;
 
   constructor(
     private brickService: HaBrickService,
@@ -87,24 +87,16 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
       this.setFormGroupValue(doc);
       this.titles = [];
       if(doc.content){
-        this.updateTitles(doc.content.ops)
+        this.richText = new CmRichText(doc.content as CmRichTextI);
+        this.titles = this.richText.getTitles();
       }
     });
   }
 
-  updateTitles(ops: any): void{
-    this.titles = [];
-    const contentData: any[] = ops;
-    contentData.forEach((c, i) => {
-      if(contentData[i+1] && contentData[i+1].attributes && contentData[i+1].attributes.header && (contentData[i+1].attributes.header == 1 || contentData[i+1].attributes.header == 2)){
-        this.titles.push([contentData[i+1].attributes.header, c.insert]);
-      }
-    });
-  }
-
-  onContentUpdate(content: LabReportContent): void {
+  onContentUpdate(content: any): void {
     this.contentDebouncer.setValue(content);
-    this.updateTitles(this.formGp.value.content.ops);
+    this.richText = new CmRichText(this.formGp.value.content  as CmRichTextI)
+    this.titles = this.richText.getTitles();
   }
 
   private setFormGroupValue(doc: HaDocumentationContentFormDTO): void {
@@ -116,7 +108,7 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
     this.documentationService.updateContent(this.formGp.value as HaDocumentationContentFormDTO).subscribe();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.contentDebouncer.complete();
   }
 

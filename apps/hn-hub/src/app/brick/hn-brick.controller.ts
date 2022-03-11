@@ -3,7 +3,7 @@ import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {HnNode} from '../folder/hn-folder.entity';
-import {HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
+import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 
 @Controller('brick')
@@ -57,5 +57,11 @@ export class HnBrickController {
   @Post('new-version')
   createNewVersion(@Body(new BlParsePipe(HnNewVersionDTO)) newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO>{
     return this.brickService.createNewVersion(newVersion);
+  }
+
+  @BlPublic()
+  @Get('latest/:brickId')
+  public getLatestBrickVersion(@Param('brickId') brickId: string): Promise<HnBrickVersion> {
+    return this.brickService.getLatestBrickVersion(brickId);
   }
 }

@@ -80,4 +80,15 @@ export class HnBrickMajorVersionService {
     return newVersion;
   }
 
+  async getLatestBrickVersion(brickId: string): Promise<HnBrickVersion>{
+    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
+      where: {
+        brick: {
+          id : brickId
+        },
+        versionState : HnVersionState.LATEST
+      }
+    });
+    return this.brickVersionService.getLatestBrickVersion(brickMajorVersion.id);
+  }
 }

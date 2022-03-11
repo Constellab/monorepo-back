@@ -113,5 +113,6 @@
   "user": "User",
   "organization_name": "Organization's name",
   "last_modification_info": "Last modification info",
-  "repo_type": "Type of repository"
+  "repo_type": "Type of repository",
+  "version_error_pattern": "Version N° invalid, expected X.X.X"
 }

@@ -30,19 +30,6 @@
         {{'title' | flErrorRequired}}
       </mat-error>
     </mat-form-field>
-
-    <!--  path  -->
-    <mat-form-field class="g-form-input">
-      <mat-label>{{'path' | translate}}</mat-label>
-      <input matInput formControlName="path" required flInputMaxLength="50"
-             placeholder="{{'path' | translate}}">
-      <mat-error *ngIf="formGp.get('path').hasError('required')">
-        {{'path' | flErrorRequired}}
-      </mat-error>
-      <mat-error *ngIf="formGp.get('path').hasError('pattern')">
-        {{'path_pattern_error' | translate}}
-      </mat-error>
-    </mat-form-field>
   </form>
 </mat-dialog-content>
 

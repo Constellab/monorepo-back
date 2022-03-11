@@ -38,6 +38,18 @@ export class CmRichText {
     return this.getFigures().find(figure => figure.filename === filename);
   }
 
+  public getTitles(): any[]{
+    const titles: any[] = [];
+    const contentData: any[] = this.getContent().ops;
+    contentData.forEach((c, i) => {
+      if(contentData[i+1] && contentData[i+1].attributes && contentData[i+1].attributes.header
+        && (contentData[i+1].attributes.header == 1 || contentData[i+1].attributes.header == 2)){
+        titles.push([contentData[i+1].attributes.header, c.insert]);
+      }
+    });
+    return titles;
+  }
+
   /**
    * Update the figure with the name
    * @param filename

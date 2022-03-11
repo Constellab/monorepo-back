@@ -21,7 +21,7 @@ export class HnBrickVersionController {
 
   @BlPublic()
   @Get('current/:brickId')
-  public getCurrentProjects(@Param('brickId') brickId: string,
+  public getCurrentBrickVersion(@Param('brickId') brickId: string,
                             @Query('page', ParseIntPipe) page: number,
                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<HnBrickVersion>> {
     return this.brickVersionService.getCurrentBrickVersion(page, size, brickId);

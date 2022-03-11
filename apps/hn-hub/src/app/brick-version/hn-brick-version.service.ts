@@ -2,23 +2,19 @@ import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickVersion, HnNewVersionDTO} from './hn-brick-version.entity';
 import {Repository} from 'typeorm';
-import {HnBrick} from '../brick/hn-brick.entity';
-import {HnNode} from '../folder/hn-folder.entity';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {BlAbstractService, BlTransportService} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {ClPageI} from '@monorepo/core-lib';
-import {HnBrickService} from '../brick/hn-brick.service';
 
 @Injectable()
-export class HnBrickVersionService extends BlAbstractService<HnBrickVersion>{
+export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
 
   constructor(
     @InjectRepository(HnBrickVersion)
     private brickVersionsRepository: Repository<HnBrickVersion>,
     private transportService: BlTransportService
-
   ) {
     super(brickVersionsRepository, HnBrickVersion);
   }
@@ -30,24 +26,9 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion>{
     return brickVersion;
   }
 
-
-  async findBrickVersionByBrickAndVersion(brick: HnBrick, versionmajor: number): Promise<HnBrickVersion> {
-    return null;
-  }
-
-  async findBrickDocsTree(brickVersion: HnBrickVersion): Promise<HnNode> {
-    return null;
-  }
-
-
-  async findRootFolderId(brickVersion: HnBrickVersion): Promise<string> {
-    return null;
-  }
-
-
   async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO): Promise<void> {
     const newBrickVersion: HnBrickVersion = new HnBrickVersion();
-    let version: number[] = newVersion.version.split('.').map(x => +x);
+    const version: number[] = newVersion.version.split('.').map(x => +x);
     newBrickVersion.initialize(brickMajorVersion, version, newVersion.repoType);
     await this.create(newBrickVersion);
   }
@@ -107,11 +88,11 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion>{
     this.transportService.emit('brick', brick);
   }
 
-  async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>>{
+  async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>> {
     return this.findPaginated(page, size, {
       where: {
         brickMajorVersion: {
-          brick : {
+          brick: {
             id: brickId
           },
         }
@@ -121,7 +102,22 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion>{
       },
       relations: ['brickMajorVersion']
     }
-  );
+    );
+  }
+
+  async getLatestBrickVersion( brickMajorVersionId: string): Promise<HnBrickVersion> {
+    const brickVersions: HnBrickVersion[] = await this.brickVersionsRepository.find({
+      where: {
+        brickMajorVersion : {
+          id : brickMajorVersionId
+        }
+      },
+      order : {
+        minor: 'DESC',
+        patch: 'DESC'
+      }
+    });
+    return brickVersions[0];
   }
 
 }

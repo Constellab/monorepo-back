@@ -5,6 +5,7 @@ import {HaBrick} from '../ha-model/ha-entities/ha-brick.class';
 import {HaNode} from '../ha-model/ha-entities/ha-node.class';
 import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
 import {HaNewVersionDTO} from '../ha-model/ha-entities/ha-version.class';
+import {HaBrickVersion} from '../ha-model/ha-entities/ha-brick-version.class';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,7 @@ export class HaBrickService {
    * @param object json object
    */
   public create(object: any): Observable<HaBrick> {
-    object.version = '1.0.0';
+    console.log(object.version)
     return this.apiService.post(this.route, object, HaBrick);
   }
 
@@ -68,5 +69,9 @@ export class HaBrickService {
 
   public createNewVersion(newVersion: Partial<HaNewVersionDTO>): Observable<any>{
     return this.apiService.post(this.route + '/new-version', newVersion);
+  }
+
+  public getLastVersion(brick: HaBrick): Observable<HaBrickVersion>{
+    return this.apiService.get(`${this.route}/latest/${brick.id}`)
   }
 }
