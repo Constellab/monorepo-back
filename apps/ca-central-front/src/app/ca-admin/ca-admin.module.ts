@@ -23,6 +23,10 @@ import {
 import {
   CaLabFrontVersionCoreModule
 } from '../ca-core/entity-module/ca-lab-front-version-core/ca-lab-front-version-core.module';
+import {
+  CaAdminOrganizationsListComponent
+} from './component/ca-admin-organizations-list/ca-admin-organizations-list.component';
+import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization-core/ca-organization-core.module';
 
 /**
  * Module only accessible by the admins
@@ -35,6 +39,7 @@ import {
     CaAdminServerInfoListComponent,
     CaAdminLabInstancesListComponent,
     CaAdminLabFrontVersionListComponent,
+    CaAdminOrganizationsListComponent,
   ],
   imports: [
     CommonModule,
@@ -43,6 +48,7 @@ import {
     CaServerInfoCoreModule,
     CaLabCoreModule,
     CaLabFrontVersionCoreModule,
+    CaOrganizationCoreModule,
 
     CaAdminRoutingModule,
   ]

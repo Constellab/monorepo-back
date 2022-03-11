@@ -1,0 +1,23 @@
+<fl-card>
+  <fl-card-header>
+    <h1>{{organization.label}}</h1>
+
+    <fl-card-actions>
+      <ng-container *caIsAdmin>
+        <button mat-icon-button type="button" (click)="openUpdateDialog()"
+                [matTooltip]="'update_organization' | translate">
+          <mat-icon>edit</mat-icon>
+        </button>
+
+        <button mat-icon-button type="button" color="warn" (click)="openDeleteOrganization()"
+                [matTooltip]="'delete_organization' | translate">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </ng-container>
+    </fl-card-actions>
+  </fl-card-header>
+</fl-card>
+
+<ca-organization-users-list [organizationId]="organization.id" class="g-section">
+
+</ca-organization-users-list>

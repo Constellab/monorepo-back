@@ -2,6 +2,7 @@ import {DateTime} from 'luxon';
 import {ClLuxonTransform, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {CaEntity} from './ca-entity.entity';
 import {CmUserCategory} from '@monorepo/common-model';
+import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
 
 export interface CaNewUser {
   firstname: string;
@@ -61,3 +62,5 @@ export class CaUser extends CaEntity {
     return categories.includes(this.category);
   }
 }
+
+export type CaUserDatasourcePaginated = FlDatasourcePaginated<CaUser>

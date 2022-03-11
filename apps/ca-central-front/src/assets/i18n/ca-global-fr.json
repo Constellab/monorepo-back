@@ -94,5 +94,19 @@
   "version": "Version",
   "gws_core_brick_version": "Version de la brique gws_core",
   "creation_info": "Creation info",
-  "last_modification_info": "Last modification info"
+  "last_modification_info": "Last modification info",
+  "organization_list": "Organisations",
+  "create_organization": "Créer une organisation",
+  "update_organization": "Modifier l'organisation",
+  "organization_created": "Organisation créée",
+  "organization_updated": "Organisation modifiée",
+  "delete_organization": "Supprimer l'organisation",
+  "delete_organization_confirmation": "Êtes-vous sûr de vouloir supprimer l'organisation ? Ce n'est pas possible si un utilisateur en fait parti ou si un objet (comme un project) est rattaché à l'organisation",
+  "organization_deleted": "Organisation supprimée",
+  "organization_users": "Membres de l'organisation",
+  "organization_add_user": "Ajouter un utilisateur à l'organisation",
+  "organization_user_added": "Utilisateur ajouté",
+  "organization_remove_user": "Retirer l'utilisateur de l'organisation",
+  "organization_remove_user_confirmation": "Êtes-vous sûr de vouloir retirer l'utilisateur de l'organisation ? Il ne pourra plus accéder aux objects de l'organisation",
+  "organization_user_removed": "Utilisateur retirer de l'organisation"
 }

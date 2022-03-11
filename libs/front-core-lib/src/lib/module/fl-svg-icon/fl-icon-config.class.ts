@@ -54,4 +54,6 @@ export const flIconsDefault: FlIcon[] = [
   {name: 'report', matIconName: 'grading'},
   {name: 'resource', matIconName: 'folder'},
   {name: 'smart_db', matIconName: 'search'},
+  {name: 'organization', matIconName: 'business'},
+
 ]

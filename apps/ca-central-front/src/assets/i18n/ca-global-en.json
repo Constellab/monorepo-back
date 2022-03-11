@@ -94,5 +94,19 @@
   "version": "Version",
   "gws_core_brick_version": "gws_core brick version",
   "creation_info": "Info de création",
-  "last_modification_info": "Info de dernière modification"
+  "last_modification_info": "Info de dernière modification",
+  "organization_list": "Organizations",
+  "create_organization": "Create organization",
+  "update_organization": "Update organization",
+  "organization_created": "Organization created",
+  "organization_updated": "Organization updated",
+  "delete_organization": "Delete organization",
+  "delete_organization_confirmation": "Are you sure you want to delete the organization ? It is not possible if there is a user in the organization or an object (like project) linked to it",
+  "organization_deleted": "Organization deleted",
+  "organization_users": "Organization's members",
+  "organization_add_user": "Add user to organization",
+  "organization_user_added": "User added",
+  "organization_remove_user": "Remove user from organization",
+  "organization_remove_user_confirmation": "Are you sure you want to remove this user form the organization ? He will not be able to access organization's objects",
+  "organization_user_removed": "User removed from organization"
 }

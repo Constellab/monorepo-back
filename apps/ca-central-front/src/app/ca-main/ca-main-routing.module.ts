@@ -8,7 +8,8 @@ import {
   caConstLabInstancesRoute,
   caConstProjectsRoute,
   caConstSettingsRoute,
-  caConstSmartDbRoute
+  caConstSmartDbRoute,
+  caConstStructureRoute
 } from '../ca-core/utils/ca-base-route';
 import {CaLoadUserGuard} from './guard/ca-load-user.guard';
 import {CaAdminGuard} from '../ca-core/guard/ca-admin-guard.service';
@@ -51,6 +52,11 @@ const routes: Route[] = [
         path: caConstAdminRoute,
         loadChildren: () => import('../ca-admin/ca-admin.module').then(m => m.CaAdminModule),
         canActivate: [CaAdminGuard]
+      },
+      //////////////////////// STRUCTURE /////////////////////////
+      {
+        path: caConstStructureRoute,
+        loadChildren: () => import('../ca-structure/ca-structure.module').then(m => m.CaStructureModule),
       },
 
       //////////////////////// SETTINGS /////////////////////////

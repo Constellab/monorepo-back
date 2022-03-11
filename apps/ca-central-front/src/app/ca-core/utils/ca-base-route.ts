@@ -9,6 +9,7 @@ export const caConstSettingsRoute = 'settings';
 export const caConstSmartDbRoute = 'smart-db';
 export const caConstProjectsRoute = 'projects';
 export const caConstAdminRoute = 'admin';
+export const caConstStructureRoute = 'structure';
 export const caConstLoginRoute = '/login';
 
 export const caConstDashboardFullRoute = `/${caConstBaseRoute}/${caConstDashboardRoute}`;
@@ -17,3 +18,5 @@ export const caConstSettingsFullRoute = `/${caConstBaseRoute}/${caConstSettingsR
 export const caConstSmartDbFullRoute = `/${caConstBaseRoute}/${caConstSmartDbRoute}`;
 export const caConstProjectsFullRoute = `/${caConstBaseRoute}/${caConstProjectsRoute}`;
 export const caConstAdminFullRoute = `/${caConstBaseRoute}/${caConstAdminRoute}`;
+export const caConstStructureFullRoute = `/${caConstBaseRoute}/${caConstStructureRoute}`;
+

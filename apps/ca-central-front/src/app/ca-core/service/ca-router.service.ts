@@ -1,11 +1,14 @@
 import {
+  caConstAdminFullRoute,
   caConstBaseRoute,
   caConstDashboardFullRoute,
   caConstLabInstancesFullRoute,
   caConstProjectsFullRoute,
-  caConstSmartDbFullRoute
+  caConstSmartDbFullRoute,
+  caConstStructureFullRoute
 } from '../utils/ca-base-route';
 import {Injectable} from '@angular/core';
+import {Router} from '@angular/router';
 
 /**
  * Class to get app route paths
@@ -13,7 +16,7 @@ import {Injectable} from '@angular/core';
 @Injectable({providedIn: 'root'})
 export class CaRouterService {
 
-  constructor() {
+  constructor(private router: Router) {
   }
 
   ////// Static function to get routes  //////
@@ -61,6 +64,18 @@ export class CaRouterService {
     return `${caConstSmartDbFullRoute}/${smartDbId}/admin`;
   }
 
+  public static getAdminRoute(): string {
+    return `${caConstAdminFullRoute}`;
+  }
+
+  ////////////////////////// STRUCTURE MODULE ///////////////////////
+  public static getOrganizationRoute(organizationId: string): string {
+    return `${caConstStructureFullRoute}/organization/${organizationId}`;
+  }
+
   ////// Function to navigate to routes  //////
 
+  public navigateToAdmin(): void {
+    this.router.navigate([CaRouterService.getAdminRoute()]);
+  }
 }

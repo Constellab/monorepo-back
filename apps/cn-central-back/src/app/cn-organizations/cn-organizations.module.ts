@@ -5,6 +5,7 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {CnOrganization} from './cn-organization.entity';
 import {CnOrganizationSecurityLayer} from './cn-organization-security.layer';
 import {CnGroupsModule} from '../cn-groups/cn-groups.module';
+import {CnUsersModule} from '../cn-users/cn-users.module';
 
 /**
  * Module to manage organization
@@ -14,9 +15,13 @@ import {CnGroupsModule} from '../cn-groups/cn-groups.module';
     TypeOrmModule.forFeature([CnOrganization]),
 
     CnGroupsModule,
+    CnUsersModule,
   ],
   controllers: [CnOrganizationsController],
-  providers: [CnOrganizationsService, CnOrganizationSecurityLayer]
+  providers: [
+    CnOrganizationsService,
+    CnOrganizationSecurityLayer
+  ]
 })
 export class CnOrganizationsModule {
 }

@@ -4,8 +4,9 @@ import {CaProject} from '../../../model/entities/ca-project.class';
 import {CaSmartDb} from '../../../model/entities/ca-smart-db.entity';
 import {CaLabInstance} from '../../../model/entities/ca-lab-instance.class';
 import {CaRouterService} from '../../../service/ca-router.service';
+import {CaOrganization} from '../../../model/entities/ca-organization.class';
 
-type CaObjectType = 'project' | 'smartDb' | 'labInstance'
+type CaObjectType = 'project' | 'smartDb' | 'labInstance' | 'organization'
 
 
 /**
@@ -36,6 +37,8 @@ export class CaDetailRoutePipe implements PipeTransform {
         return CaRouterService.getSmartDbDetailRoute(id);
       case 'labInstance':
         return CaRouterService.getLabInstanceDetailRoute(id);
+      case 'organization':
+        return CaRouterService.getOrganizationRoute(id);
       default:
         console.error(`[caDetailRoute] object type ${objectType} not supported`);
         return null;
@@ -50,6 +53,8 @@ export class CaDetailRoutePipe implements PipeTransform {
       return 'smartDb';
     } else if (obj instanceof CaLabInstance) {
       return 'labInstance';
+    } else if (obj instanceof CaOrganization) {
+      return 'organization';
     } else {
       console.error('[caDetailRoute] The object is not supported');
       return null;

@@ -3,7 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {CnUser} from './cn-user.entity';
 import {Repository} from 'typeorm';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
-import {clLangIsSupported, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
+import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {BlAbstractService, BlUserService} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
@@ -57,4 +57,17 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     await this.update(user);
   }
 
+  getUsersByOrganization(organizationId: string, page: number, size: number): Promise<ClPage<CnUser>> {
+    return this.findPaginated(page, size,
+      {
+        where: {
+          organizationId: organizationId
+        },
+        order: {
+          lastname: 'ASC',
+          firstname: 'ASC'
+        }
+      }
+    );
+  }
 }

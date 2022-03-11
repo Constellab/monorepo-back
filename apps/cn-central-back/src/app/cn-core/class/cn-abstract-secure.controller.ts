@@ -27,8 +27,8 @@ export abstract class CnAbstractSecureController<T extends BlEntityWithId> {
   }
 
   @Delete(':id')
-  delete(@Param('id', ParseUUIDPipe) id: string): void {
-    this.secuLayer.deleteByIdSecure(id);
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.secuLayer.deleteByIdSecure(id);
   }
 
   @Get(':id')

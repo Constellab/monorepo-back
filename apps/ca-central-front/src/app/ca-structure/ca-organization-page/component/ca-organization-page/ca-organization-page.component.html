@@ -1,0 +1,9 @@
+<div class="g-page">
+
+  <fl-async-section [object]="organization$">
+
+    <ng-container *flSectionBody="let organization">
+      <ca-organization-detail [organization]="organization"></ca-organization-detail>
+    </ng-container>
+  </fl-async-section>
+</div>

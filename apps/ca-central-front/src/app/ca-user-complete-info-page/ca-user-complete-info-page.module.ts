@@ -4,7 +4,6 @@ import {CaCoreModule} from '../ca-core/ca-core.module';
 import {
   CaUserCompleteInfoPageComponent
 } from './component/ca-user-complete-info-page/ca-user-complete-info-page.component';
-import {CaOrganisationFormComponent} from './component/ca-organisation-form/ca-organisation-form.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 /**
@@ -15,7 +14,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 @NgModule({
   declarations: [
     CaUserCompleteInfoPageComponent,
-    CaOrganisationFormComponent
   ],
   imports: [
     CommonModule,
@@ -25,4 +23,5 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     CaCoreModule,
   ]
 })
-export class CaUserCompleteInfoPageModule { }
+export class CaUserCompleteInfoPageModule {
+}
