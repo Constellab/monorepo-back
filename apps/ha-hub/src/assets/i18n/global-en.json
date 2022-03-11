@@ -70,6 +70,7 @@
   "user_category": "Type of user",
   "label": "Label",
   "description": "Description",
+  "creation_info": "Creation information",
   "no_description": "No description",
   "status": "Status",
   "same_status_error": "The status has not changed",
@@ -114,5 +115,6 @@
   "organization_name": "Organization's name",
   "last_modification_info": "Last modification info",
   "repo_type": "Type of repository",
-  "version_error_pattern": "Version N° invalid, expected X.X.X"
+  "version_error_pattern": "Version N° invalid, expected X.X.X",
+  "new_version_added": "New version added"
 }

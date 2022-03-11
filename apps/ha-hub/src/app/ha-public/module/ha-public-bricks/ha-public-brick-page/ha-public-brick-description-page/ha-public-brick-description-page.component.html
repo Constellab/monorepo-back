@@ -2,19 +2,19 @@
   <ng-container *flSectionBody="let brick">
     <mat-card class="brick-description">
       <fl-key-value>
-        <fl-key>Description</fl-key>
+        <fl-key>{{'description' | translate}}</fl-key>
         {{brick.description}}
       </fl-key-value>
       <br>
       <fl-key-value>
-        <fl-key>Creation info</fl-key>
+        <fl-key>{{'creation_info' | translate}}</fl-key>
         <fl-creation-info [createdAt]="brick.createdAt" [createdBy]="brick.createdBy.fullname"></fl-creation-info>
       </fl-key-value>
       <br>
       <fl-async-section [object]="latestBrickVersion$">
         <ng-container *flSectionBody="let latestBrickVersion">
           <fl-key-value>
-            <fl-key>Type of repository</fl-key>
+            <fl-key>{{'type_of_repository' | translate}}</fl-key>
             {{latestBrickVersion.repoType}}
           </fl-key-value>
         </ng-container>

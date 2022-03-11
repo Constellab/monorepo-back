@@ -2,7 +2,7 @@
 
   <ng-container *flSectionBody="let documentation">
     <div class="sidenavBody">
-      <div class="content g-max-article-width">
+      <div class="content g-max-article-width" *ngIf="formGp !== null">
         <form class="documentation-form" [formGroup]="formGp">
           <fl-text-editor class="content-editor" formGroupName="content" mode="JSON" scrollContainer="child"
                           (textChange)="onContentUpdate($event)" [disabled]="(isAdmin | async) === false"></fl-text-editor>
