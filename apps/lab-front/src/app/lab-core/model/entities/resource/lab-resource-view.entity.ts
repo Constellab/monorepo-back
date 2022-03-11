@@ -6,11 +6,13 @@ import {LabResourceViewHistogram} from './lab-resource-view-histogram.class';
 import {LabResourceVennDiagram} from './lab-resource-venn-diagram.class';
 import {LabTransformerWithConfig} from '../../global/lab-transformer.class';
 import {LabConfigValues} from '../lab-config.entity';
+import {LabResourceViewFolder} from './lab-resource-view-folder.class';
 
 // list of available view type
 export type LabResourceViewType =
   'view'
   | 'json-view'
+  | 'folder-view'
   | 'text-view'
   | 'table-view' | 'dataset-view'
   | 'network-view'
@@ -147,7 +149,8 @@ export type LabResourceView =
   | LabResourceVennDiagram
   | LabResourceViewHeatMap
   | LabResourceViewText
-  | LabResourceViewTable;
+  | LabResourceViewTable
+  | LabResourceViewFolder;
 
 // Information of the view type
 export interface LabResourceViewTypeInfo {
@@ -257,6 +260,12 @@ export const labConstResourceViewTypeInfos: Record<LabResourceViewType, LabResou
   'heatmap-view': {
     icon: 'multiline_chart',
     text: 'biox.resource_view_heatmap',
+    defaultDisplayMode: 'portal',
+    forceDefaultDisplayMode: false
+  },
+  'folder-view': {
+    icon: 'folder',
+    text: 'biox.resource_view_folder',
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false
   },

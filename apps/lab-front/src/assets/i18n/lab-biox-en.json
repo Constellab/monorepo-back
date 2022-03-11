@@ -90,6 +90,7 @@
     "resource_view_multi_views": "Multi views",
     "resource_view_venn_diagram": "Venn diagram",
     "resource_view_heatmap": "Heatmap",
+    "resource_view_folder": "Folder",
     "resource_view_display_mode": "Display mode",
     "resource_view_display_portal": "Dialog",
     "resource_view_display_component": "Full screen",
@@ -156,6 +157,8 @@
     "resource_type_updated": "Resource type updated",
     "resource_type": "Resource type",
     "print_report": "Print report",
-    "documentation": "Documentation"
+    "documentation": "Documentation",
+    "folder_extract_file": "Extract file",
+    "folder_extract_folder": "Extract folder"
   }
 }
