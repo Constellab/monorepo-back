@@ -1,11 +1,10 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {ClCachedObservable, ClHelpService} from '@monorepo/core-lib';
+import {ClCachedObservable} from '@monorepo/core-lib';
 import {LabResourceService} from '../../../../lab-core/entity-service/lab-resource.service';
 import {BehaviorSubject, firstValueFrom, Observable, Subscription} from 'rxjs';
 import {
   labConstResourceViewTypeInfos,
   LabResourceView,
-  LabResourceViewDisplayMode,
   LabResourceViewSpecsByType,
   LabResourceViewSpecWithConfig,
   LabResourceViewTypeInfo,
@@ -22,11 +21,12 @@ import {
 } from '@monorepo/front-core-lib';
 import {LabTag} from '../../../../lab-core/model/entities/lab-tag.entity';
 import {
-  LabCallTransformerParams,
+  labConvertTransformersWithConfigToParams,
   LabTransformerWithConfig
 } from '../../../../lab-core/model/global/lab-transformer.class';
 import {
-  LabResourceViewPortalComponent
+  LabResourceViewPortalComponent,
+  LabResourceViewPortalInput
 } from '../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-view-portal/lab-resource-view-portal.component';
 import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
 
@@ -35,8 +35,7 @@ export interface LabResourceViewEvent {
   status: 'success' | 'error';
   viewEvent?: {
     view: LabResourceView;
-    displayMode?: LabResourceViewDisplayMode; // mode to where show the view when success
-    viewName: string;
+    viewConfig: LabResourceViewSpecWithConfig;
   };
 }
 
@@ -49,7 +48,8 @@ export class LabResourceDetailState implements OnDestroy {
 
   private resource$: BehaviorSubject<LabResource> = new BehaviorSubject<LabResource>(null);
   private viewSpecs$: ClCachedObservable<LabResourceViewSpecsByType[]>;
-  private selectedViewSpec$: BehaviorSubject<LabResourceViewSpecWithConfig> = new BehaviorSubject(null);
+
+  private lastViewSpec?: LabResourceViewSpecWithConfig = null;
 
   private subscription: Subscription;
 
@@ -62,25 +62,25 @@ export class LabResourceDetailState implements OnDestroy {
   public init(id: string): void {
     this.id = id;
     this.resource$.next(null);
-    this.resourceService.getById(id).subscribe(
-      resource => this.resource$.next(resource),
-      error => this.resource$.error(error)
-    );
+    this.resourceService.getById(id).subscribe({
+      next: resource => this.resource$.next(resource),
+      error: error => this.resource$.error(error)
+    });
 
     // load the views once the resource was found
     this.viewSpecs$ = new ClCachedObservable(this.resourceService.getResourceViewsListGrouped(id));
 
-    this.selectedViewSpec$.next(null);
+    this.lastViewSpec = null;
 
     // Call the default view
     this.loadDefaultView();
 
     // subscribe to portal view to open them
     this.subscription = this.getView$().pipe(
-      filter(viewEvent => viewEvent.status === 'success' && viewEvent.viewEvent.displayMode === 'portal'),
+      filter(viewEvent => viewEvent.status === 'success' && viewEvent.viewEvent.viewConfig.displayMode === 'portal'),
       map(viewEvent => viewEvent.viewEvent)
     ).subscribe(
-      viewEvent => this.openViewInPortal(viewEvent.view)
+      viewEvent => this.openViewInPortal(viewEvent.view, viewEvent.viewConfig)
     );
   }
 
@@ -111,12 +111,12 @@ export class LabResourceDetailState implements OnDestroy {
     return this.viewSpecs$.getObs();
   }
 
-  public getSelectedViewSpec$(): Observable<LabResourceViewSpecWithConfig> {
-    return this.selectedViewSpec$.asObservable();
+  public getLastViewSpec(): LabResourceViewSpecWithConfig {
+    return this.lastViewSpec;
   }
 
   public selectViewSpec(viewSpecConfigured: LabResourceViewSpecWithConfig, isDefaultView: boolean = false): void {
-    this.selectedViewSpec$.next(viewSpecConfigured);
+    this.lastViewSpec = viewSpecConfigured;
     this.loadView(viewSpecConfigured, isDefaultView);
   }
 
@@ -124,16 +124,16 @@ export class LabResourceDetailState implements OnDestroy {
 
   private loadDefaultView(): void {
     // generate the default view spec
-    this.selectedViewSpec$.next({
+    this.lastViewSpec = {
       displayMode: 'fullScreen', viewMethodName: LabResourceService.defaultViewName,
-      viewName: 'Default', viewConfigValues: {}, transformersWithConfig: []
-    });
+      viewName: 'Default', viewConfigValues: {}, transformersWithConfig: [], isDefaultView: true
+    };
     this.flActionService.addAction(
       {
         type: this.actionType,
         text: 'Load default view',
         action: this.resourceService.callResourceDefaultView(this.id),
-        additionalInformation: 'fullScreen' as LabResourceViewDisplayMode
+        additionalInformation: this.lastViewSpec
       },
       true, false); // for the default view, don't show the action portal
   }
@@ -151,50 +151,33 @@ export class LabResourceDetailState implements OnDestroy {
         text: viewSpecConfigured.viewName,
         action: this.callResourceView(viewSpecConfigured.viewMethodName,
           viewSpecConfigured.viewConfigValues, viewSpecConfigured.transformersWithConfig),
-        additionalInformation: viewSpecConfigured.displayMode
+        additionalInformation: viewSpecConfigured
       },
       true,
       !isDefaultView); // for the default view, don't show the action portal
   }
 
-  /**
-   * Method to call the previous or next page of the view
-   * @param pageConfig
-   */
-  public callPagination(pageConfig: LabConfigValues): Observable<LabResourceView> {
-    const configValues: LabConfigValues = ClHelpService.deepClone(this.selectedViewSpec$.value?.viewConfigValues ?? {});
-
-    // override the view config with page config
-    for (const key of Object.keys(pageConfig)) {
-      configValues[key] = pageConfig[key];
-    }
-
-    return this.callResourceView(this.selectedViewSpec$.value.viewMethodName, configValues,
-      this.selectedViewSpec$.value.transformersWithConfig).pipe(
-      map(result => result.viewData)
-    );
-  }
-
   private callResourceView(methodName: string, configValues: LabConfigValues,
                            transformers: LabTransformerWithConfig[]): Observable<LabViewCallResult> {
-
-    const transformerParams: LabCallTransformerParams[] = transformers.map(transformer => ({
-      typing_name: transformer.transformer.typingName,
-      config_values: transformer.config
-    }));
-    return this.resourceService.callResourceView(this.id, methodName, configValues, transformerParams);
+    return this.resourceService.callResourceView(this.id, methodName, configValues,
+      labConvertTransformersWithConfigToParams(transformers));
   }
 
-  private openViewInPortal(view: LabResourceView): void {
+  private openViewInPortal(view: LabResourceView, viewConfig: LabResourceViewSpecWithConfig): void {
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
       {centerHorizontally: '0', top: '0'},
       {
         elevation: true,
         disposeOnNavigation: true,
-        customProviders: [{provide: LabResourceDetailState, useValue: this}]
       });
 
-    this.portalService.createPortal(LabResourceViewPortalComponent, portalConfig, view);
+    const config: LabResourceViewPortalInput = {
+      view: view,
+      config: viewConfig,
+      resourceId: this.id
+    };
+
+    this.portalService.createPortal(LabResourceViewPortalComponent, portalConfig, config);
   }
 
   /**
@@ -220,8 +203,7 @@ export class LabResourceDetailState implements OnDestroy {
           status: 'success',
           viewEvent: {
             view: viewResult.viewData,
-            viewName: viewResult.viewHumanName,
-            displayMode: actionResult.additionalInformation
+            viewConfig: actionResult.additionalInformation,
           }
         };
 
@@ -232,7 +214,7 @@ export class LabResourceDetailState implements OnDestroy {
 
         // if the view has a force default display mode, set it
         if (viewTypeInfo.forceDefaultDisplayMode) {
-          viewEvent.viewEvent.displayMode = viewTypeInfo.defaultDisplayMode;
+          viewEvent.viewEvent.viewConfig.displayMode = viewTypeInfo.defaultDisplayMode;
         }
 
         return viewEvent;
@@ -245,7 +227,7 @@ export class LabResourceDetailState implements OnDestroy {
   }
 
   public clear(): void {
-    this.selectedViewSpec$?.complete();
+    this.lastViewSpec = null;
     this.subscription?.unsubscribe();
     this.resource$?.complete();
   }

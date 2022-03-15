@@ -65,6 +65,7 @@ export class LabViewCallResult {
 export interface LabResourceViewSpecWithConfig {
   viewName: string;
   viewMethodName: string;
+  isDefaultView: boolean;
   viewConfigValues: LabConfigValues;
   displayMode: LabResourceViewDisplayMode;
   transformersWithConfig: LabTransformerWithConfig[];

@@ -108,6 +108,7 @@ export class LabConfigureResourceViewComponent implements OnInit {
     return {
       viewMethodName: this.input.viewSpecConfig.viewMethodName,
       viewName: this.input.viewSpecConfig.viewName,
+      isDefaultView: this.input.viewSpecConfig.isDefaultView,
       viewConfigValues: {...formValue.viewConfig.public, ...formValue.viewConfig.protected},
       displayMode: formValue.displayMode,
       transformersWithConfig: transformers

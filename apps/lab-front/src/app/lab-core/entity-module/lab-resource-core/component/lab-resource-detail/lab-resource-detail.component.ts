@@ -5,7 +5,10 @@ import {
 } from '../../../../../lab-databox/module/lab-resource-detail-page/state/lab-resource-detail-state.service';
 import {Observable, Subscription} from 'rxjs';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
-import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
+import {
+  LabResourceView,
+  LabResourceViewSpecWithConfig
+} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {
   LabResourceViewSpecsPortalComponent
@@ -32,7 +35,7 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
 
   resource$: Observable<LabResource>;
   fullScreenView: LabResourceView;
-  fullScreenViewName: string;
+  fullScreenViewConfig: LabResourceViewSpecWithConfig;
 
   showLoader: boolean = true;
 
@@ -62,9 +65,9 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
   private showFullScreenView(viewEvent: LabResourceViewEvent): void {
     this.showLoader = false;
 
-    if (viewEvent.viewEvent && viewEvent.viewEvent.displayMode === 'fullScreen') {
+    if (viewEvent.viewEvent && viewEvent.viewEvent.viewConfig.displayMode === 'fullScreen') {
       this.fullScreenView = viewEvent.viewEvent.view;
-      this.fullScreenViewName = viewEvent.viewEvent.viewName;
+      this.fullScreenViewConfig = viewEvent.viewEvent.viewConfig;
     }
   }
 

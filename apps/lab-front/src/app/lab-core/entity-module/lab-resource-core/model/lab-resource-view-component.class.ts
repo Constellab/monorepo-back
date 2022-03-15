@@ -1,4 +1,7 @@
-import {LabResourceView} from '../../../model/entities/resource/lab-resource-view.entity';
+import {
+  LabResourceView,
+  LabResourceViewSpecWithConfig
+} from '../../../model/entities/resource/lab-resource-view.entity';
 import {Directive, Input} from '@angular/core';
 
 
@@ -7,6 +10,8 @@ export class LabResourceViewDirective<T extends LabResourceView = LabResourceVie
 
   @Input() view: T;
 
-  @Input() fullscreen: boolean;
+  @Input() resourceId: string;
+
+  @Input() config: LabResourceViewSpecWithConfig;
 
 }

@@ -7,7 +7,7 @@
 
       <fl-section-header class="header">
         <h2 class="header-title">{{resource.name}} |
-          <span class="g-text-light">{{fullScreenViewName}}</span>
+          <span class="g-text-light">{{fullScreenViewConfig?.viewName}}</span>
         </h2>
         <fl-text-icon class="g-text-tiny g-text-light" *ngIf="resource.experiment"
                       gap="0">
@@ -51,12 +51,12 @@
       </fl-section-header>
 
 
-      <ng-container *flSectionBody="let resource">
+      <ng-container *flSectionBody>
 
         <!--  Header    -->
         <div class="page-padding body">
           <lab-resource-view *ngIf="fullScreenView" [view]="fullScreenView"
-                             [fullscreen]="true"></lab-resource-view>
+                             [config]="fullScreenViewConfig" [resourceId]="resource.id"></lab-resource-view>
           <div *ngIf="showLoader" class="g-text-centered">
             <fl-loader size="medium"></fl-loader>
           </div>

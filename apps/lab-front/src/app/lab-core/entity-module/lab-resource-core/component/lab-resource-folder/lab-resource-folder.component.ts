@@ -9,7 +9,6 @@ import {FlDialogService, FlFlatTreeControl, FlMenuDynamic, FlMenuDynamicService}
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
 import {ActivatedRoute} from '@angular/router';
-import {first, mergeMap} from 'rxjs/operators';
 import {
   LabFsNodeTypesSelectionDialogComponent,
   LabFsNodeTypesSelectionDialogInput,
@@ -86,10 +85,7 @@ export class LabResourceFolderComponent extends LabResourceViewDirective<LabReso
     const typingName = result.uploadMode === 'files' ? result.fileTypingNames[0] : result.folderTypingName;
 
     node.isLoading = true;
-    // todo ne pas utilise le route
-    this.route.params.pipe(
-      first(),
-      mergeMap(params => this.fileService.extractFile(params.id, path, typingName))).subscribe({
+    this.fileService.extractFile(this.resourceId, path, typingName).subscribe({
       next: resource => this.extractFileSuccess(node, resource),
       error: () => node.isLoading = false
     });

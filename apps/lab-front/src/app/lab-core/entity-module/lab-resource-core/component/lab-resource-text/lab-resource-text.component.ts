@@ -5,9 +5,10 @@ import {
   LabResourceViewText,
   labResourceViewTextSpecPage
 } from '../../../../model/entities/resource/lab-resource-view.entity';
-import {
-  LabResourceDetailState
-} from '../../../../../lab-databox/module/lab-resource-detail-page/state/lab-resource-detail-state.service';
+import {LabResourceService} from '../../../../entity-service/lab-resource.service';
+import {Observable} from 'rxjs';
+import {labConvertTransformersWithConfigToParams} from '../../../../model/global/lab-transformer.class';
+import {map} from 'rxjs/operators';
 
 /**
  * Component to view a resource as plain text
@@ -36,7 +37,7 @@ export class LabResourceTextComponent extends LabResourceViewDirective<LabResour
 
   isLoading: boolean = false;
 
-  constructor(private state: LabResourceDetailState,
+  constructor(private resourceService: LabResourceService,
               private cdr: ChangeDetectorRef) {
     super();
   }
@@ -57,11 +58,10 @@ export class LabResourceTextComponent extends LabResourceViewDirective<LabResour
   loadNextPage(): void {
     this.isLoading = true;
     this.higherPage++;
-    const paginationConfig = {[labResourceViewTextSpecPage]: this.higherPage};
-    this.state.callPagination(paginationConfig).subscribe(
-      view => this.loadNextPageSuccess(view as LabResourceViewText),
-      () => this.isLoading = false
-    );
+    this.callPagination(this.higherPage).subscribe({
+      next: view => this.loadNextPageSuccess(view),
+      error: () => this.isLoading = false
+    });
   }
 
   private loadNextPageSuccess(view: LabResourceViewText): void {
@@ -74,11 +74,21 @@ export class LabResourceTextComponent extends LabResourceViewDirective<LabResour
   loadPreviousPage(): void {
     this.isLoading = true;
     this.lowerPage--;
-    const paginationConfig = {[labResourceViewTextSpecPage]: this.lowerPage};
-    this.state.callPagination(paginationConfig).subscribe(
-      view => this.loadPreviousPageSuccess(view as LabResourceViewText),
-      () => this.isLoading = false
-    );
+    this.callPagination(this.lowerPage).subscribe({
+      next: view => this.loadPreviousPageSuccess(view),
+      error: () => this.isLoading = false
+    });
+  }
+
+  private callPagination(page: number): Observable<LabResourceViewText> {
+    // merge config with pagination config
+    const viewConfig = Object.assign(this.config.viewConfigValues, {[labResourceViewTextSpecPage]: page});
+
+    return this.resourceService.callResourceView(this.resourceId, this.config.viewMethodName,
+      viewConfig,
+      labConvertTransformersWithConfigToParams(this.config.transformersWithConfig)).pipe(
+      map(view => view.viewData)
+    ) as Observable<LabResourceViewText>;
   }
 
   private loadPreviousPageSuccess(view: LabResourceViewText): void {

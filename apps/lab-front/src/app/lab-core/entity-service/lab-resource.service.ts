@@ -114,14 +114,14 @@ export class LabResourceService implements FlSearchService<LabResource> {
       record => clDeserializeRecordWrapper(record, LabConfigSpecs, LabConfigSpecBase));
   }
 
-  public callResourceView(id: string, viewName: string, config: Record<string, any>,
+  public callResourceView(id: string, viewMethodName: string, config: LabConfigValues,
                           transformers: LabCallTransformerParams[]): Observable<LabViewCallResult> {
     for (const key in config) {
       if (config[key] == null) {
         delete config[key];
       }
     }
-    return this.apiService.post(`${this.route}/${id}/views/${viewName}`, {
+    return this.apiService.post(`${this.route}/${id}/views/${viewMethodName}`, {
       values: config,
       transformers: transformers
     }, LabViewCallResult);

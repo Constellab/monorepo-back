@@ -27,3 +27,10 @@ export function labConvertTransformFormToParams(formValue: LabTransformForm[]): 
   }
   return transformers;
 }
+
+export function labConvertTransformersWithConfigToParams(transformers: LabTransformerWithConfig[]): LabCallTransformerParams[] {
+  return transformers.map(transformer => ({
+    typing_name: transformer.transformer.typingName,
+    config_values: transformer.config
+  }));
+}

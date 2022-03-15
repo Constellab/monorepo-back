@@ -23,7 +23,6 @@ import {
 export class LabResourceViewSpecsComponent implements OnInit {
 
   @Input() viewsByType: LabResourceViewSpecsByType[];
-  selectedView: LabResourceViewSpecWithConfig;
 
   constructor(private overlayRef: FlOverlayRef,
               private state: LabResourceDetailState,
@@ -31,9 +30,6 @@ export class LabResourceViewSpecsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.state.getSelectedViewSpec$().subscribe(
-      view => this.selectedView = view
-    );
   }
 
   getSelectedClass(viewSpec: LabResourceViewSpec): string {
@@ -46,7 +42,14 @@ export class LabResourceViewSpecsComponent implements OnInit {
 
   // return true if the view is the last view selected (so we can keep the previous config)
   private isSpecIsSelected(view: LabResourceViewSpec): boolean {
-    return this.selectedView?.viewMethodName === view.methodName;
+    const lastView = this.state.getLastViewSpec();
+
+    // if there is no last view selected or the last is the default view,
+    // select the default view
+    if (lastView == null || lastView.isDefaultView) {
+      return view.defaultView;
+    }
+    return lastView.viewMethodName === view.methodName;
   }
 
   selectView(view: LabResourceViewSpec, viewByType: LabResourceViewSpecsByType): void {
@@ -57,17 +60,20 @@ export class LabResourceViewSpecsComponent implements OnInit {
   private openConfigPortal(view: LabResourceViewSpec, viewByType: LabResourceViewSpecsByType): void {
     const resource = this.state.getCurrentResource();
 
-    // if this view was previously selected, get the config value from it
     let specWithConfig: LabResourceViewSpecWithConfig;
-    if (this.isSpecIsSelected(view)) {
-      specWithConfig = this.selectedView;
+
+    // if this view was previously selected, get the config value from it
+    const lastView = this.state.getLastViewSpec();
+    if (lastView && this.isSpecIsSelected(view)) {
+      specWithConfig = lastView;
     } else {
       specWithConfig = {
         viewName: view.getName(),
         viewMethodName: view.methodName,
         displayMode: viewByType.viewTypeInfo.defaultDisplayMode,
         viewConfigValues: {},
-        transformersWithConfig: []
+        transformersWithConfig: [],
+        isDefaultView: view.defaultView
       };
     }
 

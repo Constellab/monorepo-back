@@ -2,6 +2,7 @@ import {Component, ComponentRef, Input, OnDestroy, OnInit, ViewChild, ViewContai
 import {
   labConstResourceViewTypeInfos,
   LabResourceView,
+  LabResourceViewSpecWithConfig,
   LabResourceViewType,
   LabResourceViewTypeInfo
 } from '../../../../model/entities/resource/lab-resource-view.entity';
@@ -66,7 +67,10 @@ export class LabResourceViewComponent implements OnInit, OnDestroy {
 
   _view: LabResourceView;
 
-  @Input() fullscreen: boolean = false;
+
+  @Input() resourceId: string;
+
+  @Input() config: LabResourceViewSpecWithConfig;
 
   @ViewChild('viewContainer', {static: true, read: ViewContainerRef}) viewContainer: ViewContainerRef;
 
@@ -88,19 +92,23 @@ export class LabResourceViewComponent implements OnInit, OnDestroy {
   }
 
   private initView(view: LabResourceView): void {
-    this.destroyViewComponentRef();
-    const componentType = labResourceViewGetComponentType(view.type);
-    const viewTypeInfo: LabResourceViewTypeInfo = labConstResourceViewTypeInfos[view.type];
+    // wait for other input to be set
+    setTimeout(() => {
+      this.destroyViewComponentRef();
+      const componentType = labResourceViewGetComponentType(view.type);
+      const viewTypeInfo: LabResourceViewTypeInfo = labConstResourceViewTypeInfos[view.type];
 
-    if (componentType == null || viewTypeInfo == null) {
-      this.viewNotSupportedError = true;
-      return;
-    }
-    this.viewNotSupportedError = false;
+      if (componentType == null || viewTypeInfo == null) {
+        this.viewNotSupportedError = true;
+        return;
+      }
+      this.viewNotSupportedError = false;
 
-    this.viewComponentRef = this.viewContainer.createComponent(componentType);
-    this.viewComponentRef.instance.view = view;
-    this.viewComponentRef.instance.fullscreen = this.fullscreen;
+      this.viewComponentRef = this.viewContainer.createComponent(componentType);
+      this.viewComponentRef.instance.view = view;
+      this.viewComponentRef.instance.resourceId = this.resourceId;
+      this.viewComponentRef.instance.config = this.config;
+    }, 0);
   }
 
   private destroyViewComponentRef(): void {
