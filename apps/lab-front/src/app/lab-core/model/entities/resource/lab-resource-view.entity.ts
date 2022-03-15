@@ -63,7 +63,8 @@ export class LabViewCallResult {
  * Object that contains the resource view spec and its configuration
  */
 export interface LabResourceViewSpecWithConfig {
-  viewSpec: LabResourceViewSpec;
+  viewName: string;
+  viewMethodName: string;
   viewConfigValues: LabConfigValues;
   displayMode: LabResourceViewDisplayMode;
   transformersWithConfig: LabTransformerWithConfig[];
@@ -183,7 +184,7 @@ export const labConstResourceViewTypeInfos: Record<LabResourceViewType, LabResou
     icon: 'text_snippet',
     text: 'biox.resource_view_text',
     defaultDisplayMode: 'fullScreen',
-    forceDefaultDisplayMode: true
+    forceDefaultDisplayMode: false
   },
   'table-view': {
     icon: 'calendar_view_month',
@@ -266,7 +267,7 @@ export const labConstResourceViewTypeInfos: Record<LabResourceViewType, LabResou
   'folder-view': {
     icon: 'folder',
     text: 'biox.resource_view_folder',
-    defaultDisplayMode: 'portal',
+    defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false
   },
 };

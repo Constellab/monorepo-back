@@ -35,8 +35,10 @@ import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity
 })
 export class LabResourceService implements FlSearchService<LabResource> {
 
+  public static readonly defaultViewName: string = 'default-view';
   private readonly route: string = 'resource';
   private readonly resourceTypeRoute: string = 'resource-type';
+
 
   constructor(private apiService: FlApiService) {
   }
@@ -126,7 +128,7 @@ export class LabResourceService implements FlSearchService<LabResource> {
   }
 
   public callResourceDefaultView(id: string): Observable<LabViewCallResult> {
-    return this.apiService.post(`${this.route}/${id}/default-view`, {}, LabViewCallResult);
+    return this.callResourceView(id, LabResourceService.defaultViewName, {}, []);
   }
 
   //////////////////////////////////////// TRANSFORMERS  ///////////////////////////////////////

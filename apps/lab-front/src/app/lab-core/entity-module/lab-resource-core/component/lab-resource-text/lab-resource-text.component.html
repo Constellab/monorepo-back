@@ -1,19 +1,21 @@
-<div class="g-text-centered button" *ngIf="!reachedFirstPage">
-  <button mat-flat-button color="primary" type="button"
-          (click)="loadPreviousPage()" [disabled]="isLoading">
-    {{'biox.resource_previous_text_load' | translate}}
-  </button>
-</div>
+<div class="container g-scrollable-element"
+     (flInfiniteScroll)="loadNextPage()" [flInfiniteDisabled]="reachedLastPage || isLoading">
+  <div class="g-text-centered button" *ngIf="!reachedFirstPage">
+    <button mat-flat-button color="primary" type="button"
+            (click)="loadPreviousPage()" [disabled]="isLoading">
+      {{'biox.resource_previous_text_load' | translate}}
+    </button>
+  </div>
 
 
-<div (flInfiniteScroll)="loadNextPage()" [flInfiniteMode]="infiniteScrollMode" [flInfiniteDisabled]="reachedLastPage || isLoading"
-     class="container">
-  {{text}}
-</div>
+  <div class="text-container">
+    {{text}}
+  </div>
 
-<div class="g-text-centered button" *ngIf="!reachedLastPage">
-  <button mat-flat-button color="primary" type="button"
-          (click)="loadNextPage()" [disabled]="isLoading">
-    {{'biox.resource_next_text_load' | translate}}
-  </button>
+  <div class="g-text-centered button" *ngIf="!reachedLastPage">
+    <button mat-flat-button color="primary" type="button"
+            (click)="loadNextPage()" [disabled]="isLoading">
+      {{'biox.resource_next_text_load' | translate}}
+    </button>
+  </div>
 </div>

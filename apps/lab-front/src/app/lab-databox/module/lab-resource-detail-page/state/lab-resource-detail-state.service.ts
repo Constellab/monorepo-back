@@ -123,6 +123,11 @@ export class LabResourceDetailState implements OnDestroy {
   /////////////////////////////////// VIEW //////////////////////////////////////////
 
   private loadDefaultView(): void {
+    // generate the default view spec
+    this.selectedViewSpec$.next({
+      displayMode: 'fullScreen', viewMethodName: LabResourceService.defaultViewName,
+      viewName: 'Default', viewConfigValues: {}, transformersWithConfig: []
+    });
     this.flActionService.addAction(
       {
         type: this.actionType,
@@ -143,8 +148,8 @@ export class LabResourceDetailState implements OnDestroy {
     this.flActionService.addAction(
       {
         type: this.actionType,
-        text: viewSpecConfigured.viewSpec.getName(),
-        action: this.callResourceView(viewSpecConfigured.viewSpec.methodName,
+        text: viewSpecConfigured.viewName,
+        action: this.callResourceView(viewSpecConfigured.viewMethodName,
           viewSpecConfigured.viewConfigValues, viewSpecConfigured.transformersWithConfig),
         additionalInformation: viewSpecConfigured.displayMode
       },
@@ -157,14 +162,14 @@ export class LabResourceDetailState implements OnDestroy {
    * @param pageConfig
    */
   public callPagination(pageConfig: LabConfigValues): Observable<LabResourceView> {
-    const configValues: LabConfigValues = ClHelpService.deepClone(this.selectedViewSpec$.value.viewConfigValues);
+    const configValues: LabConfigValues = ClHelpService.deepClone(this.selectedViewSpec$.value?.viewConfigValues ?? {});
 
     // override the view config with page config
     for (const key of Object.keys(pageConfig)) {
       configValues[key] = pageConfig[key];
     }
 
-    return this.callResourceView(this.selectedViewSpec$.value.viewSpec.methodName, configValues,
+    return this.callResourceView(this.selectedViewSpec$.value.viewMethodName, configValues,
       this.selectedViewSpec$.value.transformersWithConfig).pipe(
       map(result => result.viewData)
     );
@@ -186,6 +191,7 @@ export class LabResourceDetailState implements OnDestroy {
       {
         elevation: true,
         disposeOnNavigation: true,
+        customProviders: [{provide: LabResourceDetailState, useValue: this}]
       });
 
     this.portalService.createPortal(LabResourceViewPortalComponent, portalConfig, view);

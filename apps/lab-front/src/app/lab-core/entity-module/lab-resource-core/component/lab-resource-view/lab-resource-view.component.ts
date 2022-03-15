@@ -18,7 +18,6 @@ import {LabResourceFolderComponent} from '../lab-resource-folder/lab-resource-fo
 export function labResourceViewGetComponentType(viewType: LabResourceViewType): ComponentType<LabResourceViewDirective> {
   switch (viewType) {
     case 'json-view':
-
       return LabResourceJsonComponent;
     case 'text-view':
       return LabResourceTextComponent;

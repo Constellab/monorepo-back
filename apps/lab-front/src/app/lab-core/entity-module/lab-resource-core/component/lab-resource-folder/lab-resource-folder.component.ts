@@ -86,6 +86,7 @@ export class LabResourceFolderComponent extends LabResourceViewDirective<LabReso
     const typingName = result.uploadMode === 'files' ? result.fileTypingNames[0] : result.folderTypingName;
 
     node.isLoading = true;
+    // todo ne pas utilise le route
     this.route.params.pipe(
       first(),
       mergeMap(params => this.fileService.extractFile(params.id, path, typingName))).subscribe({

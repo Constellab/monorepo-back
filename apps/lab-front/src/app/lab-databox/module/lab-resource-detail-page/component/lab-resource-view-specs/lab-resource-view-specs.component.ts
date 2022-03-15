@@ -46,7 +46,7 @@ export class LabResourceViewSpecsComponent implements OnInit {
 
   // return true if the view is the last view selected (so we can keep the previous config)
   private isSpecIsSelected(view: LabResourceViewSpec): boolean {
-    return this.selectedView?.viewSpec.methodName === view.methodName;
+    return this.selectedView?.viewMethodName === view.methodName;
   }
 
   selectView(view: LabResourceViewSpec, viewByType: LabResourceViewSpecsByType): void {
@@ -63,7 +63,8 @@ export class LabResourceViewSpecsComponent implements OnInit {
       specWithConfig = this.selectedView;
     } else {
       specWithConfig = {
-        viewSpec: view,
+        viewName: view.getName(),
+        viewMethodName: view.methodName,
         displayMode: viewByType.viewTypeInfo.defaultDisplayMode,
         viewConfigValues: {},
         transformersWithConfig: []

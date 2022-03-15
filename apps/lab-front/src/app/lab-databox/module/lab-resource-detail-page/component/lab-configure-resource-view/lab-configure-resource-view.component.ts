@@ -68,7 +68,7 @@ export class LabConfigureResourceViewComponent implements OnInit {
   }
 
   private getViewSpecs(): void {
-    this.resourceService.getResourceViewSpecsDetail(this.input.resourceId, this.input.viewSpecConfig.viewSpec.methodName).subscribe(
+    this.resourceService.getResourceViewSpecsDetail(this.input.resourceId, this.input.viewSpecConfig.viewMethodName).subscribe(
       specs => this.init(specs),
       () => this.isLoading = false
     );
@@ -106,7 +106,8 @@ export class LabConfigureResourceViewComponent implements OnInit {
     }));
 
     return {
-      viewSpec: this.input.viewSpecConfig.viewSpec,
+      viewMethodName: this.input.viewSpecConfig.viewMethodName,
+      viewName: this.input.viewSpecConfig.viewName,
       viewConfigValues: {...formValue.viewConfig.public, ...formValue.viewConfig.protected},
       displayMode: formValue.displayMode,
       transformersWithConfig: transformers
