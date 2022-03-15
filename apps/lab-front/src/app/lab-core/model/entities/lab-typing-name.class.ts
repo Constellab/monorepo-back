@@ -21,4 +21,10 @@ export class LabTypingName {
     folder: 'RESOURCE.gws_core.Folder',
     tableFile: 'RESOURCE.gws_core.TableFile',
   }
+
+  public static importer = {
+    tableImporter: 'TASK.gws_core.TableImporter',
+    jsonImporter: 'TASK.gws_core.JSONImporter',
+    textImporter: 'TASK.gws_core.TextImporter',
+  }
 }

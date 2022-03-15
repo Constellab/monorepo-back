@@ -9,7 +9,7 @@
     <span>{{'biox.download_resource' | translate}}</span>
   </button>
 
-  <button mat-menu-item type="button" *ngIf="resource.isImportable && !readOnly"
+  <button mat-menu-item type="button" *ngIf="resource.isFsNode() && !readOnly"
           (click)="openImportResource()">
     <mat-icon>system_update_alt</mat-icon>
     <span>{{'biox.import_resource' | translate}}</span>

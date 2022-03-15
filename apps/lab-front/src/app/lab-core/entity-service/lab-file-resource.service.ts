@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlEntityPaginatedDatasource, FlFileHelper} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {LabFileType} from '../model/entities/resource/lab-file-type';
 import {ClPageI} from '@monorepo/core-lib';
 import {LabResource, LabResourceDatasource} from '../model/entities/resource/lab-resource.entity';
 import {HttpEvent} from '@angular/common/http';
+import {LabTypeEntity} from '../model/entities/lab-type/lab-type.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -16,21 +16,6 @@ export class LabFileResourceService {
   private readonly route: string = 'fs-node';
 
   constructor(private apiService: FlApiService) {
-  }
-
-  /**
-   * Upload a file to the serveur. This watch the http events to follow progress.
-   */
-  public uploadFiles(files: File[], typingNames?: string[]): Observable<HttpEvent<any>> {
-    const formData: FormData = new FormData();
-    files.forEach(file => formData.append('files', file));
-
-    if (typingNames) {
-      typingNames.forEach(type => formData.append('typing_names', type));
-    }
-
-    return this.apiService.post(`${this.route}/upload-files`, formData, null,
-      {observe: 'events', reportProgress: true});
   }
 
   /**
@@ -78,17 +63,20 @@ export class LabFileResourceService {
   }
 
   public extractFile(id: string, subPath: string, typingName: string): Observable<LabResource> {
-    return this.apiService.put(`${this.route}/${id}/extract-file`, {path: subPath, fs_node_typing_name: typingName}, LabResource);
+    return this.apiService.put(`${this.route}/${id}/extract-file`, {
+      path: subPath,
+      fs_node_typing_name: typingName
+    }, LabResource);
   }
 
   //////////////////////////////////////////// FILE TYPE ////////////////////////////////////////
   // return the list of all file types
-  public getFileTypes(): Observable<LabFileType[]> {
-    return this.apiService.get(`${this.route}/file-type`, LabFileType);
+  public getFileTypes(): Observable<LabTypeEntity[]> {
+    return this.apiService.get(`${this.route}/file-type`, LabTypeEntity);
   }
 
   // return the list of all folder types
-  public getFolderTypes(): Observable<LabFileType[]> {
-    return this.apiService.get(`${this.route}/folder-type`, LabFileType);
+  public getFolderTypes(): Observable<LabTypeEntity[]> {
+    return this.apiService.get(`${this.route}/folder-type`, LabTypeEntity);
   }
 }

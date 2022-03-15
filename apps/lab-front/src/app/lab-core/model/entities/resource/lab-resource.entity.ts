@@ -50,9 +50,6 @@ export class LabResource extends LabBaseEntityWithUser {
   @Type(() => LabFsNodeEntity)
   fsNode ?: LabFsNodeEntity;
 
-  @Expose({name: 'is_importable'})
-  isImportable: boolean;
-
   @Expose({name: 'is_downloadable'})
   isDownloadable: boolean;
 

@@ -1,9 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
-import {FlFileHelper} from '@monorepo/front-core-lib';
 import {FormArray, FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {LabFileType} from '../../../../model/entities/resource/lab-file-type';
 import {Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {LabTypingName} from '../../../../model/entities/lab-typing-name.class';
@@ -63,7 +61,7 @@ export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
 
   resourceTypes$: Observable<LabTypeEntity[]>;
 
-  private fileTypes$: ClCachedObservable<LabFileType[]>;
+  private fileTypes$: ClCachedObservable<LabTypeEntity[]>;
   private folderTypes$: ClCachedObservable<LabTypeEntity[]>;
 
   constructor(@Inject(MAT_DIALOG_DATA) private input: LabFsNodeTypesSelectionDialogInput,
@@ -105,21 +103,11 @@ export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
   private async initFormFiles(): Promise<void> {
     this.resourceTypes$ = this.fileTypes$.getObs();
 
-    const fileTypes = await this.fileTypes$.toPromise();
     const filesWithType: LabFsNodeWithType[] = [];
     // detect the typing name automatically
     for (const filename of this.input.filenames) {
-      // if file does not have a typing name, detect the file type
-      const extension = FlFileHelper.getFileExtension(filename);
-
-      const fileType: LabFileType = fileTypes.find(fileType => fileType.extensionIsSupported(extension));
-
-      if (fileType != null) {
-        filesWithType.push({filename: filename, typingName: fileType.typingName});
-      } else {
-        // set the file as default typing name
-        filesWithType.push({filename: filename, typingName: LabTypingName.resource.file});
-      }
+      // set the file as default typing name
+      filesWithType.push({filename: filename, typingName: LabTypingName.resource.file});
     }
 
     for (const file of filesWithType) {

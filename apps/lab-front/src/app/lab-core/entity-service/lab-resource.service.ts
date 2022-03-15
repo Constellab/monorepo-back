@@ -142,8 +142,8 @@ export class LabResourceService implements FlSearchService<LabResource> {
   }
 
   //////////////////////////////////////// IMPORTER  ///////////////////////////////////////
-  public getImporters(resourceTypingName: string): Observable<LabResourceImporterType[]> {
-    return this.apiService.get(`${this.resourceTypeRoute}/${resourceTypingName}/importer`, LabResourceImporterType);
+  public getImporters(resourceTypingName: string, extension: string): Observable<LabResourceImporterType[]> {
+    return this.apiService.get(`${this.resourceTypeRoute}/${resourceTypingName}/${extension ?? ' '}/importer`, LabResourceImporterType);
   }
 
   public callImporter(resourceId: string, importerType: string, config: LabConfigValues): Observable<LabResource> {

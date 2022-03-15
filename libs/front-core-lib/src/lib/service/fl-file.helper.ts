@@ -31,6 +31,7 @@ export class FlFileHelper {
    */
   public static getFileExtension(file: string): string {
     if (!file) return null;
+    if (file.indexOf('.') === -1) return null;
     return FlFileHelper.extractFilenameFromFullPath(file)
       .split('.')
       .slice(-1)

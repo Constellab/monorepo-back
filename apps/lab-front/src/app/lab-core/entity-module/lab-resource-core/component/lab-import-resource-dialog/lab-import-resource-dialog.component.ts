@@ -28,6 +28,7 @@ export interface LabImportResourceDialogInput {
   resourceId: string;
   resourceHumanName: string;
   resourceTypingName: string;
+  nodeExtension: string;
 }
 
 interface LabImportResourceDialogForm {
@@ -75,10 +76,10 @@ export class LabImportResourceDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.getIsLoading = true;
-    this.resourceService.getImporters(this.input.resourceTypingName).subscribe(
-      groupImporters => this.getImportersSuccess(groupImporters),
-      () => this.getImportersError()
-    );
+    this.resourceService.getImporters(this.input.resourceTypingName, this.input.nodeExtension).subscribe({
+      next: groupImporters => this.getImportersSuccess(groupImporters),
+      error: () => this.getImportersError()
+    });
 
     // on dialog close, close the overlay ref
     this.dialogRef.beforeClosed().subscribe(() => this.detailOverlayRef?.dispose());
@@ -88,13 +89,7 @@ export class LabImportResourceDialogComponent implements OnInit {
     this.groupImporters = groupImporters;
     this.getIsLoading = false;
 
-    let defaultValue: LabProcessType = null;
-
-    if (this.input.resourceTypingName === LabTypingName.resource.tableFile) {
-      // find the importer of TableFile
-      const tablesImporters = groupImporters.find(group => group.resource.typingName == LabTypingName.resource.tableFile);
-      defaultValue = tablesImporters?.importers.find(importer => importer.typingName === LabTypingName.task.tableImporter) ?? null;
-    }
+    const defaultValue: LabProcessType = this.getDefaultImporter(this.input.nodeExtension, groupImporters);
 
     this.formGp = new FormBuilder().group({
       importer: [defaultValue, Validators.required],
@@ -157,5 +152,31 @@ export class LabImportResourceDialogComponent implements OnInit {
     this.snackBarService.openSuccessMessage({text: 'biox.resource_imported', translateText: true});
     this.routerService.navigateToResourceDetail(resource.id);
     this.dialogRef.close();
+  }
+
+
+  // get default importer based on file extension
+  private getDefaultImporter(extension: string, groupImporters: LabResourceImporterType[]): LabProcessType | null {
+    // // if there is only one importer, select it
+    if (groupImporters.length === 1 && groupImporters[0].importers.length === 1) {
+      return groupImporters[0].importers[0];
+    }
+    if (['csv', 'tsv', 'xls', 'xlsx'].includes(extension)) {
+      return this.findImporter(LabTypingName.importer.tableImporter, groupImporters);
+    } else if (extension === 'json') {
+      return this.findImporter(LabTypingName.importer.jsonImporter, groupImporters);
+    } else if (extension === 'txt') {
+      return this.findImporter(LabTypingName.importer.textImporter, groupImporters);
+    }
+
+    return null;
+  }
+
+  private findImporter(importerTypingName: string, groupImporters: LabResourceImporterType[]): LabProcessType | null {
+    for (const group of groupImporters) {
+      const importer = group.importers.find(importer => importer.typingName === importerTypingName);
+      if (importer) return importer;
+    }
+    return null;
   }
 }

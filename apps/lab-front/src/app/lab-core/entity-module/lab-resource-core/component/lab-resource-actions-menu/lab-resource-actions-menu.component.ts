@@ -55,7 +55,8 @@ export class LabResourceActionsMenuComponent implements OnInit {
     const input: LabImportResourceDialogInput = {
       resourceId: this.resource.id,
       resourceHumanName: this.resource.resourceTypeHumanName,
-      resourceTypingName: this.resource.resourceTypingName
+      resourceTypingName: this.resource.resourceTypingName,
+      nodeExtension: this.resource.fsNode.getExtension()
     };
 
     this.dialogService.openMediumDialog(LabImportResourceDialogComponent, {data: input});
