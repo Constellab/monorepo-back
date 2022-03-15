@@ -41,7 +41,7 @@ export class FlSnackBarService {
    * @param duration the duration in millisecond of the snackbar
    * @param additionalConfig additional config
    */
-  public openErrorMessage(message: FlTranslatableText, duration: number = 3000,
+  public openErrorMessage(message: FlTranslatableText, duration: number = null,
                           additionalConfig: FlSnackBarAdditionalConfig = flSnackBarAdditionalConfigDefault)
     : MatSnackBarRef<FlSnackBarInfoComponent> {
     return this.openSnackBarInfo({
