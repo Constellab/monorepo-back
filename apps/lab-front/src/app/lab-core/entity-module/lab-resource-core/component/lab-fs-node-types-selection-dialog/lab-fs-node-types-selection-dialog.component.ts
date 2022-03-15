@@ -10,17 +10,18 @@ import {LabTypingName} from '../../../../model/entities/lab-typing-name.class';
 import {ClCachedObservable} from '@monorepo/core-lib';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
 
-export type LabFsNodeTypesSelectionMode = 'files' | 'folder'
+
+export type LabFsNodeTypesSelectionDialogMode = 'files' | 'folder' | 'filesOrFolder';
 
 export interface LabFsNodeTypesSelectionDialogInput {
-  selectedNodes: LabFsNodeTypesSelectionMode;
+  dialogMode: LabFsNodeTypesSelectionDialogMode;
   filenames: string[];
 }
 
 
 // object used in the form
-interface LabUploadFilesForm {
-  uploadMode: LabFsNodeTypesSelectionMode;
+interface LabForm {
+  nodeMode: 'files' | 'folder';
   files: LabFsNodeWithType[];
 }
 
@@ -55,10 +56,10 @@ export interface UploadFsNodeTypeFolderResult {
 })
 export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
 
-  selectedNodes: 'files' | 'folder';
+  selectedNodes: LabFsNodeTypesSelectionDialogMode;
 
   formArray: FormArray<LabFsNodeWithType>;
-  formGp: FormGroup<LabUploadFilesForm>;
+  formGp: FormGroup<LabForm>;
 
   resourceTypes$: Observable<LabTypeEntity[]>;
 
@@ -68,7 +69,7 @@ export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
   constructor(@Inject(MAT_DIALOG_DATA) private input: LabFsNodeTypesSelectionDialogInput,
               private fileResourceService: LabFileResourceService,
               private dialogRef: MatDialogRef<LabFsNodeTypesSelectionDialogComponent>) {
-    this.selectedNodes = input.selectedNodes;
+    this.selectedNodes = input.dialogMode;
   }
 
   ngOnInit(): void {
@@ -81,14 +82,14 @@ export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
   private buildForm(): void {
     this.formArray = new FormArray<LabFsNodeWithType>([]);
     this.formGp = new FormBuilder().group({
-      uploadMode: 'files',
+      nodeMode: this.selectedNodes === 'folder' ? 'folder' : 'files',
       files: this.formArray
     });
   }
 
   // show the selection of file types when the mode is not folder
   get showSelectFileTypes(): boolean {
-    return this.formGp.getRawValue().uploadMode !== 'folder';
+    return this.formGp.getRawValue().nodeMode !== 'folder';
   }
 
 
@@ -146,7 +147,7 @@ export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
 
       const typingNames: string[] = formValue.files.map(file => file.typingName);
 
-      if (formValue.uploadMode === 'files') {
+      if (formValue.nodeMode === 'files') {
         this.closeDialog({
           uploadMode: 'files',
           fileTypingNames: typingNames
@@ -171,6 +172,6 @@ export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
   }
 
   get typePlaceholder(): string {
-    return this.formGp.value.uploadMode === 'files' ? 'databox.select_file_type' : 'databox.select_folder_type';
+    return this.formGp.value.nodeMode === 'files' ? 'databox.select_file_type' : 'databox.select_folder_type';
   }
 }

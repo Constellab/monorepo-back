@@ -18,8 +18,8 @@ import {LabResource} from '../../../../model/entities/resource/lab-resource.enti
 import {
   LabFsNodeTypesSelectionDialogComponent,
   LabFsNodeTypesSelectionDialogInput,
-  LabFsNodeTypesSelectionDialogResult,
-  LabFsNodeTypesSelectionMode
+  LabFsNodeTypesSelectionDialogMode,
+  LabFsNodeTypesSelectionDialogResult
 } from '../lab-fs-node-types-selection-dialog/lab-fs-node-types-selection-dialog.component';
 import {ClCoreJsonConvert, ClHelpService} from '@monorepo/core-lib';
 import {Subscription} from 'rxjs';
@@ -131,17 +131,17 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
   }
 
   openUploadFolder(fileEvent: File | File[]): void {
-    this.uploadFsNode(fileEvent, 'folder');
+    this.uploadFsNode(fileEvent, 'filesOrFolder');
   }
 
-  private uploadFsNode(fileEvent: File | File[], selectedNodes: LabFsNodeTypesSelectionMode): void {
+  private uploadFsNode(fileEvent: File | File[], selectedNodes: LabFsNodeTypesSelectionDialogMode): void {
     const files: File[] = ClHelpService.convertObjectOrArrayToArray(fileEvent);
     if (files.length === 0) {
       return;
     }
 
     const data: LabFsNodeTypesSelectionDialogInput = {
-      selectedNodes: selectedNodes,
+      dialogMode: selectedNodes,
       filenames: files.map(file => file.name)
     };
     this.dialogService.openSmallDialog(LabFsNodeTypesSelectionDialogComponent, {data: data}).afterClosed().subscribe({
