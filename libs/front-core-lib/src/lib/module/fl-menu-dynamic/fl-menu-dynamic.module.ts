@@ -7,6 +7,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlIconModule} from '../fl-svg-icon/fl-icon.module';
 import {MatDividerModule} from '@angular/material/divider';
+import {RouterModule} from '@angular/router';
 
 /**
  * Module to create mat menu dynamically
@@ -21,6 +22,7 @@ import {MatDividerModule} from '@angular/material/divider';
   ],
   imports: [
     CommonModule,
+    RouterModule,
 
     FlTranslateModule,
     FlIconModule,

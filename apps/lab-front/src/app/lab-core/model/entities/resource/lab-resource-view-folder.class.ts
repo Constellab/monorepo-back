@@ -24,5 +24,6 @@ export interface LabResourceViewFolderContentFlat {
   name: string;
   resource_model_id?: string;
   level: number;
-  expandable: boolean;
+  isFolder: boolean;
+  isLoading: boolean;
 }

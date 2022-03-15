@@ -76,7 +76,7 @@ export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
     this.fileTypes$ = new ClCachedObservable(this.fileResourceService.getFileTypes());
     this.folderTypes$ = new ClCachedObservable(this.fileResourceService.getFolderTypes());
     this.buildForm();
-    this.onUploadModeChange('files');
+    this.onNodeModeChange(this.formGp.value.nodeMode);
   }
 
   private buildForm(): void {
@@ -93,7 +93,7 @@ export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
   }
 
 
-  onUploadModeChange(mode: 'files' | 'folder'): void {
+  onNodeModeChange(mode: 'files' | 'folder'): void {
     this.formArray.clear();
     if (mode === 'files') {
       this.initFormFiles();

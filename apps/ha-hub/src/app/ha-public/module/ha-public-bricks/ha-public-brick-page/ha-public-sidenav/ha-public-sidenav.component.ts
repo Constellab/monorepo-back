@@ -149,6 +149,7 @@ export class HaPublicSidenavComponent implements OnInit {
     if (isFolder) {
       return isRoot ? [
         {
+          type: 'button',
           text: {text: 'create', translateText: true},
           icon: 'add',
           onClick: () => {
@@ -157,16 +158,19 @@ export class HaPublicSidenavComponent implements OnInit {
         }
       ] : [
         {
+          type: 'button',
           text: {text: 'create', translateText: true},
           icon: 'add',
           onClick: (event) => this.openCreateDialog(id)
         },
         {
+          type: 'button',
           text: {text: 'edit', translateText: true},
           icon: 'edit',
           onClick: (event) => this.prepareEditDialog(id, isFolder)
         },
         {
+          type: 'button',
           text: {text: 'delete', translateText: true},
           icon: 'delete',
           onClick: (event) => this.openResourceDelete(id, isFolder),
@@ -176,11 +180,13 @@ export class HaPublicSidenavComponent implements OnInit {
     }
     return [
       {
+        type: 'button',
         text: {text: 'edit', translateText: true},
         icon: 'edit',
         onClick: (event) => this.prepareEditDialog(id, isFolder)
       },
       {
+        type: 'button',
         text: {text: 'delete', translateText: true},
         icon: 'delete',
         onClick: (event) => this.openResourceDelete(id, isFolder)

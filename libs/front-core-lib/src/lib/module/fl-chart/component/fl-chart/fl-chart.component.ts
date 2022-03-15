@@ -109,6 +109,7 @@ export class FlChartComponent implements OnInit, OnDestroy {
     const menu: FlMenuDynamic[] = [
       // Export to SVG button
       {
+        type: 'button',
         text: {text: 'flChart.export_chart', translateText: true},
         icon: 'file_download',
         onClick: () => this.state.downloadSVG()
@@ -118,6 +119,7 @@ export class FlChartComponent implements OnInit, OnDestroy {
       menu.push(
         // Reset zoom
         {
+          type: 'button',
           text: {text: 'flChart.reset_zoom', translateText: true},
           icon: 'search',
           onClick: () => this.state.resetZoom()

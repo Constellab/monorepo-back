@@ -4,7 +4,7 @@
       <mat-divider *ngIf="item.divider"></mat-divider>
 
       <!-- Handle branch node menu items -->
-      <span *ngIf="item.children?.length > 0 ; else leaf">
+      <span *ngIf="item.type === 'button' && item.children?.length > 0 ; else leaf">
       <button mat-menu-item [matMenuTriggerFor]="subMenu.menu" (click)="callItem(item, $event)"
               [disabled]="item.disabled">
         <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
@@ -15,12 +15,19 @@
 
       <!-- Handle leaf node menu items -->
       <ng-template #leaf>
-    <span>
-      <button mat-menu-item (click)="callItem(item, $event)" [disabled]="item.disabled">
-        <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
-        {{item.text | flTranslatableText}}
-      </button>
-    </span>
+
+        <!--    Link    -->
+        <a *ngIf="item.type === 'link'" mat-menu-item [routerLink]="item.link">
+          <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
+          {{item.text | flTranslatableText}}
+        </a>
+
+        <!--    Button    -->
+        <button *ngIf="item.type === 'button'" mat-menu-item (click)="callItem(item, $event)"
+                [disabled]="item.disabled">
+          <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
+          {{item.text | flTranslatableText}}
+        </button>
       </ng-template>
     </ng-container>
   </div>

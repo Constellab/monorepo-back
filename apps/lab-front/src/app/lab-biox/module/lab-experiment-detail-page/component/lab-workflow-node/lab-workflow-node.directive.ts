@@ -120,6 +120,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
 
     return [
       {
+        type: 'button',
         text: {text: 'biox.add_source', translateText: true},
         icon: 'resource',
         onClick: () => this.openResourceSelection(port.name),
@@ -134,6 +135,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
 
     return [
       {
+        type: 'button',
         text: {text: 'biox.add_output', translateText: true},
         icon: 'output',
         onClick: () => this.addTaskOutput(portName),
@@ -145,6 +147,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
 
   private getResourceDetailContextButton(resourceId: string | null): FlMenuDynamic {
     return {
+      type: 'button',
       text: {text: 'biox.view_resource', translateText: true},
       icon: 'visibility',
       onClick: () => this.openResourceDetail(resourceId),

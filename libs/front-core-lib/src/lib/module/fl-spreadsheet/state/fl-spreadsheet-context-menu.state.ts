@@ -47,12 +47,14 @@ export class FlSpreadsheetContextMenu {
       menu.push(  // button to create a row
         // button to create a column
         {
+          type: 'button',
           text: {text: 'flSpreadsheet.add', translateText: true},
           icon: 'add',
           onClick: () => this.action.addColumn()
         },
         // button to delete columns
         {
+          type: 'button',
           text: {text: 'flSpreadsheet.delete', translateText: true},
           icon: 'delete',
           onClick: () => this.action.deleteColumns()
@@ -74,6 +76,7 @@ export class FlSpreadsheetContextMenu {
     if (!readOnly) {
       menu.push(  // button to create a row
         {
+          type: 'button',
           text: {text: 'flSpreadsheet.add', translateText: true},
           icon: 'add',
           onClick: () => this.action.addRow(),
@@ -81,6 +84,7 @@ export class FlSpreadsheetContextMenu {
         },
         // button to delete rows
         {
+          type: 'button',
           text: {text: 'flSpreadsheet.delete', translateText: true},
           icon: 'delete',
           onClick: () => this.action.deleteRows()
@@ -103,6 +107,7 @@ export class FlSpreadsheetContextMenu {
 
   private getCreateChartConfig(): FlMenuDynamic {
     return {
+      type: 'button',
       text: {text: 'flSpreadsheet.create_chart', translateText: true},
       icon: 'addchart',
       onClick: () => this.chartState.openChartSelectionPortal(),
@@ -112,6 +117,7 @@ export class FlSpreadsheetContextMenu {
 
   private getCopyPasteConfig(readOnly: boolean): FlMenuDynamic[] {
     const menu: FlMenuDynamic[] = [{
+      type: 'button',
       text: {text: 'flSpreadsheet.copy', translateText: true},
       icon: 'content_copy',
       onClick: () => this.clipboardState.copyCurrentSelectionToClipboard(),
@@ -119,6 +125,7 @@ export class FlSpreadsheetContextMenu {
 
     if (!readOnly) {
       menu.push({
+        type: 'button',
         text: {text: 'flSpreadsheet.paste', translateText: true},
         icon: 'content_paste',
         onClick: () => this.clipboardState.pasteClipboardValueToSelection()

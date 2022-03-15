@@ -1,19 +1,24 @@
 <div class="container">
   <mat-tree *ngIf="dataSource" [dataSource]="dataSource" [treeControl]="treeControl">
 
-    <mat-tree-node *matTreeNodeDef="let node" [matTreeNodePadding]="node.level" [matTreeNodePaddingIndent]="30">
-      <lab-resource-folder-node [node]="node" nodeType="file"></lab-resource-folder-node>
+    <mat-tree-node *matTreeNodeDef="let node" [matTreeNodePadding]="node.level" [matTreeNodePaddingIndent]="30"
+                   (contextmenu)="openMenu(node, $event)">
+      <span>{{node.name}}</span>
+      <fl-loader *ngIf="node.isLoading" size="small" class="loader"></fl-loader>
     </mat-tree-node>
 
 
     <!-- This is the tree node template for expandable nodes -->
     <mat-tree-node *matTreeNodeDef="let node;when: hasChild"
-                   [matTreeNodePadding]="node.level" [matTreeNodePaddingIndent]="30" class="g-clickable">
+                   [matTreeNodePadding]="node.level" [matTreeNodePaddingIndent]="30" class="g-clickable"
+                   (contextmenu)="openMenu(node, $event)">
       <div matTreeNodeToggle fxLayout="row" fxLayoutAlign="start center">
 
         <!--      Arrow icon      -->
         <mat-icon>{{treeControl.isExpanded(node) ? 'arrow_drop_down' : 'arrow_right'}}</mat-icon>
-        <lab-resource-folder-node [node]="node" nodeType="folder"></lab-resource-folder-node>
+        <span>{{node.name}}</span>
+
+        <fl-loader *ngIf="node.isLoading" size="small" class="loader"></fl-loader>
 
       </div>
     </mat-tree-node>

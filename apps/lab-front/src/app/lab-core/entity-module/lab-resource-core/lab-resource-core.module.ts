@@ -50,7 +50,6 @@ import {
 } from './component/lab-resource-actions-menu/lab-resource-actions-menu.component';
 import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
 import {LabResourceFolderComponent} from './component/lab-resource-folder/lab-resource-folder.component';
-import {LabResourceFolderNodeComponent} from './component/lab-resource-folder-node/lab-resource-folder-node.component';
 
 
 @NgModule({
@@ -80,7 +79,6 @@ import {LabResourceFolderNodeComponent} from './component/lab-resource-folder-no
     LabUpdateResourceNameDialogComponent,
     LabResourceActionsMenuComponent,
     LabResourceFolderComponent,
-    LabResourceFolderNodeComponent,
   ],
   exports: [
     LabResourceInfoComponent,

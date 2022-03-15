@@ -77,8 +77,8 @@ export class LabFileResourceService {
       20, true);
   }
 
-  public extractFile(id: string, subPath: string): Observable<LabResource> {
-    return this.apiService.put(`${this.route}/${id}/extract-file`, {path: subPath}, LabResource);
+  public extractFile(id: string, subPath: string, typingName: string): Observable<LabResource> {
+    return this.apiService.put(`${this.route}/${id}/extract-file`, {path: subPath, fs_node_typing_name: typingName}, LabResource);
   }
 
   //////////////////////////////////////////// FILE TYPE ////////////////////////////////////////
