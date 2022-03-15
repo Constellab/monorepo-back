@@ -14,6 +14,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flPortalActionI18n} from './i18n/fl-portal-action.i18n';
+import {RouterModule} from '@angular/router';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import {flPortalActionI18n} from './i18n/fl-portal-action.i18n';
   ],
   imports: [
     CommonModule,
+    RouterModule,
 
     FlexLayoutModule,
     MatIconModule,

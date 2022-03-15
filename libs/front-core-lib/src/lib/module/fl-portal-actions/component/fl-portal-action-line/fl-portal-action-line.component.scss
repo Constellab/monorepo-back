@@ -1,11 +1,19 @@
 
-:host{
+:host {
   display: block;
   padding-top: 0.3em;
   padding-bottom: 0.3em;
 }
 
-.text{
+.link {
+  cursor: pointer;
+
+  .text:hover {
+    text-decoration: underline;
+  }
+}
+
+.text {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

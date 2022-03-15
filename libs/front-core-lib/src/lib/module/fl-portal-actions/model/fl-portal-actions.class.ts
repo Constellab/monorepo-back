@@ -7,12 +7,12 @@ import {HttpEvent, HttpEventType} from '@angular/common/http';
  * Action to be shown in the screen
  * The observable will be call automatically and result will be emitted as {@link FlPortalActionResult}
  */
-export interface FlPortalAction {
+export interface FlPortalAction<T = any> {
 
   /**
    * Action as observable to subscribe
    */
-  action: Observable<any>;
+  action: Observable<T>;
 
 
   /**
@@ -34,6 +34,12 @@ export interface FlPortalAction {
    * Additional information to return to the result
    */
   additionalInformation?: any;
+
+  /**
+   * Method called on success with the observable result. If it returns a string, the action become a clickable link
+   * @param result
+   */
+  successLink?: (result: T) => string;
 }
 
 /**
@@ -95,11 +101,14 @@ export class FlPortalActionDetail {
   }
 
   private emitSuccess(result: any): void {
+    const link = this.action.successLink ? this.action.successLink(result) : null;
+
     this.actionSubject$.next({
       status: 'success',
       result: result,
       action: this.action,
-      additionalInformation: this.action.additionalInformation
+      additionalInformation: this.action.additionalInformation,
+      link: link
     });
     this.actionSubject$.complete();
   }
@@ -171,6 +180,7 @@ export interface FlPortalActionSuccess<T = any> {
   result: T;
   action: FlPortalAction;
   additionalInformation?: any;
+  link?: string;
 }
 
 /**

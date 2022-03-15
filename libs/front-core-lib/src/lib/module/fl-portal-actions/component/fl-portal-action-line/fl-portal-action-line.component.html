@@ -1,5 +1,6 @@
 <div fxLayout="row" fxLayoutAlign="space-between center"
-     [matTooltip]="text" matTooltipShowDelay="1000" matTooltipPosition="above">
+     [matTooltip]="text" matTooltipShowDelay="1000" matTooltipPosition="above"
+     [routerLink]="link$ | async" [ngClass]="{'link': link$ | async}">
 
   <div class="text">
     {{text}}

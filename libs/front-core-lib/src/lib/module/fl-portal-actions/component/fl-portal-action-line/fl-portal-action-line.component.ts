@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FlPortalActionDetail, FlPortalActionDetailStatusEvent} from '../../model/fl-portal-actions.class';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
 import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 /**
  * Component inside {@link FlPortalActionsComponent} that subscribe
@@ -17,6 +18,7 @@ export class FlPortalActionLineComponent implements OnInit {
   @Input() action: FlPortalActionDetail;
 
   statusEvent$: Observable<FlPortalActionDetailStatusEvent>;
+  link$: Observable<string | null>;
 
   text: string;
 
@@ -27,6 +29,7 @@ export class FlPortalActionLineComponent implements OnInit {
     // translate the text if necessary
     this.text = this.translateService.translatableText(this.action.text);
     this.statusEvent$ = this.action.getStatusEvent$();
+    this.link$ = this.action.getResult$().pipe(map(result => result.status === 'success' ? result.link : null));
   }
 
 }

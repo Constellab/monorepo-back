@@ -24,6 +24,7 @@ import {
 import {ClCoreJsonConvert, ClHelpService} from '@monorepo/core-lib';
 import {Subscription} from 'rxjs';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
+import {LabRouterService} from '../../../../service/lab-router.service';
 
 // list of predefined search of the resources
 const savedSearch: FlSavedSearch[] = [
@@ -170,6 +171,7 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
         type: LabFileResourceService.uploadFileActon,
         action: this.fileResourceService.uploadFile(files[i], fileTypingNames[i]),
         trackHttpEvents: true,
+        successLink: result => LabRouterService.getResourceDetailRoute(result.id)
       };
 
       this.actionsService.addAction(action, false);
