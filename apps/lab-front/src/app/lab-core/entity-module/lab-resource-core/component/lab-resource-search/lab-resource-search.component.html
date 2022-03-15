@@ -16,14 +16,14 @@
     <!--   Upload files     -->
     <fl-input-file-icon-container [matTooltip]="'databox.upload_file' | translate" icon="upload_file"
                                   class="upload-button" color="accent">
-      <input flInputFile [multiple]="true" type="file" (fileChange)="uploadFiles($event)"
+      <input flInputFile [multiple]="true" type="file" (fileChange)="openUploadFiles($event)"
              [(ngModel)]="files">
     </fl-input-file-icon-container>
 
     <!--   Upload folders     -->
     <fl-input-file-icon-container [matTooltip]="'databox.upload_folder' | translate" icon="drive_folder_upload"
                                   class="upload-button" color="accent">
-      <input flInputFile type="file" (fileChange)="uploadFolder($event)" [multiple]="true"
+      <input flInputFile type="file" (fileChange)="openUploadFolder($event)" [multiple]="true"
              [(ngModel)]="files" webkitdirectory mozdirectory [strictMode]="false">
     </fl-input-file-icon-container>
   </fl-search-header>

@@ -29,8 +29,8 @@ import {
 } from './component/lab-select-resource-dialog/lab-select-resource-dialog.component';
 import {LabResourceCardComponent} from './component/lab-resource-card/lab-resource-card.component';
 import {
-  LabUploadFsNodeDialogComponent
-} from './component/lab-upload-fs-node-dialog/lab-upload-fs-node-dialog.component';
+  LabFsNodeTypesSelectionDialogComponent
+} from './component/lab-fs-node-types-selection-dialog/lab-fs-node-types-selection-dialog.component';
 import {LabTransformerModule} from '../lab-transformer/lab-transformer.module';
 import {
   LabImportResourceDialogComponent
@@ -72,7 +72,7 @@ import {LabResourceFolderNodeComponent} from './component/lab-resource-folder-no
     LabResourceOriginOptionsComponent,
     LabSelectResourceDialogComponent,
     LabResourceCardComponent,
-    LabUploadFsNodeDialogComponent,
+    LabFsNodeTypesSelectionDialogComponent,
     LabImportResourceDialogComponent,
     LabResourceDetailDialogComponent,
     LabResourceDetailComponent,

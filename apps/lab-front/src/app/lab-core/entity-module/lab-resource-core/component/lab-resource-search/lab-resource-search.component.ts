@@ -3,6 +3,7 @@ import {
   FL_SEARCH_CONFIG,
   FlDatasourcePaginated,
   FlDialogService,
+  FlPortalAction,
   FlPortalActionsService,
   FlSavedSearch,
   FlSearchConfig,
@@ -15,10 +16,11 @@ import {LabResourceSearch, LabResourceSearchFields} from '../../model/lab-resour
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {
-  LabUploadFsNodeDialogComponent,
-  UploadFsNodeDialogInput,
-  UploadFsNodeMode
-} from '../lab-upload-fs-node-dialog/lab-upload-fs-node-dialog.component';
+  LabFsNodeTypesSelectionDialogComponent,
+  LabFsNodeTypesSelectionDialogInput,
+  LabFsNodeTypesSelectionDialogResult,
+  LabFsNodeTypesSelectionMode
+} from '../lab-fs-node-types-selection-dialog/lab-fs-node-types-selection-dialog.component';
 import {ClCoreJsonConvert, ClHelpService} from '@monorepo/core-lib';
 import {Subscription} from 'rxjs';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
@@ -103,7 +105,8 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
 
   constructor(private searchState: FlSearchState<any>,
               private dialogService: FlDialogService,
-              private actionService: FlPortalActionsService) {
+              private actionsService: FlPortalActionsService,
+              private fileResourceService: LabFileResourceService) {
   }
 
   ngOnInit(): void {
@@ -123,32 +126,70 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
 
 
   //////////////////////////// FILE ///////////////////////
-  uploadFiles(fileEvent: File | File[]): void {
+  openUploadFiles(fileEvent: File | File[]): void {
     this.uploadFsNode(fileEvent, 'files');
   }
 
-  uploadFolder(fileEvent: File | File[]): void {
+  openUploadFolder(fileEvent: File | File[]): void {
     this.uploadFsNode(fileEvent, 'folder');
   }
 
-  private uploadFsNode(fileEvent: File | File[], selectedNodes: UploadFsNodeMode): void {
+  private uploadFsNode(fileEvent: File | File[], selectedNodes: LabFsNodeTypesSelectionMode): void {
     const files: File[] = ClHelpService.convertObjectOrArrayToArray(fileEvent);
     if (files.length === 0) {
       return;
     }
 
-    const data: UploadFsNodeDialogInput = {
+    const data: LabFsNodeTypesSelectionDialogInput = {
       selectedNodes: selectedNodes,
-      files: files
+      filenames: files.map(file => file.name)
     };
-    this.dialogService.openSmallDialog(LabUploadFsNodeDialogComponent, {data: data});
+    this.dialogService.openSmallDialog(LabFsNodeTypesSelectionDialogComponent, {data: data}).afterClosed().subscribe({
+      next: result => this.onUploadFsNodeClosed(result, files)
+    });
+
 
     // clear the list of files
     this.files = [];
   }
 
+  private onUploadFsNodeClosed(result: LabFsNodeTypesSelectionDialogResult, files: File[]): void {
+    if (result == null) return;
+    if (result.uploadMode === 'files') {
+      this.uploadFiles(result.fileTypingNames, files);
+    } else {
+      this.uploadFolder(result.folderTypingName, files);
+    }
+  }
+
+  private uploadFiles(fileTypingNames: string[], files: File[]): void {
+
+    for (let i = 0; i < fileTypingNames.length; i++) {
+      const action: FlPortalAction = {
+        text: files[i].name,
+        type: LabFileResourceService.uploadFileActon,
+        action: this.fileResourceService.uploadFile(files[i], fileTypingNames[i]),
+        trackHttpEvents: true,
+      };
+
+      this.actionsService.addAction(action, false);
+    }
+  }
+
+  private uploadFolder(folderTypingName: string, files: File[]): void {
+    const action: FlPortalAction = {
+      text: {text: 'databox.uploading_folder', translateText: true},
+      type: LabFileResourceService.uploadFileActon,
+      action: this.fileResourceService.uploadFolder(folderTypingName, files),
+      trackHttpEvents: true,
+    };
+
+    this.actionsService.addAction(action, false);
+  }
+
+
   public listenToUploadAction(): void {
-    this.actionSubscription = this.actionService.getResult$(LabFileResourceService.uploadFileActon).subscribe(
+    this.actionSubscription = this.actionsService.getResult$(LabFileResourceService.uploadFileActon).subscribe(
       result => {
         if (result.status == 'success') {
           this.datasource.addItem(ClCoreJsonConvert.deserialize(result.result, LabResource), () => true);

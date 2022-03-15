@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabUploadFsNodeDialogComponent} from './lab-upload-fs-node-dialog.component';
+import {LabFsNodeTypesSelectionDialogComponent} from './lab-fs-node-types-selection-dialog.component';
 
 describe('UploadFolderDialogComponent', () => {
-  let component: LabUploadFsNodeDialogComponent;
-  let fixture: ComponentFixture<LabUploadFsNodeDialogComponent>;
+  let component: LabFsNodeTypesSelectionDialogComponent;
+  let fixture: ComponentFixture<LabFsNodeTypesSelectionDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabUploadFsNodeDialogComponent ]
+      declarations: [ LabFsNodeTypesSelectionDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabUploadFsNodeDialogComponent);
+    fixture = TestBed.createComponent(LabFsNodeTypesSelectionDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
