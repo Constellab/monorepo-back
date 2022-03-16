@@ -8,16 +8,21 @@ import {FlChartBarPlot, FlChartHistogram, FlChartStackedBar} from '../../../fl-c
 import {ClNumberHelper} from '@monorepo/core-lib';
 import {FlChartDataBin, flChartGetDataBins} from '../../../fl-chart/model/data/fl-chart-data-bin.class';
 import {FlSheetChartSerieSelectionForm} from './fl-sheet-chart-selection-form.class';
+import {FlSheet} from '../fl-sheet.class';
 
 
 // Basic bar plot and stack plot
 export class FlSheetChartSelectionBarPlot extends FlSheetChartSelection {
 
-  public chartType: FlChartType.BAR_PLOT | FlChartType.STACKED_PLOT;
+
+  constructor(sheet: FlSheet, private chartType: FlChartType.BAR_PLOT | FlChartType.STACKED_PLOT,
+              private series: FlSheetChartSerieSelectionForm[]) {
+    super(sheet);
+  }
 
   exportToChart(): FlChartConfig {
     const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
-    for (const serie of this.selectionForm.series) {
+    for (const serie of this.series) {
       const ySelection: FlSheetSelection = this.getMultiSelectionFromString(serie.y);
       series.addSerie(new FlChartSerie<any>(this.convertSelectionTo2dDatum(ySelection), serie.name));
     }
@@ -34,7 +39,9 @@ export class FlSheetChartSelectionBarPlot extends FlSheetChartSelection {
 // Histogram
 export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
 
-  public chartType: FlChartType.HISTOGRAM;
+  constructor(sheet: FlSheet, private serie: FlSheetChartSerieSelectionForm, private nbOfBins?: number) {
+    super(sheet);
+  }
 
   exportToChart(): FlChartConfig {
     const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
@@ -46,7 +53,7 @@ export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
       .filter(value => value != null);
 
     // create the serie with bin data
-    const serie: FlChartSerie<any> = new FlChartSerie<any>(flChartGetDataBins(data, this.selectionForm.nbOfBins),
+    const serie: FlChartSerie<any> = new FlChartSerie<any>(flChartGetDataBins(data, this.nbOfBins),
       this.serie.name);
 
     // define the axisXLabelFormat
@@ -56,9 +63,5 @@ export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
     };
     series.addSerie(serie);
     return new FlChartHistogram(series);
-  }
-
-  get serie(): FlSheetChartSerieSelectionForm {
-    return this.selectionForm.series[0];
   }
 }

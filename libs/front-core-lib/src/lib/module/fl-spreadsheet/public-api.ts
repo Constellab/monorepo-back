@@ -8,7 +8,7 @@ export * from './component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-s
 export * from './component/fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
 export * from './component/fl-spreadsheet-drawer/fl-spreadsheet-drawer.component';
 export * from './component/fl-spreadsheet-header-cell/fl-spreadsheet-header-cell.component';
-export * from './component/fl-spreadsheet-header-info/fl-spreadsheet-header-info.component'
+export * from './component/fl-spreadsheet-header-info/fl-spreadsheet-header-info.component';
 export * from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
 export * from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
 
@@ -38,6 +38,9 @@ export * from './model/action/fl-sheet.action';
 export * from './model/action/fl-update-cell.action';
 
 // Chart
+export * from './model/chart/fl-sheet-chart.service';
+export * from './model/chart/fl-sheet-chart-form-config.class';
+export * from './model/chart/fl-sheet-chart-local.service';
 export * from './model/chart/fl-sheet-chart-selection.class';
 export * from './model/chart/fl-sheet-chart-selection-bar-plot.class';
 export * from './model/chart/fl-sheet-chart-selection-basic.class';
@@ -60,4 +63,4 @@ export * from './model/fl-spreadsheet.class';
 // Export the utils
 export * from './utils/fl-spreadsheet.factory';
 export * from './utils/fl-spreadsheet.helper';
-export * from './utils/fl-spreadsheet-chart-selection.factory';
+export * from './utils/fl-spreadsheet-chart-selection.helper';

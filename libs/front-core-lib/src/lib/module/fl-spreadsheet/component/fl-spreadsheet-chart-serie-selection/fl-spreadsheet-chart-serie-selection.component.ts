@@ -5,9 +5,9 @@ import {Validators} from '@angular/forms';
 import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
 import {
-  FlSpreadsheetChartSelectionFactory,
+  FlSpreadsheetChartSelectionHelper,
   FlSpreadsheetChartSerieSelectionInput
-} from '../../utils/fl-spreadsheet-chart-selection.factory';
+} from '../../utils/fl-spreadsheet-chart-selection.helper';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 
 
@@ -45,7 +45,7 @@ export class FlSpreadsheetChartSerieSelectionComponent implements OnInit {
       y: [null,
         [
           Validators.required,
-          FlSpreadsheetChartSelectionFactory.getSelectionValidator(this.input.ySelectionMode, this.state.spreadsheet)
+          FlSpreadsheetChartSelectionHelper.getSelectionValidator(this.input.ySelectionMode, this.state.spreadsheet)
         ]
       ],
     });
@@ -53,7 +53,7 @@ export class FlSpreadsheetChartSerieSelectionComponent implements OnInit {
     if (this.input.mode === 'full') {
       this.formGp.addControl('x',
         new FormControl(null,
-          [FlSpreadsheetChartSelectionFactory.getSelectionValidator(this.input.xSelectionMode, this.state.spreadsheet)]
+          [FlSpreadsheetChartSelectionHelper.getSelectionValidator(this.input.xSelectionMode, this.state.spreadsheet)]
         )
       );
     }

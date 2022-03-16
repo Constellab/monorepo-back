@@ -53,5 +53,9 @@ export const flChartTypeSelectOptions: FlChartTypeSelectOption[] = [
   {
     component: FlChartType.HEAT_MAP,
     icon: 'multiline_chart'
+  },
+  {
+    component: FlChartType.VENN_DIAGRAM,
+    icon: 'multiline_chart'
   }
 ];

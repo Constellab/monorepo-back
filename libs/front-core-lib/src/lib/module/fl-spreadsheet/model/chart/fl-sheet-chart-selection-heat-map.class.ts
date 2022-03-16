@@ -1,15 +1,18 @@
 import {FlSheetChartSelection} from './fl-sheet-chart-selection.class';
-import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {FlSheetChartSerieSelectionForm} from './fl-sheet-chart-selection-form.class';
 import {ClHelpService, ClNumberHelper} from '@monorepo/core-lib';
 import {FlChart3dDatum} from '../../../fl-chart/model/data/fl-chart-data.class';
 import {FlChartConfig} from '../../../fl-chart/model/fl-chart-config.class';
 import {FlSheetSingleSelection} from '../selection/fl-sheet-single-selection.class';
 import {FlChartHeatMap, FlChartHeatMapDataContainer} from '../../../fl-chart/model/chart/fl-chart-heat-map.class';
+import {FlSheet} from '../fl-sheet.class';
 
 export class FlSheetChartSelectionHeatMap extends FlSheetChartSelection {
 
-  public chartType: FlChartType.HEAT_MAP;
+
+  constructor(sheet: FlSheet, private serie: FlSheetChartSerieSelectionForm) {
+    super(sheet);
+  }
 
   exportToChart(): FlChartConfig {
 
@@ -27,7 +30,4 @@ export class FlSheetChartSelectionHeatMap extends FlSheetChartSelection {
     return new FlChartHeatMap(dataContainer);
   }
 
-  get serie(): FlSheetChartSerieSelectionForm {
-    return this.selectionForm.series[0];
-  }
 }

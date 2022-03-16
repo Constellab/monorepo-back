@@ -2,7 +2,9 @@ import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {FlSheetSingleSelection} from '../selection/fl-sheet-single-selection.class';
 
 
-export type FlSpreadsheetChartSelectionInput = FlSpreadsheetChartSelectionInputCreate | FlSpreadsheetChartSelectionInputUpdate;
+export type FlSpreadsheetChartSelectionInput =
+  FlSpreadsheetChartSelectionInputCreate
+  | FlSpreadsheetChartSelectionInputUpdate;
 
 // data for when selecting data for a new chart
 export interface FlSpreadsheetChartSelectionInputCreate {
@@ -27,18 +29,21 @@ export interface FlSheetChartSelectionResult {
  * Type used in the form of {@link FlSpreadsheetChartSelectionComponent}
  */
 export interface FlSheetChartSelectionForm {
+  id: symbol;
+
   // type of the chart
   chartType: FlChartType;
 
   // global data range form a multiple selection
   dataRange?: string;
 
-  // global range selection for the series names
-  seriesNameRange?: string;
-
   // list of series
   series: FlSheetChart2dSerieSelectionForm[];
 
+  additionalFields: FlSheetChartSelectionFormAdditional;
+}
+
+export interface FlSheetChartSelectionFormAdditional {
   // for the Histogram
   nbOfBins?: number;
 }
@@ -59,3 +64,34 @@ export interface FlSheetChart2dSerieSelectionForm extends FlSheetChartSerieSelec
   x?: string; // string of the x selection
 }
 
+
+interface Chart {
+  series: ChartSerie[];
+}
+
+interface ChartSerie {
+  name?: string;
+  ySelection: ChartSelection;
+  xSelection: ChartSelection;
+}
+
+type ChartSelection = ChartSelectionRange | ChartSelectionColumn;
+
+interface ChartSelectionRange {
+  type: 'range';
+  // selection: string; // string of the selection link A1:A2;B1:B2
+  selection: {
+    fromRowId: number;
+    toRowId: number;
+    fromColumnId: number;
+    toColumnId: number;
+  }[]
+}
+
+interface ChartSelectionColumn {
+  type: 'column';
+  columns: string[]; // string of the selection link column1,column2
+}
+
+// todo gérer par tag ?
+// Quel mode par defaut ?

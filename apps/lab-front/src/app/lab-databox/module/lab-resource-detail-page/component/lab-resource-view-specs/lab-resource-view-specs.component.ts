@@ -60,21 +60,20 @@ export class LabResourceViewSpecsComponent implements OnInit {
   private openConfigPortal(view: LabResourceViewSpec, viewByType: LabResourceViewSpecsByType): void {
     const resource = this.state.getCurrentResource();
 
-    let specWithConfig: LabResourceViewSpecWithConfig;
+    const specWithConfig: LabResourceViewSpecWithConfig = {
+      viewName: view.getName(),
+      viewMethodName: view.methodName,
+      displayMode: viewByType.viewTypeInfo.defaultDisplayMode,
+      viewConfigValues: {},
+      transformersWithConfig: [],
+      isDefaultView: view.defaultView
+    };
 
-    // if this view was previously selected, get the config value from it
+    // if this view was previously selected, pre fill the config and transformer with previous values
     const lastView = this.state.getLastViewSpec();
     if (lastView && this.isSpecIsSelected(view)) {
-      specWithConfig = lastView;
-    } else {
-      specWithConfig = {
-        viewName: view.getName(),
-        viewMethodName: view.methodName,
-        displayMode: viewByType.viewTypeInfo.defaultDisplayMode,
-        viewConfigValues: {},
-        transformersWithConfig: [],
-        isDefaultView: view.defaultView
-      };
+      specWithConfig.viewConfigValues = lastView.viewConfigValues;
+      specWithConfig.transformersWithConfig = lastView.transformersWithConfig;
     }
 
     const data: LabConfigureResourceViewInput = {

@@ -1,26 +1,17 @@
 import {FlSheet} from '../fl-sheet.class';
-import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../selection/fl-sheet-single-selection.class';
 import {FlSheetMultiSelection} from '../selection/fl-sheet-multi-selection.class';
 import {FlSheetSelection} from '../selection/fl-sheet-selection.class';
 import {FlChart2dDatum} from '../../../fl-chart/model/data/fl-chart-data.class';
 import {ClHelpService, ClNumberHelper} from '@monorepo/core-lib';
-import {FlSheetChartSelectionForm} from './fl-sheet-chart-selection-form.class';
 import {FlChartConfig} from '../../../fl-chart/model/fl-chart-config.class';
 
 /**
  * Object to store the chart selection and contain a method to export the selection to series
  */
 export abstract class FlSheetChartSelection {
-  private static id: number = 0;
 
-  public chartType: FlChartType;
-
-  public id: number;
-
-  public constructor(protected sheet: FlSheet, public readonly selectionForm: FlSheetChartSelectionForm) {
-    this.chartType = selectionForm.chartType;
-    this.id = FlSheetChartSelection.id++;
+  protected constructor(protected sheet: FlSheet) {
   }
 
   /**
@@ -73,7 +64,7 @@ export abstract class FlSheetChartSelection {
   }
 
   /**
-   * return the selection values as numbers, it exclude the value that are not numbers
+   * return the selection values as numbers, it excludes the value that are not numbers
    */
   protected getSelectionValues(selection: FlSheetSelection): number[] {
     const values: any[] = selection.getCellsValuesFlat();
@@ -84,3 +75,4 @@ export abstract class FlSheetChartSelection {
   }
 
 }
+

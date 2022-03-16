@@ -6,14 +6,20 @@ import {FlSheetSelection} from '../selection/fl-sheet-selection.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlChartConfig} from '../../../fl-chart/model/fl-chart-config.class';
 import {FlChartLine2d, FlChartScatterPlot2d} from '../../../fl-chart/model/chart/fl-chart-linear-2d.class';
+import {FlSheet} from '../fl-sheet.class';
+import {FlSheetChart2dSerieSelectionForm} from './fl-sheet-chart-selection-form.class';
 
 export class FlSheetChartSelectionBasic extends FlSheetChartSelection {
 
-  public chartType: FlChartType.LINE | FlChartType.SCATTER_PLOT;
+
+  constructor(sheet: FlSheet, private chartType: FlChartType.LINE | FlChartType.SCATTER_PLOT,
+              private series: FlSheetChart2dSerieSelectionForm[]) {
+    super(sheet);
+  }
 
   exportToChart(): FlChartConfig {
     const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
-    for (const serie of this.selectionForm.series) {
+    for (const serie of this.series) {
       const ySelection: FlSheetSelection = this.getMultiSelectionFromString(serie.y);
 
       if (!ClHelpService.isNullOrEmpty(serie.x)) {
@@ -24,11 +30,10 @@ export class FlSheetChartSelectionBasic extends FlSheetChartSelection {
       }
     }
 
-    if(this.chartType === FlChartType.LINE){
-      return new FlChartLine2d(series)
-    }
-    else{
-      return new FlChartScatterPlot2d(series)
+    if (this.chartType === FlChartType.LINE) {
+      return new FlChartLine2d(series);
+    } else {
+      return new FlChartScatterPlot2d(series);
     }
   }
 

@@ -48,33 +48,19 @@
           </mat-error>
         </mat-form-field>
 
+        <!---------------- Additional fields --------------------->
 
-        <!-- Series name range-->
-        <mat-form-field appearance="outline" class="g-full">
-          <mat-label>{{'flSpreadsheet.series_name' | translate}}</mat-label>
-          <input matInput formControlName="seriesNameRange"
-                 placeholder="{{'flSpreadsheet.series_name' | translate}}">
-          <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('seriesNameRange')">
-          </fl-spreadsheet-selection-input>
-
-          <mat-error *ngIf="formGp.get('seriesNameRange').hasError('invalidFormat')">
-            {{'flSpreadsheet.single_serie_data_wrong_format' | translate}}
-          </mat-error>
-          <mat-error *ngIf="formGp.get('seriesNameRange').hasError('selectionOutOfBound')">
-            {{'flSpreadsheet.selection_out_of_bound' | translate}} :
-            : {{formGp.get('seriesNameRange').getError('selectionOutOfBound')}}
-          </mat-error>
-        </mat-form-field>
-
-        <!-- NB of bins -->
-        <mat-form-field appearance="outline" class="g-full" *ngIf="showNbOfBins">
-          <mat-label>{{'flSpreadsheet.chart_nb_of_bins' | translate}}</mat-label>
-          <input matInput formControlName="nbOfBins" [min]="1"
-                 placeholder="{{'flSpreadsheet.chart_nb_of_bins' | translate}}" type="number">
-          <mat-error *ngIf="formGp.get('nbOfBins').invalid">
-            {{'flSpreadsheet.chart_nb_of_bins_error' | translate}}
-          </mat-error>
-        </mat-form-field>
+        <ng-container formGroupName="additionalFields">
+          <!-- NB of bins -->
+          <mat-form-field appearance="outline" class="g-full" *ngIf="showAdditionalField('nbOfBins')">
+            <mat-label>{{'flSpreadsheet.chart_nb_of_bins' | translate}}</mat-label>
+            <input matInput formControlName="nbOfBins" [min]="1"
+                   placeholder="{{'flSpreadsheet.chart_nb_of_bins' | translate}}" type="number">
+            <mat-error *ngIf="formGp.get('additionalFields').get('nbOfBins').invalid">
+              {{'flSpreadsheet.chart_nb_of_bins_error' | translate}}
+            </mat-error>
+          </mat-form-field>
+        </ng-container>
       </div>
 
 

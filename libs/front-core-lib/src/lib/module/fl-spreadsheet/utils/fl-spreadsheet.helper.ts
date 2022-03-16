@@ -89,8 +89,8 @@ export class FlSpreadsheetHelper {
     const match: RegExpExecArray = /\d/.exec(coord);
 
     return {
-      column: FlSpreadsheetHelper.columnIndexFromName(coord.substr(0, match.index)),
-      row: FlSpreadsheetHelper.rowIndexFromFrom(coord.substr(match.index))
+      column: FlSpreadsheetHelper.columnIndexFromName(coord.substring(0, match.index)),
+      row: FlSpreadsheetHelper.rowIndexFromFrom(coord.substring(match.index))
     };
   }
 
