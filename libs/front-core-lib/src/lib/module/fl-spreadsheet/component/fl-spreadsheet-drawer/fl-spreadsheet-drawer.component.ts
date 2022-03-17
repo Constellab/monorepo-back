@@ -6,6 +6,7 @@ import {map} from 'rxjs/operators';
 import {FlSpreadsheetRendererState} from '../../state/fl-spreadsheet-renderer-state.service';
 import {flCdkOverlayContainerClass} from '../../../../utils/fl-material.config';
 import {FlTagWithColor} from '../../../fl-tag/fl-tag.class';
+import {FlSheet} from '../../model/fl-sheet.class';
 
 @Component({
   selector: 'fl-spreadsheet-drawer',
@@ -17,6 +18,7 @@ export class FlSpreadsheetDrawerComponent implements OnInit {
 
   pinDrawer: boolean = false;
 
+  currentSheet$: Observable<FlSheet>;
   columnTags$: Observable<Record<string, string[]>>;
   rowTags$: Observable<Record<string, string[]>>;
 
@@ -29,6 +31,7 @@ export class FlSpreadsheetDrawerComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.currentSheet$ = this.state.currentSheet$;
     this.columnTags$ = this.state.currentSheet$.pipe(
       map(sheet => sheet.getColumnsTags())
     );

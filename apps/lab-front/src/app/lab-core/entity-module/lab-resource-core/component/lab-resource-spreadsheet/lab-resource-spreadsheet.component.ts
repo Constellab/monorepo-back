@@ -33,8 +33,10 @@ export class LabResourceSpreadsheetComponent extends LabResourceViewDirective<La
 
     const spreadSheet: FlSpreadsheet = new FlSpreadsheet();
     // if the resource is a csv file
-    const sheet: FlSheet = FlSpreadsheetFactory.fromArray(this.view.data, 'Sheet 1');
+    const sheet: FlSheet = FlSpreadsheetFactory.fromArray(this.view.data, this.view.title ?? 'Sheet 1');
 
+    sheet.totalColumnsCount = this.view.total_number_of_columns;
+    sheet.totalRowsCount = this.view.total_number_of_rows;
     sheet.columnsInfo = this.view.columns;
     sheet.rowsInfo = this.view.rows;
     spreadSheet.addSheet(sheet);

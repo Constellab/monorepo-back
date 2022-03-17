@@ -1,5 +1,6 @@
 import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {FlSheetSingleSelection} from '../selection/fl-sheet-single-selection.class';
+import {FlCellCoords} from '../fl-cell-coord.class';
 
 
 export type FlSpreadsheetChartSelectionInput =
@@ -35,13 +36,25 @@ export interface FlSheetChartSelectionForm {
   chartType: FlChartType;
 
   // global data range form a multiple selection
-  dataRange?: string;
+  dataRange?: FlSheetSelectionRange;
 
   // list of series
   series: FlSheetChart2dSerieSelectionForm[];
 
   additionalFields: FlSheetChartSelectionFormAdditional;
 }
+
+export type FlSheetSelectionRangeType = 'range' | 'columns';
+
+export type FlSheetSelectionRange = {
+  type: 'range';
+  selection: FlCellCoords[];
+} | {
+  type: 'columns';
+  // selected columns
+  selection: string[];
+}
+
 
 export interface FlSheetChartSelectionFormAdditional {
   // for the Histogram
@@ -54,44 +67,14 @@ export interface FlSheetChartSelectionFormAdditional {
  */
 export interface FlSheetChartSerieSelectionForm {
   name?: string;
-  y: string; // string of the selection
+  y: FlSheetSelectionRange; // string of the selection
 }
 
 /**
  * Form value of a serie selection where X is selectable
  */
 export interface FlSheetChart2dSerieSelectionForm extends FlSheetChartSerieSelectionForm {
-  x?: string; // string of the x selection
+  x?: FlSheetSelectionRange; // string of the x selection
 }
 
 
-interface Chart {
-  series: ChartSerie[];
-}
-
-interface ChartSerie {
-  name?: string;
-  ySelection: ChartSelection;
-  xSelection: ChartSelection;
-}
-
-type ChartSelection = ChartSelectionRange | ChartSelectionColumn;
-
-interface ChartSelectionRange {
-  type: 'range';
-  // selection: string; // string of the selection link A1:A2;B1:B2
-  selection: {
-    fromRowId: number;
-    toRowId: number;
-    fromColumnId: number;
-    toColumnId: number;
-  }[]
-}
-
-interface ChartSelectionColumn {
-  type: 'column';
-  columns: string[]; // string of the selection link column1,column2
-}
-
-// todo gérer par tag ?
-// Quel mode par defaut ?

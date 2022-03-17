@@ -49,49 +49,53 @@ export class LabResourceTableChartState extends FlSheetChartService {
   }
 
   generateBar(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.generateBasic2dChart('view_as_bar_plot');
+    return this.generateBasic2dChart('view_as_bar_plot', series);
   }
 
   generateBoxPlot(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.resourceService.callResourceView(this.resourceId, 'view_as_box_plot', {}, this.transformers).pipe(
+    return this.resourceService.callResourceView(this.resourceId, 'view_as_box_plot', {series: series}, this.transformers).pipe(
       map((view) => labBoxPlotToChart(view.viewData as LabResourceViewBoxPlot))
     );
   }
 
   generateHeatMap(serie: FlSheetChartSerieSelectionForm): Observable<FlChartConfig> {
-    return this.resourceService.callResourceView(this.resourceId, 'view_as_heatmap', {}, this.transformers).pipe(
+    return this.resourceService.callResourceView(this.resourceId, 'view_as_heatmap', {serie: serie}, this.transformers).pipe(
       map((view) => labHeatMapToChart(view.viewData as LabResourceViewHeatMap))
     );
   }
 
-  generateHistogram(serie: FlSheetChartSerieSelectionForm, nbOfBins?: number): Observable<FlChartConfig> {
-    return this.resourceService.callResourceView(this.resourceId, 'view_as_histogram', {}, this.transformers).pipe(
+  generateHistogram(series: FlSheetChartSerieSelectionForm[], nbOfBins?: number): Observable<FlChartConfig> {
+    return this.resourceService.callResourceView(this.resourceId, 'view_as_histogram', {
+      series: series,
+      nb_of_bins: nbOfBins
+    }, this.transformers).pipe(
       map((view) => labHistogramToChart(view.viewData as LabResourceViewHistogram))
     );
   }
 
   generateLine2d(series: FlSheetChart2dSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.generateBasic2dChart('view_as_line_plot_2d');
+    return this.generateBasic2dChart('view_as_line_plot_2d', series);
   }
 
   generateScatterPlot2d(series: FlSheetChart2dSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.generateBasic2dChart('view_as_scatter_plot_2d');
+    return this.generateBasic2dChart('view_as_scatter_plot_2d', series);
   }
 
   generateStackBar(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.generateBasic2dChart('view_as_stacked_bar_plot');
+    return this.generateBasic2dChart('view_as_stacked_bar_plot', series);
   }
 
   generateVennDiagram(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.resourceService.callResourceView(this.resourceId, 'view_as_venn_diagram', {}, this.transformers).pipe(
+    return this.resourceService.callResourceView(this.resourceId, 'view_as_venn_diagram', {series: series}, this.transformers).pipe(
       map((view) => labVennDiagramToChart(view.viewData as LabResourceVennDiagram))
     );
   }
 
-  private generateBasic2dChart(viewMethodeName: string): Observable<FlChartConfig> {
-    return this.resourceService.callResourceView(this.resourceId, viewMethodeName, {}, this.transformers).pipe(
+  private generateBasic2dChart(viewMethodeName: string, series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
+    return this.resourceService.callResourceView(this.resourceId, viewMethodeName, {series: series}, this.transformers).pipe(
       map((view) => labBasicPlotToChart(view.viewData as LabResourceViewBasicPlot2d))
     );
   }
+
 
 }

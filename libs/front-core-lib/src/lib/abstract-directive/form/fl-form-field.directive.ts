@@ -121,7 +121,7 @@ export abstract class FlFormFieldDirective<INNER, OUTER = INNER> implements Cont
 
   abstract writeValue(obj: OUTER): void;
 
-  // method called when the disable input changed
+  // method called when the disabled input changed
   abstract onDisableChange(disable: boolean): void;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

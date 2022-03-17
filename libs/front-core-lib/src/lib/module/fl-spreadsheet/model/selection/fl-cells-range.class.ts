@@ -1,15 +1,31 @@
-import {FlCellCoord, FlSheetSingleSelectionType} from './fl-sheet-single-selection.class';
 import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
+import {FlCellCoord, FlCellCoords} from '../fl-cell-coord.class';
 
-export class FlSheetRange {
+export type FlCellsRangeType = 'single' | 'multiple' | 'columns' | 'rows';
 
+/**
+ * Object to handle a single range of cells
+ */
+export class FlCellsRange {
+  constructor(
+    public readonly type: FlCellsRangeType,
+    public readonly startRow: number,
+    public readonly startColumn: number,
+    public readonly endRow: number,
+    public readonly endColumn: number) {
+  }
 
-  protected constructor(
-    public type: FlSheetSingleSelectionType,
-    public startRow: number,
-    public startColumn: number,
-    public endRow: number,
-    public endColumn: number) {
+  /**
+   * create selection from string formatted like A2:B5
+   */
+  public static MultipleFromString(coordRange: string): FlCellsRange {
+    const coords = FlSpreadsheetHelper.coordRangeFromString(coordRange);
+    return FlCellsRange.MultipleFromCoords(coords);
+  }
+
+  public static MultipleFromCoords(coords: FlCellCoords): FlCellsRange {
+    return new FlCellsRange('multiple', coords.from.row, coords.from.column,
+      coords.to.row, coords.to.column);
   }
 
 
@@ -28,6 +44,13 @@ export class FlSheetRange {
     return {
       row: Math.max(this.startRow, this.endRow),
       column: Math.max(this.startColumn, this.endColumn)
+    };
+  }
+
+  public toCoords(): FlCellCoords {
+    return {
+      from: this.from,
+      to: this.to
     };
   }
 
@@ -62,8 +85,20 @@ export class FlSheetRange {
       FlSpreadsheetHelper.coordToString(this.to);
   }
 
-  public equals(range: FlSheetRange): boolean {
+  public equals(range: FlCellsRange): boolean {
     return range.from.row === this.from.row && range.from.column === this.from.column
       && range.to.row === range.to.row && range.to.column === range.to.column;
+  }
+
+  public splitToColumnRanges(): FlCellsRange[] {
+    const ranges: FlCellsRange[] = [];
+    for (let i = this.from.column; i <= this.to.column; i++) {
+      ranges.push(new FlCellsRange('multiple', this.from.row, i, this.to.row, i));
+    }
+    return ranges;
+  }
+
+  public countCells(): number {
+    return (this.to.column - this.from.column + 1) * (this.to.row - this.from.row + 1);
   }
 }

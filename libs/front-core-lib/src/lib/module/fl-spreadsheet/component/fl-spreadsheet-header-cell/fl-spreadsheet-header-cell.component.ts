@@ -10,8 +10,8 @@ import {
 } from '@angular/core';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {Observable, Subscription} from 'rxjs';
-import {FlHeaderCellType, FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
-import {headerIndexAttributeName, headerTypeAttributeName} from '../../model/fl-cell.class';
+import {FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
+import {FlHeaderCellType, headerIndexAttributeName, headerTypeAttributeName} from '../../model/fl-cell.class';
 import {FlSpreadsheetRendererState} from '../../state/fl-spreadsheet-renderer-state.service';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlSheetHeader} from '../../model/fl-sheet-row.class';

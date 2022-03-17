@@ -24,8 +24,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {MatInputModule} from '@angular/material/input';
 import {
-  FlSpreadsheetSelectionInputComponent
-} from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
+  FlSpreadsheetSelectionListenerComponent
+} from './component/fl-spreadsheet-selection-listener/fl-spreadsheet-selection-listener.component';
 import {FlSpreadsheetSelectionInputGroupDirective} from './directive/fl-spreadsheet-selection-input-group.directive';
 import {MatSelectModule} from '@angular/material/select';
 import {FlChartModule} from '../fl-chart/fl-chart.module';
@@ -51,6 +51,13 @@ import {
   FlSpreadsheetHeaderInfoComponent
 } from './component/fl-spreadsheet-header-info/fl-spreadsheet-header-info.component';
 import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
+import {
+  FlSpreadsheetRangesInputComponent
+} from './component/fl-spreadsheet-ranges-input/fl-spreadsheet-ranges-input.component';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatChipsModule} from '@angular/material/chips';
+import {FlAutocompleteMultipleModule} from '../fl-autocomplete-multiple/fl-autocomplete-multiple.module';
 
 
 @NgModule({
@@ -60,12 +67,13 @@ import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
     FlSpreadsheetHeaderCellComponent,
     FlCellHeaderPipe,
     FlSpreadsheetChartSelectionComponent,
-    FlSpreadsheetSelectionInputComponent,
+    FlSpreadsheetSelectionListenerComponent,
     FlSpreadsheetSelectionInputGroupDirective,
     FlSpreadsheetChartSerieSelectionComponent,
     FlSpreadsheetSheetSelectionComponent,
     FlSpreadsheetDrawerComponent,
     FlSpreadsheetHeaderInfoComponent,
+    FlSpreadsheetRangesInputComponent,
   ],
   exports: [
     FlSpreadsheetComponent,
@@ -88,6 +96,7 @@ import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
     FlTagModule,
     FlCoreComponentModule,
     FlKeyValueModule,
+    FlAutocompleteMultipleModule,
 
     ScrollingModule,
     MatMenuModule,
@@ -102,6 +111,9 @@ import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
     MatMenuModule,
     MatButtonToggleModule,
     MatSidenavModule,
+    MatRadioModule,
+    MatAutocompleteModule,
+    MatChipsModule,
   ],
 })
 export class FlSpreadsheetModule {

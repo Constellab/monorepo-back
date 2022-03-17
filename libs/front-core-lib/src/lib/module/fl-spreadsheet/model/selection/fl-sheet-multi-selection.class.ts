@@ -1,8 +1,8 @@
 import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from './fl-sheet-single-selection.class';
 import {FlCell} from '../fl-cell.class';
 import {FlSheet} from '../fl-sheet.class';
-import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
 import {FlSheetSelection} from './fl-sheet-selection.class';
+import {FlCellsMultipleRange} from './fl-cells-multiple-range.class';
 
 /**
  * Object to manager multiple selections
@@ -17,11 +17,12 @@ export class FlSheetMultiSelection implements FlSheetSelection {
 
   // generate a multi selection from a string like B2:G5,B5:T4 (separated by ',')
   public static fromString(sheet: FlSheet, selection: string): FlSheetMultiSelection {
+    const ranges = FlCellsMultipleRange.fromString(selection);
+
     const selections: FlSheetSingleSelection[] = [];
 
-    const rows: string[] = selection.split(FlSpreadsheetHelper.selectionsSplitter);
-    for (const row of rows) {
-      selections.push(FlSheetSingleSelectionFull.fromString(sheet, row));
+    for (const range of ranges.ranges) {
+      selections.push(new FlSheetSingleSelectionFull(sheet, range));
     }
 
     return new FlSheetMultiSelection(selections);
@@ -69,13 +70,8 @@ export class FlSheetMultiSelection implements FlSheetSelection {
 
   // return all selection as text like B2:G5,B5:T4 (separated by ',')
   public toString(): string {
-    let test: string = '';
-    for (const selection of this.selections) {
-      if (test !== '') {
-        test += FlSpreadsheetHelper.selectionsSplitter;
-      }
-      test += selection.toString();
-    }
-    return test;
+    const ranges = new FlCellsMultipleRange(this.selections.map(selection => selection.getRange()));
+
+    return ranges.toString();
   }
 }

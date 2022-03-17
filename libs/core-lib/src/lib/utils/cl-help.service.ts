@@ -210,10 +210,15 @@ export class ClHelpService {
    * @param getSortableAttribute method to access sortable attribute
    * @param nullMode mode for null values
    */
-  public static sortAlphabeticalOrder<T>(array: T[], getSortableAttribute: (item: T) => string,
+  public static sortAlphabeticalOrder<T>(array: T[], getSortableAttribute?: (item: T) => string,
                                          nullMode: 'nullLast' | 'nullFirst' = 'nullLast'): T[] {
     if (array == null) {
       return null;
+    }
+
+    // define a function that simply returns the object
+    if (!getSortableAttribute) {
+      getSortableAttribute = (a: any) => a;
     }
 
     return array.sort((a, b) => {
@@ -269,7 +274,7 @@ export class ClHelpService {
    * Simple 2d array transpose.
    * @param array
    */
-  public static transpose2dArray(array: any[][]): any[][]{
+  public static transpose2dArray(array: any[][]): any[][] {
     return array[0].map((col, i) => array.map(row => row[i]));
   }
 }

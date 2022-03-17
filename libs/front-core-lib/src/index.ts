@@ -5,6 +5,7 @@ export * from './lib/abstract-directive/public-api';
 export * from './lib/module/fl-api/public-api';
 export * from './lib/module/fl-article/public-api';
 export * from './lib/module/fl-auth/public-api';
+export * from './lib/module/fl-autocomplete-multiple/public-api';
 export * from './lib/module/fl-bio-network/public-api';
 export * from './lib/module/fl-card/public-api';
 export * from './lib/module/fl-chart/public-api';

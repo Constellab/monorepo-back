@@ -4,19 +4,17 @@ import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {
   columnIdAttributeName,
   FlCell,
+  FlHeaderCellType,
   headerIndexAttributeName,
   headerTypeAttributeName,
   rowIdAttributeName
 } from '../model/fl-cell.class';
-import {
-  FlCellCoord,
-  FlHeaderCellType,
-  FlSheetSingleSelection
-} from '../model/selection/fl-sheet-single-selection.class';
+import {FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetContextMenu} from './fl-spreadsheet-context-menu.state';
 import {FlMouseButton} from '../../../utils/fl-keyboard.helper';
 import {FlSpreadsheetScrollState} from './fl-spreadsheet-scroll.state';
 import {FlHtmlHelper} from '../../../utils/fl-html.helper';
+import {FlCellCoord} from '../model/fl-cell-coord.class';
 
 type MouseEventCell = CellEvent | HeaderCellEvent;
 

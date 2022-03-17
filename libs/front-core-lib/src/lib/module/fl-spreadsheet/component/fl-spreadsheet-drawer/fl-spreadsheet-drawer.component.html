@@ -18,7 +18,22 @@
 
     <ng-container *flSectionBody>
       <div class="drawer-content">
-        <fl-async-section [object]="columnTags$" emptyText="flSpreadsheet.column_filters_no_tags">
+
+        <!--   Information about the current sheet     -->
+        <div *ngIf="currentSheet$ | async as sheet">
+          <fl-key-value>
+            <fl-key>{{'flSpreadsheet.total_columns_count' | translate}}</fl-key>
+            {{sheet.totalColumnsCount}}
+          </fl-key-value>
+
+          <fl-key-value>
+            <fl-key>{{'flSpreadsheet.total_rows_count' | translate}}</fl-key>
+            {{sheet.totalRowsCount}}
+          </fl-key-value>
+        </div>
+
+        <fl-async-section [object]="columnTags$" emptyText="flSpreadsheet.column_filters_no_tags"
+                          class="g-section">
           <fl-section-header>
             <h2>{{'flSpreadsheet.column_filters' | translate}}</h2>
           </fl-section-header>

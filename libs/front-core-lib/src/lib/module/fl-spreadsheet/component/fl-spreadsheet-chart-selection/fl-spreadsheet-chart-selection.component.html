@@ -28,25 +28,8 @@
         </mat-form-field>
 
         <!-- Chart data range-->
-        <mat-form-field appearance="outline" class="g-full">
-          <mat-label>{{'flSpreadsheet.chart_data_range' | translate}}</mat-label>
-          <input matInput formControlName="dataRange" placeholder="{{'flSpreadsheet.chart_data_range' | translate}}">
-          <fl-spreadsheet-selection-input matSuffix
-                                          [inputFormControl]="formGp.get('dataRange')"></fl-spreadsheet-selection-input>
-
-          <button matSuffix mat-icon-button type="button" [color]="splitButtonColor"
-                  [matTooltip]="splitButtonTooltip | translate"
-                  (click)="toggleSplitSelection()">
-            <mat-icon>pivot_table_chart</mat-icon>
-          </button>
-          <mat-error *ngIf="formGp.get('dataRange').hasError('invalidFormat')">
-            {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
-          </mat-error>
-          <mat-error *ngIf="formGp.get('dataRange').hasError('selectionOutOfBound')">
-            {{'flSpreadsheet.selection_out_of_bound' | translate}}
-            : {{formGp.get('dataRange').getError('selectionOutOfBound')}}
-          </mat-error>
-        </mat-form-field>
+        <fl-spreadsheet-ranges-input formControlName="dataRange"
+                                     [placeholder]="'flSpreadsheet.chart_data_range' | translate"></fl-spreadsheet-ranges-input>
 
         <!---------------- Additional fields --------------------->
 

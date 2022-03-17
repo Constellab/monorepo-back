@@ -1,4 +1,4 @@
-import {FlCellCoord} from '../model/selection/fl-sheet-single-selection.class';
+import {FlCellCoord, FlCellCoords} from '../model/fl-cell-coord.class';
 
 const columnNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
   'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
@@ -94,6 +94,15 @@ export class FlSpreadsheetHelper {
     };
   }
 
+  public static coordRangeFromString(coordRange: string): FlCellCoords {
+    const coords: string[] = coordRange.split(FlSpreadsheetHelper.coordSplitter);
+    const from: FlCellCoord = FlSpreadsheetHelper.coordFromString(coords[0]);
+    const to: FlCellCoord = FlSpreadsheetHelper.coordFromString(coords[1]);
+    return {
+      from: from,
+      to: to
+    };
+  }
 
   ///////////////////////////// REGEX ////////////////////////////
 

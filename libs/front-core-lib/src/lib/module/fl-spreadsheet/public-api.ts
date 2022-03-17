@@ -9,7 +9,8 @@ export * from './component/fl-spreadsheet-chart-serie-selection/fl-spreadsheet-c
 export * from './component/fl-spreadsheet-drawer/fl-spreadsheet-drawer.component';
 export * from './component/fl-spreadsheet-header-cell/fl-spreadsheet-header-cell.component';
 export * from './component/fl-spreadsheet-header-info/fl-spreadsheet-header-info.component';
-export * from './component/fl-spreadsheet-selection-input/fl-spreadsheet-selection-input.component';
+export * from './component/fl-spreadsheet-ranges-input/fl-spreadsheet-ranges-input.component';
+export * from './component/fl-spreadsheet-selection-listener/fl-spreadsheet-selection-listener.component';
 export * from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
 
 // Export the directives
@@ -49,12 +50,15 @@ export * from './model/chart/fl-sheet-chart-selection-form.class';
 export * from './model/chart/fl-sheet-chart-selection-heat-map.class';
 
 // Selection
+export * from './model/selection/fl-cells-multiple-range.class';
 export * from './model/selection/fl-sheet-multi-selection.class';
-export * from './model/selection/fl-sheet-range.class';
+export * from './model/selection/fl-cells-range.class';
 export * from './model/selection/fl-sheet-selection.class';
 export * from './model/selection/fl-sheet-single-selection.class';
 
+// global models
 export * from './model/fl-cell.class';
+export * from './model/fl-cell-coord.class';
 export * from './model/fl-sheet.class';
 export * from './model/fl-sheet-row.class';
 export * from './model/fl-spreadsheet.class';

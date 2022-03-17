@@ -19,38 +19,13 @@
       </mat-form-field>
 
       <!--   X values selection   -->
-      <mat-form-field class="g-form-input" appearance="outline" *ngIf="formGp.get('x')">
-        <mat-label>{{'flSpreadsheet.chart_serie_selection_x' | translate}}</mat-label>
-        <input matInput formControlName="x"
-               placeholder="{{'flSpreadsheet.chart_serie_selection_x' | translate}}">
-        <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('x')"></fl-spreadsheet-selection-input>
-
-        <mat-error *ngIf="formGp.get('x').hasError('invalidFormat')">
-          {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
-        </mat-error>
-        <mat-error *ngIf="formGp.get('x').hasError('selectionOutOfBound')">
-          {{'flSpreadsheet.selection_out_of_bound' | translate}}
-          : {{formGp.get('x').getError('selectionOutOfBound')}}
-        </mat-error>
-      </mat-form-field>
+      <fl-spreadsheet-ranges-input formControlName="x" *ngIf="formGp.get('x')"
+                                   [placeholder]="'flSpreadsheet.chart_serie_selection_x' | translate"></fl-spreadsheet-ranges-input>
 
       <!--   Y values selection   -->
-      <mat-form-field class="g-form-input" appearance="outline">
-        <mat-label>{{'flSpreadsheet.chart_serie_selection_y' | translate}}</mat-label>
-        <input matInput formControlName="y" required
-               placeholder="{{'flSpreadsheet.chart_serie_selection_y' | translate}}">
-        <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('y')"></fl-spreadsheet-selection-input>
-        <mat-error *ngIf="formGp.get('y').hasError('required')">
-          {{'flSpreadsheet.chart_serie_selection_y' | flErrorRequired}}
-        </mat-error>
-        <mat-error *ngIf="formGp.get('y').hasError('invalidFormat')">
-          {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
-        </mat-error>
-        <mat-error *ngIf="formGp.get('y').hasError('selectionOutOfBound')">
-          {{'flSpreadsheet.selection_out_of_bound' | translate}}
-          : {{formGp.get('y').getError('selectionOutOfBound')}}
-        </mat-error>
-      </mat-form-field>
+      <fl-spreadsheet-ranges-input formControlName="y"
+                                   [placeholder]="'flSpreadsheet.chart_serie_selection_y' | translate"></fl-spreadsheet-ranges-input>
+
 
       <div class="g-text-centered">
         <button mat-flat-button color="primary" type="submit">
@@ -60,22 +35,3 @@
     </form>
   </fl-portal-content>
 </fl-portal>
-
-<!--    -->
-
-<!--      &lt;!&ndash;   X Labels    &ndash;&gt;-->
-<!--      <mat-form-field class="g-form-input" appearance="outline">-->
-<!--        <mat-label>{{'flSpreadsheet.x_labels' | translate}}</mat-label>-->
-<!--        <input matInput formControlName="xLabels"-->
-<!--               placeholder="{{'flSpreadsheet.x_labels' | translate}}">-->
-<!--        <fl-spreadsheet-selection-input matSuffix [inputFormControl]="formGp.get('xLabels')">-->
-<!--        </fl-spreadsheet-selection-input>-->
-
-<!--        <mat-error *ngIf="formGp.get('xLabels').hasError('invalidFormat')">-->
-<!--          {{'flSpreadsheet.single_serie_data_wrong_format' | translate}}-->
-<!--        </mat-error>-->
-<!--        <mat-error *ngIf="formGp.get('xLabels').hasError('selectionOutOfBound')">-->
-<!--          {{'flSpreadsheet.selection_out_of_bound' | translate}} :-->
-<!--          : {{formGp.get('xLabels').getError('selectionOutOfBound')}}-->
-<!--        </mat-error>-->
-<!--      </mat-form-field>-->

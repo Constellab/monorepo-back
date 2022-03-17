@@ -10,6 +10,7 @@ import {FlOutsideClickDirective} from './fl-outside-click/fl-outside-click.direc
 import {FlDisableAnimationInitDirective} from './fl-disable-animation-init/fl-disable-animation-init.directive';
 import {FlAutofocusDirective} from './fl-autofocus/fl-autofocus.directive';
 import {FlPrintDirective} from './fl-print/fl-print.directive';
+import {FlElasticSearchDirective} from './fl-elastic-search/fl-elastic-search.directive';
 
 
 /**
@@ -26,6 +27,7 @@ import {FlPrintDirective} from './fl-print/fl-print.directive';
     FlDisableAnimationInitDirective,
     FlAutofocusDirective,
     FlPrintDirective,
+    FlElasticSearchDirective,
   ],
   exports: [
     FlInputMaxLengthDirective,
@@ -37,6 +39,7 @@ import {FlPrintDirective} from './fl-print/fl-print.directive';
     FlDisableAnimationInitDirective,
     FlAutofocusDirective,
     FlPrintDirective,
+    FlElasticSearchDirective,
   ],
   imports: [
     CommonModule,

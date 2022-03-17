@@ -29,8 +29,8 @@ export class FlSheetChartLocalService extends FlSheetChartService {
     return new FlSheetChartSelectionHeatMap(this.sheet, serie).exportToChart();
   }
 
-  generateHistogram(serie: FlSheetChartSerieSelectionForm, nbOfBins?: number): FlChartConfig {
-    return new FlSheetChartSelectionHistogram(this.sheet, serie, nbOfBins).exportToChart();
+  generateHistogram(series: FlSheetChartSerieSelectionForm[], nbOfBins?: number): FlChartConfig {
+    return new FlSheetChartSelectionHistogram(this.sheet, series, nbOfBins).exportToChart();
   }
 
   generateLine2d(series: FlSheetChart2dSerieSelectionForm[]): FlChartConfig {

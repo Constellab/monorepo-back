@@ -1,13 +1,13 @@
 import {FlSheetAction} from './fl-sheet.action';
 import {FlSheet} from '../fl-sheet.class';
-import {FlSheetRange} from '../selection/fl-sheet-range.class';
+import {FlCellsRange} from '../selection/fl-cells-range.class';
 
 /**
  * Action to create a new Column
  */
 export class FlAddColumnAction extends FlSheetAction {
 
-  constructor(sheetId: number, range: FlSheetRange) {
+  constructor(sheetId: number, range: FlCellsRange) {
     super(sheetId, range);
     this.disabledSelectionAfterAction = true;
   }
@@ -29,7 +29,7 @@ export class FlAddColumnAction extends FlSheetAction {
  */
 export class FlAddRowAction extends FlSheetAction {
 
-  constructor(sheetId: number, range: FlSheetRange) {
+  constructor(sheetId: number, range: FlCellsRange) {
     super(sheetId, range);
     this.disabledSelectionAfterAction = true;
   }
@@ -50,7 +50,7 @@ export class FlAddRowAction extends FlSheetAction {
  */
 export class FlDeleteColumnAction extends FlSheetAction {
 
-  constructor(sheetId: number, range: FlSheetRange,
+  constructor(sheetId: number, range: FlCellsRange,
               private values: any[][]) {
     super(sheetId, range);
     this.disabledSelectionAfterAction = true;
@@ -75,7 +75,7 @@ export class FlDeleteColumnAction extends FlSheetAction {
  */
 export class FlDeleteRowAction extends FlSheetAction {
 
-  constructor(sheetId: number, range: FlSheetRange,
+  constructor(sheetId: number, range: FlCellsRange,
               private values: any[][]) {
     super(sheetId, range);
     this.disabledSelectionAfterAction = true;

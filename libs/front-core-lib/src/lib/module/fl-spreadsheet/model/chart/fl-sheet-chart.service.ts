@@ -10,7 +10,7 @@ export abstract class FlSheetChartService {
 
   public abstract generateScatterPlot2d(series: FlSheetChart2dSerieSelectionForm[]): FlChartConfig | Observable<FlChartConfig>;
 
-  public abstract generateHistogram(serie: FlSheetChartSerieSelectionForm,
+  public abstract generateHistogram(series: FlSheetChartSerieSelectionForm[],
                                     nbOfBins?: number): FlChartConfig | Observable<FlChartConfig>;
 
   public abstract generateBoxPlot(series: FlSheetChartSerieSelectionForm[]): FlChartConfig | Observable<FlChartConfig>;

@@ -13,16 +13,13 @@ import {
 } from '@angular/core';
 import {columnIdAttributeName, FlCell, FlCellEditChange, rowIdAttributeName} from '../../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
-import {
-  FlCellCoord,
-  FlCellWithCoord,
-  FlSheetSingleSelection
-} from '../../model/selection/fl-sheet-single-selection.class';
+import {FlCellWithCoord, FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
 import {ClSubscriptionHandler} from '@monorepo/core-lib';
 import {FlSpreadsheetActions} from '../../state/fl-spreadsheet-actions.state';
 import {FlKeyboardHelper, FlKeyboardKey} from '../../../../utils/fl-keyboard.helper';
-import {FlSheetRange} from '../../model/selection/fl-sheet-range.class';
+import {FlCellsRange} from '../../model/selection/fl-cells-range.class';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
+import {FlCellCoord} from '../../model/fl-cell-coord.class';
 
 @Component({
   selector: 'fl-spreadsheet-cell',
@@ -109,13 +106,13 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
   private onSelectionChange(selection: FlSheetSingleSelection): void {
     // check if the current cell is selected
     if (selection && selection.coordIsSelected({row: this.row, column: this.column})) {
-      this.selectCell(selection);
+      this.selectCell(selection.getRange());
     } else {
       this.unSelectCell();
     }
   }
 
-  private selectCell(range: FlSheetRange): void {
+  private selectCell(range: FlCellsRange): void {
     if (!this.selected) {
       this.renderer.addClass(this.elementRef.nativeElement, 'cell-selected');
       this.selected = true;
@@ -221,7 +218,7 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
   }
 
   // return the list of border classes to apply based on selected range
-  private getBorderClassesForSelectedRange(range: FlSheetRange): string[] {
+  private getBorderClassesForSelectedRange(range: FlCellsRange): string[] {
     const classes: string[] = [];
     if (range.from.row === this.row) {
       classes.push('selected-border-top');

@@ -40,6 +40,8 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     chart_update: 'Modifier la sélection',
     chart_refresh: 'Rafraichir',
     chart_close_all: 'Tous fermer',
+    sheet_selection_range: 'Plage',
+    sheet_selection_columns: 'Colonnes',
     cell_value_object: 'Objet',
     open_cell_object_in_sheet: 'Ouvrir dans une feuille',
     sheet: 'Feuille',
@@ -50,7 +52,9 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     row_filters: 'Filtres sur lignes',
     row_filters_no_tags: 'Aucun tags sur les lignes',
     header_name: 'Nom',
-    header_tags: 'Tags'
+    header_tags: 'Tags',
+    total_rows_count: 'Nombre total de lignes',
+    total_columns_count: 'Nombre total de colonnes',
   }
 };
 
@@ -88,6 +92,8 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     chart_update: 'Update selection',
     chart_refresh: 'Refresh',
     chart_close_all: 'Close all',
+    sheet_selection_range: 'Range',
+    sheet_selection_columns: 'Columns',
     cell_value_object: 'Object',
     open_cell_object_in_sheet: 'Open in a sheet',
     sheet: 'Sheet',
@@ -98,7 +104,9 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     row_filters: 'Row filters',
     row_filters_no_tags: 'No tags on rows',
     header_name: 'Name',
-    header_tags: 'Tags'
+    header_tags: 'Tags',
+    total_rows_count: 'Total number of rows',
+    total_columns_count: 'Total number of columns',
   }
 };
 

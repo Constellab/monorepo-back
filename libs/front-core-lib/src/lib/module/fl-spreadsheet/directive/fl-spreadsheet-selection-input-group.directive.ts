@@ -11,7 +11,7 @@ import {Observable, Subject} from 'rxjs';
 })
 export class FlSpreadsheetSelectionInputGroupDirective implements OnDestroy {
 
-  private selectedComponent: Subject<number> = new Subject<number>();
+  private selectedComponent: Subject<symbol> = new Subject();
 
   constructor() {
   }
@@ -20,14 +20,14 @@ export class FlSpreadsheetSelectionInputGroupDirective implements OnDestroy {
    * The children FlSpreadsheetSelectionInputComponent emit its id when it selected
    * @param id
    */
-  public emitSelection(id: number): void {
+  public emitSelection(id: symbol): void {
     this.selectedComponent.next(id);
   }
 
   /**
    * Use to subscribe to selection change event
    */
-  public subscribeToSelection(): Observable<number> {
+  public subscribeToSelection(): Observable<symbol> {
     return this.selectedComponent.asObservable();
   }
 

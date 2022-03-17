@@ -5,14 +5,13 @@ import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
-import {FlSheetMultiSelection} from '../../model/selection/fl-sheet-multi-selection.class';
 import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {
   FlSheetChart2dSerieSelectionForm,
   FlSheetChartSelectionForm,
   FlSheetChartSelectionFormAdditional,
   FlSheetChartSelectionResult,
-  FlSheetChartSerieSelectionForm,
+  FlSheetSelectionRange,
   FlSpreadsheetChartSelectionInput,
   FlSpreadsheetChartSelectionInputCreate,
   FlSpreadsheetChartSelectionInputUpdate
@@ -26,14 +25,8 @@ import {FlTranslateService} from '../../../fl-translate/service/fl-translate.ser
 import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {debounceTime, skip} from 'rxjs/operators';
 import {merge} from 'rxjs';
-import {
-  FlSpreadsheetChartSelectionHelper,
-  FlSpreadsheetChartSerieSelectionInput,
-  FlSpreadsheetSplitSelectionMode
-} from '../../utils/fl-spreadsheet-chart-selection.helper';
+import {FlSpreadsheetChartSelectionHelper,} from '../../utils/fl-spreadsheet-chart-selection.helper';
 import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
-import {flChartGetDefaultNumberOfBins} from '../../../fl-chart/model/data/fl-chart-data-bin.class';
-import {ThemePalette} from '@angular/material/core';
 import {
   FlSheetBasic2dPlotFormConfig,
   FlSheetChartFormConfig,
@@ -41,7 +34,8 @@ import {
   FlSheetHistogramFormConfig,
   FlSheetLinePlotFormConfig,
   FlSheetScatterPlotFormConfig,
-  FlSheetVennDiagramFormConfig
+  FlSheetVennDiagramFormConfig,
+  FlSpreadsheetChartSerieSelectionInput
 } from '../../model/chart/fl-sheet-chart-form-config.class';
 
 
@@ -70,9 +64,6 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
   private formConfig: FlSheetChartFormConfig;
 
   private subscriptions: ClSubscriptionHandler = new ClSubscriptionHandler();
-
-  // use to change the select split into series
-  splitSelection: FlSpreadsheetSplitSelectionMode = 'column';
 
   constructor(private selectionState: FlSpreadsheetSelectionState,
               private state: FlSpreadsheetState,
@@ -128,12 +119,13 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
   private initCreate(input: FlSpreadsheetChartSelectionInputCreate): void {
     if (input.currentSelection) {
-      this.formGp.get('dataRange').patchValue(input.currentSelection.toString());
+      this.formGp.get('dataRange').patchValue(input.currentSelection.toFlSheetSelectionRange());
     }
   }
 
   private initUpdate(input: FlSpreadsheetChartSelectionInputUpdate): void {
     this.formGp.patchValue(input.selection);
+    this.onChartTypeChange(input.selection.chartType);
   }
 
   private listenToChanges(): void {
@@ -150,13 +142,6 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
         debounceTime(100)
       ).subscribe(
         () => this.createSerieFromDataRange()
-      )
-    );
-
-    // subscribe to serie change to refresh data based on series
-    this.subscriptions.add(
-      this.formGp.get('series').valueChanges.pipe().subscribe(
-        () => this.refreshFormOnSeriesChange()
       )
     );
   }
@@ -189,6 +174,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
   }
 
   private onChartTypeChange(chartType: FlChartType): void {
+    if (chartType == null) return;
     this.formConfig = this.getConfigForChartType(chartType);
 
     this.ngMaxOfSeries = this.formConfig.getNbMaxOfSeries();
@@ -282,40 +268,17 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
   // create the series base on main data selection
   private createSerieFromDataRange(): void {
     const chartType: FlChartType = this.formGp.get('chartType').value;
-    const dataRange: string = this.formGp.get('dataRange').value;
+    const dataRange: FlSheetSelectionRange = this.formGp.get('dataRange').value;
 
     if (ClHelpService.isNullOrEmpty(chartType) || ClHelpService.isNullOrEmpty(dataRange)
       || this.formGp.get('dataRange').invalid) {
       return;
     }
 
-    const dataSelection: FlSheetMultiSelection = this.getMultiSelectionFromString(dataRange);
-    // todo see how to handle serie name
-    const series: FlSheetChart2dSerieSelectionForm[] = this.formConfig.createSeriesFromDataRange(dataSelection, this.splitSelection);
+    const series: FlSheetChart2dSerieSelectionForm[] = this.formConfig.createSeriesFromDataRange(dataRange);
 
     this.formGp.get('series').patchValue(series);
     this.cdr.markForCheck();
-  }
-
-  // method call when the series a changes, it refreshes the form information
-  private refreshFormOnSeriesChange(): void {
-    if (this.chartType === FlChartType.HISTOGRAM) {
-      this.initNbOfBins();
-    }
-  }
-
-  // for the histogram, it set the number of bins based on nb of values
-  private initNbOfBins(): void {
-    const serie: FlSheetChartSerieSelectionForm = this.series[0];
-    const selection = this.getMultiSelectionFromString(serie.y);
-
-    if (selection) {
-      this.formGp.get('additionalFields').get('nbOfBins').patchValue(flChartGetDefaultNumberOfBins(selection.getCellsValuesFlat().length));
-    }
-  }
-
-  private getMultiSelectionFromString(selection: string): FlSheetMultiSelection {
-    return !ClHelpService.isNullOrEmpty(selection) ? FlSheetMultiSelection.fromString(this.state.currentSheet, selection) : null;
   }
 
   private resetForm(): void {
@@ -329,35 +292,23 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
     return this.input.mode === 'create' ? 'flSpreadsheet.create_chart' : 'flSpreadsheet.update_chart';
   }
 
-  toggleSplitSelection(): void {
-    this.splitSelection = this.splitSelection === 'row' ? 'column' : 'row';
-    this.createSerieFromDataRange();
-  }
-
-  get splitButtonColor(): ThemePalette {
-    return this.splitSelection === 'row' ? 'primary' : null;
-  }
-
-  get splitButtonTooltip(): string {
-    return this.splitSelection === 'row' ? 'flSpreadsheet.split_selection_by_columns' : 'flSpreadsheet.split_selection_by_rows';
-  }
-
   private getConfigForChartType(chartType: FlChartType): FlSheetChartFormConfig {
+    const sheet = this.state.currentSheet;
     switch (chartType) {
       case FlChartType.BAR_PLOT:
       case FlChartType.STACKED_PLOT:
       case FlChartType.BOX_PLOT:
-        return new FlSheetBasic2dPlotFormConfig();
+        return new FlSheetBasic2dPlotFormConfig(sheet);
       case FlChartType.SCATTER_PLOT:
-        return new FlSheetScatterPlotFormConfig();
+        return new FlSheetScatterPlotFormConfig(sheet);
       case FlChartType.LINE:
-        return new FlSheetLinePlotFormConfig();
+        return new FlSheetLinePlotFormConfig(sheet);
       case FlChartType.VENN_DIAGRAM:
-        return new FlSheetVennDiagramFormConfig();
+        return new FlSheetVennDiagramFormConfig(sheet);
       case FlChartType.HEAT_MAP:
-        return new FlSheetHeatMapFormConfig();
+        return new FlSheetHeatMapFormConfig(sheet);
       case FlChartType.HISTOGRAM:
-        return new FlSheetHistogramFormConfig();
+        return new FlSheetHistogramFormConfig(sheet);
       default:
         throw Error(`[FlSpreadsheetChartSelectionComponent] Config not defined for chart type : '${chartType}'`);
     }

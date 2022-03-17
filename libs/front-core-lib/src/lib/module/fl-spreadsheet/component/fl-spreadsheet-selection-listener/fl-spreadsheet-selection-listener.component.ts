@@ -1,44 +1,37 @@
-import {Component, Input, OnDestroy, OnInit, Optional} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Optional, Output} from '@angular/core';
 import {ThemePalette} from '@angular/material/core/common-behaviors/color';
 import {Subscription} from 'rxjs';
-import {AbstractControl} from '@angular/forms';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
-import {FlSheetMultiSelection} from '../../model/selection/fl-sheet-multi-selection.class';
-import {FlSpreadsheetSelectionInputGroupDirective} from '../../directive/fl-spreadsheet-selection-input-group.directive';
+import {
+  FlSpreadsheetSelectionInputGroupDirective
+} from '../../directive/fl-spreadsheet-selection-input-group.directive';
 import {filter} from 'rxjs/operators';
 
 /**
- * Component to place in a input to listen to selection and fill input
+ * Component to listen to selection on spreadsheet
  */
 @Component({
-  selector: 'fl-spreadsheet-selection-input',
-  templateUrl: './fl-spreadsheet-selection-input.component.html',
-  styleUrls: ['./fl-spreadsheet-selection-input.component.scss']
+  selector: 'fl-spreadsheet-selection-listener',
+  templateUrl: './fl-spreadsheet-selection-listener.component.html',
+  styleUrls: ['./fl-spreadsheet-selection-listener.component.scss']
 })
-export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
+export class FlSpreadsheetSelectionListenerComponent implements OnInit, OnDestroy {
 
-  private static id: number = 0;
 
-  @Input() inputFormControl: AbstractControl;
+  @Output() selectionChange: EventEmitter<FlSheetSingleSelection> = new EventEmitter();
 
-  /**
-   * Mode for the selection
-   * Single, it generate a string based on current single selection (like A1:C3)
-   * SplitRows, it generate a multi selection string split by columns (like A1:A3,B1:B3,C1:C3)
-   */
-  @Input() selectionMode: 'single' | 'splitRows' = 'single';
 
   selected: boolean = false;
 
   private subscription: Subscription;
   private groupSubscription: Subscription;
 
-  private readonly id: number;
+  private readonly id: symbol;
 
   constructor(private selectionState: FlSpreadsheetSelectionState,
               @Optional() private group: FlSpreadsheetSelectionInputGroupDirective) {
-    this.id = FlSpreadsheetSelectionInputComponent.id++;
+    this.id = Symbol();
   }
 
   ngOnInit(): void {
@@ -89,22 +82,9 @@ export class FlSpreadsheetSelectionInputComponent implements OnInit, OnDestroy {
   }
 
   private onNewSelection(selection: FlSheetSingleSelection): void {
-    if (selection) {
-      this.inputFormControl.patchValue(this.convertSelectionToString(selection));
-    } else {
-      this.inputFormControl.patchValue(null);
-    }
+    this.selectionChange.next(selection);
   }
 
-  private convertSelectionToString(selection: FlSheetSingleSelection): string {
-    if (this.selectionMode === 'single') {
-      return selection.toString();
-    } else {
-      // convert to multiple selection, one for each row
-      const selections: FlSheetMultiSelection = new FlSheetMultiSelection(selection.splitToColumnSelections());
-      return selections.toString();
-    }
-  }
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();

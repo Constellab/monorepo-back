@@ -1,5 +1,6 @@
 import {BehaviorSubject, Observable} from 'rxjs';
 
+export type FlHeaderCellType = 'row' | 'column';
 
 export type FlCellEditChange = { edit: false, value: void } | { edit: true, value: string };
 

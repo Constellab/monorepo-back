@@ -1,10 +1,10 @@
 import {FlBasicCell, FlCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
-import {FlCellCoord} from './selection/fl-sheet-single-selection.class';
 import {FlSheetHeader, FlSheetRow} from './fl-sheet-row.class';
 import {FlTagHelper} from '../../fl-tag/fl-tag.class';
-import {ClHelpService} from '@monorepo/core-lib';
+import {ClHelpService, ClStringHelper} from '@monorepo/core-lib';
+import {FlCellCoord} from './fl-cell-coord.class';
 
 /**
  * Information about a row or a column in the sheet
@@ -32,8 +32,12 @@ export class FlSheet {
   private readonly rowsChanged: BehaviorSubject<number>;
   private readonly columnsChanged: BehaviorSubject<number>;
 
-  private rowsCount: number = 0;
-  private columnsCount: number = 0;
+  private loadedRowsCount: number = 0;
+  private loadedColumnsCount: number = 0;
+
+  // for lazy loaded sheet
+  public totalRowsCount: number = 0;
+  public totalColumnsCount: number = 0;
 
   public rowsInfo: FlSheetHeaderInfo[];
   public columnsInfo: FlSheetHeaderInfo[];
@@ -51,7 +55,7 @@ export class FlSheet {
   ////////////////////////////// COLUMN ///////////////////////////////
   public appendMultipleColumns(count: number): void {
     for (let i = 0; i < count; i++) {
-      this.createColumn(this.columnsCount);
+      this.createColumn(this.loadedColumnsCount);
     }
 
     this.emitCellChange();
@@ -69,8 +73,8 @@ export class FlSheet {
 
 
   public insertColumn(position?: number): void {
-    if (position == null || position > this.columnsCount) {
-      position = this.columnsCount;
+    if (position == null || position > this.loadedColumnsCount) {
+      position = this.loadedColumnsCount;
     }
 
     this.createColumn(position);
@@ -82,14 +86,15 @@ export class FlSheet {
   // create an empty column without emitting
   private createColumn(position: number): void {
     // add cell for each row
-    for (let i = 0; i < this.rowsCount; i++) {
+    for (let i = 0; i < this.loadedRowsCount; i++) {
       this.insertCell(i, position);
     }
 
     if (this.columnsInfo?.length > 0) {
       this.columnsInfo.splice(position, 0, {name: null, tags: {}});
     }
-    this.columnsCount++;
+    this.loadedColumnsCount++;
+    this.totalColumnsCount++;
   }
 
   // delete columns in the interval inclusive
@@ -98,14 +103,15 @@ export class FlSheet {
     const deleteCount: number = Math.max(from, to) - fromIndex + 1;
 
     // delete cells for each rows
-    for (let i = 0; i < this.rowsCount; i++) {
+    for (let i = 0; i < this.loadedRowsCount; i++) {
       this.cells[i].splice(fromIndex, deleteCount);
     }
 
-    this.columnsCount -= deleteCount;
+    this.loadedColumnsCount -= deleteCount;
+    this.totalColumnsCount -= deleteCount;
 
     // security to prevent sheet without columns
-    if (this.columnsCount <= 0) {
+    if (this.loadedColumnsCount <= 0) {
       this.insertColumn(0);
     }
 
@@ -118,7 +124,7 @@ export class FlSheet {
   }
 
   private emitColumnsChange(): void {
-    this.columnsChanged.next(this.columnsCount);
+    this.columnsChanged.next(this.loadedColumnsCount);
   }
 
   public getColumnsCount$(): Observable<number> {
@@ -157,10 +163,30 @@ export class FlSheet {
     );
   }
 
+  public searchColumns(name: string): string[] {
+    if (!this.columnsInfo) return [];
+    const result = this.columnsInfo
+      .filter(columnInfo => columnInfo.name && ClStringHelper.stringContains(columnInfo.name, name))
+      .map(columnInfo => columnInfo.name);
+    return ClHelpService.sortAlphabeticalOrder(result);
+  }
+
+  /**
+   * Get all the column name from index with default to index if the name does not exist
+   */
+  public getColumnNames(fromColumn: number, toColumn: number): string[] {
+    if (!this.columnsInfo) return [];
+    const names: string[] = [];
+    for (let i = fromColumn; i < toColumn + 1; i++) {
+      names.push(this.getColumnInfo(i).name ?? i.toString());
+    }
+    return names;
+  }
+
   ////////////////////////////// ROW ///////////////////////////////
   public appendMultipleRows(count: number): void {
     for (let i = 0; i < count; i++) {
-      this.createRow(this.rowsCount);
+      this.createRow(this.loadedRowsCount);
     }
 
     this.emitCellChange();
@@ -177,8 +203,8 @@ export class FlSheet {
 
 
   public insertRow(position?: number): void {
-    if (position == null || position > this.rowsCount) {
-      position = this.rowsCount;
+    if (position == null || position > this.loadedRowsCount) {
+      position = this.loadedRowsCount;
     }
 
     this.createRow(position);
@@ -192,14 +218,15 @@ export class FlSheet {
     this.cells.splice(position, 0, []);
 
     // add cell for each row
-    for (let i = 0; i < this.columnsCount; i++) {
+    for (let i = 0; i < this.loadedColumnsCount; i++) {
       this.insertCell(position, i);
     }
 
     if (this.rowsInfo?.length > 0) {
       this.rowsInfo.splice(position, 0, {name: null, tags: {}});
     }
-    this.rowsCount++;
+    this.loadedRowsCount++;
+    this.totalRowsCount++;
   }
 
   // delete rows in the interval inclusive
@@ -210,10 +237,11 @@ export class FlSheet {
     // delete rows
     this.cells.splice(fromIndex, deleteCount);
 
-    this.rowsCount -= deleteCount;
+    this.loadedRowsCount -= deleteCount;
+    this.totalRowsCount -= deleteCount;
 
     // security to prevent sheet without rows
-    if (this.rowsCount <= 0) {
+    if (this.loadedRowsCount <= 0) {
       this.insertRow(0);
     }
 
@@ -227,7 +255,7 @@ export class FlSheet {
   }
 
   private emitRowsChange(): void {
-    this.rowsChanged.next(this.rowsCount);
+    this.rowsChanged.next(this.loadedRowsCount);
   }
 
   public getRowsCount$(): Observable<number> {
@@ -345,7 +373,7 @@ export class FlSheet {
    */
   public setColumnValues(column: number, values: any[], fromRow: number = 0): void {
     // create new rows if needed
-    const newRowsCount = (values.length + fromRow) - this.rowsCount;
+    const newRowsCount = (values.length + fromRow) - this.loadedRowsCount;
     if (newRowsCount > 0) {
       this.appendMultipleRows(newRowsCount);
     }
@@ -372,20 +400,28 @@ export class FlSheet {
 
 
   ////////////////////////////// Other ///////////////////////////////
-  public getColumnsCount(): number {
-    return this.columnsCount;
+  public getLoadedColumnsCount(): number {
+    return this.loadedColumnsCount;
   }
 
-  public getRowsCount(): number {
-    return this.rowsCount;
+  public getLoadedRowsCount(): number {
+    return this.loadedRowsCount;
   }
 
   /**
-   * return true if the coord is within the sheet size
+   * return true if the coord is within loaded cells of sheet
+   */
+  public coordIsLoaded(coord: FlCellCoord): boolean {
+    return coord.row >= 0 && coord.row < this.loadedRowsCount &&
+      coord.column >= 0 && coord.column < this.loadedColumnsCount;
+  }
+
+  /**
+   * return true if the coord is within total size of the sheet
    */
   public coordIsValid(coord: FlCellCoord): boolean {
-    return coord.row >= 0 && coord.row < this.rowsCount &&
-      coord.column >= 0 && coord.column < this.columnsCount;
+    return coord.row >= 0 && coord.row < this.totalRowsCount &&
+      coord.column >= 0 && coord.column < this.totalColumnsCount;
   }
 
   private getHeaderInfo(headerInfos: FlSheetHeaderInfo[], index: number): FlSheetHeaderInfo {

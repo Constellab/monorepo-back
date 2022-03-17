@@ -1,13 +1,13 @@
 import {FlSheet} from '../fl-sheet.class';
 import {FlSheetAction} from './fl-sheet.action';
-import {FlSheetRange} from '../selection/fl-sheet-range.class';
+import {FlCellsRange} from '../selection/fl-cells-range.class';
 
 /**
  * Sheet action to update multiple cells value
  */
 export class FlUpdateCellsAction extends FlSheetAction {
 
-  constructor(sheetId: number, range: FlSheetRange,
+  constructor(sheetId: number, range: FlCellsRange,
               private newValues: any[][], private previousValues: any[][]) {
     super(sheetId, range);
   }
@@ -28,7 +28,7 @@ export class FlUpdateCellsAction extends FlSheetAction {
  */
 export class FlSingleUpdateCellAction extends FlUpdateCellsAction {
 
-  constructor(sheetId: number, range: FlSheetRange, newValue: any, previousValue: any,) {
+  constructor(sheetId: number, range: FlCellsRange, newValue: any, previousValue: any,) {
     super(sheetId, range, [[newValue]], [[previousValue]]);
   }
 }

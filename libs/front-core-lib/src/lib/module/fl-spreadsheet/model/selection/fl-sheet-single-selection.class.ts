@@ -1,35 +1,34 @@
-import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
 import {FlSheet} from '../fl-sheet.class';
 import {FlCell} from '../fl-cell.class';
 import {FlSheetSelection} from './fl-sheet-selection.class';
-import {FlSheetRange} from './fl-sheet-range.class';
+import {FlCellsRange, FlCellsRangeType} from './fl-cells-range.class';
+import {FlCellCoord} from '../fl-cell-coord.class';
+import {FlSheetSelectionRange} from '../chart/fl-sheet-chart-selection-form.class';
 
-export type FlSheetSingleSelectionType = 'single' | 'multiple' | 'columns' | 'rows';
+export interface FlCellWithCoord {
+  coord: FlCellCoord;
+  cell: FlCell;
+}
 
 
 /**
- * Class containing the selection of a spreadsheet with only read method
+ * Class containing the selection of a sheet with only read method
  * This object is immutable
  */
-export class FlSheetSingleSelection extends FlSheetRange implements FlSheetSelection {
+export class FlSheetSingleSelection implements FlSheetSelection {
 
   protected constructor(
-    public sheet: FlSheet,
-    type: FlSheetSingleSelectionType,
-    startRow: number,
-    startColumn: number,
-    endRow: number,
-    endColumn: number) {
-    super(type, startRow, startColumn, endRow, endColumn);
+    protected sheet: FlSheet,
+    protected range: FlCellsRange) {
   }
 
 
   public getCellsFlat(): FlCell[] {
-    return this.sheet.getCellsFromCoordsFlat(this.from, this.to);
+    return this.sheet.getCellsFromCoordsFlat(this.range.from, this.range.to);
   }
 
   public getCells(): FlCell[][] {
-    return this.sheet.getCellsFromCoords(this.from, this.to);
+    return this.sheet.getCellsFromCoords(this.range.from, this.range.to);
   }
 
   public getCellsValues(): any[][] {
@@ -45,13 +44,8 @@ export class FlSheetSingleSelection extends FlSheetRange implements FlSheetSelec
    * If this is a row or a column selection, we return the first column
    */
   public getFirstSelectedCell(): FlCell {
-    const coord: FlCellCoord = this.getFirstSelectedCellCoord();
+    const coord: FlCellCoord = this.range.getFirstSelectedCellCoord();
     return this.sheet.getCell(coord.row, coord.column);
-  }
-
-
-  public exportToRange(): FlSheetRange {
-    return new FlSheetRange(this.type, this.startRow, this.startColumn, this.endRow, this.endColumn);
   }
 
   /**
@@ -59,8 +53,8 @@ export class FlSheetSingleSelection extends FlSheetRange implements FlSheetSelec
    */
   public splitToRowSelections(): FlSheetSingleSelection[] {
     const selections: FlSheetSingleSelection[] = [];
-    const from: FlCellCoord = this.from;
-    const to: FlCellCoord = this.to;
+    const from: FlCellCoord = this.range.from;
+    const to: FlCellCoord = this.range.to;
 
     for (let i = from.row; i <= to.row; i++) {
       selections.push(FlSheetSingleSelectionFull.Multiple(this.sheet, i, from.column, i, to.column));
@@ -74,8 +68,8 @@ export class FlSheetSingleSelection extends FlSheetRange implements FlSheetSelec
    */
   public splitToColumnSelections(): FlSheetSingleSelection[] {
     const selections: FlSheetSingleSelection[] = [];
-    const from: FlCellCoord = this.from;
-    const to: FlCellCoord = this.to;
+    const from: FlCellCoord = this.range.from;
+    const to: FlCellCoord = this.range.to;
 
     // if there is only one row selection, we return only one row
     if (from.row === to.row) {
@@ -88,6 +82,79 @@ export class FlSheetSingleSelection extends FlSheetRange implements FlSheetSelec
 
     return selections;
   }
+
+  public get startRow(): number {
+    return this.range.startRow;
+  }
+
+  public get startColumn(): number {
+    return this.range.startColumn;
+  }
+
+  public get endRow(): number {
+    return this.range.endRow;
+  }
+
+  public get endColumn(): number {
+    return this.range.endColumn;
+  }
+
+  public get type(): FlCellsRangeType {
+    return this.range.type;
+  }
+
+  public get from(): FlCellCoord {
+    return this.range.from;
+  }
+
+  public get to(): FlCellCoord {
+    return this.range.to;
+  }
+
+  public getRange(): FlCellsRange {
+    return this.range;
+  }
+
+  public getFirstSelectedCellCoord(): FlCellCoord {
+    return this.range.getFirstSelectedCellCoord();
+
+  }
+
+  // return true if the coord are within the selection
+  public coordIsSelected(coord: FlCellCoord): boolean {
+    return this.range.coordIsSelected(coord);
+
+  }
+
+  // return true if the row is within selection
+  public rowIsSelected(row: number): boolean {
+    return this.range.rowIsSelected(row);
+  }
+
+  // return true if the column is within selection
+  public columnIsSelected(column: number): boolean {
+    return this.range.columnIsSelected(column);
+  }
+
+  // return selection as text like B2:G5
+  public toString(): string {
+    return this.range.toString();
+  }
+
+  public toFlSheetSelectionRange(): FlSheetSelectionRange {
+    if (this.type === 'columns') {
+      return {
+        type: 'columns',
+        selection: this.sheet.getColumnNames(this.from.column, this.to.column)
+      };
+    } else {
+      return {
+        type: 'range',
+        selection: [this.getRange().toCoords()]
+      };
+    }
+  }
+
 
   // public getDifference(newSelection: FlSheetSelectionChange): FlSheetSelectionDifference {
   //   // the difference only work if both selection have the same start
@@ -106,41 +173,36 @@ export class FlSheetSingleSelection extends FlSheetRange implements FlSheetSelec
 }
 
 /**
- * Class containing the selection of a spreadsheet with only also update method method
- * This object is immutable
+ * Class containing the selection of a sheet with only also update method
+ * This object is immutable, it returns new objects
  */
 export class FlSheetSingleSelectionFull extends FlSheetSingleSelection {
   constructor(
-    public sheet: FlSheet,
-    type: FlSheetSingleSelectionType,
-    startRow: number,
-    startColumn: number,
-    endRow: number,
-    endColumn: number) {
-    super(sheet, type, startRow, startColumn, endRow, endColumn);
+    sheet: FlSheet,
+    range: FlCellsRange) {
+    super(sheet, range);
   }
 
   public static Single(sheet: FlSheet, row: number, column: number): FlSheetSingleSelectionFull {
-    return new FlSheetSingleSelectionFull(sheet, 'single', row, column, row, column);
+    return new FlSheetSingleSelectionFull(sheet, new FlCellsRange('single', row, column, row, column));
   }
 
   public static Multiple(sheet: FlSheet,
                          startRow: number, startColumn: number,
                          endRow: number, endColumn: number): FlSheetSingleSelectionFull {
-    return new FlSheetSingleSelectionFull(sheet, 'multiple', startRow, startColumn, endRow, endColumn);
+    return new FlSheetSingleSelectionFull(sheet, new FlCellsRange('multiple', startRow, startColumn, endRow, endColumn));
   }
 
   public static Columns(sheet: FlSheet, from: number, to: number): FlSheetSingleSelectionFull {
-    return new FlSheetSingleSelectionFull(sheet, 'columns', 0, from, sheet.getRowsCount() - 1, to);
+    return new FlSheetSingleSelectionFull(sheet, new FlCellsRange('columns', 0, from, sheet.getLoadedRowsCount() - 1, to));
   }
 
   public static Rows(sheet: FlSheet, from: number, to: number): FlSheetSingleSelectionFull {
-    return new FlSheetSingleSelectionFull(sheet, 'rows', from, 0, to, sheet.getColumnsCount() - 1);
+    return new FlSheetSingleSelectionFull(sheet, new FlCellsRange('rows', from, 0, to, sheet.getLoadedColumnsCount() - 1));
   }
 
-  public static FromRange(sheet: FlSheet, range: FlSheetRange): FlSheetSingleSelectionFull {
-    return new FlSheetSingleSelectionFull(sheet, range.type, range.startRow, range.startColumn,
-      range.endRow, range.endColumn);
+  public static FromRange(sheet: FlSheet, range: FlCellsRange): FlSheetSingleSelectionFull {
+    return new FlSheetSingleSelectionFull(sheet, range);
   }
 
   /**
@@ -150,46 +212,28 @@ export class FlSheetSingleSelectionFull extends FlSheetSingleSelection {
    * @constructor
    */
   public static fromString(sheet: FlSheet, selection: string): FlSheetSingleSelectionFull {
-    const coords: string[] = selection.split(FlSpreadsheetHelper.coordSplitter);
-    const from: FlCellCoord = FlSpreadsheetHelper.coordFromString(coords[0]);
-    const to: FlCellCoord = FlSpreadsheetHelper.coordFromString(coords[1]);
-    // todo a voir pour le type multiple
-    return new FlSheetSingleSelectionFull(sheet, 'multiple', from.row, from.column,
-      to.row, to.column);
+    return new FlSheetSingleSelectionFull(sheet, FlCellsRange.MultipleFromString(selection));
   }
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
   public expandSelection(row: number, column: number): FlSheetSingleSelectionFull {
-    return FlSheetSingleSelectionFull.Multiple(this.sheet, this.startRow, this.startColumn, row, column);
+    return FlSheetSingleSelectionFull.Multiple(this.sheet, this.range.startRow, this.range.startColumn, row, column);
   }
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
   public expandRowsSelection(row: number): FlSheetSingleSelectionFull {
-    return FlSheetSingleSelectionFull.Rows(this.sheet, this.startRow, row);
+    return FlSheetSingleSelectionFull.Rows(this.sheet, this.range.startRow, row);
   }
 
   // return a new instance of FlSheetSelectionChange wih expanded selection
   public expandColumnsSelection(column: number): FlSheetSingleSelectionFull {
-    return FlSheetSingleSelectionFull.Columns(this.sheet, this.startColumn, column);
+    return FlSheetSingleSelectionFull.Columns(this.sheet, this.range.startColumn, column);
   }
 
   public getEndCoord(): FlCellCoord {
     return {
-      row: this.endRow,
-      column: this.endColumn
+      row: this.range.endRow,
+      column: this.range.endColumn
     };
   }
 }
-
-
-export interface FlCellCoord {
-  row: number;
-  column: number;
-}
-
-export interface FlCellWithCoord {
-  coord: FlCellCoord;
-  cell: FlCell;
-}
-
-export type FlHeaderCellType = 'row' | 'column';

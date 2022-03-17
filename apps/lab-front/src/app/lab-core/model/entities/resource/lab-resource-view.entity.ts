@@ -107,6 +107,12 @@ export interface LabResourceViewTable extends LabResourceViewBase {
   data: any[][];
   rows: LabResourceViewTableHeader[];
   columns: LabResourceViewTableHeader[];
+  from_column: number;
+  from_row: number;
+  number_of_columns_per_page: number;
+  number_of_rows_per_page: number;
+  total_number_of_columns: number;
+  total_number_of_rows: number;
 }
 
 export interface LabResourceViewTableHeader {

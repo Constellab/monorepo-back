@@ -1,13 +1,19 @@
 import {Injectable} from '@angular/core';
 import {FlSheetAction} from '../model/action/fl-sheet.action';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
-import {FlCellCoord, FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../model/selection/fl-sheet-single-selection.class';
+import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../model/selection/fl-sheet-single-selection.class';
 import {FlSheet} from '../model/fl-sheet.class';
 import {FlCell} from '../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlSingleUpdateCellAction, FlUpdateCellsAction} from '../model/action/fl-update-cell.action';
 import {FlSpreadsheetActionStore} from './fl-spreadsheet-action.store';
-import {FlAddColumnAction, FlAddRowAction, FlDeleteColumnAction, FlDeleteRowAction} from '../model/action/fl-header-cell.action';
+import {
+  FlAddColumnAction,
+  FlAddRowAction,
+  FlDeleteColumnAction,
+  FlDeleteRowAction
+} from '../model/action/fl-header-cell.action';
+import {FlCellCoord} from '../model/fl-cell-coord.class';
 
 
 /**
@@ -28,7 +34,7 @@ export class FlSpreadsheetActions {
     const cell: FlCell = sheet.getCell(coord.row, coord.column);
 
     const action: FlSheetAction = new FlSingleUpdateCellAction(sheet.id,
-      FlSheetSingleSelectionFull.Single(sheet, coord.row, coord.column).exportToRange(), newValue, cell.value);
+      FlSheetSingleSelectionFull.Single(sheet, coord.row, coord.column).getRange(), newValue, cell.value);
     this.actionStore.executeNewAction(action);
   }
 
@@ -37,7 +43,7 @@ export class FlSpreadsheetActions {
     const sheet: FlSheet = this.state.currentSheet;
 
     const action: FlSheetAction = new FlUpdateCellsAction(sheet.id,
-      selection.exportToRange(), newValues, selection.getCellsValues());
+      selection.getRange(), newValues, selection.getCellsValues());
     this.actionStore.executeNewAction(action);
   }
 
@@ -45,7 +51,7 @@ export class FlSpreadsheetActions {
     const sheet: FlSheet = this.state.currentSheet;
     const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
-    const action: FlSheetAction = new FlAddColumnAction(sheet.id, selection.exportToRange());
+    const action: FlSheetAction = new FlAddColumnAction(sheet.id, selection.getRange());
 
     // clear selection after to avoid weird selection
     // before the execution, otherwise the current selection is not correct
@@ -58,7 +64,7 @@ export class FlSpreadsheetActions {
     const sheet: FlSheet = this.state.currentSheet;
     const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
-    const action: FlSheetAction = new FlAddRowAction(sheet.id, selection.exportToRange());
+    const action: FlSheetAction = new FlAddRowAction(sheet.id, selection.getRange());
 
     // clear selection after to avoid weird selection
     // before the execution, otherwise the current selection is not correct
@@ -72,7 +78,7 @@ export class FlSpreadsheetActions {
     const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
     const action: FlSheetAction = new FlDeleteColumnAction(sheet.id,
-      selection.exportToRange(), selection.getCellsValues());
+      selection.getRange(), selection.getCellsValues());
 
     // clear selection after to avoid weird selection
     // before the execution, otherwise the current selection is not correct
@@ -86,7 +92,7 @@ export class FlSpreadsheetActions {
     const selection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
     const action: FlSheetAction = new FlDeleteRowAction(sheet.id,
-      selection.exportToRange(), selection.getCellsValues());
+      selection.getRange(), selection.getCellsValues());
 
     // clear selection after to avoid weird selection
     // before the execution, otherwise the current selection is not correct
