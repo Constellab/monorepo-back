@@ -34,6 +34,8 @@ export class FlSpreadsheetRangesInputComponent extends FlFormFieldDirective<FlSp
 
   @Input() initialSelection: FlSheetSingleSelection;
 
+  @Input() selectionListenerGroup: string;
+
   @Output() selectionChange: EventEmitter<FlSheetSelectionRange> = new EventEmitter();
 
 

@@ -7,7 +7,8 @@
       <mat-radio-button value="columns">{{'flSpreadsheet.sheet_selection_columns' | translate}}</mat-radio-button>
     </mat-radio-group>
 
-    <fl-spreadsheet-selection-listener (selectionChange)="onNewSelection($event)"></fl-spreadsheet-selection-listener>
+    <fl-spreadsheet-selection-listener [group]="selectionListenerGroup"
+                                       (selectionChange)="onNewSelection($event)"></fl-spreadsheet-selection-listener>
   </div>
 
 

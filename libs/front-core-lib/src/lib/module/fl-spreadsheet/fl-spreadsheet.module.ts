@@ -26,7 +26,6 @@ import {MatInputModule} from '@angular/material/input';
 import {
   FlSpreadsheetSelectionListenerComponent
 } from './component/fl-spreadsheet-selection-listener/fl-spreadsheet-selection-listener.component';
-import {FlSpreadsheetSelectionInputGroupDirective} from './directive/fl-spreadsheet-selection-input-group.directive';
 import {MatSelectModule} from '@angular/material/select';
 import {FlChartModule} from '../fl-chart/fl-chart.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
@@ -68,7 +67,6 @@ import {FlAutocompleteMultipleModule} from '../fl-autocomplete-multiple/fl-autoc
     FlCellHeaderPipe,
     FlSpreadsheetChartSelectionComponent,
     FlSpreadsheetSelectionListenerComponent,
-    FlSpreadsheetSelectionInputGroupDirective,
     FlSpreadsheetChartSerieSelectionComponent,
     FlSpreadsheetSheetSelectionComponent,
     FlSpreadsheetDrawerComponent,

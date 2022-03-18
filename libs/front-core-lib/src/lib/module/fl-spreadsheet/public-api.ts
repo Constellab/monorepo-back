@@ -11,10 +11,8 @@ export * from './component/fl-spreadsheet-header-cell/fl-spreadsheet-header-cell
 export * from './component/fl-spreadsheet-header-info/fl-spreadsheet-header-info.component';
 export * from './component/fl-spreadsheet-ranges-input/fl-spreadsheet-ranges-input.component';
 export * from './component/fl-spreadsheet-selection-listener/fl-spreadsheet-selection-listener.component';
+export * from './component/fl-spreadsheet-selection-listener/fl-spreadsheet-selection-listener-manager.service';
 export * from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';
-
-// Export the directives
-export * from './directive/fl-spreadsheet-selection-input-group.directive';
 
 // Export the pipe
 export * from './pipe/fl-cell-header.pipe';

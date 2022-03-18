@@ -7,7 +7,7 @@
   <fl-portal-content>
 
 
-    <form [formGroup]="formGp" (ngSubmit)="submit()" flSpreadsheetSelectionInputGroup>
+    <form [formGroup]="formGp" (ngSubmit)="submit()">
 
 
       <div class="form-first-part">
@@ -28,7 +28,7 @@
         </mat-form-field>
 
         <!-- Chart data range-->
-        <fl-spreadsheet-ranges-input formControlName="dataRange"
+        <fl-spreadsheet-ranges-input formControlName="dataRange" selectionListenerGroup="sheet-chart"
                                      [placeholder]="'flSpreadsheet.chart_data_range' | translate"></fl-spreadsheet-ranges-input>
 
         <!---------------- Additional fields --------------------->

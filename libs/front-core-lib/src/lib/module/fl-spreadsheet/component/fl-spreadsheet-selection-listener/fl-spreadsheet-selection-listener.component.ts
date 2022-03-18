@@ -1,12 +1,10 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Optional, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {ThemePalette} from '@angular/material/core/common-behaviors/color';
 import {Subscription} from 'rxjs';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
-import {
-  FlSpreadsheetSelectionInputGroupDirective
-} from '../../directive/fl-spreadsheet-selection-input-group.directive';
 import {filter} from 'rxjs/operators';
+import {FlSpreadsheetSelectionListenerManagerService} from './fl-spreadsheet-selection-listener-manager.service';
 
 /**
  * Component to listen to selection on spreadsheet
@@ -18,6 +16,12 @@ import {filter} from 'rxjs/operators';
 })
 export class FlSpreadsheetSelectionListenerComponent implements OnInit, OnDestroy {
 
+  /**
+   * Assign a group to this listener
+   * When two components are in the same group they can't be activated at the same time. An activation
+   * deactivate other components (like radio button)
+   */
+  @Input() group: string;
 
   @Output() selectionChange: EventEmitter<FlSheetSingleSelection> = new EventEmitter();
 
@@ -30,7 +34,7 @@ export class FlSpreadsheetSelectionListenerComponent implements OnInit, OnDestro
   private readonly id: symbol;
 
   constructor(private selectionState: FlSpreadsheetSelectionState,
-              @Optional() private group: FlSpreadsheetSelectionInputGroupDirective) {
+              private groupManager: FlSpreadsheetSelectionListenerManagerService) {
     this.id = Symbol();
   }
 
@@ -41,7 +45,7 @@ export class FlSpreadsheetSelectionListenerComponent implements OnInit, OnDestro
   }
 
   private subscribeToGroup(): void {
-    this.group.subscribeToSelection().pipe(
+    this.groupSubscription = this.groupManager.subscribeToSelection(this.group).pipe(
       // ignore the emission of this component instance
       // ignore if this component is not selected
       filter(id => this.id !== id && this.selected)
@@ -77,7 +81,7 @@ export class FlSpreadsheetSelectionListenerComponent implements OnInit, OnDestro
 
     // if the group exists, warn it that this selection is selected
     if (this.group) {
-      this.group.emitSelection(this.id);
+      this.groupManager.emitSelection(this.group, this.id);
     }
   }
 
@@ -89,6 +93,9 @@ export class FlSpreadsheetSelectionListenerComponent implements OnInit, OnDestro
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
     this.groupSubscription?.unsubscribe();
+    if (this.group) {
+      this.groupManager.unregisterListener(this.group);
+    }
   }
 
 

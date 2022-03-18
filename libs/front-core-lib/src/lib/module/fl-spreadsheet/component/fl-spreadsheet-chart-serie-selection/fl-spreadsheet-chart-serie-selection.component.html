@@ -5,7 +5,7 @@
   </fl-portal-header>
 
   <fl-portal-content>
-    <form [formGroup]="formGp" (ngSubmit)="submit()" flSpreadsheetSelectionInputGroup
+    <form [formGroup]="formGp" (ngSubmit)="submit()"
           class="form">
 
       <!--   Serie's name   -->
@@ -19,11 +19,11 @@
       </mat-form-field>
 
       <!--   X values selection   -->
-      <fl-spreadsheet-ranges-input formControlName="x" *ngIf="formGp.get('x')"
+      <fl-spreadsheet-ranges-input formControlName="x" *ngIf="formGp.get('x')"  selectionListenerGroup="sheet-chart"
                                    [placeholder]="'flSpreadsheet.chart_serie_selection_x' | translate"></fl-spreadsheet-ranges-input>
 
       <!--   Y values selection   -->
-      <fl-spreadsheet-ranges-input formControlName="y"
+      <fl-spreadsheet-ranges-input formControlName="y"  selectionListenerGroup="sheet-chart"
                                    [placeholder]="'flSpreadsheet.chart_serie_selection_y' | translate"></fl-spreadsheet-ranges-input>
 
 
