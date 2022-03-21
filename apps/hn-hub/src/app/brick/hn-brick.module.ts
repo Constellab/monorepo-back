@@ -14,7 +14,14 @@ import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnCoreModule} from '../core/hn-core.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnBrick]), HnBrickMajorVersionModule, HnBrickVersionModule, HnFolderModule, HnDocumentationModule, HnCoreModule],
+  imports: [
+    TypeOrmModule.forFeature([HnBrick]),
+    HnBrickMajorVersionModule,
+    HnBrickVersionModule,
+    HnFolderModule,
+    HnDocumentationModule,
+    HnCoreModule
+  ],
   exports: [TypeOrmModule],
   controllers: [HnBrickController],
   providers: [HnBrickService, HnBrickMajorVersionService, HnBrickVersionService, HnFolderService, HnDocumentationService]

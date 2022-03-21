@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {getManager, Repository} from 'typeorm';
 import {HnNode} from '../folder/hn-folder.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
@@ -9,6 +9,7 @@ import {HnDocumentationService} from '../documentation/hn-documentation.service'
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnBrickMajorVersionService} from '../brick-major-version/hn-brick-major-version.service';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
+import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 
 @Injectable()
 export class HnBrickService {
@@ -17,19 +18,27 @@ export class HnBrickService {
     @InjectRepository(HnBrick)
     private bricksRepository: Repository<HnBrick>,
     private brickMajorVersionService: HnBrickMajorVersionService,
-    private documentationService: HnDocumentationService
+    private documentationService: HnDocumentationService,
+    private brickVersionService: HnBrickVersionService
   ) {
   }
 
   async create(createdBrick: HnCreateBrickDTO): Promise<HnBrick> {
     let brick: HnBrick = new HnBrick();
+    let brickVersion: HnBrickVersion;
     if (createdBrick != null) {
       brick.initialize(createdBrick.name, createdBrick.description, false);
     }
 
-    brick = await this.bricksRepository.save(brick);
+    brick = await getManager().transaction(async entityManager => {
+      brick = await entityManager.save(brick);
 
-    await this.brickMajorVersionService.create(brick, [1, 0, 0]);
+      brickVersion = await this.brickMajorVersionService.create(brick, [1, 0, 0], entityManager);
+
+      return brick;
+    })
+
+    await this.brickVersionService.sendBrickVersionIdToTransport(brickVersion.id);
 
     return brick;
   }

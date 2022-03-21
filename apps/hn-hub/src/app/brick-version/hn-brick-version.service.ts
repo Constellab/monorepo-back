@@ -1,7 +1,7 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickVersion, HnNewVersionDTO} from './hn-brick-version.entity';
-import {Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {BlAbstractService, BlTransportService} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
@@ -25,6 +25,11 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     await this.sendBrickVersionIdToTransport(brickVersion.id);
     return brickVersion;
   }
+
+  async createFirstBrickVersion(brickVersion: HnBrickVersion, entityManager: EntityManager): Promise<HnBrickVersion> {
+    return await entityManager.save(brickVersion);
+  }
+
 
   async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO): Promise<void> {
     const newBrickVersion: HnBrickVersion = new HnBrickVersion();
@@ -59,7 +64,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
    * @param brickVersionId
    * @private
    */
-  private async sendBrickVersionIdToTransport(brickVersionId: string): Promise<void> {
+  async sendBrickVersionIdToTransport(brickVersionId: string): Promise<void> {
     const brickVersion = await this.brickVersionsRepository.findOne({
       where: {
         id: brickVersionId,

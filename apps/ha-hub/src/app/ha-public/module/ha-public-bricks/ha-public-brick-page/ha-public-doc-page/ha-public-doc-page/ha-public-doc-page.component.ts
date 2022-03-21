@@ -101,7 +101,6 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
 
   private setFormGroupValue(doc: HaDocumentationContentFormDTO): void {
     this.formGp.patchValue(doc);
-    setTimeout(() => console.log(this.formGp.value.content), 1000)
   }
 
   private saveContent(value: CmRichTextI): void {

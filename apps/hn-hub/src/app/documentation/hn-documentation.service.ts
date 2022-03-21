@@ -1,6 +1,6 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationDTO} from './hn-documentation.entity';
 import {HnNodeDTO} from '../folder/hn-folder.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
@@ -27,8 +27,8 @@ export class HnDocumentationService {
   ) {
   }
 
-  async create(documentation: HnDocumentation): Promise<HnDocumentation> {
-    return await this.documentationsRepository.save(documentation);
+  async create(documentation: HnDocumentation, entityManager?: EntityManager): Promise<HnDocumentation> {
+    return entityManager ? await entityManager.save(documentation) : await this.documentationsRepository.save(documentation);
   }
 
   async findAll(): Promise<Array<HnDocumentationDTO>> {

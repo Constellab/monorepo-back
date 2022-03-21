@@ -1,6 +1,6 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository, TreeRepository} from 'typeorm';
+import {EntityManager, Repository, TreeRepository} from 'typeorm';
 import {HnFolder, HnNode, HnNodeDTO} from './hn-folder.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
@@ -20,12 +20,15 @@ export class HnFolderService {
   }
 
   private static generatePathWithTitle(title: string): string{
-    const path:string = title.toLowerCase().trim();
-    const re = / /gi;
-    return path.replace(re, "-");
+    if(title != null){
+      const path:string = title.toLowerCase().trim();
+      const re = / /gi;
+      return path.replace(re, "-");
+    }
+    return title;
   }
 
-  async create(createFolderRes: HnNodeDTO, brickMajorVersion?: HnBrickMajorVersion): Promise<HnFolder> {
+  async create(createFolderRes: HnNodeDTO, entityManager?: EntityManager, brickMajorVersion?: HnBrickMajorVersion): Promise<HnFolder> {
 
     createFolderRes.path = HnFolderService.generatePathWithTitle(createFolderRes.title);
 
@@ -33,19 +36,18 @@ export class HnFolderService {
     if(createFolderRes.folderId){
       folder = await this.foldersRepository.findOne(createFolderRes.folderId, {relations: ['documentations', 'folders']});
     }
-    const createFolder = {
-      title: createFolderRes.title,
-      folder: folder ? folder : null,
-      path: createFolderRes.path,
-      completePath: folder ? (folder.completePath ? folder.completePath : '') + createFolderRes.path + '/' : null,
-      brickMajorVersion: brickMajorVersion ? brickMajorVersion : folder.brickMajorVersion,
-      order: createFolderRes.order != null ? createFolderRes.order : folder.nextOrder()
-    }
+    const createFolder: HnFolder = new HnFolder();
+    createFolder.title = createFolderRes.title;
+    createFolder.folder =  folder ? folder : null;
+    createFolder.path = createFolderRes.path;
+    createFolder.completePath = folder ? (folder.completePath ? folder.completePath : '') + createFolderRes.path + '/' : null;
+    createFolder.brickMajorVersion =  brickMajorVersion ? brickMajorVersion : folder.brickMajorVersion;
+    createFolder.order = createFolderRes.order != null ? createFolderRes.order : folder.nextOrder();
 
-    return await this.foldersRepository.save(createFolder);
+    return entityManager ? await entityManager.save(createFolder) : await this.foldersRepository.save(createFolder);
   }
 
-  async createMainFolders(brickMajorVersion: HnBrickMajorVersion): Promise<void>{
+  async createMainFolders(brickMajorVersion: HnBrickMajorVersion, entityManager: EntityManager): Promise<void>{
 
     const createMainFolder: HnNodeDTO = new HnNodeDTO();
     createMainFolder.isFolder = true;
@@ -53,21 +55,23 @@ export class HnFolderService {
     createMainFolder.title = null;
     createMainFolder.order = 0;
 
-    const mainFolder = await this.create(createMainFolder, brickMajorVersion);
+    const mainFolder = await this.create(createMainFolder, entityManager, brickMajorVersion);
 
     const gettingStartedDoc: HnNodeDTO = new HnNodeDTO();
     gettingStartedDoc.folder = mainFolder;
     gettingStartedDoc.path = 'getting-started';
     gettingStartedDoc.title = 'Getting Started';
     gettingStartedDoc.isFolder = false;
-    await this.createDoc(gettingStartedDoc);
+    await this.createDoc(gettingStartedDoc, entityManager);
   }
 
-  async createDoc(createDocumentationRes: HnNodeDTO): Promise<HnDocumentation> {
-    createDocumentationRes.folder =
-      await this.foldersRepository.findOne(createDocumentationRes.folder ?
-        createDocumentationRes.folder.id : createDocumentationRes.folderId, {relations: ['documentations', 'folders']});
+  async createDoc(createDocumentationRes: HnNodeDTO, entityManager?: EntityManager): Promise<HnDocumentation> {
 
+    if(createDocumentationRes.folder == null){
+      createDocumentationRes.folder =
+        await this.foldersRepository.findOne(createDocumentationRes.folder ?
+          createDocumentationRes.folder.id : createDocumentationRes.folderId, {relations: ['documentations', 'folders']});
+    }
 
     createDocumentationRes.path = HnFolderService.generatePathWithTitle(createDocumentationRes.title);
 
@@ -80,7 +84,7 @@ export class HnFolderService {
     createDocumentation.folder = createDocumentationRes.folder;
     createDocumentation.order = createDocumentationRes.folder.nextOrder();
 
-    return await this.documentationService.create(createDocumentation);
+    return await this.documentationService.create(createDocumentation, entityManager);
   }
 
   async findAll(): Promise<HnFolder[]> {

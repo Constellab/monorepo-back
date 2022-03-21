@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickMajorVersion, HnVersionState} from './hn-brick-major-version.entity';
-import {Repository} from 'typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {HnFolderService} from '../folder/hn-folder.service';
 import {HnBrick} from '../brick/hn-brick.entity';
 import {HnNode} from '../folder/hn-folder.entity';
@@ -19,16 +19,18 @@ export class HnBrickMajorVersionService {
   ) {
   }
 
-  async create(brick: HnBrick, version: number[]): Promise<void> {
+  async create(brick: HnBrick, version: number[], entityManager: EntityManager): Promise<HnBrickVersion> {
     let brickMajorVersion: HnBrickMajorVersion = new HnBrickMajorVersion();
     brickMajorVersion.initialize(brick, version[0]);
-    brickMajorVersion = await this.brickMajorVersionsRepository.save(brickMajorVersion);
+    brickMajorVersion = await entityManager.save(brickMajorVersion);
 
-    const brickVersion: HnBrickVersion = new HnBrickVersion();
+    let brickVersion: HnBrickVersion = new HnBrickVersion();
     brickVersion.initialize(brickMajorVersion, version);
-    await this.brickVersionService.create(brickVersion);
+    brickVersion = await this.brickVersionService.createFirstBrickVersion(brickVersion, entityManager);
 
-    await this.folderService.createMainFolders(brickMajorVersion);
+    await this.folderService.createMainFolders(brickMajorVersion, entityManager);
+
+    return brickVersion;
   }
 
   async findBrickMajorVersionByBrickAndVersion(brick: HnBrick, version: string): Promise<HnBrickMajorVersion> {

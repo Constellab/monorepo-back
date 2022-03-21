@@ -7,7 +7,7 @@
     </mat-header-cell>
     <mat-cell *matCellDef="let version">
       <div>
-        {{version.brickMajorVersion.major}}.{{version.minor}}.{{version.patch}}
+        {{version.version.toString()}}
       </div>
     </mat-cell>
   </ng-container>

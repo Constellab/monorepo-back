@@ -22,7 +22,6 @@ export class HaBrickService {
    * @param object json object
    */
   public create(object: any): Observable<HaBrick> {
-    console.log(object.version)
     return this.apiService.post(this.route, object, HaBrick);
   }
 

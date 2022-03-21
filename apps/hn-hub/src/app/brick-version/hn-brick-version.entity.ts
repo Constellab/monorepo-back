@@ -3,7 +3,6 @@ import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CmVersion} from '@monorepo/common-model';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {BadRequestException} from '@nestjs/common';
 
 export class HnBrickPathVersion {
   id: string;
@@ -41,7 +40,7 @@ export class HnBrickVersion extends HnBaseEntity {
   @ManyToOne(() => HnBrickMajorVersion, {eager: true, onDelete: "CASCADE"})
   brickMajorVersion: HnBrickMajorVersion;
 
-  initialize(brickMajorVersion: HnBrickMajorVersion, version: number[], repoType?: HnRepoType): void{
+  initialize(brickMajorVersion: HnBrickMajorVersion, version: number[], repoType?: HnRepoType): void {
     this.brickMajorVersion = brickMajorVersion;
     this.version = new CmVersion(version[0], version[1], version[2]);
     this.repoType = repoType;
@@ -49,7 +48,11 @@ export class HnBrickVersion extends HnBaseEntity {
 
   // Default : '1.0.0'
   getVersion(): string {
-    return [this.brickMajorVersion.major, this.minor, this.patch].join('.');
+    return this.version.toString();
+  }
+
+  public get version(): CmVersion{
+    return new CmVersion(this.brickMajorVersion.major, this.minor, this.patch);
   }
 
   public set version(version: CmVersion) {
