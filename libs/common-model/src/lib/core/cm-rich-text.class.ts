@@ -38,16 +38,16 @@ export class CmRichText {
     return this.getFigures().find(figure => figure.filename === filename);
   }
 
-  public getTitles(): any[]{
-    const titles: any[] = [];
+  public getHeaders(headersSize: number[]): any[]{
+    const headers: any[] = [];
     const contentData: any[] = this.getContent().ops;
     contentData.forEach((c, i) => {
       if(contentData[i+1] && contentData[i+1].attributes && contentData[i+1].attributes.header
-        && (contentData[i+1].attributes.header == 1 || contentData[i+1].attributes.header == 2)){
-        titles.push([contentData[i+1].attributes.header, c.insert]);
+        && (headersSize.includes(contentData[i+1].attributes.header))){
+        headers.push([contentData[i+1].attributes.header, c.insert]);
       }
     });
-    return titles;
+    return headers;
   }
 
   /**

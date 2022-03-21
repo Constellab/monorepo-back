@@ -7,6 +7,7 @@ import {BlAbstractService, BlTransportService} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {ClPageI} from '@monorepo/core-lib';
+import {CmVersion} from '@monorepo/common-model';
 
 @Injectable()
 export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
@@ -34,7 +35,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO): Promise<void> {
     const newBrickVersion: HnBrickVersion = new HnBrickVersion();
     const version: number[] = newVersion.version.split('.').map(x => +x);
-    newBrickVersion.initialize(brickMajorVersion, version, newVersion.repoType);
+    newBrickVersion.initialize(brickMajorVersion, new CmVersion(version[0], version[1], version[2]), newVersion.repoType);
     await this.create(newBrickVersion);
   }
 

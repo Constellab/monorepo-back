@@ -37,11 +37,18 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Post('doc/:brickId/:version')
-  async findCurrentDoc(@Param('brickId') brickId: string,
+  @Post('doc/:brickName/:version')
+  async findCurrentDoc(@Param('brickName') brickName: string,
                        @Param('version') version: string,
                        @Body() body: any): Promise<HnDocumentation> {
-    return this.brickService.findCurrentDoc(await this.brickService.findById(brickId), body.path, version);
+    return this.brickService.findCurrentDoc(await this.brickService.findByName(brickName), body.path, version);
+  }
+
+  @BlPublic()
+  @Get('first-doc/:brickName/:version')
+  async findFirstDoc(@Param('brickName') brickName: string,
+                       @Param('version') version: string): Promise<HnDocumentation> {
+    return this.brickService.findFirstDoc(await this.brickService.findByName(brickName), version);
   }
 
   @Post()

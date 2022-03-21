@@ -98,7 +98,6 @@ export class HaPublicSidenavComponent implements OnInit {
   changedData: HaNode[];
   dragging = false;
   expandDelay = 1000;
-  validateDrop = false;
 
   ngOnInit(): void {
 
@@ -133,10 +132,12 @@ export class HaPublicSidenavComponent implements OnInit {
         }
         if (!id) {
           this.brickService.getRootFolderId(this.brickId, this.brickVersion).subscribe(res => {
-            this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, res.id, true), event);
+            this.openedMenu =
+              this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, res.id, true), event);
           });
         } else {
-          this.openedMenu = this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, false, hasChild), event);
+          this.openedMenu =
+            this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, false, hasChild), event);
         }
         this.menuOpen = true;
       }
@@ -248,8 +249,8 @@ export class HaPublicSidenavComponent implements OnInit {
     }
   }
 
-  private createEditDialog(isFolder: boolean, object: HaFolder | HaDocumentation) {
-    let node: HaNodeDTO = new HaNodeDTO();
+  private createEditDialog(isFolder: boolean, object: HaFolder | HaDocumentation): void {
+    const node: HaNodeDTO = new HaNodeDTO();
     node.id = object.id;
     node.path = object.path;
     node.isFolder = isFolder;
@@ -296,7 +297,7 @@ export class HaPublicSidenavComponent implements OnInit {
 
   }
 
-  drop($event: CdkDragDrop<HaNode[]>) {
+  drop($event: CdkDragDrop<HaNode[]>): void {
 
     // ignore drops outside of the tree
     if (!$event.isPointerOverContainer) return;
@@ -333,8 +334,7 @@ export class HaPublicSidenavComponent implements OnInit {
   }
 
   private deleteEmptyNode(nodes: HaNode[]): HaNode[] {
-    let index: number;
-    index = nodes.findIndex(n => n.name == null);
+    const index: number = nodes.findIndex(n => n.name == null);
     if (index) {
       nodes.splice(index, 1);
     }
@@ -394,17 +394,23 @@ export class HaPublicSidenavComponent implements OnInit {
     return parent.id;
   }
 
+  openFolderToNode(node: FlatNode, $event: boolean): void{
+    if($event){
+      this.treeControl.expand(node);
+    }
+  }
 
-  dragHover(node: FlatNode) {
+
+  dragHover(node: FlatNode): void {
     if (this.dragging) {
       this.overNodeLevel = node.level;
     }
   }
 
-  dragHoverEnd() {
+  dragHoverEnd(): void {
   }
 
-  dragStart($event?: CdkDragStart<FlatNode>) {
+  dragStart($event?: CdkDragStart<FlatNode>): void {
     this.dragging = true;
     this.previousData = this.dataSource.data;
     if ($event) {
@@ -415,11 +421,11 @@ export class HaPublicSidenavComponent implements OnInit {
     }
   }
 
-  dragEnd() {
+  dragEnd(): void {
     this.dragging = false;
   }
 
-  rebuildTreeForData(data: HaNode[]) {
+  rebuildTreeForData(data: HaNode[]): void {
     this.dataSource.data = data;
     this.expansionModel.selected.forEach((node) => {
       const n = this.treeControl.dataNodes.find((n) => n.id == node.id);

@@ -105,6 +105,27 @@ export class HnFolderService {
     return this.createTree(brickDocs);
   }
 
+  async findFirstDoc(brickMajorVersion: HnBrickMajorVersion): Promise<HnDocumentation>{
+    const mainFolder: HnFolder = await this.findFolderByBrickMajorVersion(brickMajorVersion);
+    const tree: HnNode = await this.findBrickDocsTree(mainFolder);
+    const firstDocNode = this.findFirstDocNodeInTree(tree);
+    return this.documentationService.findOne(firstDocNode.id);
+  }
+
+  private findFirstDocNodeInTree(tree: HnNode): HnNode{
+    let node: HnNode = null;
+    for(const c of tree.children) {
+      if(c.children){
+        node = this.findFirstDocNodeInTree(c);
+        if(node) break;
+      } else {
+        node = c;
+        break;
+      }
+    }
+    return node;
+  }
+
   private createTree(folder: HnFolder): HnNode {
 
     const currentChild: HnNode[] = [];
@@ -123,12 +144,6 @@ export class HnFolderService {
         currentChild.push(this.createTree(f));
       })
     }
-
-    // if(currentChild.length ==  0){
-    //   currentChild.push(new HnNode(null, null, null, null, 0, null));
-    // }
-
-
 
     currentParent.children = currentChild;
     currentParent.children.sort((a, b) => a.order - b.order);

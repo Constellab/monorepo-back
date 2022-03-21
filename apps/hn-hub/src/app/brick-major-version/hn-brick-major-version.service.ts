@@ -7,6 +7,7 @@ import {HnBrick} from '../brick/hn-brick.entity';
 import {HnNode} from '../folder/hn-folder.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
+import {CmVersion} from '@monorepo/common-model';
 
 @Injectable()
 export class HnBrickMajorVersionService {
@@ -19,9 +20,9 @@ export class HnBrickMajorVersionService {
   ) {
   }
 
-  async create(brick: HnBrick, version: number[], entityManager: EntityManager): Promise<HnBrickVersion> {
+  async create(brick: HnBrick, version: CmVersion, entityManager: EntityManager): Promise<HnBrickVersion> {
     let brickMajorVersion: HnBrickMajorVersion = new HnBrickMajorVersion();
-    brickMajorVersion.initialize(brick, version[0]);
+    brickMajorVersion.initialize(brick, version.major);
     brickMajorVersion = await entityManager.save(brickMajorVersion);
 
     let brickVersion: HnBrickVersion = new HnBrickVersion();

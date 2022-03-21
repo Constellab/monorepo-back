@@ -6,11 +6,11 @@
       <!-- This is the tree node template for leaf nodes -->
       <mat-tree-node *matTreeNodeDef="let node" cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)"
                      (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()"
-                      [cdkDragDisabled]="!(isAdmin | async) || node.name == null">
+                      [cdkDragDisabled]="(isAdmin | async) === false || node.name == null">
         <mat-nav-list class="line" *ngIf="node.id != null" (contextmenu)="onRightClick($event, false, false, node.id)">
           <a matTreeNodePadding matTreeNodePaddingIndent="15px" class="item" mat-list-item
              [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
-             [routerLink]="node.completePath" routerLinkActive="active">
+             [routerLink]="node.completePath" [routerLinkActive]="'active'" (isActiveChange)="openFolderToNode(node, $event)">
             <div matLine>
               {{node.name}}
             </div>
@@ -27,7 +27,7 @@
       <mat-tree-node *matTreeNodeDef="let node;when: hasChild" cdkDrag [cdkDragData]="node"
                      (mouseenter)="dragHover(node)"
                      (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart($event)" (cdkDragReleased)="dragEnd()"
-                     [cdkDragDisabled]="!(isAdmin | async)">
+                     [cdkDragDisabled]="(isAdmin | async) === false">
         <mat-nav-list class="nav-list line">
           <mat-list-item class="item" matTreeNodePadding matTreeNodePaddingIndent="15px"
                          [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"

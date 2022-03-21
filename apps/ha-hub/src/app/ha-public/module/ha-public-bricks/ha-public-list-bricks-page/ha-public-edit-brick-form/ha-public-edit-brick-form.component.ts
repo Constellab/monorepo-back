@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {HaBrick} from '../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
+import {HaBrick, HaBrickDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {HaBrickService} from '../../../../../ha-core/ha-service/ha-brick.service';
@@ -15,7 +15,7 @@ export class HaPublicEditBrickFormComponent implements OnInit {
   @Input()
   brick: HaBrick;
 
-  formGp: FormGroup<Partial<HaBrick>>;
+  formGp: FormGroup<Partial<HaBrickDTO>>;
 
   isLoading: boolean;
 
@@ -40,7 +40,7 @@ export class HaPublicEditBrickFormComponent implements OnInit {
 
   submit(): void {
     this.isLoading = true;
-    const formValue: Partial<HaBrick> = this.formGp.value;
+    const formValue: Partial<HaBrickDTO> = this.formGp.value;
     if (formValue.id) {
       //update
     } else {

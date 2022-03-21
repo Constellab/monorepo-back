@@ -1,23 +1,18 @@
-<fl-async-section [object]="documentation$" class="h100">
-
-  <ng-container *flSectionBody="let documentation">
-    <div class="sidenavBody">
-      <div class="content g-max-article-width">
-        <form class="documentation-form" [formGroup]="formGp">
-          <fl-text-editor class="content-editor" formControlName="content" mode="JSON" scrollContainer="child"
-                          (textChange)="onContentUpdate($event)"></fl-text-editor>
-        </form>
-      </div>
-      <div class="side">
-        <ng-container *ngFor="let title of titles; let i = index">
-          <ng-container *ngIf="title[0] === 1; else e">
-            <h3>{{title[1]}}</h3>
-          </ng-container>
-          <ng-template #e>
-            <h4>{{title[1]}}</h4>
-          </ng-template>
-        </ng-container>
-      </div>
-    </div>
-  </ng-container>
-</fl-async-section>
+<div class="sidenavBody">
+  <div class="content g-max-article-width">
+    <form class="documentation-form" [formGroup]="formGp">
+      <fl-text-editor class="content-editor" formControlName="content" mode="JSON" scrollContainer="child"
+                      (textChange)="onContentUpdate($event)"></fl-text-editor>
+    </form>
+  </div>
+  <div class="side">
+    <ng-container *ngFor="let title of titles; let i = index">
+      <ng-container *ngIf="title[0] === 1; else e">
+        <h3>{{title[1]}}</h3>
+      </ng-container>
+      <ng-template #e>
+        <h4>{{title[1]}}</h4>
+      </ng-template>
+    </ng-container>
+  </div>
+</div>

@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {HaBrick} from '../ha-model/ha-entities/ha-brick.class';
+import {HaBrick, HaBrickDTO} from '../ha-model/ha-entities/ha-brick.class';
 import {HaNode} from '../ha-model/ha-entities/ha-node.class';
 import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
 import {HaNewVersionDTO} from '../ha-model/ha-entities/ha-version.class';
 import {HaBrickVersion} from '../ha-model/ha-entities/ha-brick-version.class';
+import {CmVersion} from '@monorepo/common-model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,12 @@ export class HaBrickService {
    * Call http create
    * @param object json object
    */
-  public create(object: any): Observable<HaBrick> {
+  public create(object: Partial<HaBrickDTO>): Observable<HaBrick> {
+    let versionArray: string[] = ['1', '0', '0']
+    if (!(object.version instanceof CmVersion)) {
+      versionArray = object.version.split('.');
+    }
+    object.version = new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2])
     return this.apiService.post(this.route, object, HaBrick);
   }
 
@@ -35,8 +41,15 @@ export class HaBrickService {
   /**
    * Call http post to get the brick current doc
    */
-  public getDocByPath(brickId: string, path: string, version: string): Observable<HaDocumentation> {
-    return this.apiService.post(`${this.route}/doc/${brickId}/${version}`, {path: path});
+  public getDocByPath(brickName: string, path: string, version: string): Observable<HaDocumentation> {
+    return this.apiService.post(`${this.route}/doc/${brickName}/${version}`, {path: path});
+  }
+
+  /**
+   * Call http get to get the brick first doc
+   */
+  public getFirstDoc(brickName: string, version: string): Observable<HaDocumentation> {
+    return this.apiService.get(`${this.route}/first-doc/${brickName}/${version}`);
   }
 
   /**

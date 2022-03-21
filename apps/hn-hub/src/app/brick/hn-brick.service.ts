@@ -10,6 +10,8 @@ import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version
 import {HnBrickMajorVersionService} from '../brick-major-version/hn-brick-major-version.service';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
+import {HnFolderService} from '../folder/hn-folder.service';
+import {CmVersion} from '@monorepo/common-model';
 
 @Injectable()
 export class HnBrickService {
@@ -19,6 +21,7 @@ export class HnBrickService {
     private bricksRepository: Repository<HnBrick>,
     private brickMajorVersionService: HnBrickMajorVersionService,
     private documentationService: HnDocumentationService,
+    private folderService: HnFolderService,
     private brickVersionService: HnBrickVersionService
   ) {
   }
@@ -32,8 +35,7 @@ export class HnBrickService {
 
     brick = await getManager().transaction(async entityManager => {
       brick = await entityManager.save(brick);
-
-      brickVersion = await this.brickMajorVersionService.create(brick, [1, 0, 0], entityManager);
+      brickVersion = await this.brickMajorVersionService.create(brick, createdBrick.version, entityManager);
 
       return brick;
     })
@@ -75,6 +77,12 @@ export class HnBrickService {
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     return await this.documentationService.findCurrentDoc(brickMajorVersion, path);
+  }
+
+  async findFirstDoc(brick: HnBrick, version:string): Promise<HnDocumentation>{
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    return await this.folderService.findFirstDoc(brickMajorVersion);
   }
 
   async deleteBrickById(id: string): Promise<void> {
