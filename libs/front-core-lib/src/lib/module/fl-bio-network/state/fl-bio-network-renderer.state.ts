@@ -15,17 +15,7 @@ import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Link, FlBioNetworkD3LinkPoint} from '../model/fl-bio-network-d3-link.class';
 import {flBioNetworkReactionMaxValue} from '../model/fl-bio-network-d3-reaction.class';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
-import {
-  drag,
-  forceCenter,
-  forceCollide,
-  forceLink,
-  forceManyBody,
-  forceSimulation,
-  line,
-  scaleLinear,
-  select
-} from 'd3';
+import {drag, forceLink, forceManyBody, forceSimulation, line, scaleLinear, select} from 'd3';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 import {FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
 
@@ -58,13 +48,11 @@ export class FlBioNetworkRendererState implements OnDestroy {
   private readonly subscriptions = new ClSubscriptionHandler();
 
   ////////////// READONLY VARIABLE //////////////////
-  private readonly collideRadius: number = 20;
   public readonly grey: string;
   private readonly textColor: string;
   private readonly backgroundColor: string;
   private readonly arrowId: string = 'arrow';
   private readonly smallArrowId: string = 'small-arrow';
-
 
   constructor(private themeService: FlThemeService, private drawerState: FlBioNetworkDrawerState,
               private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState,
@@ -138,11 +126,9 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
         if (this.enableSimulation) {
           this.initSimulation();
-          this.launchSimulation();
-
-          // speed up the simulation to quickly end it
-          this.simulation.tick(1000);
-          this.simulation.on('end', () => this.endSimulation());
+          this.simulation.on('end', () => {
+            this.endSimulation();
+          });
         }
 
         // init the selection state
@@ -150,6 +136,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       }
     });
   }
+
 
   private initSVG(): FlD3SelectionSimple {
     this.svg = select(this.htmlContainer)
@@ -402,26 +389,21 @@ export class FlBioNetworkRendererState implements OnDestroy {
   private initSimulation(): void {
     this.simulation = forceSimulation(this.data.getMetabolitesAndReactions())
       .force('link',
-        forceLink(this.data.links).distance(1)
+        forceLink(this.data.links)
           .id((d: FlBioNetworkD3Node) => d.id)
       )
-      .force('charge', forceManyBody().strength(-1))
-      .force('center', forceCenter(this.chartWidth / 2, this.chartHeight / 2))
-      .force('collide', forceCollide().radius(this.collideRadius));
+      .force('charge', forceManyBody()).alphaDecay(0.05);
   }
 
-  private launchSimulation(): void {
-    this.simulation.on('tick', () => {
 
-      // refresh link points
-      this.groupState.allLinks.selectAll('path').attr('d', (d: FlBioNetworkD3Link) => d.getPathAttr());
+  private refreshPosition(): void {
+    // refresh link points
+    this.groupState.allLinks.selectAll('path').attr('d', (d: FlBioNetworkD3Link) => d.getPathAttr());
 
-      // refresh nodes positions
-      this.groupState.allNodes.attr('transform',
-        (d: FlBioNetworkD3Node) => 'translate(' + d.x + ',' + d.y + ')'
-      );
-    });
-
+    // refresh nodes positions
+    this.groupState.allNodes.attr('transform',
+      (d: FlBioNetworkD3Node) => 'translate(' + d.x + ',' + d.y + ')'
+    );
   }
 
   // disable all force so the user can move the node independently
@@ -434,6 +416,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       this.simulation.force('collide', null);
       this.simulation.stop();
       this.simulationEnded = true;
+      this.refreshPosition();
       // save the new positions
       this.data.savePositions();
     }
