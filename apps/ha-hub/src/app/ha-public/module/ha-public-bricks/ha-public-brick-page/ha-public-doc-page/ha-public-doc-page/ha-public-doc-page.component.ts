@@ -7,7 +7,6 @@ import {
 } from '../../../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {HaBrickService} from '../../../../../../ha-core/ha-service/ha-brick.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {Validators} from '@angular/forms';
 import {HaDocumentationService} from '../../../../../../ha-core/ha-service/ha-documentation.service';
 import {HaBrick} from '../../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {FlDebouncer} from '@monorepo/front-core-lib';
@@ -21,7 +20,7 @@ import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 })
 export class HaPublicDocPageComponent implements OnInit, OnDestroy {
 
-  private contentDebouncer: FlDebouncer<Record<string, any>>;
+  private contentDebouncer: FlDebouncer<CmRichTextI>;
   documentation$: Observable<HaDocumentation>;
   brick: HaBrick;
   brickVersion: string;
@@ -41,53 +40,54 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+    this.buildForm();
     this.route.parent.parent.url.subscribe(url => {
       this.getBrick(url[0].path);
       this.brickVersion = url[1].path;
     });
 
-    // create a debouncer to save the description after x second of idle
+    //create a debouncer to save the description after x second of idle
     this.contentDebouncer = new FlDebouncer(FlDebouncer.AUTO_SAVE_DEBOUNCE_TIME);
     this.contentDebouncer.getDebouncedValue().subscribe(
       value => this.saveContent(value)
     );
   }
 
-  private getBrick(namebrick: string): void{
+  private getBrick(namebrick: string): void {
     this.brickService.getByName(namebrick).subscribe(brick => {
       this.brick = brick;
       this.getActiveDoc();
     });
   }
 
-  private getActiveDoc(): void{
+  private getActiveDoc(): void {
     this.route.url.subscribe((url: UrlSegment[]) => {
       this.getDocumentationByPath(url);
+
     });
   }
 
   buildForm(): void {
     this.formGp = new FormBuilder().group({
       id: [null],
-      content: [null, Validators.required],
+      content: [null],
     });
   }
 
   private getDocumentationByPath(url: UrlSegment[]): void {
 
     let path: string;
-    if(url.length == 0){
+    if (url.length == 0) {
       path = 'getting-started/';
     } else {
       path = url.join('/') + '/';
     }
     this.documentation$ = this.brickService.getDocByPath(this.brick.id, path, this.brickVersion);
     this.documentation$.subscribe((doc: HaDocumentation) => {
-      this.buildForm();
       this.setFormGroupValue(doc);
       this.titles = [];
-      if(doc.content){
-        this.richText = new CmRichText(doc.content as CmRichTextI);
+      if (this.formGp.value.content) {
+        this.richText = new CmRichText(doc.content);
         this.titles = this.richText.getTitles();
       }
     });
@@ -95,16 +95,17 @@ export class HaPublicDocPageComponent implements OnInit, OnDestroy {
 
   onContentUpdate(content: any): void {
     this.contentDebouncer.setValue(content);
-    this.richText = new CmRichText(this.formGp.value.content  as CmRichTextI)
+    this.richText = new CmRichText(this.formGp.value.content as CmRichTextI)
     this.titles = this.richText.getTitles();
   }
 
   private setFormGroupValue(doc: HaDocumentationContentFormDTO): void {
     this.formGp.patchValue(doc);
+    setTimeout(() => console.log(this.formGp.value.content), 1000)
   }
 
-  private saveContent(value: Record<string, any>): void{
-    this.formGp.value.content = value;
+  private saveContent(value: CmRichTextI): void {
+    this.formGp.value.content = value as CmRichTextI;
     this.documentationService.updateContent(this.formGp.value as HaDocumentationContentFormDTO).subscribe();
   }
 
