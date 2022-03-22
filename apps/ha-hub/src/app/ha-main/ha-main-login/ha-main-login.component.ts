@@ -18,7 +18,7 @@ export class HaMainLoginComponent implements OnInit{
   ngOnInit(): void {
   }
 
-  closeDialog() {
+  closeDialog(): void {
     this.authUserService.setCurrentUser();
     this.dialogRef.close();
   }

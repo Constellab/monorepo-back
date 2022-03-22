@@ -4,10 +4,10 @@ import {HaPublicListBricksPageComponent} from './module/ha-public-bricks/ha-publ
 import {HaPublicBrickPageComponent}
   from './module/ha-public-bricks/ha-public-brick-page/ha-public-brick-page/ha-public-brick-page.component';
 import {HaPublicSidenavComponent} from './module/ha-public-bricks/ha-public-brick-page/ha-public-sidenav/ha-public-sidenav.component';
-import {HaPublicDocPageComponent} from './module/ha-public-bricks/ha-public-brick-page/ha-public-doc-page/ha-public-doc-page/ha-public-doc-page.component';
+import {HaPublicDocComponent} from './module/ha-public-bricks/ha-public-brick-page/ha-public-doc/ha-public-doc.component';
 import {HaPublicEditBrickPageComponent} from './module/ha-public-bricks/ha-public-list-bricks-page/ha-public-edit-brick-page/ha-public-edit-brick-page.component';
-import {HaPublicVersionsPageComponent} from './module/ha-public-bricks/ha-public-brick-page/ha-public-versions-page/ha-public-versions-page.component';
-import {HaPublicBrickDescriptionPageComponent} from './module/ha-public-bricks/ha-public-brick-page/ha-public-brick-description-page/ha-public-brick-description-page.component';
+import {HaPublicVersionsComponent} from './module/ha-public-bricks/ha-public-brick-page/ha-public-versions/ha-public-versions.component';
+import {HaPublicBrickDescriptionComponent} from './module/ha-public-bricks/ha-public-brick-page/ha-public-brick-description/ha-public-brick-description.component';
 
 
 
@@ -18,7 +18,7 @@ const routes: Route[] = [
   //   children: [
   //     {
   //       path: '**',
-  //       component: HaPublicDocPageComponent
+  //       component: HaPublicDocComponent
   //     }
   //   ]
   // },
@@ -53,16 +53,16 @@ const routes: Route[] = [
         component: HaPublicSidenavComponent,
         children: [{
           path: '**',
-          component: HaPublicDocPageComponent
+          component: HaPublicDocComponent
         }]
       },
       {
         path: 'version',
-        component: HaPublicVersionsPageComponent,
+        component: HaPublicVersionsComponent,
       },
       {
         path: '',
-        component: HaPublicBrickDescriptionPageComponent
+        component: HaPublicBrickDescriptionComponent
       }
     ]
   },

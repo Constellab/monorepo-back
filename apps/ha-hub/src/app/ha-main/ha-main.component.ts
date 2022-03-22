@@ -4,6 +4,8 @@ import {HaUser} from '../ha-core/ha-model/ha-entities/ha-user';
 import {HaAuthenticatedUserService} from '../ha-core/ha-service/ha-authenticated-user.service';
 import {HaMainLoginComponent} from './ha-main-login/ha-main-login.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
+import {HaAuthService} from '../ha-core/ha-service/ha-auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'ha-main',
@@ -15,10 +17,17 @@ export class HaMainComponent implements OnInit {
 
   constructor(
     private authUserService: HaAuthenticatedUserService,
+    private authService: HaAuthService,
     private dialogService: FlDialogService,
   ) { }
 
   ngOnInit(): void {
+  }
+
+  logout(): void{
+    this.authService.logout().subscribe(() => {
+      this.authUserService.init();
+    });
   }
 
   openLoginDialog(): void {

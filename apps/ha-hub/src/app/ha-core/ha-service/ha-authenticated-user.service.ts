@@ -23,10 +23,12 @@ export class HaAuthenticatedUserService {
       this.apiService.get(this.userRoute).subscribe((user: HaUser) => {
         this.userSubject.next(user);
       });
+    } else {
+      this.userSubject.next(null);
     }
   }
 
-  public setCurrentUser() {
+  public setCurrentUser(): void {
     this.init();
   }
 

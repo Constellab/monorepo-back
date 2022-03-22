@@ -37,6 +37,7 @@
   "no_user": "No user",
   "not_authorized": "Not authorized",
   "login": "Login",
+  "logout": "Logout",
   "connection_lost": "The connection has been lost",
   "session_expired": "Session expired",
   "order_form_error": "The value must be an integer over or equal to 0",
@@ -62,7 +63,8 @@
   "until_the": "Until the",
   "from_the": "From the",
   "since_the": "since the",
-  "ADMIN": "Admin",
+  "admin": "Admin",
+
   "STUDENT": "Student",
   "PUBLIC_RESEARCH": "Public research",
   "PRIVATE_INDUSTRY": "Private industry",
@@ -116,5 +118,6 @@
   "last_modification_info": "Last modification info",
   "repo_type": "Type of repository",
   "version_error_pattern": "Version N° invalid, expected X.X.X",
-  "new_version_added": "New version added"
+  "new_version_added": "New version added",
+  "add_version": "Add Version"
 }

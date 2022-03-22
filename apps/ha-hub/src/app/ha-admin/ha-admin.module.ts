@@ -1,12 +1,16 @@
 import { NgModule } from '@angular/core';
 import { HaAdminRoutingModule } from './ha-admin-routing.module';
 import { HaAdminCoreModule } from './module/ha-admin-core/ha-admin-core.module';
-import { HaAdminDocFormModule } from './module/ha-admin-doc-form/ha-admin-doc-form.module';
-import { HaAdminListPageModule } from './module/ha-admin-list-page/ha-admin-list-page.module';
-import {HaAdminLoginModule} from './module/ha-admin-login/ha-admin-login.module';
+import { HaAdminPageComponent } from './module/ha-admin-page/ha-admin-page.component';
+import {MatButtonModule} from '@angular/material/button';
+import {HaCoreModule} from '../ha-core/ha-core.module';
+import {CommonModule} from '@angular/common';
 
 @NgModule({
-  imports: [HaAdminCoreModule, HaAdminRoutingModule, HaAdminDocFormModule, HaAdminListPageModule, HaAdminLoginModule]
+  imports: [HaAdminCoreModule, HaAdminRoutingModule, MatButtonModule, HaCoreModule, CommonModule],
+  declarations: [
+    HaAdminPageComponent
+  ]
 })
 export class HaAdminModule {
 }

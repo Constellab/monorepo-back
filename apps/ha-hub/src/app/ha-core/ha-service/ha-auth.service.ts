@@ -36,6 +36,11 @@ export class HaAuthService extends FlAuthService {
     );
   }
 
+  public logoutAfterExpiration(): void{
+    this.clearServices();
+    this.clearAuthExpirationCookie();
+  }
+
   private setAuthExpirationCookie(expiresIn: { expiresIn: number }): void {
     // get the date in expiresIn milliseconds
     const date = new Date(new Date().getTime() + expiresIn.expiresIn);

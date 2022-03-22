@@ -2,16 +2,14 @@ import {Injectable} from '@nestjs/common';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {getManager, Repository} from 'typeorm';
-import {HnNode} from '../folder/hn-folder.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
-
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnBrickMajorVersionService} from '../brick-major-version/hn-brick-major-version.service';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnFolderService} from '../folder/hn-folder.service';
-import {CmVersion} from '@monorepo/common-model';
+import {HnNode} from '../folder/hn-folder.dto';
 
 @Injectable()
 export class HnBrickService {
@@ -95,8 +93,8 @@ export class HnBrickService {
     return this.brickMajorVersionService.createNewVersion(brick, newVersion);
   }
 
-  async getLatestBrickVersion(brickId: string): Promise<HnBrickVersion>{
-    return this.brickMajorVersionService.getLatestBrickVersion(brickId);
+  async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion>{
+    return this.brickMajorVersionService.getLatestBrickVersion(brickName);
   }
 }
 

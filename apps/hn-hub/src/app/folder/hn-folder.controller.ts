@@ -1,8 +1,9 @@
 import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
 import {HnFolderService} from './hn-folder.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
-import {HnFolder, HnNode, HnNodeDTO} from './hn-folder.entity';
+import {HnFolder} from './hn-folder.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
+import {HnNode, HnNodeDTO} from './hn-folder.dto';
 
 @Controller('folder')
 export class HnFolderController {

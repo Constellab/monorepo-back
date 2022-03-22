@@ -19,7 +19,7 @@ import {HaDocumentationService} from '../../../../../ha-core/ha-service/ha-docum
 import {HaFolder} from '../../../../../ha-core/ha-model/ha-entities/ha-folder.class';
 import {
   HaPublicSidenavCreateFormDialogComponent
-} from './ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
+} from '../ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
 import {HaDocumentation} from '../../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {CdkDragDrop, CdkDragStart} from '@angular/cdk/drag-drop';
 import {SelectionModel} from '@angular/cdk/collections';
@@ -32,6 +32,7 @@ interface FlatNode {
   name: string;
   level: number;
   id: string;
+  completePath?: string;
 }
 
 @Component({
@@ -45,10 +46,9 @@ export class HaPublicSidenavComponent implements OnInit {
   brickId: string;
   brickVersion: string;
   overNodeLevel: number = 0;
-
+  currentNode: HaNode;
   menuOpen: boolean;
   openedMenu: FlOverlayRef;
-
 
 
   private _transformer = (node: HaNode, level: number): any => {
@@ -111,6 +111,7 @@ export class HaPublicSidenavComponent implements OnInit {
 
           if (this.dataSource.data.length > 0) {
             this.mainFolderId = this.dataSource.data[0].parentId;
+            this.openFolderToCurrentNode();
           }
         });
       });
@@ -333,29 +334,6 @@ export class HaPublicSidenavComponent implements OnInit {
     this.saveTreeData(this.changedData);
   }
 
-  private deleteEmptyNode(nodes: HaNode[]): HaNode[] {
-    const index: number = nodes.findIndex(n => n.name == null);
-    if (index) {
-      nodes.splice(index, 1);
-    }
-    return nodes;
-  }
-
-  private updateEmptyNodes(nodes: HaNode[]): HaNode[] {
-    nodes.forEach(node => {
-      if (node.children) {
-        if (node.children.length > 0) {
-          if (node.children.length > 1) {
-            node.children = this.deleteEmptyNode(node.children);
-          }
-        } else {
-          node.children.push(new HaNode(null, null, null, null, null, null));
-        }
-      }
-    });
-    return nodes;
-  }
-
 
   saveTreeData(nodes: HaNode[]): void {
     nodes = this.updatedTree(nodes, 0);
@@ -368,7 +346,7 @@ export class HaPublicSidenavComponent implements OnInit {
       n.order = n.order != newIndex ? newIndex : n.order;
 
       const nf: FlatNode = this.treeControl.dataNodes.find(value => value.id == n.id);
-      n.parentId = this.getParentId(nf, levelTheo);
+      n.parentId = this.getParentId(nf);
 
       if (n.children) {
         if (n.children.length == 1 && n.children[0].id == null) {
@@ -381,7 +359,7 @@ export class HaPublicSidenavComponent implements OnInit {
     return nodes;
   }
 
-  getParentId(node: FlatNode, levelTheo: number): string {
+  getParentId(node: FlatNode): string {
     const currentLevel = node.level;
 
     if (currentLevel == 0) {
@@ -394,9 +372,29 @@ export class HaPublicSidenavComponent implements OnInit {
     return parent.id;
   }
 
-  openFolderToNode(node: FlatNode, $event: boolean): void{
-    if($event){
-      this.treeControl.expand(node);
+  openFolderToCurrentNode(): void {
+    this.route.children[0].url.subscribe(url => {
+      this.expandParents(this.treeControl.dataNodes.find((dn) => dn.completePath == (url.toString().replace(',', '/') + '/')));
+    })
+
+  }
+
+  expandParents(node: FlatNode): void {
+    const currentLevel = this.treeControl.getLevel(node);
+
+    if (currentLevel < 1) {
+      return null;
+    }
+
+    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
+
+    for (let i = startIndex; i >= 0; i--) {
+      const currentNode = this.treeControl.dataNodes[i];
+
+      if (this.treeControl.getLevel(currentNode) < currentLevel) {
+        this.treeControl.expand(currentNode);
+        if (this.treeControl.getLevel(currentNode) === 0) break;
+      }
     }
   }
 
@@ -408,6 +406,7 @@ export class HaPublicSidenavComponent implements OnInit {
   }
 
   dragHoverEnd(): void {
+
   }
 
   dragStart($event?: CdkDragStart<FlatNode>): void {

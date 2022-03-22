@@ -24,4 +24,8 @@ export class HaBrickVersionService {
     return new FlEntityPaginatedDatasource((page: number, pageSize: number) =>
       this.getAllFromBrick(page, pageSize, brickId), 20);
   }
+
+  public sendAllBrickVersion(): Observable<void>{
+    return this.apiService.put(`${this.route}/send-all-to-queue`, {});
+  }
 }

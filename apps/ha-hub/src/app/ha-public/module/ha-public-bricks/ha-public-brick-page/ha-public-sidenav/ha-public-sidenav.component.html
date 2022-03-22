@@ -10,7 +10,7 @@
         <mat-nav-list class="line" *ngIf="node.id != null" (contextmenu)="onRightClick($event, false, false, node.id)">
           <a matTreeNodePadding matTreeNodePaddingIndent="15px" class="item" mat-list-item
              [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
-             [routerLink]="node.completePath" [routerLinkActive]="'active'" (isActiveChange)="openFolderToNode(node, $event)">
+             [routerLink]="node.completePath" [routerLinkActive]="'active'">
             <div matLine>
               {{node.name}}
             </div>

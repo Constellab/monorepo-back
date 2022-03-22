@@ -82,20 +82,12 @@ export class HaApiErrorService extends FlApiErrorService {
    * Redirect the user to the login page
    */
   private sessionExpired(serverError: FlServerError, snackBarDuration: number): Observable<never> {
-    // save the current url for rerouting after login
-    const currentRoute = this.router.url;
-
-    // save the url if it's different
-    if (currentRoute !== '/admin/login') {
-      FlLoginSavedRoute.route = currentRoute;
-    }
 
     // for security clear the authentication expiration cookie
     // to assure the user is disconnect
     this.cookieService.removeCookie(flAuthExpiredCookie);
 
-    // redirect the user to the login page
-    this.router.navigate(['/admin/login']);
+    if(window) window.location.reload();
 
     serverError.logDetail.message = this.translateService.translate('session_expired');
 

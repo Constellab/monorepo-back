@@ -2,9 +2,9 @@ import {Body, Controller, Delete, Get, Param, Post} from '@nestjs/common';
 import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
-import {HnNode} from '../folder/hn-folder.entity';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
+import {HnNode} from '../folder/hn-folder.dto';
 
 @Controller('brick')
 export class HnBrickController {
@@ -67,8 +67,8 @@ export class HnBrickController {
   }
 
   @BlPublic()
-  @Get('latest/:brickId')
-  public getLatestBrickVersion(@Param('brickId') brickId: string): Promise<HnBrickVersion> {
-    return this.brickService.getLatestBrickVersion(brickId);
+  @Get('latest/:brickName')
+  public getLatestBrickVersion(@Param('brickName') brickName: string): Promise<HnBrickVersion> {
+    return this.brickService.getLatestBrickVersion(brickName);
   }
 }

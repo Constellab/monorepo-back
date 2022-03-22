@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  ParseUUIDPipe,
   Put,
   Res,
   UploadedFiles,
@@ -13,10 +12,10 @@ import {
 import {HnDocumentation, HnDocumentationDTO} from './hn-documentation.entity';
 import {HnDocumentationService} from './hn-documentation.service';
 import {BlFile, BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
-import {HnNodeDTO} from '../folder/hn-folder.entity';
 import {FilesInterceptor} from '@nestjs/platform-express';
 import {Response} from 'express';
-import {FlTextEditorUploadedImage} from '@monorepo/front-core-lib';
+import {HnNodeDTO} from '../folder/hn-folder.dto';
+import {CmRichTextI} from '@monorepo/common-model';
 
 @Controller('documentation')
 export class HnDocumentationController {
@@ -26,12 +25,19 @@ export class HnDocumentationController {
   @BlPublic()
   @Get()
   async findAll(): Promise<HnDocumentationDTO[]> {
-    return await this.documentationService.findAll();
+    const docs: HnDocumentation[] = await this.documentationService.findAll();
+    const docsDto: HnDocumentationDTO[] = [];
+    docs.map((doc) => {
+      if (!doc.path.includes('/')) {
+        docsDto.push(new HnDocumentationDTO(doc));
+      }
+    })
+    return docsDto;
   }
 
   @Put('content/:id')
   async updateContent(@Param('id') id: string,
-                      @Body() updateContentDoc: Record<string, any>): Promise<HnDocumentation> {
+                      @Body() updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
     return await this.documentationService.updateContent(id, updateContentDoc);
   }
 

@@ -1,0 +1,32 @@
+<fl-dialog-header>
+  {{isUpdate ? 'edit' : 'create' |translate }}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="edit-form" [formGroup]="formGp" fxLayout="column">
+
+    <!--  type  -->
+    <mat-radio-group formControlName="isFolder" name="type" class="radio-button-zone" *ngIf="!isUpdate">
+      <mat-radio-button [value]="false" class="radio-button-bt">{{'documentation' | translate }}</mat-radio-button>
+      <mat-radio-button [value]="true" [checked]="true">{{'folder' | translate }}</mat-radio-button>
+    </mat-radio-group>
+
+    <!--  title  -->
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'title' | translate}}</mat-label>
+      <input matInput formControlName="title" required flInputMaxLength="50"
+             placeholder="{{'title' | translate}}">
+      <mat-error *ngIf="formGp.get('title').hasError('required')">
+        {{'title' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" form="edit-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+  </button>
+</div>

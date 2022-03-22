@@ -16,8 +16,7 @@ export class HnBrickPathVersion {
 
 export enum HnVersionState {
   STABLE = 'STABLE',
-  LATEST = 'LATEST',
-  NEXT = 'NEXT'
+  LATEST = 'LATEST'
 }
 
 @Unique(['brick', 'major'])

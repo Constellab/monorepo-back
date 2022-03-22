@@ -1,0 +1,5 @@
+<h1>ADMIN</h1>
+<button mat-flat-button color="primary" (click)="sendAllToQueue()" *haIsAdmin class="button-create">
+  Send all brick version to queue
+  <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+</button>

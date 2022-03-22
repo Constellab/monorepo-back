@@ -1,7 +1,7 @@
-import {Column, Entity, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent, Unique} from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent} from 'typeorm';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
-import {BlEntityWithId, BlNotUpdatable} from '@monorepo/back-core-lib';
+import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 
 @Entity('Folder')
@@ -35,14 +35,14 @@ export class HnFolder extends HnBaseEntity {
 
   nextOrder(): number {
     let maxOrder: number = 0;
-    if (typeof this.folders !== 'undefined') {
+    if (this.folders != null) {
       this.folders.map(f => {
         if (f.order >= maxOrder) {
           maxOrder = f.order + 1;
         }
       });
     }
-    if (typeof this.documentations !== 'undefined') {
+    if (this.documentations != null) {
       this.documentations.map(d => {
         if (d.order >= maxOrder) {
           maxOrder = d.order + 1;
@@ -51,61 +51,4 @@ export class HnFolder extends HnBaseEntity {
     }
     return maxOrder;
   }
-}
-
-export class HnFolderResDTO extends HnBaseEntity {
-
-  title: string;
-
-  path: string;
-
-  order: number;
-
-  folderId: string;
-
-  constructor(title: string, path: string, order: number, folderId: string) {
-    super();
-    this.title = title;
-    this.path = path;
-    this.order = order;
-    this.folderId = folderId
-  }
-}
-
-export class HnNode extends HnBaseEntity {
-  name: string;
-
-  order: number;
-
-  path: string;
-
-  completePath: string;
-
-  parentId: string;
-
-  children?: HnNode[];
-
-  constructor(id: string, name: string, path: string, completePath: string, o: number, parentId?: string, children?: HnNode[]) {
-    super();
-    this.id = id;
-    this.name = name;
-    this.order = o;
-    this.path = path;
-    this.parentId = parentId ? parentId : null;
-    this.completePath = completePath;
-    if (children && children.length > 0) {
-      this.children = children;
-    }
-  }
-}
-
-export class HnNodeDTO extends BlEntityWithId {
-  title: string;
-  path: string;
-  folder?: HnFolder;
-  folderId?: string;
-  isFolder: boolean;
-  order?: number;
-
-
 }

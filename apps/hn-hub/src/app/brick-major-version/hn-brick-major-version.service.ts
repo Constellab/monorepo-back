@@ -4,10 +4,10 @@ import {HnBrickMajorVersion, HnVersionState} from './hn-brick-major-version.enti
 import {EntityManager, Repository} from 'typeorm';
 import {HnFolderService} from '../folder/hn-folder.service';
 import {HnBrick} from '../brick/hn-brick.entity';
-import {HnNode} from '../folder/hn-folder.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
+import {HnNode} from '../folder/hn-folder.dto';
 
 @Injectable()
 export class HnBrickMajorVersionService {
@@ -62,11 +62,6 @@ export class HnBrickMajorVersionService {
     return mainFolder.id;
   }
 
-  // async createNewBrickMajorVersion(newMajor: number, brick: HnBrick): Promise<HnBrickMajorVersion>{
-  //   const newBrickMajorVersion: HnBrickMajorVersion = new HnBrickMajorVersion();
-  //   newBrickMajorVersion.initialize(brick, newMajor);
-  // }
-
   async createNewVersion(brick: HnBrick, newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     const newMajor = newVersion.version.split('.')[0];
     const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
@@ -83,15 +78,15 @@ export class HnBrickMajorVersionService {
     return newVersion;
   }
 
-  async getLatestBrickVersion(brickId: string): Promise<HnBrickVersion>{
+  async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion>{
     const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
-          id : brickId
+          name: brickName
         },
         versionState : HnVersionState.LATEST
-      }
-    });
+      }, relations: ['brick']
+    })
     return this.brickVersionService.getLatestBrickVersion(brickMajorVersion.id);
   }
 }

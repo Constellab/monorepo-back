@@ -1,12 +1,13 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository, TreeRepository} from 'typeorm';
-import {HnFolder, HnNode, HnNodeDTO} from './hn-folder.entity';
+import {HnFolder} from './hn-folder.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
 import {HnUser} from '../users/hn-user.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
+import {HnNode, HnNodeDTO} from './hn-folder.dto';
 
 @Injectable()
 export class HnFolderService {
@@ -19,9 +20,9 @@ export class HnFolderService {
   ) {
   }
 
-  private static generatePathWithTitle(title: string): string{
-    if(title != null){
-      const path:string = title.toLowerCase().trim();
+  private static generatePathWithTitle(title: string): string {
+    if (title != null) {
+      const path: string = title.toLowerCase().trim();
       const re = / /gi;
       return path.replace(re, "-");
     }
@@ -33,21 +34,21 @@ export class HnFolderService {
     createFolderRes.path = HnFolderService.generatePathWithTitle(createFolderRes.title);
 
     let folder: HnFolder;
-    if(createFolderRes.folderId){
+    if (createFolderRes.folderId) {
       folder = await this.foldersRepository.findOne(createFolderRes.folderId, {relations: ['documentations', 'folders']});
     }
     const createFolder: HnFolder = new HnFolder();
     createFolder.title = createFolderRes.title;
-    createFolder.folder =  folder ? folder : null;
+    createFolder.folder = folder ? folder : null;
     createFolder.path = createFolderRes.path;
     createFolder.completePath = folder ? (folder.completePath ? folder.completePath : '') + createFolderRes.path + '/' : null;
-    createFolder.brickMajorVersion =  brickMajorVersion ? brickMajorVersion : folder.brickMajorVersion;
+    createFolder.brickMajorVersion = brickMajorVersion ? brickMajorVersion : folder.brickMajorVersion;
     createFolder.order = createFolderRes.order != null ? createFolderRes.order : folder.nextOrder();
 
     return entityManager ? await entityManager.save(createFolder) : await this.foldersRepository.save(createFolder);
   }
 
-  async createMainFolders(brickMajorVersion: HnBrickMajorVersion, entityManager: EntityManager): Promise<void>{
+  async createMainFolders(brickMajorVersion: HnBrickMajorVersion, entityManager: EntityManager): Promise<void> {
 
     const createMainFolder: HnNodeDTO = new HnNodeDTO();
     createMainFolder.isFolder = true;
@@ -67,7 +68,7 @@ export class HnFolderService {
 
   async createDoc(createDocumentationRes: HnNodeDTO, entityManager?: EntityManager): Promise<HnDocumentation> {
 
-    if(createDocumentationRes.folder == null){
+    if (createDocumentationRes.folder == null) {
       createDocumentationRes.folder =
         await this.foldersRepository.findOne(createDocumentationRes.folder ?
           createDocumentationRes.folder.id : createDocumentationRes.folderId, {relations: ['documentations', 'folders']});
@@ -92,32 +93,32 @@ export class HnFolderService {
     return this.TreeToArray(tree[0]);
   }
 
-  async findFolderByBrickMajorVersion(brickMajorVersion: HnBrickMajorVersion): Promise<HnFolder>{
+  async findFolderByBrickMajorVersion(brickMajorVersion: HnBrickMajorVersion): Promise<HnFolder> {
     return this.foldersRepository.findOne({
-      where : { brickMajorVersion: brickMajorVersion, completePath: null },
+      where: {brickMajorVersion: brickMajorVersion, completePath: null},
       relations: ['documentations']
     });
   }
 
-  async findBrickDocsTree(mainFolder: HnFolder): Promise<HnNode>{
+  async findBrickDocsTree(mainFolder: HnFolder): Promise<HnNode> {
     const brickDocs: HnFolder =
-      await this.foldersTreeRepository.findDescendantsTree(mainFolder, {relations: ['documentations', 'folders', 'folder'] });
+      await this.foldersTreeRepository.findDescendantsTree(mainFolder, {relations: ['documentations', 'folders', 'folder']});
     return this.createTree(brickDocs);
   }
 
-  async findFirstDoc(brickMajorVersion: HnBrickMajorVersion): Promise<HnDocumentation>{
+  async findFirstDoc(brickMajorVersion: HnBrickMajorVersion): Promise<HnDocumentation> {
     const mainFolder: HnFolder = await this.findFolderByBrickMajorVersion(brickMajorVersion);
     const tree: HnNode = await this.findBrickDocsTree(mainFolder);
     const firstDocNode = this.findFirstDocNodeInTree(tree);
     return this.documentationService.findOne(firstDocNode.id);
   }
 
-  private findFirstDocNodeInTree(tree: HnNode): HnNode{
+  private findFirstDocNodeInTree(tree: HnNode): HnNode {
     let node: HnNode = null;
-    for(const c of tree.children) {
-      if(c.children){
+    for (const c of tree.children) {
+      if (c.children) {
         node = this.findFirstDocNodeInTree(c);
-        if(node) break;
+        if (node) break;
       } else {
         node = c;
         break;
@@ -188,32 +189,32 @@ export class HnFolderService {
     return await this.foldersRepository.save(folder);
   }
 
-  async updateTree(updatedTree: HnNode[]): Promise<HnNode[]>{
+  async updateTree(updatedTree: HnNode[]): Promise<HnNode[]> {
     const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
-    if(!currentUser.category.includes('ADMIN')){
+    if (!currentUser.category.includes('ADMIN')) {
       throw new UnauthorizedException();
     }
-    for (const node of updatedTree){
+    for (const node of updatedTree) {
       let isUpdated = false;
-      if(node.children) {
-        const f: HnFolder = await this.foldersRepository.findOne(node.id, {relations:  ['folder']});
+      if (node.children) {
+        const f: HnFolder = await this.foldersRepository.findOne(node.id, {relations: ['folder']});
         if (f.order != node.order || f.folder.id != node.parentId) {
           isUpdated = true;
           f.order = node.order;
           f.folder.id = node.parentId;
         }
-        if(isUpdated){
+        if (isUpdated) {
           await this.foldersRepository.save(f);
         }
         await this.updateTree(node.children);
       } else {
         const d: HnDocumentation = await this.documentationService.findOne(node.id);
-        if(d.order != node.order || d.folder.id != node.parentId) {
+        if (d.order != node.order || d.folder.id != node.parentId) {
           isUpdated = true;
           d.order = node.order;
           d.folder.id = node.parentId;
         }
-        if(isUpdated){
+        if (isUpdated) {
           await this.documentationService.updatePosition(d);
         }
       }
@@ -221,25 +222,6 @@ export class HnFolderService {
 
     return updatedTree;
   }
-
-  // private updateChildrenPath(folder: HnFolder): HnFolder {
-  //   folder.folders.map(
-  //     f => {
-  //       f.completePath = folder.completePath + f.path + '/';
-  //       this.foldersRepository.save(f);
-  //       this.updateChildrenPath(f);
-  //     }
-  //   );
-  //
-  //   folder.documentations.map(
-  //     d => {
-  //       d.completePath = folder.completePath + d.path + '/';
-  //       this.documentationService.update(d);
-  //     }
-  //   );
-  //
-  //   return folder;
-  // }
 
   async remove(id: string): Promise<void> {
     const folderToDelete: HnFolder = await this.foldersRepository.findOne(id, {relations: ['documentations', 'folders']});

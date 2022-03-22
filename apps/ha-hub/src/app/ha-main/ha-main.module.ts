@@ -1,15 +1,15 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {HaMainComponent} from './ha-main.component';
 import {HaMainRoutingModule} from './ha-main-routing-module';
 import {TranslateModule} from '@ngx-translate/core';
 import {HaCoreModule} from '../ha-core/ha-core.module';
-import { UserInitiliasIconComponent } from './user-initilias-icon/user-initilias-icon.component';
-
+import {UserInitiliasIconComponent} from './user-initilias-icon/user-initilias-icon.component';
+import {HaMainLoginComponent} from './ha-main-login/ha-main-login.component';
 
 
 @NgModule({
-  declarations: [HaMainComponent, UserInitiliasIconComponent],
+  declarations: [HaMainComponent, UserInitiliasIconComponent, HaMainLoginComponent],
   imports: [
     CommonModule,
     HaMainRoutingModule,
@@ -17,4 +17,5 @@ import { UserInitiliasIconComponent } from './user-initilias-icon/user-initilias
     HaCoreModule
   ]
 })
-export class HaMainModule { }
+export class HaMainModule {
+}

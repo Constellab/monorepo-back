@@ -83,7 +83,8 @@ export class HaBrickService {
     return this.apiService.post(this.route + '/new-version', newVersion);
   }
 
-  public getLastVersion(brick: HaBrick): Observable<HaBrickVersion>{
-    return this.apiService.get(`${this.route}/latest/${brick.id}`)
+  public getLastVersion(brickName: string): Observable<HaBrickVersion>{
+    console.log(`${this.route}/latest/${brickName}`)
+    return this.apiService.get(`${this.route}/latest/${brickName}`)
   }
 }

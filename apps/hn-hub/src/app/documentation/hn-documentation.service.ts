@@ -2,7 +2,6 @@ import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationDTO} from './hn-documentation.entity';
-import {HnNodeDTO} from '../folder/hn-folder.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnUser} from '../users/hn-user.entity';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
@@ -10,6 +9,8 @@ import {BlFile, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 import {IncomingMessage} from 'http';
 import imageSize from 'image-size';
+import {HnNodeDTO} from '../folder/hn-folder.dto';
+import {CmRichTextI} from '@monorepo/common-model';
 
 class HnDocImage{
   filename: string;
@@ -31,20 +32,12 @@ export class HnDocumentationService {
     return entityManager ? await entityManager.save(documentation) : await this.documentationsRepository.save(documentation);
   }
 
-  async findAll(): Promise<Array<HnDocumentationDTO>> {
-    const docsDto: HnDocumentationDTO[] = [];
-    const docs: HnDocumentation[] = await this.documentationsRepository.find({
+  async findAll(): Promise<Array<HnDocumentation>> {
+    return await this.documentationsRepository.find({
       order: {
         order: 'ASC'
       }
     });
-    docs.map((doc) => {
-      if (!doc.path.includes('/')) {
-        const docDto = new HnDocumentationDTO(doc);
-        docsDto.push(docDto);
-      }
-    })
-    return docsDto;
   }
 
   findOne(id: string): Promise<HnDocumentation> {
@@ -68,25 +61,18 @@ export class HnDocumentationService {
   }
 
   async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
-    let currentDoc: HnDocumentation = null;
-    const docs: HnDocumentation[] = await this.documentationsRepository.find(
+    return (await this.documentationsRepository.find(
       {
         where: {completePath: path},
         relations: ['folder']
-      });
-    docs.map((doc: HnDocumentation) => {
-      if (doc.folder.brickMajorVersion.id == brickMajorVersion.id) {
-        currentDoc = doc;
-      }
-    });
-    return currentDoc;
+      })).find(d => d.folder.brickMajorVersion.id == brickMajorVersion.id);
   }
 
-  async updateContent(id: string, updateContentDoc: Record<string, any>): Promise<HnDocumentation> {
+  async updateContent(id: string, updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOne(id);
     doc.content = updateContentDoc;
     const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
-    if (!currentUser.category.includes('ADMIN')) {
+    if (!currentUser.isAdmin()) {
       throw new UnauthorizedException();
     }
     return this.documentationsRepository.save(doc);
