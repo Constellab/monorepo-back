@@ -23,7 +23,7 @@ export class FlChartRendererScatterPlot implements FlChart2AxisRenderer<FlChart2
 
       // for each group, generate the circle
       .selectAll()
-      .data((d) => d.getDataWithSerie())
+      .data((d) => d.getDataWithSerie(true))
       .enter()
       .append('circle')
       .attr('r', 3)

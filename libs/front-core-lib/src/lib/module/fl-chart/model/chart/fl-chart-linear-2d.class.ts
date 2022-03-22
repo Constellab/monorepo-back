@@ -65,7 +65,7 @@ export class FlChartLine2d extends FlChartLinear2d {
   }
 
   protected getExtendDomain(): number {
-    return 0;
+    return 0.5;
   }
 }
 

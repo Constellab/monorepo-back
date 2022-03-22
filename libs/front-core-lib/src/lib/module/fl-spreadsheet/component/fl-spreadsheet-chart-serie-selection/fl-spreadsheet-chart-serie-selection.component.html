@@ -20,12 +20,14 @@
 
       <!--   X values selection   -->
       <fl-spreadsheet-ranges-input formControlName="x" *ngIf="formGp.get('x')"  selectionListenerGroup="sheet-chart"
+                                   [rangeMode]="input.xSelectionMode"
                                    [placeholder]="'flSpreadsheet.chart_serie_selection_x' | translate"></fl-spreadsheet-ranges-input>
 
       <!--   Y values selection   -->
-      <fl-spreadsheet-ranges-input formControlName="y"  selectionListenerGroup="sheet-chart"
+      <fl-spreadsheet-ranges-input formControlName="y"  selectionListenerGroup="sheet-chart" [required]="true"
+                                   [rangeMode]="input.ySelectionMode"
                                    [placeholder]="'flSpreadsheet.chart_serie_selection_y' | translate"></fl-spreadsheet-ranges-input>
-
+<!--<fl-tag-input formControlName="y" [required]=""-->
 
       <div class="g-text-centered">
         <button mat-flat-button color="primary" type="submit">

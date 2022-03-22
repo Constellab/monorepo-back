@@ -35,7 +35,7 @@ export class FlChartRendererBarPlot implements FlChart2AxisRenderer<FlChart2dMul
 
 
   refreshData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
-    const data: FlChartDataWithSerie<FlChart2dDatum>[][] = input.data.invert();
+    const data: FlChartDataWithSerie<FlChart2dDatum>[][] = input.data.groupByX();
 
     input.container
       // generate a group for each serie
@@ -71,7 +71,7 @@ export class FlChartRendererBarPlot implements FlChart2AxisRenderer<FlChart2dMul
   private getGroupTranslate(xScale: FlChartScale, chartWidth: number, d: FlChartDataWithSerie<FlChart2dDatum>[]): string {
     // get the x value (each series have the same x) and scale it
     const x = xScale.scale(d[0].data.getX());
-    // if the scale return null set the the group outside chart
+    // if the scale return null set the group outside chart
     return 'translate(' + (x == null ? (chartWidth + 10) : x) + ',0)';
   }
 
@@ -87,10 +87,10 @@ export class FlChartRendererBarPlot implements FlChart2AxisRenderer<FlChart2dMul
 
     select(element)
       .attr('transform',
-        (d: FlChartDataWithSerie<FlChart2dDatum>) => 'translate(' + barWidth * index + ',' + yScale.scale(d.data.getY()) + ')'
+        (d: FlChartDataWithSerie<FlChart2dDatum>) => 'translate(' + barWidth * index + ',' + yScale.scale(d.data.getY(0)) + ')'
       )
       .attr('width', barWidth - 0.5) // - 1 to let space between bars
-      .attr('height', (d: FlChartDataWithSerie<FlChart2dDatum>) => chartHeight - yScale.scale(d.data.getY()));
+      .attr('height', (d: FlChartDataWithSerie<FlChart2dDatum>) => chartHeight - yScale.scale(d.data.getY(0)));
   }
 
   private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {

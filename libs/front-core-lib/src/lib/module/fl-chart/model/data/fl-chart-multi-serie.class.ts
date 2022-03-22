@@ -1,11 +1,11 @@
-import {FlChart2dDatum, FlChartAxisTickFormat, FlChartDataContainer} from './fl-chart-data.class';
+import {FlChart2dDatum, FlChartAxisTickFormat, FlChartData, FlChartDataContainer} from './fl-chart-data.class';
 import {FlChartDataWithSerie, FlChartSerie} from './fl-chart-serie.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
 
 /**
  * Object to manage multiple series
  */
-export class FlChartMultiSerie<Data> implements FlChartDataContainer<Data> {
+export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataContainer<Data> {
 
   series: FlChartSerie<Data>[];
 
@@ -142,6 +142,47 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> extends FlChartMul
     }
 
     return FlChartDomain.getLinearDomain(data, extendDomain, minValue, maxValue);
+  }
+
+  /**
+   * Group the series data by X
+   * The first array contains all the series value corresponding to X = 0,
+   * the second array all the series value where X = 1 ...
+   */
+  public groupByX(): FlChartDataWithSerie<Data>[][] {
+    const maxX: number = this.getMaxSerieX();
+
+    const data: FlChartDataWithSerie<Data>[][] = [];
+    for (let i = 0; i <= maxX; i++) {
+      const d: FlChartDataWithSerie<Data>[] = [];
+
+      for (const serie of this.series) {
+        const data = serie.getData().find(d => d.getX() === i);
+
+        if (data) {
+          d.push({
+            data: data,
+            serieKey: serie.key,
+            serieName: serie.name
+          });
+        }
+      }
+
+      data.push(d);
+    }
+
+    return data;
+  }
+
+  public getMaxSerieX(): number {
+    this.series[0].getData().map(d => d.getX());
+
+    let maxX = 0;
+    for (const serie of this.series) {
+      const x = Math.max(...serie.getData().map(d => d.getX(0)));
+      if (x > maxX) maxX = x;
+    }
+    return maxX;
   }
 
 

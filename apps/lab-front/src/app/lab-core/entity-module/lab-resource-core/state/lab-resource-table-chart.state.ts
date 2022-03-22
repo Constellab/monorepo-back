@@ -67,7 +67,7 @@ export class LabResourceTableChartState extends FlSheetChartService {
   generateHistogram(series: FlSheetChartSerieSelectionForm[], nbOfBins?: number): Observable<FlChartConfig> {
     return this.resourceService.callResourceView(this.resourceId, 'view_as_histogram', {
       series: series,
-      nb_of_bins: nbOfBins
+      nbins: nbOfBins
     }, this.transformers).pipe(
       map((view) => labHistogramToChart(view.viewData as LabResourceViewHistogram))
     );

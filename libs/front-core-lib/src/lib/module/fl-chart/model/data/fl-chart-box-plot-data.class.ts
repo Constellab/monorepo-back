@@ -1,7 +1,8 @@
 import {ascending, quantile} from 'd3';
 import {FlChartSerie} from './fl-chart-serie.class';
+import {FlChartData} from './fl-chart-data.class';
 
-export interface FlChartBoxPlotData {
+export interface FlChartBoxPlotData extends FlChartData{
   q1: number;
   median: number;
   q3: number;
@@ -49,6 +50,7 @@ export function flChartGetBoxPlotData(data: number[]): FlChartBoxPlotData {
     upperWhisker: upperWhisker,
     min: min,
     max: max,
+    valid: true,
     // nbOfData: data.length
   };
 }

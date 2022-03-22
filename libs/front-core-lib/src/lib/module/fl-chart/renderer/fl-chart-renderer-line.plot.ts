@@ -44,6 +44,6 @@ export class FlChartRendererLine implements FlChart2AxisRenderer<FlChart2dMultiS
     return (d: FlChartSerie<FlChart2dDatum>) => line<FlChart2dDatum>()
       .x((d: FlChart2dDatum) => xScale.scale(d.getX()))
       .y((d: FlChart2dDatum) => yScale.scale(d.getY()))
-      (d.getData()); // use to loop through serie's data
+      (d.getValidData()); // use to loop through serie's data
   }
 }

@@ -31,7 +31,7 @@ export class FlChartRendererHeatMap implements FlChart2AxisRenderer<FlChartHeatM
       .attr('y', d => yScale.scale(d.getY()))
       .attr('width', xScale.bandwidth())
       .attr('height', yScale.bandwidth())
-      .style('fill', (d) => this.colorScale.scale(d.getZ()?.valueOf() ?? null));
+      .style('fill', (d) => d.getZ() ? this.colorScale.scale(d.getZ().valueOf()): null);
   }
 
   refreshData(): void {

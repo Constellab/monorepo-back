@@ -51,7 +51,7 @@ const flChartI18nEn: FlLangTranslation = {
     SCATTER_PLOT: 'Scatter plot',
     BAR_PLOT: 'Bar plot',
     HISTOGRAM: 'Histogram',
-    STACKED_PLOT: 'Barres empilées',
+    STACKED_PLOT: 'Stack bar',
     BOX_PLOT: 'Box plot',
     HEAT_MAP: 'Heat map',
     VENN_DIAGRAM: 'Diagramme de venn',

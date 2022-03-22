@@ -15,10 +15,14 @@
   <!--  In range mode -->
   <mat-form-field *ngIf="mode === 'range'; else columns" class="g-full input">
     <mat-label>{{placeholder}}</mat-label>
-    <input matInput formControlName="rangeSelection" [placeholder]="placeholder">
+    <input matInput formControlName="rangeSelection" [placeholder]="placeholder" [required]="required">
 
+    <mat-error *ngIf="formGp.get('rangeSelection').hasError('required')">
+      {{placeholder | flErrorRequired}}
+    </mat-error>
     <mat-error *ngIf="formGp.get('rangeSelection').hasError('invalidFormat')">
-      {{'flSpreadsheet.multiple_series_data_wrong_format' | translate}}
+      {{'flSpreadsheet.series_data_wrong_format' | translate}}
+      {{formGp.get('rangeSelection').getError('invalidFormat')}}
     </mat-error>
     <mat-error *ngIf="formGp.get('rangeSelection').hasError('selectionOutOfBound')">
       {{'flSpreadsheet.selection_out_of_bound' | translate}}

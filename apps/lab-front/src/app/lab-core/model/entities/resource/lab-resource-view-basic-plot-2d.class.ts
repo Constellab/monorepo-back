@@ -10,7 +10,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {LabResourceViewBase} from './lab-resource-view.entity';
 
-export interface LabResourceViewBasicPlot2d extends LabResourceViewBase{
+export interface LabResourceViewBasicPlot2d extends LabResourceViewBase {
   type: 'scatter-plot-2d-view' | 'line-plot-2d-view' | 'bar-plot-view' | 'stacked-bar-plot-view';
   data: LabResourceViewChart2dData;
 }
@@ -58,6 +58,7 @@ function labResourceBuildBasicChart2d(view: LabResourceViewBasicPlot2d): FlChart
     const data: FlChart2dDatum[] = [];
 
     for (let i = 0; i < viewSerie.data.x.length; i++) {
+      // if (viewSerie.data.x[i] == null || viewSerie.data.y[i] == null) continue;
       data.push(new FlChart2dDatum(viewSerie.data.x[i], viewSerie.data.y[i]));
     }
 

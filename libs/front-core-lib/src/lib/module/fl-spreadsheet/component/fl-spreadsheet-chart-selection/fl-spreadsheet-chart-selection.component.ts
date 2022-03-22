@@ -40,7 +40,7 @@ import {
 
 
 /**
- * Modal component to select value from the excel to draw a chart
+ * Modal component to select value from the spreadsheet to draw a chart
  */
 @Component({
   selector: 'fl-spreadsheet-chart-selection',
@@ -100,9 +100,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
       chartType: [null, [
         Validators.required,
       ]],
-      dataRange: [null, [
-        FlSpreadsheetChartSelectionHelper.multipleSelectionValidator(this.state.spreadsheet),
-      ]],
+      dataRange: [null],
       series: [[], Validators.required],
       additionalFields: new FormBuilder().group({
         nbOfBins: [null, [Validators.min(1), FlGlobalValidators.isInteger()]],
@@ -158,7 +156,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
 
   private validateForm(mode: 'create' | 'update'): void {
     this.submitted = true;
-    if (this.formGp.valid) {
+    if (this.formGp.valid && !this.maxNbOfSeriesReached) {
       const value: FlSheetChartSelectionForm = this.formGp.value;
       // if we are in create mode we create a new id
       if (mode === 'create') {
@@ -312,6 +310,14 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
       default:
         throw Error(`[FlSpreadsheetChartSelectionComponent] Config not defined for chart type : '${chartType}'`);
     }
+  }
+
+  get maxNbOfSeries(): number{
+    return this.formConfig?.getNbMaxOfSeries() ?? Infinity;
+  }
+
+  get maxNbOfSeriesReached(): boolean{
+    return this.formGp.value.series.length > this.maxNbOfSeries
   }
 
   ngOnDestroy(): void {

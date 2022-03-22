@@ -8,18 +8,26 @@ export interface FlChartDataContainer<Data> {
   getData(): Data[];
 }
 
-export class FlChart2dDatum {
+export interface FlChartData {
+
+  /**
+   * Value of getter that tell if the chart data is valid and can be added to the chart
+   */
+  valid: boolean;
+}
+
+export class FlChart2dDatum implements FlChartData {
 
   constructor(protected x: number, protected y: number,
               protected xLabel?: string, protected yLabel?: string) {
   }
 
-  getX(): number {
-    return this.x;
+  getX(defaultValue: number = null): number {
+    return this.x ?? defaultValue;
   }
 
-  getY(): number {
-    return this.y;
+  getY(defaultValue: number = null): number {
+    return this.y ?? defaultValue;
   }
 
   getXLabel(): string {
@@ -29,6 +37,12 @@ export class FlChart2dDatum {
   getYLabel(): string {
     return this.yLabel ?? this.getY()?.toString() ?? '';
   }
+
+  get valid(): boolean {
+    return this.x != null && this.y != null;
+  }
+
+
 }
 
 export class FlChart3dDatum extends FlChart2dDatum {
@@ -37,7 +51,11 @@ export class FlChart3dDatum extends FlChart2dDatum {
     super(x, y, xLabel, yLabel);
   }
 
-  getZ(): number {
-    return this.z;
+  getZ(defaultValue: number = null): number {
+    return this.z ?? defaultValue;
+  }
+
+  get valid(): boolean {
+    return this.x != null && this.y != null && this.z != null;
   }
 }

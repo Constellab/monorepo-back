@@ -1,4 +1,4 @@
-import {FlChartDataContainer} from './fl-chart-data.class';
+import {FlChartData, FlChartDataContainer} from './fl-chart-data.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlLegend} from '../legend/fl-chart-legend-multi-series.class';
 
@@ -12,7 +12,7 @@ export interface FlChartDataWithSerie<T> {
 }
 
 
-export class FlChartSerie<Data> implements FlChartDataContainer<Data>, FlLegend {
+export class FlChartSerie<Data extends FlChartData> implements FlChartDataContainer<Data>, FlLegend {
 
   private static key: number = 0;
 
@@ -28,8 +28,10 @@ export class FlChartSerie<Data> implements FlChartDataContainer<Data>, FlLegend 
     this.name = serieName;
   }
 
-  public getDataWithSerie(): FlChartDataWithSerie<Data>[] {
-    return this.getData().map(data => {
+  public getDataWithSerie(getOnlyValid: boolean = false): FlChartDataWithSerie<Data>[] {
+    const data: Data[] = getOnlyValid ? this.getValidData() : this.getData();
+
+    return data.map(data => {
       return {
         data: data,
         serieKey: this.key,
@@ -52,6 +54,13 @@ export class FlChartSerie<Data> implements FlChartDataContainer<Data>, FlLegend 
 
   public getData(): Data[] {
     return this.data;
+  }
+
+  /**
+   * Retrieve only the valid data
+   */
+  public getValidData(): Data[] {
+    return this.getData().filter(d => d.valid);
   }
 
   public addData(data: Data | Data[]): void {

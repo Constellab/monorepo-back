@@ -28,7 +28,7 @@
         </mat-form-field>
 
         <!-- Chart data range-->
-        <fl-spreadsheet-ranges-input formControlName="dataRange" selectionListenerGroup="sheet-chart"
+        <fl-spreadsheet-ranges-input formControlName="dataRange" selectionListenerGroup="sheet-chart" rangeMode="single"
                                      [placeholder]="'flSpreadsheet.chart_data_range' | translate"></fl-spreadsheet-ranges-input>
 
         <!---------------- Additional fields --------------------->
@@ -78,9 +78,14 @@
           </div>
         </div>
 
-        <div *ngIf="submitted && formGp.get('series').hasError('required')"
-             class="g-text-small g-warn-text">
-          {{'flSpreadsheet.chart_serie_required_error' | translate}}
+        <div *ngIf="submitted" class="series-error">
+          <div *ngIf="formGp.get('series').hasError('required')"
+               class="g-text-small g-warn-text">
+            {{'flSpreadsheet.chart_serie_required_error' | translate}}
+          </div>
+          <div *ngIf="maxNbOfSeriesReached" class="g-text-small g-warn-text">
+            {{'flSpreadsheet.chart_too_many_series_error' | translate:{maxSeries: maxNbOfSeries} }}
+          </div>
         </div>
       </div>
 

@@ -52,10 +52,10 @@ export const flChartTypeSelectOptions: FlChartTypeSelectOption[] = [
   },
   {
     component: FlChartType.HEAT_MAP,
-    icon: 'multiline_chart'
+    icon: 'grid_on'
   },
   {
     component: FlChartType.VENN_DIAGRAM,
-    icon: 'multiline_chart'
+    icon: 'join_full'
   }
 ];

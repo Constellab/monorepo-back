@@ -25,19 +25,19 @@ export function labHeatMapToChart(view: LabResourceViewHeatMap): FlChartConfig {
   const chartData: FlChart3dDatum[][] = [];
 
   for (let column = 0; column < viewData.length; column++) {
-    const columnName: string = view.columns[column].name ?? column.toString();
+    const columnName: string = view.columns ? view.columns[column]?.name ?? column.toString() : column.toString();
     // convert all the column data into a 3d datum, where x = columnIndex, y = index of value and z = value as number
     const data: FlChart3dDatum[] = [];
 
     for (let row = 0; row < viewData[column].length; row++) {
-      const rowName: string = view.rows[row].name ?? row.toString();
+      const rowName: string = view.rows ? view.rows[row]?.name ?? row.toString() : row.toString();
       const value = ClNumberHelper.fromString(viewData[column][row], 0);
       data.push(new FlChart3dDatum(column, row, value, columnName, rowName));
     }
     chartData.push(data);
   }
 
-  console.log(chartData)
+  console.log(chartData);
   const dataContainer = new FlChartHeatMapDataContainer(chartData);
 
   // x tick labels = columns names

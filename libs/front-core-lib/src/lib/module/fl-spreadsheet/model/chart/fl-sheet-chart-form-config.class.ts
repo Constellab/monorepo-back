@@ -205,7 +205,7 @@ export class FlSheetHeatMapFormConfig extends FlSheetChartFormConfig {
     return {
       serie: serie,
       mode: 'onlyY',
-      ySelectionMode: 'multi',
+      ySelectionMode: 'single',
     };
   }
 }
@@ -214,11 +214,16 @@ export class FlSheetHeatMapFormConfig extends FlSheetChartFormConfig {
 //////////////////////////////////// HISTOGRAM /////////////////////////////////////
 export class FlSheetHistogramFormConfig extends FlSheetChartFormConfig {
   createSeriesFromDataRange(selectionRange: FlSheetSelectionRange): FlSheetChart2dSerieSelectionForm[] {
-    return this.createMultipleSeriesForY(selectionRange);
+    return this.createSingleSelectionForY(selectionRange);
   }
 
   getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
     return ['nbOfBins'];
+  }
+
+
+  getNbMaxOfSeries(): number {
+    return 1;
   }
 
   getSelectSerieConfig(serie: FlSheetChart2dSerieSelectionForm): FlSpreadsheetChartSerieSelectionInput {

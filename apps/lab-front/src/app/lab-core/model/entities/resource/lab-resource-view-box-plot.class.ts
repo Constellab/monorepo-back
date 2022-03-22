@@ -54,6 +54,7 @@ export function labBoxPlotToChart(view: LabResourceViewBoxPlot): FlChartConfig {
         q3: viewSerie.data.q3[i],
         lowerWhisker: viewSerie.data.lower_whisker[i],
         upperWhisker: viewSerie.data.upper_whisker[i],
+        valid: true
       });
 
       serieIndex++;

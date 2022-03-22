@@ -1,13 +1,13 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Optional, Output, Self} from '@angular/core';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {NgControl} from '@angular/forms';
-import {FlSpreadsheetChartSelectionHelper} from '../../utils/fl-spreadsheet-chart-selection.helper';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {Observable, of, Subscription} from 'rxjs';
 import {FlCellsMultipleRange} from '../../model/selection/fl-cells-multiple-range.class';
 import {FlSheetSelectionRange} from '../../model/chart/fl-sheet-chart-selection-form.class';
 import {FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
+import {FlSpreadsheetChartSelectionHelper} from '../../utils/fl-spreadsheet-chart-selection.helper';
 
 interface FlSpreadsheetRangeForm {
   type: 'range' | 'columns';
@@ -25,7 +25,8 @@ interface FlSpreadsheetRangeForm {
 @Component({
   selector: 'fl-spreadsheet-ranges-input',
   templateUrl: './fl-spreadsheet-ranges-input.component.html',
-  styleUrls: ['./fl-spreadsheet-ranges-input.component.scss']
+  styleUrls: ['./fl-spreadsheet-ranges-input.component.scss'],
+  providers: [{provide: FlFormFieldDirective, useExisting: FlSpreadsheetRangesInputComponent}]
 })
 export class FlSpreadsheetRangesInputComponent extends FlFormFieldDirective<FlSpreadsheetRangeForm, FlSheetSelectionRange>
   implements OnInit, OnDestroy {
@@ -35,6 +36,8 @@ export class FlSpreadsheetRangesInputComponent extends FlFormFieldDirective<FlSp
   @Input() initialSelection: FlSheetSingleSelection;
 
   @Input() selectionListenerGroup: string;
+
+  @Input() rangeMode: 'single' | 'multi' = 'multi';
 
   @Output() selectionChange: EventEmitter<FlSheetSelectionRange> = new EventEmitter();
 
@@ -49,20 +52,14 @@ export class FlSpreadsheetRangesInputComponent extends FlFormFieldDirective<FlSp
               private state: FlSpreadsheetState) {
     super(ngControl);
 
-    // init form Group here, because the writeValue can be called before ngOnInit
-    this.formGp = new FormBuilder().group({
-      type: ['range'],
-      rangeSelection: [null,
-        FlSpreadsheetChartSelectionHelper.multipleSelectionValidator(this.state.spreadsheet)],
-      columnsSelection: [null]
-    });
+
   }
 
   ngOnInit(): void {
+    this.initForm();
+
+
     this.columnSearchFunc = (searchString => of(this.state.currentSheet.searchColumns(searchString)));
-
-
-    this.registerValidateMethod();
 
     if (this.initialSelection) {
       this.onNewSelection(this.initialSelection);
@@ -76,6 +73,22 @@ export class FlSpreadsheetRangesInputComponent extends FlFormFieldDirective<FlSp
     }, 0);
   }
 
+  private initForm(): void {
+    const rangeValidation = this.rangeMode === 'multi' ?
+      FlSpreadsheetChartSelectionHelper.multipleSelectionValidator(this.state.currentSheet) :
+      FlSpreadsheetChartSelectionHelper.singleSelectionValidator(this.state.currentSheet);
+    // init form Group here, because the writeValue can be called before ngOnInit
+    this.formGp = new FormBuilder().group({
+      type: ['range'],
+      rangeSelection: [null, [rangeValidation]],
+      columnsSelection: [null]
+    });
+
+    if (this.value != null) {
+      this.formGp.patchValue(this.value);
+    }
+  }
+
   callChangeEvent(value: FlSheetSelectionRange): void {
     this.selectionChange.next(value);
   }
@@ -87,7 +100,10 @@ export class FlSpreadsheetRangesInputComponent extends FlFormFieldDirective<FlSp
     this.value = this.convertOuterToInner(obj);
 
     if (!obj) return;
-    this.formGp.patchValue(this.value);
+
+    if (this.formGp) {
+      this.formGp.patchValue(this.value);
+    }
   }
 
 

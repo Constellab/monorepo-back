@@ -20,10 +20,10 @@ export interface LabResourceViewHistogramData {
 
 export interface LabResourceViewHistogramSerie {
   data: {
-    x: number[];// list of bin interval, one more value than hist
-    y: number[];// list of hist values, one value correspond ton one bin interval
+    x: number[];// list of bin interval (two side values represent an interval), one more value than hist
+    y: number[];// list of hist values, number of values per interval
   };
-  column_name: string;
+  name: string;
 }
 
 /**
@@ -43,7 +43,7 @@ export function labHistogramToChart(view: LabResourceViewHistogram): FlChartConf
       data.push(new FlChartDataBin(i, viewSerie.data.y[i], min, max));
     }
 
-    series.addSerie(new FlChartSerie(data, viewSerie.column_name));
+    series.addSerie(new FlChartSerie(data, viewSerie.name));
   }
 
 
@@ -53,5 +53,6 @@ export function labHistogramToChart(view: LabResourceViewHistogram): FlChartConf
     return dataHisto.getIntervalText();
   };
 
+  console.log(series)
   return new FlChartHistogram(series);
 }
