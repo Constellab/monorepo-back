@@ -10,7 +10,7 @@ describe('HaPublicSidenavFormDialogComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ HaPublicSidenavCreateFormDialogComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
