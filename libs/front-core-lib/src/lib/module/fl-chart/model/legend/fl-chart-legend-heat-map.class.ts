@@ -1,7 +1,7 @@
 import {FlChartLegend} from './fl-chart-legend.class';
 import {Selection} from 'd3-selection';
 import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
-import {axisBottom, scaleLinear} from 'd3';
+import {axisRight, scaleLinear} from 'd3';
 
 /**
  * Class to draw a heat map legend
@@ -17,20 +17,20 @@ export class FlChartLegendHeatMap extends FlChartLegend {
 
   renderLegend(parent: Selection<any, any, any, any>, width: number, height: number): void {
 
-    const padding: number = height / 5;
-    const widthWithoutPadding = width - (padding * 2);
-    const rectHeight: number = height / 2;
-    this.drawLegendRect(parent, widthWithoutPadding, padding, rectHeight);
-    this.drawLegendAxis(parent, widthWithoutPadding, padding, rectHeight);
+    const margin: number = 5;
+    const rectWidth = 20;
+    const rectHeight = Math.min(height - (margin * 2), 200);
+    this.drawLegendRect(parent, rectWidth, rectHeight, margin);
+    this.drawLegendAxis(parent, rectWidth, rectHeight, margin);
   }
 
-  private drawLegendRect(parent: Selection<any, any, any, any>, width: number,
-                         padding: number, rectHeight: number): void {
+  private drawLegendRect(parent: Selection<any, any, any, any>,
+                         rectWidth: number, rectHeight: number, topMargin: number,): void {
     parent.append('defs')
       .append('linearGradient')
       .attr('id', 'legend-traffic')
       .attr('x1', '0%').attr('y1', '0%')
-      .attr('x2', '100%').attr('y2', '0%')
+      .attr('x2', '0%').attr('y2', '100%')
       .selectAll('stop')
       .data(this.domain)
       .enter().append('stop')
@@ -39,23 +39,22 @@ export class FlChartLegendHeatMap extends FlChartLegend {
 
     parent.append('rect') // gradient rect
       .attr('class', 'legendRect')
-      .attr('x', padding)
-      .attr('y', 0)
-      .attr('width', width)
-      .attr('height', rectHeight / 2)
+      .attr('x', 0)
+      .attr('y', topMargin)
+      .attr('width', rectWidth)
+      .attr('height', rectHeight)
       .style('fill', 'url(#legend-traffic)');
   }
 
-  private drawLegendAxis(parent: Selection<any, any, any, any>, width: number,
-                         padding: number, rectHeight: number): void {
+  private drawLegendAxis(parent: Selection<any, any, any, any>, x: number, rectHeight: number, topMargin: number,): void {
     const domainScale = scaleLinear()
       .domain(this.domain)
-      .range([0, width]);
+      .range([0, rectHeight]);
 
     parent.append('g') // x axis
       .attr('class', 'axis')
-      .attr('transform', `translate(${padding},${rectHeight})`)
-      .call(axisBottom(domainScale));
+      .attr('transform', `translate(${x}, ${topMargin})`)
+      .call(axisRight(domainScale));
   }
 
 

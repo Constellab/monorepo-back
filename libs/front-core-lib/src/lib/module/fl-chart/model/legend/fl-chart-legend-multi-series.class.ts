@@ -19,20 +19,14 @@ export class FlChartLegendMultiSeries extends FlChartLegend {
     super();
   }
 
-  renderLegend(parent: Selection<any, any, any, any>, width: number): void {
-    let size: number = width / this.legends.length;
-    let offset: number = this.circleRadius;
-
-    // if there is enough space for an offset
-    if (size > 50) {
-      offset = 20;
-      size = (width - offset) / this.legends.length;
-    }
+  renderLegend(parent: Selection<any, any, any, any>): void {
+    const size: number = 11;
+    const offset: number = this.circleRadius;
 
     const legend = parent.selectAll()
       .data(this.legends)
       .enter().append('g')
-      .attr('transform', (d, i) => `translate(${(i * size) + offset},0)`);
+      .attr('transform', (d, i) => `translate(0, ${(size * i) + offset} )`);
 
     legend.append('circle')
       .attr('r', this.circleRadius)
@@ -43,7 +37,11 @@ export class FlChartLegendMultiSeries extends FlChartLegend {
       .attr('y', 3)
       .text(d => d.name)
       .attr('fill', 'currentcolor')
+      .attr('title', d => d.name)
       .style('font-size', 10);
+
+    legend.append('title')
+      .text(d => d.name);
   }
 
 

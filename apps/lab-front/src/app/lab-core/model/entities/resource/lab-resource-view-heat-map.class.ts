@@ -37,7 +37,6 @@ export function labHeatMapToChart(view: LabResourceViewHeatMap): FlChartConfig {
     chartData.push(data);
   }
 
-  console.log(chartData);
   const dataContainer = new FlChartHeatMapDataContainer(chartData);
 
   // x tick labels = columns names

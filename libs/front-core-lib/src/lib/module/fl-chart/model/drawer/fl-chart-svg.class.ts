@@ -20,7 +20,7 @@ export class FlChartSvg {
 
   // height of the legend in px
   private readonly spaceBeforeLegend: number = 10;
-  private readonly legendHeight: number = 50;
+  private readonly legendWidth: number = 100;
 
   public initSvg(containerElement: HTMLElement): this {
     this.container = containerElement;
@@ -36,7 +36,7 @@ export class FlChartSvg {
     // create the legend group in the bottom of the chart container
     this.legendContainer = this.svg
       .append('g')
-      .attr('transform', `translate(0,${this.chartContainerHeight + this.spaceBeforeLegend})`);
+      .attr('transform', `translate(${this.chartContainerWidth + this.spaceBeforeLegend}, 0)`);
 
 
     return this;
@@ -45,24 +45,25 @@ export class FlChartSvg {
   get height(): number {
     return this._height;
   }
+
   get width(): number {
     return this._width;
   }
 
   public get chartContainerWidth(): number {
-    return this._width;
+    return this._width - (this.legendContainerWidth + this.spaceBeforeLegend);
   }
 
   public get chartContainerHeight(): number {
-    return this._height - (this.legendHeight + this.spaceBeforeLegend);
+    return this._height;
   }
 
   public get legendContainerWidth(): number {
-    return this._width;
+    return this.legendWidth;
   }
 
   public get legendContainerHeight(): number {
-    return this.legendHeight;
+    return this._height;
   }
 
 
@@ -99,8 +100,8 @@ export class FlChartSvg {
   // set the width and height of the chart container element. The legend will be added to the size
   public setChartContainerSize(width: number, height: number): void {
     this.setSVGSize(
-      width + width,
-      height + this.legendHeight + this.spaceBeforeLegend);
+      width + this.legendWidth + this.spaceBeforeLegend,
+      height);
   }
 }
 

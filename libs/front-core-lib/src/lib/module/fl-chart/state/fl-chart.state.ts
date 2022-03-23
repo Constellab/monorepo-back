@@ -32,7 +32,7 @@ export class FlChartState {
   private renderChart(width: number, height: number, container: HTMLElement): void {
     this.chartContainer = this.chart.getChartContainer();
 
-    // oif the chart container has a size defined, use it to set the SVG size
+    // if the chart container has a size defined, use it to set the SVG size
     if (this.chartContainer.sizeIsSet()) {
       this.chartSVG.setChartContainerSize(this.chartContainer.groupWidth, this.chartContainer.groupHeight);
     } else {
