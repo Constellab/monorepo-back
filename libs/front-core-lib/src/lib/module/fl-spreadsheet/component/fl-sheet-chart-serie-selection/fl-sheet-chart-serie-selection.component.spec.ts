@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FlSpreadsheetChartSerieSelectionComponent} from './fl-spreadsheet-chart-serie-selection.component';
+import {FlSheetChartSerieSelectionComponent} from './fl-sheet-chart-serie-selection.component';
 
 describe('FlSpreadsheetChartSerieSelectionComponent', () => {
-  let component: FlSpreadsheetChartSerieSelectionComponent;
-  let fixture: ComponentFixture<FlSpreadsheetChartSerieSelectionComponent>;
+  let component: FlSheetChartSerieSelectionComponent;
+  let fixture: ComponentFixture<FlSheetChartSerieSelectionComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FlSpreadsheetChartSerieSelectionComponent ]
+      declarations: [ FlSheetChartSerieSelectionComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FlSpreadsheetChartSerieSelectionComponent);
+    fixture = TestBed.createComponent(FlSheetChartSerieSelectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

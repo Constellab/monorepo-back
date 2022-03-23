@@ -1,6 +1,6 @@
 import {FlChartType} from '../../../fl-chart/model/fl-chart.class';
 import {FlSheetSingleSelection} from '../selection/fl-sheet-single-selection.class';
-import {FlCellCoords} from '../fl-cell-coord.class';
+import {FlCellCoordRange} from '../fl-cell-coord.class';
 
 
 export type FlSpreadsheetChartSelectionInput =
@@ -48,7 +48,7 @@ export type FlSheetSelectionRangeType = 'range' | 'columns';
 
 export type FlSheetSelectionRange = {
   type: 'range';
-  selection: FlCellCoords[];
+  selection: FlCellCoordRange[];
 } | {
   type: 'columns';
   // selected columns

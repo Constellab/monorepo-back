@@ -23,12 +23,12 @@ interface FlSpreadsheetRangeForm {
  *  - Columns selection
  */
 @Component({
-  selector: 'fl-spreadsheet-ranges-input',
-  templateUrl: './fl-spreadsheet-ranges-input.component.html',
-  styleUrls: ['./fl-spreadsheet-ranges-input.component.scss'],
-  providers: [{provide: FlFormFieldDirective, useExisting: FlSpreadsheetRangesInputComponent}]
+  selector: 'fl-sheet-ranges-input',
+  templateUrl: './fl-sheet-ranges-input.component.html',
+  styleUrls: ['./fl-sheet-ranges-input.component.scss'],
+  providers: [{provide: FlFormFieldDirective, useExisting: FlSheetRangesInputComponent}]
 })
-export class FlSpreadsheetRangesInputComponent extends FlFormFieldDirective<FlSpreadsheetRangeForm, FlSheetSelectionRange>
+export class FlSheetRangesInputComponent extends FlFormFieldDirective<FlSpreadsheetRangeForm, FlSheetSelectionRange>
   implements OnInit, OnDestroy {
 
   @Input() placeholder: string;

@@ -3,7 +3,7 @@ export interface FlCellCoord {
   column: number;
 }
 
-export interface FlCellCoords{
+export interface FlCellCoordRange {
   from: FlCellCoord;
   to: FlCellCoord
 }

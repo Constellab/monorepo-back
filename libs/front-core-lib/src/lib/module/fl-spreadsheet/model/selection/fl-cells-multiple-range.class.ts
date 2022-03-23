@@ -1,6 +1,6 @@
 import {FlCellsRange} from './fl-cells-range.class';
 import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
-import {FlCellCoords} from '../fl-cell-coord.class';
+import {FlCellCoordRange} from '../fl-cell-coord.class';
 
 
 export class FlCellsMultipleRange {
@@ -23,7 +23,7 @@ export class FlCellsMultipleRange {
     return new FlCellsMultipleRange(ranges);
   }
 
-  public static fromCoords(coords: FlCellCoords[]): FlCellsMultipleRange {
+  public static fromCoords(coords: FlCellCoordRange[]): FlCellsMultipleRange {
     const ranges = coords.map(coord => FlCellsRange.MultipleFromCoords(coord));
     return new FlCellsMultipleRange(ranges);
   }
@@ -32,7 +32,7 @@ export class FlCellsMultipleRange {
     this.ranges.push(range);
   }
 
-  public toCoords(): FlCellCoords[] {
+  public toCoords(): FlCellCoordRange[] {
     return this.ranges.map(range => range.toCoords());
   }
 

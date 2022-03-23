@@ -11,11 +11,11 @@ import {FlSpreadsheetChartSerieSelectionInput} from '../../model/chart/fl-sheet-
  * Portal to select one serie during chart selection
  */
 @Component({
-  selector: 'fl-spreadsheet-chart-serie-selection',
-  templateUrl: './fl-spreadsheet-chart-serie-selection.component.html',
-  styleUrls: ['./fl-spreadsheet-chart-serie-selection.component.scss']
+  selector: 'fl-sheet-chart-serie-selection',
+  templateUrl: './fl-sheet-chart-serie-selection.component.html',
+  styleUrls: ['./fl-sheet-chart-serie-selection.component.scss']
 })
-export class FlSpreadsheetChartSerieSelectionComponent implements OnInit {
+export class FlSheetChartSerieSelectionComponent implements OnInit {
 
   formGp: FormGroup<FlSheetChart2dSerieSelectionForm>;
 

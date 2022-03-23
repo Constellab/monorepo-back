@@ -19,8 +19,8 @@ import {
 import {FlPortalConfig} from '../../../fl-portal/model/fl-portal-config.class';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {
-  FlSpreadsheetChartSerieSelectionComponent,
-} from '../fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
+  FlSheetChartSerieSelectionComponent,
+} from '../fl-sheet-chart-serie-selection/fl-sheet-chart-serie-selection.component';
 import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
 import {ClHelpService, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {debounceTime, skip} from 'rxjs/operators';
@@ -43,12 +43,12 @@ import {
  * Modal component to select value from the spreadsheet to draw a chart
  */
 @Component({
-  selector: 'fl-spreadsheet-chart-selection',
-  templateUrl: './fl-spreadsheet-chart-selection.component.html',
-  styleUrls: ['./fl-spreadsheet-chart-selection.component.scss'],
+  selector: 'fl-sheet-chart-selection',
+  templateUrl: './fl-sheet-chart-selection.component.html',
+  styleUrls: ['./fl-sheet-chart-selection.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
+export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
 
   formGp: FormGroup<FlSheetChartSelectionForm>;
 
@@ -228,7 +228,7 @@ export class FlSpreadsheetChartSelectionComponent implements OnInit, OnDestroy {
         disposeOnNavigation: true
       });
 
-    this.portalService.createPortal(FlSpreadsheetChartSerieSelectionComponent, portalConfig, data).detachments().subscribe(
+    this.portalService.createPortal(FlSheetChartSerieSelectionComponent, portalConfig, data).detachments().subscribe(
       (newSerie) => this.onSerieUpdated(newSerie, index)
     );
 

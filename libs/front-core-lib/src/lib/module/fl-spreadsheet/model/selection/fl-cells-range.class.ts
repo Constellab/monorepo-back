@@ -1,5 +1,5 @@
 import {FlSpreadsheetHelper} from '../../utils/fl-spreadsheet.helper';
-import {FlCellCoord, FlCellCoords} from '../fl-cell-coord.class';
+import {FlCellCoord, FlCellCoordRange} from '../fl-cell-coord.class';
 
 export type FlCellsRangeType = 'single' | 'multiple' | 'columns' | 'rows';
 
@@ -23,7 +23,7 @@ export class FlCellsRange {
     return FlCellsRange.MultipleFromCoords(coords);
   }
 
-  public static MultipleFromCoords(coords: FlCellCoords): FlCellsRange {
+  public static MultipleFromCoords(coords: FlCellCoordRange): FlCellsRange {
     return new FlCellsRange('multiple', coords.from.row, coords.from.column,
       coords.to.row, coords.to.column);
   }
@@ -47,7 +47,7 @@ export class FlCellsRange {
     };
   }
 
-  public toCoords(): FlCellCoords {
+  public toCoords(): FlCellCoordRange {
     return {
       from: this.from,
       to: this.to

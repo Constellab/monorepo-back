@@ -14,9 +14,7 @@ import {FlPortalModule} from '../fl-portal/fl-portal.module';
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {MatIconModule} from '@angular/material/icon';
 import {FlIconModule} from '../fl-svg-icon/fl-icon.module';
-import {
-  FlSpreadsheetChartSelectionComponent
-} from './component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-selection.component';
+import {FlSheetChartSelectionComponent} from './component/fl-sheet-chart-selection/fl-sheet-chart-selection.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatTooltipModule} from '@angular/material/tooltip';
@@ -31,8 +29,8 @@ import {FlChartModule} from '../fl-chart/fl-chart.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flSpreadSheetI18n} from './i18n/fl-spreadsheet.i18n';
 import {
-  FlSpreadsheetChartSerieSelectionComponent
-} from './component/fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
+  FlSheetChartSerieSelectionComponent
+} from './component/fl-sheet-chart-serie-selection/fl-sheet-chart-serie-selection.component';
 import {MatDividerModule} from '@angular/material/divider';
 import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
 import {
@@ -50,9 +48,7 @@ import {
   FlSpreadsheetHeaderInfoComponent
 } from './component/fl-spreadsheet-header-info/fl-spreadsheet-header-info.component';
 import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
-import {
-  FlSpreadsheetRangesInputComponent
-} from './component/fl-spreadsheet-ranges-input/fl-spreadsheet-ranges-input.component';
+import {FlSheetRangesInputComponent} from './component/fl-sheet-ranges-input/fl-sheet-ranges-input.component';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
@@ -65,13 +61,13 @@ import {FlAutocompleteMultipleModule} from '../fl-autocomplete-multiple/fl-autoc
     FlSpreadsheetCellComponent,
     FlSpreadsheetHeaderCellComponent,
     FlCellHeaderPipe,
-    FlSpreadsheetChartSelectionComponent,
+    FlSheetChartSelectionComponent,
     FlSpreadsheetSelectionListenerComponent,
-    FlSpreadsheetChartSerieSelectionComponent,
+    FlSheetChartSerieSelectionComponent,
     FlSpreadsheetSheetSelectionComponent,
     FlSpreadsheetDrawerComponent,
     FlSpreadsheetHeaderInfoComponent,
-    FlSpreadsheetRangesInputComponent,
+    FlSheetRangesInputComponent,
   ],
   exports: [
     FlSpreadsheetComponent,

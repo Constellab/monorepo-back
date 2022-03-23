@@ -4,12 +4,12 @@ export * from './fl-spreadsheet.module';
 // Export the components
 export * from './component/fl-spreadsheet/fl-spreadsheet.component';
 export * from './component/fl-spreadsheet-cell/fl-spreadsheet-cell.component';
-export * from './component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-selection.component';
-export * from './component/fl-spreadsheet-chart-serie-selection/fl-spreadsheet-chart-serie-selection.component';
+export * from './component/fl-sheet-chart-selection/fl-sheet-chart-selection.component';
+export * from './component/fl-sheet-chart-serie-selection/fl-sheet-chart-serie-selection.component';
 export * from './component/fl-spreadsheet-drawer/fl-spreadsheet-drawer.component';
 export * from './component/fl-spreadsheet-header-cell/fl-spreadsheet-header-cell.component';
 export * from './component/fl-spreadsheet-header-info/fl-spreadsheet-header-info.component';
-export * from './component/fl-spreadsheet-ranges-input/fl-spreadsheet-ranges-input.component';
+export * from './component/fl-sheet-ranges-input/fl-sheet-ranges-input.component';
 export * from './component/fl-spreadsheet-selection-listener/fl-spreadsheet-selection-listener.component';
 export * from './component/fl-spreadsheet-selection-listener/fl-spreadsheet-selection-listener-manager.service';
 export * from './component/fl-spreadsheet-sheet-selection/fl-spreadsheet-sheet-selection.component';

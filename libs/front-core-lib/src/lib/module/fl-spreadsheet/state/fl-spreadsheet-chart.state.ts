@@ -1,9 +1,7 @@
 import {Injectable, Optional} from '@angular/core';
 import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
 import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
-import {
-  FlSpreadsheetChartSelectionComponent
-} from '../component/fl-spreadsheet-chart-selection/fl-spreadsheet-chart-selection.component';
+import {FlSheetChartSelectionComponent} from '../component/fl-sheet-chart-selection/fl-sheet-chart-selection.component';
 import {FlOverlayRef} from '../../fl-portal/model/fl-overlay-ref.class';
 import {FlChartPortalService} from '../../fl-chart/service/fl-chart-portal.service';
 import {FlChartPortalConfig, FlChartType} from '../../fl-chart/model/fl-chart.class';
@@ -69,7 +67,7 @@ export class FlSpreadsheetChartState {
       };
     }
 
-    this.overlayRef = this.portalService.createPortal(FlSpreadsheetChartSelectionComponent, portalConfig, data);
+    this.overlayRef = this.portalService.createPortal(FlSheetChartSelectionComponent, portalConfig, data);
 
     this.overlayRef.detachments().subscribe(
       (chartSelection) => this.generateChart(chartSelection, selection?.id ?? null)
