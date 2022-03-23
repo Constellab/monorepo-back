@@ -4,7 +4,7 @@ import {TransformableInfo} from 'logform';
 import 'winston-daily-rotate-file';
 import {LogLevel} from '@nestjs/common/services/logger.service';
 
-export interface BlLoggerConfig{
+export interface BlLoggerConfig {
   logLevel: LogLevel;
   logFilePath: string; // if provided, a daily log file is created
 }
@@ -20,7 +20,20 @@ export function blConfigureLogger(config: BlLoggerConfig): WinstonModuleOptions 
   const transportsList: any[] = [];
 
   const dataFormat: string = 'DD/MM/YY HH:mm:ss';
-  const logFormat = (info: TransformableInfo): string => `${info.timestamp} ${info.level} [${info.context}]: ${info.message}`;
+  const logFormat = (info: TransformableInfo): string => {
+    let context = info.context;
+    if (context == null && info.stack && info.stack.length > 0) {
+      context = info.stack[0];
+    }
+
+    if (context != null) {
+      context = '[' + context + ']';
+    } else {
+      context = '';
+    }
+
+    return `${info.timestamp} ${info.level} ${context}: ${info.message}`;
+  };
 
   // Add the console transport to log into the console
   transportsList.push(new transports.Console({
