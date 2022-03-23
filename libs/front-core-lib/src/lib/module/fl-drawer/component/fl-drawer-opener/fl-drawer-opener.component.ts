@@ -20,7 +20,10 @@ export class FlDrawerOpenerComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  @HostListener('mouseenter') onMouseEnter(): void {
+
+  @HostListener('mouseenter', ['$event']) onMouseEnter(mouse: MouseEvent): void {
+    // don't open the drawer if a button of the mouse is pressed (this can mean that the user drag an object)
+    if (mouse.buttons !== 0) return;
     this.openDrawer();
   }
 
