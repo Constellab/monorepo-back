@@ -104,6 +104,7 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
       series: [[], Validators.required],
       additionalFields: new FormBuilder().group({
         nbOfBins: [null, [Validators.min(1), FlGlobalValidators.isInteger()]],
+        density: [null]
       })
 
     });
@@ -312,12 +313,12 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
     }
   }
 
-  get maxNbOfSeries(): number{
+  get maxNbOfSeries(): number {
     return this.formConfig?.getNbMaxOfSeries() ?? Infinity;
   }
 
-  get maxNbOfSeriesReached(): boolean{
-    return this.formGp.value.series.length > this.maxNbOfSeries
+  get maxNbOfSeriesReached(): boolean {
+    return this.formGp.value.series.length > this.maxNbOfSeries;
   }
 
   ngOnDestroy(): void {

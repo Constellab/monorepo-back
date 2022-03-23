@@ -29,7 +29,7 @@
 
         <!-- Chart data range-->
         <fl-sheet-ranges-input formControlName="dataRange" selectionListenerGroup="sheet-chart" rangeMode="single"
-                                     [placeholder]="'flSpreadsheet.chart_data_range' | translate"></fl-sheet-ranges-input>
+                               [placeholder]="'flSpreadsheet.chart_data_range' | translate"></fl-sheet-ranges-input>
 
         <!---------------- Additional fields --------------------->
 
@@ -43,6 +43,12 @@
               {{'flSpreadsheet.chart_nb_of_bins_error' | translate}}
             </mat-error>
           </mat-form-field>
+
+          <!--    Density      -->
+          <mat-checkbox formControlName="density" *ngIf="showAdditionalField('density')"
+                        class="density">
+            {{'flSpreadsheet.chart_histo_density' | translate}}
+          </mat-checkbox>
         </ng-container>
       </div>
 

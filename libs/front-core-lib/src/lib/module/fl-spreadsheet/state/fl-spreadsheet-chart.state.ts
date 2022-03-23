@@ -155,7 +155,7 @@ export class FlSpreadsheetChartState {
       case FlChartType.LINE:
         return chartService.generateLine2d(formValue.series);
       case FlChartType.HISTOGRAM:
-        return chartService.generateHistogram(formValue.series, formValue.additionalFields.nbOfBins);
+        return chartService.generateHistogram(formValue.series, formValue.additionalFields.nbOfBins, formValue.additionalFields.density);
       case FlChartType.BOX_PLOT:
         return chartService.generateBoxPlot(formValue.series);
       case FlChartType.BAR_PLOT:

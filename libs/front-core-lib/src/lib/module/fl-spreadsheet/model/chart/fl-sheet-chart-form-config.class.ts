@@ -218,7 +218,7 @@ export class FlSheetHistogramFormConfig extends FlSheetChartFormConfig {
   }
 
   getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
-    return ['nbOfBins'];
+    return ['nbOfBins', 'density'];
   }
 
 

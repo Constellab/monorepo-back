@@ -27,7 +27,7 @@ export interface FlSheetChartSelectionResult {
 
 
 /**
- * Type used in the form of {@link FlSpreadsheetChartSelectionComponent}
+ * Type used in the form of {@link FlSheetChartSelectionComponent}
  */
 export interface FlSheetChartSelectionForm {
   id: symbol;
@@ -59,6 +59,7 @@ export type FlSheetSelectionRange = {
 export interface FlSheetChartSelectionFormAdditional {
   // for the Histogram
   nbOfBins?: number;
+  density?: boolean;
 }
 
 

@@ -11,7 +11,7 @@ export abstract class FlSheetChartService {
   public abstract generateScatterPlot2d(series: FlSheetChart2dSerieSelectionForm[]): FlChartConfig | Observable<FlChartConfig>;
 
   public abstract generateHistogram(series: FlSheetChartSerieSelectionForm[],
-                                    nbOfBins?: number): FlChartConfig | Observable<FlChartConfig>;
+                                    nbOfBins?: number, density?: boolean): FlChartConfig | Observable<FlChartConfig>;
 
   public abstract generateBoxPlot(series: FlSheetChartSerieSelectionForm[]): FlChartConfig | Observable<FlChartConfig>;
 
@@ -21,6 +21,5 @@ export abstract class FlSheetChartService {
 
   public abstract generateHeatMap(serie: FlSheetChartSerieSelectionForm): FlChartConfig | Observable<FlChartConfig>;
 
-  // todo a voir
   public abstract generateVennDiagram(series: FlSheetChartSerieSelectionForm[]): FlChartConfig | Observable<FlChartConfig>;
 }
