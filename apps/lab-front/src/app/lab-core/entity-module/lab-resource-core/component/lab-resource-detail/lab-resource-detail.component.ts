@@ -13,10 +13,6 @@ import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-cor
 import {
   LabResourceViewSpecsPortalComponent
 } from '../../../../../lab-databox/module/lab-resource-detail-page/component/lab-resource-view-specs-portal/lab-resource-view-specs-portal.component';
-import {
-  LabTransformResourcePortalComponent,
-  LabTransformResourcePortalInput
-} from '../../../lab-transformer/component/lab-transform-resource-portal/lab-transform-resource-portal.component';
 import {LabTag} from '../../../../model/entities/lab-tag.entity';
 import {LabRouterService} from '../../../../service/lab-router.service';
 
@@ -88,30 +84,6 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
       });
 
     this.overlayRef = this.portalService.createPortal(LabResourceViewSpecsPortalComponent, config);
-    this.overlayRef.detachments().subscribe(() => this.overlayRef = null);
-  }
-
-  async openTransformerResource(): Promise<void> {
-    this.overlayRef?.dispose();
-
-    const resource = await this.state.getResourcePromise();
-
-    const config: FlPortalConfig = this.portalService.configureAbsolutePortal(
-      {centerHorizontally: '0', top: '0'},
-      {
-        elevation: true,
-        disposeOnNavigation: true,
-        hasBackdrop: true,
-        transparentBackdrop: true,
-      });
-
-    const input: LabTransformResourcePortalInput = {
-      resourceName: resource.name,
-      resourceTypingName: resource.resourceTypingName,
-      resourceId: resource.id
-    };
-
-    this.overlayRef = this.portalService.createPortal(LabTransformResourcePortalComponent, config, input);
     this.overlayRef.detachments().subscribe(() => this.overlayRef = null);
   }
 

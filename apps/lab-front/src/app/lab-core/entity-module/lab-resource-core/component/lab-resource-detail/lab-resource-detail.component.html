@@ -22,12 +22,6 @@
               {{'biox.view_specs' | translate}}
             </button>
 
-            <button mat-stroked-button type="button" *ngIf="!readOnly"
-                    (click)="openTransformerResource()" class="button g-button-small">
-              <mat-icon>move_down</mat-icon>
-              {{'biox.transformers' | translate}}
-            </button>
-
             <!--   Link to resource detail page only for readOnly       -->
             <a mat-stroked-button type="button" *ngIf="readOnly"
                [routerLink]="resource | labDetailRoute"
