@@ -39,8 +39,8 @@ export class FlColorHelper {
     // return ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3',
     //   '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999'];
     // color for color blind : https://jfly.uni-koeln.de/color/
-    return ['#e69f00', '#56b4e9', '#009e73', '#f0e442',
-      FlColorHelper.blue, FlColorHelper.red, '#cc79a7'];
+    return ['rgba(230,159,0,0.8)', 'rgba(86,180,233,0.8)', 'rgba(0,158,115,0.8)', 'rgba(240,228,66,0.8)',
+      FlColorHelper.blue, FlColorHelper.red, 'rgba(204,121,167,0.8)'];
 
     // return ['#004949', '#ff6db6', '#490092', '#006ddb',
     //   '#920000', '#924900', '#24ff24', '#ffff6d',
@@ -69,10 +69,10 @@ export class FlColorHelper {
 
 
   public static get blue(): string {
-    return '#0072b2';
+    return 'rgba(0,114,178,0.8)';
   }
 
   public static get red(): string {
-    return '#d55c00';
+    return 'rgba(213,92,0,0.8)';
   }
 }
