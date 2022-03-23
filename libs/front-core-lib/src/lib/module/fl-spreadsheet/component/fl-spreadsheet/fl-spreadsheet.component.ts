@@ -53,6 +53,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
   @Input() readOnly: boolean = false;
 
   @ViewChild('tableContainer', {static: true}) tableContainer: ElementRef<HTMLElement>;
+  @ViewChild('horizontalScroller', {static: true}) horizontalScroller: ElementRef<HTMLElement>;
   @ViewChild('scroller', {static: true}) scroller: ElementRef<HTMLElement>;
   @ViewChild('heightSimulator', {static: true}) heightSimulator: ElementRef<HTMLElement>;
 
@@ -69,12 +70,14 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
               private scrollState: FlSpreadsheetScrollState) {
   }
 
+
   ngOnInit(): void {
     this.state.init(this.spreadsheet, this.readOnly);
     this.selectionState.init();
     this.keyboardState.init();
     this.mouseState.init();
-    this.scrollState.init(this.tableContainer, this.scroller, this.heightSimulator);
+    this.scrollState.init(this.tableContainer.nativeElement, this.scroller.nativeElement,
+      this.heightSimulator.nativeElement, this.horizontalScroller.nativeElement);
 
     this.columns$ = this.state.getCurrentSheetColumns$().pipe(
       // add the first column corresponding to the row header

@@ -1,4 +1,4 @@
-import {ElementRef, Injectable, NgZone, Renderer2} from '@angular/core';
+import {Injectable, NgZone, Renderer2} from '@angular/core';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {debounceTime, filter, startWith} from 'rxjs/operators';
@@ -25,9 +25,10 @@ export class FlSpreadsheetScrollState {
 
   // parent of the heightSimulator that scroll
   private tableContainer: HTMLElement;
-  private scroller: HTMLElement;
+  private verticalScroller: HTMLElement;
   // html element that is simulate the complete spreadsheet height
   private heightSimulator: HTMLElement;
+  private horizontalScroller: HTMLElement;
 
   // height of a cell in px
   private readonly cellHeight: number = 24;
@@ -46,10 +47,12 @@ export class FlSpreadsheetScrollState {
   }
 
 
-  public init(tableContainer: ElementRef<HTMLElement>, scroller: ElementRef<HTMLElement>, heightSimulator: ElementRef<HTMLElement>): void {
-    this.tableContainer = tableContainer.nativeElement;
-    this.scroller = scroller.nativeElement;
-    this.heightSimulator = heightSimulator.nativeElement;
+  public init(tableContainer: HTMLElement, scroller: HTMLElement, heightSimulator: HTMLElement,
+              horizontalScroller: HTMLElement): void {
+    this.tableContainer = tableContainer;
+    this.verticalScroller = scroller;
+    this.heightSimulator = heightSimulator;
+    this.horizontalScroller = horizontalScroller;
     this.listenToScroll();
 
     // listen to the selection event to scroll to last selection rows if not visible
@@ -69,7 +72,7 @@ export class FlSpreadsheetScrollState {
       this.wheelListener = this.renderer.listen(this.tableContainer, 'wheel',
         (event: WheelEvent) => this.onWheelEvent(event));
 
-      this.scrollListener = new FlRendererListenerObs(this.renderer, this.scroller, 'scroll');
+      this.scrollListener = new FlRendererListenerObs(this.renderer, this.verticalScroller, 'scroll');
       this.windowsResizeListener = new FlRendererListenerObs(this.renderer, 'window', 'resize');
 
       this.subscriptions.add(combineLatest([
@@ -84,11 +87,16 @@ export class FlSpreadsheetScrollState {
 
   private onWheelEvent(event: WheelEvent): void {
     ClHelpService.stopEventPropagation(event);
-    this.triggerScroll(event.deltaY);
+    this.triggerScrollY(event.deltaY);
+    this.triggerScrollX(event.deltaX);
   }
 
-  private triggerScroll(y: number): void {
-    this.scroller.scrollTo(0, y + this.scroller.scrollTop);
+  private triggerScrollY(y: number): void {
+    this.verticalScroller.scrollBy(0, y);
+  }
+
+  private triggerScrollX(x: number): void {
+    this.horizontalScroller.scrollBy(x, 0);
   }
 
   /**
@@ -101,12 +109,12 @@ export class FlSpreadsheetScrollState {
     this.recalculateScrollerHeight(rows.length);
 
     // calculate the fist and last row to display
-    const scrollerHeight: number = this.scroller.offsetHeight;
+    const scrollerHeight: number = this.verticalScroller.offsetHeight;
     const numberOfCell: number = Math.trunc(scrollerHeight / this.cellHeight);
 
-    const scrollTop: number = this.scroller.scrollTop;
+    const scrollTop: number = this.verticalScroller.scrollTop;
     const firstCell: number = Math.trunc(scrollTop / this.cellHeight);
-    const lastCell: number = firstCell + numberOfCell ;
+    const lastCell: number = firstCell + numberOfCell;
     const subRows: FlSheetRow[] = rows.slice(firstCell, lastCell);
 
     this.rowsToDisplay$.next(subRows);
@@ -121,7 +129,7 @@ export class FlSpreadsheetScrollState {
     // define the height of the spreadsheet
     // + 2 is to include to header row and the last row
     this.renderer.setStyle(this.heightSimulator, 'height',
-      (this.cellHeight * (rowCount + 2))  + 'px');
+      (this.cellHeight * (rowCount + 2)) + 'px');
   }
 
 
@@ -136,7 +144,7 @@ export class FlSpreadsheetScrollState {
   public scrollOnePage(direction: 'up' | 'down'): void {
     const factor: number = direction === 'up' ? -1 : 1;
 
-    this.triggerScroll(this.tableContainer.offsetHeight * factor);
+    this.triggerScrollY(this.tableContainer.offsetHeight * factor);
   }
 
   // scroll to the rowId if it's not visible
@@ -149,11 +157,11 @@ export class FlSpreadsheetScrollState {
     const interval: Interval = this.getVisibleInterval();
     // if we have to scroll to the top
     if (rowId < interval.from) {
-      this.triggerScroll(-this.cellHeight * (interval.from - rowId));
+      this.triggerScrollY(-this.cellHeight * (interval.from - rowId));
     }
     // if we have to scroll to the bottom
     else {
-      this.triggerScroll(this.cellHeight * (rowId - interval.to));
+      this.triggerScrollY(this.cellHeight * (rowId - interval.to));
     }
 
   }
