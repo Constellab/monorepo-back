@@ -14,7 +14,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
 import {FlTextEditorState} from '../../state/fl-text-editor.state';
-import {FlResizeEvent} from '../../../fl-core-directive/fl-resize/fl-resize.directive';
+import {FlResizeEvent} from '../../../fl-resize/fl-resize/fl-resize.directive';
 import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.state';
 import {Observable} from 'rxjs';
 

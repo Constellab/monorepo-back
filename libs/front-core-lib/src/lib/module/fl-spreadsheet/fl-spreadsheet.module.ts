@@ -54,6 +54,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
 import {FlAutocompleteMultipleModule} from '../fl-autocomplete-multiple/fl-autocomplete-multiple.module';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {FlResizeModule} from '../fl-resize/fl-resize.module';
 
 
 @NgModule({
@@ -92,6 +93,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     FlCoreComponentModule,
     FlKeyValueModule,
     FlAutocompleteMultipleModule,
+    FlResizeModule,
 
     ScrollingModule,
     MatMenuModule,

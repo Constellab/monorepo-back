@@ -18,6 +18,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flTextEditorI18n} from './i18n/fl-text-editor.i18n';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {FlResizeModule} from '../fl-resize/fl-resize.module';
 
 
 @NgModule({
@@ -43,6 +44,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     FlInputFileModule,
     FlCoreDirectiveModule,
     FlTranslateModule,
+    FlResizeModule,
   ],
 })
 export class FlTextEditorModule {

@@ -5,7 +5,6 @@ import {FlDragHoverDirective} from './fl-drag-hover/fl-drag-hover.directive';
 import {FlPortalModule} from '../fl-portal/fl-portal.module';
 import {FlForByIdOfDirective} from './fl-for-by-id-of/fl-for-by-id-of.directive';
 import {FlMouseHoverDirective} from './fl-mouse-hover/fl-mouse-hover.directive';
-import {FlResizeDirective} from './fl-resize/fl-resize.directive';
 import {FlOutsideClickDirective} from './fl-outside-click/fl-outside-click.directive';
 import {FlDisableAnimationInitDirective} from './fl-disable-animation-init/fl-disable-animation-init.directive';
 import {FlAutofocusDirective} from './fl-autofocus/fl-autofocus.directive';
@@ -22,7 +21,6 @@ import {FlElasticSearchDirective} from './fl-elastic-search/fl-elastic-search.di
     FlDragHoverDirective,
     FlForByIdOfDirective,
     FlMouseHoverDirective,
-    FlResizeDirective,
     FlOutsideClickDirective,
     FlDisableAnimationInitDirective,
     FlAutofocusDirective,
@@ -34,7 +32,6 @@ import {FlElasticSearchDirective} from './fl-elastic-search/fl-elastic-search.di
     FlDragHoverDirective,
     FlForByIdOfDirective,
     FlMouseHoverDirective,
-    FlResizeDirective,
     FlOutsideClickDirective,
     FlDisableAnimationInitDirective,
     FlAutofocusDirective,

@@ -28,6 +28,7 @@ export * from './lib/module/fl-loader/public-api';
 export * from './lib/module/fl-menu-dynamic/public-api';
 export * from './lib/module/fl-portal/public-api';
 export * from './lib/module/fl-portal-actions/public-api';
+export * from './lib/module/fl-resize/public-api';
 export * from './lib/module/fl-search/public-api';
 export * from './lib/module/fl-section/public-api';
 export * from './lib/module/fl-snack-bar/public-api';

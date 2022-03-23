@@ -35,6 +35,7 @@ import {
   FlChartVennDataPortalComponent
 } from './component/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
+import {FlResizeModule} from '../fl-resize/fl-resize.module';
 
 /**
  * Main module exporting all the chart modules
@@ -74,6 +75,7 @@ import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.modu
     FlTranslateModule,
     FlMenuDynamicModule,
     FlCoreDirectiveModule,
+    FlResizeModule,
 
     DragDropModule,
     MatButtonModule,

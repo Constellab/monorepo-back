@@ -22,6 +22,7 @@ import {
   FlLoaderModule,
   FlPortalActionsModule,
   FlPortalModule,
+  FlResizeModule,
   FlSearchModule,
   FlSectionModule,
   FlSnackBarModule,
@@ -72,6 +73,7 @@ import {
     FlSearchModule,
     FlArticleModule,
     FlKeyValueModule,
+    FlResizeModule,
   ]
 })
 export class LabCustomLibraryModule {

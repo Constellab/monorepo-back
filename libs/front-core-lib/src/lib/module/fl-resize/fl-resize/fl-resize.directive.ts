@@ -8,6 +8,7 @@ export interface FlResizeEvent {
   mode: FlResizeMode;
   width: number; // new width of the element
   height: number; // new height of the element
+  fullscreen: boolean;
 }
 
 /**
@@ -163,40 +164,43 @@ export class FlResizeDirective implements OnInit, OnDestroy {
   }
 
   private onMouseMove(event: MouseEvent): void {
-    switch (this.currentResizeMode) {
+    const newWidth: number = this.baseHostSize.x + event.pageX - this.baseEventPos.x;
+    const newHeight: number = this.baseHostSize.y + event.pageY - this.baseEventPos.y;
+
+    this.updateSize(newWidth, newHeight, this.currentResizeMode);
+  }
+
+  public updateSize(width: number, height: number, mode: FlResizeMode): void {
+    switch (mode) {
       case 'width':
-        this.changeWidth(event.pageX);
+        this.setWidth(width);
         break;
       case 'height':
-        this.changeHeight(event.pageY);
+        this.setHeight(height);
         break;
       case 'both':
-        this.changeWidth(event.pageX);
-        this.changeHeight(event.pageY);
+        this.setWidth(width);
+        this.setHeight(height);
         break;
     }
 
     // trigger change event
-    this.flResizeChanged.next({
+    this.emitChangeEvent({
       mode: this.currentResizeMode,
       width: this.hostWidth,
       height: this.hostHeight,
+      fullscreen: false
     });
-
   }
 
-  private changeWidth(x: number): void {
-    const newWidth: number = this.baseHostSize.x + x - this.baseEventPos.x;
-
-    // update the host with
-    this.renderer.setStyle(this.elementRef.nativeElement, 'width', newWidth + 'px');
+  private setWidth(width: number): void {
+    // update the host width
+    this.renderer.setStyle(this.elementRef.nativeElement, 'width', width + 'px');
   }
 
-  private changeHeight(y: number): void {
-    const newHeight: number = this.baseHostSize.y + y - this.baseEventPos.y;
-
+  private setHeight(height: number): void {
     // update the host height
-    this.renderer.setStyle(this.elementRef.nativeElement, 'height', newHeight + 'px');
+    this.renderer.setStyle(this.elementRef.nativeElement, 'height', height + 'px');
   }
 
   private onMouseUp(): void {
@@ -206,12 +210,34 @@ export class FlResizeDirective implements OnInit, OnDestroy {
     this.baseHostSize = null;
   }
 
-  private get hostWidth(): number {
+  public get hostWidth(): number {
     return this.elementRef.nativeElement.clientWidth;
   }
 
-  private get hostHeight(): number {
+  public get hostHeight(): number {
     return this.elementRef.nativeElement.clientHeight;
+  }
+
+  /**
+   * Method called by the
+   */
+  public setFullscreen(): void {
+    if (!window) return;
+    this.setWidth(window.innerWidth);
+    this.setHeight(window.innerHeight);
+
+    // trigger change event FlResizeFullscreenButtonComponent to set full screen
+    this.emitChangeEvent({
+      mode: this.currentResizeMode,
+      width: this.hostWidth,
+      height: this.hostHeight,
+      fullscreen: true
+    });
+  }
+
+  private emitChangeEvent(ev: FlResizeEvent): void {
+    // trigger change event
+    this.flResizeChanged.next(ev);
   }
 
 
