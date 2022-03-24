@@ -32,6 +32,8 @@ $cell-selected-border-color: #058989;
   // set to prevent being bigger than parent (- 1px is for the border)
   max-height: calc(var(--table-row-height) - 1px);
   padding: 3px;
+
+  // use grid so this is the parent that define the size, not the child
   box-sizing: border-box;
   display: grid;
   grid-template-columns: auto 1fr;

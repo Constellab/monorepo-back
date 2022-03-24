@@ -1,4 +1,5 @@
-<div class="container" tabindex="-1">
+<div class="container" tabindex="-1"
+     flMouseHover [flMouseEnterDelay]="500" (flMouseEnter)="openInfoPortal()" (flMouseLeave)="closePortal()">
 
   <div class="view-content g-not-selectable" *ngIf="!edit; else editMode">
     <ng-container *ngIf="!cellValueIsObject; else isObject">{{cellValue}}</ng-container>

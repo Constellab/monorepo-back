@@ -20,6 +20,10 @@ import {FlKeyboardHelper, FlKeyboardKey} from '../../../../utils/fl-keyboard.hel
 import {FlCellsRange} from '../../model/selection/fl-cells-range.class';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlCellCoord} from '../../model/fl-cell-coord.class';
+import {FlPortalConnectedPosition} from '../../../fl-portal/model/fl-portal.class';
+import {FlSpreadsheetCellInfoComponent} from '../fl-spreadsheet-cell-info/fl-spreadsheet-cell-info.component';
+import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
+import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
 
 @Component({
   selector: 'fl-spreadsheet-cell',
@@ -58,12 +62,14 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
 
   private subscription: ClSubscriptionHandler = new ClSubscriptionHandler();
 
+  private overlayRef: FlOverlayRef;
 
   constructor(private renderer: Renderer2, private elementRef: ElementRef<HTMLElement>,
               private state: FlSpreadsheetState,
               private selectionState: FlSpreadsheetSelectionState,
               private actionState: FlSpreadsheetActions,
-              private cdr: ChangeDetectorRef) {
+              private cdr: ChangeDetectorRef,
+              private portalService: FlPortalService) {
     this.id = FlSpreadsheetCellComponent.id++;
   }
 
@@ -250,6 +256,24 @@ export class FlSpreadsheetCellComponent implements OnInit, OnDestroy, DoCheck {
 
   openCellValueIsNewSheet(): void {
     this.state.openCellInNewSheet(this.cell);
+  }
+
+  /////////////////////////////// CELL INFO ///////////////////////////////
+  openInfoPortal(): void {
+    const positions: FlPortalConnectedPosition[] = ['right', 'left', 'top', 'bottom'];
+
+    const config = this.portalService.configureRelativePortal(this.elementRef.nativeElement, positions, {
+      disposeOnNavigation: true,
+      disposeOnOutsideClick: true,
+      elevation: true
+    });
+
+    this.overlayRef = this.portalService.createPortal(FlSpreadsheetCellInfoComponent, config, this.cellWithCoord);
+  }
+
+  closePortal(): void {
+    this.overlayRef?.dispose();
+    this.overlayRef = null;
   }
 
   ngOnDestroy(): void {

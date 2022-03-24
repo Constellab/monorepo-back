@@ -55,6 +55,10 @@ import {MatChipsModule} from '@angular/material/chips';
 import {FlAutocompleteMultipleModule} from '../fl-autocomplete-multiple/fl-autocomplete-multiple.module';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {FlResizeModule} from '../fl-resize/fl-resize.module';
+import {FlSpreadsheetCellInfoComponent} from './component/fl-spreadsheet-cell-info/fl-spreadsheet-cell-info.component';
+import {
+  FlSpreadsheetHeaderTagsComponent
+} from './component/fl-spreadsheet-header-tags/fl-spreadsheet-header-tags.component';
 
 
 @NgModule({
@@ -70,6 +74,8 @@ import {FlResizeModule} from '../fl-resize/fl-resize.module';
     FlSpreadsheetDrawerComponent,
     FlSpreadsheetHeaderInfoComponent,
     FlSheetRangesInputComponent,
+    FlSpreadsheetCellInfoComponent,
+    FlSpreadsheetHeaderTagsComponent,
   ],
   exports: [
     FlSpreadsheetComponent,

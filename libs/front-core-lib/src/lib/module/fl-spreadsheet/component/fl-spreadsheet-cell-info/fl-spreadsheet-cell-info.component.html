@@ -1,0 +1,29 @@
+<fl-portal>
+
+  <fl-portal-content>
+
+    <fl-key-value>
+      <fl-key>{{'flSpreadsheet.cell_value' | translate}}</fl-key>
+      <span class="name">{{cell.value$ | async}}</span>
+    </fl-key-value>
+
+    <!-- Column  -->
+    <ng-container *ngIf="columnInfo">
+      <mat-divider class="divider"></mat-divider>
+      <div class="g-text-small header">
+        <div *ngIf="columnInfo.name">{{columnInfo.name}}</div>
+        <fl-spreadsheet-header-tags [tags]="columnInfo.tags"></fl-spreadsheet-header-tags>
+      </div>
+    </ng-container>
+
+    <!-- Row  -->
+    <ng-container *ngIf="rowInfo">
+      <mat-divider class="divider"></mat-divider>
+      <div class="g-text-small header">
+        <div *ngIf="rowInfo.name">{{rowInfo.name}}</div>
+        <fl-spreadsheet-header-tags [tags]="rowInfo.tags"></fl-spreadsheet-header-tags>
+      </div>
+    </ng-container>
+  </fl-portal-content>
+</fl-portal>
+

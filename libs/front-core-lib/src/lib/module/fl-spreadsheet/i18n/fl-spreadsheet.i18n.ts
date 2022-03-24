@@ -44,6 +44,7 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     sheet_selection_range: 'Plage',
     sheet_selection_columns: 'Colonnes',
     cell_value_object: 'Objet',
+    cell_value: 'Value',
     open_cell_object_in_sheet: 'Ouvrir dans une feuille',
     sheet: 'Feuille',
     split_selection_by_rows: 'Séparer la sélection par lignes',
@@ -56,6 +57,8 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     header_tags: 'Tags',
     total_rows_count: 'Nombre total de lignes',
     total_columns_count: 'Nombre total de colonnes',
+    column: 'Column',
+    row: 'Row'
   }
 };
 
@@ -97,6 +100,7 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     sheet_selection_range: 'Range',
     sheet_selection_columns: 'Columns',
     cell_value_object: 'Object',
+    cell_value: 'Valeur',
     open_cell_object_in_sheet: 'Open in a sheet',
     sheet: 'Sheet',
     split_selection_by_rows: 'Split selection by rows',
@@ -109,6 +113,8 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     header_tags: 'Tags',
     total_rows_count: 'Total number of rows',
     total_columns_count: 'Total number of columns',
+    column: 'Colonne',
+    row: 'Ligne'
   }
 };
 

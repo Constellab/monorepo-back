@@ -4,7 +4,9 @@ import {Subscription} from 'rxjs';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
 import {filter} from 'rxjs/operators';
-import {FlSpreadsheetSelectionListenerManagerService} from './fl-spreadsheet-selection-listener-manager.service';
+import {
+  FlSpreadsheetSelectionListenerManagerService
+} from '../../state/fl-spreadsheet-selection-listener-manager.service';
 
 /**
  * Component to listen to selection on spreadsheet

@@ -30,6 +30,10 @@ $cell-selected-border-color: #058989;
   }
 }
 
+.container{
+  display: grid;
+}
+
 .container:focus {
   outline: none;
 }
@@ -39,8 +43,8 @@ $cell-selected-border-color: #058989;
 
   // mandatory to be able to resize the cells smaller than their content
   overflow: hidden;
-  white-space: initial;
-  word-break: break-all;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .input {
