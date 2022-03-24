@@ -17,9 +17,11 @@ export interface FlChartDataWithSeriePortalInput {
   selector: 'fl-chart-data-with-serie-portal',
   templateUrl: './fl-chart-data-with-serie-portal.component.html',
   styleUrls: ['./fl-chart-data-with-serie-portal.component.scss'],
-  changeDetection:  ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlChartDataWithSeriePortalComponent implements OnInit {
+
+  x: any;
 
   data: FlChartDataWithSerie<FlChart2dDatum>[];
   seriesColorScale: FlChartScaleColor;
@@ -27,6 +29,11 @@ export class FlChartDataWithSeriePortalComponent implements OnInit {
   constructor(@Inject(FL_PORTAL_DATA) input: FlChartDataWithSeriePortalInput) {
     this.data = ClHelpService.convertObjectOrArrayToArray(input.data);
     this.seriesColorScale = input.seriesColorScale;
+
+    // retrieve the x, it is the same for all the values
+    if (this.data?.length > 0) {
+      this.x = this.data[0].data.getX();
+    }
   }
 
   ngOnInit(): void {

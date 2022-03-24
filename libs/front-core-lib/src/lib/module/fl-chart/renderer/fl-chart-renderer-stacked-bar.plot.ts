@@ -47,6 +47,7 @@ export class FlChartRendererStackedBarPlot implements FlChart2AxisRenderer<FlCha
       .data(d => d)
       .join('rect')
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
+      .on('click', () => this.onMouseClick())
       .on('mouseout', () => this.onMouseOut())
       .attr('class', this.barClassName)
       .each((data, index, nodes) =>
@@ -69,8 +70,13 @@ export class FlChartRendererStackedBarPlot implements FlChart2AxisRenderer<FlCha
       data: d.data,
       seriesColorScale: this.colorScale
     };
+
     // create the portal
     this.portalHandler.openPortal(event.target as any, FlChartDataWithSeriePortalComponent, data);
+  }
+
+  private onMouseClick(): void {
+    this.portalHandler.fixPortal();
   }
 
   private onMouseOut(): void {

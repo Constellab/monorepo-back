@@ -1,13 +1,17 @@
 <fl-portal>
   <fl-portal-content>
 
-    <div *ngFor="let dataWithSerie of data">
-      <div>x : {{dataWithSerie.data.getX()}}</div>
-      <div>y : {{dataWithSerie.data.getY()}}</div>
+    <div *ngIf="x">x : {{x}}</div>
+    <div class="container">
+      <div *ngFor="let dataWithSerie of data" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em"
+           class="serie g-text-tiny">
 
-      <fl-chart-serie-inline class="serie" [color]="dataWithSerie.serieKey | flChartScale:seriesColorScale"
-                             [serieName]="dataWithSerie.serieName">
-      </fl-chart-serie-inline>
+        <fl-chart-serie-inline [color]="dataWithSerie.serieKey | flChartScale:seriesColorScale"
+                               [serieName]="dataWithSerie.serieName" class="serie-inline g-text-light">
+        </fl-chart-serie-inline>
+
+        <div class="value">{{dataWithSerie.data.getY() | number:'1.0-2'}}</div>
+      </div>
     </div>
   </fl-portal-content>
 </fl-portal>
