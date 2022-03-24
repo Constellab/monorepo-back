@@ -33,15 +33,22 @@ $cell-selected-border-color: #058989;
   max-height: calc(var(--table-row-height) - 1px);
   padding: 3px;
   box-sizing: border-box;
+  display: grid;
+  grid-template-columns: auto 1fr;
 }
 
 .index {
   min-width: 25px;
 }
 
+.grid-right {
+  min-width: 0;
+}
 
-.header-info {
-  flex: 1
+.header-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .colors-container {

@@ -1,10 +1,9 @@
 <div class="g-not-selectable g-text-centered container"
-     fxLayout="row" fxLayoutAlign="start center"
      flMouseHover [flMouseEnterDelay]="500" (flMouseEnter)="openHeaderPortal()" (flMouseLeave)="closePortal()">
   <div class="index">{{index | flCellHeader:type}}</div>
 
-  <div fxLayout="column" class="header-info">
-    <div class="g-text-tiny g-text-light">{{header.name}}</div>
+  <div fxLayout="column" class="grid-right">
+    <div class="g-text-tiny g-text-light header-name">{{header.name}}</div>
     <div fxLayout="row" fxLayoutAlign="center" fxLayoutGap="2px" class="colors-container">
       <div *ngFor="let color of colors$ | async" [style.background-color]="color"
            class="color">
