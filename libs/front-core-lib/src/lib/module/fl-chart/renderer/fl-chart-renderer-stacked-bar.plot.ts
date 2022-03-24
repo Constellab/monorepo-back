@@ -5,12 +5,12 @@ import {select, Series, SeriesPoint, Stack, stack} from 'd3';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 import {FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
-import {
-  FlChartDataWithSeriePortalComponent,
-  FlChartDataWithSeriePortalInput
-} from '../component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
 import {FlD3SelectionSimple} from '../model/fl-d3.class';
+import {
+  FlChartStackedBarDataPortalComponent,
+  FlChartStackedBarDataPortalInput
+} from '../component/fl-chart-stacked-bar-data-portal/fl-chart-stacked-bar-data-portal.component';
 
 /**
  * Renderer for stack stack bar plot or histogram
@@ -66,13 +66,13 @@ export class FlChartRendererStackedBarPlot implements FlChart2AxisRenderer<FlCha
   }
 
   private onMouseHover(event: MouseEvent, d: SeriesPoint<FlChartDataWithSerie<FlChart2dDatum>[]>): void {
-    const data: FlChartDataWithSeriePortalInput = {
+    const data: FlChartStackedBarDataPortalInput = {
       data: d.data,
       seriesColorScale: this.colorScale
     };
 
     // create the portal
-    this.portalHandler.openPortal(event.target as any, FlChartDataWithSeriePortalComponent, data);
+    this.portalHandler.openPortal(event.target as any, FlChartStackedBarDataPortalComponent, data);
   }
 
   private onMouseClick(): void {

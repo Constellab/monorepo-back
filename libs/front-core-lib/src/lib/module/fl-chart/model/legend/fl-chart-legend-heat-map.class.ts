@@ -17,15 +17,17 @@ export class FlChartLegendHeatMap extends FlChartLegend {
 
   renderLegend(parent: Selection<any, any, any, any>, width: number, height: number): void {
 
-    const margin: number = 5;
-    const rectWidth = 20;
-    const rectHeight = Math.min(height - (margin * 2), 200);
-    this.drawLegendRect(parent, rectWidth, rectHeight, margin);
-    this.drawLegendAxis(parent, rectWidth, rectHeight, margin);
+    const topMargin: number = 5;
+    const leftMargin = 20
+    const rectWidth = 10;
+    const rectHeight = Math.min(height - (topMargin * 2), 200);
+    this.drawLegendRect(parent, rectWidth, rectHeight, topMargin, leftMargin);
+    this.drawLegendAxis(parent, rectWidth + leftMargin, rectHeight, topMargin);
   }
 
   private drawLegendRect(parent: Selection<any, any, any, any>,
-                         rectWidth: number, rectHeight: number, topMargin: number,): void {
+                         rectWidth: number, rectHeight: number,
+                         topMargin: number, leftMaring: number): void {
     parent.append('defs')
       .append('linearGradient')
       .attr('id', 'legend-traffic')
@@ -39,7 +41,7 @@ export class FlChartLegendHeatMap extends FlChartLegend {
 
     parent.append('rect') // gradient rect
       .attr('class', 'legendRect')
-      .attr('x', 0)
+      .attr('x', leftMaring)
       .attr('y', topMargin)
       .attr('width', rectWidth)
       .attr('height', rectHeight)

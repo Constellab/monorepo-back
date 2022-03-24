@@ -1,6 +1,7 @@
 import {FlChartLegend} from './fl-chart-legend.class';
 import {Selection} from 'd3-selection';
 import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 export interface FlLegend {
   key: any; // unique key that will be used by the color scale
@@ -35,7 +36,7 @@ export class FlChartLegendMultiSeries extends FlChartLegend {
     legend.append('text')
       .attr('x', 10)
       .attr('y', 3)
-      .text(d => d.name)
+      .text(d => ClStringHelper.limiteLength(d.name, 15))
       .attr('fill', 'currentcolor')
       .attr('title', d => d.name)
       .style('font-size', 10);
@@ -43,6 +44,5 @@ export class FlChartLegendMultiSeries extends FlChartLegend {
     legend.append('title')
       .text(d => d.name);
   }
-
 
 }

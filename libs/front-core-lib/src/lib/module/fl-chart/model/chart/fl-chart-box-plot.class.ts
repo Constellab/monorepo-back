@@ -6,8 +6,8 @@ import {FlChartScaleColor, FlChartScaleColorMulti} from '../scale/fl-chart-scale
 import {FlChartMultiSerie} from '../data/fl-chart-multi-serie.class';
 import {FlChartBoxPlotData} from '../data/fl-chart-box-plot-data.class';
 import {FlChartLegendMultiSeries} from '../legend/fl-chart-legend-multi-series.class';
-import {FlChartScale, FlChartScaleBand, FlChartScaleLinear, FlChartScaleNumber} from '../scale/fl-chart-scale.class';
-import {FlChartAxis} from '../drawer/fl-chart-axis.class';
+import {FlChartScaleBand, FlChartScaleLinear, FlChartScaleNumber} from '../scale/fl-chart-scale.class';
+import {FlChartAxis, FlChartAxisBand} from '../drawer/fl-chart-axis.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
 import {FlChartRendererBoxPlot} from '../../renderer/fl-chart-renderer-box.plot';
 
@@ -26,13 +26,11 @@ export class FlChartBoxPlot extends FlChartConfig {
 
     // build the x-axis and scale based on ScaleBand
     // the x domain is an array of the number of series with index of the serie
-    const xScale: FlChartScale = new FlChartScaleBand()
+    const xScale: FlChartScaleBand = new FlChartScaleBand()
       .setInitialDomain(this.dataContainer.getBiggestSerieDomainCompleteIndexes())
       .paddingOuter(0.3);
-    const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
-      .setTickFormat(() => ''); // no info in x abscissa
-
-    xAxis.setTickFormat((this.dataContainer).axisXLabelFormat);
+    const xAxis: FlChartAxis = new FlChartAxisBand('bottom').setScale(xScale)
+      .setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelFormat);
 
 
     const data = this.dataContainer.getData();

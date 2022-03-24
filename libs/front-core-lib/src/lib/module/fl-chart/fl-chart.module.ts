@@ -36,6 +36,9 @@ import {
 } from './component/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {FlResizeModule} from '../fl-resize/fl-resize.module';
+import {
+  FlChartStackedBarDataPortalComponent
+} from './component/fl-chart-stacked-bar-data-portal/fl-chart-stacked-bar-data-portal.component';
 
 /**
  * Main module exporting all the chart modules
@@ -56,6 +59,7 @@ import {FlResizeModule} from '../fl-resize/fl-resize.module';
     FlChartScalePipe,
 
     FlChartVennDataPortalComponent,
+      FlChartStackedBarDataPortalComponent,
 
   ],
   exports: [

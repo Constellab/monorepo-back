@@ -18,7 +18,7 @@ abstract class FlChartLinear2d extends FlChartConfig {
 
   constructor(protected dataContainer: FlChart2dMultiSerie<any>) {
     super();
-    this.seriesColorScale = FlChartScaleColorMulti.fromMultiSeries(dataContainer);
+    this.seriesColorScale = FlChartScaleColorMulti.fromMultiSeries(dataContainer, true);
   }
 
   getChartContainer(): FlChartContainer<any> {

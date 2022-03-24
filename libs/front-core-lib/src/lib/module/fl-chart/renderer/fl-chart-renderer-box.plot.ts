@@ -117,7 +117,7 @@ export class FlChartRendererBoxPlot implements FlChart2AxisRenderer<FlChartMulti
       .join('line')
       .attr('class', this.horizontalLineClassName)
       .attr('x1', x1)
-      .attr('x2', width)
+      .attr('x2', width + padding)
       .attr('y1', (d) => input.yScale.scale(d))
       .attr('y2', (d) => input.yScale.scale(d))
       .attr('stroke', this.theme.foreground);

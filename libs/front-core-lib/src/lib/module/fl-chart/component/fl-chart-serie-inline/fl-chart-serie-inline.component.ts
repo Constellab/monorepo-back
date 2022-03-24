@@ -11,6 +11,8 @@ export class FlChartSerieInlineComponent implements OnInit {
 
   @Input() color: string;
 
+  @Input() limitSerieNameWidth: boolean = false;
+
   constructor() {
   }
 

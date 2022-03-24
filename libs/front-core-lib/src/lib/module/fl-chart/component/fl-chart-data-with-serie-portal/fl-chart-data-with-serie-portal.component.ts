@@ -3,15 +3,14 @@ import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 import {FlChartDataWithSerie} from '../../model/data/fl-chart-serie.class';
 import {FlChartScaleColor} from '../../model/scale/fl-chart-scale-color.class';
 import {FlChart2dDatum} from '../../model/data/fl-chart-data.class';
-import {ClHelpService} from '@monorepo/core-lib';
 
 export interface FlChartDataWithSeriePortalInput {
-  data: FlChartDataWithSerie<FlChart2dDatum> | FlChartDataWithSerie<FlChart2dDatum>[];
+  data: FlChartDataWithSerie<FlChart2dDatum>;
   seriesColorScale: FlChartScaleColor;
 }
 
 /**
- * Simple portal to show a data with its serie. Or a list of that
+ * Simple portal to show a data with its serie.
  */
 @Component({
   selector: 'fl-chart-data-with-serie-portal',
@@ -21,19 +20,13 @@ export interface FlChartDataWithSeriePortalInput {
 })
 export class FlChartDataWithSeriePortalComponent implements OnInit {
 
-  x: any;
 
-  data: FlChartDataWithSerie<FlChart2dDatum>[];
+  data: FlChartDataWithSerie<FlChart2dDatum>;
   seriesColorScale: FlChartScaleColor;
 
   constructor(@Inject(FL_PORTAL_DATA) input: FlChartDataWithSeriePortalInput) {
-    this.data = ClHelpService.convertObjectOrArrayToArray(input.data);
+    this.data = input.data;
     this.seriesColorScale = input.seriesColorScale;
-
-    // retrieve the x, it is the same for all the values
-    if (this.data?.length > 0) {
-      this.x = this.data[0].data.getX();
-    }
   }
 
   ngOnInit(): void {

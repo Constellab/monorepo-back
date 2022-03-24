@@ -1,10 +1,21 @@
-:host{
+:host {
   display: block;
 }
 
-.serie-color{
+.serie-color {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+.serie-name {
+  max-width: 25em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.serie-name-limited {
+  max-width: 6em;
 }

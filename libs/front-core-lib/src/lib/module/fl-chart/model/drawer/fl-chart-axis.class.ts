@@ -22,6 +22,8 @@ export class FlChartAxis {
 
   protected zoomDuration: number = 250;
 
+  protected tickTextIsRotated: boolean = false;
+
   constructor(type: FlChartAxisType) {
     this.type = type;
   }
@@ -42,12 +44,47 @@ export class FlChartAxis {
     return this;
   }
 
-  public draw(parent: Selection<any, void, null, undefined>, chartHeight: number, chartWidth: number): this {
+  public rotateTickText(): this {
+    this.tickTextIsRotated = true;
+    return this;
+  }
+
+  public draw(parent: Selection<any, void, null, undefined>, chartHeight: number, chartWidth: number): void {
     this.axisContainer = parent.append('g')
       .attr('transform', this.getAxisTransform(chartHeight, chartWidth))
       .call(this.createAxis());
 
-    return this;
+    this.refreshTickLabels();
+  }
+
+  /**
+   * function to Rotate the tick labels and add a title to the label
+   * Need to be called each time the zoom is changed
+   * @private
+   */
+  private refreshTickLabels(): void {
+    this.refreshTickTextRotation();
+    this.refreshTickTitle();
+  }
+
+  private refreshTickTextRotation(): void {
+    if (this.tickTextIsRotated) {
+      this.axisContainer.selectAll('text')
+        // rotate the text of the legend
+        .attr('transform', 'translate(-10,0)rotate(-45)')
+        .style('text-anchor', 'end');
+    }
+  }
+
+  private refreshTickTitle(): void {
+    // add title to tick (only if a tick format exist)
+    if (this.tickFormat) {
+      this.axisContainer.selectAll('text')
+        // add a title to each tick
+        .append('title')
+        .text(this.tickFormat);
+    }
+
   }
 
   private createAxis(): Axis<Numeric> {
@@ -105,17 +142,23 @@ export class FlChartAxis {
     this.scale.zoom(from, to);
 
     // Update axis
-    this.axisContainer.transition().duration(this.zoomDuration).call(this.createAxis());
-
-
+    this.refreshAxis();
   }
 
   public resetZoom(): void {
     // reset the scale
     this.scale.resetZoom();
     this.scale.nice();
+    this.refreshAxis();
+  }
+
+  private refreshAxis(): void {
     // recreate the axis
-    this.axisContainer.transition().call(this.createAxis());
+    this.axisContainer.transition().duration(this.zoomDuration).call(this.createAxis())
+      // wait for the end of transition to add the tick title otherwise it is overwritten
+      .on('end', () => this.refreshTickTitle());
+    // directly rotate the text, this is not overwritten
+    this.refreshTickTextRotation();
   }
 }
 
@@ -128,6 +171,8 @@ export class FlChartAxisBand extends FlChartAxis {
   public static readonly tickTextHeight: number = 12;
   // width of 1 character in tick
   public static readonly tickCharacterWidth: number = 5;
+  // width needed by the tick in X when the text is rotated to prevent superposition
+  public static readonly tickXRotateWidth: number = FlChartAxisBand.tickCharacterWidth * 3;
 
 
   public scale: FlChartScaleBand;
@@ -138,8 +183,8 @@ export class FlChartAxisBand extends FlChartAxis {
   }
 
   /**
-   * Configure a smart tick format, it prevent the tick text to get on top of each other
-   * It check the bandwidth and compare it with the tick size to decide which tick text to show
+   * Configure a smart tick format, it prevents the tick text to get on top of each other
+   * It checks the bandwidth and compare it with the tick size to decide which tick text to show
    *
    * @param tickSize average size of the tick in px
    * @param tickFormat tick format function

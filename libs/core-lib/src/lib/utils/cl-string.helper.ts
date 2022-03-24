@@ -90,7 +90,7 @@ export class ClStringHelper {
    * @param str string
    */
   public static isHttpLink(str: string): boolean {
-    return str.substr(0, 8) === 'https://' || str.substr(0, 7) === 'http://';
+    return str.substring(0, 8) === 'https://' || str.substring(0, 7) === 'http://';
   }
 
   /**
@@ -104,7 +104,7 @@ export class ClStringHelper {
       return str;
     }
 
-    return str[0].toUpperCase() + str.substr(1).toLowerCase();
+    return str[0].toUpperCase() + str.substring(1).toLowerCase();
   }
 
   /**
@@ -172,6 +172,17 @@ export class ClStringHelper {
   }
 
   public static replaceAt(str: string, index: number, replacementLength: number, replacement: string): string {
-    return str.substr(0, index) + replacement + str.substr(index + replacementLength);
+    return str.substring(0, index) + replacement + str.substring(index + replacementLength);
+  }
+
+  /**
+   * Limit length of a string a complete with '...'
+   */
+  public static limiteLength(str: string, length: number): string {
+    if (!str) return str;
+
+    if (str.length <= length) return str;
+    // when stripping, remove few more characters so the '...' doesn't not overlap
+    return str.substring(0, length - 3) + '...';
   }
 }

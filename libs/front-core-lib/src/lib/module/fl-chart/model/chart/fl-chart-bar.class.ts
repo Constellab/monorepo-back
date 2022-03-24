@@ -26,14 +26,10 @@ abstract class FlChartBar extends FlChartConfig {
     // build the x-axis and scale based on ScaleBand
     const xScale: FlChartScaleBand = new FlChartScaleBand()
       .setInitialDomain(this.dataContainer.getDomainXComplete());
-    const xAxis: FlChartAxisBand = new FlChartAxisBand('bottom').setScale(xScale);
+    const xAxis: FlChartAxisBand = new FlChartAxisBand('bottom').setScale(xScale).rotateTickText();
 
-    const xTickSize = this.getTickSize();
-    if (xTickSize != null) {
-      xAxis.setSmartTickFormat(xTickSize, this.dataContainer.axisXLabelFormat);
-    } else {
-      xAxis.setTickFormat(this.dataContainer.axisXLabelFormat);
-    }
+    xAxis.setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelFormat);
+
 
     // build the y-axis and scale linear
     const yScale: FlChartScaleLinear = new FlChartScaleNumber()
@@ -59,7 +55,6 @@ abstract class FlChartBar extends FlChartConfig {
 
   protected abstract getYDomain(): number[];
 
-  protected abstract getTickSize(): number;
 }
 
 export class FlChartBarPlot extends FlChartBar {
@@ -71,9 +66,6 @@ export class FlChartBarPlot extends FlChartBar {
     return this.dataContainer.getDomainYLinear(0, 0);
   }
 
-  protected getTickSize(): number {
-    return FlChartAxisBand.tickCharacterWidth * 3;
-  }
 }
 
 export class FlChartHistogram extends FlChartBar {
@@ -83,10 +75,6 @@ export class FlChartHistogram extends FlChartBar {
 
   protected getYDomain(): number[] {
     return this.dataContainer.getDomainYLinear(0, 0);
-  }
-
-  protected getTickSize(): number {
-    return 50;
   }
 }
 
@@ -98,9 +86,5 @@ export class FlChartStackedBar extends FlChartBar {
 
   protected getYDomain(): number[] {
     return this.dataContainer.getDomainYStacked(0, 0);
-  }
-
-  protected getTickSize(): number {
-    return FlChartAxisBand.tickCharacterWidth * 3;
   }
 }

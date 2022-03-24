@@ -23,19 +23,20 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
 
   public readonly d3Scale: ScaleOrdinal<string, string>;
 
-  constructor(domain: (number | string)[]) {
+  constructor(domain: (number | string)[], private transparentColor: boolean = false) {
     this.d3Scale = this.initScale();
     this.d3Scale.domain(domain.map(d => d.toString()));
   }
 
   // create a color scale from a multiple series. Each series key is linked to a color
-  public static fromMultiSeries(dataContainer: FlChartMultiSerie<any>): FlChartScaleColorMulti{
-    return new FlChartScaleColorMulti(dataContainer.series.map(d => d.key));
+  public static fromMultiSeries(dataContainer: FlChartMultiSerie<any>, transparentColor: boolean = false): FlChartScaleColorMulti {
+    return new FlChartScaleColorMulti(dataContainer.series.map(d => d.key), transparentColor);
   }
 
   private initScale(): ScaleOrdinal<string, string> {
+    const colors = this.transparentColor ? FlColorHelper.getColorTransparentList() : FlColorHelper.getColorList();
     // the range contains all available colors
-    return scaleOrdinal<string>(FlColorHelper.getColorList());
+    return scaleOrdinal<string>(colors);
   }
 
   public scale(value: number | string): string {

@@ -1,4 +1,6 @@
 <div class="serie" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
   <div class="serie-color" [style.backgroundColor]="color"></div>
-  <div [title]="serieName">{{serieName}}</div>
+  <div class="serie-name" [title]="serieName" [ngClass]="{'serie-name-limited' : limitSerieNameWidth}">
+    {{serieName}}
+  </div>
 </div>

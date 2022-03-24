@@ -9,6 +9,7 @@ export * from './component/fl-chart-data-with-serie-portal/fl-chart-data-with-se
 export * from './component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
 export * from './component/fl-chart-portal/fl-chart-portal.component';
 export * from './component/fl-chart-serie-inline/fl-chart-serie-inline.component';
+export * from './component/fl-chart-stacked-bar-data-portal/fl-chart-stacked-bar-data-portal.component';
 export * from './component/fl-chart-type-select-options/fl-chart-type-select-options.component';
 export * from './component/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
 
