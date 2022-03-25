@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlArrayObs, FlTableAbstractDirective} from '@monorepo/front-core-lib';
-import {HaBrickVersion} from '../../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
+import {HaBrickVersion} from '../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
 
 @Component({
   selector: 'ha-public-brick-versions-table',

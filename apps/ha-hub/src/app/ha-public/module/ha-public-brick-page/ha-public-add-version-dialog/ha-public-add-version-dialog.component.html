@@ -1,0 +1,21 @@
+<fl-dialog-header>
+  {{'add_version' | translate}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="add-version-form" [formGroup]="formGp" fxLayout="column">
+
+    <ha-add-version-form [formGp]="formGp"></ha-add-version-form>
+
+  </form>
+</mat-dialog-content>
+
+
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" form="add-version-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+  </button>
+</div>

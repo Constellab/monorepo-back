@@ -17,35 +17,25 @@
     </mat-error>
   </mat-form-field>
 
-  <!--  version  -->
   <!--  name  -->
   <mat-form-field class="g-form-input" appearance="fill">
-    <mat-label>{{'version' | translate}}</mat-label>
-    <input matInput type="text" formControlName="version">
-    <mat-error *ngIf="formGp.get('version').hasError('required')">
-      {{'version' | flErrorRequired}}
-    </mat-error>
-    <mat-error *ngIf="formGp.get('version').hasError('pattern')">
-      {{'version_error_pattern' | translate}}
+    <mat-label>{{'repo_git' | translate}}</mat-label>
+    <input matInput type="text" formControlName="repoGit">
+    <mat-error *ngIf="formGp.get('repoGit').hasError('required')">
+      {{'repo_git' | flErrorRequired}}
     </mat-error>
   </mat-form-field>
 
-  <!--  isBeta  -->
-  <mat-radio-group formControlName="isBeta" name="type">
-    <mat-radio-button [value]="true" class="radio-button-bt">{{'yes' | translate }}</mat-radio-button>
-    <mat-radio-button [value]="false" [checked]="true">{{'no' | translate }}</mat-radio-button>
-  </mat-radio-group>
-
-  <!--  subPatch  -->
-  <mat-form-field class="g-form-input" *ngIf="formGp.value.isBeta">
-    <mat-label>{{'beta_number' | translate}}</mat-label>
-    <input matInput formControlName="subPatch" required flInputMaxLength="50"
-           placeholder="{{'subPatch' | translate}}">
-    <mat-error *ngIf="formGp.get('subPatch').hasError('required')">
-      {{'version' | flErrorRequired}}
+  <!--  name  -->
+  <mat-form-field class="g-form-input" appearance="fill">
+    <mat-label>{{'repo_pip' | translate}}</mat-label>
+    <input matInput type="text" formControlName="repoPip">
+    <mat-error *ngIf="formGp.get('repoPip').hasError('required')">
+      {{'repo_pip' | flErrorRequired}}
     </mat-error>
   </mat-form-field>
 
+  <ha-add-version-form [formGp]="formGp"></ha-add-version-form>
 
   <button mat-raised-button color="primary" type="submit" class="g-centered-forced">
     {{'save' | translate}}

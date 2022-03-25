@@ -1,11 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
-import {HaBrickService} from '../../../../../ha-core/ha-service/ha-brick.service';
+import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {HaNewVersionDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-version.class';
+import {HaNewVersionDTO} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {Validators} from '@angular/forms';
+import {HaAddVersionFormComponent} from '../../ha-public-core/ha-add-version-form/ha-add-version-form.component';
 
 @Component({
   selector: 'ha-public-add-version-dialog',
@@ -35,13 +36,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
   }
 
   buildForm(): FormGroup<Partial<HaNewVersionDTO>> {
-    return new FormBuilder().group({
-      version: [null, [Validators.required, Validators.pattern( new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]],
-      brickId: [this.dialogInput.object.brickId, Validators.required],
-      repoType: [null, Validators.required],
-      isBeta: [false, Validators.required],
-      subPatch: [null, [Validators.min(1)]]
-    });
+    return HaAddVersionFormComponent.buildForm();
   }
 
   create(formValue: Partial<HaNewVersionDTO>): Observable<Partial<HaNewVersionDTO>> {

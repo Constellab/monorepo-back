@@ -323,6 +323,12 @@ mat-tree {
   }
 }
 
+// to place on a mat-checkbox to include the bottom section of it to avoid overflow
+.g-mat-radio-include-bottom {
+  padding-bottom: 12px;
+  padding-right: 12px;
+}
+
 /************************************* MAT BUTTON TOGGLE ***********************************/
 .g-mat-button-toggle-small .mat-button-toggle-label-content {
   line-height: 36px;

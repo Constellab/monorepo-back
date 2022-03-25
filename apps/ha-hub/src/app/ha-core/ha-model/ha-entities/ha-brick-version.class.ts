@@ -20,13 +20,13 @@ export class HaBrickVersion extends HaEntity{
   }
 
   public set version(version: CmVersion){
+    this.minor = version.minor;
+    this.patch = version.patch;
+    this.brickMajorVersion.major = version.major;
     if(version.isBeta()){
       this.isBeta = true;
       this.subPatch = version.subPatch;
     }
-    this.minor = version.minor;
-    this.patch = version.patch;
-    this.brickMajorVersion.major = version.major;
   }
 }
 

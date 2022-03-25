@@ -28,12 +28,12 @@ export class HnBrickService {
     let brick: HnBrick = new HnBrick();
     let brickVersion: HnBrickVersion;
     if (createdBrick != null) {
-      brick.initialize(createdBrick.name, createdBrick.description, false);
+      brick.initialize(createdBrick.name, createdBrick.description, false,createdBrick.repoPip, createdBrick.repoGit);
     }
 
     brick = await getManager().transaction(async entityManager => {
       brick = await entityManager.save(brick);
-      brickVersion = await this.brickMajorVersionService.create(brick, createdBrick.version, entityManager);
+      brickVersion = await this.brickMajorVersionService.create(brick, createdBrick.version, createdBrick.repoType, entityManager);
 
       return brick;
     })

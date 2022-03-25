@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {HaBrick} from '../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
-import {HaBrickService} from '../../../../../ha-core/ha-service/ha-brick.service';
+import {HaBrick} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
+import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
-import {HaBrickVersion} from '../../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
+import {HaBrickVersion} from '../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
 
 @Component({
   selector: 'ha-public-brick-description-page',
@@ -26,6 +26,7 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
         this.brick = brick;
       });
       this.setLastBrickVersion(params.brickName);
+
     });
   }
 

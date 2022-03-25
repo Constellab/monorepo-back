@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 import {Component, OnInit} from '@angular/core';
-import {HaMateTreeFlatDataSource, HaNode, HaNodeDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-node.class';
+import {HaMateTreeFlatDataSource, HaNode, HaNodeDTO} from '../../../../ha-core/ha-model/ha-entities/ha-node.class';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
-import {HaFolderService} from '../../../../../ha-core/ha-service/ha-folder.service';
-import {HaBrickService} from '../../../../../ha-core/ha-service/ha-brick.service';
+import {HaFolderService} from '../../../../ha-core/ha-service/ha-folder.service';
+import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {ActivatedRoute} from '@angular/router';
 import {
   FlConfirmDialogInput,
@@ -15,16 +15,16 @@ import {
   FlMenuDynamicService,
   FlOverlayRef
 } from '@monorepo/front-core-lib';
-import {HaDocumentationService} from '../../../../../ha-core/ha-service/ha-documentation.service';
-import {HaFolder} from '../../../../../ha-core/ha-model/ha-entities/ha-folder.class';
+import {HaDocumentationService} from '../../../../ha-core/ha-service/ha-documentation.service';
+import {HaFolder} from '../../../../ha-core/ha-model/ha-entities/ha-folder.class';
 import {
   HaPublicSidenavCreateFormDialogComponent
 } from '../ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
-import {HaDocumentation} from '../../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
+import {HaDocumentation} from '../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {CdkDragDrop, CdkDragStart} from '@angular/cdk/drag-drop';
 import {SelectionModel} from '@angular/cdk/collections';
 import {Observable} from 'rxjs';
-import {HaAuthenticatedUserService} from '../../../../../ha-core/ha-service/ha-authenticated-user.service';
+import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
 
 
 interface FlatNode {

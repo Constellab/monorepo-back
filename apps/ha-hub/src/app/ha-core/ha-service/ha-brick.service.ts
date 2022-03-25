@@ -30,6 +30,7 @@ export class HaBrickService {
     object.version = object.isBeta ? new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2], object.subPatch)
       : new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2])
     return this.apiService.post(this.route, object, HaBrick);
+    return null;
   }
 
   /**
@@ -85,7 +86,6 @@ export class HaBrickService {
   }
 
   public getLastVersion(brickName: string): Observable<HaBrickVersion>{
-    console.log(`${this.route}/latest/${brickName}`)
     return this.apiService.get(`${this.route}/latest/${brickName}`)
   }
 }

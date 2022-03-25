@@ -5,7 +5,7 @@ import {EntityManager, Repository} from 'typeorm';
 import {HnFolderService} from '../folder/hn-folder.service';
 import {HnBrick} from '../brick/hn-brick.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
-import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
+import {HnBrickVersion, HnNewVersionDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
 import {HnNode} from '../folder/hn-folder.dto';
 
@@ -20,7 +20,7 @@ export class HnBrickMajorVersionService {
   ) {
   }
 
-  async create(brick: HnBrick, version: CmVersion, entityManager: EntityManager): Promise<HnBrickVersion> {
+  async create(brick: HnBrick, version: CmVersion, repoType: HnRepoType, entityManager: EntityManager, ): Promise<HnBrickVersion> {
     let brickMajorVersion: HnBrickMajorVersion = new HnBrickMajorVersion();
     brickMajorVersion.initialize(brick, version.major);
     brickMajorVersion = await entityManager.save(brickMajorVersion);
@@ -28,7 +28,7 @@ export class HnBrickMajorVersionService {
       new CmVersion(+version.major, +version.minor, +version.patch, +version.subPatch) :
       new CmVersion(+version.major, +version.minor, +version.patch);
     let brickVersion: HnBrickVersion = new HnBrickVersion();
-    brickVersion.initialize(brickMajorVersion, cmVersion);
+    brickVersion.initialize(brickMajorVersion, cmVersion, repoType);
     brickVersion = await this.brickVersionService.createFirstBrickVersion(brickVersion, entityManager);
 
     await this.folderService.createMainFolders(brickMajorVersion, entityManager);

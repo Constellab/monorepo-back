@@ -3,12 +3,12 @@ import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {
   HaDocumentation,
   HaDocumentationContentFormDTO
-} from '../../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
-import {HaBrickService} from '../../../../../ha-core/ha-service/ha-brick.service';
+} from '../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
+import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {HaDocumentationService} from '../../../../../ha-core/ha-service/ha-documentation.service';
+import {HaDocumentationService} from '../../../../ha-core/ha-service/ha-documentation.service';
 import {FlDebouncer} from '@monorepo/front-core-lib';
-import {HaAuthenticatedUserService} from '../../../../../ha-core/ha-service/ha-authenticated-user.service';
+import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {Observable} from 'rxjs';
 

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {HaBrickService} from '../../../../../ha-core/ha-service/ha-brick.service';
+import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {ActivatedRoute, Params} from '@angular/router';
-import {HaBrick} from '../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
+import {HaBrick} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {Observable} from 'rxjs';
 
 @Component({
@@ -27,7 +27,6 @@ export class HaPublicBrickPageComponent implements OnInit {
     });
     this.activatedRoute.children[0].url.subscribe((sectionUrl) => {
       this.activeLink = sectionUrl[0] ? sectionUrl[0].path : '.';
-      console.log(sectionUrl);
     });
   }
 }

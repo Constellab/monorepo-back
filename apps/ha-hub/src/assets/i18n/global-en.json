@@ -121,5 +121,8 @@
   "new_version_added": "New version added",
   "add_version": "Add Version",
   "is_it_a_beta_version": "Is it a beta version",
-  "beta_number": "Beta number"
+  "beta_number": "Beta number",
+  "sub_patch_number_error": "Sub patch number must be a positif integer",
+  "repo_git": "Git repository",
+  "repo_pip": "Pip repository"
 }

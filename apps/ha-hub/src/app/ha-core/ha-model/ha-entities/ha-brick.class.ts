@@ -1,5 +1,6 @@
 import {HaEntity} from './ha-entity.class';
 import {CmVersion} from '@monorepo/common-model';
+import {HaRepoType} from './ha-version.class';
 
 export class HaBrick extends HaEntity {
   name: string;
@@ -7,6 +8,10 @@ export class HaBrick extends HaEntity {
   description: string;
 
   isCertified: boolean;
+
+  gitRepo: string;
+
+  pipRepo: string;
 }
 
 
@@ -22,4 +27,14 @@ export class HaBrickDTO {
   isBeta: boolean = false;
 
   subPatch?: number;
+}
+
+export class HaCreateBrickDTO {
+  id?: string;
+  name: string
+  description: string;
+  version: string;
+  isBeta: boolean = false;
+  subPatch?: number;
+  repoType: HaRepoType;
 }

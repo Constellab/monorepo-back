@@ -23,7 +23,7 @@ export class HnNewVersionDTO {
   repoType: HnRepoType;
 }
 
-@Unique(['brickMajorVersion', 'minor', 'patch'])
+@Unique(['brickMajorVersion', 'minor', 'patch', 'subPatch'])
 @Entity('BrickVersion')
 export class HnBrickVersion extends HnBaseEntity {
 

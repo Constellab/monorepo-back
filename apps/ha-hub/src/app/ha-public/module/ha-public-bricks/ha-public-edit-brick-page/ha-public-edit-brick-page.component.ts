@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {HaBrickService} from '../../../../../ha-core/ha-service/ha-brick.service';
+import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {ActivatedRoute} from '@angular/router';
-import {HaBrick} from '../../../../../ha-core/ha-model/ha-entities/ha-brick.class';
+import {HaBrick} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 
 @Component({
   selector: 'ha-public-edit-brick-page',
@@ -30,7 +30,7 @@ export class HaPublicEditBrickPageComponent implements OnInit {
 
   }
 
-  private getBrick(id: string) {
+  private getBrick(id: string): void{
     this.brickService.getById(id).subscribe(brick => {
       this.brick = brick;
     })

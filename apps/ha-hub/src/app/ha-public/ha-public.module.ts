@@ -4,7 +4,7 @@ import {HaPublicCoreModule} from './module/ha-public-core/ha-public-core.module'
 import {HaPublicRoutingModule} from './ha-public-routing.module';
 import {CoreModule} from '@angular/flex-layout';
 import {HaCoreModule} from '../ha-core/ha-core.module';
-import {HaPublicBrickPageModule} from './module/ha-public-bricks/ha-public-brick-page/ha-public-brick-page.module';
+import {HaPublicBrickPageModule} from './module/ha-public-brick-page/ha-public-brick-page.module';
 import {HaPublicListBricksPageModule} from './module/ha-public-bricks/ha-public-list-bricks-page.module';
 
 

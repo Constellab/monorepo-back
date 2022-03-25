@@ -2,14 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {
   HaBrickVersion,
   HaBrickVersionDataSource
-} from '../../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
-import {HaBrickVersionService} from '../../../../../ha-core/ha-service/ha-brick-version.service';
+} from '../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
+import {HaBrickVersionService} from '../../../../ha-core/ha-service/ha-brick-version.service';
 import {ActivatedRoute} from '@angular/router';
-import {HaBrickService} from '../../../../../ha-core/ha-service/ha-brick.service';
+import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
-import {HaNewVersionDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-version.class';
+import {HaNewVersionDTO} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
 import {HaPublicAddVersionDialogComponent} from '../ha-public-add-version-dialog/ha-public-add-version-dialog.component';
-import {HaNodeDTO} from '../../../../../ha-core/ha-model/ha-entities/ha-node.class';
+import {HaNodeDTO} from '../../../../ha-core/ha-model/ha-entities/ha-node.class';
 
 @Component({
   selector: 'ha-public-versions-page',
@@ -41,7 +41,6 @@ export class HaPublicVersionsComponent implements OnInit {
 
   private setDataSource(): void{
     this.brickVersions = this.brickVersionService.getDataSource(this.brickId);
-    this.brickVersions.connect().subscribe(d => console.log(d));
   }
 
   openNewVersionDialog(brickId: string): void {
