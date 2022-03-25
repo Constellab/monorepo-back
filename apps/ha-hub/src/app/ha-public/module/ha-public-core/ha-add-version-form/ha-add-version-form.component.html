@@ -31,9 +31,9 @@
 
   <!--  subPatch  -->
   <mat-form-field class="g-form-input" *ngIf="formGp.value.isBeta" appearance="fill">
-    <mat-label>{{'beta_number' | translate}}</mat-label>
+    <mat-label>{{'sub_patch_number' | translate}}</mat-label>
     <input matInput formControlName="subPatch" required flInputMaxLength="50"
-           placeholder="{{'subPatch' | translate}}">
+           placeholder="{{'sub_patch_number' | translate}}" type="number">
     <mat-error *ngIf="formGp.get('subPatch').errors">
       {{'sub_patch_number_error' | translate}}
     </mat-error>

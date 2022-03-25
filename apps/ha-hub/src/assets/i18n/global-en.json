@@ -124,5 +124,6 @@
   "beta_number": "Beta number",
   "sub_patch_number_error": "Sub patch number must be a positif integer",
   "repo_git": "Git repository",
-  "repo_pip": "Pip repository"
+  "repo_pip": "Pip repository",
+  "sub_patch_number": "Sub patch number"
 }
