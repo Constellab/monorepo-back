@@ -24,9 +24,11 @@ export class HnBrickMajorVersionService {
     let brickMajorVersion: HnBrickMajorVersion = new HnBrickMajorVersion();
     brickMajorVersion.initialize(brick, version.major);
     brickMajorVersion = await entityManager.save(brickMajorVersion);
-
+    const cmVersion: CmVersion = version.subPatch != null ?
+      new CmVersion(+version.major, +version.minor, +version.patch, +version.subPatch) :
+      new CmVersion(+version.major, +version.minor, +version.patch);
     let brickVersion: HnBrickVersion = new HnBrickVersion();
-    brickVersion.initialize(brickMajorVersion, version);
+    brickVersion.initialize(brickMajorVersion, cmVersion);
     brickVersion = await this.brickVersionService.createFirstBrickVersion(brickVersion, entityManager);
 
     await this.folderService.createMainFolders(brickMajorVersion, entityManager);

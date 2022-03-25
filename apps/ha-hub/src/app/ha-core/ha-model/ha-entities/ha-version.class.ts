@@ -15,4 +15,8 @@ export class HaNewVersionDTO {
   version: string;
 
   repoType: HaRepoType;
+
+  isBeta: boolean = false;
+
+  subPatch?: number;
 }

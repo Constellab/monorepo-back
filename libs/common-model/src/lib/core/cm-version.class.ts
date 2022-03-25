@@ -3,7 +3,7 @@ import {ClTransformFnParams} from '@monorepo/core-lib';
 
 export class CmVersion {
 
-  constructor(public major: number, public minor: number, public patch: number) {
+  constructor(public major: number, public minor: number, public patch: number, public subPatch?: number) {
   }
 
   public static fromString(version: string): CmVersion {
@@ -16,12 +16,22 @@ export class CmVersion {
       throw new Error(`Version '${version}' is invalid`);
     }
 
+    let subPatchStr: string = null;
+    console.log(versions)
+    if(versions[2].includes('-beta')){
+      [versions[2], subPatchStr] = versions[2].split('-beta');
+    }
+
     const major = parseInt(versions[0]);
     const minor = parseInt(versions[1]);
     const patch = parseInt(versions[2]);
 
     if (isNaN(major) || isNaN(minor) || isNaN(patch)) {
       throw new Error(`Version '${version}' is invalid`);
+    }
+
+    if(subPatchStr !== null){
+      return new CmVersion(major, minor, patch, parseInt(subPatchStr));
     }
 
     return new CmVersion(major, minor, patch);
@@ -31,8 +41,13 @@ export class CmVersion {
     return this.getVersionAsNumber() >= other.getVersionAsNumber();
   }
 
+  public isBeta(): boolean{
+    return this.subPatch != null;
+  }
+
   public toString(): string {
-    return [this.major, this.minor, this.patch].join('.');
+    return this.isBeta() ? [this.major, this.minor, this.patch].join('.') + '-beta' + this.subPatch
+      : [this.major, this.minor, this.patch].join('.');
   }
 
   private getVersionAsNumber(): number {

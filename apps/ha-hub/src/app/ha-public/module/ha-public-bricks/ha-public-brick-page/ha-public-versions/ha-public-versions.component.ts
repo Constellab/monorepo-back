@@ -41,6 +41,7 @@ export class HaPublicVersionsComponent implements OnInit {
 
   private setDataSource(): void{
     this.brickVersions = this.brickVersionService.getDataSource(this.brickId);
+    this.brickVersions.connect().subscribe(d => console.log(d));
   }
 
   openNewVersionDialog(brickId: string): void {
@@ -50,7 +51,9 @@ export class HaPublicVersionsComponent implements OnInit {
         version: null,
         repoType: null,
         commit: null,
-        brickId: brickId
+        brickId: brickId,
+        subPatch: null,
+        isBeta: false
       } as HaNewVersionDTO
     };
 

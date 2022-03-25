@@ -6,6 +6,7 @@ import {HaPublicEditBrickFormComponent} from './ha-public-list-bricks-page/ha-pu
 import {TranslateModule} from "@ngx-translate/core";
 import {ReactiveFormsModule} from "@angular/forms";
 import {HaCoreModule} from '../../../ha-core/ha-core.module';
+import {MatRadioModule} from "@angular/material/radio";
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import {HaCoreModule} from '../../../ha-core/ha-core.module';
     CommonModule,
     TranslateModule,
     ReactiveFormsModule,
-    HaCoreModule
+    HaCoreModule,
+    MatRadioModule
   ]
 })
 export class HaPublicListBricksPageModule {

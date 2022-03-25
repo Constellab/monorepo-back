@@ -33,6 +33,12 @@ export class HnBrickVersion extends HnBaseEntity {
   @Column({default: 0})
   patch: number;
 
+  @Column({default: null, nullable: true})
+  subPatch: number;
+
+  @Column({default: false})
+  isBeta: boolean;
+
   @Column({type: 'enum', enum: HnRepoType, nullable: false})
   repoType: HnRepoType;
 
@@ -52,13 +58,17 @@ export class HnBrickVersion extends HnBaseEntity {
   }
 
   public get version(): CmVersion{
-    return new CmVersion(this.brickMajorVersion.major, this.minor, this.patch);
+    return new CmVersion(this.brickMajorVersion.major, this.minor, this.patch, this.isBeta ? this.subPatch : null);
   }
 
   public set version(version: CmVersion) {
     this.minor = version.minor;
     this.patch = version.patch;
     this.brickMajorVersion.major = version.major;
+    if(version.isBeta()){
+      this.isBeta = true;
+      this.subPatch = version.subPatch;
+    }
   }
 
 }

@@ -34,16 +34,20 @@ export class HaPublicEditBrickFormComponent implements OnInit {
       id: [null],
       name: [null, Validators.required],
       description: [null, Validators.required],
-      version: [null, [Validators.required, Validators.pattern( new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]]
+      version: [null, [Validators.required, Validators.pattern( new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]],
+      isBeta: [false, Validators.required],
+      subPatch: [null, [Validators.min(1)]]
     });
   }
 
   submit(): void {
-    this.isLoading = true;
+
     const formValue: Partial<HaBrickDTO> = this.formGp.value;
     if (formValue.id) {
       //update
     } else {
+      if(formValue.isBeta && formValue.subPatch == null) return;
+      this.isLoading = true;
       this.brickService.create(formValue).subscribe((brick) => {
         this.isLoading = false;
         this.router.navigateByUrl('/bricks/' + brick.name);

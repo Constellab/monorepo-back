@@ -30,6 +30,22 @@
     </mat-error>
   </mat-form-field>
 
+  <!--  isBeta  -->
+  <mat-radio-group formControlName="isBeta" name="type">
+    <mat-radio-button [value]="true" class="radio-button-bt">{{'yes' | translate }}</mat-radio-button>
+    <mat-radio-button [value]="false" [checked]="true">{{'no' | translate }}</mat-radio-button>
+  </mat-radio-group>
+
+  <!--  subPatch  -->
+  <mat-form-field class="g-form-input" *ngIf="formGp.value.isBeta">
+    <mat-label>{{'beta_number' | translate}}</mat-label>
+    <input matInput formControlName="subPatch" required flInputMaxLength="50"
+           placeholder="{{'subPatch' | translate}}">
+    <mat-error *ngIf="formGp.get('subPatch').hasError('required')">
+      {{'version' | flErrorRequired}}
+    </mat-error>
+  </mat-form-field>
+
 
   <button mat-raised-button color="primary" type="submit" class="g-centered-forced">
     {{'save' | translate}}

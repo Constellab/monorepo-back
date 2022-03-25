@@ -27,7 +27,8 @@ export class HaBrickService {
     if (!(object.version instanceof CmVersion)) {
       versionArray = object.version.split('.');
     }
-    object.version = new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2])
+    object.version = object.isBeta ? new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2], object.subPatch)
+      : new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2])
     return this.apiService.post(this.route, object, HaBrick);
   }
 

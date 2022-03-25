@@ -38,12 +38,18 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
     return new FormBuilder().group({
       version: [null, [Validators.required, Validators.pattern( new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]],
       brickId: [this.dialogInput.object.brickId, Validators.required],
-      repoType: [null, Validators.required]
+      repoType: [null, Validators.required],
+      isBeta: [false, Validators.required],
+      subPatch: [null, [Validators.min(1)]]
     });
   }
 
   create(formValue: Partial<HaNewVersionDTO>): Observable<Partial<HaNewVersionDTO>> {
     formValue.brickId = this.brickId;
+    if(formValue.isBeta){
+      if(formValue.subPatch == null) return null;
+      formValue.version = `${formValue.version}-beta${formValue.subPatch}`
+    }
     return this.brickService.createNewVersion(formValue);
   }
 

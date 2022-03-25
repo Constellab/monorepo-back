@@ -119,5 +119,7 @@
   "repo_type": "Type of repository",
   "version_error_pattern": "Version N° invalid, expected X.X.X",
   "new_version_added": "New version added",
-  "add_version": "Add Version"
+  "add_version": "Add Version",
+  "is_it_a_beta_version": "Is it a beta version",
+  "beta_number": "Beta number"
 }

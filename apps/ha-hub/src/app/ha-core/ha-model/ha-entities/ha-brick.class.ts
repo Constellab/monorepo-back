@@ -18,4 +18,8 @@ export class HaBrickDTO {
   description: string;
 
   version: string|CmVersion;
+
+  isBeta: boolean = false;
+
+  subPatch?: number;
 }

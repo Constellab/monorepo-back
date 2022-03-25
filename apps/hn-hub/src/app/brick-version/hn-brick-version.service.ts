@@ -32,11 +32,11 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   }
 
 
-  async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO): Promise<void> {
+  async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO): Promise<HnBrickVersion> {
     const newBrickVersion: HnBrickVersion = new HnBrickVersion();
-    const version: number[] = newVersion.version.split('.').map(x => +x);
-    newBrickVersion.initialize(brickMajorVersion, new CmVersion(version[0], version[1], version[2]), newVersion.repoType);
-    await this.create(newBrickVersion);
+    const version: CmVersion = CmVersion.fromString(newVersion.version);
+    newBrickVersion.initialize(brickMajorVersion, version, newVersion.repoType);
+    return await this.create(newBrickVersion);
   }
 
   /**

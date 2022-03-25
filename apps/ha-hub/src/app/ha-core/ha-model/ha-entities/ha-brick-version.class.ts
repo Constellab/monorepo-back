@@ -10,13 +10,20 @@ export class HaBrickVersion extends HaEntity{
   patch: number;
   @Type(() => HaBrickMajorVersion)
   brickMajorVersion: HaBrickMajorVersion;
-  repoType: HaRepoType
+  repoType: HaRepoType;
+  isBeta: boolean = false;
+  subPatch?: number;
 
   public get version(): CmVersion{
-    return new CmVersion(this.brickMajorVersion.major, this.minor, this.patch);
+    return this.isBeta ? new CmVersion(this.brickMajorVersion.major, this.minor, this.patch, this.subPatch)
+      : new CmVersion(this.brickMajorVersion.major, this.minor, this.patch);
   }
 
   public set version(version: CmVersion){
+    if(version.isBeta()){
+      this.isBeta = true;
+      this.subPatch = version.subPatch;
+    }
     this.minor = version.minor;
     this.patch = version.patch;
     this.brickMajorVersion.major = version.major;
