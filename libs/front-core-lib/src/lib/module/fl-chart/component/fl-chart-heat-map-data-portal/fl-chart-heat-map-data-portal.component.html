@@ -1,7 +1,11 @@
-<div>
-  <div>x : {{data.x}}</div>
-  <div>y : {{data.y}}</div>
-  <div>{{'flChart.value' | translate}} : {{data.z}}</div>
+<div fxLayout="row" fxLayoutGap="1em">
 
+  <div>
+    <div>x : {{x}}</div>
+    <div>y : {{y}}</div>
+    <div>{{'flChart.value' | translate}} : {{z}}</div>
+
+  </div>
+
+  <fl-chart-data-tags [tags]="data.tags"></fl-chart-data-tags>
 </div>
-

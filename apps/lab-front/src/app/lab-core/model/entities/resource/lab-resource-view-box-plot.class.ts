@@ -20,7 +20,7 @@ export interface LabResourceViewBoxPlotData {
 }
 
 export interface LabResourceViewBoxPlotSerie {
-  column_names: string[];
+  name: string;
   data: {
     // x: number;
     max: number[];
@@ -43,7 +43,7 @@ export function labBoxPlotToChart(view: LabResourceViewBoxPlot): FlChartConfig {
 
   let serieIndex: number = 1;
   for (const viewSerie of view.data.series) {
-    const serie = new FlChartBoxPlotSerie([], serieIndex.toString());
+    const serie = new FlChartBoxPlotSerie([], viewSerie.name ?? serieIndex.toString());
 
     for (let i = 0; i < viewSerie.data.max.length; i++) {
       serie.addData({

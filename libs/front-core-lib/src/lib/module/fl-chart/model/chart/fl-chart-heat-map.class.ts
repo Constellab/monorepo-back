@@ -97,18 +97,15 @@ export class FlChartHeatMap extends FlChartConfig {
       .setInitialDomain(this.dataContainer.getDomainXComplete())
       .padding(0.01);
     const xAxis: FlChartAxis = new FlChartAxisBand('bottom').setScale(xScale)
-      .setSmartTickFormat(FlChartAxisBand.tickCharacterWidth * 3);
-
-    // todo fix x tick that overlap each other
-    // xAxis.setTickFormat(this.dataContainer.axisXLabelFormat);
+      .setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelFormat)
+      .rotateTickText();
 
     // Build Y axis
     const yScale: FlChartScaleBand = new FlChartScaleBand()
       .setInitialDomain(this.dataContainer.getDomainYComplete())
       .padding(0.01);
-    const yAxis: FlChartAxis = new FlChartAxisBand('left').setScale(yScale)
-      .setSmartTickFormat(FlChartAxisBand.tickTextHeight);
-    yAxis.setTickFormat(this.dataContainer.axisYLabelFormat);
+    const yAxis: FlChartAxisBand = new FlChartAxisBand('left').setScale(yScale)
+      .setSmartTickFormat(FlChartAxisBand.tickTextHeight, this.dataContainer.axisYLabelFormat);
 
     const chartContainer: FlChartContainer2Axis<FlChartHeatMapDataContainer> =
       new FlChartContainer2Axis();

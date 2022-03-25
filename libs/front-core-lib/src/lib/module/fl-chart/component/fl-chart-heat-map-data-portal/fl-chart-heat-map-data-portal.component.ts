@@ -1,11 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
+import {FlChart3dDatum} from '../../model/data/fl-chart-data.class';
 
-export interface FlChartHeatMapDataPortalInput {
-  x: any;
-  y: any;
-  z: any;
-}
 
 @Component({
   selector: 'fl-chart-heat-map-data-portal',
@@ -14,10 +10,17 @@ export interface FlChartHeatMapDataPortalInput {
 })
 export class FlChartHeatMapDataPortalComponent implements OnInit {
 
-  data: FlChartHeatMapDataPortalInput;
+  data: FlChart3dDatum;
 
-  constructor(@Inject(FL_PORTAL_DATA) input: FlChartHeatMapDataPortalInput) {
+  x: string;
+  y: string;
+  z: number;
+
+  constructor(@Inject(FL_PORTAL_DATA) input: FlChart3dDatum) {
     this.data = input;
+    this.x = input.getXLabel();
+    this.y = input.getYLabel();
+    this.z = input.getZ();
   }
 
   ngOnInit(): void {

@@ -3,8 +3,7 @@ import {FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
 import {FlChart3dDatum} from '../model/data/fl-chart-data.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
 import {
-  FlChartHeatMapDataPortalComponent,
-  FlChartHeatMapDataPortalInput
+  FlChartHeatMapDataPortalComponent
 } from '../component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 import {FlChartHeatMapDataContainer} from '../model/chart/fl-chart-heat-map.class';
@@ -31,7 +30,7 @@ export class FlChartRendererHeatMap implements FlChart2AxisRenderer<FlChartHeatM
       .attr('y', d => yScale.scale(d.getY()))
       .attr('width', xScale.bandwidth())
       .attr('height', yScale.bandwidth())
-      .style('fill', (d) => d.getZ() ? this.colorScale.scale(d.getZ().valueOf()): null);
+      .style('fill', (d) => d.getZ() ? this.colorScale.scale(d.getZ().valueOf()) : null);
   }
 
   refreshData(): void {
@@ -39,14 +38,9 @@ export class FlChartRendererHeatMap implements FlChart2AxisRenderer<FlChartHeatM
   }
 
   private onMouseHover(event: MouseEvent, d: FlChart3dDatum): void {
-    const input: FlChartHeatMapDataPortalInput = {
-      x: d.getXLabel(),
-      y: d.getYLabel(),
-      z: d.getZ()
-    };
 
     // create the portal
-    this.portalHandler.openPortal(event.target as any, FlChartHeatMapDataPortalComponent, input);
+    this.portalHandler.openPortal(event.target as any, FlChartHeatMapDataPortalComponent, d);
   }
 
   private onMouseOut(): void {
