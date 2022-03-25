@@ -74,7 +74,7 @@ export abstract class FlApiErrorService {
   protected showError(message: string, duration?: number,
                       detailButton?: (event: MouseEvent) => void): void {
     if (duration == null) {
-      duration = this.defaultApiErrorDuration ?? 5000;
+      duration = this.defaultApiErrorDuration;
     }
 
     this.snackBarService.openErrorMessage(message, duration,

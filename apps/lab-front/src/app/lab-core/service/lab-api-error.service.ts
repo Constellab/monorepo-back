@@ -31,7 +31,7 @@ export class LabApiErrorService extends FlApiErrorService {
   }
 
   get defaultApiErrorDuration(): number {
-    return 5000;
+    return null;
   }
 
   handleServerError(errorResponse: HttpErrorResponse, hideError: boolean,

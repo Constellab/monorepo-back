@@ -29,7 +29,7 @@ export class CaApiErrorService extends FlApiErrorService {
   }
 
   get defaultApiErrorDuration(): number {
-    return 5000;
+    return null;
   }
 
   /**

@@ -6,7 +6,6 @@ import {
   FlApiErrorService,
   flAuthExpiredCookie,
   FlCookieService,
-  FlLoginSavedRoute,
   FlServerError,
   FlSnackBarService,
   FlTranslateService
@@ -28,7 +27,7 @@ export class HaApiErrorService extends FlApiErrorService {
   }
 
   get defaultApiErrorDuration(): number {
-    return 5000;
+    return null;
   }
 
   /**
