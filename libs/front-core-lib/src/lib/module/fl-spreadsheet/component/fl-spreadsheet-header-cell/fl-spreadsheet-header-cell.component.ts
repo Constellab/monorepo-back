@@ -14,12 +14,11 @@ import {FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-sele
 import {FlHeaderCellType, headerIndexAttributeName, headerTypeAttributeName} from '../../model/fl-cell.class';
 import {FlSpreadsheetRendererState} from '../../state/fl-spreadsheet-renderer-state.service';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
-import {FlSheetHeader} from '../../model/fl-sheet-row.class';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
-import {FlSheetHeaderInfo} from '../../model/fl-sheet.class';
 import {FlPortalConnectedPosition} from '../../../fl-portal/model/fl-portal.class';
 import {FlSpreadsheetHeaderInfoComponent} from '../fl-spreadsheet-header-info/fl-spreadsheet-header-info.component';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
+import {FlSheetHeader, FlSheetHeaderInfo} from '../../model/fl-sheet-headers.class';
 
 @Component({
   selector: 'fl-spreadsheet-header-cell',
@@ -93,9 +92,9 @@ export class FlSpreadsheetHeaderCellComponent implements OnInit, OnDestroy {
   /////////////////////////////// TAG COLORS ///////////////////////////////
   private subscribeToColor(): void {
     if (this.type === 'row') {
-      this.colors$ = this.tagState.getRowColors(this.index);
+      this.colors$ = this.tagState.getRowColors$(this.index);
     } else {
-      this.colors$ = this.tagState.getColumnColor(this.index);
+      this.colors$ = this.tagState.getColumnColors$(this.index);
     }
   }
 

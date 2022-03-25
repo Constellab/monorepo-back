@@ -22,9 +22,9 @@ import {FlSpreadsheetChartState} from '../../state/fl-spreadsheet-chart.state';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {FlSpreadsheetScrollState} from '../../state/fl-spreadsheet-scroll.state';
 import {Observable} from 'rxjs';
-import {FlSheetHeader, FlSheetRow} from '../../model/fl-sheet-row.class';
 import {FlSpreadsheetRendererState} from '../../state/fl-spreadsheet-renderer-state.service';
 import {map} from 'rxjs/operators';
+import {FlSheetHeader, FlSheetRow} from '../../model/fl-sheet-headers.class';
 
 @Component({
   selector: 'fl-spreadsheet',

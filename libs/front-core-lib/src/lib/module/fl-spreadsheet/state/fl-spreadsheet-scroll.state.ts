@@ -2,10 +2,10 @@ import {Injectable, NgZone, Renderer2} from '@angular/core';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {debounceTime, filter, startWith} from 'rxjs/operators';
-import {FlSheetRow} from '../model/fl-sheet-row.class';
 import {ClHelpService, clRxjsEnterZone, ClSubscriptionHandler} from '@monorepo/core-lib';
 import {FlRendererListenerObs} from '../../../model/fl-renderer-listener-obs.class';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
+import {FlSheetRow} from '../model/fl-sheet-headers.class';
 
 export interface Interval {
   from: number;

@@ -3,7 +3,7 @@ import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 import {FlCell} from '../../model/fl-cell.class';
 import {FlCellWithCoord} from '../../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
-import {FlSheetHeaderInfo} from '../../model/fl-sheet.class';
+import {FlSheetHeaderInfo} from '../../model/fl-sheet-headers.class';
 
 /**
  * Small portal to show information about a cell
@@ -26,7 +26,7 @@ export class FlSpreadsheetCellInfoComponent implements OnInit {
     const coord = cell.coord;
     const sheet = state.currentSheet;
     this.columnInfo = sheet.getColumnInfo(coord.column);
-    this.rowInfo = sheet.getRowInfo(coord.row);
+    this.rowInfo = sheet.rows.getInfo(coord.row);
   }
 
   ngOnInit(): void {

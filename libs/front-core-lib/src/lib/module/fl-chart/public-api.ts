@@ -5,6 +5,7 @@ export * from './fl-chart.module';
 export * from './component/fl-chart/fl-chart.component';
 export * from './component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
 export * from './component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
+export * from './component/fl-chart-data-tags/fl-chart-data-tags.component';
 export * from './component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 export * from './component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
 export * from './component/fl-chart-portal/fl-chart-portal.component';

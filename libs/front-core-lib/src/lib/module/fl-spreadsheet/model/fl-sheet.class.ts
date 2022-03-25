@@ -1,24 +1,17 @@
 import {FlBasicCell, FlCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
-import {FlSheetHeader, FlSheetRow} from './fl-sheet-row.class';
-import {FlTagHelper} from '../../fl-tag/fl-tag.class';
-import {ClHelpService, ClStringHelper} from '@monorepo/core-lib';
 import {FlCellCoord} from './fl-cell-coord.class';
+import {FlSheetHeader, FlSheetHeaderInfo, FlSheetHeaders, FlSheetRow} from './fl-sheet-headers.class';
+import {FlTagWithColor} from '../../fl-tag/fl-tag.class';
 
-/**
- * Information about a row or a column in the sheet
- */
-export interface FlSheetHeaderInfo {
-  name?: string;
-  tags?: Record<string, string>;
-}
 
 /**
  * Class to manage one sheet of a spreadsheet
  * It contains and manage all the cells of the sheet
  */
 export class FlSheet {
+
 
   private static idGenerator: number = 0;
   public id: number;
@@ -39,9 +32,8 @@ export class FlSheet {
   public totalRowsCount: number = 0;
   public totalColumnsCount: number = 0;
 
-  public rowsInfo: FlSheetHeaderInfo[];
-  public columnsInfo: FlSheetHeaderInfo[];
-
+  public rows: FlSheetHeaders = new FlSheetHeaders();
+  public columns: FlSheetHeaders = new FlSheetHeaders();
 
   constructor(name: string) {
     this.name = name;
@@ -90,9 +82,8 @@ export class FlSheet {
       this.insertCell(i, position);
     }
 
-    if (this.columnsInfo?.length > 0) {
-      this.columnsInfo.splice(position, 0, {name: null, tags: {}});
-    }
+    this.columns.createInfo(position);
+
     this.loadedColumnsCount++;
     this.totalColumnsCount++;
   }
@@ -115,9 +106,7 @@ export class FlSheet {
       this.insertColumn(0);
     }
 
-    if (this.columnsInfo?.length > 0) {
-      this.columnsInfo.splice(fromIndex, deleteCount);
-    }
+    this.columns.deleteInfo(fromIndex, deleteCount);
 
     this.emitCellChange();
     this.emitColumnsChange();
@@ -133,16 +122,19 @@ export class FlSheet {
     );
   }
 
-  public getColumnsTags(): Record<string, string[]> {
-    return FlTagHelper.groupTagsByKey(this.columnsInfo.map(columnInfo => columnInfo.tags));
+  ////////////////////////////// COLUMN HEADER ////////////////////////////////
+
+
+  public getColumnsTags(): FlTagWithColor[] {
+    return this.columns.getAllTags();
   }
 
   public getColumnInfo(columnIndex: number): FlSheetHeaderInfo {
-    return this.getHeaderInfo(this.columnsInfo, columnIndex);
+    return this.columns.getInfo(columnIndex);
   }
 
   public columnHasInfo(columnIndex: number): boolean {
-    return !this.headerInfoIsEmpty(this.columnsInfo[columnIndex] ?? {});
+    return this.columns.hasInfo(columnIndex);
   }
 
   public getColumns$(): Observable<FlSheetHeader[]> {
@@ -164,23 +156,14 @@ export class FlSheet {
   }
 
   public searchColumns(name: string): string[] {
-    if (!this.columnsInfo) return [];
-    const result = this.columnsInfo
-      .filter(columnInfo => columnInfo.name && ClStringHelper.stringContains(columnInfo.name, name))
-      .map(columnInfo => columnInfo.name);
-    return ClHelpService.sortAlphabeticalOrder(result);
+    return this.columns.searchName(name);
   }
 
   /**
    * Get all the column name from index with default to index if the name does not exist
    */
   public getColumnNames(fromColumn: number, toColumn: number): string[] {
-    if (!this.columnsInfo) return [];
-    const names: string[] = [];
-    for (let i = fromColumn; i < toColumn + 1; i++) {
-      names.push(this.getColumnInfo(i).name ?? i.toString());
-    }
-    return names;
+    return this.columns.getNames(fromColumn, toColumn);
   }
 
   ////////////////////////////// ROW ///////////////////////////////
@@ -222,9 +205,8 @@ export class FlSheet {
       this.insertCell(position, i);
     }
 
-    if (this.rowsInfo?.length > 0) {
-      this.rowsInfo.splice(position, 0, {name: null, tags: {}});
-    }
+    this.rows.createInfo(position);
+
     this.loadedRowsCount++;
     this.totalRowsCount++;
   }
@@ -245,10 +227,7 @@ export class FlSheet {
       this.insertRow(0);
     }
 
-    if (this.rowsInfo?.length > 0) {
-      this.rowsInfo.splice(fromIndex, deleteCount);
-    }
-
+    this.rows.deleteInfo(from, deleteCount);
 
     this.emitCellChange();
     this.emitRowsChange();
@@ -281,19 +260,22 @@ export class FlSheet {
         return rows;
       })
     );
-
   }
 
-  public getRowsTags(): Record<string, string[]> {
-    return FlTagHelper.groupTagsByKey(this.rowsInfo.map(rowInfo => rowInfo.tags));
+  /////////////////////////////////// ROWS HEADER /////////////////////
+
+
+  public getRowsTags(): FlTagWithColor[] {
+    return this.rows.getAllTags();
   }
+
 
   public getRowInfo(rowIndex: number): FlSheetHeaderInfo {
-    return this.getHeaderInfo(this.rowsInfo, rowIndex);
+    return this.rows.getInfo(rowIndex);
   }
 
   public rowHasInfo(rowIndex: number): boolean {
-    return !this.headerInfoIsEmpty(this.rowsInfo[rowIndex] ?? {});
+    return this.rows.hasInfo(rowIndex);
   }
 
   ////////////////////////////// CELL ///////////////////////////////
@@ -422,18 +404,6 @@ export class FlSheet {
   public coordIsValid(coord: FlCellCoord): boolean {
     return coord.row >= 0 && coord.row < this.totalRowsCount &&
       coord.column >= 0 && coord.column < this.totalColumnsCount;
-  }
-
-  private getHeaderInfo(headerInfos: FlSheetHeaderInfo[], index: number): FlSheetHeaderInfo {
-    // if it doesn't exist, return a default value
-    if (!headerInfos || headerInfos[index] == null) {
-      return {name: null, tags: {}};
-    }
-    return headerInfos[index];
-  }
-
-  private headerInfoIsEmpty(headerInfo: FlSheetHeaderInfo): boolean {
-    return ClHelpService.isNullOrEmpty(headerInfo.name) && ClHelpService.isNullOrEmpty(headerInfo.tags);
   }
 
   public destroy(): void {

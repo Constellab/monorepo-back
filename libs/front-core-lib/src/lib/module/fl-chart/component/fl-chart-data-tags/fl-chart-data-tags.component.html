@@ -1,0 +1,9 @@
+<div *ngIf="hasTag()">
+  <div class="g-text-small">{{'flChart.tags' | translate}}</div>
+  <div *ngFor="let key of tags | flObjectKeys" class="g-text-tiny">
+    <fl-key-value>
+      <fl-key>{{key}}</fl-key>
+      {{tags[key]}}
+    </fl-key-value>
+  </div>
+</div>

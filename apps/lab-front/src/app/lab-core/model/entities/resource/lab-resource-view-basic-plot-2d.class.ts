@@ -26,6 +26,7 @@ export interface LabResourceViewChart2dSerie {
   data: {
     x: number[];
     y: number[];
+    tags?: Record<string, string>[]
   };
   name?: string;
 }
@@ -58,8 +59,9 @@ function labResourceBuildBasicChart2d(view: LabResourceViewBasicPlot2d): FlChart
     const data: FlChart2dDatum[] = [];
 
     for (let i = 0; i < viewSerie.data.x.length; i++) {
-      // if (viewSerie.data.x[i] == null || viewSerie.data.y[i] == null) continue;
-      data.push(new FlChart2dDatum(viewSerie.data.x[i], viewSerie.data.y[i]));
+      const datum = new FlChart2dDatum(viewSerie.data.x[i], viewSerie.data.y[i]);
+      datum.tags = viewSerie.data.tags ? viewSerie.data.tags[i] : null;
+      data.push(datum);
     }
 
     series.addSerie(new FlChartSerie(data, viewSerie.name ?? serieIndex.toString()));

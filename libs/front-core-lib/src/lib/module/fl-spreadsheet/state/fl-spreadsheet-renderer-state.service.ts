@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {FlSheetHeaderInfo} from '../model/fl-sheet.class';
 import {FlTagWithColor} from '../../fl-tag/fl-tag.class';
+import {FlSheetHeaderInfo} from '../model/fl-sheet-headers.class';
 
 
 @Injectable()
@@ -16,13 +16,13 @@ export class FlSpreadsheetRendererState {
 
   }
 
-  public getRowColors(rowId: number): Observable<string[]> {
+  public getRowColors$(rowId: number): Observable<string[]> {
     return this.rowColors$.pipe(
       map(colors => colors[rowId])
     );
   }
 
-  public getColumnColor(columnId: number): Observable<string[]> {
+  public getColumnColors$(columnId: number): Observable<string[]> {
     return this.columnColors$.pipe(
       map(colors => colors[columnId])
     );
@@ -30,13 +30,13 @@ export class FlSpreadsheetRendererState {
 
   public setRowTagColors(tagWithColors: FlTagWithColor[]): void {
     const sheet = this.state.currentSheet;
-    const rowColors = this.convertToHeaderColors(tagWithColors, sheet.rowsInfo);
+    const rowColors = this.convertToHeaderColors(tagWithColors, sheet.rows.info);
     this.rowColors$.next(rowColors);
   }
 
   public setColumnTagColors(tagWithColors: FlTagWithColor[]): void {
     const sheet = this.state.currentSheet;
-    const columnColors = this.convertToHeaderColors(tagWithColors, sheet.columnsInfo);
+    const columnColors = this.convertToHeaderColors(tagWithColors, sheet.columns.info);
     this.columnColors$.next(columnColors);
   }
 

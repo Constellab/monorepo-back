@@ -1,4 +1,5 @@
 import {ClSupportedLanguage} from '@monorepo/core-lib';
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
 
 
@@ -31,7 +32,8 @@ const flChartI18nFr: FlLangTranslation = {
     venn_groups: 'Groupe(s)',
     venn_nb_data: 'Nb de données',
     venn_data: 'Donnée(s)',
-    venn_no_data: 'Pas de données'
+    venn_no_data: 'Pas de données',
+    tags: 'Tags'
   }
 };
 
@@ -61,7 +63,8 @@ const flChartI18nEn: FlLangTranslation = {
     venn_groups: 'Group(s)',
     venn_nb_data: 'Nb of data',
     venn_data: 'Data',
-    venn_no_data: 'No data'
+    venn_no_data: 'No data',
+    tags: 'Tags'
   }
 };
 

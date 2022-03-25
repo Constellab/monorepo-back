@@ -47,7 +47,7 @@ export class FlHtmlHelper {
    * @param element
    * @param parent if string, it compares with the classe
    */
-  public static isChildOf(element: HTMLElement, parent: { element?: HTMLElement, class?: string, tag?: string }): boolean {
+  public static isChildOf(element: HTMLElement, parent: { element?: HTMLElement, className?: string, tag?: string }): boolean {
     return FlHtmlHelper.getParent(element, parent) != null;
   }
 

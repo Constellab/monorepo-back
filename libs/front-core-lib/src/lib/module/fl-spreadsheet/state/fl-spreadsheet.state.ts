@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
 import {mergeMap} from 'rxjs/operators';
 import {FlSpreadsheetFactory} from '../utils/fl-spreadsheet.factory';
 import {FlCell} from '../model/fl-cell.class';
-import {FlSheetHeader, FlSheetRow} from '../model/fl-sheet-row.class';
+import {FlSheetHeader, FlSheetRow} from '../model/fl-sheet-headers.class';
 
 /**
  * Unique state shared across the spreadsheet to store the current spreadsheet

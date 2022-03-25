@@ -19,8 +19,8 @@ export class FlSpreadsheetDrawerComponent implements OnInit {
   pinDrawer: boolean = false;
 
   currentSheet$: Observable<FlSheet>;
-  columnTags$: Observable<Record<string, string[]>>;
-  rowTags$: Observable<Record<string, string[]>>;
+  columnTags$: Observable<FlTagWithColor[]>;
+  rowTags$: Observable<FlTagWithColor[]>;
 
   // use to ignore the mouse event on the CDK to keep the drawer open if an overlay is opened
   cdkContainerClass: string = flCdkOverlayContainerClass;

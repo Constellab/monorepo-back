@@ -14,9 +14,13 @@ export interface FlChartData {
    * Value of getter that tell if the chart data is valid and can be added to the chart
    */
   valid: boolean;
+
+  tags?: Record<string, string>
 }
 
 export class FlChart2dDatum implements FlChartData {
+
+  tags?: Record<string, string>
 
   constructor(protected x: number, protected y: number,
               protected xLabel?: string, protected yLabel?: string) {

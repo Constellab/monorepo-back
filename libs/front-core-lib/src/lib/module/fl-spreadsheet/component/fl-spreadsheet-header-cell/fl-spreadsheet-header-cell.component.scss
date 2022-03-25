@@ -51,6 +51,7 @@ $cell-selected-border-color: #058989;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 0.95em; // limit height of text
 }
 
 .colors-container {

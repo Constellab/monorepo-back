@@ -26,7 +26,7 @@ interface FlTagColor {
 })
 export class FlTagsSelectColorsComponent implements OnInit {
 
-  @Input() tags: Record<string, string[]>;
+  @Input() tags: FlTagWithColor[];
 
   @Output() colorChange: EventEmitter<FlTagWithColor[]> = new EventEmitter();
 
@@ -38,28 +38,25 @@ export class FlTagsSelectColorsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.tagGroups = [];
+    const tagGroups: FlTagGroupColor[] = [];
 
-    // convert input tags to tag groups
-    let colorIndex: number = 0;
-    for (const key of Object.keys(this.tags)) {
+    for (const tag of this.tags) {
+      let tagGroup = tagGroups.find(tagGroup => tagGroup.key === tag.key);
 
-      const tagGroup: FlTagGroupColor = {
-        key: key, tags: []
-      };
-
-      for (const tag of this.tags[key]) {
-        tagGroup.tags.push({
-          value: tag,
-          // define the tag color based on index in the array
-          color: FlColorHelper.getColorFromIndex(colorIndex),
-          activeColor: false
-        });
-
-        colorIndex++;
+      // create the group if it doesn't exist yet
+      if (tagGroup == null) {
+        tagGroup = {key: tag.key, tags: []};
+        tagGroups.push(tagGroup);
       }
-      this.tagGroups.push(tagGroup);
+
+      tagGroup.tags.push({
+        value: tag.value,
+        color: tag.color,
+        activeColor: false
+      });
     }
+
+    this.tagGroups = tagGroups;
   }
 
   toggleGroupColor(group: FlTagGroupColor): void {

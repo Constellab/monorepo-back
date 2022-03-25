@@ -60,7 +60,7 @@ export * from './model/selection/fl-sheet-single-selection.class';
 export * from './model/fl-cell.class';
 export * from './model/fl-cell-coord.class';
 export * from './model/fl-sheet.class';
-export * from './model/fl-sheet-row.class';
+export * from './model/fl-sheet-headers.class';
 export * from './model/fl-spreadsheet.class';
 
 

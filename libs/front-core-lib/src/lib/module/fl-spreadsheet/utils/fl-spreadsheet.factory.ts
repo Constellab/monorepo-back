@@ -100,7 +100,7 @@ export class FlSpreadsheetFactory {
 
   /**
    * Convert a basic json object to an array of array for spreadsheet
-   * It uses the each attribute as column
+   * It uses each attribute as column
    */
   public static convertObjectToArray(object: Record<string, any>): any[][] {
     const values: any[][] = [];
@@ -124,7 +124,7 @@ export class FlSpreadsheetFactory {
 
   /**
    * Convert a simple array to 2d array
-   * If this is an array of objects, it create an array with object values for each object
+   * If this is an array of objects, it creates an array with object values for each object
    * @param array
    * @private
    */

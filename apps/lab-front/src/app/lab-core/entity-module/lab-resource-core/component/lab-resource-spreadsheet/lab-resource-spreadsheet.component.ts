@@ -1,5 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FlSheet, FlSheetChartService, FlSpreadsheet, FlSpreadsheetFactory} from '@monorepo/front-core-lib';
+import {
+  FlSheet,
+  FlSheetChartService,
+  FlSheetHeaders,
+  FlSpreadsheet,
+  FlSpreadsheetFactory
+} from '@monorepo/front-core-lib';
 import {LabResourceViewDirective} from '../../model/lab-resource-view-component.class';
 import {LabResourceViewTable} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {LabResourceTableChartState} from '../../state/lab-resource-table-chart.state';
@@ -37,8 +43,8 @@ export class LabResourceSpreadsheetComponent extends LabResourceViewDirective<La
 
     sheet.totalColumnsCount = this.view.total_number_of_columns;
     sheet.totalRowsCount = this.view.total_number_of_rows;
-    sheet.columnsInfo = this.view.columns;
-    sheet.rowsInfo = this.view.rows;
+    sheet.columns = new FlSheetHeaders(this.view.columns);
+    sheet.rows = new FlSheetHeaders(this.view.rows);
     spreadSheet.addSheet(sheet);
 
     this.spreadSheet = spreadSheet;

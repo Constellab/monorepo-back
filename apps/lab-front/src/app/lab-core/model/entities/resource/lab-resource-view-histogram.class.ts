@@ -53,6 +53,5 @@ export function labHistogramToChart(view: LabResourceViewHistogram): FlChartConf
     return dataHisto.getIntervalText();
   };
 
-  console.log(series)
   return new FlChartHistogram(series);
 }

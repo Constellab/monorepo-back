@@ -1,12 +1,17 @@
 <fl-portal>
   <fl-portal-content>
+    <div fxLayout="row" fxLayoutGap="1em">
+      <div>
+        <div>x : {{data.data.getX()}}</div>
+        <div>y : {{data.data.getY()}}</div>
 
-    <div>x : {{data.data.getX()}}</div>
-    <div>y : {{data.data.getY()}}</div>
+        <fl-chart-serie-inline class="serie" [color]="data.serieKey | flChartScale:seriesColorScale"
+                               [serieName]="data.serieName">
+        </fl-chart-serie-inline>
+      </div>
 
-    <fl-chart-serie-inline class="serie" [color]="data.serieKey | flChartScale:seriesColorScale"
-                           [serieName]="data.serieName">
-    </fl-chart-serie-inline>
+      <fl-chart-data-tags [tags]="data.data.tags"></fl-chart-data-tags>
+    </div>
   </fl-portal-content>
 </fl-portal>
 

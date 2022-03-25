@@ -2,7 +2,7 @@
      [flDisabled]="pinDrawer" [flExcludeElement]="cdkContainerClass"
      class="container">
 
-  <fl-section [object]="'aa'">
+  <fl-section [object]="true">
 
     <fl-section-header>
       <fl-section-actions class="g-button-icon-small">
@@ -17,7 +17,7 @@
 
 
     <ng-container *flSectionBody>
-      <div class="drawer-content">
+      <div class="drawer-content g-mat-checkbox-include-bottom">
 
         <!--   Information about the current sheet     -->
         <div *ngIf="currentSheet$ | async as sheet">
