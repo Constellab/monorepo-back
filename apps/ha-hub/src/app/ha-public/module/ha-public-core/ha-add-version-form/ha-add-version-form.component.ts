@@ -20,7 +20,7 @@ export class HaAddVersionFormComponent implements OnInit {
       version: [null, [Validators.required, Validators.pattern( new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]],
       repoType: [null, Validators.required],
       isBeta: [false, Validators.required],
-      subPatch: [null, [Validators.min(0), FlGlobalValidators.isInteger]]
+      subPatch: [null, [Validators.min(0), FlGlobalValidators.isInteger()]]
     });
   }
 
