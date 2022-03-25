@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {DaProjectFormDialogComponent} from './da-project-form-dialog.component';
+import {CaProjectFormDialogComponent} from './ca-project-form-dialog.component';
 
 describe('ProjectFormDialogComponent', () => {
-  let component: DaProjectFormDialogComponent;
-  let fixture: ComponentFixture<DaProjectFormDialogComponent>;
+  let component: CaProjectFormDialogComponent;
+  let fixture: ComponentFixture<CaProjectFormDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DaProjectFormDialogComponent ]
+      declarations: [ CaProjectFormDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DaProjectFormDialogComponent);
+    fixture = TestBed.createComponent(CaProjectFormDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -25,7 +25,7 @@ export class CaServerInfoFormDialogComponent extends FlFormDialogAbstractDirecti
               private serverInfoService: CaServerInfoService,
               snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<CaServerInfoFormDialogComponent>) {
-    super(dialogInput, snackBarService, dialogRef, 'server_info_created', 'server_info_updated');
+    super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
@@ -59,5 +59,14 @@ export class CaServerInfoFormDialogComponent extends FlFormDialogAbstractDirecti
   get title(): string {
     return this.isCreateMode() ? 'create_server_info' : 'update_server_info';
   }
+
+  getCreateSuccessMessage(): string {
+    return 'server_info_created';
+  }
+
+  getUpdateSuccessMessage(): string {
+    return 'server_info_updated';
+  }
+
 
 }

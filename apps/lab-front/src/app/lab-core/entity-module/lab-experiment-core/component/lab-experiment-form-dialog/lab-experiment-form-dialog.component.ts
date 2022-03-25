@@ -26,7 +26,7 @@ export class LabExperimentFormDialogComponent extends FlFormDialogAbstractDirect
               private experimentService: LabExperimentService,
               snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<LabExperimentFormDialogComponent>) {
-    super(dialogInput, snackBarService, dialogRef, 'biox.experiment_created', 'biox.experiment_updated');
+    super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
@@ -51,5 +51,15 @@ export class LabExperimentFormDialogComponent extends FlFormDialogAbstractDirect
   get title(): string {
     return this.isCreateMode() ? 'biox.new_experiment' : 'biox.update_experiment';
   }
+
+  getCreateSuccessMessage(): string {
+    return 'biox.experiment_created';
+  }
+
+  getUpdateSuccessMessage(): string {
+    return 'biox.experiment_updated';
+  }
+
+
 
 }

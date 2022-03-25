@@ -3,9 +3,8 @@ import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} fro
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {HaNewVersionDTO} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
-import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
+import {FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
-import {Validators} from '@angular/forms';
 import {HaAddVersionFormComponent} from '../../ha-public-core/ha-add-version-form/ha-add-version-form.component';
 
 @Component({
@@ -26,7 +25,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
     snackBarService: FlSnackBarService,
     dialogRef: MatDialogRef<HaPublicAddVersionDialogComponent>
   ) {
-    super(dialogInput, snackBarService, dialogRef, 'new_version_added', null);
+    super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
@@ -51,6 +50,16 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
   update(formValue: Partial<HaNewVersionDTO>): Observable<Partial<HaNewVersionDTO>> {
     return undefined;
   }
+
+  getCreateSuccessMessage(): string {
+    return 'new_version_added';
+  }
+
+  getUpdateSuccessMessage(): string {
+    return '';
+  }
+
+
 
 
 }

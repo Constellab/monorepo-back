@@ -6,10 +6,10 @@ import {CaProject} from '../../../../model/entities/ca-project.class';
  */
 @Component({
   selector: 'ca-project-info',
-  templateUrl: './da-project-info.component.html',
-  styleUrls: ['./da-project-info.component.scss']
+  templateUrl: './ca-project-info.component.html',
+  styleUrls: ['./ca-project-info.component.scss']
 })
-export class DaProjectInfoComponent implements OnInit {
+export class CaProjectInfoComponent implements OnInit {
 
   @Input() project: CaProject;
 

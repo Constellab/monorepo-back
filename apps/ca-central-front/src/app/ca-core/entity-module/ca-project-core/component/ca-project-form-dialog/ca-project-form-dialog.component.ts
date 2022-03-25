@@ -12,10 +12,10 @@ import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} fro
  */
 @Component({
   selector: 'ca-project-form-dialog',
-  templateUrl: './da-project-form-dialog.component.html',
-  styleUrls: ['./da-project-form-dialog.component.scss']
+  templateUrl: './ca-project-form-dialog.component.html',
+  styleUrls: ['./ca-project-form-dialog.component.scss']
 })
-export class DaProjectFormDialogComponent extends FlFormDialogAbstractDirective<Partial<CaProject>, CaProject> implements OnInit {
+export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<Partial<CaProject>, CaProject> implements OnInit {
 
   formGp: FormGroup<Partial<CaProject>>;
 
@@ -24,8 +24,8 @@ export class DaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
   constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaProject>,
               private projectService: CaProjectService,
               snackBarService: FlSnackBarService,
-              dialogRef: MatDialogRef<DaProjectFormDialogComponent>) {
-    super(dialogInput, snackBarService, dialogRef, 'project_created', 'project_updated');
+              dialogRef: MatDialogRef<CaProjectFormDialogComponent>) {
+    super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
@@ -55,5 +55,14 @@ export class DaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
   get title(): string {
     return this.isCreateMode() ? 'new_project' : 'update_project';
   }
+
+  getCreateSuccessMessage(): string {
+    return 'project_created';
+  }
+
+  getUpdateSuccessMessage(): string {
+    return 'project_updated';
+  }
+
 
 }

@@ -28,7 +28,7 @@ export class HaPublicSidenavCreateFormDialogComponent extends FlFormDialogAbstra
               private documentationService: HaDocumentationService,
               snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<HaPublicSidenavCreateFormDialogComponent>) {
-    super(dialogInput, snackBarService, dialogRef, 'element_created', 'element_updated');
+    super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
@@ -57,4 +57,14 @@ export class HaPublicSidenavCreateFormDialogComponent extends FlFormDialogAbstra
   update(formValue: HaNodeDTO): Observable<HaFolder | HaDocumentation> {
     return this.formGp.value.isFolder ? this.folderService.update(formValue) : this.documentationService.update(formValue);
   }
+
+  getCreateSuccessMessage(): string {
+    return 'element_created';
+  }
+
+  getUpdateSuccessMessage(): string {
+    return 'element_updated';
+  }
+
+
 }

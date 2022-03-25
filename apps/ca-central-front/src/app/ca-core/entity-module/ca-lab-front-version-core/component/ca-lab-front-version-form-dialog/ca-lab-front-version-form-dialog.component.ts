@@ -22,7 +22,7 @@ export class CaLabFrontVersionFormDialogComponent extends FlFormDialogAbstractDi
               dialogRef: MatDialogRef<CaLabFrontVersionFormDialogComponent>,
               @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaSaveLabFrontVersionDTO>,
               private labInstanceService: CaLabFrontVersionService) {
-    super(dialogInput, snackBarService, dialogRef, 'lab_front_version_created', 'lab_front_version_updated');
+    super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
@@ -49,5 +49,14 @@ export class CaLabFrontVersionFormDialogComponent extends FlFormDialogAbstractDi
   update(formValue: CaSaveLabFrontVersionDTO): Observable<CaLabFrontVersion> {
     return this.labInstanceService.update(formValue);
   }
+
+  getCreateSuccessMessage(): string {
+    return 'lab_front_version_created';
+  }
+
+  getUpdateSuccessMessage(): string {
+    return 'lab_front_version_updated';
+  }
+
 
 }

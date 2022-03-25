@@ -19,7 +19,7 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
               dialogRef: MatDialogRef<CaLabInstanceFormDialogComponent>,
               @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaLabInstance>,
               private labInstanceService: CaLabInstanceService) {
-    super(dialogInput, snackBarService, dialogRef, 'lab_instance_created', 'lab_instance_updated');
+    super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
@@ -51,5 +51,14 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
   update(formValue: Partial<CaLabInstance>): Observable<CaLabInstance> {
     return this.labInstanceService.update(formValue);
   }
+
+  getCreateSuccessMessage(): string {
+    return 'lab_instance_created';
+  }
+
+  getUpdateSuccessMessage(): string {
+    return 'lab_instance_updated';
+  }
+
 
 }

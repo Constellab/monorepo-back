@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {DaProjectInfoComponent} from './da-project-info.component';
+import {CaProjectInfoComponent} from './ca-project-info.component';
 
 describe('ProjectInfoComponent', () => {
-  let component: DaProjectInfoComponent;
-  let fixture: ComponentFixture<DaProjectInfoComponent>;
+  let component: CaProjectInfoComponent;
+  let fixture: ComponentFixture<CaProjectInfoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DaProjectInfoComponent ]
+      declarations: [ CaProjectInfoComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DaProjectInfoComponent);
+    fixture = TestBed.createComponent(CaProjectInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

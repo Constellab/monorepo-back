@@ -2,8 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {CaProjectService} from '../../../ca-core/service-api/ca-project.service';
 import {CaProject, CaProjectDatasource} from '../../../ca-core/model/entities/ca-project.class';
 import {
-  DaProjectFormDialogComponent
-} from '../../../ca-core/entity-module/ca-project-core/component/ca-project-form-dialog/da-project-form-dialog.component';
+  CaProjectFormDialogComponent
+} from '../../../ca-core/entity-module/ca-project-core/component/ca-project-form-dialog/ca-project-form-dialog.component';
 import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
 
 @Component({
@@ -27,7 +27,7 @@ export class CaMyProjectsPageComponent implements OnInit {
     const dialogInput: FlFormDialogInput = {
       mode: 'create'
     };
-    this.dialogService.openSmallDialog(DaProjectFormDialogComponent, {data: dialogInput})
+    this.dialogService.openSmallDialog(CaProjectFormDialogComponent, {data: dialogInput})
       .afterClosed().subscribe(
       projects => this.onCreateProjectClosed(projects)
     );

@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CaProject, CaProjectStatus, caProjectStatusDict} from '../../../../../ca-core/model/entities/ca-project.class';
 import {
-  DaProjectFormDialogComponent
-} from '../../../../../ca-core/entity-module/ca-project-core/component/ca-project-form-dialog/da-project-form-dialog.component';
+  CaProjectFormDialogComponent
+} from '../../../../../ca-core/entity-module/ca-project-core/component/ca-project-form-dialog/ca-project-form-dialog.component';
 import {
   CaUpdateStatusFormDialogComponent,
   UpdateStatusFormDialogInput
@@ -41,7 +41,7 @@ export class CaProjectDetailComponent implements OnInit {
       object: this.project
     };
 
-    this.dialogService.openSmallDialog(DaProjectFormDialogComponent, {
+    this.dialogService.openSmallDialog(CaProjectFormDialogComponent, {
       data: dialogInput
     }).afterClosed().subscribe(
       project => this.updateDialogClosed(project)

@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CaProjectCardComponent} from './component/ca-project-card/ca-project-card.component';
-import {DaProjectFormDialogComponent} from './component/ca-project-form-dialog/da-project-form-dialog.component';
+import {CaProjectFormDialogComponent} from './component/ca-project-form-dialog/ca-project-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaCoreModule} from '../../ca-core.module';
-import {DaProjectInfoComponent} from './component/ca-project-info/da-project-info.component';
+import {CaProjectInfoComponent} from './component/ca-project-info/ca-project-info.component';
 import {CaProjectsListComponent} from './component/ca-projects-list/ca-projects-list.component';
 import {RouterModule} from '@angular/router';
 
@@ -15,16 +15,16 @@ import {RouterModule} from '@angular/router';
   declarations: [
     // Component
     CaProjectCardComponent,
-    DaProjectFormDialogComponent,
+    CaProjectFormDialogComponent,
     CaProjectsListComponent,
-    DaProjectInfoComponent,
+    CaProjectInfoComponent,
   ],
   exports: [
     // Component
     CaProjectCardComponent,
-    DaProjectFormDialogComponent,
+    CaProjectFormDialogComponent,
     CaProjectsListComponent,
-    DaProjectInfoComponent,
+    CaProjectInfoComponent,
   ],
   imports: [
     CommonModule,

@@ -25,7 +25,7 @@ export class LabReportFormDialogComponent extends FlFormDialogAbstractDirective<
               @Inject(MAT_DIALOG_DATA) dialogInput: LabReportFormDialogInput,
               snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<LabReportFormDialogComponent>) {
-    super(dialogInput, snackBarService, dialogRef, 'biox.report_created', 'biox.report_updated');
+    super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
@@ -53,6 +53,16 @@ export class LabReportFormDialogComponent extends FlFormDialogAbstractDirective<
   update(formValue: LabReportForm): Observable<LabReport> {
     return this.reportService.update(this.dialogInput.reportId, formValue);
   }
+
+  getCreateSuccessMessage(): string {
+    return 'biox.report_created';
+  }
+
+  getUpdateSuccessMessage(): string {
+    return 'biox.report_updated';
+  }
+
+
 
 
 }

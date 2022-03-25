@@ -19,7 +19,7 @@ export class CaOrganizationFormDialogComponent extends FlFormDialogAbstractDirec
               dialogRef: MatDialogRef<CaOrganizationFormDialogComponent>,
               @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaSaveOrganizationDTO>,
               private organizationService: CaOrganizationService) {
-    super(dialogInput, snackBarService, dialogRef, 'organization_created', 'organization_updated');
+    super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
@@ -44,6 +44,14 @@ export class CaOrganizationFormDialogComponent extends FlFormDialogAbstractDirec
 
   update(formValue: CaSaveOrganizationDTO): Observable<CaOrganization> {
     return this.organizationService.update(formValue);
+  }
+
+  getCreateSuccessMessage(): string {
+    return 'organization_created';
+  }
+
+  getUpdateSuccessMessage(): string {
+    return 'organization_updated';
   }
 
 

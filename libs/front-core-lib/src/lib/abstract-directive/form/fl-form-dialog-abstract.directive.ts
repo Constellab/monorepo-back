@@ -22,9 +22,7 @@ export abstract class FlFormDialogAbstractDirective<FORM_TYPE, ENTITY = FORM_TYP
 
   protected constructor(protected dialogInput: FlFormDialogInput<FORM_TYPE>,
                         protected snackBarService: FlSnackBarService,
-                        protected dialogRef: MatDialogRef<any>,
-                        private createSuccessMessage: string,
-                        private updateSuccessMessage: string) {
+                        protected dialogRef: MatDialogRef<any>) {
   }
 
   abstract buildForm(): FormGroup<FORM_TYPE>;
@@ -32,6 +30,10 @@ export abstract class FlFormDialogAbstractDirective<FORM_TYPE, ENTITY = FORM_TYP
   abstract create(formValue: FORM_TYPE): Observable<ENTITY>;
 
   abstract update(formValue: FORM_TYPE): Observable<ENTITY>;
+
+  abstract getCreateSuccessMessage(): string;
+
+  abstract getUpdateSuccessMessage(): string;
 
 
   /**
@@ -64,21 +66,21 @@ export abstract class FlFormDialogAbstractDirective<FORM_TYPE, ENTITY = FORM_TYP
   }
 
   private callCreate(formValue: FORM_TYPE): void {
-    this.create(formValue).subscribe(
-      newEntity => this.onSaveSuccess(newEntity, this.createSuccessMessage),
-      () => this.isLoading = false
-    );
+    this.create(formValue).subscribe({
+      next: newEntity => this.onSaveSuccess(newEntity, this.getCreateSuccessMessage()),
+      error: () => this.isLoading = false
+    });
   }
 
   private callUpdate(formValue: FORM_TYPE): void {
-    this.update(formValue).subscribe(
-      newEntity => this.onSaveSuccess(newEntity, this.updateSuccessMessage),
-      () => this.isLoading = false
-    );
+    this.update(formValue).subscribe({
+      next: newEntity => this.onSaveSuccess(newEntity, this.getUpdateSuccessMessage()),
+      error: () => this.isLoading = false
+    });
   }
 
   protected onSaveSuccess(entity: ENTITY, successText: string): void {
-    this.snackBarService.openSuccessMessage({text:successText,  translateText: true});
+    this.snackBarService.openSuccessMessage({text: successText, translateText: true});
 
     this.dialogRef.close(entity);
     this.isLoading = false;

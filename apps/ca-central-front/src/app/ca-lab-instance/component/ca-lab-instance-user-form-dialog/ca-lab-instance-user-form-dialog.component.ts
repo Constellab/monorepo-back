@@ -24,7 +24,7 @@ export class CaLabInstanceUserFormDialogComponent
               private labInstanceService: CaLabInstanceService,
               snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<CaLabInstanceUserFormDialogComponent>) {
-    super(dialogInput, snackBarService, dialogRef, 'lab_user_created', '');
+    super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
@@ -46,6 +46,15 @@ export class CaLabInstanceUserFormDialogComponent
   update(): Observable<CaLabInstanceUser> {
     return undefined;
   }
+
+  getCreateSuccessMessage(): string {
+    return 'lab_user_created';
+  }
+
+  getUpdateSuccessMessage(): string {
+    return '';
+  }
+
 
 
 }
