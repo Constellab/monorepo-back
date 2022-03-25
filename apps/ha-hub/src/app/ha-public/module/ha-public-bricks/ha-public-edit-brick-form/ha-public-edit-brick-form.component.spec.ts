@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { HaPublicEditBrickFormComponent } from './ha-public-edit-brick-form.component';
+import {HaPublicEditBrickFormComponent} from './ha-public-edit-brick-form.component';
 
 describe('HaPublicEditBrickFormComponent', () => {
   let component: HaPublicEditBrickFormComponent;
@@ -8,9 +8,9 @@ describe('HaPublicEditBrickFormComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HaPublicEditBrickFormComponent ]
+      declarations: [HaPublicEditBrickFormComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
