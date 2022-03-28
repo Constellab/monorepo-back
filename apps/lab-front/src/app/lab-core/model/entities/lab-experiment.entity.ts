@@ -25,12 +25,13 @@ export const labExperimentStatusDict: FlStatusDict<LabExperimentStatus> = {
 };
 
 
-export type LabExperimentType = 'EXPERIMENT' | 'TRANSFORMER' | 'IMPORTER';
+export type LabExperimentType = 'EXPERIMENT' | 'TRANSFORMER' | 'IMPORTER' | 'FS_NODE_EXTRACTOR';
 
 export const labExperimentTypeDict: FlStatusDict<LabExperimentType> = {
   EXPERIMENT: FlStatusHelper.getInfoStatus('EXPERIMENT', 'biox.experiment_type_experiment'),
   TRANSFORMER: FlStatusHelper.getInfoStatus('TRANSFORMER', 'biox.experiment_type_transformer', 'move_down'),
   IMPORTER: FlStatusHelper.getInfoStatus('IMPORTER', 'biox.experiment_type_importer'),
+  FS_NODE_EXTRACTOR: FlStatusHelper.getInfoStatus('FS_NODE_EXTRACTOR', 'biox.experiment_type_extractor'),
 };
 
 export class LabExperiment extends LabBaseEntityWithUser {

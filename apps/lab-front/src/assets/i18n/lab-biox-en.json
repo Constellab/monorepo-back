@@ -17,6 +17,7 @@
     "experiment_type_experiment": "Experiment",
     "experiment_type_transformer": "Transformer",
     "experiment_type_importer": "Importer",
+    "experiment_type_extractor": "Extractor",
     "experiment_is_validated": "Validated",
     "experiment_waiting_for_cli": "Waiting",
     "experiment_in_queue": "Waiting",

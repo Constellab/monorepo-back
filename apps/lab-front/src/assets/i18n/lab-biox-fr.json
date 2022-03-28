@@ -17,6 +17,7 @@
     "experiment_type_experiment": "Expérience",
     "experiment_type_transformer": "Transformeur",
     "experiment_type_importer": "Importeur",
+    "experiment_type_extractor": "Extracteur",
     "experiment_is_validated": "Validée",
     "experiment_waiting_for_cli": "En attente",
     "experiment_in_queue": "En attente",
