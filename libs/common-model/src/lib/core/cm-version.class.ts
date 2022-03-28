@@ -17,8 +17,8 @@ export class CmVersion {
     }
 
     let subPatchStr: string = null;
-    console.log(versions)
-    if(versions[2].includes('-beta')){
+    console.log(versions);
+    if (versions[2].includes('-beta')) {
       [versions[2], subPatchStr] = versions[2].split('-beta');
     }
 
@@ -30,8 +30,14 @@ export class CmVersion {
       throw new Error(`Version '${version}' is invalid`);
     }
 
-    if(subPatchStr !== null){
-      return new CmVersion(major, minor, patch, parseInt(subPatchStr));
+    if (subPatchStr !== null) {
+      const subPatch = parseInt(subPatchStr);
+
+      if (isNaN(subPatch)) {
+        throw new Error(`Sub-patch version of '${version}' is invalid`);
+      }
+
+      return new CmVersion(major, minor, patch, subPatch);
     }
 
     return new CmVersion(major, minor, patch);
@@ -41,7 +47,7 @@ export class CmVersion {
     return this.getVersionAsNumber() >= other.getVersionAsNumber();
   }
 
-  public isBeta(): boolean{
+  public isBeta(): boolean {
     return this.subPatch != null;
   }
 
