@@ -7,8 +7,8 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {FlTableAbstractDirective} from '@monorepo/front-core-lib';
-import {LabResource, LabResourceDatasource} from '../../../../model/entities/resource/lab-resource.entity';
+import {FlArrayObs, FlTableAbstractDirective} from '@monorepo/front-core-lib';
+import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {LabTag} from '../../../../model/entities/lab-tag.entity';
 
@@ -24,7 +24,7 @@ import {LabTag} from '../../../../model/entities/lab-tag.entity';
 export class LabResourceTableComponent extends FlTableAbstractDirective<LabResource>
   implements OnInit {
 
-  @Input() datasource: LabResourceDatasource;
+  @Input() datasource: FlArrayObs<LabResource>;
 
   // when true, the row become clickable and resourceSelected event is trigger
   @Input() selectableRow: boolean = false;

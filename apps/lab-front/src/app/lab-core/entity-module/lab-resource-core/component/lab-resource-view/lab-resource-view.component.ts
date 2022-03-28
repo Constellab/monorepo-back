@@ -15,6 +15,7 @@ import {LabResourceNetworkComponent} from '../lab-resource-network/lab-resource-
 import {LabResourceChart2dComponent} from '../lab-resource-chart-2d/lab-resource-chart2d.component';
 import {LabResourceMultiViewComponent} from '../lab-resource-multi-view/lab-resource-multi-view.component';
 import {LabResourceFolderComponent} from '../lab-resource-folder/lab-resource-folder.component';
+import {LabResourcesListComponent} from '../lab-resources-list/lab-resources-list.component';
 
 export function labResourceViewGetComponentType(viewType: LabResourceViewType): ComponentType<LabResourceViewDirective> {
   switch (viewType) {
@@ -40,6 +41,8 @@ export function labResourceViewGetComponentType(viewType: LabResourceViewType): 
       return LabResourceMultiViewComponent;
     case 'folder-view':
       return LabResourceFolderComponent;
+    case 'resources-list-view':
+      return LabResourcesListComponent;
     default:
       console.error(`View of type ${viewType} not supported`);
       return null;

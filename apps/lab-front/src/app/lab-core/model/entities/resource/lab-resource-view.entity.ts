@@ -22,7 +22,8 @@ export type LabResourceViewType =
   | 'box-plot-view'
   | 'multi-view'
   | 'venn-diagram-view'
-  | 'heatmap-view';
+  | 'heatmap-view'
+  | 'resources-list-view';
 
 // Mode to where display the view
 export type LabResourceViewDisplayMode = 'fullScreen' | 'portal';
@@ -131,6 +132,14 @@ export interface LabResourceViewImage extends LabResourceViewBase {
   data: any;
 }
 
+/**
+ * View that list other resources
+ */
+export interface LabResourceViewResourcesList extends LabResourceViewBase {
+  type: 'resources-list-view';
+  data: any[]; // list of LabResource
+}
+
 export interface LabResourceViewMulti extends LabResourceViewBase {
   type: 'multi-view';
   data: LabResourceViewMultiData;
@@ -158,7 +167,8 @@ export type LabResourceView =
   | LabResourceViewHeatMap
   | LabResourceViewText
   | LabResourceViewTable
-  | LabResourceViewFolder;
+  | LabResourceViewFolder
+  | LabResourceViewResourcesList;
 
 // Information of the view type
 export interface LabResourceViewTypeInfo {
@@ -274,6 +284,12 @@ export const labConstResourceViewTypeInfos: Record<LabResourceViewType, LabResou
   'folder-view': {
     icon: 'folder',
     text: 'biox.resource_view_folder',
+    defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: false
+  },
+  'resources-list-view': {
+    icon: 'list',
+    text: 'biox.resource_view_resources_list',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false
   },
