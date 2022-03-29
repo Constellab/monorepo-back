@@ -26,8 +26,6 @@ import {FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
 export class FlBioNetworkRendererState implements OnDestroy {
 
   private htmlContainer: HTMLElement;
-  private chartHeight: number;
-  private chartWidth: number;
 
   private data: FlBioNetworkD3;
 
@@ -68,8 +66,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
   public init(htmlContainer: HTMLElement, slideLinkColorToggle: boolean): void {
     this.htmlContainer = htmlContainer;
-    this.chartWidth = htmlContainer.clientWidth;
-    this.chartHeight = htmlContainer.clientHeight;
+
     this.linkColorLogarithm = slideLinkColorToggle;
 
     this.subscriptions.add(this.state.getChartData$().subscribe(
@@ -98,7 +95,10 @@ export class FlBioNetworkRendererState implements OnDestroy {
           this.data.initPositions();
         }
 
-        const mainGroup = this.initSVG();
+        const chartWidth = this.htmlContainer.clientWidth;
+        const chartHeight = this.htmlContainer.clientHeight;
+
+        const mainGroup = this.initSVG(chartWidth, chartHeight);
 
 
         this.gridState.initGrid(mainGroup);
@@ -121,7 +121,9 @@ export class FlBioNetworkRendererState implements OnDestroy {
         this.drawNodes(FlBioNetworkMetaboliteLevel.MINOR);
 
 
-        this.zoomState.enableZoom(this.svg, mainGroup, this.chartWidth, this.chartHeight, this.data);
+
+
+        this.zoomState.enableZoom(this.svg, mainGroup, chartWidth, chartHeight, this.data);
         this.defineArrowMarkers();
 
         if (this.enableSimulation) {
@@ -138,11 +140,11 @@ export class FlBioNetworkRendererState implements OnDestroy {
   }
 
 
-  private initSVG(): FlD3SelectionSimple {
+  private initSVG(chartWidth: number, chartHeight: number): FlD3SelectionSimple {
     this.svg = select(this.htmlContainer)
       .append('svg')
-      .attr('width', this.chartWidth)
-      .attr('height', this.chartHeight)
+      .attr('width', chartWidth)
+      .attr('height', chartHeight)
       .on('contextmenu', (ev: Event) => ev.preventDefault()); // disable context menu
 
     //add encompassing group for the zoom
