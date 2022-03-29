@@ -63,7 +63,7 @@ export class LabReportSearchComponent implements OnInit {
 
   datasource: FlDatasourcePaginated<LabReport>;
 
-  columns: FlTableColumn<LabReport>[] = ['isValidated', 'title', 'createdAt'];
+  columns: FlTableColumn<LabReport>[] = ['title', 'createdAt'];
 
   constructor(private searchState: FlSearchState<any>,
               private reportService: LabReportService,

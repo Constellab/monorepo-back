@@ -1,4 +1,5 @@
-<mat-table fxFlex="100" mat-table [dataSource]="datasource">
+<mat-table fxFlex="100" mat-table [dataSource]="datasource"
+           [ngClass]="{'table-selectable': rowSelectable}">
 
   <!-- Sub type -->
   <ng-container matColumnDef="objectSubType">

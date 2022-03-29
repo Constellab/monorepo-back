@@ -167,9 +167,12 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
   }
 
   openCreateReport(): void {
+    const experiment = this.experimentState.currentExperiment;
+
     const input: LabReportFormDialogInput = {
       mode: 'create',
       experimentId: this.experimentState.currentExperiment.id,
+      project: experiment.project
     };
 
     this.dialogService.openSmallDialog(LabReportFormDialogComponent, {data: input}).afterClosed().subscribe(

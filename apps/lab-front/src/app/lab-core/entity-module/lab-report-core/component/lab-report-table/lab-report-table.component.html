@@ -1,16 +1,30 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
 
-
-  <!-- Validated -->
-  <ng-container matColumnDef="isValidated">
-    <mat-header-cell *matHeaderCellDef class="validated-column">
+  <!-- Title -->
+  <ng-container matColumnDef="title">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'title' | translate}}</span>
     </mat-header-cell>
-    <mat-cell *matCellDef="let report" class="validated-column">
-      <mat-icon *ngIf="report.isValidated"
-                [matTooltip]="'biox.report_validated' | translate">verified
-      </mat-icon>
+    <mat-cell *matCellDef="let report" class="g-cell-with-left-border"
+              [style.borderLeftColor]="report.project?.id | flStringToRgb">
+      <div class="validated-icon">
+        <mat-icon *ngIf="report.isValidated"
+                  [matTooltip]="'biox.report_validated' | translate">verified
+        </mat-icon>
+      </div>
+
+      <div>
+        <div>{{report.title}}</div>
+        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="report.project"
+                      gap="0">
+          <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
+          {{report.project.title}}
+        </fl-text-icon>
+      </div>
+
     </mat-cell>
   </ng-container>
+
 
   <!-- Datetime -->
   <ng-container matColumnDef="createdAt">

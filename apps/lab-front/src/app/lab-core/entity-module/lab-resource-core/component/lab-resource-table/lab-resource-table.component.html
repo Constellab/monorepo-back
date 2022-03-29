@@ -1,5 +1,24 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource">
 
+  <!-- Name -->
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'name' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let resource" class="g-cell-with-left-border"
+              [style.borderLeftColor]="resource.experiment?.id | flStringToRgb">
+      <div>
+        <div class="name" [matTooltip]="resource.name"
+             [matTooltipShowDelay]="1000" matTooltipPosition="after">{{resource.name}}</div>
+        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="resource.experiment"
+                      gap="0">
+          <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
+          {{resource.experiment.title}}
+        </fl-text-icon>
+      </div>
+    </mat-cell>
+  </ng-container>
+
   <!-- Created -->
   <ng-container matColumnDef="created">
     <mat-header-cell *matHeaderCellDef>
@@ -14,23 +33,6 @@
     </mat-cell>
   </ng-container>
 
-  <!-- Name -->
-  <ng-container matColumnDef="name">
-    <mat-header-cell *matHeaderCellDef>
-      <span> {{'name' | translate}}</span>
-    </mat-header-cell>
-    <mat-cell *matCellDef="let resource">
-      <div>
-        <div class="name" [matTooltip]="resource.name"
-             [matTooltipShowDelay]="1000" matTooltipPosition="after">{{resource.name}}</div>
-        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="resource.experiment"
-                      gap="0">
-          <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
-          {{resource.experiment.title}}
-        </fl-text-icon>
-      </div>
-    </mat-cell>
-  </ng-container>
 
   <!-- Info -->
   <ng-container matColumnDef="info">

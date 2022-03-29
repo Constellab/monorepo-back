@@ -63,7 +63,8 @@ export class LabReportDetailPageComponent implements OnInit, OnDestroy {
       mode: 'update',
       reportId: report.id,
       object: {
-        title: report.title
+        title: report.title,
+        project: report.project
       }
     };
 

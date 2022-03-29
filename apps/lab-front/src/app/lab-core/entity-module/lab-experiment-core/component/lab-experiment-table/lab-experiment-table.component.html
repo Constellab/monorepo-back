@@ -1,13 +1,15 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
 
+
   <!-- Title -->
   <ng-container matColumnDef="title">
     <mat-header-cell *matHeaderCellDef>
       <span> {{'title' | translate}}</span>
     </mat-header-cell>
-    <mat-cell *matCellDef="let experiment">
+    <mat-cell *matCellDef="let experiment" class="g-cell-with-left-border"
+              [style.borderLeftColor]="experiment.project?.id | flStringToRgb">
       <div>
-        <div class="name">{{experiment.title}}</div>
+        <div>{{experiment.title}}</div>
         <fl-text-icon class="g-text-tiny g-text-light" *ngIf="experiment.project"
                       gap="0">
           <mat-icon flIcon="project" class="g-icon-tiny"></mat-icon>

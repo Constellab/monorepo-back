@@ -6,10 +6,12 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
 import {Validators} from '@angular/forms';
 import {LabReportService} from '../../../../entity-service/lab-report.service';
+import {LabEntity} from '../../../../model/global/lab-entity.entity';
 
 export interface LabReportFormDialogInput extends FlFormDialogInput<LabReportForm> {
   reportId?: string;
   experimentId?: string; // can be provided during create to associate the report directly to an experiment
+  project?: LabEntity;
 }
 
 @Component({
@@ -38,7 +40,8 @@ export class LabReportFormDialogComponent extends FlFormDialogAbstractDirective<
 
   buildForm(): FormGroup<LabReportForm> {
     return new FormBuilder().group({
-      title: [null, Validators.required]
+      title: [null, Validators.required],
+      project: [{value: this.dialogInput.project, disabled: this.isCreateMode() && this.dialogInput.project != null}]
     });
   }
 

@@ -5,6 +5,7 @@ import {
   FlBioNetworkModule,
   FlCardModule,
   FlChartModule,
+  FlColorModule,
   FlCoreComponentModule,
   FlCoreDirectiveModule,
   FlCorePipeModule,
@@ -74,6 +75,7 @@ import {
     FlArticleModule,
     FlKeyValueModule,
     FlResizeModule,
+    FlColorModule,
   ]
 })
 export class LabCustomLibraryModule {
