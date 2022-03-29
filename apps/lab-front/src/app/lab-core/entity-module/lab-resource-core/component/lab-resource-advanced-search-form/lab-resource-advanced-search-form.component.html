@@ -21,10 +21,15 @@
     </mat-form-field>
 
     <!--  Name  -->
-    <mat-form-field class="g-full">
+    <mat-form-field class="g-search-field">
       <mat-label>{{'name' | translate }}</mat-label>
       <input matInput formControlName="name" [placeholder]="'name' | translate" autocomplete="off">
     </mat-form-field>
+
+    <!--  Experiment  -->
+    <fl-form-field class="g-search-field">
+      <lab-select-experiment formControlName="experiment" class="g-search-field"></lab-select-experiment>
+    </fl-form-field>
 
     <!--  Tags  -->
     <fl-form-field class="g-full">

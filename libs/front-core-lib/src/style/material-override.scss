@@ -164,6 +164,13 @@
   margin-left: 0.5em !important;
 }
 
+.g-button-text-ellipsis .mat-button-wrapper {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+}
+
 
 /***************************** Table *****************************/
 
@@ -257,7 +264,7 @@
 }
 
 // To be place only on the first mat-cell to define a colored border
-.g-cell-with-left-border{
+.g-cell-with-left-border {
   border-left-style: solid;
   border-left-width: 10px;
 

@@ -1,0 +1,14 @@
+<button mat-stroked-button type="button" (click)="openExperimentSelection()"
+        class="g-full g-button-text-ellipsis" [disabled]="disabled">
+  <mat-icon flIcon="experiment"></mat-icon>
+
+  <ng-container *ngIf="value && value.title; else noSelection">
+    {{value.title}}
+  </ng-container>
+
+  <ng-template #noSelection>
+    {{'biox.experiment_select' | translate}}
+  </ng-template>
+
+  <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+</button>

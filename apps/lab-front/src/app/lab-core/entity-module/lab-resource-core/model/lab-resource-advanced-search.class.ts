@@ -10,6 +10,7 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {LabSearchConverter} from '../../../model/global/lab-search-converter.class';
 import {Type} from 'class-transformer';
 import {LabResourceOrigin} from '../../../model/entities/resource/lab-resource.entity';
+import {LabExperiment} from '../../../model/entities/lab-experiment.entity';
 
 /**
  * Format of the data for the Advanced search form of the resource
@@ -20,6 +21,7 @@ export class LabResourceSearchFields {
   tags: FlTag[];
   origin: LabResourceOrigin;
   data: string;
+  experiment: LabExperiment;
 
   @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
@@ -40,6 +42,7 @@ export class LabResourceSearch {
     tags: 'flTag.tags',
     origin: 'resource_origin',
     data: 'resource_data',
+    experiment: 'biox.experiment',
     isArchived: 'is_archived',
     // group the creation date into one chip
     createdAt: 'creation_date',
@@ -56,6 +59,7 @@ export class LabResourceSearch {
     tags: {key: 'tags', operator: 'EQ', convertValue: FlTagHelper.tagsToString},
     origin: {key: 'origin', operator: 'EQ'},
     data: {key: 'data', operator: 'MATCH'},
+    experiment: {key: 'experiment', operator: 'EQ', convertValue: FlSearchConverter.getEntityId},
     // Date
     createdAt: FlSearchConverter.dateInterval('created_at'),
     createdBy: {key: 'created_by', operator: 'IN'},
@@ -76,6 +80,7 @@ export class LabResourceSearch {
         tags: [null],
         origin: [null],
         data: [null],
+        experiment: [null],
         createdAt: createAtFormGroup,
         createdBy: [null],
         isArchived: [null]

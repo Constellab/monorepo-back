@@ -65,9 +65,9 @@ body {
   max-height: 100vh;
 }
 
-// when a flex element has this class, it takes al the width in the advanced search
+// when a flex element has this class, it takes all the width in the advanced search
 // right panel, but not in a full page
 .g-search-field {
-  flex: 1 1 10em;
+  flex: 1 1 12em;
   min-width: 0;
 }
