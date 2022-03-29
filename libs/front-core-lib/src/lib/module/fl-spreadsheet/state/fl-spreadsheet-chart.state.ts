@@ -161,7 +161,7 @@ export class FlSpreadsheetChartState {
       case FlChartType.BAR_PLOT:
         return chartService.generateBar(formValue.series);
       case FlChartType.STACKED_PLOT:
-        return chartService.generateStackBar(formValue.series);
+        return chartService.generateStackBar(formValue.series, formValue.additionalFields.normalize);
       case FlChartType.HEAT_MAP:
         return chartService.generateHeatMap(formValue.series[0]);
       case FlChartType.VENN_DIAGRAM:

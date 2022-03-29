@@ -34,7 +34,8 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     chart_serie: 'Série',
     chart_series: 'Séries',
     chart_nb_of_bins: 'Nombres de classes',
-    chart_histo_density: 'Density',
+    chart_histo_density: 'Densité',
+    chart_normalize: 'Normaliser les données',
     chart_nb_of_bins_error: 'Le nombre de classes doit être un entier supérieur à 1',
     chart_serie_required_error: 'Vous devez définir au moins 1 série',
     chart_too_many_series_error: 'Le type de graphique support au maximum {{maxSeries}} séries',
@@ -44,7 +45,7 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     sheet_selection_range: 'Plage',
     sheet_selection_columns: 'Colonnes',
     cell_value_object: 'Objet',
-    cell_value: 'Value',
+    cell_value: 'Valuer',
     open_cell_object_in_sheet: 'Ouvrir dans une feuille',
     sheet: 'Feuille',
     split_selection_by_rows: 'Séparer la sélection par lignes',
@@ -57,8 +58,8 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     header_tags: 'Tags',
     total_rows_count: 'Nombre total de lignes',
     total_columns_count: 'Nombre total de colonnes',
-    column: 'Column',
-    row: 'Row'
+    column: 'Colonne',
+    row: 'Ligne'
   }
 };
 
@@ -90,7 +91,8 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     chart_serie: 'Serie',
     chart_series: 'Séries',
     chart_nb_of_bins: 'Number of classes',
-    chart_histo_density: 'Densité',
+    chart_histo_density: 'Density',
+    chart_normalize: 'Normalize data',
     chart_nb_of_bins_error: 'The number of classes must be an integer higher than 1',
     chart_serie_required_error: 'You must define at least 1 serie',
     chart_too_many_series_error: 'The chart type supports a maximum of {{maxSeries}} series',
@@ -100,7 +102,7 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     sheet_selection_range: 'Range',
     sheet_selection_columns: 'Columns',
     cell_value_object: 'Object',
-    cell_value: 'Valeur',
+    cell_value: 'Value',
     open_cell_object_in_sheet: 'Open in a sheet',
     sheet: 'Sheet',
     split_selection_by_rows: 'Split selection by rows',
@@ -113,8 +115,8 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     header_tags: 'Tags',
     total_rows_count: 'Total number of rows',
     total_columns_count: 'Total number of columns',
-    column: 'Colonne',
-    row: 'Ligne'
+    column: 'Column',
+    row: 'Row'
   }
 };
 

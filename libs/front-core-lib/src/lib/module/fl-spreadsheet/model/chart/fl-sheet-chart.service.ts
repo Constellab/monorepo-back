@@ -17,7 +17,7 @@ export abstract class FlSheetChartService {
 
   public abstract generateBar(series: FlSheetChartSerieSelectionForm[]): FlChartConfig | Observable<FlChartConfig>;
 
-  public abstract generateStackBar(series: FlSheetChartSerieSelectionForm[]): FlChartConfig | Observable<FlChartConfig>;
+  public abstract generateStackBar(series: FlSheetChartSerieSelectionForm[], normalize: boolean): FlChartConfig | Observable<FlChartConfig>;
 
   public abstract generateHeatMap(serie: FlSheetChartSerieSelectionForm): FlChartConfig | Observable<FlChartConfig>;
 

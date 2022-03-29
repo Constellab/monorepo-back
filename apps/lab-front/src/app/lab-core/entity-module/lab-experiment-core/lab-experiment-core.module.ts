@@ -23,6 +23,7 @@ import {
   LabSelectExperimentDialogComponent
 } from './component/lab-select-experiment-dialog/lab-select-experiment-dialog.component';
 import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
+import {LabSelectExperimentComponent} from './component/lab-select-experiment/lab-select-experiment.component';
 
 
 @NgModule({
@@ -35,6 +36,7 @@ import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
     LabExperimentStatusOptionsComponent,
     LabExperimentTypeOptionsComponent,
     LabSelectExperimentDialogComponent,
+    LabSelectExperimentComponent,
   ],
   exports: [
     LabExperimentTableComponent,
@@ -45,6 +47,7 @@ import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
     LabExperimentStatusOptionsComponent,
     LabExperimentTypeOptionsComponent,
     LabSelectExperimentDialogComponent,
+    LabSelectExperimentComponent,
   ],
   imports: [
     CommonModule,

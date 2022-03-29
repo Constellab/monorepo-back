@@ -82,8 +82,13 @@ export class LabResourceTableChartState extends FlSheetChartService {
     return this.generateBasic2dChart('view_as_scatter_plot_2d', series);
   }
 
-  generateStackBar(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.generateBasic2dChart('view_as_stacked_bar_plot', series);
+  generateStackBar(series: FlSheetChartSerieSelectionForm[], normalize: boolean): Observable<FlChartConfig> {
+    return this.resourceService.callResourceView(this.resourceId, 'view_as_stacked_bar_plot', {
+      series: series,
+      normalize: normalize,
+    }, this.transformers).pipe(
+      map((view) => labBasicPlotToChart(view.viewData as LabResourceViewBasicPlot2d))
+    );
   }
 
   generateVennDiagram(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {

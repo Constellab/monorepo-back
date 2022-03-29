@@ -125,8 +125,8 @@ export abstract class FlSheetChartFormConfig {
 }
 
 
-//////////////////////////////////// BAR PLOT & BOX PLOT/////////////////////////////////////
-export class FlSheetBasic2dPlotFormConfig extends FlSheetChartFormConfig {
+//////////////////////////////////// BAR PLOT /////////////////////////////////////
+export class FlSheetBarPlotFormConfig extends FlSheetChartFormConfig {
   createSeriesFromDataRange(selectionRange: FlSheetSelectionRange): FlSheetChart2dSerieSelectionForm[] {
     return this.createMultipleSeriesForY(selectionRange);
   }
@@ -139,6 +139,43 @@ export class FlSheetBasic2dPlotFormConfig extends FlSheetChartFormConfig {
     };
   }
 }
+
+//////////////////////////////////// STACKED BAR PLOT /////////////////////////////////////
+
+export class FlSheetStackedBarPlotFormConfig extends FlSheetChartFormConfig {
+  createSeriesFromDataRange(selectionRange: FlSheetSelectionRange): FlSheetChart2dSerieSelectionForm[] {
+    return this.createMultipleSeriesForY(selectionRange);
+  }
+
+  getSelectSerieConfig(serie: FlSheetChart2dSerieSelectionForm): FlSpreadsheetChartSerieSelectionInput {
+    return {
+      serie: serie,
+      mode: 'onlyY',
+      ySelectionMode: 'multi',
+    };
+  }
+
+
+  getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
+    return ['normalize'];
+  }
+}
+
+//////////////////////////////////// BOX PLOT /////////////////////////////////////
+export class FlSheetBoxPlotFormConfig extends FlSheetChartFormConfig {
+  createSeriesFromDataRange(selectionRange: FlSheetSelectionRange): FlSheetChart2dSerieSelectionForm[] {
+    return this.createMultipleSeriesForY(selectionRange);
+  }
+
+  getSelectSerieConfig(serie: FlSheetChart2dSerieSelectionForm): FlSpreadsheetChartSerieSelectionInput {
+    return {
+      serie: serie,
+      mode: 'onlyY',
+      ySelectionMode: 'multi',
+    };
+  }
+}
+
 
 //////////////////////////////////// SCATTER PLOT /////////////////////////////////////
 export class FlSheetScatterPlotFormConfig extends FlSheetChartFormConfig {

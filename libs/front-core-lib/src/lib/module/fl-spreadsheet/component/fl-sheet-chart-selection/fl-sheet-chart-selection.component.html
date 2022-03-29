@@ -46,8 +46,14 @@
 
           <!--    Density      -->
           <mat-checkbox formControlName="density" *ngIf="showAdditionalField('density')"
-                        class="density">
+                        class="checkbox">
             {{'flSpreadsheet.chart_histo_density' | translate}}
+          </mat-checkbox>
+
+          <!--    Normalize      -->
+          <mat-checkbox formControlName="normalize" *ngIf="showAdditionalField('normalize')"
+                        class="checkbox">
+            {{'flSpreadsheet.chart_normalize' | translate}}
           </mat-checkbox>
         </ng-container>
       </div>

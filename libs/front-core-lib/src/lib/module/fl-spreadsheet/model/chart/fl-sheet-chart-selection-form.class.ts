@@ -60,6 +60,8 @@ export interface FlSheetChartSelectionFormAdditional {
   // for the Histogram
   nbOfBins?: number;
   density?: boolean;
+  // for the stack bar
+  normalize?: boolean;
 }
 
 

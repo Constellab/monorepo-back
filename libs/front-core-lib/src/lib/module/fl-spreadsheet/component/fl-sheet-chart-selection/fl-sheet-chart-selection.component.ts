@@ -28,12 +28,14 @@ import {merge} from 'rxjs';
 import {FlSpreadsheetChartSelectionHelper,} from '../../utils/fl-spreadsheet-chart-selection.helper';
 import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
 import {
-  FlSheetBasic2dPlotFormConfig,
+  FlSheetBarPlotFormConfig,
+  FlSheetBoxPlotFormConfig,
   FlSheetChartFormConfig,
   FlSheetHeatMapFormConfig,
   FlSheetHistogramFormConfig,
   FlSheetLinePlotFormConfig,
   FlSheetScatterPlotFormConfig,
+  FlSheetStackedBarPlotFormConfig,
   FlSheetVennDiagramFormConfig,
   FlSpreadsheetChartSerieSelectionInput
 } from '../../model/chart/fl-sheet-chart-form-config.class';
@@ -104,7 +106,8 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
       series: [[], Validators.required],
       additionalFields: new FormBuilder().group({
         nbOfBins: [null, [Validators.min(1), FlGlobalValidators.isInteger()]],
-        density: [null]
+        density: [null],
+        normalize: [null]
       })
 
     });
@@ -295,9 +298,11 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
     const sheet = this.state.currentSheet;
     switch (chartType) {
       case FlChartType.BAR_PLOT:
+        return new FlSheetBarPlotFormConfig(sheet);
       case FlChartType.STACKED_PLOT:
+        return new FlSheetStackedBarPlotFormConfig(sheet);
       case FlChartType.BOX_PLOT:
-        return new FlSheetBasic2dPlotFormConfig(sheet);
+        return new FlSheetBoxPlotFormConfig(sheet);
       case FlChartType.SCATTER_PLOT:
         return new FlSheetScatterPlotFormConfig(sheet);
       case FlChartType.LINE:
