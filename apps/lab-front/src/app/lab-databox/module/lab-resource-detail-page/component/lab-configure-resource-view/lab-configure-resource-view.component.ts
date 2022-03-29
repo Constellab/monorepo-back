@@ -6,11 +6,10 @@ import {
   LabResourceViewTypeInfo
 } from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {Validators} from '@angular/forms';
-import {LabConfigData} from '../../../../../lab-core/model/entities/lab-config.entity';
+import {LabConfigData, LabConfigureSpecsForm} from '../../../../../lab-core/model/entities/lab-config.entity';
 import {FL_PORTAL_DATA, FlFormHelper, FlOverlayRef} from '@monorepo/front-core-lib';
 import {LabTransformerWithConfig} from '../../../../../lab-core/model/global/lab-transformer.class';
 import {
-  LabConfigureSpecsForm,
   LabConfigureSpecsFormComponent
 } from '../../../../../lab-core/entity-module/lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
 import {

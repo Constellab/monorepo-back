@@ -1,12 +1,11 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
-import {LabConfigData} from '../../../../model/entities/lab-config.entity';
+import {LabConfigData, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {LabProcessType} from '../../../../model/entities/lab-type/lab-process-type.entity';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {ClHelpService} from '@monorepo/core-lib';
 import {
-  LabConfigureSpecsForm,
   LabConfigureSpecsFormComponent
 } from '../../../lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
 import {FormArray, FormBuilder, FormControl, FormGroup} from '@ngneat/reactive-forms';

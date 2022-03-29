@@ -19,7 +19,7 @@ export class FlChartDataTagsComponent implements OnInit {
   }
 
   hasTag(): boolean {
-    return !ClHelpService.isEmptyObject(this.tags);
+    return !ClHelpService.isNullOrEmpty(this.tags);
   }
 
 }

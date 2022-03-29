@@ -1,16 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlDynamicFormGroupConfig, FlDynamicFormHelper} from '@monorepo/front-core-lib';
-import {LabConfigData} from '../../../../model/entities/lab-config.entity';
+import {LabConfigData, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {ControlContainer} from '@angular/forms';
 
-/**
- * form structure for the {@link LabConfigureSpecsFormComponent}
- */
-export interface LabConfigureSpecsForm {
-  public: Record<string, any>;
-  protected: Record<string, any>;
-}
 
 /**
  * Use to create a form to create a configuration based on a spec {@link LabConfigSpec}

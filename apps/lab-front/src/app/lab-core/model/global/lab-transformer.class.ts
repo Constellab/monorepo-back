@@ -1,4 +1,4 @@
-import {LabConfigValues} from '../entities/lab-config.entity';
+import {LabConfigureSpecsForm, LabConfigValues} from '../entities/lab-config.entity';
 import {LabProcessType} from '../entities/lab-type/lab-process-type.entity';
 
 export interface LabCallTransformerParams {
@@ -8,8 +8,7 @@ export interface LabCallTransformerParams {
 
 export interface LabTransformForm {
   transformer: LabProcessType;
-  public: LabConfigValues;
-  protected: LabConfigValues;
+  config: LabConfigureSpecsForm;
 }
 
 export interface LabTransformerWithConfig {
@@ -22,7 +21,7 @@ export function labConvertTransformFormToParams(formValue: LabTransformForm[]): 
   for (const form of formValue) {
     transformers.push({
       typing_name: form.transformer.typingName,
-      config_values: {...form.public, ...form.protected}
+      config_values: {...form.config.public, ...form.config.protected}
     });
   }
   return transformers;

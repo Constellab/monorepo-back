@@ -7,6 +7,15 @@ import {FlDynamicFormGroupConfig} from '@monorepo/front-core-lib';
 export type LabConfigValues = Record<string, any>
 
 /**
+ * form structure for the {@link LabConfigureSpecsFormComponent}
+ */
+export interface LabConfigureSpecsForm {
+  public: LabConfigValues;
+  protected: LabConfigValues;
+}
+
+
+/**
  * Config object for a process
  */
 export class LabConfigData {

@@ -11,10 +11,9 @@ import {
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {
-  LabConfigureSpecsForm,
   LabConfigureSpecsFormComponent
 } from '../../../lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
-import {LabConfigData, LabConfigValues} from '../../../../model/entities/lab-config.entity';
+import {LabConfigData, LabConfigureSpecsForm, LabConfigValues} from '../../../../model/entities/lab-config.entity';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {FlFormHelper, FlOverlayRef, FlSnackBarService} from '@monorepo/front-core-lib';
 import {LabRouterService} from '../../../../service/lab-router.service';
