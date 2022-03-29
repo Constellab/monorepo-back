@@ -10,6 +10,7 @@ import {
   FlSearchService,
   FlSearchState,
   FlTableColumn,
+  FlTag,
   flThemeDetailLight
 } from '@monorepo/front-core-lib';
 import {LabResourceSearch, LabResourceSearchFields} from '../../model/lab-resource-advanced-search.class';
@@ -123,6 +124,13 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
 
   selectResource(resource: LabResource): void {
     this.resourceSelected.next(resource);
+  }
+
+  searchOnTag(tag: FlTag): void {
+    const search: Partial<LabResourceSearchFields> = {
+      tags: [tag]
+    };
+    this.searchState.callAdvancedSearchFromObject(search);
   }
 
 

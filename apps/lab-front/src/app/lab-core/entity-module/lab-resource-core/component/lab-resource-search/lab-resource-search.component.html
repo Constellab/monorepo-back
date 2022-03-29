@@ -31,8 +31,9 @@
 
   <fl-search-result>
     <lab-resource-table [datasource]="datasource" [columns]="columns"
-                             [selectableRow]="resourceSelectable"
-                             (resourceSelected)="selectResource($event)"></lab-resource-table>
+                        [selectableRow]="resourceSelectable"
+                        (resourceSelected)="selectResource($event)"
+                        (tagSelected)="searchOnTag($event)"></lab-resource-table>
   </fl-search-result>
 
 

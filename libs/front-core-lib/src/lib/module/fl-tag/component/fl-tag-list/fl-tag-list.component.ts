@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {FlTag} from '../../fl-tag.class';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FlTag, FlTagSelectedEvent} from '../../fl-tag.class';
 
 @Component({
   selector: 'fl-tag-list',
@@ -11,12 +11,23 @@ export class FlTagListComponent implements OnInit {
 
   @Input() tags: FlTag[];
 
+  @Input() tagSelectable: boolean = false;
+
   @Input() limitNumber: number = Infinity;
+
+  @Output() tagSelected: EventEmitter<FlTagSelectedEvent> = new EventEmitter();
 
   constructor() {
   }
 
   ngOnInit(): void {
+  }
+
+  selectTag(tag: FlTag, event: MouseEvent): void {
+    this.tagSelected.next({
+      tag: tag,
+      event: event
+    });
   }
 
 }

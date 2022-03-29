@@ -25,6 +25,13 @@ export interface FlTagWithColor {
   color: string;
 }
 
+/**
+ * Event triggered when a tag is selected
+ */
+export interface FlTagSelectedEvent{
+  tag: FlTag;
+  event: MouseEvent;
+}
 
 export class FlTagHelper {
 

@@ -24,7 +24,8 @@
   <fl-search-result>
     <lab-experiment-table [datasource]="datasource" [columns]="columns"
                           [rowSelectable]="experimentSelectable"
-                          (experimentSelected)="selectExperiment($event)"></lab-experiment-table>
+                          (experimentSelected)="selectExperiment($event)"
+                          (tagSelected)="searchOnTag($event)"></lab-experiment-table>
   </fl-search-result>
 
 

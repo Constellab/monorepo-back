@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FlPaginatedTableAbstractDirective} from '@monorepo/front-core-lib';
+import {FlPaginatedTableAbstractDirective, FlTag, FlTagSelectedEvent} from '@monorepo/front-core-lib';
 import {LabExperiment} from '../../../../model/entities/lab-experiment.entity';
+import {ClHelpService} from '@monorepo/core-lib';
 
 @Component({
   selector: 'lab-experiment-table',
@@ -15,6 +16,7 @@ export class LabExperimentTableComponent extends FlPaginatedTableAbstractDirecti
 
   @Output() experimentSelected: EventEmitter<LabExperiment> = new EventEmitter();
 
+  @Output() tagSelected: EventEmitter<FlTag> = new EventEmitter();
 
   constructor() {
     super(['title', 'score', 'status', 'createdAt', 'tags']);
@@ -27,5 +29,10 @@ export class LabExperimentTableComponent extends FlPaginatedTableAbstractDirecti
     if (this.rowSelectable) {
       this.experimentSelected.next(experiment);
     }
+  }
+
+  onTagSelected(tagEvent: FlTagSelectedEvent): void {
+    ClHelpService.stopEventPropagation(tagEvent.event);
+    this.tagSelected.next(tagEvent.tag);
   }
 }

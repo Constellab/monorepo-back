@@ -80,8 +80,13 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
   // call advanced search from a saved search
   public callAdvancedSearchFromSavedSearch(savedSearch: FlSavedSearch): void {
-    const advancedSearchObject = this.callAdvancedSearch(savedSearch.filtersCriteria);
-    this.patchAdvancedFormGroup(savedSearch.filtersCriteria);
+    this.callAdvancedSearchFromObject(savedSearch.filtersCriteria);
+  }
+
+  // call advanced search from a saved search
+  public callAdvancedSearchFromObject(searchCriteria: Record<string, any>): void {
+    const advancedSearchObject = this.callAdvancedSearch(searchCriteria);
+    this.patchAdvancedFormGroup(searchCriteria);
 
     const timestamp = this.generateSearchTimestamp();
     if (this.storeSearchInUrl) {

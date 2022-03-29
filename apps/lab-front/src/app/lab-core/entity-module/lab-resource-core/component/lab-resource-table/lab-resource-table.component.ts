@@ -7,7 +7,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {FlArrayObs, FlTableAbstractDirective} from '@monorepo/front-core-lib';
+import {FlArrayObs, FlTableAbstractDirective, FlTag, FlTagSelectedEvent} from '@monorepo/front-core-lib';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {LabTag} from '../../../../model/entities/lab-tag.entity';
@@ -29,7 +29,9 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
   // when true, the row become clickable and resourceSelected event is trigger
   @Input() selectableRow: boolean = false;
 
-  @Output() resourceSelected: EventEmitter<LabResource> = new EventEmitter<LabResource>();
+  @Output() resourceSelected: EventEmitter<LabResource> = new EventEmitter();
+
+  @Output() tagSelected: EventEmitter<FlTag> = new EventEmitter();
 
   constructor(private cdr: ChangeDetectorRef) {
     super(['created', 'action', 'name', 'info', 'tags']);
@@ -63,5 +65,10 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
 
   onDelete(resource: LabResource): void {
     this.datasource.removeItem(resource);
+  }
+
+  onTagSelected(tagEvent: FlTagSelectedEvent): void {
+    ClHelpService.stopEventPropagation(tagEvent.event);
+    this.tagSelected.next(tagEvent.tag);
   }
 }

@@ -9,6 +9,7 @@ import {
   FlSearchService,
   FlSearchState,
   FlTableColumn,
+  FlTag,
   flThemeDetailLight
 } from '@monorepo/front-core-lib';
 import {LabExperimentSearch, LabExperimentSearchFields} from '../../model/lab-experiment-advanced-search.class';
@@ -90,5 +91,12 @@ export class LabExperimentSearchComponent implements OnInit {
 
   selectExperiment(experiment: LabExperiment): void {
     this.experimentSelected.next(experiment);
+  }
+
+  searchOnTag(tag: FlTag): void {
+    const search: Partial<LabExperimentSearchFields> = {
+      tags: [tag]
+    };
+    this.searchState.callAdvancedSearchFromObject(search);
   }
 }
