@@ -114,4 +114,8 @@ export class LabConfigureResourceViewComponent implements OnInit {
     };
   }
 
+  get numberOfTransformers(): number{
+    return this.formGp.value.transformers.length;
+  }
+
 }
