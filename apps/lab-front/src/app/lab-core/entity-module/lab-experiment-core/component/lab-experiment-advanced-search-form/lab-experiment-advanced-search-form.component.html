@@ -3,12 +3,15 @@
   <div fxLayout="row wrap" fxLayoutGap="1em 0 grid" fxLayoutAlign="space-between center"
        class="g-full">
 
-    <!--  Type  -->
+    <!--  Project  -->
     <mat-form-field class="g-search-field">
-      <mat-label>{{'biox.experiment_type' | translate }}</mat-label>
-      <mat-select formControlName="type" [placeholder]="'biox.experiment_type' | translate">
-        <lab-experiment-type-options></lab-experiment-type-options>
+      <mat-label>
+        {{'biox.project' | translate }}
+      </mat-label>
+      <mat-select formControlName="project" multiple [placeholder]="'biox.project' | translate">
+        <lab-project-select-options></lab-project-select-options>
       </mat-select>
+      <mat-icon matPrefix flIcon="project" class="g-text-light project-icon"></mat-icon>
     </mat-form-field>
 
     <!--  status  -->
@@ -30,11 +33,11 @@
       <input matInput formControlName="text" [placeholder]="'biox.experiment_text' | translate" autocomplete="off">
     </mat-form-field>
 
-    <!--  Project  -->
+    <!--  Type  -->
     <mat-form-field class="g-search-field">
-      <mat-label>{{'biox.project' | translate }}</mat-label>
-      <mat-select formControlName="project" multiple [placeholder]="'biox.project' | translate">
-        <lab-project-select-options></lab-project-select-options>
+      <mat-label>{{'biox.experiment_type' | translate }}</mat-label>
+      <mat-select formControlName="type" [placeholder]="'biox.experiment_type' | translate">
+        <lab-experiment-type-options></lab-experiment-type-options>
       </mat-select>
     </mat-form-field>
 

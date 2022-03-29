@@ -1,10 +1,13 @@
-:host{
- display: block;
+:host {
+  display: block;
   width: 100%;
 }
 
-.date-interval{
+.date-interval {
   padding-left: 1em;
   padding-right: 1em;
 }
 
+.date {
+  flex: 1
+}

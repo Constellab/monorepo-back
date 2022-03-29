@@ -3,7 +3,6 @@
        class="date-interval">
 
     <!--    Created at from    -->
-    <p class="g-text-light">{{'flSearch.between_the_from' | translate}}</p>
     <mat-form-field class="date" appearance="outline">
       <mat-label>{{'flSearch.begin_date' | translate}}</mat-label>
       <input matInput formControlName="from" autocomplete="disabled"
@@ -12,11 +11,7 @@
       <mat-datepicker #createdAtFrom></mat-datepicker>
     </mat-form-field>
 
-  </div>
-  <div fxLayout="row wrap" fxLayoutAlign="space-between center" fxLayoutGap="0.5em"
-       class="date-interval">
     <!--    Created at to    -->
-    <p class="g-text-light">{{'flSearch.between_the_to' | translate}}</p>
     <mat-form-field class="date" appearance="outline">
       <mat-label>{{'flSearch.end_date' | translate}}</mat-label>
       <input matInput formControlName="to" autocomplete="off"

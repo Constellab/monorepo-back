@@ -7,8 +7,6 @@ import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
 const flSearchFr: FlLangTranslation = {
   flSearch: {
     count_result: '{{count}} Résultats',
-    between_the_from: 'Du',
-    between_the_to: 'au',
     begin_date: 'Date de début',
     end_date: 'Date de fin'
   }
@@ -17,8 +15,6 @@ const flSearchFr: FlLangTranslation = {
 const flSearchEn: FlLangTranslation = {
   flSearch: {
     count_result: '{{count}} Results',
-    between_the_from: 'From the',
-    between_the_to: 'to the',
     begin_date: 'Start date',
     end_date: 'End date'
   }
