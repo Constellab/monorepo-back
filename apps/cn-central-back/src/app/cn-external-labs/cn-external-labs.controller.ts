@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, ParseUUIDPipe, Put, UploadedFiles, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, UploadedFiles, UseInterceptors} from '@nestjs/common';
 import {CnLabInstancesService} from '../cn-lab-instances/cn-lab-instances.service';
 import {ClLabGuard} from '../cn-core/decorators/cn-lab-guard.decorator';
 import {CnReport} from '../cn-projects-aggregate/cn-reports/cn-report.entity';
@@ -10,6 +10,9 @@ import {FilesInterceptor} from '@nestjs/platform-express';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
 import {CnLabInstanceStartDTO} from '../cn-lab-instances/cn-lab-instance.dto';
 import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
+import {CnLabInstanceSendMailDto} from '../cn-lab-instances/cn-lab-instance-mail.dto';
+import {CnLabInstanceMailService} from '../cn-lab-instances/cn-lab-instance-mail.service';
+import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 
 /**
  * Specific controller for route called by the lab servers. These routes are not called by a user
@@ -19,7 +22,8 @@ import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-agg
 export class CnExternalLabsController {
 
   constructor(private labInstanceService: CnLabInstancesService,
-              private projectAggregator: CnProjectAggregateService) {
+              private projectAggregator: CnProjectAggregateService,
+              private labInstanceMailService: CnLabInstanceMailService) {
   }
 
   // route called on the lab start
@@ -51,5 +55,15 @@ export class CnExternalLabsController {
     @UploadedFiles() files: BlFile[]): Promise<CnReport> {
     const createReportDto: CnCreateReportDto = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateReportDto);
     return this.projectAggregator.createReport(createReportDto, projectId, files);
+  }
+
+  /**
+   * Route to send an email from the lab
+   * @param body
+   */
+  @Post('send-mail')
+  sendMail(@Body() body: CnLabInstanceSendMailDto): Promise<void> {
+    return this.labInstanceMailService.sendMailFromLab(CnCurrentUserHelper.getAndCheckCurrentLabInstance(),
+      body);
   }
 }

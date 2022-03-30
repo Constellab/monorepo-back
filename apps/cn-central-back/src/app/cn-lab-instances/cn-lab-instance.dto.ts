@@ -30,3 +30,5 @@ export interface CnLabInstanceConfigDTO {
 export interface CnLabInstanceStartDTO {
   lab_config: CnLabConfigDto;
 }
+
+

@@ -2,7 +2,7 @@ import {Body, Controller, Get, HttpException, Param, ParseUUIDPipe, Post, Res} f
 import {Response} from 'express';
 import {CnUser} from '../cn-user.entity';
 import {CnUserAccountsService} from './cn-user-accounts.service';
-import {CnFrontService} from '../../cn-core/services/cn-front/cn-front.service';
+import {CnFrontService} from '../../cn-core/services/cn-front.service';
 import {CnUserCategories} from '../../cn-core/decorators/cn-user-category.decorator';
 import {CmUserCategory} from '@monorepo/common-model';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';

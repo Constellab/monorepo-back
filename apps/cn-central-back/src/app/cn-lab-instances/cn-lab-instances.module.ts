@@ -13,6 +13,7 @@ import {CnLabManagerService} from './cn-lab-manager.service';
 import {CnBricksModule} from '../cn-bricks/cn-bricks.module';
 import {CnLabFrontVersionsModule} from '../cn-lab-front-versions/cn-lab-front-versions.module';
 import {CnLabConfigsModule} from '../cn-lab-configs/cn-lab-configs.module';
+import {CnLabInstanceMailService} from './cn-lab-instance-mail.service';
 
 @Module({
   imports: [
@@ -30,10 +31,12 @@ import {CnLabConfigsModule} from '../cn-lab-configs/cn-lab-configs.module';
     CnLabInstancesService,
     CnLabInstancesSecurityLayer,
     CnLabManagerService,
+    CnLabInstanceMailService,
   ],
   exports: [
     CnLabInstancesService,
-    CnLabInstancesSecurityLayer
+    CnLabInstancesSecurityLayer,
+    CnLabInstanceMailService,
   ],
   controllers: [CnLabInstancesController],
 })

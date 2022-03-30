@@ -1,7 +1,7 @@
 import {Inject, Injectable, Logger} from '@nestjs/common';
 import {join} from 'path';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import {ClSupportedLanguage} from '@monorepo/core-lib';
+import {ClHelpService, ClSupportedLanguage} from '@monorepo/core-lib';
 import {BL_MAIL_CONFIG_PROVIDER, BlMailModuleConfig} from './bl-mail.class';
 import {BlTranslateService} from '../bl-translate/bl-translate.service';
 import {BlUser} from '../../models/bl-user.class';
@@ -36,7 +36,20 @@ export class BlMailService {
    * @param data map to pass data to template
    * @return true if the mail was sent, false otherwise
    */
-  async sendMailToUser(template: string, receiver: BlUser, data?: { [key: string]: any }): Promise<boolean> {
+  async sendMailToUser(template: string, receiver: BlUser | BlUser[], data?: Record<string, any>): Promise<boolean> {
+    const receivers: BlUser[] = ClHelpService.convertObjectOrArrayToArray(receiver);
+
+    let result: boolean = true;
+    for (const rec of receivers) {
+      const res = await this.sendMail(template, rec.email, rec.lang, data);
+
+      if (!res) result = false;
+    }
+
+    return result;
+  }
+
+  private async sendMail(template: string, recipients: string, lang: ClSupportedLanguage, data?: Record<string, any>): Promise<boolean> {
     const transporter = nodemailer.createTransport(this.getTransportConfig());
 
     // use https://nicholaspretorius.github.io/til0025/ example for configuration
@@ -45,10 +58,10 @@ export class BlMailService {
 
     const mailOptions = {
       from: this.getMailSender(),
-      to: receiver.email,
+      to: recipients,
       subject: await this.translateSubject(template),
-      template: this.getTemplatePath(template, receiver.lang),
-      context: data
+      template: this.getTemplatePath(template, lang),
+      context: data,
     };
 
     return new Promise((resolve) => {

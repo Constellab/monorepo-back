@@ -1,5 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {CnCoreConfigService} from '../../modules/cn-core-config/cn-core-config.service';
+import {CnCoreConfigService} from '../modules/cn-core-config/cn-core-config.service';
 
 /**
  * Core service to manager front URLs

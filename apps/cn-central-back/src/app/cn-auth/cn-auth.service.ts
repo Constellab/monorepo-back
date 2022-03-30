@@ -6,7 +6,7 @@ import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnUserAccountsService} from '../cn-users/cn-users-account/cn-user-accounts.service';
 import {ClDateHelper} from '@monorepo/core-lib';
 import {CmCredentials, CmUserCategory, CmUserStatus} from '@monorepo/common-model';
-import {BlJwtService, BlMailService} from '@monorepo/back-core-lib';
+import {BlJwtService} from '@monorepo/back-core-lib';
 
 @Injectable()
 export class CnAuthService {
@@ -19,7 +19,6 @@ export class CnAuthService {
   constructor(private usersService: CnUsersService,
               private jwtService: BlJwtService,
               private configService: CnCoreConfigService,
-              private mailService: BlMailService,
               private userAccountsService: CnUserAccountsService) {
     this.failedLoginLock = configService.getFailedLoginLock();
   }
