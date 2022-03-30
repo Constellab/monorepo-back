@@ -1,9 +1,12 @@
 <div *ngIf="hasTags()" class="tags">
   {{'flSpreadsheet.header_tags' | translate}}
-  <div *ngFor="let key of tags | flObjectKeys" class="g-text-small">
+  <div *ngFor="let tag of tags" class="g-text-small"
+       fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+
+    <div class="tag-color" [style.background-color]="tag.color"></div>
     <fl-key-value>
-      <fl-key>{{key}}</fl-key>
-      {{tags[key]}}
+      <fl-key>{{tag.key}}</fl-key>
+      {{tag.value}}
     </fl-key-value>
   </div>
 </div>

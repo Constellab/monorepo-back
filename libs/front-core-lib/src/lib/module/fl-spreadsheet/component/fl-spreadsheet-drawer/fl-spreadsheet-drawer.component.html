@@ -38,9 +38,9 @@
             <h2>{{'flSpreadsheet.column_filters' | translate}}</h2>
           </fl-section-header>
 
-          <ng-container *flSectionBody>
-            <fl-tags-select-colors [tags]="columnTags$ | async"
-                                   (colorChange)="updateColumnTagColors($event)"></fl-tags-select-colors>
+          <ng-container *flSectionBody="let columnWithTags">
+            <fl-tags-select-colors [tags]="columnWithTags.tags"
+                                   (colorChange)="updateColumnTagColors($event, columnWithTags.sheet)"></fl-tags-select-colors>
           </ng-container>
         </fl-async-section>
 
@@ -50,9 +50,11 @@
             <h2>{{'flSpreadsheet.row_filters' | translate}}</h2>
           </fl-section-header>
 
-          <ng-container *flSectionBody>
-            <fl-tags-select-colors [tags]="rowTags$ | async"
-                                   (colorChange)="updateRowTagColors($event)"></fl-tags-select-colors>
+          <ng-container *flSectionBody="let rowWithTags">
+
+            <fl-tags-select-colors [tags]="rowWithTags.tags"
+                                   (colorChange)="updateRowTagColors($event, rowWithTags.sheet)"></fl-tags-select-colors>
+
           </ng-container>
         </fl-async-section>
 

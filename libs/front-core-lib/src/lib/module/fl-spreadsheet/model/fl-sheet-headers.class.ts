@@ -7,7 +7,7 @@ import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 export interface FlSheetHeader {
   index: number;
   name: string;
-  tags: Record<string, string>;
+  tags: FlTagWithColor[];
 }
 
 
@@ -16,11 +16,19 @@ export interface FlSheetRow extends FlSheetHeader {
 }
 
 /**
+ * Input object about row or column information
+ */
+export interface FlSheetHeaderInfoInput {
+  name?: string;
+  tags?: Record<string, string>;
+}
+
+/**
  * Information about a row or a column in the sheet
  */
 export interface FlSheetHeaderInfo {
   name?: string;
-  tags?: Record<string, string>;
+  tags?: FlTagWithColor[];
 }
 
 
@@ -29,14 +37,14 @@ export interface FlSheetHeaderInfo {
  */
 export class FlSheetHeaders {
 
-  private readonly _info: FlSheetHeaderInfo[];
+  private readonly _info: FlSheetHeaderInfoInput[];
 
   // object where the first key if the tag key, second is tag value and last value is tag color
   private tagColors: Record<string, Record<string, string>>;
 
-  constructor(info: FlSheetHeaderInfo[] = []) {
+  constructor(info: FlSheetHeaderInfoInput[] = []) {
     this._info = info;
-    this.setTagsColors();
+    this.initTagsColors();
   }
 
   /**
@@ -63,14 +71,18 @@ export class FlSheetHeaders {
   public getInfo(index: number): FlSheetHeaderInfo {
     // if it doesn't exist, return a default value
     if (!this._info || this._info[index] == null) {
-      return this.emptyInfo();
+      return {name: '', tags: []};
     }
-    return this._info[index];
+    const headerInfo = this._info[index];
+    return {
+      name: headerInfo.name,
+      tags: this.convertTagsToTagsWithColors(headerInfo.tags)
+    };
   }
 
   public hasInfo(index: number): boolean {
     const info = this.getInfo(index);
-    return ClHelpService.isNullOrEmpty(info.name) && ClHelpService.isNullOrEmpty(info.tags);
+    return !ClHelpService.isNullOrEmpty(info.name) || !ClHelpService.isNullOrEmpty(info.tags);
   }
 
   public createInfo(index: number): void {
@@ -85,7 +97,7 @@ export class FlSheetHeaders {
     }
   }
 
-  get info(): FlSheetHeaderInfo[] {
+  get info(): FlSheetHeaderInfoInput[] {
     return this._info;
   }
 
@@ -113,7 +125,7 @@ export class FlSheetHeaders {
     return names;
   }
 
-  private emptyInfo(): FlSheetHeaderInfo {
+  private emptyInfo(): FlSheetHeaderInfoInput {
     return {name: null, tags: {}};
   }
 
@@ -121,7 +133,7 @@ export class FlSheetHeaders {
     return FlTagHelper.groupTagsByKey(this.info.map(info => info.tags));
   }
 
-  private setTagsColors(): void {
+  private initTagsColors(): void {
     const tags = this.groupTagByKeys();
     const tagColors = {};
 
@@ -136,6 +148,30 @@ export class FlSheetHeaders {
     }
 
     this.tagColors = tagColors;
+  }
+
+  private convertTagsToTagsWithColors(tags: Record<string, string>): FlTagWithColor[] {
+    if (tags == null) return [];
+    const tagsWithColors: FlTagWithColor[] = [];
+    for (const key of Object.keys(tags)) {
+      const value = tags[key];
+      tagsWithColors.push({
+        key: key,
+        value: value,
+        color: this.tagColors[key][value]
+      });
+    }
+    return tagsWithColors;
+  }
+
+  public setTagColors(tagColors: FlTagWithColor[]): void {
+    for (const tag of tagColors) {
+      this.setTagColor(tag.key, tag.value, tag.color);
+    }
+  }
+
+  public setTagColor(key: string, value: string, color: string): void {
+    this.tagColors[key][value] = color;
   }
 
 }

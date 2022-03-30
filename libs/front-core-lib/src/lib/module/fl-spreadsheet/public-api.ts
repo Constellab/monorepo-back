@@ -29,7 +29,7 @@ export * from './state/fl-spreadsheet-keyboard-manager.state';
 export * from './state/fl-spreadsheet-mouse-manager.state';
 export * from './state/fl-spreadsheet-scroll.state';
 export * from './state/fl-spreadsheet-selection.state';
-export * from './state/fl-spreadsheet-renderer-state.service';
+export * from './state/fl-spreadsheet-tags.state';
 export * from './state/fl-spreadsheet-selection-listener-manager.service';
 
 // Export the models

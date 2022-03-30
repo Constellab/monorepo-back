@@ -12,7 +12,7 @@ import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.
 import {Observable, Subscription} from 'rxjs';
 import {FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
 import {FlHeaderCellType, headerIndexAttributeName, headerTypeAttributeName} from '../../model/fl-cell.class';
-import {FlSpreadsheetRendererState} from '../../state/fl-spreadsheet-renderer-state.service';
+import {FlSpreadsheetTagsState} from '../../state/fl-spreadsheet-tags.state';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {FlPortalConnectedPosition} from '../../../fl-portal/model/fl-portal.class';
@@ -48,7 +48,7 @@ export class FlSpreadsheetHeaderCellComponent implements OnInit, OnDestroy {
               private selectionState: FlSpreadsheetSelectionState,
               private renderer: Renderer2,
               private elementRef: ElementRef,
-              private tagState: FlSpreadsheetRendererState,
+              private tagState: FlSpreadsheetTagsState,
               private portalService: FlPortalService) {
   }
 
@@ -118,7 +118,6 @@ export class FlSpreadsheetHeaderCellComponent implements OnInit, OnDestroy {
     if (!headerInfo) return;
     this.openHeaderInfoPortal(headerInfo);
   }
-
 
 
   private openHeaderInfoPortal(headerInfo: FlSheetHeaderInfo): void {
