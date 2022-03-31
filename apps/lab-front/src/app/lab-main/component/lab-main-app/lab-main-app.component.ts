@@ -5,6 +5,7 @@ import {map} from 'rxjs/operators';
 import {LabEnvStore} from '../../../lab-core/service/lab-env.store';
 import {LabEnvironmentHelper} from '../../../lab-core/utils/lab-environment.helper';
 import {LabAuthenticatedUserService} from '../../../lab-core/service/lab-authenticated-user.service';
+import {LabRouterService} from '../../../lab-core/service/lab-router.service';
 
 @Component({
   selector: 'lab-main-app',
@@ -18,6 +19,8 @@ export class LabMainAppComponent implements OnInit {
   centralAppUrl: string;
 
   menuExpanded: boolean = false;
+
+  appRoute = LabRouterService.getAppRoute();
 
   constructor(private labEnvManager: LabEnvStore,
               private authenticatedUserService: LabAuthenticatedUserService) {

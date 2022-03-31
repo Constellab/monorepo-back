@@ -6,8 +6,10 @@
 
       <div fxLayout="column" class="g-scrollable-element column-container">
         <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
-          <img src="assets/logo/logo_black.png" alt="Gencovery logo"
-               class="logo" flExpansionMenuButtonToggle/>
+          <a [routerLink]="appRoute">
+            <img src="assets/logo/logo_black.png" alt="Gencovery logo"
+                 class="logo"/>
+          </a>
 
           <div *ngIf="menuExpanded" class="lab-name">Lab</div>
         </div>
@@ -29,6 +31,13 @@
         <!--  Authenticated user info  -->
         <div>
 
+          <!--    Grow/Reduce menu button      -->
+          <button mat-button class="menu-button"
+                  flExpansionMenuButton flExpansionMenuButtonToggle>
+            <mat-icon>{{menuExpanded ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+            <span>{{'reduce_menu' | translate}}</span>
+          </button>
+
           <!-- Dashboard button -->
           <a mat-button [href]="centralAppUrl" class="menu-button"
              flExpansionMenuButton routerLinkActive="selected-menu"
@@ -37,12 +46,6 @@
             <span>{{'dashboard' | translate}}</span>
           </a>
 
-          <!--    Grow/Reduce menu button      -->
-          <button mat-button
-                  flExpansionMenuButton flExpansionMenuButtonToggle>
-            <mat-icon>{{menuExpanded ? 'chevron_left' : 'chevron_right' }}</mat-icon>
-            <span>{{'reduce_menu' | translate}}</span>
-          </button>
 
           <lab-main-menu-settings></lab-main-menu-settings>
         </div>
