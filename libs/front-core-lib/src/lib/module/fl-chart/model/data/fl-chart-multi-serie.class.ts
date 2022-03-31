@@ -1,6 +1,7 @@
 import {FlChart2dDatum, FlChartAxisTickFormat, FlChartData, FlChartDataContainer} from './fl-chart-data.class';
 import {FlChartDataWithSerie, FlChartSerie} from './fl-chart-serie.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 /**
  * Object to manage multiple series
@@ -91,7 +92,7 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
    */
   public setXTickLabels(xTickLabels: string[]): void {
     if (xTickLabels) {
-      this.axisXLabelFormat = (value) => (xTickLabels[value] ?? value).toString();
+      this.axisXLabelFormat = (value) => ClStringHelper.limiteLength((xTickLabels[value] ?? value).toString(), 16);
     }
   }
 
@@ -101,7 +102,7 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
    */
   public setYTickLabels(yTickLabels: string[]): void {
     if (yTickLabels) {
-      this.axisYLabelFormat = (value) => (yTickLabels[value] ?? value).toString();
+      this.axisYLabelFormat = (value) => ClStringHelper.limiteLength((yTickLabels[value] ?? value).toString(), 16);
     }
   }
 }
