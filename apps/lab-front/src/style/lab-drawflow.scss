@@ -6,6 +6,11 @@
   $primary: map-get($theme, primary);
   $warn: map-get($theme, warn);
 
+  .drawflow{
+    // set a border to the main drawflow element so the user knows the limits
+    border: 1px solid var(--grey-low-contrast);
+  }
+
   // style drawflow
   .drawflow .drawflow-node {
     width: initial;
