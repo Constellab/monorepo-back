@@ -13,6 +13,7 @@ import {
   FlDialogModule,
   FlDrawerModule,
   FlDynamicFieldModule,
+  FlExpansionMenuModule,
   FlFormInputsManagerModule,
   FlFormModule,
   FlIconModule,
@@ -76,6 +77,7 @@ import {
     FlKeyValueModule,
     FlResizeModule,
     FlColorModule,
+    FlExpansionMenuModule,
   ]
 })
 export class LabCustomLibraryModule {

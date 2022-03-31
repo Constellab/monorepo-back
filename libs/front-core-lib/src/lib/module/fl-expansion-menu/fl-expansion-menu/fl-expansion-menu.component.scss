@@ -1,0 +1,76 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.menu {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1em 8px;
+  //padding-top: 1em;
+  //padding-bottom: 1em;
+}
+
+.menu-small {
+  width: 50px;
+}
+
+.menu-large {
+  width: 11rem;
+}
+
+.header-container {
+  position: relative;
+}
+
+.expanded-button {
+  position: absolute;
+  height: 100%;
+  right: -20px;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// style of the buttons inside the menu
+::ng-deep {
+  fl-expansion-menu {
+
+    .expansion-menu-button {
+      opacity: 0.7 !important;
+      height: 34px !important;
+      padding-left: 0 !important;
+    }
+
+    .expansion-menu-button-small {
+      min-width: initial !important;
+      border-radius: 50% !important;
+      border: none !important;
+      padding: 0 !important;
+      width: 34px !important;
+    }
+
+    // use to hide the text when the menu is retracted
+    .expansion-menu-button-small .mat-button-wrapper > span {
+      display: none;
+    }
+
+    .expansion-menu-button-large {
+      width: 100% !important;
+      text-align: left !important;
+    }
+
+    .expansion-menu-button:hover {
+      opacity: 1 !important;
+    }
+
+    .expansion-menu-button mat-icon {
+      font-size: 24px !important;
+      height: 24px !important;
+      width: 24px !important;
+      margin-left: 5px !important;
+      margin-right: 5px !important;
+    }
+  }
+}

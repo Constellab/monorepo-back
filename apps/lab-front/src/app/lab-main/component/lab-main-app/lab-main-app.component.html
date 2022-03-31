@@ -1,32 +1,54 @@
-<mat-sidenav-container class="page">
-  <mat-sidenav [fixedInViewport]="true" mode="side" [opened]="true" position="start"
-               class="sidenav" [ngClass]="toolbarColorClass | async">
+<mat-sidenav-container class="page" autosize>
+  <mat-sidenav mode="side" [opened]="true" position="start"
+               [ngClass]="toolbarColorClass | async">
 
-    <div fxLayout="column" class="column-container">
+    <fl-expansion-menu [(expanded)]="menuExpanded">
 
-      <img src="assets/logo/logo_black.png" alt="Gencovery logo"
-           class="logo"/>
-      <!-- List of main menu links   -->
-      <div fxFlex="auto" class="menu" fxLayout="column">
-        <a mat-icon-button [href]="centralAppUrl"
-           class="nav-button" routerLinkActive="selected-menu"
-           [matTooltip]="'dashboard' | translate" matTooltipPosition="after">
-          <mat-icon>dashboard</mat-icon>
-        </a>
+      <div fxLayout="column" class="g-scrollable-element column-container">
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+          <img src="assets/logo/logo_black.png" alt="Gencovery logo"
+               class="logo" flExpansionMenuButtonToggle/>
 
-        <a *ngFor="let link of accessibleLinks" mat-icon-button [routerLink]="link.route"
-           class="nav-button" routerLinkActive="selected-menu"
-           [matTooltip]="link.label | translate" matTooltipPosition="after">
-          <mat-icon [flIcon]="link.icon"></mat-icon>
-        </a>
+          <div *ngIf="menuExpanded" class="lab-name">Lab</div>
+        </div>
+
+        <!-- List of main menu links   -->
+        <div fxFlex="auto" class="menu" fxLayout="column">
+          <ng-container *ngFor="let link of accessibleLinks">
+            <mat-divider *ngIf="link.divider" class="divider"></mat-divider>
+            <a mat-button [routerLink]="link.route" class="menu-button"
+               flExpansionMenuButton
+               routerLinkActive="selected-menu"
+               [matTooltip]="link.label | translate" matTooltipPosition="after">
+              <mat-icon [flIcon]="link.icon"></mat-icon>
+              <span>{{link.label | translate}}</span>
+            </a>
+          </ng-container>
+        </div>
+
+        <!--  Authenticated user info  -->
+        <div>
+
+          <!-- Dashboard button -->
+          <a mat-button [href]="centralAppUrl" class="menu-button"
+             flExpansionMenuButton routerLinkActive="selected-menu"
+             [matTooltip]="'dashboard' | translate" matTooltipPosition="after">
+            <mat-icon>dashboard</mat-icon>
+            <span>{{'dashboard' | translate}}</span>
+          </a>
+
+          <!--    Grow/Reduce menu button      -->
+          <button mat-button
+                  flExpansionMenuButton flExpansionMenuButtonToggle>
+            <mat-icon>{{menuExpanded ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+            <span>{{'reduce_menu' | translate}}</span>
+          </button>
+
+          <lab-main-menu-settings></lab-main-menu-settings>
+        </div>
+
       </div>
-
-      <!--  Authenticated user info  -->
-      <div fxLayout="row" fxLayoutAlign="center">
-        <lab-main-menu-settings></lab-main-menu-settings>
-      </div>
-
-    </div>
+    </fl-expansion-menu>
 
   </mat-sidenav>
 

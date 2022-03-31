@@ -13,6 +13,7 @@ export interface MainMenuLink {
   route: string;
   label: string;
   icon: string;
+  divider?: boolean;
 }
 
 // list of the main menu links buttons
@@ -23,11 +24,6 @@ export const mainMenuLinks: MainMenuLink[] = [
     route: labConstBioxFullRoute
   },
   {
-    label: technicalBricks.BIOTA.label,
-    icon: technicalBricks.BIOTA.icon,
-    route: labConstBiotaFullRoute
-  },
-  {
     label: 'databox.file_explorer',
     icon: 'folder',
     route: labConstDataboxFullRoute
@@ -36,6 +32,12 @@ export const mainMenuLinks: MainMenuLink[] = [
     label: 'biox.reports',
     icon: 'report',
     route: labConstReportFullRoute
+  },
+  {
+    label: technicalBricks.BIOTA.label,
+    icon: technicalBricks.BIOTA.icon,
+    route: labConstBiotaFullRoute,
+    divider: true,
   },
   // {
   //   label: 'add_brick',

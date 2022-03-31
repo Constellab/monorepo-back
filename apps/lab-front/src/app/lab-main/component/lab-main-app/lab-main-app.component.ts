@@ -17,6 +17,8 @@ export class LabMainAppComponent implements OnInit {
 
   centralAppUrl: string;
 
+  menuExpanded: boolean = false;
+
   constructor(private labEnvManager: LabEnvStore,
               private authenticatedUserService: LabAuthenticatedUserService) {
   }
@@ -32,4 +34,11 @@ export class LabMainAppComponent implements OnInit {
     );
   }
 
+  get navButtonClass(): string {
+    return this.menuExpanded ? 'nav-button-large' : 'nav-button-small';
+  }
+
+  toggleMenu(): void {
+    this.menuExpanded = !this.menuExpanded;
+  }
 }
