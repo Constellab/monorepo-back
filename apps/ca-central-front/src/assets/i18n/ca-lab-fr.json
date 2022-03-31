@@ -57,6 +57,7 @@
   "lab_manager_compose_up_form": "Option pour démarrer le lab",
   "lab_manager_adminer_running": "Attention, le service adminer est en cours d'exécution, veuillez l'arrêter une fois que les manipulations sur le BD sont terminées",
   "lab_update_bricks": "Mettre à jour les briques",
+  "lab_prune_system": "Docker prune après le démarrage",
   "lab_update_containers": "Mettre à jour les conteneurs",
   "lab_start_container": "Démarrer le lab",
   "lab_instance_config": "Configuration du lab",
