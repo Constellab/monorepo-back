@@ -69,10 +69,9 @@ function labResourceBuildBasicChart2d(view: LabResourceViewBasicPlot2d): FlChart
   }
 
   // if there are some tick labels
-  // if (view.data.x_tick_labels?.length > 0) {
-  //   series.setXTickLabels(view.data.x_tick_labels);
-  // }
-  series.setXTickLabels([])
+  if (view.data.x_tick_labels?.length > 0) {
+    series.setXTickLabels(view.data.x_tick_labels);
+  }
 
   return series;
 }
