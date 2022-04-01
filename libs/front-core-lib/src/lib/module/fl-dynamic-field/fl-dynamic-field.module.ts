@@ -21,6 +21,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatDividerModule} from '@angular/material/divider';
+import {FlTagModule} from '../fl-tag/fl-tag.module';
 
 
 /**
@@ -60,6 +61,7 @@ import {MatDividerModule} from '@angular/material/divider';
     FlCorePipeModule,
     FlFormModule,
     FlSectionModule,
+    FlTagModule,
   ],
 })
 export class FlDynamicFieldModule {

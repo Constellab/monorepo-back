@@ -76,6 +76,14 @@
     <p *ngIf="config.hint" class="g-text-light g-text-small">{{config.hint}}</p>
   </ng-container>
 
+  <!--  Tags  -->
+  <ng-container *ngSwitchCase="'tags'">
+    <fl-form-field>
+      <fl-tag-input [formControl]="control" mode="record"></fl-tag-input>
+      <p *ngIf="config.hint" class="g-text-light g-text-small">{{config.hint}}</p>
+    </fl-form-field>
+  </ng-container>
+
 </ng-container>
 
 

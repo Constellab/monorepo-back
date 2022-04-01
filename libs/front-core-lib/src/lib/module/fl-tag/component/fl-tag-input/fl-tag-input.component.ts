@@ -22,6 +22,7 @@ import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-
 import {FlTag, FlTagEntity, FlTagHelper, FlTagService} from '../../fl-tag.class';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
+type FlTagInput = FlTag[] | Record<string, string>
 
 @Component({
   selector: 'fl-tag-input',
@@ -29,7 +30,7 @@ import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
   styleUrls: ['./fl-tag-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlTagInputComponent extends FlFormFieldDirective<FlTag[]> implements OnInit {
+export class FlTagInputComponent extends FlFormFieldDirective<FlTag[], FlTagInput> implements OnInit {
 
   @Input() searchDebounceTime: number = 300;
 
@@ -37,7 +38,14 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[]> implement
 
   @Input() maxLength: number = 20;
 
-  @Output() tagChange: EventEmitter<FlTag[]> = new EventEmitter();
+  /**
+   * Different mode for the input
+   * When record,  return a record of tags
+   * When array, return a FlTag[]
+   */
+  @Input() mode: 'record' | 'array' = 'array';
+
+  @Output() tagChange: EventEmitter<FlTagInput> = new EventEmitter();
 
   @ViewChild('input') input: ElementRef<HTMLInputElement>;
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger: MatAutocompleteTrigger;
@@ -49,7 +57,7 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[]> implement
 
   allTags: FlTagEntity[] = [];
 
-  // provided when adding a new tag. It is set when the key has been define but not the value
+  // provided when adding a new tag. It is set when the key has been defined but not the value
   // this is a temp storage
   newTag: FlTagEntity;
 
@@ -97,7 +105,7 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[]> implement
     );
   }
 
-  callChangeEvent(value: FlTag[]): void {
+  callChangeEvent(value: FlTagInput): void {
     this.tagChange.next(value);
   }
 
@@ -113,7 +121,7 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[]> implement
     if (obj == null) {
       this.value = [];
     } else {
-      this.value = obj;
+      this.value = this.convertOuterToInner(obj);
     }
 
     this.cdr.markForCheck();
@@ -189,4 +197,27 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[]> implement
   }
 
 
+  protected convertOuterToInner(outerValue: FlTagInput): FlTag[] {
+    if (outerValue == null) return [];
+    if (Array.isArray(outerValue)) return outerValue;
+
+    const tags: FlTag[] = [];
+    for (const key of Object.keys(outerValue)) {
+      tags.push({key: key, value: outerValue[key]});
+    }
+    return tags;
+  }
+
+  // convert into correct format based on component mode
+  protected convertInnerToOuter(innerValue: FlTag[]): FlTagInput {
+    if (this.mode === 'array') {
+      return innerValue;
+    } else {
+      const tags: Record<string, string> = {};
+      for (const tag of innerValue) {
+        tags[tag.key] = tag.value;
+      }
+      return tags;
+    }
+  }
 }

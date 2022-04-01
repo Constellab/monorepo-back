@@ -6,6 +6,7 @@ import {
   FlDynamicFieldConfigInput,
   FlDynamicFieldConfigList,
   FlDynamicFieldConfigSelect,
+  FlDynamicFieldConfigTags,
   FlDynamicFormAbstractControl,
   FlDynamicFormGroupConfig,
 } from '@monorepo/front-core-lib';
@@ -79,6 +80,10 @@ export class LabConfigSpecs extends ClRecordWrapper<LabConfigSpec> {
     } else if (spec.type === 'bool') {
       const config: FlDynamicFieldConfigBoolean = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'boolean';
+      return config;
+    } else if(spec.type === 'tags_param'){
+      const config: FlDynamicFieldConfigTags = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
+      config.type = 'tags';
       return config;
     } else {
       const config: FlDynamicFieldConfigInput = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
@@ -160,10 +165,11 @@ export type LabConfigSpecSimple =
   LabConfigSpecString
   | LabConfigSpecFloat
   | LabConfigSpecList
-  | LabConfigSpecBoolean;
+  | LabConfigSpecBoolean
+  | LabConfigSpecTags;
 
 // If the config property is a string or a float
-export type LabConfigSpecType = 'str' | 'int' | 'float' | 'list' | 'bool' | 'param_set';
+export type LabConfigSpecType = 'str' | 'int' | 'float' | 'list' | 'bool' | 'param_set' | 'tags_param';
 
 export type LabConfigSpecVisibility = 'protected' | 'public';
 
@@ -190,7 +196,7 @@ export class LabConfigSpecBase {
   unit?: string;
 
   /**
-   * Human readable name for the config
+   * Human-readable name for the config
    */
   human_name?: string;
 
@@ -247,3 +253,9 @@ export interface LabConfigSpecParamSet extends LabConfigSpecBase {
   param_set: Record<string, LabConfigSpec>;
   max_number_of_occurrences: number;
 }
+
+export interface LabConfigSpecTags extends LabConfigSpecBase {
+  type: 'tags_param';
+  allowed_values?: void;
+}
+
