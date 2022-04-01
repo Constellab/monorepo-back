@@ -26,9 +26,10 @@ abstract class FlChartBar extends FlChartConfig {
     // build the x-axis and scale based on ScaleBand
     const xScale: FlChartScaleBand = new FlChartScaleBand()
       .setInitialDomain(this.dataContainer.getDomainXComplete());
-    const xAxis: FlChartAxisBand = new FlChartAxisBand('bottom').setScale(xScale).rotateTickText();
-
-    xAxis.setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelFormat);
+    const xAxis: FlChartAxisBand = new FlChartAxisBand('bottom').setScale(xScale)
+      .rotateTickText()
+      .setMaxTickLength(FlChartAxisBand.xRotateTickMaxLength)
+      .setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelFormat);
 
 
     // build the y-axis and scale linear

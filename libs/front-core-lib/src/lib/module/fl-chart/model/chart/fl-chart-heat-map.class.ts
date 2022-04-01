@@ -98,6 +98,7 @@ export class FlChartHeatMap extends FlChartConfig {
       .padding(0.01);
     const xAxis: FlChartAxis = new FlChartAxisBand('bottom').setScale(xScale)
       .setTickFormat(this.dataContainer.axisXLabelFormat)
+      .setMaxTickLength(FlChartAxisBand.xRotateTickMaxLength)
       .rotateTickText();
 
     // Build Y axis
@@ -105,6 +106,7 @@ export class FlChartHeatMap extends FlChartConfig {
       .setInitialDomain(this.dataContainer.getDomainYComplete())
       .padding(0.01);
     const yAxis: FlChartAxisBand = new FlChartAxisBand('left').setScale(yScale)
+      .setMaxTickLength(FlChartAxisBand.yTickMaxLength)
       .setTickFormat(this.dataContainer.axisYLabelFormat);
 
     const chartContainer: FlChartContainer2Axis<FlChartHeatMapDataContainer> =

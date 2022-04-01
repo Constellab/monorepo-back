@@ -41,6 +41,7 @@ export function labHeatMapToChart(view: LabResourceViewHeatMap): FlChartConfig {
 
   const dataContainer = new FlChartHeatMapDataContainer(chartData);
 
+  view.columns = Array(100).fill('Bonjour à tous ce text est long')
   if (!ClHelpService.isNullOrEmpty(view.columns)) {
     dataContainer.setXTickLabels(view.columns.map(column => column.name));
   }

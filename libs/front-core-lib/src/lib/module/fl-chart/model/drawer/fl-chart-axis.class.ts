@@ -3,6 +3,7 @@ import {axisBottom, axisLeft, axisRight, axisTop, Numeric} from 'd3';
 import {Selection} from 'd3-selection';
 import {Axis, AxisScale} from 'd3-axis';
 import {FlChartAxisTickFormat} from '../data/fl-chart-data.class';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 
 /**
@@ -11,6 +12,13 @@ import {FlChartAxisTickFormat} from '../data/fl-chart-data.class';
 export type FlChartAxisType = 'left' | 'bottom' | 'right' | 'top';
 
 export class FlChartAxis {
+
+  // max length of an x rotated tick before it is truncated
+  public static xRotateTickMaxLength: number = 16;
+
+  // max length of a y tick before it is truncated
+  public static yTickMaxLength: number = 8;
+
 
   public scale: FlChartScale;
 
@@ -23,6 +31,8 @@ export class FlChartAxis {
   protected zoomDuration: number = 250;
 
   protected tickTextIsRotated: boolean = false;
+
+  protected maxTickLength: number = null;
 
   constructor(type: FlChartAxisType) {
     this.type = type;
@@ -46,6 +56,11 @@ export class FlChartAxis {
 
   public rotateTickText(): this {
     this.tickTextIsRotated = true;
+    return this;
+  }
+
+  public setMaxTickLength(maxTickLength: number): this {
+    this.maxTickLength = maxTickLength;
     return this;
   }
 
@@ -92,7 +107,13 @@ export class FlChartAxis {
 
     // set the tick method if exists
     if (this.tickFormat) {
-      axis.tickFormat(this.tickFormat);
+      if (this.maxTickLength != null) {
+        // set the tick format method and limit length of tick
+        axis.tickFormat((d, index) =>
+          ClStringHelper.limiteLength(this.tickFormat(d.valueOf(), index), this.maxTickLength));
+      } else {
+        axis.tickFormat(this.tickFormat);
+      }
     }
 
     return axis;
