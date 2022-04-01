@@ -1,23 +1,17 @@
-import {Component, ElementRef, Input, OnInit, Renderer2} from '@angular/core';
+import {Component, ElementRef, OnInit, Renderer2} from '@angular/core';
 import {FlResizeDirective} from '../fl-resize/fl-resize.directive';
 import {FlHtmlHelper} from '../../../utils/fl-html.helper';
 
 /**
- * Button that work with the directive {@link FlResizeDirective} to enable full screen
+ * Button that work with the directive {@link FlResizeDirective} to enable full screen of a resizable portal
  * It must be placed under the element that has the FlResizeDirective
  */
 @Component({
-  selector: 'fl-resize-fullscreen-button',
-  templateUrl: './fl-resize-fullscreen-button.component.html',
-  styleUrls: ['./fl-resize-fullscreen-button.component.scss']
+  selector: 'fl-resize-portal-fullscreen-button',
+  templateUrl: './fl-resize-portal-fullscreen-button.component.html',
+  styleUrls: ['./fl-resize-portal-fullscreen-button.component.scss']
 })
-export class FlResizeFullscreenButtonComponent implements OnInit {
-
-  /**
-   * If provided, it sets the transform attribute to  0 0 0 of the first parent element with the class
-   * This is useful to center the full screen element
-   */
-  @Input() parentTransformClass: string;
+export class FlResizePortalFullscreenButtonComponent implements OnInit {
 
   fullscreen: boolean = false;
 
@@ -52,12 +46,11 @@ export class FlResizeFullscreenButtonComponent implements OnInit {
 
   // method to set the transform of the parent to 0 0 0 so the full screen is centered
   private updateParentTransform(): void {
-    if (this.parentTransformClass) {
-      const parent = FlHtmlHelper.getParent(this.elementRef.nativeElement, {className: this.parentTransformClass});
-      if (parent) {
-        this.renderer.setStyle(parent, 'transform', 'translate3d(0px, 0px, 0px)');
-      }
+    const parent = FlHtmlHelper.getParent(this.elementRef.nativeElement, {className: 'cdk-overlay-pane'});
+    if (parent) {
+      this.renderer.setStyle(parent, 'transform', 'translate3d(0px, 0px, 0px)');
     }
+
   }
 
   private cancelFullscreen(): void {

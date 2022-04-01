@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FlResizeFullscreenButtonComponent} from './fl-resize-fullscreen-button.component';
+import {FlResizePortalFullscreenButtonComponent} from './fl-resize-portal-fullscreen-button.component';
 
 describe('FlResizeFullscreenButtonComponent', () => {
-  let component: FlResizeFullscreenButtonComponent;
-  let fixture: ComponentFixture<FlResizeFullscreenButtonComponent>;
+  let component: FlResizePortalFullscreenButtonComponent;
+  let fixture: ComponentFixture<FlResizePortalFullscreenButtonComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FlResizeFullscreenButtonComponent ]
+      declarations: [ FlResizePortalFullscreenButtonComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FlResizeFullscreenButtonComponent);
+    fixture = TestBed.createComponent(FlResizePortalFullscreenButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

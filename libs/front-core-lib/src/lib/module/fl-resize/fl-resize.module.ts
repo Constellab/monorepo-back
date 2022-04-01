@@ -1,6 +1,8 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FlResizeFullscreenButtonComponent} from './fl-resize-fullscreen-button/fl-resize-fullscreen-button.component';
+import {
+  FlResizePortalFullscreenButtonComponent
+} from './fl-resize-fullscreen-button/fl-resize-portal-fullscreen-button.component';
 import {FlResizeDirective} from './fl-resize/fl-resize.directive';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
@@ -9,11 +11,11 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
-    FlResizeFullscreenButtonComponent,
+    FlResizePortalFullscreenButtonComponent,
     FlResizeDirective,
   ],
   exports: [
-    FlResizeFullscreenButtonComponent,
+    FlResizePortalFullscreenButtonComponent,
     FlResizeDirective,
   ],
   imports: [
