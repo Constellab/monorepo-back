@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {BiotaDataCardComponent} from './biota-data-card.component';
+import {LabBiotaDataCardComponent} from './lab-biota-data-card.component';
 
 describe('BiotaDataCardComponent', () => {
-  let component: BiotaDataCardComponent;
-  let fixture: ComponentFixture<BiotaDataCardComponent>;
+  let component: LabBiotaDataCardComponent;
+  let fixture: ComponentFixture<LabBiotaDataCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BiotaDataCardComponent ]
+      declarations: [ LabBiotaDataCardComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BiotaDataCardComponent);
+    fixture = TestBed.createComponent(LabBiotaDataCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

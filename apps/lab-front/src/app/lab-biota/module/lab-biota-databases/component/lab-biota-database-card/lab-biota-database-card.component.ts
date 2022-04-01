@@ -7,10 +7,10 @@ import {LabBiotaDatabase} from '../../../../model/lab-biota-database.class';
  */
 @Component({
   selector: 'lab-biota-database-card',
-  templateUrl: './biota-database-card.component.html',
-  styleUrls: ['./biota-database-card.component.scss']
+  templateUrl: './lab-biota-database-card.component.html',
+  styleUrls: ['./lab-biota-database-card.component.scss']
 })
-export class BiotaDatabaseCardComponent implements OnInit {
+export class LabBiotaDatabaseCardComponent implements OnInit {
 
   @Input() database: LabBiotaDatabase;
 

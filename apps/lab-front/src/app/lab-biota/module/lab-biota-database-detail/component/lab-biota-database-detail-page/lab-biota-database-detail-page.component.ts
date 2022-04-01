@@ -9,10 +9,10 @@ import {ActivatedRoute} from '@angular/router';
  */
 @Component({
   selector: 'lab-biota-database-detail-page',
-  templateUrl: './biota-database-detail-page.component.html',
-  styleUrls: ['./biota-database-detail-page.component.scss']
+  templateUrl: './lab-biota-database-detail-page.component.html',
+  styleUrls: ['./lab-biota-database-detail-page.component.scss']
 })
-export class BiotaDatabaseDetailPageComponent implements OnInit {
+export class LabBiotaDatabaseDetailPageComponent implements OnInit {
 
   database: LabBiotaDatabase;
 

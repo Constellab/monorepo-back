@@ -1,15 +1,15 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {
-  BiotaDatabasesComponent
-} from './module/lab-biota-databases/component/biota-databases/biota-databases.component';
+  LabBiotaDatabasesComponent
+} from './module/lab-biota-databases/component/lab-biota-databases/lab-biota-databases.component';
 import {
-  BiotaDatabaseDetailPageComponent
-} from './module/lab-biota-database-detail/component/biota-database-detail-page/biota-database-detail-page.component';
+  LabBiotaDatabaseDetailPageComponent
+} from './module/lab-biota-database-detail/component/lab-biota-database-detail-page/lab-biota-database-detail-page.component';
 
 const routes: Routes = [
-  {path: '', component: BiotaDatabasesComponent},
-  {path: 'database/:typingName', component: BiotaDatabaseDetailPageComponent},
+  {path: '', component: LabBiotaDatabasesComponent},
+  {path: 'database/:typingName', component: LabBiotaDatabaseDetailPageComponent},
 ];
 
 @NgModule({

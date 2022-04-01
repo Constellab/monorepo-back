@@ -1,22 +1,24 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {BiotaDatabasesComponent} from './component/biota-databases/biota-databases.component';
-import {BiotaDatabaseCardComponent} from './component/biota-database-card/biota-database-card.component';
+import {LabBiotaDatabasesComponent} from './component/lab-biota-databases/lab-biota-databases.component';
+import {LabBiotaDatabaseCardComponent} from './component/lab-biota-database-card/lab-biota-database-card.component';
 import {LabCoreModule} from '../../../lab-core/lab-core.module';
 import {RouterModule} from '@angular/router';
 import {LabBiotaCoreModule} from '../lab-biota-core/lab-biota-core.module';
-import {BiotaDataCardComponent} from './component/biota-data-card/biota-data-card.component';
-import {BiotaDataCardDialogComponent} from './component/biota-data-card-dialog/biota-data-card-dialog.component';
+import {LabBiotaDataCardComponent} from './component/lab-biota-data-card/lab-biota-data-card.component';
+import {
+  LabBiotaDataCardDialogComponent
+} from './component/lab-biota-data-card-dialog/lab-biota-data-card-dialog.component';
 
 /**
  * Module for the main biota page to list the databases
  */
 @NgModule({
   declarations: [
-    BiotaDatabasesComponent,
-    BiotaDatabaseCardComponent,
-    BiotaDataCardComponent,
-    BiotaDataCardDialogComponent
+    LabBiotaDatabasesComponent,
+    LabBiotaDatabaseCardComponent,
+    LabBiotaDataCardComponent,
+    LabBiotaDataCardDialogComponent
   ],
   imports: [
     CommonModule,

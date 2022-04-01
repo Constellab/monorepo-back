@@ -5,10 +5,10 @@ import {Validators} from '@angular/forms';
 
 @Component({
   selector: 'lab-biota-database-search-form',
-  templateUrl: './biota-database-search-form.component.html',
-  styleUrls: ['./biota-database-search-form.component.scss']
+  templateUrl: './lab-biota-database-search-form.component.html',
+  styleUrls: ['./lab-biota-database-search-form.component.scss']
 })
-export class BiotaDatabaseSearchFormComponent implements OnInit {
+export class LabBiotaDatabaseSearchFormComponent implements OnInit {
 
   formGp: FormGroup<LabBiotaDatabaseSearch>;
 

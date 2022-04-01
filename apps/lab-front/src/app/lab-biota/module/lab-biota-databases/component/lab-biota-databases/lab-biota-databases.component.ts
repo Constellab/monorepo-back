@@ -4,14 +4,14 @@ import {LabBiotaDatabaseService} from '../../../../service/lab-biota-database.se
 import {LabBiotaData, LabBiotaDataDatasource} from '../../../../model/lab-biota-data.class';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {MediaObserver} from '@angular/flex-layout';
-import {BiotaDataCardDialogComponent} from '../biota-data-card-dialog/biota-data-card-dialog.component';
+import {LabBiotaDataCardDialogComponent} from '../lab-biota-data-card-dialog/lab-biota-data-card-dialog.component';
 
 @Component({
   selector: 'lab-biota-databases',
-  templateUrl: './biota-databases.component.html',
-  styleUrls: ['./biota-databases.component.scss']
+  templateUrl: './lab-biota-databases.component.html',
+  styleUrls: ['./lab-biota-databases.component.scss']
 })
-export class BiotaDatabasesComponent implements OnInit {
+export class LabBiotaDatabasesComponent implements OnInit {
 
   biotaDatasource: LabBiotaDataDatasource;
   columns: string[] = ['id', 'name', 'actions'];
@@ -41,6 +41,6 @@ export class BiotaDatabasesComponent implements OnInit {
   }
 
   private openDetailDialog(biotaData: LabBiotaData): void {
-    this.dialogService.openMediumDialog(BiotaDataCardDialogComponent, {data: biotaData});
+    this.dialogService.openMediumDialog(LabBiotaDataCardDialogComponent, {data: biotaData});
   }
 }

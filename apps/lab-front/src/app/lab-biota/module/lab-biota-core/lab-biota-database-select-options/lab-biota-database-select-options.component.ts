@@ -8,10 +8,10 @@ import {labBiotaDatabaseGroups} from '../../../model/lab-biota-database.class';
  */
 @Component({
   selector: 'lab-biota-database-select-options',
-  templateUrl: './biota-database-select-options.component.html',
-  styleUrls: ['./biota-database-select-options.component.scss']
+  templateUrl: './lab-biota-database-select-options.component.html',
+  styleUrls: ['./lab-biota-database-select-options.component.scss']
 })
-export class BiotaDatabaseSelectOptionsComponent extends FlEmbeddedOptionsAbstractDirective
+export class LabBiotaDatabaseSelectOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit {
 
   databaseGroups = labBiotaDatabaseGroups;

@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {BiotaDatabaseDetailPageComponent} from './biota-database-detail-page.component';
+import {LabBiotaDatabaseDetailPageComponent} from './lab-biota-database-detail-page.component';
 
 describe('BiotaDatabaseDetailPageComponent', () => {
-  let component: BiotaDatabaseDetailPageComponent;
-  let fixture: ComponentFixture<BiotaDatabaseDetailPageComponent>;
+  let component: LabBiotaDatabaseDetailPageComponent;
+  let fixture: ComponentFixture<LabBiotaDatabaseDetailPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BiotaDatabaseDetailPageComponent ]
+      declarations: [ LabBiotaDatabaseDetailPageComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(BiotaDatabaseDetailPageComponent);
+    fixture = TestBed.createComponent(LabBiotaDatabaseDetailPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

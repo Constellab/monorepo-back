@@ -4,10 +4,10 @@ import {LabBiotaData} from '../../../model/lab-biota-data.class';
 
 @Component({
   selector: 'lab-biota-database-table',
-  templateUrl: './biota-database-table.component.html',
-  styleUrls: ['./biota-database-table.component.scss']
+  templateUrl: './lab-biota-database-table.component.html',
+  styleUrls: ['./lab-biota-database-table.component.scss']
 })
-export class BiotaDatabaseTableComponent extends FlPaginatedTableAbstractDirective<LabBiotaData>
+export class LabBiotaDatabaseTableComponent extends FlPaginatedTableAbstractDirective<LabBiotaData>
   implements OnInit {
 
   @Output() showDetail: EventEmitter<LabBiotaData> = new EventEmitter();

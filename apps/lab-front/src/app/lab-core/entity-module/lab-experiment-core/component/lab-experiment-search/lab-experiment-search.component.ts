@@ -22,7 +22,7 @@ import {LabRouterService} from '../../../../service/lab-router.service';
 const savedSearch: FlSavedSearch[] = [{
   searchName: 'lab-experiment',
   id: null,
-  label: 'Experiments',
+  label: 'All experiments',
   color: flThemeDetailLight.primary,
   version: 1,
   default: true,

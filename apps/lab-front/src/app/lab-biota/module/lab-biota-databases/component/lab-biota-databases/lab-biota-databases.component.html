@@ -1,5 +1,12 @@
 <div class="g-page-fixed" fxLayout="column">
 
+
+  <fl-text-icon>
+    <mat-icon flIcon="database"></mat-icon>
+    <h2>{{'biota.biota' | translate}}</h2>
+  </fl-text-icon>
+
+
   <lab-biota-database-search-form (search)="onSearch($event)"></lab-biota-database-search-form>
 
   <fl-async-section fxFlex="auto" [arrayObs]="biotaDatasource" emptyText="biota.no_entry" class="g-grow-max-height">

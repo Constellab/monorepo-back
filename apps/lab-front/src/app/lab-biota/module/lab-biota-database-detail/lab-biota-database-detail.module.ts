@@ -1,15 +1,15 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {
-  BiotaDatabaseDetailPageComponent
-} from './component/biota-database-detail-page/biota-database-detail-page.component';
+  LabBiotaDatabaseDetailPageComponent
+} from './component/lab-biota-database-detail-page/lab-biota-database-detail-page.component';
 import {LabCoreModule} from '../../../lab-core/lab-core.module';
 import {LabBiotaCoreModule} from '../lab-biota-core/lab-biota-core.module';
 
 
 @NgModule({
   declarations: [
-    BiotaDatabaseDetailPageComponent,
+    LabBiotaDatabaseDetailPageComponent,
   ],
   imports: [
     CommonModule,

@@ -9,7 +9,13 @@
   <!--  Center header  -->
   <fl-search-header fxLayout="row">
 
-    <div fxFlex="grow" class="saved-search-container">
+    <div fxFlex="grow" class="saved-search-container"
+         fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
+      <fl-text-icon>
+        <mat-icon flIcon="experiment"></mat-icon>
+        <h2>{{'biox.biox' | translate}}</h2>
+      </fl-text-icon>
+      <div class="separator"></div>
       <fl-search-saved-list></fl-search-saved-list>
     </div>
 
