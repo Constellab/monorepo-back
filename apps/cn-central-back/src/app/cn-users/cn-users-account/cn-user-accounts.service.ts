@@ -21,7 +21,7 @@ import {CnUserTokenPayload} from '../../cn-core/model/config/cn-config.class';
 export class CnUserAccountsService {
 
   private readonly oneDay: number = 86400;
-  private readonly controllerRoute: string = 'accounts';
+  private readonly controllerRoute: string = '/accounts';
 
   constructor(
     @InjectRepository(CnUser) private repository: Repository<CnUser>,
