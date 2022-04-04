@@ -25,7 +25,7 @@ export class FlSpreadsheetTagsState {
 
   public getColumnColors$(columnId: number): Observable<string[]> {
     const sheet = this.state.currentSheet;
-    return this.selectedRowTags.pipe(
+    return this.selectedColumnTags.pipe(
       map(selectedTags => this.getSelectedHeaderTagColors(sheet.getColumnInfo(columnId).tags, selectedTags))
     );
   }
