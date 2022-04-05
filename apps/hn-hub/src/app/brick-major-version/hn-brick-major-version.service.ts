@@ -20,7 +20,7 @@ export class HnBrickMajorVersionService {
   ) {
   }
 
-  async create(brick: HnBrick, version: CmVersion, repoType: HnRepoType, entityManager: EntityManager, ): Promise<HnBrickVersion> {
+  async create(brick: HnBrick, version: CmVersion, repoType: HnRepoType, entityManager: EntityManager): Promise<HnBrickVersion> {
     let brickMajorVersion: HnBrickMajorVersion = new HnBrickMajorVersion();
     brickMajorVersion.initialize(brick, version.major);
     brickMajorVersion = await entityManager.save(brickMajorVersion);

@@ -41,7 +41,7 @@ export class HaPublicSidenavCreateFormDialogComponent extends FlFormDialogAbstra
     return new FormBuilder().group({
       id: [null],
       title: [null, Validators.required],
-      isFolder: [true]
+      isFolder: [false]
     });
   }
 

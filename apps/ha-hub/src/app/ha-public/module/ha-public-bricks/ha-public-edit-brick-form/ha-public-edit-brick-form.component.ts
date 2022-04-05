@@ -65,10 +65,6 @@ export class HaPublicEditBrickFormComponent implements OnInit {
           }
         }
       )
-      this.brickService.create(formValue).subscribe((brick) => {
-        this.isLoading = false;
-        this.router.navigateByUrl('/bricks/' + brick.name);
-      });
     }
   }
 }

@@ -10,6 +10,8 @@ export class HnCreateBrickDTO {
   repoType: HnRepoType;
   repoGit: string;
   repoPip: string;
+  isBeta?: boolean;
+  subPatch?: number;
   version: CmVersion;
 }
 
@@ -39,5 +41,4 @@ export class HnBrick extends HnBaseEntity {
     this.gitRepo = repoGit;
     this.pipRepo = repoPip;
   }
-
 }

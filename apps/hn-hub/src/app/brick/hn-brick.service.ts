@@ -11,6 +11,7 @@ import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnFolderService} from '../folder/hn-folder.service';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnErrorText} from '../core/model/config/hn-error-text.class';
+import {CmVersion} from '@monorepo/common-model';
 
 @Injectable()
 export class HnBrickService {
@@ -34,12 +35,13 @@ export class HnBrickService {
       throw new BadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
     }
 
-    if (createdBrick != null) {
+    if (createdBrick) {
       brick.initialize(createdBrick.name, createdBrick.description, false,createdBrick.repoPip, createdBrick.repoGit);
     }
 
     brick = await getManager().transaction(async entityManager => {
       brick = await entityManager.save(brick);
+      if(createdBrick.isBeta) createdBrick.version.subPatch = createdBrick.subPatch;
       brickVersion = await this.brickMajorVersionService.create(brick, createdBrick.version, createdBrick.repoType, entityManager);
 
       return brick;
