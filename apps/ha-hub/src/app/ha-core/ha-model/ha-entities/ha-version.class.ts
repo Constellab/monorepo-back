@@ -5,6 +5,11 @@ export enum HaRepoType {
   GIT = 'GIT'
 }
 
+export enum HaVersionType {
+  NORMAL = 'NORMAL',
+  BETA = 'BETA'
+}
+
 export class HaVersion extends HaEntity {
   version: string;
 }

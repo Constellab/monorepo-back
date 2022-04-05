@@ -1,6 +1,6 @@
 import {ClassSerializerInterceptor, MiddlewareConsumer, Module, RequestMethod} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
-import {APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
+import {APP_FILTER, APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
 import {TypeOrmModule, TypeOrmModuleOptions} from '@nestjs/typeorm';
 import {join} from 'path';
 import {DnDatabaseConfig} from './app/core/model/hn-database-config.class';
@@ -16,11 +16,11 @@ import {
   BlJwtConfig,
   BlJwtModule,
   BlLoggerConfig,
+  BlObjectStorageModule,
+  BlObjectStorageModuleConfig,
   BlRequestContextMiddleware,
   BlTransportModule,
   BlTransportModuleConfig,
-  BlObjectStorageModule,
-  BlObjectStorageModuleConfig,
 } from '@monorepo/back-core-lib';
 import {HnCoreModule} from './app/core/hn-core.module';
 import {HnUserService} from './app/users/hn-user.service';
@@ -34,6 +34,7 @@ import {clDefaultLang} from '@monorepo/core-lib';
 import {HnBrickModule} from './app/brick/hn-brick.module';
 import {HnBrickVersionModule} from './app/brick-version/hn-brick-version.module';
 import {HnBrickMajorVersionModule} from './app/brick-major-version/hn-brick-major-version.module';
+import {HnCoreExceptionHandlerFilter} from './app/core/filters/hn-core-exception-handler.filter';
 
 function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
   const dbConfig: DnDatabaseConfig = configService.getDatabaseConfig();
@@ -143,6 +144,11 @@ function configureObjectStorageModule(configService: HnCoreConfigService): BlObj
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
+    },
+    // set global exception handler
+    {
+      provide: APP_FILTER,
+      useClass: HnCoreExceptionHandlerFilter,
     },
     // set global guards
     {

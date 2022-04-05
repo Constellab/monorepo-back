@@ -13,7 +13,8 @@ import {
   FlSectionModule,
   FlSnackBarModule,
   FlTextEditorModule,
-  FlTranslateModule
+  FlTranslateModule,
+  FlUserModule
 } from '@monorepo/front-core-lib';
 
 @NgModule({
@@ -32,6 +33,7 @@ import {
     FlMenuDynamicModule,
     FlIconModule,
     FlArticleModule,
+    FlUserModule
   ]
 })
 export class HaCustomLibraryModule {

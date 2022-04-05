@@ -1,6 +1,7 @@
 import {HaEntity} from './ha-entity.class';
 import {CmVersion} from '@monorepo/common-model';
 import {HaRepoType} from './ha-version.class';
+import {HaVersionType} from './ha-version.class';
 
 export class HaBrick extends HaEntity {
   name: string;
@@ -24,7 +25,7 @@ export class HaBrickDTO {
 
   version: string|CmVersion;
 
-  isBeta: boolean = false;
+  versionType: HaVersionType = HaVersionType.BETA;
 
   subPatch?: number;
 }

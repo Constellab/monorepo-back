@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {getManager, Repository} from 'typeorm';
@@ -10,6 +10,7 @@ import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnFolderService} from '../folder/hn-folder.service';
 import {HnNode} from '../folder/hn-folder.dto';
+import {HnErrorText} from '../core/model/config/hn-error-text.class';
 
 @Injectable()
 export class HnBrickService {
@@ -27,6 +28,12 @@ export class HnBrickService {
   async create(createdBrick: HnCreateBrickDTO): Promise<HnBrick> {
     let brick: HnBrick = new HnBrick();
     let brickVersion: HnBrickVersion;
+
+    const brickExist: HnBrick = await this.bricksRepository.findOne({where: {name: createdBrick.name}});
+    if(brickExist != null){
+      throw new BadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
+    }
+
     if (createdBrick != null) {
       brick.initialize(createdBrick.name, createdBrick.description, false,createdBrick.repoPip, createdBrick.repoGit);
     }

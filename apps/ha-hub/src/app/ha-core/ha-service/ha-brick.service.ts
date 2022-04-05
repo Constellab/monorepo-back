@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {HaBrick, HaBrickDTO} from '../ha-model/ha-entities/ha-brick.class';
 import {HaNode} from '../ha-model/ha-entities/ha-node.class';
 import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
-import {HaNewVersionDTO} from '../ha-model/ha-entities/ha-version.class';
+import {HaNewVersionDTO, HaVersionType} from '../ha-model/ha-entities/ha-version.class';
 import {HaBrickVersion} from '../ha-model/ha-entities/ha-brick-version.class';
 import {CmVersion} from '@monorepo/common-model';
 
@@ -27,7 +27,8 @@ export class HaBrickService {
     if (!(object.version instanceof CmVersion)) {
       versionArray = object.version.split('.');
     }
-    object.version = object.isBeta ? new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2], object.subPatch)
+    object.version = object.versionType === HaVersionType.BETA ?
+      new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2], object.subPatch)
       : new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2])
     return this.apiService.post(this.route, object, HaBrick);
     return null;

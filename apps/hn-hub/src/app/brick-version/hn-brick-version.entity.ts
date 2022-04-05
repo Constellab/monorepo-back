@@ -15,6 +15,11 @@ export enum HnRepoType {
   GIT = 'GIT'
 }
 
+export enum HnVersionType {
+  NORMAL = 'NORMAL',
+  BETA = 'BETA'
+}
+
 export class HnNewVersionDTO {
   brickId: string;
 
@@ -36,8 +41,8 @@ export class HnBrickVersion extends HnBaseEntity {
   @Column({default: null, nullable: true})
   subPatch: number;
 
-  @Column({default: false})
-  isBeta: boolean;
+  @Column({type: 'enum', enum: HnVersionType, nullable: false})
+  versionType: HnVersionType;
 
   @Column({type: 'enum', enum: HnRepoType, nullable: false})
   repoType: HnRepoType;
@@ -58,7 +63,8 @@ export class HnBrickVersion extends HnBaseEntity {
   }
 
   public get version(): CmVersion{
-    return new CmVersion(this.brickMajorVersion.major, this.minor, this.patch, this.isBeta ? this.subPatch : null);
+    return new CmVersion(this.brickMajorVersion.major, this.minor, this.patch,
+      this.versionType === HnVersionType.BETA ? this.subPatch : null);
   }
 
   public set version(version: CmVersion) {
@@ -66,7 +72,7 @@ export class HnBrickVersion extends HnBaseEntity {
     this.patch = version.patch;
     this.brickMajorVersion.major = version.major;
     if(version.isBeta()){
-      this.isBeta = true;
+      this.versionType = HnVersionType.BETA;
       this.subPatch = version.subPatch;
     }
   }

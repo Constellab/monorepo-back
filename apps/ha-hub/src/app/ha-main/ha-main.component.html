@@ -5,7 +5,10 @@
   <button mat-flat-button color="primary" *ngIf="!(userConnected | async)" class="g-centered-forced" (click)="openLoginDialog()">
     {{'login' | translate}}
   </button>
-  <span class="g-centered-forced" [matMenuTriggerFor]="userMenu" *ngIf="userConnected | async"><user-initilias-icon [userConnected]="(userConnected | async)"></user-initilias-icon></span>
+  <span class="g-centered-forced span-initials" [matMenuTriggerFor]="userMenu" *ngIf="userConnected | async as user">
+    <fl-user-profile-picture [firstName]="user.firstname"
+                             [lastName]="user.lastname">
+    </fl-user-profile-picture></span>
   <mat-menu #userMenu="matMenu">
     <button mat-menu-item [routerLink]="'../admin'">{{'admin_dashboard' | translate}}</button>
     <button mat-menu-item (click)="logout()">{{'logout' |translate}}</button>

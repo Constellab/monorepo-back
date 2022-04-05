@@ -1,7 +1,7 @@
 import {ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
 import {Reflector} from '@nestjs/core';
-import {ErrorText} from '../model/config/hn-error-text.class';
+import {HnErrorText} from '../model/config/hn-error-text.class';
 import {blIsDecoratedWithPublic} from '@monorepo/back-core-lib';
 
 /**
@@ -31,7 +31,7 @@ export class HnJwtAuthGuard extends AuthGuard('jwt') {
     try {
       return await (super.canActivate(context) as Promise<boolean>);
     } catch (error) {
-      throw new UnauthorizedException(ErrorText.WRONG_TOKEN);
+      throw new UnauthorizedException(HnErrorText.WRONG_TOKEN);
     }
   }
 

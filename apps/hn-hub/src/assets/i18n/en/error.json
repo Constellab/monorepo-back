@@ -1,4 +1,5 @@
 {
   "server_error": "Server error",
-  "wrong_credentials": "Wrong email or password"
+  "wrong_credentials": "Wrong email or password",
+  "brick_already_exist": "A brick with this name already exist"
 }
