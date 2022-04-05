@@ -15,6 +15,8 @@ export interface HnBrickVersionTransportDto {
   major: number;
   minor: number;
   patch: number;
+  versionType: HnRepoType;
+  subPatch: number;
   versionState: HnVersionState;
   repoType: HnRepoType;
 }

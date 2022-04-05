@@ -17,7 +17,6 @@ export class CmVersion {
     }
 
     let subPatchStr: string = null;
-    console.log(versions);
     if (versions[2].includes('-beta')) {
       [versions[2], subPatchStr] = versions[2].split('-beta');
     }
@@ -57,7 +56,7 @@ export class CmVersion {
   }
 
   private getVersionAsNumber(): number {
-    return parseInt('' + this.major + this.minor + this.patch);
+    return parseInt('' + this.major + this.minor + this.patch + this.subPatch ?? '0');
   }
 
 }
