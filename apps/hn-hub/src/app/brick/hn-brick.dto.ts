@@ -1,4 +1,4 @@
-import {HnRepoType} from '../brick-version/hn-brick-version.entity';
+import {HnRepoType, HnVersionType} from '../brick-version/hn-brick-version.entity';
 import {HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
 
 export interface HnBrickTransportDto {
@@ -15,7 +15,7 @@ export interface HnBrickVersionTransportDto {
   major: number;
   minor: number;
   patch: number;
-  versionType: HnRepoType;
+  versionType: HnVersionType;
   subPatch: number;
   versionState: HnVersionState;
   repoType: HnRepoType;

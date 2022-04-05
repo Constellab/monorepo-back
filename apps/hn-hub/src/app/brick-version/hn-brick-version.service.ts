@@ -87,6 +87,8 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         major: brickVersion.brickMajorVersion.major,
         minor: brickVersion.minor,
         patch: brickVersion.patch,
+        versionType: brickVersion.versionType,
+        subPatch: brickVersion.subPatch,
         versionState: brickVersion.brickMajorVersion.versionState,
         repoType: brickVersion.repoType
       }]
