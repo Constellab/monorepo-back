@@ -1,4 +1,4 @@
-import {CnRepoType, CnVersionState} from './cn-brick-version.entity';
+import {CnRepoType, CnVersionState, CnVersionType} from './cn-brick-version.entity';
 
 export interface CnBrickVersionDTO {
   name: string;
@@ -13,7 +13,9 @@ export enum CnBrickGWS {
   GWS_CORE = 'gws_core'
 }
 
-
+/**
+ * Object received from the queue to sync a brick and its versions
+ */
 export interface CnBrickSaveDTO {
   id: string;
   name: string;
@@ -27,6 +29,8 @@ export interface CnBrickVersionSaveDTO {
   major: number;
   minor: number;
   patch: number;
+  subPatch: number;
+  versionType: CnVersionType;
   versionState: CnVersionState;
   repoType: CnRepoType;
 }

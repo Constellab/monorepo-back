@@ -32,6 +32,8 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
       brickVersion.major = versionDTO.major;
       brickVersion.minor = versionDTO.minor;
       brickVersion.patch = versionDTO.patch;
+      brickVersion.subPatch = versionDTO.subPatch
+      brickVersion.versionType = versionDTO.versionType;
       brickVersion.versionState = versionDTO.versionState;
       brickVersion.repoType = versionDTO.repoType;
       brickVersion.brick = brick;

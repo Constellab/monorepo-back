@@ -16,6 +16,12 @@ export enum CnVersionState {
   NEXT = 'NEXT'
 }
 
+export enum CnVersionType {
+  NORMAL = 'NORMAL',
+  BETA = 'BETA'
+}
+
+
 @Unique(['brick', 'major', 'minor', 'patch'])
 @Entity('brick_version')
 export class CnBrickVersion extends BlEntityWithId {
@@ -35,6 +41,12 @@ export class CnBrickVersion extends BlEntityWithId {
   @Column({default: 0})
   patch: number;
 
+  @Column({default: null, nullable: true})
+  subPatch: number;
+
+  @Column({type: 'enum', enum: CnVersionType, nullable: false})
+  versionType: CnVersionType;
+
   @Column({type: 'enum', enum: CnVersionState, nullable: false, default: CnVersionState.STABLE})
   versionState: CnVersionState;
 
@@ -44,7 +56,8 @@ export class CnBrickVersion extends BlEntityWithId {
   @CmVersionTransform()
   @Expose()
   public get version(): CmVersion {
-    return new CmVersion(this.major, this.minor, this.patch);
+    return new CmVersion(this.major, this.minor, this.patch,
+      this.versionType === CnVersionType.BETA ? this.subPatch : null);
   }
 
   public set version(version: CmVersion) {
