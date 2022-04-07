@@ -17,30 +17,37 @@
         </fl-text-icon>
 
         <fl-section-actions>
-            <button mat-stroked-button type="button"
-                    (click)="openViewSpecs($event)" class="button g-button-small">
-              <mat-icon>visibility</mat-icon>
-              {{'biox.view_specs' | translate}}
-            </button>
+          <button mat-stroked-button type="button"
+                  (click)="openViewSpecs($event)" class="button g-button-small">
+            <mat-icon>visibility</mat-icon>
+            {{'biox.view_specs' | translate}}
+          </button>
 
-            <!--   Link to resource detail page only for readOnly       -->
-            <a mat-stroked-button type="button" *ngIf="readOnly"
-               [routerLink]="resource | labDetailRoute"
-               class="button g-button-small">
-              <mat-icon flIcon="preview"></mat-icon>
-              {{'biox.open_resource_page' | translate}}
-            </a>
+          <!--   Link to resource detail page only for readOnly       -->
+          <a mat-stroked-button type="button" *ngIf="readOnly"
+             [routerLink]="resource | labDetailRoute"
+             class="button g-button-small">
+            <mat-icon flIcon="preview"></mat-icon>
+            {{'biox.open_resource_page' | translate}}
+          </a>
 
-            <a mat-stroked-button type="button" *ngIf="resource.experiment && !readOnly"
-               [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
-               class="button g-button-small">
-              <mat-icon flIcon="experiment"></mat-icon>
-              {{'biox.experiment' | translate}}
-            </a>
+          <a mat-stroked-button type="button" *ngIf="resource.experiment && !readOnly"
+             [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
+             class="button g-button-small">
+            <mat-icon flIcon="experiment"></mat-icon>
+            {{'biox.experiment' | translate}}
+          </a>
 
           <lab-resource-actions-menu [readOnly]="readOnly" [resource]="resource" (update)="onUpdate($event)"
                                      (updateTags)="onUpdateTags($event)"
                                      (delete)="onDelete()">
+
+            <button mat-menu-item type="button"
+                    (click)="openTransformerResource()">
+              <mat-icon>move_down</mat-icon>
+              {{'biox.transformers' | translate}}
+            </button>
+
           </lab-resource-actions-menu>
         </fl-section-actions>
       </fl-section-header>

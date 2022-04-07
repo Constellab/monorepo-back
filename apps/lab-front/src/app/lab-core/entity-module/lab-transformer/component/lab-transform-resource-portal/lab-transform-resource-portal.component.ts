@@ -3,6 +3,7 @@ import {FL_PORTAL_DATA, FlFormHelper, FlOverlayRef} from '@monorepo/front-core-l
 import {
   LabCallTransformerParams,
   labConvertTransformFormToParams,
+  LabTransformerWithConfig,
   LabTransformForm
 } from '../../../../model/global/lab-transformer.class';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
@@ -18,6 +19,8 @@ export interface LabTransformResourcePortalInput {
   resourceTypingName: string;
   resourceName: string;
   resourceId: string;
+  // use to init form with transformers and config
+  currentTransformers: LabTransformerWithConfig[];
 }
 
 interface LabTransformResourcePortalForm {
@@ -51,7 +54,8 @@ export class LabTransformResourcePortalComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGp = new FormBuilder().group({
-      transformers: LabTransformResourceComponent.buildFormArray([], 1)
+      transformers: LabTransformResourceComponent.buildFormArray(
+        this.input.currentTransformers, 1)
     });
   }
 

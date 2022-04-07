@@ -15,6 +15,10 @@ import {
 } from '../../../../../lab-databox/module/lab-resource-detail-page/component/lab-resource-view-specs-portal/lab-resource-view-specs-portal.component';
 import {LabTag} from '../../../../model/entities/lab-tag.entity';
 import {LabRouterService} from '../../../../service/lab-router.service';
+import {
+  LabTransformResourcePortalComponent,
+  LabTransformResourcePortalInput
+} from '../../../lab-transformer/component/lab-transform-resource-portal/lab-transform-resource-portal.component';
 
 @Component({
   selector: 'lab-resource-detail',
@@ -100,6 +104,32 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
 
   onDelete(): void {
     this.routerService.navigateToDatabox();
+  }
+
+  async openTransformerResource(): Promise<void> {
+    const resource = this.state.getCurrentResource();
+    this.overlayRef?.dispose();
+
+
+    const config: FlPortalConfig = this.portalService.configureAbsolutePortal(
+      {centerHorizontally: '0', top: '0'},
+      {
+        elevation: true,
+        disposeOnNavigation: true,
+        hasBackdrop: true,
+        transparentBackdrop: true,
+      });
+
+    const input: LabTransformResourcePortalInput = {
+      resourceName: resource.name,
+      resourceTypingName: resource.resourceTypingName,
+      resourceId: resource.id,
+      // retrieve the current transformer of the view to init the transformer form
+      currentTransformers: this.state.getLastViewSpec()?.transformersWithConfig ?? []
+    };
+
+    this.overlayRef = this.portalService.createPortal(LabTransformResourcePortalComponent, config, input);
+    this.overlayRef.detachments().subscribe(() => this.overlayRef = null);
   }
 
 

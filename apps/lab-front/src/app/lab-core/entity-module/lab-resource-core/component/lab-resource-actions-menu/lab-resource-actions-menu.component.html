@@ -15,13 +15,9 @@
       <mat-icon>system_update_alt</mat-icon>
       <span>{{'biox.import_resource' | translate}}</span>
     </button>
-
-    <button mat-menu-item type="button"
-            (click)="openTransformerResource()">
-      <mat-icon>move_down</mat-icon>
-      {{'biox.transformers' | translate}}
-    </button>
   </ng-container>
+
+  <ng-content></ng-content>
 
   <button mat-menu-item type="button" (click)="openTagFormDialog()">
     <mat-icon>local_offer</mat-icon>

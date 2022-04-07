@@ -8,9 +8,6 @@ import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,
   FlDialogService,
-  FlOverlayRef,
-  FlPortalConfig,
-  FlPortalService,
   FlTagDialogService
 } from '@monorepo/front-core-lib';
 import {LabTag} from '../../../../model/entities/lab-tag.entity';
@@ -21,13 +18,9 @@ import {
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {LabTagService} from '../../../../entity-service/lab-tag.service';
 import {LabResourceDownloadService} from '../../../../entity-service/lab-resource-download.service';
-import {
-  LabTransformResourcePortalComponent,
-  LabTransformResourcePortalInput
-} from '../../../lab-transformer/component/lab-transform-resource-portal/lab-transform-resource-portal.component';
 
 /**
- * Action menu button for resources
+ * Action menu button for resources, it has an ng-content for custom buttons
  */
 @Component({
   selector: 'lab-resource-actions-menu',
@@ -44,14 +37,11 @@ export class LabResourceActionsMenuComponent implements OnInit {
   @Output() updateTags: EventEmitter<LabTag[]> = new EventEmitter<LabTag[]>();
   @Output() delete: EventEmitter<LabResource> = new EventEmitter<LabResource>();
 
-  private overlayRef: FlOverlayRef;
-
   constructor(private resourceService: LabResourceService,
               private dialogService: FlDialogService,
               private tagDialogService: FlTagDialogService,
               private tagService: LabTagService,
-              private resourceDownloadService: LabResourceDownloadService,
-              private portalService: FlPortalService) {
+              private resourceDownloadService: LabResourceDownloadService) {
   }
 
   ngOnInit(): void {
@@ -104,28 +94,6 @@ export class LabResourceActionsMenuComponent implements OnInit {
     if (resource) {
       this.update.next(resource);
     }
-  }
-
-  async openTransformerResource(): Promise<void> {
-    this.overlayRef?.dispose();
-
-    const config: FlPortalConfig = this.portalService.configureAbsolutePortal(
-      {centerHorizontally: '0', top: '0'},
-      {
-        elevation: true,
-        disposeOnNavigation: true,
-        hasBackdrop: true,
-        transparentBackdrop: true,
-      });
-
-    const input: LabTransformResourcePortalInput = {
-      resourceName: this.resource.name,
-      resourceTypingName: this.resource.resourceTypingName,
-      resourceId: this.resource.id
-    };
-
-    this.overlayRef = this.portalService.createPortal(LabTransformResourcePortalComponent, config, input);
-    this.overlayRef.detachments().subscribe(() => this.overlayRef = null);
   }
 
   deleteResource(): void {
