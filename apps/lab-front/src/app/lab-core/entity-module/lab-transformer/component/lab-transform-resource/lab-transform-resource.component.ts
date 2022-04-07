@@ -1,5 +1,4 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
 import {LabConfigData, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {LabProcessType} from '../../../../model/entities/lab-type/lab-process-type.entity';
@@ -10,9 +9,13 @@ import {
 } from '../../../lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
 import {FormArray, FormBuilder, FormControl, FormGroup} from '@ngneat/reactive-forms';
 import {ControlContainer} from '@angular/forms';
-import {FlGlobalValidators} from '@monorepo/front-core-lib';
+import {FlDialogService, FlGlobalValidators} from '@monorepo/front-core-lib';
 import {LabTransformerWithConfig} from '../../../../model/global/lab-transformer.class';
 import {LabTypeService} from '../../../../entity-service/lab-type.service';
+import {
+  LabSelectProcessTypeDialogComponent,
+  LabSelectProcessTypeDialogInput
+} from '../../../lab-type-core/component/lab-select-process-type-dialog/lab-select-process-type-dialog.component';
 
 interface LabSelectedTransformer {
   transformer: LabProcessType;
@@ -38,15 +41,15 @@ export class LabTransformResourceComponent implements OnInit {
 
   @Input() resourceTypingName: string;
 
-  transformersList$: Observable<LabTypeEntity[]>;
-
   selectedTransformers: LabSelectedTransformer[] = [];
 
   formArray: FormArray<LabTransformResourceForm>;
 
+  loadingProcessType: boolean = false;
   constructor(private typeService: LabTypeService,
               private controlContainer: ControlContainer,
-              private cdr: ChangeDetectorRef) {
+              private cdr: ChangeDetectorRef,
+              private dialogService: FlDialogService) {
   }
 
 
@@ -76,8 +79,6 @@ export class LabTransformResourceComponent implements OnInit {
     for (const transformer of this.formArray.value) {
       this.createSelectedTransformer(transformer.transformer);
     }
-
-    this.transformersList$ = this.typeService.getTransformerByResourceType(this.resourceTypingName);
   }
 
   addTransformer(transformer: LabProcessType): void {
@@ -119,4 +120,24 @@ export class LabTransformResourceComponent implements OnInit {
     return this.formArray.at(index) as any;
   }
 
+  selectTransformer(): void {
+    const data: LabSelectProcessTypeDialogInput = {mode: 'transformer', resourceTypingName: this.resourceTypingName};
+    this.dialogService.openBigDialog(LabSelectProcessTypeDialogComponent, {data: data}).afterClosed().subscribe(
+      processType => this.loadAndAddTransformer(processType)
+    );
+  }
+
+  // load the process type object and add it to the form
+  private loadAndAddTransformer(processType?: LabTypeEntity): void {
+    if (!processType) return;
+
+    this.loadingProcessType = true;
+    this.typeService.getTyping(processType.typingName).subscribe({
+      next: processType => {
+        this.loadingProcessType = false;
+        this.addTransformer(processType);
+      },
+      error: () => this.loadingProcessType = false
+    });
+  }
 }

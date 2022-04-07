@@ -19,7 +19,7 @@
     </mat-form-field>
 
     <!--  Object sub type  -->
-    <mat-form-field class="g-search-field">
+    <mat-form-field class="g-search-field" *ngIf="showObjectSubTypeField">
       <mat-label>{{'biox.process_type_type' | translate }}</mat-label>
       <mat-select [placeholder]="'biox.process_type_type' | translate" formControlName="objectSubType">
         <mat-option value="TASK">{{'biox.process_sub_type_TASK' | translate}}</mat-option>

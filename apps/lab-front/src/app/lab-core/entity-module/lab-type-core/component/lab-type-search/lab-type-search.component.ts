@@ -8,7 +8,7 @@ import {
   FlTableColumn,
   flThemeDetailLight
 } from '@monorepo/front-core-lib';
-import {LabTypeSearch, LabTypeSearchFields} from '../../model/lab-type-advanced-search.class';
+import {LabTypeSearch, LabTypeSearchConfig, LabTypeSearchFields} from '../../model/lab-type-advanced-search.class';
 import {LabTypeEntity, LabTypeEntityDatasource} from '../../../../model/entities/lab-type/lab-type.entity';
 import {LabTypeService} from '../../../../entity-service/lab-type.service';
 import {LabBrickGWS} from '../../../../model/entities/lab-brick.entity';
@@ -16,7 +16,7 @@ import {LabBrickGWS} from '../../../../model/entities/lab-brick.entity';
 // list of predefined search of the resources
 const savedSearch: FlSavedSearch[] = [
   {
-    searchName: 'biox-resource',
+    searchName: 'lab-type',
     id: null,
     label: 'All',
     color: flThemeDetailLight.primary,
@@ -25,7 +25,7 @@ const savedSearch: FlSavedSearch[] = [
     filtersCriteria: {} as Partial<LabTypeSearchFields>
   },
   {
-    searchName: 'biox-resource',
+    searchName: 'lab-type',
     id: null,
     label: 'Core',
     color: flThemeDetailLight.primary,
@@ -63,6 +63,8 @@ export class LabTypeSearchComponent implements OnInit {
 
   @Input() fullPageSearch: boolean = false;
 
+  @Input() config: LabTypeSearchConfig;
+
   @Output() typeSelected: EventEmitter<LabTypeEntity> = new EventEmitter();
 
   columns: FlTableColumn<LabTypeEntity>[] = [
@@ -76,6 +78,28 @@ export class LabTypeSearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.datasource = this.searchState.datasource;
+
+    // set hidden filters based on config
+    let hiddenFilters: Partial<LabTypeSearchFields>;
+
+    if (this.config.mode === 'taskOrProtocol') {
+      hiddenFilters = {objectType: ['TASK', 'PROTOCOL']};
+      this.columns = [
+        {columnName: 'name', accessor: 'humanName'},
+        {columnName: 'description', accessor: 'shortDescription'},
+        'objectSubType', 'detail'];
+    } else {
+      hiddenFilters = {
+        objectType: ['TASK', 'PROTOCOL'],
+        objectSubType: 'TRANSFORMER',
+        relatedModelTypingName: this.config.resourceTypingName
+      };
+      // don't set the objectSubType because it is always transformers
+      this.columns = [
+        {columnName: 'name', accessor: 'humanName'},
+        {columnName: 'description', accessor: 'shortDescription'}, 'detail'];
+    }
+    this.searchState.setHiddenFilters(hiddenFilters);
     this.searchState.init(this.fullPageSearch);
   }
 

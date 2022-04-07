@@ -3,26 +3,13 @@
   width: 100%;
 }
 
-.section {
-  max-height: 100%;
-}
-
-
-.divider{
-  background-color: var(--grey-low-contrast);
-  width: 1px;
-  height: 100%;
-  margin-left: 0.5em;
-  margin-right: 0.5em;
-}
-
-.button{
-  margin-bottom: 0.3em;
-  width: 100%;
-  text-transform: initial;
+.add-button{
+  display: block;
+  margin: auto;
 }
 
 .right-section {
+  margin-top: 1em;
   padding-bottom: 1em;
 }
 

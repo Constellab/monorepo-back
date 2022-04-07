@@ -1,24 +1,12 @@
-<div fxLayout="row" class="g-full">
-  <fl-async-section [object]="transformersList$" emptyText="biox.no_transformers" class="section g-scrollable-element"
-                    fxFlex="20%">
+<div class="g-full">
 
-    <ng-container *flSectionBody="let transformers">
-      <div *ngFor="let transformer of transformers" fxLayout="row" fxLayoutAlign="space-between center"
-           class="g-full">
-        <button mat-stroked-button type="button" (click)="addTransformer(transformer)"
-                class="g-button-small button">
-          {{transformer.name}}
-        </button>
+  <button mat-stroked-button type="button" (click)="selectTransformer()"
+          class="g-button-small add-button">
+    <mat-icon>add</mat-icon>
+    {{'biox.add_transformer' | translate}}
+  </button>
 
-        <lab-process-type-show-detail-button [processTypingName]="transformer.typingName">
-        </lab-process-type-show-detail-button>
-      </div>
-    </ng-container>
-  </fl-async-section>
-
-  <div class="divider"></div>
-
-  <div class="section right-section g-scrollable-element" fxFlex="80%">
+  <div class="right-section g-scrollable-element">
     <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)">
       <ng-container *ngFor="let transformer of selectedTransformers; let index = index; let last = last">
         <mat-expansion-panel hideToggle cdkDrag [expanded]="true" class="transform-panel"
@@ -51,6 +39,10 @@
         <mat-icon class="g-centered-forced" *ngIf="!last">arrow_drop_down</mat-icon>
       </ng-container>
     </mat-accordion>
+
+    <div class="g-text-centered" *ngIf="loadingProcessType">
+      <fl-loader size="small"></fl-loader>
+    </div>
   </div>
 </div>
 

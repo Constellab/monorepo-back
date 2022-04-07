@@ -152,6 +152,7 @@
     "process_sub_type_IMPORTER": "Importer",
     "process_sub_type_EXPORTER": "Exporter",
     "process_sub_type_TRANSFORMER": "Transformer",
+    "process_sub_type_Resource": "Resource",
     "view_resource": "Resource",
     "open_resource_page": "Open resource",
     "update_resource_type": "Update resource type",

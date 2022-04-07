@@ -39,6 +39,9 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
   private storeSearchInUrl: boolean = false;
 
+  // list of filter that are added programmatically and override search criteria
+  private hiddenFilters: Record<string, any> = {};
+
   constructor(private route: ActivatedRoute,
               private router: Router,
               @Inject(FL_SEARCH_CONFIG) private config: FlSearchConfig) {
@@ -95,7 +98,7 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
   }
 
   // call the advanced search from a URL change
-  private callAdvancedSearchFromUrl(filtersCriteria: any, timestamp: string): void {
+  private callAdvancedSearchFromUrl(filtersCriteria: Record<string, any>, timestamp: string): void {
     this.callAdvancedSearch(filtersCriteria);
     this.lastSearchTimestamp = timestamp;
 
@@ -103,7 +106,13 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
   }
 
   // method to just call advanced search function
-  private callAdvancedSearch(filtersCriteria: any): FlAdvancedSearchObject {
+  private callAdvancedSearch(filtersCriteria: Record<string, any>): FlAdvancedSearchObject {
+
+    // add the hidden filters
+    if(this.hiddenFilters){
+      filtersCriteria = {...filtersCriteria, ...this.hiddenFilters};
+    }
+
     // call first page and set data
     this.datasource.getFirstPage(filtersCriteria);
 
@@ -226,6 +235,14 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
         replaceUrl: true
       });
     }
+  }
+
+  /**
+   * Set filter that are added to the request but not set in the form
+   * @param hiddenFilters
+   */
+  public setHiddenFilters(hiddenFilters: Record<string, any>): void {
+    this.hiddenFilters = hiddenFilters;
   }
 
   private patchAdvancedFormGroup(value: any): void {

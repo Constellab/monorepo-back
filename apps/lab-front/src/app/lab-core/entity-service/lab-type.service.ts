@@ -46,9 +46,6 @@ export class LabTypeService implements FlSearchService<LabTypeEntity> {
       sortsCriteria: null
     };
 
-    // force filtering on TASK or PROTOCOL
-    data.filtersCriteria.push({key: 'object_type', operator: 'IN', value: ['TASK', 'PROTOCOL']});
-
     return this.apiService.post(`${this.route}/advanced-search`, data, LabTypeEntity, {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
