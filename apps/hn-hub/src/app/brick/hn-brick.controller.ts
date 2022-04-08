@@ -5,6 +5,7 @@ import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnNode} from '../folder/hn-folder.dto';
+import {HnCreateTechnicalDocContent} from './hn-brick.dto';
 
 @Controller('brick')
 export class HnBrickController {
@@ -47,7 +48,7 @@ export class HnBrickController {
   @BlPublic()
   @Get('first-doc/:brickName/:version')
   async findFirstDoc(@Param('brickName') brickName: string,
-                       @Param('version') version: string): Promise<HnDocumentation> {
+                     @Param('version') version: string): Promise<HnDocumentation> {
     return this.brickService.findFirstDoc(await this.brickService.findByName(brickName), version);
   }
 
@@ -61,8 +62,19 @@ export class HnBrickController {
     return this.brickService.deleteBrickById(id);
   }
 
+  @Post('create-technical-doc')
+  async createTechnicalDoc(@Body(new BlParsePipe(HnCreateTechnicalDocContent)) content: HnCreateTechnicalDocContent): Promise<boolean> {
+    return this.brickService.createTechnicalDoc(content);
+  }
+
+  @BlPublic()
+  @Get('technical-doc/:brickId/:version')
+  async findTechnicalDOc(@Param('brickId') brickId: string, @Param('version') version: string): Promise<HnNode> {
+    return this.brickService.findTechnicalDoc(await this.brickService.findById(brickId), version);
+  }
+
   @Post('new-version')
-  createNewVersion(@Body(new BlParsePipe(HnNewVersionDTO)) newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO>{
+  createNewVersion(@Body(new BlParsePipe(HnNewVersionDTO)) newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     return this.brickService.createNewVersion(newVersion);
   }
 

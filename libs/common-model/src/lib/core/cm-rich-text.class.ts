@@ -41,15 +41,16 @@ export class CmRichText {
   public getHeaders(headersSize: number[]): any[]{
     const headers: any[] = [];
     const contentData: any[] = this.getContent().ops;
-    console.log('CD', contentData)
-    contentData.forEach((c, i) => {
-      if(contentData[i+1] && contentData[i+1].attributes && contentData[i+1].attributes.header
-        && (headersSize.includes(contentData[i+1].attributes.header))){
-        const inserts: string[] = c.insert.split('\n')
-        if(inserts.length > 1) headers.push([contentData[i+1].attributes.header, inserts[inserts.length -1]]);
-        else headers.push([contentData[i+1].attributes.header, c.insert]);
-      }
-    });
+    if(contentData != null){
+      contentData.forEach((c, i) => {
+        if(contentData[i+1] && contentData[i+1].attributes && contentData[i+1].attributes.header
+          && (headersSize.includes(contentData[i+1].attributes.header))){
+          const inserts: string[] = c.insert.split('\n')
+          if(inserts.length > 1) headers.push([contentData[i+1].attributes.header, inserts[inserts.length -1]]);
+          else headers.push([contentData[i+1].attributes.header, c.insert]);
+        }
+      });
+    }
     return headers;
   }
 

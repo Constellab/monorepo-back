@@ -8,6 +8,9 @@ import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnBrickVersion, HnNewVersionDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
 import {HnNode} from '../folder/hn-folder.dto';
+import {HnImportTechnicalDocDTO} from '../brick/hn-brick.dto';
+import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
+import {HnDocumentation} from '../documentation/hn-documentation.entity';
 
 @Injectable()
 export class HnBrickMajorVersionService {
@@ -16,7 +19,8 @@ export class HnBrickMajorVersionService {
     @InjectRepository(HnBrickMajorVersion)
     private brickMajorVersionsRepository: Repository<HnBrickMajorVersion>,
     private folderService: HnFolderService,
-    private brickVersionService: HnBrickVersionService
+    private brickVersionService: HnBrickVersionService,
+    private technicalFolderService: HnTechnicalFolderService
   ) {
   }
 
@@ -80,15 +84,41 @@ export class HnBrickMajorVersionService {
     return newVersion;
   }
 
-  async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion>{
+  async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion> {
     const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {
           name: brickName
         },
-        versionState : HnVersionState.LATEST
+        versionState: HnVersionState.LATEST
       }, relations: ['brick']
     })
     return this.brickVersionService.getLatestBrickVersion(brickMajorVersion.id);
+  }
+
+  async createTechnicalDoc(brick: HnBrick, importFile: HnImportTechnicalDocDTO): Promise<boolean> {
+    const importVersion: CmVersion = CmVersion.fromString(importFile.brick_version);
+    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
+      where: {
+        brick: {
+          id: brick.id
+        },
+        major: importVersion.major
+      }
+    });
+
+    if(brickMajorVersion == null){
+      return false;
+    }
+
+    return this.technicalFolderService.createTechnicalDoc(brickMajorVersion, importFile);
+  }
+
+  async findTechnicalDoc(brickMajorVersion: HnBrickMajorVersion): Promise<HnNode>{
+    return this.technicalFolderService.findTechnicalDoc(brickMajorVersion);
+  }
+
+  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation>{
+    return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, path);
   }
 }

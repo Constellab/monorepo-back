@@ -89,4 +89,13 @@ export class HaBrickService {
   public getLastVersion(brickName: string): Observable<HaBrickVersion>{
     return this.apiService.get(`${this.route}/latest/${brickName}`)
   }
+
+  /*Import the technical documentation of the brick*/
+  public importTechnicalDocumentation(object: any): Observable<boolean>{
+    return this.apiService.post(this.route + '/create-technical-doc', object);
+  }
+
+  public getTechnicalDocumentation(brickId: string, version: string): Observable<HaNode>{
+    return this.apiService.get(`${this.route}/technical-doc/${brickId}/${version}`);;
+  }
 }

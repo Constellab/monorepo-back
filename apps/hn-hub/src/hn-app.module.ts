@@ -1,4 +1,4 @@
-import {ClassSerializerInterceptor, MiddlewareConsumer, Module, RequestMethod} from '@nestjs/common';
+import {ClassSerializerInterceptor, MiddlewareConsumer, Module, RequestMethod,} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {APP_FILTER, APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
 import {TypeOrmModule, TypeOrmModuleOptions} from '@nestjs/typeorm';
@@ -35,8 +35,12 @@ import {HnBrickModule} from './app/brick/hn-brick.module';
 import {HnBrickVersionModule} from './app/brick-version/hn-brick-version.module';
 import {HnBrickMajorVersionModule} from './app/brick-major-version/hn-brick-major-version.module';
 import {HnCoreExceptionHandlerFilter} from './app/core/filters/hn-core-exception-handler.filter';
+import {HnTechnicalFolderModule} from './app/technical-folder/hn-technical-folder.module';
+import {HnResourceModule} from './app/resource/hn-resource.module';
 
-function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions {
+function typeOrmConfig(
+  configService: HnCoreConfigService
+): TypeOrmModuleOptions {
   const dbConfig: DnDatabaseConfig = configService.getDatabaseConfig();
   return {
     type: 'mysql',
@@ -51,29 +55,41 @@ function typeOrmConfig(configService: HnCoreConfigService): TypeOrmModuleOptions
   };
 }
 
-function configureLogger(configService: HnCoreConfigService): WinstonModuleOptions {
+function configureLogger(
+  configService: HnCoreConfigService
+): WinstonModuleOptions {
   const logConfig: BlLoggerConfig = {
     logLevel: configService.getLogLevel(),
-    logFilePath: configService.isLocal() ? null : configService.getLogPath()
+    logFilePath: configService.isLocal() ? null : configService.getLogPath(),
   };
   return blConfigureLogger(logConfig);
 }
 
-
-function configureJwtModule(configService: HnCoreConfigService, userService: HnUserService): BlJwtConfig {
+function configureJwtModule(
+  configService: HnCoreConfigService,
+  userService: HnUserService
+): BlJwtConfig {
   return {
     jwtSecret: configService.getJwtSecret(),
-    jwtFromRequest: (request: Request) => BlCookieHelper.getCookieFromHeader(request.headers.cookie, jwtConfig.authorizationCookie),
+    jwtFromRequest: (request: Request) =>
+      BlCookieHelper.getCookieFromHeader(
+        request.headers.cookie,
+        jwtConfig.authorizationCookie
+      ),
     usersService: userService,
-    tokenDurationInSeconds: jwtConfig.tokenDurationInSeconds
+    tokenDurationInSeconds: jwtConfig.tokenDurationInSeconds,
   };
 }
 
-function configureTransportModule(configService: HnCoreConfigService): BlTransportModuleConfig {
+function configureTransportModule(
+  configService: HnCoreConfigService
+): BlTransportModuleConfig {
   return configService.getTransportModuleConfig();
 }
 
-function configureObjectStorageModule(configService: HnCoreConfigService): BlObjectStorageModuleConfig {
+function configureObjectStorageModule(
+  configService: HnCoreConfigService
+): BlObjectStorageModuleConfig {
   return configService.getObjectStorageConfig();
 }
 
@@ -88,7 +104,7 @@ function configureObjectStorageModule(configService: HnCoreConfigService): BlObj
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
       inject: [HnCoreConfigService],
-      imports: [HnCoreConfigModule]
+      imports: [HnCoreConfigModule],
     }),
 
     I18nModule.forRoot({
@@ -96,7 +112,7 @@ function configureObjectStorageModule(configService: HnCoreConfigService): BlObj
       parser: I18nJsonParser,
       parserOptions: {
         path: join(__dirname, 'assets/i18n/'),
-        watch: true //    // enable live translation
+        watch: true, //    // enable live translation
       },
     }),
 
@@ -110,13 +126,13 @@ function configureObjectStorageModule(configService: HnCoreConfigService): BlObj
     BlJwtModule.forRootAsync({
       imports: [HnCoreModule, HnUserModule],
       useFactory: configureJwtModule,
-      inject: [HnCoreConfigService, HnUserService]
+      inject: [HnCoreConfigService, HnUserService],
     }),
 
     BlTransportModule.forRootAsync({
       useFactory: configureTransportModule,
       imports: [HnCoreModule],
-      inject: [HnCoreConfigService]
+      inject: [HnCoreConfigService],
     }),
 
     HnCoreModule,
@@ -124,9 +140,8 @@ function configureObjectStorageModule(configService: HnCoreConfigService): BlObj
     BlObjectStorageModule.forRootAsync({
       imports: [HnCoreModule],
       useFactory: configureObjectStorageModule,
-      inject: [HnCoreConfigService]
+      inject: [HnCoreConfigService],
     }),
-
 
     BlExternalApiModule,
 
@@ -136,7 +151,9 @@ function configureObjectStorageModule(configService: HnCoreConfigService): BlObj
     HnBrickMajorVersionModule,
     HnUserModule,
     HnAuthModule,
-    HnFolderModule
+    HnFolderModule,
+    HnTechnicalFolderModule,
+    HnResourceModule,
   ],
   controllers: [],
   providers: [
@@ -154,8 +171,8 @@ function configureObjectStorageModule(configService: HnCoreConfigService): BlObj
     {
       provide: APP_GUARD,
       useClass: HnJwtAuthGuard,
-    }
-  ]
+    },
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer): any {

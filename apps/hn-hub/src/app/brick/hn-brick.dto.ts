@@ -20,3 +20,33 @@ export interface HnBrickVersionTransportDto {
   versionState: HnVersionState;
   repoType: HnRepoType;
 }
+
+export class HnCreateTechnicalDocContent{
+  brickName: string;
+  importFile: HnImportTechnicalDocDTO;
+}
+
+export interface HnImportParentDTO{
+  unique_name: string;
+  class_name: string;
+  object_type: string; //TODO: Mettre une enum ?
+}
+
+export interface HnImportTechnicalDocDTO{
+  json_version: string;
+  brick_name: string;
+  brick_version: string;
+  resources: HnImportResourceDTO[]
+}
+
+export interface HnImportResourceDTO{
+  unique_name: string;
+  class_name: string;
+  parent: HnImportParentDTO;
+  human_name: string;
+  short_description: string;
+  doc: string;
+  hide: boolean;
+  deprecated_since: string;
+  deprecated_message: string;
+}

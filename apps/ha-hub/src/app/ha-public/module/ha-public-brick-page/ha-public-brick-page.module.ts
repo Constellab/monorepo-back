@@ -20,6 +20,7 @@ import {HaPublicBrickDescriptionComponent} from './ha-public-brick-description/h
 import {MatCardModule} from '@angular/material/card';
 import {MatRadioModule} from '@angular/material/radio';
 import {HaPublicDocComponent} from './ha-public-doc/ha-public-doc.component';
+import { HaPublicSidenavImportTecDocDialogComponent } from './ha-public-sidenav-import-tec-doc-dialog/ha-public-sidenav-import-tec-doc-dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import {HaPublicDocComponent} from './ha-public-doc/ha-public-doc.component';
     HaPublicVersionsComponent,
     HaPublicBrickVersionsTableComponent,
     HaPublicBrickDescriptionComponent,
-    HaPublicDocComponent
+    HaPublicDocComponent,
+    HaPublicSidenavImportTecDocDialogComponent,
   ],
   imports: [
     HaPublicCoreModule,

@@ -44,12 +44,14 @@ export class HaPublicSidenavComponent implements OnInit {
 
   isAdmin: Observable<boolean> = this.authUserService.isAdmin();
   brickId: string;
+  brickName: string;
   brickVersion: string;
   overNodeLevel: number = 0;
   currentNode: HaNode;
   menuOpen: boolean;
   openedMenu: FlOverlayRef;
 
+  srcResult: any;
 
   private _transformer = (node: HaNode, level: number): any => {
     return {
@@ -77,6 +79,7 @@ export class HaPublicSidenavComponent implements OnInit {
   );
 
   dataSource = new HaMateTreeFlatDataSource(this.treeControl, this.treeFlattener);
+  technicalDataSource = new HaMateTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   constructor(
     private brickService: HaBrickService,
@@ -104,7 +107,12 @@ export class HaPublicSidenavComponent implements OnInit {
     this.route.parent.url.subscribe(url => {
       this.brickService.getByName(url[0].path).subscribe(brick => {
         this.brickId = brick.id;
+        this.brickName = brick.name
         this.brickVersion = url[1].path;
+
+        this.brickService.getTechnicalDocumentation(this.brickId, this.brickVersion).subscribe(data => {
+          this.technicalDataSource.data = [data];
+        });
 
         this.brickService.getBrickDocs(this.brickId, this.brickVersion).subscribe((data) => {
           this.dataSource.data = data.children;
@@ -386,20 +394,22 @@ export class HaPublicSidenavComponent implements OnInit {
   }
 
   expandParents(node: FlatNode): void {
-    const currentLevel = this.treeControl.getLevel(node);
+    if(node != null && node.level != null){
+      const currentLevel = this.treeControl.getLevel(node);
 
-    if (currentLevel < 1) {
-      return null;
-    }
+      if (currentLevel < 1) {
+        return null;
+      }
 
-    const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
+      const startIndex = this.treeControl.dataNodes.indexOf(node) - 1;
 
-    for (let i = startIndex; i >= 0; i--) {
-      const currentNode = this.treeControl.dataNodes[i];
+      for (let i = startIndex; i >= 0; i--) {
+        const currentNode = this.treeControl.dataNodes[i];
 
-      if (this.treeControl.getLevel(currentNode) < currentLevel) {
-        this.treeControl.expand(currentNode);
-        if (this.treeControl.getLevel(currentNode) === 0) break;
+        if (this.treeControl.getLevel(currentNode) < currentLevel) {
+          this.treeControl.expand(currentNode);
+          if (this.treeControl.getLevel(currentNode) === 0) break;
+        }
       }
     }
   }
@@ -436,6 +446,28 @@ export class HaPublicSidenavComponent implements OnInit {
       const n = this.treeControl.dataNodes.find((n) => n.id == node.id);
       this.treeControl.expand(n);
     });
+  }
+
+  openImportTechDocDialog(): void{
+
+  }
+
+  onFileSelected($event: any):void {
+
+    if (typeof (FileReader) !== 'undefined') {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        this.srcResult = JSON.parse(e.target.result);
+
+        this.brickService.importTechnicalDocumentation({
+          brickName: this.brickName,
+          importFile: this.srcResult
+        }).subscribe();
+      };
+
+      reader.readAsText($event.target.files[0]);
+    }
   }
 }
 

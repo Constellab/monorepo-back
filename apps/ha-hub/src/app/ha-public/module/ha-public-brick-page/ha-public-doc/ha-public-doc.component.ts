@@ -28,6 +28,8 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   richText: CmRichText;
   lastUrl: string = null;
   isAdmin: Observable<boolean> = this.authUserService.isAdmin();
+  isTechnical: boolean = false;
+  isCheck: boolean = false;
 
   constructor(
     private brickService: HaBrickService,
@@ -50,7 +52,11 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     //create a debouncer to save the description after x second of idle
     this.contentDebouncer = new FlDebouncer(FlDebouncer.AUTO_SAVE_DEBOUNCE_TIME);
     this.contentDebouncer.getDebouncedValue().subscribe(
-      value => this.saveContent(value)
+      value => {
+        if(this.isCheck && !this.isTechnical){
+          this.saveContent(value)
+        }
+      }
     );
   }
 
@@ -71,6 +77,8 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   }
 
   private getDocumentationByPath(url: UrlSegment[]): void {
+    this.isCheck = false;
+    this.isTechnical = false;
     let isFirstDoc: boolean = false;
     let path: string;
     if (url.length == 0) {
@@ -79,6 +87,10 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
         this.actionOnDoc(isFirstDoc, doc);
       });
     } else {
+      if(url[0].path === 'technical-folder'){
+        this.isTechnical = true;
+      }
+      this.isCheck = true;
       path = url.join('/') + '/';
       this.brickService.getDocByPath(this.brickName, path, this.brickVersion).subscribe(doc => {
         this.actionOnDoc(isFirstDoc, doc);

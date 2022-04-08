@@ -1,7 +1,7 @@
 <div class="sidenavBody">
   <div class="content g-max-article-width">
     <form class="documentation-form" [formGroup]="formGp">
-      <fl-text-editor class="content-editor" formControlName="content" [disabled]="(isAdmin | async) == false" mode="JSON" scrollContainer="child"
+      <fl-text-editor class="content-editor" formControlName="content" [disabled]="(isAdmin | async) == false || isTechnical===true" mode="JSON" scrollContainer="child"
                       (textChange)="onContentUpdate($event)"></fl-text-editor>
     </form>
   </div>

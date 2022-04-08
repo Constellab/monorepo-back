@@ -12,6 +12,7 @@ import {HnFolderService} from '../folder/hn-folder.service';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnErrorText} from '../core/model/config/hn-error-text.class';
 import {CmVersion} from '@monorepo/common-model';
+import {HnCreateTechnicalDocContent} from './hn-brick.dto';
 
 @Injectable()
 export class HnBrickService {
@@ -83,6 +84,9 @@ export class HnBrickService {
   async findCurrentDoc(brick: HnBrick, path: string, version: string): Promise<HnDocumentation> {
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    if(path.startsWith('technical-folder')){
+      return await this.brickMajorVersionService.findCurrentTecDoc(brickMajorVersion, path);
+    }
     return await this.documentationService.findCurrentDoc(brickMajorVersion, path);
   }
 
@@ -104,6 +108,26 @@ export class HnBrickService {
 
   async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion>{
     return this.brickMajorVersionService.getLatestBrickVersion(brickName);
+  }
+
+  async createTechnicalDoc(content: HnCreateTechnicalDocContent): Promise<boolean>{
+    if(content.brickName !== content.importFile.brick_name){
+      return false;
+    }
+
+    const brick: HnBrick = await this.bricksRepository.findOne({where: {name: content.brickName}});
+
+    if(brick == null){
+      return false;
+    }
+
+    return this.brickMajorVersionService.createTechnicalDoc(brick, content.importFile);
+  }
+
+  async findTechnicalDoc(brick: HnBrick, version: string): Promise<HnNode> {
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
+    return this.brickMajorVersionService.findTechnicalDoc(brickMajorVersion);
   }
 }
 

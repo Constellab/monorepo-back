@@ -12,6 +12,10 @@ import {HnBrickMajorVersionService} from '../brick-major-version/hn-brick-major-
 import {HnBrickMajorVersionModule} from '../brick-major-version/hn-brick-major-version.module';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnCoreModule} from '../core/hn-core.module';
+import {HnTechnicalFolderModule} from '../technical-folder/hn-technical-folder.module';
+import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
+import {HnResourceModule} from '../resource/hn-resource.module';
+import {HnResourceService} from '../resource/hn-resource.service';
 
 @Module({
   imports: [
@@ -20,11 +24,15 @@ import {HnCoreModule} from '../core/hn-core.module';
     HnBrickVersionModule,
     HnFolderModule,
     HnDocumentationModule,
-    HnCoreModule
+    HnCoreModule,
+    HnTechnicalFolderModule,
+    HnResourceModule
   ],
   exports: [TypeOrmModule],
   controllers: [HnBrickController],
-  providers: [HnBrickService, HnBrickMajorVersionService, HnBrickVersionService, HnFolderService, HnDocumentationService]
+  providers: [HnBrickService, HnBrickMajorVersionService,
+    HnBrickVersionService, HnFolderService,
+    HnDocumentationService, HnTechnicalFolderService, HnResourceService]
 })
 export class HnBrickModule {
 }

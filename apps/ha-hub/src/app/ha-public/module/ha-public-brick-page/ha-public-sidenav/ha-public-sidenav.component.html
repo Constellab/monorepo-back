@@ -47,7 +47,53 @@
         </mat-nav-list>
       </mat-tree-node>
     </mat-tree>
-    <div class="sidenav-empty-space" (contextmenu)="onRightClick($event, true)"></div>
+
+    <mat-tree [dataSource]="technicalDataSource" [treeControl]="treeControl" class="tree item g-full-height">
+    <!-- This is the tree node template for leaf nodes -->
+      <mat-tree-node *matTreeNodeDef="let node">
+        <mat-nav-list class="line" *ngIf="node.id != null">
+          <a matTreeNodePadding matTreeNodePaddingIndent="15px" class="item" mat-list-item
+             [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
+             [routerLink]="node.completePath" [routerLinkActive]="'active'">
+            <div matLine>
+              {{node.name}}
+            </div>
+          </a>
+          <div class="placeholder-level"  matTreeNodePadding
+               [matTreeNodePaddingIndent]="(overNodeLevel*15)+'px'">
+          </div>
+        </mat-nav-list>
+      </mat-tree-node>
+
+
+      <!-- This is the tree node template for expandable nodes -->
+      <mat-tree-node *matTreeNodeDef="let node;when: hasChild">
+        <mat-nav-list class="nav-list line">
+          <mat-list-item class="item" matTreeNodePadding matTreeNodePaddingIndent="15px"
+                         [ngStyle]="{'font-size': node.level > 0 ? '14px' : '16px'}"
+                         (click)="expansionModel.toggle(node)" matTreeNodeToggle>
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+            <div matLine>
+              {{node.name}}
+            </div>
+          </mat-list-item>
+          <div class="placeholder-level" matTreeNodePadding
+               [matTreeNodePaddingIndent]="(overNodeLevel*15)+'px'">
+          </div>
+        </mat-nav-list>
+      </mat-tree-node>
+    </mat-tree>
+
+
+    <div class="sidenav-empty-space" (contextmenu)="onRightClick($event, true)">
+
+    </div>
+    <button mat-raised-button color="primary" (click)="fileInput.click()" class="bt-add-technical-doc" *ngIf="(isAdmin | async)">
+      {{'import_technical_documentation' | translate}}
+    </button>
+    <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
   </div>
 
   <div class="sidenav-content">
