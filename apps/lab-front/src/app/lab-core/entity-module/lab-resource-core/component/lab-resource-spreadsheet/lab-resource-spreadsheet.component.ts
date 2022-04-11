@@ -8,7 +8,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {LabResourceViewDirective} from '../../model/lab-resource-view-component.class';
 import {LabResourceViewTable} from '../../../../model/entities/resource/lab-resource-view.entity';
-import {LabResourceTableChartState} from '../../state/lab-resource-table-chart.state';
+import {LabResourceTableChartService} from '../../state/lab-resource-table-chart.service';
 import {labConvertTransformersWithConfigToParams} from '../../../../model/global/lab-transformer.class';
 
 /**
@@ -19,8 +19,8 @@ import {labConvertTransformersWithConfigToParams} from '../../../../model/global
   templateUrl: './lab-resource-spreadsheet.component.html',
   styleUrls: ['./lab-resource-spreadsheet.component.scss'],
   providers: [
-    LabResourceTableChartState,
-    {provide: FlSheetChartService, useExisting: LabResourceTableChartState}
+    LabResourceTableChartService,
+    {provide: FlSheetChartService, useExisting: LabResourceTableChartService}
   ]
 })
 export class LabResourceSpreadsheetComponent extends LabResourceViewDirective<LabResourceViewTable> implements OnInit {
@@ -29,13 +29,16 @@ export class LabResourceSpreadsheetComponent extends LabResourceViewDirective<La
 
   spreadSheet: FlSpreadsheet;
 
-  constructor(private chartState: LabResourceTableChartState) {
+  constructor(private chartState: LabResourceTableChartService) {
     super();
   }
 
   ngOnInit(): void {
     // init the chart state so it knows the context
-    this.chartState.init(this.resourceId, labConvertTransformersWithConfigToParams(this.config.transformersWithConfig));
+    this.chartState.init(this.resourceId,
+      this.config.viewMethodName,
+      this.config.viewConfigValues,
+      labConvertTransformersWithConfigToParams(this.config.transformersWithConfig));
 
     const spreadSheet: FlSpreadsheet = new FlSpreadsheet();
     // if the resource is a csv file
