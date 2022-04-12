@@ -99,7 +99,7 @@ export class CnLabManagerService {
 
   public async updateConfig(labInstance: CnLabInstance, config: CnLabInstanceConfigDTO): Promise<void> {
     // check if the gws core is in the brick list
-    const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name === CnBrickGWS.GWS_CORE);
+    const gwsCore = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_CORE.toLowerCase());
 
     if (gwsCore == null) {
       throw new BadRequestException(`The brick '${CnBrickGWS.GWS_CORE}' must be set in the config`);
