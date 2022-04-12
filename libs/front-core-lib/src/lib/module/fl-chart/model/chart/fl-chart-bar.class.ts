@@ -1,6 +1,6 @@
-import {FlChartConfig} from '../fl-chart-config.class';
+import {FlChartConfig, FlChartRightSectionConfig} from '../fl-chart-config.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
-import {FlChartLegend} from '../legend/fl-chart-legend.class';
+import {FlChartSVGLegend} from '../legend/fl-chart-legend.class';
 import {FlChart2dBrushX, FlChartBrush} from '../drawer/fl-chart-brush.class';
 import {FlChartScaleColor, FlChartScaleColorMulti} from '../scale/fl-chart-scale-color.class';
 import {FlChartLegendMultiSeries} from '../legend/fl-chart-legend-multi-series.class';
@@ -10,6 +10,9 @@ import {FlChartAxis, FlChartAxisBand} from '../drawer/fl-chart-axis.class';
 import {FlChartRendererStackedBarPlot} from '../../renderer/fl-chart-renderer-stacked-bar.plot';
 import {FlChartRendererBarPlot} from '../../renderer/fl-chart-renderer-bar.plot';
 import {FlChartScaleBand, FlChartScaleLinear, FlChartScaleNumber} from '../scale/fl-chart-scale.class';
+import {
+  FlChartLegendMultiSeriesComponent
+} from '../../component/fl-chart-right-section/fl-chart-legend-multi-series/fl-chart-legend-multi-series.component';
 
 abstract class FlChartBar extends FlChartConfig {
 
@@ -44,8 +47,15 @@ abstract class FlChartBar extends FlChartConfig {
       .initData(this.dataContainer);
   }
 
-  getLegend(): FlChartLegend {
+  getSVGLegend(): FlChartSVGLegend {
     return new FlChartLegendMultiSeries(this.dataContainer.series, this.seriesColorScale);
+  }
+
+  getLegendConfig(): FlChartRightSectionConfig {
+    return {
+      componentType: FlChartLegendMultiSeriesComponent,
+      data: this.dataContainer.getSerieWithColors(this.seriesColorScale)
+    };
   }
 
   getZoomBrush(): FlChartBrush {

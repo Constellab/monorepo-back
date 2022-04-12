@@ -15,12 +15,11 @@ export class FlChartSvg {
 
   public svg: Selection<SVGElement, void, null, null>;
   public chartContainer: Selection<SVGElement, void, null, null>;
-  public legendContainer: Selection<SVGElement, void, null, null>;
   private container: HTMLElement;
 
   // height of the legend in px
-  private readonly spaceBeforeLegend: number = 10;
-  private readonly legendWidth: number = 100;
+  // private readonly spaceBeforeLegend: number = 10;
+  // private readonly legendWidth: number = 100;
 
   public initSvg(containerElement: HTMLElement): this {
     this.container = containerElement;
@@ -34,9 +33,9 @@ export class FlChartSvg {
       .append('g');
 
     // create the legend group in the bottom of the chart container
-    this.legendContainer = this.svg
-      .append('g')
-      .attr('transform', `translate(${this.chartContainerWidth + this.spaceBeforeLegend}, 0)`);
+    // this.legendContainer = this.svg
+    //   .append('g')
+    //   .attr('transform', `translate(${this.chartContainerWidth + this.spaceBeforeLegend}, 0)`);
 
 
     return this;
@@ -51,20 +50,20 @@ export class FlChartSvg {
   }
 
   public get chartContainerWidth(): number {
-    return this._width - (this.legendContainerWidth + this.spaceBeforeLegend);
+    return this._width;
   }
 
   public get chartContainerHeight(): number {
     return this._height;
   }
 
-  public get legendContainerWidth(): number {
-    return this.legendWidth;
-  }
-
-  public get legendContainerHeight(): number {
-    return this._height;
-  }
+  // public get legendContainerWidth(): number {
+  //   return this.legendWidth;
+  // }
+  //
+  // public get legendContainerHeight(): number {
+  //   return this._height;
+  // }
 
 
   /**
@@ -95,13 +94,6 @@ export class FlChartSvg {
   public setSVGSize(width: number, height: number): void {
     this._width = width;
     this._height = height;
-  }
-
-  // set the width and height of the chart container element. The legend will be added to the size
-  public setChartContainerSize(width: number, height: number): void {
-    this.setSVGSize(
-      width + this.legendWidth + this.spaceBeforeLegend,
-      height);
   }
 }
 

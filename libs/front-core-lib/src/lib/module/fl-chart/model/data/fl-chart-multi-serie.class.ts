@@ -1,6 +1,7 @@
 import {FlChart2dDatum, FlChartAxisTickFormat, FlChartData, FlChartDataContainer} from './fl-chart-data.class';
-import {FlChartDataWithSerie, FlChartSerie} from './fl-chart-serie.class';
+import {FlChartDataWithSerie, FlChartSerie, FlChartSerieWithColor} from './fl-chart-serie.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
+import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
 
 /**
  * Object to manage multiple series
@@ -103,6 +104,15 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
     if (yTickLabels) {
       this.axisYLabelFormat = (value) => (yTickLabels[value] ?? value).toString();
     }
+  }
+
+  public getSerieWithColors(colorScale: FlChartScaleColor): FlChartSerieWithColor[] {
+    return this.series.map(serie => {
+      return {
+        name: serie.name,
+        color: colorScale.getColor(serie.key)
+      };
+    });
   }
 }
 

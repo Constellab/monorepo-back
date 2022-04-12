@@ -1,4 +1,4 @@
-import {FlChartLegend} from './fl-chart-legend.class';
+import {FlChartSVGLegend} from './fl-chart-legend.class';
 import {Selection} from 'd3-selection';
 import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
 import {ClStringHelper} from '@monorepo/core-lib';
@@ -11,7 +11,7 @@ export interface FlLegend {
 /**
  * Class to draw legend for multi series charts
  */
-export class FlChartLegendMultiSeries extends FlChartLegend {
+export class FlChartLegendMultiSeries extends FlChartSVGLegend {
 
   private readonly circleRadius: number = 5;
 
@@ -31,14 +31,13 @@ export class FlChartLegendMultiSeries extends FlChartLegend {
 
     legend.append('circle')
       .attr('r', this.circleRadius)
-      .style('fill', d => this.colorScale.scale(d.key));
+      .style('fill', d => this.colorScale.getColor(d.key));
 
     legend.append('text')
       .attr('x', 10)
       .attr('y', 3)
       .text(d => ClStringHelper.limiteLength(d.name, 15))
       .attr('fill', 'currentcolor')
-      .attr('title', d => d.name)
       .style('font-size', 10);
 
     legend.append('title')

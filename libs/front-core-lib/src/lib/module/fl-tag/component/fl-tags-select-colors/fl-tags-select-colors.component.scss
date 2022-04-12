@@ -5,6 +5,7 @@
 
 .value-list{
   max-height: 10em;
+  overflow-y: auto;
 }
 
 .tag{
@@ -14,7 +15,14 @@
 }
 
 .color{
-  width: 1.7em;
-  height: 1.7em;
+  width: 1.6em;
+  height: 1.6em;
   border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tag-value{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

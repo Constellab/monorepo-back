@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
-import {FlChartVennDataSection} from '../../model/data/fl-chart-venn-data.class';
+import {FL_PORTAL_DATA} from '../../../../fl-portal/model/fl-portal.class';
+import {FlChartVennDataSection} from '../../../model/data/fl-chart-venn-data.class';
 
 /**
  * Simple portal to display the venn data on a section

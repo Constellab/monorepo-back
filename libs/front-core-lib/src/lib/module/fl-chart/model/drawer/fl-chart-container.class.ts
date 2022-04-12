@@ -109,7 +109,7 @@ export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2
   public zoomTransitionDuration: number = 250;
 
   protected get margin(): any {
-    // set some margin so the legends are include
+    // set some margin so the legends are included
     return {top: 10, right: 10, bottom: 70, left: 50};
   }
 
@@ -138,11 +138,14 @@ export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2
     this.yAxis.draw(this.group, this.chartHeight, this.chartWidth);
 
     // render the charts
-    this.renderers.forEach(renderer => renderer.initData(this.getRendererInput()));
+    this.renderers.forEach(renderer => {
+      renderer.setData(this.getRendererInput());
+      renderer.renderFirst();
+    });
   }
 
   private refreshChartRendering(): void {
-    this.renderers.forEach(renderer => renderer.refreshData(this.getRendererInput()));
+    this.renderers.forEach(renderer => renderer.refreshRender());
   }
 
   private getRendererInput(): FlChart2AxisRendererInput<Data> {
@@ -239,7 +242,11 @@ export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2
  */
 export class FlChartContainerNoAxis<Data> extends FlChartContainer<Data, FlChartNoAxisRenderer<Data>> {
   public firstChartRendering(): void {
-    this.renderers.forEach(renderer => renderer.initData(this.getRendererInput()));
+    // render the charts
+    this.renderers.forEach(renderer => {
+      renderer.setData(this.getRendererInput());
+      renderer.renderFirst();
+    });
   }
 
   private getRendererInput(): FlChartNoAxisRendererInput<Data> {

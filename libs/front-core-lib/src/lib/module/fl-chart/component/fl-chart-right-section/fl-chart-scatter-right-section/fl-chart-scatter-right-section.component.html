@@ -1,0 +1,12 @@
+<div fxLayout="column" class="container">
+
+  <div class="section g-scrollable-element">
+    <fl-chart-legend-multi-series [data]="data.legends"></fl-chart-legend-multi-series>
+  </div>
+
+  <div class="section tag-section g-scrollable-element" *ngIf="hasTags()">
+    <div>{{'flChart.tags' | translate}}</div>
+    <fl-tags-select-colors [tags]="tags" (colorChange)="onColorChange($event)"
+                           class="g-text-small"></fl-tags-select-colors>
+  </div>
+</div>

@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {FlChartBoxPlotData} from '../../model/data/fl-chart-box-plot-data.class';
-import {FlChartScaleColor} from '../../model/scale/fl-chart-scale-color.class';
-import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
+import {FlChartBoxPlotData} from '../../../model/data/fl-chart-box-plot-data.class';
+import {FlChartScaleColor} from '../../../model/scale/fl-chart-scale-color.class';
+import {FL_PORTAL_DATA} from '../../../../fl-portal/model/fl-portal.class';
 import {MatMenuTrigger} from '@angular/material/menu';
-import {FlChartDataWithSerie} from '../../model/data/fl-chart-serie.class';
+import {FlChartDataWithSerie} from '../../../model/data/fl-chart-serie.class';
 
 export interface FlChartBoxPlotDataPortalInput {
   data: FlChartDataWithSerie<FlChartBoxPlotData>;

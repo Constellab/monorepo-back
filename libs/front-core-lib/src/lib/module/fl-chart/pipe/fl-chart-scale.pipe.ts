@@ -10,7 +10,7 @@ import {FlChartScaleI} from '../model/scale/fl-chart-scale.class';
 export class FlChartScalePipe implements PipeTransform {
 
   transform(value: any, scale: FlChartScaleI): any {
-    return scale.scale(value);
+    return scale.getColor(value);
   }
 
 }

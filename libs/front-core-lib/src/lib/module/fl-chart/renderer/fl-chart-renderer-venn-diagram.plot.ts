@@ -1,9 +1,11 @@
-import {FlChartNoAxisRenderer, FlChartNoAxisRendererInput} from './fl-chart-renderer.class';
+import {FlChartNoAxisRenderer} from './fl-chart-renderer.class';
 import {FlChartVennData, FlChartVennDataSection} from '../model/data/fl-chart-venn-data.class';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 import {FlD3SelectionSimple} from '../model/fl-d3.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
-import {FlChartVennDataPortalComponent} from '../component/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
+import {
+  FlChartVennDataPortalComponent
+} from '../component/fl-chart-data-portal/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
 
 interface FlEllipsePosition {
   x: number;
@@ -24,40 +26,41 @@ interface FlSectionTextPosition {
 /**
  * Draw a venn diagram, support 2,3,4 groups
  */
-export class FlChartRendererVennDiagram implements FlChartNoAxisRenderer<FlChartVennData> {
+export class FlChartRendererVennDiagram extends FlChartNoAxisRenderer<FlChartVennData> {
 
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
   constructor(private colorScale: FlChartScaleColor) {
+    super();
   }
 
-  initData(input: FlChartNoAxisRendererInput<FlChartVennData>): void {
-    switch (input.data.totalNbOfGroups) {
+  renderFirst(): void {
+    switch (this.data.data.totalNbOfGroups) {
       case 2:
-        this.draw2Groups(input);
+        this.draw2Groups();
         break;
       case 3:
-        this.draw3Groups(input);
+        this.draw3Groups();
         break;
       case 4:
-        this.draw4Groups(input);
+        this.draw4Groups();
         break;
       default:
-        console.error('Venn diagram of size ' + input.data.totalNbOfGroups + ' not supported');
+        console.error('Venn diagram of size ' + this.data.data.totalNbOfGroups + ' not supported');
     }
   }
 
   // draw 2 groups, 2 circle side by side
-  private draw2Groups(input: FlChartNoAxisRendererInput<FlChartVennData>): void {
-    const circleRadius = (Math.min(input.chartWidth, input.chartHeight)) / 4;
+  private draw2Groups(): void {
+    const circleRadius = (Math.min(this.data.chartWidth, this.data.chartHeight)) / 4;
 
-    const firstGroup: string = input.data.groupNames[0];
-    const secondGroup: string = input.data.groupNames[1];
+    const firstGroup: string = this.data.data.groupNames[0];
+    const secondGroup: string = this.data.data.groupNames[1];
 
     // Draw circles
     // center vertically
-    const yCenter = input.chartHeight / 2;
-    const xCenter = input.chartWidth / 2;
+    const yCenter = this.data.chartHeight / 2;
+    const xCenter = this.data.chartWidth / 2;
 
     const x1 = xCenter - (circleRadius / 2);
     const x2 = xCenter + (circleRadius / 2);
@@ -66,33 +69,33 @@ export class FlChartRendererVennDiagram implements FlChartNoAxisRenderer<FlChart
       {xRadius: circleRadius, yRadius: circleRadius, x: x1, y: yCenter, rotation: 0, groupName: firstGroup},
       {xRadius: circleRadius, yRadius: circleRadius, x: x2, y: yCenter, rotation: 0, groupName: secondGroup},
     ];
-    this.drawEllipse(input.container, circlePosition);
+    this.drawEllipse(this.data.container, circlePosition);
 
     // Draw texts
-    const sections: FlChartVennDataSection[] = input.data.sections;
+    const sections: FlChartVennDataSection[] = this.data.data.sections;
     const textPosition: FlSectionTextPosition[] = [
       // left circle text
       {x: x1 - (circleRadius / 2), y: yCenter, section: this.findSection(sections, [firstGroup])},
       // right circle text
       {x: x2 + (circleRadius / 2), y: yCenter, section: this.findSection(sections, [secondGroup])},
       // join text
-      {x: input.chartWidth / 2, y: yCenter, section: this.findSection(sections, [firstGroup, secondGroup])}
+      {x: this.data.chartWidth / 2, y: yCenter, section: this.findSection(sections, [firstGroup, secondGroup])}
     ];
-    this.drawTexts(input.container, textPosition);
+    this.drawTexts(this.data.container, textPosition);
   }
 
   // draw 3 groups, 3 circle in triangle shape
-  private draw3Groups(input: FlChartNoAxisRendererInput<FlChartVennData>): void {
-    const circleRadius = (Math.min(input.chartWidth, input.chartHeight)) / 4;
+  private draw3Groups(): void {
+    const circleRadius = (Math.min(this.data.chartWidth, this.data.chartHeight)) / 4;
 
-    const firstGroup: string = input.data.groupNames[0];
-    const secondGroup: string = input.data.groupNames[1];
-    const thirdGroup: string = input.data.groupNames[2];
+    const firstGroup: string = this.data.data.groupNames[0];
+    const secondGroup: string = this.data.data.groupNames[1];
+    const thirdGroup: string = this.data.data.groupNames[2];
 
     // Draw circles
     // center vertically
-    const yCenter = input.chartHeight / 2;
-    const xCenter = input.chartWidth / 2;
+    const yCenter = this.data.chartHeight / 2;
+    const xCenter = this.data.chartWidth / 2;
     const x1 = xCenter - (circleRadius / 2);
     const x2 = xCenter + (circleRadius / 2);
 
@@ -104,11 +107,11 @@ export class FlChartRendererVennDiagram implements FlChartNoAxisRenderer<FlChart
       {xRadius: circleRadius, yRadius: circleRadius, x: x1, y: lowerY, rotation: 0, groupName: secondGroup},
       {xRadius: circleRadius, yRadius: circleRadius, x: x2, y: lowerY, rotation: 0, groupName: thirdGroup},
     ];
-    this.drawEllipse(input.container, circlePosition);
+    this.drawEllipse(this.data.container, circlePosition);
 
     // Draw texts
     const halfRadius = circleRadius / 2;
-    const sections: FlChartVennDataSection[] = input.data.sections;
+    const sections: FlChartVennDataSection[] = this.data.data.sections;
     const textPosition: FlSectionTextPosition[] = [
       // top circle text
       {x: xCenter, y: higherY - halfRadius, section: this.findSection(sections, [firstGroup])},
@@ -129,23 +132,23 @@ export class FlChartRendererVennDiagram implements FlChartNoAxisRenderer<FlChart
         section: this.findSection(sections, [firstGroup, secondGroup, thirdGroup])
       }
     ];
-    this.drawTexts(input.container, textPosition);
+    this.drawTexts(this.data.container, textPosition);
   }
 
   // draw 4 groups, 4 ellipse in rose shape
-  private draw4Groups(input: FlChartNoAxisRendererInput<FlChartVennData>): void {
-    const xRadius = (Math.min(input.chartWidth, input.chartHeight)) / 5;
-    const yRadius = (Math.min(input.chartWidth, input.chartHeight)) * 3 / 8;
+  private draw4Groups(): void {
+    const xRadius = (Math.min(this.data.chartWidth, this.data.chartHeight)) / 5;
+    const yRadius = (Math.min(this.data.chartWidth, this.data.chartHeight)) * 3 / 8;
 
-    const firstGroup: string = input.data.groupNames[0];
-    const secondGroup: string = input.data.groupNames[1];
-    const thirdGroup: string = input.data.groupNames[2];
-    const fourthGroup: string = input.data.groupNames[3];
+    const firstGroup: string = this.data.data.groupNames[0];
+    const secondGroup: string = this.data.data.groupNames[1];
+    const thirdGroup: string = this.data.data.groupNames[2];
+    const fourthGroup: string = this.data.data.groupNames[3];
 
     // Draw circles
     // center vertically
-    const yCenter = input.chartHeight / 2;
-    const xCenter = input.chartWidth / 2;
+    const yCenter = this.data.chartHeight / 2;
+    const xCenter = this.data.chartWidth / 2;
     const higherY = yCenter - (xRadius / 2);
     const shift = xRadius * 2 / 3;
 
@@ -169,12 +172,12 @@ export class FlChartRendererVennDiagram implements FlChartNoAxisRenderer<FlChart
         groupName: fourthGroup
       },
     ];
-    this.drawEllipse(input.container, ellipsePositions);
+    this.drawEllipse(this.data.container, ellipsePositions);
 
-    const chartWidth: number = input.chartWidth;
-    const chartHeight: number = input.chartHeight;
+    const chartWidth: number = this.data.chartWidth;
+    const chartHeight: number = this.data.chartHeight;
     // Draw texts
-    const sections: FlChartVennDataSection[] = input.data.sections;
+    const sections: FlChartVennDataSection[] = this.data.data.sections;
 
     // all positions are based on chart width and height
     const textPosition: FlSectionTextPosition[] = [
@@ -229,7 +232,7 @@ export class FlChartRendererVennDiagram implements FlChartNoAxisRenderer<FlChart
         section: this.findSection(sections, [firstGroup, secondGroup, thirdGroup, fourthGroup])
       }
     ];
-    this.drawTexts(input.container, textPosition, 15);
+    this.drawTexts(this.data.container, textPosition, 15);
   }
 
   // return the correct section based on a group list
@@ -260,7 +263,7 @@ export class FlChartRendererVennDiagram implements FlChartNoAxisRenderer<FlChart
       .attr('transform', d => `rotate(${d.rotation})`)
       .attr('transform-origin', d => `${d.x}px ${d.y}px`)
       .attr('fill-opacity', 0.6)
-      .attr('fill', d => this.colorScale.scale(d.groupName));
+      .attr('fill', d => this.colorScale.getColor(d.groupName));
   }
 
   private drawTexts(container: FlD3SelectionSimple, sections: FlSectionTextPosition[], fontSize: number = 18): void {

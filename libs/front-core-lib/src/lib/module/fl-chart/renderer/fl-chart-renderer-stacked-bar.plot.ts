@@ -1,4 +1,4 @@
-import {FlChart2AxisRenderer, FlChart2AxisRendererInput} from './fl-chart-renderer.class';
+import {FlChart2AxisRenderer} from './fl-chart-renderer.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
 import {select, Series, SeriesPoint, Stack, stack} from 'd3';
@@ -10,12 +10,12 @@ import {FlD3SelectionSimple} from '../model/fl-d3.class';
 import {
   FlChartStackedBarDataPortalComponent,
   FlChartStackedBarDataPortalInput
-} from '../component/fl-chart-stacked-bar-data-portal/fl-chart-stacked-bar-data-portal.component';
+} from '../component/fl-chart-data-portal/fl-chart-stacked-bar-data-portal/fl-chart-stacked-bar-data-portal.component';
 
 /**
  * Renderer for stack stack bar plot or histogram
  */
-export class FlChartRendererStackedBarPlot implements FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererStackedBarPlot extends FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly barGroupClassName: string = 'bar-group';
   private readonly barClassName: string = 'bar';
@@ -23,24 +23,25 @@ export class FlChartRendererStackedBarPlot implements FlChart2AxisRenderer<FlCha
 
 
   constructor(public colorScale: FlChartScaleColor) {
+    super();
   }
 
-  initData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
-    this.refreshData(input);
+  renderFirst(): void {
+    this.refreshRender();
   }
 
-  refreshData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
-    const stackedData = this.getStackedData(input.data);
+  refreshRender(): void {
+    const stackedData = this.getStackedData(this.data.data);
 
     // Show the bars
-    input.container
+    this.data.container
       .selectAll(`.${this.barGroupClassName}`)
       // Enter in the stack data = loop key per key = group per group
       // first group is the first serie, second group the second serie
       .data(stackedData)
       .join('g')
       .attr('class', this.barGroupClassName)
-      .attr('fill', d => this.colorScale.scale(d.key))
+      .attr('fill', d => this.colorScale.getColor(d.key))
 
       .selectAll('rect')
       // enter a second time = loop subgroup per subgroup to add all rectangles
@@ -51,18 +52,18 @@ export class FlChartRendererStackedBarPlot implements FlChart2AxisRenderer<FlCha
       .on('mouseout', () => this.onMouseOut())
       .attr('class', this.barClassName)
       .each((data, index, nodes) =>
-        this.drawBars(nodes[index] as any, input));
+        this.drawBars(nodes[index] as any));
   }
 
-  private drawBars(group: SVGElement, input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  private drawBars(group: SVGElement): void {
     const selection: FlD3SelectionSimple<SeriesPoint<FlChartDataWithSerie<FlChart2dDatum>>> = select(group);
 
     selection
       // use the x from the first data because there have the same X, if return undefined, set to chartWidth to hide it
-      .attr('x', d => input.xScale.scale(d.data[0].data.getX(), input.chartWidth))
-      .attr('y', d => input.yScale.scale(d[1]))
-      .attr('height', d => input.yScale.scale(d[0]) - input.yScale.scale(d[1]))
-      .attr('width', (input.xScale as FlChartScaleBand).bandwidth());
+      .attr('x', d => this.data.xScale.getColor(d.data[0].data.getX(), this.data.chartWidth))
+      .attr('y', d => this.data.yScale.getColor(d[1]))
+      .attr('height', d => this.data.yScale.getColor(d[0]) - this.data.yScale.getColor(d[1]))
+      .attr('width', (this.data.xScale as FlChartScaleBand).bandwidth());
   }
 
   private onMouseHover(event: MouseEvent, d: SeriesPoint<FlChartDataWithSerie<FlChart2dDatum>[]>): void {

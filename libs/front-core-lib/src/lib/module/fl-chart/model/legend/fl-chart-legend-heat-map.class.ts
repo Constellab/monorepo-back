@@ -1,4 +1,4 @@
-import {FlChartLegend} from './fl-chart-legend.class';
+import {FlChartSVGLegend} from './fl-chart-legend.class';
 import {Selection} from 'd3-selection';
 import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
 import {axisRight, scaleLinear} from 'd3';
@@ -6,7 +6,7 @@ import {axisRight, scaleLinear} from 'd3';
 /**
  * Class to draw a heat map legend
  */
-export class FlChartLegendHeatMap extends FlChartLegend {
+export class FlChartLegendHeatMap extends FlChartSVGLegend {
 
 
   constructor(private colorScale: FlChartScaleColor,
@@ -18,7 +18,7 @@ export class FlChartLegendHeatMap extends FlChartLegend {
   renderLegend(parent: Selection<any, any, any, any>, width: number, height: number): void {
 
     const topMargin: number = 5;
-    const leftMargin = 20
+    const leftMargin = 20;
     const rectWidth = 10;
     const rectHeight = Math.min(height - (topMargin * 2), 200);
     this.drawLegendRect(parent, rectWidth, rectHeight, topMargin, leftMargin);
@@ -27,7 +27,7 @@ export class FlChartLegendHeatMap extends FlChartLegend {
 
   private drawLegendRect(parent: Selection<any, any, any, any>,
                          rectWidth: number, rectHeight: number,
-                         topMargin: number, leftMaring: number): void {
+                         topMargin: number, leftMargin: number): void {
     parent.append('defs')
       .append('linearGradient')
       .attr('id', 'legend-traffic')
@@ -37,11 +37,11 @@ export class FlChartLegendHeatMap extends FlChartLegend {
       .data(this.domain)
       .enter().append('stop')
       .attr('offset', (d, i) => i === 0 ? 0 : 200)
-      .attr('stop-color', (d) => this.colorScale.scale(d));
+      .attr('stop-color', (d) => this.colorScale.getColor(d));
 
     parent.append('rect') // gradient rect
       .attr('class', 'legendRect')
-      .attr('x', leftMaring)
+      .attr('x', leftMargin)
       .attr('y', topMargin)
       .attr('width', rectWidth)
       .attr('height', rectHeight)

@@ -1,0 +1,13 @@
+
+.color{
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.text{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

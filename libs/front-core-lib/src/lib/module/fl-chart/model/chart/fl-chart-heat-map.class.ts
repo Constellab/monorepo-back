@@ -1,6 +1,6 @@
-import {FlChartConfig} from '../fl-chart-config.class';
+import {FlChartConfig, FlChartRightSectionConfig} from '../fl-chart-config.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
-import {FlChartLegend} from '../legend/fl-chart-legend.class';
+import {FlChartSVGLegend} from '../legend/fl-chart-legend.class';
 import {FlChartBrush} from '../drawer/fl-chart-brush.class';
 import {FlChart3dDatum, FlChartAxisTickFormat, FlChartDataContainer} from '../data/fl-chart-data.class';
 import {FlChartScaleColor, FlChartScaleColorLinear} from '../scale/fl-chart-scale-color.class';
@@ -9,6 +9,9 @@ import {FlChartLegendHeatMap} from '../legend/fl-chart-legend-heat-map.class';
 import {FlChartScaleBand} from '../scale/fl-chart-scale.class';
 import {FlChartAxis, FlChartAxisBand} from '../drawer/fl-chart-axis.class';
 import {FlChartRendererHeatMap} from '../../renderer/fl-chart-renderer-heat-map.plot';
+import {
+  FlChartLegendHeatMapComponent
+} from '../../component/fl-chart-right-section/fl-chart-legend-heat-map/fl-chart-legend-heat-map.component';
 
 /**
  * Data container for heat map data
@@ -125,8 +128,15 @@ export class FlChartHeatMap extends FlChartConfig {
     return chartContainer;
   }
 
-  getLegend(): FlChartLegend {
+  getSVGLegend(): FlChartSVGLegend {
     return new FlChartLegendHeatMap(this.colorScale, this.domain);
+  }
+
+  getLegendConfig(): FlChartRightSectionConfig {
+    return {
+      componentType: FlChartLegendHeatMapComponent,
+      data: this.getSVGLegend() // use the svg legend renderer
+    };
   }
 
   // no zoom

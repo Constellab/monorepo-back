@@ -8,7 +8,7 @@ import {Component, HostBinding, Input, OnInit} from '@angular/core';
 export class FlChipComponent implements OnInit {
 
   @HostBinding('class')
-  @Input() size: 'normal' | 'small' = 'normal';
+  @Input() size: 'normal' | 'small' | 'tiny' = 'normal';
 
   constructor() { }
 

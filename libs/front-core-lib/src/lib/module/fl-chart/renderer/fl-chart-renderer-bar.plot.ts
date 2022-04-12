@@ -1,4 +1,4 @@
-import {FlChart2AxisRenderer, FlChart2AxisRendererInput} from './fl-chart-renderer.class';
+import {FlChart2AxisRenderer} from './fl-chart-renderer.class';
 import {select} from 'd3';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
@@ -9,68 +9,69 @@ import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-hand
 import {
   FlChartDataWithSeriePortalComponent,
   FlChartDataWithSeriePortalInput
-} from '../component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
+} from '../component/fl-chart-data-portal/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 import {
   FlChartBinDataPortalComponent,
   FlChartBinDataPortalInput
-} from '../component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
+} from '../component/fl-chart-data-portal/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
 
 /**
  * Renderer for bar plot or histogram
  */
-export class FlChartRendererBarPlot implements FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly groupClassName: string = 'serie';
 
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
   constructor(private colorScale: FlChartScaleColor) {
+    super();
   }
 
-  initData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
-    this.refreshData(input);
+  renderFirst(): void {
+    this.refreshRender();
   }
 
 
-  refreshData(input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
-    const data: FlChartDataWithSerie<FlChart2dDatum>[][] = input.data.groupByX();
+  refreshRender(): void {
+    const chartData: FlChartDataWithSerie<FlChart2dDatum>[][] = this.data.data.groupByX();
 
-    input.container
+    this.data.container
       // generate a group for each serie
       .selectAll(`.${this.groupClassName}`)
-      .data(data)
+      .data(chartData)
       .join('g')
       .attr('class', this.groupClassName)  // I add the class line to be able to modify this line later on.
       .attr('transform', (d) =>
-        this.getGroupTranslate(input.xScale, input.chartWidth, d))
+        this.getGroupTranslate(this.data.xScale, this.data.chartWidth, d))
 
       // for each group generate the values
       .each((data, index, nodes) =>
-        this.drawSerie(nodes[index] as any, data, (input.xScale as unknown as FlChartScaleBand).bandwidth(), input));
+        this.drawSerie(nodes[index] as any, data, (this.data.xScale as unknown as FlChartScaleBand).bandwidth()));
   }
 
-  private drawSerie(group: SVGElement, data: FlChartDataWithSerie<FlChart2dDatum>[],
-                    groupWidth: number, input: FlChart2AxisRendererInput<FlChart2dMultiSerie<FlChart2dDatum>>): void {
+  private drawSerie(group: SVGElement, chartData: FlChartDataWithSerie<FlChart2dDatum>[],
+                    groupWidth: number): void {
 
-    const barWidth: number = groupWidth / data.length;
+    const barWidth: number = groupWidth / chartData.length;
 
     select(group).selectAll('rect')
-      .data(data)
+      .data(chartData)
       .join('rect')
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut())
-      .style('fill', (d) => this.colorScale.scale(d.serieKey))
+      .style('fill', (d) => this.colorScale.getColor(d.serieKey))
       .each((d, index, nodes: SVGRectElement[]) =>
-        this.drawBar(d, nodes[index], barWidth, input.chartHeight, input.yScale, index));
+        this.drawBar(d, nodes[index], barWidth, this.data.chartHeight, this.data.yScale, index));
   }
 
 
   // return the position of the group
   private getGroupTranslate(xScale: FlChartScale, chartWidth: number, d: FlChartDataWithSerie<FlChart2dDatum>[]): string {
     // get the x value (each series have the same x) and scale it
-    const x = xScale.scale(d[0].data.getX());
+    const x = xScale.getColor(d[0].data.getX());
     // if the scale return null set the group outside chart
     return 'translate(' + (x == null ? (chartWidth + 10) : x) + ',0)';
   }
@@ -87,10 +88,10 @@ export class FlChartRendererBarPlot implements FlChart2AxisRenderer<FlChart2dMul
 
     select(element)
       .attr('transform',
-        (d: FlChartDataWithSerie<FlChart2dDatum>) => 'translate(' + barWidth * index + ',' + yScale.scale(d.data.getY(0)) + ')'
+        (d: FlChartDataWithSerie<FlChart2dDatum>) => 'translate(' + barWidth * index + ',' + yScale.getColor(d.data.getY(0)) + ')'
       )
       .attr('width', barWidth - 0.5) // - 1 to let space between bars
-      .attr('height', (d: FlChartDataWithSerie<FlChart2dDatum>) => chartHeight - yScale.scale(d.data.getY(0)));
+      .attr('height', (d: FlChartDataWithSerie<FlChart2dDatum>) => chartHeight - yScale.getColor(d.data.getY(0)));
   }
 
   private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {

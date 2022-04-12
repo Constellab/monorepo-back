@@ -1,6 +1,6 @@
-import {FlChartConfig} from '../fl-chart-config.class';
+import {FlChartConfig, FlChartRightSectionConfig} from '../fl-chart-config.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
-import {FlChartLegend} from '../legend/fl-chart-legend.class';
+import {FlChartSVGLegend} from '../legend/fl-chart-legend.class';
 import {FlChart2dBrushX, FlChartBrush} from '../drawer/fl-chart-brush.class';
 import {FlChartScaleColor, FlChartScaleColorMulti} from '../scale/fl-chart-scale-color.class';
 import {FlChartMultiSerie} from '../data/fl-chart-multi-serie.class';
@@ -52,8 +52,12 @@ export class FlChartBoxPlot extends FlChartConfig {
       .initData(this.dataContainer);
   }
 
-  getLegend(): FlChartLegend {
+  getSVGLegend(): FlChartSVGLegend {
     return new FlChartLegendMultiSeries(this.dataContainer.series, this.seriesColorScale);
+  }
+
+  getLegendConfig(): FlChartRightSectionConfig {
+    return undefined;
   }
 
   getZoomBrush(): FlChartBrush {

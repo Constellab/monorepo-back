@@ -36,7 +36,7 @@ export interface FlChartScaleI {
    * @param value
    * @param defaultValue use if the returned value is null
    */
-  scale(value: any, defaultValue?: number): any;
+  getColor(value: any, defaultValue?: number): any;
 }
 
 
@@ -73,7 +73,7 @@ export abstract class FlChartScale implements FlChartScaleI {
    */
   public abstract nice(): this;
 
-  public scale(value: number, defaultValue?: number): number {
+  public getColor(value: number, defaultValue?: number): number {
     return this.d3Scale(value) ?? defaultValue;
   }
 
@@ -224,7 +224,7 @@ export class FlChartScaleBand extends FlChartScale {
 
   private get outerPaddingWidth(): number {
     // the pos of the first group, indicate the outerpadding
-    return this.scale(this.getDomain()[0]) ?? 0;
+    return this.getColor(this.getDomain()[0]) ?? 0;
   }
 
   private get innerPaddingWidth(): number {
@@ -234,7 +234,7 @@ export class FlChartScaleBand extends FlChartScale {
       return 0;
     }
     // compare the position of the first and second group and remove bandwidth to get inner padding width
-    return (this.scale(this.getDomain()[1]) - this.scale(this.getDomain()[0]) - this.bandwidth()) ?? 0;
+    return (this.getColor(this.getDomain()[1]) - this.getColor(this.getDomain()[0]) - this.bandwidth()) ?? 0;
   }
 
   // do nothing on band, because the domain is already good

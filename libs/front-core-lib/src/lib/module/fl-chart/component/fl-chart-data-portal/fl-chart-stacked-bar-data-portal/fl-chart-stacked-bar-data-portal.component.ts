@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
-import {FlChartDataWithSerie} from '../../model/data/fl-chart-serie.class';
-import {FlChart2dDatum} from '../../model/data/fl-chart-data.class';
-import {FlChartScaleColor} from '../../model/scale/fl-chart-scale-color.class';
-import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
+import {FlChartDataWithSerie} from '../../../model/data/fl-chart-serie.class';
+import {FlChart2dDatum} from '../../../model/data/fl-chart-data.class';
+import {FlChartScaleColor} from '../../../model/scale/fl-chart-scale-color.class';
+import {FL_PORTAL_DATA} from '../../../../fl-portal/model/fl-portal.class';
 
 export interface FlChartStackedBarDataPortalInput {
   data: FlChartDataWithSerie<FlChart2dDatum>[];

@@ -3,6 +3,7 @@ import {FlChartScaleI} from './fl-chart-scale.class';
 import {ScaleLinear} from 'd3-scale';
 import {FlColorHelper} from '../../../../utils/fl-color-helper.class';
 import {FlChartMultiSerie} from '../data/fl-chart-multi-serie.class';
+import {FlTagWithColor} from '../../../fl-tag/fl-tag.class';
 
 /**
  * Specific scale to return a color based on a value
@@ -13,7 +14,7 @@ export interface FlChartScaleColor extends FlChartScaleI {
    * return a color base on a value
    * @param value
    */
-  scale(value: any): string;
+  getColor(value: any): string;
 }
 
 /**
@@ -39,7 +40,7 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
     return scaleOrdinal<string>(colors);
   }
 
-  public scale(value: number | string): string {
+  public getColor(value: number | string): string {
     return this.d3Scale(value.toString());
   }
 }
@@ -68,9 +69,34 @@ export class FlChartScaleColorLinear implements FlChartScaleColor {
       .range([this.fromColor, this.toColor]);
   }
 
-  public scale(value: number): string {
+  public getColor(value: number): string {
     if (value == null) return 'white';
     return this.d3Scale(value);
+  }
+}
+
+/**
+ * Color scale contains a list of colors and return one color based on domain
+ */
+export class FlChartScaleColorTag implements FlChartScaleColor {
+
+  public readonly d3Scale: ScaleOrdinal<string, string>;
+
+  constructor(private tagsColors: FlTagWithColor[]) {
+  }
+
+
+  public getColor(tags: Record<string, string>): string {
+    if (tags == null) return 'black';
+
+    for (const key of Object.keys(tags)) {
+      const tag = this.tagsColors.find(tag => tag.key === key && tag.value === tags[key]);
+      // if the key value has a color, return it
+      if (tag) {
+        return tag.color;
+      }
+    }
+    return 'black';
   }
 }
 
@@ -83,7 +109,7 @@ export class FlChartScaleColorSimple implements FlChartScaleColor {
   constructor(private color: string) {
   }
 
-  public scale(): string {
+  public getColor(): string {
     return this.color;
   }
 }

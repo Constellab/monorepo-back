@@ -7,6 +7,9 @@ import {FlResizeDirective} from './fl-resize/fl-resize.directive';
 import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
+import {flResizeI18n} from './fl-resize.i18n';
+import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 
 
 @NgModule({
@@ -24,6 +27,12 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+
+    FlTranslateModule,
   ],
 })
-export class FlResizeModule { }
+export class FlResizeModule {
+  constructor(translateService: FlTranslateService) {
+    translateService.addModuleTranslation('FlResizeModule', flResizeI18n);
+  }
+}

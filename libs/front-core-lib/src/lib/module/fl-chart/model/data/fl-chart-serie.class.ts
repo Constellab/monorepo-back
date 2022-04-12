@@ -3,12 +3,17 @@ import {ClHelpService} from '@monorepo/core-lib';
 import {FlLegend} from '../legend/fl-chart-legend-multi-series.class';
 
 /**
- * Key to distingue a serie form another
+ * Key to distinguish a serie form another
  */
 export interface FlChartDataWithSerie<T> {
   data: T;
   serieKey: number;
   serieName: string;
+}
+
+export interface FlChartSerieWithColor {
+  name: string;
+  color: string;
 }
 
 

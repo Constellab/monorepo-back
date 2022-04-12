@@ -1,4 +1,4 @@
-import {FlChart2AxisRenderer, FlChart2AxisRendererInput} from './fl-chart-renderer.class';
+import {FlChart2AxisRenderer} from './fl-chart-renderer.class';
 import {select} from 'd3';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartScale, FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
@@ -10,12 +10,12 @@ import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-hand
 import {
   FlChartBoxPlotDataPortalComponent,
   FlChartBoxPlotDataPortalInput
-} from '../component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
+} from '../component/fl-chart-data-portal/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
 import {FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 
 
-export class FlChartRendererBoxPlot implements FlChart2AxisRenderer<FlChartMultiSerie<FlChartBoxPlotData>> {
+export class FlChartRendererBoxPlot extends FlChart2AxisRenderer<FlChartMultiSerie<FlChartBoxPlotData>> {
 
   private readonly groupClassName: string = 'group';
   private readonly boxPlotGroupClassName: string = 'group-box-plot';
@@ -27,36 +27,37 @@ export class FlChartRendererBoxPlot implements FlChart2AxisRenderer<FlChartMulti
   private theme: FlThemeDetail;
 
   constructor(public colorScale: FlChartScaleColor) {
+    super();
   }
 
-  initData(input: FlChart2AxisRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
+  renderFirst(): void {
     this.initTheme();
 
-    this.refreshData(input);
+    this.refreshRender();
   }
 
 
-  refreshData(input: FlChart2AxisRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
-    const data: FlChartDataWithSerie<FlChartBoxPlotData>[][] = input.data.invert();
+  refreshRender(): void {
+    const data: FlChartDataWithSerie<FlChartBoxPlotData>[][] = this.data.data.invert();
 
-    const bandWidth: number = (input.xScale as FlChartScaleBand).bandwidth();
+    const bandWidth: number = (this.data.xScale as FlChartScaleBand).bandwidth();
 
     // draw the groups for each invert array
-    input.container
+    this.data.container
       // generate a group for each serie
       .selectAll(`.${this.groupClassName}`)
       .data(data)
       .join('g')
       .attr('class', this.groupClassName)  // I add the class line to be able to modify this line later on.
       .attr('transform', (d, i) =>
-        this.getGroupTranslate(input.xScale, input.chartWidth, i))
+        this.getGroupTranslate(this.data.xScale, this.data.chartWidth, i))
       .each((data, index, nodes) =>
-        this.drawBoxPlotGroup(nodes[index] as any, data, bandWidth, input));
+        this.drawBoxPlotGroup(nodes[index] as any, data, bandWidth));
   }
 
   //draw the groups for each box plot
   private drawBoxPlotGroup(group: SVGElement, groupData: FlChartDataWithSerie<FlChartBoxPlotData>[],
-                           parentGroupWidth: number, input: FlChart2AxisRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
+                           parentGroupWidth: number): void {
 
     const groupWidth: number = parentGroupWidth / groupData.length;
     // Draw the main vertical line
@@ -69,12 +70,12 @@ export class FlChartRendererBoxPlot implements FlChart2AxisRenderer<FlChartMulti
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut())
       .each((data, index, nodes) =>
-        this.drawBoxPlot(nodes[index] as any, data, groupWidth, input));
+        this.drawBoxPlot(nodes[index] as any, data, groupWidth));
   }
 
   // draw on box plot in the group
   private drawBoxPlot(group: SVGElement, dataWithSerie: FlChartDataWithSerie<FlChartBoxPlotData>,
-                      groupWidth: number, input: FlChart2AxisRendererInput<FlChartMultiSerie<FlChartBoxPlotData>>): void {
+                      groupWidth: number): void {
 
     if (dataWithSerie.data == null) {
       return;
@@ -94,8 +95,8 @@ export class FlChartRendererBoxPlot implements FlChart2AxisRenderer<FlChartMulti
       .attr('class', this.verticalLineClassName)
       .attr('x1', xCenter)
       .attr('x2', xCenter)
-      .attr('y1', d => input.yScale.scale(d.data.lowerWhisker))
-      .attr('y2', d => input.yScale.scale(d.data.upperWhisker))
+      .attr('y1', d => this.data.yScale.getColor(d.data.lowerWhisker))
+      .attr('y2', d => this.data.yScale.getColor(d.data.upperWhisker))
       .attr('stroke', this.theme.foreground);
 
     // Place the box
@@ -104,11 +105,11 @@ export class FlChartRendererBoxPlot implements FlChart2AxisRenderer<FlChartMulti
       .data([dataWithSerie])
       .join('rect')
       .attr('x', x1)
-      .attr('y', d => input.yScale.scale(d.data.q3))
-      .attr('height', d => (input.yScale.scale(d.data.q1) - input.yScale.scale(d.data.q3)))
+      .attr('y', d => this.data.yScale.getColor(d.data.q3))
+      .attr('height', d => (this.data.yScale.getColor(d.data.q1) - this.data.yScale.getColor(d.data.q3)))
       .attr('width', width)
       .attr('stroke', this.theme.foreground)
-      .style('fill', (d) => this.colorScale.scale(d.serieKey));
+      .style('fill', (d) => this.colorScale.getColor(d.serieKey));
 
     // Place median, min and max horizontal lines
     select(group)
@@ -118,14 +119,14 @@ export class FlChartRendererBoxPlot implements FlChart2AxisRenderer<FlChartMulti
       .attr('class', this.horizontalLineClassName)
       .attr('x1', x1)
       .attr('x2', width + padding)
-      .attr('y1', (d) => input.yScale.scale(d))
-      .attr('y2', (d) => input.yScale.scale(d))
+      .attr('y1', (d) => this.data.yScale.getColor(d))
+      .attr('y2', (d) => this.data.yScale.getColor(d))
       .attr('stroke', this.theme.foreground);
   }
 
   // return the position of the group
   private getGroupTranslate(xScale: FlChartScale, chartWidth: number, index: number): string {
-    const scale: number = xScale.scale(index);
+    const scale: number = xScale.getColor(index);
     // if the scale return null set the the group outside chart
     return 'translate(' + (scale == null ? (chartWidth + 10) : scale) + ',0)';
   }

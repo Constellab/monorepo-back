@@ -23,18 +23,26 @@ export interface FlChart2AxisRendererInput<Data> extends FlChartNoAxisRendererIn
 /**
  * interface to implement to render graph without axis
  */
-export interface FlChartNoAxisRenderer<Data> {
+export abstract class FlChartNoAxisRenderer<Data> {
 
-  initData(input: FlChartNoAxisRendererInput<Data>): void;
+  protected data: FlChartNoAxisRendererInput<Data>;
+
+  abstract renderFirst(): void;
+
+  setData(data: FlChartNoAxisRendererInput<Data>): void {
+    this.data = data;
+  }
 }
 
 
 /**
  * interface to implement to render graph with 2 axis
  */
-export interface FlChart2AxisRenderer<Data> {
+export abstract class FlChart2AxisRenderer<Data> extends FlChartNoAxisRenderer<Data> {
 
-  initData(input: FlChart2AxisRendererInput<Data>): void;
+  protected data: FlChart2AxisRendererInput<Data>;
 
-  refreshData(input: FlChart2AxisRendererInput<Data>): void;
+  abstract renderFirst(): void;
+
+  abstract refreshRender(): void;
 }

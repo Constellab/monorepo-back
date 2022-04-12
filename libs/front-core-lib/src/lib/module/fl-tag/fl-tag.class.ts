@@ -28,7 +28,7 @@ export interface FlTagWithColor {
 /**
  * Event triggered when a tag is selected
  */
-export interface FlTagSelectedEvent{
+export interface FlTagSelectedEvent {
   tag: FlTag;
   event: MouseEvent;
 }
@@ -93,6 +93,28 @@ export class FlTagHelper {
       }
     }
     return tags;
+  }
+
+  /**
+   * Convert tag groups to TagWith colors
+   * @param tags
+   * @param colors
+   */
+  public static tagGroupsToTagWithColors(tags: Record<string, string[]>, colors: string[]): FlTagWithColor[] {
+    const tagsColors: FlTagWithColor[] = [];
+    let i = 0;
+    Object.keys(tags).forEach(tagKey => {
+      // generate a color for each tag value
+      tags[tagKey].forEach(tagValue => {
+        tagsColors.push({
+          key: tagKey,
+          value: tagValue,
+          color: colors[i % colors.length]
+        });
+        i++;
+      });
+    });
+    return tagsColors;
   }
 }
 

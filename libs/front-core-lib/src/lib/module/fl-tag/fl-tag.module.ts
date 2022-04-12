@@ -24,6 +24,7 @@ import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
 import {FlColorModule} from '../fl-color/fl-color.module';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 @NgModule({
@@ -53,6 +54,7 @@ import {FlColorModule} from '../fl-color/fl-color.module';
     DragDropModule,
     MatButtonModule,
     FlexLayoutModule,
+    MatTooltipModule,
 
     FlTranslateModule,
     FlDialogModule,

@@ -19,29 +19,43 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {
   FlChartDataWithSeriePortalComponent
-} from './component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
+} from './component/fl-chart-data-portal/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 import {
   FlChartBoxPlotDataPortalComponent
-} from './component/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
+} from './component/fl-chart-data-portal/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
 import {FlChartSerieInlineComponent} from './component/fl-chart-serie-inline/fl-chart-serie-inline.component';
 import {FlChartScalePipe} from './pipe/fl-chart-scale.pipe';
-import {FlChartBinDataPortalComponent} from './component/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
+import {
+  FlChartBinDataPortalComponent
+} from './component/fl-chart-data-portal/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
 import {FlMenuDynamicModule} from '../fl-menu-dynamic/fl-menu-dynamic.module';
 import {MatDividerModule} from '@angular/material/divider';
 import {
   FlChartHeatMapDataPortalComponent
-} from './component/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
+} from './component/fl-chart-data-portal/fl-chart-heat-map-data-portal/fl-chart-heat-map-data-portal.component';
 import {
   FlChartVennDataPortalComponent
-} from './component/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
+} from './component/fl-chart-data-portal/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {FlResizeModule} from '../fl-resize/fl-resize.module';
 import {
   FlChartStackedBarDataPortalComponent
-} from './component/fl-chart-stacked-bar-data-portal/fl-chart-stacked-bar-data-portal.component';
-import {FlChartDataTagsComponent} from './component/fl-chart-data-tags/fl-chart-data-tags.component';
+} from './component/fl-chart-data-portal/fl-chart-stacked-bar-data-portal/fl-chart-stacked-bar-data-portal.component';
+import {
+  FlChartDataTagsComponent
+} from './component/fl-chart-data-portal/fl-chart-data-tags/fl-chart-data-tags.component';
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
+import {
+  FlChartLegendMultiSeriesComponent
+} from './component/fl-chart-right-section/fl-chart-legend-multi-series/fl-chart-legend-multi-series.component';
+import {
+  FlChartLegendHeatMapComponent
+} from './component/fl-chart-right-section/fl-chart-legend-heat-map/fl-chart-legend-heat-map.component';
+import {
+  FlChartScatterRightSectionComponent
+} from './component/fl-chart-right-section/fl-chart-scatter-right-section/fl-chart-scatter-right-section.component';
+import {FlTagModule} from '../fl-tag/fl-tag.module';
 
 /**
  * Main module exporting all the chart modules
@@ -64,6 +78,9 @@ import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
     FlChartVennDataPortalComponent,
     FlChartStackedBarDataPortalComponent,
     FlChartDataTagsComponent,
+    FlChartLegendMultiSeriesComponent,
+    FlChartLegendHeatMapComponent,
+    FlChartScatterRightSectionComponent,
 
   ],
   exports: [
@@ -86,6 +103,7 @@ import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
     FlResizeModule,
     FlCorePipeModule,
     FlKeyValueModule,
+    FlTagModule,
 
     DragDropModule,
     MatButtonModule,

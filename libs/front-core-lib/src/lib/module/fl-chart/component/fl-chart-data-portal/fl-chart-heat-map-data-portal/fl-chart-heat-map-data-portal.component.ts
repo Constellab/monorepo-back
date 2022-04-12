@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
-import {FlChart3dDatum} from '../../model/data/fl-chart-data.class';
+import {FL_PORTAL_DATA} from '../../../../fl-portal/model/fl-portal.class';
+import {FlChart3dDatum} from '../../../model/data/fl-chart-data.class';
 
 
 @Component({

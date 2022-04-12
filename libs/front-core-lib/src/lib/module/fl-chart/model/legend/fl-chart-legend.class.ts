@@ -1,9 +1,9 @@
 import {Selection} from 'd3-selection';
 
 /**
- * Class responsible for drawing the d3 chart legend
+ * Class responsible for drawing the d3 chart legend in SVG container
  */
-export abstract class FlChartLegend {
+export abstract class FlChartSVGLegend {
 
   protected constructor() {
   }

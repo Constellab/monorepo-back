@@ -1,4 +1,15 @@
-import {Component, ElementRef, HostListener, Input, NgZone, OnDestroy, OnInit} from '@angular/core';
+import {
+  Component,
+  ComponentRef,
+  ElementRef,
+  HostListener,
+  Input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
 import {FlThemeService} from '../../../../service/fl-theme.service';
 import {FlChartState} from '../../state/fl-chart.state';
 import {FlMenuDynamic} from '../../../fl-menu-dynamic/model/fl-menu-dynamic.class';
@@ -7,6 +18,12 @@ import {FlMenuDynamicService} from '../../../fl-menu-dynamic/fl-menu-dynamic.ser
 import {FlChartConfig} from '../../model/fl-chart-config.class';
 import {debounceTime, filter, map} from 'rxjs/operators';
 import {FlResizeObservable} from '../../../../model/fl-resize-observable.class';
+import {FlChartRightSectionDirective} from '../fl-chart-right-section/fl-chart-right-section.directive';
+
+interface Size {
+  width: number;
+  height: number;
+}
 
 /**
  * Component to show a chart, must be included in the FlChartContainer
@@ -24,16 +41,27 @@ export class FlChartComponent implements OnInit, OnDestroy {
 
   @Input() chart: FlChartConfig;
 
-
   /**
    * If provided, it appends the item to the context menu
    */
   @Input() contextMenuItems: FlMenuDynamic[];
 
+  @ViewChild('grid', {static: true}) grid: ElementRef;
+  @ViewChild('chartContainer', {static: true}) chartContainer: ElementRef;
+
+  @ViewChild('viewContainer', {static: true, read: ViewContainerRef}) viewContainer: ViewContainerRef;
+
+
   private previousWidth: number;
   private previousHeight: number;
 
   private resizeObs: FlResizeObservable;
+
+  // padding in the chart container to prevent the svg to overflow
+  private chartContainerPadding: number = 10;
+
+  private legendComponentRef: ComponentRef<FlChartRightSectionDirective>;
+
 
   @HostListener('contextmenu', ['$event'])
   contextMenu(event: MouseEvent): void {
@@ -44,7 +72,6 @@ export class FlChartComponent implements OnInit, OnDestroy {
   constructor(private themeService: FlThemeService,
               private state: FlChartState,
               private menuService: FlMenuDynamicService,
-              private elementRef: ElementRef<HTMLElement>,
               private ngZone: NgZone) {
   }
 
@@ -53,55 +80,65 @@ export class FlChartComponent implements OnInit, OnDestroy {
     this.ngZone.runOutsideAngular(() => {
       setTimeout(() => this.initChart(), 0);
     });
+    this.renderLegend();
   }
 
   private initChart(): void {
-    let width = this.hostWidth;
-    let height = this.hostHeight;
+    const size: Size = this.svgSize;
 
     // set a default width and height
-    if (width <= 0 || height <= 0) {
-      width = 400;
-      height = 400;
+    if (size.width <= 0) {
+      size.width = 400;
+    }
+    if (size.height <= 0) {
+      size.height = 400;
     }
 
     this.state.initData(this.chart);
-    this.state.initChart(width, height,
-      this.elementRef.nativeElement);
+    this.state.initChart(size.width, size.height,
+      this.chartContainer.nativeElement);
 
-    this.previousWidth = width;
-    this.previousHeight = height;
+    this.previousWidth = size.width;
+    this.previousHeight = size.height;
 
     this.subscribeToResize();
-
   }
 
   // function to subscribe to host resize to redraw the chart
+  // listen to the grid size, to prevent multi triggered because of the scrollbar
   private subscribeToResize(): void {
-    this.resizeObs = new FlResizeObservable(this.elementRef.nativeElement);
+    this.resizeObs = new FlResizeObservable(this.grid.nativeElement);
 
     this.resizeObs.getObs().pipe(
       debounceTime(250),
-      map(() => ({x: this.hostWidth, y: this.hostHeight})),
-      filter(size => size.x !== this.previousWidth || size.y !== this.previousHeight)).subscribe(
-      size => this.redrawChart(size.x, size.y),
+      map(() => this.svgSize),
+      filter(size => size.width !== this.previousWidth || size.height !== this.previousHeight)).subscribe(
+      size => this.redrawChart(size)
     );
   }
 
   // clear the svg and rebuild the chart
-  private redrawChart(width: number, height: number): void {
+  private redrawChart(size: Size): void {
     console.log('Redraw chart');
     this.state.chartSVG.svg.remove();
-    this.state.initChart(width, height, this.elementRef.nativeElement);
+    this.state.initChart(size.width, size.height,
+      this.chartContainer.nativeElement);
+  }
+
+  private get svgSize(): Size {
+    return {
+      width: this.chartContainerWidth,
+      height: this.chartContainerHeight - this.chartContainerPadding
+    };
   }
 
 
-  private get hostWidth(): number {
-    return this.elementRef.nativeElement.clientWidth;
+  private get chartContainerWidth(): number {
+    return this.chartContainer.nativeElement.clientWidth;
   }
 
-  private get hostHeight(): number {
-    return this.elementRef.nativeElement.clientHeight;
+  private get chartContainerHeight(): number {
+    return this.chartContainer.nativeElement.clientHeight;
   }
 
 
@@ -133,8 +170,22 @@ export class FlChartComponent implements OnInit, OnDestroy {
     this.menuService.openDynamicMenuAbsolute(menu, mouseEvent);
   }
 
+  private renderLegend(): void {
+    const config = this.chart.getLegendConfig();
+
+    if(config == null) return;
+    this.legendComponentRef = this.viewContainer.createComponent(config.componentType);
+    this.legendComponentRef.instance.data = config.data;
+  }
+
+  private destroyLegendComponentRef(): void {
+    this.legendComponentRef?.destroy();
+    this.legendComponentRef = null;
+  }
+
   ngOnDestroy(): void {
     this.resizeObs?.disconnect();
+    this.destroyLegendComponentRef();
   }
 
 

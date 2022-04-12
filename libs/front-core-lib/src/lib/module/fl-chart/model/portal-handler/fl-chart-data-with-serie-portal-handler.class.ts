@@ -1,7 +1,7 @@
 import {
   FlChartDataWithSeriePortalComponent,
   FlChartDataWithSeriePortalInput
-} from '../../component/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
+} from '../../component/fl-chart-data-portal/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 import {FlChartDataWithSerie} from '../data/fl-chart-serie.class';
 import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
 import {FlChartPortalHandler} from './fl-chart-portal-handler.class';
