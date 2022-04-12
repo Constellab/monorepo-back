@@ -14,10 +14,10 @@ export type FlChartAxisType = 'left' | 'bottom' | 'right' | 'top';
 export class FlChartAxis {
 
   // max length of an x rotated tick before it is truncated
-  public static xRotateTickMaxLength: number = 16;
+  public static xRotateTickMaxLength: number = 25;
 
   // max length of a y tick before it is truncated
-  public static yTickMaxLength: number = 8;
+  public static yTickMaxLength: number = 20;
 
 
   public scale: FlChartScale;

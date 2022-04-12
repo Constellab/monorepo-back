@@ -110,7 +110,7 @@ export class FlChartContainer2Axis<Data> extends FlChartContainer<Data, FlChart2
 
   protected get margin(): any {
     // set some margin so the legends are included
-    return {top: 10, right: 10, bottom: 70, left: 50};
+    return {top: 10, right: 10, bottom: 100, left: 100};
   }
 
   public initXAxis(axis: FlChartAxis): this {

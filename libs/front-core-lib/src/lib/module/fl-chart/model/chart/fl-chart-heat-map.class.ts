@@ -80,7 +80,7 @@ export class FlChartHeatMap extends FlChartConfig {
   private readonly domain: [number, number];
 
   // predefined size for the rects
-  private readonly rectSize = 15;
+  private readonly rectSize = 18;
 
 
   constructor(protected dataContainer: FlChartHeatMapDataContainer) {
