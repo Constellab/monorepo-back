@@ -14,7 +14,7 @@ export interface FlChartScaleColor extends FlChartScaleI {
    * return a color base on a value
    * @param value
    */
-  getColor(value: any): string;
+  scale(value: any): string;
 }
 
 /**
@@ -40,7 +40,7 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
     return scaleOrdinal<string>(colors);
   }
 
-  public getColor(value: number | string): string {
+  public scale(value: number | string): string {
     return this.d3Scale(value.toString());
   }
 }
@@ -69,7 +69,7 @@ export class FlChartScaleColorLinear implements FlChartScaleColor {
       .range([this.fromColor, this.toColor]);
   }
 
-  public getColor(value: number): string {
+  public scale(value: number): string {
     if (value == null) return 'white';
     return this.d3Scale(value);
   }
@@ -86,7 +86,7 @@ export class FlChartScaleColorTag implements FlChartScaleColor {
   }
 
 
-  public getColor(tags: Record<string, string>): string {
+  public scale(tags: Record<string, string>): string {
     if (tags == null) return 'black';
 
     for (const key of Object.keys(tags)) {
@@ -109,7 +109,7 @@ export class FlChartScaleColorSimple implements FlChartScaleColor {
   constructor(private color: string) {
   }
 
-  public getColor(): string {
+  public scale(): string {
     return this.color;
   }
 }

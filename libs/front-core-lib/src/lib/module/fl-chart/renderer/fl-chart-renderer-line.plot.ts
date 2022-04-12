@@ -26,7 +26,7 @@ export class FlChartRendererLine extends FlChart2AxisRenderer<FlChart2dMultiSeri
       .enter()
       .append('path')
       .attr('fill', 'none')
-      .attr('stroke', serie => this.colorScale.getColor(serie.key))
+      .attr('stroke', serie => this.colorScale.scale(serie.key))
       .attr('class', this.serieClassName)  // I add the class line to be able to modify this line later on.
       .attr('stroke-width', 1.5)
       .attr('d', this.getDValue(this.data.xScale, this.data.yScale)
@@ -43,8 +43,8 @@ export class FlChartRendererLine extends FlChart2AxisRenderer<FlChart2dMultiSeri
   private getDValue(xScale: FlChartScale,
                     yScale: FlChartScale): ValueFn<any, FlChartSerie<FlChart2dDatum>, any> {
     return (d: FlChartSerie<FlChart2dDatum>) => line<FlChart2dDatum>()
-      .x((d: FlChart2dDatum) => xScale.getColor(d.getX()))
-      .y((d: FlChart2dDatum) => yScale.getColor(d.getY()))
+      .x((d: FlChart2dDatum) => xScale.scale(d.getX()))
+      .y((d: FlChart2dDatum) => yScale.scale(d.getY()))
       (d.getValidData()); // use to loop through serie's data
   }
 }

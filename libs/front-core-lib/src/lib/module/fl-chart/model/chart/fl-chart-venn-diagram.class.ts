@@ -39,7 +39,7 @@ export class FlChartVennDiagram extends FlChartConfig {
   getLegendConfig(): FlChartRightSectionConfig {
     const serieColors: FlChartSerieWithColor[] = this.dataContainer.groupNames.map(groupName => ({
       name: groupName,
-      color: this.colorScale.getColor(groupName)
+      color: this.colorScale.scale(groupName)
     }));
     return {
       componentType: FlChartLegendMultiSeriesComponent,

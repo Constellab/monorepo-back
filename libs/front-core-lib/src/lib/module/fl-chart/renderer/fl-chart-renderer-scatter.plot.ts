@@ -28,9 +28,9 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRenderer<FlChart2dMu
       .enter()
       .append('circle')
       .attr('r', 3)
-      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.colorScale.getColor(d.serieKey))
-      .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.xScale.getColor(d.data.getX()))
-      .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.getColor(d.data.getY()))
+      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.colorScale.scale(d.serieKey))
+      .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.xScale.scale(d.data.getX()))
+      .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.scale(d.data.getY()))
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut());
   }
@@ -39,20 +39,20 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRenderer<FlChart2dMu
     this.data.container
       .selectAll(`circle`)
       .transition()
-      .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.xScale.getColor(d.data.getX()))
-      .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.getColor(d.data.getY()));
+      .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.xScale.scale(d.data.getX()))
+      .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.scale(d.data.getY()));
   }
 
   setTagColors(colorScale: FlChartScaleColor): void {
     this.data.container
       .selectAll(`circle`)
-      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => colorScale.getColor(d.data.tags));
+      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => colorScale.scale(d.data.tags));
   }
 
   resetColors(): void {
     this.data.container
       .selectAll(`circle`)
-      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.colorScale.getColor(d.serieKey));
+      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.colorScale.scale(d.serieKey));
   }
 
   private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {

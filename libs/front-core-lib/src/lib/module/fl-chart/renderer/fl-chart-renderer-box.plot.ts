@@ -95,8 +95,8 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRenderer<FlChartMultiSer
       .attr('class', this.verticalLineClassName)
       .attr('x1', xCenter)
       .attr('x2', xCenter)
-      .attr('y1', d => this.data.yScale.getColor(d.data.lowerWhisker))
-      .attr('y2', d => this.data.yScale.getColor(d.data.upperWhisker))
+      .attr('y1', d => this.data.yScale.scale(d.data.lowerWhisker))
+      .attr('y2', d => this.data.yScale.scale(d.data.upperWhisker))
       .attr('stroke', this.theme.foreground);
 
     // Place the box
@@ -105,11 +105,11 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRenderer<FlChartMultiSer
       .data([dataWithSerie])
       .join('rect')
       .attr('x', x1)
-      .attr('y', d => this.data.yScale.getColor(d.data.q3))
-      .attr('height', d => (this.data.yScale.getColor(d.data.q1) - this.data.yScale.getColor(d.data.q3)))
+      .attr('y', d => this.data.yScale.scale(d.data.q3))
+      .attr('height', d => (this.data.yScale.scale(d.data.q1) - this.data.yScale.scale(d.data.q3)))
       .attr('width', width)
       .attr('stroke', this.theme.foreground)
-      .style('fill', (d) => this.colorScale.getColor(d.serieKey));
+      .style('fill', (d) => this.colorScale.scale(d.serieKey));
 
     // Place median, min and max horizontal lines
     select(group)
@@ -119,14 +119,14 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRenderer<FlChartMultiSer
       .attr('class', this.horizontalLineClassName)
       .attr('x1', x1)
       .attr('x2', width + padding)
-      .attr('y1', (d) => this.data.yScale.getColor(d))
-      .attr('y2', (d) => this.data.yScale.getColor(d))
+      .attr('y1', (d) => this.data.yScale.scale(d))
+      .attr('y2', (d) => this.data.yScale.scale(d))
       .attr('stroke', this.theme.foreground);
   }
 
   // return the position of the group
   private getGroupTranslate(xScale: FlChartScale, chartWidth: number, index: number): string {
-    const scale: number = xScale.getColor(index);
+    const scale: number = xScale.scale(index);
     // if the scale return null set the the group outside chart
     return 'translate(' + (scale == null ? (chartWidth + 10) : scale) + ',0)';
   }

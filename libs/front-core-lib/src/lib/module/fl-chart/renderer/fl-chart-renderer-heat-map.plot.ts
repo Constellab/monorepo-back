@@ -27,11 +27,11 @@ export class FlChartRendererHeatMap extends FlChart2AxisRenderer<FlChartHeatMapD
       .append('rect')
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut())
-      .attr('x', ((d: FlChart3dDatum) => xScale.getColor(d.getX())))
-      .attr('y', d => yScale.getColor(d.getY()))
+      .attr('x', ((d: FlChart3dDatum) => xScale.scale(d.getX())))
+      .attr('y', d => yScale.scale(d.getY()))
       .attr('width', xScale.bandwidth())
       .attr('height', yScale.bandwidth())
-      .style('fill', (d) => d.getZ() ? this.colorScale.getColor(d.getZ().valueOf()) : null);
+      .style('fill', (d) => d.getZ() ? this.colorScale.scale(d.getZ().valueOf()) : null);
   }
 
   refreshRender(): void {

@@ -31,7 +31,7 @@ export class FlChartLegendMultiSeries extends FlChartSVGLegend {
 
     legend.append('circle')
       .attr('r', this.circleRadius)
-      .style('fill', d => this.colorScale.getColor(d.key));
+      .style('fill', d => this.colorScale.scale(d.key));
 
     legend.append('text')
       .attr('x', 10)

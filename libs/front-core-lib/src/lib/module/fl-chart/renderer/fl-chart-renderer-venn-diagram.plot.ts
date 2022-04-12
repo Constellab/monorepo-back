@@ -263,7 +263,7 @@ export class FlChartRendererVennDiagram extends FlChartNoAxisRenderer<FlChartVen
       .attr('transform', d => `rotate(${d.rotation})`)
       .attr('transform-origin', d => `${d.x}px ${d.y}px`)
       .attr('fill-opacity', 0.6)
-      .attr('fill', d => this.colorScale.getColor(d.groupName));
+      .attr('fill', d => this.colorScale.scale(d.groupName));
   }
 
   private drawTexts(container: FlD3SelectionSimple, sections: FlSectionTextPosition[], fontSize: number = 18): void {

@@ -62,7 +62,7 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
       .join('rect')
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut())
-      .style('fill', (d) => this.colorScale.getColor(d.serieKey))
+      .style('fill', (d) => this.colorScale.scale(d.serieKey))
       .each((d, index, nodes: SVGRectElement[]) =>
         this.drawBar(d, nodes[index], barWidth, this.data.chartHeight, this.data.yScale, index));
   }
@@ -71,7 +71,7 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
   // return the position of the group
   private getGroupTranslate(xScale: FlChartScale, chartWidth: number, d: FlChartDataWithSerie<FlChart2dDatum>[]): string {
     // get the x value (each series have the same x) and scale it
-    const x = xScale.getColor(d[0].data.getX());
+    const x = xScale.scale(d[0].data.getX());
     // if the scale return null set the group outside chart
     return 'translate(' + (x == null ? (chartWidth + 10) : x) + ',0)';
   }
@@ -88,10 +88,10 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
 
     select(element)
       .attr('transform',
-        (d: FlChartDataWithSerie<FlChart2dDatum>) => 'translate(' + barWidth * index + ',' + yScale.getColor(d.data.getY(0)) + ')'
+        (d: FlChartDataWithSerie<FlChart2dDatum>) => 'translate(' + barWidth * index + ',' + yScale.scale(d.data.getY(0)) + ')'
       )
       .attr('width', barWidth - 0.5) // - 1 to let space between bars
-      .attr('height', (d: FlChartDataWithSerie<FlChart2dDatum>) => chartHeight - yScale.getColor(d.data.getY(0)));
+      .attr('height', (d: FlChartDataWithSerie<FlChart2dDatum>) => chartHeight - yScale.scale(d.data.getY(0)));
   }
 
   private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {

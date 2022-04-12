@@ -106,7 +106,8 @@ export class FlChartHeatMap extends FlChartConfig {
 
     // Build Y axis
     const yScale: FlChartScaleBand = new FlChartScaleBand()
-      .setInitialDomain(this.dataContainer.getDomainYComplete())
+      // reverse the domain so the y = 0 is on top
+      .setInitialDomain(this.dataContainer.getDomainYComplete().reverse())
       .padding(0.01);
     const yAxis: FlChartAxisBand = new FlChartAxisBand('left').setScale(yScale)
       .setMaxTickLength(FlChartAxisBand.yTickMaxLength)

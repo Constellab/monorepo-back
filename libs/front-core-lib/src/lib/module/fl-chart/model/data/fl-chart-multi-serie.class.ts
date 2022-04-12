@@ -110,7 +110,7 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
     return this.series.map(serie => {
       return {
         name: serie.name,
-        color: colorScale.getColor(serie.key)
+        color: colorScale.scale(serie.key)
       };
     });
   }

@@ -37,7 +37,7 @@ export class FlChartLegendHeatMap extends FlChartSVGLegend {
       .data(this.domain)
       .enter().append('stop')
       .attr('offset', (d, i) => i === 0 ? 0 : 200)
-      .attr('stop-color', (d) => this.colorScale.getColor(d));
+      .attr('stop-color', (d) => this.colorScale.scale(d));
 
     parent.append('rect') // gradient rect
       .attr('class', 'legendRect')
