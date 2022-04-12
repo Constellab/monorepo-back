@@ -55,7 +55,8 @@ export class FlChartState {
 
 
   public downloadSVG(): void {
-    this.chartSVG.downloadSVG(this.themeService.isDarkTheme());
+    const svgLegend = this.chart.getSVGLegend();
+    this.chartSVG.downloadSVG(svgLegend, this.themeService.isDarkTheme());
   }
 
   public resetZoom(): void {

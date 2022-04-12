@@ -1,6 +1,7 @@
 import {Selection} from 'd3-selection';
 import {FlFileHelper} from '../../../../service/fl-file.helper';
 import {select} from 'd3';
+import {FlChartSVGLegend} from '../legend/fl-chart-legend.class';
 
 /**
  * Main class to manage the svg for the chart.
@@ -17,9 +18,6 @@ export class FlChartSvg {
   public chartContainer: Selection<SVGElement, void, null, null>;
   private container: HTMLElement;
 
-  // height of the legend in px
-  // private readonly spaceBeforeLegend: number = 10;
-  // private readonly legendWidth: number = 100;
 
   public initSvg(containerElement: HTMLElement): this {
     this.container = containerElement;
@@ -31,12 +29,6 @@ export class FlChartSvg {
 
     this.chartContainer = this.svg
       .append('g');
-
-    // create the legend group in the bottom of the chart container
-    // this.legendContainer = this.svg
-    //   .append('g')
-    //   .attr('transform', `translate(${this.chartContainerWidth + this.spaceBeforeLegend}, 0)`);
-
 
     return this;
   }
@@ -57,15 +49,6 @@ export class FlChartSvg {
     return this._height;
   }
 
-  // public get legendContainerWidth(): number {
-  //   return this.legendWidth;
-  // }
-  //
-  // public get legendContainerHeight(): number {
-  //   return this._height;
-  // }
-
-
   /**
    * Return the svg html
    */
@@ -77,16 +60,35 @@ export class FlChartSvg {
    * Download the SVG as file
    * @invertColors if true invert the #000000 colors with #fffff. It is useful for the dark theme
    */
-  public downloadSVG(invertColors: boolean = false): void {
-    // construct the svg and add the xmlns attribute
-    let svg: string = `<svg xmlns="http://www.w3.org/2000/svg">${this.getSVGHTMLContent()}</svg>`;
+  public downloadSVG(svgLegend?: FlChartSVGLegend, invertColors: boolean = false): void {
+    // height of the legend in px
+    const legendMargin: number = 10;
+    const svgLegendWidth: number = 100;
 
-    if (invertColors) {
-      svg = svg.replace(/#000000/g, '_tempUnique_');
-      svg = svg.replace(/#ffffff/g, '#000000');
-      svg = svg.replace(/_tempUnique_/g, '#ffffff');
+    // create a new svg element
+    const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    // copy innerHTML to new svg
+    svgElement.innerHTML = this.getSVGHTMLContent();
+
+    // generate the legend in svg
+    if (svgLegend) {
+      const legendContainer = select(svgElement)
+        .append('g')
+        .attr('transform', `translate(${this.chartContainerWidth + legendMargin}, ${legendMargin})`);
+      svgLegend.renderLegend(legendContainer, svgLegendWidth, this._height - legendMargin);
     }
-    const blob: Blob = new Blob([svg]);
+
+    // retrieve html as string
+    let stringSvg = svgElement.outerHTML;
+
+    // invert colors if necessary
+    if (invertColors) {
+      stringSvg = stringSvg.replace(/#000000/g, '_tempUnique_');
+      stringSvg = stringSvg.replace(/#ffffff/g, '#000000');
+      stringSvg = stringSvg.replace(/_tempUnique_/g, '#ffffff');
+    }
+    const blob: Blob = new Blob([stringSvg]);
     FlFileHelper.downloadBlob(blob, 'chart.svg');
   }
 
