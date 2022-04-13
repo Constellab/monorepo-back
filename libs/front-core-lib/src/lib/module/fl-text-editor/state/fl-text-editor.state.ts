@@ -28,8 +28,6 @@ export class FlTextEditorState implements OnDestroy {
       return;
     }
 
-    console.log(file);
-
     this.imageService.uploadImage(file).subscribe(
       fileUrl => this.insertImageFromUrl(fileUrl, this.getCurrentSelectionIndex())
     );

@@ -31,6 +31,10 @@ export class FlTextEditorFigureComponent implements OnInit, OnDestroy {
   @HostBinding('attr.filename')
   @Input() filename: string;
 
+  @Input() naturalWidth: string;
+
+  @Input() naturalHeight: string;
+
   @HostBinding('attr.width')
   @Input() width: string;
 
@@ -46,6 +50,9 @@ export class FlTextEditorFigureComponent implements OnInit, OnDestroy {
   @ViewChild('figure') figure: ElementRef<HTMLElement>;
 
   @ViewChild('templatePortalContent') templatePortalContent: TemplateRef<unknown>;
+
+  imageWidth: number;
+  imageHeight: number;
 
   sanitizedUrl: string;
 
@@ -66,7 +73,28 @@ export class FlTextEditorFigureComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sanitizedUrl = this.sanitizer.sanitize(SecurityContext.URL, this.state.getImageUrl(this.filename));
     this.disabled$ = this.state.getDisabled$();
+    this.initSize();
   }
+
+  private initSize(): void {
+
+    const width = parseFloat(this.width);
+    const height = parseFloat(this.height);
+    // if the size of the image was not modified
+    if (this.width === this.naturalWidth && this.height === this.naturalHeight) {
+      const parentWidth = this.elementRef.nativeElement.clientWidth;
+
+      // if the image is larger than container, resize it
+      if (parentWidth > 0 && width > parentWidth) {
+        this.imageWidth = parentWidth;
+        this.imageHeight = ((parentWidth / width) * parseFloat(this.height));
+      }
+    } else {
+      this.imageWidth = width;
+      this.imageHeight = height;
+    }
+  }
+
 
   openPortal(): void {
     if (this.overlayRef) return;
