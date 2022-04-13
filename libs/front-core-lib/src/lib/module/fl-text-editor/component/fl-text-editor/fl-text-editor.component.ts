@@ -197,9 +197,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
           const lineBounds: BoundsStatic = this.quill.getBounds(range.index, range.length);
           this.showBlockAddButton(lineBounds);
         }
-      } else {
       }
-
     });
   }
 
