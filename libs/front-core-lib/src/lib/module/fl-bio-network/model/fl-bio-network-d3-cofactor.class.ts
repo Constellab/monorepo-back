@@ -12,8 +12,6 @@ const flBioNetworkCofactorBorderRadius: number = 0.5;
 export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
   public type: 'cofactor';
 
-  visible: boolean = false;
-
   public data: FlBioNetworkMetabolite;
 
   constructor(id: string, name: string, fillColor: string, data: FlBioNetworkMetabolite) {

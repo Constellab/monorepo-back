@@ -237,7 +237,6 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .attr('fill', d => d.color)
       // define the arrow marker, no marker for link of cofactors
       .attr('marker-end', (d: FlBioNetworkD3Link) => d.isLinkedToCofactor() ? `url(#${this.smallArrowId})` : `url(#${this.arrowId})`)
-      .each(d => d.visible = true)
       .on('contextmenu', this.createLinkPoint());
 
     this.drawLinkPoints(linkGroup);

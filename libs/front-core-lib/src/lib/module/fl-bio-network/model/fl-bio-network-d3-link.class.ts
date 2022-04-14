@@ -49,12 +49,13 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
   source: FlBioNetworkD3Node;
   target: FlBioNetworkD3Node;
 
-  visible: boolean = true;
-
   pointPositions: FlBioNetworkD3LinkPoint[] = [];
 
   // group element containing the link (path) and the points (circles)
   groupElement: SVGGElement;
+
+  value: number;
+  absValue: number;
 
   constructor(source: FlBioNetworkD3Node, target: FlBioNetworkD3Node,
               public estimate: FlBioNetworkReactionEstimate, points: FlCoord[],
@@ -72,16 +73,10 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
     // add the link to the source and target
     this.source.departureLinks.push(this);
     this.target.arrivalLinks.push(this);
-  }
 
-  get value(): number {
-    return typeof this.estimate.value === 'number' ? this.estimate.value : 0;
+    this.value = typeof this.estimate.value === 'number' ? this.estimate.value : 0;
+    this.absValue = Math.abs(this.value);
   }
-
-  get absValue(): number {
-    return Math.abs(this.value);
-  }
-
 
   get absLog2Value(): number {
     return Math.log2(this.absValue + 1.5);

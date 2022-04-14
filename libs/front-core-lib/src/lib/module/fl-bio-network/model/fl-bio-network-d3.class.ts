@@ -102,7 +102,6 @@ export class FlBioNetworkD3 {
 
 // Any D3 object in the network
 export abstract class FlBioNetworkD3Object {
-  visible: boolean; // true if the element is visible on the network
 
   // use to store the level if there is some calculation
   protected _level: number;

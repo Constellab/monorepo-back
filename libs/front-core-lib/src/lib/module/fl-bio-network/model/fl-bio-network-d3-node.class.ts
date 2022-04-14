@@ -29,8 +29,6 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
   fx?: number;
   fy?: number;
 
-  visible: boolean = true;
-
   public departureLinks: FlBioNetworkD3Link[] = [];
   public arrivalLinks: FlBioNetworkD3Link[] = [];
 
@@ -68,7 +66,6 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
       textSelection.attr('class', flBioNetworkNodeTextClass);
     }
     this.setNodeTitle(container);
-    this.visible = true;
   }
 
   protected setNodeTitle(container: SVGElement): void {

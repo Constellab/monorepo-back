@@ -3,20 +3,9 @@ import {FlD3SelectionSimple, FlD3ZoomEvent} from '../../fl-chart/model/fl-d3.cla
 import {ZoomBehavior, ZoomTransform} from 'd3-zoom';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
-import {flBioNetworkNodeTextClass} from '../model/fl-bio-network-d3-node.class';
-import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 import {zoom, zoomIdentity} from 'd3';
 import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
-
-/**
- * Different threshold for D3 object levels
- */
-const d3ObjectZoomLevelThreshold = {
-  1: 0, // levels 0 are always showed
-  2: 1, // level 2 showed when zoom > 1
-  3: 3 // level 3 are showed if zoom > 3
-};
 
 /**
  * State to manage the zoom in the {@link FlBioNetworkComponent}
@@ -36,10 +25,6 @@ export class FlBioNetworkZoomState implements OnDestroy {
   public readonly minZoomScale: number = 0.1;
   public readonly maxZoomScale: number = 10;
 
-  // zoom threshold where the node-text are displayed
-  // if zoom >= threshold --> text is displayed
-  private readonly nodeTextVisibilityThreshold = 0.7;
-
   // Default zoom scale when zooming to a position
   private readonly zoomToPositionScale: number = 3;
 
@@ -49,7 +34,7 @@ export class FlBioNetworkZoomState implements OnDestroy {
   // store the lowest level of all the data. The lowest level should always be visible
   private lowestLevel: number = 1;
 
-  constructor(private ngZone: NgZone, private groupState: FlBioNetworkGroupState) {
+  constructor(private ngZone: NgZone) {
   }
 
 
@@ -85,38 +70,9 @@ export class FlBioNetworkZoomState implements OnDestroy {
   private onZoom(transform: ZoomTransform): void {
     this.zoomableElement.attr('transform', transform.toString());
 
-    // this.updateObjectVisibility(transform.k);
-
     // emit the zoom
     this.zoom$.next(transform);
     this.firstZoom = false;
-  }
-
-  private updateObjectVisibility(zoomScale: number): void {
-
-    // get the current zoom level based on current scale
-    // Make the current level equal of higher than lowest level so the lowest level are always shown
-    const currentLevel = Math.max(this.getObjectLevelFromScale(zoomScale), this.lowestLevel);
-
-    // update the zoom visibility if there were no zoom previously or the zoom level has changed
-    const updateVisibility: boolean = this.firstZoom
-      || this.getObjectLevelFromScale(this.getCurrentScale()) != currentLevel;
-
-    if (updateVisibility) {
-      this.groupState.allObjects.each(d => d.visible = d.getLevel() <= currentLevel)
-        .style('opacity', (d => d.visible ? 1 : 0));
-    }
-  }
-
-  // show or hide the text based on scroll scale
-  private updateNodeTextVisibility(zoomScale: number): void {
-    const previousDisplay = this.getCurrentScale() >= this.nodeTextVisibilityThreshold;
-    const currentDisplay = zoomScale >= this.nodeTextVisibilityThreshold;
-
-    if (previousDisplay != currentDisplay) {
-      const opacity = currentDisplay ? 1 : 0;
-      this.svg.selectAll('.' + flBioNetworkNodeTextClass).style('opacity', opacity);
-    }
   }
 
   /**
@@ -169,16 +125,6 @@ export class FlBioNetworkZoomState implements OnDestroy {
 
   public get currentZoom(): ZoomTransform | null {
     return this.zoom$.value;
-  }
-
-  // retrieve the Object level to show based on current zoom scale
-  public getObjectLevelFromScale(scale: number): number {
-    let level = 0;
-
-    while (scale > d3ObjectZoomLevelThreshold[level + 1]) {
-      level++;
-    }
-    return level;
   }
 
   public convertCoord(coord: FlCoord): FlCoord {

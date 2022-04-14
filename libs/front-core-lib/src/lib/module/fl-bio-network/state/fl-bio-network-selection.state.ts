@@ -90,7 +90,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
     const links: FlBioNetworkD3Link[] = [];
     // update link opacity
-    this.groupState.visibleLinks.style('opacity', (link: FlBioNetworkD3Link) => {
+    this.groupState.allLinks.style('opacity', (link: FlBioNetworkD3Link) => {
       if (link.absValue >= value) {
         links.push(link);
         return 1;
@@ -199,14 +199,14 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   }
 
   private selectLinksFromList(links: FlBioNetworkD3Link[]): void {
-    this.groupState.visibleLinks.style('opacity', (link: FlBioNetworkD3Link) =>
+    this.groupState.allLinks.style('opacity', (link: FlBioNetworkD3Link) =>
       links.findIndex(l => l.id === link.id) !== -1 ? 1 : this.hiddenOpacity);
   }
 
   // select all the nodes connected to the links and return the node list
   private selectNodesFromLinks(links: FlBioNetworkD3Link[]): FlBioNetworkD3Node[] {
     const nodes: FlBioNetworkD3Node[] = [];
-    this.groupState.visibleNodes.style('opacity', (node: FlBioNetworkD3Node) => {
+    this.groupState.allNodes.style('opacity', (node: FlBioNetworkD3Node) => {
       // is the node is connected to one of the links
       if (links.findIndex(l => l.isLinkedToNode(node.id)) !== -1) {
         nodes.push(node); // save the node
@@ -227,10 +227,10 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     if (!this.isReady()) return;
 
     // update opacity and color of nodes
-    this.groupState.visibleNodes.style('opacity', 1);
+    this.groupState.allNodes.style('opacity', 1);
 
     // update link opacity
-    this.groupState.visibleLinks.style('opacity', 1);
+    this.groupState.allLinks.style('opacity', 1);
 
     if (emitSelection) {
       this.emitNone();
@@ -243,7 +243,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
   // get the selection of the nodes objects (not container)
   private get allNodes(): FlD3SelectionSimple<FlBioNetworkD3Node> {
-    return this.groupState.visibleNodes.selectAll(`.${flBioNetworkNodeClass}`);
+    return this.groupState.allNodes.selectAll(`.${flBioNetworkNodeClass}`);
   }
 
   private currentSelection(): FlBioNetworkSelectionEvent {

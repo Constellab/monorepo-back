@@ -46,15 +46,6 @@ export class FlBioNetworkGroupState {
     return this.mainGroup.selectAll(this.getAllLinkClassSelection()).selectChildren();
   }
 
-  public get visibleNodes(): FlD3SelectionSimple<FlBioNetworkD3Node> {
-    return this.allNodes.filter(d => d.visible);
-  }
-
-  public get visibleLinks(): FlD3SelectionSimple<FlBioNetworkD3Link> {
-    return this.allLinks.filter(d => d.visible);
-  }
-
-
   // return a selection of all d3 objects
   public get allObjects(): FlD3SelectionSimple<FlBioNetworkD3Object> {
     return this.mainGroup.selectAll(`${this.getAllNodeClassSelection()},${this.getAllLinkClassSelection()}`)
