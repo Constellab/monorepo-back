@@ -5,14 +5,15 @@ import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
 import {FlBioNetworkD3Object} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkMetaboliteLevel, flBioNetworkMetaboliteLevels} from '../model/fl-bio-network.class';
 
-const nodeGroupClass: string = 'node-';
-const linkGroupClass: string = 'link-';
 
 /**
  * State to store the D3 group select and retrieve different D3 selections
  */
 @Injectable()
 export class FlBioNetworkGroupState {
+
+  private static readonly nodeGroupClass = 'node-';
+  private static readonly linkGroupClass = 'link-';
 
   public mainGroup: FlD3SelectionSimple;
 
@@ -30,12 +31,20 @@ export class FlBioNetworkGroupState {
 
   }
 
-  public getNodesGroup(nodeLevel: FlBioNetworkMetaboliteLevel): FlD3SelectionSimple<FlBioNetworkD3Link> {
-    return this.mainGroup.selectAll(`.${this.getNodeClass(nodeLevel)}`);
+  public getNodesGroup(nodeLevels: FlBioNetworkMetaboliteLevel[]): FlD3SelectionSimple<FlBioNetworkD3Node> {
+    return this.mainGroup.selectAll(this.getNodeClassSelections(nodeLevels));
   }
 
-  public getLinksGroup(nodeLevel: FlBioNetworkMetaboliteLevel): FlD3SelectionSimple<FlBioNetworkD3Link> {
-    return this.mainGroup.selectAll(`.${this.getLinkClass(nodeLevel)}`);
+  public getLinksGroup(nodeLevels: FlBioNetworkMetaboliteLevel[]): FlD3SelectionSimple<FlBioNetworkD3Link> {
+    return this.mainGroup.selectAll(this.getLinkClassSelections(nodeLevels));
+  }
+
+  public getNodes(nodeLevels: FlBioNetworkMetaboliteLevel[]): FlD3SelectionSimple<FlBioNetworkD3Node> {
+    return this.getNodesGroup(nodeLevels).selectChildren();
+  }
+
+  public getLinks(nodeLevels: FlBioNetworkMetaboliteLevel[]): FlD3SelectionSimple<FlBioNetworkD3Link> {
+    return this.getLinksGroup(nodeLevels).selectChildren();
   }
 
   public get allNodes(): FlD3SelectionSimple<FlBioNetworkD3Node> {
@@ -60,31 +69,43 @@ export class FlBioNetworkGroupState {
    * Retrieve the HTML element of the group containing nodes
    */
   public getNodeGroupElement(nodeLevel: FlBioNetworkMetaboliteLevel): HTMLElement {
-    return this.getNodesGroup(nodeLevel).node();
+    return this.getNodesGroup([nodeLevel]).node();
   }
 
   /**
    * Retrieve the HTML element of the group containing links
    */
   public getLinkGroupElement(nodeLevel: FlBioNetworkMetaboliteLevel): HTMLElement {
-    return this.getLinksGroup(nodeLevel).node();
+    return this.getLinksGroup([nodeLevel]).node();
   }
 
   private getAllNodeClassSelection(): string {
-    // eslint-disable-next-line max-len
-    return `.${this.getNodeClass(FlBioNetworkMetaboliteLevel.MAJOR)},.${this.getNodeClass(FlBioNetworkMetaboliteLevel.MINOR)},.${this.getNodeClass(FlBioNetworkMetaboliteLevel.COFACTOR)}`;
+    return this.getNodeClassSelections(flBioNetworkMetaboliteLevels);
   }
+
 
   private getAllLinkClassSelection(): string {
-    // eslint-disable-next-line max-len
-    return `.${this.getLinkClass(FlBioNetworkMetaboliteLevel.MAJOR)},.${this.getLinkClass(FlBioNetworkMetaboliteLevel.MINOR)},.${this.getLinkClass(FlBioNetworkMetaboliteLevel.COFACTOR)}`;
+    return this.getLinkClassSelections(flBioNetworkMetaboliteLevels);
   }
 
+  private getNodeClassSelections(nodeLevels: FlBioNetworkMetaboliteLevel[]): string {
+    return nodeLevels.map(nodeLevel => '.' + this.getNodeClass(nodeLevel)).join(',');
+  }
+
+  private getLinkClassSelections(nodeLevels: FlBioNetworkMetaboliteLevel[]): string {
+    return nodeLevels.map(nodeLevel => '.' + this.getLinkClass(nodeLevel)).join(',');
+  }
+
+
   private getNodeClass(nodeLevel: FlBioNetworkMetaboliteLevel): string {
-    return nodeGroupClass + nodeLevel;
+    return FlBioNetworkGroupState.nodeGroupClass + nodeLevel;
   }
 
   private getLinkClass(nodeLevel: FlBioNetworkMetaboliteLevel): string {
-    return linkGroupClass + nodeLevel;
+    return FlBioNetworkGroupState.linkGroupClass + nodeLevel;
+  }
+
+  public isReady(): boolean {
+    return this.mainGroup != null;
   }
 }

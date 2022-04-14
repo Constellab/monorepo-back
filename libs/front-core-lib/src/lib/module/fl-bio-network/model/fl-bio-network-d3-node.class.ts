@@ -38,7 +38,7 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
 
 
   protected constructor(public id: string, public name: string, public type: FlBioNetworkD3NodeType,
-                        public fillColor: string, public strokeColor: string,
+                        public defaultColor: string, public strokeColor: string,
                         public data: FlBioNetworkMetabolite | FlBioNetworkReaction) {
     super();
     if (data.position != null && data.position.x != null && data.position.y != null) {
@@ -77,7 +77,7 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
                           fontSize: string, y: number, x: number = 0): FlD3SelectionSimple {
     // create the text for metabolite
     return select(element).append('text')
-      .text((d: FlBioNetworkD3Node) => d.name.substr(0, 20))
+      .text((d: FlBioNetworkD3Node) => d.name.slice(0, 20))
       .attr('x', x)
       .attr('y', y)
       .attr('dy', '1em')

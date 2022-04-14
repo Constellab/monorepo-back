@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {FlBioNetworkRendererState} from '../../state/fl-bio-network-renderer.state';
 import {MatSliderChange} from '@angular/material/slider';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {filter} from 'rxjs/operators';
 import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
+import {FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
+import {FlBioNetworkMetaboliteLevel} from '../../model/fl-bio-network.class';
 
 /**
  * Component inside the {@link FlBioNetworkComponent} to show the quick actions
@@ -24,21 +25,22 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   // if true the link colors switch to logarithm
   linkColorLogarithm: boolean = false;
-  showCofactor: boolean = false;
+  // showCofactor: boolean = false;
   showMinors: boolean = false;
   showText: boolean = false;
 
   constructor(private cdr: ChangeDetectorRef,
               private state: FlBioNetworkState,
               private selectionState: FlBioNetworkSelectionState,
-              private rendererState: FlBioNetworkRendererState) {
+              private optionState: FlBioNetworkOptionsState) {
   }
 
   ngOnInit(): void {
-    this.linkColorLogarithm = this.rendererState.getLinkColorLogarithm();
-    this.showCofactor = this.rendererState.getShowCofactors();
-    this.showMinors = this.rendererState.getShowMinors();
-    this.showText = this.rendererState.getShowTexts()
+    const options = this.optionState.getCurrentOptions();
+    this.linkColorLogarithm = options.linkColorScale === 'logarithm';
+    // this.showCofactor = this.rendererState.getShowCofactors();
+    this.showMinors = options.visibleLevels.includes(FlBioNetworkMetaboliteLevel.MINOR);
+    this.showText = options.showTexts;
     this.state.getChartData$().subscribe(
       chartData => this.onNewData(chartData)
     );
@@ -52,32 +54,32 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   private onNewData(chartData: FlBioNetworkD3): void {
     if (chartData) {
-      this.linksMaxAbsValue = chartData.getLinksMaxAbsoluteValue();
+      this.linksMaxAbsValue = Math.trunc(chartData.getLinksMaxAbsoluteValue());
       this.isReady = true;
     } else {
       this.linksMaxAbsValue = 0;
       this.isReady = false;
 
     }
-    this.showCofactor = false;
     this.cdr.markForCheck();
   }
 
 
   setLinksColors(): void {
-    this.rendererState.setLinksColors(this.linkColorLogarithm);
+    this.optionState.setLinkColorMode(this.linkColorLogarithm ? 'logarithm' : 'linear');
   }
 
-  toggleShowCofactor(): void {
-    this.rendererState.toggleCofactors(this.showCofactor);
-  }
+  // toggleShowCofactor(): void {
+  //   this.rendererState.toggleCofactors(this.showCofactor);
+  // }
 
   toggleShowTexts(): void {
-    this.rendererState.toggleShowTexts(this.showText);
+    this.optionState.setShowText(this.showText);
   }
 
   toggleShowMinors(): void {
-    this.rendererState.toggleShowMinors(this.showMinors);
+    this.optionState.setVisibleLevels(this.showMinors ?
+      [FlBioNetworkMetaboliteLevel.MAJOR, FlBioNetworkMetaboliteLevel.MINOR] : [FlBioNetworkMetaboliteLevel.MAJOR]);
   }
 
   // set opacity to 0.1 to link where abs value is lower than slider value

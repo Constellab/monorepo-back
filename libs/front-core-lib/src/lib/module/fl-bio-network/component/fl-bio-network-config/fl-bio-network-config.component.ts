@@ -1,10 +1,14 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {FlBioNetwork, FlBioNetworkPathwaySelection, FlPathwayDatabase, flPathwayDatabases} from '../../model/fl-bio-network.class';
+import {
+  FlBioNetwork,
+  FlBioNetworkPathwaySelection,
+  FlPathwayDatabase,
+  flPathwayDatabases
+} from '../../model/fl-bio-network.class';
 import {MatSelectChange} from '@angular/material/select';
 import {Observable} from 'rxjs';
-import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
-import {ClHelpService} from '@monorepo/core-lib';
+import {FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
 
 /**
  * Component to select the config of the pathway before showing it
@@ -25,8 +29,9 @@ export class FlBioNetworkConfigComponent implements OnInit {
 
   pathways$: Observable<FlBioNetworkPathwaySelection[]>;
   pathwaysAllSelected: boolean = false;
+  pathwaysAllColored: boolean = false;
 
-  constructor(private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState) {
+  constructor(private state: FlBioNetworkState, private optionState: FlBioNetworkOptionsState) {
   }
 
   ngOnInit(): void {
@@ -57,18 +62,31 @@ export class FlBioNetworkConfigComponent implements OnInit {
     }
   }
 
-  togglePathwayHighlight(pathwayDetail: FlBioNetworkPathwaySelection, event: MouseEvent): void {
-    ClHelpService.stopEventPropagation(event);
-    this.selectionState.togglePathwayHighlight(pathwayDetail);
+  togglePathwayColor(pathwayDetail: FlBioNetworkPathwaySelection): void {
+    pathwayDetail.highlighted = !pathwayDetail.highlighted;
+
+    const highlightedPathways: FlBioNetworkPathwaySelection[] = this.getSelectedPathways()
+      .filter(pathway => pathway.highlighted);
+    this.optionState.setColoredPathways(highlightedPathways);
   }
 
-  // todo améliorer la gestion des pathways coloré
-  // faire un state ? Garer le pathway coloré quand on en ajout un autre ?
-  toggleAllPathwayHighlight(): void {
-    const selectedPathways: FlBioNetworkPathwaySelection[] = this.state.getCurrentPathways().filter(
+
+  toggleAllPathwayColors(): void {
+    this.pathwaysAllColored = !this.pathwaysAllColored;
+    const selectedPathways: FlBioNetworkPathwaySelection[] = this.getSelectedPathways();
+    selectedPathways.forEach(pathway => pathway.highlighted = this.pathwaysAllColored);
+
+    if (this.pathwaysAllColored) {
+      this.optionState.setColoredPathways(selectedPathways);
+    } else {
+      this.optionState.setColoredPathways([]);
+    }
+  }
+
+  private getSelectedPathways(): FlBioNetworkPathwaySelection[] {
+    return this.state.getCurrentPathways().filter(
       pathway => pathway.selected
     );
-    this.selectionState.toggleAllPathwayHighlight(selectedPathways);
   }
 
   selectionChanged(pathway: FlBioNetworkPathwaySelection): void {

@@ -22,9 +22,9 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
   public data: FlBioNetworkReaction;
   public pathwayIds: string[]; // list of pathway for the reaction
 
-  constructor(id: string, name: string, fillColor: string, strokeColor: string,
+  constructor(id: string, name: string, defaultColor: string, strokeColor: string,
               data: FlBioNetworkReaction, pathwayIds: string[]) {
-    super(id, name, 'reaction', fillColor, strokeColor, data);
+    super(id, name, 'reaction', defaultColor, strokeColor, data);
     this.pathwayIds = pathwayIds;
   }
 
@@ -40,7 +40,7 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
       .attr('ry', flBioNetworkReactionBorderRadius)
       .attr('stroke', this.strokeColor)
       .attr('stroke-width', 0.25)
-      .attr('fill', this.fillColor) as FlD3SelectionSimple<FlBioNetworkD3Node>;
+      .attr('fill', this.defaultColor) as FlD3SelectionSimple<FlBioNetworkD3Node>;
   }
 
   // draw the text for reaction inside the rect

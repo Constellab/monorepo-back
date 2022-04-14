@@ -6,6 +6,7 @@ import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
 import {FlBioNetworkD3Object} from './fl-bio-network-d3.class';
 import {FlCoord, FlCoordHelper} from '../../../model/shared/fl-coord.class';
 
+export const flBioNetworkLinkElement = 'path'
 
 // const lineFunction = line<FlCoord>().x(d => d.x).y(d => d.y);
 // const lineFunction = line<FlCoord>().x(d => d.x).y(d => d.y).curve(curveStep);
@@ -59,7 +60,7 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
 
   constructor(source: FlBioNetworkD3Node, target: FlBioNetworkD3Node,
               public estimate: FlBioNetworkReactionEstimate, points: FlCoord[],
-              public color: string) {
+              public defaultColor: string) {
     super();
     this.source = source;
     this.target = target;

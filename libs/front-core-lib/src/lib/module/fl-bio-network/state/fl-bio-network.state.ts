@@ -231,7 +231,6 @@ export class FlBioNetworkState implements OnDestroy {
     );
   }
 
-
   ngOnDestroy(): void {
     this.selectedNetwork$.complete();
     this.chartData$.complete();

@@ -32,7 +32,8 @@
 
     <div fxLayout="row" fxLayoutAlign="start center">
       <button mat-icon-button class="highlight-icon g-button-icon-tiny"
-              (click)="toggleAllPathwayHighlight()"
+              (click)="toggleAllPathwayColors()"
+              [color]="pathwaysAllColored ? 'primary' : null"
               [matTooltip]="'flBioNetwork.highlight_all_pathway' | translate">
         <mat-icon>colorize</mat-icon>
       </button>
@@ -45,7 +46,7 @@
 
     <div *ngFor="let pathway of pathways$ | async" fxLayout="row" fxLayoutAlign="start center">
       <button mat-icon-button class="highlight-icon g-button-icon-tiny"
-              (click)="togglePathwayHighlight(pathway, $event)" [disabled]="!pathway.selected"
+              (click)="togglePathwayColor(pathway)" [disabled]="!pathway.selected"
               [matTooltip]="'flBioNetwork.highlight_pathway' | translate">
         <mat-icon [style.color]="pathway.highlighted ? pathway.color: ''">
           colorize

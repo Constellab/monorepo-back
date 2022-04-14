@@ -14,8 +14,8 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
 
   public data: FlBioNetworkMetabolite;
 
-  constructor(id: string, name: string, fillColor: string, data: FlBioNetworkMetabolite) {
-    super(id, name, 'cofactor', '#ffaa33', fillColor, data);
+  constructor(id: string, name: string, defaultColor: string, data: FlBioNetworkMetabolite) {
+    super(id, name, 'cofactor', '#ffaa33', defaultColor, data);
   }
 
   drawNode(container: SVGElement): FlD3SelectionSimple<FlBioNetworkD3Node> {
@@ -28,7 +28,7 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
       .attr('transform', 'translate(2.5, -1) rotate(45)')
       .attr('stroke', this.strokeColor)
       .attr('stroke-width', 0.3)
-      .attr('fill', this.fillColor) as FlD3SelectionSimple<FlBioNetworkD3Node>;
+      .attr('fill', this.defaultColor) as FlD3SelectionSimple<FlBioNetworkD3Node>;
   }
 
   protected drawNodeText(container: SVGElement, textColor: string, backgroundColor: string): FlD3SelectionSimple {

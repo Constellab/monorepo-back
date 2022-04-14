@@ -26,9 +26,11 @@ export * from './model/fl-bio-network-selection.class';
 
 // States
 export * from './state/fl-bio-network.state';
+export * from './state/fl-bio-network-color.state';
 export * from './state/fl-bio-network-drawer.state';
 export * from './state/fl-bio-network-grid.state';
 export * from './state/fl-bio-network-group.state';
+export * from './state/fl-bio-network-options.state';
 export * from './state/fl-bio-network-renderer.state';
 export * from './state/fl-bio-network-selection.state';
 export * from './state/fl-bio-network-zoom.state';

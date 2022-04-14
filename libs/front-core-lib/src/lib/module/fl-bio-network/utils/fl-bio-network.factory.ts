@@ -138,7 +138,7 @@ export class FlBioNetworkFactory {
           metaboliteNode = this.metabolites.find(m => m.data.id === metabolite.id);
         }
 
-        // get the estimate with a default value if it doesn't exists
+        // get the estimate with a default value if it doesn't exist
         const estimate: FlBioNetworkReactionEstimate = FlBioNetworkHelper.getReactionEstimate(reactionD3.data);
         const reactionLink: FlBioNetworkReactionLink = reactionD3.data.metabolites[metaboliteId];
 

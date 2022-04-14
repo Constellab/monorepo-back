@@ -8,6 +8,8 @@ import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.s
 import {FlBioNetworkZoomState} from '../../state/fl-bio-network-zoom.state';
 import {FlBioNetworkGridState} from '../../state/fl-bio-network-grid.state';
 import {FlBioNetworkGroupState} from '../../state/fl-bio-network-group.state';
+import {FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
+import {FlBioNetworkColorState} from '../../state/fl-bio-network-color.state';
 
 @Component({
   selector: 'fl-bio-network',
@@ -15,12 +17,14 @@ import {FlBioNetworkGroupState} from '../../state/fl-bio-network-group.state';
   styleUrls: ['./fl-bio-network.component.scss'],
   providers: [
     FlBioNetworkState,
+    FlBioNetworkOptionsState,
     FlBioNetworkGroupState,
     FlBioNetworkRendererState,
     FlBioNetworkDrawerState,
     FlBioNetworkZoomState,
     FlBioNetworkSelectionState,
     FlBioNetworkGridState,
+    FlBioNetworkColorState,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -54,7 +58,7 @@ export class FlBioNetworkComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.rendererState.init(this.chartHtmlContainer.nativeElement, false);
+    this.rendererState.init(this.chartHtmlContainer.nativeElement);
   }
 
   openDrawer(): void {

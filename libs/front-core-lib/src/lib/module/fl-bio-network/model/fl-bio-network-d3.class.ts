@@ -68,15 +68,7 @@ export class FlBioNetworkD3 {
 
   // return the min and max value of all links
   public getLinksMaxAbsoluteValue(): number {
-    let max: number = 0;
-
-    for (const link of this.links) {
-      if (link.absValue > max) {
-        max = link.absValue;
-      }
-    }
-
-    return max;
+    return Math.max(...this.links.map(link => link.absValue));
   }
 
   public hasPosition(): boolean {
@@ -105,6 +97,8 @@ export abstract class FlBioNetworkD3Object {
 
   // use to store the level if there is some calculation
   protected _level: number;
+
+  defaultColor: string;
 
   public getLevel(): FlBioNetworkMetaboliteLevel {
     if (this._level == null) {
