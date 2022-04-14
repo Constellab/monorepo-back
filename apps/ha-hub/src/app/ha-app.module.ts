@@ -11,7 +11,10 @@ import {
   flIconsDefault,
   FlPortalModule,
   FlSnackBarModule,
+  FlTextEditorFigureBlot,
+  FlTextEditorFigureComponent,
   FlTextEditorImageService,
+  FlTextEditorModule,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {HaApiServiceConfig} from './ha-core/ha-model/ha-config/ha-api-module.config';
@@ -59,7 +62,10 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
     FlIconModule.forRoot({
       iconFolder: 'assets/mat-icons/',
       iconsToRegister: flIconsDefault
-    })
+    }),
+    FlTextEditorModule.forRoot({
+      blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent}]
+    }),
 
   ],
   providers: [{

@@ -17,7 +17,10 @@ import {
   flSetRootInjector,
   FlSnackBarModule,
   FlTagModule,
+  FlTextEditorFigureBlot,
+  FlTextEditorFigureComponent,
   FlTextEditorImageService,
+  FlTextEditorModule,
   FlThemeService,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
@@ -73,6 +76,9 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlPortalActionsModule.forRoot(),
     FlAuthModule.forRoot(LabAuthenticationService),
     FlTagModule.forRoot(LabTagService),
+    FlTextEditorModule.forRoot({
+      blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent}]
+    }),
 
     LabAppRoutingModule
   ],

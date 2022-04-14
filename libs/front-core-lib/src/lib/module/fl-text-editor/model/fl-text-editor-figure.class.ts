@@ -3,8 +3,6 @@ import {CmRichTextFigure} from '@monorepo/common-model';
 
 const BlockEmbed = Quill.import('blots/block/embed');
 
-
-
 export class FlTextEditorFigureBlot extends BlockEmbed {
 
   static blotName = 'figure';

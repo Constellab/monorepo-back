@@ -11,7 +11,8 @@ export * from './state/fl-text-editor.state';
 export * from './state/fl-text-editors-manager.state';
 
 // Models
-export * from './fl-text-editor.class';
-export * from './fl-text-editor-figure.class';
-export * from './fl-text-editor-image.service';
+export * from './model/fl-text-editor.class';
+export * from './model/fl-text-editor-figure.class';
+export * from './model/fl-text-editor-image.service';
+export * from './model/fl-text-editor-module-config.class';
 

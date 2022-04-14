@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy, Optional} from '@angular/core';
 import Quill from 'quill';
-import {FlTextEditorImageService, FlTextEditorUploadedImage} from '../fl-text-editor-image.service';
+import {FlTextEditorImageService, FlTextEditorUploadedImage} from '../model/fl-text-editor-image.service';
 import {CmRichTextFigure} from '@monorepo/common-model';
 import {BehaviorSubject, Observable} from 'rxjs';
 

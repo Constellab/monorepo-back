@@ -13,7 +13,7 @@ import {
   Self,
   ViewChild
 } from '@angular/core';
-import {FlQuillConfig, FlQuillJson, FlTextEditorConfig} from '../../fl-text-editor.class';
+import {FlQuillConfig, FlQuillJson, FlTextEditorConfig} from '../../model/fl-text-editor.class';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {NgControl} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -25,7 +25,6 @@ import {
   FlTextEditorBlockAddButtonComponent
 } from '../fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
 import {FlTextEditorState} from '../../state/fl-text-editor.state';
-import {FlTextEditorFigureBlot} from '../../fl-text-editor-figure.class';
 import hljs from 'highlight.js/lib/core';
 import python from 'highlight.js/lib/languages/python';
 import Quill, {BoundsStatic, RangeStatic} from 'quill';
@@ -41,8 +40,6 @@ type FlTextEditorMode = 'HTML' | 'JSON'
 
 const Delta = Quill.import('delta');
 const Block = Quill.import('blots/block');
-
-Quill.register(FlTextEditorFigureBlot, true);
 
 
 /**

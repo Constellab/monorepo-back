@@ -1,4 +1,4 @@
-import {Injector, NgModule} from '@angular/core';
+import {Injector, ModuleWithProviders, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FlTextEditorComponent} from './component/fl-text-editor/fl-text-editor.component';
 import {MatButtonModule} from '@angular/material/button';
@@ -19,6 +19,8 @@ import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flTextEditorI18n} from './i18n/fl-text-editor.i18n';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FlResizeModule} from '../fl-resize/fl-resize.module';
+import Quill from 'quill';
+import {FlTextEditorModuleConfig} from './model/fl-text-editor-module-config.class';
 
 
 @NgModule({
@@ -50,17 +52,31 @@ import {FlResizeModule} from '../fl-resize/fl-resize.module';
 export class FlTextEditorModule {
   private static registered: boolean = false;
 
+  private static config: FlTextEditorModuleConfig;
+
   constructor(injector: Injector, translateService: FlTranslateService) {
     if (FlTextEditorModule.registered) return;
-    // declare the FlTextEditorFigureComponent as angular element to make the tag
-    // fl-text-editor-figure
-    customElements.define('fl-text-editor-figure',
-      createCustomElement(FlTextEditorFigureComponent, {
-        injector,
-      }));
 
     FlTextEditorModule.registered = true;
 
     translateService.addModuleTranslation('FlTextEditorModule', flTextEditorI18n);
+
+    // Register quill blots
+    for (const blot of FlTextEditorModule.config.blots) {
+      Quill.register(blot.blot, true);
+
+      // declare the FlTextEditorFigureComponent as angular element to make the tag
+      // fl-text-editor-figure
+      customElements.define(blot.blot.tagName.toLowerCase(),
+        createCustomElement(blot.componentType, {injector: injector}));
+    }
+  }
+
+  public static forRoot(config: FlTextEditorModuleConfig): ModuleWithProviders<FlTextEditorModule> {
+    this.config = config;
+
+    return {
+      ngModule: FlTextEditorModule,
+    };
   }
 }

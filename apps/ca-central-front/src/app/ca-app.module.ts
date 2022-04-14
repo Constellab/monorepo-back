@@ -21,7 +21,10 @@ import {
   FlServiceWorkerService,
   flSetRootInjector,
   FlSnackBarModule,
+  FlTextEditorFigureBlot,
+  FlTextEditorFigureComponent,
   FlTextEditorImageService,
+  FlTextEditorModule,
   FlThemeService,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
@@ -80,6 +83,9 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     FlPortalModule.forRoot(),
     FlAuthModule.forRoot(CaAuthenticationService, CaUserAccountsService),
     FlPortalActionsModule.forRoot(),
+    FlTextEditorModule.forRoot({
+      blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent}]
+    }),
 
     ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production}),
   ],
