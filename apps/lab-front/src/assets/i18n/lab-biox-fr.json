@@ -162,6 +162,9 @@
     "print_report": "Imprimer le rapport",
     "documentation": "Documentation",
     "folder_extract_file": "Extraire le fichier",
-    "folder_extract_folder": "Extraire le dossier"
+    "folder_extract_folder": "Extraire le dossier",
+    "type_deprecated_since": "Obsolète depuis",
+    "type_deprecated": "Obsolète",
+    "type_include_deprecated": "Inclure les objets obsolètes"
   }
 }

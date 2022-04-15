@@ -12,6 +12,12 @@
       <p>{{'biox.process_type_type' | translate}} : {{processType.modelName}}</p>
       <p *ngIf="processType.shortDescription">{{processType.shortDescription}}</p>
     </div>
+    <div *ngIf="processType.deprecatedSince" class="deprecated">
+      <fl-chip class="g-warn-background" size="small">
+        {{'biox.type_deprecated_since' | translate}} : {{processType.deprecatedSince}}
+      </fl-chip>
+      <p>{{processType.deprecatedMessage}}</p>
+    </div>
 
     <div class="panel-container">
       <!-- Inputs -->
@@ -26,7 +32,7 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <lab-process-ports-list [ports]="processType.getInputSpecs()"
-                                     class="panel-padding"></lab-process-ports-list>
+                                class="panel-padding"></lab-process-ports-list>
       </mat-expansion-panel>
 
 
@@ -42,7 +48,7 @@
           </mat-panel-title>
         </mat-expansion-panel-header>
         <lab-process-ports-list [ports]="processType.getOutputSpecs()"
-                                     class="panel-padding"></lab-process-ports-list>
+                                class="panel-padding"></lab-process-ports-list>
       </mat-expansion-panel>
 
 

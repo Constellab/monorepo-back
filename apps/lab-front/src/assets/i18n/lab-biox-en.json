@@ -162,6 +162,9 @@
     "print_report": "Print report",
     "documentation": "Documentation",
     "folder_extract_file": "Extract file",
-    "folder_extract_folder": "Extract folder"
+    "folder_extract_folder": "Extract folder",
+    "type_deprecated_since": "Deprecated since",
+    "type_deprecated": "Deprecated",
+    "type_include_deprecated": "Include deprecated objects"
   }
 }

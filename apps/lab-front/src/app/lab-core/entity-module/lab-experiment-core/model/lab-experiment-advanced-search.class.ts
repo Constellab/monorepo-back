@@ -64,8 +64,8 @@ export class LabExperimentSearch {
     createdBy: {key: 'created_by', operator: 'IN'},
     createdAt: FlSearchConverter.dateInterval('created_at'),
     lastModifiedAt: FlSearchConverter.dateInterval('last_modified_at'),
-    isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.convertArchived},
-    isValidated: {key: 'is_validated', operator: 'EQ', convertValue: LabSearchConverter.convertValidated},
+    isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.includeAllOnCheck},
+    isValidated: {key: 'is_validated', operator: 'EQ', convertValue: LabSearchConverter.includeAllOnCheck},
   };
 
   public static getAdvancedSearchForm(): FormGroup<LabExperimentSearchFields> {

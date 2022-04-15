@@ -4,25 +4,12 @@
 export class LabSearchConverter {
 
   /**
-   * Search converter for archived checkbox. If check, return no filter (search on archived and not archived)
-   * If null or false, only search on non archived objets
-   * @param archived
+   * If check, return null (meaning no filters)
+   * If null or false, return false
+   * @param checked
    */
-  public static convertArchived(archived: boolean): boolean | null {
-    if (!archived) {
-      return false;
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * Search converter for validated checkbox. If check, return no filter (search on validated and not validated)
-   * If null or false, only search on non-validated objets
-   * @param archived
-   */
-  public static convertValidated(archived: boolean): boolean | null {
-    if (!archived) {
+  public static includeAllOnCheck(checked: boolean): boolean | null {
+    if (!checked) {
       return false;
     } else {
       return null;

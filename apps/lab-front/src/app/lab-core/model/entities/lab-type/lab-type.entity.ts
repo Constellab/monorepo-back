@@ -27,6 +27,13 @@ export class LabTypeEntity extends LabBaseEntity {
   @Expose({name: 'object_sub_type'})
   objectSubType: LabTypeObjectSubType;
 
+  @Expose({name: 'deprecated_since'})
+  deprecatedSince?: string;
+
+  @Expose({name: 'deprecated_message'})
+  deprecatedMessage?: string;
+
+
   status: LabTypeObjectStatus;
 
   get name(): string {

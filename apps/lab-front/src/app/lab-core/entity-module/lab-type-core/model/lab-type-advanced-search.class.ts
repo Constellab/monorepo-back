@@ -1,6 +1,7 @@
 import {FlFormInputsManagerConfig, FlSearchCriteriaConverter} from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {LabTypeObjectSubType, LabTypeObjectType} from '../../../model/entities/lab-type/lab-type.entity';
+import {LabSearchConverter} from '../../../model/global/lab-search-converter.class';
 
 /**
  * config for the lab type search component
@@ -25,6 +26,7 @@ export class LabTypeSearchFields {
   objectType: LabTypeObjectType[];
   objectSubType: LabTypeObjectSubType;
   relatedModelTypingName: string;
+  includeDeprecated: boolean;
 }
 
 
@@ -35,7 +37,8 @@ export class LabTypeSearch {
    */
   public static advancedSearchManagerConfig: FlFormInputsManagerConfig<LabTypeSearchFields> = {
     text: 'name',
-    objectSubType: 'biox.process_type_type'
+    objectSubType: 'biox.process_type_type',
+    includeDeprecated: 'biox.type_include_deprecated'
   };
 
   /**
@@ -47,6 +50,7 @@ export class LabTypeSearch {
     objectType: {key: 'object_type', operator: 'IN'},
     objectSubType: {key: 'object_sub_type', operator: 'EQ'},
     relatedModelTypingName: {key: 'related_model_typing_name', operator: 'EQ'},
+    includeDeprecated: {key: 'include_deprecated', operator: 'EQ', convertValue: LabSearchConverter.includeAllOnCheck}
   };
 
   public static getAdvancedSearchForm(): FormGroup<LabTypeSearchFields> {
@@ -57,6 +61,7 @@ export class LabTypeSearch {
         objectType: [null],
         objectSubType: [null],
         relatedModelTypingName: [null],
+        includeDeprecated: [null],
       }
     );
   }

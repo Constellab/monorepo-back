@@ -22,7 +22,7 @@ const savedSearch: FlSavedSearch[] = [
     color: flThemeDetailLight.primary,
     version: 1,
     default: true,
-    filtersCriteria: {} as Partial<LabTypeSearchFields>
+    filtersCriteria: {includeDeprecated: false} as Partial<LabTypeSearchFields>
   },
   {
     searchName: 'lab-type',
@@ -31,7 +31,7 @@ const savedSearch: FlSavedSearch[] = [
     color: flThemeDetailLight.primary,
     version: 1,
     default: false,
-    filtersCriteria: {brick: [LabBrickGWS.GWS_CORE]} as Partial<LabTypeSearchFields>
+    filtersCriteria: {brick: [LabBrickGWS.GWS_CORE], includeDeprecated: false} as Partial<LabTypeSearchFields>
   }
 ];
 
@@ -67,10 +67,7 @@ export class LabTypeSearchComponent implements OnInit {
 
   @Output() typeSelected: EventEmitter<LabTypeEntity> = new EventEmitter();
 
-  columns: FlTableColumn<LabTypeEntity>[] = [
-    {columnName: 'name', accessor: 'humanName'},
-    {columnName: 'description', accessor: 'shortDescription'},
-    'objectSubType', 'detail'];
+  columns: FlTableColumn<LabTypeEntity>[];
   datasource: LabTypeEntityDatasource;
 
   constructor(private searchState: FlSearchState<any>) {
@@ -85,7 +82,7 @@ export class LabTypeSearchComponent implements OnInit {
     if (this.config.mode === 'taskOrProtocol') {
       hiddenFilters = {objectType: ['TASK', 'PROTOCOL']};
       this.columns = [
-        {columnName: 'name', accessor: 'humanName'},
+        'name',
         {columnName: 'description', accessor: 'shortDescription'},
         'objectSubType', 'detail'];
     } else {
@@ -96,7 +93,7 @@ export class LabTypeSearchComponent implements OnInit {
       };
       // don't set the objectSubType because it is always transformers
       this.columns = [
-        {columnName: 'name', accessor: 'humanName'},
+        'name',
         {columnName: 'description', accessor: 'shortDescription'}, 'detail'];
     }
     this.searchState.setHiddenFilters(hiddenFilters);

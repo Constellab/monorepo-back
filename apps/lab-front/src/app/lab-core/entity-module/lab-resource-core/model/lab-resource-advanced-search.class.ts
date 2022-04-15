@@ -63,7 +63,7 @@ export class LabResourceSearch {
     // Date
     createdAt: FlSearchConverter.dateInterval('created_at'),
     createdBy: {key: 'created_by', operator: 'IN'},
-    isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.convertArchived},
+    isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.includeAllOnCheck},
   };
 
 
