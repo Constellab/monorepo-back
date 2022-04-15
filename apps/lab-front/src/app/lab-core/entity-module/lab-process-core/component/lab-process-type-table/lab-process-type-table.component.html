@@ -7,6 +7,10 @@
       {{'name' | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let processType">
+      <mat-icon *ngIf="processType.status === 'TYPE_UNAVAILABLE'" color="warn"
+                class="type-unavailable">
+        error
+      </mat-icon>
       <div>
         <div>{{processType.humanName}}</div>
         <div *ngIf="processType.deprecatedSince">

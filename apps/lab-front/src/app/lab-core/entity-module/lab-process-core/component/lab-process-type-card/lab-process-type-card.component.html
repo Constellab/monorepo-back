@@ -19,6 +19,13 @@
       <p>{{processType.deprecatedMessage}}</p>
     </div>
 
+    <div *ngIf="processType.status === 'TYPE_UNAVAILABLE'">
+      <fl-text-icon class="g-warn-text">
+        <mat-icon color="warn">error</mat-icon>
+        {{'biox.process_type_unavailable_error' | translate}}
+      </fl-text-icon>
+    </div>
+
     <div class="panel-container">
       <!-- Inputs -->
       <mat-expansion-panel *ngIf="processType.hasInputSpecs()" hideToggle [expanded]="true"

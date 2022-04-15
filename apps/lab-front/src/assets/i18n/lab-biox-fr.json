@@ -165,6 +165,7 @@
     "folder_extract_folder": "Extraire le dossier",
     "type_deprecated_since": "Obsolète depuis",
     "type_deprecated": "Obsolète",
-    "type_include_deprecated": "Inclure les objets obsolètes"
+    "type_include_deprecated": "Inclure les objets obsolètes",
+    "process_type_unavailable_error": "Le type de processus n'est pas disponible, vous ne pouvez pas l'utiliser"
   }
 }
