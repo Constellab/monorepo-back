@@ -21,7 +21,9 @@ import {drag, forceLink, forceManyBody, forceSimulation, line, select} from 'd3'
 import {FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
 import {FlBioNetworkColorState} from './fl-bio-network-color.state';
 import {FlBioNetworkOptions, FlBioNetworkOptionsState} from './fl-bio-network-options.state';
-import {Subscription} from 'rxjs';
+import {FlCoord} from '../../../model/shared/fl-coord.class';
+import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class';
+import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.class';
 
 /**
  * State to manager the drawing of bio network using d3
@@ -39,8 +41,8 @@ export class FlBioNetworkRendererState implements OnDestroy {
   private simulation: Simulation<FlBioNetworkD3Node, any>;
   private simulationEnded: boolean = false;
 
-  private readonly subscriptions = new ClSubscriptionHandler();
-  private optionSubscription: Subscription;
+  private readonly globalSubscriptions = new ClSubscriptionHandler();
+  private initSubscriptions: ClSubscriptionHandler;
 
   ////////////// READONLY VARIABLE //////////////////
   public readonly grey: string;
@@ -65,7 +67,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
   public init(htmlContainer: HTMLElement): void {
     this.htmlContainer = htmlContainer;
 
-    this.subscriptions.add(this.state.getChartData$().subscribe(
+    this.globalSubscriptions.add(this.state.getChartData$().subscribe(
       chartData => this.drawNetwork(chartData)
     ));
   }
@@ -122,9 +124,13 @@ export class FlBioNetworkRendererState implements OnDestroy {
         this.selectionState.init(chartData);
         this.optionState.init();
 
-        this.optionSubscription = this.optionState.getOptions$().subscribe(
+        this.initSubscriptions = new ClSubscriptionHandler();
+        this.initSubscriptions.add(this.selectionState.getSelectionMode$().subscribe(
+          selectionEvent => this.onNewSelection(selectionEvent)
+        ));
+        this.initSubscriptions.add(this.optionState.getOptions$().subscribe(
           event => this.onOptionChange(event)
-        );
+        ));
       }
     });
   }
@@ -145,9 +151,11 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
   ///////////////////////////////////////////////// Nodes ///////////////////////////////////////////////////////
 
-  private drawNodes(level: FlBioNetworkMetaboliteLevel): void {
+  private drawNodes(level: FlBioNetworkMetaboliteLevel, nodes: FlBioNetworkD3Node[] = null): void {
 
-    const nodes = this.data.getNodes(level);
+    if (nodes == null) {
+      nodes = this.data.getNodes(level);
+    }
     const textColor: string = this.textColor;
     const backgroundColor: string = this.backgroundColor;
     const dragFunction: any = drag()
@@ -208,8 +216,10 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
   ///////////////////////////////////////////////// LINKS ///////////////////////////////////////////////////////
 
-  private drawLinks(level: FlBioNetworkMetaboliteLevel): void {
-    const links = this.data.getLinks(level);
+  private drawLinks(level: FlBioNetworkMetaboliteLevel, links: FlBioNetworkD3Link[] = null): void {
+    if (links == null) {
+      links = this.data.getLinks(level);
+    }
 
     const linkGroup: FlD3SelectionSimple<FlBioNetworkD3Link> = this.groupState.getLinksGroup([level])
       .selectAll('g')
@@ -224,7 +234,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .attr('d', (d: FlBioNetworkD3Link) => d.getPathAttr())
       .attr('stroke-opacity', 0.9)
       .attr('stroke-width', (d: FlBioNetworkD3Link) => d.getLinkWidth())
-      .attr('fill', d => d.defaultColor)
+      .attr('stroke', d => d.defaultColor)
       // define the arrow marker, no marker for link of cofactors
       .attr('marker-end', (d: FlBioNetworkD3Link) => d.isLinkedToCofactor() ? `url(#${this.smallArrowId})` : `url(#${this.arrowId})`)
       .on('contextmenu', this.createLinkPoint());
@@ -374,36 +384,56 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
   /////////////////////////////////////////// COFACTORS //////////////////////////////////////////////
 
-  // public toggleCofactors(showCofactor: boolean): void {
-  //   if (this.showCofactors === showCofactor) return;
-  //
-  //   this.showCofactors = showCofactor;
-  //   if (showCofactor) {
-  //     for (const reaction of this.data.reactions) {
-  //       // init cofactor positions
-  //       const tSpaces = Math.PI * 2 / reaction.childNodes.length;
-  //       let t = 0;
-  //       const center: FlCoord = reaction.getCenter();
-  //
-  //       // use the size of the grid for the distance of the metabolite
-  //       const distance = this.gridState.xAxisTick.size;
-  //
-  //       for (const node of reaction.childNodes) {
-  //         const x = distance * Math.cos(t) + center.x;
-  //         const y = distance * Math.sin(t) + center.y;
-  //         node.setCenter({x, y});
-  //         t += tSpaces;
-  //       }
-  //     }
-  //
-  //     this.drawNodes(FlBioNetworkMetaboliteLevel.COFACTOR);
-  //     this.drawLinks(FlBioNetworkMetaboliteLevel.COFACTOR);
-  //
-  //   } else {
-  //     this.clearGroup(this.groupState.getNodesGroup([FlBioNetworkMetaboliteLevel.COFACTOR]));
-  //     this.clearGroup(this.groupState.getLinksGroup([FlBioNetworkMetaboliteLevel.COFACTOR]));
-  //   }
-  // }
+  // show cofactors if a reaction is selected
+  private onNewSelection(selectEvent: FlBioNetworkSelectionEvent): void {
+    this.removeCofactors();
+
+    // When a node is selected, show the cofactors linked to the reactions
+    if (selectEvent.mode === 'nodes') {
+      // if the selected node is a reaction, we show the cofactors linked to it
+      if (selectEvent.selectedNode instanceof FlBioNetworkD3Reaction) {
+        this.showCofactors([selectEvent.selectedNode]);
+      }
+    }
+  }
+
+  private removeCofactors(): void {
+    this.clearGroup(this.groupState.getNodesGroup([FlBioNetworkMetaboliteLevel.COFACTOR]));
+    this.clearGroup(this.groupState.getLinksGroup([FlBioNetworkMetaboliteLevel.COFACTOR]));
+  }
+
+  // show all cofactors linked to the reactions
+  private showCofactors(reactions: FlBioNetworkD3Node[]): void {
+
+    const cofactors: FlBioNetworkD3Node[] = [];
+    const links: FlBioNetworkD3Link[] = [];
+
+    for (const reaction of reactions) {
+
+      // init cofactor positions
+      const tSpaces = Math.PI * 2 / reaction.childNodes.length;
+      let t = 0;
+      const center: FlCoord = reaction.getCenter();
+
+      // use the size of the grid for the distance of the metabolite
+      const distance = this.gridState.xAxisTick.size;
+
+      for (const node of reaction.childNodes) {
+        const x = distance * Math.cos(t) + center.x;
+        const y = distance * Math.sin(t) + center.y;
+        node.setCenter({x, y});
+        t += tSpaces;
+        cofactors.push(node);
+
+        // add the link between the reaction and the cofactor
+        links.push(...node.getAllLinks());
+      }
+    }
+
+    this.drawNodes(FlBioNetworkMetaboliteLevel.COFACTOR, cofactors);
+    this.drawLinks(FlBioNetworkMetaboliteLevel.COFACTOR, links);
+
+  }
 
   private onOptionChange(options: FlBioNetworkOptions): void {
     switch (options.action) {
@@ -445,7 +475,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
     this.svg = null;
     this.simulationEnded = false;
     this.groupState.clearNetwork();
-    this.optionSubscription?.unsubscribe();
+    this.initSubscriptions?.unsubscribe();
   }
 
 
@@ -455,7 +485,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
 
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.globalSubscriptions.unsubscribe();
     this.simulation?.stop();
   }
 }

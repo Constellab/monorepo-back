@@ -52,7 +52,16 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   public selectNodeAndDirectLinks(node: FlBioNetworkD3Node, zoomToNode: boolean = false): void {
     if (!this.isReady()) return;
 
-    this.selectNodesAndDirectLinks([node.id]);
+
+    const links: FlBioNetworkD3Link[] = this.getConnectedReactionsLinks([node.id]);
+
+    // select the connected links
+    this.selectLinksFromList(links);
+
+    // select the connected nodes
+    const nodes: FlBioNetworkD3Node[] = this.selectNodesFromLinks(links);
+
+    this.selection$.next({mode: 'nodes', nodes: nodes, links: links, selectedNode: node});
 
     // open the drawer with detail
     this.drawerState.newAction({
@@ -65,19 +74,6 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     }
   }
 
-  public selectNodesAndDirectLinks(nodeIds: string[]): void {
-    if (!this.isReady()) return;
-
-    const links: FlBioNetworkD3Link[] = this.getConnectedReactionsLinks(nodeIds);
-
-    // select the connected links
-    this.selectLinksFromList(links);
-
-    // select the connected nodes
-    const nodes: FlBioNetworkD3Node[] = this.selectNodesFromLinks(links);
-
-    this.selection$.next({mode: 'nodes', nodes: nodes, links: links});
-  }
 
   // set opacity to 0.1 to link where abs value is lower than slider value
   public hideLinkLowerThan(value: number): void {

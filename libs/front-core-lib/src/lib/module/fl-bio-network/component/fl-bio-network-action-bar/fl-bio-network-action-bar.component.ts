@@ -69,10 +69,6 @@ export class FlBioNetworkActionBarComponent implements OnInit {
     this.optionState.setLinkColorMode(this.linkColorLogarithm ? 'logarithm' : 'linear');
   }
 
-  // toggleShowCofactor(): void {
-  //   this.rendererState.toggleCofactors(this.showCofactor);
-  // }
-
   toggleShowTexts(): void {
     this.optionState.setShowText(this.showText);
   }
