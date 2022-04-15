@@ -61,38 +61,12 @@ export class LabProgressBarData extends LabBaseEntity {
   value: number;
 }
 
-
-export type LabProgressBarStatus = 'DRAFT' | 'RUNNING' | 'FINISHED' | 'ARCHIVED'
-
-const labProgressBarStatusDict: FlStatusDict<LabProgressBarStatus> = {
-  DRAFT: FlStatusHelper.getInfoStatus('DRAFT'),
-  ARCHIVED: FlStatusHelper.getInfoStatus('ARCHIVED'),
-  FINISHED: FlStatusHelper.getSuccessStatus('FINISHED'),
-  RUNNING: FlStatusHelper.getRunningStatus('RUNNING')
-};
-
-
 export class LabProgressBar extends LabBaseEntity {
 
   process: { id: string, type: string };
 
   @Type(() => LabProgressBarData)
   data: LabProgressBarData;
-
-  get status(): FlStatus<LabProgressBarStatus> {
-    if (this.isArchived) {
-      return labProgressBarStatusDict.ARCHIVED;
-    }
-
-    if (this.data.elapsedTime === 0) {
-      return labProgressBarStatusDict.DRAFT;
-    } else if (this.data.value < this.data.maxValue) {
-      return labProgressBarStatusDict.RUNNING;
-    } else {
-      return labProgressBarStatusDict.FINISHED;
-    }
-  }
-
 
   // return true if the progress as started (can be running or finished)
   wasStarted(): boolean {
