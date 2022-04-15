@@ -9,8 +9,12 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRenderer<FlChart2dMu
 
   private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
 
-  constructor(public colorScale: FlChartScaleColor) {
+  // function to return the color of the point
+  private getColorFunction: (d: FlChartDataWithSerie<FlChart2dDatum>) => string;
+
+  constructor(private defaultColorScale: FlChartScaleColor) {
     super();
+    this.getColorFunction = this.getDefaultColorFunction();
   }
 
   renderFirst(): void {
@@ -28,7 +32,7 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRenderer<FlChart2dMu
       .enter()
       .append('circle')
       .attr('r', 3)
-      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.colorScale.scale(d.serieKey))
+      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.getColorFunction(d))
       .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.xScale.scale(d.data.getX()))
       .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.scale(d.data.getY()))
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
@@ -43,20 +47,28 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRenderer<FlChart2dMu
       .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.scale(d.data.getY()));
   }
 
+  // set function to return color of points based on tags
   setTagColors(colorScale: FlChartScaleColor): void {
-    this.data.container
-      .selectAll(`circle`)
-      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => colorScale.scale(d.data.tags));
+    this.setColorFunction((d: FlChartDataWithSerie<FlChart2dDatum>) => colorScale.scale(d.data.tags));
   }
 
   resetColors(): void {
+    this.setColorFunction(this.getDefaultColorFunction());
+  }
+
+  private setColorFunction(colorFunction: (d: FlChartDataWithSerie<FlChart2dDatum>) => string): void {
+    this.getColorFunction = colorFunction;
     this.data.container
       .selectAll(`circle`)
-      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.colorScale.scale(d.serieKey));
+      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.getColorFunction(d));
+  }
+
+  private getDefaultColorFunction(): (d: FlChartDataWithSerie<FlChart2dDatum>) => string {
+    return (d: FlChartDataWithSerie<FlChart2dDatum>) => this.defaultColorScale.scale(d.serieKey);
   }
 
   private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {
-    this.portalHandler.openPortal(event.target as any, d, this.colorScale);
+    this.portalHandler.openPortal(event.target as any, d, this.defaultColorScale);
   }
 
   private onMouseOut(): void {

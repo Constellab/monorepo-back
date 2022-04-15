@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FlChartRightSectionDirective} from '../fl-chart-right-section.directive';
 import {FlChartSerieWithColor} from '../../../model/data/fl-chart-serie.class';
 
@@ -12,6 +12,9 @@ import {FlChartSerieWithColor} from '../../../model/data/fl-chart-serie.class';
 })
 export class FlChartLegendMultiSeriesComponent extends FlChartRightSectionDirective<FlChartSerieWithColor[]>
   implements OnInit {
+
+  // when disable the color is replace with a grey color
+  @Input() disableLegends: boolean = false;
 
   ngOnInit(): void {
   }

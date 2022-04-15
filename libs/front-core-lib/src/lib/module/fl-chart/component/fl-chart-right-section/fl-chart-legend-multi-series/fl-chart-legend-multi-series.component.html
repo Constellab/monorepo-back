@@ -1,8 +1,8 @@
 <div class="g-scrollable-element">
   <div *ngFor="let serie of data" class="g-text-tiny">
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
-      <div class="color" [ngStyle]="{'background-color': serie.color}"></div>
-      <div class="text" [matTooltip]="serie.name" matTooltipPosition="after">
+      <div class="color" [style.background-color]="serie.color" [ngClass]="{'disable-color': disableLegends}"></div>
+      <div class="text">
         {{serie.name}}
       </div>
     </div>

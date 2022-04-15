@@ -1,5 +1,6 @@
-<div fxLayout="row wrap" fxLayoutGap="1em">
-  <div *ngFor="let tagGroup of tagGroups; let groupIndex = index" class="group">
+<div [fxLayout]="groupLayout" fxLayoutGap="1em">
+  <div *ngFor="let tagGroup of tagGroups; let groupIndex = index" class="group"
+       >
 
     <div class="g-full" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5em">
       <div>{{tagGroup.key}}</div>
@@ -18,7 +19,8 @@
         <div class="tag-value">{{tagValue.value}}</div>
 
         <div *ngIf="tagValue.activeColor" [style.background-color]="tagValue.color" class="color"
-             (click)="openColorSelector(tagValue, $event)" [(flColorSelector)]="tagValue.color" (flColorSelectorChange)="emitColors()"></div>
+             (click)="openColorSelector(tagValue, $event)" [(flColorSelector)]="tagValue.color"
+             (flColorSelectorChange)="emitColors()"></div>
 
       </fl-chip>
     </div>

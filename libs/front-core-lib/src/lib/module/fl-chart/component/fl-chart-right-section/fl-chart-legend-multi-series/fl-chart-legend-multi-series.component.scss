@@ -6,8 +6,10 @@
   border-radius: 50%;
 }
 
+.disable-color{
+  background-color: var(--grey-low-contrast) !important;
+}
+
 .text{
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  word-break: break-word;
 }

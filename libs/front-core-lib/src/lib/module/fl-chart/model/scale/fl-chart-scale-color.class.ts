@@ -22,7 +22,7 @@ export interface FlChartScaleColor extends FlChartScaleI {
  */
 export class FlChartScaleColorMulti implements FlChartScaleColor {
 
-  public readonly d3Scale: ScaleOrdinal<string, string>;
+  private readonly d3Scale: ScaleOrdinal<string, string>;
 
   constructor(domain: (number | string)[], private transparentColor: boolean = false) {
     this.d3Scale = this.initScale();
@@ -79,8 +79,6 @@ export class FlChartScaleColorLinear implements FlChartScaleColor {
  * Color scale contains a list of colors and return one color based on domain
  */
 export class FlChartScaleColorTag implements FlChartScaleColor {
-
-  public readonly d3Scale: ScaleOrdinal<string, string>;
 
   constructor(private tagsColors: FlTagWithColor[]) {
   }

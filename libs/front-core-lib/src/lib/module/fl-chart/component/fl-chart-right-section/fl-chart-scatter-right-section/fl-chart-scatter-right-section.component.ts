@@ -27,6 +27,8 @@ export class FlChartScatterRightSectionComponent extends FlChartRightSectionDire
 
   tags: FlTagWithColor[];
 
+  tagAreSelected: boolean= false;
+
   ngOnInit(): void {
     this.tags = FlTagHelper.tagGroupsToTagWithColors(this.data.tags,
       FlColorHelper.getColorTransparentList());
@@ -35,10 +37,12 @@ export class FlChartScatterRightSectionComponent extends FlChartRightSectionDire
   onColorChange(tags: FlTagWithColor[]): void {
     if(tags?.length > 0){
       const colorScale = new FlChartScaleColorTag(tags);
-      this.data.scatterRenderer.setTagColors(colorScale)
+      this.data.scatterRenderer.setTagColors(colorScale);
+      this.tagAreSelected = true;
     }
     else{
       this.data.scatterRenderer.resetColors();
+      this.tagAreSelected = false;
     }
   }
 

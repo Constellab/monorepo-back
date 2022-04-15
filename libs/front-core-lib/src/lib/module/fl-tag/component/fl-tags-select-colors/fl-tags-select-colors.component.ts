@@ -28,7 +28,9 @@ export class FlTagsSelectColorsComponent implements OnInit {
 
   @Input() tags: FlTagWithColor[];
 
+  @Input() groupLayout : 'column' | 'row wrap' = 'row wrap';
   @Output() colorChange: EventEmitter<FlTagWithColor[]> = new EventEmitter();
+
 
   tagGroups: FlTagGroupColor[];
 
