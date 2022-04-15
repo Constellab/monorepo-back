@@ -88,7 +88,8 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
 
     const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
 
-    if (cellEvent == null) {
+    // if the cell couldn't be found or this is the first column (containing row names)
+    if (cellEvent == null || cellEvent.type === 'header' && cellEvent.index < 0) {
       return;
     }
 
