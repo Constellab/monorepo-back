@@ -40,7 +40,7 @@
   <!-- Dynamic columns -->
   <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
     <mat-header-cell *matHeaderCellDef>
-      <p>{{column.columnName | translate}}</p>
+      {{column.columnName | translate}}
     </mat-header-cell>
     <mat-cell *matCellDef="let obj">
       <div>
