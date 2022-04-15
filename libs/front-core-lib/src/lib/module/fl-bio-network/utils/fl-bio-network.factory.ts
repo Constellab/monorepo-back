@@ -143,7 +143,9 @@ export class FlBioNetworkFactory {
         const reactionLink: FlBioNetworkReactionLink = reactionD3.data.metabolites[metaboliteId];
 
         // right side of the link
-        if (reactionLink.stoich > 0) {
+        // if the estimate is negative, the link is inverted
+        const estimateValue: number = typeof estimate.value === 'number' ? estimate.value : 0;
+        if (reactionLink.stoich * estimateValue > 0) {
           this.links.push(new FlBioNetworkD3Link(reactionD3, metaboliteNode,
             estimate, reactionLink.points, this.themeDetail.greyLowContrast));
         }

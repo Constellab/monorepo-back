@@ -120,7 +120,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
         // init the selection state
         this.selectionState.init(chartData);
-        this.optionState.init()
+        this.optionState.init();
 
         this.optionSubscription = this.optionState.getOptions$().subscribe(
           event => this.onOptionChange(event)
@@ -309,7 +309,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
   }
 
   private defineArrowMarkers(): void {
-    this.defineArrowMarker(this.arrowId, 1, 21);
+    this.defineArrowMarker(this.arrowId, 2, 10);
     this.defineArrowMarker(this.smallArrowId, 1, 10);
   }
 
@@ -406,7 +406,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
   // }
 
   private onOptionChange(options: FlBioNetworkOptions): void {
-    switch (options.action){
+    switch (options.action) {
       case 'updateVisibilityLevel':
         this.toggleShowMinors(options.visibleLevels.includes(FlBioNetworkMetaboliteLevel.MINOR));
         break;
