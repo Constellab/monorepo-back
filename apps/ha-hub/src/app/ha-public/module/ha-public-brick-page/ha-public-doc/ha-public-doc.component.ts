@@ -7,15 +7,16 @@ import {
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {HaDocumentationService} from '../../../../ha-core/ha-service/ha-documentation.service';
-import {FlDebouncer} from '@monorepo/front-core-lib';
+import {FlDebouncer, FlTextEditorConfig} from '@monorepo/front-core-lib';
 import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {Observable} from 'rxjs';
+import {HaDocTextEditorConfig} from '../ha-doc-text-editor-config.class';
 
 @Component({
   selector: 'ha-public-doc-page',
   templateUrl: './ha-public-doc.component.html',
-  styleUrls: ['./ha-public-doc.component.scss']
+  styleUrls: ['./ha-public-doc.component.scss'],
 })
 export class HaPublicDocComponent implements OnInit, OnDestroy {
 
@@ -33,13 +34,16 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   isCheck: boolean = false;
   activatedRoute: ActivatedRoute = this.route;
 
+  textEditorConfig: FlTextEditorConfig;
+
   constructor(
     private brickService: HaBrickService,
     private documentationService: HaDocumentationService,
     private authUserService: HaAuthenticatedUserService,
     private route: ActivatedRoute,
     private router: Router,
-  ) {
+    textEditorConfig: HaDocTextEditorConfig) {
+    this.textEditorConfig = textEditorConfig;
   }
 
 
@@ -55,8 +59,8 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     this.contentDebouncer = new FlDebouncer(FlDebouncer.AUTO_SAVE_DEBOUNCE_TIME);
     this.contentDebouncer.getDebouncedValue().subscribe(
       value => {
-        if(this.isCheck && !this.isTechnical){
-          this.saveContent(value)
+        if (this.isCheck && !this.isTechnical) {
+          this.saveContent(value);
         }
       }
     );
@@ -89,7 +93,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
         this.actionOnDoc(isFirstDoc, doc);
       });
     } else {
-      if(url[0].path === 'technical-folder'){
+      if (url[0].path === 'technical-folder') {
         this.isTechnical = true;
       }
       this.isCheck = true;
@@ -135,10 +139,10 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   private saveContent(value: CmRichTextI): void {
     this.formGp.value.content = value as CmRichTextI;
     this.isAdmin.subscribe(isAdmin => {
-      if(isAdmin){
+      if (isAdmin) {
         this.documentationService.updateContent(this.formGp.value as HaDocumentationContentFormDTO).subscribe();
       }
-    })
+    });
 
   }
 

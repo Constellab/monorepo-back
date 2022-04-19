@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlTextEditorImageService, FlTextEditorUploadedImage} from '@monorepo/front-core-lib'
+import {FlApiService, FlTextEditorUploadedImage} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {
   HaDocumentation,
@@ -15,12 +15,11 @@ import {map} from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class HaDocumentationService extends FlTextEditorImageService {
+export class HaDocumentationService {
 
   private readonly route: string = 'documentation';
 
   constructor(private apiService: FlApiService) {
-    super();
   }
 
   /**
@@ -83,11 +82,6 @@ export class HaDocumentationService extends FlTextEditorImageService {
 
   public getFilePath(filename: string): string {
     return this.apiService.getBaseRouteUrl(`${this.route}/image/${filename}`);
-  }
-
-
-  deleteImage(filename: string): Observable<void> {
-    return this.apiService.delete(`${this.route}/image/${filename}`);
   }
 
   uploadImage(file: File): Observable<FlTextEditorUploadedImage> {

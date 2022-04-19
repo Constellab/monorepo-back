@@ -13,7 +13,7 @@ import {
   Self,
   ViewChild
 } from '@angular/core';
-import {FlQuillConfig, FlQuillJson, FlTextEditorConfig} from '../../model/fl-text-editor.class';
+import {FlQuillJson, FlTextEditorBlockAddButton} from '../../model/fl-text-editor.class';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {NgControl} from '@angular/forms';
 import {DomSanitizer} from '@angular/platform-browser';
@@ -29,6 +29,7 @@ import hljs from 'highlight.js/lib/core';
 import python from 'highlight.js/lib/languages/python';
 import Quill, {BoundsStatic, RangeStatic} from 'quill';
 import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.state';
+import {FlTextEditorConfig} from '../../model/fl-text-editor-config.class';
 
 hljs.registerLanguage('python', python);
 
@@ -55,7 +56,7 @@ const Block = Quill.import('blots/block');
 })
 export class FlTextEditorComponent extends FlFormFieldDirective<string> implements OnInit, OnDestroy {
 
-  @Input() config: FlTextEditorConfig = 'complete';
+  @Input() config: FlTextEditorConfig;
 
   @Input() mode: FlTextEditorMode = 'HTML';
 
@@ -65,7 +66,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   @Input() autoFocus: boolean = false;
 
   /**
-   * If auto it will find the parent scrollable element (use cdkScrollable),
+   * If auto it finds the parent scrollable element (use cdkScrollable),
    * otherwise it uses the child .ql-editor as scrollable
    */
   @Input() scrollContainer: 'auto' | 'child' = 'auto';
@@ -99,14 +100,14 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
           syntax: {
             highlight: (text: string) => hljs.highlight(text, {language: 'python'}).value
           },              // Include syntax module
-          toolbar: FlQuillConfig.getToolbarConfig(this.config),
+          toolbar: this.config.getToolbarConfig(),
         },
         placeholder: this.placeholder,
         scrollingContainer: this.getScrollingContainer()
       }
     );
 
-    this.state.init(this.quill, this.disabled);
+    this.state.init(this.quill, this.config, this.disabled);
 
 
     // init the HTML with the value set
@@ -182,7 +183,8 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   }
 
   private showAddButton(range: RangeStatic): void {
-    if (range == null || this.disabled || !FlQuillConfig.showAddButton(this.config)) return;
+    const buttons = this.config.getBlockAddButtons(this.state);
+    if (range == null || this.disabled || buttons.length === 0) return;
 
     this.zone.run(() => {
 
@@ -192,22 +194,20 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
         const [block] = scroll.descendant(Block, range.index);
         if (block != null && block.domNode.firstChild instanceof HTMLBRElement) {
           const lineBounds: BoundsStatic = this.quill.getBounds(range.index, range.length);
-          this.showBlockAddButton(lineBounds);
+          this.showBlockAddButton(lineBounds, buttons);
         }
       }
     });
   }
 
-  private showBlockAddButton(lineBounds: BoundsStatic): void {
+  private showBlockAddButton(lineBounds: BoundsStatic, buttons: FlTextEditorBlockAddButton[]): void {
     const editorPosition = this.editorElement.nativeElement.getBoundingClientRect();
     const config = this.portalService.configureAbsolutePortal({
       top: (editorPosition.top + lineBounds.top - 7) + 'px',
       left: (editorPosition.left + lineBounds.left - 50) + 'px'
-    }, {
-      customProviders: [{provide: FlTextEditorState, useValue: this.state}]
     });
 
-    this.blockAddButtonOverlay = this.portalService.createPortal(FlTextEditorBlockAddButtonComponent, config);
+    this.blockAddButtonOverlay = this.portalService.createPortal(FlTextEditorBlockAddButtonComponent, config, buttons);
   }
 
   private closeBlockAddButtonOverlay(): void {

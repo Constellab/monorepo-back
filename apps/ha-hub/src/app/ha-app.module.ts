@@ -13,7 +13,6 @@ import {
   FlSnackBarModule,
   FlTextEditorFigureBlot,
   FlTextEditorFigureComponent,
-  FlTextEditorImageService,
   FlTextEditorModule,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
@@ -25,7 +24,6 @@ import {HaAppRoutingModule} from './ha-app-routing-module';
 import {HaCoreModule} from './ha-core/ha-core.module';
 import {HaAuthService} from './ha-core/ha-service/ha-auth.service';
 import {HaAuthenticatedUserService} from './ha-core/ha-service/ha-authenticated-user.service';
-import {HaDocumentationService} from './ha-core/ha-service/ha-documentation.service';
 
 function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): () => void {
   return (): void => authenticatedUserService.init();
@@ -73,8 +71,7 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
     useClass: FlHttpInterceptorService,
     multi: true
   },
-  {provide: APP_INITIALIZER, useFactory: loadUserOnInit, deps: [HaAuthenticatedUserService], multi: true},
-  {provide: FlTextEditorImageService, useExisting: HaDocumentationService},
+    {provide: APP_INITIALIZER, useFactory: loadUserOnInit, deps: [HaAuthenticatedUserService], multi: true},
   ],
   bootstrap: [AppComponent],
 })

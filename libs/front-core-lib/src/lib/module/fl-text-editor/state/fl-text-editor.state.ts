@@ -1,8 +1,9 @@
-import {Injectable, OnDestroy, Optional} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import Quill from 'quill';
-import {FlTextEditorImageService, FlTextEditorUploadedImage} from '../model/fl-text-editor-image.service';
+import {FlTextEditorUploadedImage} from '../model/fl-text-editor-image.class';
 import {CmRichTextFigure} from '@monorepo/common-model';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {FlTextEditorConfig} from '../model/fl-text-editor-config.class';
 
 
 @Injectable()
@@ -12,43 +13,27 @@ export class FlTextEditorState implements OnDestroy {
 
   private disabled$: BehaviorSubject<boolean>;
 
-  constructor(@Optional() private imageService: FlTextEditorImageService) {
+  public config: FlTextEditorConfig;
+
+  constructor() {
   }
 
 
-  public init(quill: Quill, disabled: boolean): void {
+  public init(quill: Quill, config: FlTextEditorConfig, disabled: boolean): void {
     this.quill = quill;
+    this.config = config;
     this.disabled$ = new BehaviorSubject(disabled);
   }
 
-
-  public insertImageFromFile(file: File): void {
-    if (!this.imageService) {
-      console.error('[FlTextEditor] The FlTextEditorImageService was not provided');
-      return;
-    }
-
-    this.imageService.uploadImage(file).subscribe(
-      fileUrl => this.insertImageFromUrl(fileUrl, this.getCurrentSelectionIndex())
-    );
-  }
-
   public insertImageFromUrl(image: FlTextEditorUploadedImage, index: number): void {
-    this.quill.insertEmbed(index, 'figure', {
+    const figure: CmRichTextFigure = {
       filename: image.filename,
       width: image.width,
       height: image.height,
       naturalWidth: image.width,
       naturalHeight: image.height
-    } as CmRichTextFigure, Quill.sources.USER);
-  }
-
-  public getImageUrl(filename: string): string {
-    if (!this.imageService) {
-      console.error('[FlTextEditor] The FlTextEditorImageService was not provided');
-      return '';
-    }
-    return this.imageService.getImageUrl(filename);
+    };
+    this.insertEmbed(index, 'figure', figure);
   }
 
   public insertCodeBlock(): void {
@@ -59,7 +44,11 @@ export class FlTextEditorState implements OnDestroy {
     this.quill.format('blockquote', true);
   }
 
-  private getCurrentSelectionIndex(): number {
+  public insertEmbed(index: number, type: string, value: any): void {
+    this.quill.insertEmbed(index, type, value, Quill.sources.USER);
+  }
+
+  public getCurrentSelectionIndex(): number {
     return this.quill.getSelection(true).index;
   }
 

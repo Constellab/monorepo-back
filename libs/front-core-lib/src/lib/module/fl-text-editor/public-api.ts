@@ -12,7 +12,9 @@ export * from './state/fl-text-editors-manager.state';
 
 // Models
 export * from './model/fl-text-editor.class';
+export * from './model/fl-text-editor-basic-config.class';
 export * from './model/fl-text-editor-figure.class';
-export * from './model/fl-text-editor-image.service';
+export * from './model/fl-text-editor-config.class';
+export * from './model/fl-text-editor-image.class';
 export * from './model/fl-text-editor-module-config.class';
 

@@ -1,17 +1,16 @@
 import {Injectable} from '@angular/core';
 import {CaReport} from '../model/entities/ca-report.class';
-import {FlApiService, FlTextEditorImageService, FlTextEditorUploadedImage} from '@monorepo/front-core-lib';
+import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CaReportService extends FlTextEditorImageService{
+export class CaReportService {
 
   private readonly route: string = 'reports';
 
   constructor(private apiService: FlApiService) {
-    super();
   }
 
   getReportsByExperiment(experimentId: string): Observable<CaReport[]> {
@@ -32,15 +31,5 @@ export class CaReportService extends FlTextEditorImageService{
   getImageUrl(filename: string): string {
     return this.apiService.getBaseRouteUrl(`${this.route}/image/${filename}`);
   }
-
-  // don't implement following because it is in readonly
-  deleteImage(): Observable<void> {
-    return undefined;
-  }
-  uploadImage(): Observable<FlTextEditorUploadedImage> {
-    return undefined;
-  }
-
-
 
 }

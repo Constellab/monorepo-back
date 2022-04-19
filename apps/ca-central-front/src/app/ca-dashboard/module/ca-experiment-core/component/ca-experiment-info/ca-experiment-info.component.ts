@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
+import {FlTextEditorBasicConfig, FlTextEditorConfig} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'ca-experiment-info',
@@ -9,6 +10,8 @@ import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.
 export class CaExperimentInfoComponent implements OnInit {
 
   @Input() experiment: CaExperiment;
+
+  textEditorConfig: FlTextEditorConfig = new FlTextEditorBasicConfig();
 
   constructor() { }
 

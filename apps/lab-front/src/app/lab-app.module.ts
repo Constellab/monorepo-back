@@ -19,7 +19,6 @@ import {
   FlTagModule,
   FlTextEditorFigureBlot,
   FlTextEditorFigureComponent,
-  FlTextEditorImageService,
   FlTextEditorModule,
   FlThemeService,
   FlTranslateModule
@@ -32,7 +31,6 @@ import {LabApiErrorService} from './lab-core/service/lab-api-error.service';
 import {LabApiServiceConfig} from './lab-core/service/lab-api-module.config';
 import {LabAppRoutingModule} from './lab-app-routing.module';
 import {LabTagService} from './lab-core/entity-service/lab-tag.service';
-import {LabReportService} from './lab-core/entity-service/lab-report.service';
 
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
@@ -89,7 +87,6 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
       multi: true
     },
     {provide: APP_INITIALIZER, useFactory: loadThemeOnInit, deps: [FlThemeService], multi: true},
-    {provide: FlTextEditorImageService, useExisting: LabReportService},
   ],
   bootstrap: [LabAppComponent],
 })

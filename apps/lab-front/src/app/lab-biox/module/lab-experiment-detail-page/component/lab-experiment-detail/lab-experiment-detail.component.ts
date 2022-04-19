@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {LabExperiment} from '../../../../../lab-core/model/entities/lab-experiment.entity';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
-import {FlDebouncer, FlQuillJson} from '@monorepo/front-core-lib';
+import {FlDebouncer, FlQuillJson, FlTextEditorBasicConfig, FlTextEditorConfig} from '@monorepo/front-core-lib';
 import {LabExperimentService} from '../../../../../lab-core/entity-service/lab-experiment.service';
 
 /**
@@ -11,12 +11,14 @@ import {LabExperimentService} from '../../../../../lab-core/entity-service/lab-e
 @Component({
   selector: 'lab-experiment-detail',
   templateUrl: './lab-experiment-detail.component.html',
-  styleUrls: ['./lab-experiment-detail.component.scss']
+  styleUrls: ['./lab-experiment-detail.component.scss'],
 })
 export class LabExperimentDetailComponent implements OnInit, OnDestroy {
 
   experiment$: Observable<LabExperiment>;
   description: FlQuillJson;
+
+  textEditorConfig: FlTextEditorConfig = new FlTextEditorBasicConfig();
 
   private descriptionDebouncer: FlDebouncer<FlQuillJson>;
 

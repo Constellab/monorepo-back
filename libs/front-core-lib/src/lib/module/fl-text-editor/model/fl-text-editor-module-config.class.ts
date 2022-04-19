@@ -10,7 +10,4 @@ export interface FlTextEditorModuleConfig {
 export interface FlTextEditorModuleConfigBlot {
   blot: any;
   componentType: Type<any>;
-  type: 'block';
-  addIcon: string;
-  addTooltip: string;
 }

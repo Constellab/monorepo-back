@@ -59,7 +59,7 @@
     <!--    Description      -->
     <fl-form-field class="g-form-input">
       <mat-label>{{'description' | translate}}</mat-label>
-      <fl-text-editor formControlName="description" class="text-editor">
+      <fl-text-editor formControlName="description" class="text-editor" [config]="textEditorConfig">
       </fl-text-editor>
       <mat-error *ngIf="formGp.get('description').hasError('required')">
         {{'description' | flErrorRequired}}

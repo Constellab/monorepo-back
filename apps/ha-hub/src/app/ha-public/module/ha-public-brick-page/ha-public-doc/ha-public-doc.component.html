@@ -2,7 +2,7 @@
   <div class="content">
     <form class="documentation-form" [formGroup]="formGp"  *ngIf="!isTechnical">
       <fl-text-editor class="content-editor g-max-article-width" formControlName="content" [disabled]="(isAdmin | async) === false || isTechnical===true" mode="JSON" scrollContainer="child"
-                      (textChange)="onContentUpdate($event)"></fl-text-editor>
+                      [config]="textEditorConfig"  (textChange)="onContentUpdate($event)"></fl-text-editor>
     </form>
     <div class="technical-doc-div g-max-article-width" *ngIf="isTechnical && technicalDocumentation">
       <h1>{{technicalDocumentation.humanName}}</h1>

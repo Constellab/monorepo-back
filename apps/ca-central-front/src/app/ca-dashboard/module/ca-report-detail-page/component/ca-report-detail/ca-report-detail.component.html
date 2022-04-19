@@ -14,7 +14,8 @@
   </fl-article-left-side>
 
   <fl-article>
-    <fl-text-editor [ngModel]="report.content" mode="JSON" [disabled]="true" class="g-full-height" flPrint></fl-text-editor>
+    <fl-text-editor [ngModel]="report.content" mode="JSON" [disabled]="true" class="g-full-height" flPrint
+                    [config]="textEditorConfig"></fl-text-editor>
 
   </fl-article>
 

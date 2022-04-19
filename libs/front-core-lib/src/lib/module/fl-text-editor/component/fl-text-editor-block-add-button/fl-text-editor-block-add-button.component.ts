@@ -1,5 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {FlTextEditorState} from '../../state/fl-text-editor.state';
+import {Component, Inject, OnInit} from '@angular/core';
+import {FlTextEditorBlockAddButton} from '../../model/fl-text-editor.class';
+import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 
 @Component({
   selector: 'fl-text-editor-block-add-button',
@@ -10,7 +11,10 @@ export class FlTextEditorBlockAddButtonComponent implements OnInit {
 
   showMenu: boolean;
 
-  constructor(private state: FlTextEditorState) {
+  buttons: FlTextEditorBlockAddButton[];
+
+  constructor(@Inject(FL_PORTAL_DATA) buttons: FlTextEditorBlockAddButton[]) {
+    this.buttons = buttons;
   }
 
   ngOnInit(): void {
@@ -24,22 +28,12 @@ export class FlTextEditorBlockAddButtonComponent implements OnInit {
     return this.showMenu ? 'clear' : 'add';
   }
 
-  uploadImage(file: File | File[]): void {
-    this.state.insertImageFromFile(file as File);
+  onAction(button: FlTextEditorBlockAddButton, event: any): void {
+    button.onAction(event);
     this.closeMenu();
   }
 
-  insertCode(): void {
-    this.state.insertCodeBlock();
-    this.closeMenu();
-  }
-
-  insertBlockquote(): void {
-    this.state.insertBlockQuote();
-    this.closeMenu();
-  }
-
-  closeMenu(): void{
+  closeMenu(): void {
     this.showMenu = false;
   }
 }

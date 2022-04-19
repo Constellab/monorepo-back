@@ -27,9 +27,10 @@
   </fl-article-left-side>
 
   <fl-article>
-    <fl-text-editor [(ngModel)]="description" mode="JSON" [disabled]="experiment.isValidated" class="g-full-height"
+    <fl-text-editor [config]="textEditorConfig"
+                    [(ngModel)]="description" mode="JSON" [disabled]="experiment.isValidated" class="g-full-height"
                     [placeholder]="'biox.experiment_description_placeholder' | translate"
-                    (textChange)="onDescriptionChanged($event)" config="simple"></fl-text-editor>
+                    (textChange)="onDescriptionChanged($event)"></fl-text-editor>
   </fl-article>
 
   <fl-article-right-side>

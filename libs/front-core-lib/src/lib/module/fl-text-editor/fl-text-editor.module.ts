@@ -21,6 +21,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FlResizeModule} from '../fl-resize/fl-resize.module';
 import Quill from 'quill';
 import {FlTextEditorModuleConfig} from './model/fl-text-editor-module-config.class';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 
 @NgModule({
@@ -39,6 +40,7 @@ import {FlTextEditorModuleConfig} from './model/fl-text-editor-module-config.cla
     MatButtonModule,
     MatIconModule,
     MatInputModule,
+    MatTooltipModule,
     MatFormFieldModule,
     FlexLayoutModule,
 
@@ -73,7 +75,7 @@ export class FlTextEditorModule {
   }
 
   public static forRoot(config: FlTextEditorModuleConfig): ModuleWithProviders<FlTextEditorModule> {
-    this.config = config;
+    FlTextEditorModule.config = config;
 
     return {
       ngModule: FlTextEditorModule,

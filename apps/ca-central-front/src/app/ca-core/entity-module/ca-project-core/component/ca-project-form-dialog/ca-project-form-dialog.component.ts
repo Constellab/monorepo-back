@@ -5,7 +5,13 @@ import {CaProject} from '../../../../model/entities/ca-project.class';
 import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
-import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
+import {
+  FlFormDialogAbstractDirective,
+  FlFormDialogInput,
+  FlSnackBarService,
+  FlTextEditorBasicConfig,
+  FlTextEditorConfig
+} from '@monorepo/front-core-lib';
 
 /**
  * Dialog to create or update a project
@@ -20,6 +26,8 @@ export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
   formGp: FormGroup<Partial<CaProject>>;
 
   isLoading: boolean = false;
+
+  textEditorConfig: FlTextEditorConfig = new FlTextEditorBasicConfig();
 
   constructor(@Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaProject>,
               private projectService: CaProjectService,

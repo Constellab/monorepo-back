@@ -7,7 +7,6 @@ import {
   FlDialogService,
   FlSearchConverter,
   FlSearchService,
-  FlTextEditorImageService,
   FlTextEditorUploadedImage
 } from '@monorepo/front-core-lib';
 import {LabReport, LabReportContent, LabReportForm} from '../model/entities/lab-report.entity';
@@ -19,13 +18,12 @@ import {LabProject} from '../model/entities/lab-project.class';
 import {map} from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
-export class LabReportService extends FlTextEditorImageService implements FlSearchService<LabReport> {
+export class LabReportService implements FlSearchService<LabReport> {
 
   private route: string = 'report';
 
   constructor(private apiService: FlApiService,
               private dialogService: FlDialogService) {
-    super();
   }
 
   public create(reportForm: LabReportForm): Observable<LabReport> {
@@ -105,11 +103,6 @@ export class LabReportService extends FlTextEditorImageService implements FlSear
 
   public getFilePath(filename: string): string {
     return this.apiService.getBaseRouteUrl(`${this.route}/image/${filename}`);
-  }
-
-
-  deleteImage(filename: string): Observable<void> {
-    return this.apiService.delete(`${this.route}/image/${filename}`);
   }
 
   uploadImage(file: File): Observable<FlTextEditorUploadedImage> {

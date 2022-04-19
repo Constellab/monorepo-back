@@ -2,7 +2,13 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LabReport, LabReportContent} from '../../../../../lab-core/model/entities/lab-report.entity';
 import {LabReportService} from '../../../../../lab-core/entity-service/lab-report.service';
 import {ActivatedRoute} from '@angular/router';
-import {FlConfirmDialogInput, FlConfirmDialogResult, FlDebouncer, FlDialogService} from '@monorepo/front-core-lib';
+import {
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDebouncer,
+  FlDialogService,
+  FlTextEditorConfig
+} from '@monorepo/front-core-lib';
 import {
   LabReportFormDialogComponent,
   LabReportFormDialogInput
@@ -15,6 +21,7 @@ import {
   LabValidateObjectDialogInput
 } from '../../../../../lab-core/entity-module/lab-project-core/component/lab-validate-object-dialog/lab-validate-object-dialog.component';
 import {LabProject} from '../../../../../lab-core/model/entities/lab-project.class';
+import {LabReportTextEditorConfig} from '../../lab-report-text-editor-config.class';
 
 @Component({
   selector: 'lab-report-detail-page',
@@ -27,13 +34,17 @@ export class LabReportDetailPageComponent implements OnInit, OnDestroy {
   report$: Observable<LabReport>;
   content: LabReportContent;
 
+  textEditorConfig: FlTextEditorConfig;
+
   private contentDebouncer: FlDebouncer<LabReportContent>;
 
   constructor(private reportService: LabReportService,
               private state: LabReportDetailPageState,
               private route: ActivatedRoute,
               private dialogService: FlDialogService,
-              private routerService: LabRouterService) {
+              private routerService: LabRouterService,
+              textEditorConfig: LabReportTextEditorConfig) {
+    this.textEditorConfig = textEditorConfig;
   }
 
   ngOnInit(): void {
