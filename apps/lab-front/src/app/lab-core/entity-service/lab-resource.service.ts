@@ -5,7 +5,7 @@ import {
   FlEntityPaginatedDatasource,
   FlFileHelper,
   FlSearchConverter,
-  FlSearchService
+  FLSearchFunction
 } from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
 import {LabResource, LabResourceDatasource} from '../model/entities/resource/lab-resource.entity';
@@ -33,7 +33,7 @@ import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity
 @Injectable({
   providedIn: 'root'
 })
-export class LabResourceService implements FlSearchService<LabResource> {
+export class LabResourceService {
 
   public static readonly defaultViewName: string = 'default-view';
   private readonly route: string = 'resource';
@@ -76,6 +76,10 @@ export class LabResourceService implements FlSearchService<LabResource> {
 
   public updateResourceType(id: string, resourceTypingName: string): Observable<LabResource> {
     return this.apiService.put(`${this.route}/${id}/type/${resourceTypingName}`, null, LabResource);
+  }
+
+  public getAdvancedSearchFunction(): FLSearchFunction<LabResource> {
+    return (page: number, pageSize: number, filters?: LabResourceSearchFields) => this.advancedSearch(page, pageSize, filters);
   }
 
 

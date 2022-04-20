@@ -1,9 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
-  FL_SEARCH_CONFIG,
   FlSavedSearch,
   FlSearchConfig,
-  FlSearchService,
   FlSearchState,
   FlTableColumn,
   flThemeDetailLight
@@ -35,28 +33,12 @@ const savedSearch: FlSavedSearch[] = [
   }
 ];
 
-/**
- * Configuration factory for the
- * */
-function searchConfig(searchService: FlSearchService<any>): FlSearchConfig {
-  return {
-    version: 1,
-    searchService: searchService,
-    buildAdvancedForm: LabTypeSearch.getAdvancedSearchForm,
-    advancedFormClass: LabTypeSearchFields,
-    savedSearch: savedSearch,
-    advancedSearchFormManagerConfig: LabTypeSearch.advancedSearchManagerConfig
-  };
-}
-
-
 @Component({
   selector: 'lab-type-search',
   templateUrl: './lab-type-search.component.html',
   styleUrls: ['./lab-type-search.component.scss'],
   providers: [
     FlSearchState,
-    {provide: FL_SEARCH_CONFIG, useFactory: searchConfig, deps: [LabTypeService]}
   ]
 })
 export class LabTypeSearchComponent implements OnInit {
@@ -70,11 +52,11 @@ export class LabTypeSearchComponent implements OnInit {
   columns: FlTableColumn<LabTypeEntity>[];
   datasource: LabTypeEntityDatasource;
 
-  constructor(private searchState: FlSearchState<any>) {
+  constructor(private searchState: FlSearchState<any>,
+              private typeService: LabTypeService) {
   }
 
   ngOnInit(): void {
-    this.datasource = this.searchState.datasource;
 
     // set hidden filters based on config
     let hiddenFilters: Partial<LabTypeSearchFields>;
@@ -97,7 +79,18 @@ export class LabTypeSearchComponent implements OnInit {
         {columnName: 'description', accessor: 'shortDescription'}, 'detail'];
     }
     this.searchState.setHiddenFilters(hiddenFilters);
-    this.searchState.init(this.fullPageSearch);
+
+    const config: FlSearchConfig = {
+      version: 1,
+      searchFunc: this.typeService.getAdvancedSearchFunction(),
+      buildAdvancedForm: LabTypeSearch.getAdvancedSearchForm,
+      advancedFormClass: LabTypeSearchFields,
+      savedSearch: savedSearch,
+      advancedSearchFormManagerConfig: LabTypeSearch.advancedSearchManagerConfig,
+      storeSearchInUrl: this.fullPageSearch
+    };
+    this.searchState.init(config);
+    this.datasource = this.searchState.datasource;
   }
 
   selectType(type: LabTypeEntity): void {

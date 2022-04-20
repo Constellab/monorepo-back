@@ -1,9 +1,8 @@
-import {Inject, Injectable, OnDestroy} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {FlDatasourcePaginated} from '../../../model/datasource/fl-datasource-paginated.class';
 import {FormGroup} from '@ngneat/reactive-forms';
 import {MatDrawer} from '@angular/material/sidenav';
-import {FL_SEARCH_CONFIG, FlSearchConfig} from './fl-search-state-config.class';
-import {FlSearchService} from './fl-search-service.class';
+import {FlSearchConfig} from './fl-search-state-config.class';
 import {FlEntityPaginatedDatasource} from '../../../model/datasource/fl-entity-datasource.class';
 import {FlEntity} from '../../../model/fl-entity.class';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -22,14 +21,12 @@ type FlSearchMode = 'advanced' | 'default';
 @Injectable()
 export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
+  private config: FlSearchConfig;
   // datasource containing the data
-  public readonly datasource: FlDatasourcePaginated<T>;
-
-  // service for the search
-  private readonly searchService: FlSearchService<T>;
+  public datasource: FlDatasourcePaginated<T>;
 
   // form group instance of the advanced form
-  public readonly advancedSearchFormGroup: FormGroup;
+  public advancedSearchFormGroup: FormGroup;
 
   // timestamp code of the last search to prevent calling the same search twice
   private lastSearchTimestamp: string;
@@ -42,13 +39,9 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
   // list of filter that are added programmatically and override search criteria
   private hiddenFilters: Record<string, any> = {};
 
+
   constructor(private route: ActivatedRoute,
-              private router: Router,
-              @Inject(FL_SEARCH_CONFIG) private config: FlSearchConfig) {
-    this.advancedSearchFormGroup = config.buildAdvancedForm();
-    this.searchService = config.searchService;
-    this.datasource = new FlEntityPaginatedDatasource(
-      this.searchService.advancedSearch.bind(this.searchService), 20, false);
+              private router: Router) {
   }
 
   public setDrawer(drawer: MatDrawer): void {
@@ -57,12 +50,15 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
   /**
    * Init the search page and call first search
-   * @param storeSearchInUrl if true the url is modified
+   * @param config
    */
-  public init(storeSearchInUrl: boolean): void {
-    this.storeSearchInUrl = storeSearchInUrl;
+  public init(config: FlSearchConfig): void {
+    this.config = config;
+    this.advancedSearchFormGroup = config.buildAdvancedForm();
 
-    if (storeSearchInUrl) {
+    this.datasource = new FlEntityPaginatedDatasource(config.searchFunc, 20, false);
+
+    if (config.storeSearchInUrl) {
       this.subscribeToNavigation();
     } else {
       this.initFirstSearch();
@@ -109,7 +105,7 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
   private callAdvancedSearch(filtersCriteria: Record<string, any>): FlAdvancedSearchObject {
 
     // add the hidden filters
-    if(this.hiddenFilters){
+    if (this.hiddenFilters) {
       filtersCriteria = {...filtersCriteria, ...this.hiddenFilters};
     }
 
@@ -255,6 +251,10 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
   public toggleDrawer(): void {
     this.drawer.toggle();
+  }
+
+  public getConfig(): FlSearchConfig {
+    return this.config;
   }
 
   ngOnDestroy(): void {

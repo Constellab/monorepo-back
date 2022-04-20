@@ -1,13 +1,11 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {
-  FL_SEARCH_CONFIG,
   FlDatasourcePaginated,
   FlDialogService,
   FlPortalAction,
   FlPortalActionsService,
   FlSavedSearch,
   FlSearchConfig,
-  FlSearchService,
   FlSearchState,
   FlTableColumn,
   FlTag,
@@ -58,20 +56,6 @@ const savedSearch: FlSavedSearch[] = [
   }];
 
 /**
- * Configuration factory for the
- * */
-function searchConfig(searchService: FlSearchService<any>): FlSearchConfig {
-  return {
-    version: 1,
-    searchService: searchService,
-    buildAdvancedForm: LabResourceSearch.getAdvancedSearchForm,
-    advancedFormClass: LabResourceSearchFields,
-    savedSearch: savedSearch,
-    advancedSearchFormManagerConfig: LabResourceSearch.advancedSearchManagerConfig
-  };
-}
-
-/**
  * Complete component to search on resource. It supports a select mode and manage file upload.
  */
 @Component({
@@ -80,7 +64,6 @@ function searchConfig(searchService: FlSearchService<any>): FlSearchConfig {
   styleUrls: ['./lab-resource-search.component.scss'],
   providers: [
     FlSearchState,
-    {provide: FL_SEARCH_CONFIG, useFactory: searchConfig, deps: [LabResourceService]}
   ]
 
 })
@@ -108,7 +91,8 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
   constructor(private searchState: FlSearchState<any>,
               private dialogService: FlDialogService,
               private actionsService: FlPortalActionsService,
-              private fileResourceService: LabFileResourceService) {
+              private fileResourceService: LabFileResourceService,
+              private resourceService: LabResourceService) {
   }
 
   ngOnInit(): void {
@@ -117,8 +101,17 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
       this.columns.push('action');
     }
 
+    const searchConfig: FlSearchConfig = {
+      version: 1,
+      searchFunc: this.resourceService.getAdvancedSearchFunction(),
+      buildAdvancedForm: LabResourceSearch.getAdvancedSearchForm,
+      advancedFormClass: LabResourceSearchFields,
+      savedSearch: savedSearch,
+      advancedSearchFormManagerConfig: LabResourceSearch.advancedSearchManagerConfig,
+      storeSearchInUrl: this.fullPageSearch
+    };
+    this.searchState.init(searchConfig);
     this.datasource = this.searchState.datasource;
-    this.searchState.init(this.fullPageSearch);
     this.listenToUploadAction();
   }
 

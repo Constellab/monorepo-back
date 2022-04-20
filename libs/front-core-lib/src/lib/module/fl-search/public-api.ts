@@ -15,6 +15,5 @@ export * from './model/fl-search.class';
 export * from './model/fl-search.state';
 export * from './model/fl-search-url.helper';
 export * from './model/fl-saved-search.class';
-export * from './model/fl-search-service.class';
 export * from './model/fl-search-converter.class';
 export * from './model/fl-search-state-config.class';

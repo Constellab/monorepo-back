@@ -1,12 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
-  FL_SEARCH_CONFIG,
   FlDatasourcePaginated,
   FlDialogService,
   FlFormDialogInput,
   FlSavedSearch,
   FlSearchConfig,
-  FlSearchService,
   FlSearchState,
   FlTableColumn,
   FlTag,
@@ -29,27 +27,12 @@ const savedSearch: FlSavedSearch[] = [{
   filtersCriteria: {type: 'EXPERIMENT', isValidated: false, isArchived: false} as Partial<LabExperimentSearchFields>
 }];
 
-/**
- * Configuration factory for the
- * */
-function searchConfig(searchService: FlSearchService<any>): FlSearchConfig {
-  return {
-    version: 1,
-    searchService: searchService,
-    buildAdvancedForm: LabExperimentSearch.getAdvancedSearchForm,
-    advancedFormClass: LabExperimentSearchFields,
-    savedSearch: savedSearch,
-    advancedSearchFormManagerConfig: LabExperimentSearch.advancedSearchManagerConfig
-  };
-}
-
 @Component({
   selector: 'lab-experiment-search',
   templateUrl: './lab-experiment-search.component.html',
   styleUrls: ['./lab-experiment-search.component.scss'],
   providers: [
     FlSearchState,
-    {provide: FL_SEARCH_CONFIG, useFactory: searchConfig, deps: [LabExperimentService]}
   ]
 })
 export class LabExperimentSearchComponent implements OnInit {
@@ -71,8 +54,17 @@ export class LabExperimentSearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const config: FlSearchConfig = {
+      version: 1,
+      searchFunc: this.experimentService.getAdvancedSearchFunction(),
+      buildAdvancedForm: LabExperimentSearch.getAdvancedSearchForm,
+      advancedFormClass: LabExperimentSearchFields,
+      savedSearch: savedSearch,
+      advancedSearchFormManagerConfig: LabExperimentSearch.advancedSearchManagerConfig,
+      storeSearchInUrl: this.fullPageSearch
+    };
+    this.searchState.init(config);
     this.datasource = this.searchState.datasource;
-    this.searchState.init(this.fullPageSearch);
   }
 
   createExperiment(): void {

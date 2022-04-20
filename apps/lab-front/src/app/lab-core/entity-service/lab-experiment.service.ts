@@ -5,7 +5,7 @@ import {
   FlEntityPaginatedDatasource,
   FlQuillJson,
   FlSearchConverter,
-  FlSearchService,
+  FLSearchFunction,
   FlTag
 } from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
@@ -26,7 +26,7 @@ import {
 @Injectable({
   providedIn: 'root'
 })
-export class LabExperimentService implements FlSearchService<LabExperiment> {
+export class LabExperimentService {
 
   private route: string = 'experiment';
 
@@ -101,6 +101,10 @@ export class LabExperimentService implements FlSearchService<LabExperiment> {
 
   public cloneExperiment(id: string): Observable<LabExperiment> {
     return this.apiService.put(`${this.route}/${id}/clone`, null, LabExperiment);
+  }
+
+  public getAdvancedSearchFunction(): FLSearchFunction<LabExperiment> {
+    return (page: number, pageSize: number, filters?: LabExperimentSearchFields) => this.advancedSearch(page, pageSize, filters);
   }
 
   public advancedSearch(page: number, pageSize: number, filters?: LabExperimentSearchFields): Observable<ClPageI<LabExperiment>> {

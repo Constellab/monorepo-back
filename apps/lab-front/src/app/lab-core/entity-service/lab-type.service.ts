@@ -3,7 +3,7 @@ import {
   FlAdvancedSearchInput,
   FlApiWithCacheService,
   FlSearchConverter,
-  FlSearchService
+  FLSearchFunction
 } from '@monorepo/front-core-lib';
 import {LabTypeEntity, LabTypeObjectType} from '../model/entities/lab-type/lab-type.entity';
 import {Observable} from 'rxjs';
@@ -15,7 +15,7 @@ import {LabProtocolType} from '../model/entities/lab-type/lab-protocol-type.enti
 @Injectable({
   providedIn: 'root'
 })
-export class LabTypeService implements FlSearchService<LabTypeEntity> {
+export class LabTypeService {
 
   private readonly route: string = 'typing';
 
@@ -36,7 +36,11 @@ export class LabTypeService implements FlSearchService<LabTypeEntity> {
   }
 
   public getTyping(typingName: string): Observable<LabTaskType | LabProtocolType> {
-    return this.apiService.getWithCache(`${this.route}/${typingName}`,LabTypeService.deserializeTyping);
+    return this.apiService.getWithCache(`${this.route}/${typingName}`, LabTypeService.deserializeTyping);
+  }
+
+  public getAdvancedSearchFunction(): FLSearchFunction<LabTypeEntity> {
+    return (page: number, pageSize: number, filters?: LabTypeSearchFields) => this.advancedSearch(page, pageSize, filters);
   }
 
   public advancedSearch(page: number, pageSize: number, filters: LabTypeSearchFields): Observable<ClPageI<LabTypeEntity>> {

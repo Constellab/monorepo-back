@@ -6,19 +6,22 @@ import {
   FlConfirmDialogResult,
   FlDialogService,
   FlSearchConverter,
-  FlSearchService,
+  FLSearchFunction,
   FlTextEditorUploadedImage
 } from '@monorepo/front-core-lib';
 import {LabReport, LabReportContent, LabReportForm} from '../model/entities/lab-report.entity';
 import {Observable} from 'rxjs';
 import {ClPageI} from '@monorepo/core-lib';
 import {LabExperiment} from '../model/entities/lab-experiment.entity';
-import {LabReportSearch} from '../entity-module/lab-report-core/model/lab-report-advanced-search.class';
+import {
+  LabReportSearch,
+  LabReportSearchFields
+} from '../entity-module/lab-report-core/model/lab-report-advanced-search.class';
 import {LabProject} from '../model/entities/lab-project.class';
 import {map} from 'rxjs/operators';
 
 @Injectable({providedIn: 'root'})
-export class LabReportService implements FlSearchService<LabReport> {
+export class LabReportService {
 
   private route: string = 'report';
 
@@ -88,7 +91,11 @@ export class LabReportService implements FlSearchService<LabReport> {
     return this.apiService.get(`${this.route}/${reportId}/experiments`, LabExperiment);
   }
 
-  public advancedSearch(page: number, pageSize: number, filters: any): Observable<ClPageI<LabReport>> {
+  public getAdvancedSearchFunction(): FLSearchFunction<LabReport> {
+    return (page: number, pageSize: number, filters?: LabReportSearchFields) => this.advancedSearch(page, pageSize, filters);
+  }
+
+  public advancedSearch(page: number, pageSize: number, filters: LabReportSearchFields): Observable<ClPageI<LabReport>> {
     const data: FlAdvancedSearchInput = {
       filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, LabReportSearch.advancedSearchConverter),
       sortsCriteria: null
@@ -124,8 +131,6 @@ export class LabReportService implements FlSearchService<LabReport> {
   getImageUrl(filename: string): string {
     return this.getFilePath(filename);
   }
-
-
 
 
 }
