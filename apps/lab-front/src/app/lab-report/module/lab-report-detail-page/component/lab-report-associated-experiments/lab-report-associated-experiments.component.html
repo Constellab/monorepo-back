@@ -1,7 +1,10 @@
 <fl-section [object]="experiments" [isLoading]="isLoading" emptyText="biox.no_report_associated_experiment">
 
   <fl-section-header>
-    <h3>{{'biox.report_associated_experiment' | translate}}</h3>
+    <fl-text-icon>
+      <mat-icon flIcon="experiment"></mat-icon>
+      <h3>{{'biox.report_associated_experiment' | translate}}</h3>
+    </fl-text-icon>
 
     <fl-section-actions *ngIf="canEdit">
       <button mat-icon-button type="button" [matTooltip]="'biox.report_associate_experiment' | translate"

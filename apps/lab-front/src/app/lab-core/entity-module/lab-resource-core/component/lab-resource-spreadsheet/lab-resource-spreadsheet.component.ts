@@ -9,7 +9,6 @@ import {
 import {LabResourceViewDirective} from '../../model/lab-resource-view-component.class';
 import {LabResourceViewTable} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {LabResourceTableChartService} from '../../state/lab-resource-table-chart.service';
-import {labConvertTransformersWithConfigToParams} from '../../../../model/global/lab-transformer.class';
 
 /**
  * Component to display a resource in a spreadsheet
@@ -36,9 +35,9 @@ export class LabResourceSpreadsheetComponent extends LabResourceViewDirective<La
   ngOnInit(): void {
     // init the chart state so it knows the context
     this.chartState.init(this.resourceId,
-      this.config.viewMethodName,
-      this.config.viewConfigValues,
-      labConvertTransformersWithConfigToParams(this.config.transformersWithConfig));
+      this.config.methodName,
+      this.config.configValues,
+      this.config.transformers);
 
     const spreadSheet: FlSpreadsheet = new FlSpreadsheet();
     // if the resource is a csv file

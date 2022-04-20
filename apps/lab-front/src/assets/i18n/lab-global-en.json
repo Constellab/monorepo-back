@@ -6,6 +6,7 @@
   "connection_lost": "The connection has been lost",
   "description": "Description",
   "title": "Title",
+  "caption": "Caption",
   "status": "Status",
   "datetime": "Date time",
   "no_lab_experiment": "There is no experiment",

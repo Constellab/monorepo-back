@@ -2,7 +2,8 @@ import {Component, ComponentRef, Input, OnDestroy, OnInit, ViewChild, ViewContai
 import {
   labConstResourceViewTypeInfos,
   LabResourceView,
-  LabResourceViewSpecWithConfig,
+  LabResourceViewConfig,
+  LabResourceViewDisplayMode,
   LabResourceViewType,
   LabResourceViewTypeInfo
 } from '../../../../model/entities/resource/lab-resource-view.entity';
@@ -73,7 +74,9 @@ export class LabResourceViewComponent implements OnInit, OnDestroy {
 
   @Input() resourceId: string;
 
-  @Input() config: LabResourceViewSpecWithConfig;
+  @Input() config: LabResourceViewConfig;
+
+  @Input() displayMode: LabResourceViewDisplayMode = 'fullScreen';
 
   @ViewChild('viewContainer', {static: true, read: ViewContainerRef}) viewContainer: ViewContainerRef;
 
@@ -111,6 +114,7 @@ export class LabResourceViewComponent implements OnInit, OnDestroy {
       this.viewComponentRef.instance.view = view;
       this.viewComponentRef.instance.resourceId = this.resourceId;
       this.viewComponentRef.instance.config = this.config;
+      this.viewComponentRef.instance.displayMode = this.displayMode;
     }, 0);
   }
 

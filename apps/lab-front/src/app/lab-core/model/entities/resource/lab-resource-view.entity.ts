@@ -4,7 +4,7 @@ import {LabResourceViewBasicPlot2d} from './lab-resource-view-basic-plot-2d.clas
 import {LabResourceViewHeatMap} from './lab-resource-view-heat-map.class';
 import {LabResourceViewHistogram} from './lab-resource-view-histogram.class';
 import {LabResourceVennDiagram} from './lab-resource-venn-diagram.class';
-import {LabTransformerWithConfig} from '../../global/lab-transformer.class';
+import {LabCallTransformerParams, LabTransformerWithConfig} from '../../global/lab-transformer.class';
 import {LabConfigValues} from '../lab-config.entity';
 import {LabResourceViewFolder} from './lab-resource-view-folder.class';
 
@@ -70,6 +70,12 @@ export interface LabResourceViewSpecWithConfig {
   viewConfigValues: LabConfigValues;
   displayMode: LabResourceViewDisplayMode;
   transformersWithConfig: LabTransformerWithConfig[];
+}
+
+export interface LabResourceViewConfig {
+  methodName: string;
+  configValues: LabConfigValues;
+  transformers: LabCallTransformerParams[];
 }
 
 export interface LabResourceViewBase {

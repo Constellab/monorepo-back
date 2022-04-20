@@ -1,12 +1,13 @@
-import {LabEntity} from '../../global/lab-entity.entity';
 import {LabConfigValues} from '../lab-config.entity';
 import {Expose} from 'class-transformer';
 import {LabResourceViewType} from './lab-resource-view.entity';
+import {LabCallTransformerParams} from '../../global/lab-transformer.class';
+import {LabBaseEntityWithUser} from '../lab-user.entity';
 
 /**
  * Represent a view config that the user viewed
  */
-export class LabViewConfig extends LabEntity {
+export class LabViewConfig extends LabBaseEntityWithUser {
 
   title: string;
 
@@ -21,5 +22,15 @@ export class LabViewConfig extends LabEntity {
   @Expose({name: 'config_values'})
   configValues: LabConfigValues;
 
-  transformers: any[];
+  transformers: LabCallTransformerParams[];
+
+  resource: {
+    id: string;
+    name: string;
+  };
+
+  experiment?: {
+    id: string;
+    title: string;
+  };
 }

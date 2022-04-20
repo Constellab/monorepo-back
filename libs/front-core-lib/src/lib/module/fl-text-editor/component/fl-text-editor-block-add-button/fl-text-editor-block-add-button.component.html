@@ -10,14 +10,14 @@
     <ng-container *ngFor="let button of buttons">
       <button *ngIf="button.type === 'button'; else fileExplorer" mat-icon-button
               class="menu-button g-button-icon-border g-button-icon-small"
-              (click)="onAction(button, $event)" [matTooltip]="button.tooltip">
+              (click)="onAction(button, $event)" [matTooltip]="button.tooltip | translate">
         <mat-icon>{{button.icon}}</mat-icon>
       </button>
 
       <ng-template #fileExplorer>
         <!--   Upload files     -->
-        <fl-input-file-icon-container icon="image" class="menu-button" [border]="true"
-                                      size="small">
+        <fl-input-file-icon-container [icon]="button.icon" class="menu-button" [border]="true"
+                                      size="small" [matTooltip]="button.tooltip | translate">
           <input flInputFile [strictMode]="true" accept="image/*" type="file"
                  (fileChange)="onAction(button, $event)">
         </fl-input-file-icon-container>

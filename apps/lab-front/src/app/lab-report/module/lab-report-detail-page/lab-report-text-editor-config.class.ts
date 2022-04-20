@@ -1,5 +1,5 @@
-import {Injectable} from '@angular/core';
 import {
+  FlDialogService,
   FlQuillConfig,
   FlTextEditorBlockAddButton,
   FlTextEditorConfig,
@@ -7,14 +7,20 @@ import {
   FlTextEditorState
 } from '@monorepo/front-core-lib';
 import {LabReportService} from '../../../lab-core/entity-service/lab-report.service';
+import {
+  LabSelectViewConfigDialogComponent
+} from '../../../lab-core/entity-module/lab-view-config-core/component/lab-select-view-config-dialog/lab-select-view-config-dialog.component';
+import {LabViewConfig} from '../../../lab-core/model/entities/resource/lab-view-config.entity';
+import {LabReportContentView, LabReportContentViewBlot} from './lab-report-content-view.class';
 
 /**
  * Config for the text editor in the report
  */
-@Injectable({providedIn: 'root'})
 export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
-  constructor(private reportService: LabReportService) {
+  constructor(private reportId: string,
+              private reportService: LabReportService,
+              private dialogService: FlDialogService) {
     super();
   }
 
@@ -28,18 +34,41 @@ export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlT
         icon: 'image', type: 'fileExplorer',
         onAction: file => this.insertImageFromFile(file, state)
       },
+      {
+        icon: 'add_chart', type: 'button', tooltip: 'biox.report_add_view',
+        onAction: () => this.openSelectResourceView(state)
+      },
       this.getCodeBlockAddButton(state)
     ];
   }
 
-  public insertImageFromFile(file: File, textEditorState: FlTextEditorState): void {
+  private insertImageFromFile(file: File, textEditorState: FlTextEditorState): void {
     const index = textEditorState.getCurrentSelectionIndex();
     this.reportService.uploadImage(file).subscribe(
       fileUrl => textEditorState.insertImageFromUrl(fileUrl, index)
     );
   }
 
+  private openSelectResourceView(textEditorState: FlTextEditorState): void {
+    this.dialogService.openBigDialog(LabSelectViewConfigDialogComponent, {data: this.reportId}).afterClosed()
+      .subscribe(viewConfig => this.insertResourceView(textEditorState, viewConfig));
+  }
+
+  private insertResourceView(textEditorState: FlTextEditorState, viewConfig?: LabViewConfig): void {
+    if (viewConfig == null) return;
+    const index = textEditorState.getCurrentSelectionIndex();
+    const contentView: LabReportContentView = {
+      resource_id: viewConfig.resource.id,
+      view_method_name: viewConfig.viewName,
+      view_config: viewConfig.configValues,
+      transformers: viewConfig.transformers
+    };
+
+    textEditorState.insertEmbed(index, LabReportContentViewBlot.blotName, contentView);
+  }
+
   public getImageUrl(filename: string): string {
     return this.reportService.getImageUrl(filename);
   }
+
 }

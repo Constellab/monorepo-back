@@ -6,6 +6,7 @@
   "connection_lost": "La connexion a été perdue",
   "description": "Description",
   "title": "Titre",
+  "caption": "Sous-titre",
   "status": "Statut",
   "datetime": "Date/heure",
   "no_lab_experiment": "Il n'y a pas d'expérience",

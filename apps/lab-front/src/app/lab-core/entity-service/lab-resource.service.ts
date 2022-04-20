@@ -118,8 +118,16 @@ export class LabResourceService {
       record => clDeserializeRecordWrapper(record, LabConfigSpecs, LabConfigSpecBase));
   }
 
+  /**
+   * Call a view on a resource
+   * @param id
+   * @param viewMethodName
+   * @param config
+   * @param transformers
+   * @param saveViewConfig if true the config is saved in the historic
+   */
   public callResourceView(id: string, viewMethodName: string, config: LabConfigValues,
-                          transformers: LabCallTransformerParams[]): Observable<LabViewCallResult> {
+                          transformers: LabCallTransformerParams[], saveViewConfig: boolean = false): Observable<LabViewCallResult> {
     for (const key in config) {
       if (config[key] == null) {
         delete config[key];
@@ -127,12 +135,13 @@ export class LabResourceService {
     }
     return this.apiService.post(`${this.route}/${id}/views/${viewMethodName}`, {
       values: config,
-      transformers: transformers
+      transformers: transformers,
+      save_view_config: saveViewConfig
     }, LabViewCallResult);
   }
 
   public callResourceDefaultView(id: string): Observable<LabViewCallResult> {
-    return this.callResourceView(id, LabResourceService.defaultViewName, {}, []);
+    return this.callResourceView(id, LabResourceService.defaultViewName, {}, [], true);
   }
 
   //////////////////////////////////////// TRANSFORMERS  ///////////////////////////////////////

@@ -119,6 +119,9 @@ export class FlChartComponent implements OnInit, OnDestroy {
 
   // clear the svg and rebuild the chart
   private redrawChart(size: Size): void {
+    if(size.width <= 0 || size.height <= 0) {
+      return;
+    }
     console.log('Redraw chart');
     this.state.chartSVG.svg.remove();
     this.state.initChart(size.width, size.height,

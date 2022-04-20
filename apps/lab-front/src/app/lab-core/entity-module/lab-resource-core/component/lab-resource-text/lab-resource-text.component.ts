@@ -7,7 +7,6 @@ import {
 } from '../../../../model/entities/resource/lab-resource-view.entity';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {Observable} from 'rxjs';
-import {labConvertTransformersWithConfigToParams} from '../../../../model/global/lab-transformer.class';
 import {map} from 'rxjs/operators';
 
 /**
@@ -82,11 +81,11 @@ export class LabResourceTextComponent extends LabResourceViewDirective<LabResour
 
   private callPagination(page: number): Observable<LabResourceViewText> {
     // merge config with pagination config
-    const viewConfig = Object.assign(this.config.viewConfigValues, {[labResourceViewTextSpecPage]: page});
+    const viewConfig = Object.assign(this.config.configValues, {[labResourceViewTextSpecPage]: page});
 
-    return this.resourceService.callResourceView(this.resourceId, this.config.viewMethodName,
+    return this.resourceService.callResourceView(this.resourceId, this.config.methodName,
       viewConfig,
-      labConvertTransformersWithConfigToParams(this.config.transformersWithConfig)).pipe(
+      this.config.transformers).pipe(
       map(view => view.viewData)
     ) as Observable<LabResourceViewText>;
   }

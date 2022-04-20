@@ -1,0 +1,8 @@
+<fl-dialog-header>
+  {{'biox.view_config_select' | translate }}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <lab-view-config-search [reportId]="reportId"
+                          (viewConfigSelected)="onViewConfigSelected($event)"></lab-view-config-search>
+</mat-dialog-content>

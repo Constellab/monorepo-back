@@ -31,6 +31,10 @@ import {LabApiErrorService} from './lab-core/service/lab-api-error.service';
 import {LabApiServiceConfig} from './lab-core/service/lab-api-module.config';
 import {LabAppRoutingModule} from './lab-app-routing.module';
 import {LabTagService} from './lab-core/entity-service/lab-tag.service';
+import {LabReportContentViewBlot} from './lab-report/module/lab-report-detail-page/lab-report-content-view.class';
+import {
+  LabReportContentViewComponent
+} from './lab-report/module/lab-report-detail-page/component/lab-report-content-view/lab-report-content-view.component';
 
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
@@ -75,7 +79,8 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
     FlAuthModule.forRoot(LabAuthenticationService),
     FlTagModule.forRoot(LabTagService),
     FlTextEditorModule.forRoot({
-      blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent}]
+      blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent},
+        {blot: LabReportContentViewBlot, componentType: LabReportContentViewComponent}]
     }),
 
     LabAppRoutingModule

@@ -1,6 +1,7 @@
 import {
   LabResourceView,
-  LabResourceViewSpecWithConfig
+  LabResourceViewConfig,
+  LabResourceViewDisplayMode
 } from '../../../model/entities/resource/lab-resource-view.entity';
 import {Directive, Input} from '@angular/core';
 
@@ -12,6 +13,8 @@ export class LabResourceViewDirective<T extends LabResourceView = LabResourceVie
 
   @Input() resourceId: string;
 
-  @Input() config: LabResourceViewSpecWithConfig;
+  @Input() config: LabResourceViewConfig;
+
+  @Input() displayMode: LabResourceViewDisplayMode = 'fullScreen';
 
 }

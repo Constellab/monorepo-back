@@ -7,16 +7,31 @@ import {
   LabReportAssociatedExperimentsComponent
 } from './component/lab-report-associated-experiments/lab-report-associated-experiments.component';
 import {RouterModule} from '@angular/router';
+import {
+  LabViewConfigCoreModule
+} from '../../../lab-core/entity-module/lab-view-config-core/lab-view-config-core.module';
+import {LabReportContentViewComponent} from './component/lab-report-content-view/lab-report-content-view.component';
+import {LabResourceCoreModule} from '../../../lab-core/entity-module/lab-resource-core/lab-resource-core.module';
 
 
 @NgModule({
-  declarations: [LabReportDetailPageComponent, LabReportAssociatedExperimentsComponent],
+  declarations: [
+    LabReportDetailPageComponent,
+    LabReportAssociatedExperimentsComponent,
+    LabReportContentViewComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
     RouterModule,
 
     LabCoreModule,
+    LabViewConfigCoreModule,
+    LabResourceCoreModule,
+  ],
+  exports: [
+    LabReportContentViewComponent
   ]
 })
-export class LabReportDetailPageModule { }
+export class LabReportDetailPageModule {
+}

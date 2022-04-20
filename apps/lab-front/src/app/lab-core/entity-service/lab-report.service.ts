@@ -19,6 +19,11 @@ import {
 } from '../entity-module/lab-report-core/model/lab-report-advanced-search.class';
 import {LabProject} from '../model/entities/lab-project.class';
 import {map} from 'rxjs/operators';
+import {LabViewConfig} from '../model/entities/resource/lab-view-config.entity';
+import {
+  LabViewConfigSearch,
+  LabViewConfigSearchFields
+} from '../entity-module/lab-view-config-core/model/lab-view-config-search.class';
 
 @Injectable({providedIn: 'root'})
 export class LabReportService {
@@ -95,7 +100,7 @@ export class LabReportService {
     return (page: number, pageSize: number, filters?: LabReportSearchFields) => this.advancedSearch(page, pageSize, filters);
   }
 
-  public advancedSearch(page: number, pageSize: number, filters: LabReportSearchFields): Observable<ClPageI<LabReport>> {
+  private advancedSearch(page: number, pageSize: number, filters: LabReportSearchFields): Observable<ClPageI<LabReport>> {
     const data: FlAdvancedSearchInput = {
       filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, LabReportSearch.advancedSearchConverter),
       sortsCriteria: null
@@ -130,6 +135,24 @@ export class LabReportService {
 
   getImageUrl(filename: string): string {
     return this.getFilePath(filename);
+  }
+
+  ///////////////////////////////////////////// RESOURCE VIEW /////////////////////////////////////////////
+
+  public getViewConfigSearchFunction(reportId: string): FLSearchFunction<LabViewConfig> {
+    return (page: number, pageSize: number, filters?: LabViewConfigSearchFields) =>
+      this.searchResourceView(reportId, page, pageSize, filters);
+  }
+
+  private searchResourceView(reportId: string, page: number, pageSize: number,
+                             filters: LabViewConfigSearchFields): Observable<ClPageI<LabViewConfig>> {
+    const data: FlAdvancedSearchInput = {
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, LabViewConfigSearch.advancedSearchConverter),
+      sortsCriteria: null
+    };
+    return this.apiService.post(`${this.route}/${reportId}/resource-views`, data, LabViewConfig, {
+      page: page, pageSize: pageSize, resultIsPaginated: true
+    });
   }
 
 

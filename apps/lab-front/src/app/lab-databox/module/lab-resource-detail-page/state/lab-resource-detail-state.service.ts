@@ -5,6 +5,8 @@ import {BehaviorSubject, firstValueFrom, Observable, Subscription} from 'rxjs';
 import {
   labConstResourceViewTypeInfos,
   LabResourceView,
+  LabResourceViewConfig,
+  LabResourceViewDisplayMode,
   LabResourceViewSpecsByType,
   LabResourceViewSpecWithConfig,
   LabResourceViewTypeInfo,
@@ -35,7 +37,8 @@ export interface LabResourceViewEvent {
   status: 'success' | 'error';
   viewEvent?: {
     view: LabResourceView;
-    viewConfig: LabResourceViewSpecWithConfig;
+    viewConfig: LabResourceViewConfig;
+    displayMode: LabResourceViewDisplayMode;
   };
 }
 
@@ -77,7 +80,7 @@ export class LabResourceDetailState implements OnDestroy {
 
     // subscribe to portal view to open them
     this.subscription = this.getView$().pipe(
-      filter(viewEvent => viewEvent.status === 'success' && viewEvent.viewEvent.viewConfig.displayMode === 'portal'),
+      filter(viewEvent => viewEvent.status === 'success' && viewEvent.viewEvent.displayMode === 'portal'),
       map(viewEvent => viewEvent.viewEvent)
     ).subscribe(
       viewEvent => this.openViewInPortal(viewEvent.view, viewEvent.viewConfig)
@@ -128,6 +131,7 @@ export class LabResourceDetailState implements OnDestroy {
       displayMode: 'fullScreen', viewMethodName: LabResourceService.defaultViewName,
       viewName: 'Default', viewConfigValues: {}, transformersWithConfig: [], isDefaultView: true
     };
+
     this.flActionService.addAction(
       {
         type: this.actionType,
@@ -160,10 +164,10 @@ export class LabResourceDetailState implements OnDestroy {
   private callResourceView(methodName: string, configValues: LabConfigValues,
                            transformers: LabTransformerWithConfig[]): Observable<LabViewCallResult> {
     return this.resourceService.callResourceView(this.id, methodName, configValues,
-      labConvertTransformersWithConfigToParams(transformers));
+      labConvertTransformersWithConfigToParams(transformers), true);
   }
 
-  private openViewInPortal(view: LabResourceView, viewConfig: LabResourceViewSpecWithConfig): void {
+  private openViewInPortal(view: LabResourceView, viewConfig: LabResourceViewConfig): void {
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
       {centerHorizontally: '0', top: '0'},
       {
@@ -199,11 +203,17 @@ export class LabResourceDetailState implements OnDestroy {
         // if the view has a force display mode, use it. Otherwise, use the selected display mode
         const viewTypeInfo: LabResourceViewTypeInfo = labConstResourceViewTypeInfos[viewResult.viewData.type];
 
+        const additionalInfo: LabResourceViewSpecWithConfig = actionResult.additionalInformation;
         const viewEvent: LabResourceViewEvent = {
           status: 'success',
           viewEvent: {
             view: viewResult.viewData,
-            viewConfig: actionResult.additionalInformation,
+            viewConfig: {
+              methodName: additionalInfo.viewMethodName,
+              configValues: additionalInfo.viewConfigValues,
+              transformers: labConvertTransformersWithConfigToParams(additionalInfo.transformersWithConfig),
+            },
+            displayMode: additionalInfo.displayMode
           }
         };
 
@@ -214,7 +224,7 @@ export class LabResourceDetailState implements OnDestroy {
 
         // if the view has a force default display mode, set it
         if (viewTypeInfo.forceDefaultDisplayMode) {
-          viewEvent.viewEvent.viewConfig.displayMode = viewTypeInfo.defaultDisplayMode;
+          viewEvent.viewEvent.displayMode = viewTypeInfo.defaultDisplayMode;
         }
 
         return viewEvent;

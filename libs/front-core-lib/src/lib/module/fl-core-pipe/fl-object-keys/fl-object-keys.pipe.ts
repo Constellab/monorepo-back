@@ -3,7 +3,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 /**
  * Convert an enum to an Array to loop through it
  *
- * It return the list of keys
+ * It returns the list of keys
  */
 @Pipe({
   name: 'flObjectKeys'

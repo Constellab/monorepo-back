@@ -3,7 +3,7 @@
     *ngFor="let subView of view.data.views"
     [colspan]="subView.colspan"
     [rowspan]="subView.rowspan">
-    <lab-resource-view [view]="subView.view" [config]="config" [resourceId]="resourceId"></lab-resource-view>
+    <lab-resource-view [view]="subView.view" [config]="config" [resourceId]="resourceId" [displayMode]="displayMode"></lab-resource-view>
   </mat-grid-tile>
 </mat-grid-list>
 
