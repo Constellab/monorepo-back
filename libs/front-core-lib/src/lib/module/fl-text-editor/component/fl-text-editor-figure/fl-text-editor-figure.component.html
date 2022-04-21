@@ -8,7 +8,7 @@
   <figcaption class="caption g-text-light g-text-small">
     <ng-container *ngIf="imageTitle || caption"><strong>{{imageTitle}}</strong> | {{caption}}</ng-container>
     <button mat-icon-button type="button" *ngIf="(disabled$ | async) === false"
-            class="g-button-icon-tiny edit-button" (click)="openPortal()">
+            class="g-button-icon-tiny edit-button" (click)="openEditDialog()">
     <mat-icon>edit</mat-icon>
     </button>
   </figcaption>
