@@ -205,8 +205,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     const config = this.portalService.configureAbsolutePortal({
       top: (editorPosition.top + lineBounds.top - 7) + 'px',
       left: (editorPosition.left + lineBounds.left - 50) + 'px'
-    });
-
+    }, {scrollStrategy: this.portalService.getCloseOnScrollStrategy()});
     this.blockAddButtonOverlay = this.portalService.createPortal(FlTextEditorBlockAddButtonComponent, config, buttons);
   }
 

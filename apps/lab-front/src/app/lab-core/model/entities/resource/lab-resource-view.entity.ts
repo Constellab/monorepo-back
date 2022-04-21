@@ -217,7 +217,7 @@ export const labConstResourceViewTypeInfos: Record<LabResourceViewType, LabResou
   },
   'dataset-view': {
     icon: 'calendar_view_month',
-    text: 'biox.resource_view_spreadsheet',
+    text: 'biox.resource_view_dataset_view',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true
   },

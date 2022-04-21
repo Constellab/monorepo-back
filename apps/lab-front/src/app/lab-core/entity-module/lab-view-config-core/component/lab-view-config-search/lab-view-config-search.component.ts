@@ -38,7 +38,7 @@ export class LabViewConfigSearchComponent implements OnInit {
 
   datasource: FlDatasourcePaginated<LabViewConfig>;
 
-  columns: FlTableColumn<LabViewConfig>[] = ['viewType', 'title', 'caption', 'createdAt', 'preview'];
+  columns: FlTableColumn<LabViewConfig>[] = ['viewType', 'resource', 'title', 'createdAt', 'preview'];
 
   constructor(private searchState: FlSearchState<any>,
               private reportService: LabReportService) {

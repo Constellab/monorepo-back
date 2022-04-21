@@ -15,14 +15,30 @@
     </mat-cell>
   </ng-container>
 
+  <!-- Resource -->
+  <ng-container matColumnDef="resource">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'resource' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let viewTypeInfo">
+      <div>
+        <div class="name">{{viewTypeInfo.resource.name}}</div>
+        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="viewTypeInfo.experiment"
+                      gap="0">
+          <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
+          {{viewTypeInfo.experiment.title}}
+        </fl-text-icon>
+      </div>
+    </mat-cell>
+  </ng-container>
 
   <!-- Datetime -->
   <ng-container matColumnDef="createdAt">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'datetime' | translate}}</span>
+      <span>{{'biox.view_config_date' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let viewTypeInfo">
-      <fl-from-now [date]="viewTypeInfo.createdAt"></fl-from-now>
+      <fl-from-now [date]="viewTypeInfo.lastModifiedAt"></fl-from-now>
     </mat-cell>
   </ng-container>
 

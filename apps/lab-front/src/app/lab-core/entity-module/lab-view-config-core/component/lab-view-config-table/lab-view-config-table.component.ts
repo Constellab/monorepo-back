@@ -27,7 +27,7 @@ export class LabViewConfigTableComponent extends FlPaginatedTableAbstractDirecti
 
   constructor(private portalService: FlPortalService,
               private resourceService: LabResourceService) {
-    super(['viewType', 'createdAt', 'preview']);
+    super(['viewType', 'createdAt', 'preview', 'resource']);
   }
 
   ngOnInit(): void {
