@@ -3,7 +3,6 @@ import {FlDatasourcePaginated, FlFileHelper} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {LabTag} from '../lab-tag.entity';
 import {LabBaseEntityWithUser} from '../lab-user.entity';
-import {LabTechnicalInfo} from './lab-technical-info.class';
 
 /**
  * Represent a file or a folder link to the resource
@@ -65,9 +64,6 @@ export class LabResource extends LabBaseEntityWithUser {
     id: string;
     title: string;
   };
-
-  @Expose({name: 'technical_info'})
-  technicalInfo?: LabTechnicalInfo[]
 
   isFsNode(): boolean {
     return this.fsNode != null;

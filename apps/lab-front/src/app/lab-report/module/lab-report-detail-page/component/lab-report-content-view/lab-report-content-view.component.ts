@@ -27,7 +27,6 @@ export class LabReportContentViewComponent extends FlTextEditorElementDirective 
   @HostBinding('attr.caption')
   @Input() caption: string;
 
-  config: LabResourceViewConfig;
   view: LabResourceView;
 
   disabled$: Observable<boolean>;
