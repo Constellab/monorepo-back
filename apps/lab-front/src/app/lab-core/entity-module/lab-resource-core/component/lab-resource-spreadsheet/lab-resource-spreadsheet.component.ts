@@ -6,7 +6,7 @@ import {
   FlSpreadsheet,
   FlSpreadsheetFactory
 } from '@monorepo/front-core-lib';
-import {LabResourceViewDirective} from '../../model/lab-resource-view-component.class';
+import {LabResourceViewDirective} from '../../model/lab-resource-view.directive';
 import {LabResourceViewTable} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {LabResourceTableChartService} from '../../state/lab-resource-table-chart.service';
 

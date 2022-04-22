@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {LabResourceViewDirective} from '../../model/lab-resource-view-component.class';
+import {LabResourceViewDirective} from '../../model/lab-resource-view.directive';
 import {FlChartConfig} from '@monorepo/front-core-lib';
 import {labBasicPlotToChart} from '../../../../model/entities/resource/lab-resource-view-basic-plot-2d.class';
 import {labBoxPlotToChart} from '../../../../model/entities/resource/lab-resource-view-box-plot.class';

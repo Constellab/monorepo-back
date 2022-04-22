@@ -61,7 +61,9 @@ export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlT
       resource_id: viewConfig.resource.id,
       view_method_name: viewConfig.viewName,
       view_config: viewConfig.configValues,
-      transformers: viewConfig.transformers
+      transformers: viewConfig.transformers,
+      title: viewConfig.title,
+      caption: null
     };
 
     textEditorState.insertEmbed(index, LabReportContentViewBlot.blotName, contentView);

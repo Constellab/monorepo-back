@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {LabViewCallResult} from '../model/entities/resource/lab-resource-view.entity';
+import {LabResourceView} from '../model/entities/resource/lab-resource-view.entity';
 import {LabConfigValues} from '../model/entities/lab-config.entity';
 import {LabCallTransformerParams} from '../model/global/lab-transformer.class';
 
@@ -26,7 +26,7 @@ export class LabResourceTableService {
    */
   public callChartOnTable(resourceId: string, tableViewMethodName: string, tableViewConfig: LabConfigValues,
                           tableViewTransformers: LabCallTransformerParams[],
-                          chartType: LabTableChartType, chartConfig: LabConfigValues): Observable<LabViewCallResult> {
+                          chartType: LabTableChartType, chartConfig: LabConfigValues): Observable<LabResourceView> {
 
     const data = {
       table_view_name: tableViewMethodName,
@@ -36,6 +36,6 @@ export class LabResourceTableService {
       chart_config_values: chartConfig
     };
 
-    return this.apiService.post(`${this.route}/${resourceId}/call-chart`, data, LabViewCallResult);
+    return this.apiService.post(`${this.route}/${resourceId}/call-chart`, data);
   }
 }

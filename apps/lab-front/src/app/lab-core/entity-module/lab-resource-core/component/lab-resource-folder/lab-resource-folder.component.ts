@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {LabResourceViewDirective} from '../../model/lab-resource-view-component.class';
+import {LabResourceViewDirective} from '../../model/lab-resource-view.directive';
 import {
   LabResourceViewFolder,
   LabResourceViewFolderContent,

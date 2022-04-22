@@ -5,42 +5,9 @@
          [alt]="imageTitle" class="image">
   </div>
 
-  <figcaption class="caption g-text-light g-text-small">
-    <ng-container *ngIf="imageTitle || caption"><strong>{{imageTitle}}</strong> | {{caption}}</ng-container>
-    <button mat-icon-button type="button" *ngIf="(disabled$ | async) === false"
-            class="g-button-icon-tiny edit-button" (click)="openEditDialog()">
-    <mat-icon>edit</mat-icon>
-    </button>
+  <figcaption class="g-text-centered">
+    <fl-text-editor-title-caption [(title)]="imageTitle" [(caption)]="caption"
+                                  [editable]="(disabled$ | async) === false"></fl-text-editor-title-caption>
   </figcaption>
 
 </figure>
-
-<ng-template #templatePortalContent>
-  <fl-portal class="portal">
-
-    <fl-portal-content>
-      <form (ngSubmit)="closeOverlay()">
-        <div fxLayout="column">
-          <mat-form-field>
-            <mat-label>{{'flTextEditor.title' | translate}}</mat-label>
-            <input matInput [(ngModel)]="imageTitle" [placeholder]="'flTextEditor.title' | translate"
-                   name="title" flInputMaxLength="50">
-          </mat-form-field>
-
-          <mat-form-field>
-            <mat-label>{{'flTextEditor.caption' | translate}}</mat-label>
-            <textarea matInput [(ngModel)]="caption" [placeholder]="'flTextEditor.caption' | translate"
-                      name="caption" rows="4">
-            </textarea>
-          </mat-form-field>
-          <div class="g-text-centered">
-            <button mat-stroked-button type="submit" class="g-button-small">
-              {{'flTextEditor.ok' | translate}}
-            </button>
-          </div>
-        </div>
-      </form>
-    </fl-portal-content>
-
-  </fl-portal>
-</ng-template>

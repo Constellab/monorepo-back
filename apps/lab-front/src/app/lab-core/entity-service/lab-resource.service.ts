@@ -14,9 +14,9 @@ import {map} from 'rxjs/operators';
 import {LabTypeEntity} from '../model/entities/lab-type/lab-type.entity';
 import {
   labGroupResourceViewSpecsByType,
+  LabResourceView,
   LabResourceViewSpec,
-  LabResourceViewSpecsByType,
-  LabViewCallResult
+  LabResourceViewSpecsByType
 } from '../model/entities/resource/lab-resource-view.entity';
 import {
   LabResourceSearch,
@@ -127,7 +127,7 @@ export class LabResourceService {
    * @param saveViewConfig if true the config is saved in the historic
    */
   public callResourceView(id: string, viewMethodName: string, config: LabConfigValues,
-                          transformers: LabCallTransformerParams[], saveViewConfig: boolean = false): Observable<LabViewCallResult> {
+                          transformers: LabCallTransformerParams[], saveViewConfig: boolean = false): Observable<LabResourceView> {
     for (const key in config) {
       if (config[key] == null) {
         delete config[key];
@@ -137,10 +137,10 @@ export class LabResourceService {
       values: config,
       transformers: transformers,
       save_view_config: saveViewConfig
-    }, LabViewCallResult);
+    });
   }
 
-  public callResourceDefaultView(id: string): Observable<LabViewCallResult> {
+  public callResourceDefaultView(id: string): Observable<LabResourceView> {
     return this.callResourceView(id, LabResourceService.defaultViewName, {}, [], true);
   }
 

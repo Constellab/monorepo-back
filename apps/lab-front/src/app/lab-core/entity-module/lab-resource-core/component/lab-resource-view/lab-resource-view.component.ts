@@ -8,7 +8,7 @@ import {
   LabResourceViewTypeInfo
 } from '../../../../model/entities/resource/lab-resource-view.entity';
 import {ComponentType} from '@angular/cdk/overlay';
-import {LabResourceViewDirective} from '../../model/lab-resource-view-component.class';
+import {LabResourceViewDirective} from '../../model/lab-resource-view.directive';
 import {LabResourceJsonComponent} from '../lab-resource-json/lab-resource-json.component';
 import {LabResourceTextComponent} from '../lab-resource-text/lab-resource-text.component';
 import {LabResourceSpreadsheetComponent} from '../lab-resource-spreadsheet/lab-resource-spreadsheet.component';

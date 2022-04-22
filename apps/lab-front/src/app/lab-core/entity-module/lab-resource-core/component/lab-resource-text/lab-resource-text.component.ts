@@ -1,13 +1,12 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FlInfiniteScrollMode} from '@monorepo/front-core-lib';
-import {LabResourceViewDirective} from '../../model/lab-resource-view-component.class';
+import {LabResourceViewDirective} from '../../model/lab-resource-view.directive';
 import {
   LabResourceViewText,
   labResourceViewTextSpecPage
 } from '../../../../model/entities/resource/lab-resource-view.entity';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
 
 /**
  * Component to view a resource as plain text
@@ -85,9 +84,7 @@ export class LabResourceTextComponent extends LabResourceViewDirective<LabResour
 
     return this.resourceService.callResourceView(this.resourceId, this.config.methodName,
       viewConfig,
-      this.config.transformers).pipe(
-      map(view => view.viewData)
-    ) as Observable<LabResourceViewText>;
+      this.config.transformers) as Observable<LabResourceViewText>;
   }
 
   private loadPreviousPageSuccess(view: LabResourceViewText): void {

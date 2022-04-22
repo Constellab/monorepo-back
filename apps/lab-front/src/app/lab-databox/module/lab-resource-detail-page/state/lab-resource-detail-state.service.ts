@@ -9,8 +9,7 @@ import {
   LabResourceViewDisplayMode,
   LabResourceViewSpecsByType,
   LabResourceViewSpecWithConfig,
-  LabResourceViewTypeInfo,
-  LabViewCallResult
+  LabResourceViewTypeInfo
 } from '../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
 import {filter, map} from 'rxjs/operators';
@@ -162,7 +161,7 @@ export class LabResourceDetailState implements OnDestroy {
   }
 
   private callResourceView(methodName: string, configValues: LabConfigValues,
-                           transformers: LabTransformerWithConfig[]): Observable<LabViewCallResult> {
+                           transformers: LabTransformerWithConfig[]): Observable<LabResourceView> {
     return this.resourceService.callResourceView(this.id, methodName, configValues,
       labConvertTransformersWithConfigToParams(transformers), true);
   }
@@ -190,7 +189,7 @@ export class LabResourceDetailState implements OnDestroy {
   public getView$(): Observable<LabResourceViewEvent> {
     return this.flActionService.getResult$(this.actionType).pipe(
       // convert the action result to LabResourceViewEvent
-      map((actionResult: FlPortalActionResult<LabViewCallResult>) => {
+      map((actionResult: FlPortalActionResult<LabResourceView>) => {
 
         if (actionResult.status === 'error') {
           return {
@@ -198,16 +197,16 @@ export class LabResourceDetailState implements OnDestroy {
           };
         }
 
-        const viewResult: LabViewCallResult = actionResult.result;
+        const view: LabResourceView = actionResult.result;
 
         // if the view has a force display mode, use it. Otherwise, use the selected display mode
-        const viewTypeInfo: LabResourceViewTypeInfo = labConstResourceViewTypeInfos[viewResult.viewData.type];
+        const viewTypeInfo: LabResourceViewTypeInfo = labConstResourceViewTypeInfos[view.type];
 
         const additionalInfo: LabResourceViewSpecWithConfig = actionResult.additionalInformation;
         const viewEvent: LabResourceViewEvent = {
           status: 'success',
           viewEvent: {
-            view: viewResult.viewData,
+            view: view,
             viewConfig: {
               methodName: additionalInfo.viewMethodName,
               configValues: additionalInfo.viewConfigValues,

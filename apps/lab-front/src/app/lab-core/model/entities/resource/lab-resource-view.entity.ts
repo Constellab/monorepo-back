@@ -7,6 +7,7 @@ import {LabResourceVennDiagram} from './lab-resource-venn-diagram.class';
 import {LabCallTransformerParams, LabTransformerWithConfig} from '../../global/lab-transformer.class';
 import {LabConfigValues} from '../lab-config.entity';
 import {LabResourceViewFolder} from './lab-resource-view-folder.class';
+import {LabTechnicalInfo} from './lab-technical-info.class';
 
 // list of available view type
 export type LabResourceViewType =
@@ -49,17 +50,6 @@ export class LabResourceViewSpec {
   }
 }
 
-export class LabViewCallResult {
-  @Expose({name: 'view_human_name'})
-  viewHumanName: string;
-
-  @Expose({name: 'view_short_description'})
-  viewShortDescription: string;
-
-  @Expose({name: 'view_data'})
-  viewData: LabResourceView;
-}
-
 /**
  * Object that contains the resource view spec and its configuration
  */
@@ -82,6 +72,7 @@ export interface LabResourceViewBase {
   type: LabResourceViewType;
   data: any;
   title?: string;
+  technical_info?: LabTechnicalInfo[];
 }
 
 export interface LabResourceViewJson extends LabResourceViewBase {

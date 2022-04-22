@@ -30,7 +30,7 @@ import {
 } from '../../../model/entities/resource/lab-resource-venn-diagram.class';
 import {LabResourceTableService, LabTableChartType} from '../../../entity-service/lab-resource-table.service';
 import {LabConfigValues} from '../../../model/entities/lab-config.entity';
-import {LabViewCallResult} from '../../../model/entities/resource/lab-resource-view.entity';
+import {LabResourceView} from '../../../model/entities/resource/lab-resource-view.entity';
 
 /**
  * Service passed to @{LabResourceTableComponent}  to call chart view on spreadsheet actions
@@ -62,13 +62,13 @@ export class LabResourceTableChartService extends FlSheetChartService {
 
   generateBoxPlot(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
     return this.callChartOnTable('box-plot', {series: series}).pipe(
-      map((view) => labBoxPlotToChart(view.viewData as LabResourceViewBoxPlot))
+      map((view) => labBoxPlotToChart(view as LabResourceViewBoxPlot))
     );
   }
 
   generateHeatMap(serie: FlSheetChartSerieSelectionForm): Observable<FlChartConfig> {
     return this.callChartOnTable('heatmap', {serie: serie}).pipe(
-      map((view) => labHeatMapToChart(view.viewData as LabResourceViewHeatMap))
+      map((view) => labHeatMapToChart(view as LabResourceViewHeatMap))
     );
   }
 
@@ -78,7 +78,7 @@ export class LabResourceTableChartService extends FlSheetChartService {
       nbins: nbOfBins,
       density: density,
     }).pipe(
-      map((view) => labHistogramToChart(view.viewData as LabResourceViewHistogram))
+      map((view) => labHistogramToChart(view as LabResourceViewHistogram))
     );
   }
 
@@ -95,23 +95,23 @@ export class LabResourceTableChartService extends FlSheetChartService {
       series: series,
       normalize: normalize,
     }).pipe(
-      map((view) => labBasicPlotToChart(view.viewData as LabResourceViewBasicPlot2d))
+      map((view) => labBasicPlotToChart(view as LabResourceViewBasicPlot2d))
     );
   }
 
   generateVennDiagram(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
     return this.callChartOnTable('venn-diagram', {series: series}).pipe(
-      map((view) => labVennDiagramToChart(view.viewData as LabResourceVennDiagram))
+      map((view) => labVennDiagramToChart(view as LabResourceVennDiagram))
     );
   }
 
   private generateBasic2dChart(chartType: LabTableChartType, series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
     return this.callChartOnTable(chartType, {series: series}).pipe(
-      map((view) => labBasicPlotToChart(view.viewData as LabResourceViewBasicPlot2d))
+      map((view) => labBasicPlotToChart(view as LabResourceViewBasicPlot2d))
     );
   }
 
-  private callChartOnTable(chartType: LabTableChartType, chartConfig: LabConfigValues): Observable<LabViewCallResult> {
+  private callChartOnTable(chartType: LabTableChartType, chartConfig: LabConfigValues): Observable<LabResourceView> {
     return this.resourceTableService.callChartOnTable(this.resourceId, this.tableViewMethodName,
       this.tableViewConfig, this.tableTransformers, chartType, chartConfig);
   }

@@ -173,6 +173,7 @@
     "type_deprecated_since": "Deprecated since",
     "type_deprecated": "Deprecated",
     "type_include_deprecated": "Include deprecated objects",
-    "process_type_unavailable_error": "The process is not available, you can't use it"
+    "process_type_unavailable_error": "The process is not available, you can't use it",
+    "technical_info": "Technical information"
   }
 }

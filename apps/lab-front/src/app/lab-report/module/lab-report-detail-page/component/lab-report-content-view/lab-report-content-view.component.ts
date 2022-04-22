@@ -1,9 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, HostBinding, Input, OnInit} from '@angular/core';
 import {LabResourceService} from '../../../../../lab-core/entity-service/lab-resource.service';
 import {
   LabResourceView,
   LabResourceViewConfig
 } from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
+import {FlTextEditorElementDirective, FlTextEditorsManagerState} from '@monorepo/front-core-lib';
+import {Observable} from 'rxjs';
 
 /**
  * Component used in the Text editor to show a resource view
@@ -13,32 +15,41 @@ import {
   templateUrl: './lab-report-content-view.component.html',
   styleUrls: ['./lab-report-content-view.component.scss']
 })
-export class LabReportContentViewComponent implements OnInit {
+export class LabReportContentViewComponent extends FlTextEditorElementDirective implements OnInit {
 
   @Input() resourceId: string;
-  @Input() viewMethodName: string;
-  @Input() viewConfig: string;
-  @Input() transformers: string;
+
+  @Input() viewConfig: LabResourceViewConfig;
+
+  @HostBinding('attr.view-title')
+  @Input() viewTitle: string;
+
+  @HostBinding('attr.caption')
+  @Input() caption: string;
 
   config: LabResourceViewConfig;
   view: LabResourceView;
 
-  constructor(private resourceService: LabResourceService) {
+  disabled$: Observable<boolean>;
+
+
+  constructor(private resourceService: LabResourceService,
+              elementRef: ElementRef<HTMLElement>,
+              managersState: FlTextEditorsManagerState) {
+    super(elementRef, managersState);
   }
 
   ngOnInit(): void {
-    const config: LabResourceViewConfig = {
-      methodName: this.viewMethodName,
-      configValues: JSON.parse(this.viewConfig),
-      transformers: JSON.parse(this.transformers)
-    };
-
-    this.resourceService.callResourceView(this.resourceId, this.viewMethodName,
-      config.configValues, config.transformers).subscribe(
-      viewResult => this.view = viewResult.viewData
+    this.resourceService.callResourceView(this.resourceId, this.viewConfig.methodName,
+      this.viewConfig.configValues, this.viewConfig.transformers).subscribe(
+      view => this.onViewLoaded(view),
     );
 
-    this.config = config;
+    this.disabled$ = this.getDisabled$();
+  }
+
+  private onViewLoaded(view: LabResourceView): void {
+    this.view = view;
   }
 
 }

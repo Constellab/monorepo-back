@@ -44,7 +44,7 @@ export class LabViewConfigTableComponent extends FlPaginatedTableAbstractDirecti
     // load the view and show it in a portal
     this.resourceService.callResourceView(viewConfig.resource.id, viewConfig.viewName, viewConfig.configValues,
       viewConfig.transformers).subscribe(
-      viewResult => this.openPortal(viewConfig, viewResult.viewData, event.target as any),
+      view => this.openPortal(viewConfig, view, event.target as any),
     );
   }
 

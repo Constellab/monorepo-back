@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FlBioNetwork} from '@monorepo/front-core-lib';
-import {LabResourceViewDirective} from '../../model/lab-resource-view-component.class';
+import {LabResourceViewDirective} from '../../model/lab-resource-view.directive';
 import {LabResourceViewNetwork} from '../../../../model/entities/resource/lab-resource-view.entity';
 
 /**

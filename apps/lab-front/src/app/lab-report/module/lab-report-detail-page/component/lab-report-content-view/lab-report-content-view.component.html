@@ -1,6 +1,16 @@
-<div contenteditable="false" class="container">
-  <lab-resource-view *ngIf="view" [resourceId]="resourceId" [view]="view"
-                     [config]="config"></lab-resource-view>
+<div contenteditable="false" class="g-ql-embed-full-width">
 
-  <mat-divider></mat-divider>
+  <div class="chart-container">
+    <lab-resource-view *ngIf="view" [resourceId]="resourceId" [view]="view"
+                       [config]="config"></lab-resource-view>
+  </div>
+
+  <div class="g-text-centered">
+    <fl-text-editor-title-caption [(title)]="viewTitle" [(caption)]="caption"
+                                  [editable]="(disabled$ | async) === false"></fl-text-editor-title-caption>
+
+    <lab-technical-info-button *ngIf="view" [technicalInfo]="view.technical_info"
+                               class="g-button-icon-tiny g-text-light"></lab-technical-info-button>
+
+  </div>
 </div>

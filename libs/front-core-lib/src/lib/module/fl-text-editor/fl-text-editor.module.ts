@@ -22,6 +22,9 @@ import {FlResizeModule} from '../fl-resize/fl-resize.module';
 import Quill from 'quill';
 import {FlTextEditorModuleConfig} from './model/fl-text-editor-module-config.class';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {
+  FlTextEditorTitleCaptionComponent
+} from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
 
 
 @NgModule({
@@ -29,9 +32,11 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     FlTextEditorComponent,
     FlTextEditorBlockAddButtonComponent,
     FlTextEditorFigureComponent,
+    FlTextEditorTitleCaptionComponent,
   ],
   exports: [
     FlTextEditorComponent,
+    FlTextEditorTitleCaptionComponent,
   ],
   imports: [
     CommonModule,

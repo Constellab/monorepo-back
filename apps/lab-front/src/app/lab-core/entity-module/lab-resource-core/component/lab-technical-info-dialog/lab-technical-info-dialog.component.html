@@ -1,0 +1,14 @@
+
+<fl-dialog-header>
+  <h3>{{ 'biox.technical_info' | translate }}</h3>
+</fl-dialog-header>
+
+<mat-dialog-content>
+
+  <div *ngFor="let info of technicalInfo">
+    <fl-key-value>
+      <fl-key>{{ info.key }}</fl-key>
+      {{ info.value }}
+    </fl-key-value>
+  </div>
+</mat-dialog-content>
