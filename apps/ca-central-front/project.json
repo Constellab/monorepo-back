@@ -3,9 +3,9 @@
   "root": "apps/ca-central-front",
   "sourceRoot": "apps/ca-central-front/src",
   "prefix": "ca",
-  "architect": {
+  "targets": {
     "build": {
-      "builder": "@angular-devkit/build-angular:browser",
+      "executor": "@angular-devkit/build-angular:browser",
       "options": {
         "outputPath": "dist/apps/ca-central-front",
         "index": "apps/ca-central-front/src/index.html",
@@ -46,10 +46,7 @@
           }
         ],
         "scripts": [],
-        "allowedCommonJsDependencies": [
-          "class-transformer",
-          "highlight.js"
-        ]
+        "allowedCommonJsDependencies": ["class-transformer", "highlight.js"]
       },
       "configurations": {
         "development": {
@@ -131,7 +128,7 @@
       }
     },
     "serve": {
-      "builder": "@angular-devkit/build-angular:dev-server",
+      "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
         "browserTarget": "ca-central-front:build"
       },
@@ -146,13 +143,13 @@
       "defaultConfiguration": "development"
     },
     "extract-i18n": {
-      "builder": "@angular-devkit/build-angular:extract-i18n",
+      "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
         "browserTarget": "ca-central-front:build"
       }
     },
     "lint": {
-      "builder": "@nrwl/linter:eslint",
+      "executor": "@nrwl/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "apps/ca-central-front/src/**/*.ts",
@@ -161,17 +158,13 @@
       }
     },
     "test": {
-      "builder": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/apps/ca-central-front"
-      ],
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/ca-central-front"],
       "options": {
         "jestConfig": "apps/ca-central-front/jest.config.js",
         "passWithNoTests": true
       }
     }
   },
-  "tags": [
-    "front"
-  ]
+  "tags": ["front"]
 }

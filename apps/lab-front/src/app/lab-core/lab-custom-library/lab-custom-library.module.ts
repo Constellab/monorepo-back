@@ -35,6 +35,7 @@ import {
   FlTextIconModule,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
+import {RvResourceViewModule} from '@monorepo/resource-view';
 
 /**
  * Regrouped all the needed import for this app from library
@@ -78,6 +79,9 @@ import {
     FlResizeModule,
     FlColorModule,
     FlExpansionMenuModule,
+
+    //  Other lib
+    RvResourceViewModule,
   ]
 })
 export class LabCustomLibraryModule {

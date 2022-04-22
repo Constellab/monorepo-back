@@ -1,0 +1,4 @@
+<fl-bio-network *ngIf="networks" [data]="networks" [fullscreen]="displayMode === 'fullScreen'"></fl-bio-network>
+
+<fl-error-text *ngIf="error" [errorMessage]="'biox.resource_is_not_a_network' | translate">
+</fl-error-text>

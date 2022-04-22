@@ -19,7 +19,8 @@
         </fl-text-icon>
 
         <fl-section-actions>
-          <lab-technical-info-button *ngIf="fullScreenView" [technicalInfo]="fullScreenView.technical_info"></lab-technical-info-button>
+          <lab-technical-info-button *ngIf="fullScreenView"
+                                     [technicalInfo]="fullScreenView.technical_info"></lab-technical-info-button>
 
           <button mat-stroked-button type="button"
                   (click)="openViewSpecs($event)" class="button g-button-small">
@@ -61,8 +62,8 @@
 
         <!--  Header    -->
         <div class="page-padding body">
-          <lab-resource-view *ngIf="fullScreenView" [view]="fullScreenView"
-                             [config]="fullScreenViewConfig" [resourceId]="resource.id"></lab-resource-view>
+          <rv-resource-view *ngIf="fullScreenView" [view]="fullScreenView"
+                            [config]="fullScreenViewConfig" [resourceId]="resource.id"></rv-resource-view>
           <div *ngIf="showLoader" class="g-text-centered">
             <fl-loader size="medium"></fl-loader>
           </div>

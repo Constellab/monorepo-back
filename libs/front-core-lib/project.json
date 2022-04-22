@@ -3,9 +3,9 @@
   "root": "libs/front-core-lib",
   "sourceRoot": "libs/front-core-lib/src",
   "prefix": "fl",
-  "architect": {
+  "targets": {
     "lint": {
-      "builder": "@nrwl/linter:eslint",
+      "executor": "@nrwl/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "libs/front-core-lib/src/**/*.ts",
@@ -14,17 +14,13 @@
       }
     },
     "test": {
-      "builder": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/libs/front-core-lib"
-      ],
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/front-core-lib"],
       "options": {
         "jestConfig": "libs/front-core-lib/jest.config.js",
         "passWithNoTests": true
       }
     }
   },
-  "tags": [
-    "front"
-  ]
+  "tags": ["front"]
 }

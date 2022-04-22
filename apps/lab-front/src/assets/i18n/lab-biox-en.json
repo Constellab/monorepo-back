@@ -82,7 +82,6 @@
     "view_specs": "Views",
     "default_view": "Default view",
     "show_view": "Show view",
-    "view_type_node_supported": "View not supported. It will be supported in a short notice",
     "resource_view_scatter_plot_2d": "Scatter plot 2d",
     "resource_view_line_plot_2d": "Line 2d",
     "resource_view_bar_plot": "Bar plot",

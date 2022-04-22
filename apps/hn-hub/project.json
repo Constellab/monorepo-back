@@ -3,20 +3,15 @@
   "sourceRoot": "apps/hn-hub/src",
   "projectType": "application",
   "prefix": "hn-hub",
-  "architect": {
+  "targets": {
     "build": {
-      "builder": "@nrwl/node:build",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "executor": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/hn-hub",
         "main": "apps/hn-hub/src/main.ts",
         "tsConfig": "apps/hn-hub/tsconfig.app.json",
-        "assets": [
-          "apps/hn-hub/src/assets",
-          "apps/hn-hub/src/environments"
-        ]
+        "assets": ["apps/hn-hub/src/assets", "apps/hn-hub/src/environments"]
       },
       "configurations": {
         "production": {
@@ -33,24 +28,20 @@
       }
     },
     "serve": {
-      "builder": "@nrwl/node:execute",
+      "executor": "@nrwl/node:execute",
       "options": {
         "buildTarget": "hn-hub:build"
       }
     },
     "lint": {
-      "builder": "@nrwl/linter:eslint",
+      "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "apps/hn-hub/**/*.ts"
-        ]
+        "lintFilePatterns": ["apps/hn-hub/**/*.ts"]
       }
     },
     "test": {
-      "builder": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/apps/hn-hub"
-      ],
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/hn-hub"],
       "options": {
         "jestConfig": "apps/hn-hub/jest.config.js",
         "passWithNoTests": true

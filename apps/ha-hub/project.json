@@ -3,9 +3,9 @@
   "root": "apps/ha-hub",
   "sourceRoot": "apps/ha-hub/src",
   "prefix": "ha",
-  "architect": {
+  "targets": {
     "build": {
-      "builder": "@angular-devkit/build-angular:browser",
+      "executor": "@angular-devkit/build-angular:browser",
       "options": {
         "outputPath": "dist/apps/ha-hub",
         "index": "apps/ha-hub/src/index.html",
@@ -124,7 +124,7 @@
       }
     },
     "serve": {
-      "builder": "@angular-devkit/build-angular:dev-server",
+      "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
         "browserTarget": "ha-hub:build"
       },
@@ -139,13 +139,13 @@
       "defaultConfiguration": "development"
     },
     "extract-i18n": {
-      "builder": "@angular-devkit/build-angular:extract-i18n",
+      "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
         "browserTarget": "ha-hub:build"
       }
     },
     "lint": {
-      "builder": "@nrwl/linter:eslint",
+      "executor": "@nrwl/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "apps/ha-hub/src/**/*.ts",
@@ -154,17 +154,13 @@
       }
     },
     "test": {
-      "builder": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/apps/ha-hub"
-      ],
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/ha-hub"],
       "options": {
         "jestConfig": "apps/ha-hub/jest.config.js",
         "passWithNoTests": true
       }
     }
   },
-  "tags": [
-    "front"
-  ]
+  "tags": ["front"]
 }

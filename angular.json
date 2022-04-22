@@ -12,6 +12,7 @@
     "ha-hub-e2e": "apps/ha-documentation-e2e",
     "hn-hub": "apps/hn-hub",
     "lab-front": "apps/lab-front",
-    "lab-front-e2e": "apps/lab-front-e2e"
+    "lab-front-e2e": "apps/lab-front-e2e",
+    "resource-view": "libs/resource-view"
   }
 }

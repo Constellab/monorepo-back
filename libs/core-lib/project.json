@@ -2,20 +2,16 @@
   "root": "libs/core-lib",
   "sourceRoot": "libs/core-lib/src",
   "projectType": "library",
-  "architect": {
+  "targets": {
     "lint": {
-      "builder": "@nrwl/linter:eslint",
+      "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "libs/core-lib/**/*.ts"
-        ]
+        "lintFilePatterns": ["libs/core-lib/**/*.ts"]
       }
     },
     "test": {
-      "builder": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/libs/core-lib"
-      ],
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/core-lib"],
       "options": {
         "jestConfig": "libs/core-lib/jest.config.js",
         "passWithNoTests": true

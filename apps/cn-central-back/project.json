@@ -3,12 +3,10 @@
   "sourceRoot": "apps/cn-central-back/src",
   "projectType": "application",
   "prefix": "cn-central-back",
-  "architect": {
+  "targets": {
     "build": {
-      "builder": "@nrwl/node:build",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "executor": "@nrwl/node:build",
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/cn-central-back",
         "main": "apps/cn-central-back/src/main.ts",
@@ -27,24 +25,20 @@
       }
     },
     "serve": {
-      "builder": "@nrwl/node:execute",
+      "executor": "@nrwl/node:execute",
       "options": {
         "buildTarget": "cn-central-back:build"
       }
     },
     "lint": {
-      "builder": "@nrwl/linter:eslint",
+      "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "apps/cn-central-back/**/*.ts"
-        ]
+        "lintFilePatterns": ["apps/cn-central-back/**/*.ts"]
       }
     },
     "test": {
-      "builder": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/apps/cn-central-back"
-      ],
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/cn-central-back"],
       "options": {
         "jestConfig": "apps/cn-central-back/jest.config.js",
         "passWithNoTests": true

@@ -3,9 +3,9 @@
   "root": "apps/lab-front",
   "sourceRoot": "apps/lab-front/src",
   "prefix": "lab",
-  "architect": {
+  "targets": {
     "build": {
-      "builder": "@angular-devkit/build-angular:browser",
+      "executor": "@angular-devkit/build-angular:browser",
       "options": {
         "outputPath": "dist/apps/lab-front",
         "index": "apps/lab-front/src/index.html",
@@ -44,10 +44,7 @@
           }
         ],
         "scripts": [],
-        "allowedCommonJsDependencies": [
-          "class-transformer",
-          "highlight.js"
-        ]
+        "allowedCommonJsDependencies": ["class-transformer", "highlight.js"]
       },
       "configurations": {
         "development": {
@@ -99,7 +96,7 @@
       }
     },
     "serve": {
-      "builder": "@angular-devkit/build-angular:dev-server",
+      "executor": "@angular-devkit/build-angular:dev-server",
       "options": {
         "browserTarget": "lab-front:build"
       },
@@ -114,13 +111,13 @@
       "defaultConfiguration": "development"
     },
     "extract-i18n": {
-      "builder": "@angular-devkit/build-angular:extract-i18n",
+      "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
         "browserTarget": "lab-front:build"
       }
     },
     "lint": {
-      "builder": "@nrwl/linter:eslint",
+      "executor": "@nrwl/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "apps/lab-front/src/**/*.ts",
@@ -129,17 +126,13 @@
       }
     },
     "test": {
-      "builder": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/apps/lab-front"
-      ],
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/lab-front"],
       "options": {
         "jestConfig": "apps/lab-front/jest.config.js",
         "passWithNoTests": true
       }
     }
   },
-  "tags": [
-    "front"
-  ]
+  "tags": ["front"]
 }

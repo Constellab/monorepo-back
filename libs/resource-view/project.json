@@ -1,0 +1,26 @@
+{
+  "projectType": "library",
+  "root": "libs/resource-view",
+  "sourceRoot": "libs/resource-view/src",
+  "prefix": "rv",
+  "targets": {
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/resource-view"],
+      "options": {
+        "jestConfig": "libs/resource-view/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/resource-view/src/**/*.ts",
+          "libs/resource-view/src/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": ["front"]
+}
