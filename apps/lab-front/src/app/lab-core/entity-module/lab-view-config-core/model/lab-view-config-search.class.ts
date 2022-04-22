@@ -11,8 +11,6 @@ import {LabResourceViewType} from '../../../model/entities/resource/lab-resource
 export class LabViewConfigSearchFields {
   title: string;
 
-  caption: string;
-
   viewType: LabResourceViewType;
 
   @Type(() => FlSearchDateInterval)
@@ -26,7 +24,6 @@ export class LabViewConfigSearch {
    */
   public static advancedSearchManagerConfig: FlFormInputsManagerConfig<LabViewConfigSearchFields> = {
     title: 'title',
-    caption: 'caption',
     viewType: 'biox.view_type',
     // group the creation date into one chip
     createdAt: 'creation_date',
@@ -38,7 +35,6 @@ export class LabViewConfigSearch {
    */
   public static advancedSearchConverter: FlSearchCriteriaConverter<LabViewConfigSearchFields> = {
     title: {key: 'title', operator: 'CONTAINS'},
-    caption: {key: 'caption', operator: 'CONTAINS'},
     viewType: {key: 'view_type', operator: 'EQ'},
     // Date
     createdAt: FlSearchConverter.dateInterval('created_at'),

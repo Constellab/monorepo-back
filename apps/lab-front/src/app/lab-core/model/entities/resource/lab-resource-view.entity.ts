@@ -82,7 +82,6 @@ export interface LabResourceViewBase {
   type: LabResourceViewType;
   data: any;
   title?: string;
-  caption?: string;
 }
 
 export interface LabResourceViewJson extends LabResourceViewBase {
@@ -111,7 +110,11 @@ export interface LabResourceViewText extends LabResourceViewBase {
 
 export interface LabResourceViewTable extends LabResourceViewBase {
   type: 'table-view' | 'dataset-view';
-  data: any[][];
+  data: LabResourceViewTableData;
+}
+
+export interface LabResourceViewTableData {
+  table: any[][];
   rows: LabResourceViewTableHeader[];
   columns: LabResourceViewTableHeader[];
   from_column: number;

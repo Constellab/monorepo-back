@@ -11,8 +11,6 @@ export class LabViewConfig extends LabBaseEntityWithUser {
 
   title: string;
 
-  caption: string;
-
   @Expose({name: 'view_type'})
   viewType: LabResourceViewType;
 
