@@ -27,7 +27,7 @@ export class FlSpreadsheetScrollState {
   // parent of the heightSimulator that scroll
   private tableContainer: HTMLElement;
   private verticalScroller: HTMLElement;
-  // html element that is simulate the complete spreadsheet height
+  // html element that simulates the complete spreadsheet height
   private heightSimulator: HTMLElement;
   private horizontalScroller: HTMLElement;
 
@@ -87,6 +87,13 @@ export class FlSpreadsheetScrollState {
   }
 
   private onWheelEvent(event: WheelEvent): void {
+    // if we reached the top or bottom of the vertical scroller,
+    // we don't override the scroll logic
+    if ((this.verticalScroller.scrollTop === (this.verticalScroller.scrollHeight - this.verticalScroller.offsetHeight)
+        && event.deltaY > 0) ||
+      this.verticalScroller.scrollTop === 0 && event.deltaY < 0) {
+      return;
+    }
     ClHelpService.stopEventPropagation(event);
     this.triggerScrollY(event.deltaY);
     this.triggerScrollX(event.deltaX);
