@@ -6,7 +6,7 @@
   </button>
 </div>
 
-<div *ngFor="let part of sentence.parts; let index = index" class="g-compact-form"
+<div *ngFor="let part of sentence.parts; let index = index" class="g-form-field-compact"
      fxLayout="row" fxLayoutAlign="start center">
 
   <div class="part-section subject">
@@ -16,7 +16,7 @@
   <div class="part-section verb" fxLayout="column">
     {{part.verb}}
 
-    <mat-form-field class="g-no-hint">
+    <mat-form-field class="g-form-field-no-hint">
       <mat-select [placeholder]="'smart_db.type' | translate" [(ngModel)]="part.type">
         <mat-option value="Positive" class="g-success-text">Positive</mat-option>
         <mat-option value="Negative" class="g-warn-text">Negative</mat-option>

@@ -2,6 +2,7 @@ export class FlColorHelper {
 
   public static blue: string = 'rgba(0,114,178,1)';
   public static red: string = 'rgba(213,92,0,1)';
+  public static pinkShiny: string = '#ff0087';
 
   public static transparentBlue: string = 'rgba(0,114,178,0.8)';
   public static transparentRed: string = 'rgba(213,92,0,0.8)';

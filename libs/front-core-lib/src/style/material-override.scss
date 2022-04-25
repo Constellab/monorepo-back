@@ -15,7 +15,7 @@
   padding-bottom: 0;
 }
 
-.g-no-hint.mat-form-field, .g-no-hint .mat-form-field:not(.g-with-hint) {
+.g-form-field-no-hint.mat-form-field, .g-form-field-no-hint .mat-form-field:not(.g-with-hint) {
   .mat-form-field-wrapper {
     padding-bottom: 0.2em;
   }
@@ -25,7 +25,7 @@
   }
 }
 
-@mixin g-compact-form-height {
+@mixin g-form-field-compact-height {
   &.mat-form-field-appearance-outline {
     .mat-form-field-infix {
       padding-top: 0;
@@ -63,26 +63,26 @@
   }
 }
 
-@mixin g-compact-form-width {
+@mixin g-form-field-compact-width {
   .mat-form-field-infix {
     width: 120px;
   }
 }
 
 // make a mat-form-field compact in height and width
-.g-compact-form.mat-form-field, .g-compact-form .mat-form-field:not(.g-no-compact-form) {
-  @include g-compact-form-height;
-  @include g-compact-form-width;
+.g-form-field-compact.mat-form-field, .g-form-field-compact .mat-form-field:not(.g-no-compact-form) {
+  @include g-form-field-compact-height;
+  @include g-form-field-compact-width;
 }
 
 // make a mat-form-field compact in height
-.g-compact-form-height.mat-form-field, .g-compact-form-height .mat-form-field:not(.g-no-compact-form) {
-  @include g-compact-form-height;
+.g-form-field-compact-height.mat-form-field, .g-form-field-compact-height .mat-form-field:not(.g-no-compact-form) {
+  @include g-form-field-compact-height;
 }
 
 // make a mat-form-field compact in width
-.g-compact-form-width.mat-form-field, .g-compact-form-width .mat-form-field:not(.g-no-compact-form) {
-  @include g-compact-form-width;
+.g-form-field-compact-width.mat-form-field, .g-form-field-compact-width .mat-form-field:not(.g-no-compact-form) {
+  @include g-form-field-compact-width;
 }
 
 

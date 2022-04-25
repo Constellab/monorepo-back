@@ -9,8 +9,8 @@ import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 // size for the reaction rect
-export const flBioNetworkReactionWidth: number = 5;
-export const flBioNetworkReactionHeight: number = 5;
+export const flBioNetworkReactionWidth: number = 8;
+export const flBioNetworkReactionHeight: number = 8;
 export const flBioNetworkReactionBorderRadius: number = 1;
 
 // maximum value of a reaction in a pathway
@@ -39,7 +39,7 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
       .attr('rx', flBioNetworkReactionBorderRadius) // round corner
       .attr('ry', flBioNetworkReactionBorderRadius)
       .attr('stroke', this.strokeColor)
-      .attr('stroke-width', 0.25)
+      .attr('stroke-width', 1)
       .attr('fill', this.defaultColor) as FlD3SelectionSimple<FlBioNetworkD3Node>;
   }
 

@@ -6,7 +6,7 @@ import {FlBioNetworkD3Node, flBioNetworkNodeClass} from '../model/fl-bio-network
 import {FlBioNetworkD3Object} from '../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Link, flBioNetworkLinkElement} from '../model/fl-bio-network-d3-link.class';
 import {ScaleLinear} from 'd3-scale';
-import {scaleLinear} from 'd3';
+import {quantile, scaleLinear} from 'd3';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {FlBioNetworkState} from './fl-bio-network.state';
@@ -16,6 +16,8 @@ import {
   FlBioNetworkOptionsState
 } from './fl-bio-network-options.state';
 import {filter} from 'rxjs/operators';
+import {ClNumberHelper} from '@monorepo/core-lib';
+import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 
 type FlColorFunction = (node: FlBioNetworkD3Object) => string;
 type FlLinkColorFunction = (node: FlBioNetworkD3Link) => string;
@@ -105,31 +107,55 @@ export class FlBioNetworkColorState {
 
   private getLinkColorFunction(linkColorScale: FlBioNetworkLinkColorScale): FlLinkColorFunction {
     const colorTransform: (value: number) => number = this.getLinkColorTransformFunction(linkColorScale);
-    const colorScale = this.getLinkColorScale(colorTransform);
+    const colorScale = this.getLinkColorScale(linkColorScale);
     return (link: FlBioNetworkD3Link) => colorScale(colorTransform(link.absValue));
   }
 
   // create a color scale for link
-  private getLinkColorScale(colorTransform: (value: number) => number): ScaleLinear<string, any, any> {
+  private getLinkColorScale(colorMode: FlBioNetworkLinkColorScale): ScaleLinear<string, any, any> {
+    const range: [string, string] = [this.grey, FlColorHelper.pinkShiny];
 
-    const range: [string, string] = [this.grey, 'blue'];
-
-    const max = this.state.getCurrentChartData().getLinksMaxAbsoluteValue();
-
+    const max = this.getLinkColorMaxDomain(colorMode);
     return scaleLinear<string>().domain(
-      [0, colorTransform(max)])
-      .range(range);
+      [0, max])
+      .range(range)
+      .clamp(true); // value outside domain are clamped to the edges
   }
+
+  /**
+   * Return the link color max domain based on mode
+   * @param colorMode
+   * @private
+   */
+  private getLinkColorMaxDomain(colorMode: FlBioNetworkLinkColorScale): number {
+
+    if (colorMode === 'threshold-75' || colorMode === 'threshold-95') {
+      const threshold = colorMode === 'threshold-75' ? 0.75 : 0.95;
+
+      // round all value to merge similar values
+      const values = this.state.getCurrentChartData().getLinksValues().map(value => ClNumberHelper.round(value, 1));
+      // remove duplicates
+      const uniqueValues = new Set(values);
+
+      // return the quantile
+      return quantile(uniqueValues, threshold);
+    }
+
+    // for other color modes, return the max value
+    const func = this.getLinkColorTransformFunction(colorMode);
+    return func(this.state.getCurrentChartData().getLinksMaxAbsoluteValue());
+  }
+
 
   // return a function to apply on link value before calling the color scale
   private getLinkColorTransformFunction(colorMode: FlBioNetworkLinkColorScale): (absValue: number) => number {
-    if (colorMode === 'logarithm') {
-      return (absValue => {
-        // get the log 2 of absolute value
-        return Math.log2(absValue + 1);
-      });
-    } else {
-      return (absValue => absValue);
+    switch (colorMode) {
+      case 'log2':
+        return (absValue => Math.log2(absValue + 1));
+      case 'log10':
+        return (absValue => Math.log10(absValue + 1));
+      default:
+        return (absValue => absValue);
     }
   }
 

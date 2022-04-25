@@ -9,9 +9,13 @@ import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
 const flBioNetworkI18nFr: FlLangTranslation = {
   flBioNetwork: {
     links: 'Lien externes',
-    link_value_help: 'Slider pour cacher les lien d\'une valeur inférieur à',
-    link_color_normal: 'Couleurs linéaires',
-    link_color_log: 'Couleurs logarithmes',
+    flux_threshold: 'Seuil du flux',
+    link_colors: 'Couleur des liens',
+    link_color_linear: 'Linéaires',
+    link_color_log_2: 'Log 2',
+    link_color_log_10: 'Log 10',
+    link_color_threshold_75: 'Seuil Q=75',
+    link_color_threshold_95: 'Seuil Q=95',
     select_sub_pathway: 'Sélectionner un pathway',
     open_config: 'Ouvrir les paramètres',
     config: 'Config',
@@ -39,9 +43,13 @@ const flBioNetworkI18nFr: FlLangTranslation = {
 const flBioNetworkI18nEn: FlLangTranslation = {
   flBioNetwork: {
     links: 'External links',
-    link_value_help: 'Slide to hide link with a value lower than',
-    link_color_normal: 'Linears colors',
-    link_color_log: 'Logarithm colors',
+    flux_threshold: 'Flux threshold',
+    link_colors: 'Link colors',
+    link_color_linear: 'Linear',
+    link_color_log_2: 'Log 2',
+    link_color_log_10: 'Log 10',
+    link_color_threshold_75: 'Threshold Q=75',
+    link_color_threshold_95: 'Threshold Q=95',
     select_sub_pathway: 'Select a pathway',
     config: 'Config',
     node: 'Node',

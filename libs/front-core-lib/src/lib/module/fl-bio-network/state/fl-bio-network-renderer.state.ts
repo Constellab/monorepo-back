@@ -232,11 +232,12 @@ export class FlBioNetworkRendererState implements OnDestroy {
     linkGroup
       .append(flBioNetworkLinkElement)
       .attr('d', (d: FlBioNetworkD3Link) => d.getPathAttr())
-      .attr('stroke-opacity', 0.9)
+      // .attr('stroke-opacity', 0.9)
       .attr('stroke-width', (d: FlBioNetworkD3Link) => d.getLinkWidth())
       .attr('stroke', d => d.defaultColor)
       // define the arrow marker, no marker for link of cofactors
       .attr('marker-end', (d: FlBioNetworkD3Link) => d.isLinkedToCofactor() ? `url(#${this.smallArrowId})` : `url(#${this.arrowId})`)
+      .style('fill', 'transparent')
       .on('contextmenu', this.createLinkPoint());
 
     this.drawLinkPoints(linkGroup);
@@ -319,7 +320,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
   }
 
   private defineArrowMarkers(): void {
-    this.defineArrowMarker(this.arrowId, 2, 10);
+    this.defineArrowMarker(this.arrowId, 2, 5);
     this.defineArrowMarker(this.smallArrowId, 1, 10);
   }
 

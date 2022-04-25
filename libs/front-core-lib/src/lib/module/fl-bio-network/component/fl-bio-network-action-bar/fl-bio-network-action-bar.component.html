@@ -3,16 +3,16 @@
      *ngIf="isReady">
 
   <!--   Slider to hide link     -->
-  <div *ngIf="linksMaxAbsValue > 0">
-    <p class="g-text-small g-text-light">{{'flBioNetwork.link_value_help' | translate}} : {{sliderValue}}</p>
+  <div *ngIf="maxFluxValue > 0">
+    <p class="g-text-small g-text-light">{{'flBioNetwork.flux_threshold' | translate}} : {{fluxThreshold}}</p>
     <mat-slider class="slider" color="primary"
-                [max]="linksMaxAbsValue"
+                [max]="maxFluxValue"
                 [min]="0"
                 [step]="1"
                 [thumbLabel]="true"
                 tickInterval="auto"
-                [(ngModel)]="sliderValue"
-                (change)="hideLinkLowerThan($event)">
+                [(ngModel)]="fluxThreshold"
+                (change)="fluxThresholdChange($event)">
     </mat-slider>
 
   </div>
@@ -29,9 +29,17 @@
       {{'flBioNetwork.toggle_show_texts' | translate}}
     </mat-checkbox>
 
-    <mat-checkbox [(ngModel)]="linkColorLogarithm" (change)="setLinksColors()" color="primary">
-      {{'flBioNetwork.link_color_log' | translate}}
-    </mat-checkbox>
+    <mat-form-field class="g-form-field-compact g-form-field-no-hint">
+      <mat-label>{{'flBioNetwork.link_colors' | translate}}</mat-label>
+      <mat-select [(ngModel)]="linkColorLogarithm" (selectionChange)="setLinksColors()"
+                  [placeholder]="'flBioNetwork.link_colors' | translate">
+        <mat-option value="linear">{{'flBioNetwork.link_color_linear' | translate}}</mat-option>
+        <mat-option value="log2">{{'flBioNetwork.link_color_log_2' | translate}}</mat-option>
+        <mat-option value="log10">{{'flBioNetwork.link_color_log_10' | translate}}</mat-option>
+        <mat-option value="threshold-75">{{'flBioNetwork.link_color_threshold_75' | translate}}</mat-option>
+        <mat-option value="threshold-95">{{'flBioNetwork.link_color_threshold_95' | translate}}</mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <fl-bio-network-selection-info class="g-full-height"></fl-bio-network-selection-info>

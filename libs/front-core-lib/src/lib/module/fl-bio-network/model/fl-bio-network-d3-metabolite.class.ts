@@ -7,8 +7,8 @@ import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
 
 
 // radius of the metabolite round
-export const flBioNetworkMinorMetaboliteRadius: number = 4.5;
-export const flBioNetworkMajorMetaboliteRadius: number = 6;
+export const flBioNetworkMinorMetaboliteRadius: number = 6;
+export const flBioNetworkMajorMetaboliteRadius: number = 12;
 
 export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
 
@@ -26,7 +26,7 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
       .join('circle')
       .attr('r', this.getRadius())
       .attr('stroke', this.strokeColor)
-      .attr('stroke-width', 0.5)
+      .attr('stroke-width', 3)
       .attr('fill', this.defaultColor) as FlD3SelectionSimple<FlBioNetworkD3Node>;
   }
 
@@ -62,7 +62,7 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
   }
 
   private getFontTextSize(): string {
-    return this.isMajor() ? '1em' : '0.5em';
+    return this.isMajor() ? '1.3em' : '0.5em';
   }
 
 }

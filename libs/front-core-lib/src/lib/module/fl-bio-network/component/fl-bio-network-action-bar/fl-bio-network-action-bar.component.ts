@@ -4,7 +4,7 @@ import {MatSliderChange} from '@angular/material/slider';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {filter} from 'rxjs/operators';
 import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
-import {FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
+import {FlBioNetworkLinkColorScale, FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
 import {FlBioNetworkMetaboliteLevel} from '../../model/fl-bio-network.class';
 
 /**
@@ -20,11 +20,11 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   isReady: boolean = false;
 
-  sliderValue: number = 0;
-  linksMaxAbsValue: number;
+  fluxThreshold: number = 0;
+  maxFluxValue: number;
 
   // if true the link colors switch to logarithm
-  linkColorLogarithm: boolean = false;
+  linkColorLogarithm: FlBioNetworkLinkColorScale = 'linear';
   // showCofactor: boolean = false;
   showMinors: boolean = false;
   showText: boolean = false;
@@ -37,7 +37,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   ngOnInit(): void {
     const options = this.optionState.getCurrentOptions();
-    this.linkColorLogarithm = options.linkColorScale === 'logarithm';
+    this.linkColorLogarithm = options.linkColorScale;
     // this.showCofactor = this.rendererState.getShowCofactors();
     this.showMinors = options.visibleLevels.includes(FlBioNetworkMetaboliteLevel.MINOR);
     this.showText = options.showTexts;
@@ -54,10 +54,10 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   private onNewData(chartData: FlBioNetworkD3): void {
     if (chartData) {
-      this.linksMaxAbsValue = Math.trunc(chartData.getLinksMaxAbsoluteValue());
+      this.maxFluxValue = Math.trunc(chartData.getLinksMaxAbsoluteValue());
       this.isReady = true;
     } else {
-      this.linksMaxAbsValue = 0;
+      this.maxFluxValue = 0;
       this.isReady = false;
 
     }
@@ -66,7 +66,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
 
   setLinksColors(): void {
-    this.optionState.setLinkColorMode(this.linkColorLogarithm ? 'logarithm' : 'linear');
+    this.optionState.setLinkColorMode(this.linkColorLogarithm);
   }
 
   toggleShowTexts(): void {
@@ -79,13 +79,12 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   }
 
   // set opacity to 0.1 to link where abs value is lower than slider value
-  hideLinkLowerThan(change: MatSliderChange): void {
-    this.selectionState.hideLinkLowerThan(change.value);
+  fluxThresholdChange(change: MatSliderChange): void {
+    this.selectionState.fluxThresholdOpacity(change.value);
   }
 
   private resetSlider(): void {
-    // also reset slider
-    this.sliderValue = 0;
+    this.fluxThreshold = 0;
 
     this.cdr.markForCheck();
   }

@@ -7,7 +7,7 @@ import {FlBioNetworkMetaboliteLevel, FlBioNetworkPathwaySelection} from '../mode
  * normal --> normal linear scale
  * log --> logarithmic scale
  */
-export type FlBioNetworkLinkColorScale = 'linear' | 'logarithm';
+export type FlBioNetworkLinkColorScale = 'linear' | 'log2' | 'log10' | 'threshold-75' | 'threshold-95';
 
 export type FlBioNetworkOptionsAction = 'init' | 'toggleText' | 'updateVisibilityLevel' | 'color';
 

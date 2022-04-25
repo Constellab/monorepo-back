@@ -205,6 +205,10 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
     link = this.arrivalLinks.find(link => link.source.id === nodeId);
     return link;
   }
+
+  public getLinkMaxValue(): number {
+    return Math.max(...[...this.departureLinks, ...this.arrivalLinks].map(link => link.absValue));
+  }
 }
 
 

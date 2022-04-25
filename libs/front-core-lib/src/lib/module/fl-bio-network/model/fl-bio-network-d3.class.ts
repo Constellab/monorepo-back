@@ -66,6 +66,10 @@ export class FlBioNetworkD3 {
     return [min, max];
   }
 
+  public getLinksValues(): number[] {
+    return this.links.map(link => link.absValue);
+  }
+
   // return the min and max value of all links
   public getLinksMaxAbsoluteValue(): number {
     return Math.max(...this.links.map(link => link.absValue));

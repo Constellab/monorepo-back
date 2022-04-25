@@ -75,9 +75,14 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   }
 
 
-  // set opacity to 0.1 to link where abs value is lower than slider value
-  public hideLinkLowerThan(value: number): void {
+  // set opacity to 0.1 to link and node where abs value is lower than value
+  public fluxThresholdOpacity(value: number): void {
     if (!this.isReady()) return;
+
+    if (value === 0) {
+      this.resetSelection();
+      return;
+    }
 
     // reset the selection if the selection was different than linkByValue
     if (this.currentSelection().mode !== 'none' && this.currentSelection().mode !== 'linkByValue') {
@@ -95,7 +100,18 @@ export class FlBioNetworkSelectionState implements OnDestroy {
       }
     });
 
-    this.selection$.next({mode: 'linkByValue', links: links});
+    // update the node opacity
+    const nodes: FlBioNetworkD3Node[] = [];
+    this.groupState.allNodes.style('opacity', (node: FlBioNetworkD3Node) => {
+      if (node.getLinkMaxValue() >= value) {
+        nodes.push(node);
+        return 1;
+      } else {
+        return this.hiddenOpacity;
+      }
+    });
+
+    this.selection$.next({mode: 'linkByValue', links: links, nodes: nodes});
   }
 
 

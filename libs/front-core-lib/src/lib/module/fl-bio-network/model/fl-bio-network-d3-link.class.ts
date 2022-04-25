@@ -108,7 +108,7 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
 
   getLinkWidth(): number {
     const level = this.getLevel();
-    return level === FlBioNetworkMetaboliteLevel.MAJOR ? this.absLog10Value + 1 : this.absLog10Value + 0.5;
+    return level === FlBioNetworkMetaboliteLevel.MAJOR ? this.absLog10Value + 5 : this.absLog10Value + 1.5;
   }
 
   ////////////////////////////////////// POINTS //////////////////////////////////////
