@@ -35,7 +35,8 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
   }
 
   private initScale(): ScaleOrdinal<string, string> {
-    const colors = this.transparentColor ? FlColorHelper.getColorTransparentList() : FlColorHelper.getColorList();
+    const transparency: number = this.transparentColor ? 0.8 : 1;
+    const colors = FlColorHelper.getColorList(transparency);
     // the range contains all available colors
     return scaleOrdinal<string>(colors);
   }
