@@ -6,7 +6,7 @@ import {
   FlBioNetworkReactionLink,
   FlPathwayDatabase
 } from '../model/fl-bio-network.class';
-import {FlBioNetworkD3Node, flBioNetworkGetCompartmentColor,} from '../model/fl-bio-network-d3-node.class';
+import {FlBioNetworkD3Node,} from '../model/fl-bio-network-d3-node.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlBioNetworkHelper} from './fl-bio-network.helper';
 import {FlBioNetworkD3Metabolite} from '../model/fl-bio-network-d3-metabolite.class';
@@ -15,6 +15,8 @@ import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class'
 import {FlBioNetworkD3Cofactor} from '../model/fl-bio-network-d3-cofactor.class';
 import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
+import {FlColorHelper} from '../../../utils/fl-color-helper.class';
+import {flBioNetworkCompartments} from '../model/fl-bio-network-compartment.class';
 
 export class FlBioNetworkFactory {
 
@@ -101,7 +103,7 @@ export class FlBioNetworkFactory {
         if (this.metabolites.findIndex(node => node.id === metaboliteId) === -1) {
           this.metabolites.push(new FlBioNetworkD3Metabolite(metabolite.id,
             metabolite.name ? metabolite.name : metabolite.id,
-            this.getMetaboliteColor(metabolite), this.themeDetail.foreground,
+            this.getMetaboliteColor(metabolite.compartment), this.themeDetail.foreground,
 
             metabolite
           ));
@@ -178,8 +180,13 @@ export class FlBioNetworkFactory {
   }
 
 
-  private getMetaboliteColor(metabolite: FlBioNetworkMetabolite): string {
-    return flBioNetworkGetCompartmentColor(metabolite.compartment);
+  private getMetaboliteColor(compartment: string): string {
+    const compartmentColor = flBioNetworkCompartments.find(c => c.id === compartment);
+    if (compartmentColor) return compartmentColor.color;
+
+    // as the compartment is a single letter, we duplicate it to have really different colors
+    return FlColorHelper.stringToRGBColor(compartment + compartment + compartment
+      + compartment + compartment + compartment + compartment + compartment + compartment);
   }
 
   // calculate position of reactions that are not set if possible

@@ -10,6 +10,7 @@ import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {FlFileHelper} from '../../../service/fl-file.helper';
+import {FlBioNetworkCompartment, flBioNetworkCompartments} from '../model/fl-bio-network-compartment.class';
 
 
 /**
@@ -184,7 +185,7 @@ export class FlBioNetworkState implements OnDestroy {
     return this.chartData$.value;
   }
 
-  public downloadNetworkJson(): void{
+  public downloadNetworkJson(): void {
     const network: FlBioNetwork = this.exportAllNetwork();
 
     // TODO to remove, this is temporary to export a view object
@@ -225,9 +226,18 @@ export class FlBioNetworkState implements OnDestroy {
 
   /////////////////////////////////////// OTHER /////////////////////////////////////////
 
-  public getCompartments$(): Observable<Record<string, string>> {
+  public getCompartments$(): Observable<FlBioNetworkCompartment[]> {
     return this.selectedNetwork$.pipe(
-      map(network => network.compartments)
+      map(network => {
+        const compartments: FlBioNetworkCompartment[] = [];
+        for (const key of Object.keys(network.compartments)) {
+          const compartment = flBioNetworkCompartments.find(c => c.id === key);
+          if (compartment) {
+            compartments.push(compartment);
+          }
+        }
+        return compartments;
+      })
     );
   }
 

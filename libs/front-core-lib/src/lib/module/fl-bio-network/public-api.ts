@@ -15,6 +15,7 @@ export * from './component/fl-bio-network-zoom/fl-bio-network-zoom.component';
 
 // Models
 export * from './model/fl-bio-network.class';
+export * from './model/fl-bio-network-compartment.class';
 export * from './model/fl-bio-network-d3-node.class';
 export * from './model/fl-bio-network-d3-cofactor.class';
 export * from './model/fl-bio-network-d3-link.class';

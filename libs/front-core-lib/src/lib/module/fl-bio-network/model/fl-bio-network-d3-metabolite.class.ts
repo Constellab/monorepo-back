@@ -4,11 +4,15 @@ import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-netw
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
+import {flBioNetworkCompartmentBiomass} from './fl-bio-network-compartment.class';
 
 
 // radius of the metabolite round
-export const flBioNetworkMinorMetaboliteRadius: number = 6;
-export const flBioNetworkMajorMetaboliteRadius: number = 12;
+const flBioNetworkBiomassMetaboliteRadius: number = 20;
+const flBioNetworkMinorMetaboliteRadius: number = 6;
+const flBioNetworkMajorMetaboliteRadius: number = 12;
+const flBioNetworkMajorMetaboliteStroke: number = 3;
+const flBioNetworkMinorMetaboliteStroke: number = 1.5;
 
 export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
 
@@ -26,7 +30,7 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
       .join('circle')
       .attr('r', this.getRadius())
       .attr('stroke', this.strokeColor)
-      .attr('stroke-width', 3)
+      .attr('stroke-width', this.getStrokeWidth())
       .attr('fill', this.defaultColor) as FlD3SelectionSimple<FlBioNetworkD3Node>;
   }
 
@@ -58,7 +62,12 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
   }
 
   private getRadius(): number {
+    if (this.data.compartment === flBioNetworkCompartmentBiomass.id) return flBioNetworkBiomassMetaboliteRadius;
     return this.isMajor() ? flBioNetworkMajorMetaboliteRadius : flBioNetworkMinorMetaboliteRadius;
+  }
+
+  private getStrokeWidth(): number {
+    return this.isMajor() ? flBioNetworkMajorMetaboliteStroke : flBioNetworkMinorMetaboliteStroke;
   }
 
   private getFontTextSize(): string {
