@@ -36,7 +36,16 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     search_node: 'Rechercher un metabolite',
     toggle_show_cofactor: 'Afficher les cofacteurs',
     toggle_show_texts: 'Afficher les textes',
-    toggle_show_minor: 'Afficher les mineurs'
+    toggle_show_minor: 'Afficher les mineurs',
+    id: 'Id',
+    name: 'Nom',
+    details: 'Détails',
+    enzyme_name: 'Nom de l\'enzyme',
+    enzyme_ec_number: 'EC number de l\'enzyme',
+    flux_value: 'Flux',
+    flux_lower_bound: 'Flux inférieur',
+    flux_upper_bound: 'Flux supérieur',
+    pathways: 'Pathways',
   }
 };
 
@@ -70,7 +79,16 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     search_node: 'Search metabolite',
     toggle_show_cofactor: 'Show cofactors',
     toggle_show_texts: 'Show texts',
-    toggle_show_minor: 'Show minors'
+    toggle_show_minor: 'Show minors',
+    id: 'Id',
+    name: 'Name',
+    details: 'Details',
+    enzyme_name: 'Enzyme name',
+    enzyme_ec_number: 'Enzyme EC number',
+    flux_value: 'Flux',
+    flux_lower_bound: 'Flux lower bound',
+    flux_upper_bound: 'Flux upper bound',
+    pathways: 'Pathways',
   }
 };
 

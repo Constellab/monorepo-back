@@ -5,7 +5,7 @@ import {Observable} from 'rxjs';
  * RXJS operator to force the observable into the ngZone
  * @param zone instance of ngZone
  */
-export function clRxjsEnterZone(zone: NgZone) {
+export function flRxjsEnterNgZone(zone: NgZone) {
   return <T>(source: Observable<T>) =>
     new Observable<T>(observer =>
       source.subscribe({

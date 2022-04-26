@@ -54,7 +54,7 @@ export class FlBioNetworkHelper {
    * @param subPathway
    * @private
    */
-  private static splitReactionPathway(subPathway?: FlBioNetworkPathwayDetail): FlBioNetworkPathwayDetail[] {
+  public static splitReactionPathway(subPathway?: FlBioNetworkPathwayDetail): FlBioNetworkPathwayDetail[] {
     if (subPathway == null) {
       return [flDefaultPathway];
     }

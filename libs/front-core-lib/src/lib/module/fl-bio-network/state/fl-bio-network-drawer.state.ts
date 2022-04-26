@@ -3,6 +3,7 @@ import {MatDrawer} from '@angular/material/sidenav';
 import {FlBioNetworkDrawerAction, FlBioNetworkDrawerStateValue} from '../model/fl-bio-network-drawer-action.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
+import {flRxjsEnterNgZone} from '../../../utils/fl-rxjs-enter-ng-zone';
 
 
 /**
@@ -32,7 +33,7 @@ export class FlBioNetworkDrawerState implements OnDestroy {
   }
 
   public getState$(): Observable<FlBioNetworkDrawerStateValue> {
-    return this.state$.asObservable();
+    return this.state$.asObservable().pipe(flRxjsEnterNgZone(this.ngZone));
   }
 
   public openDrawer(): void {
@@ -58,6 +59,5 @@ export class FlBioNetworkDrawerState implements OnDestroy {
 
   ngOnDestroy(): void {
     this.state$.complete();
-    console.log('Destroy');
   }
 }

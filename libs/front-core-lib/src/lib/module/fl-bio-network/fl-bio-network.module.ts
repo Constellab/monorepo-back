@@ -1,6 +1,8 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FlBioNetworkNodeDetailComponent} from './component/fl-bio-network-node-detail/fl-bio-network-node-detail.component';
+import {
+  FlBioNetworkNodeDetailComponent
+} from './component/fl-bio-network-node-detail/fl-bio-network-node-detail.component';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlJsonEditorModule} from '../fl-json-editor/fl-json-editor.module';
 import {MatSidenavModule} from '@angular/material/sidenav';
@@ -9,7 +11,9 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatButtonModule} from '@angular/material/button';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
-import {FlBioNetworkNodeLinksComponent} from './component/fl-bio-network-node-links/fl-bio-network-node-links.component';
+import {
+  FlBioNetworkNodeLinksComponent
+} from './component/fl-bio-network-node-links/fl-bio-network-node-links.component';
 import {MatListModule} from '@angular/material/list';
 import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
 import {MatSliderModule} from '@angular/material/slider';
@@ -23,14 +27,30 @@ import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flBioNetworkI18n} from './i18n/fl-bio-network.i18n';
 import {FlBioNetworkComponent} from './component/fl-bio-network/fl-bio-network.component';
 import {MatTabsModule} from '@angular/material/tabs';
-import {FlBioNetworkActionBarComponent} from './component/fl-bio-network-action-bar/fl-bio-network-action-bar.component';
-import {FlBioNetworkCompartmentsComponent} from './component/fl-bio-network-compartments/fl-bio-network-compartments.component';
+import {
+  FlBioNetworkActionBarComponent
+} from './component/fl-bio-network-action-bar/fl-bio-network-action-bar.component';
+import {
+  FlBioNetworkCompartmentsComponent
+} from './component/fl-bio-network-compartments/fl-bio-network-compartments.component';
 import {FlBioNetworkZoomComponent} from './component/fl-bio-network-zoom/fl-bio-network-zoom.component';
-import {FlBioNetworkSelectionInfoComponent} from './component/fl-bio-network-selection-info/fl-bio-network-selection-info.component';
+import {
+  FlBioNetworkSelectionInfoComponent
+} from './component/fl-bio-network-selection-info/fl-bio-network-selection-info.component';
 import {FlDrawerModule} from '../fl-drawer/fl-drawer.module';
-import {FlBioNetworkNodeSearchComponent} from './component/fl-bio-network-node-search/fl-bio-network-node-search.component';
+import {
+  FlBioNetworkNodeSearchComponent
+} from './component/fl-bio-network-node-search/fl-bio-network-node-search.component';
 import {MatInputModule} from '@angular/material/input';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {
+  FlBioNetworkReactionDetailComponent
+} from './component/fl-bio-network-reaction-detail/fl-bio-network-reaction-detail.component';
+import {
+  FlBioNetworkMetaboliteDetailComponent
+} from './component/fl-bio-network-metabolite-detail/fl-bio-network-metabolite-detail.component';
+import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -46,7 +66,9 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     FlBioNetworkCompartmentsComponent,
     FlBioNetworkZoomComponent,
     FlBioNetworkSelectionInfoComponent,
-    FlBioNetworkNodeSearchComponent
+    FlBioNetworkNodeSearchComponent,
+    FlBioNetworkReactionDetailComponent,
+    FlBioNetworkMetaboliteDetailComponent
   ],
   exports: [
     FlBioNetworkComponent,
@@ -69,6 +91,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     MatTabsModule,
     MatInputModule,
     MatAutocompleteModule,
+    MatExpansionModule,
 
 
     FlTranslateModule,
@@ -76,6 +99,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     FlCoreDirectiveModule,
     FlCoreComponentModule,
     FlDrawerModule,
+    FlKeyValueModule,
   ],
 })
 export class FlBioNetworkModule {

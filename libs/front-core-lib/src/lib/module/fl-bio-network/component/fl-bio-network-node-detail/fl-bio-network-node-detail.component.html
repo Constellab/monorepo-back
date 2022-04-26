@@ -1,5 +1,19 @@
 <div *ngIf="node$ | async as node; else noNode">
-  <fl-pretty-json class="g-section json" [object]="node.data" [previewMaxTextLength]="30"></fl-pretty-json>
+
+  <fl-bio-network-reaction-detail *ngIf="node.type === 'reaction'; else metabolite"
+                                  [node]="$any(node.data)"></fl-bio-network-reaction-detail>
+  <ng-template #metabolite>
+    <fl-bio-network-metabolite-detail [node]="$any(node.data)"></fl-bio-network-metabolite-detail>
+  </ng-template>
+
+  <mat-expansion-panel class="detail-panel">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{'flBioNetwork.details' | translate}}
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <fl-pretty-json class="g-section json" [object]="node.data" [previewMaxTextLength]="30"></fl-pretty-json>
+  </mat-expansion-panel>
 
   <fl-bio-network-node-links class="g-section" [node]="node"></fl-bio-network-node-links>
 </div>

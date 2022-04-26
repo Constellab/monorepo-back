@@ -8,6 +8,7 @@ export * from './fl-lazy-property';
 export * from './fl-login-saved-route';
 export * from './fl-material.config';
 export * from './fl-root-injector';
+export * from './fl-rxjs-enter-ng-zone';
 
 // Json transform
 export * from './json-transform/fl-json-sanitize.transform';
