@@ -13,7 +13,7 @@ export class FlBioNetworkReactionDetailComponent implements OnInit {
 
   @ClOnChange(function (this: FlBioNetworkReactionDetailComponent, value: FlBioNetworkReaction) {
     if (value) {
-      this.selectPathway(value);
+      this.pathways = this.getPathways(value);
     }
   })
   @Input() node: FlBioNetworkReaction;
@@ -26,9 +26,12 @@ export class FlBioNetworkReactionDetailComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  private selectPathway(node: FlBioNetworkReaction): void {
+  private getPathways(node: FlBioNetworkReaction): FlBioNetworkPathwayDetail[] {
+    if (!node.enzyme || !node.enzyme.pathways) return null;
     const pathways = node.enzyme.pathways[this.state.getDatabase()];
-    this.pathways = FlBioNetworkHelper.splitReactionPathway(pathways);
+
+    if (!pathways) return null;
+    return FlBioNetworkHelper.splitReactionPathway(pathways);
   }
 
 

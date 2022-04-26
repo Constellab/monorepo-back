@@ -32,11 +32,11 @@
   {{node.estimate.upper_bound | number : '1.2-2'}}
 </fl-key-value>
 
-<ng-container *ngIf="pathways">
+<ng-container *ngIf="pathways?.length > 0">
   <fl-key-value class="pathways">
     <fl-key>{{'flBioNetwork.pathways' | translate}}</fl-key>
-    <div *ngFor="let pathway of pathways">
-      {{pathway.name}}
-    </div>
+    <ul *ngFor="let pathway of pathways">
+      <li>{{pathway.name}}</li>
+    </ul>
   </fl-key-value>
 </ng-container>
