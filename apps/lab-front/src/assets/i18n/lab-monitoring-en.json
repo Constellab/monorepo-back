@@ -8,6 +8,7 @@
     "messages_count": "{{count}} message(s)",
     "version": "Version",
     "repo_type": "Repository type",
-    "repo_commit": "Commit"
+    "repo_commit": "Commit",
+    "generate_technical_doc": "Generate technical doc"
   }
 }

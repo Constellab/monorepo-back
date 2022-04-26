@@ -15,4 +15,8 @@ export class LabBrickService {
   public getAllBricks(): Observable<LabBrickEntity[]> {
     return this.apiService.get(this.route, LabBrickEntity);
   }
+
+  public generateTechnicalDoc(brickName: string): Observable<any> {
+    return this.apiService.get(`${this.route}/${brickName}/technical-doc`);
+  }
 }

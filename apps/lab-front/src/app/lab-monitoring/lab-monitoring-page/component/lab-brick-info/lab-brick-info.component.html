@@ -13,5 +13,10 @@
   {{brick.repoCommit}}
 </fl-key-value>
 
-
+<button mat-stroked-button color="primary" type="button" (click)="generateTechnicalDoc()"
+        class="generate-doc g-button-small">
+  {{'monitoring.generate_technical_doc' | translate}}
+  <fl-button-loader *ngIf="generateDocIsLoading" size="small"></fl-button-loader>
+</button>
 <lab-brick-message-list [messages]="$any(brick.data.messages)"></lab-brick-message-list>
+
