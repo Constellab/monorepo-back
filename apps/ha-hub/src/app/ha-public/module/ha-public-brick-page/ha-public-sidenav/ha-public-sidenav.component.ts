@@ -111,7 +111,10 @@ export class HaPublicSidenavComponent implements OnInit {
         this.brickVersion = url[1].path;
 
         this.brickService.getTechnicalDocumentation(this.brickId, this.brickVersion).subscribe(data => {
-          this.technicalDataSource.data = [data];
+          if(data){
+            this.technicalDataSource.data = [data];
+          }
+
         });
 
         this.brickService.getBrickDocs(this.brickId, this.brickVersion).subscribe((data) => {
@@ -463,7 +466,9 @@ export class HaPublicSidenavComponent implements OnInit {
         this.brickService.importTechnicalDocumentation({
           brickName: this.brickName,
           importFile: this.srcResult
-        }).subscribe();
+        }).subscribe(() => {
+          window.location.reload();
+        });
       };
 
       reader.readAsText($event.target.files[0]);

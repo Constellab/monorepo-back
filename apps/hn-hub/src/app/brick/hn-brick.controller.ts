@@ -5,7 +5,7 @@ import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnNode} from '../folder/hn-folder.dto';
-import {HnCreateTechnicalDocContent} from './hn-brick.dto';
+import {HnBrickListDTO, HnCreateTechnicalDocContent} from './hn-brick.dto';
 
 @Controller('brick')
 export class HnBrickController {
@@ -14,7 +14,7 @@ export class HnBrickController {
 
   @BlPublic()
   @Get()
-  find(): Promise<HnBrick[]> {
+  find(): Promise<HnBrickListDTO[]> {
     return this.brickService.find();
   }
 
@@ -69,7 +69,7 @@ export class HnBrickController {
 
   @BlPublic()
   @Get('technical-doc/:brickId/:version')
-  async findTechnicalDOc(@Param('brickId') brickId: string, @Param('version') version: string): Promise<HnNode> {
+  async findTechnicalDoc(@Param('brickId') brickId: string, @Param('version') version: string): Promise<HnNode> {
     return this.brickService.findTechnicalDoc(await this.brickService.findById(brickId), version);
   }
 

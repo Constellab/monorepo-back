@@ -66,6 +66,7 @@ export class HnDocumentationController {
   /**
    * Return an image of the report
    */
+  @BlPublic()
   @Get('image/:filename')
   public async get(@Param('filename') filename: string,
                    @Res() response: Response): Promise<any> {

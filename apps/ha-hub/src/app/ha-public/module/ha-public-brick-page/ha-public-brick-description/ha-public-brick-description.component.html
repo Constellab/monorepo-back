@@ -1,31 +1,55 @@
-<mat-card class="brick-description" *ngIf="brick != null">
-  <fl-key-value>
-    <fl-key>{{'description' | translate}}</fl-key>
-    {{brick.description}}
-  </fl-key-value>
-  <br>
-  <fl-key-value>
-    <fl-key>{{'creation_info' | translate}}</fl-key>
-    <fl-creation-info [createdAt]="brick.createdAt" [createdBy]="brick.createdBy.fullname"></fl-creation-info>
-  </fl-key-value>
-  <br>
-  <fl-key-value>
-    <fl-key>{{'repo_git' | translate}}</fl-key>
-    {{brick.gitRepo}}
-  </fl-key-value>
-  <br>
-  <fl-key-value>
-    <fl-key>{{'repo_pip' | translate}}</fl-key>
-    {{brick.pipRepo}}
-  </fl-key-value>
-  <br>
-  <fl-async-section [object]="latestBrickVersion$">
-    <ng-container *flSectionBody="let latestBrickVersion">
-      <fl-key-value>
-        <fl-key>{{'type_of_repository' | translate}}</fl-key>
-        {{latestBrickVersion.repoType}}
-      </fl-key-value>
-    </ng-container>
-  </fl-async-section>
-</mat-card>
+<div class="brick-description" *ngIf="brick != null">
+  <div class="left-side-div side-description-div">
+    <div class="main-description-div">
+      <div class="brick-logo"></div>
+      <div class="brick-info">
+        <span class="display-inline">
+          <h2 class="brick-name">{{brick.name}}</h2>
+          <fl-text-icon iconPosition="end" gap="0.2em"><mat-icon class="mat-primary">check</mat-icon>Verified</fl-text-icon>
+        </span>
+        <br>
+        <fl-key-value>
+          <fl-key>{{'description' | translate}}</fl-key>
+          {{brick.description}}
+        </fl-key-value>
+        <br>
+            <fl-key-value>
+              <fl-key>{{'version' | translate}}</fl-key>
+              {{lastVersion.toString()}}
+            </fl-key-value>
+        <br>
+      </div>
+    </div>
+    <div class="tags-div">
+      <mat-chip-list>
+        <mat-chip>Gencovery Data</mat-chip>
+        <mat-chip>Analysis</mat-chip>
+        <mat-chip>Verified</mat-chip>
+      </mat-chip-list>
+    </div>
+  </div>
+  <div class="right-side-div side-description-div">
+    <h2>Technicals Information</h2>
+    <br>
+    <fl-key-value>
+      <fl-key>{{'repo_git' | translate}}</fl-key>
+      {{brick.gitRepo}}
+    </fl-key-value>
+    <br>
+    <fl-key-value>
+      <fl-key>{{'repo_pip' | translate}}</fl-key>
+      {{brick.pipRepo}}
+    </fl-key-value>
+    <br>
+        <fl-key-value>
+          <fl-key>{{'type_of_repository' | translate}}</fl-key>
+          {{latestBrickVersion.repoType}}
+        </fl-key-value>
+    <br>
+    <div class="display-inline">
+      <fl-user-profile-picture [firstName]="brick.createdBy.firstname" [lastName]="brick.createdBy.lastname"></fl-user-profile-picture>
+      <fl-creation-info [createdAt]="brick.createdAt" [createdBy]="brick.createdBy.fullname" class="creator-info"></fl-creation-info>
+    </div>
+  </div>
+</div>
 

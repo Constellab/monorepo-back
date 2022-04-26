@@ -1,5 +1,6 @@
 import {HnRepoType, HnVersionType} from '../brick-version/hn-brick-version.entity';
 import {HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
+import {CmVersion} from '@monorepo/common-model';
 
 export interface HnBrickTransportDto {
   id: string;
@@ -49,4 +50,15 @@ export interface HnImportResourceDTO{
   hide: boolean;
   deprecated_since: string;
   deprecated_message: string;
+}
+
+
+export class HnBrickListDTO{
+  id: string;
+  name: string;
+  description: string;
+  pipRepo: string;
+  gitRepo: string;
+  lastVersion: CmVersion;
+  isCertified?: boolean;
 }

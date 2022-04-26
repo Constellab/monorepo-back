@@ -50,27 +50,29 @@ export class HnTechnicalFolderService {
         }
       }
     });
+    if(technicalFolder){
+      const children: HnNode[] = [];
+      //RESOURCES
+      const resources: HnResource[] = await this.resourceService.findResources(technicalFolder);
+      if (resources && resources.length > 0) {
+        const resourceFolder: HnNode = new HnNode(
+          'ressourceFolder',
+          'Resources',
+          'resource',
+          'technical-folder/resource/',
+          0,
+          technicalFolder.id,
+          this.addTecDoToNodeFolder(resources, 'ressourceFolder', 'technical-folder/resource/')
+        );
+        children.push(resourceFolder);
+      }
+      //TODO: faire pour les autre classes
 
-    const children: HnNode[] = [];
-    //RESOURCES
-    const resources: HnResource[] = await this.resourceService.findResources(technicalFolder);
-    if (resources && resources.length > 0) {
-      const resourceFolder: HnNode = new HnNode(
-        'ressourceFolder',
-        'Resources',
-        'resource',
-        'technical-folder/resource/',
-        0,
-        technicalFolder.id,
-        this.addTecDoToNodeFolder(resources, 'ressourceFolder', 'technical-folder/resource/')
-      );
-      children.push(resourceFolder);
+      return new HnNode(technicalFolder.id, 'Technical Documentation',
+        'technical-documentation', 'technical-documentation/',
+        0, null, children);
     }
-    //TODO: faire pour les autre classes
-
-    return new HnNode(technicalFolder.id, 'Technical Documentation',
-      'technical-documentation', 'technical-documentation/',
-      0, null, children);;
+    return null;
   }
 
   addTecDoToNodeFolder(docs: HnGeneratedDocEntity[], parentId: string, parentCompletePath: string): HnNode[]{

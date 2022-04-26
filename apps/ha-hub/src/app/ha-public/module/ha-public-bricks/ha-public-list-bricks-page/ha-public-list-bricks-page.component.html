@@ -1,14 +1,39 @@
-<button mat-flat-button color="primary" routerLink="edit" *haIsAdmin class="button-create">
-  Create
-</button>
+<section class="title-section">
+  <div class="title-div">
+    <h1>Build and Ship any Application Anywhere</h1>
+    <p>Docker Hub is the world's easiest way to create, manage, and deliver your team's container applications.</p>
+  </div>
+  <img class="title-image" fxHide.lt-md src="../../../../../assets/images/home-background.avif"/>
+  <div class="title-left-corner"></div>
+</section>
 
-<div class="brick-list">
-  <mat-grid-list cols="3" rowHeight="26vh" gutterSize="20">
-    <ng-container *ngFor="let brick of bricks">
-      <mat-grid-tile class="brick" [routerLink]="brick.name">
-        <h1>{{brick.name}}</h1>
-      </mat-grid-tile>
-    </ng-container>
-  </mat-grid-list>
-</div>
+
+<section class="brick-list-section">
+
+
+  <div class="brick-list">
+      <ng-container *ngFor="let brick of bricks" >
+        <a [href]="'bricks/' + brick.name" >
+           <div class="brick" >
+            <div class="brick-logo"></div>
+            <div class="brick-info">
+              <h2>{{brick.name}}</h2>
+              <fl-text-icon iconPosition="end" gap="0.2em"><mat-icon class="mat-primary">check</mat-icon>Verified</fl-text-icon>
+<!--              <fl-text-icon iconPosition="end" gap="0.2em"><mat-icon class="g-success-text">check</mat-icon>Verified</fl-text-icon>-->
+              <p>{{brick.lastVersion.toString()}}</p>
+            </div>
+
+          </div>
+        </a>
+
+      </ng-container>
+
+  </div>
+
+  <button mat-flat-button color="primary" routerLink="edit" *haIsAdmin class="button-create">
+    {{'create' | translate}} <mat-icon>add</mat-icon>
+  </button>
+</section>
+
+
 

@@ -1,8 +1,43 @@
-<mat-toolbar class="nav-bar">
-  <span>Gencovery hub</span>
-  <span class="option"><a routerLink="../">Bricks list</a></span>
+<mat-toolbar class="nav-bar" fxHide.lt-sm>
+  <a routerLink="../" class="gencovery-logo">
+    <img src="../../assets/images/gencovery-logo.png" />
+  </a>
+  <span fxHide.lt-md><a routerLink="../">Gencovery Hub</a></span>
+
+  <span class="option"><a routerLink="../">Home</a></span>
+  <span class="option"><a href="https://constellab.gencovery.com/">Constellab</a></span>
   <span class="spacer"></span>
-  <button mat-flat-button color="primary" *ngIf="!(userConnected | async)" class="g-centered-forced" (click)="openLoginDialog()">
+  <button mat-flat-button color="primary" *ngIf="!(userConnected | async)" class="g-centered-forced bt-register"
+          (click)="openLoginDialog()">
+    {{'register' | translate}}
+  </button>
+  <button mat-flat-button color="primary" *ngIf="!(userConnected | async)" class="g-centered-forced"
+          (click)="openLoginDialog()">
+    {{'login' | translate}}
+  </button>
+  <span class="g-centered-forced span-initials" [matMenuTriggerFor]="userMenu" *ngIf="userConnected | async as user">
+    <fl-user-profile-picture [firstName]="user.firstname"
+                             [lastName]="user.lastname">
+    </fl-user-profile-picture></span>
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item [routerLink]="'../admin'">{{'admin_dashboard' | translate}}</button>
+    <button mat-menu-item (click)="logout()">{{'logout' |translate}}</button>
+  </mat-menu>
+</mat-toolbar>
+
+<mat-toolbar class="nav-bar" fxHide.gt-xs>
+  <a routerLink="../">
+    <img src="../../assets/images/gencovery-logo.png" class="gencovery-logo"/>
+  </a>
+  <span class="option"><a routerLink="../"><mat-icon>home</mat-icon></a></span>
+  <span class="option"><a href="https://constellab.gencovery.com/"><mat-icon>auto_awesome</mat-icon></a></span>
+  <span class="spacer"></span>
+  <button mat-flat-button color="primary" *ngIf="!(userConnected | async)" class="g-centered-forced bt-register"
+          (click)="openLoginDialog()">
+    {{'register' | translate}}
+  </button>
+  <button mat-flat-button color="primary" *ngIf="!(userConnected | async)" class="g-centered-forced"
+          (click)="openLoginDialog()">
     {{'login' | translate}}
   </button>
   <span class="g-centered-forced span-initials" [matMenuTriggerFor]="userMenu" *ngIf="userConnected | async as user">

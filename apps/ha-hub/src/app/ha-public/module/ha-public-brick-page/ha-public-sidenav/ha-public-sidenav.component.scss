@@ -1,16 +1,15 @@
 .container {
   position: fixed;
   left: 0;
-  top: 9em;
+  top: 7.65em;
   width: 100%;
-  height: calc(100% - 9em);
+  height: calc(100% - 7.65em);
   background-color: var(--main-background);
   flex-direction: row;
   display: flex;
 }
 
 .sidenav-content {
-  margin-left: 1em;
   height: 100%;
   flex: auto;
 }
@@ -20,10 +19,12 @@
   box-sizing: border-box;
   width: 25rem;
   min-width: 25rem;
+  padding-right: 1em;
   max-width: 25rem  ;
   background-color: var(--main-background);
   display: flex;
   flex-direction: column;
+  border-right: 2px solid var(--card-background);
 }
 
 .sidenav-empty-space{

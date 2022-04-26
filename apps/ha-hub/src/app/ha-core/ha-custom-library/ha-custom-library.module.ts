@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {
   FlArticleModule,
-  FlAuthModule,
+  FlAuthModule, FlCoreComponentModule,
   FlCoreDirectiveModule,
   FlCorePipeModule,
   FlDialogModule,
@@ -12,7 +12,7 @@ import {
   FlPortalModule,
   FlSectionModule,
   FlSnackBarModule,
-  FlTextEditorModule,
+  FlTextEditorModule, FlTextIconModule,
   FlTranslateModule,
   FlUserModule
 } from '@monorepo/front-core-lib';
@@ -33,7 +33,9 @@ import {
     FlMenuDynamicModule,
     FlIconModule,
     FlArticleModule,
-    FlUserModule
+    FlUserModule,
+    FlTextIconModule,
+    FlCoreComponentModule
   ]
 })
 export class HaCustomLibraryModule {

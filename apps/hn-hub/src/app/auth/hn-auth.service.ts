@@ -31,6 +31,7 @@ export class HnAuthService {
       if (!userCentral) {
         throw new UnauthorizedException('Wrong mail or passord');
       }
+      console.log(userCentral)
       return userCentral;
     } catch (e: any) {
       if (e.status >= 500 && e.status < 600) {

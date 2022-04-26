@@ -2,4 +2,59 @@
   width: 80%;
   margin-left: 10%;
   margin-top: 1em;
+  display: flex;
+  flex-direction: row;
+}
+
+.brick-name{
+  margin-right: 1em;
+}
+
+.brick-description .side-description-div{
+  width: 50%;
+  padding: 1em 3em;
+}
+
+.brick-description .right-side-div{
+  border-left: 2px solid var(--card-background);
+}
+
+.brick-logo{
+  height: 120px;
+  min-width: 120px;
+
+  background-image: url("../../../../../assets/images/gencovery-logo.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.main-description-div{
+  display: flex;
+  flex-direction: row;
+}
+
+.brick-info{
+  padding-left: 1em;
+  padding-top: 1em;
+}
+
+.left-side-div{
+  display: flex;
+  flex-direction: column;
+}
+
+.tags-div{
+  margin-top: 1em;
+  max-width: 100%;
+}
+
+.display-inline{
+  display: flex;
+  flex-direction: row;
+  font-size: 1em;
+}
+
+.creator-info{
+  margin-left: 0.5em;
+  line-height: 2em;
 }

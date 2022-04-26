@@ -12,7 +12,7 @@ import {HnFolderService} from '../folder/hn-folder.service';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnErrorText} from '../core/model/config/hn-error-text.class';
 import {CmVersion} from '@monorepo/common-model';
-import {HnCreateTechnicalDocContent} from './hn-brick.dto';
+import {HnBrickListDTO, HnCreateTechnicalDocContent} from './hn-brick.dto';
 
 @Injectable()
 export class HnBrickService {
@@ -53,8 +53,21 @@ export class HnBrickService {
     return brick;
   }
 
-  async find(): Promise<HnBrick[]> {
-    return this.bricksRepository.find();
+  async find(): Promise<HnBrickListDTO[]> {
+    const bricks: HnBrick[] = await this.bricksRepository.find();
+    const res: HnBrickListDTO[] = [];
+    for(const brick of bricks) {
+      const resBrick = new HnBrickListDTO()
+      resBrick.id = brick.id;
+      resBrick.name = brick.name;
+      resBrick.description = brick.description;
+      resBrick.gitRepo = brick.gitRepo;
+      resBrick.pipRepo = brick.pipRepo;
+      resBrick.isCertified = brick.isCertified;
+      resBrick.lastVersion = (await this.brickMajorVersionService.getLatestBrickVersion(brick.name)).version;
+      res.push(resBrick);
+    }
+    return res;
   }
 
   async findByName(name: string): Promise<HnBrick> {

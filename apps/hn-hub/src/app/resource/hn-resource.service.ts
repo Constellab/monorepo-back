@@ -24,11 +24,11 @@ export class HnResourceService {
       }
     });
 
-    for(const r of oldResources){
+    for (const r of oldResources) {
       await this.resourceRepository.delete(r);
     }
 
-    for(const r of resources) {
+    for (const r of resources) {
       const resource = new HnResource();
       resource.doc = r.doc;
       resource.brickName = technicalFolder.brickMajorVersion.brick.name;
@@ -42,7 +42,7 @@ export class HnResourceService {
 
       //TODO A MODIFIER pour le parent et deprecatedSince
 
-      if(r.parent){
+      if (r.parent) {
         resource.parentUniqueName = r.parent.unique_name;
       }
 
@@ -50,23 +50,24 @@ export class HnResourceService {
       resource.shortDescription = r.short_description;
 
       await this.resourceRepository.save(resource);
-    };
+    }
+    ;
 
     return true;
   }
 
 
-  async findResources(technicalFolder: HnTechnicalFolder): Promise<HnResource[]>{
+  async findResources(technicalFolder: HnTechnicalFolder): Promise<HnResource[]> {
     return this.resourceRepository.find({
-      where:{
-        technicalFolder:{
+      where: {
+        technicalFolder: {
           id: technicalFolder.id
         }
       }
     });
   }
 
-  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string, completePath: string): Promise<HnDocumentation>{
+  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string, completePath: string): Promise<HnDocumentation> {
 
     const resource: HnResource = await this.resourceRepository.findOne({
       technicalFolder: {
@@ -75,7 +76,7 @@ export class HnResourceService {
       uniqueName: uniqueName
     });
 
-    if(resource){
+    if (resource) {
       const doc: HnDocumentation = new HnDocumentation();
       doc.id = resource.id;
       doc.path = resource.uniqueName;

@@ -1,11 +1,11 @@
 <div class="sidenavBody">
-  <div class="content g-max-article-width">
+  <div class="content ">
     <form class="documentation-form" [formGroup]="formGp">
-      <fl-text-editor class="content-editor" formControlName="content" [disabled]="(isAdmin | async) == false || isTechnical===true" mode="JSON" scrollContainer="child"
+      <fl-text-editor class="content-editor g-max-article-width" formControlName="content" [disabled]="(isAdmin | async) === false || isTechnical===true" mode="JSON" scrollContainer="child"
                       (textChange)="onContentUpdate($event)"></fl-text-editor>
     </form>
   </div>
-  <div class="side">
+  <div class="side" fxHide.lt-lg>
     <ng-container *ngFor="let title of titles; let i = index">
       <ng-container *ngIf="title[0] === 1; else e">
         <h3>{{title[1]}}</h3>

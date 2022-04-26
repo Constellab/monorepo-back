@@ -1,13 +1,117 @@
+.title-section{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: #0d0735;
+}
+
+.title-section .title-div{
+  height: 100%;
+  width: 50%;
+  margin-left: 5%;
+  z-index: 30;
+  padding: 5em 0;
+}
+
+.title-section .title-image{
+  width: 50%;
+}
+
+.title-div h1{
+  font-size: 34px;
+}
+
+.title-div p{
+  font-size: 18px;
+}
+
+@media (min-width: 1500px) {
+  .title-section .title-div h1{
+    margin-top: 2em;
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 959px) {
+
+
+  .title-section .title-div{
+    padding: 5em 1.5em;
+    margin: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .title-section .title-div h1{
+    width: 100%;
+    margin: 0;
+  }
+}
+
+
+.title-section .title-left-corner{
+  z-index: 40;
+  position: absolute;
+  width: 0;
+  height: 0;
+  bottom: 0;
+}
+
+.title-section .title-image{
+  flex: auto;
+}
+
 .brick{
+  margin-bottom: 1em;
   background-color: var(--card-background);
-  cursor: pointer;
+  width: 16em !important;
+  height: 6em !important;
+  display: flex;
+}
+
+.brick-logo{
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url("../../../../../assets/images/gencovery-logo.png");
+  width: 6em;
+  height: 100%;
+}
+
+.brick-info{
+  width: 10.67em;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.brick-info h2{
+  padding-top: 0.75em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brick-list{
-  padding: 2em;
+  max-width: 85em;
+  width: auto;
+  margin-top: 1.5em;
+  margin-left: auto;
+  margin-right: auto;
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: repeat(auto-fill, 16em);
+  justify-content: center;
 }
 
 .button-create{
-  margin-top: 1em;
-  margin-left: 2em;
+  margin-top: 1.5em;
+  margin-bottom: 1em;
 }
+
+.brick-list-section{
+  width: 100vw;
+  align-items: center;
+  text-align: center;
+}
+
+

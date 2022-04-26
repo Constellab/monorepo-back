@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="sidenav g-full-height">
+  <div class="sidenav g-full-height" fxHide.lt-md>
 
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree item g-full-height"
               cdkDropList (cdkDropListDropped)="drop($event)">

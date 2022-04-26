@@ -16,7 +16,6 @@ export class DaApiServiceConfig extends FlApiServiceConfig {
       json.objects = ClCoreJsonConvert.deserialize(json.objects, classReference);
       return json;
     } else {
-      console.error('Response object not paginated');
       throw 'Response object not paginated';
     }
   }

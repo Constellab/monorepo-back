@@ -13,6 +13,8 @@ export class HaBrick extends HaEntity {
   gitRepo: string;
 
   pipRepo: string;
+
+  lastVersion: CmVersion;
 }
 
 
