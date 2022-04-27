@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabResourceViewComponent} from './lab-resource-view.component';
+import {RvViewSpreadsheetComponent} from './rv-view-spreadsheet.component';
 
-describe('BioxResourceViewComponent', () => {
-  let component: LabResourceViewComponent;
-  let fixture: ComponentFixture<LabResourceViewComponent>;
+describe('BioxResourceSpreadsheetComponent', () => {
+  let component: RvViewSpreadsheetComponent;
+  let fixture: ComponentFixture<RvViewSpreadsheetComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabResourceViewComponent ]
+      declarations: [ RvViewSpreadsheetComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabResourceViewComponent);
+    fixture = TestBed.createComponent(RvViewSpreadsheetComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -35,6 +35,8 @@ import {LabReportContentViewBlot} from './lab-report/module/lab-report-detail-pa
 import {
   LabReportContentViewComponent
 } from './lab-report/module/lab-report-detail-page/component/lab-report-content-view/lab-report-content-view.component';
+import {RvResourceViewModule} from '@monorepo/resource-view';
+import {labConstResourceViewTypeInfos} from './lab-core/model/entities/resource/lab-resource-view.entity';
 
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
@@ -82,6 +84,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
       blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent},
         {blot: LabReportContentViewBlot, componentType: LabReportContentViewComponent}]
     }),
+    RvResourceViewModule.forRoot({availableViews: labConstResourceViewTypeInfos}),
 
     LabAppRoutingModule
   ],

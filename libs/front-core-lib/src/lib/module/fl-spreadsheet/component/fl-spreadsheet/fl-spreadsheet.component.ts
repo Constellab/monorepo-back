@@ -9,7 +9,6 @@ import {
   ViewChild
 } from '@angular/core';
 import {FlSpreadsheet} from '../../model/fl-spreadsheet.class';
-import {FlCell} from '../../model/fl-cell.class';
 import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.state';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlSpreadsheetContextMenu} from '../../state/fl-spreadsheet-context-menu.state';
@@ -25,6 +24,7 @@ import {Observable} from 'rxjs';
 import {FlSpreadsheetTagsState} from '../../state/fl-spreadsheet-tags.state';
 import {map} from 'rxjs/operators';
 import {FlSheetHeader, FlSheetRow} from '../../model/fl-sheet-headers.class';
+import {FlSheetChartService} from '../../model/chart/fl-sheet-chart.service';
 
 @Component({
   selector: 'fl-spreadsheet',
@@ -52,16 +52,15 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
   @Input() readOnly: boolean = false;
 
+  @Input() chartService: FlSheetChartService;
+
   @ViewChild('tableContainer', {static: true}) tableContainer: ElementRef<HTMLElement>;
   @ViewChild('horizontalScroller', {static: true}) horizontalScroller: ElementRef<HTMLElement>;
   @ViewChild('scroller', {static: true}) scroller: ElementRef<HTMLElement>;
   @ViewChild('heightSimulator', {static: true}) heightSimulator: ElementRef<HTMLElement>;
 
-  headerColumns: FlCell[];
-
   columns$: Observable<FlSheetHeader[]>;
   rows$: Observable<FlSheetRow[]>;
-
 
   constructor(private state: FlSpreadsheetState,
               private selectionState: FlSpreadsheetSelectionState,
@@ -72,7 +71,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.state.init(this.spreadsheet, this.readOnly);
+    this.state.init(this.spreadsheet, this.readOnly, this.chartService);
     this.selectionState.init();
     this.keyboardState.init();
     this.mouseState.init();

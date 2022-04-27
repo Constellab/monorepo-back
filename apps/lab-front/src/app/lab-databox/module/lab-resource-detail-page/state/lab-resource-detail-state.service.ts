@@ -6,7 +6,6 @@ import {
   labConstResourceViewTypeInfos,
   LabResourceView,
   LabResourceViewConfig,
-  LabResourceViewDisplayMode,
   LabResourceViewSpecsByType,
   LabResourceViewSpecWithConfig,
   LabResourceViewTypeInfo
@@ -30,6 +29,7 @@ import {
   LabResourceViewPortalInput
 } from '../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-view-portal/lab-resource-view-portal.component';
 import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
+import {RvViewDisplayMode} from '@monorepo/resource-view';
 
 // Event on view loaded
 export interface LabResourceViewEvent {
@@ -37,7 +37,7 @@ export interface LabResourceViewEvent {
   viewEvent?: {
     view: LabResourceView;
     viewConfig: LabResourceViewConfig;
-    displayMode: LabResourceViewDisplayMode;
+    displayMode: RvViewDisplayMode;
   };
 }
 
@@ -217,7 +217,7 @@ export class LabResourceDetailState implements OnDestroy {
         };
 
         if (viewTypeInfo == null) {
-          this.flSnackBarService.openErrorMessage({text: 'biox.view_type_node_supported', translateText: true});
+          this.flSnackBarService.openErrorMessage({text: 'rvResourceView.view_type_node_supported', translateText: true});
           return viewEvent;
         }
 

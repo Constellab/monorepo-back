@@ -2,6 +2,7 @@ import Quill from 'quill';
 import {LabConfigValues} from '../../../lab-core/model/entities/lab-config.entity';
 import {LabCallTransformerParams} from '../../../lab-core/model/global/lab-transformer.class';
 import {LabReportContentViewComponent} from './component/lab-report-content-view/lab-report-content-view.component';
+import {ClHelpService} from '@monorepo/core-lib';
 
 const BlockEmbed = Quill.import('blots/block/embed');
 
@@ -34,8 +35,8 @@ export class LabReportContentViewBlot extends BlockEmbed {
     component.caption = value.caption;
     component.viewConfig = {
       methodName: value.view_method_name,
-      configValues: value.view_config,
-      transformers: value.transformers
+      configValues: ClHelpService.deepClone(value.view_config),
+      transformers: ClHelpService.deepClone(value.transformers)
     };
 
     return node;

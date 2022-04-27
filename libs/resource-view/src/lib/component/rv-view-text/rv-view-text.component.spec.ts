@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabResourceJsonComponent} from './lab-resource-json.component';
+import {RvViewTextComponent} from './rv-view-text.component';
 
-describe('BioxResourceJsonComponent', () => {
-  let component: LabResourceJsonComponent;
-  let fixture: ComponentFixture<LabResourceJsonComponent>;
+describe('BioxResourceTextComponent', () => {
+  let component: RvViewTextComponent;
+  let fixture: ComponentFixture<RvViewTextComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabResourceJsonComponent ]
+      declarations: [ RvViewTextComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabResourceJsonComponent);
+    fixture = TestBed.createComponent(RvViewTextComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

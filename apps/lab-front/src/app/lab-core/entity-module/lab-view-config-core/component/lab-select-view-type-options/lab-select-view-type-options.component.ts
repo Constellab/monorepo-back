@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, Host, OnInit} from '@angular/core';
 import {FlEmbeddedOptionsAbstractDirective} from '@monorepo/front-core-lib';
 import {MatSelect} from '@angular/material/select';
-import {labConstResourceViewTypeInfos} from '../../../../model/entities/resource/lab-resource-view.entity';
+import {rvDefaultViewTypeInfos} from '@monorepo/resource-view';
 
 @Component({
   selector: 'lab-select-view-type-options',
@@ -11,7 +11,7 @@ import {labConstResourceViewTypeInfos} from '../../../../model/entities/resource
 export class LabSelectViewTypeOptionsComponent extends FlEmbeddedOptionsAbstractDirective
   implements OnInit, AfterViewInit {
 
-  viewTypes = labConstResourceViewTypeInfos;
+  viewTypes = rvDefaultViewTypeInfos;
 
   constructor(@Host() private select: MatSelect) {
     super(select);

@@ -1,6 +1,6 @@
-import {LabResourceViewBase} from './lab-resource-view.entity';
+import {RvResourceViewBase} from '@monorepo/resource-view';
 
-export interface LabResourceViewFolder extends LabResourceViewBase {
+export interface LabResourceViewFolder extends RvResourceViewBase {
   type: 'folder-view',
   data: LabResourceViewFolderData
 }

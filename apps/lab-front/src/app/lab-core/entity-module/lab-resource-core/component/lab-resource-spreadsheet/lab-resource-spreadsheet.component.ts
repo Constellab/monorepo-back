@@ -1,14 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {
-  FlSheet,
-  FlSheetChartService,
-  FlSheetHeaders,
-  FlSpreadsheet,
-  FlSpreadsheetFactory
-} from '@monorepo/front-core-lib';
-import {LabResourceViewDirective} from '../../model/lab-resource-view.directive';
-import {LabResourceViewTable} from '../../../../model/entities/resource/lab-resource-view.entity';
+import {FlSheetChartService, FlSpreadsheet} from '@monorepo/front-core-lib';
 import {LabResourceTableChartService} from '../../state/lab-resource-table-chart.service';
+import {RvResourceViewDirective, RvResourceViewTable, rvTableToSpreadsheet} from '@monorepo/resource-view';
 
 /**
  * Component to display a resource in a spreadsheet
@@ -19,37 +12,29 @@ import {LabResourceTableChartService} from '../../state/lab-resource-table-chart
   styleUrls: ['./lab-resource-spreadsheet.component.scss'],
   providers: [
     LabResourceTableChartService,
-    {provide: FlSheetChartService, useExisting: LabResourceTableChartService}
   ]
 })
-export class LabResourceSpreadsheetComponent extends LabResourceViewDirective<LabResourceViewTable> implements OnInit {
+export class LabResourceSpreadsheetComponent extends RvResourceViewDirective<RvResourceViewTable> implements OnInit {
 
-  @Input() view: LabResourceViewTable;
+  @Input() view: RvResourceViewTable;
 
   spreadSheet: FlSpreadsheet;
 
-  constructor(private chartState: LabResourceTableChartService) {
+  chartService: FlSheetChartService;
+
+  constructor(private tableChartService: LabResourceTableChartService) {
     super();
   }
 
   ngOnInit(): void {
     // init the chart state so it knows the context
-    this.chartState.init(this.resourceId,
+    this.tableChartService.init(this.resourceId,
       this.config.methodName,
       this.config.configValues,
       this.config.transformers);
+    this.chartService = this.tableChartService;
 
-    const spreadSheet: FlSpreadsheet = new FlSpreadsheet();
-    // if the resource is a csv file
-    const sheet: FlSheet = FlSpreadsheetFactory.fromArray(this.view.data.table, this.view.title ?? 'Sheet 1');
-
-    sheet.totalColumnsCount = this.view.data.total_number_of_columns;
-    sheet.totalRowsCount = this.view.data.total_number_of_rows;
-    sheet.columns = new FlSheetHeaders(this.view.data.columns);
-    sheet.rows = new FlSheetHeaders(this.view.data.rows);
-    spreadSheet.addSheet(sheet);
-
-    this.spreadSheet = spreadSheet;
+    this.spreadSheet = rvTableToSpreadsheet(this.view);
   }
 
 }

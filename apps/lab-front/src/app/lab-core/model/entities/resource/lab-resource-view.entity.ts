@@ -1,33 +1,31 @@
 import {Expose} from 'class-transformer';
-import {LabResourceViewBoxPlot} from './lab-resource-view-box-plot.class';
-import {LabResourceViewBasicPlot2d} from './lab-resource-view-basic-plot-2d.class';
-import {LabResourceViewHeatMap} from './lab-resource-view-heat-map.class';
-import {LabResourceViewHistogram} from './lab-resource-view-histogram.class';
-import {LabResourceVennDiagram} from './lab-resource-venn-diagram.class';
 import {LabCallTransformerParams, LabTransformerWithConfig} from '../../global/lab-transformer.class';
 import {LabConfigValues} from '../lab-config.entity';
+import {
+  rvDefaultViewTypeInfos,
+  RvResourceView,
+  RvResourceViewBase,
+  RvResourceViewType,
+  RvResourceViewTypeInfo,
+  RvViewDisplayMode
+} from '@monorepo/resource-view';
+import {
+  LabResourcesListComponent
+} from '../../../entity-module/lab-resource-core/component/lab-resources-list/lab-resources-list.component';
+import {
+  LabResourceSpreadsheetComponent
+} from '../../../entity-module/lab-resource-core/component/lab-resource-spreadsheet/lab-resource-spreadsheet.component';
+import {
+  LabResourceTextComponent
+} from '../../../entity-module/lab-resource-core/component/lab-resource-text/lab-resource-text.component';
+import {
+  LabResourceFolderComponent
+} from '../../../entity-module/lab-resource-core/component/lab-resource-folder/lab-resource-folder.component';
 import {LabResourceViewFolder} from './lab-resource-view-folder.class';
-import {LabTechnicalInfo} from './lab-technical-info.class';
 
 // list of available view type
-export type LabResourceViewType =
-  'view'
-  | 'json-view'
-  | 'folder-view'
-  | 'text-view'
-  | 'table-view' | 'dataset-view'
-  | 'network-view'
-  | 'image-view'
-  | 'scatter-plot-2d-view' | 'line-plot-2d-view'
-  | 'bar-plot-view' | 'stacked-bar-plot-view' | 'histogram-view'
-  | 'box-plot-view'
-  | 'multi-view'
-  | 'venn-diagram-view'
-  | 'heatmap-view'
-  | 'resources-list-view';
-
-// Mode to where display the view
-export type LabResourceViewDisplayMode = 'fullScreen' | 'portal';
+export type LabResourceViewType = RvResourceViewType | 'view'
+  | 'resources-list-view' | 'folder-view';
 
 export class LabResourceViewSpec {
   @Expose({name: 'method_name'})
@@ -58,7 +56,7 @@ export interface LabResourceViewSpecWithConfig {
   viewMethodName: string;
   isDefaultView: boolean;
   viewConfigValues: LabConfigValues;
-  displayMode: LabResourceViewDisplayMode;
+  displayMode: RvViewDisplayMode;
   transformersWithConfig: LabTransformerWithConfig[];
 }
 
@@ -68,114 +66,23 @@ export interface LabResourceViewConfig {
   transformers: LabCallTransformerParams[];
 }
 
-export interface LabResourceViewBase {
-  type: LabResourceViewType;
-  data: any;
-  title?: string;
-  technical_info?: LabTechnicalInfo[];
-}
-
-export interface LabResourceViewJson extends LabResourceViewBase {
-  type: 'json-view';
-  data: Record<string, any>;
-}
-
-// Spec name of the page on view text
-export const labResourceViewTextSpecPage: string = 'page';
-
-export interface LabResourceViewText extends LabResourceViewBase {
-  type: 'text-view';
-  data: {
-    text: string
-    is_first_page: boolean;
-    is_last_page: boolean;
-    last_page: number;
-    next_page: number;
-    number_of_items_per_page: number;
-    page: number;
-    prev_page: number;
-    total_number_of_items: number;
-    total_number_of_pages: number;
-  };
-}
-
-export interface LabResourceViewTable extends LabResourceViewBase {
-  type: 'table-view' | 'dataset-view';
-  data: LabResourceViewTableData;
-}
-
-export interface LabResourceViewTableData {
-  table: any[][];
-  rows: LabResourceViewTableHeader[];
-  columns: LabResourceViewTableHeader[];
-  from_column: number;
-  from_row: number;
-  number_of_columns_per_page: number;
-  number_of_rows_per_page: number;
-  total_number_of_columns: number;
-  total_number_of_rows: number;
-}
-
-export interface LabResourceViewTableHeader {
-  name: string;
-  tags: Record<string, string>;
-}
-
-
-export interface LabResourceViewNetwork extends LabResourceViewBase {
-  type: 'network-view';
-  data: any;
-}
-
-export interface LabResourceViewImage extends LabResourceViewBase {
-  type: 'image-view';
-  data: any;
-}
-
 /**
  * View that list other resources
  */
-export interface LabResourceViewResourcesList extends LabResourceViewBase {
+export interface LabResourceViewResourcesList extends RvResourceViewBase {
   type: 'resources-list-view';
   data: any[]; // list of LabResource
 }
 
-export interface LabResourceViewMulti extends LabResourceViewBase {
-  type: 'multi-view';
-  data: LabResourceViewMultiData;
-}
-
-export interface LabResourceViewMultiData {
-  nb_of_columns: number;
-  views: {
-    colspan: number;
-    rowspan: number;
-    view: LabResourceView;
-  }[];
-}
-
 //////////////////////////// TYPE THAT GROUP ALL VIEW TYPES /////////////////////////////
-export type LabResourceView =
-  LabResourceViewJson
-  | LabResourceViewMulti
-  | LabResourceViewBoxPlot
-  | LabResourceViewHistogram
-  | LabResourceViewBasicPlot2d
-  | LabResourceViewImage
-  | LabResourceViewNetwork
-  | LabResourceVennDiagram
-  | LabResourceViewHeatMap
-  | LabResourceViewText
-  | LabResourceViewTable
-  | LabResourceViewFolder
-  | LabResourceViewResourcesList;
+export type LabResourceView = RvResourceView | LabResourceViewResourcesList | LabResourceViewFolder;
 
 // Information of the view type
 export interface LabResourceViewTypeInfo {
   icon: string;
   text: string;
   // Where the view show in a portal or component by default
-  defaultDisplayMode: LabResourceViewDisplayMode;
+  defaultDisplayMode: RvViewDisplayMode;
   // if true the default display mode can be modified
   forceDefaultDisplayMode: boolean;
 }
@@ -184,116 +91,47 @@ export interface LabResourceViewTypeInfo {
 //////////////////////////// VIEW STATIC INFO FOR EACH TYPE /////////////////////////////
 
 // Record of view type, icon
-export const labConstResourceViewTypeInfos: Record<LabResourceViewType, LabResourceViewTypeInfo> = {
-  view: {
-    icon: 'view_quilt',
-    text: 'biox.resource_view_base',
-    defaultDisplayMode: 'portal',
-    forceDefaultDisplayMode: false
-  },
-  'json-view': {
-    icon: 'code',
-    text: 'biox.resource_view_json',
-    defaultDisplayMode: 'fullScreen',
-    forceDefaultDisplayMode: false
-  },
-  'text-view': {
-    icon: 'text_snippet',
-    text: 'biox.resource_view_text',
-    defaultDisplayMode: 'fullScreen',
-    forceDefaultDisplayMode: false
-  },
+export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInfo> = {
+  ...rvDefaultViewTypeInfos,
+  // override the table view to add functionalities like chart from api
   'table-view': {
     icon: 'calendar_view_month',
     text: 'biox.resource_view_spreadsheet',
     defaultDisplayMode: 'fullScreen',
-    forceDefaultDisplayMode: true
+    forceDefaultDisplayMode: true,
+    viewComponent: LabResourceSpreadsheetComponent,
   },
-  'dataset-view': {
-    icon: 'calendar_view_month',
-    text: 'biox.resource_view_dataset_view',
+  // override the text view to enable pagination
+  'text-view': {
+    icon: 'text_snippet',
+    text: 'biox.resource_view_text',
     defaultDisplayMode: 'fullScreen',
-    forceDefaultDisplayMode: true
+    forceDefaultDisplayMode: false,
+    viewComponent: LabResourceTextComponent,
   },
-  'network-view': {
-    icon: 'share',
-    text: 'biox.resource_view_pathway',
-    defaultDisplayMode: 'fullScreen',
-    forceDefaultDisplayMode: true
-  },
-  'image-view': {
-    icon: 'insert_photo',
-    text: 'biox.resource_view_image',
+  view: {
+    icon: 'view_quilt',
+    text: 'biox.resource_view_base',
     defaultDisplayMode: 'portal',
-    forceDefaultDisplayMode: false
-  },
-  'scatter-plot-2d-view': {
-    icon: 'scatter_plot',
-    text: 'biox.resource_view_scatter_plot_2d',
-    defaultDisplayMode: 'portal',
-    forceDefaultDisplayMode: false
-  },
-  'line-plot-2d-view': {
-    icon: 'show_chart',
-    text: 'biox.resource_view_line_plot_2d',
-    defaultDisplayMode: 'portal',
-    forceDefaultDisplayMode: false
-  },
-  'bar-plot-view': {
-    icon: 'bar_chart',
-    text: 'biox.resource_view_bar_plot',
-    defaultDisplayMode: 'portal',
-    forceDefaultDisplayMode: false
-  },
-  'stacked-bar-plot-view': {
-    icon: 'stacked_bar_chart',
-    text: 'biox.resource_view_stacked_bar_plot',
-    defaultDisplayMode: 'portal',
-    forceDefaultDisplayMode: false
-  },
-  'histogram-view': {
-    icon: 'bar_chart',
-    text: 'biox.resource_view_histogram',
-    defaultDisplayMode: 'portal',
-    forceDefaultDisplayMode: false
-  },
-  'box-plot-view': {
-    icon: 'multiline_chart',
-    text: 'biox.resource_view_box_plot',
-    defaultDisplayMode: 'portal',
-    forceDefaultDisplayMode: false
-  },
-  'multi-view': {
-    icon: 'multiline_chart',
-    text: 'biox.resource_view_multi_views',
-    defaultDisplayMode: 'fullScreen',
-    forceDefaultDisplayMode: false
-  },
-  'venn-diagram-view': {
-    icon: 'join_full',
-    text: 'biox.resource_view_venn_diagram',
-    defaultDisplayMode: 'portal',
-    forceDefaultDisplayMode: false
-  },
-  'heatmap-view': {
-    icon: 'multiline_chart',
-    text: 'biox.resource_view_heatmap',
-    defaultDisplayMode: 'portal',
-    forceDefaultDisplayMode: false
-  },
-  'folder-view': {
-    icon: 'folder',
-    text: 'biox.resource_view_folder',
-    defaultDisplayMode: 'fullScreen',
-    forceDefaultDisplayMode: false
+    forceDefaultDisplayMode: false,
+    viewComponent: null,
   },
   'resources-list-view': {
     icon: 'list',
     text: 'biox.resource_view_resources_list',
     defaultDisplayMode: 'fullScreen',
-    forceDefaultDisplayMode: false
+    forceDefaultDisplayMode: false,
+    viewComponent: LabResourcesListComponent
   },
+  'folder-view': {
+    icon: 'folder',
+    text: 'biox.resource_view_folder',
+    defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: false,
+    viewComponent: LabResourceFolderComponent,
+  }
 };
+
 
 /**
  * Object that group view specs by type

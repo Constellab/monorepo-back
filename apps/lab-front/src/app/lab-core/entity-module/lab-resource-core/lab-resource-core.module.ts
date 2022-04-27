@@ -4,18 +4,12 @@ import {LabResourceInfoComponent} from './component/lab-resource-info/lab-resour
 import {LabCoreModule} from '../../lab-core.module';
 import {LabResourceSpreadsheetComponent} from './component/lab-resource-spreadsheet/lab-resource-spreadsheet.component';
 import {RouterModule} from '@angular/router';
-import {LabResourceJsonComponent} from './component/lab-resource-json/lab-resource-json.component';
 import {LabResourceTextComponent} from './component/lab-resource-text/lab-resource-text.component';
-import {LabResourceImageComponent} from './component/lab-resource-image/lab-resource-image.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   LabResourceTypeSelectOptionsComponent
 } from './component/lab-resource-type-select-options/lab-resource-type-select-options.component';
-import {LabResourceNetworkComponent} from './component/lab-resource-network/lab-resource-network.component';
-import {LabResourceChart2dComponent} from './component/lab-resource-chart-2d/lab-resource-chart2d.component';
 import {LabResourceViewPortalComponent} from './component/lab-resource-view-portal/lab-resource-view-portal.component';
-import {LabResourceMultiViewComponent} from './component/lab-resource-multi-view/lab-resource-multi-view.component';
-import {LabResourceViewComponent} from './component/lab-resource-view/lab-resource-view.component';
 import {LabResourceTableComponent} from './component/lab-resource-table/lab-resource-table.component';
 import {LabResourceSearchComponent} from './component/lab-resource-search/lab-resource-search.component';
 import {
@@ -64,15 +58,9 @@ import {
   declarations: [
     LabResourceInfoComponent,
     LabResourceSpreadsheetComponent,
-    LabResourceJsonComponent,
     LabResourceTextComponent,
-    LabResourceImageComponent,
     LabResourceTypeSelectOptionsComponent,
-    LabResourceNetworkComponent,
-    LabResourceChart2dComponent,
     LabResourceViewPortalComponent,
-    LabResourceMultiViewComponent,
-    LabResourceViewComponent,
     LabResourceTableComponent,
     LabResourceSearchComponent,
     LabResourceAdvancedSearchFormComponent,
@@ -94,15 +82,9 @@ import {
   exports: [
     LabResourceInfoComponent,
     LabResourceSpreadsheetComponent,
-    LabResourceJsonComponent,
     LabResourceTextComponent,
-    LabResourceImageComponent,
     LabResourceTypeSelectOptionsComponent,
-    LabResourceNetworkComponent,
-    LabResourceChart2dComponent,
     LabResourceViewPortalComponent,
-    LabResourceMultiViewComponent,
-    LabResourceViewComponent,
     LabResourceTableComponent,
     LabResourceSearchComponent,
     LabResourceOriginOptionsComponent,

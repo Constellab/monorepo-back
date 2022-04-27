@@ -1,12 +1,13 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {LabResourceView, LabResourceViewConfig} from '../../../../model/entities/resource/lab-resource-view.entity';
+import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
+import {RvViewConfig} from '@monorepo/resource-view';
 
 
 export interface LabResourceViewPortalInput {
   view: LabResourceView;
   resourceId: string;
-  config: LabResourceViewConfig;
+  config: RvViewConfig;
 }
 
 @Component({
@@ -18,7 +19,7 @@ export class LabResourceViewPortalComponent implements OnInit {
 
   view: LabResourceView;
   resourceId: string;
-  config: LabResourceViewConfig;
+  config: RvViewConfig;
 
   width: string;
   height: string;

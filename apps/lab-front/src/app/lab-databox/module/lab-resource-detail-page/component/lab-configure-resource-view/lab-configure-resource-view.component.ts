@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {
-  LabResourceViewDisplayMode,
   LabResourceViewSpecWithConfig,
   LabResourceViewTypeInfo
 } from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
@@ -18,6 +17,7 @@ import {
 } from '../../../../../lab-core/entity-module/lab-transformer/component/lab-transform-resource/lab-transform-resource.component';
 import {LabResourceService} from '../../../../../lab-core/entity-service/lab-resource.service';
 import {LabConfigSpecs} from '../../../../../lab-core/model/entities/lab-config-spec.entity';
+import {RvViewDisplayMode} from '@monorepo/resource-view';
 
 export interface LabConfigureResourceViewInput {
   title: string;
@@ -28,7 +28,7 @@ export interface LabConfigureResourceViewInput {
 }
 
 interface LabConfigureResourceViewForm {
-  displayMode: LabResourceViewDisplayMode;
+  displayMode: RvViewDisplayMode;
   viewConfig: LabConfigureSpecsForm;
   transformers: LabTransformResourceForm[];
 }
@@ -114,7 +114,7 @@ export class LabConfigureResourceViewComponent implements OnInit {
     };
   }
 
-  get numberOfTransformers(): number{
+  get numberOfTransformers(): number {
     return this.formGp.value.transformers.length;
   }
 

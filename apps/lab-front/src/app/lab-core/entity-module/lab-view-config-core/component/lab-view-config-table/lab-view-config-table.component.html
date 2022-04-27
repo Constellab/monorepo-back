@@ -8,7 +8,7 @@
     <mat-cell *matCellDef="let viewConfig">
       <ng-container *ngIf="viewConfig.viewType | labViewTypeInfo as viewTypeInfo">
         <fl-text-icon>
-          <mat-icon>{{viewTypeInfo.icon}}</mat-icon>
+          <mat-icon [flIcon]="viewTypeInfo.icon"></mat-icon>
           {{viewTypeInfo.text | translate}}
         </fl-text-icon>
       </ng-container>

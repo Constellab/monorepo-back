@@ -1,10 +1,10 @@
 import {Directive, Input} from '@angular/core';
-import {RvResourceView, RvViewDisplayMode} from './rv-resource-view.class';
+import {RvResourceViewBase, RvViewDisplayMode} from './rv-resource-view.class';
 import {RvViewConfig} from './rv-view-config.class';
 
 
 @Directive()
-export class RvResourceViewDirective<T extends RvResourceView = RvResourceView> {
+export class RvResourceViewDirective<T extends RvResourceViewBase = RvResourceViewBase> {
 
   @Input() view: T;
 

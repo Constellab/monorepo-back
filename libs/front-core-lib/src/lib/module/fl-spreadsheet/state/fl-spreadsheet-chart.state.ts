@@ -1,4 +1,4 @@
-import {Injectable, Optional} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {FlPortalService} from '../../fl-portal/service/fl-portal.service';
 import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
 import {FlSheetChartSelectionComponent} from '../component/fl-sheet-chart-selection/fl-sheet-chart-selection.component';
@@ -36,8 +36,7 @@ export class FlSpreadsheetChartState {
   constructor(private state: FlSpreadsheetState,
               private portalService: FlPortalService,
               private chartPortalService: FlChartPortalService,
-              private selectionState: FlSpreadsheetSelectionState,
-              @Optional() private chartService: FlSheetChartService) {
+              private selectionState: FlSpreadsheetSelectionState) {
   }
 
   public openChartSelectionPortal(selection?: FlSheetChartSelectionForm): void {
@@ -141,8 +140,9 @@ export class FlSpreadsheetChartState {
    * Get the correct chart service. If a FlSheetChartService was injected, use it, otherwise use the local chart
    */
   private getChartService(sheet: FlSheet): FlSheetChartService {
-    if (this.chartService) {
-      return this.chartService;
+    const chartService = this.state.getChartService();
+    if (chartService) {
+      return chartService;
     }
     return new FlSheetChartLocalService(sheet);
   }

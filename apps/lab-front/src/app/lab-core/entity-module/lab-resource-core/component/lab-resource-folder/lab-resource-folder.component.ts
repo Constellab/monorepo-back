@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {LabResourceViewDirective} from '../../model/lab-resource-view.directive';
 import {
   LabResourceViewFolder,
   LabResourceViewFolderContent,
@@ -16,6 +15,7 @@ import {
 } from '../lab-fs-node-types-selection-dialog/lab-fs-node-types-selection-dialog.component';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabRouterService} from '../../../../service/lab-router.service';
+import {RvResourceViewDirective} from '@monorepo/resource-view';
 
 /**
  * Resource view for folder
@@ -25,7 +25,7 @@ import {LabRouterService} from '../../../../service/lab-router.service';
   templateUrl: './lab-resource-folder.component.html',
   styleUrls: ['./lab-resource-folder.component.scss']
 })
-export class LabResourceFolderComponent extends LabResourceViewDirective<LabResourceViewFolder> implements OnInit {
+export class LabResourceFolderComponent extends RvResourceViewDirective<LabResourceViewFolder> implements OnInit {
 
   treeControl: FlFlatTreeControl<LabResourceViewFolderContentFlat>;
 

@@ -1,14 +1,10 @@
-import {Component, ComponentRef, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
-import {
-  rvConstResourceViewTypeInfos,
-  RvResourceView,
-  RvResourceViewTypeInfo,
-  RvViewDisplayMode
-} from '../../model/rv-resource-view.class';
+import {Component, ComponentRef, Inject, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {RvResourceViewBase, RvViewDisplayMode} from '../../model/rv-resource-view.class';
 
 import {RvViewConfig} from '../../model/rv-view-config.class';
 import {RvResourceViewDirective} from '../../model/rv-resource-view.directive';
-import {rvViewComponentFactory} from '../../model/rv-resource-view-module.config';
+import {RvResourceViewTypeInfo} from '../../model/rv-type-info.class';
+import {RV_MODULE_CONFIG, RvResourceViewModuleConfig} from '../../model/rv-resource-view-module.config';
 
 @Component({
   selector: 'rv-resource-view',
@@ -17,14 +13,14 @@ import {rvViewComponentFactory} from '../../model/rv-resource-view-module.config
 })
 export class RvResourceViewComponent implements OnInit, OnDestroy {
 
-  @Input() set view(value: RvResourceView) {
+  @Input() set view(value: RvResourceViewBase) {
     this._view = value;
     if (this.isReady) {
       this.initView(value);
     }
   }
 
-  _view: RvResourceView;
+  _view: RvResourceViewBase;
 
 
   @Input() resourceId: string;
@@ -42,7 +38,7 @@ export class RvResourceViewComponent implements OnInit, OnDestroy {
   viewNotSupportedError: boolean = false;
 
 
-  constructor() {
+  constructor(@Inject(RV_MODULE_CONFIG) private moduleConfig: RvResourceViewModuleConfig) {
   }
 
   ngOnInit(): void {
@@ -52,25 +48,29 @@ export class RvResourceViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  private initView(view: RvResourceView): void {
+  private initView(view: RvResourceViewBase): void {
     // wait for other input to be set
     setTimeout(() => {
       this.destroyViewComponentRef();
-      const componentType = rvViewComponentFactory(view.type);
-      const viewTypeInfo: RvResourceViewTypeInfo = rvConstResourceViewTypeInfos[view.type];
 
-      if (componentType == null || viewTypeInfo == null) {
+      const viewTypeInfo: RvResourceViewTypeInfo = this.getViewInfo(view.type);
+
+      if (viewTypeInfo == null || viewTypeInfo.viewComponent == null) {
         this.viewNotSupportedError = true;
         return;
       }
-      this.viewNotSupportedError = false;
 
-      this.viewComponentRef = this.viewContainer.createComponent(componentType);
+      this.viewNotSupportedError = false;
+      this.viewComponentRef = this.viewContainer.createComponent(viewTypeInfo.viewComponent);
       this.viewComponentRef.instance.view = view;
       this.viewComponentRef.instance.resourceId = this.resourceId;
       this.viewComponentRef.instance.config = this.config;
       this.viewComponentRef.instance.displayMode = this.displayMode;
     }, 0);
+  }
+
+  private getViewInfo(viewType: string): RvResourceViewTypeInfo {
+    return this.moduleConfig.availableViews[viewType];
   }
 
   private destroyViewComponentRef(): void {

@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FlInfiniteScrollMode} from '@monorepo/front-core-lib';
-import {LabResourceViewDirective} from '../../model/lab-resource-view.directive';
-import {
-  LabResourceViewText,
-  labResourceViewTextSpecPage
-} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {Observable} from 'rxjs';
+import {RvResourceViewDirective, RvResourceViewText} from '@monorepo/resource-view';
+
+
+// Spec name of the page on view text
+const labResourceViewTextSpecPage: string = 'page';
 
 /**
  * Component to view a resource as plain text
@@ -19,9 +19,9 @@ import {Observable} from 'rxjs';
   styleUrls: ['./lab-resource-text.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LabResourceTextComponent extends LabResourceViewDirective<LabResourceViewText> implements OnInit {
+export class LabResourceTextComponent extends RvResourceViewDirective<RvResourceViewText> implements OnInit {
 
-  @Input() view: LabResourceViewText;
+  @Input() view: RvResourceViewText;
 
   @Input() infiniteScrollMode: FlInfiniteScrollMode = 'body';
 
@@ -62,7 +62,7 @@ export class LabResourceTextComponent extends LabResourceViewDirective<LabResour
     });
   }
 
-  private loadNextPageSuccess(view: LabResourceViewText): void {
+  private loadNextPageSuccess(view: RvResourceViewText): void {
     this.view.data.text += this.toString(view.data.text);
     this.text += this.toString(view.data.text);
     this.reachedLastPage = view.data.is_last_page;
@@ -78,16 +78,16 @@ export class LabResourceTextComponent extends LabResourceViewDirective<LabResour
     });
   }
 
-  private callPagination(page: number): Observable<LabResourceViewText> {
+  private callPagination(page: number): Observable<RvResourceViewText> {
     // merge config with pagination config
     const viewConfig = Object.assign(this.config.configValues, {[labResourceViewTextSpecPage]: page});
 
     return this.resourceService.callResourceView(this.resourceId, this.config.methodName,
       viewConfig,
-      this.config.transformers) as Observable<LabResourceViewText>;
+      this.config.transformers) as Observable<RvResourceViewText>;
   }
 
-  private loadPreviousPageSuccess(view: LabResourceViewText): void {
+  private loadPreviousPageSuccess(view: RvResourceViewText): void {
     this.view.data.text = this.toString(view.data) + this.view.data;
     this.text = this.toString(view.data) + this.text;
     this.reachedFirstPage = view.data.is_first_page;

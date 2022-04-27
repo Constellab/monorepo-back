@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {LabResourceViewDirective} from '../../model/lab-resource-view.directive';
 import {LabResourceViewResourcesList} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {FlArrayObs, FlEntityArrayObs, FlTableColumn} from '@monorepo/front-core-lib';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
+import {RvResourceViewDirective} from '@monorepo/resource-view';
 
 /**
  * View of resource that show a list of other resources
@@ -13,7 +13,7 @@ import {ClCoreJsonConvert} from '@monorepo/core-lib';
   templateUrl: './lab-resources-list.component.html',
   styleUrls: ['./lab-resources-list.component.scss']
 })
-export class LabResourcesListComponent extends LabResourceViewDirective<LabResourceViewResourcesList>
+export class LabResourcesListComponent extends RvResourceViewDirective<LabResourceViewResourcesList>
   implements OnInit {
 
   datasource: FlArrayObs<LabResource>;

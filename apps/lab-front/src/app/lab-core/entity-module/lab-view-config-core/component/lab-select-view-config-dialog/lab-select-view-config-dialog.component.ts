@@ -20,6 +20,10 @@ export class LabSelectViewConfigDialogComponent implements OnInit {
   }
 
   onViewConfigSelected(viewConfig: LabViewConfig): void {
+    if(viewConfig.viewType) {
+      this.dialogRef.close(viewConfig);
+    }
+
     this.dialogRef.close(viewConfig);
   }
 

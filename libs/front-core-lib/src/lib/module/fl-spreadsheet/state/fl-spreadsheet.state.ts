@@ -6,6 +6,7 @@ import {mergeMap} from 'rxjs/operators';
 import {FlSpreadsheetFactory} from '../utils/fl-spreadsheet.factory';
 import {FlCell} from '../model/fl-cell.class';
 import {FlSheetHeader, FlSheetRow} from '../model/fl-sheet-headers.class';
+import {FlSheetChartService} from '../model/chart/fl-sheet-chart.service';
 
 /**
  * Unique state shared across the spreadsheet to store the current spreadsheet
@@ -22,10 +23,13 @@ export class FlSpreadsheetState implements OnDestroy {
 
   public readOnly: boolean = false;
 
-  public init(spreadsheet: FlSpreadsheet, readOnly: boolean): void {
+  private chartService: FlSheetChartService;
+
+  public init(spreadsheet: FlSpreadsheet, readOnly: boolean, chartService: FlSheetChartService): void {
     this._spreadsheet = spreadsheet;
     this.lastSheetId = spreadsheet.sheets.length;
     this.readOnly = readOnly;
+    this.chartService = chartService;
   }
 
   public get spreadsheet(): FlSpreadsheet {
@@ -81,6 +85,12 @@ export class FlSpreadsheetState implements OnDestroy {
     const newSheet = FlSpreadsheetFactory.fromAny(cell.value, sheetName);
     this.cellObjectSheets.set(cell.id, newSheet);
     this._spreadsheet.addSheet(newSheet);
+  }
+
+
+  //////////////////////////////////// OTHER ////////////////////////////////////
+  public getChartService(): FlSheetChartService {
+    return this.chartService;
   }
 
 
