@@ -28,11 +28,6 @@
             "glob": "**/*",
             "input": "libs/front-core-lib/src/assets/font",
             "output": "assets/font"
-          },
-          {
-            "glob": "favicon.ico",
-            "input": "libs/front-core-lib/src/",
-            "output": "./"
           }
         ],
         "styles": [
