@@ -284,16 +284,6 @@ mat-tree {
   background-color: transparent;
 }
 
-.mat-drawer-container {
-  background-color: var(--main-background);
-  color: var(--color-foreground);
-}
-
-.mat-drawer {
-  background-color: var(--card-background);
-  color: var(--color-foreground);
-}
-
 /********************************* EXPANSION PANEL *****************************/
 // disable left and right padding of expansion panel body
 .g-expansion-disable-side-padding .mat-expansion-panel-body {

@@ -40,17 +40,11 @@ $theme: mat.define-dark-theme((color: (primary: $primary, accent: $accent, warn:
 
 // define the background theme
 $background: map_merge(mat.$dark-theme-background-palette, (background: #1B1919, card: #222222, dialog:#222222));
-//$background: mat.$dark-theme-background-palette;
-
 // define the foreground
 $foreground: map_merge(mat.$dark-theme-foreground-palette, (base: #EDFAFB, icon: #EDFAFB, icons: #EDFAFB, text: #EDFAFB));
 
-// Set the foreground background theme in the theme variable
-$theme: map_merge($theme, (foreground: $foreground, background: $background));
-
 // Load all global classes to theme
-@include _base-theme($theme);
-
+@include _base-theme($theme, $background, $foreground);
 
 //////////////////// GLOBAL CSS VARIABLES ///////////////////////
 $foreground-color: mat.get-color-from-palette($foreground, text);

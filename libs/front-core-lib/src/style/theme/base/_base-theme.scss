@@ -2,17 +2,38 @@
 @use '@angular/material' as mat;
 @import "libs/front-core-lib/src/lib/module/fl-input-file/fl-input-file-container/fl-input-file-theme";
 
+// function to set the background and foreground palette in material theme
+// from https://github.com/angular/components/issues/6244#issuecomment-1017629612
+@function set-background-foreground($theme, $background, $foreground) {
+  $color: map_get($theme, color);
 
+  $color: map_merge(
+      $color,
+      (
+        background: $background,
+        foreground: $foreground,
+      )
+  );
+  @return map_merge(
+      $theme,
+      (
+        color: $color,
+      )
+  );
+}
 /**
  * It apply the theme in parameter and define global css variable for theme
   This mixin must be call only once
  */
-@mixin _base-theme($mat-theme) {
-  $primary: map-get($mat-theme, primary);
-  $accent: map-get($mat-theme, accent);
-  $warn: map-get($mat-theme, warn);
-  $foreground: map-get($mat-theme, foreground);
-  $background: map-get($mat-theme, background);
+@mixin _base-theme($mat-theme, $background, $foreground) {
+  $mat-theme: set-background-foreground($mat-theme, $background, $foreground);
+
+  $color: mat.get-color-config($mat-theme);
+  $primary: map-get($color, primary);
+  $accent: map-get($color, accent);
+  $warn: map-get($color, warn);
+  $foreground: map-get($color, foreground);
+  $background: map-get($color, background);
   $foreground-color: mat.get-color-from-palette($foreground, text);
   $background-color: mat.get-color-from-palette($background, background);
   $divider: mat.get-color-from-palette($foreground, dividers);

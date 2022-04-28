@@ -42,17 +42,12 @@ $theme: mat.define-light-theme((color: (primary: $primary, accent: $accent, warn
 
 // define the background theme
 $background: map_merge(mat.$light-theme-background-palette, (background: #F9F8F8, card: #E9E9E9, dialog:#E9E9E9));
-// Set the background theme in the theme variable
-$theme: map_merge($theme, (background: $background));
 
 // define the foreground
 $foreground: map_merge(mat.$light-theme-foreground-palette, (base: #010202, icon: #010202, icons: #010202, text: #010202));
-// Set the background theme in the theme variable
-$theme: map_merge($theme, (foreground: $foreground));
-
 
 // Load all global classes link to theme
-@include _base-theme($theme);
+@include _base-theme($theme, $background, $foreground);
 
 //////////////////// GLOBAL CSS VARIABLES ///////////////////////
 :root {
