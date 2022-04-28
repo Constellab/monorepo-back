@@ -9,6 +9,7 @@ export class FlTextEditorFigureBlot extends BlockEmbed {
 
   static blotName = 'figure';
   static tagName = 'fl-text-editor-figure';
+  static className = 'g-quill-block';
 
   private domNode: HTMLElement;
 
