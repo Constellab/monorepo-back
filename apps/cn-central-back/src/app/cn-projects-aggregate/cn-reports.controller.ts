@@ -34,10 +34,21 @@ export class CnReportsController {
    * Return an image of the report
    */
   @Get('image/:filename')
-  public async get(@Param('filename') filename: string,
+  public async getImage(@Param('filename') filename: string,
                    @Res() response: Response): Promise<any> {
     const file = await this.projectAggregator.getReportImage(filename);
     file.pipe(response);
   }
+
+  /**
+   * Return a view of the report
+   */
+  @Get('view/:filename')
+  public async getView(@Param('filename') filename: string,
+  @Res() response: Response): Promise<any> {
+    const file = await this.projectAggregator.getReportView(filename);
+    file.pipe(response);
+  }
+
 
 }

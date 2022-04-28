@@ -1,16 +1,4 @@
-<div contenteditable="false" class="container">
-
-  <div class="chart-container">
-    <rv-resource-view *ngIf="view" [resourceId]="resourceId" [view]="view"
-                       [config]="viewConfig" displayMode="portal"></rv-resource-view>
-  </div>
-
-  <div class="g-text-centered">
-    <fl-text-editor-title-caption [(title)]="viewTitle" [(caption)]="caption"
-                                  [editable]="(disabled$ | async) === false"></fl-text-editor-title-caption>
-
-    <lab-technical-info-button *ngIf="view" [technicalInfo]="view.technical_info"
-                               class="g-button-icon-tiny g-text-light"></lab-technical-info-button>
-
-  </div>
-</div>
+<rv-report-resource-view [resourceId]="resourceId" [view$]="view$"
+                         [viewConfig]="viewConfig" [(viewTitle)]="viewTitle" [(caption)]="caption"
+                         [editable]="(disabled$ | async) === false">
+</rv-report-resource-view>

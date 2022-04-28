@@ -27,7 +27,7 @@ export class LabReportContentViewComponent extends FlTextEditorElementDirective 
   @HostBinding('attr.caption')
   @Input() caption: string;
 
-  view: LabResourceView;
+  view$: Observable<LabResourceView>;
 
   disabled$: Observable<boolean>;
 
@@ -39,16 +39,11 @@ export class LabReportContentViewComponent extends FlTextEditorElementDirective 
   }
 
   ngOnInit(): void {
-    this.resourceService.callResourceView(this.resourceId, this.viewConfig.methodName,
-      this.viewConfig.configValues, this.viewConfig.transformers).subscribe(
-      view => this.onViewLoaded(view),
-    );
+    this.view$ = this.resourceService.callResourceView(this.resourceId, this.viewConfig.methodName,
+      this.viewConfig.configValues, this.viewConfig.transformers);
 
     this.disabled$ = this.getDisabled$();
   }
 
-  private onViewLoaded(view: LabResourceView): void {
-    this.view = view;
-  }
 
 }

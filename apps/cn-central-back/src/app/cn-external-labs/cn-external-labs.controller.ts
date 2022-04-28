@@ -1,13 +1,11 @@
-import {Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, UploadedFiles, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
 import {CnLabInstancesService} from '../cn-lab-instances/cn-lab-instances.service';
 import {ClLabGuard} from '../cn-core/decorators/cn-lab-guard.decorator';
 import {CnReport} from '../cn-projects-aggregate/cn-reports/cn-report.entity';
-import {BlFile, BlParsePipe} from '@monorepo/back-core-lib';
+import {BlParsePipe} from '@monorepo/back-core-lib';
 import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
 import {CnCreateReportDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
-import {FilesInterceptor} from '@nestjs/platform-express';
-import {ClCoreJsonConvert} from '@monorepo/core-lib';
 import {CnLabInstanceStartDTO} from '../cn-lab-instances/cn-lab-instance.dto';
 import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
 import {CnLabInstanceSendMailDto} from '../cn-lab-instances/cn-lab-instance-mail.dto';
@@ -47,14 +45,11 @@ export class CnExternalLabsController {
   }
 
 
-  @UseInterceptors(FilesInterceptor('files'))
   @Put('project/:projectId/report')
   saveReport(
     @Param('projectId', new ParseUUIDPipe()) projectId: string,
-    @Body() body: { body: string },
-    @UploadedFiles() files: BlFile[]): Promise<CnReport> {
-    const createReportDto: CnCreateReportDto = ClCoreJsonConvert.deserializeObject(JSON.parse(body.body), CnCreateReportDto);
-    return this.projectAggregator.createReport(createReportDto, projectId, files);
+    @Body(new BlParsePipe(CnCreateReportDto)) createReportDto: CnCreateReportDto): Promise<CnReport> {
+    return this.projectAggregator.createReport(createReportDto, projectId);
   }
 
   /**

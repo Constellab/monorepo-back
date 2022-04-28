@@ -58,6 +58,7 @@ export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlT
     if (viewConfig == null) return;
     const index = textEditorState.getCurrentSelectionIndex();
     const contentView: LabReportContentView = {
+      id: viewConfig.id + '_' + new Date().getTime(),
       resource_id: viewConfig.resource.id,
       view_method_name: viewConfig.viewName,
       view_config: viewConfig.configValues,

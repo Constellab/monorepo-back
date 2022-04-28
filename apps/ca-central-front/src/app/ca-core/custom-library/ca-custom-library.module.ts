@@ -27,6 +27,7 @@ import {
   FlTextIconModule,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
+import {RvResourceViewModule} from '@monorepo/resource-view';
 
 /**
  * Regrouped all the needed import from library
@@ -64,6 +65,8 @@ import {
     FlKeyValueModule,
     FlInputFileModule,
     FlDynamicFieldModule,
+
+    RvResourceViewModule,
   ]
 })
 export class CaCustomLibraryModule {

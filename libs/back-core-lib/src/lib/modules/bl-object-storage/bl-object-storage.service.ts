@@ -15,8 +15,7 @@ export class BlObjectStorageService {
   constructor(@Inject(BL_OBJECT_STORAGE_CONFIG_PROVIDER) private moduleConfig: BlObjectStorageModuleConfig) {
   }
 
-  public generateRandomFileName(filename: string): string {
-    const extension = BlFileHelper.getFileExtension(filename);
+  public generateRandomFileName(extension: string): string {
     return ClStringHelper.generateUUID() + '_' + new Date().getTime() + '.' + extension;
   }
 
@@ -26,13 +25,37 @@ export class BlObjectStorageService {
 
     let filename: string;
     if (generatedRandomObjectName) {
-      filename = this.generateRandomFileName(obj.originalname);
+      const extension = BlFileHelper.getFileExtension(obj.originalname);
+      filename = this.generateRandomFileName(extension);
     } else {
       filename = obj.originalname;
     }
 
     await s3Client.send(new PutObjectCommand({
       Bucket: bucket, Key: filename, Body: obj.buffer, ContentType: obj.mimetype
+    }));
+
+    return filename;
+  }
+
+  public async uploadIncomingMessage(message: IncomingMessage, bucket: string,
+                                     filename: string, contentType: string): Promise<string> {
+    const s3Client = this.getClient();
+
+    await s3Client.send(new PutObjectCommand({
+      Bucket: bucket, Key: filename, Body: message, ContentType: contentType
+    }));
+
+    return filename;
+  }
+
+  public async uploadJson(json: any, bucket: string): Promise<string> {
+    const s3Client = this.getClient();
+
+    const filename: string = this.generateRandomFileName('json');
+
+    await s3Client.send(new PutObjectCommand({
+      Bucket: bucket, Key: filename, Body: JSON.stringify(json), ContentType: 'application/json'
     }));
 
     return filename;

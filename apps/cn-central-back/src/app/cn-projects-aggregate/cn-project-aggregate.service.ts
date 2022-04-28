@@ -12,7 +12,6 @@ import {CnReportsService} from './cn-reports/cn-reports.service';
 import {CnExperiment} from './cn-experiments/cn-experiment.entity';
 import {CnCreateLabExperimentDto} from './cn-experiments/cn-experiment.dto';
 import {CnCreateReportDto} from './cn-reports/cn-report.dto';
-import {BlFile} from '@monorepo/back-core-lib';
 import {CnReport} from './cn-reports/cn-report.entity';
 import {IncomingMessage} from 'http';
 import {CnGroupsService} from '../cn-groups/cn-groups.service';
@@ -135,7 +134,7 @@ export class CnProjectAggregateService {
     return report;
   }
 
-  async createReport(createReportDto: CnCreateReportDto, projectId: string, files: BlFile[]): Promise<CnReport> {
+  async createReport(createReportDto: CnCreateReportDto, projectId: string): Promise<CnReport> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     // get and check all experiment
@@ -152,7 +151,7 @@ export class CnProjectAggregateService {
       }
       experiments.push(experiment);
     }
-    return this.reportService.createReport(createReportDto, experiments, project, files);
+    return this.reportService.createReport(createReportDto, experiments, project);
   }
 
   async getReportAssociatedToExperiment(experimentId: string): Promise<CnReport[]> {
@@ -172,6 +171,12 @@ export class CnProjectAggregateService {
     // todo securize route ?
     return this.reportService.getImage(filename);
   }
+
+  getReportView(filename: string): Promise<IncomingMessage> {
+    // todo securize route ?
+    return this.reportService.getView(filename);
+  }
+
 
 
   /////////////////////////////////////// SECURITY //////////////////////////////////

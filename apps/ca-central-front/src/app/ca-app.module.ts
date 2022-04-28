@@ -33,7 +33,11 @@ import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {CaAuthenticationService} from './ca-login/service/ca-authentication.service';
 import {CaUserAccountsService} from './ca-core/service-api/ca-user-accounts.service';
 import {CaApiErrorService} from './ca-core/service/ca-api-error.service';
-
+import {rvDefaultViewTypeInfos, RvResourceViewModule} from '@monorepo/resource-view';
+import {CaReportContentViewBlot} from './ca-dashboard/module/ca-report-core/model/ca-report-content-view.class';
+import {
+  CaReportContentViewComponent
+} from './ca-dashboard/module/ca-report-core/component/ca-report-content-view/ca-report-content-view.component';
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -82,8 +86,16 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
     FlAuthModule.forRoot(CaAuthenticationService, CaUserAccountsService),
     FlPortalActionsModule.forRoot(),
     FlTextEditorModule.forRoot({
-      blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent}]
+      blots: [
+        {
+          blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent
+        },
+        {
+          blot: CaReportContentViewBlot, componentType: CaReportContentViewComponent
+        }]
     }),
+    RvResourceViewModule.forRoot({availableViews: rvDefaultViewTypeInfos}),
+
 
     ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production}),
   ],

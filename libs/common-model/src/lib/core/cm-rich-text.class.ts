@@ -1,7 +1,9 @@
 export interface CmRichTextI {
-  ops: {
-    insert: any
-  }[];
+  ops: CmRichTextOp[];
+}
+
+export interface CmRichTextOp {
+  insert: any;
 }
 
 /**
@@ -17,42 +19,43 @@ export interface CmRichTextFigure {
   naturalHeight: number;
 }
 
+export interface CmRichTextFigureOp extends CmRichTextOp {
+  insert: {
+    figure: CmRichTextFigure
+  };
+}
+
 
 export class CmRichText {
+
+  private static readonly figureOps = 'figure';
 
   constructor(private richText: CmRichTextI) {
   }
 
-  /**
-   * Get the list of figure in the json
-   */
-  public getFigures(): CmRichTextFigure[] {
-    return this.richText.ops.filter(
-      op => op.insert.figure !== null && typeof op.insert.figure === 'object',
-    ).map(
-      op => op.insert.figure
-    );
+  public getContent(): CmRichTextI {
+    return this.richText;
   }
 
-  public getFigure(filename: string): CmRichTextFigure {
-    return this.getFigures().find(figure => figure.filename === filename);
-  }
-
-  public getHeaders(headersSize: number[]): any[]{
+  public getHeaders(headersSize: number[]): any[] {
     const headers: any[] = [];
     const contentData: any[] = this.getContent().ops;
-    if(contentData != null){
+    if (contentData != null) {
       contentData.forEach((c, i) => {
-        if(contentData[i+1] && contentData[i+1].attributes && contentData[i+1].attributes.header
-          && (headersSize.includes(contentData[i+1].attributes.header))){
-          const inserts: string[] = c.insert.split('\n')
-          if(inserts.length > 1) headers.push([contentData[i+1].attributes.header, inserts[inserts.length -1]]);
-          else headers.push([contentData[i+1].attributes.header, c.insert]);
+        if (contentData[i + 1] && contentData[i + 1].attributes && contentData[i + 1].attributes.header
+          && (headersSize.includes(contentData[i + 1].attributes.header))) {
+          const inserts: string[] = c.insert.split('\n');
+          if (inserts.length > 1) headers.push([contentData[i + 1].attributes.header, inserts[inserts.length - 1]]);
+          else headers.push([contentData[i + 1].attributes.header, c.insert]);
         }
       });
     }
     return headers;
   }
+
+
+  ///////////////////////////////////// FIGURE ///////////////////////////////////////////////
+
 
   /**
    * Update the figure with the name
@@ -60,14 +63,46 @@ export class CmRichText {
    * @param figure
    */
   public updateFigure(filename: string, figure: Partial<CmRichTextFigure>): void {
-    const oldFigure = this.getFigure(filename);
+    const opsFigure: CmRichTextFigureOp = this.getFigureOp(filename);
 
-    if (oldFigure == null) return;
+    if (opsFigure == null) return;
 
-    Object.assign(oldFigure, figure);
+    opsFigure.insert.figure = Object.assign(opsFigure.insert.figure, figure);
   }
 
-  public getContent(): CmRichTextI {
-    return this.richText;
+
+  public getFigureOp(filename: string): CmRichTextFigureOp {
+    return this.findSpecialOp(CmRichText.figureOps, (figure: CmRichTextFigure) => figure.filename === filename);
   }
+
+  public getFiguresOps(): CmRichTextFigureOp[] {
+    return this.getSpecialOps(CmRichText.figureOps);
+  }
+
+  ///////////////////////////////////// SPECIAL OPS ///////////////////////////////////////////////
+  /**
+   * Override a spacial ops value
+   * @param opsType
+   * @param findPredicate
+   * @param newValue
+   */
+  public setSpecialOps(opsType: string, findPredicate: (ops: any, index: number) => boolean, newValue: any): void {
+    const specialOps: CmRichTextOp = this.findSpecialOp(opsType, findPredicate);
+
+    if (specialOps == null) return;
+
+    // update inset param
+    specialOps.insert[opsType] = newValue;
+  }
+
+  public getSpecialOps(opsType: string): CmRichTextOp[] {
+    return this.richText.ops.filter(
+      op => op.insert[opsType] !== null && typeof op.insert[opsType] === 'object',
+    );
+  }
+
+  public findSpecialOp(opsType: string, findPredicate: (ops: any, index: number) => boolean): CmRichTextOp | undefined {
+    return this.getSpecialOps(opsType).find(findPredicate);
+  }
+
 }

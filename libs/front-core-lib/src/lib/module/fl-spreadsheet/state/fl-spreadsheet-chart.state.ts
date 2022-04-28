@@ -136,6 +136,11 @@ export class FlSpreadsheetChartState {
     );
   }
 
+  // return true if we can make chart from the sheet
+  public chartAreEnabled(): boolean {
+    return this.state.getChartService() != null;
+  }
+
   /**
    * Get the correct chart service. If a FlSheetChartService was injected, use it, otherwise use the local chart
    */

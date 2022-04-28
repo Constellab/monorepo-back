@@ -8,6 +8,7 @@ const BlockEmbed = Quill.import('blots/block/embed');
 
 
 export interface LabReportContentView {
+  id: string;
   resource_id: string;
   view_method_name: string;
   view_config: LabConfigValues;

@@ -7,6 +7,7 @@ import {
   cnExternalLabApiKeyHeader,
   cnExternalLabApiKeySchema
 } from '../cn-core/model/config/cn-config.class';
+import {CnExternalLabCallView} from './model/cn-external-lab-api.class';
 
 /**
  * Service to call the api of a lab
@@ -26,6 +27,17 @@ export class CnExternalLabApiService {
   public async getSettings(labInfo: CnExternalApiInfo): Promise<any> {
     return lastValueFrom(this.get(labInfo, `settings`));
   }
+
+  public async callResourceView(labInfo: CnExternalApiInfo, resourceId: string, viewName: string,
+                                callViewDTO: CnExternalLabCallView): Promise<any> {
+    return lastValueFrom(this.post(labInfo, `resource/${resourceId}/views/${viewName}`, callViewDTO));
+  }
+
+  public async getReportImage(labInfo: CnExternalApiInfo, filename: string): Promise<any> {
+    return lastValueFrom(this.get(labInfo, `report/image/${filename}`, null,
+      {observe: 'response', responseType: 'stream'}));
+  }
+
 
   /**
    * Make an http post with the ip of the lab and the API key of the lab in header

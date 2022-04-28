@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabTechnicalInfoButtonComponent} from './lab-technical-info-button.component';
+import {RvTechnicalInfoButtonComponent} from './rv-technical-info-button.component';
 
 describe('LabTechnicalInfoButtonComponent', () => {
-  let component: LabTechnicalInfoButtonComponent;
-  let fixture: ComponentFixture<LabTechnicalInfoButtonComponent>;
+  let component: RvTechnicalInfoButtonComponent;
+  let fixture: ComponentFixture<RvTechnicalInfoButtonComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabTechnicalInfoButtonComponent ]
+      declarations: [ RvTechnicalInfoButtonComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabTechnicalInfoButtonComponent);
+    fixture = TestBed.createComponent(RvTechnicalInfoButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -46,12 +46,6 @@ import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
 import {LabResourceFolderComponent} from './component/lab-resource-folder/lab-resource-folder.component';
 import {LabResourcesListComponent} from './component/lab-resources-list/lab-resources-list.component';
 import {LabExperimentCoreModule} from '../lab-experiment-core/lab-experiment-core.module';
-import {
-  LabTechnicalInfoDialogComponent
-} from './component/lab-technical-info-dialog/lab-technical-info-dialog.component';
-import {
-  LabTechnicalInfoButtonComponent
-} from './component/lab-technical-info-button/lab-technical-info-button.component';
 
 
 @NgModule({
@@ -76,8 +70,6 @@ import {
     LabResourceActionsMenuComponent,
     LabResourceFolderComponent,
     LabResourcesListComponent,
-    LabTechnicalInfoDialogComponent,
-    LabTechnicalInfoButtonComponent,
   ],
   exports: [
     LabResourceInfoComponent,
@@ -96,8 +88,6 @@ import {
     LabUpdateResourceTypeComponent,
     LabUpdateResourceNameDialogComponent,
     LabResourceActionsMenuComponent,
-    LabTechnicalInfoDialogComponent,
-    LabTechnicalInfoButtonComponent,
   ],
   imports: [
     CommonModule,

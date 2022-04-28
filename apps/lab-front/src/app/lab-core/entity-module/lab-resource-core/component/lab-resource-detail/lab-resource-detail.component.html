@@ -19,8 +19,8 @@
         </fl-text-icon>
 
         <fl-section-actions>
-          <lab-technical-info-button *ngIf="fullScreenView"
-                                     [technicalInfo]="fullScreenView.technical_info"></lab-technical-info-button>
+          <rv-technical-info-button *ngIf="fullScreenView"
+                                     [technicalInfo]="fullScreenView.technical_info"></rv-technical-info-button>
 
           <button mat-stroked-button type="button"
                   (click)="openViewSpecs($event)" class="button g-button-small">

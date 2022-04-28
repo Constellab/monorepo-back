@@ -1,7 +1,10 @@
 export * from './lib/rv-resource-view.module';
 
 // Component
+export * from './lib/component/rv-report-resource-view/rv-report-resource-view.component';
 export * from './lib/component/rv-resource-view/rv-resource-view.component';
+export * from './lib/component/rv-technical-info-button/rv-technical-info-button.component';
+export * from './lib/component/rv-technical-info-dialog/rv-technical-info-dialog.component';
 export * from './lib/component/rv-view-chart-2d/rv-view-chart2d.component';
 export * from './lib/component/rv-view-json/rv-view-json.component';
 export * from './lib/component/rv-view-multi-views/rv-view-multi-views.component';

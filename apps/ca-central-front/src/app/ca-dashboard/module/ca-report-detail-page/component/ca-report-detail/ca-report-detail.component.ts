@@ -5,6 +5,7 @@ import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 import {FlTextEditorConfig} from '@monorepo/front-core-lib';
 import {CaTextEditorConfig} from '../../../../../ca-core/model/config/ca-text-editor-config.class';
+import {CaReportService} from '../../../../../ca-core/service-api/ca-report.service';
 
 @Component({
   selector: 'ca-report-detail',
@@ -19,8 +20,8 @@ export class CaReportDetailComponent implements OnInit {
   textEditorConfig: FlTextEditorConfig;
 
   constructor(private experimentService: CaExperimentService,
-              textEditorConfig: CaTextEditorConfig) {
-    this.textEditorConfig = textEditorConfig;
+              private reportService: CaReportService) {
+    this.textEditorConfig = new CaTextEditorConfig(reportService);
   }
 
   ngOnInit(): void {

@@ -1,0 +1,20 @@
+<div contenteditable="false" class="container">
+
+  <div class="chart-container" fxLayoutAlign="center center">
+    <rv-resource-view *ngIf="view" [resourceId]="resourceId" [view]="view"
+                      [config]="viewConfig" displayMode="portal"
+                      class="resource-view"></rv-resource-view>
+
+    <fl-loader *ngIf="isLoading" size="medium"></fl-loader>
+  </div>
+
+  <div class="g-text-centered">
+    <fl-text-editor-title-caption [title]="viewTitle" [caption]="caption"
+                                  (titleChange)="onTitleChange($event)" (captionChange)="onCaptionChange($event)"
+                                  [editable]="editable"></fl-text-editor-title-caption>
+
+    <rv-technical-info-button *ngIf="view" [technicalInfo]="view.technical_info"
+                              class="g-button-icon-tiny g-text-light"></rv-technical-info-button>
+
+  </div>
+</div>

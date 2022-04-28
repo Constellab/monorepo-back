@@ -1,0 +1,22 @@
+:host{
+  cursor: initial;
+}
+
+.container{
+  padding-top: 1em;
+  padding-bottom: 1em;
+  border: 1px solid var(--grey-low-contrast);
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+  border-radius: 5px;
+}
+
+.resource-view{
+  width: 100%;
+  height: 100%;
+}
+
+.chart-container{
+  height: 500px;
+}
+

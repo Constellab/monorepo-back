@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {CaReport} from '../model/entities/ca-report.class';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
+import {RvResourceView} from '@monorepo/resource-view';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class CaReportService {
   }
 
   getById(id: string): Observable<CaReport> {
-    return this.apiService.getById(this.route, id);
+    return this.apiService.getById(this.route, id, CaReport);
   }
 
 
@@ -30,6 +31,10 @@ export class CaReportService {
 
   getImageUrl(filename: string): string {
     return this.apiService.getBaseRouteUrl(`${this.route}/image/${filename}`);
+  }
+
+  getView(filename: string): Observable<RvResourceView> {
+    return this.apiService.get(`${this.route}/view/${filename}`);
   }
 
 }

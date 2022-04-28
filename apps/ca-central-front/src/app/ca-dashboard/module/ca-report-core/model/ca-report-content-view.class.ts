@@ -1,0 +1,45 @@
+import Quill from 'quill';
+import {CaReportContentViewComponent} from '../component/ca-report-content-view/ca-report-content-view.component';
+import {RvConfigValues, RvResourceView, RvTransformerParams} from '@monorepo/resource-view';
+
+const BlockEmbed = Quill.import('blots/block/embed');
+
+
+export interface CaReportViewConfig {
+  filename: string;
+  id: string;
+  resource_id: string;
+  view_method_name: string;
+  view_config: RvConfigValues;
+  transformers: RvTransformerParams[];
+  title: string;
+  caption: string;
+}
+
+export class CaReportContentViewBlot extends BlockEmbed {
+
+  static blotName: 'resource_view' = 'resource_view';
+  static tagName = 'ca-report-content-view';
+
+  private readonly storedValue: RvResourceView;
+
+  static create(value: CaReportViewConfig): any {
+    const node: HTMLElement = super.create();
+
+    // pass data to the component via the node
+    const component: CaReportContentViewComponent = node as any;
+    component.viewConfig = value;
+
+    return node;
+  }
+
+  constructor(node: Node, value: any) {
+    super(node, value);
+    this.storedValue = value;
+  }
+
+  value(): { resource_view: RvResourceView } {
+
+    return {[CaReportContentViewBlot.blotName]: this.storedValue};
+  }
+}

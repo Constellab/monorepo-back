@@ -22,3 +22,9 @@ export interface CnExternalNewLabUser {
   userId: string;
   group: CnExternalLabUserGroup;
 }
+
+export interface CnExternalLabCallView {
+  values: Record<string, any>;
+  transformers: any[];
+  save_view_config: boolean;
+}

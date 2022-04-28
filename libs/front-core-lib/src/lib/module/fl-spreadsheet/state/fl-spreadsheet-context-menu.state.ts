@@ -62,7 +62,9 @@ export class FlSpreadsheetContextMenu {
       );
     }
 
-    menu.push(this.getCreateChartConfig());
+    if (this.chartState.chartAreEnabled()) {
+      menu.push(this.getCreateChartConfig());
+    }
     return menu;
   }
 
@@ -91,7 +93,9 @@ export class FlSpreadsheetContextMenu {
         });
     }
 
-    menu.push(this.getCreateChartConfig());
+    if (this.chartState.chartAreEnabled()) {
+      menu.push(this.getCreateChartConfig());
+    }
     return menu;
   }
 
@@ -99,10 +103,13 @@ export class FlSpreadsheetContextMenu {
    * Get config for the header row based on a selection
    */
   private getCellConfig(): FlMenuDynamic[] {
-    return [
-      ...this.getCopyPasteConfig(this.state.readOnly),
-      this.getCreateChartConfig()
-    ];
+    const menu = this.getCopyPasteConfig(this.state.readOnly);
+
+    if (this.chartState.chartAreEnabled()) {
+      menu.push(this.getCreateChartConfig());
+    }
+
+    return menu;
   }
 
   private getCreateChartConfig(): FlMenuDynamic {
