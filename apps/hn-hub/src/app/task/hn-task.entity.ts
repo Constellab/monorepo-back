@@ -2,7 +2,7 @@ import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.enti
 import {Entity, Unique} from 'typeorm';
 
 @Unique(['uniqueName', 'technicalFolder'])
-@Entity('Resource')
-export class HnResource extends HnGeneratedDocEntity {
+@Entity('Task')
+export class HnTask extends HnGeneratedDocEntity {
 
 }

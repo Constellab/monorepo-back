@@ -1,5 +1,7 @@
 import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {Column} from 'typeorm';
+import {Column, ManyToOne} from 'typeorm';
+import {Type} from 'class-transformer';
+import {HnTechnicalFolder} from '../../../technical-folder/hn-technical-folder.entity';
 
 export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   @Column()
@@ -17,24 +19,36 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
 
   @Column({nullable: true})
   shortDescription?: string;
-  @Column()
+
+  @Column({type: 'text', nullable: true})
   doc: string;
 
   @Column({nullable: true})
   parentUniqueName?: string;
 
   @Column({nullable: true})
-  parentBrick?: string;
+  parentHumanName?: string;
+
 
   @Column({nullable: true})
-  parentMajor?: number;
+  parentBrickName?: string;
+
+  @Column({nullable: true})
+  parentMajorVersion?: number;
+
+  @Column({nullable: true})
+  parentVersion?: string;
 
   @Column()
   hide: boolean;
 
   @Column({nullable: true})
-  deprecatedSinceMajor?: number;
+  deprecatedSince?: string;
 
   @Column({nullable: true})
   deprecatedMessage?: string;
+
+  @Type(() => HnTechnicalFolder)
+  @ManyToOne(() => HnTechnicalFolder, {eager: true, nullable: false})
+  technicalFolder: HnTechnicalFolder;
 }

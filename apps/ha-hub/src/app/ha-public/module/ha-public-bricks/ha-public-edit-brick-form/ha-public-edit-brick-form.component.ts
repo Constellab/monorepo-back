@@ -35,7 +35,7 @@ export class HaPublicEditBrickFormComponent implements OnInit {
     this.formGp = new FormBuilder().group({
       id: [null],
       name: [null, Validators.required],
-      description: [null, Validators.required],
+      description: [null, [Validators.required, Validators.maxLength(255)]],
       version: [null, [Validators.required, Validators.pattern(new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]],
       repoType: [null, Validators.required],
       isBeta: [false, Validators.required],

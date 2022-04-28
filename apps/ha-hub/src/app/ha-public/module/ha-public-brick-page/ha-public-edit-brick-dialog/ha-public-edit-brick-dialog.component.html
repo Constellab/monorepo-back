@@ -1,0 +1,43 @@
+<fl-dialog-header>
+  {{ 'edit' |translate }}
+</fl-dialog-header>
+
+<mat-dialog-content>
+  <form (ngSubmit)="submit()" id="edit-form" [formGroup]="formGp" fxLayout="column">
+
+    <!--  description  -->
+    <mat-form-field class="g-form-input" appearance="fill">
+      <mat-label>{{'description' | translate}}</mat-label>
+      <textarea matInput formControlName="description" flInputMaxLength="255"></textarea>
+      <mat-error *ngIf="formGp.get('description').hasError('required')">
+        {{'description' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  gitRepo  -->
+    <mat-form-field class="g-form-input" appearance="fill">
+      <mat-label>{{'repo_git' | translate}}</mat-label>
+      <input matInput type="text" formControlName="gitRepo">
+      <mat-error *ngIf="formGp.get('gitRepo').hasError('required')">
+        {{'repo_git' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+
+    <!--  pipRepo  -->
+    <mat-form-field class="g-form-input" appearance="fill">
+      <mat-label>{{'repo_pip' | translate}}</mat-label>
+      <input matInput type="text" formControlName="pipRepo">
+      <mat-error *ngIf="formGp.get('pipRepo').hasError('required')">
+        {{'repo_pip' | flErrorRequired}}
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="submit" form="edit-form"
+          class="g-centered-forced">
+    {{'save' | translate}}
+    <fl-button-loader *ngIf="isLoading"></fl-button-loader>
+  </button>
+</div>

@@ -8,7 +8,6 @@ import {HnImportTechnicalDocDTO} from '../brick/hn-brick.dto';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnResource} from '../resource/hn-resource.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
-import {HnDocumentation} from '../documentation/hn-documentation.entity';
 
 @Injectable()
 export class HnTechnicalFolderService {
@@ -50,7 +49,7 @@ export class HnTechnicalFolderService {
         }
       }
     });
-    if(technicalFolder){
+    if (technicalFolder) {
       const children: HnNode[] = [];
       //RESOURCES
       const resources: HnResource[] = await this.resourceService.findResources(technicalFolder);
@@ -75,10 +74,10 @@ export class HnTechnicalFolderService {
     return null;
   }
 
-  addTecDoToNodeFolder(docs: HnGeneratedDocEntity[], parentId: string, parentCompletePath: string): HnNode[]{
+  addTecDoToNodeFolder(docs: HnGeneratedDocEntity[], parentId: string, parentCompletePath: string): HnNode[] {
     const nodes: HnNode[] = [];
     let i: number = 0;
-    for(const d of docs){
+    for (const d of docs) {
       const n: HnNode = new HnNode(d.id, d.humanName, d.uniqueName, parentCompletePath + d.uniqueName + '/', i, parentId)
       nodes.push(n);
       i++;
@@ -86,10 +85,10 @@ export class HnTechnicalFolderService {
     return nodes;
   }
 
-  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation>{
+  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<any> {
     const techFolder: HnTechnicalFolder = await this.technicalFolderRepository.findOne({
-      where:{
-        brickMajorVersion:{
+      where: {
+        brickMajorVersion: {
           id: brickMajorVersion.id
         }
       }
@@ -100,9 +99,9 @@ export class HnTechnicalFolderService {
 
     const currentTecDocClass: string = arrayPath[1];
 
-    switch (currentTecDocClass){
+    switch (currentTecDocClass) {
       case 'resource':
-        return this.resourceService.findCurrentTecDoc(techFolder, arrayPath[2], path)
+        return this.resourceService.findCurrentTecDoc(techFolder, arrayPath[2])
       default:
         return null;
     }

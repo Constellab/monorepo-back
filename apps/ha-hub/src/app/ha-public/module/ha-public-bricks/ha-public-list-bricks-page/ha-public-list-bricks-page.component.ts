@@ -18,7 +18,6 @@ export class HaPublicListBricksPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.daBrickService.get().subscribe((bricks: HaBrick[]) => {
-      console.log(bricks[0].lastVersion)
       for(const b of bricks){
         b.lastVersion = new CmVersion(b.lastVersion.major, b.lastVersion.minor, b.lastVersion.patch, b.lastVersion.subPatch);
       }

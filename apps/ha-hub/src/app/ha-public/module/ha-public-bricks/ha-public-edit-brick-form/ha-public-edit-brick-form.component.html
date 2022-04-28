@@ -11,13 +11,13 @@
   <!--  description  -->
   <mat-form-field class="g-form-input" appearance="fill">
     <mat-label>{{'description' | translate}}</mat-label>
-    <textarea matInput formControlName="description"></textarea>
+    <textarea matInput formControlName="description" maxlength="255"></textarea>
     <mat-error *ngIf="formGp.get('description').hasError('required')">
       {{'description' | flErrorRequired}}
     </mat-error>
   </mat-form-field>
 
-  <!--  name  -->
+  <!--  gitRepo  -->
   <mat-form-field class="g-form-input" appearance="fill">
     <mat-label>{{'repo_git' | translate}}</mat-label>
     <input matInput type="text" formControlName="repoGit">
@@ -26,7 +26,7 @@
     </mat-error>
   </mat-form-field>
 
-  <!--  name  -->
+  <!--  pipRepo  -->
   <mat-form-field class="g-form-input" appearance="fill">
     <mat-label>{{'repo_pip' | translate}}</mat-label>
     <input matInput type="text" formControlName="repoPip">

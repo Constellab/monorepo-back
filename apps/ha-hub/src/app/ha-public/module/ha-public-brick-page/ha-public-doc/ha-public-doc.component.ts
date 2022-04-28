@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {
   HaDocumentation,
-  HaDocumentationContentFormDTO
+  HaDocumentationContentFormDTO, HaTechnicalDocumentation
 } from '../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
@@ -21,6 +21,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
 
   private contentDebouncer: FlDebouncer<CmRichTextI>;
   documentation: HaDocumentation;
+  technicalDocumentation: HaTechnicalDocumentation;
   brickName: string;
   brickVersion: string;
   formGp: FormGroup<Partial<HaDocumentationContentFormDTO>>;
@@ -30,13 +31,14 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   isAdmin: Observable<boolean> = this.authUserService.isAdmin();
   isTechnical: boolean = false;
   isCheck: boolean = false;
+  activatedRoute: ActivatedRoute = this.route;
 
   constructor(
     private brickService: HaBrickService,
     private documentationService: HaDocumentationService,
     private authUserService: HaAuthenticatedUserService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {
   }
 
@@ -98,23 +100,32 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     }
   }
 
-  private actionOnDoc(isFirstDoc: boolean, doc: HaDocumentation): void {
+  private actionOnDoc(isFirstDoc: boolean, doc: any): void {
     if (isFirstDoc) {
       this.router.navigate([`${this.router.url}/${doc.completePath}`]);
     }
-    this.documentation = doc;
-    this.setFormGroupValue(doc);
-    this.titles = [];
-    if (this.formGp.value.content) {
-      this.richText = new CmRichText(doc.content);
-      this.titles = this.richText.getHeaders([1, 2, 3]);
+    if(this.isTechnical){
+      this.titles = []
+      this.technicalDocumentation = doc
+      console.log(doc)
+    } else {
+      this.documentation = doc;
+
+      this.setFormGroupValue(doc);
+      this.titles = [];
+      if (this.formGp.value.content && doc.content) {
+        this.richText = new CmRichText(doc.content);
+        this.titles = this.richText.getHeaders([1, 2, 3]);
+      }
     }
   }
 
   onContentUpdate(content: any): void {
     this.contentDebouncer.setValue(content);
-    this.richText = new CmRichText(this.formGp.value.content as CmRichTextI)
-    this.titles = this.richText.getHeaders([1, 2, 3]);
+    if(this.formGp.value.content){
+      this.richText = new CmRichText(this.formGp.value.content as CmRichTextI)
+      this.titles = this.richText.getHeaders([1, 2, 3]);
+    }
   }
 
   private setFormGroupValue(doc: HaDocumentationContentFormDTO): void {

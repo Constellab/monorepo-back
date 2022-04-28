@@ -1,22 +1,23 @@
-<div class="brick-description" *ngIf="brick != null">
+<div class="brick-description" *ngIf="brick != null && lastVersion != null">
   <div class="left-side-div side-description-div">
     <div class="main-description-div">
       <div class="brick-logo"></div>
       <div class="brick-info">
         <span class="display-inline">
           <h2 class="brick-name">{{brick.name}}</h2>
-          <fl-text-icon iconPosition="end" gap="0.2em"><mat-icon class="mat-primary">check</mat-icon>Verified</fl-text-icon>
+          <fl-text-icon iconPosition="end" gap="0.2em"><mat-icon
+            class="mat-primary">check</mat-icon>Verified</fl-text-icon>
         </span>
         <br>
-        <fl-key-value>
+        <fl-key-value class="brick-description-value">
           <fl-key>{{'description' | translate}}</fl-key>
           {{brick.description}}
         </fl-key-value>
         <br>
-            <fl-key-value>
-              <fl-key>{{'version' | translate}}</fl-key>
-              {{lastVersion.toString()}}
-            </fl-key-value>
+        <fl-key-value>
+          <fl-key>{{'version' | translate}}</fl-key>
+          {{lastVersion.toString()}}
+        </fl-key-value>
         <br>
       </div>
     </div>
@@ -41,15 +42,22 @@
       {{brick.pipRepo}}
     </fl-key-value>
     <br>
-        <fl-key-value>
-          <fl-key>{{'type_of_repository' | translate}}</fl-key>
-          {{latestBrickVersion.repoType}}
-        </fl-key-value>
+    <fl-key-value>
+      <fl-key>{{'type_of_repository' | translate}}</fl-key>
+      {{latestBrickVersion.repoType}}
+    </fl-key-value>
     <br>
     <div class="display-inline">
-      <fl-user-profile-picture [firstName]="brick.createdBy.firstname" [lastName]="brick.createdBy.lastname"></fl-user-profile-picture>
-      <fl-creation-info [createdAt]="brick.createdAt" [createdBy]="brick.createdBy.fullname" class="creator-info"></fl-creation-info>
+      <fl-user-profile-picture [firstName]="brick.createdBy.firstname"
+                               [lastName]="brick.createdBy.lastname"></fl-user-profile-picture>
+      <fl-creation-info [createdAt]="brick.createdAt" [createdBy]="brick.createdBy.fullname"
+                        class="creator-info"></fl-creation-info>
     </div>
   </div>
+</div>
+<div class="edit-button-div">
+  <button mat-flat-button color="primary" (click)="createEditBrickDialog()" *haIsAdmin class="button-edit">
+    {{'edit' | translate}} <mat-icon>edit</mat-icon>
+  </button>
 </div>
 

@@ -12,16 +12,6 @@ import {HaPublicBrickDescriptionComponent} from './module/ha-public-brick-page/h
 
 
 const routes: Route[] = [
-  // {
-  //   path: 'docs',
-  //   component: HaPublicSidenavComponent,
-  //   children: [
-  //     {
-  //       path: '**',
-  //       component: HaPublicDocComponent
-  //     }
-  //   ]
-  // },
   {
     path: '',
     component: HaPublicListBricksPageComponent,

@@ -12,11 +12,15 @@
 .sidenav-content {
   height: 100%;
   flex: auto;
+  // POUR LA POP UP DU TEXT EDITOR
+  min-width: 0;
+  overflow: initial;
+  z-index: 3;
 }
 
 .sidenav {
-  height: 100%;
-  box-sizing: border-box;
+  min-height: 100%;
+  height: auto;
   width: 25rem;
   min-width: 25rem;
   padding-right: 1em;
@@ -24,7 +28,12 @@
   background-color: var(--main-background);
   display: flex;
   flex-direction: column;
-  border-right: 2px solid var(--card-background);
+}
+
+@media (max-width: 959px) {
+  .sidenav-content{
+    z-index: 1;
+  }
 }
 
 .sidenav-empty-space{
@@ -74,3 +83,17 @@
   margin-left: 7.5%;
   margin-bottom: 1em;
 }
+
+.small-screen-title{
+  display: flex;
+  flex-direction: row;
+  vertical-align: middle;
+}
+
+.bt-open-side-nav{
+  font-size: 2.5em;
+  padding-left: 0.2em;
+  padding-bottom: 0.3em;
+  padding-right: 0.2em;
+}
+

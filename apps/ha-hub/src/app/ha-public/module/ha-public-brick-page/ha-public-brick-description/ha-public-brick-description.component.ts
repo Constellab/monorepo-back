@@ -1,9 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {HaBrick} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
+import {HaBrick, HaEditBrickDTO} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {ActivatedRoute} from '@angular/router';
 import {HaBrickVersion} from '../../../../ha-core/ha-model/ha-entities/ha-brick-version.class';
 import {CmVersion} from '@monorepo/common-model';
+import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
+import {HaPublicEditBrickDialogComponent} from '../ha-public-edit-brick-dialog/ha-public-edit-brick-dialog.component';
 
 @Component({
   selector: 'ha-public-brick-description-page',
@@ -13,13 +15,15 @@ import {CmVersion} from '@monorepo/common-model';
 export class HaPublicBrickDescriptionComponent implements OnInit {
 
   brick: HaBrick;
-  latestBrickVersion:HaBrickVersion;
+  latestBrickVersion: HaBrickVersion;
   lastVersion: CmVersion;
 
   constructor(
     private route: ActivatedRoute,
-    private brickService: HaBrickService
-  ) { }
+    private brickService: HaBrickService,
+    private dialogService: FlDialogService,
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.parent.params.subscribe(params => {
@@ -37,5 +41,30 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
       this.latestBrickVersion = res;
       this.lastVersion = new CmVersion(res.brickMajorVersion.major, res.minor, res.patch, res.subPatch);
     });
+  }
+
+  private createEditBrickDialog(): void {
+    const node: HaEditBrickDTO = new HaEditBrickDTO();
+    node.id = this.brick.id;
+    node.description = this.brick.description;
+    node.gitRepo = this.brick.gitRepo;
+    node.pipRepo = this.brick.pipRepo;
+
+    const input: FlFormDialogInput<HaEditBrickDTO> = {
+      mode: 'update',
+      object: node
+    };
+
+    this.openSmallDialog(input);
+  }
+
+  private openSmallDialog(input: any): void {
+    this.dialogService.openSmallDialog(HaPublicEditBrickDialogComponent, {data: input}).afterClosed().subscribe(
+      (res: HaBrick) => {
+        if (res != null) {
+          this.brick = res;
+        }
+      }
+    );
   }
 }

@@ -41,3 +41,10 @@ export class HaCreateBrickDTO {
   subPatch?: number;
   repoType: HaRepoType;
 }
+
+export class HaEditBrickDTO{
+  id: string;
+  description: string;
+  gitRepo: string;
+  pipRepo: string;
+}

@@ -118,7 +118,7 @@ export class HnBrickMajorVersionService {
     return this.technicalFolderService.findTechnicalDoc(brickMajorVersion);
   }
 
-  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation>{
+  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<any>{
     return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, path);
   }
 }

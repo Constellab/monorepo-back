@@ -4,7 +4,6 @@ import {HnResource} from './hn-resource.entity';
 import {Repository} from 'typeorm';
 import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
 import {HnImportResourceDTO} from '../brick/hn-brick.dto';
-import {HnDocumentation} from '../documentation/hn-documentation.entity';
 
 @Injectable()
 export class HnResourceService {
@@ -30,6 +29,7 @@ export class HnResourceService {
 
     for (const r of resources) {
       const resource = new HnResource();
+      resource.shortDescription = r.short_description ? r.short_description : null;
       resource.doc = r.doc;
       resource.brickName = technicalFolder.brickMajorVersion.brick.name;
       resource.technicalFolder = technicalFolder;
@@ -44,8 +44,12 @@ export class HnResourceService {
 
       if (r.parent) {
         resource.parentUniqueName = r.parent.unique_name;
+        resource.parentHumanName = r.parent.human_name;
+        resource.parentMajorVersion = +r.parent.brick_version.split('.')[0];
+        resource.parentBrickName = r.parent.brick_name;
+        resource.parentVersion = r.parent.brick_version;
       }
-
+      resource.deprecatedSince = r.deprecated_since;
       resource.deprecatedMessage = r.deprecated_message;
       resource.shortDescription = r.short_description;
 
@@ -67,7 +71,7 @@ export class HnResourceService {
     });
   }
 
-  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string, completePath: string): Promise<HnDocumentation> {
+  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<any> {
 
     const resource: HnResource = await this.resourceRepository.findOne({
       technicalFolder: {
@@ -77,18 +81,20 @@ export class HnResourceService {
     });
 
     if (resource) {
-      const doc: HnDocumentation = new HnDocumentation();
-      doc.id = resource.id;
-      doc.path = resource.uniqueName;
-      doc.completePath = completePath;
-      doc.content = {ops: [{insert: resource.doc}]};
-      doc.title = resource.humanName;
-      doc.order = 0;
-      doc.folder = null;
-      doc.createdAt = null;
-      doc.createdBy = null;
-      doc.lastModifiedBy = null;
-      doc.lastModifiedAt = null;
+      const doc: any = {
+        uniqueName: resource.uniqueName,
+        humanName:resource.humanName,
+        shortDescription: resource.shortDescription,
+        doc: resource.doc,
+        brickName: resource.brickName,
+        parentUniqueName: resource.parentUniqueName,
+        parentBrickName: resource.parentBrickName,
+        parentMajorVersion: resource.parentMajorVersion,
+        parentHumanName: resource.parentHumanName,
+        parentVersion: resource.parentVersion,
+        resourceType: 'resource'
+      };
+
       return doc;
     }
 

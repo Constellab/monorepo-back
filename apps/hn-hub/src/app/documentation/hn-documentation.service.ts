@@ -1,7 +1,7 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
-import {HnDocumentation, HnDocumentationDTO} from './hn-documentation.entity';
+import {HnDocumentation} from './hn-documentation.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnUser} from '../users/hn-user.entity';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
@@ -70,10 +70,12 @@ export class HnDocumentationService {
 
   async updateContent(id: string, updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOne(id);
-    doc.content = updateContentDoc;
-    const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
-    if (!currentUser.isAdmin()) {
-      throw new UnauthorizedException();
+    if(doc){
+      doc.content = updateContentDoc;
+      const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
+      if (!currentUser.isAdmin()) {
+        throw new UnauthorizedException();
+      }
     }
     return this.documentationsRepository.save(doc);
   }

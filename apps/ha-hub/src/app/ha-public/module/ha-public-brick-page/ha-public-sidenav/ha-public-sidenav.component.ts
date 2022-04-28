@@ -5,7 +5,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {HaFolderService} from '../../../../ha-core/ha-service/ha-folder.service';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,
@@ -23,8 +23,9 @@ import {
 import {HaDocumentation} from '../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {CdkDragDrop, CdkDragStart} from '@angular/cdk/drag-drop';
 import {SelectionModel} from '@angular/cdk/collections';
-import {Observable} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
+import {MediaChange, MediaObserver} from '@angular/flex-layout';
 
 
 interface FlatNode {
@@ -47,7 +48,7 @@ export class HaPublicSidenavComponent implements OnInit {
   brickName: string;
   brickVersion: string;
   overNodeLevel: number = 0;
-  currentNode: HaNode;
+  currentNode: FlatNode;
   menuOpen: boolean;
   openedMenu: FlOverlayRef;
 
@@ -81,6 +82,11 @@ export class HaPublicSidenavComponent implements OnInit {
   dataSource = new HaMateTreeFlatDataSource(this.treeControl, this.treeFlattener);
   technicalDataSource = new HaMateTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
+  private mediaSubscription!: Subscription;
+  isSmallScreen: boolean = false;
+  sideNavIsOpen: boolean = false;
+  activatedRoute: ActivatedRoute = this.route;
+
   constructor(
     private brickService: HaBrickService,
     private authUserService: HaAuthenticatedUserService,
@@ -89,6 +95,7 @@ export class HaPublicSidenavComponent implements OnInit {
     private documentationService: HaDocumentationService,
     private folderService: HaFolderService,
     private dialogService: FlDialogService,
+    public mediaObserver: MediaObserver,
   ) {
   }
 
@@ -104,6 +111,14 @@ export class HaPublicSidenavComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.mediaSubscription = this.mediaObserver
+      .asObservable()
+      .pipe()
+      .subscribe((change) => {
+        this.setIsSmallScreen(change);
+      });
+
+
     this.route.parent.url.subscribe(url => {
       this.brickService.getByName(url[0].path).subscribe(brick => {
         this.brickId = brick.id;
@@ -111,7 +126,7 @@ export class HaPublicSidenavComponent implements OnInit {
         this.brickVersion = url[1].path;
 
         this.brickService.getTechnicalDocumentation(this.brickId, this.brickVersion).subscribe(data => {
-          if(data){
+          if (data) {
             this.technicalDataSource.data = [data];
           }
 
@@ -129,9 +144,27 @@ export class HaPublicSidenavComponent implements OnInit {
     });
   }
 
+  setIsSmallScreen(mediaChanges: MediaChange[]): void {
+    this.isSmallScreen = mediaChanges.find(m => m.mqAlias == 'lt-md') != null
+  }
+
+
   isNotEmpty(node: FlatNode): boolean {
-    const n: HaNode = this.dataSource.data.find(n => n.id == node.id);
+    const n: HaNode = this.findNodeInData(node.id, this.dataSource.data);
     return n.children != null && n.children.length > 0;
+  }
+
+  private findNodeInData(id: string, data: HaNode[]): HaNode{
+    for(const n of data){
+      if(n.id == id){
+        return n
+      }
+      if(n.children && n.children.length > 0){
+        const node = this.findNodeInData(id, n.children);
+        if(node) return node;
+      }
+    }
+    return null;
   }
 
   onRightClick(event: MouseEvent, isFolder: boolean, hasChild: boolean = false, id?: string): void {
@@ -397,7 +430,7 @@ export class HaPublicSidenavComponent implements OnInit {
   }
 
   expandParents(node: FlatNode): void {
-    if(node != null && node.level != null){
+    if (node != null && node.level != null) {
       const currentLevel = this.treeControl.getLevel(node);
 
       if (currentLevel < 1) {
@@ -451,11 +484,11 @@ export class HaPublicSidenavComponent implements OnInit {
     });
   }
 
-  openImportTechDocDialog(): void{
+  openImportTechDocDialog(): void {
 
   }
 
-  onFileSelected($event: any):void {
+  onFileSelected($event: any): void {
 
     if (typeof (FileReader) !== 'undefined') {
       const reader = new FileReader();
@@ -472,6 +505,16 @@ export class HaPublicSidenavComponent implements OnInit {
       };
 
       reader.readAsText($event.target.files[0]);
+    }
+  }
+
+  closeSideNav(): void {
+    this.sideNavIsOpen = false;
+  }
+
+  openSideNav(): void {
+    if(this.isSmallScreen){
+      this.sideNavIsOpen = true;
     }
   }
 }

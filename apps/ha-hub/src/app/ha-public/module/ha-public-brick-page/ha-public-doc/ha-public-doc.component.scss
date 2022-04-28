@@ -36,10 +36,20 @@
   flex: auto;
   max-width: calc(100% - 25.5rem);
   height: 98%;
+  padding-left: 1em;
 }
 
 .h100{
   height: 100%;
+}
+
+.technical-doc-div{
+  margin: auto;
+  padding-left: 1em;
+}
+
+.technical-doc-content{
+  white-space: pre-line;
 }
 
 

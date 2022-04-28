@@ -1,11 +1,11 @@
-import {Body, Controller, Delete, Get, Param, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
 import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnNode} from '../folder/hn-folder.dto';
-import {HnBrickListDTO, HnCreateTechnicalDocContent} from './hn-brick.dto';
+import {HnBrickListDTO, HnCreateTechnicalDocContent, HnEditBrickDTO} from './hn-brick.dto';
 
 @Controller('brick')
 export class HnBrickController {
@@ -41,7 +41,7 @@ export class HnBrickController {
   @Post('doc/:brickName/:version')
   async findCurrentDoc(@Param('brickName') brickName: string,
                        @Param('version') version: string,
-                       @Body() body: any): Promise<HnDocumentation> {
+                       @Body() body: any): Promise<HnDocumentation | any> {
     return this.brickService.findCurrentDoc(await this.brickService.findByName(brickName), body.path, version);
   }
 
@@ -82,5 +82,10 @@ export class HnBrickController {
   @Get('latest/:brickName')
   public getLatestBrickVersion(@Param('brickName') brickName: string): Promise<HnBrickVersion> {
     return this.brickService.getLatestBrickVersion(brickName);
+  }
+
+  @Put('edit')
+  public editBrick(@Body(new BlParsePipe(HnEditBrickDTO)) editedBrick: HnEditBrickDTO): Promise<HnBrick>{
+    return this.brickService.editBrick(editedBrick);
   }
 }

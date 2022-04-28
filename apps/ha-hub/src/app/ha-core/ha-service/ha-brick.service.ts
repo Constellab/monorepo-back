@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {HaBrick, HaBrickDTO} from '../ha-model/ha-entities/ha-brick.class';
+import {HaBrick, HaBrickDTO, HaEditBrickDTO} from '../ha-model/ha-entities/ha-brick.class';
 import {HaNode} from '../ha-model/ha-entities/ha-node.class';
 import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
 import {HaNewVersionDTO, HaVersionType} from '../ha-model/ha-entities/ha-version.class';
@@ -97,5 +97,11 @@ export class HaBrickService {
 
   public getTechnicalDocumentation(brickId: string, version: string): Observable<HaNode>{
     return this.apiService.get(`${this.route}/technical-doc/${brickId}/${version}`);;
+  }
+
+
+  //EDIT BRICK
+  public editBrick(editedBrick: HaEditBrickDTO): Observable<HaBrick>{
+    return this.apiService.put(`${this.route}/edit`, editedBrick);
   }
 }

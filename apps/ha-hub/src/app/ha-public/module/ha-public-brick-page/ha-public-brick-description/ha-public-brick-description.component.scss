@@ -58,3 +58,57 @@
   margin-left: 0.5em;
   line-height: 2em;
 }
+
+.edit-button-div{
+  margin-top: 1em;
+  margin-bottom: 1em;
+  width: 100%;
+  text-align: center;
+}
+
+.brick-description-value{
+  white-space: pre-line;
+}
+
+
+@media (max-width: 1279px) {
+  .brick-description{
+    width: 90%;
+    margin-left: 5%;
+  }
+}
+
+@media (max-width: 959px) {
+  .brick-description{
+    flex-direction: column;
+  }
+
+  .brick-description .side-description-div{
+    width: 100%;
+    padding: 1em 1em;
+  }
+
+  .brick-description .right-side-div{
+    border: none;
+  }
+}
+
+@media (max-width: 599px) {
+  .brick-description .side-description-div{
+    padding: 1em 0;
+  }
+
+  .brick-info{
+    padding: 0;
+  }
+
+  .main-description-div{
+    flex-direction: column;
+  }
+
+  .brick-logo{
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-bottom: 1em;
+  }
+}

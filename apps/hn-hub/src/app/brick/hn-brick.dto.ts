@@ -10,7 +10,6 @@ export interface HnBrickTransportDto {
   versions: HnBrickVersionTransportDto[];
 }
 
-
 export interface HnBrickVersionTransportDto {
   id: string;
   major: number;
@@ -30,6 +29,9 @@ export class HnCreateTechnicalDocContent{
 export interface HnImportParentDTO{
   unique_name: string;
   class_name: string;
+  human_name: string;
+  brick_name: string;
+  brick_version: string;
   object_type: string; //TODO: Mettre une enum ?
 }
 
@@ -61,4 +63,11 @@ export class HnBrickListDTO{
   gitRepo: string;
   lastVersion: CmVersion;
   isCertified?: boolean;
+}
+
+export class HnEditBrickDTO{
+  id: string;
+  description: string;
+  pipRepo: string;
+  gitRepo: string;
 }
