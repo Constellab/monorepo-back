@@ -25,8 +25,8 @@ export interface FlThemeDetail {
  */
 export const flThemeDetailLight: FlThemeDetail = {
   primary: '#49A8A9',
-  accent: '#8751F6',
-  warn: '#E28773',
+  accent: '#6C4EF6',
+  warn: '#F991C3',
   background: '#F9F8F8',
   foreground: '#010202',
 
@@ -47,8 +47,8 @@ export const flThemeDetailLight: FlThemeDetail = {
  */
 export const flThemeDetailDark: FlThemeDetail = {
   primary: '#49A8A9',
-  accent: '#8751F6',
-  warn: '#E28773',
+  accent: '#6C4EF6',
+  warn: '#F991C3',
   background: '#1B1919',
   foreground: '#E8E8E8',
 

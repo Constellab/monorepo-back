@@ -1,14 +1,51 @@
-
 //@import "~quill/dist/quill.snow.css";
 @import "~quill/dist/quill.bubble.css";
 
 //////////////////////////// QUILL ////////////////////////////////////
 // file to configure quill css
 
+.ql-container {
+  font-family: inherit;
+}
+
 // make the editor scrollable
-.ql-editor{
+.ql-editor {
   overflow: auto;
   max-height: inherit;
+
+}
+
+.ql-bubble .ql-editor{
+  p {
+    margin-bottom: 0.5em;
+    font-weight: 100;
+    line-height: 1.35em
+  }
+
+  h1 {
+    font-size: 24px;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  h4 {
+    font-size: 17px;
+    font-weight: 100;
+    margin: 0;
+  }
+
 }
 
 
@@ -18,15 +55,14 @@
   z-index: 9999;
 }
 
-.ql-editor{
+.ql-editor {
 
-  img{
+  img {
     max-width: 100%;
     display: block;
     margin: auto;
   }
 }
-
 
 
 // Color available by the quill editor

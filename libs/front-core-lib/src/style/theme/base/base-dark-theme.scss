@@ -17,7 +17,7 @@ $primary: mat.define-palette($custom-primary, 500, 500, 500, 500);
 
 // Secondary
 $custom-accent: (
-  500: #8751F6,
+  500: #6C4EF6,
   contrast: (
     500: #E5E5E5,
   )
@@ -28,7 +28,7 @@ $accent: mat.define-palette($custom-accent, 500, 500, 500, 500);
 // The warn palette is optional (defaults to red).
 // Warn
 $custom-warn: (
-  500: #E28773,
+  500: #F991C3,
   contrast: (
     500: #010202,
   )
@@ -39,15 +39,14 @@ $warn: mat.define-palette($custom-warn, 500, 500, 500, 500);
 $theme: mat.define-dark-theme((color: (primary: $primary, accent: $accent, warn: $warn)));
 
 // define the background theme
-//$background: map_merge($mat-dark-theme-background, (background: #1B1919, card: #222222, dialog:#222222));
-$background: mat.$dark-theme-background-palette;
-// Set the background theme in the theme variable
-//$theme: map_merge($theme, (background: $background));
+$background: map_merge(mat.$dark-theme-background-palette, (background: #1B1919, card: #222222, dialog:#222222));
+//$background: mat.$dark-theme-background-palette;
 
 // define the foreground
-$foreground: map_merge(mat.$dark-theme-foreground-palette, (base: #E8E8E8, icon: #E8E8E8, icons: #E8E8E8, text: #E8E8E8));
-// Set the background theme in the theme variable
-$theme: map_merge($theme, (foreground: $foreground));
+$foreground: map_merge(mat.$dark-theme-foreground-palette, (base: #EDFAFB, icon: #EDFAFB, icons: #EDFAFB, text: #EDFAFB));
+
+// Set the foreground background theme in the theme variable
+$theme: map_merge($theme, (foreground: $foreground, background: $background));
 
 // Load all global classes to theme
 @include _base-theme($theme);

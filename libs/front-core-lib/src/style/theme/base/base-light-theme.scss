@@ -18,7 +18,7 @@ $primary: mat.define-palette($custom-primary, 500, 500, 500, 500);
 
 // Secondary
 $custom-accent: (
-  500: #8751F6,
+  500: #6C4EF6,
   contrast: (
     500: #E5E5E5,
   )
@@ -29,7 +29,7 @@ $accent: mat.define-palette($custom-accent, 500, 500, 500, 500);
 // The warn palette is optional (defaults to red).
 // Warn
 $custom-warn: (
-  500: #E28773,
+  500: #F991C3,
   contrast: (
     500: #E5E5E5,
   )
