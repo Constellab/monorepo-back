@@ -5,13 +5,15 @@ import {
   FlTextEditorImageLoader
 } from '@monorepo/front-core-lib';
 import {CaReportService} from '../../service-api/ca-report.service';
+import {RvResourceView} from '@monorepo/resource-view';
+import {Observable} from 'rxjs';
 
 /**
  * Config for the text editor in the report
  */
 export class CaTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
-  constructor(private reportService: CaReportService) {
+  constructor(private reportService: CaReportService, private reportId: string) {
     super();
   }
 
@@ -25,6 +27,10 @@ export class CaTextEditorConfig extends FlTextEditorConfig implements FlTextEdit
 
 
   public getImageUrl(filename: string): string {
-    return this.reportService.getImageUrl(filename);
+    return this.reportService.getImageUrl(this.reportId, filename);
+  }
+
+  public getView(filename: string): Observable<RvResourceView> {
+    return this.reportService.getView(this.reportId, filename);
   }
 }

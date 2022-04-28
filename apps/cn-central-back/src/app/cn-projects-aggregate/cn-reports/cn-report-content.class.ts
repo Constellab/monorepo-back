@@ -25,4 +25,7 @@ export class CnReportContent extends CmRichText {
     return this.getSpecialOps(CnReportContent.viewOps);
   }
 
+  public getViewsOp(filename: string): CnReportViewOp | undefined {
+    return this.findSpecialOp(CnReportContent.viewOps, (viewOp: CnReportViewOp) => viewOp.insert.resource_view.filename === filename);
+  }
 }

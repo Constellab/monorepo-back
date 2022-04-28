@@ -71,8 +71,8 @@ export class CmRichText {
   }
 
 
-  public getFigureOp(filename: string): CmRichTextFigureOp {
-    return this.findSpecialOp(CmRichText.figureOps, (figure: CmRichTextFigure) => figure.filename === filename);
+  public getFigureOp(filename: string): CmRichTextFigureOp | undefined {
+    return this.findSpecialOp(CmRichText.figureOps, (figureOp: CmRichTextFigureOp) => figureOp.insert.figure.filename === filename);
   }
 
   public getFiguresOps(): CmRichTextFigureOp[] {
@@ -101,7 +101,7 @@ export class CmRichText {
     );
   }
 
-  public findSpecialOp(opsType: string, findPredicate: (ops: any, index: number) => boolean): CmRichTextOp | undefined {
+  public findSpecialOp(opsType: string, findPredicate: (ops: CmRichTextOp, index: number) => boolean): CmRichTextOp | undefined {
     return this.getSpecialOps(opsType).find(findPredicate);
   }
 

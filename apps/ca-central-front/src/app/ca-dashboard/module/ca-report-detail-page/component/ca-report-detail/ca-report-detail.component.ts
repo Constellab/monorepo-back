@@ -21,10 +21,10 @@ export class CaReportDetailComponent implements OnInit {
 
   constructor(private experimentService: CaExperimentService,
               private reportService: CaReportService) {
-    this.textEditorConfig = new CaTextEditorConfig(reportService);
   }
 
   ngOnInit(): void {
+    this.textEditorConfig = new CaTextEditorConfig(this.reportService, this.report.id);
     this.experiments$ = this.experimentService.getExperimentsByReport(this.report.id);
   }
 

@@ -29,12 +29,12 @@ export class CaReportService {
 
   ////////////////////////////// METHOD FOR TEXT EDITOR //////////////////////////
 
-  getImageUrl(filename: string): string {
-    return this.apiService.getBaseRouteUrl(`${this.route}/image/${filename}`);
+  getImageUrl(reportId: string, filename: string): string {
+    return this.apiService.getBaseRouteUrl(`${this.route}/${reportId}/image/${filename}`);
   }
 
-  getView(filename: string): Observable<RvResourceView> {
-    return this.apiService.get(`${this.route}/view/${filename}`);
+  getView(reportId: string, filename: string): Observable<RvResourceView> {
+    return this.apiService.get(`${this.route}/${reportId}/view/${filename}`);
   }
 
 }

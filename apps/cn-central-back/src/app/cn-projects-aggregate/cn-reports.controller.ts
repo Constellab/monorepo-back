@@ -33,20 +33,22 @@ export class CnReportsController {
   /**
    * Return an image of the report
    */
-  @Get('image/:filename')
-  public async getImage(@Param('filename') filename: string,
-                   @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregator.getReportImage(filename);
+  @Get(':id/image/:filename')
+  public async getImage(@Param('id', new ParseUUIDPipe()) id: string,
+                        @Param('filename') filename: string,
+                        @Res() response: Response): Promise<any> {
+    const file = await this.projectAggregator.getReportImage(id, filename);
     file.pipe(response);
   }
 
   /**
    * Return a view of the report
    */
-  @Get('view/:filename')
-  public async getView(@Param('filename') filename: string,
-  @Res() response: Response): Promise<any> {
-    const file = await this.projectAggregator.getReportView(filename);
+  @Get(':id/view/:filename')
+  public async getView(@Param('id', new ParseUUIDPipe()) id: string,
+                       @Param('filename') filename: string,
+                       @Res() response: Response): Promise<any> {
+    const file = await this.projectAggregator.getReportView(id, filename);
     file.pipe(response);
   }
 

@@ -16,6 +16,7 @@ import {CnReport} from './cn-reports/cn-report.entity';
 import {IncomingMessage} from 'http';
 import {CnGroupsService} from '../cn-groups/cn-groups.service';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
+import {CnReportContent} from './cn-reports/cn-report-content.class';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -167,16 +168,28 @@ export class CnProjectAggregateService {
     return this.reportService.getReportsByProject(projectId);
   }
 
-  getReportImage(filename: string): Promise<IncomingMessage> {
-    // todo securize route ?
+  async getReportImage(reportId: string, filename: string): Promise<IncomingMessage> {
+    // check that the user can get the report
+    const report = await this.findReport(reportId);
+
+    // check that the filename is in the report
+    const content = new CnReportContent(report.content);
+    if(content.getFigureOp(filename) == null) {
+      throw new UnauthorizedException();
+    }
     return this.reportService.getImage(filename);
   }
 
-  getReportView(filename: string): Promise<IncomingMessage> {
-    // todo securize route ?
+  async getReportView(reportId: string, filename: string): Promise<IncomingMessage> {
+    const report = await this.findReport(reportId);
+
+    // check that the filename is in the report
+    const content = new CnReportContent(report.content);
+    if(content.getViewsOp(filename) == null) {
+      throw new UnauthorizedException();
+    }
     return this.reportService.getView(filename);
   }
-
 
 
   /////////////////////////////////////// SECURITY //////////////////////////////////
