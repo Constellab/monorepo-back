@@ -7,11 +7,12 @@ import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {BlAbstractService, BlObjectStorageService} from '@monorepo/back-core-lib';
 import {IncomingMessage} from 'http';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
-import {CnCreateReportDto} from './cn-report.dto';
+import {CnCreateReportDto, CnCreateReportWithConfigDto} from './cn-report.dto';
 import {CnExternalLabApiService} from '../../cn-external-lab-api/cn-external-lab-api.service';
 import {AxiosResponse} from 'axios';
-import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
+import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
+import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
@@ -19,7 +20,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   constructor(@InjectRepository(CnReport) private repository: Repository<CnReport>,
               private objectStorageService: BlObjectStorageService,
               private configService: CnCoreConfigService,
-              private externalLabService: CnExternalLabApiService) {
+              private externalLabService: CnExternalLabApiService,
+              private labConfigService: CnLabConfigsService) {
     super(repository, CnReport);
   }
 
@@ -32,25 +34,30 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     });
   }
 
-  async createReport(createReportDto: CnCreateReportDto, experiments: CnExperiment[],
+  async createReport(createReportDto: CnCreateReportWithConfigDto, experiments: CnExperiment[],
                      project: CnProject): Promise<CnReport> {
 
-    const richText = new CnReportContent(createReportDto.content);
+    // retrieve the lab config
+    const labConfig = await this.labConfigService.getOrCreateLabConfig(createReportDto.lab_config);
+
+    const reportDto: CnCreateReportDto = createReportDto.report;
+    const richText = new CnReportContent(reportDto.content);
 
     await this.loadReportImages(richText);
 
     await this.loadReportViews(richText);
 
     const report = new CnReport();
-    report.id = createReportDto.id;
-    report.createdAt = createReportDto.createdAt;
-    report.createdBy = createReportDto.createdBy;
-    report.lastModifiedAt = createReportDto.lastModifiedAt;
-    report.lastModifiedBy = createReportDto.lastModifiedBy;
-    report.title = createReportDto.title;
+    report.id = reportDto.id;
+    report.createdAt = reportDto.createdAt;
+    report.createdBy = reportDto.createdBy;
+    report.lastModifiedAt = reportDto.lastModifiedAt;
+    report.lastModifiedBy = reportDto.lastModifiedBy;
+    report.title = reportDto.title;
     report.content = richText.getContent();
     report.project = project;
     report.experiments = experiments;
+    report.labConfig = labConfig;
 
     return await this.repository.save(report);
   }
@@ -70,7 +77,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
       // Upload the image to the object storage and update the figure filename
       figureOp.insert.figure.filename = await this.objectStorageService.uploadIncomingMessage(
         result.data, this.configService.getReportImageObjectStorageBucket(),
-        figure.filename, result.headers['content-type'])
+        figure.filename, result.headers['content-type']);
     }
   }
 

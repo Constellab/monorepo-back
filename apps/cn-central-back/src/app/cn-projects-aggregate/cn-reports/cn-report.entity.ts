@@ -4,6 +4,7 @@ import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {Type} from 'class-transformer';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CmRichTextI} from '@monorepo/common-model';
+import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 
 @Entity('report')
 export class CnReport extends CnBaseEntity {
@@ -24,4 +25,8 @@ export class CnReport extends CnBaseEntity {
   @ManyToMany(() => CnExperiment, experiment => experiment.reports)
   @JoinTable({name: 'report_experiment'})
   experiments: CnExperiment[];
+
+  @Type(() => CnLabConfig)
+  @ManyToOne(() => CnLabConfig, {nullable: false})
+  labConfig: CnLabConfig;
 }

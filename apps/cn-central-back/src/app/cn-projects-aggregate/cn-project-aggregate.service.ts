@@ -11,7 +11,7 @@ import {CnExperimentsService} from './cn-experiments/cn-experiments.service';
 import {CnReportsService} from './cn-reports/cn-reports.service';
 import {CnExperiment} from './cn-experiments/cn-experiment.entity';
 import {CnCreateLabExperimentDto} from './cn-experiments/cn-experiment.dto';
-import {CnCreateReportDto} from './cn-reports/cn-report.dto';
+import {CnCreateReportWithConfigDto} from './cn-reports/cn-report.dto';
 import {CnReport} from './cn-reports/cn-report.entity';
 import {IncomingMessage} from 'http';
 import {CnGroupsService} from '../cn-groups/cn-groups.service';
@@ -135,12 +135,12 @@ export class CnProjectAggregateService {
     return report;
   }
 
-  async createReport(createReportDto: CnCreateReportDto, projectId: string): Promise<CnReport> {
+  async createReport(createReportDto: CnCreateReportWithConfigDto, projectId: string): Promise<CnReport> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     // get and check all experiment
     const experiments: CnExperiment[] = [];
-    for (const experimentId of createReportDto.experimentIds) {
+    for (const experimentId of createReportDto.experiment_ids) {
       const experiment: CnExperiment = await this.experimentService.findById(experimentId);
 
       if (experiment == null) {

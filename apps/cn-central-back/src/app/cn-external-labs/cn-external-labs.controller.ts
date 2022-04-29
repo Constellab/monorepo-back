@@ -5,7 +5,7 @@ import {CnReport} from '../cn-projects-aggregate/cn-reports/cn-report.entity';
 import {BlParsePipe} from '@monorepo/back-core-lib';
 import {CnCreateLabExperimentDto} from '../cn-projects-aggregate/cn-experiments/cn-experiment.dto';
 import {CnProject} from '../cn-projects-aggregate/cn-projects/cn-project.entity';
-import {CnCreateReportDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
+import {CnCreateReportWithConfigDto} from '../cn-projects-aggregate/cn-reports/cn-report.dto';
 import {CnLabInstanceStartDTO} from '../cn-lab-instances/cn-lab-instance.dto';
 import {CnProjectAggregateService} from '../cn-projects-aggregate/cn-project-aggregate.service';
 import {CnLabInstanceSendMailDto} from '../cn-lab-instances/cn-lab-instance-mail.dto';
@@ -48,7 +48,7 @@ export class CnExternalLabsController {
   @Put('project/:projectId/report')
   saveReport(
     @Param('projectId', new ParseUUIDPipe()) projectId: string,
-    @Body(new BlParsePipe(CnCreateReportDto)) createReportDto: CnCreateReportDto): Promise<CnReport> {
+    @Body() createReportDto: CnCreateReportWithConfigDto): Promise<CnReport> {
     return this.projectAggregator.createReport(createReportDto, projectId);
   }
 

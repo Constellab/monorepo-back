@@ -1,12 +1,19 @@
 import {CnBaseEntityDTO} from '../../cn-core/model/entities/cn-base.entity';
 import {CnReport} from './cn-report.entity';
 import {CmRichTextI} from '@monorepo/common-model';
+import {CnLabConfigDto} from '../../cn-lab-configs/cn-lab-config.dto';
 
-export class CnCreateReportDto extends CnBaseEntityDTO {
+export interface CnCreateReportWithConfigDto {
+  report: CnCreateReportDto;
+  lab_config: CnLabConfigDto;
+  experiment_ids: string[];
+}
+
+
+export interface CnCreateReportDto extends CnBaseEntityDTO {
   title: string;
   content: CmRichTextI;
 
-  experimentIds: string[];
 }
 
 
