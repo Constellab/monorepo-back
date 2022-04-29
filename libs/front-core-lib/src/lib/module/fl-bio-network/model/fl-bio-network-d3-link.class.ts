@@ -6,7 +6,7 @@ import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
 import {FlBioNetworkD3Object} from './fl-bio-network-d3.class';
 import {FlCoord, FlCoordHelper} from '../../../model/shared/fl-coord.class';
 
-export const flBioNetworkLinkElement = 'path'
+export const flBioNetworkLinkElement = 'path';
 
 // const lineFunction = line<FlCoord>().x(d => d.x).y(d => d.y);
 // const lineFunction = line<FlCoord>().x(d => d.x).y(d => d.y).curve(curveStep);
@@ -108,7 +108,14 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
 
   getLinkWidth(): number {
     const level = this.getLevel();
-    return level === FlBioNetworkMetaboliteLevel.MAJOR ? this.absLog10Value + 5 : this.absLog10Value + 1.5;
+    switch (level) {
+      case FlBioNetworkMetaboliteLevel.MAJOR:
+        return this.absLog10Value + 5;
+      case FlBioNetworkMetaboliteLevel.MINOR:
+        return this.absLog10Value + 1.5;
+      case FlBioNetworkMetaboliteLevel.COFACTOR:
+        return Math.max(this.absLog10Value, 1);
+    }
   }
 
   ////////////////////////////////////// POINTS //////////////////////////////////////

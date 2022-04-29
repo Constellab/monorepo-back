@@ -7,6 +7,8 @@ import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
 
 // size for the cofactor losange
 const flBioNetworkCofactorSize: number = 3.5;
+// y transform to center the cofactor losange
+const flBioNetworkCofactorYTransform: number = -2.5;
 const flBioNetworkCofactorBorderRadius: number = 0.5;
 
 export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
@@ -25,7 +27,7 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
       .attr('height', flBioNetworkCofactorSize)
       .attr('rx', flBioNetworkCofactorBorderRadius) // round corner
       .attr('ry', flBioNetworkCofactorBorderRadius)
-      .attr('transform', 'translate(2.5, -1) rotate(45)')
+      .attr('transform', `translate(0,${flBioNetworkCofactorYTransform}) rotate(45)`)
       .attr('stroke', this.strokeColor)
       .attr('stroke-width', 0.3)
       .attr('fill', this.defaultColor) as FlD3SelectionSimple<FlBioNetworkD3Node>;
@@ -39,15 +41,15 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
 
   convertFromCenterCoord(coord: FlCoord): FlCoord {
     return {
-      x: coord.x + (flBioNetworkCofactorSize / 2),
-      y: coord.y + (flBioNetworkCofactorSize / 2),
+      x: coord.x,
+      y: coord.y,
     };
   }
 
   convertToCenterCoord(coord: FlCoord): FlCoord {
     return {
-      x: coord.x - (flBioNetworkCofactorSize / 2),
-      y: coord.y - (flBioNetworkCofactorSize / 2),
+      x: coord.x,
+      y: coord.y,
     };
   }
 

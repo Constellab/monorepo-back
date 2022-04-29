@@ -321,7 +321,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
 
   private defineArrowMarkers(): void {
     this.defineArrowMarker(this.arrowId, 2, 5);
-    this.defineArrowMarker(this.smallArrowId, 1, 5);
+    this.defineArrowMarker(this.smallArrowId, 1, 10);
   }
 
 
