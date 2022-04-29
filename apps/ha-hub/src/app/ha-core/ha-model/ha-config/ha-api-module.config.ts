@@ -9,7 +9,7 @@ import {environment} from '../../../../environments/ha-environment';
 @Injectable({
   providedIn: 'root'
 })
-export class DaApiServiceConfig extends FlApiServiceConfig {
+export class HaApiServiceConfig extends FlApiServiceConfig {
   deserializePage(json: any, classReference: ClDeserializationRef): ClPageI<any> {
     // if the result if paginated (we supposed the json is type of ClPage)
     if (json.objects != null && json.objects instanceof Array) {
@@ -22,6 +22,10 @@ export class DaApiServiceConfig extends FlApiServiceConfig {
 
   getApiUrl(): string {
     return environment.apiUrl;
+  }
+
+  getConstellabUrl(): string{
+    return environment.constellabUrl;
   }
 
   getHeaders(): Record<string, string> {

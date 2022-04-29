@@ -14,7 +14,7 @@ import {
   FlTextEditorImageService,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
-import {DaApiServiceConfig} from './ha-core/ha-model/ha-config/ha-api-module.config';
+import {HaApiServiceConfig} from './ha-core/ha-model/ha-config/ha-api-module.config';
 import {HaApiErrorService} from './ha-core/ha-model/ha-config/ha-api-error.service';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
@@ -38,7 +38,7 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
     HaAppRoutingModule,
     HaCoreModule,
 
-    FlApiModule.forRoot(DaApiServiceConfig, HaApiErrorService),
+    FlApiModule.forRoot(HaApiServiceConfig, HaApiErrorService),
 
     FlAuthModule.forRoot(HaAuthService),
 
