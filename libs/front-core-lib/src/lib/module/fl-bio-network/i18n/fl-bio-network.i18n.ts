@@ -42,9 +42,10 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     details: 'Détails',
     enzyme_name: 'Nom de l\'enzyme',
     enzyme_ec_number: 'EC number de l\'enzyme',
-    flux_value: 'Flux',
-    flux_lower_bound: 'Flux inférieur',
-    flux_upper_bound: 'Flux supérieur',
+    flux_value: 'Valeur',
+    flux_estimate: 'Estimation du flux',
+    flux_interval: 'Intervalle',
+    flux_constraints: 'Contraintes de flux',
     pathways: 'Pathways',
   }
 };
@@ -85,9 +86,10 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     details: 'Details',
     enzyme_name: 'Enzyme name',
     enzyme_ec_number: 'Enzyme EC number',
-    flux_value: 'Flux',
-    flux_lower_bound: 'Flux lower bound',
-    flux_upper_bound: 'Flux upper bound',
+    flux_value: 'Value',
+    flux_estimate: 'Flux estimate',
+    flux_interval: 'Interval',
+    flux_constraints: 'Flux constraints',
     pathways: 'Pathways',
   }
 };
