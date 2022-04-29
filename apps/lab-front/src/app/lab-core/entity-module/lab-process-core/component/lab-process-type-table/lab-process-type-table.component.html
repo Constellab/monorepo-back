@@ -8,7 +8,7 @@
     </mat-header-cell>
     <mat-cell *matCellDef="let processType">
       <mat-icon *ngIf="processType.status === 'TYPE_UNAVAILABLE'" color="warn"
-                class="type-unavailable">
+                class="type-unavailable" [matTooltip]="'biox.process_type_unavailable_error' | translate">
         error
       </mat-icon>
       <div>
