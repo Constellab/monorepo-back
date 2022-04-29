@@ -36,7 +36,7 @@
 
 .brick-info{
   padding-left: 1em;
-
+  flex: auto;
 }
 
 .left-side-div{
@@ -54,6 +54,7 @@
   flex-direction: row;
   font-size: 1em;
   align-items: center;
+  width: 100%;
 }
 
 .button-edit{

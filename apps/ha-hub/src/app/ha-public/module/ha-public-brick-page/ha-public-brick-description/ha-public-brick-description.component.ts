@@ -43,7 +43,7 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
     });
   }
 
-  private createEditBrickDialog(): void {
+  createEditBrickDialog(): void {
     const node: HaEditBrickDTO = new HaEditBrickDTO();
     node.id = this.brick.id;
     node.description = this.brick.description;
