@@ -31,11 +31,12 @@
 .main-description-div{
   display: flex;
   flex-direction: row;
+
 }
 
 .brick-info{
   padding-left: 1em;
-  padding-top: 1em;
+
 }
 
 .left-side-div{
@@ -52,6 +53,11 @@
   display: flex;
   flex-direction: row;
   font-size: 1em;
+  align-items: center;
+}
+
+.button-edit{
+  margin-left: auto;
 }
 
 .creator-info{

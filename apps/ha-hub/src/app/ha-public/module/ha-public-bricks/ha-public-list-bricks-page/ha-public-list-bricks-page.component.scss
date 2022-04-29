@@ -1,19 +1,29 @@
 .title-section{
   width: 100%;
+  min-height: calc(100vh - 4.5em);
+  height: auto;
   display: flex;
   flex-direction: row;
 }
 
 .title-section .title-div{
   height: 100%;
-  width: 50%;
+  width: 35%;
   margin-left: 5%;
   z-index: 30;
-  padding: 5em 0;
+  padding: 12.5em 0;
+  box-sizing: border-box;
 }
 
 .title-section .title-image{
-  width: 50%;
+  max-width: 60%;
+  width: 60%;
+  height: auto;
+  max-height: 100%;
+  background-image: url("../../../../../assets/images/home-background.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .title-div h1{
@@ -21,6 +31,7 @@
 }
 
 .title-div p{
+  margin-top: 1em;
   font-size: 18px;
 }
 
@@ -54,10 +65,6 @@
   width: 0;
   height: 0;
   bottom: 0;
-}
-
-.title-section .title-image{
-  flex: auto;
 }
 
 .brick{

@@ -1,6 +1,5 @@
 .gencovery-logo{
   height: 2.5em;
-  padding: 0;
   margin: 0;
 }
 
@@ -14,7 +13,8 @@
 
 .nav-bar{
   background-color: var(--card-background);
-  border-bottom: 1px solid var(--grey-low-contrast);
+  padding: 1em 5%;
+  height: 4.5em !important;
   display: flex;
 }
 
@@ -33,6 +33,9 @@
 }
 
 @media (max-width: 599px) {
+  .nav-bar{
+    padding: 1em 1%;
+  }
   .option{
     font-size: 2em;
     margin-left: 1.5em;

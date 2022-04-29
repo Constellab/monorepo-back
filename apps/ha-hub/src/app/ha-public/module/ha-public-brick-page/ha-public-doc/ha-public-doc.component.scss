@@ -46,6 +46,11 @@
 .technical-doc-div{
   margin: auto;
   padding-left: 1em;
+  padding-top: 1em;
+}
+
+.technical-doc-div *{
+  padding-bottom: 1em;
 }
 
 .technical-doc-content{

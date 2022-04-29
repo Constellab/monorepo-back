@@ -6,7 +6,11 @@
         <span class="display-inline">
           <h2 class="brick-name">{{brick.name}}</h2>
           <fl-text-icon iconPosition="end" gap="0.2em"><mat-icon
-            class="mat-primary">check</mat-icon>Verified</fl-text-icon>
+            class="mat-primary">check</mat-icon>Verified
+          </fl-text-icon>
+          <button mat-icon-button color="primary" (click)="createEditBrickDialog()" *haIsAdmin class="button-edit">
+            <mat-icon>edit</mat-icon>
+          </button>
         </span>
         <br>
         <fl-key-value class="brick-description-value">
@@ -55,9 +59,3 @@
     </div>
   </div>
 </div>
-<div class="edit-button-div">
-  <button mat-flat-button color="primary" (click)="createEditBrickDialog()" *haIsAdmin class="button-edit">
-    {{'edit' | translate}} <mat-icon>edit</mat-icon>
-  </button>
-</div>
-
