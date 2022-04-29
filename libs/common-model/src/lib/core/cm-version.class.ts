@@ -43,22 +43,40 @@ export class CmVersion {
   }
 
   public isEqualOrHigher(other: CmVersion): boolean {
-    return this.getVersionAsNumber() >= other.getVersionAsNumber();
+    return this.getDif(other) >= 0;
+  }
+
+  private getDif(other: CmVersion): number {
+    if (this.major === other.major &&
+      this.minor === other.minor &&
+      this.patch === other.patch &&
+      this.getSubPatchAsNumber() === other.getSubPatchAsNumber()) {
+      return 0;
+    }
+
+    if (this.major > other.major ||
+      (this.major === other.major && this.minor > other.minor) ||
+      (this.major === other.major && this.minor === other.minor && this.patch > other.patch) ||
+      (this.major === other.major && this.minor === other.minor && this.patch === other.patch &&
+        this.getSubPatchAsNumber() > other.getSubPatchAsNumber())) {
+      return 1;
+    } else {
+      return -1;
+    }
   }
 
   public isBeta(): boolean {
     return this.subPatch != null;
   }
 
+  public getSubPatchAsNumber(): number {
+    return this.subPatch != null ? this.subPatch : -1;
+  }
+
   public toString(): string {
     return this.isBeta() ? [this.major, this.minor, this.patch].join('.') + '-beta' + this.subPatch
       : [this.major, this.minor, this.patch].join('.');
   }
-
-  private getVersionAsNumber(): number {
-    return parseInt('' + this.major + this.minor + this.patch + this.subPatch ?? '0');
-  }
-
 }
 
 export function CmVersionTransform(): PropertyDecorator {
