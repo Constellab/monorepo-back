@@ -54,7 +54,7 @@ export class BlMailService {
 
     // use https://nicholaspretorius.github.io/til0025/ example for configuration
     // configure the mail to use template .hbs files
-    transporter.use('compile', hbs(this.getTemplateOptions()));
+    transporter.use('compile', hbs(this.getTemplateOptions(lang)));
 
     const mailOptions = {
       from: this.getMailSender(),
@@ -103,13 +103,13 @@ export class BlMailService {
     return this.moduleConfig.mailConfig.sender;
   }
 
-  private getTemplateOptions(): any {
+  private getTemplateOptions(lang: ClSupportedLanguage): any {
     // configuration for the template with hbs
     return {
       viewEngine: {
         extname: '.hbs', // handlebars extension
         layoutsDir: this.moduleConfig.templateFolder, // location of handlebars templates
-        defaultLayout: 'cn-main', // name of main template, will wrap all other templates
+        defaultLayout: 'cn-main-' + lang, // name of main template, will wrap all other templates
         partialsDir: this.moduleConfig.templateFolder, // location of your subtemplates aka. header, footer etc
       },
       viewPath: this.moduleConfig.templateFolder,
