@@ -43,13 +43,6 @@ export class CaUser extends CaEntity {
     return this.fullname;
   }
 
-  /**
-   * return the user profile picture if exist or a default image
-   */
-  public getPhotoWithDefault(): string {
-    return this.photo || 'assets/images/portrait.png';
-  }
-
   public isAdmin(): boolean {
     return this.category === CmUserCategory.ADMIN;
   }

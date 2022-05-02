@@ -25,7 +25,8 @@ import {
   FlStatusModule,
   FlTextEditorModule,
   FlTextIconModule,
-  FlTranslateModule
+  FlTranslateModule,
+  FlUserModule
 } from '@monorepo/front-core-lib';
 import {RvResourceViewModule} from '@monorepo/resource-view';
 
@@ -65,6 +66,7 @@ import {RvResourceViewModule} from '@monorepo/resource-view';
     FlKeyValueModule,
     FlInputFileModule,
     FlDynamicFieldModule,
+    FlUserModule,
 
     RvResourceViewModule,
   ]

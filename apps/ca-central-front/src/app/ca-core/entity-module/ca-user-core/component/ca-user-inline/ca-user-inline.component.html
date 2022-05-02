@@ -1,8 +1,7 @@
 <div fxLayout="row" fxLayoutAlign="start center"
      fxLayoutGap="0.4em">
-  <fl-round-image [imageUrl]="user.getPhotoWithDefault()"
-                   size="2.5em">
-  </fl-round-image>
+  <fl-user-profile-picture [firstName]="user.firstname" [lastName]="user.lastname"
+                           class="person-picture"></fl-user-profile-picture>
 
   <div class="g-text-small" *ngIf="showName">
     {{user.fullname}}
