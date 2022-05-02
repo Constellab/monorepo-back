@@ -3,9 +3,9 @@ import {LabConfigValues} from '../../../lab-core/model/entities/lab-config.entit
 import {LabCallTransformerParams} from '../../../lab-core/model/global/lab-transformer.class';
 import {LabReportContentViewComponent} from './component/lab-report-content-view/lab-report-content-view.component';
 import {ClHelpService} from '@monorepo/core-lib';
+import Parchment from 'parchment';
 
-const BlockEmbed = Quill.import('blots/block/embed');
-
+const Embed = Quill.import('blots/block/embed') as typeof Parchment.Embed;
 
 export interface LabReportContentView {
   id: string;
@@ -17,17 +17,17 @@ export interface LabReportContentView {
   caption: string;
 }
 
-export class LabReportContentViewBlot extends BlockEmbed {
+export class LabReportContentViewBlot extends Embed {
 
   static blotName: 'resource_view' = 'resource_view';
   static tagName = 'lab-report-content-view';
 
-  private domNode: HTMLElement;
+  public domNode: HTMLElement;
 
   private readonly storedValue: LabReportContentView;
 
   static create(value: LabReportContentView): any {
-    const node: HTMLElement = super.create();
+    const node: HTMLElement = super.create(value) as any;
 
     // pass data to the component via the node
     const component: LabReportContentViewComponent = node as any;
@@ -44,7 +44,7 @@ export class LabReportContentViewBlot extends BlockEmbed {
   }
 
   constructor(node: Node, value: LabReportContentView) {
-    super(node, value);
+    super(node);
     this.storedValue = value;
   }
 

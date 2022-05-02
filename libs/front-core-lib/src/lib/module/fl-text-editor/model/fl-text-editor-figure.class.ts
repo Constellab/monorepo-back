@@ -1,25 +1,26 @@
-import Quill from 'quill';
 import {CmRichTextFigure} from '@monorepo/common-model';
+import Quill from 'quill';
+import Parchment from 'parchment';
 
-const BlockEmbed = Quill.import('blots/block/embed');
+const Embed = Quill.import('blots/block/embed') as typeof Parchment.Embed;
 
-export class FlTextEditorFigureBlot extends BlockEmbed {
+export class FlTextEditorFigureBlot extends Embed {
 
   static blotName = 'figure';
   static tagName = 'fl-text-editor-figure';
   static className = 'g-quill-block';
 
-  private domNode: HTMLElement;
+  public domNode: HTMLElement;
 
   private readonly storedValue: CmRichTextFigure;
 
   static create(value: CmRichTextFigure): any {
-    const node: HTMLElement = super.create();
+    const node: HTMLElement = super.create(value) as any;
 
-    if(!value.naturalWidth) {
+    if (!value.naturalWidth) {
       value.naturalWidth = 100;
     }
-    if(!value.naturalHeight) {
+    if (!value.naturalHeight) {
       value.naturalHeight = 100;
     }
     node.setAttribute('filename', value.filename);
@@ -34,7 +35,7 @@ export class FlTextEditorFigureBlot extends BlockEmbed {
   }
 
   constructor(node: Node, value: CmRichTextFigure) {
-    super(node, value);
+    super(node);
     this.storedValue = value;
   }
 

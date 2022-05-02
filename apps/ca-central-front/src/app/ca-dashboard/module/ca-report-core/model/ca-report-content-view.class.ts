@@ -1,8 +1,9 @@
 import Quill from 'quill';
 import {CaReportContentViewComponent} from '../component/ca-report-content-view/ca-report-content-view.component';
 import {RvConfigValues, RvResourceView, RvTransformerParams} from '@monorepo/resource-view';
+import Parchment from 'parchment';
 
-const BlockEmbed = Quill.import('blots/block/embed');
+const Embed = Quill.import('blots/block/embed') as typeof Parchment.Embed;
 
 
 export interface CaReportViewConfig {
@@ -16,7 +17,7 @@ export interface CaReportViewConfig {
   caption: string;
 }
 
-export class CaReportContentViewBlot extends BlockEmbed {
+export class CaReportContentViewBlot extends Embed {
 
   static blotName: 'resource_view' = 'resource_view';
   static tagName = 'ca-report-content-view';
@@ -24,7 +25,7 @@ export class CaReportContentViewBlot extends BlockEmbed {
   private readonly storedValue: RvResourceView;
 
   static create(value: CaReportViewConfig): any {
-    const node: HTMLElement = super.create();
+    const node: HTMLElement = super.create(value) as any;
 
     // pass data to the component via the node
     const component: CaReportContentViewComponent = node as any;
@@ -34,7 +35,7 @@ export class CaReportContentViewBlot extends BlockEmbed {
   }
 
   constructor(node: Node, value: any) {
-    super(node, value);
+    super(node);
     this.storedValue = value;
   }
 
