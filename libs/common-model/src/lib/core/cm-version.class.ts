@@ -1,6 +1,9 @@
 import {Transform} from 'class-transformer';
 import {ClTransformFnParams} from '@monorepo/core-lib';
 
+/**
+ * Object to support version like 2.1.1 or 2.2.0-beta.1
+ */
 export class CmVersion {
 
   constructor(public major: number, public minor: number, public patch: number, public subPatch?: number) {
@@ -12,34 +15,38 @@ export class CmVersion {
     }
 
     const versions = version.split('.');
-    if (versions.length !== 3) {
+    if (versions.length !== 3 && version.length !== 4) {
       throw new Error(`Version '${version}' is invalid`);
     }
 
-    let subPatchStr: string = null;
-    if (versions[2].includes('-beta')) {
-      [versions[2], subPatchStr] = versions[2].split('-beta');
+    // main version contain version before sub patch like 1.1.1
+    let mainVersionsStr = version;
+
+    // if there is a sub-patch, extract it
+    let subPatch: number = null;
+    if(version.includes('-beta.')){
+      let subPatchStr: string;
+      [mainVersionsStr, subPatchStr] = version.split('-beta.');
+
+      subPatch = parseInt(subPatchStr);
+      if (isNaN(subPatch)) {
+        throw new Error(`Sub-patch version of '${version}' is invalid`);
+      }
     }
 
-    const major = parseInt(versions[0]);
-    const minor = parseInt(versions[1]);
-    const patch = parseInt(versions[2]);
+
+    // extract other versions
+    const mainVersions = mainVersionsStr.split('.');
+
+    const major = parseInt(mainVersions[0]);
+    const minor = parseInt(mainVersions[1]);
+    const patch = parseInt(mainVersions[2]);
 
     if (isNaN(major) || isNaN(minor) || isNaN(patch)) {
       throw new Error(`Version '${version}' is invalid`);
     }
 
-    if (subPatchStr !== null) {
-      const subPatch = parseInt(subPatchStr);
-
-      if (isNaN(subPatch)) {
-        throw new Error(`Sub-patch version of '${version}' is invalid`);
-      }
-
-      return new CmVersion(major, minor, patch, subPatch);
-    }
-
-    return new CmVersion(major, minor, patch);
+    return new CmVersion(major, minor, patch, subPatch);
   }
 
   public isEqualOrHigher(other: CmVersion): boolean {
@@ -74,7 +81,7 @@ export class CmVersion {
   }
 
   public toString(): string {
-    return this.isBeta() ? [this.major, this.minor, this.patch].join('.') + '-beta' + this.subPatch
+    return this.isBeta() ? [this.major, this.minor, this.patch].join('.') + '-beta.' + this.subPatch
       : [this.major, this.minor, this.patch].join('.');
   }
 }
