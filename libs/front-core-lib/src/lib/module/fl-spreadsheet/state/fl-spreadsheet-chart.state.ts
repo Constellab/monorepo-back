@@ -189,20 +189,6 @@ export class FlSpreadsheetChartState {
     }
   }
 
-  /**
-   * Refresh the chart
-   * @param selectionId
-   * @private
-   */
-  private refreshChart(selectionId: symbol): void {
-    const selection: SelectionWithOverlay = this.currentSelections.get(selectionId);
-    if (selection) {
-      this.generateChart({
-        mode: 'update',
-        selection: selection.selection
-      }, selectionId);
-    }
-  }
 
   private closeChartOverlay(selectionId: symbol): void {
     this.currentSelections.get(selectionId)?.overlayRef.dispose();
@@ -224,16 +210,6 @@ export class FlSpreadsheetChartState {
   private getContextMenuItem(selectionId: symbol): FlMenuDynamic[] {
     const menu: FlMenuDynamic[] = [];
 
-    // add the refresh button only on edit mode (useless in readonly)
-    if (!this.state.readOnly) {
-      // button refresh the chart data
-      menu.push({
-        type: 'button',
-        text: {text: 'flSpreadsheet.chart_refresh', translateText: true},
-        icon: 'refresh',
-        onClick: () => this.refreshChart(selectionId)
-      });
-    }
     // button to edit the chart and reopen data selection
     menu.push({
       type: 'button',
