@@ -13,9 +13,10 @@
   overflow: auto;
   max-height: inherit;
   padding: 12px 35px;
+  font-family: "Poppins", "Helvetica Neue", sans-serif;
 }
 
-.ql-editor{
+.ql-bubble .ql-editor {
   p {
     font-weight: 100;
     line-height: 2em;
@@ -52,29 +53,56 @@
     margin-bottom: 0.5em;
   }
 
-  ul, ol{
+  ul, ol {
     margin-bottom: 1em;
   }
 
-  li{
+  li {
     padding-bottom: 8px;
     line-height: 2rem;
   }
 
-  li::before{
+  li::before {
     margin-right: 10px;
   }
 
   // customize the bullet marker
-  ul li::before{
-      font-size: 1.5rem;
-      margin-left: -1.5em;
-      vertical-align: bottom;
+  ul li::before {
+    font-size: 1.5rem;
+    margin-left: -1.5em;
+    vertical-align: bottom;
   }
 
+  // link
+  a {
+    position: relative;
+    white-space: initial !important;
+    color: var(--primary-color);
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  // Code block
   pre.ql-syntax {
     background-color: var(--card-background);
     color: var(--color-foreground);
+    margin-top: 2em;
+    margin-bottom: 2em;
+    border-radius: 10px;
+    font-family: "Poppins", "Helvetica Neue", sans-serif;
+  }
+
+  blockquote {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    border-left-color: var(--grey-low-contrast);
+  }
+
+  code {
+    background-color: var(--grey-low-contrast);
+    color: var(--color-foreground);
+    padding: 7px;
+    font-weight: bold;
   }
 }
 

@@ -20,7 +20,7 @@
   }
 
   .ql-editor{
-    .g-text-editor-hint, .fl-alignt-right{
+    .g-text-editor-hint{
       padding: 1em 2em;
       border-radius: 10px;
       margin-top: 2em;
@@ -35,7 +35,7 @@
       padding-top: 2em;
     }
 
-    .g-text-editor-hint-info, .fl-alignt-right{
+    .g-text-editor-hint-info{
       background-color: mat.get-color-from-palette($primary);
       color: mat.get-color-from-palette($primary, default-contrast);
     }
