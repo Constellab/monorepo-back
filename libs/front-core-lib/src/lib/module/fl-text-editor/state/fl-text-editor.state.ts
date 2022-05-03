@@ -1,10 +1,10 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import Quill from 'quill';
+import Quill, {RangeStatic} from 'quill';
 import {FlTextEditorUploadedImage} from '../model/fl-text-editor-image.class';
 import {CmRichTextFigure} from '@monorepo/common-model';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlTextEditorConfig} from '../model/fl-text-editor-config.class';
-
+import {FlTextEditorHintType} from '../model/fl-text-editor-hint.class';
 
 @Injectable()
 export class FlTextEditorState implements OnDestroy {
@@ -44,12 +44,27 @@ export class FlTextEditorState implements OnDestroy {
     this.quill.format('blockquote', true);
   }
 
+  public insertHint(hintType: FlTextEditorHintType): void {
+    this.quill.format('hint', hintType);
+  }
+
+
   public insertEmbed(index: number, type: string, value: any): void {
     this.quill.insertEmbed(index, type, value, Quill.sources.USER);
   }
 
+  public removeFormat(): void {
+    const selection = this.getCurrentSelection();
+    this.quill.removeFormat(selection.index, selection.length);
+  }
+
+  public getCurrentSelection(): RangeStatic {
+    return this.quill.getSelection(true);
+  }
+
+
   public getCurrentSelectionIndex(): number {
-    return this.quill.getSelection(true).index;
+    return this.getCurrentSelection().index;
   }
 
   //////////////////////////////////////// OTHER /////////////////////////////////

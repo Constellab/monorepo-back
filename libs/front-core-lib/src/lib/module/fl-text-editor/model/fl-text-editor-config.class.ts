@@ -18,11 +18,31 @@ export abstract class FlTextEditorConfig {
     };
   }
 
+  protected getHintBlockAddButton(state: FlTextEditorState): FlTextEditorBlockAddButton {
+    return {
+      icon: 'info',
+      type: 'button',
+      children: [
+        {icon: 'info', type: 'button', onAction: () => state.insertHint('info')},
+        {icon: 'warnings', type: 'button', onAction: () => state.insertHint('warning')},
+        {icon: 'biotech', type: 'button', onAction: () => state.insertHint('science')}
+      ],
+    };
+  }
+
   protected getQuoteBlockAddButton(state: FlTextEditorState): FlTextEditorBlockAddButton {
     return {
       icon: 'format_quote',
       type: 'button',
       onAction: () => state.insertBlockQuote()
+    };
+  }
+
+  protected getFormatClearAddButton(state: FlTextEditorState): FlTextEditorBlockAddButton {
+    return {
+      icon: 'format_clear',
+      type: 'button',
+      onAction: () => state.removeFormat()
     };
   }
 

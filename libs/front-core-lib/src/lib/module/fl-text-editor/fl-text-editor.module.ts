@@ -25,6 +25,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {
   FlTextEditorTitleCaptionComponent
 } from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
+import {FlTextEditorHintComponent} from './component/fl-text-editor-hint/fl-text-editor-hint.component';
+import {FlTextEditorHint} from './model/fl-text-editor-hint.class';
 
 
 @NgModule({
@@ -33,6 +35,7 @@ import {
     FlTextEditorBlockAddButtonComponent,
     FlTextEditorFigureComponent,
     FlTextEditorTitleCaptionComponent,
+    FlTextEditorHintComponent,
   ],
   exports: [
     FlTextEditorComponent,
@@ -63,6 +66,9 @@ export class FlTextEditorModule {
 
   constructor(injector: Injector, translateService: FlTranslateService) {
     if (FlTextEditorModule.registered) return;
+
+    // register default blots
+    Quill.register(FlTextEditorHint);
 
     FlTextEditorModule.registered = true;
 

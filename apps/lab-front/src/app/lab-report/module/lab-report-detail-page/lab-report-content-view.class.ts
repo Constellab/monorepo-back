@@ -1,11 +1,9 @@
-import Quill from 'quill';
 import {LabConfigValues} from '../../../lab-core/model/entities/lab-config.entity';
 import {LabCallTransformerParams} from '../../../lab-core/model/global/lab-transformer.class';
 import {LabReportContentViewComponent} from './component/lab-report-content-view/lab-report-content-view.component';
 import {ClHelpService} from '@monorepo/core-lib';
-import Parchment from 'parchment';
+import {FlQuillEmbed} from '@monorepo/front-core-lib';
 
-const Embed = Quill.import('blots/block/embed') as typeof Parchment.Embed;
 
 export interface LabReportContentView {
   id: string;
@@ -17,7 +15,7 @@ export interface LabReportContentView {
   caption: string;
 }
 
-export class LabReportContentViewBlot extends Embed {
+export class LabReportContentViewBlot extends FlQuillEmbed {
 
   static blotName: 'resource_view' = 'resource_view';
   static tagName = 'lab-report-content-view';

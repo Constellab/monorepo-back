@@ -132,27 +132,35 @@
 }
 
 
-@mixin g-button-icon-size($button-size, $icon-size, $icon-font-size) {
+
+.g-button-icon-small {
   &.mat-icon-button, & .mat-icon-button {
-    width: $button-size;
-    height: $button-size;
-    line-height: $button-size;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
 
     mat-icon {
-      height: $icon-size;
-      width: $icon-size;
-      font-size: $icon-font-size;
-      line-height: $icon-font-size;
+      height: 20px;
+      width: 18px;
+      font-size: 18px;
+      line-height: 18px;
     }
   }
 }
 
-.g-button-icon-small {
-  @include g-button-icon-size(30px, 20px, 18px)
-}
-
 .g-button-icon-tiny {
-  @include g-button-icon-size(20px, 16px, 15px)
+  &.mat-icon-button, & .mat-icon-button {
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+
+    mat-icon {
+      height: 16px;
+      width: 16px;
+      font-size: 15px;
+      line-height: 15px;
+    }
+  }
 }
 
 .g-button-hide-text span, .g-button-hide-text mat-icon {

@@ -30,6 +30,7 @@ import python from 'highlight.js/lib/languages/python';
 import Quill, {BoundsStatic, RangeStatic} from 'quill';
 import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.state';
 import {FlTextEditorConfig} from '../../model/fl-text-editor-config.class';
+import {FlQuillBLock, FlQuillDelta} from '../../model/fl-quill-export.class';
 
 hljs.registerLanguage('python', python);
 
@@ -39,8 +40,6 @@ hljs.registerLanguage('python', python);
  */
 type FlTextEditorMode = 'HTML' | 'JSON'
 
-const Delta = Quill.import('delta');
-const Block = Quill.import('blots/block');
 
 
 /**
@@ -162,7 +161,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   }
 
   private setJsonDelta(json: FlQuillJson): void {
-    const delta = json?.ops != null ? new Delta(json.ops) : [];
+    const delta = json?.ops != null ? new FlQuillDelta(json.ops) : [];
     this.quill.setContents(delta);
   }
 
@@ -191,7 +190,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       this.closeBlockAddButtonOverlay();
       if (range.length === 0) {
         const scroll: any = this.quill.scroll;
-        const [block] = scroll.descendant(Block, range.index);
+        const [block] = scroll.descendant(FlQuillBLock, range.index);
         if (block != null && block.domNode.firstChild instanceof HTMLBRElement) {
           const lineBounds: BoundsStatic = this.quill.getBounds(range.index, range.length);
           this.showBlockAddButton(lineBounds, buttons);

@@ -38,7 +38,9 @@ export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlT
         icon: 'add_chart', type: 'button', tooltip: 'biox.report_add_view',
         onAction: () => this.openSelectResourceView(state)
       },
-      this.getCodeBlockAddButton(state)
+      this.getCodeBlockAddButton(state),
+      this.getHintBlockAddButton(state),
+      this.getFormatClearAddButton(state)
     ];
   }
 

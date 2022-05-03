@@ -10,9 +10,11 @@
     <ng-container *ngFor="let button of buttons">
       <button *ngIf="button.type === 'button'; else fileExplorer" mat-icon-button
               class="menu-button g-button-icon-border g-button-icon-small"
-              (click)="onAction(button, $event)" [matTooltip]="button.tooltip | translate">
+              (click)="onAction(button, $event)" [matTooltip]="button.tooltip | translate"
+              flMouseHover (flMouseEnter)="openSubMenu(button,$event)">
         <mat-icon>{{button.icon}}</mat-icon>
       </button>
+
 
       <ng-template #fileExplorer>
         <!--   Upload files     -->
@@ -26,3 +28,16 @@
     </ng-container>
   </ng-container>
 </div>
+
+<!-- List of sub buttons in another portal-->
+<ng-template #submenu>
+  <div>
+    <div *ngFor="let button of childrenButtons">
+      <button mat-icon-button
+              class="sub-menu-button g-button-icon-border g-button-icon-small"
+              (click)="onAction(button, $event)" [matTooltip]="button.tooltip | translate">
+        <mat-icon>{{button.icon}}</mat-icon>
+      </button>
+    </div>
+  </div>
+</ng-template>

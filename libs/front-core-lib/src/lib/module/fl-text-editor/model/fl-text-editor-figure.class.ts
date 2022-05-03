@@ -1,10 +1,8 @@
 import {CmRichTextFigure} from '@monorepo/common-model';
-import Quill from 'quill';
-import Parchment from 'parchment';
+import {FlQuillEmbed} from './fl-quill-export.class';
 
-const Embed = Quill.import('blots/block/embed') as typeof Parchment.Embed;
 
-export class FlTextEditorFigureBlot extends Embed {
+export class FlTextEditorFigureBlot extends FlQuillEmbed {
 
   static blotName = 'figure';
   static tagName = 'fl-text-editor-figure';

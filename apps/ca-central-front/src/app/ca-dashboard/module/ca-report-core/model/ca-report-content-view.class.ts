@@ -1,9 +1,6 @@
-import Quill from 'quill';
 import {CaReportContentViewComponent} from '../component/ca-report-content-view/ca-report-content-view.component';
 import {RvConfigValues, RvResourceView, RvTransformerParams} from '@monorepo/resource-view';
-import Parchment from 'parchment';
-
-const Embed = Quill.import('blots/block/embed') as typeof Parchment.Embed;
+import {FlQuillEmbed} from '@monorepo/front-core-lib';
 
 
 export interface CaReportViewConfig {
@@ -17,7 +14,7 @@ export interface CaReportViewConfig {
   caption: string;
 }
 
-export class CaReportContentViewBlot extends Embed {
+export class CaReportContentViewBlot extends FlQuillEmbed {
 
   static blotName: 'resource_view' = 'resource_view';
   static tagName = 'ca-report-content-view';

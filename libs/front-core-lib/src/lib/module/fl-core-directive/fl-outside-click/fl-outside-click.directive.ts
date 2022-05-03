@@ -17,7 +17,7 @@ export class FlOutsideClickDirective implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.listener = this.renderer.listen('body', 'mousedown',
+    this.listener = this.renderer.listen('body', 'click',
       (event: MouseEvent) => this.checkElement(event));
   }
 

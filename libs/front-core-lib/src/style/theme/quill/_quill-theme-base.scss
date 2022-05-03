@@ -3,11 +3,9 @@
 
 @mixin _quill-theme-base($mat-theme) {
   $primary: map-get($mat-theme, primary);
+  $accent: map-get($mat-theme, accent);
   $warn: map-get($mat-theme, warn);
   $foreground: map-get($mat-theme, foreground);
-  $background: map-get($mat-theme, background);
-  $foreground-color: mat.get-color-from-palette($foreground, text);
-  $background-color: mat.get-color-from-palette($background, background);
   $divider: mat.get-color-from-palette($foreground, dividers);
 
   // set quill editor in red when the editor is invalid
@@ -21,115 +19,35 @@
     border-color: $divider !important;
   }
 
-  // quill overrides
-  // Quill dark theme
-  .ql-snow .ql-stroke {
-    stroke: $foreground-color !important;
-  }
+  .ql-editor{
+    .g-text-editor-hint, .fl-alignt-right{
+      padding: 1em 2em;
+      border-radius: 10px;
+      margin-top: 2em;
+      margin-bottom: 2em;
+    }
 
-  .ql-snow .ql-stroke-miter {
-    stroke: $foreground-color !important;
-  }
+    // this is useful to merge multiple hint when they are next to each other
+    .g-text-editor-hint-info +.g-text-editor-hint-info,
+    .g-text-editor-hint-warning +.g-text-editor-hint-warning,
+    .g-text-editor-hint-science +.g-text-editor-hint-science{
+      margin-top: -4em;
+      padding-top: 2em;
+    }
 
-  .ql-snow .ql-fill,
-  .ql-snow .ql-stroke.ql-fill {
-    fill: $foreground-color !important;
-  }
+    .g-text-editor-hint-info, .fl-alignt-right{
+      background-color: mat.get-color-from-palette($primary);
+      color: mat.get-color-from-palette($primary, default-contrast);
+    }
 
-  .ql-snow .ql-picker {
-    color: $foreground-color !important;
-  }
+    .g-text-editor-hint-warning{
+      background-color: mat.get-color-from-palette($warn);
+      color: mat.get-color-from-palette($warn, default-contrast);
+    }
 
-  .ql-snow .ql-tooltip {
-    color: $foreground-color !important;
-  }
-
-  .ql-snow.ql-toolbar button:hover,
-  .ql-snow .ql-toolbar button:hover,
-  .ql-snow.ql-toolbar button:focus,
-  .ql-snow .ql-toolbar button:focus,
-  .ql-snow.ql-toolbar button.ql-active,
-  .ql-snow .ql-toolbar button.ql-active,
-  .ql-snow.ql-toolbar .ql-picker-label:hover,
-  .ql-snow .ql-toolbar .ql-picker-label:hover,
-  .ql-snow.ql-toolbar .ql-picker-label.ql-active,
-  .ql-snow .ql-toolbar .ql-picker-label.ql-active,
-  .ql-snow.ql-toolbar .ql-picker-item:hover,
-  .ql-snow .ql-toolbar .ql-picker-item:hover,
-  .ql-snow.ql-toolbar .ql-picker-item.ql-selected,
-  .ql-snow .ql-toolbar .ql-picker-item.ql-selected {
-    color: mat.get-color-from-palette($primary) !important;
-  }
-  .ql-snow.ql-toolbar button:hover .ql-fill,
-  .ql-snow .ql-toolbar button:hover .ql-fill,
-  .ql-snow.ql-toolbar button:focus .ql-fill,
-  .ql-snow .ql-toolbar button:focus .ql-fill,
-  .ql-snow.ql-toolbar button.ql-active .ql-fill,
-  .ql-snow .ql-toolbar button.ql-active .ql-fill,
-  .ql-snow.ql-toolbar .ql-picker-label:hover .ql-fill,
-  .ql-snow .ql-toolbar .ql-picker-label:hover .ql-fill,
-  .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-fill,
-  .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-fill,
-  .ql-snow.ql-toolbar .ql-picker-item:hover .ql-fill,
-  .ql-snow .ql-toolbar .ql-picker-item:hover .ql-fill,
-  .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-fill,
-  .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-fill,
-  .ql-snow.ql-toolbar button:hover .ql-stroke.ql-fill,
-  .ql-snow .ql-toolbar button:hover .ql-stroke.ql-fill,
-  .ql-snow.ql-toolbar button:focus .ql-stroke.ql-fill,
-  .ql-snow .ql-toolbar button:focus .ql-stroke.ql-fill,
-  .ql-snow.ql-toolbar button.ql-active .ql-stroke.ql-fill,
-  .ql-snow .ql-toolbar button.ql-active .ql-stroke.ql-fill,
-  .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke.ql-fill,
-  .ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke.ql-fill,
-  .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke.ql-fill,
-  .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke.ql-fill,
-  .ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke.ql-fill,
-  .ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke.ql-fill,
-  .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke.ql-fill,
-  .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke.ql-fill {
-    fill: mat.get-color-from-palette($primary) !important;
-  }
-  .ql-snow.ql-toolbar button:hover .ql-stroke,
-  .ql-snow .ql-toolbar button:hover .ql-stroke,
-  .ql-snow.ql-toolbar button:focus .ql-stroke,
-  .ql-snow .ql-toolbar button:focus .ql-stroke,
-  .ql-snow.ql-toolbar button.ql-active .ql-stroke,
-  .ql-snow .ql-toolbar button.ql-active .ql-stroke,
-  .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke,
-  .ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke,
-  .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke,
-  .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke,
-  .ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke,
-  .ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke,
-  .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
-  .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke,
-  .ql-snow.ql-toolbar button:hover .ql-stroke-miter,
-  .ql-snow .ql-toolbar button:hover .ql-stroke-miter,
-  .ql-snow.ql-toolbar button:focus .ql-stroke-miter,
-  .ql-snow .ql-toolbar button:focus .ql-stroke-miter,
-  .ql-snow.ql-toolbar button.ql-active .ql-stroke-miter,
-  .ql-snow .ql-toolbar button.ql-active .ql-stroke-miter,
-  .ql-snow.ql-toolbar .ql-picker-label:hover .ql-stroke-miter,
-  .ql-snow .ql-toolbar .ql-picker-label:hover .ql-stroke-miter,
-  .ql-snow.ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter,
-  .ql-snow .ql-toolbar .ql-picker-label.ql-active .ql-stroke-miter,
-  .ql-snow.ql-toolbar .ql-picker-item:hover .ql-stroke-miter,
-  .ql-snow .ql-toolbar .ql-picker-item:hover .ql-stroke-miter,
-  .ql-snow.ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter,
-  .ql-snow .ql-toolbar .ql-picker-item.ql-selected .ql-stroke-miter {
-    stroke: mat.get-color-from-palette($primary) !important;
-  }
-
-  .ql-snow .ql-picker-options {
-    background-color: $background-color !important;
-  }
-
-  .ql-snow .ql-color-picker.ql-background .ql-picker-item {
-    background-color: $background-color !important;
-  }
-
-  .ql-snow .ql-tooltip {
-    background-color: $background-color !important;
+    .g-text-editor-hint-science{
+      background-color: mat.get-color-from-palette($accent);
+      color: mat.get-color-from-palette($accent, default-contrast);
+    }
   }
 }
