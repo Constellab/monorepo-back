@@ -64,7 +64,7 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
       .on('mouseout', () => this.onMouseOut())
       .style('fill', (d) => this.colorScale.scale(d.serieKey))
       .each((d, index, nodes: SVGRectElement[]) =>
-        this.drawBar(d, nodes[index], barWidth, this.data.chartHeight, this.data.yScale, index));
+        this.drawBar(d, nodes[index], barWidth, this.data.yScale, index));
   }
 
 
@@ -77,22 +77,41 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
   }
 
   // draw one bar
-  private drawBar(d: FlChartDataWithSerie<FlChart2dDatum>, element: SVGRectElement, barWidth: number, chartHeight: number,
+  private drawBar(d: FlChartDataWithSerie<FlChart2dDatum>, element: SVGRectElement, barWidth: number,
                   yScale: FlChartScale, index: number): void {
     if (d.data == null) {
       return;
     }
 
-    // prevent bar width form being smaller than 1
+    // prevent bar width from being smaller than 1
     barWidth = Math.max(barWidth, 1);
+
+    const y0 = yScale.scale(0);
 
     select(element)
       .attr('transform',
-        (d: FlChartDataWithSerie<FlChart2dDatum>) => 'translate(' + barWidth * index + ',' + yScale.scale(d.data.getY(0)) + ')'
+        (d: FlChartDataWithSerie<FlChart2dDatum>) => this.getTransform(d, barWidth, yScale, index, y0)
       )
       .attr('width', barWidth - 0.5) // - 1 to let space between bars
-      .attr('height', (d: FlChartDataWithSerie<FlChart2dDatum>) => chartHeight - yScale.scale(d.data.getY(0)));
+      // set height, equals to distance from 0
+      .attr('height', (d: FlChartDataWithSerie<FlChart2dDatum>) => Math.abs(yScale.scale(d.data.getY(0)) - y0));
   }
+
+  private getTransform(d: FlChartDataWithSerie<FlChart2dDatum>, barWidth: number,
+                       yScale: FlChartScale, index: number, y0: number): string {
+    const value = d.data.getY(0);
+
+    let y: number;
+    if (value >= 0) {
+      y = yScale.scale(value);
+    } else {
+      // if negative, the base is 0
+      y = y0;
+    }
+
+    return `translate(${barWidth * index},${y})`;
+  }
+
 
   private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {
     // handle the FlChartDataBin portal
