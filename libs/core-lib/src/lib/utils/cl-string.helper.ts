@@ -185,4 +185,9 @@ export class ClStringHelper {
     // when stripping, remove few more characters so the '...' doesn't not overlap
     return str.substring(0, length - 3) + '...';
   }
+
+  public static toKebabCase(str: string): string {
+    if (str == null) return null;
+    return str.trim().replace(/\s+/g, '-').toLowerCase();
+  }
 }

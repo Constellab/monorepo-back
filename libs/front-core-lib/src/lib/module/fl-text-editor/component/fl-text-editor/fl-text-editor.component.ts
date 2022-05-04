@@ -30,7 +30,7 @@ import python from 'highlight.js/lib/languages/python';
 import Quill, {BoundsStatic, RangeStatic} from 'quill';
 import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.state';
 import {FlTextEditorConfig} from '../../model/fl-text-editor-config.class';
-import {FlQuillBLock, FlQuillDelta} from '../../model/fl-quill-export.class';
+import {FlQuillBlock, FlQuillDelta} from '../../model/fl-quill-export.class';
 
 hljs.registerLanguage('python', python);
 
@@ -190,7 +190,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       this.closeBlockAddButtonOverlay();
       if (range.length === 0) {
         const scroll: any = this.quill.scroll;
-        const [block] = scroll.descendant(FlQuillBLock, range.index);
+        const [block] = scroll.descendant(FlQuillBlock, range.index);
         if (block != null && block.domNode.firstChild instanceof HTMLBRElement) {
           const lineBounds: BoundsStatic = this.quill.getBounds(range.index, range.length);
           this.showBlockAddButton(lineBounds, buttons);

@@ -25,7 +25,6 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {
   FlTextEditorTitleCaptionComponent
 } from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
-import {FlTextEditorHintComponent} from './component/fl-text-editor-hint/fl-text-editor-hint.component';
 import {FlTextEditorHint} from './model/fl-text-editor-hint.class';
 
 
@@ -35,7 +34,6 @@ import {FlTextEditorHint} from './model/fl-text-editor-hint.class';
     FlTextEditorBlockAddButtonComponent,
     FlTextEditorFigureComponent,
     FlTextEditorTitleCaptionComponent,
-    FlTextEditorHintComponent,
   ],
   exports: [
     FlTextEditorComponent,

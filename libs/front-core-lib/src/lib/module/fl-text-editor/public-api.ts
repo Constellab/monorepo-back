@@ -5,7 +5,6 @@ export * from './fl-text-editor.module';
 export * from './component/fl-text-editor/fl-text-editor.component';
 export * from './component/fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
 export * from './component/fl-text-editor-figure/fl-text-editor-figure.component';
-export * from './component/fl-text-editor-hint/fl-text-editor-hint.component';
 export * from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
 
 // States

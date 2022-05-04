@@ -1,9 +1,9 @@
-import {FlQuillBLock} from './fl-quill-export.class';
+import {FlQuillBlock} from './fl-quill-export.class';
 
 export type FlTextEditorHintType = 'info' | 'warning' | 'science';
 
 
-export class FlTextEditorHint extends FlQuillBLock {
+export class FlTextEditorHint extends FlQuillBlock {
 
   static blotName = 'hint';
   static tagName = 'DIV';
