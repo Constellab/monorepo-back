@@ -103,11 +103,11 @@ figure {
 }
 
 .g-centered {
-  margin: auto;
+  margin-inline: auto;
 }
 
 .g-centered-forced {
-  margin: auto !important;
+  margin-inline: auto !important;
   display: block !important;
 }
 
