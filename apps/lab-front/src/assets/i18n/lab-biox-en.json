@@ -167,6 +167,7 @@
     "view_configs": "View configs historic",
     "view_config_date": "Viewed",
     "view_config_select": "Select a view config",
+    "view_config_select_help": "Here is the historic of the views you have generated. You can only search on views of resources that were generated or used by one of the experiments related to this report. \nIf you don't find the view you want, re-generate it from the resource page and re-launch the search, the view should appear in the first position.",
     "report_add_view": "Add resource view",
     "view_preview": "Preview view",
     "type_deprecated_since": "Deprecated since",
@@ -176,3 +177,4 @@
     "technical_info": "Technical information"
   }
 }
+
