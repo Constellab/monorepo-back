@@ -23,9 +23,9 @@ export abstract class FlTextEditorConfig {
       icon: 'info',
       type: 'button',
       children: [
-        {icon: 'info', type: 'button', onAction: () => state.insertHint('info')},
-        {icon: 'warnings', type: 'button', onAction: () => state.insertHint('warning')},
-        {icon: 'biotech', type: 'button', onAction: () => state.insertHint('science')}
+        {icon: 'info', type: 'button', tooltip: 'flTextEditor.hint_classic', onAction: () => state.insertHint('info')},
+        {icon: 'warnings', type: 'button', tooltip: 'flTextEditor.hint_warning', onAction: () => state.insertHint('warning')},
+        {icon: 'biotech', type: 'button', tooltip: 'flTextEditor.hint_scientific', onAction: () => state.insertHint('science')}
       ],
     };
   }

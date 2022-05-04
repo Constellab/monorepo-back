@@ -10,6 +10,9 @@ const flTextEditorI18nFr: FlLangTranslation = {
     title: 'Titre',
     caption: 'Légende',
     ok: 'Ok',
+    hint_classic: 'Aide',
+    hint_warning: 'Warning',
+    hint_scientific: 'Info scientifique'
   }
 };
 
@@ -18,6 +21,9 @@ const flTextEditorI18nEn: FlLangTranslation = {
     title: 'Title',
     caption: 'Caption',
     ok: 'Ok',
+    hint_classic: 'Hint',
+    hint_warning: 'Warning',
+    hint_scientific: 'Scientific info'
   }
 };
 

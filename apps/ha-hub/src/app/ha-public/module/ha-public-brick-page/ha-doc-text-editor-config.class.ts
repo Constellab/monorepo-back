@@ -28,7 +28,8 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
         icon: 'image', type: 'fileExplorer',
         onAction: file => this.insertImageFromFile(file, state)
       },
-      this.getCodeBlockAddButton(state)
+      this.getCodeBlockAddButton(state),
+      this.getHintBlockAddButton(state),
     ];
   }
 

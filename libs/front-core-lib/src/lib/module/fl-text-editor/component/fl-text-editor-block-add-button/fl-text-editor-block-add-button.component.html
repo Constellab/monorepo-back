@@ -35,7 +35,7 @@
     <div *ngFor="let button of childrenButtons">
       <button mat-icon-button
               class="sub-menu-button g-button-icon-border g-button-icon-small"
-              (click)="onAction(button, $event)" [matTooltip]="button.tooltip | translate">
+              (click)="onAction(button, $event)" [matTooltip]="button.tooltip | translate" matTooltipPosition="after">
         <mat-icon>{{button.icon}}</mat-icon>
       </button>
     </div>
