@@ -18,7 +18,6 @@ export * from './model/fl-text-editor-basic-config.class';
 export * from './model/fl-text-editor-config.class';
 export * from './model/fl-text-editor-element.directive';
 export * from './model/fl-text-editor-figure.class';
-export * from './model/fl-text-editor-header.class';
 export * from './model/fl-text-editor-hint.class';
 export * from './model/fl-text-editor-image.class';
 export * from './model/fl-text-editor-module-config.class';
