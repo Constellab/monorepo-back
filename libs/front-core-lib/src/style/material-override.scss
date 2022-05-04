@@ -91,6 +91,7 @@
 .mat-stroked-button, .mat-raised-button, .mat-button, .mat-flat-button {
   text-transform: uppercase;
   overflow: hidden !important;
+  border-radius: 30px !important;
   //text-overflow: ellipsis;
   //white-space: nowrap;
 }
@@ -105,6 +106,18 @@
   border-width: 2px !important;
 }
 
+// resize the icons used in a button to be smaller
+.mat-stroked-button, .mat-raised-button, .mat-button, .mat-flat-button {
+  .material-icons {
+    font-size: 18px;
+    height: 19px; // 1px more than font to center
+    width: 19px;
+    margin-right: 5px;
+    margin-left: 5px;
+  }
+}
+
+
 .g-button-medium {
   font-size: 1.3rem !important;
 }
@@ -114,16 +127,23 @@
   margin-right: 0.3em;
 }
 
+
 .g-button-big {
   font-size: 1.5rem !important;
-  padding: 0.6em !important;
+  padding: 0.6em 2em !important;
 }
 
 .g-button-small {
   font-size: 0.8rem !important;
-  padding-left: 0.5em !important;
-  padding-right: 0.5em !important;
+  padding-left: 1em !important;
+  padding-right: 1em !important;
   line-height: 2.0em !important;
+
+  // remove margin of icon
+  .material-icons {
+    margin-right: 0;
+    margin-left: 0;
+  }
 }
 
 .g-button-icon-border {
@@ -178,6 +198,8 @@
   overflow: hidden;
   display: block;
 }
+
+
 
 
 /***************************** Table *****************************/

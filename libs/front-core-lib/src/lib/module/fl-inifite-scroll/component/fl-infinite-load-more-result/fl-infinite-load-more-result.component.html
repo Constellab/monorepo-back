@@ -1,7 +1,7 @@
 <ng-container *ngIf="datasource.page">
   <div *ngIf="!datasource.page.last" fxLayout="row" fxLayoutAlign="center">
     <button [disabled]="datasource.isLoading"
-            mat-button color="primary" type="button" (click)="loadMoreResults()">
+            mat-stroked-button color="primary" type="button" (click)="loadMoreResults()">
       {{'show_more_result' | translate}}
       <fl-button-loader *ngIf="datasource.nextPageIsLoading"></fl-button-loader>
     </button>

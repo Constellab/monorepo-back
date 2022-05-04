@@ -41,22 +41,3 @@ mat-icon.g-icon-big svg {
   width: 48px;
   height: 48px;
 }
-
-// resize the icons used in a button to be smaller
-.mat-stroked-button, .mat-raised-button, .mat-button, .mat-flat-button {
-  .material-icons {
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
-    margin-top: -2px;
-  }
-
-  // set the right margin if the icon is after or before the text
-  .mat-button-wrapper > .material-icons:first-child {
-    margin-right: 5px;
-  }
-
-  .mat-button-wrapper > .material-icons:last-child {
-    margin-left: 5px;
-  }
-}

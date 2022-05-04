@@ -21,7 +21,7 @@
     "experiment_is_validated": "Validée",
     "experiment_waiting_for_cli": "En attente",
     "experiment_in_queue": "En attente",
-    "experiment_select": "Sélectionner une expérience",
+    "experiment_select": "Expérience",
     "experiment_detail": "Détail",
     "experiment_workflow": "Playground",
     "experiment_save_description": "Sauvegarder la description",

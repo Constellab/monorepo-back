@@ -1,12 +1,12 @@
 <!--  Start and stop button  -->
-<button *ngIf="labInstance.isRunning(); else stopped" mat-button color="warn" type="button"
+<button *ngIf="labInstance.isRunning(); else stopped" mat-stroked-button color="warn" type="button"
         (click)="stopLab($event)" class="g-button-small">
   <mat-icon>stop</mat-icon>
   <span>{{'stop_lab' | translate}}</span>
   <fl-button-loader *ngIf="isLoading" size="small" position="override"></fl-button-loader>
 </button>
 <ng-template #stopped>
-  <button mat-button color="primary" type="button"
+  <button mat-stroked-button color="primary" type="button"
           (click)="startLab($event)" class="g-button-small">
     <mat-icon>play_arrow</mat-icon>
     <span>{{'start_lab' | translate}}</span>
