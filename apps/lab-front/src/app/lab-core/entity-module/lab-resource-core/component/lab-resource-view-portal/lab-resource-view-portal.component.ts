@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
-import {FL_PORTAL_DATA} from '@monorepo/front-core-lib';
+import {FL_PORTAL_DATA, FlMenuDynamic} from '@monorepo/front-core-lib';
 import {RvViewConfig} from '@monorepo/resource-view';
 
 
@@ -8,6 +8,7 @@ export interface LabResourceViewPortalInput {
   view: LabResourceView;
   resourceId: string;
   config: RvViewConfig;
+  contextMenuItems?: FlMenuDynamic[];
 }
 
 @Component({
@@ -20,6 +21,7 @@ export class LabResourceViewPortalComponent implements OnInit {
   view: LabResourceView;
   resourceId: string;
   config: RvViewConfig;
+  contextMenuItems?: FlMenuDynamic[];
 
   width: string;
   height: string;
@@ -29,6 +31,7 @@ export class LabResourceViewPortalComponent implements OnInit {
     this.view = input.view;
     this.resourceId = input.resourceId;
     this.config = input.config;
+    this.contextMenuItems = input.contextMenuItems;
 
     if (input.view.type === 'multi-view') {
       this.width = 'min(1000px, 90vw)';

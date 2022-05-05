@@ -1,6 +1,9 @@
 import {Injectable} from '@angular/core';
 import {
-  FlChartConfig,
+  FlMenuDynamic,
+  FlOverlayRef,
+  FlPortalConfig,
+  FlPortalService,
   FlSheetChart2dSerieSelectionForm,
   FlSheetChartSerieSelectionForm,
   FlSheetChartService
@@ -12,17 +15,9 @@ import {LabResourceTableService, LabTableChartType} from '../../../entity-servic
 import {LabConfigValues} from '../../../model/entities/lab-config.entity';
 import {LabResourceView} from '../../../model/entities/resource/lab-resource-view.entity';
 import {
-  rvBasicPlotToChart,
-  rvBoxPlotToChart,
-  rvHeatMapToChart,
-  rvHistogramToChart,
-  RvResourceVennDiagram,
-  RvResourceViewBasicPlot2d,
-  RvResourceViewBoxPlot,
-  RvResourceViewHeatMap,
-  RvResourceViewHistogram,
-  rvVennDiagramToChart
-} from '@monorepo/resource-view';
+  LabResourceViewPortalComponent,
+  LabResourceViewPortalInput
+} from '../component/lab-resource-view-portal/lab-resource-view-portal.component';
 
 /**
  * Service passed to @{LabResourceTableComponent}  to call chart view on spreadsheet actions
@@ -35,7 +30,8 @@ export class LabResourceTableChartService extends FlSheetChartService {
   private tableViewConfig: LabConfigValues;
   private tableTransformers: LabCallTransformerParams[];
 
-  constructor(private resourceTableService: LabResourceTableService) {
+  constructor(private resourceTableService: LabResourceTableService,
+              private portalService: FlPortalService) {
     super();
   }
 
@@ -48,64 +44,87 @@ export class LabResourceTableChartService extends FlSheetChartService {
     this.tableTransformers = tableTransformers;
   }
 
-  generateBar(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.generateBasic2dChart('bar-plot', series);
+  generateBar(series: FlSheetChartSerieSelectionForm[], contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
+    return this.generateBasic2dChart('bar-plot', series, contextMenuItems);
   }
 
-  generateBoxPlot(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.callChartOnTable('box-plot', {series: series}).pipe(
-      map((view) => rvBoxPlotToChart(view as RvResourceViewBoxPlot))
-    );
+  generateBoxPlot(series: FlSheetChartSerieSelectionForm[], contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
+    return this.callChartOnTable('box-plot', {series: series}, contextMenuItems);
   }
 
-  generateHeatMap(serie: FlSheetChartSerieSelectionForm): Observable<FlChartConfig> {
-    return this.callChartOnTable('heatmap', {serie: serie}).pipe(
-      map((view) => rvHeatMapToChart(view as RvResourceViewHeatMap))
-    );
+  generateHeatMap(serie: FlSheetChartSerieSelectionForm, contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
+    return this.callChartOnTable('heatmap', {serie: serie}, contextMenuItems);
   }
 
-  generateHistogram(series: FlSheetChartSerieSelectionForm[], nbOfBins?: number, density?: boolean): Observable<FlChartConfig> {
+  generateHistogram(series: FlSheetChartSerieSelectionForm[], nbOfBins?: number, density?: boolean,
+                    contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
     return this.callChartOnTable('histogram', {
       series: series,
       nbins: nbOfBins,
       density: density,
-    }).pipe(
-      map((view) => rvHistogramToChart(view as RvResourceViewHistogram))
-    );
+    }, contextMenuItems);
   }
 
-  generateLine2d(series: FlSheetChart2dSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.generateBasic2dChart('line-plot-2d', series);
+  generateLine2d(series: FlSheetChart2dSerieSelectionForm[], contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
+    return this.generateBasic2dChart('line-plot-2d', series, contextMenuItems);
   }
 
-  generateScatterPlot2d(series: FlSheetChart2dSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.generateBasic2dChart('scatter-plot-2d', series);
+  generateScatterPlot2d(series: FlSheetChart2dSerieSelectionForm[], contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
+    return this.generateBasic2dChart('scatter-plot-2d', series, contextMenuItems);
   }
 
-  generateStackBar(series: FlSheetChartSerieSelectionForm[], normalize: boolean): Observable<FlChartConfig> {
+  generateStackBar(series: FlSheetChartSerieSelectionForm[], normalize: boolean,
+                   contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
     return this.callChartOnTable('stack-bar-plot', {
       series: series,
       normalize: normalize,
-    }).pipe(
-      map((view) => rvBasicPlotToChart(view as RvResourceViewBasicPlot2d))
+    }, contextMenuItems);
+  }
+
+  generateVennDiagram(series: FlSheetChartSerieSelectionForm[], contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
+    return this.callChartOnTable('venn-diagram', {series: series}, contextMenuItems).pipe(
     );
   }
 
-  generateVennDiagram(series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.callChartOnTable('venn-diagram', {series: series}).pipe(
-      map((view) => rvVennDiagramToChart(view as RvResourceVennDiagram))
+  private generateBasic2dChart(chartType: LabTableChartType, series: FlSheetChartSerieSelectionForm[],
+                               contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
+    return this.callChartOnTable(chartType, {series: series}, contextMenuItems).pipe(
     );
   }
 
-  private generateBasic2dChart(chartType: LabTableChartType, series: FlSheetChartSerieSelectionForm[]): Observable<FlChartConfig> {
-    return this.callChartOnTable(chartType, {series: series}).pipe(
-      map((view) => rvBasicPlotToChart(view as RvResourceViewBasicPlot2d))
-    );
-  }
-
-  private callChartOnTable(chartType: LabTableChartType, chartConfig: LabConfigValues): Observable<LabResourceView> {
+  private callChartOnTable(chartType: LabTableChartType, chartConfig: LabConfigValues,
+                           contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
     return this.resourceTableService.callChartOnTable(this.resourceId, this.tableViewMethodName,
-      this.tableViewConfig, this.tableTransformers, chartType, chartConfig);
+      this.tableViewConfig, this.tableTransformers, chartType, chartConfig).pipe(
+      map((view) => this.openChartPortal(view, contextMenuItems)),
+    );
+  }
+
+  /**
+   * Open the chart portal after chart selection
+   * @private
+   */
+  private openChartPortal(view: LabResourceView, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
+
+    const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
+      {centerHorizontally: '0', top: '0'},
+      {
+        elevation: true,
+        disposeOnNavigation: true,
+      });
+
+    const config: LabResourceViewPortalInput = {
+      view: view,
+      config: {
+        methodName: this.tableViewMethodName,
+        configValues: this.tableViewConfig,
+        transformers: this.tableTransformers,
+      },
+      resourceId: this.resourceId,
+      contextMenuItems: contextMenuItems
+    };
+
+    return this.portalService.createPortal(LabResourceViewPortalComponent, portalConfig, config);
   }
 
 }

@@ -5,6 +5,7 @@ import {RvViewConfig} from '../../model/rv-view-config.class';
 import {RvResourceViewDirective} from '../../model/rv-resource-view.directive';
 import {RvResourceViewTypeInfo} from '../../model/rv-type-info.class';
 import {RV_MODULE_CONFIG, RvResourceViewModuleConfig} from '../../model/rv-resource-view-module.config';
+import {FlMenuDynamic} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'rv-resource-view',
@@ -28,6 +29,9 @@ export class RvResourceViewComponent implements OnInit, OnDestroy {
   @Input() config: RvViewConfig;
 
   @Input() displayMode: RvViewDisplayMode = 'fullScreen';
+
+  // if provided the view will support a right click. (only supported by view chart2d for now)
+  @Input() contextMenuItems?: FlMenuDynamic[];
 
   @ViewChild('viewContainer', {static: true, read: ViewContainerRef}) viewContainer: ViewContainerRef;
 
@@ -66,6 +70,7 @@ export class RvResourceViewComponent implements OnInit, OnDestroy {
       this.viewComponentRef.instance.resourceId = this.resourceId;
       this.viewComponentRef.instance.config = this.config;
       this.viewComponentRef.instance.displayMode = this.displayMode;
+      this.viewComponentRef.instance.contextMenuItems = this.contextMenuItems;
     }, 0);
   }
 
