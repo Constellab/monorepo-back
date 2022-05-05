@@ -29,10 +29,14 @@ export class FlChartDataBin extends FlChart2dDatum {
  * @param data
  * @param numberOfBins
  */
-export function flChartGetDataBins(data: number[], numberOfBins: number): FlChartDataBin[] {
+export function flChartGetDataBins(data: number[], numberOfBins?: number): FlChartDataBin[] {
   const domain: [number, number] = FlChartDomain.getLinearDomain(data);
 
   const bins: FlChartDataBin[] = [];
+
+  if (numberOfBins == null) {
+    numberOfBins = flChartGetDefaultNumberOfBins(data.length);
+  }
 
   // size of the bins (set to 1 if result is 0)
   const thresholds: number = (domain[1] - domain[0]) / numberOfBins || 1;

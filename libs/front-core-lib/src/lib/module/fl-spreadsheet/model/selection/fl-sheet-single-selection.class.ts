@@ -2,7 +2,7 @@ import {FlSheet} from '../fl-sheet.class';
 import {FlCell} from '../fl-cell.class';
 import {FlSheetSelection} from './fl-sheet-selection.class';
 import {FlCellsRange, FlCellsRangeType} from './fl-cells-range.class';
-import {FlCellCoord} from '../fl-cell-coord.class';
+import {FlCellCoord, FlCellCoordRange} from '../fl-cell-coord.class';
 import {FlSheetSelectionRange} from '../chart/fl-sheet-chart-selection-form.class';
 
 export interface FlCellWithCoord {
@@ -197,11 +197,26 @@ export class FlSheetSingleSelectionFull extends FlSheetSingleSelection {
     return new FlSheetSingleSelectionFull(sheet, new FlCellsRange('columns', 0, from, sheet.getLoadedRowsCount() - 1, to));
   }
 
+  public static ColumnName(sheet: FlSheet, columnName: string): FlSheetSingleSelectionFull {
+    const index = sheet.findColumnIndex(columnName);
+
+    if(index === -1) {
+      throw new Error(`Column '${columnName}' not found`);
+    }
+
+    return FlSheetSingleSelectionFull.Columns(sheet, index, index);
+  }
+
   public static Rows(sheet: FlSheet, from: number, to: number): FlSheetSingleSelectionFull {
     return new FlSheetSingleSelectionFull(sheet, new FlCellsRange('rows', from, 0, to, sheet.getLoadedColumnsCount() - 1));
   }
 
   public static FromRange(sheet: FlSheet, range: FlCellsRange): FlSheetSingleSelectionFull {
+    return new FlSheetSingleSelectionFull(sheet, range);
+  }
+
+  public static FromCellCoordsRange(sheet: FlSheet, cellsRange: FlCellCoordRange): FlSheetSingleSelectionFull {
+    const range = FlCellsRange.MultipleFromCellCoordsRange(cellsRange);
     return new FlSheetSingleSelectionFull(sheet, range);
   }
 

@@ -105,7 +105,7 @@ export class FlSheetHeaders {
    * Search the name in the header
    * @param name
    */
-  public searchName(name: string): string[] {
+  public searchByName(name: string): string[] {
     if (!this._info) return [];
     const result = this._info
       .filter(info => info.name && ClStringHelper.stringContains(info.name, name))
@@ -123,6 +123,11 @@ export class FlSheetHeaders {
       names.push(this.getInfo(i).name ?? i.toString());
     }
     return names;
+  }
+
+  public findIndexByName(name: string): number {
+    if (!this._info) return -1;
+    return this._info.findIndex(info => info.name === name);
   }
 
   private emptyInfo(): FlSheetHeaderInfoInput {

@@ -5,13 +5,13 @@
   <!-- Use to center the title -->
   <div class="fake-icon">
   </div>
-  <div class="g-centered-forced">
+  <div class="center">
     <ng-content></ng-content>
   </div>
   <div>
 
     <ng-content select="fl-portal-header-buttons"></ng-content>
-    <button mat-icon-button type="button" flPortalClose
+    <button mat-icon-button type="button" [flPortalClose]="null"
             tabindex="-1">
       <mat-icon>close</mat-icon>
     </button>

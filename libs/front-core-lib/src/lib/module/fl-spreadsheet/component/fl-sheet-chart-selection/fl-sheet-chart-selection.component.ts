@@ -27,18 +27,7 @@ import {debounceTime, skip} from 'rxjs/operators';
 import {merge} from 'rxjs';
 import {FlSpreadsheetChartSelectionHelper,} from '../../utils/fl-spreadsheet-chart-selection.helper';
 import {FlGlobalValidators} from '../../../../utils/fl-global.validators';
-import {
-  FlSheetBarPlotFormConfig,
-  FlSheetBoxPlotFormConfig,
-  FlSheetChartFormConfig,
-  FlSheetHeatMapFormConfig,
-  FlSheetHistogramFormConfig,
-  FlSheetLinePlotFormConfig,
-  FlSheetScatterPlotFormConfig,
-  FlSheetStackedBarPlotFormConfig,
-  FlSheetVennDiagramFormConfig,
-  FlSpreadsheetChartSerieSelectionInput
-} from '../../model/chart/fl-sheet-chart-form-config.class';
+import {FlSheetChartConfig, FlSpreadsheetChartSerieSelectionInput} from '../../model/chart/fl-sheet-chart-config.class';
 
 
 /**
@@ -61,9 +50,11 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
 
   submitted: boolean = false;
 
+  availableChartTypes: FlChartType[];
+
   private readonly hideElementClass: string = 'g-hide-element';
 
-  private formConfig: FlSheetChartFormConfig;
+  private formConfig: FlSheetChartConfig;
 
   private subscriptions: ClSubscriptionHandler = new ClSubscriptionHandler();
 
@@ -88,6 +79,7 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
 
     this.initForm();
 
+    this.availableChartTypes = this.state.getChartConfigs().map(chartConfig => chartConfig.getChartType());
 
     // add a timeout before the listen to prevent event from being fired
     // on patch during init
@@ -168,7 +160,7 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
       }
 
       const result: FlSheetChartSelectionResult = {
-        selection: value,
+        formValue: value,
         mode: mode
       };
       this.overlayRef.dispose(result);
@@ -277,7 +269,8 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const series: FlSheetChart2dSerieSelectionForm[] = this.formConfig.createSeriesFromDataRange(dataRange);
+    const series: FlSheetChart2dSerieSelectionForm[] = this.formConfig.createSeriesFromDataRange(
+      this.state.currentSheet, dataRange);
 
     this.formGp.get('series').patchValue(series);
     this.cdr.markForCheck();
@@ -294,28 +287,8 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
     return this.input.mode === 'create' ? 'flSpreadsheet.create_chart' : 'flSpreadsheet.update_chart';
   }
 
-  private getConfigForChartType(chartType: FlChartType): FlSheetChartFormConfig {
-    const sheet = this.state.currentSheet;
-    switch (chartType) {
-      case FlChartType.BAR_PLOT:
-        return new FlSheetBarPlotFormConfig(sheet);
-      case FlChartType.STACKED_PLOT:
-        return new FlSheetStackedBarPlotFormConfig(sheet);
-      case FlChartType.BOX_PLOT:
-        return new FlSheetBoxPlotFormConfig(sheet);
-      case FlChartType.SCATTER_PLOT:
-        return new FlSheetScatterPlotFormConfig(sheet);
-      case FlChartType.LINE:
-        return new FlSheetLinePlotFormConfig(sheet);
-      case FlChartType.VENN_DIAGRAM:
-        return new FlSheetVennDiagramFormConfig(sheet);
-      case FlChartType.HEAT_MAP:
-        return new FlSheetHeatMapFormConfig(sheet);
-      case FlChartType.HISTOGRAM:
-        return new FlSheetHistogramFormConfig(sheet);
-      default:
-        throw Error(`[FlSpreadsheetChartSelectionComponent] Config not defined for chart type : '${chartType}'`);
-    }
+  private getConfigForChartType(chartType: FlChartType): FlSheetChartConfig {
+    return this.state.getChartConfig(chartType);
   }
 
   get maxNbOfSeries(): number {

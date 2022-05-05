@@ -1,4 +1,4 @@
-<mat-option *ngFor="let chart of charts" [value]="chart.component">
-  <mat-icon>{{chart.icon}}</mat-icon>
-  {{'flChart.' + chart.component | translate}}
+<mat-option *ngFor="let chart of availableChartTypes" [value]="chart">
+  <mat-icon>{{chartTypeIcons[chart]}}</mat-icon>
+  {{'flChart.' + chart | translate}}
 </mat-option>

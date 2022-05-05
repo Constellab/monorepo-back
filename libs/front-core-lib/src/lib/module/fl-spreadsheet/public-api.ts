@@ -39,9 +39,8 @@ export * from './model/action/fl-sheet.action';
 export * from './model/action/fl-update-cell.action';
 
 // Chart
-export * from './model/chart/fl-sheet-chart.service';
-export * from './model/chart/fl-sheet-chart-form-config.class';
-export * from './model/chart/fl-sheet-chart-local.service';
+export * from './model/chart/fl-sheet-chart-config.class';
+export * from './model/chart/fl-sheet-chart-local-config.class';
 export * from './model/chart/fl-sheet-chart-selection.class';
 export * from './model/chart/fl-sheet-chart-selection-bar-plot.class';
 export * from './model/chart/fl-sheet-chart-selection-basic.class';

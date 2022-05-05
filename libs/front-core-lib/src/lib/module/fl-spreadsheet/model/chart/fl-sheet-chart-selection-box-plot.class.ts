@@ -2,6 +2,10 @@ import {FlSheetChartSelection} from './fl-sheet-chart-selection.class';
 import {FlChartConfig} from '../../../fl-chart/model/fl-chart-config.class';
 import {FlSheetChartSerieSelectionForm} from './fl-sheet-chart-selection-form.class';
 import {FlSheet} from '../fl-sheet.class';
+import {FlChartMultiSerie} from '../../../fl-chart/model/data/fl-chart-multi-serie.class';
+import {FlSheetSelection} from '../selection/fl-sheet-selection.class';
+import {FlChartBoxPlotSerie, flChartGetBoxPlotData} from '../../../fl-chart/model/data/fl-chart-box-plot-data.class';
+import {FlChartBoxPlot} from '../../../fl-chart/model/chart/fl-chart-box-plot.class';
 
 export class FlSheetChartSelectionBoxPlot extends FlSheetChartSelection {
 
@@ -10,17 +14,16 @@ export class FlSheetChartSelectionBoxPlot extends FlSheetChartSelection {
   }
 
   exportToChart(): FlChartConfig {
-    // const series: FlChartMultiSerie<any> = new FlChartMultiSerie();
-    //
-    // for (const serie of this.series) {
-    //   const ySelection: FlSheetSelection = this.getMultiSelectionFromString(serie.y);
-    //   const values: number[] = this.getSelectionValues(ySelection);
-    //
-    //   series.addSerie(new FlChartBoxPlotSerie([flChartGetBoxPlotData(values)], serie.name));
-    // }
-    //
-    // return new FlChartBoxPlot(series);
-    return null;
+    const series: FlChartMultiSerie<any> = new FlChartMultiSerie();
+
+    for (const serie of this.series) {
+      const ySelection: FlSheetSelection = this.getMultiSelectionFromSelectionRange(serie.y);
+      const values: number[] = this.getSelectionValues(ySelection);
+
+      series.addSerie(new FlChartBoxPlotSerie([flChartGetBoxPlotData(values)], serie.name));
+    }
+
+    return new FlChartBoxPlot(series);
   }
 
 

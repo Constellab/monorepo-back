@@ -122,6 +122,10 @@ export class FlSheet {
     );
   }
 
+  public findColumnIndex(name: string): number {
+    return this.columns.findIndexByName(name);
+  }
+
   ////////////////////////////// COLUMN HEADER ////////////////////////////////
 
 
@@ -156,7 +160,7 @@ export class FlSheet {
   }
 
   public searchColumns(name: string): string[] {
-    return this.columns.searchName(name);
+    return this.columns.searchByName(name);
   }
 
   /**

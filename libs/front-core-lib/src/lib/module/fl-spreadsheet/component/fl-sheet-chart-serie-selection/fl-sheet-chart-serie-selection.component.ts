@@ -4,7 +4,7 @@ import {FormBuilder, FormControl, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
 import {FlOverlayRef} from '../../../fl-portal/model/fl-overlay-ref.class';
-import {FlSpreadsheetChartSerieSelectionInput} from '../../model/chart/fl-sheet-chart-form-config.class';
+import {FlSpreadsheetChartSerieSelectionInput} from '../../model/chart/fl-sheet-chart-config.class';
 
 
 /**

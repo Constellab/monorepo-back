@@ -1,10 +1,10 @@
 import {FlSheet} from '../fl-sheet.class';
-import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../selection/fl-sheet-single-selection.class';
 import {FlSheetMultiSelection} from '../selection/fl-sheet-multi-selection.class';
 import {FlSheetSelection} from '../selection/fl-sheet-selection.class';
 import {FlChart2dDatum} from '../../../fl-chart/model/data/fl-chart-data.class';
 import {ClHelpService, ClNumberHelper} from '@monorepo/core-lib';
 import {FlChartConfig} from '../../../fl-chart/model/fl-chart-config.class';
+import {FlSheetSelectionRange} from './fl-sheet-chart-selection-form.class';
 
 /**
  * Object to store the chart selection and contain a method to export the selection to series
@@ -19,23 +19,8 @@ export abstract class FlSheetChartSelection {
    */
   public abstract exportToChart(): FlChartConfig;
 
-
-  /**
-   * Convert a selection string to a Selection
-   * @param selection
-   * @protected
-   */
-  protected getSingleSelectionFromString(selection: string): FlSheetSingleSelection {
-    return !ClHelpService.isNullOrEmpty(selection) ? FlSheetSingleSelectionFull.fromString(this.sheet, selection) : null;
-  }
-
-  /**
-   * Convert a selection string to a Multiple Selection
-   * @param selection
-   * @protected
-   */
-  protected getMultiSelectionFromString(selection: string): FlSheetMultiSelection {
-    return !ClHelpService.isNullOrEmpty(selection) ? FlSheetMultiSelection.fromString(this.sheet, selection) : null;
+  protected getMultiSelectionFromSelectionRange(selection: FlSheetSelectionRange): FlSheetMultiSelection {
+    return !ClHelpService.isNullOrEmpty(selection) ? FlSheetMultiSelection.fromSelectionRange(this.sheet, selection) : null;
   }
 
   /**
@@ -70,8 +55,7 @@ export abstract class FlSheetChartSelection {
     const values: any[] = selection.getCellsValuesFlat();
 
     // convert the values to number if possible
-    return values.map(value => ClNumberHelper.fromString(value))
-      .filter(value => value != null); // exclude null values
+    return values.map(value => ClNumberHelper.fromString(value));
   }
 
 }

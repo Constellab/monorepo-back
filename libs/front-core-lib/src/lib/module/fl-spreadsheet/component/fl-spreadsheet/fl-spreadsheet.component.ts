@@ -24,7 +24,7 @@ import {Observable} from 'rxjs';
 import {FlSpreadsheetTagsState} from '../../state/fl-spreadsheet-tags.state';
 import {map} from 'rxjs/operators';
 import {FlSheetHeader, FlSheetRow} from '../../model/fl-sheet-headers.class';
-import {FlSheetChartService} from '../../model/chart/fl-sheet-chart.service';
+import {FlSheetChartConfig} from '../../model/chart/fl-sheet-chart-config.class';
 
 @Component({
   selector: 'fl-spreadsheet',
@@ -52,7 +52,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
   @Input() readOnly: boolean = false;
 
-  @Input() chartService: FlSheetChartService;
+  @Input() chartConfigs: FlSheetChartConfig[];
 
   @ViewChild('tableContainer', {static: true}) tableContainer: ElementRef<HTMLElement>;
   @ViewChild('horizontalScroller', {static: true}) horizontalScroller: ElementRef<HTMLElement>;
@@ -71,7 +71,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
-    this.state.init(this.spreadsheet, this.readOnly, this.chartService);
+    this.state.init(this.spreadsheet, this.readOnly, this.chartConfigs);
     this.selectionState.init();
     this.keyboardState.init();
     this.mouseState.init();

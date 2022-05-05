@@ -22,7 +22,7 @@ export interface FlSpreadsheetChartSelectionInputUpdate {
 
 export interface FlSheetChartSelectionResult {
   mode: 'create' | 'update';
-  selection: FlSheetChartSelectionForm;
+  formValue: FlSheetChartSelectionForm;
 }
 
 

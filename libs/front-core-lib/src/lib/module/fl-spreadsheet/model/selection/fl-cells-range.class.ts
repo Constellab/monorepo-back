@@ -20,10 +20,10 @@ export class FlCellsRange {
    */
   public static MultipleFromString(coordRange: string): FlCellsRange {
     const coords = FlSpreadsheetHelper.coordRangeFromString(coordRange);
-    return FlCellsRange.MultipleFromCoords(coords);
+    return FlCellsRange.MultipleFromCellCoordsRange(coords);
   }
 
-  public static MultipleFromCoords(coords: FlCellCoordRange): FlCellsRange {
+  public static MultipleFromCellCoordsRange(coords: FlCellCoordRange): FlCellsRange {
     return new FlCellsRange('multiple', coords.from.row, coords.from.column,
       coords.to.row, coords.to.column);
   }

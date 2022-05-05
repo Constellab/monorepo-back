@@ -115,7 +115,7 @@ export class FlSheetRangesInputComponent extends FlFormFieldDirective<FlSpreadsh
     if (!outerValue) return null;
 
     if (outerValue.type === 'range') {
-      const multipleRange = FlCellsMultipleRange.fromCoords(outerValue.selection);
+      const multipleRange = FlCellsMultipleRange.fromCellCoordsRange(outerValue.selection);
       return {
         type: 'range',
         rangeSelection: multipleRange.toString(),

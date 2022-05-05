@@ -19,7 +19,7 @@
             <mat-select-trigger>
               {{'flChart.' + formGp.value.chartType | translate}}
             </mat-select-trigger>
-            <fl-chart-type-select-options></fl-chart-type-select-options>
+            <fl-chart-type-select-options [availableChartTypes]="availableChartTypes"></fl-chart-type-select-options>
           </mat-select>
 
           <mat-error *ngIf="formGp.get('chartType').hasError('required')">

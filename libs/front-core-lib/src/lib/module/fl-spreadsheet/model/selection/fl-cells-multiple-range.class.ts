@@ -23,8 +23,8 @@ export class FlCellsMultipleRange {
     return new FlCellsMultipleRange(ranges);
   }
 
-  public static fromCoords(coords: FlCellCoordRange[]): FlCellsMultipleRange {
-    const ranges = coords.map(coord => FlCellsRange.MultipleFromCoords(coord));
+  public static fromCellCoordsRange(coords: FlCellCoordRange[]): FlCellsMultipleRange {
+    const ranges = coords.map(coord => FlCellsRange.MultipleFromCellCoordsRange(coord));
     return new FlCellsMultipleRange(ranges);
   }
 

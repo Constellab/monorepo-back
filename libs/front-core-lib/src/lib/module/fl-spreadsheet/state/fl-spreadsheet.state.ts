@@ -6,7 +6,18 @@ import {mergeMap} from 'rxjs/operators';
 import {FlSpreadsheetFactory} from '../utils/fl-spreadsheet.factory';
 import {FlCell} from '../model/fl-cell.class';
 import {FlSheetHeader, FlSheetRow} from '../model/fl-sheet-headers.class';
-import {FlSheetChartService} from '../model/chart/fl-sheet-chart.service';
+import {FlSheetChartConfig} from '../model/chart/fl-sheet-chart-config.class';
+import {FlChartType} from '../../fl-chart/model/fl-chart.class';
+import {
+  FlSheetLocalChartConfigBarPlot,
+  FlSheetLocalChartConfigBoxPlot,
+  FlSheetLocalChartConfigHeatMap,
+  FlSheetLocalChartConfigHistogram,
+  FlSheetLocalChartConfigLinePlot,
+  FlSheetLocalChartConfigScatterPlot,
+  FlSheetLocalChartConfigStackedBarPlot
+} from '../model/chart/fl-sheet-chart-local-config.class';
+import {FlChartPortalService} from '../../fl-chart/service/fl-chart-portal.service';
 
 /**
  * Unique state shared across the spreadsheet to store the current spreadsheet
@@ -23,13 +34,17 @@ export class FlSpreadsheetState implements OnDestroy {
 
   public readOnly: boolean = false;
 
-  private chartService: FlSheetChartService;
+  private chartConfigs: FlSheetChartConfig[];
 
-  public init(spreadsheet: FlSpreadsheet, readOnly: boolean, chartService: FlSheetChartService): void {
+  constructor(private chartPortalService: FlChartPortalService) {
+  }
+
+
+  public init(spreadsheet: FlSpreadsheet, readOnly: boolean, chartConfigs: FlSheetChartConfig[]): void {
     this._spreadsheet = spreadsheet;
     this.lastSheetId = spreadsheet.sheets.length;
     this.readOnly = readOnly;
-    this.chartService = chartService;
+    this.chartConfigs = chartConfigs ?? this.getDefaultChartConfigs();
   }
 
   public get spreadsheet(): FlSpreadsheet {
@@ -88,11 +103,28 @@ export class FlSpreadsheetState implements OnDestroy {
   }
 
 
-  //////////////////////////////////// OTHER ////////////////////////////////////
-  public getChartService(): FlSheetChartService {
-    return this.chartService;
+  //////////////////////////////////// CHART ////////////////////////////////////
+  public getChartConfigs(): FlSheetChartConfig[] {
+    return this.chartConfigs;
   }
 
+  public getChartConfig(chartType: FlChartType): FlSheetChartConfig {
+    return this.chartConfigs.find(config => config.getChartType() === chartType);
+  }
+
+  private getDefaultChartConfigs(): FlSheetChartConfig[] {
+    return [
+      new FlSheetLocalChartConfigLinePlot(this.chartPortalService),
+      new FlSheetLocalChartConfigScatterPlot(this.chartPortalService),
+      new FlSheetLocalChartConfigBarPlot(this.chartPortalService),
+      new FlSheetLocalChartConfigStackedBarPlot(this.chartPortalService),
+      new FlSheetLocalChartConfigHistogram(this.chartPortalService),
+      new FlSheetLocalChartConfigBoxPlot(this.chartPortalService),
+      new FlSheetLocalChartConfigHeatMap(this.chartPortalService),
+    ]
+  }
+
+  //////////////////////////////////// OTHER ////////////////////////////////////
 
   ngOnDestroy(): void {
     this._spreadsheet.destroy();

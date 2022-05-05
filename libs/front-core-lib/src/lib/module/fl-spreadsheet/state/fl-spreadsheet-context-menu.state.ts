@@ -62,9 +62,7 @@ export class FlSpreadsheetContextMenu {
       );
     }
 
-    if (this.chartState.chartAreEnabled()) {
-      menu.push(this.getCreateChartConfig());
-    }
+    menu.push(this.getCreateChartConfig());
     return menu;
   }
 
@@ -93,9 +91,8 @@ export class FlSpreadsheetContextMenu {
         });
     }
 
-    if (this.chartState.chartAreEnabled()) {
-      menu.push(this.getCreateChartConfig());
-    }
+    menu.push(this.getCreateChartConfig());
+
     return menu;
   }
 
@@ -105,9 +102,8 @@ export class FlSpreadsheetContextMenu {
   private getCellConfig(): FlMenuDynamic[] {
     const menu = this.getCopyPasteConfig(this.state.readOnly);
 
-    if (this.chartState.chartAreEnabled()) {
-      menu.push(this.getCreateChartConfig());
-    }
+    menu.push(this.getCreateChartConfig());
+
 
     return menu;
   }

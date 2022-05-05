@@ -4,7 +4,6 @@ import {FlPortalConfig} from '../../fl-portal/model/fl-portal-config.class';
 import {FlSheetChartSelectionComponent} from '../component/fl-sheet-chart-selection/fl-sheet-chart-selection.component';
 import {FlOverlayRef} from '../../fl-portal/model/fl-overlay-ref.class';
 import {FlChartPortalService} from '../../fl-chart/service/fl-chart-portal.service';
-import {FlChartType} from '../../fl-chart/model/fl-chart.class';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlMenuDynamic} from '../../fl-menu-dynamic/model/fl-menu-dynamic.class';
 import {
@@ -14,8 +13,7 @@ import {
 } from '../model/chart/fl-sheet-chart-selection-form.class';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
 import {Observable} from 'rxjs';
-import {FlSheetChartService} from '../model/chart/fl-sheet-chart.service';
-import {FlSheet} from '../model/fl-sheet.class';
+import {FlSnackBarService} from '../../fl-snack-bar/fl-snack-bar.service';
 
 
 interface SelectionWithOverlay {
@@ -34,7 +32,8 @@ export class FlSpreadsheetChartState {
   constructor(private state: FlSpreadsheetState,
               private portalService: FlPortalService,
               private chartPortalService: FlChartPortalService,
-              private selectionState: FlSpreadsheetSelectionState) {
+              private selectionState: FlSpreadsheetSelectionState,
+              private snackBarService: FlSnackBarService) {
   }
 
   public openChartSelectionPortal(selection?: FlSheetChartSelectionForm): void {
@@ -88,18 +87,25 @@ export class FlSpreadsheetChartState {
       this.closeChartOverlay(fromSelectionId);
     }
 
-    // get the service used to generate the chart
-    const chartService = this.getChartService(this.state.currentSheet);
-    // generate chart config
-    const chartOverlay = this.openChartPortal(chartService, result.selection);
+    // generate chart
+    try {
 
+      const chartConfig = this.state.getChartConfig(result.formValue.chartType);
 
-    if (chartOverlay instanceof Observable) {
-      chartOverlay.subscribe(
-        conf => this.registerPortalOverlay(conf, result.selection)
-      );
-    } else {
-      this.registerPortalOverlay(chartOverlay, result.selection);
+      const chartOverlay = chartConfig.generateChart(
+        result.formValue.series, result.formValue.additionalFields, this.state.currentSheet,
+        this.getContextMenuItem(result.formValue.id));
+
+      if (chartOverlay instanceof Observable) {
+        chartOverlay.subscribe(
+          conf => this.registerPortalOverlay(conf, result.formValue)
+        );
+      } else {
+        this.registerPortalOverlay(chartOverlay, result.formValue);
+      }
+    } catch (e) {
+      this.snackBarService.openErrorMessage('Error while generating chart');
+      throw e;
     }
   }
 
@@ -118,52 +124,6 @@ export class FlSpreadsheetChartState {
     overlay.detachments().subscribe(
       () => this.clearSelection(formSelection.id)
     );
-  }
-
-  // return true if we can make chart from the sheet
-  public chartAreEnabled(): boolean {
-    return this.state.getChartService() != null;
-  }
-
-  /**
-   * Get the correct chart service. If a FlSheetChartService was injected, use it, otherwise use the local chart
-   */
-  private getChartService(sheet: FlSheet): FlSheetChartService {
-    const chartService = this.state.getChartService();
-    if (chartService) {
-      return chartService;
-    }
-
-    return null;
-    // return new FlSheetChartLocalService(sheet);
-  }
-
-  private openChartPortal(chartService: FlSheetChartService,
-                          formValue: FlSheetChartSelectionForm): FlOverlayRef | Observable<FlOverlayRef> {
-
-    const contextMenuItems = this.getContextMenuItem(formValue.id)
-    switch (formValue.chartType) {
-      case FlChartType.SCATTER_PLOT:
-        return chartService.generateScatterPlot2d(formValue.series, contextMenuItems);
-      case FlChartType.LINE:
-        return chartService.generateLine2d(formValue.series, contextMenuItems);
-      case FlChartType.HISTOGRAM:
-        return chartService.generateHistogram(formValue.series, formValue.additionalFields.nbOfBins,
-          formValue.additionalFields.density, contextMenuItems);
-      case FlChartType.BOX_PLOT:
-        return chartService.generateBoxPlot(formValue.series, contextMenuItems);
-      case FlChartType.BAR_PLOT:
-        return chartService.generateBar(formValue.series, contextMenuItems);
-      case FlChartType.STACKED_PLOT:
-        return chartService.generateStackBar(formValue.series, formValue.additionalFields.normalize, contextMenuItems);
-      case FlChartType.HEAT_MAP:
-        return chartService.generateHeatMap(formValue.series[0], contextMenuItems);
-      case FlChartType.VENN_DIAGRAM:
-        return chartService.generateVennDiagram(formValue.series, contextMenuItems);
-      default:
-        console.error(`[FlSpreadsheetChartState] The chart type ${formValue.chartType} is not supported`);
-        return null;
-    }
   }
 
   /**
