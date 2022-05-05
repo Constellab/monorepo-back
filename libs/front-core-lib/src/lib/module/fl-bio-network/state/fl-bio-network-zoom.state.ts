@@ -56,6 +56,9 @@ export class FlBioNetworkZoomState implements OnDestroy {
     if (this.currentZoom) {
       this.zoomHandler.transform(svg, this.currentZoom);
     } else {
+      // init the zoom default value
+      const defaultZoom = zoomIdentity.translate(620, 300).scale(0.3)
+      this.zoomHandler.transform(svg, defaultZoom);
       // this.updateObjectVisibility(1);
       this.firstZoom = false;
     }
