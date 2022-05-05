@@ -11,7 +11,7 @@
                  class="logo"/>
           </a>
 
-          <div *ngIf="menuExpanded" class="lab-name">Lab</div>
+          <div *ngIf="menuExpanded" class="lab-name">{{labName$ | async}}</div>
         </div>
 
         <!-- List of main menu links   -->

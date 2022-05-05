@@ -1,7 +1,5 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-
-import {Observable} from 'rxjs';
 import {FlApiService} from './fl-api.service';
 import {FlCleanableService, FlCleanerService} from '../../../utils/fl-cleanable-service';
 import {FlHttpOption} from '../model/fl-http-option.class';
@@ -39,14 +37,14 @@ export class FlApiWithCacheService extends FlApiService implements FlCleanableSe
    * @param options custom http options
    */
   public getByIdWithCache(route: string, id: string, classReference ?: ClDeserializationRef,
-                          options: FlHttpOption = {}): Observable<any> {
+                          options: FlHttpOption = {}): ClCachedObservable<any> {
     const fullRoute = this.getUrlForId(route, id);
 
     if (!this.routeObservables.has(fullRoute)) {
       this.routeObservables.set(fullRoute, new ClCachedObservable<any>(super.getById(route, id, classReference, options)));
     }
 
-    return this.routeObservables.get(fullRoute).getObs();
+    return this.routeObservables.get(fullRoute);
   }
 
   /**
@@ -56,7 +54,7 @@ export class FlApiWithCacheService extends FlApiService implements FlCleanableSe
    * @param options custom http options
    */
   public getWithCache(route: string, classReference ?: ClDeserializationRef,
-                      options: FlHttpOption = {}): Observable<any> {
+                      options: FlHttpOption = {}): ClCachedObservable<any> {
     if (options.page != null || options.pageSize != null) {
       console.error('The getWithCache method does not support pagination, please use normal get');
       return null;
@@ -68,7 +66,7 @@ export class FlApiWithCacheService extends FlApiService implements FlCleanableSe
       this.routeObservables.set(fullRoute, new ClCachedObservable<any>(super.get(route, classReference, options)));
     }
 
-    return this.routeObservables.get(fullRoute).getObs();
+    return this.routeObservables.get(fullRoute);
   }
 
   /**

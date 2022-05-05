@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
-import {FlApiService, FlServerError} from '@monorepo/front-core-lib';
+import {FlApiWithCacheService, FlServerError} from '@monorepo/front-core-lib';
 import {Observable, of, throwError} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {LabEnvStore} from './lab-env.store';
+import {LabSystemInfo} from '../model/global/lab-system.class';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,12 @@ export class LabSystemService {
 
   private readonly route: string = 'system';
 
-  constructor(private apiService: FlApiService,
+  constructor(private apiService: FlApiWithCacheService,
               private labEnvStore: LabEnvStore) {
+  }
+
+  public getSystemInfo(): Observable<LabSystemInfo> {
+    return this.apiService.get(`${this.route}/info`, LabSystemInfo);
   }
 
   /**

@@ -36,7 +36,7 @@ export class LabTypeService {
   }
 
   public getTyping(typingName: string): Observable<LabTaskType | LabProtocolType> {
-    return this.apiService.getWithCache(`${this.route}/${typingName}`, LabTypeService.deserializeTyping);
+    return this.apiService.getWithCache(`${this.route}/${typingName}`, LabTypeService.deserializeTyping).getObs();
   }
 
   public getAdvancedSearchFunction(): FLSearchFunction<LabTypeEntity> {
@@ -57,7 +57,7 @@ export class LabTypeService {
 
   public getTransformerByResourceType(resourceTypingName: string): Observable<LabTypeEntity[]> {
     return this.apiService.getWithCache(`${this.route}/transformers/${resourceTypingName}`,
-      LabTaskType);
+      LabTaskType).getObs();
   }
 
 
