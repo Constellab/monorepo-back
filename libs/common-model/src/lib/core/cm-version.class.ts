@@ -15,7 +15,7 @@ export class CmVersion {
     }
 
     const versions = version.split('.');
-    if (versions.length !== 3 && version.length !== 4) {
+    if (versions.length !== 3 && versions.length !== 4) {
       throw new Error(`Version '${version}' is invalid`);
     }
 
@@ -53,6 +53,10 @@ export class CmVersion {
     return this.getDif(other) >= 0;
   }
 
+  public isEqual(other: CmVersion): boolean {
+    return this.getDif(other) === 0;
+  }
+
   private getDif(other: CmVersion): number {
     if (this.major === other.major &&
       this.minor === other.minor &&
@@ -76,8 +80,11 @@ export class CmVersion {
     return this.subPatch != null;
   }
 
+  /**
+   * Return the subPatch as a number. If there is no subPatch, return Infinity, so it is greater than beta version
+   */
   public getSubPatchAsNumber(): number {
-    return this.subPatch != null ? this.subPatch : -1;
+    return this.subPatch != null ? this.subPatch : Infinity;
   }
 
   public toString(): string {
