@@ -57,6 +57,10 @@ export class LabRouterService {
   }
 
   /////////////////// NAVIGATE METHODS ///////////////////
+  public navigateToAppRoute(): void {
+    this.router.navigate([LabRouterService.getAppRoute()]);
+  }
+
   public navigateToExperimentListRoute(): Promise<boolean> {
     return this.router.navigate([LabRouterService.getExperimentListRoute()]);
   }

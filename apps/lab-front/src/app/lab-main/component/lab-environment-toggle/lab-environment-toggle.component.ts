@@ -3,6 +3,8 @@ import {MatSlideToggleChange} from '@angular/material/slide-toggle';
 import {LabDevEnvironmentService} from '../../../lab-core/service/lab-dev-environment.service';
 import {Subscription} from 'rxjs';
 import {LabEnvStore} from '../../../lab-core/service/lab-env.store';
+import {LabRouterService} from '../../../lab-core/service/lab-router.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'lab-environment-toggle',
@@ -20,7 +22,9 @@ export class LabEnvironmentToggleComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   constructor(private labEnvStore: LabEnvStore,
-              private labEnvService: LabDevEnvironmentService) {
+              private labEnvService: LabDevEnvironmentService,
+              private routerService: LabRouterService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -47,7 +51,7 @@ export class LabEnvironmentToggleComponent implements OnInit, OnDestroy {
       );
     } else {
       this.labEnvStore.setLabEnvironment('prod');
-      this.reloadPage();
+      this.redirectToExpeirmentList();
     }
   }
 
@@ -56,13 +60,19 @@ export class LabEnvironmentToggleComponent implements OnInit, OnDestroy {
     if (!activate) {
       this.checked = false;
     } else {
-      this.reloadPage();
+      this.redirectToExpeirmentList();
     }
   }
 
-  private reloadPage(): void {
-    location.reload();
+  private redirectToExpeirmentList(): void {
+    if (this.router.isActive(LabRouterService.getExperimentListRoute(),
+      {fragment: 'ignored', paths: 'exact', matrixParams: 'ignored', queryParams: 'ignored'})) {
+      location.reload();
+    } else {
+      this.routerService.navigateToExperimentListRoute();
+    }
   }
+
 
   get disabled(): boolean {
     // only disable the toggle if it is not check and the dev api is not running
