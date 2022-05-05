@@ -34,8 +34,6 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
   private drawer: MatDrawer;
   private routeSubscription: Subscription;
 
-  private storeSearchInUrl: boolean = false;
-
   // list of filter that are added programmatically and override search criteria
   private hiddenFilters: Record<string, any> = {};
 
@@ -72,7 +70,7 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
     const timestamp = this.generateSearchTimestamp();
 
-    if (this.storeSearchInUrl) {
+    if (this.config.storeSearchInUrl) {
       this.saveAdvancedSearchInUrl(advancedSearch, timestamp);
     }
   }
@@ -88,7 +86,7 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
     this.patchAdvancedFormGroup(searchCriteria);
 
     const timestamp = this.generateSearchTimestamp();
-    if (this.storeSearchInUrl) {
+    if (this.config.storeSearchInUrl) {
       this.saveAdvancedSearchInUrl(advancedSearchObject, timestamp);
     }
   }
