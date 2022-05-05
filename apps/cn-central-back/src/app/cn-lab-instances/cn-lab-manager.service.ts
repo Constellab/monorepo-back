@@ -113,6 +113,7 @@ export class CnLabManagerService {
     }
 
     const labManagerConfig: CnLabManagerUpdateConfigDTO = {
+      labName: labInstance.name,
       frontVersion: frontVersion.version.toString(),
       bricks: []
     };

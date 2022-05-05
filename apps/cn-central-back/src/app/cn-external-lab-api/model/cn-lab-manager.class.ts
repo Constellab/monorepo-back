@@ -53,6 +53,7 @@ export interface CnLabManagerInitConfig {
  * Object to communicate with lab manager to update the config
  */
 export interface CnLabManagerUpdateConfigDTO {
+  labName: string;
   frontVersion: string;
   bricks: CnLabManagerBrickVersionDTO[];
 }
