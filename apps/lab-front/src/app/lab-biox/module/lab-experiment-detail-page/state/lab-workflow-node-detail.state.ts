@@ -4,6 +4,7 @@ import {LabProcess} from '../../../../lab-core/model/entities/process/lab-proces
 import {switchMap} from 'rxjs/operators';
 import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
 import {LabWorkflowNodeProcess} from '../model/lab-workflow-node-process.class';
+import {LabWorkflowManagerState} from './lab-workflow-manager-state';
 
 /**
  * State to manage the selected node to show it in the drawer
@@ -13,7 +14,7 @@ export class LabWorkflowNodeDetailState {
 
   private node$: BehaviorSubject<LabWorkflowNodeProcess>;
 
-  constructor() {
+  constructor(private workflowManagerState: LabWorkflowManagerState) {
   }
 
   public init(): void {
@@ -37,6 +38,6 @@ export class LabWorkflowNodeDetailState {
   }
 
   public updateConfigValues(config: LabConfigValues): void {
-    this.node$.value.updateConfig(config);
+    this.workflowManagerState.updateProcessConfig(this.node$.value, config);
   }
 }

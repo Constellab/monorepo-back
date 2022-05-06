@@ -54,13 +54,16 @@ export class LabWorkflowLayer {
     return this.nodes.find((node) => predicate(node));
   }
 
-  public onNodeRemoved(nodeId: string): void {
+  public removeNode(nodeId: string): LabWorkflowNode<any> | undefined {
     // remove the node in the local array
     const index: number = this.nodes.findIndex((node) => node.nodeId === nodeId);
     if (index >= 0) {
+      const node: LabWorkflowNode<any> = this.nodes[index];
       this.nodes.splice(index, 1);
+      return node;
     } else {
       console.error('Couldn\'t find node with id ' + nodeId);
+      return null;
     }
   }
 
@@ -94,7 +97,8 @@ export class LabWorkflowLayer {
 
   ///////////////////////////////// CONNECTION //////////////////////////////////////
 
-
+  // add the connection in the local array and in the editor
+  // this method is triggered when the connection is created by program
   public addConnection(connection: LabWorkflowConnection): void {
     this.connections.push(connection);
     this.editor.addConnection(connection.outputNode.nodeId, connection.inputNode.nodeId,
@@ -102,37 +106,73 @@ export class LabWorkflowLayer {
   }
 
   // add the connection to the local list
-  public saveConnection(event: ConnectionEvent): void {
-    // only add the connection if it doesn't exist
-    if (this.findConnection(event) == null) {
-      const outputNode: LabWorkflowNode<any> = this.findNodeWithId(event.output_id);
-      const inputNode: LabWorkflowNode<any> = this.findNodeWithId(event.input_id);
-
-
-      // todo voir le null
-      const workflowConnection: LabWorkflowConnection = new LabWorkflowConnection(outputNode, inputNode,
-        outputNode.findOutputPortByDrawflowName(event.output_class), inputNode.findInputPortByDrawflowName(event.input_class), null);
-      this.connections.push(workflowConnection);
-    }
+  // this method is triggered when the user manually creates a connection
+  public saveUserConnectionAdded(outputNode: LabWorkflowNode<any>, inputNode: LabWorkflowNode<any>,
+                                 outputPort: LabWorkflowPort, inputPort: LabWorkflowPort): LabWorkflowConnection | undefined {
     this.resetPortColors();
+
+    // only add the connection if it doesn't exist
+    if (this.findConnection(outputNode.nodeId, inputNode.nodeId, outputPort.name, inputPort.name) != null) return null;
+
+    const workflowConnection: LabWorkflowConnection = new LabWorkflowConnection(outputNode, inputNode,
+      outputPort, inputPort);
+    this.connections.push(workflowConnection);
+    return workflowConnection;
   }
 
-  public removeConnection(event: ConnectionEvent): void {
-    const connectionIndex: number = this.findConnectionIndex(event);
-    if (connectionIndex >= 0) {
-      this.connections.splice(connectionIndex, 1);
+  // remove the connection from the local array and in the editor
+  // this method is triggered when the connection is deleted by program
+  public removeConnection(connection: LabWorkflowConnection): LabWorkflowConnection | undefined {
+    const removedConnection = this.saveUserConnectionRemoved(connection);
+
+    if (removedConnection) {
+      this.editor.removeSingleConnection(removedConnection.outputNode.nodeId, removedConnection.inputNode.nodeId,
+        removedConnection.outputPort.drawFlowName, removedConnection.inputPort.drawFlowName);
+      return removedConnection;
     }
+    return null;
   }
 
-  public findConnection(connectionEvent: ConnectionEvent): LabWorkflowConnection {
-    const connectionIndex: number = this.findConnectionIndex(connectionEvent);
+  // remove the connection from the local list
+  // this method is triggered when the user manually remove a connection
+  public saveUserConnectionRemoved(connection: LabWorkflowConnection): LabWorkflowConnection | undefined {
+    const connectionIndex: number = this.findConnectionIndex(connection.outputNode.nodeId,
+      connection.inputNode.nodeId, connection.outputPort.name, connection.inputPort.name);
+    if (connectionIndex >= 0) {
+      const connection: LabWorkflowConnection = this.connections[connectionIndex];
+      this.connections.splice(connectionIndex, 1);
+      return connection;
+    }
+    return null;
+  }
+
+  public findConnectionByConnectionEvent(connectionEvent: ConnectionEvent): LabWorkflowConnection {
+    const index = this.findConnectionIndexByConnectionEvent(connectionEvent);
+    return this.connections[index];
+  }
+
+  public findConnectionIndexByConnectionEvent(connectionEvent: ConnectionEvent): number {
+    // check if input is available for the node
+    const inputNode: LabWorkflowNode<any> = this.findNodeWithId(connectionEvent.input_id);
+    const outputNode: LabWorkflowNode<any> = this.findNodeWithId(connectionEvent.output_id);
+    const inputPort: LabWorkflowPort = inputNode.findInputPortByDrawflowName(connectionEvent.input_class);
+    const outputPort: LabWorkflowPort = outputNode.findOutputPortByDrawflowName(connectionEvent.output_class);
+
+    return this.findConnectionIndex(outputNode.nodeId, inputNode.nodeId,
+      outputPort.name, inputPort.name);
+  }
+
+  public findConnection(outputNodeId: string, inputNodeId: string,
+                        outputPortName: string, inputPortName: string): LabWorkflowConnection {
+    const connectionIndex: number = this.findConnectionIndex(outputNodeId, inputNodeId, outputPortName, inputPortName);
     return connectionIndex >= 0 ? this.connections[connectionIndex] : null;
   }
 
-  public findConnectionIndex(connectionEvent: ConnectionEvent): number {
+  public findConnectionIndex(outputNodeId: string, inputNodeId: string,
+                             outputPortName: string, inputPortName: string): number {
     return this.connections.findIndex(c =>
-      c.outputNode.nodeId === connectionEvent.output_id && c.inputNode.nodeId === connectionEvent.input_id &&
-      c.outputPort.drawFlowName === connectionEvent.output_class && c.inputPort.drawFlowName === connectionEvent.input_class);
+      c.outputNode.nodeId === outputNodeId && c.inputNode.nodeId === inputNodeId &&
+      c.outputPort.name === outputPortName && c.inputPort.name === inputPortName);
   }
 
   ///////////////////////// OTHER //////////////////////////

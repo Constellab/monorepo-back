@@ -1,5 +1,5 @@
 import {LabWorkflowNode} from './lab-workflow-node.class';
-import {LabConnection, LabNode} from '../../../../lab-core/model/global/lab-connection.class';
+import {LabNode} from '../../../../lab-core/model/global/lab-connection.class';
 import {LabWorkflowPort} from './lab-workflow-port.class';
 import {LabWorkflowNodeInterface} from './lab-workflow-node-interface.class';
 import {LabWorkflowNodeOuterface} from './lab-workflow-node-outerface.class';
@@ -12,8 +12,7 @@ export class LabWorkflowConnection {
   constructor(public readonly outputNode: LabWorkflowNode<LabNode>,
               public readonly inputNode: LabWorkflowNode<LabNode>,
               public readonly outputPort: LabWorkflowPort,
-              public readonly inputPort: LabWorkflowPort,
-              public readonly object: LabConnection) {
+              public readonly inputPort: LabWorkflowPort) {
   }
 
   /**

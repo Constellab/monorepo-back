@@ -1,5 +1,5 @@
 import {Injectable, NgZone} from '@angular/core';
-import {LabWorkflow, LabWorkflowMode} from '../model/lab-workflow.class';
+import {LabWorkflow, LabWorkflowEvent, LabWorkflowMode} from '../model/lab-workflow.class';
 import {LabWorkflowNodeProcess} from '../model/lab-workflow-node-process.class';
 import {LabProcess} from '../../../../lab-core/model/entities/process/lab-process.entity';
 import {
@@ -19,14 +19,28 @@ import {LabWorkflowNodeInterface} from '../model/lab-workflow-node-interface.cla
 import {LabWorkflowNodeOuterface} from '../model/lab-workflow-node-outerface.class';
 import {LabWorkflowPort} from '../model/lab-workflow-port.class';
 import {LabProtocol} from '../../../../lab-core/model/entities/process/lab-protocol.entity';
-import {FlCoord, FlPortalAction, FlPortalActionsService} from '@monorepo/front-core-lib';
+import {FlCoord, FlPortalAction, FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
 import {LabWorkflowNodeIO} from '../model/lab-workflow-node-io.class';
 import {LabResourceService} from '../../../../lab-core/entity-service/lab-resource.service';
-import {filter} from 'rxjs/operators';
 import {LabAddProcessWithLink, LabNodeRelativeCoord} from '../model/lab-workflow-action.class';
 import {LabExperimentService} from '../../../../lab-core/entity-service/lab-experiment.service';
 import {LabExperimentDetailPageState} from './lab-experiment-detail-page.state';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
+import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
+
+export enum LabWorkflowAction {
+  ADD_PROCESS = 'workflow-add-process',
+  ADD_PROCESS_WITH_CONNECTIONS = 'workflow-add-process-with-connections',
+  SAVE_CONFIG = 'workflow-save-config',
+  DELETE_PROCESS = 'workflow-remove-process',
+  ADD_CONNECTION = 'workflow-add-connection',
+  DELETE_CONNECTION = 'workflow-delete-connection',
+}
+
+interface LabWorkflowEventAdditionalInfo {
+  protocolId: string;
+  connection: LabWorkflowConnection;
+}
 
 /**
  * State for the workflow, it is created for the module and can only manage on state a the time
@@ -53,11 +67,6 @@ export class LabWorkflowManagerState {
   private actionSubscription: Subscription;
   private flowsSubscription: Subscription;
 
-  //  Name of the action to add a process for the ActionService
-  private readonly addProcessAction: string = 'add-process';
-  private readonly addProcessWithConnectorAction: string = 'add-process-with-connector';
-
-
   constructor(private protocolService: LabProtocolService,
               private experimentService: LabExperimentService,
               private actionsService: FlPortalActionsService,
@@ -70,25 +79,20 @@ export class LabWorkflowManagerState {
 
     this.workflow = new LabWorkflow(element, experimentState.currentExperiment.title ?? 'Experiment', mainFlow.object, 'edit', this.ngZone);
 
+    this.workflow.getWorkflowEvent$().subscribe(
+      (event: LabWorkflowEvent) => this.onWorkflowEvent(event)
+    );
     this.workflow.start();
 
     // init the nodes with the job list
     this.initFlow(mainFlow);
 
     // listen to the new Process actions
-    this.actionSubscription = this.actionsService.getResult$([this.addProcessAction, this.addProcessWithConnectorAction])
-      .pipe(filter(result => result.status === 'success')).subscribe(
-        result => {
-          switch (result.action.type) {
-            case this.addProcessAction:
-              this.onNewProcess(result.result, result.additionalInformation);
-              return;
-            case this.addProcessWithConnectorAction:
-              this.onNewProcessWithConnector(result.result, result.additionalInformation);
-              break;
-          }
-        }
-      );
+    this.actionSubscription = this.actionsService.getResult$([
+      LabWorkflowAction.ADD_PROCESS, LabWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
+      LabWorkflowAction.DELETE_PROCESS, LabWorkflowAction.DELETE_CONNECTION, LabWorkflowAction.ADD_CONNECTION]).subscribe(
+      result => this.onWorkflowActionResult(result)
+    );
 
     this.flowsSubscription = experimentState.getFlowUpdate$().subscribe(
       flow => this.refreshFlow(flow)
@@ -166,7 +170,7 @@ export class LabWorkflowManagerState {
         text: 'biox.adding_process', translateText: true,
         translateParam: {param: {processName: processName}}
       },
-      type: this.addProcessAction,
+      type: LabWorkflowAction.ADD_PROCESS,
       // create the process in the API and get the process
       action: this.protocolService.addProcessToProtocol(currentProtocol.id, processTypingName),
       additionalInformation: this.workflow.currentLayer.id
@@ -192,7 +196,7 @@ export class LabWorkflowManagerState {
         text: 'biox.adding_source', translateText: true,
         translateParam: {param: {resourceName: resourceName}}
       },
-      type: this.addProcessWithConnectorAction,
+      type: LabWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
       // create the process in the API and get the process
       action: this.protocolService.addSourceToProcessInput(currentProtocol.id, processNodeName, inputPortName, resourceId),
       additionalInformation: relativeCoord
@@ -216,7 +220,7 @@ export class LabWorkflowManagerState {
       text: {
         text: 'biox.adding_output', translateText: true,
       },
-      type: this.addProcessWithConnectorAction,
+      type: LabWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
       // create the process in the API and get the process
       action: this.protocolService.addTaskOutput(currentProtocol.id, processNodeName, outputPortName),
       additionalInformation: relativeCoord
@@ -253,13 +257,13 @@ export class LabWorkflowManagerState {
 
   public addInterface(): void {
     const interfaceNode: LabInterfaceNode = LabInterfaceNode.newGenericInterface(this.generateId('i_'));
-    // todo see pos
+    // todo see pos and save on db
     this.addNodeOnPosition(interfaceNode, 0, 0);
   }
 
   public addOuterface(): void {
     const outerfaceNode: LabOuterfaceNode = LabOuterfaceNode.newGenericInterface(this.generateId('o_'));
-    // todo see pos
+    // todo see pos and save on db
     this.addNodeOnPosition(outerfaceNode, 0, 0);
   }
 
@@ -285,8 +289,6 @@ export class LabWorkflowManagerState {
   //////////////////////// INIT NODES AND CONNECTIONS FOR FLOW ////////////////////////////
   // create nodes and connection for a flow
   private initFlow(protocol: LabFlow<LabProtocol>): void {
-    // disable check on workflow to force creation
-    this.workflow.disableCheck();
     // add all nodes
     this.addNodesRecursively(protocol.getRootNodes(), 0, 0);
 
@@ -294,9 +296,6 @@ export class LabWorkflowManagerState {
     for (const step of protocol.getAllConnections()) {
       this.addConnection(step);
     }
-
-    // re-enable check after init
-    this.workflow.enableCheck();
   }
 
 
@@ -363,12 +362,104 @@ export class LabWorkflowManagerState {
     const outputPort: LabWorkflowPort = outputNode.findOutputPortByName(connection.from.getPort());
 
     const workflowConnectionLink: LabWorkflowConnection = new LabWorkflowConnection(outputNode, inputNode,
-      outputPort, inputPort, connection);
+      outputPort, inputPort);
     this.workflow.addConnection(workflowConnectionLink);
+  }
+
+  //////////////////////// CONFIG ////////////////////////////
+  public updateProcessConfig(node: LabWorkflowNodeProcess, config: LabConfigValues): void {
+    node.updateConfig(config);
+
+    const obs = this.protocolService.saveProcessConfig(node.currentObject.parentProtocolId, node.currentObject.name, config);
+    this.actionsService.addAction({
+      type: LabWorkflowAction.SAVE_CONFIG,
+      action: obs,
+      text: {text: 'biox.saving_config', translateText: true}
+    });
   }
 
 
   //////////////////////// OTHER ////////////////////////////
+
+  private onWorkflowEvent(workflowEvent: LabWorkflowEvent): void {
+
+    let portalAction: FlPortalAction;
+
+    switch (workflowEvent.action) {
+      case 'deleteNode':
+        const process: LabProcess = workflowEvent.node.currentObject;
+        portalAction = {
+          type: LabWorkflowAction.DELETE_PROCESS,
+          text: {
+            text: 'biox.deleting_process',
+            translateText: true,
+            translateParam: {param: {processName: process.name}}
+          },
+          action: this.protocolService.deleteProcessInProtocol(workflowEvent.protocolId, process.name),
+        };
+        break;
+      case 'addConnection' :
+      case 'deleteConnection' :
+        const outputProcess = workflowEvent.connection.outputNode.currentObject.name;
+        const inputProcess = workflowEvent.connection.inputNode.currentObject.name;
+        const outputPort = workflowEvent.connection.outputPort.name;
+        const inputPort = workflowEvent.connection.inputPort.name;
+
+        const additionalInformation: LabWorkflowEventAdditionalInfo = {
+          protocolId: workflowEvent.protocolId,
+          connection: workflowEvent.connection
+        };
+
+        if (workflowEvent.action === 'addConnection') {
+          portalAction = {
+            type: LabWorkflowAction.ADD_CONNECTION,
+            text: {
+              text: 'biox.adding_connection',
+              translateText: true
+            },
+            action: this.protocolService.addConnection(workflowEvent.protocolId, {
+              output_process_name: outputProcess,
+              input_process_name: inputProcess,
+              output_port_name: outputPort,
+              input_port_name: inputPort,
+            }),
+            additionalInformation: additionalInformation
+          };
+        } else {
+          portalAction = {
+            type: LabWorkflowAction.DELETE_CONNECTION,
+            text: {
+              text: 'biox.deleting_connection',
+              translateText: true
+            },
+            action: this.protocolService.deleteConnection(workflowEvent.protocolId, inputProcess, inputPort),
+            additionalInformation: additionalInformation
+          };
+        }
+        break;
+    }
+
+    this.actionsService.addAction(portalAction);
+  }
+
+  private onWorkflowActionResult(actionResult: FlPortalActionResult): void {
+    if (actionResult.status === 'success') {
+      if (actionResult.action.type === LabWorkflowAction.ADD_PROCESS) {
+        this.onNewProcess(actionResult.result, actionResult.additionalInformation);
+      } else if (actionResult.action.type === LabWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS) {
+        this.onNewProcessWithConnector(actionResult.result, actionResult.additionalInformation);
+      }
+    } else {
+      // revert the DELETE and ADD_CONNECTION actions
+      if (actionResult.action.type === LabWorkflowAction.DELETE_CONNECTION) {
+        const info: LabWorkflowEventAdditionalInfo = actionResult.additionalInformation;
+        this.workflow.addConnection(info.connection, info.protocolId);
+      } else if (actionResult.action.type === LabWorkflowAction.ADD_CONNECTION) {
+        const info: LabWorkflowEventAdditionalInfo = actionResult.additionalInformation;
+        this.workflow.removeConnection(info.connection, info.protocolId);
+      }
+    }
+  }
 
   public getExperiment(): LabExperiment {
     return this.experimentState.currentExperiment;

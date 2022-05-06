@@ -39,8 +39,8 @@ export class LabProcess extends LabNode {
   @Expose({name: 'experiment_id'})
   experimentId: string;
 
-  @Expose({name: 'protocol_id'})
-  protocolId: string;
+  @Expose({name: 'parent_protocol_id'})
+  parentProtocolId: string;
 
   @FlStatusTransform(labProcessStatusDict)
   status: FlStatus<LabProcessStatus>;

@@ -63,8 +63,12 @@
     "resource_is_not_a_network": "La ressource n'est pas un réseau",
     "filename": "Fichier",
     "adding_process": "Ajout de '{{processName}}'",
+    "deleting_process": "Suppression '{{processName}}'",
+    "adding_connection": "Ajout de la connexion",
+    "deleting_connection": "Suppression de la connexion",
     "adding_source": "Ajout de '{{resourceName}}'",
     "adding_output": "Ajout d'un output",
+    "saving_config": "Sauvegarde de la configuration",
     "add_source": "Sélectionner une resource",
     "add_output": "Ajouter un output",
     "project": "Projet",
@@ -173,6 +177,7 @@
     "type_deprecated_since": "Obsolète depuis",
     "type_deprecated": "Obsolète",
     "type_include_deprecated": "Inclure les objets obsolètes",
-    "process_type_unavailable_error": "Le type de processus n'est pas disponible, vous ne pouvez pas l'utiliser"
+    "process_type_unavailable_error": "Le type de processus n'est pas disponible, vous ne pouvez pas l'utiliser",
+    "technical_info": "Informations techniques"
   }
 }

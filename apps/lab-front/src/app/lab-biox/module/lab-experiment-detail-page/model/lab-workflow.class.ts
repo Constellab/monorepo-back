@@ -10,6 +10,23 @@ import {LabFlowManager} from '../../../../lab-core/model/global/lab-connection.c
 
 export type LabWorkflowMode = 'edit' | 'readOnly';
 
+export type LabWorkflowEvent =
+  LabWorkflowDeleteNodeEvent
+  | LabWorkflowConnectionEvent
+
+export interface LabWorkflowDeleteNodeEvent {
+  action: 'deleteNode';
+  node: LabWorkflowNode<any>;
+  protocolId: string;
+}
+
+export interface LabWorkflowConnectionEvent {
+  action: 'addConnection' | 'deleteConnection';
+  connection: LabWorkflowConnection;
+  protocolId: string;
+}
+
+
 /**
  * Class to manage Drawflow
  */
@@ -27,8 +44,7 @@ export class LabWorkflow {
 
   private mode: LabWorkflowMode;
 
-  // if false there is no check when creating nodes or connections
-  private checkOnCreate: boolean = true;
+  private workflowEvent$: Subject<LabWorkflowEvent> = new Subject<LabWorkflowEvent>();
 
   constructor(private element: HTMLElement,
               name: string,
@@ -38,7 +54,6 @@ export class LabWorkflow {
 
     this.editor = new Drawflow(element);
     this.editor.zoom_value = 0.1;
-
 
 
     // set edit or readonly mode
@@ -160,7 +175,14 @@ export class LabWorkflow {
   }
 
   private onNodeRemoved(nodeId: number): void {
-    this.currentLayer.onNodeRemoved(nodeId.toString());
+    const node = this.currentLayer.removeNode(nodeId.toString());
+    if (node) {
+      this.workflowEvent$.next({
+        action: 'deleteNode',
+        node: node,
+        protocolId: this.currentLayer.object.id
+      });
+    }
   }
 
 
@@ -198,36 +220,74 @@ export class LabWorkflow {
 
   ////////////////////// CONNECTION ///////////////////////////
 
-  public addConnection(connection: LabWorkflowConnection): void {
-    this.currentLayer.addConnection(connection);
+  /**
+   * Add connection to the current layer, it doesn't trigger the event
+   */
+  public addConnection(connection: LabWorkflowConnection, layerId?: string): void {
+    const layer: LabWorkflowLayer = layerId ? this.findLayerWithId(layerId) : this.currentLayer;
+    if (layer) {
+      this.currentLayer.addConnection(connection);
+    }
   }
 
-  private onConnectionCreated(connection: ConnectionEvent): void {
+  private onConnectionCreated(connectionEvent: ConnectionEvent): void {
     // check if input is available for the node
-    const inputNode: LabWorkflowNode<any> = this.findNodeWithId(connection.input_id);
-    const outputNode: LabWorkflowNode<any> = this.findNodeWithId(connection.output_id);
-    const inputPort: LabWorkflowPort = inputNode.findInputPortByDrawflowName(connection.input_class);
-    const outputPort: LabWorkflowPort = outputNode.findOutputPortByDrawflowName(connection.output_class);
+    const inputNode: LabWorkflowNode<any> = this.findNodeWithId(connectionEvent.input_id);
+    const outputNode: LabWorkflowNode<any> = this.findNodeWithId(connectionEvent.output_id);
+    const inputPort: LabWorkflowPort = inputNode.findInputPortByDrawflowName(connectionEvent.input_class);
+    const outputPort: LabWorkflowPort = outputNode.findOutputPortByDrawflowName(connectionEvent.output_class);
+
+    // if the connection already exists, we don't need to do anything
+    // this happened when the add_connection is called and the connection is added by code not user
+    if (this.findConnection(outputNode.nodeId, inputNode.nodeId, outputPort.name, inputPort.name) != null) {
+      return;
+    }
 
     // check if the input is available and if the port are compatible
     // refuse if there are more than one connection (the new one is counting)
-    if (this.checkOnCreate && (
-      inputNode.countInputConnections(connection.input_class) > 1 ||
-      !inputPort.isCompatible(outputPort))) {
+    if (inputNode.countInputConnections(connectionEvent.input_class) > 1 ||
+      !inputPort.isCompatible(outputPort)) {
       // remove the connection
-      this.editor.removeSingleConnection(connection.output_id, connection.input_id,
-        connection.output_class, connection.input_class);
+      this.editor.removeSingleConnection(connectionEvent.output_id, connectionEvent.input_id,
+        connectionEvent.output_class, connectionEvent.input_class);
 
       // consider the connection was canceled
       this.onConnectionCanceled();
       return;
     }
 
-    this.currentLayer.saveConnection(connection);
+    const newConnection = this.currentLayer.saveUserConnectionAdded(outputNode, inputNode, outputPort, inputPort);
+    if (connectionEvent) {
+      this.workflowEvent$.next({
+        action: 'addConnection',
+        connection: newConnection,
+        protocolId: this.currentLayer.object.id
+      });
+    }
   }
 
-  private onConnectionRemoved(connection: ConnectionEvent): void {
-    this.currentLayer.removeConnection(connection);
+  /**
+   * Remove connection programmatically, it doesn't trigger a delete event
+   */
+  public removeConnection(connection: LabWorkflowConnection, layerId: string): void {
+    const layer: LabWorkflowLayer = layerId ? this.findLayerWithId(layerId) : this.currentLayer;
+    if (layer) {
+      this.currentLayer.removeConnection(connection);
+    }
+  }
+
+  private onConnectionRemoved(connectionEvent: ConnectionEvent): void {
+    // if the connection was already deleted, we don't need to do anything
+    // this happened when the removeConnection is called and the connection was deleted by code not user
+    const connection = this.currentLayer.findConnectionByConnectionEvent(connectionEvent);
+    if (connection) {
+      this.currentLayer.saveUserConnectionRemoved(connection);
+      this.workflowEvent$.next({
+        action: 'deleteConnection',
+        connection: connection,
+        protocolId: this.currentLayer.object.id
+      });
+    }
   }
 
   public onConnectionSelected(): Observable<LabWorkflowConnection> {
@@ -235,11 +295,21 @@ export class LabWorkflow {
   }
 
   private emitConnectionSelected(connectionEvent: ConnectionEvent): void {
-    const connection: LabWorkflowConnection = this.currentLayer.findConnection(connectionEvent);
-
-    if (connection != null) {
-      this.connectionSelected$.next(connection);
+    const connectionIndex: number = this.currentLayer.findConnectionIndexByConnectionEvent(connectionEvent);
+    if (connectionIndex >= 0) {
+      this.connectionSelected$.next(this.currentLayer.connections[connectionIndex]);
     }
+  }
+
+  public findConnection(outputNodeId: string, inputNodeId: string,
+                        outputPortName: string, inputPortName: string): LabWorkflowConnection {
+    for (const layer of this.layers) {
+      const connection = layer.findConnection(outputNodeId, inputNodeId, outputPortName, inputPortName);
+      if (connection != null) {
+        return connection;
+      }
+    }
+    return null;
   }
 
   //////////////////// OTHER ///////////////////////
@@ -253,16 +323,13 @@ export class LabWorkflow {
     return this.mode;
   }
 
-  public disableCheck(): void {
-    this.checkOnCreate = false;
-  }
-
-  public enableCheck(): void {
-    this.checkOnCreate = true;
+  public getWorkflowEvent$(): Observable<LabWorkflowEvent> {
+    return this.workflowEvent$.asObservable();
   }
 
   public destroy(): void {
     this.connectionSelected$.complete();
     this.currentLayer$.complete();
+    this.workflowEvent$.complete();
   }
 }

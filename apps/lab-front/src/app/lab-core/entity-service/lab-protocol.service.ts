@@ -7,6 +7,7 @@ import {LabProtocol} from '../model/entities/process/lab-protocol.entity';
 import {LabProcess} from '../model/entities/process/lab-process.entity';
 import {LabAddProcessWithLink} from '../../lab-biox/module/lab-experiment-detail-page/model/lab-workflow-action.class';
 import {labInstantiateProcess} from '../model/entities/process/lab-process.transform';
+import {LabConfigValues} from '../model/entities/lab-config.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -30,18 +31,45 @@ export class LabProtocolService {
     );
   }
 
-  /**
-   * Route to add a process (from type) to an existing protocol (can be a sub protocol)
-   * @param protocolId
-   * @param process_typing_name
-   */
-  public addProcessToProtocol(protocolId: string, process_typing_name: string): Observable<LabProcess> {
-    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-process/${process_typing_name}`, null,
-      (result) => labInstantiateProcess(result));
-  }
 
   private initProtocolFlow(protocol: LabProtocol): LabFlow<LabProtocol> {
     return new LabFlow<LabProtocol>(protocol);
+  }
+
+  //////////////////////////////////////// PROCESS /////////////////////////////////////
+  /**
+   * Route to add a process (from type) to an existing protocol (can be a sub protocol)
+   * @param protocolId
+   * @param processTypingName
+   */
+  public addProcessToProtocol(protocolId: string, processTypingName: string): Observable<LabProcess> {
+    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-process/${processTypingName}`, null,
+      (result) => labInstantiateProcess(result));
+  }
+
+  public deleteProcessInProtocol(protocolId: string, processInstanceName: string): Observable<any> {
+    return this.apiService.delete(`${this.baseRoute}/${protocolId}/process/${processInstanceName}`);
+  }
+
+  //////////////////////////////////////// CONNECTION /////////////////////////////////////
+
+  public addConnection(protocolId: string, connection: {
+    output_process_name: string
+    output_port_name: string
+    input_process_name: string
+    input_port_name: string
+  }): Observable<void> {
+    return this.apiService.post(`${this.baseRoute}/${protocolId}/connector`, connection);
+  }
+
+  public deleteConnection(protocolId: string, inputProcessName: string, inputPortName: string): Observable<void> {
+    return this.apiService.delete(`${this.baseRoute}/${protocolId}/connector/${inputProcessName}/${inputPortName}`);
+  }
+
+  //////////////////////////////////////// CONFIG /////////////////////////////////////
+
+  public saveProcessConfig(protocolId: string, processInstanceName: string, config: LabConfigValues): Observable<void> {
+    return this.apiService.put(`${this.baseRoute}/${protocolId}/process/${processInstanceName}/config`, config);
   }
 
   //////////////////////////////////////// SPECIFIC PROCESS /////////////////////////////////////
