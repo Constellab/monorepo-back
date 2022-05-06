@@ -86,7 +86,7 @@ export class LabInterfaceNode extends LabNode {
     node.name = portName;
     node.portType = {
       resource_types: [resourceSpec],
-      type_io: 'TypeIO'
+      io_spec: 'TypeIO'
     };
     return node;
   }
@@ -112,7 +112,7 @@ export class LabOuterfaceNode extends LabNode {
     node.name = portName;
     node.portType = {
       resource_types: [resourceSpec],
-      type_io: 'TypeIO'
+      io_spec: 'TypeIO'
     };
     return node;
   }

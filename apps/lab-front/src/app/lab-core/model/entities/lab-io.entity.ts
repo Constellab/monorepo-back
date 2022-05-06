@@ -9,7 +9,7 @@ export type LabIOSpecType = 'TypeIO' | 'ConstantOut'| 'SpecialTypeOut' | 'Skippa
 
 
 export interface LabIOSpec {
-  type_io: LabIOSpecType;
+  io_spec: LabIOSpecType;
   data?: Record<string, any>
   resource_types: LabIOSpecResourceType[]
 }
