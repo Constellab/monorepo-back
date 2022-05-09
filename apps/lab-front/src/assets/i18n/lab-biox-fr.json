@@ -136,7 +136,7 @@
     "report_updated": "Rapport modifié",
     "report_placeholder": "Écrivez votre rapport...",
     "validate_report": "Valider le rapport",
-    "validate_report_help_text": "Vous êtes sur le point de valider le rapport. Lors de la validation, le rapport est envoyer dans l'espace collaboratif. Une fois validée le rapport ne peut plus être modifié ou supprimé. Si le rapport est associé à des experiences, il faut que les expériences soient d'abord validées. Le rapport doit être lié à un projet pour être validé.",
+    "validate_report_help_text": "Vous êtes sur le point de valider le rapport. Lors de la validation, le rapport est envoyer dans l'espace collaboratif. Une fois validée le rapport ne peut plus être modifié ou supprimé.\n\nSi le rapport est associé à des experiences, les expériences associées seront automatiquement validées.\n\nLe rapport doit être lié à un projet pour être validé.",
     "report_validated": "Rapport validé",
     "delete_report": "Supprimer le rapport",
     "delete_report_confirmation": "Êtes-vous sûr de vouloir supprimer le rapport ? Une fois supprimé il ne pourra pas être récupéré.",
