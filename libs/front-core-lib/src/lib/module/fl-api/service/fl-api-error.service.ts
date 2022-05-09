@@ -83,4 +83,23 @@ export abstract class FlApiErrorService {
       });
   }
 
+  /**
+   * Open a warning snackbar with the text
+   * @param message message to display
+   * @param duration snackbar duration
+   * @param detailButton if provided, a detail button is displayed and this method is trigger on click
+   * The snack bar is closed on click
+   */
+  protected showInfo(message: string, duration?: number,
+                     detailButton?: (event: MouseEvent) => void): void {
+    if (duration == null) {
+      duration = this.defaultApiErrorDuration;
+    }
+
+    this.snackBarService.openSuccessMessage(message, duration,
+      {
+        showCloseButton: true, detailButton: detailButton
+      });
+  }
+
 }

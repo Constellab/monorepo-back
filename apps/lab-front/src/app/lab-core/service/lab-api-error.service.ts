@@ -61,9 +61,14 @@ export class LabApiErrorService extends FlApiErrorService {
     }
 
     if (!hideError) {
-      // open the error snack bar
-      this.showError(serverError.logDetail.message, snackBarDuration,
-        () => this.dialogService.openSmallDialog(LabErrorDetailComponent, {data: apiError}));
+      const detailButton = (): any => this.dialogService.openSmallDialog(LabErrorDetailComponent, {data: apiError});
+      if (apiError.show_as === 'info') {
+        // open the warning snack bar if the message type is warning
+        this.showInfo(serverError.logDetail.message, snackBarDuration, detailButton);
+      } else {
+        // open the error snack bar
+        this.showError(serverError.logDetail.message, snackBarDuration, detailButton);
+      }
     }
 
     // throw the error to propagate it

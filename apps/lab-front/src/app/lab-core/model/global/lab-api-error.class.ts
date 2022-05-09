@@ -13,4 +13,6 @@ export interface LabApiError {
 
   // unique id of this error instance
   instance_id: string;
+
+  show_as: 'error' | 'info';
 }
