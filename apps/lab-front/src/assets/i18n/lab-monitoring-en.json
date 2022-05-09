@@ -9,6 +9,11 @@
     "version": "Version",
     "repo_type": "Repository type",
     "repo_commit": "Commit",
-    "generate_technical_doc": "Generate technical doc"
+    "generate_technical_doc": "Generate technical doc",
+    "call_migration_title": "Call migration manually",
+    "call_migration_help_text": "/!\\ USE THIS FUNCTIONALITY ONLY IF YOU KNOW WHAT YOU ARE DOING /!\\\n\n. This let you call a migration script manually of a specific brick version.",
+    "select_migration_version": "Select a migration version",
+    "call_migration": "Call migration",
+    "call_migration_success": "Call migration success"
   }
 }

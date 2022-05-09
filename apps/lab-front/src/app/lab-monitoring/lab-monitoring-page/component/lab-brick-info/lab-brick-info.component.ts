@@ -1,7 +1,10 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {LabBrickEntity} from '../../../../lab-core/model/entities/lab-brick.entity';
 import {LabBrickService} from '../../../../lab-core/entity-service/lab-brick.service';
-import {FlFileHelper} from '@monorepo/front-core-lib';
+import {FlDialogService, FlFileHelper} from '@monorepo/front-core-lib';
+import {
+  LabBrickCallMigrationDialogComponent
+} from '../lab-brick-call-migration-dialog/lab-brick-call-migration-dialog.component';
 
 /**
  * Show information and messages about a brick
@@ -19,7 +22,8 @@ export class LabBrickInfoComponent implements OnInit {
   generateDocIsLoading: boolean = false;
 
   constructor(private labBrickService: LabBrickService,
-              private cdr: ChangeDetectorRef) {
+              private cdr: ChangeDetectorRef,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -31,6 +35,11 @@ export class LabBrickInfoComponent implements OnInit {
       next: doc => this.onSuccess(doc),
       error: () => this.onComplete(),
     });
+  }
+
+  openCallMigrationDialog(): void {
+    this.dialogService.openMediumDialog(LabBrickCallMigrationDialogComponent,
+      {data: this.brick.name});
   }
 
   private onSuccess(doc: any): void {

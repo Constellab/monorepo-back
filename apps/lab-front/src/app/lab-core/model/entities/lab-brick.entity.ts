@@ -1,6 +1,7 @@
 import {LabEntity} from '../global/lab-entity.entity';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
+import {CmVersion, CmVersionTransform} from '@monorepo/common-model';
 
 export type LabBrickMessageStatus = 'INFO' | 'ERROR'  | 'CRITICAL'| 'WARNING'
 
@@ -67,3 +68,10 @@ export enum LabBrickGWS {
   GWS_CORE = 'gws_core'
 }
 
+export class LabBrickMigration{
+  @CmVersionTransform()
+  version: CmVersion
+
+  @Expose({name: 'short_description'})
+  shortDescription: string
+}

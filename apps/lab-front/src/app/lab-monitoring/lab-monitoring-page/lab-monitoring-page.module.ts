@@ -6,6 +6,10 @@ import {LabBrickListStatusComponent} from './component/lab-brick-list-status/lab
 import {LabHealthCheckComponent} from './component/lab-health-check/lab-health-check.component';
 import {LabBrickMessageListComponent} from './component/lab-brick-message-list/lab-brick-message-list.component';
 import {LabBrickInfoComponent} from './component/lab-brick-info/lab-brick-info.component';
+import {
+  LabBrickCallMigrationDialogComponent
+} from './component/lab-brick-call-migration-dialog/lab-brick-call-migration-dialog.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 
 @NgModule({
@@ -14,10 +18,13 @@ import {LabBrickInfoComponent} from './component/lab-brick-info/lab-brick-info.c
     LabBrickListStatusComponent,
     LabHealthCheckComponent,
     LabBrickMessageListComponent,
-    LabBrickInfoComponent
+    LabBrickInfoComponent,
+    LabBrickCallMigrationDialogComponent
   ],
   imports: [
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
 
     LabCoreModule,
   ]
