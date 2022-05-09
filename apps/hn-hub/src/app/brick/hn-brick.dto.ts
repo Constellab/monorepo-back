@@ -39,7 +39,8 @@ export interface HnImportTechnicalDocDTO{
   json_version: string;
   brick_name: string;
   brick_version: string;
-  resources: HnImportResourceDTO[]
+  resources: HnImportResourceDTO[],
+  tasks: HnImportTaskDTO[]
 }
 
 export interface HnImportResourceDTO{
@@ -54,6 +55,18 @@ export interface HnImportResourceDTO{
   deprecated_message: string;
 }
 
+
+export interface HnImportTaskDTO{
+  unique_name: string;
+  class_name: string;
+  parent: HnImportParentDTO;
+  human_name: string;
+  short_description: string;
+  doc: string;
+  hide: boolean;
+  deprecated_since: string;
+  deprecated_message: string;
+}
 
 export class HnBrickListDTO{
   id: string;

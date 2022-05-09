@@ -1,27 +1,38 @@
 <div class="sidenavBody">
-  <div class="content">
-    <form class="documentation-form" [formGroup]="formGp"  *ngIf="!isTechnical">
-      <fl-text-editor class="content-editor g-max-article-width" formControlName="content" [disabled]="(isAdmin | async) === false || isTechnical===true" mode="JSON" scrollContainer="child"
-                      [config]="textEditorConfig"  (textChange)="onContentUpdate($event)"></fl-text-editor>
+  <div class="loader" *ngIf="isLoading">
+    <fl-loader size="medium"></fl-loader>
+  </div>
+  <div class="content" *ngIf="!isLoading">
+    <div class="doc-title-div">
+      <h1 class="doc-title">{{documentation.title}}</h1>
+    </div>
+    <form class="documentation-form" [formGroup]="formGp" *ngIf="!isTechnical">
+      <fl-text-editor class="content-editor g-max-article-width" formControlName="content"
+                      [disabled]="(isAdmin | async) === false || isTechnical===true" mode="JSON" scrollContainer="child"
+                      [config]="textEditorConfig" (textChange)="onContentUpdate($event)"></fl-text-editor>
     </form>
     <div class="technical-doc-div g-max-article-width" *ngIf="isTechnical && technicalDocumentation">
       <h1>{{technicalDocumentation.humanName}}</h1>
-      <span *ngIf="technicalDocumentation.parentUniqueName">Parent : <a class="g-text-link"
-        [routerLink]="technicalDocumentation.parentBrickName + '/' + (technicalDocumentation.parentVersion ?technicalDocumentation.parentVersion : 'latest')  +
-      '/doc/technical-folder/' + technicalDocumentation.resourceType + '/' + technicalDocumentation.parentUniqueName" [relativeTo]="activatedRoute.parent.parent.parent">
+      <span *ngIf="technicalDocumentation.parentUniqueName">Parent :
+        <a class="g-text-link"
+           [routerLink]="technicalDocumentation.parentBrickName + '/' + (technicalDocumentation.parentVersion ?technicalDocumentation.parentVersion : 'latest')  +
+            '/doc/technical-folder/' + technicalDocumentation.resourceType + '/' + technicalDocumentation.parentUniqueName"
+           [relativeTo]="activatedRoute.parent.parent.parent">
         {{technicalDocumentation.parentHumanName}}
-      </a> v.{{technicalDocumentation.parentVersion}}</span>
+        </a>
+        v.{{technicalDocumentation.parentVersion}}
+      </span>
       <p>{{technicalDocumentation.shortDescription}}</p>
       <p class="technical-doc-content">{{technicalDocumentation.doc}}</p>
     </div>
   </div>
   <div class="side" fxHide.lt-lg>
     <ng-container *ngFor="let title of titles; let i = index">
-      <ng-container *ngIf="title[0] === 1; else e">
-        <h3>{{title[1]}}</h3>
+      <ng-container *ngIf="title[0] === 2; else e">
+        <h4>{{title[1]}}</h4>
       </ng-container>
       <ng-template #e>
-        <h4>{{title[1]}}</h4>
+        <h5>{{title[1]}}</h5>
       </ng-template>
     </ng-container>
   </div>

@@ -8,7 +8,7 @@
 
 .title-section .title-div{
   height: 100%;
-  width: 35%;
+  width: 45%;
   margin-left: 5%;
   z-index: 30;
   padding: 12.5em 0;
@@ -16,10 +16,9 @@
 }
 
 .title-section .title-image{
-  max-width: 60%;
-  width: 60%;
+  max-width: 50%;
+  width: 50%;
   height: auto;
-  max-height: 100%;
   background-image: url("../../../../../assets/images/home-background.png");
   background-size: contain;
   background-repeat: no-repeat;
@@ -51,6 +50,7 @@
 
   .title-section .title-image{
     flex: auto;
+    margin: auto;
     min-width: 100%;
   }
 
@@ -82,6 +82,8 @@
   width: 16em !important;
   height: 6em !important;
   display: flex;
+  padding-bottom: 1em;
+  padding-right: 1em;
 }
 
 .brick-logo{
@@ -91,6 +93,7 @@
   background-image: url("../../../../../assets/images/gencovery-logo.png");
   width: 6em;
   height: 100%;
+  padding-top: 0.5em;
 }
 
 .brick-info{
@@ -100,21 +103,21 @@
 }
 
 .brick-info h2{
-  padding-top: 0.75em;
+  padding-top: 0.5em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .brick-list{
-  max-width: 85em;
+  max-width: 90em;
   width: auto;
   margin-top: 1.5em;
   margin-left: auto;
   margin-right: auto;
   display: grid;
   grid-gap: 1em;
-  grid-template-columns: repeat(auto-fill, 16em);
+  grid-template-columns: repeat(auto-fill, 17em);
   justify-content: center;
 }
 

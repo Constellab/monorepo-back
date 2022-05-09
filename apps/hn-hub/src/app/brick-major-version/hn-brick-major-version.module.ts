@@ -14,15 +14,17 @@ import {HnTechnicalFolderModule} from '../technical-folder/hn-technical-folder.m
 import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
 import {HnResourceModule} from '../resource/hn-resource.module';
 import {HnResourceService} from '../resource/hn-resource.service';
+import {HnTaskService} from '../task/hn-task.service';
+import {HnTaskModule} from '../task/hn-task.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnBrickMajorVersion]),
     HnBrickVersionModule, HnFolderModule, HnDocumentationModule,
-    HnCoreModule, HnTechnicalFolderModule, HnResourceModule],
+    HnCoreModule, HnTechnicalFolderModule, HnResourceModule, HnTaskModule],
   exports: [TypeOrmModule],
   controllers: [HnBrickMajorVersionController],
   providers: [HnBrickMajorVersionService, HnBrickVersionService, HnFolderService,
-    HnDocumentationService, HnTechnicalFolderService, HnResourceService]
+    HnDocumentationService, HnTechnicalFolderService, HnResourceService, HnTaskService]
 })
 export class HnBrickMajorVersionModule {
 }

@@ -8,13 +8,15 @@ import {HnImportTechnicalDocDTO} from '../brick/hn-brick.dto';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnResource} from '../resource/hn-resource.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
+import {HnTaskService} from '../task/hn-task.service';
 
 @Injectable()
 export class HnTechnicalFolderService {
   constructor(
     @InjectRepository(HnTechnicalFolder)
     private readonly technicalFolderRepository: Repository<HnTechnicalFolder>,
-    private resourceService: HnResourceService
+    private resourceService: HnResourceService,
+    private taskService: HnTaskService
   ) {
   }
 
@@ -34,11 +36,13 @@ export class HnTechnicalFolderService {
     }
 
     let resourcesOk: boolean = false;
+    let tasksOk: boolean = false;
     //TODO: Faire pour les autres classes
 
     resourcesOk = await this.resourceService.createTechnicalDocResources(technicalFolder, importFile.resources);
+    tasksOk = await this.taskService.createTechnicalDocTasks(technicalFolder, importFile.tasks);
 
-    return resourcesOk;
+    return resourcesOk && tasksOk;
   }
 
   async findTechnicalDoc(brickMajorVersion: HnBrickMajorVersion): Promise<HnNode> {

@@ -2,7 +2,8 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {
   HaDocumentation,
-  HaDocumentationContentFormDTO, HaTechnicalDocumentation
+  HaDocumentationContentFormDTO,
+  HaTechnicalDocumentation
 } from '../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
@@ -33,7 +34,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   isTechnical: boolean = false;
   isCheck: boolean = false;
   activatedRoute: ActivatedRoute = this.route;
-
+  isLoading: boolean = true;
   textEditorConfig: FlTextEditorConfig;
 
   constructor(
@@ -108,10 +109,9 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     if (isFirstDoc) {
       this.router.navigate([`${this.router.url}/${doc.completePath}`]);
     }
-    if(this.isTechnical){
+    if (this.isTechnical) {
       this.titles = []
       this.technicalDocumentation = doc
-      console.log(doc)
     } else {
       this.documentation = doc;
 
@@ -119,16 +119,18 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
       this.titles = [];
       if (this.formGp.value.content && doc.content) {
         this.richText = new CmRichText(doc.content);
-        this.titles = this.richText.getHeaders([1, 2, 3]);
+        this.titles = this.richText.getHeaders([2, 3]);
       }
     }
+
+    this.isLoading = false;
   }
 
   onContentUpdate(content: any): void {
     this.contentDebouncer.setValue(content);
-    if(this.formGp.value.content){
+    if (this.formGp.value.content) {
       this.richText = new CmRichText(this.formGp.value.content as CmRichTextI)
-      this.titles = this.richText.getHeaders([1, 2, 3]);
+      this.titles = this.richText.getHeaders([2, 3]);
     }
   }
 

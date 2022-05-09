@@ -4,6 +4,7 @@ export interface CmRichTextI {
 
 export interface CmRichTextOp {
   insert: any;
+  attributes?: any;
 }
 
 /**
