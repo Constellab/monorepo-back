@@ -66,6 +66,9 @@
   "lab_instance_update_brick": "Update brick",
   "lab_instance_brick_hidden": "Hide brick",
   "lab_instance_brick_already_exists": "The brick {{brickName}} already exists in the lab",
+  "adminer_url": "Adminer url",
+  "adminer_gws_core_server": "Gws_core server",
+  "adminer_gws_biota_server": "Gws_biota server",
   "brick": "Brick",
   "brick_version": "Brick version"
 }

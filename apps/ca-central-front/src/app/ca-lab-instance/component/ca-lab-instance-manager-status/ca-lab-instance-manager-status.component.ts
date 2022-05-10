@@ -13,6 +13,8 @@ export class CaLabInstanceManagerStatusComponent implements OnInit {
 
   @Input() labStatus: CaLabManagerStatus;
 
+  @Input() adminerUrl: string;
+
   constructor() {
   }
 

@@ -12,7 +12,7 @@
         <ca-lab-instance-users-list class="g-section" [labInstanceId]="labInstance.id"></ca-lab-instance-users-list>
 
         <!--   Manager, only for admins     -->
-        <ca-lab-instance-manager *caIsAdmin [labInstanceId]="labInstance.id"
+        <ca-lab-instance-manager *caIsAdmin [labInstance]="labInstance"
                                  class="g-section"></ca-lab-instance-manager>
 
         <!--        <ca-lab-instance-iframe [labUrl]="labInstance.url" fxFlex="grow"-->

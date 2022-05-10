@@ -57,6 +57,10 @@ export class CaLabInstance extends CaBaseEntity {
   public isRunning(): boolean {
     return this.currentStatus.status.value === 'RUNNING';
   }
+
+  get adminerUrl(): string {
+    return `https://adminer.${this.virtualHost}`;
+  }
 }
 
 export type CaLabInstanceDatasource = FlEntityPaginatedDatasource<CaLabInstance>;

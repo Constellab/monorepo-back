@@ -18,9 +18,25 @@
   {{'lab_manager_no_task' | translate}}
 </ng-template>
 
-<!-- Lab taAdminer runnings -->
-<fl-text-icon *ngIf="labStatus.adminerIsRunning" class="g-text-big g-warn-text">
-  <mat-icon>warnings</mat-icon>
-  {{'lab_manager_adminer_running' | translate}}
+<!-- Lab Adminer runnings -->
+<div *ngIf="labStatus.adminerIsRunning">
+  <fl-text-icon class="g-text-big g-warn-text">
+    <mat-icon>warnings</mat-icon>
+    {{'lab_manager_adminer_running' | translate}}
+  </fl-text-icon>
 
-</fl-text-icon>
+  <fl-key-value>
+    <fl-key>{{'adminer_url' | translate}}</fl-key>
+    <a [href]="adminerUrl" class="g-text-link" target="_blank">{{adminerUrl}}</a>
+  </fl-key-value>
+
+  <fl-key-value>
+    <fl-key>{{'adminer_gws_core_server' | translate}}</fl-key>
+    <span>gws_core_prod_db | gws_core_dev_db</span>
+  </fl-key-value>
+
+  <fl-key-value>
+    <fl-key>{{'adminer_gws_biota_server' | translate}}</fl-key>
+    <span>gws_biota_prod_db | gws_biota_dev_db</span>
+  </fl-key-value>
+</div>
