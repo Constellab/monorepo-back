@@ -32,6 +32,13 @@ export class CnProjectsController {
     return this.projectAggregate.getCurrentProjects(page, size);
   }
 
+  @Get('group/:groupId')
+  public getByTeam(@Param('groupId', new ParseUUIDPipe()) groupId: string,
+                    @Query('page', ParseIntPipe) page: number,
+                    @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
+    return this.projectAggregate.getProjectOfTeam(groupId, page, size);
+  }
+
   @Put('/:id/status/:status')
   updateStatus(@Param('id', new ParseUUIDPipe()) id: string,
                @Param('status', new BlParseEnumPipe(CnProjectStatus)) status: CnProjectStatus): Promise<CnProject> {

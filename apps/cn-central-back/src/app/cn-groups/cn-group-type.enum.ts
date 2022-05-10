@@ -3,6 +3,6 @@
  */
 export enum CnGroupType {
   SINGLE_USER = 'SINGLE_USER',
-  USERS = 'USERS',
+  TEAM = 'TEAM',
   ORGANIZATION = 'ORGANIZATION'
 }

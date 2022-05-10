@@ -24,6 +24,15 @@ export class ClPage<T> implements ClPageI<T> {
     return new ClPage(page === 0, ((page + 1) * pageSize) >= totalElements, totalElements,
       page, pageSize, objects);
   }
+
+  /**
+   * Call map method on objects and return a new ClPage
+   * @param fn
+   */
+  public map<K>(fn: (value: T) => K): ClPage<K> {
+    return new ClPage(this.first, this.last, this.totalElements, this.currentPage, this.pageSize,
+      this.objects.map(fn));
+  }
 }
 
 /**

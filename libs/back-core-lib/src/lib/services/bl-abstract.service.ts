@@ -1,22 +1,20 @@
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
 import {BadRequestException, NotFoundException} from '@nestjs/common';
 import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
-import {FindManyOptions} from 'typeorm/find-options/FindManyOptions';
-import {ClPage, ClPageI} from '@monorepo/core-lib';
 import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
 import {BlPersistenceAction, BlPersistenceLogger} from './bl-persistence-logger';
 import {blPropertyIsNotUpdatable} from '../decorators/bl-not-updatable.decorator';
+import {BlAbstractPaginatedService} from './bl-abstract-paginated.service';
 
-export abstract class BlAbstractService<T extends BlEntityWithId> {
-
-  private readonly maxPageSize: number = 50;
+export abstract class BlAbstractService<T extends BlEntityWithId>
+  extends BlAbstractPaginatedService<T> {
 
   private readonly persistenceLogger = BlPersistenceLogger.getInstance();
 
 
-  protected constructor(private repo: Repository<T>,
-                        private entityClass: new() => T) {
-
+  protected constructor(repo: Repository<T>,
+                        entityClass: new() => T) {
+    super(repo, entityClass);
   }
 
   async create(entity: T, entityManager?: EntityManager): Promise<T> {
@@ -90,38 +88,8 @@ export abstract class BlAbstractService<T extends BlEntityWithId> {
     return entity;
   }
 
-  async findPaginated(page: number = 0, size: number = 10, options: FindOneOptions<T> = {},
-                      entityManager?: EntityManager): Promise<ClPageI<T>> {
-    const manager: EntityManager = this.getEntityManager(entityManager);
-
-    const safePage: number = this.getSafePage(page);
-    const safeSize: number = this.getSafePageSize(size);
-
-    // build the options with the paginated filters
-    const pageOptions: FindManyOptions<T> = {...options, skip: safePage * safeSize, take: safeSize};
-
-    // get and count the total number of result
-    const [result, totalElements] = await manager.findAndCount(this.entityClass, pageOptions);
-
-    return ClPage.fromPagination(safePage, safeSize, totalElements, result);
-  }
-
   // use to log persistence
   private logAction(actionName: BlPersistenceAction, entityId: string): void {
     this.persistenceLogger.logPersistence(actionName, entityId, this.entityClass.name);
-  }
-
-  protected getSafePage(page: number): number{
-    // must be a positive number
-    return Math.max(page, 0)
-  }
-
-  protected getSafePageSize(size: number): number{
-    // must be a positive number and be lower than maxPageSize
-    return size < 0 ? 10 : (size > this.maxPageSize ? this.maxPageSize : size)
-  }
-
-  protected getEntityManager(entityManager?: EntityManager): EntityManager {
-    return entityManager ?? this.repo.manager;
   }
 }

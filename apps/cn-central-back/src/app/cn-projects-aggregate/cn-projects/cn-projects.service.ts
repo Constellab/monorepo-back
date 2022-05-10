@@ -10,15 +10,15 @@ import {CnGroupsService} from '../../cn-groups/cn-groups.service';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
-import {CnUsersService} from '../../cn-users/cn-users.service';
 import {CnGroup} from '../../cn-groups/cn-group.entity';
+import {SelectQueryBuilder} from 'typeorm/query-builder/SelectQueryBuilder';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
 
   constructor(@InjectRepository(CnProject) private repository: Repository<CnProject>,
               @InjectRepository(CnProjectStatusHistory) statusHistoRepo: Repository<CnProjectStatusHistory>,
-              private groupService: CnGroupsService, private userService: CnUsersService) {
+              private groupService: CnGroupsService) {
     super(repository, CnProject, statusHistoRepo, CnProjectStatusHistory);
   }
 
@@ -38,30 +38,45 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     return this.getProjectOfUser(user, safePage, safeSize);
   }
 
-  public async getProjectsOfUserId(userId: string): Promise<CnProject[]> {
-    const user = await this.userService.findByIdAndCheck(userId);
-    return (await this.getProjectOfUser(user, 0, 1000)).objects;
-  }
-
   /**
    * Get project by groups of user
    */
   private async getProjectOfUser(user: CnUser, page: number, size: number): Promise<ClPageI<CnProject>> {
     const groupIds = await this.groupService.getGroupIdsFromUser(user);
 
-    // get projects by shared groups
-    const [result, totalElements] = await this.repository.createQueryBuilder('project')
+    const queryBuilder: SelectQueryBuilder<CnProject> = this.repository.createQueryBuilder('project')
       // the join is one project_group and group table, should be more optimized to only join on project_group
       .leftJoin('project.sharedGroups', 'group')
-      .where('group.id IN(:groupIds)', {groupIds: groupIds})
-      .innerJoinAndSelect('project.createdBy', 'created_by')
-      .innerJoinAndSelect('project.lastModifiedBy', 'last_modified_by')
+      .where('group.id IN(:groupIds)', {groupIds: groupIds});
+
+    return this.getProjectFromBuilder(queryBuilder, page, size);
+  }
+
+  /**
+   * Get all projects shared with a group paginated
+   */
+  public async getProjectsOfGroup(groupId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
+    const queryBuilder: SelectQueryBuilder<CnProject> = this.repository.createQueryBuilder('project')
+      // the join is one project_group and group table, should be more optimized to only join on project_group
+      .leftJoin('project.sharedGroups', 'group')
+      .where('group.id = :groupId', {groupId: groupId});
+    return this.getProjectFromBuilder(queryBuilder, page, size);
+  }
+
+  private async getProjectFromBuilder(builder: SelectQueryBuilder<CnProject>,
+                                      page: number, size: number): Promise<ClPageI<CnProject>> {
+    const safePage: number = this.getSafePage(page);
+    const safeSize: number = this.getSafePageSize(size);
+
+    const [result, totalElements] = await builder
+      .leftJoinAndSelect('project.createdBy', 'created_by')
+      .leftJoinAndSelect('project.lastModifiedBy', 'last_modified_by')
       .innerJoinAndSelect('project.currentStatus', 'status')
       .skip(page * size)
       .take(size)
       .getManyAndCount();
 
-    return ClPage.fromPagination(page, size, totalElements, result);
+    return ClPage.fromPagination(safePage, safeSize, totalElements, result);
   }
 
   public async shareProject(project: CnProject, groupId: string): Promise<CnGroup> {

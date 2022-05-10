@@ -13,7 +13,7 @@
         <ca-group-select-options></ca-group-select-options>
 
         <mat-select-trigger *ngIf="formControl.value">
-          <ca-group-inline [group]="formControl.value"></ca-group-inline>
+          <ca-group-inline [group]="formControl.value" [disableLink]="true"></ca-group-inline>
         </mat-select-trigger>
       </mat-select>
       <mat-error *ngIf="formControl.hasError('required')">

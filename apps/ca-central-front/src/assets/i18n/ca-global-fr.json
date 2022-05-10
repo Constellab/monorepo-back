@@ -113,5 +113,21 @@
   "organization_remove_user": "Retirer l'utilisateur de l'organisation",
   "organization_remove_user_confirmation": "Êtes-vous sûr de vouloir retirer l'utilisateur de l'organisation ? Il ne pourra plus accéder aux objects de l'organisation",
   "organization_user_removed": "Utilisateur retirer de l'organisation",
-  "group": "Groupe"
+  "group": "Groupe",
+  "no_team": "Aucune équipe",
+  "my_teams": "Mes équipes",
+  "create_team": "Créer une équipe",
+  "update_team": "Modifier le équipe",
+  "team_created": "Groupe créé",
+  "team_updated": "Groupe modifié",
+  "delete_team": "Supprimer l'équipe",
+  "delete_team_confirmation": "Êtes-vous sûr de vouloir supprimer l'équipe ? Ce n'est pas possible si un objet (comme un projet) est rattaché à cette équipe",
+  "team_deleted": "Groupe supprimé",
+  "team_users": "Membres de l'équipe",
+  "team_add_user": "Ajouter un utilisateur a l'équipe",
+  "team_user_added": "Utilisateur ajouté",
+  "team_remove_user": "Retirer l'utilisateur de l'équipe",
+  "team_remove_user_confirmation": "Êtes-vous sûr de vouloir retirer l'utilisateur de l'équipe ? Il ne pourra plus accéder aux objets de l'équipe",
+  "team_user_removed": "Utilisateur retiré de l'équipe",
+  "team_projects": "Projets de l'équipe"
 }

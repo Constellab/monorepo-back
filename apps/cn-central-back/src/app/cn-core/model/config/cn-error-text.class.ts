@@ -32,5 +32,7 @@ export enum CnErrorText {
   USER_ALREADY_IN_GROUP = 'error.user_already_in_group',
   USER_NOT_IN_GROUP = 'error.user_not_in_group',
   USER_ALREADY_IN_ORGANIZATION = 'error.user_already_in_organization',
+  USER_IN_OTHER_ORGANIZATION = 'error.user_in_other_organization',
+  REMOVE_GROUP_LAST_USER = 'error.remove_group_last_user',
   PROJECT_MUST_HAVE_A_GROUP ='error.project_must_have_a_group'
 }

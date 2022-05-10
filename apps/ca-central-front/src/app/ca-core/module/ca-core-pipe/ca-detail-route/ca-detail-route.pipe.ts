@@ -5,8 +5,9 @@ import {CaSmartDb} from '../../../model/entities/ca-smart-db.entity';
 import {CaLabInstance} from '../../../model/entities/ca-lab-instance.class';
 import {CaRouterService} from '../../../service/ca-router.service';
 import {CaOrganization} from '../../../model/entities/ca-organization.class';
+import {CaGroup, CaGroupType} from '../../../model/entities/ca-group.entity';
 
-type CaObjectType = 'project' | 'smartDb' | 'labInstance' | 'organization'
+type CaObjectType = 'project' | 'smartDb' | 'labInstance' | 'organization' | 'group';
 
 
 /**
@@ -21,14 +22,18 @@ type CaObjectType = 'project' | 'smartDb' | 'labInstance' | 'organization'
 })
 export class CaDetailRoutePipe implements PipeTransform {
 
+  transform(value: string, objectType?: CaObjectType): string;
+  transform(value: CaEntity): string;
   transform(value: string | CaEntity, objectType?: CaObjectType): string {
+
+    let id: string;
     if (objectType == null) {
-      objectType = this.getObjectType(value);
+      [objectType, id] = this.getObjectType(value);
+    } else {
+      id = value as string;
     }
 
     if (objectType == null) return null;
-
-    const id = typeof value === 'string' ? value : value.id;
 
     switch (objectType) {
       case 'project':
@@ -39,6 +44,8 @@ export class CaDetailRoutePipe implements PipeTransform {
         return CaRouterService.getLabInstanceDetailRoute(id);
       case 'organization':
         return CaRouterService.getOrganizationRoute(id);
+      case 'group':
+        return CaRouterService.getTeamRoute(id);
       default:
         console.error(`[caDetailRoute] object type ${objectType} not supported`);
         return null;
@@ -46,18 +53,28 @@ export class CaDetailRoutePipe implements PipeTransform {
 
   }
 
-  private getObjectType(obj: any): CaObjectType {
+  private getObjectType(obj: any): [CaObjectType, string] {
     if (obj instanceof CaProject) {
-      return 'project';
+      return ['project', obj.id];
     } else if (obj instanceof CaSmartDb) {
-      return 'smartDb';
+      return ['smartDb', obj.id];
     } else if (obj instanceof CaLabInstance) {
-      return 'labInstance';
+      return ['labInstance', obj.id];
     } else if (obj instanceof CaOrganization) {
-      return 'organization';
+      return ['organization', obj.id];
+    } else if (obj instanceof CaGroup) {
+      switch (obj.type) {
+        // specific case for organization group, we return the page of the organization not the group
+        case CaGroupType.ORGANIZATION:
+          return ['organization', obj.organizationId];
+        case CaGroupType.TEAM:
+          return ['group', obj.id];
+        case CaGroupType.SINGLE_USER:
+          return [null, obj.id];
+      }
     } else {
       console.error('[caDetailRoute] The object is not supported');
-      return null;
+      return [null, null];
     }
   }
 

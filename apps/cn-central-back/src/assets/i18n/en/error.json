@@ -29,5 +29,7 @@
   "user_already_in_group": "The user already is in the group",
   "user_not_in_group": "The user is not in the group",
   "user_already_in_organization": "The user already is in the organization",
+  "user_in_other_organization": "The user is not in the same organization as you",
+  "remove_group_last_user": "You can't remove the last user of the group",
   "project_must_have_a_group": "The project must be shared with at least one group"
 }

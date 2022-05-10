@@ -48,8 +48,11 @@ export class CnProjectAggregateService {
     return this.projectService.getCurrentProjects(page, size);
   }
 
-  public async getProjectsOfUserId(userId: string): Promise<CnProject[]> {
-    return this.projectService.getProjectsOfUserId(userId);
+  public async getProjectOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
+    // check if the user can view the group
+    await this.groupService.getAndCheckTeamById(groupId);
+
+    return this.projectService.getProjectsOfGroup(groupId, page, size);
   }
 
   public async shareProject(projectId: string, groupId: string): Promise<CnGroup> {

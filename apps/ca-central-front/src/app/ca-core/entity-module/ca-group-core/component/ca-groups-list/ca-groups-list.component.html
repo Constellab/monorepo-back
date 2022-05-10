@@ -1,0 +1,7 @@
+<div fxLayout="row wrap" fxLayoutGap="1%">
+  <a *ngFor="let group of groups" class="card" [routerLink]="group | caDetailRoute"
+     fxFlex="15em" fxFlex.xs="49%">
+    <ca-group-card [group]="group"></ca-group-card>
+  </a>
+</div>
+

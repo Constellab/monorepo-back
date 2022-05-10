@@ -56,5 +56,5 @@ export const flIconsDefault: FlIcon[] = [
   {name: 'view', matIconName: 'bar_chart'},
   {name: 'smart_db', matIconName: 'search'},
   {name: 'organization', matIconName: 'business'},
-
+  {name: 'group', matIconName: 'group'},
 ]

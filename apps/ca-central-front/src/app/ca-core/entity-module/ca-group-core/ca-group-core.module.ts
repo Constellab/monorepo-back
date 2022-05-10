@@ -6,6 +6,11 @@ import {CaGroupInlineComponent} from './component/ca-group-inline/ca-group-inlin
 import {CaGroupTypeIconPipe} from './pipe/ca-group-type-icon.pipe';
 import {CaGroupShareDialogComponent} from './component/ca-group-share-dialog/ca-group-share-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {CaGroupCardComponent} from './component/ca-group-card/ca-group-card.component';
+import {CaGroupsListComponent} from './component/ca-groups-list/ca-groups-list.component';
+import {RouterModule} from '@angular/router';
+import {CaGroupAddUserDialogComponent} from './component/ca-group-add-user-dialog/ca-group-add-user-dialog.component';
+import {CaTeamFormDialogComponent} from './component/ca-team-form-dialog/ca-team-form-dialog.component';
 
 
 @NgModule({
@@ -13,18 +18,27 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     CaGroupSelectOptionsComponent,
     CaGroupInlineComponent,
     CaGroupTypeIconPipe,
-    CaGroupShareDialogComponent
+    CaGroupShareDialogComponent,
+    CaGroupCardComponent,
+    CaGroupsListComponent,
+    CaGroupAddUserDialogComponent,
+    CaTeamFormDialogComponent
   ],
   exports: [
     CaGroupSelectOptionsComponent,
     CaGroupInlineComponent,
     CaGroupTypeIconPipe,
-    CaGroupShareDialogComponent
+    CaGroupShareDialogComponent,
+    CaGroupCardComponent,
+    CaGroupsListComponent,
+    CaGroupAddUserDialogComponent,
+    CaTeamFormDialogComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule,
 
     CaCoreModule,
   ],

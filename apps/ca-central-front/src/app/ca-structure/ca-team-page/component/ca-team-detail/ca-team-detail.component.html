@@ -1,0 +1,23 @@
+<fl-card>
+  <fl-card-header>
+    <h1>{{team.label}}</h1>
+
+    <fl-card-actions>
+      <button mat-icon-button type="button" (click)="openUpdateDialog()"
+              [matTooltip]="'update_team' | translate">
+        <mat-icon>edit</mat-icon>
+      </button>
+
+      <button mat-icon-button type="button" color="warn" (click)="openDeleteDialog()"
+              [matTooltip]="'delete_team' | translate">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </fl-card-actions>
+  </fl-card-header>
+</fl-card>
+
+<ca-team-users-list [groupId]="team.id" class="g-section">
+</ca-team-users-list>
+
+<ca-group-projects-list [teamId]="team.id" class="g-section"></ca-group-projects-list>
+

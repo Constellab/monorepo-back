@@ -1,0 +1,37 @@
+<fl-async-section [arrayObs]="users">
+
+  <fl-section-header class="g-page-title">
+    <fl-text-icon>
+      <mat-icon class="g-icon-big">people</mat-icon>
+      <h2>{{'team_users' | translate}}</h2>
+    </fl-text-icon>
+
+    <fl-section-actions>
+      <button mat-flat-button type="button" color="accent"
+              class="g-button-small" [matTooltip]="'team_add_user' | translate"
+              (click)="openAddUserDialog()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </fl-section-actions>
+
+  </fl-section-header>
+
+  <ng-container *flSectionBody>
+    <fl-card>
+      <fl-card-body class="limit-height" (flInfiniteScroll)="loadMoreResults()"
+                    [flInfiniteDisabled]="users.isLoading || users.page?.last">
+        <ca-user-table [datasource]="users" [columns]="displayedColumns">
+
+          <ng-template let-user>
+            <button mat-icon-button type="button" color="warn" (click)="openRemoveUserDialog(user)"
+                    [matTooltip]="'team_remove_user' | translate">
+              <mat-icon>clear</mat-icon>
+            </button>
+          </ng-template>
+        </ca-user-table>
+      </fl-card-body>
+    </fl-card>
+  </ng-container>
+
+
+</fl-async-section>

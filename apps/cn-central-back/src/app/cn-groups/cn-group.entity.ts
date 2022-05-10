@@ -14,7 +14,6 @@ import {CnGroupType} from './cn-group-type.enum';
 import {CnOrganization} from '../cn-organizations/cn-organization.entity';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {Exclude} from 'class-transformer';
-import {BadRequestException} from '@nestjs/common';
 
 @TableInheritance({column: {type: 'enum', enum: CnGroupType, name: 'type'}})
 @Entity('group')
@@ -34,6 +33,9 @@ export class CnGroupOrganization extends CnGroup {
   @OneToOne(() => CnOrganization, {onDelete: 'CASCADE'})
   @JoinColumn()
   organization: CnOrganization;
+
+  @Column({nullable: true})
+  organizationId: string;
 
   type: CnGroupType.ORGANIZATION;
 }
@@ -57,25 +59,13 @@ export class CnGroupSingleUser extends CnGroup {
   }
 }
 
-@ChildEntity(CnGroupType.USERS)
-export class CnGroupUsers extends CnGroup {
-
-  // @Exclude()
-  // @ManyToMany(() => CnUser, (user: CnUser) => user.groups)
-  // @JoinTable({name: 'user_group'})
-  // users: CnUser[];
+@ChildEntity(CnGroupType.TEAM)
+export class CnGroupTeam extends CnGroup {
 
   @OneToMany(() => CnUserGroup, userGroup => userGroup.group)
   users: CnUserGroup[];
 
-  type: CnGroupType.USERS;
-
-  public userIsInGroup(userId: string): boolean {
-    if (!this.users) {
-      throw new BadRequestException('The user are not loaded');
-    }
-    return this.users.find(userGroup => userGroup.userId === userId) !== null;
-  }
+  type: CnGroupType.TEAM;
 }
 
 @Entity('user_group')
@@ -84,12 +74,13 @@ export class CnUserGroup {
   @PrimaryColumn({type: 'varchar', length: 36})
   userId: string;
 
-  @ManyToOne(() => CnUser)
+  @ManyToOne(() => CnUser, {onUpdate: 'CASCADE', onDelete: 'CASCADE'})
   user: CnUser;
 
   @PrimaryColumn({type: 'varchar', length: 36})
   groupId: string;
 
-  @ManyToOne(() => CnGroupUsers, group => group.users)
-  group: CnGroupUsers;
+  @ManyToOne(() => CnGroupTeam, group => group.users,
+    {onUpdate: 'CASCADE', onDelete: 'CASCADE'})
+  group: CnGroupTeam;
 }

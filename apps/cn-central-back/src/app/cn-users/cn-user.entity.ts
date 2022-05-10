@@ -1,6 +1,6 @@
 import {BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToOne} from 'typeorm';
 import {Exclude} from 'class-transformer';
-import {CnGroupSingleUser, CnGroupUsers} from '../cn-groups/cn-group.entity';
+import {CnGroupSingleUser, CnGroupTeam} from '../cn-groups/cn-group.entity';
 import * as argon2 from 'argon2';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
@@ -45,8 +45,8 @@ export class CnUser extends BlEntityWithId implements BlUser {
   @Column({nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme})
   theme: ClTheme;
 
-  @ManyToMany(() => CnGroupUsers, (group: CnGroupUsers) => group.users)
-  groups: CnGroupUsers[];
+  @ManyToMany(() => CnGroupTeam, (group: CnGroupTeam) => group.users)
+  groups: CnGroupTeam[];
 
   @Exclude()
   @OneToOne(() => CnGroupSingleUser, (group: CnGroupSingleUser) => group.user,

@@ -1,0 +1,16 @@
+<fl-async-section [arrayObs]="projectsDatasource" emptyText="no_project">
+
+  <fl-section-header class="g-page-title">
+    <fl-text-icon iconPosition="start">
+      <mat-icon class="g-icon-big" flIcon="project"></mat-icon>
+      <h2>{{'team_projects' | translate}}</h2>
+    </fl-text-icon>
+  </fl-section-header>
+
+  <ng-container *flSectionBody="let projects">
+    <ca-projects-list [projects]="projects"></ca-projects-list>
+
+    <fl-infinite-load-more-result [datasource]="projectsDatasource"></fl-infinite-load-more-result>
+  </ng-container>
+
+</fl-async-section>

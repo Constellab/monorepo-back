@@ -4,7 +4,7 @@ import {CnLabInstancesSecurityLayer} from './cn-lab-instances-security.layer';
 import {CnLabInstanceStatusHistory} from './cn-lab-instance-status-history.entity';
 import {CnExternalLabUser, CnExternalNewLabUser} from '../cn-external-lab-api/model/cn-external-lab-api.class';
 import {BlDtoHelper, BlParsePipe} from '@monorepo/back-core-lib';
-import {ClPage} from '@monorepo/core-lib';
+import {ClPageI} from '@monorepo/core-lib';
 import {CnLabInstanceConfigDTO, CnLabInstanceDto} from './cn-lab-instance.dto';
 import {
   CnLabComposeUpOptions,
@@ -42,7 +42,7 @@ export class CnLabInstancesController {
    */
   @Get('current')
   public getCurrentLabInstances(@Query('page', ParseIntPipe) page: number,
-                                @Query('size', ParseIntPipe) size: number): Promise<ClPage<CnLabInstance>> {
+                                @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnLabInstance>> {
     return this.securityLayer.getCurrentLabInstances(page, size);
   }
 

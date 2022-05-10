@@ -13,6 +13,8 @@ export class CaGroupInlineComponent implements OnInit {
 
   @Input() group: CaGroup;
 
+  @Input() disableLink: boolean = false;
+
   constructor() {
   }
 

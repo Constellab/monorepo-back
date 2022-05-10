@@ -1,12 +1,5 @@
-import {
-  caConstAdminRoute,
-  caConstDashboardFullRoute,
-  caConstLabInstancesFullRoute,
-  caConstProjectsFullRoute,
-  caConstSettingsFullRoute,
-  caConstSmartDbRoute
-} from '../../ca-core/utils/ca-base-route';
 import {CmUserCategory} from '@monorepo/common-model';
+import {CaRouterService} from '../../ca-core/service/ca-router.service';
 
 /**
  * Describe one main menu link button
@@ -23,32 +16,37 @@ export const caMainMenuLinks: CaMainMenuLink[] = [
   {
     label: 'dashboard',
     icon: 'dashboard',
-    route: caConstDashboardFullRoute
+    route: CaRouterService.getDashboardRoute(),
   },
   {
     label: 'my_projects',
     icon: 'project',
-    route: caConstProjectsFullRoute
+    route: CaRouterService.getMyProjectsRoute()
   },
   {
     label: 'my_labs',
     icon: 'lab',
-    route: caConstLabInstancesFullRoute
+    route: CaRouterService.getMyLabInstancesRoute()
+  },
+  {
+    label: 'my_teams',
+    icon: 'group',
+    route: CaRouterService.getMyTeamsRoute()
   },
   {
     label: 'my_smart_db',
     icon: 'smart_db',
-    route: caConstSmartDbRoute
+    route: CaRouterService.getMySmartDbsRoute(),
   },
   {
     label: 'admin_dashboard',
     icon: 'admin_panel_settings',
-    route: caConstAdminRoute,
+    route: CaRouterService.getAdminRoute(),
     authorizedCategories: [CmUserCategory.ADMIN]
   },
   {
     label: 'settings',
     icon: 'settings',
-    route: caConstSettingsFullRoute
+    route: CaRouterService.getSettingsRoute()
   }
 ];

@@ -28,10 +28,10 @@ export class CaSelectUserOptionsComponent extends FlEmbeddedOptionsAbstractDirec
 
   private getUsers(): void {
     this.isLoading = true;
-    this.userService.findAll().subscribe(
-      users => this.getSuccess(users),
-      () => this.isLoading = false
-    );
+    this.userService.findAll().subscribe({
+      next: users => this.getSuccess(users),
+      error: () => this.isLoading = false
+    });
   }
 
   private getSuccess(users: CaUser[]): void {

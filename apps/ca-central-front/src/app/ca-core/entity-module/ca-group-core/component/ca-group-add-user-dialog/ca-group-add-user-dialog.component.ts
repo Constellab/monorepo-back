@@ -1,30 +1,44 @@
 import {Component, Inject, OnInit} from '@angular/core';
+import {Observable} from 'rxjs';
+import {CaUser} from '../../../../model/entities/ca-user.class';
 import {FormControl} from '@ngneat/reactive-forms';
-import {CaUser} from '../../../../ca-core/model/entities/ca-user.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CaOrganizationService} from '../../../../ca-core/service-api/ca-organization.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {Validators} from '@angular/forms';
 
+
+export interface CaGroupAddUserDialogInput {
+  // method to add the user to the group
+  addUserToGroup: (userId: string) => Observable<CaUser>;
+  title: string;
+  successMessage: string;
+}
+
+/**
+ * Dialog to add a user to a group or an organization
+ */
 @Component({
-  selector: 'ca-organization-add-user-dialog',
-  templateUrl: './ca-organization-add-user-dialog.component.html',
-  styleUrls: ['./ca-organization-add-user-dialog.component.scss']
+  selector: 'ca-group-add-user-dialog',
+  templateUrl: './ca-group-add-user-dialog.component.html',
+  styleUrls: ['./ca-group-add-user-dialog.component.scss']
 })
-export class CaOrganizationAddUserDialogComponent implements OnInit {
+export class CaGroupAddUserDialogComponent implements OnInit {
 
   formControl: FormControl<CaUser>;
 
   isLoading: boolean = false;
 
-  constructor(@Inject(MAT_DIALOG_DATA) private orgaId: string,
-              private dialogRef: MatDialogRef<CaOrganizationAddUserDialogComponent>,
-              private organizationService: CaOrganizationService,
+  constructor(@Inject(MAT_DIALOG_DATA) private input: CaGroupAddUserDialogInput,
+              private dialogRef: MatDialogRef<CaGroupAddUserDialogComponent>,
               private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {
     this.formControl = new FormControl<CaUser>(null, Validators.required);
+  }
+
+  get title(): string {
+    return this.input.title;
   }
 
   submit(): void {
@@ -35,14 +49,14 @@ export class CaOrganizationAddUserDialogComponent implements OnInit {
 
   private addUserToOrganization(userId: string): void {
     this.isLoading = true;
-    this.organizationService.addUserToOrganization(this.orgaId, userId).subscribe({
+    this.input.addUserToGroup(userId).subscribe({
       next: user => this.addUserSuccess(user),
       error: () => this.isLoading = false
     });
   }
 
   private addUserSuccess(user: CaUser): void {
-    this.snackBarService.openSuccessMessage({text: 'organization_user_added', translateText: true});
+    this.snackBarService.openSuccessMessage({text: this.input.successMessage, translateText: true});
     this.isLoading = false;
     this.dialogRef.close(user);
   }

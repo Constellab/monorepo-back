@@ -7,7 +7,7 @@ import {
 } from '../model/entities/ca-project.class';
 import {Observable} from 'rxjs';
 import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource,} from '@monorepo/front-core-lib';
-import {ClGetPageFunction} from '@monorepo/core-lib';
+import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 import {CaGroup} from '../model/entities/ca-group.entity';
 
 /**
@@ -91,5 +91,14 @@ export class CaProjectService {
 
   public unshareProject(id: string, groupId: string): Observable<void> {
     return this.apiService.delete(`${this.route}/${id}/unshare/${groupId}`);
+  }
+
+  public getProjectsByTeam(groupId: string, page: number, size: number): Observable<ClPageI<CaProject>> {
+    return this.apiService.get(`${this.route}/group/${groupId}`, CaProject,
+      {resultIsPaginated: true, page: page, pageSize: size});
+  }
+
+  public getProjectsByTeamDatasource(groupId: string): CaProjectDatasource {
+    return new FlEntityPaginatedDatasource((page: number, pageSize: number)  => this.getProjectsByTeam(groupId, page, pageSize), 20);
   }
 }

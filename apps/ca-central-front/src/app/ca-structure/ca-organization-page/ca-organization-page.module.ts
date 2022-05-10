@@ -7,10 +7,8 @@ import {CaOrganizationDetailComponent} from './component/ca-organization-detail/
 import {
   CaOrganizationUsersListComponent
 } from './component/ca-organization-users-list/ca-organization-users-list.component';
-import {
-  CaOrganizationAddUserDialogComponent
-} from './component/ca-organization-add-user-dialog/ca-organization-add-user-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {CaGroupCoreModule} from '../../ca-core/entity-module/ca-group-core/ca-group-core.module';
 
 
 @NgModule({
@@ -18,7 +16,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     CaOrganizationPageComponent,
     CaOrganizationDetailComponent,
     CaOrganizationUsersListComponent,
-    CaOrganizationAddUserDialogComponent
   ],
   imports: [
     CommonModule,
@@ -27,6 +24,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
     CaCoreModule,
     CaOrganizationCoreModule,
+    CaGroupCoreModule,
   ]
 })
 export class CaOrganizationPageModule {

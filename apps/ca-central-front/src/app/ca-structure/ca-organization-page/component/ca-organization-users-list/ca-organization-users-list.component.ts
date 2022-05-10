@@ -2,10 +2,11 @@ import {Component, Input, OnInit} from '@angular/core';
 import {CaOrganizationService} from '../../../../ca-core/service-api/ca-organization.service';
 import {CaUser, CaUserDatasourcePaginated} from '../../../../ca-core/model/entities/ca-user.class';
 import {FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService, FlTableColumn} from '@monorepo/front-core-lib';
-import {
-  CaOrganizationAddUserDialogComponent
-} from '../ca-organization-add-user-dialog/ca-organization-add-user-dialog.component';
 import {CaAuthenticatedUserService} from '../../../../ca-core/service-api/ca-authenticated-user.service';
+import {
+  CaGroupAddUserDialogComponent,
+  CaGroupAddUserDialogInput
+} from '../../../../ca-core/entity-module/ca-group-core/component/ca-group-add-user-dialog/ca-group-add-user-dialog.component';
 
 /**
  * Component to list the users of an organization and add
@@ -38,7 +39,13 @@ export class CaOrganizationUsersListComponent implements OnInit {
   }
 
   openAddUserDialog(): void {
-    this.dialogService.openSmallDialog(CaOrganizationAddUserDialogComponent, {data: this.organizationId}).afterClosed().subscribe(
+    const input: CaGroupAddUserDialogInput = {
+      addUserToGroup: (userId: string) => this.organizationService.addUserToOrganization(this.organizationId, userId),
+      title: 'organization_add_user',
+      successMessage: 'organization_user_added'
+    };
+
+    this.dialogService.openSmallDialog(CaGroupAddUserDialogComponent, {data: input}).afterClosed().subscribe(
       user => this.onAddUserClosed(user)
     );
   }

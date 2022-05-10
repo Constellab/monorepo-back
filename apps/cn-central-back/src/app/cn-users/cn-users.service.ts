@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnUser} from './cn-user.entity';
 import {Repository} from 'typeorm';
@@ -16,9 +16,23 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   findAll(): Promise<CnUser[]> {
-    return this.repository.find({
-      order: {lastname: 'ASC', firstname: 'ASC'}
-    });
+    const currentUser = CnCurrentUserHelper.getCurrentUser();
+
+    if(currentUser.isAdmin()){
+      return this.repository.find({
+        order: {lastname: 'ASC', firstname: 'ASC'}
+      });
+    }else{
+      if(!currentUser.hasOrganization()){
+        throw new UnauthorizedException("You must be in an organization")
+      }
+
+      return this.repository.find({
+        where: {organizationId: currentUser.organizationId},
+        order: {lastname: 'ASC', firstname: 'ASC'}
+      });
+    }
+
   }
 
   findOne(id: string): Promise<CnUser> {

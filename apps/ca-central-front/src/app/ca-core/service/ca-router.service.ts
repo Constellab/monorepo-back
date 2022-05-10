@@ -4,12 +4,14 @@ import {
   caConstDashboardFullRoute,
   caConstLabInstancesFullRoute,
   caConstProjectsFullRoute,
+  caConstSettingsFullRoute,
   caConstSmartDbFullRoute,
   caConstStructureFullRoute
 } from '../utils/ca-base-route';
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 
+/* eslint-disable @typescript-eslint/member-ordering */
 /**
  * Class to get app route paths
  */
@@ -22,6 +24,10 @@ export class CaRouterService {
   ////// Static function to get routes  //////
   public static getAppRoute(): string {
     return `/${caConstBaseRoute}`;
+  }
+
+  public static getDashboardRoute(): string {
+    return `${caConstDashboardFullRoute}`;
   }
 
   public static getLabInstanceDetailRoute(labInstanceId: string): string {
@@ -52,6 +58,8 @@ export class CaRouterService {
     return `${caConstSmartDbFullRoute}`;
   }
 
+
+
   public static getSmartDbDetailRoute(id: string): string {
     return `${caConstSmartDbFullRoute}/${id}`;
   }
@@ -64,18 +72,43 @@ export class CaRouterService {
     return `${caConstSmartDbFullRoute}/${smartDbId}/admin`;
   }
 
-  public static getAdminRoute(): string {
-    return `${caConstAdminFullRoute}`;
-  }
+
 
   ////////////////////////// STRUCTURE MODULE ///////////////////////
   public static getOrganizationRoute(organizationId: string): string {
     return `${caConstStructureFullRoute}/organization/${organizationId}`;
   }
 
-  ////// Function to navigate to routes  //////
+  public static getTeamRoute(groupId: string): string {
+    return `${caConstStructureFullRoute}/team/${groupId}`;
+  }
+
+  public static getMyTeamsRoute(): string {
+    return `${caConstStructureFullRoute}/my-teams`;
+  }
+
+  public navigateToMyTeams(): void {
+    this.router.navigate([CaRouterService.getMyTeamsRoute()]);
+  }
+
+  public navigateToTeam(groupId: string): void {
+    this.router.navigate([CaRouterService.getTeamRoute(groupId)]);
+  }
+
+  ////////////////////////// ADMIN ///////////////////////
+
+  public static getAdminRoute(): string {
+    return `${caConstAdminFullRoute}`;
+  }
 
   public navigateToAdmin(): void {
     this.router.navigate([CaRouterService.getAdminRoute()]);
   }
+
+
+  ////////////////////////// SETTINGS ///////////////////////
+  public static getSettingsRoute(): string {
+    return `${caConstSettingsFullRoute}`;
+  }
+
 }
