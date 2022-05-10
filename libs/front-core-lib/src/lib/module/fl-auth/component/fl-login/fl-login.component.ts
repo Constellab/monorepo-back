@@ -84,7 +84,7 @@ export class FlLoginComponent implements OnInit {
   }
 
   openSignupDialog(): void {
-    this.dialogService.openSmallDialog(FlSignupDialogComponent);
+    this.dialogService.openSmallDialog(FlSignupDialogComponent, {disableClose: true});
   }
 
   openPasswordForgotten(): void {
