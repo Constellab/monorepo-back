@@ -172,7 +172,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       .leftJoinAndSelect('group.lastModifiedBy', 'last_modified_by')
       .where('group.type = :typeUser and user_group.userId = :userId', {typeUser: CnGroupType.TEAM, userId: user.id});
 
-    if(includeSingleGroup){
+    if (includeSingleGroup) {
       queryBuilder.orWhere('group.type = :typeSingle and group.userId = :userId', {
         typeSingle: CnGroupType.SINGLE_USER,
         userId: user.id
@@ -205,12 +205,17 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
   }
 
   public async getUserSingleGroup(userId: string): Promise<CnGroup> {
-    return this.repository.findOne({
+    const group = await this.repository.findOne({
       where: {
         user: {id: userId},
         type: CnGroupType.SINGLE_USER
       }
     });
+
+    if (group == null) {
+      throw new BadRequestException(`User ${userId} has no single group`);
+    }
+    return group;
   }
 
   public async getUsersOfTeam(groupId: string, page: number, size: number): Promise<ClPageI<CnUser>> {
