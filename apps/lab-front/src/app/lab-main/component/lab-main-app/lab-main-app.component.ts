@@ -7,6 +7,7 @@ import {LabEnvironmentHelper} from '../../../lab-core/utils/lab-environment.help
 import {LabAuthenticatedUserService} from '../../../lab-core/service/lab-authenticated-user.service';
 import {LabRouterService} from '../../../lab-core/service/lab-router.service';
 import {LabSystemService} from '../../../lab-core/service/lab-system.service';
+import {Title} from '@angular/platform-browser';
 
 @Component({
   selector: 'lab-main-app',
@@ -23,20 +24,19 @@ export class LabMainAppComponent implements OnInit {
 
   appRoute = LabRouterService.getAppRoute();
 
-  labName$: Observable<string>;
+  labName: string;
 
   constructor(private labEnvManager: LabEnvStore,
               private authenticatedUserService: LabAuthenticatedUserService,
-              private systemService: LabSystemService) {
+              private systemService: LabSystemService,
+              private titleService: Title) {
   }
 
   ngOnInit(): void {
     this.centralAppUrl = LabEnvironmentHelper.getCentralFrontAppUrl();
     this.authenticatedUserService.loadAuthenticatedUser();
-    this.labName$ = this.systemService.getSystemInfo().pipe(
-      map(systemInfo => systemInfo.labName),
-      startWith('Lab'),
-    )
+    this.getLabInfo();
+
   }
 
   get toolbarColorClass(): Observable<string> {
@@ -51,5 +51,15 @@ export class LabMainAppComponent implements OnInit {
 
   toggleMenu(): void {
     this.menuExpanded = !this.menuExpanded;
+  }
+
+  private getLabInfo(): void {
+    this.systemService.getSystemInfo().pipe(
+      map(systemInfo => systemInfo.labName),
+      startWith('Lab')).subscribe(
+      labName => {
+        this.labName = labName;
+        this.titleService.setTitle(labName);
+      });
   }
 }
