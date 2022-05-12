@@ -64,7 +64,7 @@ export class LabTransformResourceComponent implements OnInit {
   }
 
   private static buildFormGroup(transformer: LabTransformerWithConfig): FormGroup<LabTransformResourceForm> {
-    const configData = LabConfigData.fromSpecs(transformer.transformer.getConfigSpecs(), transformer.config);
+    const configData = LabConfigData.fromSpecs(transformer.transformer.configSpecs, transformer.config);
     return (new FormBuilder().group({
       transformer: [transformer.transformer],
       config: LabConfigureSpecsFormComponent.buildFormGroup(configData)
@@ -94,7 +94,7 @@ export class LabTransformResourceComponent implements OnInit {
   }
 
   private createSelectedTransformer(transformer: LabProcessType): LabSelectedTransformer {
-    const configData = LabConfigData.fromSpecs(transformer.getConfigSpecs());
+    const configData = LabConfigData.fromSpecs(transformer.configSpecs);
 
     const selectedTransformer: LabSelectedTransformer = {
       transformer: transformer,

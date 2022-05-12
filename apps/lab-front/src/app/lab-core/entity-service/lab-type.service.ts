@@ -9,8 +9,7 @@ import {LabTypeEntity, LabTypeObjectType} from '../model/entities/lab-type/lab-t
 import {Observable} from 'rxjs';
 import {ClCoreJsonConvert, ClPageI} from '@monorepo/core-lib';
 import {LabTypeSearch, LabTypeSearchFields} from '../entity-module/lab-type-core/model/lab-type-advanced-search.class';
-import {LabTaskType} from '../model/entities/lab-type/lab-task-type.entity';
-import {LabProtocolType} from '../model/entities/lab-type/lab-protocol-type.entity';
+import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -27,15 +26,15 @@ export class LabTypeService {
     const objectType: LabTypeObjectType = typingObj.object_type;
     switch (objectType) {
       case 'TASK':
-        return ClCoreJsonConvert.deserialize(typingObj, LabTaskType);
+        return ClCoreJsonConvert.deserialize(typingObj, LabProcessType);
       case 'PROTOCOL':
-        return ClCoreJsonConvert.deserialize(typingObj, LabProtocolType);
+        return ClCoreJsonConvert.deserialize(typingObj, LabProcessType);
       default:
         return ClCoreJsonConvert.deserialize(typingObj, LabTypeEntity);
     }
   }
 
-  public getTyping(typingName: string): Observable<LabTaskType | LabProtocolType> {
+  public getTyping(typingName: string): Observable<LabProcessType> {
     return this.apiService.getWithCache(`${this.route}/${typingName}`, LabTypeService.deserializeTyping).getObs();
   }
 
@@ -57,7 +56,7 @@ export class LabTypeService {
 
   public getTransformerByResourceType(resourceTypingName: string): Observable<LabTypeEntity[]> {
     return this.apiService.getWithCache(`${this.route}/transformers/${resourceTypingName}`,
-      LabTaskType).getObs();
+      LabProcessType).getObs();
   }
 
 

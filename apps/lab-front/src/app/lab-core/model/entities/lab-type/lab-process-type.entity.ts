@@ -1,54 +1,36 @@
-import {LabConfigSpecs} from '../lab-config-spec.entity';
+import {LabConfigSpecBase, LabConfigSpecs} from '../lab-config-spec.entity';
 import {LabTypeEntity} from './lab-type.entity';
 import {LabIOSpec} from '../lab-io.entity';
+import {Expose} from 'class-transformer';
+import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 
 
-export abstract class LabProcessType extends LabTypeEntity {
+export class LabProcessType extends LabTypeEntity {
 
-  type: LabProcessTypeDetail;
+  @Expose({name: 'input_specs'})
+  inputSpecs: Record<string, LabIOSpec>;
 
-  hasDocumentation(): boolean {
-    return this.type?.doc != null ?? false;
-  }
+  @Expose({name: 'output_specs'})
+  outputSpecs: Record<string, LabIOSpec>;
 
+  @Expose({name: 'config_specs'})
+  @ClRecordWrapperTransform(LabConfigSpecs, LabConfigSpecBase)
+
+  configSpecs: LabConfigSpecs;
 
   hasInputSpecs(): boolean {
-    const inputSpecs: Record<string, LabIOSpec> = this.getInputSpecs();
+    const inputSpecs: Record<string, LabIOSpec> = this.inputSpecs;
     return inputSpecs != null && Object.keys(inputSpecs).length > 0;
-
   }
 
   hasOutputSpecs(): boolean {
-    const outputSpecs: Record<string, LabIOSpec> = this.getOutputSpecs();
+    const outputSpecs: Record<string, LabIOSpec> = this.outputSpecs;
     return outputSpecs != null && Object.keys(outputSpecs).length > 0;
   }
 
   hasConfigSpecs(): boolean {
-    const config: LabConfigSpecs = this.getConfigSpecs();
+    const config: LabConfigSpecs = this.configSpecs;
     return config != null && config.hasConfigs();
   }
 
-  getConfigSpecs(): LabConfigSpecs {
-    return this.type?.getConfigSpecs() ?? LabConfigSpecs.empty();
-  }
-
-  getInputSpecs(): Record<string, LabIOSpec> {
-    return this.type?.getInputSpecs() ?? {};
-  }
-
-  getOutputSpecs(): Record<string, LabIOSpec> {
-    return this.type?.getOutputSpecs() ?? {};
-  }
-
-}
-
-export interface LabProcessTypeDetail {
-
-  doc?: string;
-
-  getInputSpecs(): Record<string, LabIOSpec>;
-
-  getOutputSpecs(): Record<string, LabIOSpec>;
-
-  getConfigSpecs(): LabConfigSpecs;
 }

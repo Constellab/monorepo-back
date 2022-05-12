@@ -33,8 +33,14 @@ export class LabTypeEntity extends LabBaseEntity {
   @Expose({name: 'deprecated_message'})
   deprecatedMessage?: string;
 
+  doc?: string;
+
 
   status: LabTypeObjectStatus;
+
+  hasDocumentation(): boolean {
+    return this?.doc != null ?? false;
+  }
 
   get name(): string {
     return this.humanName || this.modelName;

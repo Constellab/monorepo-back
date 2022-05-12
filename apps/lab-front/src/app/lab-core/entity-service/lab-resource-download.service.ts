@@ -66,7 +66,7 @@ export class LabResourceDownloadService {
     }
 
     const input: LabConfigureSpecsFormDialogInput = {
-      configData: LabConfigData.fromSpecs(exporterType.getConfigSpecs()),
+      configData: LabConfigData.fromSpecs(exporterType.configSpecs),
       title: 'biox.download_resource_title',
       submitButtonText: 'biox.download_resource',
     };

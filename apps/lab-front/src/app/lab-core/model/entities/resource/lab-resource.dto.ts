@@ -1,14 +1,14 @@
 import {Type} from 'class-transformer';
-import {LabTaskType} from '../lab-type/lab-task-type.entity';
+import {LabProcessType} from '../lab-type/lab-process-type.entity';
 
 /**
  * DTO object to list the importer of a resource type
  */
 export class LabResourceImporterType {
 
-  @Type(() => LabTaskType)
-  resource: LabTaskType;
+  @Type(() => LabProcessType)
+  resource: LabProcessType;
 
-  @Type(() => LabTaskType)
-  importers: LabTaskType[];
+  @Type(() => LabProcessType)
+  importers: LabProcessType[];
 }
