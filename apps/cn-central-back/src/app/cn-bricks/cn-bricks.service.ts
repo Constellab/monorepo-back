@@ -88,6 +88,6 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     });
 
     // useful to sort with sub patch
-    return brickVersions.sort((a, b) => a.version.getDif(b.version));
+    return brickVersions.sort((a, b) => b.version.getDif(a.version));
   }
 }

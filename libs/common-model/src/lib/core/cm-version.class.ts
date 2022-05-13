@@ -57,6 +57,13 @@ export class CmVersion {
     return this.getDif(other) === 0;
   }
 
+  /**
+   * Returns the difference between this version and another version
+   * === 0 if equal
+   * 1 if this version is higher
+   * -1 if other version is higher
+   * @param other
+   */
   public getDif(other: CmVersion): number {
     if (this.major === other.major &&
       this.minor === other.minor &&
