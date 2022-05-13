@@ -82,6 +82,10 @@ export class CnProjectAggregateService {
     return project.sharedGroups;
   }
 
+  public async getProjectsOfUserId(userId: string): Promise<CnProject[]> {
+    return this.projectService.getProjectsOfUserId(userId);
+  }
+
 
   /////////////////////////////////////// PROJECT STATUS //////////////////////////////////
 

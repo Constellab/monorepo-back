@@ -12,13 +12,14 @@ import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {SelectQueryBuilder} from 'typeorm/query-builder/SelectQueryBuilder';
+import {CnUsersService} from '../../cn-users/cn-users.service';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
 
   constructor(@InjectRepository(CnProject) private repository: Repository<CnProject>,
               @InjectRepository(CnProjectStatusHistory) statusHistoRepo: Repository<CnProjectStatusHistory>,
-              private groupService: CnGroupsService) {
+              private groupService: CnGroupsService, private userService: CnUsersService) {
     super(repository, CnProject, statusHistoRepo, CnProjectStatusHistory);
   }
 
@@ -36,6 +37,11 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
     const safeSize: number = this.getSafePageSize(size);
 
     return this.getProjectOfUser(user, safePage, safeSize);
+  }
+
+  public async getProjectsOfUserId(userId: string): Promise<CnProject[]> {
+    const user = await this.userService.findByIdAndCheck(userId);
+    return (await this.getProjectOfUser(user, 0, 1000)).objects;
   }
 
   /**
