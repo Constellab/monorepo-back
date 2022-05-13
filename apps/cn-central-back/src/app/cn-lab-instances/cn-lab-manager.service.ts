@@ -107,7 +107,7 @@ export class CnLabManagerService {
 
     // retrieve the lab front version
     const gwsCoreVersion = CmVersion.fromString(gwsCore.version);
-    const frontVersion = await this.labFrontService.findByGwsCoreVersion(gwsCoreVersion.major, gwsCoreVersion.minor, gwsCoreVersion.patch);
+    const frontVersion = await this.labFrontService.findByGwsCoreVersion(gwsCoreVersion);
     if (frontVersion == null) {
       throw new BadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCore.version}'`);
     }
