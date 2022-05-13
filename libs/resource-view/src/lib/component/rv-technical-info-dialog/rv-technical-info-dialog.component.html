@@ -6,9 +6,10 @@
 <mat-dialog-content>
 
   <div *ngFor="let info of technicalInfo">
-    <fl-key-value>
+    <fl-key-value class="technical-info">
       <fl-key>{{ info.key }}</fl-key>
       {{ info.value }}
     </fl-key-value>
+    <div *ngIf="info.short_description" class="g-text-small g-text-light">{{info.short_description}}</div>
   </div>
 </mat-dialog-content>
