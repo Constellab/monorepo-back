@@ -5,7 +5,8 @@ import {
   FlEntityPaginatedDatasource,
   FlFileHelper,
   FlSearchConverter,
-  FLSearchFunction
+  FLSearchFunction,
+  FlTag
 } from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
 import {LabResource, LabResourceDatasource} from '../model/entities/resource/lab-resource.entity';
@@ -28,6 +29,7 @@ import {LabResourceImporterType} from '../model/entities/resource/lab-resource.d
 import {LabConfigSpecBase, LabConfigSpecs} from '../model/entities/lab-config-spec.entity';
 import {LabTypeService} from './lab-type.service';
 import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
+import {LabTag} from '../model/entities/lab-tag.entity';
 
 
 @Injectable({
@@ -91,6 +93,10 @@ export class LabResourceService {
     return this.apiService.post(`${this.route}/advanced-search`, data, LabResource, {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
+  }
+
+  public saveTags(id: string, tags: FlTag[]): Observable<LabTag[]> {
+    return this.apiService.put(`${this.route}/${id}/tags`, tags, LabTag);
   }
 
   //////////////////////////////////////// RESOURCE TYPE///////////////////////////////////////

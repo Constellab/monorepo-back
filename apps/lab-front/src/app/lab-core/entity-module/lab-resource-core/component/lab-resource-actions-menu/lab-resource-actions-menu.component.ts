@@ -16,7 +16,6 @@ import {
   LabUpdateResourceNameDialogComponent
 } from '../lab-update-resource-name-dialog/lab-update-resource-name-dialog.component';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
-import {LabTagService} from '../../../../entity-service/lab-tag.service';
 import {LabResourceDownloadService} from '../../../../entity-service/lab-resource-download.service';
 
 /**
@@ -40,7 +39,6 @@ export class LabResourceActionsMenuComponent implements OnInit {
   constructor(private resourceService: LabResourceService,
               private dialogService: FlDialogService,
               private tagDialogService: FlTagDialogService,
-              private tagService: LabTagService,
               private resourceDownloadService: LabResourceDownloadService) {
   }
 
@@ -66,7 +64,7 @@ export class LabResourceActionsMenuComponent implements OnInit {
   openTagFormDialog(): void {
     this.tagDialogService.openUpdateTagDialog({
       tags: this.resource.tags,
-      updateMethod: (tags) => this.tagService.saveTags(this.resource.typingName, this.resource.id, tags)
+      updateMethod: (tags) => this.resourceService.saveTags(this.resource.id, tags)
     }).afterClosed().subscribe(
       (newTags: LabTag[]) => this.onTagClosed(newTags)
     );
