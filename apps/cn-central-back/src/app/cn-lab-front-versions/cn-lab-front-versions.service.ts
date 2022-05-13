@@ -50,13 +50,14 @@ export class CnLabFrontVersionsService extends BlAbstractService<CnLabFrontVersi
     });
   }
 
-  public findByGwsCoreVersion(major: number, minor: number, patch: number): Promise<CnLabFrontVersion | null> {
+  public findByGwsCoreVersion(version: CmVersion): Promise<CnLabFrontVersion | null> {
     return this.repository.findOne({
       where: {
         gwsCoreBrickVersion: {
-          major: major,
-          minor: minor,
-          patch: patch
+          major: version.major,
+          minor: version.minor,
+          patch: version.patch,
+          subPatch: version.subPatch
         },
       },
       relations: ['gwsCoreBrickVersion']
