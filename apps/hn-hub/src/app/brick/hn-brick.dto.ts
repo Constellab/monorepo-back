@@ -95,6 +95,7 @@ export class HnBrickListDTO{
   gitRepo: string;
   lastVersion: CmVersion;
   isCertified?: boolean;
+  imageLink?: string;
 }
 
 export class HnEditBrickDTO{

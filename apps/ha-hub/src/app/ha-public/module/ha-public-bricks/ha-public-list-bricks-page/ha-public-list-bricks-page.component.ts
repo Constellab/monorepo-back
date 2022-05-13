@@ -13,11 +13,11 @@ export class HaPublicListBricksPageComponent implements OnInit {
   bricks: HaBrick[];
 
   constructor(
-    private daBrickService: HaBrickService
+    private haBrickService: HaBrickService
   ) { }
 
   ngOnInit(): void {
-    this.daBrickService.get().subscribe((bricks: HaBrick[]) => {
+    this.haBrickService.get().subscribe((bricks: HaBrick[]) => {
       for(const b of bricks){
         b.lastVersion = new CmVersion(b.lastVersion.major, b.lastVersion.minor, b.lastVersion.patch, b.lastVersion.subPatch);
       }
