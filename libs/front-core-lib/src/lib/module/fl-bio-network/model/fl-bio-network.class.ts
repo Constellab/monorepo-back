@@ -32,7 +32,7 @@ export interface FlBioNetworkMetabolite {
   mass?: any;
   formula?: string;
   chebi_id?: string;
-  position?: FlCoord;
+  layout?: FlCoord;
   level: FlBioNetworkMetaboliteLevel;
   is_cofactor: boolean;
 }
@@ -46,7 +46,7 @@ export interface FlBioNetworkReaction {
   upper_bound?: number;
   enzyme?: FlBioNetworkEnzyme;
   estimate: FlBioNetworkReactionEstimate;
-  position?: FlCoord;
+  layout?: FlCoord;
   level?: FlBioNetworkMetaboliteLevel;
 }
 

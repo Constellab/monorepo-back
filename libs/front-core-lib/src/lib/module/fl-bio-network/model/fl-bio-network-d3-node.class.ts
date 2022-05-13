@@ -41,8 +41,8 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
                         public defaultColor: string, public strokeColor: string,
                         public data: FlBioNetworkMetabolite | FlBioNetworkReaction) {
     super();
-    if (data.position != null && data.position.x != null && data.position.y != null) {
-      this.setCenter(data.position);
+    if (data.layout != null && data.layout.x != null && data.layout.y != null) {
+      this.setCenter(data.layout);
       this.freezePosition();
     }
   }
@@ -156,7 +156,13 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
   }
 
   public savePosition(): void {
-    this.data.position = this.getCenter();
+    const center = this.getCenter();
+    if (this.data.layout == null) {
+      this.data.layout = this.getCenter();
+    }else{
+      this.data.layout.x = center.x;
+      this.data.layout.y = center.y;
+    }
   }
 
   public initPosition(): void {
