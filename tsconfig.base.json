@@ -26,7 +26,8 @@
       "@monorepo/common-model": ["libs/common-model/src/index.ts"],
       "@monorepo/core-lib": ["libs/core-lib/src/index.ts"],
       "@monorepo/front-core-lib": ["libs/front-core-lib/src/index.ts"],
-      "@monorepo/resource-view": ["libs/resource-view/src/index.ts"]
+      "@monorepo/resource-view": ["libs/resource-view/src/index.ts"],
+      "@monorepo/technical-doc": ["libs/technical-doc/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

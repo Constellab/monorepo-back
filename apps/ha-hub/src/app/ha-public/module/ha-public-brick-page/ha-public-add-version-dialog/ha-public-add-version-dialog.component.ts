@@ -42,7 +42,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
     formValue.brickId = this.brickId;
     if(formValue.isBeta){
       if(formValue.subPatch == null) return null;
-      formValue.version = `${formValue.version}-beta${formValue.subPatch}`
+      formValue.version = `${formValue.version}-beta.${formValue.subPatch}`
     }
     return this.brickService.createNewVersion(formValue);
   }

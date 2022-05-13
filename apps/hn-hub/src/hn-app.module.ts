@@ -43,6 +43,7 @@ import { HnCoreExceptionHandlerFilter } from './app/core/filters/hn-core-excepti
 import { HnTechnicalFolderModule } from './app/technical-folder/hn-technical-folder.module';
 import { HnResourceModule } from './app/resource/hn-resource.module';
 import { HnTaskModule } from './app/task/hn-task.module';
+import { HnProtocolModule } from './app/protocol/hn-protocol.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService
@@ -161,6 +162,7 @@ function configureObjectStorageModule(
     HnTechnicalFolderModule,
     HnResourceModule,
     HnTaskModule,
+    HnProtocolModule,
   ],
   controllers: [],
   providers: [

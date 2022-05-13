@@ -7,12 +7,14 @@ import {HnResourceModule} from '../resource/hn-resource.module';
 import {HnResourceService} from '../resource/hn-resource.service';
 import {HnTaskModule} from '../task/hn-task.module';
 import {HnTaskService} from '../task/hn-task.service';
+import {HnProtocolService} from '../protocol/hn-protocol.service';
+import {HnProtocolModule} from '../protocol/hn-protocol.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnTechnicalFolder]), HnResourceModule, HnTaskModule],
+  imports: [TypeOrmModule.forFeature([HnTechnicalFolder]), HnResourceModule, HnTaskModule, HnProtocolModule],
   controllers: [HnTechnicalFolderController],
   exports: [TypeOrmModule],
-  providers: [HnTechnicalFolderService, HnResourceService, HnTaskService],
+  providers: [HnTechnicalFolderService, HnResourceService, HnTaskService, HnProtocolService],
 })
 export class HnTechnicalFolderModule {
 }

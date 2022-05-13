@@ -11,6 +11,7 @@ import {HnNode} from '../folder/hn-folder.dto';
 import {HnImportTechnicalDocDTO} from '../brick/hn-brick.dto';
 import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
+import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 
 @Injectable()
 export class HnBrickMajorVersionService {
@@ -118,7 +119,7 @@ export class HnBrickMajorVersionService {
     return this.technicalFolderService.findTechnicalDoc(brickMajorVersion);
   }
 
-  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<any>{
+  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnGeneratedDocEntity>{
     return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, path);
   }
 }

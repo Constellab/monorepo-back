@@ -27,10 +27,9 @@ export class HnCreateTechnicalDocContent{
 }
 
 export interface HnImportParentDTO{
-  unique_name: string;
+  typing_name: string;
   class_name: string;
   human_name: string;
-  brick_name: string;
   brick_version: string;
   object_type: string; //TODO: Mettre une enum ?
 }
@@ -40,7 +39,8 @@ export interface HnImportTechnicalDocDTO{
   brick_name: string;
   brick_version: string;
   resources: HnImportResourceDTO[],
-  tasks: HnImportTaskDTO[]
+  tasks: HnImportTaskDTO[],
+  protocols: HnImportProtocolDTO[]
 }
 
 export interface HnImportResourceDTO{
@@ -66,6 +66,25 @@ export interface HnImportTaskDTO{
   hide: boolean;
   deprecated_since: string;
   deprecated_message: string;
+  input_specs: any;
+  output_specs: any;
+  config_specs: any;
+}
+
+export interface HnImportProtocolDTO{
+  unique_name: string;
+  class_name: string;
+  parent: HnImportParentDTO;
+  human_name: string;
+  short_description: string;
+  doc: string;
+  hide: boolean;
+  deprecated_since: string;
+  deprecated_message: string;
+  input_specs: any;
+  output_specs: any;
+  config_specs: any;
+  status: string;
 }
 
 export class HnBrickListDTO{

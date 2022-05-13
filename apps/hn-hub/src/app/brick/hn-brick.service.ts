@@ -13,6 +13,7 @@ import {HnNode} from '../folder/hn-folder.dto';
 import {HnErrorText} from '../core/model/config/hn-error-text.class';
 import {CmVersion} from '@monorepo/common-model';
 import {HnBrickListDTO, HnCreateTechnicalDocContent, HnEditBrickDTO} from './hn-brick.dto';
+import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 
 @Injectable()
 export class HnBrickService {
@@ -94,7 +95,7 @@ export class HnBrickService {
     return this.brickMajorVersionService.findRootFolderId(brickMajorVersion);
   }
 
-  async findCurrentDoc(brick: HnBrick, path: string, version: string): Promise<HnDocumentation | any> {
+  async findCurrentDoc(brick: HnBrick, path: string, version: string): Promise<HnDocumentation | HnGeneratedDocEntity> {
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     if(path.startsWith('technical-folder')){
@@ -125,7 +126,6 @@ export class HnBrickService {
 
   async createTechnicalDoc(content: HnCreateTechnicalDocContent): Promise<boolean>{
     if(content.brickName.toUpperCase() !== content.importFile.brick_name.toUpperCase()){
-      console.log('AHHHHH')
       return false;
     }
 

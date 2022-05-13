@@ -2,8 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {
   HaDocumentation,
-  HaDocumentationContentFormDTO,
-  HaTechnicalDocumentation
+  HaDocumentationContentFormDTO
 } from '../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
@@ -13,6 +12,7 @@ import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-auth
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {Observable} from 'rxjs';
 import {HaDocTextEditorConfig} from '../ha-doc-text-editor-config.class';
+import {TdProcessType} from '@monorepo/technical-doc';
 
 @Component({
   selector: 'ha-public-doc-page',
@@ -23,7 +23,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
 
   private contentDebouncer: FlDebouncer<CmRichTextI>;
   documentation: HaDocumentation;
-  technicalDocumentation: HaTechnicalDocumentation;
+  technicalDocumentation: TdProcessType;
   brickName: string;
   brickVersion: string;
   formGp: FormGroup<Partial<HaDocumentationContentFormDTO>>;
@@ -84,6 +84,8 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   }
 
   private getDocumentationByPath(url: UrlSegment[]): void {
+    this.technicalDocumentation = null;
+    this.documentation = null;
     this.isCheck = false;
     this.isTechnical = false;
     let isFirstDoc: boolean = false;
@@ -107,6 +109,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
 
   private actionOnDoc(isFirstDoc: boolean, doc: any): void {
     if (isFirstDoc) {
+
       this.router.navigate([`${this.router.url}/${doc.completePath}`]);
     }
     if (this.isTechnical) {

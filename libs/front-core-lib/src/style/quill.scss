@@ -16,7 +16,7 @@
   font-family: "Poppins", "Helvetica Neue", sans-serif;
 }
 
-.ql-bubble .ql-editor {
+.ql-bubble .ql-editor, .g-doc-format {
   p {
     font-weight: 100;
     line-height: 2em;
@@ -98,7 +98,7 @@
     border-left-color: var(--grey-low-contrast);
   }
 
-  code {
+  code, pre{
     background-color: var(--grey-low-contrast);
     color: var(--color-foreground);
     padding: 6px 7px;

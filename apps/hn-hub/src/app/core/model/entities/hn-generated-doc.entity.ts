@@ -12,8 +12,7 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
 
   @Column()
   uniqueName: string;
-  @Column()
-  className: string;
+
   @Column()
   humanName: string;
 
@@ -24,14 +23,10 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   doc: string;
 
   @Column({nullable: true})
-  parentUniqueName?: string;
-
-  @Column({nullable: true})
   parentHumanName?: string;
 
-
   @Column({nullable: true})
-  parentBrickName?: string;
+  parentTypingName?: string;
 
   @Column({nullable: true})
   parentMajorVersion?: number;

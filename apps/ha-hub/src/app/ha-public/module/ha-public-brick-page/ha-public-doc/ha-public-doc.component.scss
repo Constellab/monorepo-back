@@ -44,6 +44,8 @@
   height: 100%;
   padding-left: 1em;
   padding-right: 1em;
+  display: flex;
+  flex-direction: column;
 }
 
 .h100{
@@ -51,17 +53,10 @@
 }
 
 .technical-doc-div{
-  margin: auto;
-  padding-left: 1em;
+  margin: 0 auto;
   padding-top: 1em;
-}
-
-.technical-doc-div *{
-  padding-bottom: 1em;
-}
-
-.technical-doc-content{
-  white-space: pre-line;
+  flex: 1 0 auto;
+  width: 100%;
 }
 
 .doc-title-div{

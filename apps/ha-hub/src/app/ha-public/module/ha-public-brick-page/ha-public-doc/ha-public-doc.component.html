@@ -4,26 +4,16 @@
   </div>
   <div class="content" *ngIf="!isLoading">
     <div class="doc-title-div">
-      <h1 class="doc-title">{{documentation.title}}</h1>
+      <h1 class="doc-title" *ngIf="documentation && !isTechnical">{{documentation.title}}</h1>
+      <h1 class="doc-title" *ngIf="technicalDocumentation && isTechnical">{{technicalDocumentation.humanName}}</h1>
     </div>
     <form class="documentation-form" [formGroup]="formGp" *ngIf="!isTechnical">
       <fl-text-editor class="content-editor g-max-article-width" formControlName="content"
                       [disabled]="(isAdmin | async) === false || isTechnical===true" mode="JSON" scrollContainer="child"
                       [config]="textEditorConfig" (textChange)="onContentUpdate($event)"></fl-text-editor>
     </form>
-    <div class="technical-doc-div g-max-article-width" *ngIf="isTechnical && technicalDocumentation">
-      <h1>{{technicalDocumentation.humanName}}</h1>
-      <span *ngIf="technicalDocumentation.parentUniqueName">Parent :
-        <a class="g-text-link"
-           [routerLink]="technicalDocumentation.parentBrickName + '/' + (technicalDocumentation.parentVersion ?technicalDocumentation.parentVersion : 'latest')  +
-            '/doc/technical-folder/' + technicalDocumentation.resourceType + '/' + technicalDocumentation.parentUniqueName"
-           [relativeTo]="activatedRoute.parent.parent.parent">
-        {{technicalDocumentation.parentHumanName}}
-        </a>
-        v.{{technicalDocumentation.parentVersion}}
-      </span>
-      <p>{{technicalDocumentation.shortDescription}}</p>
-      <p class="technical-doc-content">{{technicalDocumentation.doc}}</p>
+    <div class="technical-doc-div g-styled-scrollbar g-max-article-width" *ngIf="isTechnical && technicalDocumentation">
+      <td-technical-doc-view [technicalDoc]="technicalDocumentation"></td-technical-doc-view>
     </div>
   </div>
   <div class="side" fxHide.lt-lg>

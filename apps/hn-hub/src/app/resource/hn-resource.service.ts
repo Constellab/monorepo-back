@@ -37,16 +37,14 @@ export class HnResourceService {
       resource.brickMajor = technicalFolder.brickMajorVersion.major;
       resource.uniqueName = r.unique_name;
 
-      resource.className = r.class_name;
       resource.humanName = r.human_name;
 
       //TODO A MODIFIER pour le parent et deprecatedSince
 
       if (r.parent) {
-        resource.parentUniqueName = r.parent.unique_name;
+        resource.parentTypingName = r.parent.typing_name;
         resource.parentHumanName = r.parent.human_name;
         resource.parentMajorVersion = +r.parent.brick_version.split('.')[0];
-        resource.parentBrickName = r.parent.brick_name;
         resource.parentVersion = r.parent.brick_version;
       }
       resource.deprecatedSince = r.deprecated_since;
@@ -67,6 +65,9 @@ export class HnResourceService {
         technicalFolder: {
           id: technicalFolder.id
         }
+      },
+      order: {
+        humanName: 'ASC'
       }
     });
   }
@@ -82,17 +83,16 @@ export class HnResourceService {
 
     if (resource) {
       const doc: any = {
+        brickName: resource.brickName,
         uniqueName: resource.uniqueName,
         humanName:resource.humanName,
         shortDescription: resource.shortDescription,
         doc: resource.doc,
-        brickName: resource.brickName,
-        parentUniqueName: resource.parentUniqueName,
-        parentBrickName: resource.parentBrickName,
+        parentTypingName: resource.parentTypingName,
         parentMajorVersion: resource.parentMajorVersion,
         parentHumanName: resource.parentHumanName,
         parentVersion: resource.parentVersion,
-        resourceType: 'resource'
+        objectType: 'RESOURCE'
       };
 
       return doc;

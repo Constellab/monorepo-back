@@ -16,15 +16,18 @@ import {HnResourceModule} from '../resource/hn-resource.module';
 import {HnResourceService} from '../resource/hn-resource.service';
 import {HnTaskService} from '../task/hn-task.service';
 import {HnTaskModule} from '../task/hn-task.module';
+import {HnProtocolService} from '../protocol/hn-protocol.service';
+import {HnProtocolModule} from '../protocol/hn-protocol.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnBrickMajorVersion]),
     HnBrickVersionModule, HnFolderModule, HnDocumentationModule,
-    HnCoreModule, HnTechnicalFolderModule, HnResourceModule, HnTaskModule],
+    HnCoreModule, HnTechnicalFolderModule, HnResourceModule, HnTaskModule, HnProtocolModule],
   exports: [TypeOrmModule],
   controllers: [HnBrickMajorVersionController],
   providers: [HnBrickMajorVersionService, HnBrickVersionService, HnFolderService,
-    HnDocumentationService, HnTechnicalFolderService, HnResourceService, HnTaskService]
+    HnDocumentationService, HnTechnicalFolderService, HnResourceService,
+    HnTaskService, HnProtocolService]
 })
 export class HnBrickMajorVersionModule {
 }
