@@ -1,0 +1,26 @@
+{
+  "projectType": "library",
+  "root": "libs/technical-doc",
+  "sourceRoot": "libs/technical-doc/src",
+  "prefix": "td",
+  "targets": {
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/technical-doc"],
+      "options": {
+        "jestConfig": "libs/technical-doc/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/technical-doc/src/**/*.ts",
+          "libs/technical-doc/src/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": ["front"]
+}

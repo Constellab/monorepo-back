@@ -1,7 +1,9 @@
 <div class="brick-description" *ngIf="brick != null && lastVersion != null">
   <div class="left-side-div side-description-div">
     <div class="main-description-div">
-      <div class="brick-logo"></div>
+      <div class="brick-logo" [style.background-image]="
+      brick.imageLink ? 'url(\''+ brick.imageLink +'\')' :
+      'url(\'../../../../../assets/images/gencovery-logo.png\')'"></div>
       <div class="brick-info">
         <span class="display-inline">
           <h2 class="brick-name">{{brick.name}}</h2>

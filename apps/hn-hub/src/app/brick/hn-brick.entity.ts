@@ -34,6 +34,9 @@ export class HnBrick extends HnBaseEntity {
   @Column({nullable: true})
   gitRepo: string;
 
+  @Column({nullable: true})
+  imageLink?: string;
+
   initialize(name: string, description: string, isCertified: boolean, repoPip?: string, repoGit?:string): void {
     this.name = name;
     this.description = description;

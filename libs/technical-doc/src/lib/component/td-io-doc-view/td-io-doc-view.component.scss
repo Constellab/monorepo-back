@@ -1,0 +1,22 @@
+.io-div{
+  border-left: solid 1px rgba(255, 255, 255, 0.14);
+  padding-left: 1em;
+  padding-top: 1em;
+  display: flex;
+  flex-direction: column;
+}
+
+.io-div-head{
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+}
+
+.io-div-head *{
+  margin: 0;
+}
+
+
+.io-div-head span{
+  padding-left: 1em;
+}

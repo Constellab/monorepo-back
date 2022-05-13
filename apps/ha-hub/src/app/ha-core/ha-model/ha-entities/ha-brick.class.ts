@@ -15,6 +15,8 @@ export class HaBrick extends HaEntity {
   pipRepo: string;
 
   lastVersion: CmVersion;
+
+  imageLink?: string;
 }
 
 

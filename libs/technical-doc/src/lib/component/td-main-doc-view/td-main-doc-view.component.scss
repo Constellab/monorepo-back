@@ -1,0 +1,16 @@
+p, div, .key-val{
+  margin-top: 1em;
+  padding: 0 35px;
+  text-align: justify;
+}
+
+@media (max-width: 1280px) {
+
+  p, div, span{
+    padding: 0  5px;
+  }
+}
+
+.technical-doc-content{
+  white-space: pre-line;
+}
