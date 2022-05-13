@@ -52,7 +52,8 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
           brick: {name: name},
           major: version.major,
           minor: version.minor,
-          patch: version.patch
+          patch: version.patch,
+          subPatch: version.subPatch
         },
         relations: ['brick']
       });
@@ -73,8 +74,8 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     return this.brickRepo.find({relations: ['versions']});
   }
 
-  public getBrickVersions(brickName: string): Promise<CnBrickVersion[]> {
-    return this.brickVersionRepo.find({
+  public async getBrickVersions(brickName: string): Promise<CnBrickVersion[]> {
+    const brickVersions = await this.brickVersionRepo.find({
       where: {
         brick: {name: brickName},
       },
@@ -85,5 +86,8 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
       },
       relations: ['brick']
     });
+
+    // useful to sort with sub patch
+    return brickVersions.sort((a, b) => a.version.getDif(b.version));
   }
 }

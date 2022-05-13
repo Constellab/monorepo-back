@@ -57,7 +57,7 @@ export class CmVersion {
     return this.getDif(other) === 0;
   }
 
-  private getDif(other: CmVersion): number {
+  public getDif(other: CmVersion): number {
     if (this.major === other.major &&
       this.minor === other.minor &&
       this.patch === other.patch &&
