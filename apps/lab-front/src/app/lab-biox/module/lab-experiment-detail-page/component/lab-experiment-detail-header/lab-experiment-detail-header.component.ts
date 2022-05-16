@@ -197,8 +197,14 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     };
 
     this.dialogService.openConfirmDialog(data).afterClosed().subscribe(
-      (result: FlConfirmDialogResult) => this.onExperimentUpdate(result.result)
+      (result: FlConfirmDialogResult) => this.onExperimentReset(result.result)
     );
+  }
+
+  private onExperimentReset(experiment?: LabExperiment): void {
+    if (experiment) {
+      this.experimentState.updateExperiment(experiment, true);
+    }
   }
 
   deleteExperiment(): void {

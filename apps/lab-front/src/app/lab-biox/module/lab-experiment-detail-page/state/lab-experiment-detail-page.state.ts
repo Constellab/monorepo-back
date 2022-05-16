@@ -75,9 +75,18 @@ export class LabExperimentDetailPageState {
     return this.getExperiment$().pipe(map(experiment => experiment.isEditable()));
   }
 
-  public updateExperiment(experiment: LabExperiment): void {
+  /**
+   * Update the experiment locally
+   * @param experiment
+   * @param refreshWorkflow if true, the flow are reloaded
+   */
+  public updateExperiment(experiment: LabExperiment, refreshWorkflow: boolean = false): void {
     if (experiment == null) return;
     this.experiment$.next(experiment);
+
+    if (refreshWorkflow) {
+      this.refreshAllFlows();
+    }
   }
 
   public updateTags(tags: LabTag[]): void {
@@ -134,14 +143,23 @@ export class LabExperimentDetailPageState {
    * @private
    */
   private refreshFlowsTick(flowIds: string[]): void {
-    const obs: Observable<LabFlow<LabProtocol>>[] = flowIds.map(id => this.protocolService.getProtocolAsFlow(id));
-    this.refreshSubscription = merge(...obs).subscribe(
+    this.refreshSubscription = this.refreshFlows(flowIds).subscribe(
       {
-        next: (flow) => this.refreshFlowSuccess(flow),
-        error: () => console.error('Error during refresh'),
         complete: () => this.checkAndStartRefreshFlow()
       }
     );
+  }
+
+  private refreshAllFlows(): void {
+    this.refreshFlows(Object.keys(this.flows)).subscribe();
+  }
+
+  private refreshFlows(flowIds: string[]): Observable<LabFlow<LabProtocol>> {
+    const obs: Observable<LabFlow<LabProtocol>>[] = flowIds.map(id => this.protocolService.getProtocolAsFlow(id));
+    return merge(...obs).pipe(
+      tap(flow => this.refreshFlowSuccess(flow)),
+    );
+
   }
 
   public stopFlowsRefresh(): void {

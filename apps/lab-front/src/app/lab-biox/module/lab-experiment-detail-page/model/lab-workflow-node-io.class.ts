@@ -1,11 +1,11 @@
 import {LabWorkflowNodeProcess} from './lab-workflow-node-process.class';
 import {LabProcess} from '../../../../lab-core/model/entities/process/lab-process.entity';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, distinctUntilChanged, Observable} from 'rxjs';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
 import {FlStatusEvent} from '@monorepo/front-core-lib';
 import {LabWorkflowPort} from './lab-workflow-port.class';
 import {labGetTypingNameColor} from '../../../../lab-core/entity-module/lab-process-core/utils/lab-process-port-color';
-import {distinct, map, switchMap} from 'rxjs/operators';
+import {map, switchMap} from 'rxjs/operators';
 
 
 /**
@@ -35,12 +35,12 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
   private initLoadedResource(): void {
     this.getObject$().pipe(
       map(process => this.getResourceId(process)),
-      distinct(),
-      switchMap(resourceId => this.loadResource(resourceId))
-    ).subscribe(
-      resource => this.setLoadedResource(resource),
-      error => this.loadedResource$.next({status: 'error', error: error})
-    );
+      distinctUntilChanged(),
+      switchMap(resourceId => this.loadResource(resourceId)),
+    ).subscribe({
+      next: resource => this.setLoadedResource(resource),
+      error: error => this.loadedResource$.next({status: 'error', error: error})
+    });
   }
 
   getHTML(): string {
