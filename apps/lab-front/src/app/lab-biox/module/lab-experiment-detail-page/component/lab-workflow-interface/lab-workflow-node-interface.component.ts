@@ -28,7 +28,7 @@ export class LabWorkflowNodeInterfaceComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.node = this.workflowManager.findNodeWithName(this.name);
+    this.node = this.workflowManager.findNodeWithNameInCurrentLayer(this.name);
     if (this.node == null) {
       console.error('Couldn\'t find node with name : ' + this.name);
     }

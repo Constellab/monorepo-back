@@ -10,7 +10,7 @@ import {
   LabOuterfaceNode
 } from '../../../../lab-core/model/global/lab-connection.class';
 import {LabWorkflowLayer} from '../model/lab-workflow-layer.class';
-import {BehaviorSubject, Observable, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {LabWorkflowConnection} from '../model/lab-workflow-connection.class';
 import {LabExperiment} from '../../../../lab-core/model/entities/lab-experiment.entity';
 import {LabProtocolService} from '../../../../lab-core/entity-service/lab-protocol.service';
@@ -26,12 +26,10 @@ import {LabAddProcessWithLink, LabNodeRelativeCoord} from '../model/lab-workflow
 import {LabExperimentService} from '../../../../lab-core/entity-service/lab-experiment.service';
 import {LabExperimentDetailPageState} from './lab-experiment-detail-page.state';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
-import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
 
 export enum LabWorkflowAction {
   ADD_PROCESS = 'workflow-add-process',
   ADD_PROCESS_WITH_CONNECTIONS = 'workflow-add-process-with-connections',
-  SAVE_CONFIG = 'workflow-save-config',
   DELETE_PROCESS = 'workflow-remove-process',
   ADD_CONNECTION = 'workflow-add-connection',
   DELETE_CONNECTION = 'workflow-delete-connection',
@@ -63,7 +61,7 @@ export class LabWorkflowManagerState {
   private idGenerator: number = 0;
 
   // emit to true when loading
-  private _layerIsLoading$: Subject<boolean> = new BehaviorSubject(false);
+  private _layerIsLoading$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   private actionSubscription: Subscription;
   private flowsSubscription: Subscription;
 
@@ -106,9 +104,21 @@ export class LabWorkflowManagerState {
     if (this.workflow.hasLayer(layerId)) {
       this.workflow.selectLayer(layerId);
     } else {
+      // if a layer is already loading, skip
+      if (this._layerIsLoading$.value) return;
       // load a new layer
       this._layerIsLoading$.next(true);
-      this.experimentState.loadFlow(layerId);
+      this.experimentState.getFlow(layerId).subscribe(
+        {
+          next: (flow) => {
+            this._layerIsLoading$.next(false);
+            if (!this.workflow.hasLayer(flow.object.id)) {
+              this.addProtocolLayer(flow);
+            }
+          },
+          error: () => this._layerIsLoading$.next(false)
+        },
+      );
     }
   }
 
@@ -118,12 +128,8 @@ export class LabWorkflowManagerState {
 
 
   private refreshFlow(flow: LabFlow<LabProtocol>): void {
-    this._layerIsLoading$.next(false);
-
     const layer = this.workflow.findLayerWithId(flow.object.id);
-    if (!layer) {
-      this.addProtocolLayer(flow);
-    } else {
+    if (layer) {
       this.refreshLayerNodeObjects(layer, flow);
     }
   }
@@ -147,13 +153,7 @@ export class LabWorkflowManagerState {
       const node: LabNode = flow.getAllNodesArray().find(n => n.id === workflowNode.currentObject.id);
 
       if (node == null) continue;
-      if (workflowNode instanceof LabWorkflowNodeProcess && node instanceof LabProcess) {
-        workflowNode.updateObject(node);
-      } else if (workflowNode instanceof LabWorkflowNodeInterface && node instanceof LabInterfaceNode) {
-        workflowNode.updateObject(node);
-      } else if (workflowNode instanceof LabWorkflowNodeOuterface && node instanceof LabOuterfaceNode) {
-        workflowNode.updateObject(node);
-      }
+      workflowNode.updateObject(node);
     }
   }
 
@@ -282,8 +282,15 @@ export class LabWorkflowManagerState {
     return this.workflow.getMode();
   }
 
-  public findNodeWithName(name: string): LabWorkflowNode<any> {
+  public findNodeWithNameInCurrentLayer(name: string): LabWorkflowNode<any> {
     return this.workflow.findNodeWithNameInCurrentLayer(name);
+  }
+
+  public findNodeWithName(layerId: string, name: string): LabWorkflowNode<any> {
+    const layer = this.workflow.findLayerWithId(layerId);
+
+    if (layer == null) return null;
+    return layer.findNodeWithName(name);
   }
 
   //////////////////////// INIT NODES AND CONNECTIONS FOR FLOW ////////////////////////////
@@ -355,8 +362,8 @@ export class LabWorkflowManagerState {
    * Convert a Connection to a WorkflowConnection and add it to the current layer
    */
   private addConnection(connection: LabConnection): void {
-    const outputNode: LabWorkflowNode<any> = this.findNodeWithName(connection.from.getNodeName());
-    const inputNode: LabWorkflowNode<any> = this.findNodeWithName(connection.to.getNodeName());
+    const outputNode: LabWorkflowNode<any> = this.findNodeWithNameInCurrentLayer(connection.from.getNodeName());
+    const inputNode: LabWorkflowNode<any> = this.findNodeWithNameInCurrentLayer(connection.to.getNodeName());
 
     const inputPort: LabWorkflowPort = inputNode.findInputPortByName(connection.to.getPort());
     const outputPort: LabWorkflowPort = outputNode.findOutputPortByName(connection.from.getPort());
@@ -365,19 +372,6 @@ export class LabWorkflowManagerState {
       outputPort, inputPort);
     this.workflow.addConnection(workflowConnectionLink);
   }
-
-  //////////////////////// CONFIG ////////////////////////////
-  public updateProcessConfig(node: LabWorkflowNodeProcess, config: LabConfigValues): void {
-    node.updateConfig(config);
-
-    const obs = this.protocolService.saveProcessConfig(node.currentObject.parentProtocolId, node.currentObject.name, config);
-    this.actionsService.addAction({
-      type: LabWorkflowAction.SAVE_CONFIG,
-      action: obs,
-      text: {text: 'biox.saving_config', translateText: true}
-    });
-  }
-
 
   //////////////////////// OTHER ////////////////////////////
 

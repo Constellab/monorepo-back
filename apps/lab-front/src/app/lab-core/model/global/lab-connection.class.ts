@@ -150,13 +150,14 @@ export class LabFlow<T extends LabFlowManager> {
   }
 
   public getAllNodes(): Record<string, LabNode> {
-    return Object.assign(this.object.getNodes(), this.object.interfaceNodes, this.object.outerfaceNodes);
+    return Object.assign({}, this.object.getNodes(), this.object.interfaceNodes, this.object.outerfaceNodes);
   }
 
   public getAllNodesArray(): LabNode[] {
-    const nodes: Record<string, LabNode> = this.object.getNodes();
+    const nodes: Record<string, LabNode> = this.getAllNodes();
     return Object.keys(nodes).map(key => nodes[key]);
   }
+
 
   // return the nodes that do not have any inputs
   public getRootNodes(): LabNode[] {

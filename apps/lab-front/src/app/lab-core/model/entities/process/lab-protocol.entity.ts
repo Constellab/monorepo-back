@@ -76,7 +76,7 @@ export class LabProtocol extends LabProcess implements LabFlowManager {
     return this.data.graph.links;
   }
 
-  getNodes(): Record<string, LabNode> {
+  getNodes(): Record<string, LabProcess> {
     return this.data.graph.nodes;
   }
 
@@ -94,5 +94,9 @@ export class LabProtocol extends LabProcess implements LabFlowManager {
 
   getOutputSpecs(): Record<string, LabIO> {
     return this.outputs;
+  }
+
+  public getProcess(instanceName: string): LabProcess {
+    return this.getNodes()[instanceName];
   }
 }

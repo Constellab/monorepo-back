@@ -4,7 +4,6 @@ import {LabFlow} from '../../../../../lab-core/model/global/lab-connection.class
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
 import {LabProtocol} from '../../../../../lab-core/model/entities/process/lab-protocol.entity';
 import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
-import {first} from 'rxjs/operators';
 
 
 @Component({
@@ -32,10 +31,10 @@ export class LabWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadExperimentFlow(): void {
-    this.experimentState.getMainFlow$().pipe(first()).subscribe(
-      flow => this.loadExperimentFlowSuccess(flow),
-      () => this.onError()
-    );
+    this.experimentState.getMainFlow$().subscribe({
+      next: flow => this.loadExperimentFlowSuccess(flow),
+      error: () => this.onError()
+    });
   }
 
   private loadExperimentFlowSuccess(flow: LabFlow<LabProtocol>): void {

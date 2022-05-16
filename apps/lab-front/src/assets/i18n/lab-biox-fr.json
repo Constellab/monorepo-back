@@ -2,6 +2,7 @@
   "biox": {
     "biox": "Expériences",
     "configuration": "Configuration",
+    "protocol_config": "Protocol configuration",
     "interface": "Interface",
     "outerface": "Outerface",
     "new_experiment": "Nouvelle expérience",
@@ -69,6 +70,8 @@
     "adding_source": "Ajout de '{{resourceName}}'",
     "adding_output": "Ajout d'un output",
     "saving_config": "Sauvegarde de la configuration",
+    "edit_config": "Modifier configuration",
+    "process_no_config": "Pas de configuration",
     "add_source": "Sélectionner une resource",
     "add_output": "Ajouter un output",
     "project": "Projet",

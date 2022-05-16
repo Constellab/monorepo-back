@@ -1,4 +1,4 @@
-import {LabConfig} from '../lab-config.entity';
+import {LabConfig, LabConfigValues} from '../lab-config.entity';
 import {ClRecordTransform} from '@monorepo/core-lib';
 import {LabNode} from '../../global/lab-connection.class';
 import {Expose, Type} from 'class-transformer';
@@ -74,6 +74,10 @@ export class LabProcess extends LabNode {
 
   public hasConfig(): boolean {
     return this.config?.data.specs.hasProperties() ?? false;
+  }
+
+  public updateConfig(config: LabConfigValues): void {
+    this.config.updateConfig(config);
   }
 
 

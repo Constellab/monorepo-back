@@ -23,7 +23,7 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
   labProcess$: Observable<LabProcess>;
   node$: Observable<LabWorkflowNodeProcess>;
 
-  configMode$: Observable<'config' | 'source' | null>;
+  configMode$: Observable<'config' | 'source' | 'protocol' | null>;
   showProgress$: Observable<boolean>;
 
   isEditable$: Observable<boolean>;
@@ -46,9 +46,13 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
     this.isEditable$ = this.experimentState.isEditable$();
   }
 
-  private getConfigMode(process: LabProcess): 'config' | 'source' | null {
+  private getConfigMode(process: LabProcess): 'config' | 'source' | 'protocol' | null {
     if (process.isSource()) {
       return 'source';
+    }
+
+    if(process.isProtocol){
+      return 'protocol';
     }
 
     return process.hasConfig() ? 'config' : null;

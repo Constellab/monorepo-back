@@ -1,0 +1,23 @@
+
+
+.left-section{
+  border-right: 1px solid var(--grey-low-contrast);
+  width: 13em;
+  flex-shrink: 0;
+}
+
+.process{
+  cursor: pointer;
+  padding: 1em;
+  border-bottom: 1px solid var(--grey-low-contrast);
+
+}
+
+.process:hover{
+  background-color: var(--grey-low-contrast);
+}
+
+.right-section{
+  min-width: 20em;
+  flex: 1 0 auto;
+}

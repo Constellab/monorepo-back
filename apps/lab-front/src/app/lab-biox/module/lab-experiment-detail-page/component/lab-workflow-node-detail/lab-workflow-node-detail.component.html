@@ -89,5 +89,18 @@
       </mat-expansion-panel-header>
       <lab-task-source-config></lab-task-source-config>
     </mat-expansion-panel>
+
+    <!-------------------------- Specific to Protocol ---------------------------->
+    <mat-expansion-panel *ngSwitchCase="'protocol'" hideToggle [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
+          <fl-text-icon>
+            <mat-icon>settings</mat-icon>
+            {{'biox.protocol_config' | translate}}
+          </fl-text-icon>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <lab-protocol-config></lab-protocol-config>
+    </mat-expansion-panel>
   </ng-container>
 </div>

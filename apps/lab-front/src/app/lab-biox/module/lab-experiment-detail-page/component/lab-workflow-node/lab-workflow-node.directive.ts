@@ -34,7 +34,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
   }
 
   protected initNode(): void {
-    this.node = this.workflowManager.findNodeWithName(this.name) as LabWorkflowNodeProcess;
+    this.node = this.workflowManager.findNodeWithNameInCurrentLayer(this.name) as LabWorkflowNodeProcess;
     if (this.node == null) {
       console.error('Couldn\'t find node with name : ' + this.name);
     }

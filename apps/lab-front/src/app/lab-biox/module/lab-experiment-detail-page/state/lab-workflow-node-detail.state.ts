@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, firstValueFrom, Observable} from 'rxjs';
 import {LabProcess} from '../../../../lab-core/model/entities/process/lab-process.entity';
 import {switchMap} from 'rxjs/operators';
 import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
 import {LabWorkflowNodeProcess} from '../model/lab-workflow-node-process.class';
 import {LabWorkflowManagerState} from './lab-workflow-manager-state';
+import {LabExperimentDetailPageState} from './lab-experiment-detail-page.state';
 
 /**
  * State to manage the selected node to show it in the drawer
@@ -14,7 +15,8 @@ export class LabWorkflowNodeDetailState {
 
   private node$: BehaviorSubject<LabWorkflowNodeProcess>;
 
-  constructor(private workflowManagerState: LabWorkflowManagerState) {
+  constructor(private workflowManagerState: LabWorkflowManagerState,
+              private experimentState: LabExperimentDetailPageState) {
   }
 
   public init(): void {
@@ -33,11 +35,16 @@ export class LabWorkflowNodeDetailState {
     return this.getNode$().pipe(switchMap(node => node.getObject$()));
   }
 
+  public getProcessPromise(): Promise<LabProcess> {
+    return firstValueFrom(this.getProcess$());
+  }
+
   public clear(): void {
     this.node$.complete();
   }
 
   public updateConfigValues(config: LabConfigValues): void {
-    this.workflowManagerState.updateProcessConfig(this.node$.value, config);
+    const node = this.node$.value;
+    this.experimentState.updateProcessConfig(node.currentObject.parentProtocolId, node.currentObject.name, config);
   }
 }

@@ -46,6 +46,13 @@ import {
 import {RouterModule} from '@angular/router';
 import {LabTypeCoreModule} from '../../../lab-core/entity-module/lab-type-core/lab-type-core.module';
 import {LabWorkflowNodeOutputComponent} from './component/lab-workflow-node-output/lab-workflow-node-output.component';
+import {LabProtocolConfigComponent} from './component/lab-protocol-config/lab-protocol-config.component';
+import {
+  LabConfigureProtocolDialogComponent
+} from './component/lab-configure-protocol-dialog/lab-configure-protocol-dialog.component';
+import {LabConfigureProtocolComponent} from './component/lab-configure-protocol/lab-configure-protocol.component';
+import {LabConfigureProcessComponent} from './component/lab-configure-process/lab-configure-process.component';
+import {LabConfigureTaskComponent} from './component/lab-configure-task/lab-configure-task.component';
 
 
 @NgModule({
@@ -68,6 +75,11 @@ import {LabWorkflowNodeOutputComponent} from './component/lab-workflow-node-outp
     LabExperimentDetailComponent,
     LabExperimentAssociatedReportsComponent,
     LabWorkflowNodeOutputComponent,
+    LabProtocolConfigComponent,
+    LabConfigureProtocolDialogComponent,
+    LabConfigureProtocolComponent,
+    LabConfigureProcessComponent,
+    LabConfigureTaskComponent,
   ],
   imports: [
     CommonModule,

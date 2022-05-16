@@ -1,0 +1,9 @@
+
+<div class="select-button" *ngIf="isEditable$ | async">
+  <button mat-stroked-button type="button"
+          (click)="openConfigureProtocolDialog()"
+          class="g-centered-forced">
+    <mat-icon>edit</mat-icon>
+    {{'biox.edit_config' | translate }}
+  </button>
+</div>

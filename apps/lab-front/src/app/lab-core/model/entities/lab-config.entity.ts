@@ -56,6 +56,10 @@ export class LabConfigData {
   public hasConfig(visibility?: LabConfigSpecVisibility): boolean {
     return this.specs.hasConfigs(visibility);
   }
+
+  public updateValues(config: LabConfigValues): void {
+    this.values = config;
+  }
 }
 
 
@@ -67,6 +71,10 @@ export class LabConfig extends LabBaseEntity {
   // object containing the current configuration values
   @Type(() => LabConfigData)
   data: LabConfigData;
+
+  public updateConfig(config: LabConfigValues): void {
+    this.data.updateValues(config);
+  }
 }
 
 
