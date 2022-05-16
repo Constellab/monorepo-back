@@ -141,6 +141,10 @@ export interface LabFlowManager {
 
   getOuterfacesConnections(): Record<string, LabConnection>;
 
+  addNode(node: LabNode): void;
+
+  removeNode(nodeName: string): void;
+
 }
 
 export class LabFlow<T extends LabFlowManager> {

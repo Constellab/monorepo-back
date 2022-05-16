@@ -99,4 +99,16 @@ export class LabProtocol extends LabProcess implements LabFlowManager {
   public getProcess(instanceName: string): LabProcess {
     return this.getNodes()[instanceName];
   }
+
+  addNode(node: LabNode): void {
+    this.data.graph.nodes[node.name] = node as LabProcess;
+  }
+
+  removeNode(nodeName: string): void {
+    // todo this is not perfect, because it should remove the connections
+    delete this.data.graph.nodes[nodeName];
+  }
+
+
+
 }

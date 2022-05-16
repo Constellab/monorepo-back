@@ -5,6 +5,7 @@ import {LabProcess} from '../../../../lab-core/model/entities/process/lab-proces
 import {
   LabConnection,
   LabFlow,
+  LabFlowManager,
   LabInterfaceNode,
   LabNode,
   LabOuterfaceNode
@@ -83,7 +84,7 @@ export class LabWorkflowManagerState {
     this.workflow.start();
 
     // init the nodes with the job list
-    this.initFlow(mainFlow);
+    this.initFlow(this.workflow.currentLayer, mainFlow);
 
     // listen to the new Process actions
     this.actionSubscription = this.actionsService.getResult$([
@@ -130,7 +131,7 @@ export class LabWorkflowManagerState {
   private refreshFlow(flow: LabFlow<LabProtocol>): void {
     const layer = this.workflow.findLayerWithId(flow.object.id);
     if (layer) {
-      this.refreshLayerNodeObjects(layer, flow);
+      layer.refreshObject(flow);
     }
   }
 
@@ -138,25 +139,9 @@ export class LabWorkflowManagerState {
    * Create a new layer and init it with the protocol information
    */
   private addProtocolLayer(flow: LabFlow<LabProtocol>): void {
-    this.workflow.createSubLayerIfNotExists(flow.object.name, flow.object.title, flow.object);
-    this.initFlow(flow);
+    const layer = this.workflow.createSubLayerIfNotExists(flow.object.name, flow.object.title, flow.object);
+    this.initFlow(layer, flow);
   }
-
-
-  /**
-   * Refresh the layer node objects with flow object
-   */
-  private refreshLayerNodeObjects(layer: LabWorkflowLayer, flow: LabFlow<LabProtocol>): void {
-    // update the layer object
-    layer.object = flow.object;
-    for (const workflowNode of layer.nodes) {
-      const node: LabNode = flow.getAllNodesArray().find(n => n.id === workflowNode.currentObject.id);
-
-      if (node == null) continue;
-      workflowNode.updateObject(node);
-    }
-  }
-
 
   //////////////////////// NODE ////////////////////////////
 
@@ -232,15 +217,18 @@ export class LabWorkflowManagerState {
   private onNewProcess(process: LabProcess, layerId: string, coordX: number = 0, coordY: number = 0): void {
     // convert to node
     const node: LabWorkflowNode<any> = this.createNodeFromProcess(process, process.name, coordX, coordY);
-    // add the node to the workflow
 
-    this.workflow.addNodeToLayer(node, layerId);
+    // add the node to the workflow
+    const layer: LabWorkflowLayer = this.workflow.findLayerWithId(layerId);
+    layer.addNode(node);
   }
 
   private onNewProcessWithConnector(processWithLink: LabAddProcessWithLink, relativeCoord: LabNodeRelativeCoord): void {
     const coord = this.getRelativeNodePosition(relativeCoord);
     this.onNewProcess(processWithLink.process, relativeCoord.layerId, coord.x, coord.y);
-    this.addConnection(processWithLink.link);
+
+    const layer: LabWorkflowLayer = this.workflow.findLayerWithId(relativeCoord.layerId);
+    this.addConnection(layer, processWithLink.link);
   }
 
   private createNodeFromProcess(process: LabProcess, name: string, coordX: number = 0, coordY: number = 0): LabWorkflowNode<any> {
@@ -255,17 +243,17 @@ export class LabWorkflowManagerState {
     }
   }
 
-  public addInterface(): void {
-    const interfaceNode: LabInterfaceNode = LabInterfaceNode.newGenericInterface(this.generateId('i_'));
-    // todo see pos and save on db
-    this.addNodeOnPosition(interfaceNode, 0, 0);
-  }
-
-  public addOuterface(): void {
-    const outerfaceNode: LabOuterfaceNode = LabOuterfaceNode.newGenericInterface(this.generateId('o_'));
-    // todo see pos and save on db
-    this.addNodeOnPosition(outerfaceNode, 0, 0);
-  }
+  // public addInterface(): void {
+  //   const interfaceNode: LabInterfaceNode = LabInterfaceNode.newGenericInterface(this.generateId('i_'));
+  //   // todo see pos and save on db
+  //   this.addNodeOnPosition(interfaceNode, 0, 0);
+  // }
+  //
+  // public addOuterface(): void {
+  //   const outerfaceNode: LabOuterfaceNode = LabOuterfaceNode.newGenericInterface(this.generateId('o_'));
+  //   // todo see pos and save on db
+  //   this.addNodeOnPosition(outerfaceNode, 0, 0);
+  // }
 
   //////////////////////// GETS ////////////////////////////
 
@@ -295,13 +283,13 @@ export class LabWorkflowManagerState {
 
   //////////////////////// INIT NODES AND CONNECTIONS FOR FLOW ////////////////////////////
   // create nodes and connection for a flow
-  private initFlow(protocol: LabFlow<LabProtocol>): void {
+  private initFlow(layer: LabWorkflowLayer, protocol: LabFlow<LabFlowManager>): void {
     // add all nodes
-    this.addNodesRecursively(protocol.getRootNodes(), 0, 0);
+    this.addNodesRecursively(layer, protocol.getRootNodes(), 0, 0);
 
     // create the connections
     for (const step of protocol.getAllConnections()) {
-      this.addConnection(step);
+      this.addConnection(layer, step);
     }
   }
 
@@ -309,22 +297,22 @@ export class LabWorkflowManagerState {
   /**
    * Add the nodes if there have ot already been added and call method on output nodes
    */
-  private addNodesRecursively(nodes: LabNode[], posX: number, basePosY: number): number {
+  private addNodesRecursively(layer: LabWorkflowLayer, nodes: LabNode[], posX: number, basePosY: number): number {
     let currentPosY: number = basePosY - 1;
     for (const node of nodes) {
       // check if the node has already been added
-      if (this.workflow.findNodeWithNameInCurrentLayer(node.name) != null) {
+      if (layer.findNodeWithName(node.name) != null) {
         continue;
       }
 
       currentPosY++;
 
       // and the node and mark it as added
-      this.addNodeOnPosition(node, posX, currentPosY);
+      this.addNodeOnPosition(layer, node, posX, currentPosY);
 
       for (const key of Object.keys(node.outputConnections)) {
         const outputNodes: LabNode[] = node.outputConnections[key].map(output => output.getNode());
-        currentPosY = this.addNodesRecursively(outputNodes, posX + 1, currentPosY);
+        currentPosY = this.addNodesRecursively(layer, outputNodes, posX + 1, currentPosY);
       }
     }
 
@@ -334,11 +322,12 @@ export class LabWorkflowManagerState {
 
   /**
    *
+   * @param layer
    * @param node
    * @param posX position in the workflow like in 2d array
    * @param posY position in the workflow like in 2d array
    */
-  private addNodeOnPosition(node: LabNode, posX: number, posY: number): void {
+  private addNodeOnPosition(layer: LabWorkflowLayer, node: LabNode, posX: number, posY: number): void {
     // convert the 2D position to coords
     const coordX = ((this.htmlNodeWidth + this.htmlDefaultNodeSpaceX) * posX) + this.htmlOffsetX;
     const coordY = ((this.htmlNodeHeight + this.htmlDefaultNodeSpaceY) * posY) + this.htmlOffsetY;
@@ -355,13 +344,13 @@ export class LabWorkflowManagerState {
     }
 
     // and the node and mark it as added
-    this.workflow.addNodeToCurrentLayer(workflowNode);
+    layer.addNode(workflowNode);
   }
 
   /**
    * Convert a Connection to a WorkflowConnection and add it to the current layer
    */
-  private addConnection(connection: LabConnection): void {
+  private addConnection(layer: LabWorkflowLayer, connection: LabConnection): void {
     const outputNode: LabWorkflowNode<any> = this.findNodeWithNameInCurrentLayer(connection.from.getNodeName());
     const inputNode: LabWorkflowNode<any> = this.findNodeWithNameInCurrentLayer(connection.to.getNodeName());
 
@@ -370,7 +359,7 @@ export class LabWorkflowManagerState {
 
     const workflowConnectionLink: LabWorkflowConnection = new LabWorkflowConnection(outputNode, inputNode,
       outputPort, inputPort);
-    this.workflow.addConnection(workflowConnectionLink);
+    layer.addConnection(workflowConnectionLink);
   }
 
   //////////////////////// OTHER ////////////////////////////
@@ -447,10 +436,12 @@ export class LabWorkflowManagerState {
       // revert the DELETE and ADD_CONNECTION actions
       if (actionResult.action.type === LabWorkflowAction.DELETE_CONNECTION) {
         const info: LabWorkflowEventAdditionalInfo = actionResult.additionalInformation;
-        this.workflow.addConnection(info.connection, info.protocolId);
+        const layer = this.workflow.findLayerWithId(info.protocolId);
+        layer.addConnection(info.connection);
       } else if (actionResult.action.type === LabWorkflowAction.ADD_CONNECTION) {
         const info: LabWorkflowEventAdditionalInfo = actionResult.additionalInformation;
-        this.workflow.removeConnection(info.connection, info.protocolId);
+        const layer = this.workflow.findLayerWithId(info.protocolId);
+        layer.removeConnection(info.connection);
       }
     }
   }

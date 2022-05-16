@@ -3,7 +3,7 @@ import {LabWorkflowConnection} from './lab-workflow-connection.class';
 import {LabWorkflowPort} from './lab-workflow-port.class';
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 import {LabWorkflowNodeProcess} from './lab-workflow-node-process.class';
-import {LabFlowManager} from '../../../../lab-core/model/global/lab-connection.class';
+import {LabFlow, LabFlowManager, LabNode} from '../../../../lab-core/model/global/lab-connection.class';
 import {LabEntity} from '../../../../lab-core/model/global/lab-entity.entity';
 
 /**
@@ -40,6 +40,11 @@ export class LabWorkflowLayer {
   public addNode(node: LabWorkflowNode<any>): void {
     this.nodes.push(node);
     this.createAndInitNode(node);
+
+    // update the lab flow object
+    if(this.object.getNodes()[node.nodeName] == null){
+      this.object.addNode(node.currentObject)
+    }
   }
 
   public findNodeWithId(nodeId: string): LabWorkflowNode<any> {
@@ -60,6 +65,9 @@ export class LabWorkflowLayer {
     if (index >= 0) {
       const node: LabWorkflowNode<any> = this.nodes[index];
       this.nodes.splice(index, 1);
+
+      // update the lab flow object
+      this.object.removeNode(node.nodeName);
       return node;
     } else {
       console.error('Couldn\'t find node with id ' + nodeId);
@@ -201,6 +209,20 @@ export class LabWorkflowLayer {
   public resetPortColors(): void {
     for (const node of this.nodes) {
       node.initPortColors();
+    }
+  }
+
+  /**
+   * Refresh the layer node objects with flow object
+   */
+  public refreshObject(flow: LabFlow<LabFlowManager>): void{
+    // update the layer object
+    this.object = flow.object;
+    for (const workflowNode of this.nodes) {
+      const node: LabNode = flow.getAllNodesArray().find(n => n.id === workflowNode.currentObject.id);
+
+      if (node == null) continue;
+      workflowNode.updateObject(node);
     }
   }
 

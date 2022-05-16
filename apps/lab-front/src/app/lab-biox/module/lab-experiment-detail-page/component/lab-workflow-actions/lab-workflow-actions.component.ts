@@ -61,11 +61,11 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
   }
 
   addInterface(): void {
-    this.workflowManager.addInterface();
+    // this.workflowManager.addInterface();
   }
 
   addOuterface(): void {
-    this.workflowManager.addOuterface();
+    // this.workflowManager.addOuterface();
   }
 
 

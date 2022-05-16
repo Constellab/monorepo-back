@@ -123,13 +123,18 @@ export class LabWorkflow {
     layer.selectLayer();
   }
 
-  public createSubLayerIfNotExists(name: string, title: string, object: LabFlowManager): void {
-    if (this.findLayerWithId(object.id) == null) {
+  public createSubLayerIfNotExists(name: string, title: string, object: LabFlowManager, selectLayer: boolean = true): LabWorkflowLayer {
+    let layer: LabWorkflowLayer = this.findLayerWithId(object.id);
+    if (layer == null) {
       this.editor.addModule(object.id);
-      this.layers.push(this.currentLayer.createSubLayer(name, title, object));
+      layer = this.currentLayer.createSubLayer(name, title, object);
+      this.layers.push(layer);
     }
 
-    this.selectLayer(object.id);
+    if (selectLayer) {
+      this.selectLayer(object.id);
+    }
+    return layer;
   }
 
   public hasLayer(layerId: string): boolean {
@@ -161,18 +166,6 @@ export class LabWorkflow {
   }
 
   ////////////////////// NODE ///////////////////////////
-  public addNodeToCurrentLayer(node: LabWorkflowNode<any>): void {
-    this.currentLayer.addNode(node);
-  }
-
-  public addNodeToLayer(node: LabWorkflowNode<any>, layerId: string): void {
-    const layer: LabWorkflowLayer = this.findLayerWithId(layerId);
-    if (layer == null) {
-      console.error(`Can't add the node because the layer ${layerId} doesn't exist`);
-      return;
-    }
-    layer.addNode(node);
-  }
 
   private onNodeRemoved(nodeId: number): void {
     const node = this.currentLayer.removeNode(nodeId.toString());
@@ -220,16 +213,6 @@ export class LabWorkflow {
 
   ////////////////////// CONNECTION ///////////////////////////
 
-  /**
-   * Add connection to the current layer, it doesn't trigger the event
-   */
-  public addConnection(connection: LabWorkflowConnection, layerId?: string): void {
-    const layer: LabWorkflowLayer = layerId ? this.findLayerWithId(layerId) : this.currentLayer;
-    if (layer) {
-      this.currentLayer.addConnection(connection);
-    }
-  }
-
   private onConnectionCreated(connectionEvent: ConnectionEvent): void {
     // check if input is available for the node
     const inputNode: LabWorkflowNode<any> = this.findNodeWithId(connectionEvent.input_id);
@@ -263,16 +246,6 @@ export class LabWorkflow {
         connection: newConnection,
         protocolId: this.currentLayer.object.id
       });
-    }
-  }
-
-  /**
-   * Remove connection programmatically, it doesn't trigger a delete event
-   */
-  public removeConnection(connection: LabWorkflowConnection, layerId: string): void {
-    const layer: LabWorkflowLayer = layerId ? this.findLayerWithId(layerId) : this.currentLayer;
-    if (layer) {
-      this.currentLayer.removeConnection(connection);
     }
   }
 

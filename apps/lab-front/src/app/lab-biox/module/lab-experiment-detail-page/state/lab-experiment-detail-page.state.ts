@@ -220,7 +220,10 @@ export class LabExperimentDetailPageState {
   public updateProcessConfig(protocolId: string, processInstanceName: string, config: LabConfigValues): void {
     const node = this.findNodeWithName(protocolId, processInstanceName);
 
-    if (node == null) return;
+    if (node == null){
+      console.error(`Could not find node with name ${processInstanceName} in protocol ${protocolId}`);
+      return;
+    }
 
     const flow = this.flows[protocolId];
 
