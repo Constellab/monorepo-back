@@ -1,10 +1,10 @@
-import {Injectable} from '@nestjs/common';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {Injectable, Logger} from '@nestjs/common';
+import {Observable, throwError} from 'rxjs';
+import {catchError, map} from 'rxjs/operators';
 import {BlExternalApiHttpOption, BlExternalApiHttpOptionObserve} from './bl-external-api.class';
 import {ClCoreJsonConvert, ClDeserializationRef, ClPageI} from '@monorepo/core-lib';
 import {BlExternalApiErrorService} from './bl-external-api-error.service';
-import {AxiosResponse} from 'axios';
+import {AxiosError, AxiosResponse} from 'axios';
 import {HttpService} from '@nestjs/axios';
 
 @Injectable()
@@ -25,7 +25,8 @@ export class BlExternalApiService {
   public post(route: string, body: any, classReference?: ClDeserializationRef,
               options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.httpService.post(route, this.convertObjectToPlain(body), options).pipe(
-      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated))
+      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
+      catchError(err => this.catchError(err, route)),
     );
   }
 
@@ -39,7 +40,8 @@ export class BlExternalApiService {
   public put(route: string, body: any, classReference?: ClDeserializationRef,
              options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.httpService.put(route, this.convertObjectToPlain(body), options).pipe(
-      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated))
+      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
+      catchError(err => this.catchError(err, route)),
     );
   }
 
@@ -52,7 +54,8 @@ export class BlExternalApiService {
   public delete(route: string, classReference?: ClDeserializationRef,
                 options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.httpService.delete(route, options).pipe(
-      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated))
+      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
+      catchError(err => this.catchError(err, route)),
     );
   }
 
@@ -65,7 +68,8 @@ export class BlExternalApiService {
   public get(route: string, classReference?: ClDeserializationRef,
              options: BlExternalApiHttpOption = {}): Observable<any> {
     return this.httpService.get(route, options).pipe(
-      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated))
+      map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
+      catchError(err => this.catchError(err, route)),
     );
   }
 
@@ -125,6 +129,15 @@ export class BlExternalApiService {
       console.error('Response object not paginated');
       throw 'Response object not paginated';
     }
+  }
+
+  private catchError(error: AxiosError, route: string): Observable<any> {
+    if(error?.message){
+      Logger.error(`[BLApiService] Error during call to route '${route}' : ${error.message}`);
+    }else{
+      Logger.error(`[BLApiService] Error during call to route '${route}' : ${error}`);
+    }
+    return throwError(error as any);
   }
 
   /**
