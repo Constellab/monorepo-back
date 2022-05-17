@@ -1,4 +1,5 @@
-import {AxiosRequestConfig} from 'axios';
+import {AxiosError, AxiosRequestConfig} from 'axios';
+import {CmNestApiError} from '@monorepo/common-model';
 
 export type BlExternalApiHttpOptionObserve = 'data' | 'response';
 
@@ -6,7 +7,7 @@ export interface BlExternalApiHttpOption extends AxiosRequestConfig {
   /**
    * if set to true the call supposed that the result is a {@link ClPage}
    * and if a class reference is provided to convert the result to class with json converter,
-   * the Page.content will be convert to class reference array
+   * the Page.content will be converted to class reference array
    */
   resultIsPaginated?: boolean;
 
@@ -16,4 +17,11 @@ export interface BlExternalApiHttpOption extends AxiosRequestConfig {
    * If data, it only returns the content of the response
    */
   observe?: BlExternalApiHttpOptionObserve;
+}
+
+export interface BlExternalApiError{
+  status: number;
+  message: string;
+  error: AxiosError;
+  knownError?: CmNestApiError;
 }

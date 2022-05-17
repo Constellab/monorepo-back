@@ -1,7 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import {Observable, throwError} from 'rxjs';
 import {catchError, map} from 'rxjs/operators';
-import {BlExternalApiHttpOption, BlExternalApiHttpOptionObserve} from './bl-external-api.class';
+import {BlExternalApiError, BlExternalApiHttpOption, BlExternalApiHttpOptionObserve} from './bl-external-api.class';
 import {ClCoreJsonConvert, ClDeserializationRef, ClPageI} from '@monorepo/core-lib';
 import {BlExternalApiErrorService} from './bl-external-api-error.service';
 import {AxiosError, AxiosResponse} from 'axios';
@@ -131,13 +131,28 @@ export class BlExternalApiService {
     }
   }
 
-  private catchError(error: AxiosError, route: string): Observable<any> {
-    if(error?.message){
-      Logger.error(`[BLApiService] Error during call to route '${route}' : ${error.message}`);
-    }else{
-      Logger.error(`[BLApiService] Error during call to route '${route}' : ${error}`);
+  private catchError(error: AxiosError, route: string): Observable<never> {
+
+    const apiError: BlExternalApiError = {
+      status: error.response ? error.response.status : null,
+      message: error.message ?? '',
+      error: error
+    };
+
+    const errorData = error.response?.data ?? {};
+    // If the error is formatted like : CmNestApiError
+    if (errorData && errorData.status && errorData.code && errorData.detail && errorData.instanceId) {
+      apiError.knownError = errorData;
+      apiError.message = errorData.detail;
     }
-    return throwError(error as any);
+
+    if (apiError.message) {
+      Logger.error(`[BLApiService] Error during call to route '${route}' : ${apiError.message}`);
+    } else {
+      Logger.error(`[BLApiService] Error during call to route '${route}'`);
+    }
+    return throwError(apiError as any);
+
   }
 
   /**
