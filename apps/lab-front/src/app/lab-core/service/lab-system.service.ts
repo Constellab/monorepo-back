@@ -38,13 +38,9 @@ export class LabSystemService {
           if (err.response.status === 0 || err.response.status === 504) {
             return of(null);
           }
-          return throwError(err);
+          return throwError(err as any);
         }),
         tap(() => this.labEnvStore.setLabEnvironment('prod'))
       );
-  }
-
-  public healthCheck(): Observable<void> {
-    return this.apiService.get(`health-check`);
   }
 }

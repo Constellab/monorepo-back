@@ -14,6 +14,8 @@
     "call_migration_help_text": "/!\\ USE THIS FUNCTIONALITY ONLY IF YOU KNOW WHAT YOU ARE DOING /!\\\n\n. This let you call a migration script manually of a specific brick version.",
     "select_migration_version": "Select a migration version",
     "call_migration": "Call migration",
-    "call_migration_success": "Call migration success"
+    "call_migration_success": "Call migration success",
+    "lab_name": "Lab name",
+    "front_version": "Interface version"
   }
 }
