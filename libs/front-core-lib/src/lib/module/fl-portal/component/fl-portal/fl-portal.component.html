@@ -1,11 +1,12 @@
+<div flPortalZIndex [flPortalZIndexDisabled]="flPortalZIndexDisabled">
+  <ng-content select="fl-portal-header">
+  </ng-content>
 
-<ng-content select="fl-portal-header">
-</ng-content>
+  <div class="content g-scrollable-element">
+    <ng-content select="fl-portal-content"></ng-content>
+  </div>
 
-<div class="content g-scrollable-element">
-  <ng-content select="fl-portal-content"></ng-content>
+
+  <ng-content select="fl-portal-footer">
+  </ng-content>
 </div>
-
-
-<ng-content select="fl-portal-footer">
-</ng-content>

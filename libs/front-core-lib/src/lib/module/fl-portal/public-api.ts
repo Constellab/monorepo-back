@@ -16,6 +16,7 @@ export * from './component/fl-tooltip/fl-tooltip.component';
 
 // Export the directives
 export * from './directive/fl-portal-close.directive';
+export * from './directive/fl-portal-z-index.directive';
 
 // Export model
 export * from './model/fl-overlay-ref.class';

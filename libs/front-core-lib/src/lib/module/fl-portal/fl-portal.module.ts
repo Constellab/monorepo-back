@@ -15,6 +15,7 @@ import {FlPortalComponent} from './component/fl-portal/fl-portal.component';
 import {FlPortalContentComponent} from './component/fl-portal-content/fl-portal-content.component';
 import {FlPortalFooterComponent} from './component/fl-portal-footer/fl-portal-footer.component';
 import {FlPortalHeaderButtonsComponent} from './component/fl-portal-header-buttons/fl-portal-header-buttons.component';
+import {FlPortalZIndexDirective} from './directive/fl-portal-z-index.directive';
 
 /**
  * Core modules containing components
@@ -29,6 +30,7 @@ import {FlPortalHeaderButtonsComponent} from './component/fl-portal-header-butto
     FlPortalContentComponent,
     FlPortalFooterComponent,
     FlPortalHeaderButtonsComponent,
+    FlPortalZIndexDirective,
   ],
   exports: [
     FlPortalCloseDirective,
@@ -37,6 +39,7 @@ import {FlPortalHeaderButtonsComponent} from './component/fl-portal-header-butto
     FlPortalContentComponent,
     FlPortalFooterComponent,
     FlPortalHeaderButtonsComponent,
+    FlPortalZIndexDirective,
   ],
   imports: [
     CommonModule,
