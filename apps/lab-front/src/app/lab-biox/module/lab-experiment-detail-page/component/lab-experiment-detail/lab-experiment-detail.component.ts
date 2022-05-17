@@ -2,7 +2,13 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {LabExperiment} from '../../../../../lab-core/model/entities/lab-experiment.entity';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
-import {FlDebouncer, FlQuillJson, FlTextEditorBasicConfig, FlTextEditorConfig} from '@monorepo/front-core-lib';
+import {
+  FlDebouncer,
+  FlQuillJson,
+  FlTagDialogService,
+  FlTextEditorBasicConfig,
+  FlTextEditorConfig
+} from '@monorepo/front-core-lib';
 import {LabExperimentService} from '../../../../../lab-core/entity-service/lab-experiment.service';
 
 /**
@@ -23,7 +29,8 @@ export class LabExperimentDetailComponent implements OnInit, OnDestroy {
   private descriptionDebouncer: FlDebouncer<FlQuillJson>;
 
   constructor(private experimentState: LabExperimentDetailPageState,
-              private experimentService: LabExperimentService) {
+              private experimentService: LabExperimentService,
+              private tagDialogService: FlTagDialogService) {
   }
 
   ngOnInit(): void {
@@ -51,6 +58,20 @@ export class LabExperimentDetailComponent implements OnInit, OnDestroy {
 
   private saveDescriptionSuccess(description: FlQuillJson): void {
     this.experimentState.updateDescription(description);
+  }
+
+  openTagsFormDialog(): void {
+    const experiment = this.experimentState.currentExperiment;
+    this.tagDialogService.openUpdateTagDialog({
+      tags: experiment.tags,
+      updateMethod: (tags) => this.experimentService.saveTags(experiment.id, tags)
+    }).afterClosed().subscribe(
+      newTags => {
+        if (newTags != null) {
+          this.experimentState.updateTags(newTags);
+        }
+      }
+    );
   }
 
   ngOnDestroy(): void {

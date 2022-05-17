@@ -4,7 +4,13 @@
   <fl-article-left-side>
 
     <!--  Tags  -->
-    <fl-tag-list class="tag-list" [tags]="experiment.tags"></fl-tag-list>
+    <div fxLayout="row">
+      <fl-tag-list fxFlex="auto" [tags]="experiment.tags"></fl-tag-list>
+      <button mat-icon-button type="button" class="g-button-icon-small"
+      (click)="openTagsFormDialog()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
 
     <!--  Project  -->
     <div *ngIf="experiment.project" class="separator">
