@@ -51,7 +51,7 @@ export class LabWorkflowPort {
   /**
    * return the port color base on first type
    */
-  public getColor(): string {
+  public getDefaultColor(): string {
     return labGetProcessPortColor(this.specs);
   }
 }

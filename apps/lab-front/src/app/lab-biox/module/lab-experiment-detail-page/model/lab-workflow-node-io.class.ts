@@ -86,15 +86,20 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
     );
   }
 
-  private getCurrentResourceId(): string | null {
+  private getCurrentResource(): LabResource | null {
     const resourceStatus = this.loadedResource$.value;
-    return resourceStatus?.status === 'success' && resourceStatus.object ? resourceStatus.object.id : null;
+    return resourceStatus?.status === 'success' && resourceStatus.object ? resourceStatus.object : null;
   }
 
   public setLoadedResource(resource: LabResource): void {
     this.loadedResource$.next({status: 'success', object: resource});
     // refresh the port color base on selected resource
     this.setPortColor(resource);
+  }
+
+
+  public initPortColors(): void {
+    this.setPortColor(this.getCurrentResource());
   }
 
   // set the port color based on selected resource
@@ -108,7 +113,7 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
     if (resource) {
       this.setPortElementColor(portElement, labGetTypingNameColor(resource.resourceTypingName));
     } else {
-      this.setPortElementColor(portElement, port.getColor());
+      this.setPortElementColor(portElement, port.getDefaultColor());
     }
   }
 
