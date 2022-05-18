@@ -26,6 +26,9 @@ import {
   FlTextEditorTitleCaptionComponent
 } from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
 import {FlTextEditorHint} from './model/fl-text-editor-hint.class';
+import {
+  FlTextEditorDragButtonsComponent
+} from './component/fl-text-editor-drag-buttons/fl-text-editor-drag-buttons.component';
 
 
 @NgModule({
@@ -34,6 +37,7 @@ import {FlTextEditorHint} from './model/fl-text-editor-hint.class';
     FlTextEditorBlockAddButtonComponent,
     FlTextEditorFigureComponent,
     FlTextEditorTitleCaptionComponent,
+    FlTextEditorDragButtonsComponent,
   ],
   exports: [
     FlTextEditorComponent,

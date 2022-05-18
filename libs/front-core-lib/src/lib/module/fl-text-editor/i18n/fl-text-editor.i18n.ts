@@ -12,7 +12,8 @@ const flTextEditorI18nFr: FlLangTranslation = {
     ok: 'Ok',
     hint_classic: 'Aide',
     hint_warning: 'Warning',
-    hint_scientific: 'Info scientifique'
+    hint_scientific: 'Info scientifique',
+    move_block: 'Drag to move'
   }
 };
 
@@ -23,7 +24,8 @@ const flTextEditorI18nEn: FlLangTranslation = {
     ok: 'Ok',
     hint_classic: 'Hint',
     hint_warning: 'Warning',
-    hint_scientific: 'Scientific info'
+    hint_scientific: 'Scientific info',
+    move_block: 'Glisser pour déplacer'
   }
 };
 

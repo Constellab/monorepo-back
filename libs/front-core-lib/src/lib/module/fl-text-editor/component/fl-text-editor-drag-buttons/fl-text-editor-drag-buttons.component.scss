@@ -1,0 +1,9 @@
+.drag-indicator{
+  cursor: grab;
+}
+
+.drag-bar{
+  height: 3px;
+  background-color: var(--primary-color);
+  border-radius: 5px;
+}

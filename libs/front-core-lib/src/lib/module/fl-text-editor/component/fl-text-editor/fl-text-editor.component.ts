@@ -73,7 +73,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   @Output() textChange: EventEmitter<any> = new EventEmitter<any>();
   @ViewChild('editor', {static: true}) editorElement: ElementRef<HTMLElement>;
 
-  quill: Quill;
+  private quill: Quill;
 
   private blockAddButtonOverlay?: FlOverlayRef;
 
@@ -106,8 +106,7 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
       }
     );
 
-    this.state.init(this.quill, this.config, this.disabled);
-
+    this.state.init(this.quill, this.config, this.editorElement.nativeElement, this.disabled);
 
     // init the HTML with the value set
     this.setQuillValue(this.value);

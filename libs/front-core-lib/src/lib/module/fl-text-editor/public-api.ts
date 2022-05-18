@@ -4,6 +4,7 @@ export * from './fl-text-editor.module';
 // Components
 export * from './component/fl-text-editor/fl-text-editor.component';
 export * from './component/fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
+export * from './component/fl-text-editor-drag-buttons/fl-text-editor-drag-buttons.component';
 export * from './component/fl-text-editor-figure/fl-text-editor-figure.component';
 export * from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
 

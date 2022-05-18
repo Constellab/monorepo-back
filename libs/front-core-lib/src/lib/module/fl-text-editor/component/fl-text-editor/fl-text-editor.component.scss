@@ -13,3 +13,13 @@
   max-height: inherit;
   height: inherit;
 }
+
+.drag-indicator{
+  cursor: grab;
+}
+
+.drag-bar{
+  width: 500px;
+  height: 2px;
+  background-color: var(--grey-low-contrast);
+}

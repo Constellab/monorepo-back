@@ -9,6 +9,8 @@ import {FlTextEditorHintType} from '../model/fl-text-editor-hint.class';
 @Injectable()
 export class FlTextEditorState implements OnDestroy {
 
+  public textEditorContainer: HTMLElement;
+
   private quill: Quill;
 
   private disabled$: BehaviorSubject<boolean>;
@@ -19,9 +21,10 @@ export class FlTextEditorState implements OnDestroy {
   }
 
 
-  public init(quill: Quill, config: FlTextEditorConfig, disabled: boolean): void {
+  public init(quill: Quill, config: FlTextEditorConfig, textEditorContainer: HTMLElement, disabled: boolean): void {
     this.quill = quill;
     this.config = config;
+    this.textEditorContainer = textEditorContainer;
     this.disabled$ = new BehaviorSubject(disabled);
   }
 
@@ -67,6 +70,64 @@ export class FlTextEditorState implements OnDestroy {
     return this.getCurrentSelection().index;
   }
 
+
+  //////////////////////////////////////// ELEMENT MANIP /////////////////////////////////
+
+  /**
+   * Return the block element of an element in the text editor
+   * @param element
+   * @private
+   */
+  public getEditorBlockElement(element: HTMLElement): HTMLElement {
+    let target: HTMLElement = element;
+    let previousTarget: HTMLElement = null;
+
+    const editorElement = this.getQlEditorElement();
+
+    while (target != null && target !== editorElement) {
+      previousTarget = target;
+      target = target.parentElement;
+    }
+
+    return previousTarget;
+  }
+
+  /**
+   * Retrieve the text editor block from an page y position
+   * @param pageY
+   */
+  public getBlockFromMouseYPosition(pageY: number): HTMLElement {
+    const editor = this.getQlEditorElement();
+
+    let previousChild: HTMLElement = null;
+    for (let i = 0; i < editor.childNodes.length; i++) {
+      const child: HTMLElement = editor.childNodes[i] as HTMLElement;
+      const rect = child.getBoundingClientRect();
+
+      // when the top of the rect is greater (meaning bellow the mouse), we stop and return the previous child
+      if(rect.top > pageY) {
+        return previousChild;
+      }
+      previousChild = child;
+    }
+
+    return null;
+  }
+
+  /**
+   * return true if the element is an empty block in the text editor
+   * @param element
+   * @private
+   */
+  public isEmptyBlock(element: HTMLElement): boolean {
+    return element.children.length === 1 && (element.childNodes[0] as HTMLElement).tagName === 'BR';
+  }
+
+  public getQlEditorElement(): HTMLElement {
+    return this.textEditorContainer.querySelector('.ql-editor');
+  }
+
+
   //////////////////////////////////////// OTHER /////////////////////////////////
 
   public setDisabled(disabled: boolean): void {
@@ -76,7 +137,6 @@ export class FlTextEditorState implements OnDestroy {
   public getDisabled$(): Observable<boolean> {
     return this.disabled$.asObservable();
   }
-
   ngOnDestroy(): void {
     this.disabled$?.complete();
   }
