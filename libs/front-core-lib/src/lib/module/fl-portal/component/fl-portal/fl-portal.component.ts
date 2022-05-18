@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 /**
  * Generic component to use on portal to normalize style and prevent portal form being too big
@@ -11,12 +11,8 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class FlPortalComponent implements OnInit {
 
-  /**
-   * When true flPortalZIndex directive is disabled. Portal won't be moved on top of others on mousedown
-   */
-  @Input() flPortalZIndexDisabled: boolean = false;
-
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
