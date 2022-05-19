@@ -7,15 +7,23 @@ import {LabSearchConverter} from '../../../model/global/lab-search-converter.cla
  * config for the lab type search component
  */
 export type LabTypeSearchConfig =
-  // Mode to filter on Task or protocol by default
+// Mode to filter on Task or protocol by default
   {
-    mode: 'taskOrProtocol'
+    mode: 'taskOrProtocol';
   } |
   // Mode to filter on transformer for a specific resource
   {
-    mode: 'transformer',
-    resourceTypingName: string
+    mode: 'transformer';
+    resourceTypingName: string;
+  } |
+
+  // Mode to filter on importers for a specific resource and extension
+  {
+    mode: 'importer';
+    resourceTypingName: string;
+    extension: string;
   }
+
 
 /**
  * Format of the data for the Advanced search form of the resource
@@ -25,8 +33,8 @@ export class LabTypeSearchFields {
   text: string;
   objectType: LabTypeObjectType[];
   objectSubType: LabTypeObjectSubType;
-  relatedModelTypingName: string;
   includeDeprecated: boolean;
+  importerIgnoreExtension: boolean; // only for importer mode, if true we don't filter on file extension
 }
 
 
@@ -38,7 +46,8 @@ export class LabTypeSearch {
   public static advancedSearchManagerConfig: FlFormInputsManagerConfig<LabTypeSearchFields> = {
     text: 'name',
     objectSubType: 'biox.process_type_type',
-    includeDeprecated: 'biox.type_include_deprecated'
+    includeDeprecated: 'biox.type_include_deprecated',
+    importerIgnoreExtension: 'biox.type_importer_ignore_extension'
   };
 
   /**
@@ -49,7 +58,7 @@ export class LabTypeSearch {
     text: {key: 'text', operator: 'MATCH'},
     objectType: {key: 'object_type', operator: 'IN'},
     objectSubType: {key: 'object_sub_type', operator: 'EQ'},
-    relatedModelTypingName: {key: 'related_model_typing_name', operator: 'EQ'},
+    importerIgnoreExtension: {key: 'importer_ignore_extension', operator: 'EQ'},
     includeDeprecated: {key: 'include_deprecated', operator: 'EQ', convertValue: LabSearchConverter.includeAllOnCheck}
   };
 
@@ -60,7 +69,7 @@ export class LabTypeSearch {
         text: [null],
         objectType: [null],
         objectSubType: [null],
-        relatedModelTypingName: [null],
+        importerIgnoreExtension: [null],
         includeDeprecated: [null],
       }
     );

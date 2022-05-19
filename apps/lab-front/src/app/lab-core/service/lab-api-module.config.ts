@@ -11,14 +11,15 @@ import {LabEnvironmentHelper} from '../utils/lab-environment.helper';
 interface LabPaginatedResponse {
   objects: any[];
   page: number;
-  prev_page: number,
-  next_page: number,
-  last_page: number,
-  total_number_of_items: number,
-  total_number_of_pages: number,
-  number_of_items_per_page: number,
-  is_first_page: boolean,
-  is_last_page: boolean
+  prev_page: number;
+  next_page: number;
+  last_page: number;
+  total_number_of_items: number;
+  total_number_of_pages: number;
+  number_of_items_per_page: number;
+  is_first_page: boolean;
+  is_last_page: boolean;
+  total_is_approximate?: boolean;
 }
 
 /**
@@ -43,6 +44,7 @@ export class LabApiServiceConfig extends FlApiServiceConfig {
         pageSize: json.number_of_items_per_page,
         totalElements: json.total_number_of_items,
         objects: ClCoreJsonConvert.deserialize(json.objects, classReference),
+        totalIsApproximate: json.total_is_approximate
       };
     } else {
       console.error('Response object not paginated');

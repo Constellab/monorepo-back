@@ -12,6 +12,7 @@ export interface ClPageI<T> {
   totalElements: number;
   currentPage: number;
   pageSize: number;
+  totalIsApproximate?: boolean; // if true the totalElements might not be accurate
 }
 
 export class ClPage<T> implements ClPageI<T> {

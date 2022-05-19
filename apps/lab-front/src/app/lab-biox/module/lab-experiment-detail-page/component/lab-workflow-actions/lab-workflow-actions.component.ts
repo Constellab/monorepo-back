@@ -9,9 +9,9 @@ import {
   FlSnackBarService
 } from '@monorepo/front-core-lib';
 import {
-  LabSelectProcessTypeDialogComponent,
-  LabSelectProcessTypeDialogInput
-} from '../../../../../lab-core/entity-module/lab-type-core/component/lab-select-process-type-dialog/lab-select-process-type-dialog.component';
+  LabSelectTypeDialogComponent,
+  LabSelectTypeDialogInput
+} from '../../../../../lab-core/entity-module/lab-type-core/component/lab-select-type-dialog/lab-select-type-dialog.component';
 import {LabTypeEntity} from '../../../../../lab-core/model/entities/lab-type/lab-type.entity';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
 import {Observable} from 'rxjs';
@@ -48,8 +48,10 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
   }
 
   addProcess(): void {
-    const data: LabSelectProcessTypeDialogInput = {mode: 'taskOrProtocol'}
-    this.dialogService.openBigDialog(LabSelectProcessTypeDialogComponent, {data: data}).afterClosed().subscribe(
+    const data: LabSelectTypeDialogInput = {
+      searchConfig: {mode: 'taskOrProtocol'}
+    };
+    this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: data}).afterClosed().subscribe(
       processType => this.onSelectTypeClosed(processType)
     );
   }

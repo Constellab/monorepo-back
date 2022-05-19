@@ -25,4 +25,8 @@ export class LabTypeAdvancedSearchFormComponent implements OnInit {
     return this.config.mode === 'taskOrProtocol';
   }
 
+  get showImporterIgnoreExtensionField(): boolean {
+    return this.config.mode === 'importer';
+  }
+
 }

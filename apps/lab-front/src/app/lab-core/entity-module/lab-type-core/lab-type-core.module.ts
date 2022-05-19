@@ -7,21 +7,19 @@ import {LabTypeSearchComponent} from './component/lab-type-search/lab-type-searc
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabCoreModule} from '../../lab-core.module';
 import {LabBrickCoreModule} from '../lab-brick-core/lab-brick-core.module';
-import {
-  LabSelectProcessTypeDialogComponent
-} from './component/lab-select-process-type-dialog/lab-select-process-type-dialog.component';
+import {LabSelectTypeDialogComponent} from './component/lab-select-type-dialog/lab-select-type-dialog.component';
 import {LabProcessCoreModule} from '../lab-process-core/lab-process-core.module';
 
 @NgModule({
   declarations: [
     LabTypeAdvancedSearchFormComponent,
     LabTypeSearchComponent,
-    LabSelectProcessTypeDialogComponent
+    LabSelectTypeDialogComponent
   ],
   exports: [
     LabTypeAdvancedSearchFormComponent,
     LabTypeSearchComponent,
-    LabSelectProcessTypeDialogComponent,
+    LabSelectTypeDialogComponent,
   ],
   imports: [
     CommonModule,

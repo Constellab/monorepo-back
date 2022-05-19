@@ -13,9 +13,9 @@ import {FlDialogService, FlGlobalValidators} from '@monorepo/front-core-lib';
 import {LabTransformerWithConfig} from '../../../../model/global/lab-transformer.class';
 import {LabTypeService} from '../../../../entity-service/lab-type.service';
 import {
-  LabSelectProcessTypeDialogComponent,
-  LabSelectProcessTypeDialogInput
-} from '../../../lab-type-core/component/lab-select-process-type-dialog/lab-select-process-type-dialog.component';
+  LabSelectTypeDialogComponent,
+  LabSelectTypeDialogInput
+} from '../../../lab-type-core/component/lab-select-type-dialog/lab-select-type-dialog.component';
 
 interface LabSelectedTransformer {
   transformer: LabProcessType;
@@ -46,6 +46,7 @@ export class LabTransformResourceComponent implements OnInit {
   formArray: FormArray<LabTransformResourceForm>;
 
   loadingProcessType: boolean = false;
+
   constructor(private typeService: LabTypeService,
               private controlContainer: ControlContainer,
               private cdr: ChangeDetectorRef,
@@ -121,8 +122,13 @@ export class LabTransformResourceComponent implements OnInit {
   }
 
   selectTransformer(): void {
-    const data: LabSelectProcessTypeDialogInput = {mode: 'transformer', resourceTypingName: this.resourceTypingName};
-    this.dialogService.openBigDialog(LabSelectProcessTypeDialogComponent, {data: data}).afterClosed().subscribe(
+    const data: LabSelectTypeDialogInput = {
+      searchConfig: {
+        mode: 'transformer',
+        resourceTypingName: this.resourceTypingName
+      }
+    };
+    this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: data}).afterClosed().subscribe(
       processType => this.loadAndAddTransformer(processType)
     );
   }

@@ -1,38 +1,28 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ComponentRef,
-  Inject,
-  OnInit,
-  ViewChild,
-  ViewContainerRef
-} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {
   LabConfigureSpecsFormComponent
 } from '../../../lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
 import {LabConfigData, LabConfigureSpecsForm, LabConfigValues} from '../../../../model/entities/lab-config.entity';
-import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {FlFormHelper, FlOverlayRef, FlSnackBarService} from '@monorepo/front-core-lib';
+import {FormGroup} from '@ngneat/reactive-forms';
+import {FlDialogService, FlFormHelper, FlOverlayRef, FlSnackBarService} from '@monorepo/front-core-lib';
 import {LabRouterService} from '../../../../service/lab-router.service';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabProcessType} from '../../../../model/entities/lab-type/lab-process-type.entity';
-import {Validators} from '@angular/forms';
-import {LabResourceImporterType} from '../../../../model/entities/resource/lab-resource.dto';
 import {LabTypingName} from '../../../../model/entities/lab-typing-name.class';
+import {
+  LabSelectTypeDialogComponent,
+  LabSelectTypeDialogInput
+} from '../../../lab-type-core/component/lab-select-type-dialog/lab-select-type-dialog.component';
+import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
+import {LabTypeService} from '../../../../entity-service/lab-type.service';
 
 export interface LabImportResourceDialogInput {
   resourceId: string;
   resourceHumanName: string;
   resourceTypingName: string;
   nodeExtension: string;
-}
-
-interface LabImportResourceDialogForm {
-  importer: LabProcessType;
-  config: LabConfigureSpecsForm;
 }
 
 /**
@@ -42,109 +32,100 @@ interface LabImportResourceDialogForm {
   selector: 'lab-import-resource-dialog',
   templateUrl: './lab-import-resource-dialog.component.html',
   styleUrls: ['./lab-import-resource-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LabImportResourceDialogComponent implements OnInit {
+export class LabImportResourceDialogComponent implements OnInit, OnDestroy {
 
-  @ViewChild('viewContainer', {static: false, read: ViewContainerRef}) viewContainer: ViewContainerRef;
+  formGp: FormGroup<LabConfigureSpecsForm>;
 
-  groupImporters: LabResourceImporterType[];
-
-  formGp: FormGroup<LabImportResourceDialogForm>;
+  selectedImporterType: LabProcessType = null;
   configData: LabConfigData;
 
-  getIsLoading: boolean = false;
+  processTypeIsLoading: boolean = false;
   callIsLoading: boolean = false;
-
-  resourceNoImportable: boolean = false;
-
-  resourceHumanName: string;
-
-  private viewComponentRef: ComponentRef<LabConfigureSpecsFormComponent>;
 
   private detailOverlayRef: FlOverlayRef;
 
   constructor(@Inject(MAT_DIALOG_DATA) private input: LabImportResourceDialogInput,
+              private dialogService: FlDialogService,
               private dialogRef: MatDialogRef<LabImportResourceDialogComponent>,
               private resourceService: LabResourceService,
+              private typingService: LabTypeService,
               private routerService: LabRouterService,
-              private snackBarService: FlSnackBarService,
-              private cdr: ChangeDetectorRef) {
-    this.resourceHumanName = input.resourceHumanName;
+              private snackBarService: FlSnackBarService) {
   }
 
   ngOnInit(): void {
-    this.getIsLoading = true;
-    this.resourceService.getImporters(this.input.resourceTypingName, this.input.nodeExtension).subscribe({
-      next: groupImporters => this.getImportersSuccess(groupImporters),
-      error: () => this.getImportersError()
-    });
+    const defaultImporter = this.getDefaultImporterTypingName(this.input.nodeExtension);
 
-    // on dialog close, close the overlay ref
-    this.dialogRef.beforeClosed().subscribe(() => this.detailOverlayRef?.dispose());
+    if (defaultImporter) {
+      this.loadImporterType(defaultImporter);
+    } else {
+      this.openImportSelectDialog();
+    }
   }
 
-  private getImportersSuccess(groupImporters: LabResourceImporterType[]): void {
-    this.groupImporters = groupImporters;
-    this.getIsLoading = false;
+  openImportSelectDialog(): void {
+    const input: LabSelectTypeDialogInput = {
+      searchConfig: {
+        mode: 'importer',
+        resourceTypingName: this.input.resourceTypingName,
+        extension: this.input.nodeExtension
+      },
+      title: 'biox.select_importer'
+    };
 
-    const defaultValue: LabProcessType = this.getDefaultImporter(this.input.nodeExtension, groupImporters);
-
-    this.formGp = new FormBuilder().group({
-      importer: [defaultValue, Validators.required],
-      config: [null]
-    });
-
-    // let time to refresh the view to be able to access html container
-    setTimeout(() => {
-      if (defaultValue) {
-        this.selectImporter(defaultValue);
-      }
-      this.cdr.markForCheck();
-    }, 0);
-
-    this.cdr.markForCheck();
+    this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: input}).afterClosed().subscribe(
+      (importer: LabTypeEntity) => this.loadImporterType(importer?.typingName ?? null)
+    );
   }
 
-  private getImportersError(): void {
-    this.resourceNoImportable = true;
-    this.getIsLoading = false;
+  private loadImporterType(importerTypingName: string): void {
+    if (importerTypingName == null || importerTypingName === this.selectedImporterType?.typingName) return;
+
+    this.formGp = null;
+    this.configData = null;
+    this.selectedImporterType = null;
+
+    this.processTypeIsLoading = true;
+
+    // timeout is useful to let the page refresh to the is recreated even if
+    // the observable finished quickly
+    setTimeout(() => this.typingService.getTyping(importerTypingName).subscribe({
+      next: importer => this.selectImporter(importer),
+      error: () => this.processTypeIsLoading = false
+    }), 0);
   }
+
 
   selectImporter(importer: LabProcessType): void {
-    this.configData = LabConfigData.fromSpecs(importer.configSpecs);
-    this.formGp.setControl('config', LabConfigureSpecsFormComponent.buildFormGroup(this.configData));
-    this.formGp.updateValueAndValidity();
+    this.processTypeIsLoading = false;
 
-    // build the component manually for force it to reload
-    this.viewComponentRef?.destroy();
-    this.viewComponentRef = this.viewContainer.createComponent(LabConfigureSpecsFormComponent);
-    this.viewComponentRef.instance.configData = this.configData;
+    this.selectedImporterType = importer;
+    this.configData = LabConfigData.fromSpecs(importer.configSpecs);
+    this.formGp = LabConfigureSpecsFormComponent.buildFormGroup(this.configData);
   }
 
   get showNoConfigMessage(): boolean {
-    return this.formGp.value.importer && !this.formGp.value.importer?.hasConfigSpecs();
+    return this.selectedImporterType && !this.selectedImporterType.hasConfigSpecs();
   }
 
   submit(): void {
     if (this.callIsLoading) return;
     if (this.formGp.valid) {
-      const value: LabConfigValues = {...this.formGp.value.config.public, ...this.formGp.value.config.protected};
-      this.callImport(this.formGp.value.importer, value);
+      const value: LabConfigValues = {...this.formGp.value.public, ...this.formGp.value.protected};
+      this.callImport(value);
     } else {
       FlFormHelper.markAllAsTouched(this.formGp);
     }
   }
 
-  private callImport(importer: LabProcessType, configValue: LabConfigValues): void {
+  private callImport(configValue: LabConfigValues): void {
     this.callIsLoading = true;
-    this.resourceService.callImporter(this.input.resourceId, importer.typingName, configValue).subscribe(
-      resource => this.callImportSuccess(resource),
-      () => {
-        this.callIsLoading = false;
-        this.cdr.markForCheck();
-      }
-    );
+    this.resourceService.callImporter(this.input.resourceId, this.selectedImporterType.typingName, configValue)
+      .subscribe({
+        next: resource => this.callImportSuccess(resource),
+        error: () => this.callIsLoading = false
+      });
   }
 
   private callImportSuccess(resource: LabResource): void {
@@ -154,28 +135,24 @@ export class LabImportResourceDialogComponent implements OnInit {
   }
 
 
-  // get default importer based on file extension
-  private getDefaultImporter(extension: string, groupImporters: LabResourceImporterType[]): LabProcessType | null {
-    // // if there is only one importer, select it
-    if (groupImporters.length === 1 && groupImporters[0].importers.length === 1) {
-      return groupImporters[0].importers[0];
-    }
+  // get default importer typing name based on file extension
+  private getDefaultImporterTypingName(extension: string): string | null {
     if (['csv', 'tsv', 'xls', 'xlsx'].includes(extension)) {
-      return this.findImporter(LabTypingName.importer.tableImporter, groupImporters);
+      return LabTypingName.importer.tableImporter;
     } else if (extension === 'json') {
-      return this.findImporter(LabTypingName.importer.jsonImporter, groupImporters);
+      return LabTypingName.importer.jsonImporter;
     } else if (extension === 'txt') {
-      return this.findImporter(LabTypingName.importer.textImporter, groupImporters);
+      return LabTypingName.importer.textImporter;
     }
 
     return null;
   }
 
-  private findImporter(importerTypingName: string, groupImporters: LabResourceImporterType[]): LabProcessType | null {
-    for (const group of groupImporters) {
-      const importer = group.importers.find(importer => importer.typingName === importerTypingName);
-      if (importer) return importer;
-    }
-    return null;
+
+  ngOnDestroy(): void {
+    // on dialog close, close the overlay ref
+    this.detailOverlayRef?.dispose();
   }
+
+
 }

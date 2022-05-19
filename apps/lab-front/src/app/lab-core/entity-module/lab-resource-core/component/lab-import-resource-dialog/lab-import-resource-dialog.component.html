@@ -2,68 +2,51 @@
   {{'biox.import_resource' | translate}}
 </fl-dialog-header>
 
-<mat-dialog-content>
-  <div *ngIf="getIsLoading; else ready" class="g-text-centered">
+<mat-dialog-content class="content">
+  <!--   Small explanation text     -->
+  <div class="g-text-light help-text">
+    {{'biox.import_resource_text' | translate }}
+  </div>
+
+  <div class="g-text-centered">
+    <button mat-stroked-button type="button" (click)="openImportSelectDialog()">
+      {{'biox.select_importer' | translate}}
+    </button>
+  </div>
+
+  <div *ngIf="processTypeIsLoading" class="g-text-centered">
     <fl-loader size="medium"></fl-loader>
   </div>
 
-  <ng-template #ready>
-    <div *ngIf="!resourceNoImportable; else noImportable">
-      <!--   Small explanation text     -->
-      <div class="g-text-light help-text">
-        {{'biox.import_resource_text' | translate }}
-      </div>
 
-      <!--   The import need config, show the form   -->
-      <form (ngSubmit)="submit()" [formGroup]="formGp">
+  <form *ngIf="selectedImporterType" (ngSubmit)="submit()" [formGroup]="formGp">
 
-        <mat-form-field class="g-full">
-          <mat-label>{{'biox.select_importer' | translate}}</mat-label>
-          <mat-select formControlName="importer" [placeholder]="'biox.select_importer' | translate"
-                      (selectionChange)="selectImporter($event.value)">
-            <mat-optgroup *ngFor="let groupImporter of groupImporters"
-                          [label]="groupImporter.resource.humanName">
-              <mat-option *ngFor="let importer of groupImporter.importers" [value]="importer">
-                {{importer.humanName}}
-              </mat-option>
-            </mat-optgroup>
-          </mat-select>
-          <mat-error *ngIf="formGp.get('importer').hasError('required')">
-            {{'biox.select_importer' | flErrorRequired}}
-          </mat-error>
-        </mat-form-field>
+    <mat-divider class="divider"></mat-divider>
+    <!--   Info about importer with button to see detail     -->
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+      <h2>{{selectedImporterType.humanName}}</h2>
 
-        <!--   Info about importer with button to see detail     -->
-        <div *ngIf="formGp.value.importer" fxLayout="row" fxLayoutAlign="space-between center">
-          <span class="g-text-light short-description">
-            {{formGp.value.importer.shortDescription || formGp.value.importer.humanName}}
-          </span>
-
-          <lab-process-type-show-detail-button [processTypingName]="formGp.value.importer.typingName">
-          </lab-process-type-show-detail-button>
-        </div>
-
-
-        <div formGroupName="config">
-          <!--     lab-configure-specs-form     -->
-          <ng-template #viewContainer></ng-template>
-        </div>
-
-        <!--   If the import doesn't need config   -->
-        <div *ngIf="showNoConfigMessage" class="g-text-light">
-          {{'biox.resource_import_no_config' | translate}}
-        </div>
-
-        <button mat-flat-button color="primary" type="submit"
-                class="g-centered-forced submit-button">
-          {{'biox.import_resource' | translate}}
-          <fl-button-loader *ngIf="callIsLoading"></fl-button-loader>
-        </button>
-      </form>
+      <lab-process-type-show-detail-button [processTypingName]="selectedImporterType.typingName">
+      </lab-process-type-show-detail-button>
+    </div>
+    <div class="g-text-light short-description">
+      {{selectedImporterType.shortDescription || selectedImporterType.humanName}}
     </div>
 
-    <ng-template #noImportable>
-      <fl-error-text [errorMessage]="'biox.resource_not_importable' | translate"></fl-error-text>
-    </ng-template>
-  </ng-template>
+    <div>
+      <lab-configure-specs-form [configData]="configData"></lab-configure-specs-form>
+    </div>
+
+    <!--   If the import doesn't need config   -->
+    <div *ngIf="showNoConfigMessage" class="g-text-light">
+      {{'biox.resource_import_no_config' | translate}}
+    </div>
+
+    <button mat-flat-button color="primary" type="submit"
+            class="g-centered-forced submit-button">
+      {{'biox.import_resource' | translate}}
+      <fl-button-loader *ngIf="callIsLoading"></fl-button-loader>
+    </button>
+  </form>
+
 </mat-dialog-content>

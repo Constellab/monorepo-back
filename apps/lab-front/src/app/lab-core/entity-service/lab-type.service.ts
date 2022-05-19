@@ -39,25 +39,32 @@ export class LabTypeService {
   }
 
   public getAdvancedSearchFunction(): FLSearchFunction<LabTypeEntity> {
-    return (page: number, pageSize: number, filters?: LabTypeSearchFields) => this.advancedSearch(page, pageSize, filters);
+    return (page: number, pageSize: number, filters?: LabTypeSearchFields) =>
+      this.advancedSearch(`${this.route}/advanced-search`, page, pageSize, filters);
   }
 
-  public advancedSearch(page: number, pageSize: number, filters: LabTypeSearchFields): Observable<ClPageI<LabTypeEntity>> {
+  public getImporterAdvancedSearchFunction(resourceTypingName: string, extension: string): FLSearchFunction<LabTypeEntity> {
+    const route: string = `${this.route}/importers/search/${resourceTypingName}/${extension}`;
+    return (page: number, pageSize: number, filters?: LabTypeSearchFields) =>
+      this.advancedSearch(route, page, pageSize, filters);
+  }
 
+  public getTransformerAdvancedSearchFunction(resourceTypingName: string): FLSearchFunction<LabTypeEntity> {
+    const route: string = `${this.route}/transformers/search/${resourceTypingName}`;
+    return (page: number, pageSize: number, filters?: LabTypeSearchFields) =>
+      this.advancedSearch(route, page, pageSize, filters);
+  }
+
+  private advancedSearch(route: string, page: number, pageSize: number,
+                         filters: LabTypeSearchFields): Observable<ClPageI<LabTypeEntity>> {
     const data: FlAdvancedSearchInput = {
       filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, LabTypeSearch.advancedSearchConverter),
       sortsCriteria: null
     };
 
-    return this.apiService.post(`${this.route}/advanced-search`, data, LabTypeEntity, {
+    return this.apiService.post(route, data, LabTypeEntity, {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
   }
-
-  public getTransformerByResourceType(resourceTypingName: string): Observable<LabTypeEntity[]> {
-    return this.apiService.getWithCache(`${this.route}/transformers/${resourceTypingName}`,
-      LabProcessType).getObs();
-  }
-
 
 }

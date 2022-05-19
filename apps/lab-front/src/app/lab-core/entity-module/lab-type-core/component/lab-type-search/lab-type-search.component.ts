@@ -2,6 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   FlSavedSearch,
   FlSearchConfig,
+  FLSearchFunction,
   FlSearchState,
   FlTableColumn,
   flThemeDetailLight
@@ -60,29 +61,43 @@ export class LabTypeSearchComponent implements OnInit {
 
     // set hidden filters based on config
     let hiddenFilters: Partial<LabTypeSearchFields>;
+    let searchFunction: FLSearchFunction;
 
-    if (this.config.mode === 'taskOrProtocol') {
-      hiddenFilters = {objectType: ['TASK', 'PROTOCOL']};
-      this.columns = [
-        'name',
-        {columnName: 'description', accessor: 'shortDescription'},
-        'objectSubType', 'detail'];
-    } else {
-      hiddenFilters = {
-        objectType: ['TASK', 'PROTOCOL'],
-        objectSubType: 'TRANSFORMER',
-        relatedModelTypingName: this.config.resourceTypingName
-      };
-      // don't set the objectSubType because it is always transformers
-      this.columns = [
-        'name',
-        {columnName: 'description', accessor: 'shortDescription'}, 'detail'];
+    switch (this.config.mode) {
+      case 'taskOrProtocol':
+        searchFunction = this.typeService.getAdvancedSearchFunction();
+
+        hiddenFilters = {objectType: ['TASK', 'PROTOCOL']};
+        this.columns = [
+          'name',
+          {columnName: 'description', accessor: 'shortDescription'},
+          'objectSubType', 'detail'];
+        break;
+      case 'transformer':
+        searchFunction = this.typeService.getTransformerAdvancedSearchFunction(this.config.resourceTypingName);
+
+        // don't set the objectSubType because it is always transformers
+        this.columns = [
+          'name',
+          {columnName: 'description', accessor: 'shortDescription'}, 'detail'];
+        break;
+      case 'importer':
+        searchFunction = this.typeService.getImporterAdvancedSearchFunction(this.config.resourceTypingName,
+          this.config.extension);
+
+        // don't set the objectSubType because it is always importers
+        this.columns = [
+          'name',
+          {columnName: 'description', accessor: 'shortDescription'}, 'detail'];
+        break;
     }
+
+
     this.searchState.setHiddenFilters(hiddenFilters);
 
     const config: FlSearchConfig = {
       version: 1,
-      searchFunc: this.typeService.getAdvancedSearchFunction(),
+      searchFunc: searchFunction,
       buildAdvancedForm: LabTypeSearch.getAdvancedSearchForm,
       advancedFormClass: LabTypeSearchFields,
       savedSearch: savedSearch,
