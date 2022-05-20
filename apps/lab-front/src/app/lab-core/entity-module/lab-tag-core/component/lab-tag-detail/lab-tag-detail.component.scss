@@ -1,0 +1,41 @@
+
+.element {
+  cursor: pointer;
+}
+
+.element:hover {
+  background-color: var(--grey-low-contrast);
+}
+
+.key {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-radius: 20px;
+  padding-left: 0.5em;
+}
+
+.key-text {
+  margin-left: 0.5em;
+}
+
+.values-container {
+}
+
+.value {
+  display: block;
+  padding-left: 3.3em;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
+  border: 2px solid transparent;
+  border-radius: 20px;
+}
+
+.selected{
+  border-color: var(--color-foreground);
+}
+
+.color{
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}

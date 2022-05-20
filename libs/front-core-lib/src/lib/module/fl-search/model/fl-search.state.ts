@@ -82,21 +82,22 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
 
   // call advanced search from a saved search
   public callAdvancedSearchFromObject(searchCriteria: Record<string, any>): void {
-    const advancedSearchObject = this.callAdvancedSearch(searchCriteria);
-    this.patchAdvancedFormGroup(searchCriteria);
-
-    const timestamp = this.generateSearchTimestamp();
-    if (this.config.storeSearchInUrl) {
-      this.saveAdvancedSearchInUrl(advancedSearchObject, timestamp);
-    }
+    this.resetAdvancedFormGroup(searchCriteria);
+    this.callAdvancedSearchFromForm();
   }
+
+  public patchFormValueAndCallSearch(searchCriteria: Record<string, any>): void {
+    this.advancedSearchFormGroup.patchValue(searchCriteria);
+    this.callAdvancedSearchFromForm();
+  }
+
 
   // call the advanced search from a URL change
   private callAdvancedSearchFromUrl(filtersCriteria: Record<string, any>, timestamp: string): void {
     this.callAdvancedSearch(filtersCriteria);
     this.lastSearchTimestamp = timestamp;
 
-    this.patchAdvancedFormGroup(filtersCriteria);
+    this.resetAdvancedFormGroup(filtersCriteria);
   }
 
   // method to just call advanced search function
@@ -239,7 +240,7 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
     this.hiddenFilters = hiddenFilters;
   }
 
-  private patchAdvancedFormGroup(value: any): void {
+  private resetAdvancedFormGroup(value: any): void {
     this.advancedSearchFormGroup.reset(value);
   }
 

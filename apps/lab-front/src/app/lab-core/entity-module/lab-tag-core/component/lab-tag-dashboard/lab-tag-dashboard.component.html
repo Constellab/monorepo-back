@@ -1,0 +1,7 @@
+<div *ngIf="tags">
+  <div *ngFor="let tag of tags">
+    <lab-tag-detail [tagEntity]="tag.tag"
+                    [selectedValue]="tag.selectedValue?.value"
+                    (selectedValueChange)="selectTag(tag, $event)"></lab-tag-detail>
+  </div>
+</div>

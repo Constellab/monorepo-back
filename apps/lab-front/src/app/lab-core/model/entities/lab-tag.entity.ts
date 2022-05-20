@@ -1,4 +1,4 @@
-import {FlTag, FlTagEntity} from '@monorepo/front-core-lib';
+import {FlDatasourcePaginated, FlTag, FlTagEntity} from '@monorepo/front-core-lib';
 import {LabEntity} from '../global/lab-entity.entity';
 
 /**
@@ -17,3 +17,4 @@ export class LabTagEntity extends LabEntity implements FlTagEntity {
   values: string[];
 }
 
+export type LabTagDatasource = FlDatasourcePaginated<LabTagEntity>;

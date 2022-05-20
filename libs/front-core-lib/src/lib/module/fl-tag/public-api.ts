@@ -11,5 +11,8 @@ export * from './component/fl-tags-select-colors/fl-tags-select-colors.component
 // service
 export * from './fl-tag-dialog.service';
 
+// pipe
+export * from './pipe/fl-tag-color.pipe';
+
 // Models
 export * from './fl-tag.class';

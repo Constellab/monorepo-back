@@ -81,6 +81,17 @@ export class LabResource extends LabBaseEntityWithUser {
     return this.origin === 'UPLOADED';
   }
 
+  addTag(tag: LabTag): void {
+    const index = this.tags.findIndex(t => t.key === tag.key);
+
+    if (index >= 0) {
+      this.tags.splice(index, 1);
+    }
+    this.tags.push(tag);
+
+    this.tags = [...this.tags];
+  }
+
 }
 
 

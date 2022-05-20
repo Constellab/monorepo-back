@@ -1,0 +1,19 @@
+<div fxLayout="row" fxLayoutAlign="start center" class="element key" (click)="toggleExpanded()">
+  <mat-icon class="g-icon-small">{{icon}}</mat-icon>
+  <div class="key-text">{{tagEntity.key}}</div>
+</div>
+
+<!--   Values  -->
+<div *ngIf="isExpanded" class="values-container g-text-small">
+
+  <div *ngFor="let value of tagEntity.values" class="value element" (click)="selectTag(value)"
+       flDraggable [flDraggableType]="dragType" [flDraggableData]="getFlTag(value)"
+       [ngClass]="{'selected': isSelected(value)}"
+       fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+
+    <div class="color" [style.background-color]="getFlTag(value) | flTagColor"></div>
+    <div>
+      {{value}}
+    </div>
+  </div>
+</div>

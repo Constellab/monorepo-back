@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormGroup} from '@angular/forms';
-import {FlSearchState} from '@monorepo/front-core-lib';
+import {FlSearchState, FlTag} from '@monorepo/front-core-lib';
+import {LabResourceSearchFields} from '../../model/lab-resource-advanced-search.class';
 
 /**
  * Work within the lab-resource-search and this manage the advanced search form
@@ -19,6 +20,17 @@ export class LabResourceAdvancedSearchFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGp = this.searchState.advancedSearchFormGroup;
+  }
+
+  searchOnTag(tag: FlTag): void {
+    const search: Partial<LabResourceSearchFields> = {
+      tags: [tag]
+    };
+    this.searchState.patchFormValueAndCallSearch(search);
+  }
+
+  onTagSelectionChange(): void{
+    this.searchState.callAdvancedSearchFromForm();
   }
 
 

@@ -11,6 +11,7 @@ import {
   FlCorePipeModule,
   FlDateModule,
   FlDialogModule,
+  FlDragModule,
   FlDrawerModule,
   FlDynamicFieldModule,
   FlExpansionMenuModule,
@@ -79,6 +80,7 @@ import {RvResourceViewModule} from '@monorepo/resource-view';
     FlResizeModule,
     FlColorModule,
     FlExpansionMenuModule,
+    FlDragModule,
 
     //  Other lib
     RvResourceViewModule,

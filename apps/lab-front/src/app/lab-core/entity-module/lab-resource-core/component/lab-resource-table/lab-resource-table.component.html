@@ -95,7 +95,8 @@
   <!-- Mode link -->
   <ng-template #notSelectable>
     <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
-             [routerLink]="row | labDetailRoute"></mat-row>
+             [routerLink]="row | labDetailRoute"
+             flDragHover="drag-element" [flDragHoverMode]="supportedDropType" (flDrop)="onDrop(row, $event)"></mat-row>
   </ng-template>
 </mat-table>
 

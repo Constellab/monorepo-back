@@ -25,6 +25,8 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FlCoreComponentModule} from '../fl-core-component/fl-core-component.module';
 import {FlColorModule} from '../fl-color/fl-color.module';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {FlTagColorPipe} from './pipe/fl-tag-color.pipe';
+import {MatRippleModule} from '@angular/material/core';
 
 
 @NgModule({
@@ -33,7 +35,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     FlTagComponent,
     FlTagFormDialogComponent,
     FlTagListComponent,
-    FlTagsSelectColorsComponent
+    FlTagsSelectColorsComponent,
+    FlTagColorPipe
   ],
   exports: [
     FlTagInputComponent,
@@ -41,6 +44,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     FlTagFormDialogComponent,
     FlTagListComponent,
     FlTagsSelectColorsComponent,
+    FlTagColorPipe,
   ],
   imports: [
     CommonModule,
@@ -55,6 +59,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatButtonModule,
     FlexLayoutModule,
     MatTooltipModule,
+    MatRippleModule,
 
     FlTranslateModule,
     FlDialogModule,

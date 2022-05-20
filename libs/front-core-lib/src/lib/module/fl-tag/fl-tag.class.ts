@@ -1,4 +1,5 @@
 import {Observable} from 'rxjs';
+import {FlColorHelper} from '../../utils/fl-color-helper.class';
 
 /**
  * Simple tag with key value
@@ -115,6 +116,10 @@ export class FlTagHelper {
       });
     });
     return tagsColors;
+  }
+
+  public static getTagDefaultColor(key: string, value: string): string {
+    return FlColorHelper.stringToRGBColor(`${key}${FlTagHelper.KEY_VALUE_SEPARATOR}${value}`);
   }
 }
 

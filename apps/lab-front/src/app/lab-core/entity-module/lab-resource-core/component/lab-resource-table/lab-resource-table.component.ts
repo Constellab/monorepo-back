@@ -7,10 +7,12 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {FlArrayObs, FlTableAbstractDirective, FlTag, FlTagSelectedEvent} from '@monorepo/front-core-lib';
+import {FlArrayObs, FlDropEvent, FlTableAbstractDirective, FlTag, FlTagSelectedEvent} from '@monorepo/front-core-lib';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {LabTag} from '../../../../model/entities/lab-tag.entity';
+import {LabDragType} from '../../../../model/global/lab-drag-type.class';
+import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 
 /**
  * Table to show resource with possibility actions on resource and a select mode
@@ -33,7 +35,11 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
 
   @Output() tagSelected: EventEmitter<FlTag> = new EventEmitter();
 
-  constructor(private cdr: ChangeDetectorRef) {
+  // enable drop tags
+  supportedDropType: LabDragType = LabDragType.TAG;
+
+  constructor(private cdr: ChangeDetectorRef,
+              private resourceService: LabResourceService) {
     super(['created', 'action', 'name', 'info', 'tags']);
   }
 
@@ -70,5 +76,13 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
   onTagSelected(tagEvent: FlTagSelectedEvent): void {
     ClHelpService.stopEventPropagation(tagEvent.event);
     this.tagSelected.next(tagEvent.tag);
+  }
+
+  onDrop(resource: LabResource, event: FlDropEvent<FlTag>): void {
+    if(!event.data) return;
+
+    resource.addTag(event.data);
+    this.resourceService.saveTags(resource.id, resource.tags).subscribe();
+    this.cdr.markForCheck();
   }
 }

@@ -1,8 +1,4 @@
-<mat-chip-list class="list" [selectable]="false">
-  <mat-chip *ngFor="let tag of tags | slice:0:limitNumber" [flTag]="tag"
-            [removable]="false" [selectable]="tagSelectable"
-            class="g-mat-chip-small" [ngClass]="{'selectable' : tagSelectable}"
-            [disableRipple]="!tagSelectable"
-            (click)="selectTag(tag, $event)"></mat-chip>
-</mat-chip-list>
-
+<div>
+  <fl-tag *ngFor="let tag of tags | slice:0:limitNumber" [flTag]="tag"
+          (click)="selectTag(tag, $event)"></fl-tag>
+</div>

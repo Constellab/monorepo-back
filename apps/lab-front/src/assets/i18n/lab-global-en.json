@@ -79,6 +79,7 @@
   "begin_date": "Start date",
   "end_date": "End date",
   "search": "Search",
+  "advanced_search": "Advanced search",
   "count_result": "{{count}} Results",
   "queue_jobs": "Execution queue",
   "empty_queue": "There is no experiment in the execution queue",

@@ -1,7 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FlInputMaxLengthDirective} from './fl-input-max-length/fl-input-max-length.directive';
-import {FlDragHoverDirective} from './fl-drag-hover/fl-drag-hover.directive';
 import {FlPortalModule} from '../fl-portal/fl-portal.module';
 import {FlForByIdOfDirective} from './fl-for-by-id-of/fl-for-by-id-of.directive';
 import {FlMouseHoverDirective} from './fl-mouse-hover/fl-mouse-hover.directive';
@@ -18,7 +17,6 @@ import {FlElasticSearchDirective} from './fl-elastic-search/fl-elastic-search.di
 @NgModule({
   declarations: [
     FlInputMaxLengthDirective,
-    FlDragHoverDirective,
     FlForByIdOfDirective,
     FlMouseHoverDirective,
     FlOutsideClickDirective,
@@ -29,7 +27,6 @@ import {FlElasticSearchDirective} from './fl-elastic-search/fl-elastic-search.di
   ],
   exports: [
     FlInputMaxLengthDirective,
-    FlDragHoverDirective,
     FlForByIdOfDirective,
     FlMouseHoverDirective,
     FlOutsideClickDirective,

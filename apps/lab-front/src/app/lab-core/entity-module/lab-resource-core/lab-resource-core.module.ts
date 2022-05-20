@@ -46,6 +46,7 @@ import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
 import {LabResourceFolderComponent} from './component/lab-resource-folder/lab-resource-folder.component';
 import {LabResourcesListComponent} from './component/lab-resources-list/lab-resources-list.component';
 import {LabExperimentCoreModule} from '../lab-experiment-core/lab-experiment-core.module';
+import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 
 
 @NgModule({
@@ -101,6 +102,7 @@ import {LabExperimentCoreModule} from '../lab-experiment-core/lab-experiment-cor
     LabProcessCoreModule,
     LabUserCoreModule,
     LabExperimentCoreModule,
+    LabTagCoreModule,
   ],
 })
 export class LabResourceCoreModule {

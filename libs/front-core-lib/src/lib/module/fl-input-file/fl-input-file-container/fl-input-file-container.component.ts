@@ -4,7 +4,7 @@ import {FlInputFileDirective} from '../fl-input-file.directive';
 import {NgControl} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
-import {FlDropFileEvent} from '../../fl-core-directive/fl-drag-hover/fl-drop-file-event.class';
+import {FlDropEvent} from '../../fl-drag/fl-drag.class';
 
 /**
  * @internal
@@ -170,7 +170,7 @@ export class FlInputFileContainerComponent extends _FlInputFileContainerComponen
     }
   }
 
-  onDropFile(event: FlDropFileEvent): void {
+  onDropFile(event: FlDropEvent): void {
     this.inputFile.fileChanged(event.event.dataTransfer.files);
   }
 

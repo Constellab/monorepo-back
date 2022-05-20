@@ -123,7 +123,7 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
     const search: Partial<LabResourceSearchFields> = {
       tags: [tag]
     };
-    this.searchState.callAdvancedSearchFromObject(search);
+    this.searchState.patchFormValueAndCallSearch(search);
   }
 
 

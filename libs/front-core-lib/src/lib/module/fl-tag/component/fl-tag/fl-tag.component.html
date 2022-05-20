@@ -1,3 +1,14 @@
-{{flTag.key}} : {{flTag.value}}
-<mat-icon *ngIf="removable" matChipRemove>cancel</mat-icon>
+
+<fl-chip class="chip">
+  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+    <div class="color" [style.background-color]="flTag | flTagColor">
+    </div>
+
+    <div>{{flTag.key}} : {{flTag.value}}</div>
+
+<!--    <button mat-icon-button class="g-button-icon-tiny">-->
+<!--      <mat-icon>cancel</mat-icon>-->
+<!--    </button>-->
+  </div>
+</fl-chip>
 

@@ -69,7 +69,7 @@ export class FlColorHelper {
       this.orange, this.pink, this.brown, this.blueGreen, this.darkBlue,
       this.red, this.darkGreen, this.beige, this.lightGreen, this.mallow, this.greenShiny,
       this.grey, this.blueGrey, this.palePurple];
-    if(transparencyAlpha === 1){
+    if (transparencyAlpha === 1) {
       return colorList;
     }
 
@@ -79,7 +79,7 @@ export class FlColorHelper {
       colorListWithTransparency.push(color.replace('1)', `${transparencyAlpha})`));
     }
 
-    return colorListWithTransparency
+    return colorListWithTransparency;
   }
 
   public static getColorFromIndex(index: number): string {
@@ -99,6 +99,37 @@ export class FlColorHelper {
       ['#303f9f', '#283593', '#1a237e'],
       ['#00796b', '#00695c', '#004d40'],
     ];
+  }
+
+
+  /**
+   * Get the contrasting color for any hex color
+   * @param hexColor
+   */
+  public static getContrastColor(hexColor: string): string {
+
+    // If a leading # is provided, remove it
+    if (hexColor.slice(0, 1) === '#') {
+      hexColor = hexColor.slice(1);
+    }
+
+    // If a three-character hexcode, make six-character
+    if (hexColor.length === 3) {
+      hexColor = hexColor.split('').map(function (hex) {
+        return hex + hex;
+      }).join('');
+    }
+
+    // Convert to RGB value
+    const r = parseInt(hexColor.substring(0, 2), 16);
+    const g = parseInt(hexColor.substring(2, 4), 16);
+    const b = parseInt(hexColor.substring(4, 6), 16);
+
+    // Get YIQ ratio
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+
+    // Check contrast
+    return (yiq >= 128) ? 'black' : 'white';
   }
 
 

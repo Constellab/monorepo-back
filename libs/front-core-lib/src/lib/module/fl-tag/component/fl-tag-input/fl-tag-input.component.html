@@ -6,10 +6,13 @@
                  (cdkDropListDropped)="dropChip($event)">
     <mat-chip
       *ngFor="let tag of value"
-      [flTag]="tag"
       cdkDrag
       [removable]="true"
       (removed)="remove(tag)">
+      {{tag.key}} : {{tag.value}}
+      <button matChipRemove>
+        <mat-icon>cancel</mat-icon>
+      </button>
     </mat-chip>
     <mat-chip *ngIf="newTag" [removable]="true" (removed)="removeTempFruit()" class="temp-fruit">{{newTag.key}} :
     </mat-chip>

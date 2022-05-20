@@ -1,7 +1,8 @@
 import {Directive, ElementRef, EventEmitter, HostListener, Input, Output, Renderer2} from '@angular/core';
-import {FlDropFileEvent} from './fl-drop-file-event.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlFileHelper} from '../../../service/fl-file.helper';
+import {FlDropEvent} from '../fl-drag.class';
+import {FlDragManagerService} from '../fl-drag-manager.service';
 
 
 /**
@@ -21,7 +22,7 @@ export class FlDragHoverDirective {
   }
 
   /**
-   * If true, it disable the directive
+   * If true, it disabled the directive
    */
   @Input() flDragHoverDisabled: boolean = false;
 
@@ -33,10 +34,10 @@ export class FlDragHoverDirective {
   /**
    * Mode, when to activate the drop zone
    * File --> activate only in file drag
-   * Element --> activate on everything but file
-   * All activate on any drag
+   * All  --> activate on any drag
+   * string --> activate on drag from flDraggable with key
    */
-  @Input() flDragHoverMode: 'file' | 'element' | 'all' = 'file';
+  @Input() flDragHoverMode: 'file' | 'all' | string= 'file';
 
   /**
    * Input/Output data true if we are dragging over the host element
@@ -46,7 +47,7 @@ export class FlDragHoverDirective {
   /**
    * Emit an event when a file is drop on the host
    */
-  @Output() flDrop: EventEmitter<FlDropFileEvent> = new EventEmitter();
+  @Output() flDrop: EventEmitter<FlDropEvent> = new EventEmitter();
 
   // > 0 if the user is dragging over the host element
   private dragoverCount: number = 0;
@@ -86,11 +87,25 @@ export class FlDragHoverDirective {
       // stop event to avoid file opening in browser
       this.stopEvent(event);
 
-      // emit the drop event
-      this.flDrop.emit({
-        files: FlFileHelper.convertFileListToArray(event.dataTransfer.files),
+      const dropEvent: FlDropEvent = {
         event: event
-      });
+      };
+
+      switch (this.flDragHoverMode) {
+        case 'file':
+          dropEvent.files = FlFileHelper.convertFileListToArray(event.dataTransfer.files);
+          break;
+        case 'all':
+          dropEvent.files = FlFileHelper.convertFileListToArray(event.dataTransfer.files);
+          dropEvent.data = this.dragManager.getData();
+          break;
+        default:
+          dropEvent.data = this.dragManager.getDataWithType(this.flDragHoverMode);
+          break;
+      }
+
+      // emit the drop event
+      this.flDrop.emit(dropEvent);
 
       this.clearClass();
     }
@@ -108,7 +123,8 @@ export class FlDragHoverDirective {
     }
   }
 
-  constructor(private renderer: Renderer2, private elementRef: ElementRef) {
+  constructor(private renderer: Renderer2, private elementRef: ElementRef,
+              private dragManager: FlDragManagerService) {
     // init dragIsHovering value
     this.emitDragover();
   }
@@ -163,10 +179,10 @@ export class FlDragHoverDirective {
     switch (this.flDragHoverMode) {
       case 'file':
         return dataTransfer.types.includes('Files');
-      case 'element':
-        return !dataTransfer.types.includes('Files');
       case 'all':
         return true;
+      default:
+        return this.dragManager.hasDataWithType(this.flDragHoverMode);
     }
   }
 

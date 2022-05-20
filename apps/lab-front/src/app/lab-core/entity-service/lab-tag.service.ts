@@ -17,4 +17,8 @@ export class LabTagService extends FlTagService {
   public searchTag(key: string): Observable<LabTagEntity[]> {
     return this.apiService.get(`${this.route}/${key}`, LabTagEntity);
   }
+
+  public getAllTags(): Observable<LabTagEntity[]> {
+    return this.apiService.get(this.route, LabTagEntity);
+  }
 }
