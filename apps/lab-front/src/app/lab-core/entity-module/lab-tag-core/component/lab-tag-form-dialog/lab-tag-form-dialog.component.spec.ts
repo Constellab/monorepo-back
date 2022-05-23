@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabTagDetailComponent} from './lab-tag-detail.component';
+import {LabTagFormDialogComponent} from './lab-tag-form-dialog.component';
 
-describe('LabTagDetailComponent', () => {
-  let component: LabTagDetailComponent;
-  let fixture: ComponentFixture<LabTagDetailComponent>;
+describe('LabTagFormDialogComponent', () => {
+  let component: LabTagFormDialogComponent;
+  let fixture: ComponentFixture<LabTagFormDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabTagDetailComponent ]
+      declarations: [ LabTagFormDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabTagDetailComponent);
+    fixture = TestBed.createComponent(LabTagFormDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

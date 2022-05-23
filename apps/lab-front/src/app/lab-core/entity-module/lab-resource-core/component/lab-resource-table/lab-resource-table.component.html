@@ -89,7 +89,8 @@
   <!-- Mode selectable -->
   <ng-container *ngIf="selectableRow; else notSelectable">
     <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
-             (click)="rowClicked(row)"></mat-row>
+             (click)="rowClicked(row)"
+             flDragHover="drag-element" [flDragHoverMode]="supportedDropType" (flDrop)="onDrop(row, $event)"></mat-row>
   </ng-container>
 
   <!-- Mode link -->

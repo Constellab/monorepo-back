@@ -120,8 +120,10 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
   }
 
   searchOnTag(tag: FlTag): void {
+    const tags = this.searchState.advancedSearchFormGroup.value.tags ?? [];
+    const newTags = [...tags, tag];
     const search: Partial<LabResourceSearchFields> = {
-      tags: [tag]
+      tags: newTags
     };
     this.searchState.patchFormValueAndCallSearch(search);
   }

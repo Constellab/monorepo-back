@@ -86,11 +86,11 @@ export abstract class FlFormDialogAbstractDirective<FORM_TYPE, ENTITY = FORM_TYP
     this.isLoading = false;
   }
 
-  protected isCreateMode(): boolean {
+  isCreateMode(): boolean {
     return this.dialogInput.mode === 'create';
   }
 
-  protected isUpdateMode(): boolean {
+  isUpdateMode(): boolean {
     return this.dialogInput.mode === 'update';
   }
 

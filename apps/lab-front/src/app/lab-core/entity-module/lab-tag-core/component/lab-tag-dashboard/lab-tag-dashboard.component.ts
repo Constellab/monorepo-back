@@ -1,8 +1,17 @@
 import {Component, EventEmitter, OnInit, Optional, Output, Self} from '@angular/core';
 import {LabTagService} from '../../../../entity-service/lab-tag.service';
-import {FlFormFieldDirective, FlTag} from '@monorepo/front-core-lib';
+import {
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDialogService,
+  FlFormDialogInput,
+  FlFormFieldDirective,
+  FlTag
+} from '@monorepo/front-core-lib';
 import {NgControl} from '@angular/forms';
 import {LabTagEntity} from '../../../../model/entities/lab-tag.entity';
+import {LabTagFormDialogComponent} from '../lab-tag-form-dialog/lab-tag-form-dialog.component';
+import {ClHelpService} from '@monorepo/core-lib';
 
 
 interface LabTagEntityWithSelection {
@@ -27,7 +36,8 @@ export class LabTagDashboardComponent extends FlFormFieldDirective<FlTag[]> impl
   tags: LabTagEntityWithSelection[];
 
   constructor(@Optional() @Self() ngControl: NgControl,
-              private tagService: LabTagService) {
+              private tagService: LabTagService,
+              private dialogService: FlDialogService) {
     super(ngControl);
   }
 
@@ -75,7 +85,7 @@ export class LabTagDashboardComponent extends FlFormFieldDirective<FlTag[]> impl
     this.selectionChange.next(value);
   }
 
-  onDisableChange(disable: boolean): void {
+  onDisableChange(): void {
   }
 
 
@@ -88,5 +98,98 @@ export class LabTagDashboardComponent extends FlFormFieldDirective<FlTag[]> impl
 
     const selectedTags: FlTag[] = this.tags.filter(tag => tag.selectedValue != null).map(tag => tag.selectedValue);
     this.setAndEmitValue(selectedTags);
+  }
+
+  openAddTagDialog(event: MouseEvent): void {
+    ClHelpService.stopEventPropagation(event);
+
+    const input: FlFormDialogInput<FlTag> = {
+      mode: 'create',
+    };
+
+    this.dialogService.openSmallDialog(LabTagFormDialogComponent, {data: input}).afterClosed().subscribe(
+      tagEntity => this.refreshTagEntity(tagEntity)
+    );
+  }
+
+  openAddValueDialog(key: string): void {
+    const input: FlFormDialogInput<FlTag> = {
+      mode: 'create',
+      object: {key: key, value: null}
+    };
+
+    this.dialogService.openSmallDialog(LabTagFormDialogComponent, {data: input}).afterClosed().subscribe(
+      tagEntity => this.refreshTagEntity(tagEntity)
+    );
+  }
+
+  openUpdateValueDialog(tag: FlTag): void {
+    const input: FlFormDialogInput<FlTag> = {
+      mode: 'update',
+      object: tag
+    };
+
+    this.dialogService.openSmallDialog(LabTagFormDialogComponent, {data: input}).afterClosed().subscribe(
+      tagEntity => this.refreshTagEntity(tagEntity)
+    );
+  }
+
+  private refreshTagEntity(tagEntity?: LabTagEntity): void {
+    if (!tagEntity) return;
+
+    const index = this.tags.findIndex(tag => tag.tag.key === tagEntity.key);
+    if (index >= 0) {
+      this.tags[index] = {
+        tag: tagEntity,
+        selectedValue: null
+      };
+    } else {
+      this.tags.push({
+        tag: tagEntity,
+        selectedValue: null
+      });
+    }
+  }
+
+  openDeleteTag(tag: FlTag): void {
+    const data: FlConfirmDialogInput = {
+      title: 'tag_delete',
+      content: 'tag_delete_confirmation',
+      translateTitleAndContent: true,
+      observable: this.tagService.deleteTag(tag.key, tag.value),
+      successMessage: 'tag_deleted',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(data).afterClosed().subscribe(
+      result => this.onDeleteClosed(result, tag)
+    );
+  }
+
+  private onDeleteClosed(result: FlConfirmDialogResult,
+                         tag: FlTag): void {
+    if (!result.choice) return;
+
+    const index = this.tags.findIndex(t => t.tag.key === tag.key);
+    if (index >= 0) {
+      const tagEntity = this.tags[index].tag;
+      // if we deleted the last value, we remove the TagEntity
+      if (tagEntity.values.length === 1) {
+        this.tags.splice(index, 1);
+      } else {
+        // delete only the value
+        const valueIndex = tagEntity.values.indexOf(tag.value);
+        if (valueIndex >= 0) {
+          const newTagEntity = tagEntity.clone();
+          newTagEntity.values.splice(valueIndex, 1);
+
+          this.tags[index] = {
+            tag: newTagEntity,
+            selectedValue: null,
+          };
+        }
+      }
+
+    }
   }
 }

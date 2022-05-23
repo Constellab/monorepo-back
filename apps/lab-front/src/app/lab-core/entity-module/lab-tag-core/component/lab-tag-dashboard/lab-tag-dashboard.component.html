@@ -1,7 +1,22 @@
-<div *ngIf="tags">
-  <div *ngFor="let tag of tags">
-    <lab-tag-detail [tagEntity]="tag.tag"
-                    [selectedValue]="tag.selectedValue?.value"
-                    (selectedValueChange)="selectTag(tag, $event)"></lab-tag-detail>
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <div fxFlex="auto">{{'tags' | translate}}</div>
+
+      <button mat-icon-button type="submit" (click)="openAddTagDialog($event)">
+        <mat-icon>add</mat-icon>
+      </button>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <div *ngIf="tags">
+    <div *ngFor="let tag of tags">
+      <lab-tag-entity-detail [tagEntity]="tag.tag"
+                      [ngModel]="tag.selectedValue?.value"
+                      (selectedValueChange)="selectTag(tag, $event)"
+                      (addTagValue)="openAddValueDialog($event)"
+                      (updateTagValue)="openUpdateValueDialog($event)"
+                      (deleteTagValue)="openDeleteTag($event)"></lab-tag-entity-detail>
+    </div>
   </div>
-</div>
+</mat-expansion-panel>

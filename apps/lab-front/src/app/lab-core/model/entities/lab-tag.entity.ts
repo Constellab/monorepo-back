@@ -15,6 +15,14 @@ export class LabTag implements FlTag {
 export class LabTagEntity extends LabEntity implements FlTagEntity {
   key: string;
   values: string[];
+
+  clone(): LabTagEntity {
+    const clone = new LabTagEntity();
+    clone.id = this.id;
+    clone.key = this.key;
+    clone.values = this.values;
+    return clone;
+  }
 }
 
 export type LabTagDatasource = FlDatasourcePaginated<LabTagEntity>;

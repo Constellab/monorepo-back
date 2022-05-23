@@ -18,14 +18,7 @@
   </div>
 
   <!--   Tags    -->
-  <mat-expansion-panel>
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{'tags' | translate}}
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <lab-tag-dashboard formControlName="tags" (selectionChange)="onTagSelectionChange()"></lab-tag-dashboard>
-  </mat-expansion-panel>
+  <lab-tag-dashboard formControlName="tags" (selectionChange)="onTagSelectionChange()"></lab-tag-dashboard>
 
   <!--   Advanced search    -->
   <mat-expansion-panel>

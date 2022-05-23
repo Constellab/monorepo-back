@@ -36,7 +36,7 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[], FlTagInpu
 
   @Input() label: string = 'flTag.tags';
 
-  @Input() maxLength: number = 20;
+  @Input() maxLength: number = FlTagHelper.MAX_LENGTH;
 
   /**
    * Different mode for the input

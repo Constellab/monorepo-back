@@ -1,3 +1,6 @@
+.action-buttons {
+  display: none;
+}
 
 .element {
   cursor: pointer;
@@ -8,10 +11,12 @@
 }
 
 .key {
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
   border-radius: 20px;
-  padding-left: 0.5em;
+  padding: 0.5em;
+}
+
+.key:hover .action-buttons {
+  display: block;
 }
 
 .key-text {
@@ -23,18 +28,21 @@
 
 .value {
   display: block;
-  padding-left: 3.3em;
-  padding-top: 0.3em;
-  padding-bottom: 0.3em;
+  padding: 0.3em 1em 0.3em 3.3em;
   border: 2px solid transparent;
   border-radius: 20px;
 }
 
-.selected{
+
+.value:hover .action-buttons {
+  display: block;
+}
+
+.selected {
   border-color: var(--color-foreground);
 }
 
-.color{
+.color {
   width: 10px;
   height: 10px;
   border-radius: 50%;

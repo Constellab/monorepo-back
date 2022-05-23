@@ -37,7 +37,7 @@ export class FlDragHoverDirective {
    * All  --> activate on any drag
    * string --> activate on drag from flDraggable with key
    */
-  @Input() flDragHoverMode: 'file' | 'all' | string= 'file';
+  @Input() flDragHoverMode: 'file' | 'all' | string = 'file';
 
   /**
    * Input/Output data true if we are dragging over the host element

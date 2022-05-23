@@ -38,6 +38,7 @@ export class FlTagHelper {
 
   private static readonly KEY_VALUE_SEPARATOR = ':';
   private static readonly TAGS_SEPARATOR = ',';
+  public static readonly MAX_LENGTH = 20;
 
   public static addOrReplaceTag(tags: FlTag[], tag: FlTag): FlTag[] {
     if (!tags) return [tag];
