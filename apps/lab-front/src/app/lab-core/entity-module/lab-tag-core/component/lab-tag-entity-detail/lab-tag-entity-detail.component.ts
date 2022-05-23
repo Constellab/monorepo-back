@@ -4,6 +4,8 @@ import {LabDragType} from '../../../../model/global/lab-drag-type.class';
 import {FlFormFieldDirective, FlTag} from '@monorepo/front-core-lib';
 import {NgControl} from '@angular/forms';
 import {ClHelpService} from '@monorepo/core-lib';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {LabTagService} from '../../../../entity-service/lab-tag.service';
 
 /**
  * Component to show the LabTagEntity information
@@ -31,7 +33,8 @@ export class LabTagEntityDetailComponent extends FlFormFieldDirective<string> im
 
   dragType: LabDragType = LabDragType.TAG;
 
-  constructor(@Optional() @Self() ngControl: NgControl) {
+  constructor(@Optional() @Self() ngControl: NgControl,
+              private tagService: LabTagService) {
     super(ngControl);
   }
 
@@ -97,6 +100,12 @@ export class LabTagEntityDetailComponent extends FlFormFieldDirective<string> im
   deleteTagValueClick(value: string, event: MouseEvent): void {
     ClHelpService.stopEventPropagation(event);
     this.deleteTagValue.next(this.getFlTag(value));
+  }
+
+  reorderValues(event: CdkDragDrop<string[]>): void {
+    moveItemInArray(this.tagEntity.values, event.previousIndex, event.currentIndex);
+
+    this.tagService.reorderTagValues(this.tagEntity.key, this.tagEntity.values).subscribe();
   }
 
 }

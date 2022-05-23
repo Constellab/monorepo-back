@@ -1,36 +1,55 @@
-<div fxLayout="row" fxLayoutAlign="start center" class="element key" (click)="toggleExpanded()">
-  <mat-icon class="g-icon-small">{{icon}}</mat-icon>
-  <div class="key-text" fxFlex="auto">{{tagEntity.key}}</div>
+<!-- The element is draggable withing the tag dashboard component-->
+<div class="g-drag-hide-placeholder container" cdkDrag cdkDragPreviewClass="g-drag-elevate">
 
-  <button mat-icon-button type="submit" (click)="addTagValueClick($event)"
-          class="g-button-icon-tiny action-buttons">
-    <mat-icon>add</mat-icon>
-  </button>
-</div>
+  <div fxLayout="row" fxLayoutAlign="start center" class="element key"
+       (click)="toggleExpanded()">
+    <mat-icon class="g-icon-small">{{icon}}</mat-icon>
+    <div class="key-text" fxFlex="auto">{{tagEntity.key}}</div>
 
-<!--   Values  -->
-<div *ngIf="isExpanded" class="values-container g-text-small">
-
-  <div *ngFor="let value of tagEntity.values" class="value element" (click)="selectTag(value)"
-       flDraggable [flDraggableType]="dragType" [flDraggableData]="getFlTag(value)"
-       [ngClass]="{'selected': isSelected(value)}"
-       fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em"
-       [matTooltip]="'tag_drag_tooltip' | translate" [matTooltipShowDelay]="1000">
-
-    <div class="color" [style.background-color]="getFlTag(value) | flTagColor"></div>
-    <div fxFlex="auto">
-      {{value}}
-    </div>
 
     <div class="action-buttons">
-      <button mat-icon-button type="submit" class="g-button-icon-tiny"
-              (click)="updateTagValueClick(value, $event)">
-        <mat-icon>edit</mat-icon>
+      <button mat-icon-button type="submit"
+              class="g-button-icon-tiny drag-indicator" cdkDragHandle>
+        <mat-icon>drag_indicator</mat-icon>
       </button>
-      <button mat-icon-button type="submit" class="g-button-icon-tiny"
-              (click)="deleteTagValueClick(value, $event)">
-        <mat-icon>clear</mat-icon>
+
+      <button mat-icon-button type="submit" (click)="addTagValueClick($event)"
+              class="g-button-icon-tiny">
+        <mat-icon>add</mat-icon>
       </button>
+    </div>
+  </div>
+
+  <!--   Values  -->
+  <div *ngIf="isExpanded" class="g-text-small g-drag-anim-order"
+       cdkDropList (cdkDropListDropped)="reorderValues($event)">
+
+    <div *ngFor="let value of tagEntity.values" class="value element g-drag-hide-placeholder" (click)="selectTag(value)"
+         flDraggable [flDraggableType]="dragType" [flDraggableData]="getFlTag(value)"
+         [ngClass]="{'selected': isSelected(value)}"
+         fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em"
+         [matTooltip]="'tag_drag_tooltip' | translate" [matTooltipShowDelay]="1000"
+         cdkDrag cdkDragPreviewClass="g-drag-elevate">
+
+      <div class="color" [style.background-color]="getFlTag(value) | flTagColor"></div>
+      <div fxFlex="auto">
+        {{value}}
+      </div>
+
+      <div class="action-buttons">
+        <button mat-icon-button type="submit"
+                class="g-button-icon-tiny drag-indicator" cdkDragHandle>
+          <mat-icon>drag_indicator</mat-icon>
+        </button>
+        <button mat-icon-button type="submit" class="g-button-icon-tiny"
+                (click)="updateTagValueClick(value, $event)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button type="submit" class="g-button-icon-tiny"
+                (click)="deleteTagValueClick(value, $event)">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 </div>

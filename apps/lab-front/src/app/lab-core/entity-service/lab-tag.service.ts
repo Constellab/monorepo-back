@@ -33,4 +33,12 @@ export class LabTagService extends FlTagService {
   public deleteTag(tagKey: string, tagValue: string): Observable<void> {
     return this.apiService.delete(`${this.route}/${tagKey}/${tagValue}`);
   }
+
+  public reorderTags(tagKeys: string[]): Observable<LabTagEntity[]> {
+    return this.apiService.put(`${this.route}/reorder`, tagKeys, LabTagEntity);
+  }
+
+  public reorderTagValues(tagKey: string, values: string[]): Observable<LabTagEntity> {
+    return this.apiService.put(`${this.route}/${tagKey}/reorder`, values, LabTagEntity);
+  }
 }

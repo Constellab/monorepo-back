@@ -12,6 +12,7 @@ import {NgControl} from '@angular/forms';
 import {LabTagEntity} from '../../../../model/entities/lab-tag.entity';
 import {LabTagFormDialogComponent} from '../lab-tag-form-dialog/lab-tag-form-dialog.component';
 import {ClHelpService} from '@monorepo/core-lib';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
 
 interface LabTagEntityWithSelection {
@@ -35,6 +36,8 @@ export class LabTagDashboardComponent extends FlFormFieldDirective<FlTag[]> impl
 
   tags: LabTagEntityWithSelection[];
 
+  isLoading: boolean = false;
+
   constructor(@Optional() @Self() ngControl: NgControl,
               private tagService: LabTagService,
               private dialogService: FlDialogService) {
@@ -46,8 +49,12 @@ export class LabTagDashboardComponent extends FlFormFieldDirective<FlTag[]> impl
   }
 
   private getTags(): void {
+    this.isLoading = true;
     this.tagService.getAllTags().subscribe(
-      tags => this.getTagsSuccess(tags),
+      {
+        next: tags => this.getTagsSuccess(tags),
+        error: () => this.isLoading = false
+      }
     );
   }
 
@@ -61,6 +68,7 @@ export class LabTagDashboardComponent extends FlFormFieldDirective<FlTag[]> impl
     if (this.value) {
       this.setTagSelection(this.value);
     }
+    this.isLoading = false;
   }
 
   writeValue(obj: FlTag[]): void {
@@ -191,5 +199,12 @@ export class LabTagDashboardComponent extends FlFormFieldDirective<FlTag[]> impl
       }
 
     }
+  }
+
+  reorderTags(event: CdkDragDrop<string[]>): void {
+    moveItemInArray(this.tags, event.previousIndex, event.currentIndex);
+
+    const keys = this.tags.map(tag => tag.tag.key);
+    this.tagService.reorderTags(keys).subscribe();
   }
 }

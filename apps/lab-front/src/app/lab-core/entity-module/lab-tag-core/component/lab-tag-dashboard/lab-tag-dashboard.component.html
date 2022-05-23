@@ -8,15 +8,20 @@
       </button>
     </mat-panel-title>
   </mat-expansion-panel-header>
+  <fl-section [object]="tags" [isLoading]="isLoading">
+    <ng-container *flSectionBody>
 
-  <div *ngIf="tags">
-    <div *ngFor="let tag of tags">
-      <lab-tag-entity-detail [tagEntity]="tag.tag"
-                      [ngModel]="tag.selectedValue?.value"
-                      (selectedValueChange)="selectTag(tag, $event)"
-                      (addTagValue)="openAddValueDialog($event)"
-                      (updateTagValue)="openUpdateValueDialog($event)"
-                      (deleteTagValue)="openDeleteTag($event)"></lab-tag-entity-detail>
-    </div>
-  </div>
+      <div *ngIf="tags" cdkDropList (cdkDropListDropped)="reorderTags($event)"
+           class="g-drag-anim-order">
+        <div *ngFor="let tag of tags">
+          <lab-tag-entity-detail [tagEntity]="tag.tag"
+                                 [ngModel]="tag.selectedValue?.value"
+                                 (selectedValueChange)="selectTag(tag, $event)"
+                                 (addTagValue)="openAddValueDialog($event)"
+                                 (updateTagValue)="openUpdateValueDialog($event)"
+                                 (deleteTagValue)="openDeleteTag($event)"></lab-tag-entity-detail>
+        </div>
+      </div>
+    </ng-container>
+  </fl-section>
 </mat-expansion-panel>

@@ -1,5 +1,9 @@
+.container{
+  background-color: inherit;
+}
+
 .action-buttons {
-  display: none;
+  opacity: 0;
 }
 
 .element {
@@ -16,14 +20,11 @@
 }
 
 .key:hover .action-buttons {
-  display: block;
+  opacity: 1;
 }
 
 .key-text {
   margin-left: 0.5em;
-}
-
-.values-container {
 }
 
 .value {
@@ -31,11 +32,12 @@
   padding: 0.3em 1em 0.3em 3.3em;
   border: 2px solid transparent;
   border-radius: 20px;
+  background-color: inherit;
 }
 
 
 .value:hover .action-buttons {
-  display: block;
+  opacity: 1;
 }
 
 .selected {
@@ -46,4 +48,8 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
+}
+
+.drag-indicator{
+  cursor: grab;
 }
