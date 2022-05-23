@@ -18,18 +18,12 @@
     <mat-form-field class="g-form-input" appearance="fill">
       <mat-label>{{'repo_git' | translate}}</mat-label>
       <input matInput type="text" formControlName="gitRepo">
-      <mat-error *ngIf="formGp.get('gitRepo').hasError('required')">
-        {{'repo_git' | flErrorRequired}}
-      </mat-error>
     </mat-form-field>
 
     <!--  pipRepo  -->
     <mat-form-field class="g-form-input" appearance="fill">
       <mat-label>{{'repo_pip' | translate}}</mat-label>
       <input matInput type="text" formControlName="pipRepo">
-      <mat-error *ngIf="formGp.get('pipRepo').hasError('required')">
-        {{'repo_pip' | flErrorRequired}}
-      </mat-error>
     </mat-form-field>
   </form>
 </mat-dialog-content>

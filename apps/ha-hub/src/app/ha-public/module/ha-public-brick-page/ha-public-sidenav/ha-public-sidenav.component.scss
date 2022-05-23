@@ -28,6 +28,8 @@
   padding-right: 1em;
   max-width: 25rem  ;
   background-color: var(--main-background);
+  display: flex;
+  flex-direction: column;
 }
 
 .router{
@@ -46,6 +48,7 @@
 
 .sidenav-empty-space{
   flex: auto;
+  width: 100%;
 }
 
 .tree{

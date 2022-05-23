@@ -37,13 +37,13 @@
   </div>
   <div class="right-side-div side-description-div">
     <h2>Technicals Information</h2>
-    <br>
-    <fl-key-value>
+    <br *ngIf="brick.gitRepo">
+    <fl-key-value *ngIf="brick.gitRepo">
       <fl-key>{{'repo_git' | translate}}</fl-key>
       {{brick.gitRepo}}
     </fl-key-value>
-    <br>
-    <fl-key-value>
+    <br *ngIf="brick.pipRepo">
+    <fl-key-value *ngIf="brick.pipRepo">
       <fl-key>{{'repo_pip' | translate}}</fl-key>
       {{brick.pipRepo}}
     </fl-key-value>

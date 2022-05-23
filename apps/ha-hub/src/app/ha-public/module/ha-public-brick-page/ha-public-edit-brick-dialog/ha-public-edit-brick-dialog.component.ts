@@ -36,8 +36,8 @@ export class HaPublicEditBrickDialogComponent extends FlFormDialogAbstractDirect
     return new FormBuilder().group({
       id: [null],
       description: [null, [Validators.required, Validators.maxLength(255)]],
-      gitRepo: [null, Validators.required],
-      pipRepo: [null, Validators.required]
+      gitRepo: [null],
+      pipRepo: [null]
     });
   }
 
