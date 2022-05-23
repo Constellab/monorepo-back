@@ -64,6 +64,10 @@ export class HnTaskService {
         task.configSpecs = t.config_specs;
       }
 
+      if(t.additional_info && Object.keys(t.additional_info).length > 0){
+        task.additionalInfo = t.additional_info;
+      }
+
       await this.tasksRepository.save(task);
     }
 
@@ -107,7 +111,8 @@ export class HnTaskService {
         objectType: 'TASK',
         inputSpecs: task.inputSpecs,
         outputSpecs: task.outputSpecs,
-        configSpecs: task.configSpecs
+        configSpecs: task.configSpecs,
+        additionalInfo: task.additionalInfo
       };
 
       return doc;

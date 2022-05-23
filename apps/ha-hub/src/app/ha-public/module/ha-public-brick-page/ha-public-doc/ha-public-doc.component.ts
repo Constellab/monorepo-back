@@ -94,15 +94,16 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     if (url.length == 0) {
       isFirstDoc = true;
       this.brickService.getFirstDoc(this.brickName, this.brickVersion).subscribe(doc => {
+        this.isCheck = true;
         this.actionOnDoc(isFirstDoc, doc);
       });
     } else {
       if (url[0].path === 'technical-folder') {
         this.isTechnical = true;
       }
-      this.isCheck = true;
       path = url.join('/') + '/';
       this.brickService.getDocByPath(this.brickName, path, this.brickVersion).subscribe(doc => {
+        this.isCheck = true;
         this.actionOnDoc(isFirstDoc, doc);
       });
     }
@@ -143,6 +144,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   }
 
   private saveContent(value: CmRichTextI): void {
+
     this.formGp.value.content = value as CmRichTextI;
     this.isAdmin.subscribe(isAdmin => {
       if (isAdmin) {

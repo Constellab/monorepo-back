@@ -69,6 +69,7 @@ export interface HnImportTaskDTO{
   input_specs: any;
   output_specs: any;
   config_specs: any;
+  additional_info?: any;
 }
 
 export interface HnImportProtocolDTO{
@@ -84,6 +85,7 @@ export interface HnImportProtocolDTO{
   input_specs: any;
   output_specs: any;
   config_specs: any;
+  additional_info?: any;
   status: string;
 }
 

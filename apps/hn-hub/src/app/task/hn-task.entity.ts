@@ -16,4 +16,8 @@ export class HnTask extends HnGeneratedDocEntity {
   @Column({name: 'configSpecs', type: 'simple-json', nullable: true})
   @Expose({name: 'config_specs'})
   configSpecs?: Record<string, any>;
+
+  @Column({name: 'additionalInfo', type: 'simple-json', nullable: true})
+  @Expose({name: 'additional_info'})
+  additionalInfo?: Record<string, any>;
 }

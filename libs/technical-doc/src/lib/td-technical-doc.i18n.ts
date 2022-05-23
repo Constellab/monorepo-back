@@ -13,7 +13,8 @@ const tdTechnicalDocI18nFr: FlLangTranslation = {
     allowed_values: 'Valeurs autorisées',
     default_value: 'Valeur par défaut',
     parent: 'Parent',
-    status: 'Etat'
+    status: 'Etat',
+    supported_extensions: 'Extensions supportées'
   }
 };
 
@@ -26,7 +27,8 @@ const tdTechnicalDocI18nEn: FlLangTranslation = {
     allowed_values: 'Allowed values',
     default_value: 'Default value',
     parent: 'Parent',
-    status: 'Status'
+    status: 'Status',
+    supported_extensions: 'Supported Extentions'
   }
 };
 

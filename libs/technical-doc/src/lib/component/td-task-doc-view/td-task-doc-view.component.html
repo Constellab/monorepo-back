@@ -1,5 +1,11 @@
 <td-main-doc-view [doc]="task" class="ql-editor"></td-main-doc-view>
 
+<fl-key-value *ngIf="task.additionalInfo.supported_extensions && task.additionalInfo.supported_extensions.length > 0"
+              class="key-val ql-editor div-spec">
+  <fl-key>{{'td.supported_extensions' |translate}}</fl-key>
+  {{task.additionalInfo.supported_extensions.join(', ')}}
+</fl-key-value>
+
 <mat-divider class="divider" *ngIf="task.inputSpecs"></mat-divider>
 
 <div class="div-spec ql-editor" *ngIf="task.inputSpecs">

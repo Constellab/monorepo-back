@@ -13,6 +13,9 @@ export class TdTaskType extends TdProcessType {
 
   @Expose({name: 'config_specs'})
   configSpecs?: Record<string, TdConfigTypeDTO>;
+
+  @Expose({name: 'additional_info'})
+  additionalInfo?: TdAdditionalInfoDTO;
 }
 
 
@@ -41,4 +44,8 @@ export class TdConfigTypeDTO {
   short_description?: string;
   allowed_values?: any[];
   default_value: any;
+}
+
+export interface TdAdditionalInfoDTO{
+  supported_extensions: string[];
 }
