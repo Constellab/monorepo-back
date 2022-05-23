@@ -1,5 +1,5 @@
 <mat-toolbar class="nav-bar" fxHide.lt-sm>
-  <a routerLink="../" class="gencovery-logo">
+  <a routerLink="../" class="gencovery-hub-logo gencovery-logo">
     <img src="../../assets/images/gencovery-logo.png" fxHide.gt-sm />
     <img src="../../assets/images/hub-logo.png" fxHide.lt-md/>
   </a>
@@ -50,9 +50,22 @@
   </mat-menu>
 </mat-toolbar>
 
-<router-outlet></router-outlet>
+<div class="test">
+  <div class="router">
+    <router-outlet></router-outlet>
+  </div>
 
+  <footer class="footer">
+    <img class="footer-logo" src="../../assets/images/gencovery-logo.png" fxHide.gt-sm />
+    <img class="footer-logo" src="../../assets/images/gencovery-logo-text.png" fxHide.lt-md/>
+    <div class="footer-text" fxHide.lt-md>The Collaborative Software Company</div>
+    <div class="footer-text">©2022 – Gencovery – All Rights Reserved</div>
+    <div class="footer-text">
+      <a href="https://gamma.gencovery.com/legal/privacy-policy/">Private Policy</a>
+    </div>
+    <div class="footer-text">
+      <a href="https://gamma.gencovery.com/legal/terms-of-use/">Terms of use</a>
+    </div>
+  </footer>
+</div>
 
-<footer class="footer ">
-
-</footer>
