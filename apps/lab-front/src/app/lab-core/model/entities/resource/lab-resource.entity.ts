@@ -1,8 +1,7 @@
 import {LabEntity} from '../../global/lab-entity.entity';
 import {FlDatasourcePaginated, FlFileHelper} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
-import {LabTag} from '../lab-tag.entity';
-import {LabBaseEntityWithUser} from '../lab-user.entity';
+import {LabEntityWithTag} from '../lab-entity-with-tag.entity';
 
 /**
  * Represent a file or a folder link to the resource
@@ -28,7 +27,7 @@ export class LabFsNodeEntity extends LabEntity {
 
 export type LabResourceOrigin = 'UPLOADED' | 'GENERATED';
 
-export class LabResource extends LabBaseEntityWithUser {
+export class LabResource extends LabEntityWithTag {
   // typing name of the resource model
   @Expose({name: 'typing_name'})
   typingName: string;
@@ -42,9 +41,6 @@ export class LabResource extends LabBaseEntityWithUser {
 
   @Expose({name: 'resource_type_short_description'})
   resourceTypeShortDescription: string;
-
-  @Type(() => LabTag)
-  tags: LabTag[];
 
   @Expose({name: 'fs_node'})
   @Type(() => LabFsNodeEntity)
@@ -79,17 +75,6 @@ export class LabResource extends LabBaseEntityWithUser {
 
   isDeletable(): boolean {
     return this.origin === 'UPLOADED';
-  }
-
-  addTag(tag: LabTag): void {
-    const index = this.tags.findIndex(t => t.key === tag.key);
-
-    if (index >= 0) {
-      this.tags.splice(index, 1);
-    }
-    this.tags.push(tag);
-
-    this.tags = [...this.tags];
   }
 
 }

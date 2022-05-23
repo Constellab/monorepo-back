@@ -1,7 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FlPaginatedTableAbstractDirective, FlTag, FlTagSelectedEvent} from '@monorepo/front-core-lib';
+import {FlDropEvent, FlPaginatedTableAbstractDirective, FlTag, FlTagSelectedEvent} from '@monorepo/front-core-lib';
 import {LabExperiment} from '../../../../model/entities/lab-experiment.entity';
 import {ClHelpService} from '@monorepo/core-lib';
+import {LabDragType} from '../../../../model/global/lab-drag-type.class';
+import {LabExperimentService} from '../../../../entity-service/lab-experiment.service';
 
 @Component({
   selector: 'lab-experiment-table',
@@ -18,7 +20,10 @@ export class LabExperimentTableComponent extends FlPaginatedTableAbstractDirecti
 
   @Output() tagSelected: EventEmitter<FlTag> = new EventEmitter();
 
-  constructor() {
+  // enable drop tags
+  supportedDropType: LabDragType = LabDragType.TAG;
+
+  constructor(private experimentService: LabExperimentService) {
     super(['title', 'score', 'status', 'createdAt', 'tags']);
   }
 
@@ -34,5 +39,12 @@ export class LabExperimentTableComponent extends FlPaginatedTableAbstractDirecti
   onTagSelected(tagEvent: FlTagSelectedEvent): void {
     ClHelpService.stopEventPropagation(tagEvent.event);
     this.tagSelected.next(tagEvent.tag);
+  }
+
+  onDrop(experiment: LabExperiment, event: FlDropEvent<FlTag>): void {
+    if (!event.data) return;
+
+    experiment.addTag(event.data);
+    this.experimentService.saveTags(experiment.id, experiment.tags).subscribe();
   }
 }

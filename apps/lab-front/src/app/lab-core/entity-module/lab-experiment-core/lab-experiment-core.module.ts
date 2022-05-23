@@ -24,6 +24,7 @@ import {
 } from './component/lab-select-experiment-dialog/lab-select-experiment-dialog.component';
 import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
 import {LabSelectExperimentComponent} from './component/lab-select-experiment/lab-select-experiment.component';
+import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 
 
 @NgModule({
@@ -58,6 +59,7 @@ import {LabSelectExperimentComponent} from './component/lab-select-experiment/la
     LabCoreModule,
     LabProjectCoreModule,
     LabUserCoreModule,
+    LabTagCoreModule,
   ]
 })
 export class LabExperimentCoreModule {

@@ -18,4 +18,8 @@ export class LabExperimentAdvancedSearchFormComponent implements OnInit {
     this.formGp = this.searchState.advancedSearchFormGroup;
   }
 
+  onTagSelectionChange(): void {
+    this.searchState.callAdvancedSearchFromForm();
+  }
+
 }

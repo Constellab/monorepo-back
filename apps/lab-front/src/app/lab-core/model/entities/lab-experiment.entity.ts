@@ -8,8 +8,7 @@ import {
   FlStatusTransform
 } from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
-import {LabTag} from './lab-tag.entity';
-import {LabBaseEntityWithUser} from './lab-user.entity';
+import {LabEntityWithTag} from './lab-entity-with-tag.entity';
 
 export type LabExperimentStatus = 'DRAFT' | 'IN_QUEUE' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
@@ -34,7 +33,7 @@ export const labExperimentTypeDict: FlStatusDict<LabExperimentType> = {
   FS_NODE_EXTRACTOR: FlStatusHelper.getInfoStatus('FS_NODE_EXTRACTOR', 'biox.experiment_type_extractor'),
 };
 
-export class LabExperiment extends LabBaseEntityWithUser {
+export class LabExperiment extends LabEntityWithTag {
 
   score: any;
 
@@ -50,9 +49,6 @@ export class LabExperiment extends LabBaseEntityWithUser {
   @Type(() => LabEntity)
   protocol: LabEntity;
 
-  @Expose({name: 'is_archived'})
-  isArchived: boolean;
-
   @FlStatusTransform(labExperimentStatusDict)
   status: FlStatus<LabExperimentStatus>;
 
@@ -63,9 +59,6 @@ export class LabExperiment extends LabBaseEntityWithUser {
     id: string;
     title: string;
   };
-
-  @Type(() => LabTag)
-  tags: LabTag[];
 
   isEditable(): boolean {
     return !this.isArchived && !this.isValidated && !this.isRunning() && this.status.value !== 'IN_QUEUE';
