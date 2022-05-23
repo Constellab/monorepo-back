@@ -4,12 +4,7 @@
 </fl-key-value>
 <fl-key-value *ngIf="doc.parentTypingName" class="key-val">
   <fl-key>{{'td.parent' | translate}}</fl-key>
-  <a class="g-text-link"
-     [routerLink]="docParentBrickName + '/' + (doc.parentVersion ?doc.parentVersion : 'latest')  +
-            '/doc/technical-folder/' + doc.objectType.toLowerCase() + '/' + docParentUniqueName"
-     [relativeTo]="activatedRoute.parent.parent.parent">
-    {{doc.parentHumanName}}
-  </a>
+  <td-tech-doc-link [doc]="doc"></td-tech-doc-link>
   v.{{doc.parentVersion}}
 </fl-key-value>
 <p>{{doc.shortDescription}}</p>

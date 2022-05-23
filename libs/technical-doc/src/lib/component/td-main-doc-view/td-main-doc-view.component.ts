@@ -17,17 +17,9 @@ export class TdMainDocViewComponent implements OnInit {
 
   docContent: string;
 
-  activatedRoute: ActivatedRoute;
-
-  docParentUniqueName: string;
-  docParentBrickName: string;
-
-  constructor(private route: ActivatedRoute, private domSanitizer: DomSanitizer) { }
+  constructor( private domSanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
-    this.activatedRoute = this.route;
-    this.docParentUniqueName = TdTypingName.getUniqueName(this.doc.parentTypingName);
-    this.docParentBrickName = TdTypingName.getBrickName(this.doc.parentTypingName);
     this.docContent = this.domSanitizer.sanitize( SecurityContext.HTML, marked.parse(this.doc.doc));
   }
 

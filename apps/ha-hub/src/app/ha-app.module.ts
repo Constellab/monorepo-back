@@ -24,6 +24,8 @@ import {HaAppRoutingModule} from './ha-app-routing-module';
 import {HaCoreModule} from './ha-core/ha-core.module';
 import {HaAuthService} from './ha-core/ha-service/ha-auth.service';
 import {HaAuthenticatedUserService} from './ha-core/ha-service/ha-authenticated-user.service';
+import {TdTechnicalDocModule} from '@monorepo/technical-doc';
+import {HaTdServiceConfig} from './ha-core/ha-model/ha-config/ha-td-service.config';
 
 function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): () => void {
   return (): void => authenticatedUserService.init();
@@ -40,6 +42,8 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
     HaCoreModule,
 
     FlApiModule.forRoot(HaApiServiceConfig, HaApiErrorService),
+
+    TdTechnicalDocModule.forRoot(HaTdServiceConfig),
 
     FlAuthModule.forRoot(HaAuthService),
 
@@ -71,7 +75,7 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
     useClass: FlHttpInterceptorService,
     multi: true
   },
-    {provide: APP_INITIALIZER, useFactory: loadUserOnInit, deps: [HaAuthenticatedUserService], multi: true},
+  {provide: APP_INITIALIZER, useFactory: loadUserOnInit, deps: [HaAuthenticatedUserService], multi: true},
   ],
   bootstrap: [AppComponent],
 })

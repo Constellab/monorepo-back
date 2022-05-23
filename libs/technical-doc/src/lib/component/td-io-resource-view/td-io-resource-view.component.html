@@ -1,10 +1,4 @@
 <div class="resource-color-link">
   <div class="resource-color-div" [style.background-color]="color" ></div>
-
-  <a class="g-text-link"
-     [routerLink]="getIoBrickName(resource.typing_name) + '/' + (resource.brick_version ?resource.brick_version: 'latest')  +
-              '/doc/technical-folder/resource/' + getIoUniqueName(resource.typing_name)"
-     [relativeTo]="activatedRoute.parent.parent.parent">
-  {{resource.human_name}}
-</a>
+  <td-tech-doc-link [doc]="resourceDoc"></td-tech-doc-link>
 </div>

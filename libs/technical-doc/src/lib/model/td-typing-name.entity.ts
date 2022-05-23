@@ -3,6 +3,10 @@
  */
 export class TdTypingName {
 
+  static getTypeName(typingName: string): string{
+    return this.splitedTypingname(typingName)[0];
+  }
+
   static getBrickName(typingName: string): string {
     return this.splitedTypingname(typingName)[1];
   }

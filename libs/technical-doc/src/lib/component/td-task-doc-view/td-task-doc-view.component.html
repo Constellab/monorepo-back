@@ -1,6 +1,6 @@
 <td-main-doc-view [doc]="task" class="ql-editor"></td-main-doc-view>
 
-<fl-key-value *ngIf="task.additionalInfo.supported_extensions && task.additionalInfo.supported_extensions.length > 0"
+<fl-key-value *ngIf="task.additionalInfo && task.additionalInfo.supported_extensions && task.additionalInfo.supported_extensions.length > 0"
               class="key-val ql-editor div-spec">
   <fl-key>{{'td.supported_extensions' |translate}}</fl-key>
   {{task.additionalInfo.supported_extensions.join(', ')}}

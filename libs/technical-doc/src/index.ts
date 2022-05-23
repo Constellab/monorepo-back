@@ -19,3 +19,8 @@ export * from './lib/component/td-main-doc-view/td-main-doc-view.component';
 export * from './lib/component/td-task-doc-view/td-task-doc-view.component';
 export * from './lib/component/td-io-doc-view/td-io-doc-view.component';
 export * from './lib/component/td-io-resource-view/td-io-resource-view.component';
+export * from './lib/component/td-tech-doc-link/td-tech-doc-link.component';
+
+//service
+export * from './lib/service/td-service.service'
+export * from './lib/service/td-service-config.config'
