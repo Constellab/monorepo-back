@@ -1,5 +1,5 @@
 <mat-drawer-container class="container" [hasBackdrop]="isSmallScreen" (backdropClick)="closeSideNav()">
-  <mat-drawer #drawer class=" g-full-height" [mode]="isSmallScreen ? 'over' : 'side'"  [opened]="!isSmallScreen || sideNavIsOpen">
+  <mat-drawer #drawer class="g-full-height g-styled-scrollbar" [mode]="isSmallScreen ? 'over' : 'side'"  [opened]="!isSmallScreen || sideNavIsOpen">
     <div class="sidenav">
       <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree item g-full-height"
                 cdkDropList (cdkDropListDropped)="drop($event)">
@@ -107,7 +107,8 @@
     <div *ngIf="isSmallScreen" class="small-screen-title">
       <mat-icon (click)="openSideNav()" class="bt-open-side-nav">menu</mat-icon>
     </div>
-
-    <router-outlet></router-outlet>
+    <div [class]="isSmallScreen ? 'small-router' : 'router'">
+      <router-outlet></router-outlet>
+    </div>
   </mat-drawer-content>
 </mat-drawer-container>

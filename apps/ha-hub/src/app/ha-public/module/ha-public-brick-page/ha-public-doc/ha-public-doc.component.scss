@@ -11,7 +11,7 @@
 
 .documentation-form{
   width: 100%;
-  height: calc(92% - 2px);
+  height: calc(100% - 5em);
 }
 
 .sidenavBody{
@@ -54,14 +54,13 @@
 
 .technical-doc-div{
   margin: 0 auto;
-  padding-top: 1em;
-  flex: 1 0 auto;
+  height: calc(100% - 5em);
   width: 100%;
 }
 
 .doc-title-div{
   width: 100%;
-  height: calc(8% + 2px);
+  height: calc(5em);
 }
 
 .doc-title{
