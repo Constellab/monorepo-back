@@ -20,8 +20,11 @@ import {HaPublicBrickDescriptionComponent} from './ha-public-brick-description/h
 import {MatCardModule} from '@angular/material/card';
 import {MatRadioModule} from '@angular/material/radio';
 import {HaPublicDocComponent} from './ha-public-doc/ha-public-doc.component';
-import { HaPublicSidenavImportTecDocDialogComponent } from './ha-public-sidenav-import-tec-doc-dialog/ha-public-sidenav-import-tec-doc-dialog.component';
-import { HaPublicEditBrickDialogComponent } from './ha-public-edit-brick-dialog/ha-public-edit-brick-dialog.component';
+import {
+  HaPublicSidenavImportTecDocDialogComponent
+} from './ha-public-sidenav-import-tec-doc-dialog/ha-public-sidenav-import-tec-doc-dialog.component';
+import {HaPublicEditBrickDialogComponent} from './ha-public-edit-brick-dialog/ha-public-edit-brick-dialog.component';
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -47,7 +50,8 @@ import { HaPublicEditBrickDialogComponent } from './ha-public-edit-brick-dialog/
     MatCardModule,
     FlKeyValueModule,
     MatRadioModule,
-    FormsModule
+    FormsModule,
+    MatTooltipModule
   ]
 })
 export class HaPublicBrickPageModule {

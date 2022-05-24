@@ -21,7 +21,7 @@ import {
   HaPublicSidenavCreateFormDialogComponent
 } from '../ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
 import {HaDocumentation} from '../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
-import {CdkDragDrop, CdkDragStart} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, CdkDragMove, CdkDragStart} from '@angular/cdk/drag-drop';
 import {SelectionModel} from '@angular/cdk/collections';
 import {Observable, Subscription} from 'rxjs';
 import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
@@ -72,6 +72,7 @@ export class HaPublicSidenavComponent implements OnInit {
     node => node.expandable
   );
 
+
   treeFlattener = new MatTreeFlattener(
     this._transformer,
     node => node.level,
@@ -108,6 +109,7 @@ export class HaPublicSidenavComponent implements OnInit {
   changedData: HaNode[];
   dragging = false;
   expandDelay = 1000;
+  hoverId: string;
 
   ngOnInit(): void {
 
@@ -167,7 +169,7 @@ export class HaPublicSidenavComponent implements OnInit {
     return null;
   }
 
-  onRightClick(event: MouseEvent, isFolder: boolean, hasChild: boolean = false, id?: string): void {
+  onClickMenu(event: MouseEvent, isFolder: boolean, hasChild: boolean = false, id?: string): void {
     this.isAdmin.subscribe(isAdmin => {
       if (isAdmin) {
         event.preventDefault();
@@ -177,14 +179,14 @@ export class HaPublicSidenavComponent implements OnInit {
         }
         if (!id) {
           this.brickService.getRootFolderId(this.brickId, this.brickVersion).subscribe(res => {
-            this.openedMenu =
-              this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, res.id, true), event);
+            this.openCreateDialog(res.id);
           });
         } else {
           this.openedMenu =
             this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, false, hasChild), event);
+          this.menuOpen = true;
         }
-        this.menuOpen = true;
+
       }
     });
   }
@@ -348,7 +350,16 @@ export class HaPublicSidenavComponent implements OnInit {
 
   }
 
+  dragMoved(event: CdkDragMove<any>): void {
+    const e = event.source.element
+
+
+
+    console.log(e)
+  }
+
   drop($event: CdkDragDrop<HaNode[]>): void {
+    console.log($event.currentIndex, $event.previousIndex)
 
     // ignore drops outside of the tree
     if (!$event.isPointerOverContainer) return;
@@ -357,7 +368,6 @@ export class HaPublicSidenavComponent implements OnInit {
     // the cdkDragDrop event.currentIndex jives with visible nodes.
     // it calls rememberExpandedTreeNodes to persist expand state
     const visibleNodes = this.visibleNodes();
-
 
     // deep clone the data source so we can mutate it
     this.changedData = JSON.parse(JSON.stringify(this.dataSource.data));
@@ -448,32 +458,6 @@ export class HaPublicSidenavComponent implements OnInit {
         }
       }
     }
-  }
-
-
-  dragHover(node: FlatNode): void {
-    if (this.dragging) {
-      this.overNodeLevel = node.level;
-    }
-  }
-
-  dragHoverEnd(): void {
-
-  }
-
-  dragStart($event?: CdkDragStart<FlatNode>): void {
-    this.dragging = true;
-    this.previousData = this.dataSource.data;
-    if ($event) {
-      const node: FlatNode = $event.source.data;
-      if (this.treeControl.isExpanded(node)) {
-        this.treeControl.collapse(node);
-      }
-    }
-  }
-
-  dragEnd(): void {
-    this.dragging = false;
   }
 
   rebuildTreeForData(data: HaNode[]): void {
