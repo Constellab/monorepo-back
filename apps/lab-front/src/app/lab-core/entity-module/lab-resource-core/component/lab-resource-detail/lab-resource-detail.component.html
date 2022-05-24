@@ -10,8 +10,9 @@
           <span class="g-text-light">{{resource.resourceTypeHumanName}}</span>
         </h2>
 
-        <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'" class="g-text-link">
-          <fl-text-icon class="g-text-tiny g-text-light" *ngIf="resource.experiment"
+        <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
+           *ngIf="resource.experiment" class="g-text-link">
+          <fl-text-icon class="g-text-tiny g-text-light"
                         gap="0">
             <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
             {{resource.experiment.title}}

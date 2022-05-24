@@ -9,17 +9,17 @@ import {RvResourceViewDirective} from '@monorepo/resource-view';
  * View of resource that show a list of other resources
  */
 @Component({
-  selector: 'lab-resources-list',
-  templateUrl: './lab-resources-list.component.html',
-  styleUrls: ['./lab-resources-list.component.scss']
+  selector: 'lab-view-resources-list',
+  templateUrl: './lab-view-resources-list.component.html',
+  styleUrls: ['./lab-view-resources-list.component.scss']
 })
-export class LabResourcesListComponent extends RvResourceViewDirective<LabResourceViewResourcesList>
+export class LabViewResourcesListComponent extends RvResourceViewDirective<LabResourceViewResourcesList>
   implements OnInit {
 
   datasource: FlArrayObs<LabResource>;
 
   columns: FlTableColumn<LabResource>[] = ['name', 'info',
-    {columnName: 'resource_type', accessor: 'resourceTypeHumanName'}, 'tags'];
+    {columnName: 'resource_type', accessor: 'resourceTypeHumanName'}, 'tags', 'viewResource', 'openInNewTab'];
 
 
   ngOnInit(): void {

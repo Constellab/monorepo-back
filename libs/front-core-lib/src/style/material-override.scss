@@ -293,6 +293,11 @@
   flex: 8 1 0 !important;
 }
 
+// To be place only on the first mat-cell-header set the padding to added with cell with border
+.g-cell-header-with-left-border {
+  padding-left: 34px !important;
+}
+
 // To be place only on the first mat-cell to define a colored border
 .g-cell-with-left-border {
   border-left-style: solid;

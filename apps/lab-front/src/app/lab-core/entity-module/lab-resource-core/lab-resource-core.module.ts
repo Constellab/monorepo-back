@@ -43,7 +43,7 @@ import {
 } from './component/lab-resource-actions-menu/lab-resource-actions-menu.component';
 import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
 import {LabResourceFolderComponent} from './component/lab-resource-folder/lab-resource-folder.component';
-import {LabResourcesListComponent} from './component/lab-resources-list/lab-resources-list.component';
+import {LabViewResourcesListComponent} from './component/lab-view-resources-list/lab-view-resources-list.component';
 import {LabExperimentCoreModule} from '../lab-experiment-core/lab-experiment-core.module';
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 import {LabTypeCoreModule} from '../lab-type-core/lab-type-core.module';
@@ -73,7 +73,7 @@ import {
     LabUpdateResourceNameDialogComponent,
     LabResourceActionsMenuComponent,
     LabResourceFolderComponent,
-    LabResourcesListComponent,
+    LabViewResourcesListComponent,
     LabResourceDetailViewTabsComponent,
   ],
   exports: [

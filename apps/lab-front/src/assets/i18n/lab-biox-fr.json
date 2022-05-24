@@ -162,6 +162,7 @@
     "biox.process_sub_type_RESOURCE": "Ressource",
     "view_resource": "Ressource",
     "open_resource_page": "Ouvrir la ressource",
+    "open_resource_in_new_tab": "Ouvrir dans un nouvel onglet",
     "update_resource_type": "Modifier le type de la ressource",
     "update_resource_type_help": "Vous pouvez modifier le type de la ressource seulement si cette ressource n'est pas utilisée dans une expérience",
     "resource_type_updated": "Type de la ressource modifié",

@@ -10,8 +10,8 @@ import {
   RvViewDisplayMode
 } from '@monorepo/resource-view';
 import {
-  LabResourcesListComponent
-} from '../../../entity-module/lab-resource-core/component/lab-resources-list/lab-resources-list.component';
+  LabViewResourcesListComponent
+} from '../../../entity-module/lab-resource-core/component/lab-view-resources-list/lab-view-resources-list.component';
 import {
   LabResourceSpreadsheetComponent
 } from '../../../entity-module/lab-resource-core/component/lab-resource-spreadsheet/lab-resource-spreadsheet.component';
@@ -121,7 +121,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     text: 'biox.resource_view_resources_list',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
-    viewComponent: LabResourcesListComponent
+    viewComponent: LabViewResourcesListComponent
   },
   'folder-view': {
     icon: 'folder',

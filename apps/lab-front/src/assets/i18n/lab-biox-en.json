@@ -162,6 +162,7 @@
     "process_sub_type_Resource": "Resource",
     "view_resource": "Resource",
     "open_resource_page": "Open resource",
+    "open_resource_in_new_tab": "Open in new tab",
     "update_resource_type": "Update resource type",
     "update_resource_type_help": "You can update the type of the resource only if the resource is not used in an experiment",
     "resource_type_updated": "Resource type updated",

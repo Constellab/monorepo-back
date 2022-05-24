@@ -2,7 +2,7 @@
 
   <!-- Name -->
   <ng-container matColumnDef="name">
-    <mat-header-cell *matHeaderCellDef>
+    <mat-header-cell *matHeaderCellDef class="g-cell-header-with-left-border">
       <span> {{'name' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let resource" class="g-cell-with-left-border"
@@ -71,6 +71,32 @@
 
     </mat-cell>
   </ng-container>
+
+  <!-- View Resource -->
+  <ng-container matColumnDef="viewResource">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let resource" class="g-table-icon-button-cell">
+      <button mat-icon-button (click)="openResourceDetail(resource, $event)"
+              type="button" [matTooltip]="'biox.resource_preview' | translate">
+        <mat-icon>visibility</mat-icon>
+      </button>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Open in new tab -->
+  <ng-container matColumnDef="openInNewTab">
+    <mat-header-cell *matHeaderCellDef>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let resource">
+      <a mat-stroked-button [routerLink]="resource | labDetailRoute"
+         target="_blank" class="g-button-small" (click)="openInNewTab($event)">
+        {{'biox.open_resource_in_new_tab' | translate}}
+        <mat-icon>open_in_new</mat-icon>
+      </a>
+    </mat-cell>
+  </ng-container>
+
 
   <!-- Dynamic columns -->
   <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
