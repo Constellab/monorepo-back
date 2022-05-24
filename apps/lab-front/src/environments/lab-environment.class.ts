@@ -27,6 +27,9 @@ export interface LabEnvironmentSettings {
 
   // url of the central front
   centralFrontUrl: string;
+
+  // url of the hub front
+  hubFrontUrl: string;
 }
 
 // Path of the environment json file created during the docker run (used in production)

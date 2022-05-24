@@ -18,7 +18,8 @@ export const environment: Environment = {
     devApiBaseUrl: apiBaseUrl,
     codeServerUrl: 'https://vlab.tokyo.gencovery.io/',
     virtualHost: 'localhost',
-    centralFrontUrl: 'http://localhost:4200'
+    centralFrontUrl: 'http://localhost:4200',
+    hubFrontUrl: 'https://hub-pre-prod.gencovery.com'
   },
 };
 

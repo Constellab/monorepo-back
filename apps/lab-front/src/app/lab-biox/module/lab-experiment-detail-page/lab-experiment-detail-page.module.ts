@@ -30,7 +30,6 @@ import {LabProgressBarInfoComponent} from './component/lab-progress-bar-info/lab
 import {LabTaskSourceConfigComponent} from './component/lab-task-source-config/lab-task-source-config.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabWorkflowNodeDetailState} from './state/lab-workflow-node-detail.state';
-import {LabProcessCoreModule} from '../../../lab-core/entity-module/lab-process-core/lab-process-core.module';
 import {
   LabExperimentDetailHeaderComponent
 } from './component/lab-experiment-detail-header/lab-experiment-detail-header.component';
@@ -91,7 +90,6 @@ import {LabConfigureTaskComponent} from './component/lab-configure-task/lab-conf
     LabExperimentCoreModule,
     LabResourceCoreModule,
     LabConfigCoreModule,
-    LabProcessCoreModule,
     LabProjectCoreModule,
     LabTypeCoreModule,
   ],

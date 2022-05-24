@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabProcessTypePortalComponent} from './lab-process-type-portal.component';
+import {LabTypeDialogComponent} from './lab-type-dialog.component';
 
 describe('BioxProcessTypePortalComponent', () => {
-  let component: LabProcessTypePortalComponent;
-  let fixture: ComponentFixture<LabProcessTypePortalComponent>;
+  let component: LabTypeDialogComponent;
+  let fixture: ComponentFixture<LabTypeDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabProcessTypePortalComponent ]
+      declarations: [ LabTypeDialogComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabProcessTypePortalComponent);
+    fixture = TestBed.createComponent(LabTypeDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

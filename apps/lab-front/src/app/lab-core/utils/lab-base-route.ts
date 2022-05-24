@@ -8,6 +8,7 @@ export const labConstBiotaRoute = 'biota';
 export const labConstDataboxRoute = 'databox';
 export const labConstReportRoute = 'report';
 export const labConstMonitoringRoute = 'monitoring';
+export const labConstDocRoute = 'doc';
 export const labConstLoginRoute = '/login';
 
 export const labConstBioxFullRoute = `/${labConstBaseRoute}/${labConstBioxRoute}`;
@@ -15,4 +16,5 @@ export const labConstBiotaFullRoute = `/${labConstBaseRoute}/${labConstBiotaRout
 export const labConstDataboxFullRoute = `/${labConstBaseRoute}/${labConstDataboxRoute}`;
 export const labConstReportFullRoute = `/${labConstBaseRoute}/${labConstReportRoute}`;
 export const labConstMonitoringFullRoute = `/${labConstBaseRoute}/${labConstMonitoringRoute}`;
+export const labConstDocFullRoute = `/${labConstBaseRoute}/${labConstDocRoute}`;
 

@@ -30,7 +30,6 @@ import {
   LabImportResourceDialogComponent
 } from './component/lab-import-resource-dialog/lab-import-resource-dialog.component';
 import {LabConfigCoreModule} from '../lab-config-core/lab-config-core.module';
-import {LabProcessCoreModule} from '../lab-process-core/lab-process-core.module';
 import {
   LabResourceDetailDialogComponent
 } from './component/lab-resource-detail-dialog/lab-resource-detail-dialog.component';
@@ -47,6 +46,7 @@ import {LabResourceFolderComponent} from './component/lab-resource-folder/lab-re
 import {LabResourcesListComponent} from './component/lab-resources-list/lab-resources-list.component';
 import {LabExperimentCoreModule} from '../lab-experiment-core/lab-experiment-core.module';
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
+import {LabTypeCoreModule} from '../lab-type-core/lab-type-core.module';
 
 
 @NgModule({
@@ -99,7 +99,7 @@ import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
     LabCoreModule,
     LabTransformerModule,
     LabConfigCoreModule,
-    LabProcessCoreModule,
+    LabTypeCoreModule,
     LabUserCoreModule,
     LabExperimentCoreModule,
     LabTagCoreModule,

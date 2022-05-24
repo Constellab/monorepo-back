@@ -182,6 +182,7 @@
     "type_include_deprecated": "Inclure les objets obsolètes",
     "type_importer_ignore_extension": "Ignorer l'extension du fichier",
     "process_type_unavailable_error": "Le type de processus n'est pas disponible, vous ne pouvez pas l'utiliser",
-    "technical_info": "Informations techniques"
+    "technical_info": "Informations techniques",
+    "open_type_in_page": "Ouvrir en page entière"
   }
 }

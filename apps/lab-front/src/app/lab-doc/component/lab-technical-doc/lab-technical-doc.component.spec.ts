@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabProcessDocComponent} from './lab-process-doc.component';
+import {LabTechnicalDocComponent} from './lab-technical-doc.component';
 
-describe('BioxProcessTypeDocComponent', () => {
-  let component: LabProcessDocComponent;
-  let fixture: ComponentFixture<LabProcessDocComponent>;
+describe('LabTechnicalDocComponent', () => {
+  let component: LabTechnicalDocComponent;
+  let fixture: ComponentFixture<LabTechnicalDocComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabProcessDocComponent ]
+      declarations: [ LabTechnicalDocComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabProcessDocComponent);
+    fixture = TestBed.createComponent(LabTechnicalDocComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

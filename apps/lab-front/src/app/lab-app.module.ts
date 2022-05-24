@@ -37,6 +37,8 @@ import {
 } from './lab-report/module/lab-report-detail-page/component/lab-report-content-view/lab-report-content-view.component';
 import {RvResourceViewModule} from '@monorepo/resource-view';
 import {labConstResourceViewTypeInfos} from './lab-core/model/entities/resource/lab-resource-view.entity';
+import {TdTechnicalDocModule} from '@monorepo/technical-doc';
+import {LabTdServiceConfig} from './lab-core/service/lab-td-service.config';
 
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
@@ -85,6 +87,7 @@ function loadThemeOnInit(themeService: FlThemeService): () => void {
         {blot: LabReportContentViewBlot, componentType: LabReportContentViewComponent}]
     }),
     RvResourceViewModule.forRoot({availableViews: labConstResourceViewTypeInfos}),
+    TdTechnicalDocModule.forRoot(LabTdServiceConfig),
 
     LabAppRoutingModule
   ],

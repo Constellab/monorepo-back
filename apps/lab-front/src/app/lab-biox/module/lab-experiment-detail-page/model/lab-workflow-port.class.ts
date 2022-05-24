@@ -1,4 +1,4 @@
-import {labGetProcessPortColor} from '../../../../lab-core/entity-module/lab-process-core/utils/lab-process-port-color';
+import {labGetProcessPortColor} from '../../../../lab-core/entity-module/lab-type-core/utils/lab-process-port-color';
 import {LabIOSpec} from '../../../../lab-core/model/entities/lab-io.entity';
 
 export class LabWorkflowPort {

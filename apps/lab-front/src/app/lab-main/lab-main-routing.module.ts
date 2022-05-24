@@ -5,6 +5,7 @@ import {
   labConstBiotaRoute,
   labConstBioxRoute,
   labConstDataboxRoute,
+  labConstDocRoute,
   labConstMonitoringRoute,
   labConstReportRoute
 } from '../lab-core/utils/lab-base-route';
@@ -29,27 +30,32 @@ const routes: Routes = [
         path: '', redirectTo: labConstBioxRoute, pathMatch: 'full'
       },
 
-      //////////////////////// BIOX  /////////////////////////
+      ////////////////////////  BIOX  /////////////////////////
       {
         path: labConstBioxRoute,
         loadChildren: () => import('../lab-biox/lab-biox.module').then(m => m.LabBioxModule)
       },
 
-      //////////////////////// BIOTA  /////////////////////////
+      ////////////////////////  BIOTA  /////////////////////////
       {
         path: labConstBiotaRoute,
         loadChildren: () => import('../lab-biota/lab-biota.module').then(m => m.LabBiotaModule)
       },
 
-      //////////////////////// DATABOX  /////////////////////////
+      ////////////////////////  DATABOX  /////////////////////////
       {
         path: labConstDataboxRoute,
         loadChildren: () => import('../lab-databox/lab-databox.module').then(m => m.LabDataboxModule)
       },
-      //////////////////////// REPORT  /////////////////////////
+      ////////////////////////  REPORT  /////////////////////////
       {
         path: labConstReportRoute,
         loadChildren: () => import('../lab-report/lab-report.module').then(m => m.LabReportModule)
+      },
+      ////////////////////////  DOC  /////////////////////////
+      {
+        path: labConstDocRoute,
+        loadChildren: () => import('../lab-doc/lab-doc.module').then(m => m.LabDocModule)
       },
       //////////////////////// MONITORING  /////////////////////////
       {

@@ -26,8 +26,8 @@
     <div fxLayout="row" fxLayoutAlign="space-between center">
       <h2>{{selectedImporterType.humanName}}</h2>
 
-      <lab-process-type-show-detail-button [processTypingName]="selectedImporterType.typingName">
-      </lab-process-type-show-detail-button>
+      <lab-type-show-detail-button [typingName]="selectedImporterType.typingName">
+      </lab-type-show-detail-button>
     </div>
     <div class="g-text-light short-description">
       {{selectedImporterType.shortDescription || selectedImporterType.humanName}}

@@ -39,9 +39,9 @@
     <mat-header-cell *matHeaderCellDef class="detail-column">
     </mat-header-cell>
     <mat-cell *matCellDef="let processType" class="detail-column">
-      <lab-process-type-show-detail-button [processTypingName]="processType.typingName"
-                                           (click)="stopEventPropagation($event)">
-      </lab-process-type-show-detail-button>
+      <lab-type-show-detail-button [typingName]="processType.typingName"
+                                   (click)="stopEventPropagation($event)">
+      </lab-type-show-detail-button>
     </mat-cell>
   </ng-container>
 

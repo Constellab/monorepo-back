@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabProcessTypeCardComponent} from './lab-process-type-card.component';
+import {LabTypeDetailComponent} from './lab-type-detail.component';
 
 describe('BioxProcessTypeCardComponent', () => {
-  let component: LabProcessTypeCardComponent;
-  let fixture: ComponentFixture<LabProcessTypeCardComponent>;
+  let component: LabTypeDetailComponent;
+  let fixture: ComponentFixture<LabTypeDetailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabProcessTypeCardComponent ]
+      declarations: [ LabTypeDetailComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabProcessTypeCardComponent);
+    fixture = TestBed.createComponent(LabTypeDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

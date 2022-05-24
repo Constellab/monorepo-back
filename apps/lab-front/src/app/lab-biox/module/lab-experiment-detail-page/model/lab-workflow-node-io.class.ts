@@ -4,7 +4,7 @@ import {BehaviorSubject, distinctUntilChanged, Observable} from 'rxjs';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
 import {FlStatusEvent} from '@monorepo/front-core-lib';
 import {LabWorkflowPort} from './lab-workflow-port.class';
-import {labGetTypingNameColor} from '../../../../lab-core/entity-module/lab-process-core/utils/lab-process-port-color';
+import {labGetTypingNameColor} from '../../../../lab-core/entity-module/lab-type-core/utils/lab-process-port-color';
 import {map, switchMap} from 'rxjs/operators';
 
 

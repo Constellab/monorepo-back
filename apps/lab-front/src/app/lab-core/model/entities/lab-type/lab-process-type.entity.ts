@@ -3,9 +3,9 @@ import {LabTypeEntity} from './lab-type.entity';
 import {LabIOSpec} from '../lab-io.entity';
 import {Expose} from 'class-transformer';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
+import {TdProcessType} from '@monorepo/technical-doc';
 
-
-export class LabProcessType extends LabTypeEntity {
+export class LabProcessType extends LabTypeEntity implements TdProcessType {
 
   @Expose({name: 'input_specs'})
   inputSpecs: Record<string, LabIOSpec>;

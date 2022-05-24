@@ -3,6 +3,7 @@ import {
   labConstBaseRoute,
   labConstBioxFullRoute,
   labConstDataboxFullRoute,
+  labConstDocFullRoute,
   labConstMonitoringFullRoute,
   labConstReportFullRoute
 } from '../utils/lab-base-route';
@@ -25,11 +26,11 @@ export class LabRouterService {
   }
 
   public static getExperimentListRoute(): string {
-    return `${labConstBioxFullRoute}`;
+    return labConstBioxFullRoute;
   }
 
   public static getDataboxRoute(): string {
-    return `${labConstDataboxFullRoute}`;
+    return labConstDataboxFullRoute;
   }
 
   public static getExperimentDetailRoute(id: string): string {
@@ -41,15 +42,23 @@ export class LabRouterService {
   }
 
   public static getMonitoringRoute(): string {
-    return `${labConstMonitoringFullRoute}`;
+    return labConstMonitoringFullRoute;
   }
 
   public static getReportSearchRoute(): string {
-    return `${labConstReportFullRoute}`;
+    return labConstReportFullRoute;
   }
 
   public static getReportDetailRoute(id: string): string {
     return `${labConstReportFullRoute}/${id}`;
+  }
+
+  public static getDocRoute(): string {
+    return labConstDocFullRoute;
+  }
+
+  public static getTechnicalDocRoute(typingName: string): string{
+    return `${LabRouterService.getDocRoute()}/technical-doc/${typingName}`;
   }
 
   public static getLoginRoute(): string {

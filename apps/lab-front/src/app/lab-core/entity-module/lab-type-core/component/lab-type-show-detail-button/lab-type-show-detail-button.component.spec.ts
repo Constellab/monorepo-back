@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabProcessTypeShowDetailButtonComponent} from './lab-process-type-show-detail-button.component';
+import {LabTypeShowDetailButtonComponent} from './lab-type-show-detail-button.component';
 
 describe('LabProcessTypeShowDetailButtonComponent', () => {
-  let component: LabProcessTypeShowDetailButtonComponent;
-  let fixture: ComponentFixture<LabProcessTypeShowDetailButtonComponent>;
+  let component: LabTypeShowDetailButtonComponent;
+  let fixture: ComponentFixture<LabTypeShowDetailButtonComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabProcessTypeShowDetailButtonComponent ]
+      declarations: [ LabTypeShowDetailButtonComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabProcessTypeShowDetailButtonComponent);
+    fixture = TestBed.createComponent(LabTypeShowDetailButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
