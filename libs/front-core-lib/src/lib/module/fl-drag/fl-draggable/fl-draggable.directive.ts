@@ -17,6 +17,11 @@ export class FlDraggableDirective implements OnInit {
    */
   @Input() flDraggableData: any;
 
+  /**
+   * Element to use as ghost when dragging
+   */
+  @Input() flDraggableGhostElement: HTMLElement;
+
   @Output() flDragStart: EventEmitter<DragEvent> = new EventEmitter();
 
   @HostListener('dragstart', ['$event'])
@@ -24,6 +29,10 @@ export class FlDraggableDirective implements OnInit {
     this.dragManager.setDraggedData(this.flDraggableType, this.flDraggableData);
 
     this.flDragStart.emit(event);
+
+    if (this.flDraggableGhostElement) {
+      event.dataTransfer.setDragImage(this.flDraggableGhostElement, 0, 0);
+    }
   }
 
 

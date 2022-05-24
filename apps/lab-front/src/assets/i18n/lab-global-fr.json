@@ -71,6 +71,7 @@
   "tags": "Tags",
   "update_tags": "Modifier les tags",
   "tag_drag_tooltip": "Faire glisser sur un objet pour le tagger",
+  "reorder_tag_values": "Réorganiser les tags",
   "tag_create": "Créer un tag",
   "tag_created": "Tag créé",
   "tag_update": "Modifier la valeur du tag",

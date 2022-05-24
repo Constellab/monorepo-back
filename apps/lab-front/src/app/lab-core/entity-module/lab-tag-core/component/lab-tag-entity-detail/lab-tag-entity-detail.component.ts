@@ -108,4 +108,9 @@ export class LabTagEntityDetailComponent extends FlFormFieldDirective<string> im
     this.tagService.reorderTagValues(this.tagEntity.key, this.tagEntity.values).subscribe();
   }
 
+  dragStarted(event: any): void {
+    console.log('Start')
+    ClHelpService.stopEventPropagation(event.source);
+  }
+
 }
