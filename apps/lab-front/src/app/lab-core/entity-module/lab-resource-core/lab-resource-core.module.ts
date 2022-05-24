@@ -47,6 +47,9 @@ import {LabResourcesListComponent} from './component/lab-resources-list/lab-reso
 import {LabExperimentCoreModule} from '../lab-experiment-core/lab-experiment-core.module';
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 import {LabTypeCoreModule} from '../lab-type-core/lab-type-core.module';
+import {
+  LabResourceDetailViewTabsComponent
+} from './component/lab-resource-detail-view-tabs/lab-resource-detail-view-tabs.component';
 
 
 @NgModule({
@@ -71,6 +74,7 @@ import {LabTypeCoreModule} from '../lab-type-core/lab-type-core.module';
     LabResourceActionsMenuComponent,
     LabResourceFolderComponent,
     LabResourcesListComponent,
+    LabResourceDetailViewTabsComponent,
   ],
   exports: [
     LabResourceInfoComponent,

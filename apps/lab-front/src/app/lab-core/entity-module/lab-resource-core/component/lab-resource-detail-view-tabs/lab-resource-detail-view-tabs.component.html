@@ -1,0 +1,26 @@
+<div *ngIf="showLoader" class="g-text-centered">
+  <fl-loader size="medium"></fl-loader>
+</div>
+<mat-tab-group class="g-full-height g-mat-tab-full-height" [animationDuration]="'0'">
+  <mat-tab *ngFor="let view of views; let i = index">
+
+    <ng-template mat-tab-label>
+      <div>{{view.view.title}}</div>
+
+      <rv-technical-info-button [technicalInfo]="view.view.technical_info"
+                                class="g-button-icon-small"></rv-technical-info-button>
+      <button mat-icon-button (click)="closeTab(i)" class="g-button-icon-small" *ngIf="views.length > 1">
+        <mat-icon>close</mat-icon>
+      </button>
+    </ng-template>
+
+
+    <rv-resource-view [view]="view.view"
+                      [config]="view.viewConfig" [resourceId]="resourceId"
+                      class="resource-view">
+    </rv-resource-view>
+
+
+
+  </mat-tab>
+</mat-tab-group>

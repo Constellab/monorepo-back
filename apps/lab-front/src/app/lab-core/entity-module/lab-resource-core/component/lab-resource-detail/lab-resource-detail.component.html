@@ -8,19 +8,17 @@
       <fl-section-header class="header">
         <h2 class="header-title">{{resource.name}} |
           <span class="g-text-light">{{resource.resourceTypeHumanName}}</span>
-          <!--    Show the view title only if the title is different form the resource name      -->
-          <span class="g-text-light"
-                *ngIf="fullScreenView && fullScreenView.title !== resource.name"> | {{fullScreenView.title}}</span>
         </h2>
-        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="resource.experiment"
-                      gap="0">
-          <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
-          {{resource.experiment.title}}
-        </fl-text-icon>
+
+        <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'" class="g-text-link">
+          <fl-text-icon class="g-text-tiny g-text-light" *ngIf="resource.experiment"
+                        gap="0">
+            <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
+            {{resource.experiment.title}}
+          </fl-text-icon>
+        </a>
 
         <fl-section-actions>
-          <rv-technical-info-button *ngIf="fullScreenView"
-                                     [technicalInfo]="fullScreenView.technical_info"></rv-technical-info-button>
 
           <button mat-stroked-button type="button"
                   (click)="openViewSpecs($event)" class="button g-button-small">
@@ -34,13 +32,6 @@
              class="button g-button-small">
             <mat-icon flIcon="preview"></mat-icon>
             {{'biox.open_resource_page' | translate}}
-          </a>
-
-          <a mat-stroked-button type="button" *ngIf="resource.experiment && !readOnly"
-             [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
-             class="button g-button-small">
-            <mat-icon flIcon="experiment"></mat-icon>
-            {{'biox.experiment' | translate}}
           </a>
 
           <lab-resource-actions-menu [readOnly]="readOnly" [resource]="resource" (update)="onUpdate($event)"
@@ -62,11 +53,7 @@
 
         <!--  Header    -->
         <div class="page-padding body">
-          <rv-resource-view *ngIf="fullScreenView" [view]="fullScreenView"
-                            [config]="fullScreenViewConfig" [resourceId]="resource.id"></rv-resource-view>
-          <div *ngIf="showLoader" class="g-text-centered">
-            <fl-loader size="medium"></fl-loader>
-          </div>
+          <lab-resource-detail-view-tabs></lab-resource-detail-view-tabs>
         </div>
       </ng-container>
 

@@ -100,7 +100,7 @@ export class LabResourceViewSpecsComponent implements OnInit {
 
   private onConfigDialogClosed(config: LabResourceViewSpecWithConfig): void {
     if (config == null) return;
-    this.state.selectViewSpec(config);
+    this.state.callView(config);
   }
 
   closeOverlay(): void {

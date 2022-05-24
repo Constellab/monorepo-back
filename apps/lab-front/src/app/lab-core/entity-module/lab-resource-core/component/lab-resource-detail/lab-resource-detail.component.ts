@@ -1,11 +1,9 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
-  LabResourceDetailState,
-  LabResourceViewEvent
+  LabResourceDetailState
 } from '../../../../../lab-databox/module/lab-resource-detail-page/state/lab-resource-detail-state.service';
-import {Observable, Subscription} from 'rxjs';
+import {Observable} from 'rxjs';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
-import {LabResourceView, LabResourceViewConfig} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {
   LabResourceViewSpecsPortalComponent
@@ -31,13 +29,8 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
   @Input() readOnly: boolean = false;
 
   resource$: Observable<LabResource>;
-  fullScreenView: LabResourceView;
-  fullScreenViewConfig: LabResourceViewConfig;
-
-  showLoader: boolean = true;
 
   private overlayRef: FlOverlayRef;
-  private subscription: Subscription;
 
   constructor(private state: LabResourceDetailState,
               private portalService: FlPortalService,
@@ -51,21 +44,6 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
       this.state.init(this.resourceId);
     }
     this.resource$ = this.state.getResource$();
-
-    // subscribe to fullscreen view
-    this.subscription = this.state.getView$().subscribe(
-      view => this.showFullScreenView(view)
-    );
-  }
-
-
-  private showFullScreenView(viewEvent: LabResourceViewEvent): void {
-    this.showLoader = false;
-
-    if (viewEvent.viewEvent && viewEvent.viewEvent.displayMode === 'fullScreen') {
-      this.fullScreenView = viewEvent.viewEvent.view;
-      this.fullScreenViewConfig = viewEvent.viewEvent.viewConfig;
-    }
   }
 
 
@@ -129,16 +107,9 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
     this.overlayRef.detachments().subscribe(() => this.overlayRef = null);
   }
 
-
-  private clearComponent(): void {
-    this.subscription?.unsubscribe();
+  ngOnDestroy(): void {
     this.overlayRef?.dispose();
     this.state.clear();
-    this.fullScreenView = null;
-  }
-
-  ngOnDestroy(): void {
-    this.clearComponent();
   }
 
 }

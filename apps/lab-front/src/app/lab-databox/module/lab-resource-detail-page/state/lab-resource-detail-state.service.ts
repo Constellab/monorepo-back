@@ -46,7 +46,7 @@ export class LabResourceDetailState implements OnDestroy {
 
   private readonly actionType: string = 'view-loader';
 
-  private id: string;
+  public id: string;
 
   private resource$: BehaviorSubject<LabResource> = new BehaviorSubject<LabResource>(null);
   private viewSpecs$: ClCachedObservable<LabResourceViewSpecsByType[]>;
@@ -65,7 +65,7 @@ export class LabResourceDetailState implements OnDestroy {
     this.id = id;
     this.resource$.next(null);
     this.resourceService.getById(id).subscribe({
-      next: resource => this.resource$.next(resource),
+      next: resource => this.onResourceLoaded(resource),
       error: error => this.resource$.error(error)
     });
 
@@ -84,6 +84,12 @@ export class LabResourceDetailState implements OnDestroy {
     ).subscribe(
       viewEvent => this.openViewInPortal(viewEvent.view, viewEvent.viewConfig)
     );
+  }
+
+  private onResourceLoaded(resource: LabResource): void {
+    this.resource$.next(resource);
+    // Call the default view
+    this.loadDefaultView();
   }
 
   public getResource$(): Observable<LabResource> {
@@ -117,12 +123,12 @@ export class LabResourceDetailState implements OnDestroy {
     return this.lastViewSpec;
   }
 
-  public selectViewSpec(viewSpecConfigured: LabResourceViewSpecWithConfig, isDefaultView: boolean = false): void {
-    this.lastViewSpec = viewSpecConfigured;
-    this.loadView(viewSpecConfigured, isDefaultView);
-  }
 
   /////////////////////////////////// VIEW //////////////////////////////////////////
+  public callView(viewSpecConfigured: LabResourceViewSpecWithConfig): void {
+    this.lastViewSpec = viewSpecConfigured;
+    this.loadView(viewSpecConfigured, false);
+  }
 
   private loadDefaultView(): void {
     // generate the default view spec
@@ -217,7 +223,10 @@ export class LabResourceDetailState implements OnDestroy {
         };
 
         if (viewTypeInfo == null) {
-          this.flSnackBarService.openErrorMessage({text: 'rvResourceView.view_type_node_supported', translateText: true});
+          this.flSnackBarService.openErrorMessage({
+            text: 'rvResourceView.view_type_node_supported',
+            translateText: true
+          });
           return viewEvent;
         }
 
