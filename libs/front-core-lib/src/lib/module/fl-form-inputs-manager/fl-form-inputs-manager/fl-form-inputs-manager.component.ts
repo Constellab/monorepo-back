@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Optional, Output} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, FormGroupDirective, NgForm} from '@angular/forms';
-import {ThemePalette} from '@angular/material/core';
 import {Subscription} from 'rxjs';
 import {FlFormFilledInput, FlFormInputName, FlFormInputsManagerConfig} from '../fl-form-inputs-manager.class';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
@@ -29,7 +28,7 @@ export class FlFormInputsManagerComponent implements OnInit, OnDestroy {
 
   /**
    * Default value use for translation. If not translate field is provided
-   * for a object in the config, this value is used
+   * for an object in the config, this value is used
    */
   @Input() translateByDefault: boolean = false;
 
@@ -39,17 +38,7 @@ export class FlFormInputsManagerComponent implements OnInit, OnDestroy {
   @Input() config?: FlFormInputsManagerConfig = {};
 
   /**
-   * If true, it display a chip to reset the form when at least on input is filled
-   */
-  @Input() resetChip: boolean = false;
-
-  /**
-   * Color for the chips
-   */
-  @Input() chipColor: ThemePalette = 'primary';
-
-  /**
-   * If true, the false values are considered as null an the chip will not be created
+   * If true, the false values are considered as null and the chip will not be created
    */
   @Input() skipFalseBoolean : boolean = true;
 
@@ -81,7 +70,7 @@ export class FlFormInputsManagerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // get the formGroup if it doesn't exists
+    // get the formGroup if it doesn't exist
     if (this.formGp == null) {
       // case of NgModel form
       if (this.ngForm) {
@@ -190,13 +179,6 @@ export class FlFormInputsManagerComponent implements OnInit, OnDestroy {
       name: name,
       control: control
     };
-  }
-
-  reset(): void {
-    const inputs = [...this.filledInputs];
-    this.formGp.reset();
-
-    this.emitChipDeleted(inputs);
   }
 
   private emitChipListChange(): void {

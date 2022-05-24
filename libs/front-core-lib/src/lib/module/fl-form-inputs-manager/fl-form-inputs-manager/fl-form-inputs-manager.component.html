@@ -1,13 +1,6 @@
-<mat-chip-list class="chip-list">
-  <!-- Remove all chip -->
-  <mat-chip *ngIf="resetChip && filledInputs?.length > 0" [color]="chipColor"
-            [removable]="true" (removed)="reset()">
-    {{'all' | translate}}
-    <mat-icon matChipRemove>cancel</mat-icon>
-  </mat-chip>
-  <mat-chip *ngFor="let input of filledInputs" [color]="chipColor"
-            [removable]="true" (removed)="clearInput(input)">
+<fl-chip *ngFor="let input of filledInputs; let i = index" class="chip" size="small">
+  <fl-text-icon iconPosition="end" gap="5px">
     {{input.name}}
-    <mat-icon matChipRemove>cancel</mat-icon>
-  </mat-chip>
-</mat-chip-list>
+    <mat-icon class="g-icon-tiny" (click)="clearInput(input)">cancel</mat-icon>
+  </fl-text-icon>
+</fl-chip>

@@ -11,3 +11,13 @@
   display: block;
   overflow: hidden;
 }
+
+.chip{
+  background-color: var(--grey-contrast);
+  color: var(--grey-contrast-text);
+  margin: 4px;
+}
+
+.remove-icon{
+  cursor: pointer;
+}
