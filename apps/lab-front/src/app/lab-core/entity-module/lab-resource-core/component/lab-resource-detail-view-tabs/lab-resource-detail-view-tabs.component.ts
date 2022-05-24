@@ -20,6 +20,7 @@ interface LabViewWithConfig {
 })
 export class LabResourceDetailViewTabsComponent implements OnInit, OnDestroy {
 
+  selectedTabIndex: number = 0;
   resourceId: string;
 
   views: LabViewWithConfig[] = [];
@@ -49,6 +50,8 @@ export class LabResourceDetailViewTabsComponent implements OnInit, OnDestroy {
         view: viewEvent.viewEvent.view,
         viewConfig: viewEvent.viewEvent.viewConfig
       });
+
+      this.selectedTabIndex = this.views.length - 1;
     }
   }
 

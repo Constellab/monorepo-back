@@ -1,7 +1,8 @@
 <div *ngIf="showLoader" class="g-text-centered">
   <fl-loader size="medium"></fl-loader>
 </div>
-<mat-tab-group class="g-full-height g-mat-tab-full-height" [animationDuration]="'0'">
+<mat-tab-group class="g-full-height g-mat-tab-full-height" [animationDuration]="'0'"
+               [(selectedIndex)]="selectedTabIndex">
   <mat-tab *ngFor="let view of views; let i = index">
 
     <ng-template mat-tab-label>
