@@ -12,14 +12,18 @@ export * from './lib/model/td-protocol-type.entity';
 
 
 //component
-export * from './lib/component/td-technical-doc-view/td-technical-doc-view.component';
-export * from './lib/component/td-resource-doc-view/td-resource-doc-view.component';
-export * from './lib/component/td-main-doc-view/td-main-doc-view.component';
-export * from './lib/component/td-task-doc-view/td-task-doc-view.component';
-export * from './lib/component/td-io-doc-view/td-io-doc-view.component';
-export * from './lib/component/td-io-resource-view/td-io-resource-view.component';
+export * from './lib/component/td-technical-doc/td-technical-doc.component';
+export * from './lib/component/td-resource-doc/td-resource-doc.component';
+export * from './lib/component/td-main-doc/td-main-doc.component';
+export * from './lib/component/td-task-doc/td-task-doc.component';
+export * from './lib/component/td-io-doc/td-io-doc.component';
+export * from './lib/component/td-io-resource/td-io-resource.component';
 export * from './lib/component/td-tech-doc-link/td-tech-doc-link.component';
+export * from './lib/component/td-protocol-doc/td-protocol-doc.component';
 
 //service
-export * from './lib/service/td-service.service'
-export * from './lib/service/td-service-config.config'
+export * from './lib/service/td-service-config.config';
+
+
+//pipe
+export * from './lib/pipe/td-markdown.pipe';

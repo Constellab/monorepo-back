@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {TdTaskDocViewComponent} from './td-task-doc-view.component';
+import {TdMainDocComponent} from './td-main-doc.component';
 
-describe('TdTaskDocViewComponent', () => {
-  let component: TdTaskDocViewComponent;
-  let fixture: ComponentFixture<TdTaskDocViewComponent>;
+describe('TdMainDocView.ComponentComponent', () => {
+  let component: TdMainDocComponent;
+  let fixture: ComponentFixture<TdMainDocComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TdTaskDocViewComponent]
+      declarations: [TdMainDocComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TdTaskDocViewComponent);
+    fixture = TestBed.createComponent(TdMainDocComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

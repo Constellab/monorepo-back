@@ -6,11 +6,11 @@ import {TdResourceTypeDTO} from '../../model/td-process-type.entity';
 import {TdUniqueType} from '../../model/td-type.entity';
 
 @Component({
-  selector: 'td-io-resource-view',
-  templateUrl: './td-io-resource-view.component.html',
-  styleUrls: ['./td-io-resource-view.component.scss']
+  selector: 'td-io-resource',
+  templateUrl: './td-io-resource.component.html',
+  styleUrls: ['./td-io-resource.component.scss']
 })
-export class TdIoResourceViewComponent implements OnInit {
+export class TdIoResourceComponent implements OnInit {
 
   @Input()
   resource: TdResourceTypeDTO;
@@ -35,10 +35,10 @@ export class TdIoResourceViewComponent implements OnInit {
   }
 
   getIoBrickName(typingName: string): string {
-    return TdTypingName.getBrickName(typingName);
+    return new TdTypingName(typingName).getBrickName();
   }
 
   getIoUniqueName(typingName: string): string {
-    return TdTypingName.getUniqueName(typingName);
+    return new TdTypingName(typingName).getUniqueName();;
   }
 }

@@ -22,4 +22,5 @@ import {HaPublicCoreModule} from '../ha-public-core/ha-public-core.module';
   ]
 })
 export class HaPublicListBricksPageModule {
+
 }

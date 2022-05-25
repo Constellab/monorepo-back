@@ -1,4 +1,4 @@
-<td-main-doc-view [entity]="task" class="ql-editor"></td-main-doc-view>
+<td-main-doc [entity]="task" class="ql-editor"></td-main-doc>
 
 <fl-key-value *ngIf="task.additionalInfo && task.additionalInfo.supported_extensions && task.additionalInfo.supported_extensions.length > 0"
               class="key-val ql-editor div-spec">
@@ -13,7 +13,7 @@
     <mat-icon>login</mat-icon>
     <h3>{{'td.input' | translate}}</h3>
   </div>
-  <td-io-doc-view [ioSpecs]="task.inputSpecs"></td-io-doc-view>
+  <td-io-doc [ioSpecs]="task.inputSpecs"></td-io-doc>
 </div>
 
 <mat-divider class="divider" *ngIf="task.outputSpecs"></mat-divider>
@@ -23,7 +23,7 @@
     <mat-icon>logout</mat-icon>
     <h3>{{'td.output' | translate}}</h3>
   </div>
-  <td-io-doc-view [ioSpecs]="task.outputSpecs"></td-io-doc-view>
+  <td-io-doc [ioSpecs]="task.outputSpecs"></td-io-doc>
 </div>
 
 <mat-divider class="divider" *ngIf="task.configSpecs"></mat-divider>

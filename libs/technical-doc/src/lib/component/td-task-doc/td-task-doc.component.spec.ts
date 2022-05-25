@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {TdIoResourceViewComponent} from './td-io-resource-view.component';
+import {TdTaskDocComponent} from './td-task-doc.component';
 
-describe('TdIoResourceViewComponent', () => {
-  let component: TdIoResourceViewComponent;
-  let fixture: ComponentFixture<TdIoResourceViewComponent>;
+describe('TdTaskDocViewComponent', () => {
+  let component: TdTaskDocComponent;
+  let fixture: ComponentFixture<TdTaskDocComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TdIoResourceViewComponent]
+      declarations: [TdTaskDocComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TdIoResourceViewComponent);
+    fixture = TestBed.createComponent(TdTaskDocComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

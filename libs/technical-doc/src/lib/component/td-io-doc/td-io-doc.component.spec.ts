@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {TdProtocolDocViewComponent} from './td-protocol-doc-view.component';
+import {TdIoDocComponent} from './td-io-doc.component';
 
-describe('TdProtocolDocViewComponent', () => {
-  let component: TdProtocolDocViewComponent;
-  let fixture: ComponentFixture<TdProtocolDocViewComponent>;
+describe('TdIoDocViewComponent', () => {
+  let component: TdIoDocComponent;
+  let fixture: ComponentFixture<TdIoDocComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TdProtocolDocViewComponent]
+      declarations: [TdIoDocComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TdProtocolDocViewComponent);
+    fixture = TestBed.createComponent(TdIoDocComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

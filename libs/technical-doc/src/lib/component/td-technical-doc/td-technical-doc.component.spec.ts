@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {TdTechnicalDocViewComponent} from './td-technical-doc-view.component';
+import {TdTechnicalDocComponent} from './td-technical-doc.component';
 
 describe('TdTechnicalDocViewComponent', () => {
-  let component: TdTechnicalDocViewComponent;
-  let fixture: ComponentFixture<TdTechnicalDocViewComponent>;
+  let component: TdTechnicalDocComponent;
+  let fixture: ComponentFixture<TdTechnicalDocComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TdTechnicalDocViewComponent]
+      declarations: [TdTechnicalDocComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TdTechnicalDocViewComponent);
+    fixture = TestBed.createComponent(TdTechnicalDocComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

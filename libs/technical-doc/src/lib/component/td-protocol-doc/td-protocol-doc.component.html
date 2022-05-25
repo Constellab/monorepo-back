@@ -1,4 +1,4 @@
-<td-main-doc-view [entity]="protocol" class="ql-editor"></td-main-doc-view>
+<td-main-doc [entity]="protocol" class="ql-editor"></td-main-doc>
 
 <mat-divider class="divider" *ngIf="protocol.inputSpecs"></mat-divider>
 
@@ -7,7 +7,7 @@
     <mat-icon>login</mat-icon>
     <h3>{{'td.input' | translate}}</h3>
   </div>
-  <td-io-doc-view [ioSpecs]="protocol.inputSpecs"></td-io-doc-view>
+  <td-io-doc [ioSpecs]="protocol.inputSpecs"></td-io-doc>
 </div>
 
 <mat-divider class="divider" *ngIf="protocol.outputSpecs"></mat-divider>
@@ -17,7 +17,7 @@
     <mat-icon>logout</mat-icon>
     <h3>{{'td.output' | translate}}</h3>
   </div>
-  <td-io-doc-view [ioSpecs]="protocol.outputSpecs"></td-io-doc-view>
+  <td-io-doc [ioSpecs]="protocol.outputSpecs"></td-io-doc>
 </div>
 
 <mat-divider class="divider" *ngIf="protocol.configSpecs"></mat-divider>

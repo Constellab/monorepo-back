@@ -21,12 +21,13 @@ export class TdTechDocLinkComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const techDocUrl = this.tdServiceConfig.getTechnicalDocUrl(
-      TdTypingName.getBrickName(this.uniqueElement.typingName),
-      this.uniqueElement.version,
-      TdTypingName.getTypeName(this.uniqueElement.typingName).toLowerCase(),
-      TdTypingName.getUniqueName(this.uniqueElement.typingName));
-    this.isAbsolute = techDocUrl.isAbsolute;
+
+    const typingName: TdTypingName = new TdTypingName(this.uniqueElement.typingName);
+
+    const techDocUrl = this.tdServiceConfig.getTechnicalDocUrl(this.uniqueElement.version, typingName);
+
+
+    this.isAbsolute = techDocUrl.isAbsolute; // true if getTechnicalDocUrl returned an absolute url
     this.url = techDocUrl.url;
   }
 

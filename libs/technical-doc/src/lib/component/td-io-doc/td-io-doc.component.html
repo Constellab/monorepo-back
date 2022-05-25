@@ -3,7 +3,7 @@
     <h4>{{ioSpecs[io].human_name}} : </h4>
     <span *ngFor="let r of ioSpecs[io].resource_types; let first= first">
       <span *ngIf="!first">,</span>
-        <td-io-resource-view [resource]="r"></td-io-resource-view>
+        <td-io-resource [resource]="r"></td-io-resource>
     </span>
   </div>
   <p>{{ioSpecs[io].short_description}}</p>

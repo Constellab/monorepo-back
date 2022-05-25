@@ -13,7 +13,7 @@
                       [config]="textEditorConfig" (textChange)="onContentUpdate($event)"></fl-text-editor>
     </form>
     <div class="technical-doc-div g-styled-scrollbar g-max-article-width" *ngIf="isTechnical && technicalDocumentation">
-      <td-technical-doc-view [technicalDoc]="technicalDocumentation"></td-technical-doc-view>
+      <td-technical-doc [technicalDoc]="technicalDocumentation"></td-technical-doc>
     </div>
   </div>
   <div class="side" fxHide.lt-lg>

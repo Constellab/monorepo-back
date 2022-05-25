@@ -8,4 +8,4 @@
   v.{{entity.parentVersion}}
 </fl-key-value>
 <p>{{entity.shortDescription}}</p>
-<div class="technical-doc-content" [innerHTML]="docContent"></div>
+<div class="technical-doc-content" [innerHTML]="entity.doc | tdMarkdown"></div>

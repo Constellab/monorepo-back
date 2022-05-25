@@ -1,19 +1,17 @@
+import {TdTypingName} from '../model/td-typing-name.entity';
+
 export interface TdTechnicalDocUrl{
   isAbsolute: boolean;
   url: string;
 }
 
 
-/**
- * Service to provide to configure {@link TdService}
- */
 export abstract class TdServiceConfig {
   /**
-   * The technical documentation url
+   * Get the unique technical documentation url
+   * Result can be contain an absolute  link or not
    */
   public abstract getTechnicalDocUrl(
-    parentBrickName: string,
     parentVersion: string,
-    objectType: string,
-    docParentUniqueName: string): TdTechnicalDocUrl; // boolean = isAbsolute ; string = link
+    typingName: TdTypingName): TdTechnicalDocUrl; // boolean = isAbsolute ; string = link
 }

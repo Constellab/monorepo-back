@@ -10,5 +10,3 @@ export interface TdTaskType extends TdProcessType {
 export interface TdAdditionalInfoDTO {
   supported_extensions: string[];
 }
-
-
