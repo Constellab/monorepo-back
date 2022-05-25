@@ -8,7 +8,7 @@ import {ClHelpService} from '@monorepo/core-lib';
  * Component to show the detail of a type (resource, task or protocol)
  */
 @Component({
-  selector: 'lab-process-type-detail',
+  selector: 'lab-type-detail',
   templateUrl: './lab-type-detail.component.html',
   styleUrls: ['./lab-type-detail.component.scss'],
 })

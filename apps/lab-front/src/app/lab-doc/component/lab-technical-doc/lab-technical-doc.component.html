@@ -1,6 +1,12 @@
-<fl-async-section [object]="type$">
+<div class="g-page">
+  <fl-async-section [object]="type$">
 
-  <ng-container *flSectionBody="let type">
-    <lab-process-type-detail [type]="type"></lab-process-type-detail>
-  </ng-container>
-</fl-async-section>
+    <ng-container *flSectionBody="let type">
+      <fl-article-container>
+        <fl-article>
+          <lab-type-detail [type]="type"></lab-type-detail>
+        </fl-article>
+      </fl-article-container>
+    </ng-container>
+  </fl-async-section>
+</div>
