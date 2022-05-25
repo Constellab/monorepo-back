@@ -6,9 +6,9 @@
   {{task.additionalInfo.supported_extensions.join(', ')}}
 </fl-key-value>
 
-<mat-divider class="divider" *ngIf="task.inputSpecs"></mat-divider>
+<mat-divider class="divider" *ngIf="task.inputSpecs && (task.inputSpecs | flObjectKeys).length > 0"></mat-divider>
 
-<div class="div-spec ql-editor" *ngIf="task.inputSpecs && task.inputSpecs">
+<div class="div-spec ql-editor" *ngIf="task.inputSpecs && (task.inputSpecs | flObjectKeys).length > 0">
   <div class="div-head">
     <mat-icon>login</mat-icon>
     <h3>{{'td.input' | translate}}</h3>
@@ -16,9 +16,9 @@
   <td-io-doc [ioSpecs]="task.inputSpecs"></td-io-doc>
 </div>
 
-<mat-divider class="divider" *ngIf="task.outputSpecs"></mat-divider>
+<mat-divider class="divider" *ngIf="task.outputSpecs && (task.outputSpecs | flObjectKeys).length > 0"></mat-divider>
 
-<div class="div-spec ql-editor" *ngIf="task.outputSpecs">
+<div class="div-spec ql-editor" *ngIf="task.outputSpecs && (task.outputSpecs | flObjectKeys).length > 0">
   <div class="div-head">
     <mat-icon>logout</mat-icon>
     <h3>{{'td.output' | translate}}</h3>
@@ -26,9 +26,9 @@
   <td-io-doc [ioSpecs]="task.outputSpecs"></td-io-doc>
 </div>
 
-<mat-divider class="divider" *ngIf="task.configSpecs"></mat-divider>
+<mat-divider class="divider" *ngIf="task.configSpecs && (task.configSpecs | flObjectKeys).length > 0"></mat-divider>
 
-<div class="div-spec ql-editor" *ngIf="task.configSpecs">
+<div class="div-spec ql-editor" *ngIf="task.configSpecs && (task.configSpecs | flObjectKeys).length > 0">
   <div class="div-head">
     <mat-icon>settings</mat-icon>
     <h3>{{'td.configuration' | translate}}</h3>

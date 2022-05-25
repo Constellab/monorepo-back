@@ -1,11 +1,11 @@
 import {TdTypeEntity} from './td-type.entity';
 
 export interface TdProcessType extends TdTypeEntity {
-  inputSpecs?: Record<string, TdIOSpecDTO>;
+  inputSpecs: Record<string, TdIOSpecDTO>;
 
-  outputSpecs?: Record<string, TdIOSpecDTO>;
+  outputSpecs: Record<string, TdIOSpecDTO>;
 
-  configSpecs?: Record<string, TdConfigTypeDTO>;
+  configSpecs: Record<string, TdConfigTypeDTO>;
 }
 
 export interface TdIOSpecDTO {
