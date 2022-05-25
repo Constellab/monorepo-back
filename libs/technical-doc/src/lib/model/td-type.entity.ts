@@ -6,8 +6,6 @@ export type TdTypeObjectStatus = 'SUCCESS' | 'TYPE_UNAVAILABLE';
 
 export interface TdTypeEntity {
 
-  uniqueName: string;
-
   humanName: string;
 
   shortDescription: string | undefined;

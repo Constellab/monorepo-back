@@ -58,11 +58,6 @@ export class LabTypeEntity extends LabBaseEntity implements TdTypeEntity {
   get parentVersion(): string {
     return this.parent?.brick_version ?? null;
   }
-
-  // TODO TO REMOVE
-  get uniqueName(): string {
-    return '';
-  }
 }
 
 export type LabTypeEntityDatasource = FlDatasourcePaginated<LabTypeEntity>;
