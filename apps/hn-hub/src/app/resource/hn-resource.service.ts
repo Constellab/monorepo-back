@@ -50,6 +50,7 @@ export class HnResourceService {
       resource.deprecatedSince = r.deprecated_since;
       resource.deprecatedMessage = r.deprecated_message;
       resource.shortDescription = r.short_description;
+      resource.objectSubType = r.object_sub_type;
 
       await this.resourceRepository.save(resource);
     }
@@ -92,7 +93,8 @@ export class HnResourceService {
         parentMajorVersion: resource.parentMajorVersion,
         parentHumanName: resource.parentHumanName,
         parentVersion: resource.parentVersion,
-        objectType: 'RESOURCE'
+        objectType: 'RESOURCE',
+        objectSubType: resource.objectSubType
       };
 
       return doc;

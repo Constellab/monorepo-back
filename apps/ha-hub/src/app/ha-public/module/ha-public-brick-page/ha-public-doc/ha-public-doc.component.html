@@ -3,9 +3,8 @@
     <fl-loader size="medium"></fl-loader>
   </div>
   <div class="content" *ngIf="!isLoading">
-    <div class="doc-title-div">
-      <h1 class="doc-title" *ngIf="documentation && !isTechnical">{{documentation.title}}</h1>
-      <h1 class="doc-title" *ngIf="technicalDocumentation && isTechnical">{{technicalDocumentation.humanName}}</h1>
+    <div class="doc-title-div" *ngIf="documentation && !isTechnical">
+      <h1 class="doc-title">{{documentation.title}}</h1>
     </div>
     <form class="documentation-form" [formGroup]="formGp" *ngIf="!isTechnical">
       <fl-text-editor class="content-editor g-max-article-width" formControlName="content"

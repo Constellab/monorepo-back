@@ -8,8 +8,7 @@
 
 .io-div-head{
   display: flex;
-  flex-direction: row;
-  align-items: end;
+  align-items: flex-end;
 }
 
 .io-div-head *{
@@ -20,3 +19,4 @@
 .io-div-head span{
   padding-left: 1em;
 }
+

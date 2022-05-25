@@ -1,6 +1,6 @@
 export type TdTypeObjectType = 'TASK' | 'RESOURCE' | 'PROTOCOL' | 'MODEL';
 
-export type TdTypeObjectSubType = 'TASK' | 'PROTOCOL' | 'TRANSFORMER' | 'IMPORTER' | 'EXPORTER';
+export type TdTypeObjectSubType = 'TASK' | 'RESOURCE' | 'PROTOCOL' | 'TRANSFORMER' | 'IMPORTER' | 'EXPORTER';
 
 export type TdTypeObjectStatus = 'SUCCESS' | 'TYPE_UNAVAILABLE';
 
@@ -25,6 +25,8 @@ export interface TdTypeEntity {
   parentVersion: string | undefined;
 
   objectType: TdTypeObjectType | undefined;
+
+  objectSubType: TdTypeObjectSubType | undefined;
 
   status: TdTypeObjectStatus | undefined;
 }

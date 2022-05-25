@@ -43,7 +43,7 @@ export interface HnImportTechnicalDocDTO{
   protocols: HnImportProtocolDTO[]
 }
 
-export interface HnImportResourceDTO{
+export interface HnImportEntity{
   unique_name: string;
   class_name: string;
   parent: HnImportParentDTO;
@@ -53,40 +53,25 @@ export interface HnImportResourceDTO{
   hide: boolean;
   deprecated_since: string;
   deprecated_message: string;
-}
-
-
-export interface HnImportTaskDTO{
-  unique_name: string;
-  class_name: string;
-  parent: HnImportParentDTO;
-  human_name: string;
-  short_description: string;
-  doc: string;
-  hide: boolean;
-  deprecated_since: string;
-  deprecated_message: string;
-  input_specs: any;
-  output_specs: any;
-  config_specs: any;
-  additional_info?: any;
-}
-
-export interface HnImportProtocolDTO{
-  unique_name: string;
-  class_name: string;
-  parent: HnImportParentDTO;
-  human_name: string;
-  short_description: string;
-  doc: string;
-  hide: boolean;
-  deprecated_since: string;
-  deprecated_message: string;
-  input_specs: any;
-  output_specs: any;
-  config_specs: any;
-  additional_info?: any;
+  object_sub_type: string;
   status: string;
+}
+
+export type HnImportResourceDTO =HnImportEntity;
+
+
+export interface HnImportTaskDTO extends HnImportEntity{
+  input_specs: any;
+  output_specs: any;
+  config_specs: any;
+  additional_info?: any;
+}
+
+export interface HnImportProtocolDTO extends HnImportEntity{
+  input_specs: any;
+  output_specs: any;
+  config_specs: any;
+  additional_info?: any;
 }
 
 export class HnBrickListDTO{

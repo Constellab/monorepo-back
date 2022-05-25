@@ -49,6 +49,7 @@ export class HnProtocolService {
       proto.deprecatedSince = p.deprecated_since;
       proto.deprecatedMessage = p.deprecated_message;
       proto.shortDescription = p.short_description;
+      proto.objectSubType = p.object_sub_type;
 
 
       if (p.input_specs && Object.keys(p.input_specs).length > 0) {
@@ -111,7 +112,7 @@ export class HnProtocolService {
         inputSpecs: proto.inputSpecs,
         outputSpecs: proto.outputSpecs,
         configSpecs: proto.configSpecs,
-        status: proto.status
+        objectSubType: proto.objectSubType
       };
 
       return doc;

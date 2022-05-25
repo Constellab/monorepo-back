@@ -46,4 +46,7 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   @Type(() => HnTechnicalFolder)
   @ManyToOne(() => HnTechnicalFolder, {eager: true, nullable: false})
   technicalFolder: HnTechnicalFolder;
+
+  @Column({nullable: true})
+  objectSubType: string;
 }

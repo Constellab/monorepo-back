@@ -25,7 +25,6 @@ export class TdTechnicalDocComponent implements OnInit {
 
   ngOnInit(): void {
     this.technicalDocType = this.technicalDoc.objectType;
-
     switch (this.technicalDocType){
       case "PROTOCOL":
         this.elementProtocol = this.technicalDoc as TdProtocolType;

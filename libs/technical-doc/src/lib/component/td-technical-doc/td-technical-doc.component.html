@@ -1,3 +1,11 @@
+<div class="doc-title-div" fxLayout="row" fxLayoutAlign="space-between center">
+  <h1 class="doc-title">{{technicalDoc.humanName}}</h1>
+  <fl-chip class="g-primary-background" *ngIf="technicalDoc.objectSubType">
+    {{technicalDoc.objectSubType}}
+  </fl-chip>
+</div>
+
+
 <div class="tech-doc ql-bubble">
   <td-resource-doc [resource]="elementResource" *ngIf="technicalDocType === 'RESOURCE'">
   </td-resource-doc>

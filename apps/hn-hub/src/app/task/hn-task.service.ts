@@ -50,6 +50,7 @@ export class HnTaskService {
       task.deprecatedSince = t.deprecated_since;
       task.deprecatedMessage = t.deprecated_message;
       task.shortDescription = t.short_description;
+      task.objectSubType = t.object_sub_type;
 
 
       if (t.input_specs && Object.keys(t.input_specs).length > 0) {
@@ -112,7 +113,8 @@ export class HnTaskService {
         inputSpecs: task.inputSpecs,
         outputSpecs: task.outputSpecs,
         configSpecs: task.configSpecs,
-        additionalInfo: task.additionalInfo
+        additionalInfo: task.additionalInfo,
+        objectSubType: task.objectSubType
       };
 
       return doc;
