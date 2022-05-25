@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import {TdProcessType, TdServiceConfig, TdTypingName} from '@monorepo/technical-doc';
+import {TdServiceConfig, TdTypingName, TdUniqueType} from '@monorepo/technical-doc';
 
 @Component({
   selector: 'td-tech-doc-link',
@@ -10,7 +10,7 @@ import {TdProcessType, TdServiceConfig, TdTypingName} from '@monorepo/technical-
 export class TdTechDocLinkComponent implements OnInit {
 
   @Input()
-  doc: TdProcessType;
+  uniqueElement: TdUniqueType;
 
   isAbsolute: boolean;
   url: string;
@@ -22,10 +22,10 @@ export class TdTechDocLinkComponent implements OnInit {
 
   ngOnInit(): void {
     const techDocUrl = this.tdServiceConfig.getTechnicalDocUrl(
-      TdTypingName.getBrickName(this.doc.parentTypingName),
-      this.doc.parentVersion,
-      TdTypingName.getTypeName(this.doc.parentTypingName).toLowerCase(),
-      TdTypingName.getUniqueName(this.doc.parentTypingName));
+      TdTypingName.getBrickName(this.uniqueElement.typingName),
+      this.uniqueElement.version,
+      TdTypingName.getTypeName(this.uniqueElement.typingName).toLowerCase(),
+      TdTypingName.getUniqueName(this.uniqueElement.typingName));
     this.isAbsolute = techDocUrl.isAbsolute;
     this.url = techDocUrl.url;
   }

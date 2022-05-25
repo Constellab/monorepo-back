@@ -1,10 +1,10 @@
 <a class="g-text-link"
-   [routerLink]="url" *ngIf="!isAbsolute">
-  {{doc.parentHumanName}}
+   [routerLink]="url" *ngIf="!isAbsolute" target="_blank">
+  {{uniqueElement.humanName}}
 </a>
 
 
 <a class="g-text-link"
-   [href]="url" *ngIf="isAbsolute">
-  {{doc.parentHumanName}}
+   [href]="url" *ngIf="isAbsolute" target="_blank">
+  {{uniqueElement.humanName}}
 </a>

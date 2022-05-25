@@ -1,6 +1,7 @@
-import {TdProcessType} from './td-process-type.entity';
+import {TdTypeEntity} from './td-type.entity';
 
 
-export class TdResourceType extends TdProcessType {
+export type TdResourceType = TdTypeEntity;
 
-}
+
+

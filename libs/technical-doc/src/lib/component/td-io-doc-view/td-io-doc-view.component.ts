@@ -1,7 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TdIOSpecDTO} from '../../model/td-task-type.entity';
-import {ActivatedRoute} from '@angular/router';
-import {TdTypingName} from '../../model/td-typing-name.entity';
+import {TdIOSpecDTO} from '../../model/td-process-type.entity';
 
 @Component({
   selector: 'td-io-doc-view',
@@ -13,7 +11,8 @@ export class TdIoDocViewComponent implements OnInit {
   @Input()
   ioSpecs: Record<string, TdIOSpecDTO>;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
 

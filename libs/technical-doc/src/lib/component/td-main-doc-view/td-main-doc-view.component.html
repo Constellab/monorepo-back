@@ -1,11 +1,11 @@
-<fl-key-value *ngIf="doc.status" class="key-val">
+<fl-key-value *ngIf="entity.status" class="key-val">
   <fl-key>{{'td.status' | translate}}</fl-key>
-  {{doc.status}}
+  {{entity.status}}
 </fl-key-value>
-<fl-key-value *ngIf="doc.parentTypingName" class="key-val">
+<fl-key-value *ngIf="entity.parentTypingName" class="key-val">
   <fl-key>{{'td.parent' | translate}}</fl-key>
-  <td-tech-doc-link [doc]="doc"></td-tech-doc-link>
-  v.{{doc.parentVersion}}
+  <td-tech-doc-link [uniqueElement]="uniqueEntityParent"></td-tech-doc-link>
+  v.{{entity.parentVersion}}
 </fl-key-value>
-<p>{{doc.shortDescription}}</p>
+<p>{{entity.shortDescription}}</p>
 <div class="technical-doc-content" [innerHTML]="docContent"></div>

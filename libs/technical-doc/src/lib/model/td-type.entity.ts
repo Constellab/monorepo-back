@@ -6,23 +6,34 @@ export type TdTypeObjectStatus = 'SUCCESS' | 'TYPE_UNAVAILABLE';
 
 export interface TdTypeEntity {
 
-  brickName?: string;
+  brickName: string | undefined;
 
-  uniqueName?: string;
+  uniqueName: string | undefined;
 
-  humanName?: string;
+  humanName: string | undefined;
 
-  shortDescription?: string;
+  shortDescription: string | undefined;
 
-  doc?: string;
+  doc: string | undefined;
 
-  parentTypingName?: string;
+  parentTypingName: string | undefined;
 
-  parentMajorVersion?: number;
+  parentMajorVersion: number | undefined;
 
-  parentHumanName?: string;
+  parentHumanName: string | undefined;
 
-  parentVersion?: string;
+  parentVersion: string | undefined;
 
-  objectType?: TdTypeObjectType;
+  objectType: TdTypeObjectType | undefined;
+
+  status: TdTypeObjectStatus | undefined;
+}
+
+
+export interface TdUniqueType{
+  typingName: string;
+
+  humanName: string;
+
+  version: string;
 }
