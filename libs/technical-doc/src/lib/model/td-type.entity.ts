@@ -6,8 +6,6 @@ export type TdTypeObjectStatus = 'SUCCESS' | 'TYPE_UNAVAILABLE';
 
 export interface TdTypeEntity {
 
-  brickName: string;
-
   uniqueName: string;
 
   humanName: string;
@@ -17,8 +15,6 @@ export interface TdTypeEntity {
   doc: string;
 
   parentTypingName: string | undefined;
-
-  parentMajorVersion: number | undefined;
 
   parentHumanName: string | undefined;
 
