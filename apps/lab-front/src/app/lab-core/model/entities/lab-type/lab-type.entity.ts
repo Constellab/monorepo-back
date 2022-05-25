@@ -1,16 +1,11 @@
 import {LabBaseEntity} from '../../global/lab-entity.entity';
 import {Expose} from 'class-transformer';
 import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
+import {TdTypeEntity, TdTypeObjectStatus, TdTypeObjectSubType, TdTypeObjectType} from '@monorepo/technical-doc';
 
-export type LabTypeObjectType = 'TASK' | 'RESOURCE' | 'PROTOCOL' | 'MODEL';
-
-export type LabTypeObjectSubType = 'TASK' | 'PROTOCOL' | 'TRANSFORMER' | 'IMPORTER' | 'EXPORTER';
-
-export type LabTypeObjectStatus = 'SUCCESS' | 'TYPE_UNAVAILABLE';
-
-export class LabTypeEntity extends LabBaseEntity {
+export class LabTypeEntity extends LabBaseEntity implements TdTypeEntity {
   @Expose({name: 'object_type'})
-  objectType: LabTypeObjectType;
+  objectType: TdTypeObjectType;
 
   @Expose({name: 'typing_name'})
   typingName: string;
@@ -22,10 +17,10 @@ export class LabTypeEntity extends LabBaseEntity {
   humanName: string;
 
   @Expose({name: 'short_description'})
-  shortDescription?: string;
+  shortDescription: string | undefined;
 
   @Expose({name: 'object_sub_type'})
-  objectSubType: LabTypeObjectSubType;
+  objectSubType: TdTypeObjectSubType;
 
   @Expose({name: 'deprecated_since'})
   deprecatedSince?: string;
@@ -33,10 +28,16 @@ export class LabTypeEntity extends LabBaseEntity {
   @Expose({name: 'deprecated_message'})
   deprecatedMessage?: string;
 
-  doc?: string;
+  parent?: {
+    brick_version: string;
+    human_name: string;
+    typing_name: string;
+  };
 
 
-  status: LabTypeObjectStatus;
+  doc: string | undefined;
+
+  status: TdTypeObjectStatus;
 
   hasDocumentation(): boolean {
     return this?.doc != null ?? false;
@@ -44,6 +45,23 @@ export class LabTypeEntity extends LabBaseEntity {
 
   get name(): string {
     return this.humanName || this.modelName;
+  }
+
+  get parentTypingName(): string {
+    return this.parent?.typing_name ?? null;
+  }
+
+  get parentHumanName(): string {
+    return this.parent?.human_name ?? null;
+  }
+
+  get parentVersion(): string {
+    return this.parent?.brick_version ?? null;
+  }
+
+  // TODO TO REMOVE
+  get uniqueName(): string {
+    return '';
   }
 }
 

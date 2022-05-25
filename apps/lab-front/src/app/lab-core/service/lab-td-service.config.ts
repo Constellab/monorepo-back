@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {TdServiceConfig, TdTechnicalDocUrl} from '@monorepo/technical-doc';
+import {TdServiceConfig, TdTechnicalDocUrl, TdTypingName} from '@monorepo/technical-doc';
 import {LabRouterService} from './lab-router.service';
 
 /**
@@ -9,11 +9,12 @@ import {LabRouterService} from './lab-router.service';
   providedIn: 'root'
 })
 export class LabTdServiceConfig extends TdServiceConfig {
-  getTechnicalDocUrl(parentBrickName: string, parentVersion: string, objectType: string, docParentUniqueName: string): TdTechnicalDocUrl {
+  getTechnicalDocUrl(parentVersion: string, typingName: TdTypingName): TdTechnicalDocUrl {
     return {
-      url: LabRouterService.getTechnicalDocRoute(objectType + '.' + parentBrickName + '.' + docParentUniqueName),
+      url: LabRouterService.getTechnicalDocRoute(typingName.typingName),
       isAbsolute: false
     };
   }
+
 
 }

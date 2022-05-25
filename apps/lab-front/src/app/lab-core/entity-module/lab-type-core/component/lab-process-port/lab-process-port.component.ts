@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LabIOSpec} from '../../../../model/entities/lab-io.entity';
+import {TdIOSpecDTO} from '@monorepo/technical-doc';
 
 @Component({
   selector: 'lab-process-port',
@@ -10,7 +10,7 @@ export class LabProcessPortComponent implements OnInit {
 
   @Input() name: string;
 
-  @Input() specs: LabIOSpec;
+  @Input() specs: TdIOSpecDTO;
 
   constructor() {
   }

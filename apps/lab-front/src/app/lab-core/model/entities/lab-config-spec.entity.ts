@@ -174,7 +174,7 @@ export type LabConfigSpecType = 'str' | 'int' | 'float' | 'list' | 'bool' | 'par
 export type LabConfigSpecVisibility = 'protected' | 'public';
 
 // Typed description of the config spec
-export class LabConfigSpecBase {
+export class LabConfigSpecBase{
   /**
    * Type of the config value (string, float...)
    */

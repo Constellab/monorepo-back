@@ -1,7 +1,8 @@
-import {LabIO, LabIOSpec, LabIOSpecResourceType} from '../entities/lab-io.entity';
+import {LabIO} from '../entities/lab-io.entity';
 import {Exclude} from 'class-transformer';
 import {LabTypingName} from '../entities/lab-typing-name.class';
 import {LabBaseEntityWithUser} from '../entities/lab-user.entity';
+import {TdIOSpecDTO, TdResourceTypeDTO} from '@monorepo/technical-doc';
 
 export interface LabConnectionPart {
 
@@ -60,10 +61,11 @@ export abstract class LabNode extends LabBaseEntityWithUser {
   }
 }
 
-const resourceSpec: LabIOSpecResourceType = {
+const resourceSpec: TdResourceTypeDTO = {
   typing_name: LabTypingName.model.resource,
   human_name: 'Resource',
-  short_description: 'Any resource'
+  short_description: 'Any resource',
+  brick_version: ''
 };
 
 /**
@@ -75,7 +77,7 @@ export class LabInterfaceNode extends LabNode {
   portName: string;
 
   // types supported by the port
-  portType: LabIOSpec;
+  portType: TdIOSpecDTO;
 
   /**
    * Return a new interface with specs equals to resource
@@ -86,7 +88,8 @@ export class LabInterfaceNode extends LabNode {
     node.name = portName;
     node.portType = {
       resource_types: [resourceSpec],
-      io_spec: 'TypeIO'
+      human_name: '',
+      short_description: ''
     };
     return node;
   }
@@ -101,7 +104,7 @@ export class LabOuterfaceNode extends LabNode {
   portName: string;
 
   // types supported by the port
-  portType: LabIOSpec;
+  portType: TdIOSpecDTO;
 
   /**
    * Return a new outerface with specs equals to resource
@@ -112,7 +115,8 @@ export class LabOuterfaceNode extends LabNode {
     node.name = portName;
     node.portType = {
       resource_types: [resourceSpec],
-      io_spec: 'TypeIO'
+      human_name: '',
+      short_description: ''
     };
     return node;
   }

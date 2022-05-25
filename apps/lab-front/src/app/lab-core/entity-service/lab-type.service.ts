@@ -5,11 +5,12 @@ import {
   FlSearchConverter,
   FLSearchFunction
 } from '@monorepo/front-core-lib';
-import {LabTypeEntity, LabTypeObjectType} from '../model/entities/lab-type/lab-type.entity';
+import {LabTypeEntity} from '../model/entities/lab-type/lab-type.entity';
 import {Observable} from 'rxjs';
 import {ClCoreJsonConvert, ClPageI} from '@monorepo/core-lib';
 import {LabTypeSearch, LabTypeSearchFields} from '../entity-module/lab-type-core/model/lab-type-advanced-search.class';
 import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
+import {TdTypeObjectType} from '@monorepo/technical-doc';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class LabTypeService {
 
   public static deserializeTyping(typingObj: any): LabTypeEntity | LabTypeEntity[] {
     // construct the correct class based on object_type
-    const objectType: LabTypeObjectType = typingObj.object_type;
+    const objectType: TdTypeObjectType = typingObj.object_type;
     switch (objectType) {
       case 'TASK':
         return ClCoreJsonConvert.deserialize(typingObj, LabProcessType);

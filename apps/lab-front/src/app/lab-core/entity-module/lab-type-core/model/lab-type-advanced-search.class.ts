@@ -1,7 +1,7 @@
 import {FlFormInputsManagerConfig, FlSearchCriteriaConverter} from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {LabTypeObjectSubType, LabTypeObjectType} from '../../../model/entities/lab-type/lab-type.entity';
 import {LabSearchConverter} from '../../../model/global/lab-search-converter.class';
+import {TdTypeObjectSubType, TdTypeObjectType} from '@monorepo/technical-doc';
 
 /**
  * config for the lab type search component
@@ -31,8 +31,8 @@ export type LabTypeSearchConfig =
 export class LabTypeSearchFields {
   brick: string[];
   text: string;
-  objectType: LabTypeObjectType[];
-  objectSubType: LabTypeObjectSubType;
+  objectType: TdTypeObjectType[];
+  objectSubType: TdTypeObjectSubType;
   includeDeprecated: boolean;
   importerIgnoreExtension: boolean; // only for importer mode, if true we don't filter on file extension
 }
