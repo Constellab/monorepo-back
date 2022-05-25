@@ -6,56 +6,63 @@
   {{task.additionalInfo.supported_extensions.join(', ')}}
 </fl-key-value>
 
-<mat-divider class="divider" *ngIf="task.inputSpecs && (task.inputSpecs | flObjectKeys).length > 0"></mat-divider>
+<ng-container *ngIf="task.inputSpecs | flIsNotEmpty">
+  <mat-divider class="divider"></mat-divider>
 
-<div class="div-spec ql-editor" *ngIf="task.inputSpecs && (task.inputSpecs | flObjectKeys).length > 0">
-  <div class="div-head">
-    <mat-icon>login</mat-icon>
-    <h3>{{'td.input' | translate}}</h3>
-  </div>
-  <td-io-doc [ioSpecs]="task.inputSpecs"></td-io-doc>
-</div>
-
-<mat-divider class="divider" *ngIf="task.outputSpecs && (task.outputSpecs | flObjectKeys).length > 0"></mat-divider>
-
-<div class="div-spec ql-editor" *ngIf="task.outputSpecs && (task.outputSpecs | flObjectKeys).length > 0">
-  <div class="div-head">
-    <mat-icon>logout</mat-icon>
-    <h3>{{'td.output' | translate}}</h3>
-  </div>
-  <td-io-doc [ioSpecs]="task.outputSpecs"></td-io-doc>
-</div>
-
-<mat-divider class="divider" *ngIf="task.configSpecs && (task.configSpecs | flObjectKeys).length > 0"></mat-divider>
-
-<div class="div-spec ql-editor" *ngIf="task.configSpecs && (task.configSpecs | flObjectKeys).length > 0">
-  <div class="div-head">
-    <mat-icon>settings</mat-icon>
-    <h3>{{'td.configuration' | translate}}</h3>
-  </div>
-
-  <div *ngFor="let c of task.configSpecs | flObjectKeys" class="config-spec">
-    <div class="config-spec-head" fxLayout="row" fxLayoutAlign="space-between center">
-      <h4>{{c}}</h4>
-      <div>
-        <fl-chip class="g-primary-background chip" *ngIf="task.configSpecs[c].optional">Optional</fl-chip>
-        <fl-chip class="g-primary-background chip" *ngIf="task.configSpecs[c].visibility !== 'public'">Advanced parameter</fl-chip>
-      </div>
+  <div class="div-spec ql-editor">
+    <div class="div-head">
+      <mat-icon>login</mat-icon>
+      <h3>{{'td.input' | translate}}</h3>
     </div>
-    <p>{{task.configSpecs[c].short_description}}</p>
-    <fl-key-value *ngIf="task.configSpecs[c].type" class="key-val">
-      <fl-key>{{'td.type' |translate}}</fl-key>
-      <code>{{task.configSpecs[c].type === 'str' ? 'string' : task.configSpecs[c].type}}</code>
-    </fl-key-value>
-    <fl-key-value *ngIf="task.configSpecs[c].allowed_values" class="key-val">
-      <fl-key>{{'td.allowed_values' | translate}}</fl-key>
-      <span *ngFor="let aV of task.configSpecs[c].allowed_values">
+    <td-io-doc [ioSpecs]="task.inputSpecs"></td-io-doc>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="task.outputSpecs | flIsNotEmpty">
+  <mat-divider class="divider"></mat-divider>
+
+  <div class="div-spec ql-editor">
+    <div class="div-head">
+      <mat-icon>logout</mat-icon>
+      <h3>{{'td.output' | translate}}</h3>
+    </div>
+    <td-io-doc [ioSpecs]="task.outputSpecs"></td-io-doc>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="task.configSpecs | flIsNotEmpty">
+  <mat-divider class="divider" ></mat-divider>
+
+  <div class="div-spec ql-editor">
+    <div class="div-head">
+      <mat-icon>settings</mat-icon>
+      <h3>{{'td.configuration' | translate}}</h3>
+    </div>
+
+    <div *ngFor="let c of task.configSpecs | flObjectKeys" class="config-spec">
+      <div class="config-spec-head" fxLayout="row" fxLayoutAlign="space-between center">
+        <h4>{{c}}</h4>
+        <div>
+          <fl-chip class="g-primary-background chip" *ngIf="task.configSpecs[c].optional">Optional</fl-chip>
+          <fl-chip class="g-primary-background chip" *ngIf="task.configSpecs[c].visibility !== 'public'">Advanced parameter</fl-chip>
+        </div>
+      </div>
+      <p>{{task.configSpecs[c].short_description}}</p>
+      <fl-key-value *ngIf="task.configSpecs[c].type" class="key-val">
+        <fl-key>{{'td.type' |translate}}</fl-key>
+        <code>{{task.configSpecs[c].type === 'str' ? 'string' : task.configSpecs[c].type}}</code>
+      </fl-key-value>
+      <fl-key-value *ngIf="task.configSpecs[c].allowed_values" class="key-val">
+        <fl-key>{{'td.allowed_values' | translate}}</fl-key>
+        <span *ngFor="let aV of task.configSpecs[c].allowed_values">
          <code>{{aV}}</code>&nbsp;
       </span>
-    </fl-key-value>
-    <fl-key-value *ngIf="task.configSpecs[c].default_value" class="key-val">
-      <fl-key>{{'td.default_value' | translate}}</fl-key>
-      <code>{{task.configSpecs[c].default_value}}</code>
-    </fl-key-value>
+      </fl-key-value>
+      <fl-key-value *ngIf="task.configSpecs[c].default_value" class="key-val">
+        <fl-key>{{'td.default_value' | translate}}</fl-key>
+        <code>{{task.configSpecs[c].default_value}}</code>
+      </fl-key-value>
+    </div>
   </div>
-</div>
+
+</ng-container>
