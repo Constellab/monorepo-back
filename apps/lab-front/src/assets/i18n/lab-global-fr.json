@@ -82,6 +82,7 @@
   "tag_deleted": "Tag supprimé",
   "tag_key": "Clé",
   "tag_value": "Valeur",
+  "no_tags": "Aucun tag, commencez à utiliser des tags pour organiser vos objets",
   "is_archived": "Archiver",
   "between_the_from": "Du",
   "between_the_to": "au",

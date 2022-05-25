@@ -82,6 +82,7 @@
   "tag_deleted": "Tag deleted",
   "tag_key": "Key",
   "tag_value": "Value",
+  "no_tags": "No tags, start using tags to organize your objects",
   "is_archived": "Archive",
   "between_the_from": "From the",
   "between_the_to": "to the",

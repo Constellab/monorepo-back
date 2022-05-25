@@ -8,7 +8,7 @@
       </button>
     </mat-panel-title>
   </mat-expansion-panel-header>
-  <fl-section [object]="tags" [isLoading]="isLoading">
+  <fl-section [object]="tags" [isLoading]="isLoading" emptyText="no_tags">
     <ng-container *flSectionBody>
 
       <div *ngIf="tags" cdkDropList (cdkDropListDropped)="reorderTags($event)"
