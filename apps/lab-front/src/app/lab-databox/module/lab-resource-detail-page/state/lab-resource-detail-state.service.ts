@@ -74,9 +74,6 @@ export class LabResourceDetailState implements OnDestroy {
 
     this.lastViewSpec = null;
 
-    // Call the default view
-    this.loadDefaultView();
-
     // subscribe to portal view to open them
     this.subscription = this.getView$().pipe(
       filter(viewEvent => viewEvent.status === 'success' && viewEvent.viewEvent.displayMode === 'portal'),
