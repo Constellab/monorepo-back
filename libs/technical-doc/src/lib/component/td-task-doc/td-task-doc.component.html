@@ -8,7 +8,7 @@
 
 <mat-divider class="divider" *ngIf="task.inputSpecs"></mat-divider>
 
-<div class="div-spec ql-editor" *ngIf="task.inputSpecs">
+<div class="div-spec ql-editor" *ngIf="task.inputSpecs && task.inputSpecs">
   <div class="div-head">
     <mat-icon>login</mat-icon>
     <h3>{{'td.input' | translate}}</h3>
