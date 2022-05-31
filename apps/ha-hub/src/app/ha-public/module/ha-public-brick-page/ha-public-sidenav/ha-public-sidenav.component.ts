@@ -183,7 +183,7 @@ export class HaPublicSidenavComponent implements OnInit {
           });
         } else {
           this.openedMenu =
-            this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, false, hasChild), event);
+            this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(isFolder, id, hasChild), event);
           this.menuOpen = true;
         }
 
@@ -191,18 +191,9 @@ export class HaPublicSidenavComponent implements OnInit {
     });
   }
 
-  private getContextMenuConfig(isFolder: boolean, id?: string, isRoot: boolean = false, hasChild: boolean = false): FlMenuDynamic[] {
+  private getContextMenuConfig(isFolder: boolean, id?: string, hasChild: boolean = false): FlMenuDynamic[] {
     if (isFolder) {
-      return isRoot ? [
-        {
-          type: 'button',
-          text: {text: 'create', translateText: true},
-          icon: 'add',
-          onClick: () => {
-            this.openCreateDialog(id);
-          }
-        }
-      ] : [
+      return [
         {
           type: 'button',
           text: {text: 'create', translateText: true},
@@ -211,7 +202,7 @@ export class HaPublicSidenavComponent implements OnInit {
         },
         {
           type: 'button',
-          text: {text: 'edit', translateText: true},
+          text: {text: 'edit_title', translateText: true},
           icon: 'edit',
           onClick: (event) => this.prepareEditDialog(id, isFolder)
         },
@@ -227,7 +218,7 @@ export class HaPublicSidenavComponent implements OnInit {
     return [
       {
         type: 'button',
-        text: {text: 'edit', translateText: true},
+        text: {text: 'edit_title', translateText: true},
         icon: 'edit',
         onClick: (event) => this.prepareEditDialog(id, isFolder)
       },
