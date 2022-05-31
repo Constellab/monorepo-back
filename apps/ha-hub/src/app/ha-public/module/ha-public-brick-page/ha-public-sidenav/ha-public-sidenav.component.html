@@ -10,29 +10,31 @@
                        class="draggable-element g-drag-hide-placeholder" [cdkDragData]="node">
           <mat-nav-list class="line" *ngIf="node.id != null"
                         (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null">
+            <a (click)="closeSideNav()" [routerLink]="node.completePath"
+               [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="item no-link-drag" >
 
-            <mat-list-item class="item" matLine matTreeNodePadding matTreeNodePaddingIndent="15px">
+              <mat-list-item class="item" matLine matTreeNodePadding matTreeNodePaddingIndent="15px">
 
-              <a class="link-item"
-                 (click)="closeSideNav()"
-                 [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}"
-                 [routerLink]="node.completePath" [relativeTo]="activatedRoute" [routerLinkActive]="'active'">
-                {{node.name}}
-              </a>
-              <div class="line-icons" *ngIf="(isAdmin | async) && hoverId===node.id">
-                <button type="button" mat-icon-button matTooltip="{{'drag_and_drop_to_move' | translate}}"
-                class="g-button-icon-small">
-                  <mat-icon cdkDragHandle class="drag-drop-bt">
-                    vertical_align_center
-                  </mat-icon>
-                </button>
-                <button type="button" mat-icon-button class="g-button-icon-small">
-                  <mat-icon (click)="onClickMenu($event, false, false, node.id)">
-                    more_vert
-                  </mat-icon>
-                </button>
-              </div>
-            </mat-list-item>
+                <span class="link-item"
+
+                   [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}">
+                  {{node.name}}
+                </span>
+                <div class="line-icons" *ngIf="(isAdmin | async) && hoverId===node.id">
+                  <button type="button" mat-icon-button matTooltip="{{'drag_and_drop_to_move' | translate}}"
+                          class="g-button-icon-small">
+                    <mat-icon cdkDragHandle class="drag-drop-bt">
+                      vertical_align_center
+                    </mat-icon>
+                  </button>
+                  <button type="button" mat-icon-button class="g-button-icon-small">
+                    <mat-icon (click)="onClickMenu($event, false, false, node.id)">
+                      more_vert
+                    </mat-icon>
+                  </button>
+                </div>
+              </mat-list-item>
+            </a>
           </mat-nav-list>
         </mat-tree-node>
 
@@ -44,7 +46,8 @@
           <mat-nav-list class="nav-list line">
             <mat-list-item class="item" matTreeNodePadding matTreeNodePaddingIndent="15px"
                            [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}"
-                           (click)="expansionModel.toggle(node)" matTreeNodeToggle (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null">
+                           (click)="expansionModel.toggle(node)" matTreeNodeToggle (mouseenter)="hoverId=node.id"
+                           (mouseleave)="hoverId=null">
               <mat-icon class="mat-icon-rtl-mirror">
                 {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
               </mat-icon>

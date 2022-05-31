@@ -68,6 +68,10 @@
   height: 100%;
 }
 
+.no-link-drag{
+  -webkit-user-drag: none;
+}
+
 .link-item{
   display: flex;
   flex-direction: row;
