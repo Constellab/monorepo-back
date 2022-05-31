@@ -8,13 +8,13 @@
 
 
     <div class="action-buttons">
-      <button mat-icon-button type="submit"
+      <button mat-icon-button type="button"
               class="g-button-icon-tiny drag-indicator" cdkDragHandle
               [matTooltip]="'reorder_tags' | translate">
         <mat-icon>drag_handle</mat-icon>
       </button>
 
-      <button mat-icon-button type="submit" (click)="addTagValueClick($event)"
+      <button mat-icon-button type="button" (click)="addTagValueClick($event)"
               class="g-button-icon-tiny">
         <mat-icon>add</mat-icon>
       </button>
