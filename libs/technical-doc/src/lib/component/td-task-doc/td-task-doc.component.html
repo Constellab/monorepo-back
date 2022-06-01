@@ -39,30 +39,6 @@
       <h3>{{'td.configuration' | translate}}</h3>
     </div>
 
-    <div *ngFor="let c of task.configSpecs | flObjectKeys" class="config-spec">
-      <div class="config-spec-head" fxLayout="row" fxLayoutAlign="space-between center">
-        <h4>{{c}}</h4>
-        <div>
-          <fl-chip class="g-primary-background chip" *ngIf="task.configSpecs[c].optional">Optional</fl-chip>
-          <fl-chip class="g-primary-background chip" *ngIf="task.configSpecs[c].visibility !== 'public'">Advanced parameter</fl-chip>
-        </div>
-      </div>
-      <p>{{task.configSpecs[c].short_description}}</p>
-      <fl-key-value *ngIf="task.configSpecs[c].type" class="key-val">
-        <fl-key>{{'td.type' |translate}}</fl-key>
-        <code>{{task.configSpecs[c].type === 'str' ? 'string' : task.configSpecs[c].type}}</code>
-      </fl-key-value>
-      <fl-key-value *ngIf="task.configSpecs[c].allowed_values" class="key-val">
-        <fl-key>{{'td.allowed_values' | translate}}</fl-key>
-        <span *ngFor="let aV of task.configSpecs[c].allowed_values">
-         <code>{{aV}}</code>&nbsp;
-      </span>
-      </fl-key-value>
-      <fl-key-value *ngIf="task.configSpecs[c].default_value" class="key-val">
-        <fl-key>{{'td.default_value' | translate}}</fl-key>
-        <code>{{task.configSpecs[c].default_value}}</code>
-      </fl-key-value>
-    </div>
+    <td-config [configSpecs]="task.configSpecs"></td-config>
   </div>
-
 </ng-container>

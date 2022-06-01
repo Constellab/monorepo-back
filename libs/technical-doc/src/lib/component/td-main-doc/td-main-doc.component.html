@@ -1,3 +1,9 @@
+
+<div class="g-text-editor-hint g-text-editor-hint-warning deprecated-message-div" *ngIf="entity.deprecatedSince">
+  <div><strong>{{'td.deprecated_since' | translate}} : {{entity.deprecatedSince}}</strong></div>
+  <div>{{entity.deprecatedMessage}}</div>
+</div>
+
 <fl-key-value *ngIf="entity.status" class="key-val">
   <fl-key>{{'td.status' | translate}}</fl-key>
   {{entity.status}}

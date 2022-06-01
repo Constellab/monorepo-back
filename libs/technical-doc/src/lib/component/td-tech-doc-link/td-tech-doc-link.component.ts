@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
-import {TdServiceConfig, TdTypingName, TdUniqueType} from '@monorepo/technical-doc';
+import {TdUniqueType} from '../../model/td-type.entity';
+import {TdServiceConfig} from '../../service/td-service-config.config';
+import {TdTypingName} from '../../model/td-typing-name.entity';
 
 @Component({
   selector: 'td-tech-doc-link',

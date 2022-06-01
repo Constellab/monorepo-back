@@ -20,6 +20,7 @@ export * from './lib/component/td-io-doc/td-io-doc.component';
 export * from './lib/component/td-io-resource/td-io-resource.component';
 export * from './lib/component/td-tech-doc-link/td-tech-doc-link.component';
 export * from './lib/component/td-protocol-doc/td-protocol-doc.component';
+export * from './lib/component/td-config/td-config.component';
 
 //service
 export * from './lib/service/td-service-config.config';

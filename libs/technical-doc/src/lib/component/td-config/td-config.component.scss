@@ -1,0 +1,24 @@
+.config-spec{
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  padding-left: 1em;
+  border-left: solid 2px var(--grey-low-contrast);
+}
+
+.config-spec-head{
+  width: 100%;
+  align-items: center;
+}
+
+.key-val{
+  padding-top: 1em;
+}
+
+.chip{
+  margin-right: 1em;
+}
+
+.param-set-margin{
+  margin-left: 1.5em;
+}

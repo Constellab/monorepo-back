@@ -14,7 +14,11 @@ const tdTechnicalDocI18nFr: FlLangTranslation = {
     default_value: 'Valeur par défaut',
     parent: 'Parent',
     status: 'Etat',
-    supported_extensions: 'Extensions supportées'
+    supported_extensions: 'Extensions supportées',
+    param_set: 'Liste',
+    max_occurrence_number: 'Nombre maximum d\'occurrences',
+    deprecated: 'Obsolète',
+    deprecated_since: 'Obsolète depuis la version'
   }
 };
 
@@ -28,7 +32,11 @@ const tdTechnicalDocI18nEn: FlLangTranslation = {
     default_value: 'Default value',
     parent: 'Parent',
     status: 'Status',
-    supported_extensions: 'Supported Extentions'
+    supported_extensions: 'Supported Extentions',
+    param_set: 'List',
+    max_occurrence_number: 'Maximum occurrences number',
+    deprecated: 'Deprecated',
+    deprecated_since: 'Deprecated since the version'
   }
 };
 

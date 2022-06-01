@@ -23,6 +23,7 @@ import {TdProtocolDocComponent} from './component/td-protocol-doc/td-protocol-do
 import {TdServiceConfig} from './service/td-service-config.config';
 import { TdTechDocLinkComponent } from './component/td-tech-doc-link/td-tech-doc-link.component';
 import { TdMarkdownPipe } from './pipe/td-markdown.pipe';
+import { TdConfigComponent } from './component/td-config/td-config.component';
 
 @NgModule({
   imports: [
@@ -46,7 +47,8 @@ import { TdMarkdownPipe } from './pipe/td-markdown.pipe';
     TdIoResourceComponent,
     TdProtocolDocComponent,
     TdTechDocLinkComponent,
-    TdMarkdownPipe
+    TdMarkdownPipe,
+    TdConfigComponent
   ],
   exports: [
     TdTechnicalDocComponent,

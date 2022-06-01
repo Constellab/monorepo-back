@@ -11,7 +11,7 @@
           <mat-nav-list class="line" *ngIf="node.id != null"
                         (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null">
             <a (click)="closeSideNav()" [routerLink]="node.completePath"
-               [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="item no-link-drag" >
+               [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="item" draggable="false">
 
               <mat-list-item class="item" matLine matTreeNodePadding matTreeNodePaddingIndent="15px">
 

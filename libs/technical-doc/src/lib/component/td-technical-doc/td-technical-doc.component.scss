@@ -18,3 +18,12 @@
   padding-left: 35px;
   padding-bottom: 0.2em;
 }
+
+.chip-list{
+  display: flex;
+  flex-direction: row;
+}
+
+.deprecated-chip{
+  margin-right: 0.75em;
+}

@@ -1,8 +1,14 @@
 <div class="doc-title-div" fxLayout="row" fxLayoutAlign="space-between center">
   <h1 class="doc-title">{{technicalDoc.humanName}}</h1>
-  <fl-chip class="g-primary-background" *ngIf="technicalDoc.objectSubType">
-    {{technicalDoc.objectSubType}}
-  </fl-chip>
+  <div class="chip-list">
+    <fl-chip class="deprecated-chip g-warn-background" *ngIf="technicalDoc.deprecatedSince">
+      {{'td.deprecated' | translate}}
+    </fl-chip>
+    <fl-chip class="g-primary-background" *ngIf="technicalDoc.objectSubType">
+      {{technicalDoc.objectSubType}}
+    </fl-chip>
+  </div>
+
 </div>
 
 

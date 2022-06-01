@@ -94,7 +94,9 @@ export class HnResourceService {
         parentHumanName: resource.parentHumanName,
         parentVersion: resource.parentVersion,
         objectType: 'RESOURCE',
-        objectSubType: resource.objectSubType
+        objectSubType: resource.objectSubType,
+        deprecatedSince: resource.deprecatedSince,
+        deprecatedMessage: resource.deprecatedMessage
       };
 
       return doc;

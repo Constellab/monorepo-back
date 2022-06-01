@@ -23,6 +23,10 @@ export interface TdTypeEntity {
   objectSubType: TdTypeObjectSubType;
 
   status: TdTypeObjectStatus | undefined;
+
+  deprecatedSince: string | undefined;
+
+  deprecatedMessage: string | undefined;
 }
 
 

@@ -114,7 +114,9 @@ export class HnTaskService {
         outputSpecs: task.outputSpecs,
         configSpecs: task.configSpecs,
         additionalInfo: task.additionalInfo,
-        objectSubType: task.objectSubType
+        objectSubType: task.objectSubType,
+        deprecatedSince: task.deprecatedSince,
+        deprecatedMessage: task.deprecatedMessage
       };
 
       return doc;

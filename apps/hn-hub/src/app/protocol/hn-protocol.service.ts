@@ -112,7 +112,9 @@ export class HnProtocolService {
         inputSpecs: proto.inputSpecs,
         outputSpecs: proto.outputSpecs,
         configSpecs: proto.configSpecs,
-        objectSubType: proto.objectSubType
+        objectSubType: proto.objectSubType,
+        deprecatedSince: proto.deprecatedSince,
+        deprecatedMessage: proto.deprecatedMessage
       };
 
       return doc;

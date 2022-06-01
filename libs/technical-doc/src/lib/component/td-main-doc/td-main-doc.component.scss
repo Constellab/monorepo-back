@@ -1,7 +1,12 @@
-p, div, .key-val{
+p, .technical-doc-content, .key-val{
   margin-top: 1em;
   padding: 0 35px;
   text-align: justify;
+}
+
+.deprecated-message-div{
+  width: 90%;
+  margin-left: 5%;
 }
 
 @media (max-width: 1280px) {
