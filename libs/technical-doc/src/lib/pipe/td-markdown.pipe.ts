@@ -11,7 +11,7 @@ export class TdMarkdownPipe implements PipeTransform {
   }
 
   transform(value: string): string {
-    return this.domSanitizer.sanitize(SecurityContext.HTML, marked.parse(value));
+    return this.domSanitizer.sanitize(SecurityContext.NONE, marked.parse(value));
   }
 
 }

@@ -40,21 +40,11 @@ export type TdConfigSpecSimple =
 export interface TdConfigSpecString extends TdConfigSpecBase {
 
   type: 'str';
-
-  /**
-   * If present, the value must be in the array
-   */
-  allowed_values?: string[];
 }
 
 export interface TdConfigSpecFloat extends TdConfigSpecBase {
 
   type: 'int' | 'float';
-
-  /**
-   * If present, the value must be in the array
-   */
-  allowed_values?: string[];
 
   // min value validator
   min_value: number;
@@ -65,17 +55,14 @@ export interface TdConfigSpecFloat extends TdConfigSpecBase {
 
 export interface TdConfigSpecBoolean extends TdConfigSpecBase {
   type: 'bool';
-  allowed_values?: void;
 }
 
 export interface TdConfigSpecList extends TdConfigSpecBase {
   type: 'list';
-  allowed_values?: void;
 }
 
 export interface TdConfigSpecTags extends TdConfigSpecBase {
   type: 'tags_param';
-  allowed_values?: void;
 }
 
 
@@ -114,6 +101,8 @@ export interface TdConfigSpecBase {
    * Visibility for the config, if protected, it is considered as advanced option
    */
   visibility: TdConfigSpecVisibility;
+
+  allowed_values?: any;
 }
 
 // If the config property is a string or a float
@@ -123,7 +112,6 @@ export type TdConfigSpecVisibility = 'protected' | 'public';
 
 export interface TdConfigSpecParamSet extends TdConfigSpecBase {
   type: 'param_set';
-
   param_set: Record<string, TdConfigSpec>;
   max_number_of_occurrences: number;
 }
