@@ -6,6 +6,8 @@ export interface TdProcessType extends TdTypeEntity {
   outputSpecs: Record<string, TdIOSpecDTO>;
 
   configSpecs: Record<string, TdConfigSpec>;
+
+  additionalInfo: TdAdditionalInfoDTO | undefined;
 }
 
 export interface TdIOSpecDTO {
@@ -114,4 +116,8 @@ export interface TdConfigSpecParamSet extends TdConfigSpecBase {
   type: 'param_set';
   param_set: Record<string, TdConfigSpec>;
   max_number_of_occurrences: number;
+}
+
+export interface TdAdditionalInfoDTO {
+  supported_extensions: string[];
 }

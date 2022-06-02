@@ -1,12 +1,12 @@
-<td-main-doc [entity]="task" class="ql-editor"></td-main-doc>
+<td-main-doc [entity]="process" class="ql-editor"></td-main-doc>
 
-<fl-key-value *ngIf="task.additionalInfo && task.additionalInfo.supported_extensions && task.additionalInfo.supported_extensions.length > 0"
+<fl-key-value *ngIf="process.additionalInfo && process.additionalInfo.supported_extensions && process.additionalInfo.supported_extensions.length > 0"
               class="key-val ql-editor div-spec">
   <fl-key>{{'td.supported_extensions' |translate}}</fl-key>
-  {{task.additionalInfo.supported_extensions.join(', ')}}
+  {{process.additionalInfo.supported_extensions.join(', ')}}
 </fl-key-value>
 
-<ng-container *ngIf="task.inputSpecs | flIsNotEmpty">
+<ng-container *ngIf="process.inputSpecs | flIsNotEmpty">
   <mat-divider class="divider"></mat-divider>
 
   <div class="div-spec ql-editor">
@@ -14,11 +14,11 @@
       <mat-icon>login</mat-icon>
       <h3>{{'td.input' | translate}}</h3>
     </div>
-    <td-io-doc [ioSpecs]="task.inputSpecs"></td-io-doc>
+    <td-io-doc [ioSpecs]="process.inputSpecs"></td-io-doc>
   </div>
 </ng-container>
 
-<ng-container *ngIf="task.outputSpecs | flIsNotEmpty">
+<ng-container *ngIf="process.outputSpecs | flIsNotEmpty">
   <mat-divider class="divider"></mat-divider>
 
   <div class="div-spec ql-editor">
@@ -26,11 +26,11 @@
       <mat-icon>logout</mat-icon>
       <h3>{{'td.output' | translate}}</h3>
     </div>
-    <td-io-doc [ioSpecs]="task.outputSpecs"></td-io-doc>
+    <td-io-doc [ioSpecs]="process.outputSpecs"></td-io-doc>
   </div>
 </ng-container>
 
-<ng-container *ngIf="task.configSpecs | flIsNotEmpty">
+<ng-container *ngIf="process.configSpecs | flIsNotEmpty">
   <mat-divider class="divider" ></mat-divider>
 
   <div class="div-spec ql-editor">
@@ -39,6 +39,6 @@
       <h3>{{'td.configuration' | translate}}</h3>
     </div>
 
-    <td-config [configSpecs]="task.configSpecs"></td-config>
+    <td-config [configSpecs]="process.configSpecs"></td-config>
   </div>
 </ng-container>

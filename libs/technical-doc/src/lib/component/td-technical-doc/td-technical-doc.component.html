@@ -13,10 +13,11 @@
 
 
 <div class="tech-doc ql-bubble">
-  <td-resource-doc [resource]="$any(technicalDoc)" *ngIf="technicalDoc.objectType === 'RESOURCE'">
+  <td-resource-doc [resource]="$any(technicalDoc)"
+                   *ngIf="technicalDoc.objectType === 'RESOURCE'">
   </td-resource-doc>
-  <td-task-doc [task]="$any(technicalDoc)" *ngIf="technicalDoc.objectType === 'TASK'">
-  </td-task-doc>
-  <td-protocol-doc [protocol]="$any(technicalDoc)" *ngIf="technicalDoc.objectType === 'PROTOCOL'">
-  </td-protocol-doc>
+  <td-process-doc [process]="$any(technicalDoc)"
+                  *ngIf="technicalDoc.objectType === 'TASK' ||
+                  technicalDoc.objectType === 'PROTOCOL'">
+  </td-process-doc>
 </div>

@@ -49,4 +49,6 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
 
   @Column({nullable: true})
   objectSubType: string;
+
+  objectType: string;
 }

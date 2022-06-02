@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
 import {TdTypingName} from '../../model/td-typing-name.entity';
 import {FlColorHelper} from '@monorepo/front-core-lib';
 import {TdResourceTypeDTO} from '../../model/td-process-type.entity';
@@ -11,21 +10,15 @@ import {TdUniqueType} from '../../model/td-type.entity';
   styleUrls: ['./td-io-resource.component.scss']
 })
 export class TdIoResourceComponent implements OnInit {
-
   @Input()
   resource: TdResourceTypeDTO;
-
   uniqueParent: TdUniqueType;
-
   color: string;
 
-  activatedRoute: ActivatedRoute;
-
-  constructor(private route: ActivatedRoute) {
+  constructor() {
   }
 
   ngOnInit(): void {
-    this.activatedRoute = this.route;
     this.uniqueParent = {
       typingName: this.resource.typing_name,
       version: this.resource.brick_version ? this.resource.brick_version : 'latest',
@@ -39,6 +32,6 @@ export class TdIoResourceComponent implements OnInit {
   }
 
   getIoUniqueName(typingName: string): string {
-    return new TdTypingName(typingName).getUniqueName();;
+    return new TdTypingName(typingName).getUniqueName();
   }
 }

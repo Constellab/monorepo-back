@@ -96,33 +96,9 @@ export class HnTaskService {
       },
       uniqueName: uniqueName
     });
+    task.objectType = 'TASK';
 
-
-    if (task) {
-      const doc: any = {
-        brickName: task.brickName,
-        uniqueName: task.uniqueName,
-        humanName: task.humanName,
-        shortDescription: task.shortDescription,
-        doc: task.doc,
-        parentTypingName: task.parentTypingName,
-        parentMajorVersion: task.parentMajorVersion,
-        parentHumanName: task.parentHumanName,
-        parentVersion: task.parentVersion,
-        objectType: 'TASK',
-        inputSpecs: task.inputSpecs,
-        outputSpecs: task.outputSpecs,
-        configSpecs: task.configSpecs,
-        additionalInfo: task.additionalInfo,
-        objectSubType: task.objectSubType,
-        deprecatedSince: task.deprecatedSince,
-        deprecatedMessage: task.deprecatedMessage
-      };
-
-      return doc;
-    }
-
-    return null;
+    return task;
 
 
   }

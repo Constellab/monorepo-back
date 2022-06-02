@@ -95,32 +95,8 @@ export class HnProtocolService {
       },
       uniqueName: uniqueName
     });
-
-
-    if (proto) {
-      const doc: any = {
-        brickName: proto.brickName,
-        uniqueName: proto.uniqueName,
-        humanName: proto.humanName,
-        shortDescription: proto.shortDescription,
-        doc: proto.doc,
-        parentTypingName: proto.parentTypingName,
-        parentMajorVersion: proto.parentMajorVersion,
-        parentHumanName: proto.parentHumanName,
-        parentVersion: proto.parentVersion,
-        objectType: 'TASK',
-        inputSpecs: proto.inputSpecs,
-        outputSpecs: proto.outputSpecs,
-        configSpecs: proto.configSpecs,
-        objectSubType: proto.objectSubType,
-        deprecatedSince: proto.deprecatedSince,
-        deprecatedMessage: proto.deprecatedMessage
-      };
-
-      return doc;
-    }
-
-    return null;
+    proto.objectType = 'PROTOCOL'
+    return proto;
 
 
   }

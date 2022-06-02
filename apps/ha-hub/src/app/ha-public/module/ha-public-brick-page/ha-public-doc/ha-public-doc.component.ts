@@ -12,7 +12,6 @@ import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-auth
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {Observable} from 'rxjs';
 import {HaDocTextEditorConfig} from '../ha-doc-text-editor-config.class';
-// @ts-ignore
 import {TdProcessType} from '@monorepo/technical-doc';
 
 @Component({

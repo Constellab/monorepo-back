@@ -4,6 +4,7 @@ import {HnResource} from './hn-resource.entity';
 import {Repository} from 'typeorm';
 import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
 import {HnImportResourceDTO} from '../brick/hn-brick.dto';
+import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 
 @Injectable()
 export class HnResourceService {
@@ -73,7 +74,7 @@ export class HnResourceService {
     });
   }
 
-  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<any> {
+  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnGeneratedDocEntity> {
 
     const resource: HnResource = await this.resourceRepository.findOne({
       technicalFolder: {
@@ -81,29 +82,7 @@ export class HnResourceService {
       },
       uniqueName: uniqueName
     });
-
-    if (resource) {
-      const doc: any = {
-        brickName: resource.brickName,
-        uniqueName: resource.uniqueName,
-        humanName:resource.humanName,
-        shortDescription: resource.shortDescription,
-        doc: resource.doc,
-        parentTypingName: resource.parentTypingName,
-        parentMajorVersion: resource.parentMajorVersion,
-        parentHumanName: resource.parentHumanName,
-        parentVersion: resource.parentVersion,
-        objectType: 'RESOURCE',
-        objectSubType: resource.objectSubType,
-        deprecatedSince: resource.deprecatedSince,
-        deprecatedMessage: resource.deprecatedMessage
-      };
-
-      return doc;
-    }
-
-    return null;
-
-
+    resource.objectType = 'RESOURCE'
+    return resource;
   }
 }

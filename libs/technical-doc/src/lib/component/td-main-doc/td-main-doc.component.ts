@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {DomSanitizer} from '@angular/platform-browser';
 import {TdTypeEntity, TdUniqueType} from '../../model/td-type.entity';
 
 @Component({
@@ -14,7 +13,7 @@ export class TdMainDocComponent implements OnInit {
 
   uniqueEntityParent: TdUniqueType;
 
-  constructor(private domSanitizer: DomSanitizer) {
+  constructor() {
   }
 
   ngOnInit(): void {

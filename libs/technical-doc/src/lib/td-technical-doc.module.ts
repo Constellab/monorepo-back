@@ -4,7 +4,7 @@ import {TdResourceDocComponent} from './component/td-resource-doc/td-resource-do
 import {TdTechnicalDocComponent} from './component/td-technical-doc/td-technical-doc.component';
 import {RouterModule} from "@angular/router";
 import {TdMainDocComponent} from './component/td-main-doc/td-main-doc.component';
-import {TdTaskDocComponent} from './component/td-task-doc/td-task-doc.component';
+import {TdProcessDocComponent} from './component/td-process-doc/td-process-doc.component';
 import {MatIconModule} from '@angular/material/icon';
 import {
   FlCoreComponentModule,
@@ -19,7 +19,6 @@ import {MatDividerModule} from "@angular/material/divider";
 import {FlexModule} from '@angular/flex-layout';
 import {TdIoResourceComponent} from './component/td-io-resource/td-io-resource.component';
 import {tdTechnicalDocI18n} from './td-technical-doc.i18n';
-import {TdProtocolDocComponent} from './component/td-protocol-doc/td-protocol-doc.component';
 import {TdServiceConfig} from './service/td-service-config.config';
 import { TdTechDocLinkComponent } from './component/td-tech-doc-link/td-tech-doc-link.component';
 import { TdMarkdownPipe } from './pipe/td-markdown.pipe';
@@ -42,10 +41,9 @@ import { TdConfigComponent } from './component/td-config/td-config.component';
     TdResourceDocComponent,
     TdTechnicalDocComponent,
     TdMainDocComponent,
-    TdTaskDocComponent,
+    TdProcessDocComponent,
     TdIoDocComponent,
     TdIoResourceComponent,
-    TdProtocolDocComponent,
     TdTechDocLinkComponent,
     TdMarkdownPipe,
     TdConfigComponent
