@@ -39,6 +39,8 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
   // when true, the row become clickable and resourceSelected event is trigger
   @Input() selectableRow: boolean = false;
 
+  @Input() tagSelectable: boolean = true;
+
   @Output() resourceSelected: EventEmitter<LabResource> = new EventEmitter();
 
   @Output() tagSelected: EventEmitter<FlTag> = new EventEmitter();

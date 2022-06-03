@@ -53,7 +53,7 @@
     </mat-header-cell>
     <mat-cell *matCellDef="let resource" class="g-column-width-2 tags">
       <fl-tag-list [tags]="resource.tags"
-                   [tagSelectable]="true" (tagSelected)="onTagSelected($event)"></fl-tag-list>
+                   [tagSelectable]="tagSelectable" (tagSelected)="onTagSelected($event)"></fl-tag-list>
     </mat-cell>
   </ng-container>
 

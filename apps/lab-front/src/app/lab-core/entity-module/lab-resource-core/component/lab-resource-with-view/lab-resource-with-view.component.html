@@ -1,4 +1,3 @@
-
 <fl-async-section [object]="resource$" fxLayout="column" class="g-full-height main-section">
 
   <ng-container *flSectionBody="let resource">
@@ -11,14 +10,18 @@
           <span class="g-text-light">{{resource.resourceTypeHumanName}}</span>
         </h2>
 
-        <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
-           *ngIf="resource.experiment" class="g-text-link">
-          <fl-text-icon class="g-text-tiny g-text-light"
-                        gap="0">
-            <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
-            {{resource.experiment.title}}
-          </fl-text-icon>
-        </a>
+        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+          <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
+             *ngIf="resource.experiment" class="g-text-link">
+            <fl-text-icon class="g-text-tiny g-text-light"
+                          gap="0">
+              <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
+              {{resource.experiment.title}}
+            </fl-text-icon>
+          </a>
+
+          <fl-tag-list [tags]="resource.tags" [tagSelectable]="false" class="g-text-small"></fl-tag-list>
+        </div>
 
         <fl-section-actions>
           <rv-technical-info-button *ngIf="view$ | async as view"
