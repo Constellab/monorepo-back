@@ -39,6 +39,9 @@ export class LabResourceWithViewComponent implements OnInit, OnDestroy {
 
   viewConfig: RvViewConfig;
 
+  // if true it mean that the view is used transformers, so the resource edition button are disable
+  isTransformedView: boolean;
+
   private overlayRef: FlOverlayRef;
 
 
@@ -54,6 +57,8 @@ export class LabResourceWithViewComponent implements OnInit, OnDestroy {
 
 
     const viewWithConfig = this.state.getViewConfig();
+    this.isTransformedView = viewWithConfig.transformersWithConfig?.length > 0 ?? false;
+
     this.viewConfig = {
       methodName: viewWithConfig.viewMethodName,
       configValues: viewWithConfig.viewConfigValues,

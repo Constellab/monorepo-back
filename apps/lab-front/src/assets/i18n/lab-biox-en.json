@@ -41,6 +41,8 @@
     "resource_view_pathway": "Pathway",
     "resource_view_text": "Text",
     "resource_view_image": "Image",
+    "pre_resource": "Pre resource",
+    "pre_resource_tooltip": "This resource does not exist in the system, it was generated with a transformer",
     "workflow_loading_error": "Error while retrieving protocol",
     "add_process": "Add a process",
     "add_selected_process": "Add process",

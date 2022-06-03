@@ -27,7 +27,12 @@
           <rv-technical-info-button *ngIf="view$ | async as view"
                                     [technicalInfo]="view.technical_info"></rv-technical-info-button>
 
-          <button mat-stroked-button type="button"
+          <fl-chip class="g-primary-background" [matTooltip]="'biox.pre_resource_tooltip' | translate"
+                   *ngIf="isTransformedView">
+            {{'biox.pre_resource' | translate}}
+          </fl-chip>
+
+          <button mat-stroked-button type="button" *ngIf="!isTransformedView"
                   (click)="openViewSpecs($event)" class="button g-button-small">
             <mat-icon>visibility</mat-icon>
             {{'biox.view_specs' | translate}}
@@ -43,7 +48,7 @@
 
           <lab-resource-actions-menu [readOnly]="readOnly" [resource]="resource" (update)="onUpdate($event)"
                                      (updateTags)="onUpdateTags($event)"
-                                     (delete)="onDelete()">
+                                     (delete)="onDelete()" *ngIf="!isTransformedView">
 
             <button mat-menu-item type="button"
                     (click)="openTransformerResource()">
