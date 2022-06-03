@@ -32,7 +32,7 @@ export class LabTypeDetailComponent implements OnInit {
     if (type instanceof LabProcessType) {
       return this.convertLabProcessToTdProcess(type);
     } else {
-      return type;
+      return type as TdResourceType;
     }
   }
 

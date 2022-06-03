@@ -23,10 +23,10 @@ export class LabTypeEntity extends LabBaseEntity implements TdTypeEntity {
   objectSubType: TdTypeObjectSubType;
 
   @Expose({name: 'deprecated_since'})
-  deprecatedSince?: string;
+  deprecatedSince: string | undefined;
 
   @Expose({name: 'deprecated_message'})
-  deprecatedMessage?: string;
+  deprecatedMessage: string | undefined;
 
   parent?: {
     brick_version: string;
