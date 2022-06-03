@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  FlDialogService,
   FlQuillConfig,
   FlTextEditorBlockAddButton,
   FlTextEditorConfig,
@@ -14,7 +15,8 @@ import {HaDocumentationService} from '../../../ha-core/ha-service/ha-documentati
 @Injectable({providedIn: 'root'})
 export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
-  constructor(private docService: HaDocumentationService) {
+  constructor(private docService: HaDocumentationService,
+              private dialogService: FlDialogService) {
     super();
   }
 
@@ -30,6 +32,7 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
       },
       this.getCodeBlockAddButton(state),
       this.getHintBlockAddButton(state),
+      this.getVideoAddButton(state, this.dialogService),
     ];
   }
 

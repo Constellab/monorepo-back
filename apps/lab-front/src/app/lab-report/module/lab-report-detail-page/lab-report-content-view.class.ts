@@ -19,6 +19,7 @@ export class LabReportContentViewBlot extends FlQuillEmbed {
 
   static blotName: 'resource_view' = 'resource_view';
   static tagName = 'lab-report-content-view';
+  static className = 'g-quill-block';
 
   public domNode: HTMLElement;
 

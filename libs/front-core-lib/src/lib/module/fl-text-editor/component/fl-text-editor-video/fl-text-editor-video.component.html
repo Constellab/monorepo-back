@@ -1,0 +1,16 @@
+<figure class="container">
+
+  <div class="video-wrapper" *ngIf="sanitizedUrl">
+    <iframe [src]="sanitizedUrl"></iframe>
+  </div>
+
+  <div *ngIf="urlError" class="g-text-light g-text-centered">
+    <p>{{'flTextEditor.video_url_error' | translate}}</p>
+  </div>
+
+  <figcaption class="g-text-centered">
+    <fl-text-editor-title-caption [(title)]="videoTitle" [(caption)]="caption"
+                                  [editable]="(disabled$ | async) === false"></fl-text-editor-title-caption>
+  </figcaption>
+
+</figure>

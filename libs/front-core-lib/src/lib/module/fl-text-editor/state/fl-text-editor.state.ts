@@ -1,10 +1,11 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import Quill, {RangeStatic} from 'quill';
 import {FlTextEditorUploadedImage} from '../model/fl-text-editor-image.class';
-import {CmRichTextFigure} from '@monorepo/common-model';
+import {CmRichTextFigure, CmRichTextVideo} from '@monorepo/common-model';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlTextEditorConfig} from '../model/fl-text-editor-config.class';
-import {FlTextEditorHintType} from '../model/fl-text-editor-hint.class';
+import {FlTextEditorHintType} from '../model/fl-text-editor-hint-blot.class';
+import {ClYoutubeHelper} from '@monorepo/core-lib';
 
 @Injectable()
 export class FlTextEditorState implements OnDestroy {
@@ -28,6 +29,7 @@ export class FlTextEditorState implements OnDestroy {
     this.disabled$ = new BehaviorSubject(disabled);
   }
 
+
   public insertImageFromUrl(image: FlTextEditorUploadedImage, index: number): void {
     const figure: CmRichTextFigure = {
       filename: image.filename,
@@ -49,6 +51,18 @@ export class FlTextEditorState implements OnDestroy {
 
   public insertHint(hintType: FlTextEditorHintType): void {
     this.quill.format('hint', hintType);
+  }
+
+  public insertVideo(url: string, index: number): void {
+    const embedUrl = ClYoutubeHelper.convertToEmbedUrl(url);
+    if(embedUrl == null) return;
+
+    const data: CmRichTextVideo = {
+      url: embedUrl,
+      title: '',
+      caption: ''
+    };
+    this.insertEmbed(index, 'video', data);
   }
 
 
@@ -105,7 +119,7 @@ export class FlTextEditorState implements OnDestroy {
       const rect = child.getBoundingClientRect();
 
       // when the top of the rect is greater (meaning bellow the mouse), we stop and return the previous child
-      if(rect.top > pageY) {
+      if (rect.top > pageY) {
         return previousChild;
       }
       previousChild = child;
@@ -137,6 +151,7 @@ export class FlTextEditorState implements OnDestroy {
   public getDisabled$(): Observable<boolean> {
     return this.disabled$.asObservable();
   }
+
   ngOnDestroy(): void {
     this.disabled$?.complete();
   }

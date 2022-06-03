@@ -13,7 +13,11 @@ const flTextEditorI18nFr: FlLangTranslation = {
     hint_classic: 'Aide',
     hint_warning: 'Warning',
     hint_scientific: 'Info scientifique',
-    move_block: 'Drag to move'
+    move_block: 'Glisser pour déplacer',
+    url: 'Url',
+    add_a_video: 'Ajouter une vidéo youtube',
+    video_url_error: 'L\'url de la vidéo youtube est invalide',
+    not_youtube_link_error: 'Ce n\'est pas un lien de vidéo youtube',
   }
 };
 
@@ -25,7 +29,12 @@ const flTextEditorI18nEn: FlLangTranslation = {
     hint_classic: 'Hint',
     hint_warning: 'Warning',
     hint_scientific: 'Scientific info',
-    move_block: 'Glisser pour déplacer'
+    move_block: 'Drag to move',
+    url: 'Url',
+    add_a_video: 'Add a youtube video',
+    video_url_error: 'Invalid youtube video url',
+    not_youtube_link_error: 'This is not a youtube video url',
+
   }
 };
 

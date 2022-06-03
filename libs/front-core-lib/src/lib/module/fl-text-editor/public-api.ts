@@ -6,7 +6,9 @@ export * from './component/fl-text-editor/fl-text-editor.component';
 export * from './component/fl-text-editor-block-add-button/fl-text-editor-block-add-button.component';
 export * from './component/fl-text-editor-drag-buttons/fl-text-editor-drag-buttons.component';
 export * from './component/fl-text-editor-figure/fl-text-editor-figure.component';
+export * from './component/fl-text-editor-link-dialog/fl-text-editor-link-dialog.component';
 export * from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
+export * from './component/fl-text-editor-video/fl-text-editor-video.component';
 
 // States
 export * from './state/fl-text-editor.state';
@@ -18,8 +20,8 @@ export * from './model/fl-text-editor.class';
 export * from './model/fl-text-editor-basic-config.class';
 export * from './model/fl-text-editor-config.class';
 export * from './model/fl-text-editor-element.directive';
-export * from './model/fl-text-editor-figure.class';
-export * from './model/fl-text-editor-hint.class';
+export * from './model/fl-text-editor-figure-blot.class';
+export * from './model/fl-text-editor-hint-blot.class';
 export * from './model/fl-text-editor-image.class';
 export * from './model/fl-text-editor-module-config.class';
-
+export * from './model/fl-text-editor-video-blot.class';

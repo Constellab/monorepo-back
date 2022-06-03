@@ -18,6 +18,7 @@ export class CaReportContentViewBlot extends FlQuillEmbed {
 
   static blotName: 'resource_view' = 'resource_view';
   static tagName = 'ca-report-content-view';
+  static className = 'g-quill-block';
 
   private readonly storedValue: RvResourceView;
 

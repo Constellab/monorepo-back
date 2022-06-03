@@ -20,6 +20,15 @@ export interface CmRichTextFigure {
   naturalHeight: number;
 }
 
+/**
+ * Object representing the value stored to create a video
+ */
+export interface CmRichTextVideo {
+  url: string;
+  title?: string;
+  caption?: string;
+}
+
 export interface CmRichTextFigureOp extends CmRichTextOp {
   insert: {
     figure: CmRichTextFigure

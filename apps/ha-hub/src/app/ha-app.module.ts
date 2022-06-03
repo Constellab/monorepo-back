@@ -14,6 +14,8 @@ import {
   FlTextEditorFigureBlot,
   FlTextEditorFigureComponent,
   FlTextEditorModule,
+  FlTextEditorVideoBlot,
+  FlTextEditorVideoComponent,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {HaApiServiceConfig} from './ha-core/ha-model/ha-config/ha-api-module.config';
@@ -66,7 +68,10 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
       iconsToRegister: flIconsDefault
     }),
     FlTextEditorModule.forRoot({
-      blots: [{blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent}]
+      blots: [
+        {blot: FlTextEditorFigureBlot, componentType: FlTextEditorFigureComponent},
+        {blot: FlTextEditorVideoBlot, componentType: FlTextEditorVideoComponent},
+      ]
     }),
 
   ],

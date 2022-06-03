@@ -3,7 +3,7 @@ import {FlQuillBlock} from './fl-quill-export.class';
 export type FlTextEditorHintType = 'info' | 'warning' | 'science';
 
 
-export class FlTextEditorHint extends FlQuillBlock {
+export class FlTextEditorHintBlot extends FlQuillBlock {
 
   static blotName = 'hint';
   static tagName = 'DIV';

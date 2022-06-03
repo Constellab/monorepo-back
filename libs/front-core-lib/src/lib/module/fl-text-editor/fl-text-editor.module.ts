@@ -11,7 +11,7 @@ import {FlInputFileModule} from '../fl-input-file/fl-input-file.module';
 import {FlCoreDirectiveModule} from '../fl-core-directive/fl-core-directive.module';
 import {FlTextEditorFigureComponent} from './component/fl-text-editor-figure/fl-text-editor-figure.component';
 import {createCustomElement} from '@angular/elements';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FlTranslateModule} from '../fl-translate/fl-translate.module';
@@ -25,10 +25,16 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {
   FlTextEditorTitleCaptionComponent
 } from './component/fl-text-editor-title-caption/fl-text-editor-title-caption.component';
-import {FlTextEditorHint} from './model/fl-text-editor-hint.class';
+import {FlTextEditorHintBlot} from './model/fl-text-editor-hint-blot.class';
 import {
   FlTextEditorDragButtonsComponent
 } from './component/fl-text-editor-drag-buttons/fl-text-editor-drag-buttons.component';
+import {FlTextEditorVideoComponent} from './component/fl-text-editor-video/fl-text-editor-video.component';
+import {
+  FlTextEditorLinkDialogComponent
+} from './component/fl-text-editor-link-dialog/fl-text-editor-link-dialog.component';
+import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
+import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 
 
 @NgModule({
@@ -38,6 +44,8 @@ import {
     FlTextEditorFigureComponent,
     FlTextEditorTitleCaptionComponent,
     FlTextEditorDragButtonsComponent,
+    FlTextEditorVideoComponent,
+    FlTextEditorLinkDialogComponent,
   ],
   exports: [
     FlTextEditorComponent,
@@ -46,6 +54,7 @@ import {
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
 
     MatButtonModule,
     MatIconModule,
@@ -57,8 +66,10 @@ import {
     FlPortalModule,
     FlInputFileModule,
     FlCoreDirectiveModule,
+    FlCorePipeModule,
     FlTranslateModule,
     FlResizeModule,
+    FlDialogModule,
   ],
 })
 export class FlTextEditorModule {
@@ -70,7 +81,7 @@ export class FlTextEditorModule {
     if (FlTextEditorModule.registered) return;
 
     // register default blots
-    Quill.register(FlTextEditorHint);
+    Quill.register(FlTextEditorHintBlot);
 
     FlTextEditorModule.registered = true;
 
