@@ -31,6 +31,8 @@
     "no_experiment_associated_report": "Aucun rapport associé",
     "experiment_associated_report": "Rapports associés",
     "score": "Score",
+    "resource_tab_loading": "Chargement...",
+    "resource_tab_error": "Erreur",
     "resource_view_json": "Json",
     "resource_view_spreadsheet": "Feuille de calcul",
     "resource_view_dataset_view": "Dataset",

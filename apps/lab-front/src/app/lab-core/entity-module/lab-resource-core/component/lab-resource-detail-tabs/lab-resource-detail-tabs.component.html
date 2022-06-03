@@ -1,0 +1,15 @@
+<mat-tab-group class="g-full-height g-mat-tab-full-height" [animationDuration]="'0'"
+               [(selectedIndex)]="selectedTabIndex">
+  <mat-tab *ngFor="let resourceWithView of resourceWithViews; let i = index">
+
+    <ng-template mat-tab-label>
+      <lab-resource-detail-tab-header [viewSymbol]="resourceWithView.viewSymbol"></lab-resource-detail-tab-header>
+    </ng-template>
+
+
+    <lab-resource-with-view [resourceId]="resourceWithView.resourceId" [viewSymbol]="resourceWithView.viewSymbol"
+                             [readOnly]="readOnly">
+    </lab-resource-with-view>
+  </mat-tab>
+
+</mat-tab-group>

@@ -1,5 +1,5 @@
 import {Expose} from 'class-transformer';
-import {LabCallTransformerParams, LabTransformerWithConfig} from '../../global/lab-transformer.class';
+import {LabTransformerWithConfig} from '../../global/lab-transformer.class';
 import {LabConfigValues} from '../lab-config.entity';
 import {
   rvDefaultViewTypeInfos,
@@ -7,6 +7,7 @@ import {
   RvResourceViewBase,
   RvResourceViewType,
   RvResourceViewTypeInfo,
+  RvTransformerParams,
   RvViewDisplayMode
 } from '@monorepo/resource-view';
 import {
@@ -52,6 +53,7 @@ export class LabResourceViewSpec {
  * Object that contains the resource view spec and its configuration
  */
 export interface LabResourceViewSpecWithConfig {
+  resourceId: string;
   viewName: string;
   viewMethodName: string;
   isDefaultView: boolean;
@@ -63,7 +65,7 @@ export interface LabResourceViewSpecWithConfig {
 export interface LabResourceViewConfig {
   methodName: string;
   configValues: LabConfigValues;
-  transformers: LabCallTransformerParams[];
+  transformers: RvTransformerParams[];
 }
 
 /**

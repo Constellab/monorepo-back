@@ -33,7 +33,6 @@ import {LabConfigCoreModule} from '../lab-config-core/lab-config-core.module';
 import {
   LabResourceDetailDialogComponent
 } from './component/lab-resource-detail-dialog/lab-resource-detail-dialog.component';
-import {LabResourceDetailComponent} from './component/lab-resource-detail/lab-resource-detail.component';
 import {LabUpdateResourceTypeComponent} from './component/lab-update-resource-type/lab-update-resource-type.component';
 import {
   LabUpdateResourceNameDialogComponent
@@ -47,9 +46,18 @@ import {LabViewResourcesListComponent} from './component/lab-view-resources-list
 import {LabExperimentCoreModule} from '../lab-experiment-core/lab-experiment-core.module';
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 import {LabTypeCoreModule} from '../lab-type-core/lab-type-core.module';
+import {LabResourceWithViewComponent} from './component/lab-resource-with-view/lab-resource-with-view.component';
 import {
-  LabResourceDetailViewTabsComponent
-} from './component/lab-resource-detail-view-tabs/lab-resource-detail-view-tabs.component';
+  LabResourceDetailTabHeaderComponent
+} from './component/lab-resource-detail-tab-header/lab-resource-detail-tab-header.component';
+import {LabResourceViewSpecsComponent} from './component/lab-resource-view-specs/lab-resource-view-specs.component';
+import {
+  LabResourceViewSpecsPortalComponent
+} from './component/lab-resource-view-specs-portal/lab-resource-view-specs-portal.component';
+import {
+  LabConfigureResourceViewComponent
+} from './component/lab-configure-resource-view/lab-configure-resource-view.component';
+import {LabResourceDetailTabsComponent} from './component/lab-resource-detail-tabs/lab-resource-detail-tabs.component';
 
 
 @NgModule({
@@ -68,13 +76,17 @@ import {
     LabFsNodeTypesSelectionDialogComponent,
     LabImportResourceDialogComponent,
     LabResourceDetailDialogComponent,
-    LabResourceDetailComponent,
     LabUpdateResourceTypeComponent,
     LabUpdateResourceNameDialogComponent,
     LabResourceActionsMenuComponent,
     LabResourceFolderComponent,
     LabViewResourcesListComponent,
-    LabResourceDetailViewTabsComponent,
+    LabResourceWithViewComponent,
+    LabResourceDetailTabHeaderComponent,
+    LabResourceViewSpecsComponent,
+    LabResourceViewSpecsPortalComponent,
+    LabConfigureResourceViewComponent,
+    LabResourceDetailTabsComponent
   ],
   exports: [
     LabResourceInfoComponent,
@@ -89,10 +101,15 @@ import {
     LabResourceCardComponent,
     LabImportResourceDialogComponent,
     LabResourceDetailDialogComponent,
-    LabResourceDetailComponent,
     LabUpdateResourceTypeComponent,
     LabUpdateResourceNameDialogComponent,
     LabResourceActionsMenuComponent,
+    LabResourceWithViewComponent,
+    LabResourceDetailTabHeaderComponent,
+    LabResourceViewSpecsComponent,
+    LabResourceViewSpecsPortalComponent,
+    LabConfigureResourceViewComponent,
+    LabResourceDetailTabsComponent
   ],
   imports: [
     CommonModule,

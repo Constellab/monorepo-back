@@ -1,0 +1,21 @@
+
+<div *ngIf="isLoading; else notLoading"
+     fxLayout="row" fxLayoutAlign="start center">
+  {{'biox.resource_tab_loading' | translate}}
+  <fl-loader [size]="20" class="loader"></fl-loader>
+</div>
+
+<ng-template #notLoading>
+
+  <div *ngIf="isError; else notError">
+    {{'biox.resource_tab_error' | translate}}
+  </div>
+
+  <ng-template #notError>
+    {{view.title}}
+
+    <button mat-icon-button (click)="closeTab()" class="g-button-icon-small" *ngIf="showCloseButton$ | async">
+      <mat-icon>close</mat-icon>
+    </button>
+  </ng-template>
+</ng-template>

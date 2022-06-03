@@ -1,2 +1,2 @@
 <lab-resource-table class="table" [datasource]="datasource" [columns]="columns"
-                    [selectableRow]="false"></lab-resource-table>
+                    [selectableRow]="selectableRow" (resourceSelected)="openInNewTab($event)"></lab-resource-table>

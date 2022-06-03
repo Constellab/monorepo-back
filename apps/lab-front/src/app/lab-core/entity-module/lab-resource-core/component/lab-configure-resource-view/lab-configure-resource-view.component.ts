@@ -3,20 +3,20 @@ import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {
   LabResourceViewSpecWithConfig,
   LabResourceViewTypeInfo
-} from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
+} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {Validators} from '@angular/forms';
-import {LabConfigData, LabConfigureSpecsForm} from '../../../../../lab-core/model/entities/lab-config.entity';
+import {LabConfigData, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {FL_PORTAL_DATA, FlFormHelper, FlOverlayRef} from '@monorepo/front-core-lib';
-import {LabTransformerWithConfig} from '../../../../../lab-core/model/global/lab-transformer.class';
+import {LabTransformerWithConfig} from '../../../../model/global/lab-transformer.class';
 import {
   LabConfigureSpecsFormComponent
-} from '../../../../../lab-core/entity-module/lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
+} from '../../../lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
 import {
   LabTransformResourceComponent,
   LabTransformResourceForm
-} from '../../../../../lab-core/entity-module/lab-transformer/component/lab-transform-resource/lab-transform-resource.component';
-import {LabResourceService} from '../../../../../lab-core/entity-service/lab-resource.service';
-import {LabConfigSpecs} from '../../../../../lab-core/model/entities/lab-config-spec.entity';
+} from '../../../lab-transformer/component/lab-transform-resource/lab-transform-resource.component';
+import {LabResourceService} from '../../../../entity-service/lab-resource.service';
+import {LabConfigSpecs} from '../../../../model/entities/lab-config-spec.entity';
 import {RvViewDisplayMode} from '@monorepo/resource-view';
 
 export interface LabConfigureResourceViewInput {
@@ -105,6 +105,7 @@ export class LabConfigureResourceViewComponent implements OnInit {
     }));
 
     return {
+      resourceId: this.input.resourceId,
       viewMethodName: this.input.viewSpecConfig.viewMethodName,
       viewName: this.input.viewSpecConfig.viewName,
       isDefaultView: this.input.viewSpecConfig.isDefaultView,

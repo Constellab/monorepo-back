@@ -1,13 +1,13 @@
-import {lastValueFrom, Observable, of, Subject, throwError} from 'rxjs';
+import {lastValueFrom, Observable, of, ReplaySubject, Subject, throwError} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
 
 /**
  * Observable wrapper that works like a hot observable.
- * It subscribe to the internalObservable on first getObs call. Then it returned the cached value
+ * It subscribes to the internalObservable on first getObs call. Then it returned the cached value
  * on the next getObs calls.
  *
- * It emits last value (if exists) and next values until error or complete
+ * It emits all values (if exists) and next values until error or complete
  *
  * It completes when the internalObservable completes
  */
@@ -16,7 +16,7 @@ export class ClCachedObservable<T> {
   private _value: T;
   private error: any;
 
-  private subject: Subject<T>;
+  private subject: ReplaySubject<T>;
 
   private isSuccess: boolean = false;
   private isError: boolean = false;
@@ -68,15 +68,15 @@ export class ClCachedObservable<T> {
    */
   private subscribeToObservable(): Subject<T> {
     this.isLoading = true;
-    this.subject = new Subject<T>();
+    this.subject = new ReplaySubject<T>();
 
     // the delay allow to return the observable before it completes
     // (if it's an observable that complete directly)
-    this.internalObservable.pipe(delay(0)).subscribe(
-      value => this.onSuccess(value),
-      error => this.onError(error),
-      () => this.onComplete()
-    );
+    this.internalObservable.pipe(delay(0)).subscribe({
+      next: value => this.onSuccess(value),
+      error: error => this.onError(error),
+      complete: () => this.onComplete()
+    });
 
     return this.subject;
   }

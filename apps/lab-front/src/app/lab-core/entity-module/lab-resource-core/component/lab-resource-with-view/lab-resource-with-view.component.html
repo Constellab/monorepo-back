@@ -1,3 +1,4 @@
+
 <fl-async-section [object]="resource$" fxLayout="column" class="g-full-height main-section">
 
   <ng-container *flSectionBody="let resource">
@@ -20,6 +21,8 @@
         </a>
 
         <fl-section-actions>
+          <rv-technical-info-button *ngIf="view$ | async as view"
+                                    [technicalInfo]="view.technical_info"></rv-technical-info-button>
 
           <button mat-stroked-button type="button"
                   (click)="openViewSpecs($event)" class="button g-button-small">
@@ -54,7 +57,10 @@
 
         <!--  Header    -->
         <div class="page-padding body">
-          <lab-resource-detail-view-tabs></lab-resource-detail-view-tabs>
+          <rv-resource-view *ngIf="view$ | async as view" [view]="view"
+                            [config]="viewConfig" [resourceId]="resourceId"
+                            class="resource-view">
+          </rv-resource-view>
         </div>
       </ng-container>
 

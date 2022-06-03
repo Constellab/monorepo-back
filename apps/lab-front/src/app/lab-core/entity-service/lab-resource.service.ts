@@ -23,13 +23,13 @@ import {
   LabResourceSearch,
   LabResourceSearchFields
 } from '../entity-module/lab-resource-core/model/lab-resource-advanced-search.class';
-import {LabCallTransformerParams} from '../model/global/lab-transformer.class';
 import {LabConfigValues} from '../model/entities/lab-config.entity';
 import {LabResourceImporterType} from '../model/entities/resource/lab-resource.dto';
 import {LabConfigSpecBase, LabConfigSpecs} from '../model/entities/lab-config-spec.entity';
 import {LabTypeService} from './lab-type.service';
 import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
 import {LabTag} from '../model/entities/lab-tag.entity';
+import {RvTransformerParams} from '@monorepo/resource-view';
 
 
 @Injectable({
@@ -133,7 +133,7 @@ export class LabResourceService {
    * @param saveViewConfig if true the config is saved in the historic
    */
   public callResourceView(id: string, viewMethodName: string, config: LabConfigValues,
-                          transformers: LabCallTransformerParams[], saveViewConfig: boolean = false): Observable<LabResourceView> {
+                          transformers: RvTransformerParams[], saveViewConfig: boolean = false): Observable<LabResourceView> {
     for (const key in config) {
       if (config[key] == null) {
         delete config[key];
@@ -156,7 +156,7 @@ export class LabResourceService {
    * @param transformers
    * @param resourceId
    */
-  public transformResource(transformers: LabCallTransformerParams[], resourceId: string): Observable<LabResource> {
+  public transformResource(transformers: RvTransformerParams[], resourceId: string): Observable<LabResource> {
     return this.apiService.post(`${this.route}/${resourceId}/transform`, transformers, LabResource);
   }
 

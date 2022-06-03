@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {LabResourceDetailState} from '../../state/lab-resource-detail-state.service';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -8,7 +7,6 @@ import {map} from 'rxjs/operators';
   selector: 'lab-resource-detail-page',
   templateUrl: './lab-resource-detail-page.component.html',
   styleUrls: ['./lab-resource-detail-page.component.scss'],
-  providers: [LabResourceDetailState]
 })
 export class LabResourceDetailPageComponent implements OnInit {
 
@@ -23,4 +21,5 @@ export class LabResourceDetailPageComponent implements OnInit {
       map(params => params.id)
     );
   }
+
 }

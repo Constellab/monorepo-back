@@ -3,13 +3,13 @@ import {
   LabResourceViewSpec,
   LabResourceViewSpecsByType,
   LabResourceViewSpecWithConfig
-} from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
-import {LabResourceDetailState} from '../../state/lab-resource-detail-state.service';
+} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {
   LabConfigureResourceViewComponent,
   LabConfigureResourceViewInput,
 } from '../lab-configure-resource-view/lab-configure-resource-view.component';
+import {LabResourceViewState} from '../../state/lab-resource-view.state';
 
 /**
  * List of view specs class by type and possibility to select a view specs
@@ -25,7 +25,7 @@ export class LabResourceViewSpecsComponent implements OnInit {
   @Input() viewsByType: LabResourceViewSpecsByType[];
 
   constructor(private overlayRef: FlOverlayRef,
-              private state: LabResourceDetailState,
+              private state: LabResourceViewState,
               private portalService: FlPortalService) {
   }
 
@@ -57,10 +57,11 @@ export class LabResourceViewSpecsComponent implements OnInit {
   }
 
   // prepare the data and open the view configuration portal
-  private openConfigPortal(view: LabResourceViewSpec, viewByType: LabResourceViewSpecsByType): void {
-    const resource = this.state.getCurrentResource();
+  private async openConfigPortal(view: LabResourceViewSpec, viewByType: LabResourceViewSpecsByType): Promise<void> {
+    const resource = await this.state.getResourcePromise();
 
     const specWithConfig: LabResourceViewSpecWithConfig = {
+      resourceId: resource.id,
       viewName: view.getName(),
       viewMethodName: view.methodName,
       displayMode: viewByType.viewTypeInfo.defaultDisplayMode,

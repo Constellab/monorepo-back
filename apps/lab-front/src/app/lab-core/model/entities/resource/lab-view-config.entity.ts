@@ -1,8 +1,8 @@
 import {LabConfigValues} from '../lab-config.entity';
 import {Expose} from 'class-transformer';
 import {LabResourceViewType} from './lab-resource-view.entity';
-import {LabCallTransformerParams} from '../../global/lab-transformer.class';
 import {LabBaseEntityWithUser} from '../lab-user.entity';
+import {RvTransformerParams} from '@monorepo/resource-view';
 
 /**
  * Represent a view config that the user viewed
@@ -20,7 +20,7 @@ export class LabViewConfig extends LabBaseEntityWithUser {
   @Expose({name: 'config_values'})
   configValues: LabConfigValues;
 
-  transformers: LabCallTransformerParams[];
+  transformers: RvTransformerParams[];
 
   resource: {
     id: string;

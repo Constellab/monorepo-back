@@ -3,7 +3,7 @@ import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {LabResourceView} from '../model/entities/resource/lab-resource-view.entity';
 import {LabConfigValues} from '../model/entities/lab-config.entity';
-import {LabCallTransformerParams} from '../model/global/lab-transformer.class';
+import {RvTransformerParams} from '@monorepo/resource-view';
 
 export type LabTableChartType = 'line-plot-2d' | 'scatter-plot-2d' | 'bar-plot' |
   'stack-bar-plot' | 'histogram' | 'box-plot' | 'heatmap' | 'venn-diagram';
@@ -25,7 +25,7 @@ export class LabResourceTableService {
    * Method used by the Table view to call a Chart view on it
    */
   public callChartOnTable(resourceId: string, tableViewMethodName: string, tableViewConfig: LabConfigValues,
-                          tableViewTransformers: LabCallTransformerParams[],
+                          tableViewTransformers: RvTransformerParams[],
                           chartType: LabTableChartType, chartConfig: LabConfigValues): Observable<LabResourceView> {
 
     const data = {

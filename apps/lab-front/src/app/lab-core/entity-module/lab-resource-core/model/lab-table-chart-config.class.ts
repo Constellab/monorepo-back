@@ -13,7 +13,6 @@ import {
   FlSpreadsheetChartSerieSelectionInput
 } from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {LabCallTransformerParams} from '../../../model/global/lab-transformer.class';
 import {map} from 'rxjs/operators';
 import {LabResourceTableService, LabTableChartType} from '../../../entity-service/lab-resource-table.service';
 import {LabConfigValues} from '../../../model/entities/lab-config.entity';
@@ -22,6 +21,7 @@ import {
   LabResourceViewPortalComponent,
   LabResourceViewPortalInput
 } from '../component/lab-resource-view-portal/lab-resource-view-portal.component';
+import {RvTransformerParams} from '@monorepo/resource-view';
 
 /**
  * Main config class to generate chart from the sheet by calling the resource service
@@ -29,7 +29,7 @@ import {
 export abstract class LabTableChartConfig extends FlSheetChartConfig {
 
   constructor(private resourceId: string, private tableViewMethodName: string,
-              private tableViewConfig: LabConfigValues, private tableTransformers: LabCallTransformerParams[],
+              private tableViewConfig: LabConfigValues, private tableTransformers: RvTransformerParams[],
               private resourceTableService: LabResourceTableService, private portalService: FlPortalService) {
     super();
   }
