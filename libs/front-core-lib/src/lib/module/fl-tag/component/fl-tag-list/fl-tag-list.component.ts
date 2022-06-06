@@ -15,6 +15,8 @@ export class FlTagListComponent implements OnInit {
 
   @Input() limitNumber: number = Infinity;
 
+  @Input() showNoTagMessage: boolean = false;
+
   @Output() tagSelected: EventEmitter<FlTagSelectedEvent> = new EventEmitter();
 
   constructor() {

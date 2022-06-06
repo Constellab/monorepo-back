@@ -24,7 +24,6 @@ import {FlCoord, FlPortalAction, FlPortalActionResult, FlPortalActionsService} f
 import {LabWorkflowNodeIO} from '../model/lab-workflow-node-io.class';
 import {LabResourceService} from '../../../../lab-core/entity-service/lab-resource.service';
 import {LabAddProcessWithLink, LabNodeRelativeCoord} from '../model/lab-workflow-action.class';
-import {LabExperimentService} from '../../../../lab-core/entity-service/lab-experiment.service';
 import {LabExperimentDetailPageState} from './lab-experiment-detail-page.state';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
 
@@ -67,7 +66,6 @@ export class LabWorkflowManagerState {
   private flowsSubscription: Subscription;
 
   constructor(private protocolService: LabProtocolService,
-              private experimentService: LabExperimentService,
               private actionsService: FlPortalActionsService,
               private resourceService: LabResourceService,
               private ngZone: NgZone) {
