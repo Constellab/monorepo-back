@@ -45,7 +45,6 @@ export class LabViewConfigSearch {
     return new FormBuilder().group(
       {
         title: [null],
-        caption: [null],
         viewType: [null],
         createdAt: new FormBuilder().group<FlSearchDateInterval>({
           from: [null],
