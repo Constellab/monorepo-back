@@ -52,6 +52,11 @@ export class FlTextEditorDragButtonsComponent implements OnInit, OnDestroy {
         }
       }
     );
+
+    // remove the overlay on an outside click
+    this.state.getOutsideClick$().subscribe(
+      () => this.dragIndicatorOverlay?.dispose()
+    );
   }
 
   private enableIndicator(): void {

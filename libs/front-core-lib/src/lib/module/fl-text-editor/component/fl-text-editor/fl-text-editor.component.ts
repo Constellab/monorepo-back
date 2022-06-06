@@ -31,6 +31,7 @@ import Quill, {BoundsStatic, RangeStatic} from 'quill';
 import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.state';
 import {FlTextEditorConfig} from '../../model/fl-text-editor-config.class';
 import {FlQuillBlock, FlQuillDelta} from '../../model/fl-quill-export.class';
+import {FlHtmlHelper} from '../../../../utils/fl-html.helper';
 
 hljs.registerLanguage('python', python);
 
@@ -39,7 +40,6 @@ hljs.registerLanguage('python', python);
  * JSON --> Get JSON as Delta and generate JSON
  */
 type FlTextEditorMode = 'HTML' | 'JSON'
-
 
 
 /**
@@ -230,6 +230,14 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
     // otherwise, use document as scrolling container
     return this.document.documentElement;
+  }
+
+  outsideClick(event: MouseEvent): void {
+    // we consider all elements with parent marked as text-editor-overlay to be in the text editor element
+    const parent = FlHtmlHelper.getParent(event.target as HTMLElement, {className: 'text-editor-overlay'});
+    if (parent) return;
+    this.state.outsideClick(event);
+    this.blockAddButtonOverlay?.dispose();
   }
 
 

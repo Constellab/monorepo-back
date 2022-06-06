@@ -2,7 +2,7 @@ import {Injectable, OnDestroy} from '@angular/core';
 import Quill, {RangeStatic} from 'quill';
 import {FlTextEditorUploadedImage} from '../model/fl-text-editor-image.class';
 import {CmRichTextFigure, CmRichTextVideo} from '@monorepo/common-model';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {FlTextEditorConfig} from '../model/fl-text-editor-config.class';
 import {FlTextEditorHintType} from '../model/fl-text-editor-hint-blot.class';
 import {ClYoutubeHelper} from '@monorepo/core-lib';
@@ -15,6 +15,7 @@ export class FlTextEditorState implements OnDestroy {
   private quill: Quill;
 
   private disabled$: BehaviorSubject<boolean>;
+  private outsideClick$: Subject<MouseEvent>;
 
   public config: FlTextEditorConfig;
 
@@ -27,6 +28,7 @@ export class FlTextEditorState implements OnDestroy {
     this.config = config;
     this.textEditorContainer = textEditorContainer;
     this.disabled$ = new BehaviorSubject(disabled);
+    this.outsideClick$ = new Subject();
   }
 
 
@@ -152,8 +154,17 @@ export class FlTextEditorState implements OnDestroy {
     return this.disabled$.asObservable();
   }
 
+  public outsideClick(event: MouseEvent): void{
+    this.outsideClick$.next(event);
+  }
+
+  public getOutsideClick$(): Observable<MouseEvent> {
+    return this.outsideClick$.asObservable();
+  }
+
   ngOnDestroy(): void {
     this.disabled$?.complete();
+    this.outsideClick$?.complete();
   }
 
 
