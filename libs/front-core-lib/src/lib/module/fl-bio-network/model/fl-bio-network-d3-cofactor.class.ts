@@ -16,8 +16,8 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
 
   public data: FlBioNetworkMetabolite;
 
-  constructor(id: string, name: string, defaultColor: string, data: FlBioNetworkMetabolite) {
-    super(id, name, 'cofactor', '#ffaa33', defaultColor, data);
+  constructor(name: string, defaultColor: string, data: FlBioNetworkMetabolite) {
+    super(name, 'cofactor', '#ffaa33', defaultColor, data);
   }
 
   drawNode(container: SVGElement): FlD3SelectionSimple<FlBioNetworkD3Node> {

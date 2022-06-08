@@ -179,7 +179,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
     // use to round the position based on grid if closed enough
     const roundedCoord = this.gridState.roundCoordOnGrid(dragEvent.subject.convertFromCenterCoord(dragEvent));
 
-    let nodeToMoveIds: string[];
+    let nodeToMoveIds: symbol[];
     if (roundedCoord) {
       nodeToMoveIds = dragEvent.subject.setCenter(roundedCoord);
     } else {
@@ -351,7 +351,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
     this.simulation = forceSimulation(this.data.getMetabolitesAndReactions())
       .force('link',
         forceLink(this.data.links)
-          .id((d: FlBioNetworkD3Node) => d.id)
+        // .id((d: FlBioNetworkD3Node) => d.id)
       )
       .force('charge', forceManyBody()).alphaDecay(0.05);
   }

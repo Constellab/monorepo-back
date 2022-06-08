@@ -15,9 +15,10 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
   public data: FlBioNetworkReaction;
   public pathwayIds: string[]; // list of pathway for the reaction
 
-  constructor(id: string, name: string, defaultColor: string, strokeColor: string,
+  constructor(name: string, public clusterId: string,
+              defaultColor: string, strokeColor: string,
               data: FlBioNetworkReaction, pathwayIds: string[]) {
-    super(id, name, 'reaction', defaultColor, strokeColor, data);
+    super(name, 'reaction', defaultColor, strokeColor, data);
     this.pathwayIds = pathwayIds;
   }
 
@@ -66,6 +67,7 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
   }
 
 
+  // TODO TO REMOVE
   public isInPathway(id: string): boolean {
     return this.pathwayIds.includes(id);
   }

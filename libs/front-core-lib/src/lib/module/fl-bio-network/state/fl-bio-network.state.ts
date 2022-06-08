@@ -1,5 +1,11 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {FlBioNetwork, FlBioNetworkPathwaySelection, FlPathwayDatabase} from '../model/fl-bio-network.class';
+import {
+  FlBioNetwork,
+  FlBioNetworkCluster,
+  FlBioNetworkClusterGroupSelection,
+  FlBioNetworkPathwaySelection,
+  FlPathwayDatabase
+} from '../model/fl-bio-network.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlBioNetworkFactory} from '../utils/fl-bio-network.factory';
 import {ClHelpService} from '@monorepo/core-lib';
@@ -87,12 +93,19 @@ export class FlBioNetworkState implements OnDestroy {
   public selectDatabase(database: FlPathwayDatabase): void {
     this.database$.next(database);
 
-    const pathwayList: FlBioNetworkPathwaySelection[] = this.getPathwayList(database);
-    this.pathways$.next(pathwayList);
+    // todo remove pathway selection
+    // const pathwayList: FlBioNetworkPathwaySelection[] = this.getPathwayList(database);
+    // this.pathways$.next(pathwayList);
+
+    const clusterList: FlBioNetworkPathwaySelection[] = this.getClustersList();
+    this.pathways$.next(clusterList);
+
+    console.log(this.getClustersGroup());
+
 
     // if there is only one pathway, select it by default
-    if (pathwayList.length === 1) {
-      this.selectPathways([pathwayList[0]]);
+    if (clusterList.length === 1) {
+      this.selectPathways([clusterList[0]]);
     }
 
     this.emitPathwaySelectionChange();
@@ -162,12 +175,72 @@ export class FlBioNetworkState implements OnDestroy {
     return this.pathwayListCache[database];
   }
 
+  private getClustersList(): FlBioNetworkPathwaySelection[] {
+    if (this.getSelectedNetwork() == null) {
+      return [];
+    }
+
+    const network = this.getSelectedNetwork();
+    const clusters: FlBioNetworkPathwaySelection[] = [];
+
+
+    for (const metabolite of network.metabolites) {
+      for (const cluster of Object.keys(metabolite.layout.clusters)) {
+        if (clusters.find(c => c.id === cluster) == null) {
+          clusters.push({
+            id: cluster,
+            name: cluster,
+            selected: false,
+            highlighted: false,
+            color: FlColorHelper.stringToRGBColor(cluster)
+          });
+        }
+      }
+    }
+
+    return clusters;
+  }
+
+  private getClustersGroup(): FlBioNetworkClusterGroupSelection[] {
+    const network = this.getSelectedNetwork();
+    if (network == null) {
+      return [];
+    }
+    const groups: FlBioNetworkClusterGroupSelection[] = [];
+
+    for (const metabolite of network.metabolites) {
+
+      for (const clusterName of Object.keys(metabolite.layout.clusters)) {
+        const cluster: FlBioNetworkCluster = metabolite.layout.clusters[clusterName];
+        let parent = groups.find(g => g.name === cluster.parent);
+        if (parent == null) {
+          parent = {
+            name: cluster.parent,
+            children: [],
+          };
+          groups.push(parent);
+        }
+
+        const child = parent.children.find(c => c.name === clusterName);
+        if (child == null) {
+          parent.children.push({name: clusterName});
+        }
+      }
+    }
+
+    return groups;
+  }
+
 
   public emitPathwaySelectionChange(): void {
     this.pathwaySelectionChange$.next();
   }
 
   public getPathways$(): Observable<FlBioNetworkPathwaySelection[]> {
+    return this.pathways$.asObservable();
+  }
+
+  public getClusters$(): Observable<FlBioNetworkPathwaySelection[]> {
     return this.pathways$.asObservable();
   }
 
@@ -198,29 +271,7 @@ export class FlBioNetworkState implements OnDestroy {
   }
 
   public exportAllNetwork(): FlBioNetwork {
-    const d3Network: FlBioNetworkD3 = this.chartData$.value;
-    if (d3Network == null) return null;
-    const network: FlBioNetwork = {
-      metabolites: [],
-      reactions: [],
-      compartments: this.getSelectedNetwork().compartments,
-      name: this.getSelectedNetwork().name
-    };
-
-    network.metabolites = d3Network.metabolites.map(node => node.data);
-    network.reactions = d3Network.reactions.map(node => node.data);
-
-    // add cofactor metabolite and check if there the metabolite was not already added (because cofactor are duplicated)
-    // don't send position
-    for (const cofactorD3 of d3Network.cofactors) {
-      const cofactor = cofactorD3.data;
-      if (network.metabolites.findIndex(metabolite => metabolite.id === cofactor.id) === -1) {
-        network.metabolites.push(cofactor as any);
-      }
-    }
-
-
-    return network;
+    return this.getSelectedNetwork();
   }
 
 

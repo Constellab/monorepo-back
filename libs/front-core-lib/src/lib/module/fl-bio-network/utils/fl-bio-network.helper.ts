@@ -1,6 +1,7 @@
 import {ClHelpService} from '@monorepo/core-lib';
 import {
   FlBioNetwork,
+  FlBioNetworkMetabolite,
   FlBioNetworkPathwayDetail,
   flBioNetworkPathwayIdSeparator,
   FlBioNetworkReaction,
@@ -98,12 +99,35 @@ export class FlBioNetworkHelper {
                                        database: FlPathwayDatabase): boolean {
     const reactionPathways: string[] = FlBioNetworkHelper.getReactionPathwayId(reaction, database);
 
-    // return only the the reaction pathways that are in the list of pathways
+    // return only the reaction pathways that are in the list of pathways
     return reactionPathways.findIndex(id => pathwayIds.indexOf(id) !== -1) !== -1;
   }
 
   // return the estimate values of a reaction, with a default value if it doesn't exist
   public static getReactionEstimate(reaction: FlBioNetworkReaction): FlBioNetworkReactionEstimate {
     return reaction.estimate ?? flDefaultPathwayReactionValue;
+  }
+
+  public static metaboliteIsInCluster(metabolite: FlBioNetworkMetabolite, clusterId: string): boolean {
+    return metabolite.layout.clusters[clusterId] != null;
+  }
+
+  public static getReactionClusters(reaction:FlBioNetworkReaction,
+                                    metabolites: FlBioNetworkMetabolite[]): string[] {
+    const clusters: string[] = [];
+
+    // the reaction is the clusters of all metabolites associated to the reaction
+    for(const metaboliteId of Object.keys(reaction.metabolites)){
+      const metabolite: FlBioNetworkMetabolite = metabolites.find(m => m.id === metaboliteId);
+      if(metabolite && !metabolite.is_cofactor){
+        for(const clusterId of Object.keys(metabolite.layout.clusters)){
+          if(!clusters.includes(clusterId)){
+            clusters.push(clusterId);
+          }
+        }
+      }
+    }
+
+    return clusters;
   }
 }

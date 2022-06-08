@@ -14,6 +14,8 @@ export type FlBioNetworkD3NodeType = 'metabolite' | 'reaction' | 'cofactor';
 
 export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements SimulationNodeDatum {
 
+  id: symbol = Symbol();
+
   // the following properties are set by d3
   // Node’s zero-based index into nodes array. This property is set during the initialization process of a simulation.
   index?: number;
@@ -37,14 +39,10 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
   public childNodes: FlBioNetworkD3Node[] = [];
 
 
-  protected constructor(public id: string, public name: string, public type: FlBioNetworkD3NodeType,
+  protected constructor(public name: string, public type: FlBioNetworkD3NodeType,
                         public defaultColor: string, public strokeColor: string,
                         public data: FlBioNetworkMetabolite | FlBioNetworkReaction) {
     super();
-    if (data.layout != null && data.layout.x != null && data.layout.y != null) {
-      this.setCenter(data.layout);
-      this.freezePosition();
-    }
   }
 
 
@@ -106,15 +104,21 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
    * Set the center position of the node
    * return the ids of the moved nodes
    */
-  public setCenter(coord: FlCoord): string[] {
+  public setCenter(coord: FlCoord): symbol[] {
     return this.setPosition(this.convertToCenterCoord(coord));
+  }
+
+  public setCenterAndFreeze(coord: FlCoord): symbol[] {
+    const nodes = this.setCenter(coord);
+    this.freezePosition();
+    return nodes;
   }
 
   /**
    * Set the position of the node
    * return the ids of the moved nodes
    */
-  public setPosition(coord: FlCoord): string[] {
+  public setPosition(coord: FlCoord): symbol[] {
     const diff: FlCoord = {
       x: coord.x - this.x,
       y: coord.y - this.y
@@ -128,7 +132,7 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
   }
 
   // add the coord to the current position
-  public move(coord: FlCoord): string[] {
+  public move(coord: FlCoord): symbol[] {
     this.x += coord.x;
     this.y += coord.y;
     this.savePosition();
@@ -136,9 +140,9 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
     return [this.id, ...this.moveLinkedNodes(coord)];
   }
 
-  private moveLinkedNodes(coord: FlCoord): string[] {
+  private moveLinkedNodes(coord: FlCoord): symbol[] {
     // move also the linked nodes
-    const movedNode: string[] = [];
+    const movedNode: symbol[] = [];
     if (this.childNodes) {
       for (const node of this.childNodes) {
         movedNode.push(...node.move(coord));
@@ -156,13 +160,6 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
   }
 
   public savePosition(): void {
-    const center = this.getCenter();
-    if (this.data.layout == null) {
-      this.data.layout = this.getCenter();
-    }else{
-      this.data.layout.x = center.x;
-      this.data.layout.y = center.y;
-    }
   }
 
   public initPosition(): void {
@@ -202,7 +199,7 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
    * Search the link, link to the node and the provided node
    * @param nodeId
    */
-  public getLinkToNode(nodeId: string): FlBioNetworkD3Link | null {
+  public getLinkToNode(nodeId: symbol): FlBioNetworkD3Link | null {
     // search on departure links
     let link = this.departureLinks.find(link => link.target.id === nodeId);
     if (link) return link;

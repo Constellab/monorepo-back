@@ -93,11 +93,11 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
 
   ////////////////////////////////////// NODES //////////////////////////////////////
 
-  isLinkedToNode(nodeId: string): boolean {
+  isLinkedToNode(nodeId: symbol): boolean {
     return this.source.id === nodeId || this.target.id === nodeId;
   }
 
-  isLinkedToAnyNode(nodeIds: string[]): boolean {
+  isLinkedToAnyNode(nodeIds: symbol[]): boolean {
     return nodeIds.some(nodeIndex => this.isLinkedToNode(nodeIndex));
   }
 
@@ -180,15 +180,16 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
   }
 
   // save the coord points to the reaction
+  // todo to check with new format
   public savePoints(): void {
     const reaction = this.reaction;
     const metabolite = this.metabolite;
     if (reaction) {
-      if (!reaction.data.metabolites[metabolite.id]) {
-        console.error(`Can't find the metabolite ${metabolite.id} in reaction ${reaction.id}`);
+      if (!reaction.data.metabolites[metabolite.data.id]) {
+        console.error(`Can't find the metabolite ${metabolite.name} in reaction ${reaction.name}`);
         return;
       }
-      reaction.data.metabolites[metabolite.id].points = this.pointsToCoords();
+      reaction.data.metabolites[metabolite.data.id].points = this.pointsToCoords();
     }
   }
 

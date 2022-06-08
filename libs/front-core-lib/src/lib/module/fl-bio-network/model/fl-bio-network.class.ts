@@ -32,7 +32,7 @@ export interface FlBioNetworkMetabolite {
   mass?: any;
   formula?: string;
   chebi_id?: string;
-  layout?: FlCoord;
+  layout?: FlBioNetworkLayout;
   level: FlBioNetworkMetaboliteLevel;
   is_cofactor: boolean;
 }
@@ -48,6 +48,20 @@ export interface FlBioNetworkReaction {
   estimate: FlBioNetworkReactionEstimate;
   layout?: FlCoord;
   level?: FlBioNetworkMetaboliteLevel;
+}
+
+export interface FlBioNetworkLayout {
+  // x: number;
+  // y: number;
+  clusters: Record<string, FlBioNetworkCluster>;
+}
+
+export interface FlBioNetworkCluster extends FlCoord {
+  x: number;
+  y: number;
+  level: FlBioNetworkMetaboliteLevel;
+  name: string;
+  parent: string;
 }
 
 export interface FlBioNetworkReactionLink {
@@ -90,6 +104,14 @@ export interface FlBioNetworkPathwaySelection extends FlBioNetworkPathwayDetail 
   color: string;
 }
 
+export interface FlBioNetworkClusterGroupSelection {
+  name: string;
+  children: FlBioNetworkClusterSelection[];
+}
+
+export interface FlBioNetworkClusterSelection {
+  name: string;
+}
 
 export interface FlBioNetworkReactionEstimate {
   value: number;

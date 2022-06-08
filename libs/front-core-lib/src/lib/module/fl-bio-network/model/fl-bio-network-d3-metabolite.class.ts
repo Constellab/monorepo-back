@@ -19,8 +19,9 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
   public type: 'metabolite';
   public data: FlBioNetworkMetabolite;
 
-  constructor(id: string, name: string, defaultColor: string, strokeColor: string, data: FlBioNetworkMetabolite) {
-    super(id, name, 'metabolite', defaultColor, strokeColor, data);
+  constructor(name: string, public clusterId: string,
+              defaultColor: string, strokeColor: string, data: FlBioNetworkMetabolite) {
+    super(name, 'metabolite', defaultColor, strokeColor, data);
   }
 
 
@@ -74,4 +75,11 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
     return this.isMajor() ? '1.3em' : '0.5em';
   }
 
+
+  savePosition(): void {
+    const center = this.getCenter();
+    const cluster = this.data.layout.clusters[this.clusterId];
+    cluster.x = center.x;
+    cluster.y = center.y;
+  }
 }
