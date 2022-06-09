@@ -54,7 +54,7 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
   }
 
   protected _getLevel(): FlBioNetworkMetaboliteLevel {
-    return this.data.level ?? FlBioNetworkMetaboliteLevel.COFACTOR;
+    return FlBioNetworkMetaboliteLevel.COFACTOR;
   }
 
   isInPathway(id: string): boolean {

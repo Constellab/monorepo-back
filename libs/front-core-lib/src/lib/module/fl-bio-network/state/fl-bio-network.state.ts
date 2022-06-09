@@ -184,19 +184,27 @@ export class FlBioNetworkState implements OnDestroy {
     const clusters: FlBioNetworkPathwaySelection[] = [];
 
 
+    clusters.push({
+      id: FlBioNetworkHelper.defaultClusterId,
+      name: FlBioNetworkHelper.defaultClusterId,
+      color: FlColorHelper.stringToRGBColor(FlBioNetworkHelper.defaultClusterId),
+      highlighted: false,
+      selected: false,
+    });
     for (const metabolite of network.metabolites) {
-      for (const cluster of Object.keys(metabolite.layout.clusters)) {
-        if (clusters.find(c => c.id === cluster) == null) {
+      for (const cluster of Object.values(metabolite.layout.clusters)) {
+        if (clusters.find(c => c.id === cluster.parent) == null) {
           clusters.push({
-            id: cluster,
-            name: cluster,
+            id: cluster.parent,
+            name: cluster.parent,
             selected: false,
             highlighted: false,
-            color: FlColorHelper.stringToRGBColor(cluster)
+            color: FlColorHelper.stringToRGBColor(cluster.parent)
           });
         }
       }
     }
+
 
     return clusters;
   }

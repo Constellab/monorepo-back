@@ -64,6 +64,13 @@ export interface FlBioNetworkCluster extends FlCoord {
   parent: string;
 }
 
+// TODO rename and review format with cluster
+export interface FlBioNetworkClusterInfo  {
+  clusterId: string;
+  subClusterIds: string[];
+}
+
+
 export interface FlBioNetworkReactionLink {
   stoich: number;
   points: FlCoord[];

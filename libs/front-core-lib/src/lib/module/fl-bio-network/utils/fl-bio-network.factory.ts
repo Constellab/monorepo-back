@@ -1,6 +1,6 @@
 import {
   FlBioNetwork,
-  FlBioNetworkCluster,
+  FlBioNetworkClusterInfo,
   FlBioNetworkMetabolite,
   FlBioNetworkReaction,
   FlBioNetworkReactionEstimate,
@@ -57,20 +57,21 @@ export class FlBioNetworkFactory {
 
     for (const reaction of reactions) {
 
-      const reactionsClusters: string[] = FlBioNetworkHelper.getReactionClusters(reaction, metabolites);
+      const reactionsClusters: FlBioNetworkClusterInfo[] = FlBioNetworkHelper.getReactionClusters(reaction, metabolites);
       const reactionPathways: string[] = FlBioNetworkHelper.getReactionPathwayId(reaction, pathwayDatabase);
 
       for (const cluster of selectedCluster) {
-        if (reactionsClusters.includes(cluster)) {
-          // add the reaction
-          const reactionNode = new FlBioNetworkD3Reaction(
-            reaction.name ? reaction.name : reaction.id,
-            cluster,
-            this.themeDetail.greyHighContrast, this.themeDetail.foreground, reaction, reactionPathways
-          );
-          reactionNodes.push(reactionNode);
-        }
+        const reactionCluster: FlBioNetworkClusterInfo = reactionsClusters.find(c => c.clusterId === cluster);
 
+        if (!reactionCluster) continue;
+
+        // add the reaction
+        const reactionNode = new FlBioNetworkD3Reaction(
+          reaction.name ? reaction.name : reaction.id,
+          reactionCluster,
+          this.themeDetail.greyHighContrast, this.themeDetail.foreground, reaction, reactionPathways
+        );
+        reactionNodes.push(reactionNode);
       }
     }
 
@@ -87,18 +88,26 @@ export class FlBioNetworkFactory {
       if (metabolite.is_cofactor) {
         continue;
       }
+      const metaboliteClusters: FlBioNetworkClusterInfo[] = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
 
       // add one metabolite node for each cluster of the metabolite
       for (const cluster of selectedClusters) {
-        if (!FlBioNetworkHelper.metaboliteIsInCluster(metabolite, cluster)) continue;
+        const metaboliteCluster: FlBioNetworkClusterInfo = metaboliteClusters.find(c => c.clusterId === cluster);
 
-        const metaboliteCluster: FlBioNetworkCluster = metabolite.layout.clusters[cluster];
+        if (!metaboliteCluster) continue;
+
+        // retrieve level of the metabolite
+        const positionCluster = metabolite.layout.clusters[metaboliteCluster.subClusterIds[0]];
+        const level = positionCluster?.level ?? metabolite.level;
+
 
         const metaboliteNode = new FlBioNetworkD3Metabolite(metabolite.name ? metabolite.name : metabolite.id,
-          cluster, this.getMetaboliteColor(metabolite.compartment), this.themeDetail.foreground, metabolite);
+          metaboliteCluster, level, this.getMetaboliteColor(metabolite.compartment), this.themeDetail.foreground, metabolite);
 
-        if (metaboliteCluster && metaboliteCluster.x != null && metaboliteCluster.y != null) {
-          metaboliteNode.setCenterAndFreeze(metaboliteCluster);
+        // for the metabolite position, take the position of the first sub cluster
+        const clusterPosition = metabolite.layout.clusters[metaboliteCluster.subClusterIds[0]];
+        if (clusterPosition && clusterPosition.x != null && clusterPosition.y != null) {
+          metaboliteNode.setCenterAndFreeze(clusterPosition);
         }
 
         this.metabolites.push(metaboliteNode);
@@ -132,7 +141,7 @@ export class FlBioNetworkFactory {
           reactionNode.addChildNode(metaboliteNode);
         } else {
           metaboliteNode = this.metabolites.find(metabolite => metabolite.data.id === metaboliteId
-            && metabolite.clusterId === reactionNode.clusterId);
+            && metabolite.cluster.clusterId === reactionNode.cluster.clusterId);
         }
 
         if (metaboliteNode == null) {

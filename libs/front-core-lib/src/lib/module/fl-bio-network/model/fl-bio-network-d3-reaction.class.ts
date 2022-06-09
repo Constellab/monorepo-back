@@ -1,4 +1,4 @@
-import {FlBioNetworkMetaboliteLevel, FlBioNetworkReaction} from './fl-bio-network.class';
+import {FlBioNetworkClusterInfo, FlBioNetworkMetaboliteLevel, FlBioNetworkReaction} from './fl-bio-network.class';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {select} from 'd3';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
@@ -15,7 +15,7 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
   public data: FlBioNetworkReaction;
   public pathwayIds: string[]; // list of pathway for the reaction
 
-  constructor(name: string, public clusterId: string,
+  constructor(name: string, public cluster: FlBioNetworkClusterInfo,
               defaultColor: string, strokeColor: string,
               data: FlBioNetworkReaction, pathwayIds: string[]) {
     super(name, 'reaction', defaultColor, strokeColor, data);

@@ -1,6 +1,7 @@
 import {ClHelpService} from '@monorepo/core-lib';
 import {
   FlBioNetwork,
+  FlBioNetworkClusterInfo,
   FlBioNetworkMetabolite,
   FlBioNetworkPathwayDetail,
   flBioNetworkPathwayIdSeparator,
@@ -17,6 +18,8 @@ const pathwaySplitChar = '; ';
  * Helper class to manipulate {@link FlBioNetwork}
  */
 export class FlBioNetworkHelper {
+
+  public static readonly defaultClusterId = 'Default';
 
 
   /**
@@ -108,21 +111,56 @@ export class FlBioNetworkHelper {
     return reaction.estimate ?? flDefaultPathwayReactionValue;
   }
 
-  public static metaboliteIsInCluster(metabolite: FlBioNetworkMetabolite, clusterId: string): boolean {
-    return metabolite.layout.clusters[clusterId] != null;
+  public static getMetaboliteCluster(metabolite: FlBioNetworkMetabolite, parentClusterId: string): FlBioNetworkClusterInfo | undefined {
+    return FlBioNetworkHelper.getMetaboliteClusters(metabolite).find(cluster => cluster.clusterId === parentClusterId);
   }
 
-  public static getReactionClusters(reaction:FlBioNetworkReaction,
-                                    metabolites: FlBioNetworkMetabolite[]): string[] {
-    const clusters: string[] = [];
+  public static getMetaboliteClusters(metabolite: FlBioNetworkMetabolite): FlBioNetworkClusterInfo[] {
+    if (Object.keys(metabolite.layout.clusters).length === 0) {
+      return [{
+        clusterId: FlBioNetworkHelper.defaultClusterId,
+        subClusterIds: [FlBioNetworkHelper.defaultClusterId],
+      }];
+    }
+
+    const clusters: FlBioNetworkClusterInfo[] = [];
+
+    for (const [key, value] of Object.entries(metabolite.layout.clusters)) {
+      let cluster = clusters.find(c => c.clusterId === value.parent);
+
+      if (!cluster) {
+        cluster = {
+          clusterId: value.parent,
+          subClusterIds: [],
+        };
+        clusters.push(cluster);
+      }
+      cluster.subClusterIds.push(key);
+    }
+
+    return clusters;
+  }
+
+  public static getReactionClusters(reaction: FlBioNetworkReaction,
+                                    metabolites: FlBioNetworkMetabolite[]): FlBioNetworkClusterInfo[] {
+    const clusters: FlBioNetworkClusterInfo[] = [];
 
     // the reaction is the clusters of all metabolites associated to the reaction
-    for(const metaboliteId of Object.keys(reaction.metabolites)){
+    for (const metaboliteId of Object.keys(reaction.metabolites)) {
       const metabolite: FlBioNetworkMetabolite = metabolites.find(m => m.id === metaboliteId);
-      if(metabolite && !metabolite.is_cofactor){
-        for(const clusterId of Object.keys(metabolite.layout.clusters)){
-          if(!clusters.includes(clusterId)){
-            clusters.push(clusterId);
+      if (metabolite && !metabolite.is_cofactor) {
+
+        const metabolitesClusters = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
+        for (const cluster of metabolitesClusters) {
+
+          const reactionCluster = clusters.find(c => c.clusterId === cluster.clusterId);
+          // add the metabolite cluster to the reaction cluster
+          if (!reactionCluster) {
+            clusters.push(ClHelpService.deepClone(cluster));
+          }else{
+            // todo merge sub cluster ids and remove duplicate
+            reactionCluster.subClusterIds = reactionCluster.subClusterIds.concat(cluster.subClusterIds);
+
           }
         }
       }

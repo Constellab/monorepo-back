@@ -1,6 +1,6 @@
 import {select} from 'd3';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
-import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
+import {FlBioNetworkClusterInfo, FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
@@ -19,7 +19,7 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
   public type: 'metabolite';
   public data: FlBioNetworkMetabolite;
 
-  constructor(name: string, public clusterId: string,
+  constructor(name: string, public cluster: FlBioNetworkClusterInfo, public level: FlBioNetworkMetaboliteLevel,
               defaultColor: string, strokeColor: string, data: FlBioNetworkMetabolite) {
     super(name, 'metabolite', defaultColor, strokeColor, data);
   }
@@ -53,7 +53,7 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
   }
 
   protected _getLevel(): FlBioNetworkMetaboliteLevel {
-    return this.data.level ?? FlBioNetworkMetaboliteLevel.MINOR;
+    return this.level;
   }
 
   isInPathway(id: string): boolean {
@@ -78,8 +78,10 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
 
   savePosition(): void {
     const center = this.getCenter();
-    const cluster = this.data.layout.clusters[this.clusterId];
-    cluster.x = center.x;
-    cluster.y = center.y;
+    const cluster = this.data.layout.clusters[this.cluster.subClusterIds[0]];
+    if (cluster) {
+      cluster.x = center.x;
+      cluster.y = center.y;
+    }
   }
 }
