@@ -6,7 +6,7 @@
     {{'biox.add_transformer' | translate}}
   </button>
 
-  <div class="right-section g-scrollable-element">
+  <div class="right-section">
     <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" class="g-drag-anim-order">
       <ng-container *ngFor="let transformer of selectedTransformers; let index = index; let last = last">
         <mat-expansion-panel hideToggle cdkDrag [expanded]="true" class="transform-panel g-drag-hide-placeholder"
