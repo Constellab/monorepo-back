@@ -36,7 +36,8 @@ export class LabResourceViewPortalComponent implements OnInit {
     if (input.view.type === 'multi-view') {
       this.width = 'min(1000px, 90vw)';
       this.height = 'min(1000px, 90vh)';
-    } else {
+    }
+    else {
       this.width = '660px';
       this.height = '600px';
     }

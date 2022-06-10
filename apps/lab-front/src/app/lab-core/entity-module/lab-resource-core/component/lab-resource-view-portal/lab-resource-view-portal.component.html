@@ -1,4 +1,4 @@
-<fl-portal class="portal" flResize="both" flPortalZIndex>
+<fl-portal class="portal" flResize="both" flPortalZIndex [style.width]="width" [style.height]="height">
   <fl-portal-header [enableDrag]="true">
     <div class="title">{{view.title}}</div>
 
@@ -10,7 +10,6 @@
 
   <fl-portal-content>
     <rv-resource-view [view]="view" [config]="config" [resourceId]="resourceId" [displayMode]="'portal'"
-                      [contextMenuItems]="contextMenuItems"
-                      [style.width]="width" [style.height]="height"></rv-resource-view>
+                      [contextMenuItems]="contextMenuItems"></rv-resource-view>
   </fl-portal-content>
 </fl-portal>
