@@ -46,3 +46,52 @@ export abstract class FlChart2AxisRenderer<Data> extends FlChartNoAxisRenderer<D
 
   abstract refreshRender(): void;
 }
+
+
+/**
+ * interface to implement to render graph with 2 axis that support color change
+ * for the data (point, line, ...)
+ *
+ * @Data data container
+ * @Datum one datum of the data to color the element
+ */
+export abstract class FlChart2AxisRendererWithColors<Data, Datum> extends FlChart2AxisRenderer<Data> {
+
+  // function to return the color for a datum
+  protected currentColorFunction: (d: Datum) => string;
+
+  protected constructor() {
+    super();
+    // init the current color function
+    this.currentColorFunction = this.getDefaultColorFunction();
+  }
+
+  /**
+   * Method the retrieve the default color function for the data
+   */
+  protected abstract getDefaultColorFunction(): (d: Datum) => string;
+
+  /**
+   * Method called when the color function changed to refresh the color on the chart
+   * @param colorFunction
+   * @protected
+   */
+  protected abstract refreshColor(colorFunction: (d: Datum) => string): void;
+
+
+  /**
+   * Set the default color function
+   */
+  resetColors(): void {
+    this.setColorFunction(this.getDefaultColorFunction());
+  }
+
+  /**
+   * Set a new color function
+   * @param colorFunction
+   */
+  setColorFunction(colorFunction: (d: Datum) => string): void {
+    this.currentColorFunction = colorFunction;
+    this.refreshColor(colorFunction);
+  }
+}

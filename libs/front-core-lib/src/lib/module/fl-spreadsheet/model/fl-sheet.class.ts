@@ -3,7 +3,6 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
 import {FlCellCoord} from './fl-cell-coord.class';
 import {FlSheetHeader, FlSheetHeaderInfo, FlSheetHeaders, FlSheetRow} from './fl-sheet-headers.class';
-import {FlTagWithColor} from '../../fl-tag/fl-tag.class';
 
 
 /**
@@ -128,11 +127,6 @@ export class FlSheet {
 
   ////////////////////////////// COLUMN HEADER ////////////////////////////////
 
-
-  public getColumnsTags(): FlTagWithColor[] {
-    return this.columns.getAllTags();
-  }
-
   public getColumnInfo(columnIndex: number): FlSheetHeaderInfo {
     return this.columns.getInfo(columnIndex);
   }
@@ -151,7 +145,7 @@ export class FlSheet {
           columns.push({
             index: i,
             name: columnInfo.name,
-            tags: columnInfo.tags
+            tags: columnInfo.tags,
           });
         }
         return columns;
@@ -258,7 +252,7 @@ export class FlSheet {
             cells: this.cells[i],
             index: i,
             name: info.name,
-            tags: info.tags
+            tags: info.tags,
           });
         }
         return rows;
@@ -267,11 +261,6 @@ export class FlSheet {
   }
 
   /////////////////////////////////// ROWS HEADER /////////////////////
-
-
-  public getRowsTags(): FlTagWithColor[] {
-    return this.rows.getAllTags();
-  }
 
 
   public getRowInfo(rowIndex: number): FlSheetHeaderInfo {

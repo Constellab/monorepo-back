@@ -16,10 +16,10 @@ export * from './component/fl-chart-data-portal/fl-chart-heat-map-data-portal/fl
 export *
   from './component/fl-chart-data-portal/fl-chart-stacked-bar-data-portal/fl-chart-stacked-bar-data-portal.component';
 export * from './component/fl-chart-data-portal/fl-chart-venn-data-portal/fl-chart-venn-data-portal.component';
-// FlChartLegend
+// Right section
 export * from './component/fl-chart-right-section/fl-chart-legend-heat-map/fl-chart-legend-heat-map.component';
 export * from './component/fl-chart-right-section/fl-chart-legend-multi-series/fl-chart-legend-multi-series.component';
-export * from './component/fl-chart-right-section/fl-chart-scatter-right-section/fl-chart-scatter-right-section.component';
+export * from './component/fl-chart-right-section/fl-chart-legend-series-with-tags/fl-chart-legend-series-with-tags.component';
 // Pipes
 export * from './pipe/fl-chart-scale.pipe';
 

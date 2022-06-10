@@ -2,12 +2,15 @@ import {FlCell} from './fl-cell.class';
 import {FlTagHelper, FlTagWithColor} from '../../fl-tag/fl-tag.class';
 import {ClHelpService, ClStringHelper} from '@monorepo/core-lib';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
+import {FlTagColorer} from '../../fl-tag/fl-tag-colorer.class';
+import {map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
 
 export interface FlSheetHeader {
   index: number;
   name: string;
-  tags: FlTagWithColor[];
+  tags: Record<string, string>;
 }
 
 
@@ -28,7 +31,8 @@ export interface FlSheetHeaderInfoInput {
  */
 export interface FlSheetHeaderInfo {
   name?: string;
-  tags?: FlTagWithColor[];
+  tags?: Record<string, string>;
+  tagColorer: FlTagColorer;
 }
 
 
@@ -39,44 +43,23 @@ export class FlSheetHeaders {
 
   private readonly _info: FlSheetHeaderInfoInput[];
 
-  // object where the first key if the tag key, second is tag value and last value is tag color
-  private tagColors: Record<string, Record<string, string>>;
+  public tagColorer: FlTagColorer;
 
   constructor(info: FlSheetHeaderInfoInput[] = []) {
     this._info = info;
     this.initTagsColors();
   }
 
-  /**
-   * Retrieve all the tags group by key
-   */
-  public getAllTags(): FlTagWithColor[] {
-    const tags = this.groupTagByKeys();
-    const tagsWithColors: FlTagWithColor[] = [];
-
-    // build tags with colors using the tag colors object
-    for (const key of Object.keys(tags)) {
-      for (const tagValue of tags[key]) {
-        tagsWithColors.push({
-          key: key,
-          value: tagValue,
-          color: this.tagColors[key][tagValue]
-        });
-      }
-    }
-
-    return tagsWithColors;
-  }
-
   public getInfo(index: number): FlSheetHeaderInfo {
     // if it doesn't exist, return a default value
     if (!this._info || this._info[index] == null) {
-      return {name: '', tags: []};
+      return {name: '', tags: {}, tagColorer: this.tagColorer};
     }
     const headerInfo = this._info[index];
     return {
       name: headerInfo.name,
-      tags: this.convertTagsToTagsWithColors(headerInfo.tags)
+      tags: headerInfo.tags,
+      tagColorer: this.tagColorer
     };
   }
 
@@ -140,43 +123,23 @@ export class FlSheetHeaders {
 
   private initTagsColors(): void {
     const tags = this.groupTagByKeys();
-    const tagColors = {};
+    this.tagColorer = FlTagColorer.fromGroupedTags(tags, FlColorHelper.getColorList());
+  }
 
-    // set a color for each tag value based on index
-    let colorIndex: number = 0;
-    for (const key of Object.keys(tags)) {
-      tagColors[key] = {};
-      for (const tagValue of tags[key]) {
-        tagColors[key][tagValue] = FlColorHelper.getColorFromIndex(colorIndex);
-        colorIndex++;
+  public getSelectedIndexTagColors(index: number): Observable<string[]> {
+    return this.tagColorer.getSelectedTags$().pipe(
+      map(selectedTags => this.getHeaderColors(this.getInfo(index).tags, selectedTags))
+    );
+  }
+
+  private getHeaderColors(headerTags: Record<string, string>, selectedTags: FlTagWithColor[]): string[] {
+    const colors: string[] = [];
+
+    for (const selectedTag of selectedTags) {
+      if (headerTags[selectedTag.key] === selectedTag.value) {
+        colors.push(selectedTag.color);
       }
     }
-
-    this.tagColors = tagColors;
+    return colors;
   }
-
-  private convertTagsToTagsWithColors(tags: Record<string, string>): FlTagWithColor[] {
-    if (tags == null) return [];
-    const tagsWithColors: FlTagWithColor[] = [];
-    for (const key of Object.keys(tags)) {
-      const value = tags[key];
-      tagsWithColors.push({
-        key: key,
-        value: value,
-        color: this.tagColors[key][value]
-      });
-    }
-    return tagsWithColors;
-  }
-
-  public setTagColors(tagColors: FlTagWithColor[]): void {
-    for (const tag of tagColors) {
-      this.setTagColor(tag.key, tag.value, tag.color);
-    }
-  }
-
-  public setTagColor(key: string, value: string, color: string): void {
-    this.tagColors[key][value] = color;
-  }
-
 }

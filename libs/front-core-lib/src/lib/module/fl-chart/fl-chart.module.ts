@@ -52,10 +52,10 @@ import {
 import {
   FlChartLegendHeatMapComponent
 } from './component/fl-chart-right-section/fl-chart-legend-heat-map/fl-chart-legend-heat-map.component';
-import {
-  FlChartScatterRightSectionComponent
-} from './component/fl-chart-right-section/fl-chart-scatter-right-section/fl-chart-scatter-right-section.component';
 import {FlTagModule} from '../fl-tag/fl-tag.module';
+import {
+  FlChartLegendSeriesWithTagsComponent
+} from './component/fl-chart-right-section/fl-chart-legend-series-with-tags/fl-chart-legend-series-with-tags.component';
 
 /**
  * Main module exporting all the chart modules
@@ -80,7 +80,7 @@ import {FlTagModule} from '../fl-tag/fl-tag.module';
     FlChartDataTagsComponent,
     FlChartLegendMultiSeriesComponent,
     FlChartLegendHeatMapComponent,
-    FlChartScatterRightSectionComponent,
+    FlChartLegendSeriesWithTagsComponent,
 
   ],
   exports: [

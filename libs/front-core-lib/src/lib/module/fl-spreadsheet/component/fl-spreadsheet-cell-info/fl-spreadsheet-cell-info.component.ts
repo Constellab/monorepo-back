@@ -26,7 +26,7 @@ export class FlSpreadsheetCellInfoComponent implements OnInit {
     const coord = cell.coord;
     const sheet = state.currentSheet;
     this.columnInfo = sheet.getColumnInfo(coord.column);
-    this.rowInfo = sheet.rows.getInfo(coord.row);
+    this.rowInfo = sheet.getRowInfo(coord.row);
   }
 
   ngOnInit(): void {

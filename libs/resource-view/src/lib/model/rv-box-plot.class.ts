@@ -30,6 +30,7 @@ export interface RvResourceViewBoxPlotSerie {
     q3: number[];
     lower_whisker: number[];
     upper_whisker: number[];
+    tags?: Record<string, string>[];
     // nb_of_data: number;
   };
 }
@@ -54,6 +55,7 @@ export function rvBoxPlotToChart(view: RvResourceViewBoxPlot): FlChartConfig {
         q3: viewSerie.data.q3[i],
         lowerWhisker: viewSerie.data.lower_whisker[i],
         upperWhisker: viewSerie.data.upper_whisker[i],
+        tags: viewSerie.data.tags?.[i],
         valid: true
       });
 

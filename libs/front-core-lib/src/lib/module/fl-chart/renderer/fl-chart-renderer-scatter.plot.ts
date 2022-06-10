@@ -1,20 +1,20 @@
 import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
-import {FlChart2AxisRenderer} from './fl-chart-renderer.class';
+import {FlChart2AxisRendererWithColors} from './fl-chart-renderer.class';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
+import {FlTagColorer} from '../../fl-tag/fl-tag-colorer.class';
+import {FlTagWithColor} from '../../fl-tag/fl-tag.class';
 
-export class FlChartRendererScatterPlot extends FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererScatterPlot extends FlChart2AxisRendererWithColors<FlChart2dMultiSerie<FlChart2dDatum>,
+  FlChartDataWithSerie<FlChart2dDatum>> {
 
   private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
 
-  // function to return the color of the point
-  private getColorFunction: (d: FlChartDataWithSerie<FlChart2dDatum>) => string;
-
-  constructor(private defaultColorScale: FlChartScaleColor) {
+  constructor(private defaultColorScale: FlChartScaleColor,
+              private tagColorer: FlTagColorer) {
     super();
-    this.getColorFunction = this.getDefaultColorFunction();
   }
 
   renderFirst(): void {
@@ -32,11 +32,15 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRenderer<FlChart2dMu
       .enter()
       .append('circle')
       .attr('r', 3)
-      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.getColorFunction(d))
+      .style('fill', this.currentColorFunction)
       .attr('cx', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.xScale.scale(d.data.getX()))
       .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.scale(d.data.getY()))
       .on('mouseover', (event, d) => this.onMouseHover(event, d))
       .on('mouseout', () => this.onMouseOut());
+
+    this.tagColorer.getSelectedTags$().subscribe(
+      tags => this.onSelectedTagUpdate(tags)
+    );
   }
 
   refreshRender(): void {
@@ -52,27 +56,34 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRenderer<FlChart2dMu
     this.setColorFunction((d: FlChartDataWithSerie<FlChart2dDatum>) => colorScale.scale(d.data.tags));
   }
 
-  resetColors(): void {
-    this.setColorFunction(this.getDefaultColorFunction());
-  }
 
-  private setColorFunction(colorFunction: (d: FlChartDataWithSerie<FlChart2dDatum>) => string): void {
-    this.getColorFunction = colorFunction;
-    this.data.container
-      .selectAll(`circle`)
-      .style('fill', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.getColorFunction(d));
-  }
-
-  private getDefaultColorFunction(): (d: FlChartDataWithSerie<FlChart2dDatum>) => string {
+  protected getDefaultColorFunction(): (d: FlChartDataWithSerie<FlChart2dDatum>) => string {
     return (d: FlChartDataWithSerie<FlChart2dDatum>) => this.defaultColorScale.scale(d.serieKey);
   }
 
+  protected refreshColor(colorFunction: (d: FlChartDataWithSerie<FlChart2dDatum>) => string): void {
+    this.data.container
+      .selectAll(`circle`)
+      .style('fill', colorFunction);
+  }
+
   private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {
-    this.portalHandler.openPortal(event.target as any, d, this.defaultColorScale);
+    this.portalHandler.openPortal(event.target as any, d, this.defaultColorScale, this.tagColorer);
   }
 
   private onMouseOut(): void {
     this.portalHandler.closePortal();
+  }
+
+  private onSelectedTagUpdate(selectedTags: FlTagWithColor[]): void {
+    if (selectedTags.length > 0) {
+      const colorFunction: (d: FlChartDataWithSerie<FlChart2dDatum>) => string = (d: FlChartDataWithSerie<FlChart2dDatum>) => {
+        return FlTagColorer.getObjectColor(d.data.tags, selectedTags);
+      };
+      this.setColorFunction(colorFunction);
+    } else {
+      this.resetColors();
+    }
   }
 
 }

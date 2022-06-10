@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
-import {FlColorHelper} from '../../../../utils/fl-color-helper.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlTagWithColor} from '../../fl-tag.class';
+import {FlTagColorer} from '../../fl-tag-colorer.class';
 
 interface FlTagGroupColor {
   key: string;
@@ -26,15 +26,13 @@ interface FlTagColor {
 })
 export class FlTagsSelectColorsComponent implements OnInit {
 
-  @Input() tags: FlTagWithColor[];
+  @Input() tagColorer: FlTagColorer;
 
-  @Input() groupLayout : 'column' | 'row wrap' = 'row wrap';
+  @Input() groupLayout: 'column' | 'row wrap' = 'row wrap';
   @Output() colorChange: EventEmitter<FlTagWithColor[]> = new EventEmitter();
 
 
   tagGroups: FlTagGroupColor[];
-
-  colors: string[][] = FlColorHelper.getColorsGroups();
 
   constructor() {
   }
@@ -42,7 +40,8 @@ export class FlTagsSelectColorsComponent implements OnInit {
   ngOnInit(): void {
     const tagGroups: FlTagGroupColor[] = [];
 
-    for (const tag of this.tags) {
+
+    for (const tag of this.tagColorer.getTags()) {
       let tagGroup = tagGroups.find(tagGroup => tagGroup.key === tag.key);
 
       // create the group if it doesn't exist yet
@@ -106,6 +105,9 @@ export class FlTagsSelectColorsComponent implements OnInit {
       }
     }
     this.colorChange.emit(tagWithColor);
+    if (this.tagColorer) {
+      this.tagColorer.setSelectedTags(tagWithColor);
+    }
   }
 
   groupColor(group: FlTagGroupColor): ThemePalette | null {

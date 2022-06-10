@@ -18,9 +18,11 @@ export interface FlChartRightSectionConfig {
 export abstract class FlChartConfig {
   abstract getChartContainer(): FlChartContainer<any>;
 
-  abstract getLegendConfig(): FlChartRightSectionConfig;
+  abstract getRightSectionConfig(): FlChartRightSectionConfig;
 
   abstract getSVGLegend(): FlChartSVGLegend;
 
   abstract getZoomBrush(): FlChartBrush;
+
+  abstract destroy(): void;
 }

@@ -27,6 +27,7 @@ import {FlColorModule} from '../fl-color/fl-color.module';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {FlTagColorPipe} from './pipe/fl-tag-color.pipe';
 import {MatRippleModule} from '@angular/material/core';
+import {FlTagsToListPipe} from './pipe/fl-tags-to-list.pipe';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import {MatRippleModule} from '@angular/material/core';
     FlTagFormDialogComponent,
     FlTagListComponent,
     FlTagsSelectColorsComponent,
-    FlTagColorPipe
+    FlTagColorPipe,
+    FlTagsToListPipe
   ],
   exports: [
     FlTagInputComponent,
@@ -45,6 +47,7 @@ import {MatRippleModule} from '@angular/material/core';
     FlTagListComponent,
     FlTagsSelectColorsComponent,
     FlTagColorPipe,
+    FlTagsToListPipe,
   ],
   imports: [
     CommonModule,

@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlTag, FlTagSelectedEvent} from '../../fl-tag.class';
+import {FlTagColorer} from '../../fl-tag-colorer.class';
 
 @Component({
   selector: 'fl-tag-list',
@@ -9,13 +10,15 @@ import {FlTag, FlTagSelectedEvent} from '../../fl-tag.class';
 })
 export class FlTagListComponent implements OnInit {
 
-  @Input() tags: FlTag[];
+  @Input() tags: FlTag[] | Record<string, string>;
 
   @Input() tagSelectable: boolean = false;
 
   @Input() limitNumber: number = Infinity;
 
   @Input() showNoTagMessage: boolean = false;
+
+  @Input() tagColorer?: FlTagColorer;
 
   @Output() tagSelected: EventEmitter<FlTagSelectedEvent> = new EventEmitter();
 

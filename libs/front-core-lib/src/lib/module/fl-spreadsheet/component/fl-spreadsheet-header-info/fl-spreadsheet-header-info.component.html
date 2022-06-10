@@ -7,6 +7,7 @@
       <span class="name">{{headerInfo.name}}</span>
     </fl-key-value>
 
-    <fl-spreadsheet-header-tags [tags]="headerInfo.tags" class="tags"></fl-spreadsheet-header-tags>
+    <fl-spreadsheet-header-tags [tags]="headerInfo.tags" [tagColorer]="headerInfo.tagColorer"
+                                class="tags"></fl-spreadsheet-header-tags>
   </fl-portal-content>
 </fl-portal>

@@ -4,9 +4,9 @@
     <fl-chart-legend-multi-series [data]="data.legends" [disableLegends]="tagAreSelected"></fl-chart-legend-multi-series>
   </div>
 
-  <div class="section tag-section g-scrollable-element" *ngIf="hasTags()">
+  <div class="section tag-section g-scrollable-element" *ngIf="hasTag$ | async">
     <div>{{'flChart.tags' | translate}}</div>
-    <fl-tags-select-colors [tags]="tags" (colorChange)="onColorChange($event)"
+    <fl-tags-select-colors [tagColorer]="data.tagColorer" (colorChange)="onTagColorChange($event)"
                            class="g-text-small" groupLayout="column"></fl-tags-select-colors>
   </div>
 </div>

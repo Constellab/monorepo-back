@@ -51,7 +51,7 @@ abstract class FlChartBar extends FlChartConfig {
     return new FlChartLegendMultiSeries(this.dataContainer.series, this.seriesColorScale);
   }
 
-  getLegendConfig(): FlChartRightSectionConfig {
+  getRightSectionConfig(): FlChartRightSectionConfig {
     return {
       componentType: FlChartLegendMultiSeriesComponent,
       data: this.dataContainer.getSerieWithColors(this.seriesColorScale)
@@ -65,6 +65,9 @@ abstract class FlChartBar extends FlChartConfig {
   protected abstract getRenderers(): FlChart2AxisRenderer<FlChart2dMultiSerie<any>>[];
 
   protected abstract getYDomain(): number[];
+
+  destroy(): void {
+  }
 
 }
 

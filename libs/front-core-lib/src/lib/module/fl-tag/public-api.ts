@@ -13,6 +13,8 @@ export * from './fl-tag-dialog.service';
 
 // pipe
 export * from './pipe/fl-tag-color.pipe';
+export * from './pipe/fl-tags-to-list.pipe';
 
 // Models
 export * from './fl-tag.class';
+export * from './fl-tag-colorer.class';

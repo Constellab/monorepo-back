@@ -4,10 +4,12 @@ import {FlChartScaleColor} from '../../../model/scale/fl-chart-scale-color.class
 import {FL_PORTAL_DATA} from '../../../../fl-portal/model/fl-portal.class';
 import {MatMenuTrigger} from '@angular/material/menu';
 import {FlChartDataWithSerie} from '../../../model/data/fl-chart-serie.class';
+import {FlTagColorer} from '../../../../fl-tag/fl-tag-colorer.class';
 
 export interface FlChartBoxPlotDataPortalInput {
   data: FlChartDataWithSerie<FlChartBoxPlotData>;
   seriesColorScale: FlChartScaleColor;
+  tagColorer: FlTagColorer;
 }
 
 /**
@@ -25,12 +27,15 @@ export class FlChartBoxPlotDataPortalComponent implements OnInit {
   seriesColorScale: FlChartScaleColor;
 
   boxPlotData: FlChartBoxPlotData;
+
+  tagColorer?: FlTagColorer;
   @ViewChild(MatMenuTrigger, {static: true}) matMenuTrigger: MatMenuTrigger;
 
   constructor(@Inject(FL_PORTAL_DATA) input: FlChartBoxPlotDataPortalInput) {
     this.data = input.data;
     this.boxPlotData = input.data.data;
     this.seriesColorScale = input.seriesColorScale;
+    this.tagColorer = input.tagColorer;
   }
 
   ngOnInit(): void {

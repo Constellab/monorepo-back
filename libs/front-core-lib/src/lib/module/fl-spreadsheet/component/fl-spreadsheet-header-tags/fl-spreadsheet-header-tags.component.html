@@ -1,12 +1,4 @@
-<div *ngIf="hasTags()" class="tags">
+<div *ngIf="hasTags()" class="tags g-text-small">
   {{'flSpreadsheet.header_tags' | translate}}
-  <div *ngFor="let tag of tags" class="g-text-small"
-       fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
-
-    <div class="tag-color" [style.background-color]="tag.color"></div>
-    <fl-key-value>
-      <fl-key>{{tag.key}}</fl-key>
-      {{tag.value}}
-    </fl-key-value>
-  </div>
+    <fl-tag-list [tags]="tags" [tagColorer]="tagColorer"></fl-tag-list>
 </div>

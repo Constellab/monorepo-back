@@ -15,7 +15,7 @@ export interface FlChartData {
    */
   valid: boolean;
 
-  tags?: Record<string, string>
+  tags?: Record<string, string>;
 }
 
 export class FlChart2dDatum implements FlChartData {

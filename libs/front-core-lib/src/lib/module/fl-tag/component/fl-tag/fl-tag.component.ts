@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FlTag} from '../../fl-tag.class';
+import {FlTagColorer} from '../../fl-tag-colorer.class';
 
 /**
  * Simple component for tags
@@ -14,6 +15,7 @@ export class FlTagComponent implements OnInit {
 
   @Input() flTag: FlTag;
 
+  @Input() tagColorer?: FlTagColorer;
 
   constructor() {
   }

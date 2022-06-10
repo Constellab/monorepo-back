@@ -32,29 +32,25 @@
           </fl-key-value>
         </div>
 
-        <fl-async-section [object]="columnTags$" emptyText="flSpreadsheet.column_filters_no_tags"
+        <fl-async-section [object]="columnTagsColorer$" emptyText="flSpreadsheet.column_filters_no_tags"
                           class="g-section">
           <fl-section-header>
             <h2>{{'flSpreadsheet.column_filters' | translate}}</h2>
           </fl-section-header>
 
-          <ng-container *flSectionBody="let columnWithTags">
-            <fl-tags-select-colors [tags]="columnWithTags.tags"
-                                   (colorChange)="updateColumnTagColors($event, columnWithTags.sheet)"></fl-tags-select-colors>
+          <ng-container *flSectionBody="let columnTagsColorer">
+            <fl-tags-select-colors [tagColorer]="columnTagsColorer"></fl-tags-select-colors>
           </ng-container>
         </fl-async-section>
 
-        <fl-async-section [object]="rowTags$" emptyText="flSpreadsheet.row_filters_no_tags"
+        <fl-async-section [object]="rowTagsColorer$" emptyText="flSpreadsheet.row_filters_no_tags"
                           class="g-section">
           <fl-section-header>
             <h2>{{'flSpreadsheet.row_filters' | translate}}</h2>
           </fl-section-header>
 
-          <ng-container *flSectionBody="let rowWithTags">
-
-            <fl-tags-select-colors [tags]="rowWithTags.tags"
-                                   (colorChange)="updateRowTagColors($event, rowWithTags.sheet)"></fl-tags-select-colors>
-
+          <ng-container *flSectionBody="let rowTagColorer">
+            <fl-tags-select-colors [tagColorer]="rowTagColorer"></fl-tags-select-colors>
           </ng-container>
         </fl-async-section>
 

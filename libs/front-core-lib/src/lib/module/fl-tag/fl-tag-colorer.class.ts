@@ -1,0 +1,125 @@
+import {FlTag, FlTagHelper, FlTagWithColor} from './fl-tag.class';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {ClHelpService} from '@monorepo/core-lib';
+
+interface FlTagColorWithSelection extends FlTagWithColor {
+  selected: boolean;
+}
+
+/**
+ * Object to store the color of tags with possibility to select some tags
+ */
+export class FlTagColorer {
+
+  private tags$: BehaviorSubject<FlTagColorWithSelection[]>;
+
+  constructor(tagsColors: FlTagWithColor[]) {
+    this.tags$ = new BehaviorSubject(this.tagsWithColorToTagsWithSelection(tagsColors));
+  }
+
+  public static fromGroupedTags(tags: Record<string, string[]>, colorList: string[]): FlTagColorer {
+    const tagWithColor = FlTagHelper.tagGroupsToTagWithColors(tags, colorList);
+    return new FlTagColorer(tagWithColor);
+  }
+
+  /**
+   * Get the color of an object based on its tags
+   */
+  public static getObjectColor(tags: Record<string, string>,
+                               tagColors: FlTagWithColor[], defaultColor: string = 'black'): string {
+    if (tags == null) return defaultColor;
+
+    for (const key of Object.keys(tags)) {
+      // check that the tag key value is listed in the tag colors
+      const tagColor = tagColors.find(tag => tag.key === key && tag.value === tags[key]);
+      // if the key value has a color, return it
+      if (tagColor) {
+        return tagColor.color;
+      }
+    }
+    return defaultColor;
+  }
+
+  public getTags(): FlTagColorWithSelection[] {
+    return this.tags$.value;
+  }
+
+  public getTagColor(tags: FlTag, defaultColor: string = 'black'): string {
+    return this.getTagColorFromTag(tags, this.tags$.value, defaultColor);
+  }
+
+
+  public getTagColor$(tags: FlTag, defaultColor: string = 'black'): Observable<string> {
+    return this.tags$.pipe(map(tagColors => this.getTagColorFromTag(tags, tagColors, defaultColor)));
+  }
+
+  public getSelectedTagColor$(tags: FlTag, defaultColor: string = 'black'): Observable<string> {
+    return this.getSelectedTags$().pipe(
+      map((tagColors) => this.getTagColorFromTag(tags, tagColors, defaultColor))
+    );
+  }
+
+  private getTagColorFromTag(tag: FlTag, tagColors: FlTagWithColor[], defaultColor: string = 'black'): string {
+    const tagColor = tagColors.find(t => tag.key === t.key && tag.value === t.value);
+    // if the key value has a color, return it
+    if (tagColor) {
+      return tagColor.color;
+    }
+
+    return defaultColor;
+  }
+
+  public getTaggedObjectColor(tags: Record<string, string>, defaultColor: string = 'black'): string {
+    return FlTagColorer.getObjectColor(tags, this.tags$.value, defaultColor);
+  }
+
+  public getTaggedObjectColor$(tags: Record<string, string>, defaultColor: string = 'black'): Observable<string> {
+    return this.tags$.pipe(map(tagColors => FlTagColorer.getObjectColor(tags, tagColors, defaultColor)));
+  }
+
+  /**
+   * Set the list of selected tags and update the colors of selected tags
+   * @param selectedTags
+   */
+  public setSelectedTags(selectedTags: FlTagWithColor[]): void {
+    const tags = ClHelpService.deepClone(this.tags$.value);
+
+    for (const tag of tags) {
+      const selected = selectedTags.find(selectedTag => selectedTag.key === tag.key && selectedTag.value === tag.value);
+
+      if (selected) {
+        tag.selected = true;
+        // also refresh the color of the tag
+        tag.color = selected.color;
+      } else {
+        tag.selected = false;
+      }
+    }
+    this.tags$.next(tags);
+  }
+
+  public setTagColors(tagsColors: FlTagWithColor[]): void {
+    this.tags$.next(this.tagsWithColorToTagsWithSelection(tagsColors));
+  }
+
+  public getSelectedTags$(): Observable<FlTagWithColor[]> {
+    return this.tags$.asObservable().pipe(
+      map((tagColors) => tagColors.filter(tagColor => tagColor.selected))
+    );
+  }
+
+  private tagsWithColorToTagsWithSelection(tagWithColor: FlTagWithColor[]): FlTagColorWithSelection[] {
+    return tagWithColor.map(t => ({
+      key: t.key, value: t.value, color: t.color, selected: false
+    }));
+  }
+
+  hasTags$(): Observable<boolean> {
+    return this.tags$.pipe(map(tags => tags.length > 0));
+  }
+
+  destroy(): void {
+    this.tags$.complete();
+  }
+}

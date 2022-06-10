@@ -6,6 +6,7 @@ import {FlChartDataWithSerie} from '../data/fl-chart-serie.class';
 import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
 import {FlChartPortalHandler} from './fl-chart-portal-handler.class';
 import {FlChart2dDatum} from '../data/fl-chart-data.class';
+import {FlTagColorer} from '../../../fl-tag/fl-tag-colorer.class';
 
 /**
  * Used to handle opening and closing {@link FlChartDataWithSeriePortalComponent}
@@ -19,10 +20,12 @@ export class FlChartDataWithSeriePortalHandler {
     this.handler = new FlChartPortalHandler();
   }
 
-  public openPortal(element: Element, d: FlChartDataWithSerie<FlChart2dDatum>, colorScale: FlChartScaleColor): void {
+  public openPortal(element: Element, d: FlChartDataWithSerie<FlChart2dDatum>, colorScale: FlChartScaleColor,
+                    tagColorer?: FlTagColorer): void {
     const data: FlChartDataWithSeriePortalInput = {
       data: d,
-      seriesColorScale: colorScale
+      seriesColorScale: colorScale,
+      tagColorer: tagColorer
     };
     // create the portal
     this.handler.openPortal(element, FlChartDataWithSeriePortalComponent, data);

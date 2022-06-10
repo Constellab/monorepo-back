@@ -14,12 +14,13 @@ import {FlChartConfig, FlChartRightSectionConfig} from '../fl-chart-config.class
 import {
   FlChartLegendMultiSeriesComponent
 } from '../../component/fl-chart-right-section/fl-chart-legend-multi-series/fl-chart-legend-multi-series.component';
-import {
-  FlChartScatterPlotLegendData,
-  FlChartScatterRightSectionComponent
-} from '../../component/fl-chart-right-section/fl-chart-scatter-right-section/fl-chart-scatter-right-section.component';
 import {FlChart2dDatum} from '../data/fl-chart-data.class';
-import {FlTagHelper} from '../../../fl-tag/fl-tag.class';
+import {
+  FlChartLegendSeriesWithTagsComponent,
+  FlChartLegendSerieWithTagsInput
+} from '../../component/fl-chart-right-section/fl-chart-legend-series-with-tags/fl-chart-legend-series-with-tags.component';
+import {FlColorHelper} from '../../../../utils/fl-color-helper.class';
+import {FlTagColorer} from '../../../fl-tag/fl-tag-colorer.class';
 
 abstract class FlChartLinear2d extends FlChartConfig {
 
@@ -27,9 +28,16 @@ abstract class FlChartLinear2d extends FlChartConfig {
 
   protected readonly renderers: FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>>[];
 
+  protected readonly tagColorer: FlTagColorer;
+
   constructor(protected dataContainer: FlChart2dMultiSerie<FlChart2dDatum>) {
     super();
     this.seriesColorScale = FlChartScaleColorMulti.fromMultiSeries(dataContainer, true);
+
+    // init tag colorer
+    this.tagColorer = FlTagColorer.fromGroupedTags(this.dataContainer.getTagsGroupByKey(),
+      FlColorHelper.getColorList(0.8));
+
     this.renderers = this.createRenderers();
   }
 
@@ -69,19 +77,22 @@ abstract class FlChartLinear2d extends FlChartConfig {
 
   protected abstract getExtendDomain(): number;
 
+  destroy(): void {
+    this.tagColorer.destroy();
+  }
 }
 
 export class FlChartLine2d extends FlChartLinear2d {
 
   createRenderers(): FlChart2AxisRenderer<FlChart2dMultiSerie<any>>[] {
-    return [new FlChartRendererLine(this.seriesColorScale), new FlChartRendererScatterPlot(this.seriesColorScale)];
+    return [new FlChartRendererLine(this.seriesColorScale), new FlChartRendererScatterPlot(this.seriesColorScale, this.tagColorer)];
   }
 
   protected getExtendDomain(): number {
     return 0.5;
   }
 
-  getLegendConfig(): FlChartRightSectionConfig {
+  getRightSectionConfig(): FlChartRightSectionConfig {
     return {
       componentType: FlChartLegendMultiSeriesComponent,
       data: this.dataContainer.getSerieWithColors(this.seriesColorScale)
@@ -92,34 +103,20 @@ export class FlChartLine2d extends FlChartLinear2d {
 export class FlChartScatterPlot2d extends FlChartLinear2d {
 
   createRenderers(): FlChart2AxisRenderer<FlChart2dMultiSerie<any>>[] {
-    return [new FlChartRendererScatterPlot(this.seriesColorScale)];
-  }
-
-  private getScatterPlotRenderer(): FlChartRendererScatterPlot {
-    return this.renderers[0] as FlChartRendererScatterPlot;
+    return [new FlChartRendererScatterPlot(this.seriesColorScale, this.tagColorer)];
   }
 
   protected getExtendDomain(): number {
     return 0.5;
   }
 
-  getLegendConfig(): FlChartRightSectionConfig {
-    // retrieve all the tags
-    const tags: Record<string, string>[] = [];
-    for (const serie of this.dataContainer.series) {
-      for(const data of serie.data) {
-        if (data.tags && Object.keys(data.tags).length > 0) {
-          tags.push(data.tags);
-        }
-      }
-    }
-    const data: FlChartScatterPlotLegendData = {
+  getRightSectionConfig(): FlChartRightSectionConfig {
+    const data: FlChartLegendSerieWithTagsInput = {
       legends: this.dataContainer.getSerieWithColors(this.seriesColorScale),
-      scatterRenderer: this.getScatterPlotRenderer(),
-      tags: FlTagHelper.groupTagsByKey(tags)
+      tagColorer: this.tagColorer
     };
     return {
-      componentType: FlChartScatterRightSectionComponent,
+      componentType: FlChartLegendSeriesWithTagsComponent,
       data: data
     };
   }

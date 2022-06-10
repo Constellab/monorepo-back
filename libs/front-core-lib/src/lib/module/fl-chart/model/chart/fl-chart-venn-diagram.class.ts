@@ -36,7 +36,7 @@ export class FlChartVennDiagram extends FlChartConfig {
     return new FlChartLegendMultiSeries(legends, this.colorScale);
   }
 
-  getLegendConfig(): FlChartRightSectionConfig {
+  getRightSectionConfig(): FlChartRightSectionConfig {
     const serieColors: FlChartSerieWithColor[] = this.dataContainer.groupNames.map(groupName => ({
       name: groupName,
       color: this.colorScale.scale(groupName)
@@ -50,6 +50,9 @@ export class FlChartVennDiagram extends FlChartConfig {
   // no zoom
   getZoomBrush(): FlChartBrush {
     return undefined;
+  }
+
+  destroy(): void {
   }
 
 

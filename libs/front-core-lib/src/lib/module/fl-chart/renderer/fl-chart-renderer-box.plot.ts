@@ -1,4 +1,4 @@
-import {FlChart2AxisRenderer} from './fl-chart-renderer.class';
+import {FlChart2AxisRendererWithColors} from './fl-chart-renderer.class';
 import {select} from 'd3';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartScale, FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
@@ -13,20 +13,25 @@ import {
 } from '../component/fl-chart-data-portal/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
 import {FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
+import {FlTagColorer} from '../../fl-tag/fl-tag-colorer.class';
+import {FlTagWithColor} from '../../fl-tag/fl-tag.class';
 
 
-export class FlChartRendererBoxPlot extends FlChart2AxisRenderer<FlChartMultiSerie<FlChartBoxPlotData>> {
+export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlChartMultiSerie<FlChartBoxPlotData>,
+  FlChartDataWithSerie<FlChartBoxPlotData>> {
 
   private readonly groupClassName: string = 'group';
   private readonly boxPlotGroupClassName: string = 'group-box-plot';
   private readonly verticalLineClassName: string = 'vertical-line';
   private readonly horizontalLineClassName: string = 'horizontal-line';
+  private readonly rectColorClassName: string = 'rect-color';
 
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
   private theme: FlThemeDetail;
 
-  constructor(public colorScale: FlChartScaleColor) {
+  constructor(private defaultColorScale: FlChartScaleColor,
+              private tagColorer: FlTagColorer) {
     super();
   }
 
@@ -34,6 +39,10 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRenderer<FlChartMultiSer
     this.initTheme();
 
     this.refreshRender();
+
+    this.tagColorer.getSelectedTags$().subscribe(
+      tags => this.onSelectedTagUpdate(tags)
+    );
   }
 
 
@@ -101,7 +110,7 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRenderer<FlChartMultiSer
 
     // Place the box
     select(group)
-      .selectAll(`rect`)
+      .selectAll(`.${this.rectColorClassName}`)
       .data([dataWithSerie])
       .join('rect')
       .attr('x', x1)
@@ -109,7 +118,8 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRenderer<FlChartMultiSer
       .attr('height', d => (this.data.yScale.scale(d.data.q1) - this.data.yScale.scale(d.data.q3)))
       .attr('width', width)
       .attr('stroke', this.theme.foreground)
-      .style('fill', (d) => this.colorScale.scale(d.serieKey));
+      .attr('class', this.rectColorClassName)
+      .style('fill', this.currentColorFunction);
 
     // Place median, min and max horizontal lines
     select(group)
@@ -127,7 +137,7 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRenderer<FlChartMultiSer
   // return the position of the group
   private getGroupTranslate(xScale: FlChartScale, chartWidth: number, index: number): string {
     const scale: number = xScale.scale(index);
-    // if the scale return null set the the group outside chart
+    // if the scale return null set the group outside chart
     return 'translate(' + (scale == null ? (chartWidth + 10) : scale) + ',0)';
   }
 
@@ -138,13 +148,40 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRenderer<FlChartMultiSer
   private onMouseHover(event: MouseEvent, data: FlChartDataWithSerie<FlChartBoxPlotData>): void {
     const input: FlChartBoxPlotDataPortalInput = {
       data: data,
-      seriesColorScale: this.colorScale
+      seriesColorScale: this.defaultColorScale,
+      tagColorer: this.tagColorer
     };
     this.portalHandler.openPortal(event.target as any, FlChartBoxPlotDataPortalComponent, input);
   }
 
   private onMouseOut(): void {
     this.portalHandler.closePortal();
+  }
+
+  // set function to return color of points based on tags
+  setTagColors(colorScale: FlChartScaleColor): void {
+    this.setColorFunction((d: FlChartDataWithSerie<FlChartBoxPlotData>) => colorScale.scale(d.data.tags));
+  }
+
+  private onSelectedTagUpdate(selectedTags: FlTagWithColor[]): void {
+    if (selectedTags.length > 0) {
+      const colorFunction: (d: FlChartDataWithSerie<FlChartBoxPlotData>) => string = (d: FlChartDataWithSerie<FlChartBoxPlotData>) => {
+        return FlTagColorer.getObjectColor(d.data.tags, selectedTags);
+      };
+      this.setColorFunction(colorFunction);
+    } else {
+      this.resetColors();
+    }
+  }
+
+  protected getDefaultColorFunction(): (d: FlChartDataWithSerie<FlChartBoxPlotData>) => string {
+    return (d: FlChartDataWithSerie<FlChartBoxPlotData>) => this.defaultColorScale.scale(d.serieKey);
+  }
+
+  protected refreshColor(colorFunction: (d: FlChartDataWithSerie<FlChartBoxPlotData>) => string): void {
+    // update the color of the rects
+    this.data.container.selectAll(`.${this.rectColorClassName}`)
+      .style('fill', colorFunction);
   }
 
 

@@ -1,3 +1,6 @@
+:host{
+  display: inline-block;
+}
 
 .chip {
   background-color: var(--grey-contrast);
@@ -9,4 +12,5 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  flex-shrink: 0;
 }

@@ -1,7 +1,7 @@
 
 <fl-chip class="chip">
   <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
-    <div class="color" [style.background-color]="flTag | flTagColor">
+    <div class="color" [style.background-color]="flTag | flTagColor:tagColorer | async">
     </div>
 
     <div>{{flTag.key}} : {{flTag.value}}</div>

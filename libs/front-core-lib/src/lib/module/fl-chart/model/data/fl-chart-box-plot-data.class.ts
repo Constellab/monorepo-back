@@ -2,7 +2,7 @@ import {ascending, quantile} from 'd3';
 import {FlChartSerie} from './fl-chart-serie.class';
 import {FlChartData} from './fl-chart-data.class';
 
-export interface FlChartBoxPlotData extends FlChartData{
+export interface FlChartBoxPlotData extends FlChartData {
   q1: number;
   median: number;
   q3: number;
@@ -27,7 +27,7 @@ export class FlChartBoxPlotSerie extends FlChartSerie<FlChartBoxPlotData> {
 }
 
 /**
- * returns the box plot informations for a list of number
+ * returns the box plot information for a list of number
  * @param data
  */
 export function flChartGetBoxPlotData(data: number[]): FlChartBoxPlotData {

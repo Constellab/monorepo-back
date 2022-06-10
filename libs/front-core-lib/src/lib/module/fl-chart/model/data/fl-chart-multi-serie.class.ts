@@ -2,6 +2,7 @@ import {FlChart2dDatum, FlChartAxisTickFormat, FlChartData, FlChartDataContainer
 import {FlChartDataWithSerie, FlChartSerie, FlChartSerieWithColor} from './fl-chart-serie.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
 import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
+import {FlTagHelper} from '../../../fl-tag/fl-tag.class';
 
 /**
  * Object to manage multiple series
@@ -114,6 +115,22 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
       };
     });
   }
+
+  /**
+   * Return all the tags value of the data grouped by key
+   */
+  public getTagsGroupByKey(): Record<string, string[]> {
+    const tags: Record<string, string>[] = [];
+
+    for (const serie of this.series) {
+      for (const data of serie.data) {
+        if (data.tags && Object.keys(data.tags).length > 0) {
+          tags.push(data.tags);
+        }
+      }
+    }
+    return FlTagHelper.groupTagsByKey(tags);
+  }
 }
 
 
@@ -194,6 +211,5 @@ export class FlChart2dMultiSerie<Data extends FlChart2dDatum> extends FlChartMul
     }
     return maxX;
   }
-
 
 }

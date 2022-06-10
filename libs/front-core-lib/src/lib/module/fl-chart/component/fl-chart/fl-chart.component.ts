@@ -119,7 +119,7 @@ export class FlChartComponent implements OnInit, OnDestroy {
 
   // clear the svg and rebuild the chart
   private redrawChart(size: Size): void {
-    if(size.width <= 0 || size.height <= 0) {
+    if (size.width <= 0 || size.height <= 0) {
       return;
     }
     console.log('Redraw chart');
@@ -174,9 +174,9 @@ export class FlChartComponent implements OnInit, OnDestroy {
   }
 
   private renderLegend(): void {
-    const config = this.chart.getLegendConfig();
+    const config = this.chart.getRightSectionConfig();
 
-    if(config == null) return;
+    if (config == null) return;
     this.legendComponentRef = this.viewContainer.createComponent(config.componentType);
     this.legendComponentRef.instance.data = config.data;
   }
@@ -189,6 +189,7 @@ export class FlChartComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.resizeObs?.disconnect();
     this.destroyLegendComponentRef();
+    this.chart?.destroy();
   }
 
 

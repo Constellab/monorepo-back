@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {ClHelpService} from '@monorepo/core-lib';
-import {FlTagWithColor} from '../../../fl-tag/fl-tag.class';
+import {FlTagColorer} from '../../../fl-tag/fl-tag-colorer.class';
 
 /**
  * List the tags of a header
@@ -13,7 +13,9 @@ import {FlTagWithColor} from '../../../fl-tag/fl-tag.class';
 })
 export class FlSpreadsheetHeaderTagsComponent implements OnInit {
 
-  @Input() tags: FlTagWithColor[];
+  @Input() tags: Record<string, string>;
+
+  @Input() tagColorer: FlTagColorer;
 
   constructor() {
   }

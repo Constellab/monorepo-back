@@ -12,7 +12,6 @@ import {FlSpreadsheetSelectionState} from '../../state/fl-spreadsheet-selection.
 import {Observable, Subscription} from 'rxjs';
 import {FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
 import {FlHeaderCellType, headerIndexAttributeName, headerTypeAttributeName} from '../../model/fl-cell.class';
-import {FlSpreadsheetTagsState} from '../../state/fl-spreadsheet-tags.state';
 import {FlSpreadsheetState} from '../../state/fl-spreadsheet.state';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {FlPortalConnectedPosition} from '../../../fl-portal/model/fl-portal.class';
@@ -48,7 +47,6 @@ export class FlSpreadsheetHeaderCellComponent implements OnInit, OnDestroy {
               private selectionState: FlSpreadsheetSelectionState,
               private renderer: Renderer2,
               private elementRef: ElementRef,
-              private tagState: FlSpreadsheetTagsState,
               private portalService: FlPortalService) {
   }
 
@@ -92,9 +90,9 @@ export class FlSpreadsheetHeaderCellComponent implements OnInit, OnDestroy {
   /////////////////////////////// TAG COLORS ///////////////////////////////
   private subscribeToColor(): void {
     if (this.type === 'row') {
-      this.colors$ = this.tagState.getRowColors$(this.index);
+      this.colors$ = this.state.currentSheet.rows.getSelectedIndexTagColors(this.index);
     } else {
-      this.colors$ = this.tagState.getColumnColors$(this.index);
+      this.colors$ = this.state.currentSheet.columns.getSelectedIndexTagColors(this.index);
     }
   }
 

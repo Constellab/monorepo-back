@@ -133,7 +133,7 @@ export class FlChartHeatMap extends FlChartConfig {
     return new FlChartLegendHeatMap(this.colorScale, this.domain);
   }
 
-  getLegendConfig(): FlChartRightSectionConfig {
+  getRightSectionConfig(): FlChartRightSectionConfig {
     return {
       componentType: FlChartLegendHeatMapComponent,
       data: this.getSVGLegend() // use the svg legend renderer
@@ -145,5 +145,7 @@ export class FlChartHeatMap extends FlChartConfig {
     return undefined;
   }
 
+  destroy(): void {
+  }
 
 }

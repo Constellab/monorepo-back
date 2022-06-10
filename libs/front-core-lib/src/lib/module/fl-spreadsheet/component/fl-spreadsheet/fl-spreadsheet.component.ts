@@ -21,7 +21,6 @@ import {FlSpreadsheetChartState} from '../../state/fl-spreadsheet-chart.state';
 import {FlPortalService} from '../../../fl-portal/service/fl-portal.service';
 import {FlSpreadsheetScrollState} from '../../state/fl-spreadsheet-scroll.state';
 import {Observable} from 'rxjs';
-import {FlSpreadsheetTagsState} from '../../state/fl-spreadsheet-tags.state';
 import {map} from 'rxjs/operators';
 import {FlSheetHeader, FlSheetRow} from '../../model/fl-sheet-headers.class';
 import {FlSheetChartConfig} from '../../model/chart/fl-sheet-chart-config.class';
@@ -41,7 +40,6 @@ import {FlSheetChartConfig} from '../../model/chart/fl-sheet-chart-config.class'
     FlSpreadsheetActions,
     FlSpreadsheetChartState,
     FlSpreadsheetScrollState,
-    FlSpreadsheetTagsState,
     FlPortalService, // providers to access the state in portal
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -80,7 +78,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
     this.columns$ = this.state.getCurrentSheetColumns$().pipe(
       // add the first column corresponding to the row header
-      map(columns => [{index: -1, name: '', tags: []}, ...columns])
+      map(columns => [{index: -1, name: '', tags: {}}, ...columns])
     );
     this.rows$ = this.scrollState.getRowsToDisplay$();
   }

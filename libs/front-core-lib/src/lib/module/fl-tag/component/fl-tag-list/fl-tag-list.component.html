@@ -1,5 +1,6 @@
 <div>
-  <fl-tag *ngFor="let tag of tags | slice:0:limitNumber" [flTag]="tag"
+  <fl-tag *ngFor="let tag of tags | flTagsToList | slice:0:limitNumber" [flTag]="tag"
+          [tagColorer]="tagColorer"
           (click)="selectTag(tag, $event)"></fl-tag>
 </div>
 

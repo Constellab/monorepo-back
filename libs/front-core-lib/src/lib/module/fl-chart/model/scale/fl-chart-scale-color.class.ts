@@ -3,7 +3,6 @@ import {FlChartScaleI} from './fl-chart-scale.class';
 import {ScaleLinear} from 'd3-scale';
 import {FlColorHelper} from '../../../../utils/fl-color-helper.class';
 import {FlChartMultiSerie} from '../data/fl-chart-multi-serie.class';
-import {FlTagWithColor} from '../../../fl-tag/fl-tag.class';
 
 /**
  * Specific scale to return a color based on a value
@@ -75,30 +74,6 @@ export class FlChartScaleColorLinear implements FlChartScaleColor {
     return this.d3Scale(value);
   }
 }
-
-/**
- * Color scale contains a list of colors and return one color based on domain
- */
-export class FlChartScaleColorTag implements FlChartScaleColor {
-
-  constructor(private tagsColors: FlTagWithColor[]) {
-  }
-
-
-  public scale(tags: Record<string, string>): string {
-    if (tags == null) return 'black';
-
-    for (const key of Object.keys(tags)) {
-      const tag = this.tagsColors.find(tag => tag.key === key && tag.value === tags[key]);
-      // if the key value has a color, return it
-      if (tag) {
-        return tag.color;
-      }
-    }
-    return 'black';
-  }
-}
-
 
 /**
  * Color scale that return only one color

@@ -12,7 +12,8 @@
       <mat-divider class="divider"></mat-divider>
       <div class="g-text-small header">
         <div *ngIf="columnInfo.name">{{columnInfo.name}}</div>
-        <fl-spreadsheet-header-tags [tags]="columnInfo.tags"></fl-spreadsheet-header-tags>
+        <fl-spreadsheet-header-tags [tags]="columnInfo.tags"
+                                    [tagColorer]="columnInfo.tagColorer"></fl-spreadsheet-header-tags>
       </div>
     </ng-container>
 
@@ -21,7 +22,8 @@
       <mat-divider class="divider"></mat-divider>
       <div class="g-text-small header">
         <div *ngIf="rowInfo.name">{{rowInfo.name}}</div>
-        <fl-spreadsheet-header-tags [tags]="rowInfo.tags"></fl-spreadsheet-header-tags>
+        <fl-spreadsheet-header-tags [tags]="rowInfo.tags"
+                                    [tagColorer]="rowInfo.tagColorer"></fl-spreadsheet-header-tags>
       </div>
     </ng-container>
   </fl-portal-content>

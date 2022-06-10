@@ -10,15 +10,27 @@ import {FlChartScaleBand, FlChartScaleLinear, FlChartScaleNumber} from '../scale
 import {FlChartAxis, FlChartAxisBand} from '../drawer/fl-chart-axis.class';
 import {FlChartDomain} from '../fl-chart-domain.class';
 import {FlChartRendererBoxPlot} from '../../renderer/fl-chart-renderer-box.plot';
+import {
+  FlChartLegendSeriesWithTagsComponent,
+  FlChartLegendSerieWithTagsInput
+} from '../../component/fl-chart-right-section/fl-chart-legend-series-with-tags/fl-chart-legend-series-with-tags.component';
+import {FlColorHelper} from '../../../../utils/fl-color-helper.class';
+import {FlTagColorer} from '../../../fl-tag/fl-tag-colorer.class';
 
 // Config box plot
 export class FlChartBoxPlot extends FlChartConfig {
 
   protected readonly seriesColorScale: FlChartScaleColor;
 
+  private readonly renderer: FlChartRendererBoxPlot;
+  private readonly tagColorer: FlTagColorer;
+
   constructor(protected dataContainer: FlChartMultiSerie<FlChartBoxPlotData>) {
     super();
     this.seriesColorScale = FlChartScaleColorMulti.fromMultiSeries(dataContainer);
+    this.tagColorer = FlTagColorer.fromGroupedTags(this.dataContainer.getTagsGroupByKey(),
+      FlColorHelper.getColorList());
+    this.renderer = new FlChartRendererBoxPlot(this.seriesColorScale, this.tagColorer);
   }
 
   getChartContainer(): FlChartContainer<any> {
@@ -48,7 +60,7 @@ export class FlChartBoxPlot extends FlChartConfig {
     return chartContainer
       .initXAxis(xAxis)
       .initAxisY(yAxis)
-      .addRenderer(new FlChartRendererBoxPlot(this.seriesColorScale))
+      .addRenderer(this.renderer)
       .initData(this.dataContainer);
   }
 
@@ -56,12 +68,25 @@ export class FlChartBoxPlot extends FlChartConfig {
     return new FlChartLegendMultiSeries(this.dataContainer.series, this.seriesColorScale);
   }
 
-  getLegendConfig(): FlChartRightSectionConfig {
-    return undefined;
+
+  getRightSectionConfig(): FlChartRightSectionConfig {
+    const data: FlChartLegendSerieWithTagsInput = {
+      legends: this.dataContainer.getSerieWithColors(this.seriesColorScale),
+      tagColorer: this.tagColorer
+    };
+
+    return {
+      componentType: FlChartLegendSeriesWithTagsComponent,
+      data: data
+    };
   }
 
   getZoomBrush(): FlChartBrush {
     return new FlChart2dBrushX();
+  }
+
+  destroy(): void {
+    this.tagColorer.destroy();
   }
 
 }
