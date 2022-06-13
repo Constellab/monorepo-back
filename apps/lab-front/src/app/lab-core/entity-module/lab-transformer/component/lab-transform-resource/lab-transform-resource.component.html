@@ -20,6 +20,9 @@
               <div class="g-text-light"
                    *ngIf="!transformer.hasConfig">{{'biox.transformer_no_config' | translate}}</div>
 
+              <lab-type-show-detail-button [typingName]="transformer.transformer.typingName">
+              </lab-type-show-detail-button>
+
               <button mat-icon-button type="button"
                       class="g-button-icon-small drag-indicator" cdkDragHandle
                       [matTooltip]="'biox.reorder_transformers' | translate">
