@@ -44,6 +44,7 @@ import { HnTechnicalFolderModule } from './app/technical-folder/hn-technical-fol
 import { HnResourceModule } from './app/resource/hn-resource.module';
 import { HnTaskModule } from './app/task/hn-task.module';
 import { HnProtocolModule } from './app/protocol/hn-protocol.module';
+import {HnBrickVersionReferenceModule} from './app/brick-version-reference/hn-brick-version-reference.module';
 
 function typeOrmConfig(
   configService: HnCoreConfigService
@@ -163,6 +164,7 @@ function configureObjectStorageModule(
     HnResourceModule,
     HnTaskModule,
     HnProtocolModule,
+    HnBrickVersionReferenceModule
   ],
   controllers: [],
   providers: [

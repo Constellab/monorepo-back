@@ -51,6 +51,7 @@ export class HnBrickVersion extends HnBaseEntity {
   @ManyToOne(() => HnBrickMajorVersion, {eager: true, onDelete: "CASCADE"})
   brickMajorVersion: HnBrickMajorVersion;
 
+
   initialize(brickMajorVersion: HnBrickMajorVersion, version: CmVersion, repoType?: HnRepoType): void {
     this.brickMajorVersion = brickMajorVersion;
     this.version = version;
@@ -62,7 +63,7 @@ export class HnBrickVersion extends HnBaseEntity {
     return this.version.toString();
   }
 
-  public get version(): CmVersion{
+  public get version(): CmVersion {
     return new CmVersion(this.brickMajorVersion.major, this.minor, this.patch,
       this.versionType === HnVersionType.BETA ? this.subPatch : null);
   }
@@ -71,7 +72,7 @@ export class HnBrickVersion extends HnBaseEntity {
     this.minor = version.minor;
     this.patch = version.patch;
     this.brickMajorVersion.major = version.major;
-    if(version.isBeta()){
+    if (version.isBeta()) {
       this.versionType = HnVersionType.BETA;
       this.subPatch = version.subPatch;
     }
