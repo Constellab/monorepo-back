@@ -7,9 +7,9 @@
   </button>
 
   <div class="right-section g-scrollable-element">
-    <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)">
+    <mat-accordion cdkDropList (cdkDropListDropped)="drop($event)" class="g-drag-anim-order">
       <ng-container *ngFor="let transformer of selectedTransformers; let index = index; let last = last">
-        <mat-expansion-panel hideToggle cdkDrag [expanded]="true" class="transform-panel"
+        <mat-expansion-panel hideToggle cdkDrag [expanded]="true" class="transform-panel g-drag-hide-placeholder"
                              [formGroup]="getFormGroup(index)">
 
           <mat-expansion-panel-header>
@@ -20,7 +20,14 @@
               <div class="g-text-light"
                    *ngIf="!transformer.hasConfig">{{'biox.transformer_no_config' | translate}}</div>
 
-              <button mat-icon-button type="button" (click)="removeTransformer(index, $event)">
+              <button mat-icon-button type="button"
+                      class="g-button-icon-small drag-indicator" cdkDragHandle
+                      [matTooltip]="'biox.reorder_transformers' | translate">
+                <mat-icon>drag_handle</mat-icon>
+
+              </button>
+              <button mat-icon-button type="button" (click)="removeTransformer(index, $event)"
+                      class="g-button-icon-small">
                 <mat-icon>clear</mat-icon>
               </button>
             </div>

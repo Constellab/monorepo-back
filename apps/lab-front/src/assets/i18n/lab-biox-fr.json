@@ -127,6 +127,7 @@
     "call_transform": "Transformer",
     "transformer_no_config": "Pas de config",
     "no_transformers": "Aucun transformeurs",
+    "reorder_transformers": "Réorganiser les transformeurs",
     "process_type_view_detail": "Voir le détail",
     "progress_bar_progress": "Avancement",
     "import_resource": "Importer la resource",
