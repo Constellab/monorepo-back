@@ -25,6 +25,7 @@ export * from './state/fl-spreadsheet-actions.state';
 export * from './state/fl-spreadsheet-chart.state';
 export * from './state/fl-spreadsheet-clipboard.state';
 export * from './state/fl-spreadsheet-context-menu.state';
+export * from './state/fl-spreadsheet-element.state';
 export * from './state/fl-spreadsheet-keyboard-manager.state';
 export * from './state/fl-spreadsheet-mouse-manager.state';
 export * from './state/fl-spreadsheet-scroll.state';

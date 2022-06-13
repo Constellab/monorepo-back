@@ -7,6 +7,9 @@ import {FlRendererListenerObs} from '../../../model/fl-renderer-listener-obs.cla
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlSheetRow} from '../model/fl-sheet-headers.class';
 import {flRxjsEnterNgZone} from '../../../utils/fl-rxjs-enter-ng-zone';
+import {FlSpreadsheetElementState} from './fl-spreadsheet-element.state';
+import {FlHtmlHelper} from '../../../utils/fl-html.helper';
+import {FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
 
 export interface Interval {
   from: number;
@@ -44,7 +47,8 @@ export class FlSpreadsheetScrollState {
   constructor(private renderer: Renderer2,
               private state: FlSpreadsheetState,
               private ngZone: NgZone,
-              private selectionState: FlSpreadsheetSelectionState) {
+              private selectionState: FlSpreadsheetSelectionState,
+              private elementState: FlSpreadsheetElementState) {
   }
 
 
@@ -58,10 +62,10 @@ export class FlSpreadsheetScrollState {
 
     // listen to the selection event to scroll to last selection rows if not visible
     this.selectionState.getSelection$()
-      // don't scroll on empty, rows or columns selection
-      .pipe(filter(selection => selection != null && selection.type !== 'columns'))
+      // don't scroll on empty or columns selection
+      .pipe(filter(selection => selection != null))
       .subscribe(
-        selection => this.scrollToRow(selection.endRow)
+        selection => this.scrollToCell(selection)
       );
   }
 
@@ -155,6 +159,21 @@ export class FlSpreadsheetScrollState {
     this.triggerScrollY(this.tableContainer.offsetHeight * factor);
   }
 
+  public scrollToCell(selection: FlSheetSingleSelection): void {
+    const columnId = selection.endColumn;
+    const rowId = selection.endRow;
+
+    if (selection.type === 'rows') {
+      this.scrollToRow(rowId);
+    } else if (selection.type === 'columns') {
+      this.scrollToColumn(columnId);
+    } else {
+      this.scrollToColumn(columnId);
+      this.scrollToRow(rowId);
+    }
+
+  }
+
   // scroll to the rowId if it's not visible
   public scrollToRow(rowId: number): void {
     // if the rows is already visible
@@ -171,7 +190,13 @@ export class FlSpreadsheetScrollState {
     else {
       this.triggerScrollY(this.cellHeight * (rowId - interval.to));
     }
+  }
 
+  public scrollToColumn(columnId: number): void {
+    const element = this.elementState.getColumnHeaderCellElement(columnId);
+    if (element) {
+      FlHtmlHelper.scrollToElementIfNotVisible(element);
+    }
   }
 
   public rowIsVisible(rowId: number): boolean {

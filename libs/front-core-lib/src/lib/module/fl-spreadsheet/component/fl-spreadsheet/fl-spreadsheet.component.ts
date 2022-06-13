@@ -24,6 +24,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {FlSheetHeader, FlSheetRow} from '../../model/fl-sheet-headers.class';
 import {FlSheetChartConfig} from '../../model/chart/fl-sheet-chart-config.class';
+import {FlSpreadsheetElementState} from '../../state/fl-spreadsheet-element.state';
 
 @Component({
   selector: 'fl-spreadsheet',
@@ -31,6 +32,7 @@ import {FlSheetChartConfig} from '../../model/chart/fl-sheet-chart-config.class'
   styleUrls: ['./fl-spreadsheet.component.scss'],
   providers: [
     FlSpreadsheetState,
+    FlSpreadsheetElementState,
     FlSpreadsheetSelectionState,
     FlSpreadsheetContextMenu,
     FlSpreadsheetKeyboardManagerState,
@@ -61,6 +63,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
   rows$: Observable<FlSheetRow[]>;
 
   constructor(private state: FlSpreadsheetState,
+              private elementState: FlSpreadsheetElementState,
               private selectionState: FlSpreadsheetSelectionState,
               private keyboardState: FlSpreadsheetKeyboardManagerState,
               private mouseState: FlSpreadsheetMouseManagerState,
@@ -70,6 +73,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.state.init(this.spreadsheet, this.readOnly, this.chartConfigs);
+    this.elementState.init(this.tableContainer.nativeElement);
     this.selectionState.init();
     this.keyboardState.init();
     this.mouseState.init();

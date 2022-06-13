@@ -1,36 +1,14 @@
 import {ElementRef, Injectable, NgZone, OnDestroy, Renderer2} from '@angular/core';
 import {FlSpreadsheetSelectionState} from './fl-spreadsheet-selection.state';
 import {FlSpreadsheetState} from './fl-spreadsheet.state';
-import {
-  columnIdAttributeName,
-  FlCell,
-  FlHeaderCellType,
-  headerIndexAttributeName,
-  headerTypeAttributeName,
-  rowIdAttributeName
-} from '../model/fl-cell.class';
 import {FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetContextMenu} from './fl-spreadsheet-context-menu.state';
 import {FlMouseButton} from '../../../utils/fl-keyboard.helper';
 import {FlSpreadsheetScrollState} from './fl-spreadsheet-scroll.state';
-import {FlHtmlHelper} from '../../../utils/fl-html.helper';
 import {FlCellCoord} from '../model/fl-cell-coord.class';
+import {FlCoord} from '../../../model/shared/fl-coord.class';
+import {FlSheetMouseEventCell, FlSpreadsheetElementState} from './fl-spreadsheet-element.state';
 
-type MouseEventCell = CellEvent | HeaderCellEvent;
-
-interface CellEvent {
-  type: 'cell';
-  coord: FlCellCoord;
-  cell: FlCell;
-  element: HTMLElement;
-}
-
-interface HeaderCellEvent {
-  type: 'header';
-  headerType: FlHeaderCellType;
-  index: number;
-  element: HTMLElement;
-}
 
 /**
  * Unique state shared across the spreadsheet to handle spreadsheet mouse events
@@ -45,10 +23,14 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
   private contextMenuListener: () => void;
 
   private readonly expandAutoScrollZoneHeight: number = 24;
+  private readonly expandAutoScrollZoneWidth: number = 100;
   private expandSelectionScrollInterval: any;
   private expandSelectionScrollIntervalDuration: number = 100;
 
+  private lastMousePosition: FlCoord;
+
   constructor(private state: FlSpreadsheetState,
+              private elementState: FlSpreadsheetElementState,
               private selectionState: FlSpreadsheetSelectionState,
               private contextMenuState: FlSpreadsheetContextMenu,
               private scrollState: FlSpreadsheetScrollState,
@@ -81,15 +63,21 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
 
 
   private onMouseDown(event: MouseEvent): void {
-    // on listen to left click
+    // on listen to left-click
     if (event.button !== FlMouseButton.LEFT) {
       return;
     }
 
-    const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
+    const cellEvent: FlSheetMouseEventCell = this.elementState.getCellFromHTMLElement(event.target as any);
 
-    // if the cell couldn't be found or this is the first column (containing row names)
-    if (cellEvent == null || cellEvent.type === 'header' && cellEvent.index < 0) {
+    // if the cell couldn't be found
+    if (cellEvent == null) {
+      return;
+    }
+
+    // if this is the first cell (on top left)
+    if (cellEvent.type === 'header' && cellEvent.index === -1) {
+      this.selectionState.selectAllColumns();
       return;
     }
 
@@ -102,43 +90,42 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     this.clearMouseMoveListener();
     this.mouseMoveListener = this.renderer.listen(this.elementRef.nativeElement, 'mousemove',
       (event: MouseEvent) => this.onMouseMove(event));
+
+    this.expandSelectionScrollInterval = setInterval(() => this.onMouseInterval(),
+      this.expandSelectionScrollIntervalDuration);
   }
 
   private onMouseMove(event: MouseEvent): void {
-
-    const shift: number = this.getScrollZoneFromMouseEvent(event);
-
-    // if we are in the scroll zone
-    if (shift !== 0) {
-
-      // if an interval is already running, do nothing the interval will trigger the scroll
-      if (!this.expandSelectionScrollInterval) {
-
-        // create an interval to trigger a scroll each x ms (while the user's mouse in the the scroll zone)
-        this.expandSelectionScrollInterval = setInterval(() => {
-          this.selectionState.expandSelectionWithShift(shift, 0);
-        }, this.expandSelectionScrollIntervalDuration);
-      }
-
-    } else {
-      // use to clear the interval is the mouse left the scrolling zone
-      this.clearMouseMoveInterval();
-    }
+    // save the last mouse position
+    this.lastMousePosition = {
+      x: event.clientX,
+      y: event.clientY
+    };
 
     // retrieve the cell form the mouse event to expand the selection
-    const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
+    const cellEvent: FlSheetMouseEventCell = this.elementState.getCellFromHTMLElement(event.target as any);
     if (cellEvent == null) {
       return;
     }
 
     // if the mouse is in the scroll zone, we lock the row selection because it is automatically done by the scroll zone
+    const shift: number = this.getYScrollZoneFromMousePosition(event.clientY);
     const lockRow = shift !== 0;
     this.expandSelection(cellEvent, lockRow);
   }
 
+  private onMouseInterval(): void {
+    if (!this.lastMousePosition) return;
+
+    const xShift: number = this.getXScrollZoneFromMousePosition(this.lastMousePosition.x);
+    const yShift: number = this.getYScrollZoneFromMousePosition(this.lastMousePosition.y);
+
+    this.selectionState.expandSelectionWithShift(yShift, xShift);
+  }
+
 
   // reset the selection
-  private selectUnique(cellEvent: MouseEventCell): void {
+  private selectUnique(cellEvent: FlSheetMouseEventCell): void {
     if (cellEvent.type === 'cell') {
       this.selectionState.selectUniqueCell(cellEvent.coord);
     } else {
@@ -154,9 +141,10 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
    * expand the current selection base on cellEvent
    * @param cellEvent
    * @param lockRow if true, the row is not changed
+   * @param lockColumn if true, the column is not changed
    * @private
    */
-  private expandSelection(cellEvent: MouseEventCell, lockRow: boolean = false): void {
+  private expandSelection(cellEvent: FlSheetMouseEventCell, lockRow: boolean = false, lockColumn: boolean = false): void {
     const currentSelection: FlSheetSingleSelection = this.selectionState.currentSelection;
 
     if (currentSelection == null) return;
@@ -166,6 +154,11 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     // prevent row change if set
     if (lockRow) {
       coord.row = currentSelection.endRow;
+    }
+
+    // prevent column change if set
+    if (lockColumn) {
+      coord.column = currentSelection.endColumn;
     }
 
     switch (currentSelection.type) {
@@ -182,7 +175,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
   }
 
   // retrieve cell cord from MouseEventCell and current selection
-  private mouseEventCellToCoord(cellEvent: MouseEventCell, currentSelection: FlSheetSingleSelection): FlCellCoord {
+  private mouseEventCellToCoord(cellEvent: FlSheetMouseEventCell, currentSelection: FlSheetSingleSelection): FlCellCoord {
     if (cellEvent.type === 'cell') {
       return cellEvent.coord;
     }
@@ -202,7 +195,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
 
   private onMouseDblClick(event: MouseEvent): void {
     if (this.readOnly) return;
-    const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
+    const cellEvent: FlSheetMouseEventCell = this.elementState.getCellFromHTMLElement(event.target as any);
 
     if (cellEvent == null) {
       return;
@@ -218,7 +211,7 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
   }
 
   private onContextMenu(event: MouseEvent): void {
-    const cellEvent: MouseEventCell = this.getCellFromMouseEventTarget(event);
+    const cellEvent: FlSheetMouseEventCell = this.elementState.getCellFromHTMLElement(event.target as any);
 
     if (cellEvent == null) {
       return;
@@ -253,50 +246,6 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
     }
   }
 
-  private getCellFromMouseEventTarget(event: MouseEvent): MouseEventCell | null {
-    // search if this is a cell
-    let element = FlHtmlHelper.getParent(event.target as any, {tagName: 'FL-SPREADSHEET-CELL'});
-    if (element) {
-      return this.getCellFromHTMLElement(element);
-    }
-
-    // search if this is a header cell
-    element = FlHtmlHelper.getParent(event.target as any, {tagName: 'FL-SPREADSHEET-HEADER-CELL'});
-    if (element) {
-      return this.getHeaderCellFromHTMLElement(element);
-    }
-
-    return null;
-  }
-
-  // returns cell based on a html element : FL-SPREADSHEET-CELL
-  private getCellFromHTMLElement(element: HTMLElement): CellEvent {
-    const row: number = parseInt(element.getAttribute(rowIdAttributeName));
-    const column: number = parseInt(element.getAttribute(columnIdAttributeName));
-
-    return {
-      type: 'cell',
-      cell: this.state.currentSheet.getCell(row, column),
-      coord: {
-        row: row,
-        column: column
-      },
-      element: element
-    };
-  }
-
-  // returns header cell info based on a html element : FL-SPREADSHEET-HEADER-CELL
-  private getHeaderCellFromHTMLElement(element: HTMLElement): HeaderCellEvent {
-    const index: number = parseInt(element.getAttribute(headerIndexAttributeName));
-    const type: FlHeaderCellType = element.getAttribute(headerTypeAttributeName) as FlHeaderCellType;
-
-    return {
-      type: 'header',
-      headerType: type,
-      index: index,
-      element: element
-    };
-  }
 
   private clearMouseMoveListener(): void {
     if (this.mouseMoveListener) {
@@ -317,12 +266,27 @@ export class FlSpreadsheetMouseManagerState implements OnDestroy {
   // return -1 if the mouse event is in the upper scroll zone
   // 1 if the mouse event is in the lower scroll zone
   // 0 if the mouse event is not in the scroll zone
-  private getScrollZoneFromMouseEvent(mouseEvent: MouseEvent): number {
+  private getYScrollZoneFromMousePosition(y: number): number {
     const rect: DOMRect = this.elementRef.nativeElement.getBoundingClientRect();
-    const relativePosition: number = mouseEvent.clientY - rect.top;
+    const relativePosition: number = y - rect.top;
     if (relativePosition < this.expandAutoScrollZoneHeight) {
       return -1;
     } else if (relativePosition > (rect.height - this.expandAutoScrollZoneHeight)) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  // return -1 if the mouse event is in the upper scroll zone
+  // 1 if the mouse event is in the lower scroll zone
+  // 0 if the mouse event is not in the scroll zone
+  private getXScrollZoneFromMousePosition(x: number): number {
+    const rect: DOMRect = this.elementRef.nativeElement.getBoundingClientRect();
+    const relativePosition: number = x - rect.left;
+    if (relativePosition < this.expandAutoScrollZoneWidth) {
+      return -1;
+    } else if (relativePosition > (rect.width - this.expandAutoScrollZoneWidth)) {
       return 1;
     } else {
       return 0;

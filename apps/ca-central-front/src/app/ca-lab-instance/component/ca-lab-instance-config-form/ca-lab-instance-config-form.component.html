@@ -16,7 +16,7 @@
         <div matLine>{{brickVersion.name}} : {{brickVersion.version}}</div>
         <p matLine class="g-text-small">{{'lab_instance_brick_hidden' | translate}} : {{brickVersion.isHidden | flYesNo}}</p>
 
-        <button mat-icon-button type="button" class="g-button-small" (click)="openBrickVersionForm(brickVersion)"
+        <button mat-icon-button type="button" class="g-button-icon-small" (click)="openBrickVersionForm(brickVersion)"
                 [matTooltip]="'lab_instance_update_brick' | translate">
           <mat-icon>edit</mat-icon>
         </button>

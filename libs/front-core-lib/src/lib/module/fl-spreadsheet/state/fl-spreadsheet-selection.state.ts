@@ -72,6 +72,14 @@ export class FlSpreadsheetSelectionState implements OnDestroy {
     return selection;
   }
 
+  public selectAllColumns(): FlSheetSingleSelection {
+    const selection: FlSheetSingleSelectionFull = FlSheetSingleSelectionFull.Columns(this.currentSheet,
+      0, this.currentSheet.getLoadedColumnsCount() - 1);
+    this.newSelection(selection);
+    return selection;
+  }
+
+
   public setSelection(sheet: FlSheet, range: FlCellsRange): FlSheetSingleSelection {
     const selection: FlSheetSingleSelectionFull = FlSheetSingleSelectionFull.FromRange(sheet, range);
     this.newSelection(selection);
