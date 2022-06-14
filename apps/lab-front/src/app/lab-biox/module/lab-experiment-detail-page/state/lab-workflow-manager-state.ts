@@ -20,7 +20,13 @@ import {LabWorkflowNodeInterface} from '../model/lab-workflow-node-interface.cla
 import {LabWorkflowNodeOuterface} from '../model/lab-workflow-node-outerface.class';
 import {LabWorkflowPort} from '../model/lab-workflow-port.class';
 import {LabProtocol} from '../../../../lab-core/model/entities/process/lab-protocol.entity';
-import {FlCoord, FlPortalAction, FlPortalActionResult, FlPortalActionsService} from '@monorepo/front-core-lib';
+import {
+  FlCoord,
+  FlPortalAction,
+  FlPortalActionResult,
+  FlPortalActionsService,
+  FlSnackBarService
+} from '@monorepo/front-core-lib';
 import {LabWorkflowNodeIO} from '../model/lab-workflow-node-io.class';
 import {LabResourceService} from '../../../../lab-core/entity-service/lab-resource.service';
 import {LabAddProcessWithLink, LabNodeRelativeCoord} from '../model/lab-workflow-action.class';
@@ -33,6 +39,8 @@ export enum LabWorkflowAction {
   DELETE_PROCESS = 'workflow-remove-process',
   ADD_CONNECTION = 'workflow-add-connection',
   DELETE_CONNECTION = 'workflow-delete-connection',
+  DELETE_INTERFACE = 'workflow-delete-interface',
+  DELETE_OUTERFACE = 'workflow-delete-outerface',
 }
 
 interface LabWorkflowEventAdditionalInfo {
@@ -68,13 +76,14 @@ export class LabWorkflowManagerState {
   constructor(private protocolService: LabProtocolService,
               private actionsService: FlPortalActionsService,
               private resourceService: LabResourceService,
+              private snackBarService: FlSnackBarService,
               private ngZone: NgZone) {
   }
 
   public init(element: HTMLElement, mainFlow: LabFlow<LabProtocol>, experimentState: LabExperimentDetailPageState): void {
     this.experimentState = experimentState;
 
-    this.workflow = new LabWorkflow(element, experimentState.currentExperiment.title ?? 'Experiment', mainFlow.object, 'edit', this.ngZone);
+    this.workflow = new LabWorkflow(element, 'Main protocol', mainFlow.object, 'edit', this.ngZone);
 
     this.workflow.getWorkflowEvent$().subscribe(
       (event: LabWorkflowEvent) => this.onWorkflowEvent(event)
@@ -369,22 +378,56 @@ export class LabWorkflowManagerState {
     switch (workflowEvent.action) {
       case 'deleteNode':
         const process: LabProcess = workflowEvent.node.currentObject;
-        portalAction = {
-          type: LabWorkflowAction.DELETE_PROCESS,
-          text: {
-            text: 'biox.deleting_process',
-            translateText: true,
-            translateParam: {param: {processName: process.name}}
-          },
-          action: this.protocolService.deleteProcessInProtocol(workflowEvent.protocolId, process.name),
-        };
+
+        if (process instanceof LabInterfaceNode) {
+          portalAction = {
+            type: LabWorkflowAction.DELETE_INTERFACE,
+            text: {
+              text: 'biox.deleting_interface',
+              translateText: true,
+              translateParam: {param: {name: process.portName}}
+            },
+            action: this.protocolService.deleteInterface(workflowEvent.protocolId, process.portName),
+          };
+        } else if (process instanceof LabOuterfaceNode) {
+          portalAction = {
+            type: LabWorkflowAction.DELETE_OUTERFACE,
+            text: {
+              text: 'biox.deleting_outerface',
+              translateText: true,
+              translateParam: {param: {name: process.portName}}
+            },
+            action: this.protocolService.deleteOuterface(workflowEvent.protocolId, process.portName),
+          };
+        } else {
+          portalAction = {
+            type: LabWorkflowAction.DELETE_PROCESS,
+            text: {
+              text: 'biox.deleting_process',
+              translateText: true,
+              translateParam: {param: {processName: process.name}}
+            },
+            action: this.protocolService.deleteProcessInProtocol(workflowEvent.protocolId, process.name),
+          };
+        }
         break;
       case 'addConnection' :
       case 'deleteConnection' :
-        const outputProcess = workflowEvent.connection.outputNode.currentObject.name;
-        const inputProcess = workflowEvent.connection.inputNode.currentObject.name;
+        const outputProcess = workflowEvent.connection.outputNode.currentObject;
+        const inputProcess = workflowEvent.connection.inputNode.currentObject;
+
+        if (outputProcess instanceof LabInterfaceNode ||
+          inputProcess instanceof LabOuterfaceNode) {
+          this.snackBarService.openErrorMessage({text: 'biox.delete_link_interface_error', translateText: true});
+          // re-create the connection
+          const layer = this.workflow.findLayerWithId(workflowEvent.protocolId);
+          layer.addConnection(workflowEvent.connection);
+          return;
+        }
+
         const outputPort = workflowEvent.connection.outputPort.name;
         const inputPort = workflowEvent.connection.inputPort.name;
+
 
         const additionalInformation: LabWorkflowEventAdditionalInfo = {
           protocolId: workflowEvent.protocolId,
@@ -399,8 +442,8 @@ export class LabWorkflowManagerState {
               translateText: true
             },
             action: this.protocolService.addConnection(workflowEvent.protocolId, {
-              output_process_name: outputProcess,
-              input_process_name: inputProcess,
+              output_process_name: outputProcess.name,
+              input_process_name: inputProcess.name,
               output_port_name: outputPort,
               input_port_name: inputPort,
             }),
@@ -413,7 +456,7 @@ export class LabWorkflowManagerState {
               text: 'biox.deleting_connection',
               translateText: true
             },
-            action: this.protocolService.deleteConnection(workflowEvent.protocolId, inputProcess, inputPort),
+            action: this.protocolService.deleteConnection(workflowEvent.protocolId, inputProcess.name, inputPort),
             additionalInformation: additionalInformation
           };
         }

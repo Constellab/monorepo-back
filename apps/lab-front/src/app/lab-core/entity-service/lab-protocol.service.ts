@@ -72,6 +72,16 @@ export class LabProtocolService {
     return this.apiService.put(`${this.baseRoute}/${protocolId}/process/${processInstanceName}/config`, config);
   }
 
+  //////////////////////////////////////// INTERFACE / OUTERFACE /////////////////////////////////////
+
+  public deleteInterface(protocolId: string, interfaceName: string): Observable<void> {
+    return this.apiService.delete(`${this.baseRoute}/${protocolId}/interface/${interfaceName}`);
+  }
+
+  public deleteOuterface(protocolId: string, outerfaceName: string): Observable<void> {
+    return this.apiService.delete(`${this.baseRoute}/${protocolId}/outerface/${outerfaceName}`);
+  }
+
   //////////////////////////////////////// SPECIFIC PROCESS /////////////////////////////////////
 
   public addSourceToProcessInput(protocolId: string, processName: string,

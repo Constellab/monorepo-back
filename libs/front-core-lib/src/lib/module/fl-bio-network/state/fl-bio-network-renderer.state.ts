@@ -141,11 +141,8 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .append('svg')
       .attr('width', chartWidth)
       .attr('height', chartHeight)
-      .on('contextmenu', (ev: Event) => ev.preventDefault()) // disable context menu
-      .on('click', (event) => {
-        console.log(this.gridState.roundCoordOnGrid(event))
-        }
-      );
+      .on('contextmenu', (ev: Event) => ev.preventDefault()); // disable context menu
+
 
     //add encompassing group for the zoom
     return this.svg.append('g')
