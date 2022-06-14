@@ -116,4 +116,6 @@ export abstract class FlBioNetworkD3Object {
   protected abstract _getLevel(): FlBioNetworkMetaboliteLevel;
 
   public abstract isInPathway(id: string): boolean;
+
+  public abstract isInCluster(id: string): boolean;
 }

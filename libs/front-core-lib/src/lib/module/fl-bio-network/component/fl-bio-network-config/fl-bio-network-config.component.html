@@ -27,42 +27,9 @@
     </mat-form-field>
 
 
-    <!--  Select the pathway  -->
-    <p>{{'flBioNetwork.select_sub_pathway' | translate}}</p>
+    <fl-bio-network-clusters-list></fl-bio-network-clusters-list>
 
-    <div fxLayout="row" fxLayoutAlign="start center">
-      <button mat-icon-button class="highlight-icon g-button-icon-tiny"
-              (click)="toggleAllPathwayColors()"
-              [color]="pathwaysAllColored ? 'primary' : null"
-              [matTooltip]="'flBioNetwork.highlight_all_pathway' | translate">
-        <mat-icon>colorize</mat-icon>
-      </button>
-      <!--  Select all toggle  -->
-      <mat-checkbox [checked]="pathwaysAllSelected"
-                    (change)="selectAllPathwayChange($event.checked)">
-        {{'flBioNetwork.select_all_pathway' | translate}}
-      </mat-checkbox>
-    </div>
-
-    <div *ngFor="let pathway of pathways$ | async" fxLayout="row" fxLayoutAlign="start center">
-      <button mat-icon-button class="highlight-icon g-button-icon-tiny"
-              (click)="togglePathwayColor(pathway)" [disabled]="!pathway.selected"
-              [matTooltip]="'flBioNetwork.highlight_pathway' | translate">
-        <mat-icon [style.color]="pathway.highlighted ? pathway.color: ''">
-          colorize
-        </mat-icon>
-      </button>
-
-      <mat-checkbox (click)="$event.stopPropagation()"
-                    (change)="selectionChanged(pathway)"
-                    [(ngModel)]="pathway.selected"
-                    class="g-mat-checkbox-wrap-text">
-        <div class="g-text-small g-text-capitalize-first">
-          {{pathway.name}} ({{pathway.id}})
-        </div>
-      </mat-checkbox>
-    </div>
   </div>
-
 </div>
+
 

@@ -216,5 +216,7 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
     return this.target.isInPathway(id) || this.source.isInPathway(id);
   }
 
-
+  public isInCluster(id: string): boolean {
+    return this.target.isInCluster(id) || this.source.isInCluster(id);
+  }
 }

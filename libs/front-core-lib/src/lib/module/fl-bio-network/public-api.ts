@@ -4,6 +4,7 @@ export * from './fl-bio-network.module';
 // Components
 export * from './component/fl-bio-network/fl-bio-network.component';
 export * from './component/fl-bio-network-action-bar/fl-bio-network-action-bar.component';
+export * from './component/fl-bio-network-clusters-list/fl-bio-network-clusters-list.component';
 export * from './component/fl-bio-network-compartments/fl-bio-network-compartments.component';
 export * from './component/fl-bio-network-config/fl-bio-network-config.component';
 export * from './component/fl-bio-network-drawer/fl-bio-network-drawer.component';

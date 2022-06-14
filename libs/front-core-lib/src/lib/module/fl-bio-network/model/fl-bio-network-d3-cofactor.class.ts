@@ -62,5 +62,12 @@ export class FlBioNetworkD3Cofactor extends FlBioNetworkD3Node {
     return this.getConnectedNodes().filter(n => n instanceof FlBioNetworkD3Reaction).some(n => n.isInPathway(id));
   }
 
+  isInCluster(id: string): boolean {
+    // check if any connected reaction is in the cluster
+    return this.getConnectedNodes().filter(n => n instanceof FlBioNetworkD3Reaction).some(n => n.isInCluster(id));
+  }
+
+
+
 
 }

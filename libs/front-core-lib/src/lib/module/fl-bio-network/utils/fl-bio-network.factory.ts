@@ -29,8 +29,8 @@ export class FlBioNetworkFactory {
   }
 
 
-  public convertPathwayToChartPathway(network: FlBioNetwork, selectedPathways: string[],
-                                      pathwayDatabase: FlPathwayDatabase): FlBioNetworkD3 {
+  public convertNetworkToNetworkD3(network: FlBioNetwork, selectedPathways: string[],
+                                   pathwayDatabase: FlPathwayDatabase): FlBioNetworkD3 {
 
     // create the metabolites nodes form the reactions
     this.initMetabolitesNodes(network.metabolites, selectedPathways);

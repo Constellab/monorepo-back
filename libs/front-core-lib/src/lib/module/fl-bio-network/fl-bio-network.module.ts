@@ -51,6 +51,9 @@ import {
 } from './component/fl-bio-network-metabolite-detail/fl-bio-network-metabolite-detail.component';
 import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
 import {MatExpansionModule} from '@angular/material/expansion';
+import {
+  FlBioNetworkClustersListComponent
+} from './component/fl-bio-network-clusters-list/fl-bio-network-clusters-list.component';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -68,7 +71,8 @@ import {MatExpansionModule} from '@angular/material/expansion';
     FlBioNetworkSelectionInfoComponent,
     FlBioNetworkNodeSearchComponent,
     FlBioNetworkReactionDetailComponent,
-    FlBioNetworkMetaboliteDetailComponent
+    FlBioNetworkMetaboliteDetailComponent,
+    FlBioNetworkClustersListComponent
   ],
   exports: [
     FlBioNetworkComponent,

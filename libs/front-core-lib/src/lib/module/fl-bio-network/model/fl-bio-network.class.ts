@@ -105,7 +105,8 @@ export interface FlBioNetworkPathwayDetail {
   name: string;
 }
 
-export interface FlBioNetworkPathwaySelection extends FlBioNetworkPathwayDetail {
+// TODO to improve
+export interface FlBioNetworkClusterSelection extends FlBioNetworkPathwayDetail {
   selected: boolean;
   highlighted: boolean;
   color: string;
@@ -113,10 +114,10 @@ export interface FlBioNetworkPathwaySelection extends FlBioNetworkPathwayDetail 
 
 export interface FlBioNetworkClusterGroupSelection {
   name: string;
-  children: FlBioNetworkClusterSelection[];
+  children: FlBioNetworkClusterSelection2[];
 }
 
-export interface FlBioNetworkClusterSelection {
+export interface FlBioNetworkClusterSelection2 {
   name: string;
 }
 

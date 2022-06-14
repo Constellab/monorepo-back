@@ -62,6 +62,12 @@ export class FlBioNetworkD3Metabolite extends FlBioNetworkD3Node {
     return this.getConnectedNodes().filter(n => n instanceof FlBioNetworkD3Reaction).some(n => n.isInPathway(id));
   }
 
+  isInCluster(id: string): boolean {
+    return this.cluster.clusterId === id;
+  }
+
+
+
   private getRadius(): number {
     if (this.data.compartment === flBioNetworkCompartmentBiomass.id) return flBioNetworkBiomassMetaboliteRadius;
     return this.isMajor() ? flBioNetworkMajorMetaboliteRadius : flBioNetworkMinorMetaboliteRadius;

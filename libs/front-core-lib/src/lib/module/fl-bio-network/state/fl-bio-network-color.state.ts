@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
-import {FlBioNetworkMetaboliteLevel, FlBioNetworkPathwaySelection} from '../model/fl-bio-network.class';
+import {FlBioNetworkClusterSelection, FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
 import {FlD3SelectionSimple} from '../../fl-chart/model/fl-d3.class';
 import {FlBioNetworkD3Node, flBioNetworkNodeClass} from '../model/fl-bio-network-d3-node.class';
 import {FlBioNetworkD3Object} from '../model/fl-bio-network-d3.class';
@@ -53,8 +53,8 @@ export class FlBioNetworkColorState {
   private onOptionEvent(options: FlBioNetworkOptions): void {
     if (!this.isReady()) return;
 
-    if (options.coloredPathways?.length > 0) {
-      this.colorPathways(options.visibleLevels, options.coloredPathways);
+    if (options.coloredClusters?.length > 0) {
+      this.colorClusters(options.visibleLevels, options.coloredClusters);
     } else {
       this.changeLinkColor(options.visibleLevels, this.getLinkColorFunction(options.linkColorScale));
       this.changeNodeColor(options.visibleLevels, this.getNodeColorFunction());
@@ -62,18 +62,18 @@ export class FlBioNetworkColorState {
   }
 
 
-  private colorPathways(nodeLevels: FlBioNetworkMetaboliteLevel[], pathways: FlBioNetworkPathwaySelection[]): void {
+  private colorClusters(nodeLevels: FlBioNetworkMetaboliteLevel[], clusters: FlBioNetworkClusterSelection[]): void {
     if (!this.isReady()) return;
 
-    const colorFunction = this.getPathwayColorFunction(pathways);
+    const colorFunction = this.getClusterColorFunction(clusters);
     this.changeNodeColor(nodeLevels, colorFunction);
     this.changeLinkColor(nodeLevels, colorFunction);
   }
 
-  private getPathwayColorFunction(pathways: FlBioNetworkPathwaySelection[]): FlColorFunction {
+  private getClusterColorFunction(pathways: FlBioNetworkClusterSelection[]): FlColorFunction {
     return (node: FlBioNetworkD3Object) => {
       for (const pathway of pathways) {
-        if (node.isInPathway(pathway.id)) {
+        if (node.isInCluster(pathway.id)) {
           return pathway.color;
         }
       }

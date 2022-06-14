@@ -72,6 +72,12 @@ export class FlBioNetworkD3Reaction extends FlBioNetworkD3Node {
     return this.pathwayIds.includes(id);
   }
 
+  isInCluster(id: string): boolean {
+    return this.cluster.clusterId === id;
+  }
+
+
+
   // The level of the reaction is the lowest level of connected metabolites
   protected _getLevel(): FlBioNetworkMetaboliteLevel {
     if (this.data.level) return this.data.level;

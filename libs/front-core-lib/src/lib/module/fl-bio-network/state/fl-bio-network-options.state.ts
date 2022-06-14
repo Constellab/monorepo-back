@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {FlBioNetworkMetaboliteLevel, FlBioNetworkPathwaySelection} from '../model/fl-bio-network.class';
+import {FlBioNetworkClusterSelection, FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
 
 /**
  * Type of scale to use to color link based on its value
@@ -19,7 +19,7 @@ export type FlBioNetworkOptions = {
   visibleLevels: FlBioNetworkMetaboliteLevel[];
   showTexts: boolean;
   linkColorScale: FlBioNetworkLinkColorScale;
-  coloredPathways: FlBioNetworkPathwaySelection[];
+  coloredClusters: FlBioNetworkClusterSelection[];
 };
 
 
@@ -31,7 +31,7 @@ export class FlBioNetworkOptionsState implements OnDestroy {
     visibleLevels: [FlBioNetworkMetaboliteLevel.MAJOR],
     showTexts: true,
     linkColorScale: 'linear',
-    coloredPathways: [],
+    coloredClusters: [],
   });
 
   constructor() {
@@ -39,7 +39,7 @@ export class FlBioNetworkOptionsState implements OnDestroy {
 
   public init(): void {
     // clear the pathway selection when the state is reset
-    this.emitConfig('init', {coloredPathways: []});
+    this.emitConfig('init', {coloredClusters: []});
   }
 
   //////////////////////////////// VISIBLE  OPTIONS ////////////////////////////////
@@ -60,8 +60,8 @@ export class FlBioNetworkOptionsState implements OnDestroy {
     this.emitConfig('color', {linkColorScale: mode});
   }
 
-  public setColoredPathways(pathways: FlBioNetworkPathwaySelection[]): void {
-    this.emitConfig('color', {coloredPathways: pathways});
+  public setColoredClusters(clusters: FlBioNetworkClusterSelection[]): void {
+    this.emitConfig('color', {coloredClusters: clusters});
   }
 
   //////////////////////////////// OPTIONS ////////////////////////////////

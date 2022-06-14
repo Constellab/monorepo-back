@@ -1,11 +1,5 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {
-  FlBioNetwork,
-  FlBioNetworkCluster,
-  FlBioNetworkClusterGroupSelection,
-  FlBioNetworkPathwaySelection,
-  FlPathwayDatabase
-} from '../model/fl-bio-network.class';
+import {FlBioNetwork, FlBioNetworkClusterSelection, FlPathwayDatabase} from '../model/fl-bio-network.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlBioNetworkFactory} from '../utils/fl-bio-network.factory';
 import {ClHelpService} from '@monorepo/core-lib';
@@ -30,11 +24,11 @@ export class FlBioNetworkState implements OnDestroy {
   private chartData$: BehaviorSubject<FlBioNetworkD3 | null>;
   private database$: BehaviorSubject<FlPathwayDatabase | null>;
 
-  private pathways$: BehaviorSubject<FlBioNetworkPathwaySelection[]>;
-  private pathwaySelectionChange$: BehaviorSubject<void>;
+  private clusters$: BehaviorSubject<FlBioNetworkClusterSelection[]>;
+  private clustersSelectionChange$: BehaviorSubject<void>;
 
   // used to cache the list of pathway
-  private pathwayListCache: Record<FlPathwayDatabase | string, FlBioNetworkPathwaySelection[]>;
+  private pathwayListCache: Record<FlPathwayDatabase | string, FlBioNetworkClusterSelection[]>;
 
   constructor(private translateService: FlTranslateService, private themeService: FlThemeService) {
   }
@@ -46,19 +40,19 @@ export class FlBioNetworkState implements OnDestroy {
     this.selectedNetwork$ = new BehaviorSubject(this.networks[0]);
     this.chartData$ = new BehaviorSubject(null);
     this.database$ = new BehaviorSubject(null);
-    this.pathways$ = new BehaviorSubject([]);
-    this.pathwaySelectionChange$ = new BehaviorSubject(null);
+    this.clusters$ = new BehaviorSubject([]);
+    this.clustersSelectionChange$ = new BehaviorSubject(null);
 
     this.pathwayListCache = {};
 
     // load the db and the list of pathways
     this.selectDatabase(defaultDb);
 
-    this.pathwaySelectionChange$.pipe(
+    this.clustersSelectionChange$.pipe(
       // use a debounce time to prevent rebuilding the graph to much
       debounceTime(500)
     ).subscribe(
-      () => this.selectPathways(this.pathways$.value)
+      () => this.selectClusters(this.clusters$.value)
     );
   }
 
@@ -80,8 +74,8 @@ export class FlBioNetworkState implements OnDestroy {
     // find the network with the name
     const network: FlBioNetwork = this.networks.find(network => network.name === name);
     this.selectedNetwork$.next(network);
-    this.pathways$.next([]);
-    this.emitPathwaySelectionChange();
+    this.clusters$.next([]);
+    this.emitClustersSelectionChange();
   }
 
   public getSelectedNetwork(): FlBioNetwork {
@@ -93,22 +87,15 @@ export class FlBioNetworkState implements OnDestroy {
   public selectDatabase(database: FlPathwayDatabase): void {
     this.database$.next(database);
 
-    // todo remove pathway selection
-    // const pathwayList: FlBioNetworkPathwaySelection[] = this.getPathwayList(database);
-    // this.pathways$.next(pathwayList);
-
-    const clusterList: FlBioNetworkPathwaySelection[] = this.getClustersList();
-    this.pathways$.next(clusterList);
-
-    console.log(this.getClustersGroup());
-
+    const clusterList: FlBioNetworkClusterSelection[] = this.getClustersList();
+    this.clusters$.next(clusterList);
 
     // if there is only one pathway, select it by default
     if (clusterList.length === 1) {
-      this.selectPathways([clusterList[0]]);
+      this.selectClusters([clusterList[0]]);
     }
 
-    this.emitPathwaySelectionChange();
+    this.emitClustersSelectionChange();
   }
 
   public getDatabase$(): Observable<FlPathwayDatabase> {
@@ -119,38 +106,38 @@ export class FlBioNetworkState implements OnDestroy {
     return this.database$.value;
   }
 
-  /////////////////////////////////////// PATHWAYS  /////////////////////////////////////////
+  /////////////////////////////////////// CLUSTERS  /////////////////////////////////////////
 
-  // select specific pathway in the network to display
-  private selectPathways(pathways: FlBioNetworkPathwaySelection[]): void {
-    pathways.forEach(pathway => pathway.highlighted = false);
-    const pathwayIds: string[] = pathways.filter(pathway => pathway.selected).map(pathway => pathway.id);
+  // select specific cluster in the network to display
+  private selectClusters(clusters: FlBioNetworkClusterSelection[]): void {
+    clusters.forEach(cluster => cluster.highlighted = false);
+    const clusterIds: string[] = clusters.filter(cluster => cluster.selected).map(pathway => pathway.id);
     // if no ids are selected, we return null
-    if (ClHelpService.isNullOrEmpty(pathwayIds) || this.getDatabase() == null ||
+    if (ClHelpService.isNullOrEmpty(clusterIds) || this.getDatabase() == null ||
       this.getSelectedNetwork() == null) {
       this.chartData$.next(null);
       return;
     }
     const chartData: FlBioNetworkD3 = new FlBioNetworkFactory(this.themeService.getCurrentThemeDetail())
-      .convertPathwayToChartPathway(this.getSelectedNetwork(), pathwayIds, this.getDatabase());
+      .convertNetworkToNetworkD3(this.getSelectedNetwork(), clusterIds, this.getDatabase());
 
     this.chartData$.next(chartData);
   }
 
-  public selectAllPathways(): void {
-    this.getCurrentPathways().forEach(pathway => pathway.selected = true);
-    this.emitPathwaySelectionChange();
+  public selectAllClusters(): void {
+    this.getCurrentClusters().forEach(cluster => cluster.selected = true);
+    this.emitClustersSelectionChange();
   }
 
-  public unselectAllPathways(): void {
-    this.getCurrentPathways().forEach(pathway => {
-      pathway.selected = false;
-      pathway.highlighted = false;
+  public unselectAllClusters(): void {
+    this.getCurrentClusters().forEach(cluster => {
+      cluster.selected = false;
+      cluster.highlighted = false;
     });
-    this.emitPathwaySelectionChange();
+    this.emitClustersSelectionChange();
   }
 
-  private getPathwayList(database: FlPathwayDatabase): FlBioNetworkPathwaySelection[] {
+  private getPathwayList(database: FlPathwayDatabase): FlBioNetworkClusterSelection[] {
     if (database == null || this.getSelectedNetwork() == null) {
       return [];
     }
@@ -175,13 +162,13 @@ export class FlBioNetworkState implements OnDestroy {
     return this.pathwayListCache[database];
   }
 
-  private getClustersList(): FlBioNetworkPathwaySelection[] {
+  private getClustersList(): FlBioNetworkClusterSelection[] {
     if (this.getSelectedNetwork() == null) {
       return [];
     }
 
     const network = this.getSelectedNetwork();
-    const clusters: FlBioNetworkPathwaySelection[] = [];
+    const clusters: FlBioNetworkClusterSelection[] = [];
 
 
     clusters.push({
@@ -209,51 +196,47 @@ export class FlBioNetworkState implements OnDestroy {
     return clusters;
   }
 
-  private getClustersGroup(): FlBioNetworkClusterGroupSelection[] {
-    const network = this.getSelectedNetwork();
-    if (network == null) {
-      return [];
-    }
-    const groups: FlBioNetworkClusterGroupSelection[] = [];
+  // private getClustersGroup(): FlBioNetworkClusterGroupSelection[] {
+  //   const network = this.getSelectedNetwork();
+  //   if (network == null) {
+  //     return [];
+  //   }
+  //   const groups: FlBioNetworkClusterGroupSelection[] = [];
+  //
+  //   for (const metabolite of network.metabolites) {
+  //
+  //     for (const clusterName of Object.keys(metabolite.layout.clusters)) {
+  //       const cluster: FlBioNetworkCluster = metabolite.layout.clusters[clusterName];
+  //       let parent = groups.find(g => g.name === cluster.parent);
+  //       if (parent == null) {
+  //         parent = {
+  //           name: cluster.parent,
+  //           children: [],
+  //         };
+  //         groups.push(parent);
+  //       }
+  //
+  //       const child = parent.children.find(c => c.name === clusterName);
+  //       if (child == null) {
+  //         parent.children.push({name: clusterName});
+  //       }
+  //     }
+  //   }
+  //
+  //   return groups;
+  // }
 
-    for (const metabolite of network.metabolites) {
 
-      for (const clusterName of Object.keys(metabolite.layout.clusters)) {
-        const cluster: FlBioNetworkCluster = metabolite.layout.clusters[clusterName];
-        let parent = groups.find(g => g.name === cluster.parent);
-        if (parent == null) {
-          parent = {
-            name: cluster.parent,
-            children: [],
-          };
-          groups.push(parent);
-        }
-
-        const child = parent.children.find(c => c.name === clusterName);
-        if (child == null) {
-          parent.children.push({name: clusterName});
-        }
-      }
-    }
-
-    return groups;
+  public emitClustersSelectionChange(): void {
+    this.clustersSelectionChange$.next();
   }
 
-
-  public emitPathwaySelectionChange(): void {
-    this.pathwaySelectionChange$.next();
+  public getClusters$(): Observable<FlBioNetworkClusterSelection[]> {
+    return this.clusters$.asObservable();
   }
 
-  public getPathways$(): Observable<FlBioNetworkPathwaySelection[]> {
-    return this.pathways$.asObservable();
-  }
-
-  public getClusters$(): Observable<FlBioNetworkPathwaySelection[]> {
-    return this.pathways$.asObservable();
-  }
-
-  public getCurrentPathways(): FlBioNetworkPathwaySelection[] {
-    return this.pathways$.value;
+  public getCurrentClusters(): FlBioNetworkClusterSelection[] {
+    return this.clusters$.value;
   }
 
 
@@ -305,8 +288,8 @@ export class FlBioNetworkState implements OnDestroy {
     this.chartData$.complete();
     this.database$.complete();
 
-    this.pathways$.complete();
-    this.pathwaySelectionChange$.complete();
+    this.clusters$.complete();
+    this.clustersSelectionChange$.complete();
   }
 }
 
