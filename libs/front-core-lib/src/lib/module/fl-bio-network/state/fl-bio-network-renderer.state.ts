@@ -141,7 +141,11 @@ export class FlBioNetworkRendererState implements OnDestroy {
       .append('svg')
       .attr('width', chartWidth)
       .attr('height', chartHeight)
-      .on('contextmenu', (ev: Event) => ev.preventDefault()); // disable context menu
+      .on('contextmenu', (ev: Event) => ev.preventDefault()) // disable context menu
+      .on('click', (event) => {
+        console.log(this.gridState.roundCoordOnGrid(event))
+        }
+      );
 
     //add encompassing group for the zoom
     return this.svg.append('g')
@@ -390,7 +394,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
     this.removeCofactors();
 
     // When a node is selected, show the cofactors linked to the reactions
-    if (selectEvent.mode === 'nodes') {
+    if (selectEvent.mode === 'singleNode') {
       // if the selected node is a reaction, we show the cofactors linked to it
       if (selectEvent.selectedNode instanceof FlBioNetworkD3Reaction) {
         this.showCofactors([selectEvent.selectedNode]);

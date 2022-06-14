@@ -387,9 +387,14 @@ mat-tree {
 
 
 /************************************* MAT OPTION ***********************************/
-// class to hide the checkbox on multiple seletable mat options
+// class to hide the checkbox on multiple selectable mat options
 .g-mat-option-hide-checkbox .mat-pseudo-checkbox {
   display: none;
+}
+
+// Class to be placed on a mat-option to allow multi line on the option
+.g-mat-option-multi-line .mat-option-text{
+  line-height: initial;
 }
 
 /************************************* MAT CHIP ***********************************/

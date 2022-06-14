@@ -3,7 +3,7 @@ import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
 import {FlBioNetworkD3Cofactor} from './fl-bio-network-d3-cofactor.class';
 import {FlBioNetworkD3Link} from './fl-bio-network-d3-link.class';
 import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
-import {FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
+import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
 
 /**
  * Data used to construct to d3 network
@@ -93,6 +93,23 @@ export class FlBioNetworkD3 {
   // return the lowest level of objects
   public getLowestLevel(): number {
     return Math.min(...this.getAllNodes().map(node => node.getLevel()));
+  }
+
+  /**
+   * return the metabolite data (not the nodes) and not duplicated
+   */
+  public getMetabolitesData(): FlBioNetworkMetabolite[] {
+    const metabolitesData: FlBioNetworkMetabolite[] = [];
+    for (const metabolite of this.metabolites) {
+      if (metabolitesData.find(metaboliteData => metaboliteData.id === metabolite.data.id) == null) {
+        metabolitesData.push(metabolite.data);
+      }
+    }
+    return metabolitesData;
+  }
+
+  public getMetabolitesNodes(metaboliteId: string): FlBioNetworkD3Metabolite[]{
+    return this.metabolites.filter(metabolite => metabolite.data.id === metaboliteId);
   }
 }
 

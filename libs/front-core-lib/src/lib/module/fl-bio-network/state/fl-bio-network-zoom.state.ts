@@ -26,7 +26,9 @@ export class FlBioNetworkZoomState implements OnDestroy {
   public readonly maxZoomScale: number = 10;
 
   // Default zoom scale when zooming to a position
-  private readonly zoomToPositionScale: number = 3;
+  private readonly zoomToPositionScale: number = 0.5;
+  // Scale use when we zoom to multiple positions
+  private readonly zoomToMultiplePositionScale: number = 0.3;
 
   // true after the enable zoom and false after first zoom handling
   private firstZoom: boolean = true;
@@ -57,7 +59,7 @@ export class FlBioNetworkZoomState implements OnDestroy {
       this.zoomHandler.transform(svg, this.currentZoom);
     } else {
       // init the zoom default value
-      const defaultZoom = zoomIdentity.translate(875, 385).scale(0.25)
+      const defaultZoom = zoomIdentity.translate(875, 385).scale(0.5);
       this.zoomHandler.transform(svg, defaultZoom);
       // this.updateObjectVisibility(1);
       this.firstZoom = false;
@@ -92,6 +94,23 @@ export class FlBioNetworkZoomState implements OnDestroy {
           .translate(this.svgWidth * 0.5 - scale * posX,
             this.svgHeight * 0.5 - scale * posY)
           .scale(scale));
+  }
+
+  public zoomToPositions(coords: FlCoord[]): void {
+    let minX = coords[0].x;
+    let minY = coords[0].y;
+    let maxX = coords[0].x;
+    let maxY = coords[0].y;
+    for (let i = 1; i < coords.length; i++) {
+      if (coords[i].x < minX) minX = coords[i].x;
+      if (coords[i].y < minY) minY = coords[i].y;
+      if (coords[i].x > maxX) maxX = coords[i].x;
+      if (coords[i].y > maxY) maxY = coords[i].y;
+    }
+
+    const x = (minX + maxX) / 2;
+    const y = (minY + maxY) / 2;
+    this.zoomToPosition(x, y, this.zoomToMultiplePositionScale);
   }
 
   private getCurrentScale(): number {

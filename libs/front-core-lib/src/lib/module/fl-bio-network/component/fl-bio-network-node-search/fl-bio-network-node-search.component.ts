@@ -6,7 +6,7 @@ import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Metabolite} from '../../model/fl-bio-network-d3-metabolite.class';
 import {FormControl} from '@ngneat/reactive-forms';
 import {debounceTime, map, startWith} from 'rxjs/operators';
-import {FlBioNetworkD3Node} from '../../model/fl-bio-network-d3-node.class';
+import {FlBioNetworkMetabolite} from '../../model/fl-bio-network.class';
 
 /**
  * Component to search on metabolite and select a metabolite
@@ -19,10 +19,10 @@ import {FlBioNetworkD3Node} from '../../model/fl-bio-network-d3-node.class';
 })
 export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
 
-  metabolites: FlBioNetworkD3Node[];
-  filteredMetabolite: Observable<FlBioNetworkD3Node[]>;
+  metabolites: FlBioNetworkMetabolite[];
+  filteredMetabolite: Observable<FlBioNetworkMetabolite[]>;
 
-  searchControl: FormControl<string | FlBioNetworkD3Node> = new FormControl();
+  searchControl: FormControl<string | FlBioNetworkMetabolite> = new FormControl();
 
   private subscription: Subscription;
 
@@ -38,7 +38,7 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
       .pipe(
         startWith(''),
         debounceTime(250),
-        map((value: string | FlBioNetworkD3Metabolite) => typeof value === 'string' ? value : value.name),
+        map((value: string | FlBioNetworkMetabolite) => typeof value === 'string' ? value : value.name),
         map(name => name ? this.filter(name) : this.metabolites.slice())
       );
   }
@@ -51,7 +51,7 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
 
   private onNewChartData(bioNetwork: FlBioNetworkD3): void {
     if (bioNetwork) {
-      this.metabolites = bioNetwork.metabolites;
+      this.metabolites = bioNetwork.getMetabolitesData();
     } else {
       this.metabolites = [];
     }
@@ -64,14 +64,14 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
   }
 
   selectMetabolite(): void {
-    const metabolite: string | FlBioNetworkD3Node = this.searchControl.value;
-    if (metabolite == null || !(metabolite instanceof FlBioNetworkD3Metabolite)) return;
+    const metabolite: string | FlBioNetworkMetabolite = this.searchControl.value;
+    if (metabolite == null || typeof metabolite === 'string') return;
 
-    this.selectionState.selectNodeAndDirectLinks(metabolite, true);
+    this.selectionState.selectMetabolite(metabolite.id);
   }
 
   // method to filter metabolites based on string
-  private filter(name: string): FlBioNetworkD3Node[] {
+  private filter(name: string): FlBioNetworkMetabolite[] {
     const filterValue = name.toLowerCase();
     return this.metabolites.filter(metabolite => metabolite.name.toLowerCase().includes(filterValue));
   }

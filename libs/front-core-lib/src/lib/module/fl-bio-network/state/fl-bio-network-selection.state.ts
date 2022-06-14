@@ -10,6 +10,7 @@ import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
 import {FlBioNetworkZoomState} from './fl-bio-network-zoom.state';
 import {FlBioNetworkGroupState} from './fl-bio-network-group.state';
 import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class';
+import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 /**
  * Class to manage the selection in the {@link FlBioNetworkComponent}
@@ -52,7 +53,6 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   public selectNodeAndDirectLinks(node: FlBioNetworkD3Node, zoomToNode: boolean = false): void {
     if (!this.isReady()) return;
 
-
     const links: FlBioNetworkD3Link[] = this.getConnectedReactionsLinks([node.id]);
 
     // select the connected links
@@ -61,7 +61,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     // select the connected nodes
     const nodes: FlBioNetworkD3Node[] = this.selectNodesFromLinks(links);
 
-    this.selection$.next({mode: 'nodes', nodes: nodes, links: links, selectedNode: node});
+    this.selection$.next({mode: 'singleNode', nodes: nodes, links: links, selectedNode: node});
 
     // open the drawer with detail
     this.drawerState.newAction({
@@ -71,6 +71,42 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
     if (zoomToNode) {
       this.zoomState.zoomToPosition(node.x, node.y);
+    }
+  }
+
+  /**
+   * Select the nodes and direct links and hide all other node and links
+   */
+  public selectNodesAndDirectLinks(nodes: FlBioNetworkD3Node[]): void {
+    if (!this.isReady() || nodes.length === 0) return;
+
+    const links: FlBioNetworkD3Link[] = this.getConnectedReactionsLinks(nodes.map(n => n.id));
+
+    // select the connected links
+    this.selectLinksFromList(links);
+
+    // select the connected nodes
+    const connectedNodes: FlBioNetworkD3Node[] = this.selectNodesFromLinks(links);
+
+    this.selection$.next({mode: 'multipleNodes', nodes: connectedNodes, links: links, selectedNodes: nodes});
+
+    const positions: FlCoord[] = nodes.map(n => ({x: n.x, y: n.y}));
+    this.zoomState.zoomToPositions(positions);
+  }
+
+  public selectMetabolite(metaboliteId: string): void {
+    if (!this.isReady()) return;
+
+    // retrieve all the nodes that correspond to this metabolite
+    const nodes = this.data.getMetabolitesNodes(metaboliteId);
+
+    if (nodes.length === 0) {
+      console.error(`No node found for metabolite ${metaboliteId}`);
+    } else if (nodes.length === 1) {
+      this.selectNodeAndDirectLinks(nodes[0], true);
+    } else {
+      // select them
+      this.selectNodesAndDirectLinks(nodes);
     }
   }
 
