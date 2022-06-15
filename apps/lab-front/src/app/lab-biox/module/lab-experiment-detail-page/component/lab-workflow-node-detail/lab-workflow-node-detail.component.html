@@ -8,7 +8,8 @@
     </div>
 
     <!----------------------------  Progress ---------------------------->
-    <mat-expansion-panel *ngIf="showProgress$ | async" hideToggle [expanded]="process.status.value === 'RUNNING'"
+    <mat-expansion-panel *ngIf="process.progressBar && process.status.value !== 'DRAFT'"
+                         [expanded]="process.status.value === 'RUNNING'"
                          class="g-scrollable-element">
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
@@ -30,7 +31,7 @@
   </ng-container>
 
   <!---------------------------- Inputs ---------------------------->
-  <mat-expansion-panel *ngIf="node.hasInputs()" hideToggle [expanded]="true">
+  <mat-expansion-panel *ngIf="node.hasInputs()" [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title class="g-not-selectable">
         <fl-text-icon>
@@ -44,7 +45,7 @@
 
 
   <!---------------------------- Outputs ---------------------------->
-  <mat-expansion-panel *ngIf="node.hasOutputs()" hideToggle [expanded]="true">
+  <mat-expansion-panel *ngIf="node.hasOutputs()" [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title class="g-not-selectable">
         <fl-text-icon>
@@ -59,7 +60,7 @@
 
   <!---------------------------- Config ---------------------------->
   <ng-container [ngSwitch]="configMode$ | async">
-    <mat-expansion-panel *ngSwitchCase="'config'" hideToggle [expanded]="true" #configPanel>
+    <mat-expansion-panel *ngSwitchCase="'config'" [expanded]="true" #configPanel>
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
@@ -78,7 +79,7 @@
     </mat-expansion-panel>
 
     <!-------------------------- Specific to Source ---------------------------->
-    <mat-expansion-panel *ngSwitchCase="'source'" hideToggle [expanded]="true">
+    <mat-expansion-panel *ngSwitchCase="'source'" [expanded]="true">
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
@@ -91,7 +92,7 @@
     </mat-expansion-panel>
 
     <!-------------------------- Specific to Protocol ---------------------------->
-    <mat-expansion-panel *ngSwitchCase="'protocol'" hideToggle [expanded]="true">
+    <mat-expansion-panel *ngSwitchCase="'protocol'" [expanded]="true">
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
