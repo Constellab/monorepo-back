@@ -53,6 +53,13 @@
       {{latestBrickVersion.repoType}}
     </fl-key-value>
     <br>
+    <fl-key-value>
+      <fl-key>References</fl-key>
+      <div *ngFor="let r of references">
+        <a [routerLink]="'../../../' + r.name">{{r.name}}</a> v{{r.version}}
+      </div>
+    </fl-key-value>
+    <br>
     <div class="display-inline">
       <fl-user-profile-picture [firstName]="brick.createdBy.firstname"
                                [lastName]="brick.createdBy.lastname"></fl-user-profile-picture>

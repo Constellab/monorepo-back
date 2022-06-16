@@ -350,7 +350,6 @@ export class HaPublicSidenavComponent implements OnInit {
   }
 
   drop($event: CdkDragDrop<HaNode[]>): void {
-    console.log($event.currentIndex, $event.previousIndex)
 
     // ignore drops outside of the tree
     if (!$event.isPointerOverContainer) return;
@@ -382,13 +381,19 @@ export class HaPublicSidenavComponent implements OnInit {
     //this.changedData = this.updateEmptyNodes(this.changedData);
     // rebuild tree with mutated data
     this.rebuildTreeForData(this.changedData);
-    this.saveTreeData(this.changedData);
+    this.saveTreeData(this.changedData, node);
   }
 
 
-  saveTreeData(nodes: HaNode[]): void {
+  saveTreeData(nodes: HaNode[], node: any): void {
     nodes = this.updatedTree(nodes, 0);
-    this.folderService.updateTree(nodes).subscribe();
+    this.folderService.updateTree(nodes).subscribe(() => {
+      if(node.expandable){
+        this.folderService.update({id: node.id, title: node.name, isFolder: true}).subscribe();
+      } else {
+        this.documentationService.update({id: node.id, isFolder: false, title: node.name}).subscribe();
+      }
+    });
   }
 
   updatedTree(nodes: HaNode[], levelTheo: number): HaNode[] {

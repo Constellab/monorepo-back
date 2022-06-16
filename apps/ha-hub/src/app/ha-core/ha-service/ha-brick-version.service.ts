@@ -3,6 +3,7 @@ import {FlApiService, FlEntityPaginatedDatasource} from '@monorepo/front-core-li
 import {HaBrickVersion, HaBrickVersionDataSource} from '../ha-model/ha-entities/ha-brick-version.class';
 import {Observable} from 'rxjs';
 import {ClPageI} from '@monorepo/core-lib';
+import {HaReferenceDTO} from '../ha-model/ha-entities/ha-version.class';
 
 @Injectable({
   providedIn: 'root'
@@ -28,4 +29,13 @@ export class HaBrickVersionService {
   public sendAllBrickVersion(): Observable<void>{
     return this.apiService.put(`${this.route}/send-all-to-queue`, {});
   }
+
+  public getAllReferences(id: string): Observable<HaReferenceDTO[]>{
+    return this.apiService.getById(`${this.route}/references`, id);
+  }
+
+  public getDirectReferences(id: string): Observable<HaReferenceDTO[]>{
+    return this.apiService.getById(`${this.route}/direct-references`, id);
+  }
+
 }

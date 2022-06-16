@@ -181,12 +181,34 @@ export class HnFolderService {
   }
 
   async update(updatedFolder: HnNodeDTO): Promise<HnFolder> {
-    const folder: HnFolder = await this.foldersRepository.findOne(updatedFolder.id, {relations: ['folder']});
+    let folder: HnFolder = await this.foldersRepository.findOne(updatedFolder.id, {relations: ['folder', 'documentations', 'folders']});
 
-    folder.path = updatedFolder.path;
+    folder.path = HnFolderService.generatePathWithTitle(updatedFolder.title);
     folder.title = updatedFolder.title;
-    folder.completePath = folder.folder.completePath + updatedFolder.path + '/';
-    return await this.foldersRepository.save(folder);
+    folder.completePath = folder.folder.completePath ? folder.folder.completePath + folder.path + '/' : folder.path + '/';
+
+    folder = await this.foldersRepository.save(folder);
+
+    await this.updateChildCompletePath(folder);
+
+    return folder;
+  }
+
+  async updateChildCompletePath(folder: HnFolder): Promise<void> {
+    if (folder.documentations.length > 0) {
+      for (const d of folder.documentations) {
+        await this.documentationService.updateCompletePath(d, folder);
+      }
+    }
+    if (folder.folders.length > 0) {
+      for (const f of folder.folders) {
+        const fDTO = new HnNodeDTO();
+        fDTO.isFolder = true;
+        fDTO.title = f.title;
+        fDTO.id = f.id;
+        await this.update(fDTO);
+      }
+    }
   }
 
   async updateTree(updatedTree: HnNode[]): Promise<HnNode[]> {

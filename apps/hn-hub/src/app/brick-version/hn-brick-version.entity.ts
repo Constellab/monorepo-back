@@ -1,8 +1,12 @@
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany, Unique} from 'typeorm';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CmVersion} from '@monorepo/common-model';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
+import {
+  HnBrickVersionReference,
+  HnBrickVersionRefState
+} from '../brick-version-reference/hn-brick-version-reference.entity';
 
 export class HnBrickPathVersion {
   id: string;
@@ -26,6 +30,14 @@ export class HnNewVersionDTO {
   version: string;
 
   repoType: HnRepoType;
+
+  references?: HnReferenceDTO[];
+}
+
+export interface HnReferenceDTO{
+  name: string;
+  version: string;
+  referenceState: HnBrickVersionRefState
 }
 
 @Unique(['brickMajorVersion', 'minor', 'patch', 'subPatch'])
@@ -51,8 +63,7 @@ export class HnBrickVersion extends HnBaseEntity {
   @ManyToOne(() => HnBrickMajorVersion, {eager: true, onDelete: "CASCADE"})
   brickMajorVersion: HnBrickMajorVersion;
 
-
-  initialize(brickMajorVersion: HnBrickMajorVersion, version: CmVersion, repoType?: HnRepoType): void {
+  initialize(brickMajorVersion: HnBrickMajorVersion, version: CmVersion, repoType: HnRepoType): void {
     this.brickMajorVersion = brickMajorVersion;
     this.version = version;
     this.repoType = repoType;
@@ -75,6 +86,8 @@ export class HnBrickVersion extends HnBaseEntity {
     if (version.isBeta()) {
       this.versionType = HnVersionType.BETA;
       this.subPatch = version.subPatch;
+    } else {
+      this.versionType = HnVersionType.NORMAL;
     }
   }
 

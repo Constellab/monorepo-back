@@ -1,0 +1,31 @@
+<fl-key-value>
+  <fl-key>{{'version' | translate}}</fl-key>
+  {{bv.version}}
+</fl-key-value>
+
+<fl-key-value>
+  <fl-key>{{'repo_type' | translate}}</fl-key>
+  {{bv.repoType}}
+</fl-key-value>
+
+<fl-key-value>
+  <fl-key>{{'last_modification_info' | translate}}</fl-key>
+  <fl-last-modification-info [lastModifiedBy]="bv.lastModifiedBy?.fullname"
+                             [lastModifiedAt]="bv.lastModifiedAt">
+  </fl-last-modification-info>
+</fl-key-value>
+
+<div *ngIf="references && references.length > 0">
+  <fl-key-value *ngIf="directReferences.length > 0">
+    <fl-key>Direct references</fl-key>
+    <div *ngFor="let r of directReferences">
+      {{r.name}} v{{r.version}}
+    </div>
+  </fl-key-value>
+  <fl-key-value *ngIf="indirectReferences.length > 0">
+    <fl-key>Indirect references</fl-key>
+    <div *ngFor="let r of indirectReferences">
+      {{r.name}} v{{r.version}}
+    </div>
+  </fl-key-value>
+</div>

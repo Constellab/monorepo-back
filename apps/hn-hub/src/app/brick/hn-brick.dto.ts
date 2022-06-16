@@ -26,6 +26,12 @@ export class HnCreateTechnicalDocContent{
   importFile: HnImportTechnicalDocDTO;
 }
 
+export class HnIsActualBrickAndNewVersionDTO{
+  brickId: string;
+  inputBrickName: string;
+  inputBrickVersion: string;
+}
+
 export interface HnImportParentDTO{
   typing_name: string;
   class_name: string;

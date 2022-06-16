@@ -3,12 +3,14 @@ import {HnBrickVersionService} from './hn-brick-version.service';
 import {HnBrickVersionController} from './hn-brick-version.controller';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {HnBrickVersion} from './hn-brick-version.entity';
+import {HnBrickVersionReferenceModule} from '../brick-version-reference/hn-brick-version-reference.module';
+import {HnBrickVersionReferenceService} from '../brick-version-reference/hn-brick-version-reference.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HnBrickVersion])],
+  imports: [TypeOrmModule.forFeature([HnBrickVersion]), HnBrickVersionReferenceModule],
   exports: [TypeOrmModule],
   controllers: [HnBrickVersionController],
-  providers: [HnBrickVersionService]
+  providers: [HnBrickVersionService, HnBrickVersionReferenceService]
 })
 export class HnBrickVersionModule {
 }

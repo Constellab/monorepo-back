@@ -5,7 +5,12 @@ import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnNode} from '../folder/hn-folder.dto';
-import {HnBrickListDTO, HnCreateTechnicalDocContent, HnEditBrickDTO} from './hn-brick.dto';
+import {
+  HnBrickListDTO,
+  HnCreateTechnicalDocContent,
+  HnEditBrickDTO,
+  HnIsActualBrickAndNewVersionDTO
+} from './hn-brick.dto';
 
 @Controller('brick')
 export class HnBrickController {
@@ -85,7 +90,13 @@ export class HnBrickController {
   }
 
   @Put('edit')
-  public editBrick(@Body(new BlParsePipe(HnEditBrickDTO)) editedBrick: HnEditBrickDTO): Promise<HnBrick>{
+  public editBrick(@Body(new BlParsePipe(HnEditBrickDTO)) editedBrick: HnEditBrickDTO): Promise<HnBrick> {
     return this.brickService.editBrick(editedBrick);
+  }
+
+  @Post('is-actual-brick-and-new-version')
+  async isActualBrickAndNewVersion(@Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
+    content: HnIsActualBrickAndNewVersionDTO): Promise<boolean> {
+    return this.brickService.isActualBrickAndNewVersion(content);
   }
 }

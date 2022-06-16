@@ -6,6 +6,8 @@ import {HaBrickVersion} from '../../../../ha-core/ha-model/ha-entities/ha-brick-
 import {CmVersion} from '@monorepo/common-model';
 import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
 import {HaPublicEditBrickDialogComponent} from '../ha-public-edit-brick-dialog/ha-public-edit-brick-dialog.component';
+import {HaReferenceDTO} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
+import {HaBrickVersionService} from '../../../../ha-core/ha-service/ha-brick-version.service';
 
 @Component({
   selector: 'ha-public-brick-description-page',
@@ -17,10 +19,12 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
   brick: HaBrick;
   latestBrickVersion: HaBrickVersion;
   lastVersion: CmVersion;
+  references: HaReferenceDTO[];
 
   constructor(
     private route: ActivatedRoute,
     private brickService: HaBrickService,
+    private brickVersionService: HaBrickVersionService,
     private dialogService: FlDialogService,
   ) {
   }
@@ -40,7 +44,14 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
     this.brickService.getLastVersion(brickName).subscribe(res => {
       this.latestBrickVersion = res;
       this.lastVersion = new CmVersion(res.brickMajorVersion.major, res.minor, res.patch, res.subPatch);
+      this.setDirectReferences(res.id);
     });
+  }
+
+  private setDirectReferences(brickVersionId: string): void{
+    this.brickVersionService.getDirectReferences(brickVersionId).subscribe(res => {
+      this.references = res;
+    })
   }
 
   createEditBrickDialog(): void {

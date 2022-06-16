@@ -11,8 +11,9 @@ import {IncomingMessage} from 'http';
 import imageSize from 'image-size';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
 import {CmRichTextI} from '@monorepo/common-model';
+import {HnFolder} from '../folder/hn-folder.entity';
 
-class HnDocImage{
+class HnDocImage {
   filename: string;
   width: number;
   height: number;
@@ -46,9 +47,10 @@ export class HnDocumentationService {
 
   async update(updatedDocumentation: HnNodeDTO): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOne(updatedDocumentation.id, {relations: ['folder']});
-    doc.path = updatedDocumentation.path;
+    doc.path = updatedDocumentation.title.toLowerCase().trim();
+    doc.path = doc.path.replace(/ /gi, '-');
     doc.title = updatedDocumentation.title;
-    doc.completePath = doc.folder.completePath + updatedDocumentation.path + '/';
+    doc.completePath = doc.folder.completePath ?  doc.folder.completePath + doc.path + '/' : doc.path + '/';
     return this.documentationsRepository.save(doc);
   }
 
@@ -70,7 +72,7 @@ export class HnDocumentationService {
 
   async updateContent(id: string, updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOne(id);
-    if(doc){
+    if (doc) {
       doc.content = updateContentDoc;
       const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
       if (!currentUser.isAdmin()) {
@@ -80,9 +82,9 @@ export class HnDocumentationService {
     return this.documentationsRepository.save(doc);
   }
 
-  async saveImage(files: BlFile[]): Promise<HnDocImage>{
+  async saveImage(files: BlFile[]): Promise<HnDocImage> {
     const docImage: HnDocImage = new HnDocImage();
-    for(const file of files){
+    for (const file of files) {
       const imSize = imageSize(file.buffer);
       docImage.filename = await this.objectStorageService.uploadObject(file, this.getReportBucket(), true);
       docImage.width = imSize.width;
@@ -97,5 +99,10 @@ export class HnDocumentationService {
 
   private getReportBucket(): string {
     return this.configService.getReportObjectStorageBucket();
+  }
+
+  async updateCompletePath(doc: HnDocumentation, folder: HnFolder): Promise<void>{
+    doc.completePath = folder.completePath ? folder.completePath + doc.path + '/' : doc.path + '/';
+    await this.documentationsRepository.save(doc);
   }
 }

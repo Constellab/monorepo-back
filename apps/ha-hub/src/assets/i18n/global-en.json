@@ -131,5 +131,8 @@
   "drag_and_drop_to_move": "Drag and drop to move",
   "create_element": "Create element",
   "technical_information": "Technical Information",
-  "edit_title": "Edit title"
+  "edit_title": "Edit title",
+  "import-new-version-file": "Import the file 'settings.json'",
+  "import-new-version-text1": "To declare a new brick version, select the file 'settings.json' at the root of the brick project",
+  "import-new-version-text2": "Here is the information extracted from the file, check if it's correct before saving the new version"
 }

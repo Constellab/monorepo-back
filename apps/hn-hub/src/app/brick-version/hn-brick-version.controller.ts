@@ -1,7 +1,7 @@
 import {Controller, Get, Param, ParseIntPipe, Put, Query} from '@nestjs/common';
 import {HnBrickVersionService} from './hn-brick-version.service';
 import {ClPageI} from '@monorepo/core-lib';
-import {HnBrickVersion} from './hn-brick-version.entity';
+import {HnBrickVersion, HnReferenceDTO} from './hn-brick-version.entity';
 import {BlPublic} from '@monorepo/back-core-lib';
 
 @Controller('brick-version')
@@ -26,5 +26,18 @@ export class HnBrickVersionController {
                             @Query('size', ParseIntPipe) size: number): Promise<ClPageI<HnBrickVersion>> {
     return this.brickVersionService.getCurrentBrickVersion(page, size, brickId);
   }
+
+  @BlPublic()
+  @Get('references/:id')
+  public getAllReferences(@Param('id') id: string): Promise<HnReferenceDTO[]>{
+    return this.brickVersionService.getAllReferences(id);
+  }
+
+  @BlPublic()
+  @Get('direct-references/:id')
+  public getDirectReferences(@Param('id') id: string): Promise<HnReferenceDTO[]>{
+    return this.brickVersionService.getDirectReferences(id);
+  }
+
 
 }

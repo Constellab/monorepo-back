@@ -25,6 +25,7 @@ import {
 } from './ha-public-sidenav-import-tec-doc-dialog/ha-public-sidenav-import-tec-doc-dialog.component';
 import {HaPublicEditBrickDialogComponent} from './ha-public-edit-brick-dialog/ha-public-edit-brick-dialog.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
+import { HaPublicBrickVersionDetailDialogComponent } from './ha-public-brick-version-detail-dialog/ha-public-brick-version-detail-dialog.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     HaPublicDocComponent,
     HaPublicSidenavImportTecDocDialogComponent,
     HaPublicEditBrickDialogComponent,
+    HaPublicBrickVersionDetailDialogComponent,
   ],
   imports: [
     HaPublicCoreModule,

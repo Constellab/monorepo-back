@@ -36,6 +36,19 @@
     </mat-cell>
   </ng-container>
 
+  <!-- information -->
+  <ng-container matColumnDef="informations">
+    <mat-header-cell *matHeaderCellDef class="info-cell">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let version" class="info-cell">
+      <div >
+        <mat-icon class="bt-info" (click)="openBrickVersionDetail(version)">info</mat-icon>
+      </div>
+
+    </mat-cell>
+  </ng-container>
+
+
 
 
   <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>

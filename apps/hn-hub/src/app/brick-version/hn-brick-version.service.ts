@@ -1,13 +1,18 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {HnBrickVersion, HnNewVersionDTO} from './hn-brick-version.entity';
-import {EntityManager, Repository} from 'typeorm';
+import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './hn-brick-version.entity';
+import {EntityManager, getManager, Repository} from 'typeorm';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {BlAbstractService, BlTransportService} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {ClPageI} from '@monorepo/core-lib';
 import {CmVersion} from '@monorepo/common-model';
+import {HnBrickVersionReferenceService} from '../brick-version-reference/hn-brick-version-reference.service';
+import {
+  HnBrickVersionReference,
+  HnBrickVersionRefState
+} from '../brick-version-reference/hn-brick-version-reference.entity';
 
 @Injectable()
 export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
@@ -15,14 +20,15 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   constructor(
     @InjectRepository(HnBrickVersion)
     private brickVersionsRepository: Repository<HnBrickVersion>,
-    private transportService: BlTransportService
+    private transportService: BlTransportService,
+    private brickVersionReferenceService: HnBrickVersionReferenceService,
+    private entityManager: EntityManager
   ) {
     super(brickVersionsRepository, HnBrickVersion);
   }
 
   async create(brickVersion: HnBrickVersion): Promise<HnBrickVersion> {
     brickVersion = await this.brickVersionsRepository.save(brickVersion);
-
     await this.sendBrickVersionIdToTransport(brickVersion.id);
     return brickVersion;
   }
@@ -33,10 +39,73 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
 
 
   async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO): Promise<HnBrickVersion> {
-    const newBrickVersion: HnBrickVersion = new HnBrickVersion();
-    const version: CmVersion = CmVersion.fromString(newVersion.version);
-    newBrickVersion.initialize(brickMajorVersion, version, newVersion.repoType);
-    return await this.create(newBrickVersion);
+    let res: HnBrickVersion = null;
+    res = await getManager().transaction(async entityManager => {
+      const newBrickVersion: HnBrickVersion = new HnBrickVersion();
+      const version: CmVersion = CmVersion.fromString(newVersion.version);
+      const bv: HnBrickVersion = await this.brickVersionsRepository.findOne({
+        where: {
+          brickMajorVersion: {
+            id : brickMajorVersion.id
+          },
+          minor: version.minor,
+          patch: version.patch,
+          subPatch: version.subPatch
+        }
+      })
+      if(bv != null){
+        bv.initialize(brickMajorVersion, version, newVersion.repoType);
+        res = await entityManager.save(bv);
+        await this.brickVersionReferenceService.deleteByBrickVersionId(res.id, entityManager);
+      } else {
+        newBrickVersion.initialize(brickMajorVersion, version, newVersion.repoType);
+        res = await entityManager.save(newBrickVersion);
+      }
+
+      if (newVersion.references && newVersion.references.length > 0) {
+
+        const refs: HnBrickVersionReference[] = [];
+
+        for (const ref of newVersion.references) {
+          if (refs.find(r => r.brickVersion.brickMajorVersion.brick.name == ref.name)) {
+            throw new UnauthorizedException(`There is more than one reference of the brick ${ref.name}`);
+          }
+          const cmV: CmVersion = CmVersion.fromString(ref.version);
+          const brickVersion: HnBrickVersion = await this.brickVersionsRepository.findOne({
+            where: {
+              brickMajorVersion: {
+                brick: {
+                  name: ref.name
+                },
+                major: cmV.major
+              },
+              minor: cmV.minor,
+              patch: cmV.patch,
+              subPatch: cmV.subPatch
+            },
+            relations: ['brickMajorVersion', 'brickMajorVersion.brick']
+          });
+          if (!brickVersion) {
+            throw new UnauthorizedException(`The referenced brick ${ref.name} with the version ${ref.version} is not in the hub`);
+          }
+          refs.push({
+            brickVersion: res,
+            reference: brickVersion,
+            versionState: HnBrickVersionRefState.DIRECT
+          } as HnBrickVersionReference);
+        }
+        for (let r of refs) {
+          const ref: HnBrickVersionReference = new HnBrickVersionReference();
+          Object.assign(ref, r);
+
+          r = await entityManager.save(ref);
+        }
+      }
+
+      return res;
+    });
+    await this.sendBrickVersionIdToTransport(res.id);
+    return res;
   }
 
   /**
@@ -113,19 +182,93 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     );
   }
 
-  async getLatestBrickVersion( brickMajorVersionId: string): Promise<HnBrickVersion> {
+  async getLatestBrickVersion(brickMajorVersionId: string): Promise<HnBrickVersion> {
     const brickVersions: HnBrickVersion[] = await this.brickVersionsRepository.find({
       where: {
-        brickMajorVersion : {
-          id : brickMajorVersionId
+        brickMajorVersion: {
+          id: brickMajorVersionId
         }
       },
-      order : {
+      order: {
         minor: 'DESC',
         patch: 'DESC'
       }
     });
     return brickVersions[0];
+  }
+
+  async checkIfVersionExist(brickMajorVersion: HnBrickMajorVersion, version: string): Promise<boolean> {
+    const v: CmVersion = CmVersion.fromString(version);
+    const bv: HnBrickVersion = await this.brickVersionsRepository.findOne({
+      where: {
+        brickMajorVersion: {
+          id: brickMajorVersion.id
+        },
+        minor: v.minor,
+        patch: v.patch,
+        subPatch: v.subPatch
+      }
+    });
+    if(bv && bv.version.major != v.major){
+      throw new UnauthorizedException('Impossible to create a new major version');
+    }
+    return bv != null;
+  }
+
+  async findDirectReferences(id: string): Promise<HnBrickVersionReference[]>{
+    return await this.brickVersionReferenceService.findByBrickVersionId(id);
+  }
+
+  async findAllReferences(id: string, isUndirect?: boolean): Promise<HnBrickVersionReference[]>{
+    const res: HnBrickVersionReference[] = await this.findDirectReferences(id);
+    if(res.length == 0){
+      return res;
+    } else {
+      for(const bVR of res){
+        if(isUndirect){
+          bVR.versionState = HnBrickVersionRefState.INDIRECT;
+        }
+        res.push(...await this.findAllReferences(bVR.referenceId, true));
+      }
+      return res;
+    }
+  }
+
+  async getDirectReferences(id: string): Promise<HnReferenceDTO[]>{
+    const res: HnReferenceDTO[] = [];
+    for(const bVR of (await this.findDirectReferences(id))){
+      res.push((await this.bVRToRef(bVR)));
+    }
+    return res;
+  }
+
+  async getAllReferences(id: string): Promise<HnReferenceDTO[]>{
+    const res: HnReferenceDTO[] = [];
+    for(const bVR of (await this.findAllReferences(id))){
+      res.push(await this.bVRToRef(bVR));
+    }
+    return res.filter(function(value, index, array) {
+      let t = true;
+      for(const e of array){
+        if(e.name == value.name && array.indexOf(e) != index){
+          t = CmVersion.fromString(e.version) < CmVersion.fromString(value.version);
+          console.log(t);
+        }
+      }
+      return t;
+    });
+  }
+
+  async bVRToRef(bVR: HnBrickVersionReference): Promise<HnReferenceDTO>{
+    return {
+      name : await this.getBrickName(bVR.referenceId),
+      version : (await this.brickVersionsRepository.findOne(bVR.referenceId)).version.toString(),
+      referenceState : bVR.versionState
+    };
+  }
+
+  async getBrickName(id: string): Promise<string>{
+    return (await this.brickVersionsRepository.findOne(id)).brickMajorVersion.brick.name;
   }
 
 }

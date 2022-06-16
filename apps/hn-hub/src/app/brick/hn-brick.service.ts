@@ -12,8 +12,14 @@ import {HnFolderService} from '../folder/hn-folder.service';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnErrorText} from '../core/model/config/hn-error-text.class';
 import {CmVersion} from '@monorepo/common-model';
-import {HnBrickListDTO, HnCreateTechnicalDocContent, HnEditBrickDTO} from './hn-brick.dto';
+import {
+  HnBrickListDTO,
+  HnCreateTechnicalDocContent,
+  HnEditBrickDTO,
+  HnIsActualBrickAndNewVersionDTO
+} from './hn-brick.dto';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
+import {HnBrickVersionReferenceService} from '../brick-version-reference/hn-brick-version-reference.service';
 
 @Injectable()
 export class HnBrickService {
@@ -24,7 +30,8 @@ export class HnBrickService {
     private brickMajorVersionService: HnBrickMajorVersionService,
     private documentationService: HnDocumentationService,
     private folderService: HnFolderService,
-    private brickVersionService: HnBrickVersionService
+    private brickVersionService: HnBrickVersionService,
+    private brickVersionReferenceService: HnBrickVersionReferenceService
   ) {
   }
 
@@ -45,6 +52,7 @@ export class HnBrickService {
       brick = await entityManager.save(brick);
       if(createdBrick.isBeta) createdBrick.version.subPatch = createdBrick.subPatch;
       brickVersion = await this.brickMajorVersionService.create(brick, createdBrick.version, createdBrick.repoType, entityManager);
+
 
       return brick;
     })
@@ -152,8 +160,25 @@ export class HnBrickService {
       brick.gitRepo = editedBrick.gitRepo;
       brick.pipRepo = editedBrick.pipRepo;
     }
-    this.bricksRepository.save(brick);
+    await this.bricksRepository.save(brick);
     return brick;
+  }
+
+  async isActualBrickAndNewVersion(content: HnIsActualBrickAndNewVersionDTO): Promise<boolean>{
+    const brick: HnBrick = await this.bricksRepository.findOne(content.brickId);
+
+    if(brick && brick.name.toUpperCase() != content.inputBrickName.toUpperCase()){
+      return false;
+    }
+
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, content.inputBrickVersion);
+
+    if(brickMajorVersion == null){
+      return false;
+    }
+
+    return this.brickVersionService.checkIfVersionExist(brickMajorVersion, content.inputBrickVersion);
   }
 }
 

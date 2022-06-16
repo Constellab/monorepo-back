@@ -2,10 +2,14 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {HaNewVersionDTO} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
-import {FormGroup} from '@ngneat/reactive-forms';
+import {
+  HaAddVersionInput,
+  HaNewVersionDTO,
+  HaRepoType
+} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
+import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
-import {HaAddVersionFormComponent} from '../../ha-public-core/ha-add-version-form/ha-add-version-form.component';
+import {Validators} from '@angular/forms';
 
 @Component({
   selector: 'ha-public-add-version-dialog',
@@ -17,6 +21,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
   isLoading: boolean = false;
   brickId: string;
   isUpdate: boolean = false;
+  inputFile: HaAddVersionInput;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -35,16 +40,22 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
   }
 
   buildForm(): FormGroup<Partial<HaNewVersionDTO>> {
-    return HaAddVersionFormComponent.buildForm();
+    return new FormBuilder().group({
+      version: [null, [Validators.pattern(new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]],
+      repoType: [HaRepoType.PIP, Validators.required],
+      isBeta: [false],
+      subPatch: [null]
+    });
   }
 
   create(formValue: Partial<HaNewVersionDTO>): Observable<Partial<HaNewVersionDTO>> {
     formValue.brickId = this.brickId;
-    if(formValue.isBeta){
-      if(formValue.subPatch == null) return null;
-      formValue.version = `${formValue.version}-beta.${formValue.subPatch}`
+    formValue.isBeta = this.inputFile.version.includes('-beta.');
+    if (formValue.isBeta) {
+      formValue.subPatch = +this.inputFile.version.split('-beta.')[1];
     }
-    return this.brickService.createNewVersion(formValue);
+    formValue.version = this.inputFile.version;
+    return this.brickService.createNewVersion(formValue, this.inputFile.brickVersionReferences);
   }
 
   update(formValue: Partial<HaNewVersionDTO>): Observable<Partial<HaNewVersionDTO>> {
@@ -60,6 +71,23 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
   }
 
 
+  onFileSelected($event: any): void {
+    if (typeof (FileReader) !== 'undefined') {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        const srcResult = JSON.parse(e.target.result);
+
+        this.brickService.isActualBrickAndNewVersion(this.brickId, srcResult.name, srcResult.version).subscribe((res) => {
+          this.inputFile = new HaAddVersionInput(res, srcResult.name, srcResult.version, srcResult.environment);
+          this.isUpdate = res;
+          console.log(res);
+        });
+      };
+
+      reader.readAsText($event.target.files[0]);
+    }
+  }
 
 
 }

@@ -4,7 +4,7 @@ import {Observable} from 'rxjs';
 import {HaBrick, HaBrickDTO, HaEditBrickDTO} from '../ha-model/ha-entities/ha-brick.class';
 import {HaNode} from '../ha-model/ha-entities/ha-node.class';
 import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
-import {HaNewVersionDTO, HaVersionType} from '../ha-model/ha-entities/ha-version.class';
+import {HaNewVersionDTO, HaReferenceDTO, HaVersionType} from '../ha-model/ha-entities/ha-version.class';
 import {HaBrickVersion} from '../ha-model/ha-entities/ha-brick-version.class';
 import {CmVersion} from '@monorepo/common-model';
 
@@ -82,7 +82,10 @@ export class HaBrickService {
     return this.apiService.get(this.route + `/root-folder/${brickId}/${version}`);
   }
 
-  public createNewVersion(newVersion: Partial<HaNewVersionDTO>): Observable<any>{
+  public createNewVersion(newVersion: Partial<HaNewVersionDTO>, references?: HaReferenceDTO[]): Observable<any>{
+    if(references && references.length > 0){
+      newVersion.references = references;
+    }
     return this.apiService.post(this.route + '/new-version', newVersion);
   }
 
@@ -103,5 +106,10 @@ export class HaBrickService {
   //EDIT BRICK
   public editBrick(editedBrick: HaEditBrickDTO): Observable<HaBrick>{
     return this.apiService.put(`${this.route}/edit`, editedBrick);
+  }
+
+  //VERIFY IF BRICK IT'S A NEW BRICK VERSION
+  public isActualBrickAndNewVersion(brickId: string, inputBrickName: string, inputBrickVersion: string): Observable<boolean>{
+    return this.apiService.post(`${this.route}/is-actual-brick-and-new-version`,{brickId, inputBrickName, inputBrickVersion});
   }
 }

@@ -1,23 +1,30 @@
-import {Column, Entity, OneToOne} from 'typeorm';
-import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
+import {Column, Entity, JoinColumn, ManyToOne, Unique} from 'typeorm';
 import {HnBrickVersion} from '../brick-version/hn-brick-version.entity';
+import {BlEntityWithId} from '@monorepo/back-core-lib';
 
-export enum HnBrickIdAndVersion {
+export enum HnBrickVersionRefState {
   DIRECT = 'DIRECT',
-  UNDIRECT = 'UNDIRECT'
+  INDIRECT = 'INDIRECT'
 }
 
+@Unique(['brickVersionId', 'referenceId'])
 @Entity('BrickVersionReference')
-export class HnBrickVersionReference extends HnBaseEntity {
+export class HnBrickVersionReference extends BlEntityWithId {
 
-  // @BlNotUpdatable()
-  // @ManyToOne(() => HnBrick, {eager: true, onDelete: "CASCADE"})
-  // brick: HnBrick;
+  @Column({type: 'enum', enum: HnBrickVersionRefState, nullable: false })
+  versionState: HnBrickVersionRefState;
 
-  @Column({type: 'enum', enum: HnBrickIdAndVersion, nullable: false})
-  versionState: HnBrickIdAndVersion;
-
-  @OneToOne(() => HnBrickVersion)
+  @ManyToOne(() => HnBrickVersion, object => object.id,{ nullable: false, onDelete: 'CASCADE'} )
+  @JoinColumn({ name: 'brickVersionId' })
   brickVersion: HnBrickVersion;
 
+  @Column({nullable: false})
+  brickVersionId: string;
+
+  @ManyToOne(() => HnBrickVersion, object => object.id, {nullable: false, onDelete: 'CASCADE'})
+  @JoinColumn({ name: 'referenceId' })
+  reference: HnBrickVersion;
+
+  @Column({nullable: false})
+  referenceId: string;
 }

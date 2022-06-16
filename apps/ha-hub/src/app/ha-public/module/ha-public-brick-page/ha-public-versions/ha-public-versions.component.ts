@@ -20,7 +20,7 @@ export class HaPublicVersionsComponent implements OnInit {
 
   brickVersions: HaBrickVersionDataSource;
   brickId: string;
-  displayedColumns: FlTableColumn<HaBrickVersion>[] = ['version', 'repoType', 'lastModified'];
+  displayedColumns: FlTableColumn<HaBrickVersion>[] = ['version', 'repoType', 'lastModified', 'informations'];
 
   constructor(
     private brickVersionService: HaBrickVersionService,
