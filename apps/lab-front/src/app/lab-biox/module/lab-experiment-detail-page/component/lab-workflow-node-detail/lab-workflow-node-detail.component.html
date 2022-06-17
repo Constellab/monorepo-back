@@ -3,7 +3,10 @@
   <ng-container *ngIf="labProcess$ | async as process">
     <div class="g-text-light">
       <p>{{'biox.node_process_name' | translate}} : {{process.name}}</p>
-      <p>{{'biox.node_type' | translate}} : {{process.processTypingName}}</p>
+      <p>
+        {{'biox.node_type' | translate}} : {{process.processTypingName}}
+        <lab-type-show-detail-button [typingName]="process.processTypingName"></lab-type-show-detail-button>
+      </p>
       <p *ngIf="process.data.description">{{process.data.description}}</p>
     </div>
 
@@ -69,7 +72,7 @@
           </fl-text-icon>
         </mat-panel-title>
         <mat-panel-description fxLayout="row" fxLayoutAlign="end" *ngIf="isEditable$ | async">
-          <button mat-icon-button type="button" class="g-default-color-text"
+          <button mat-icon-button type="button" class="g-default-color-text g-button-icon-small edit-button"
                   (click)="openConfig($event, configPanel, node)">
             <mat-icon>edit</mat-icon>
           </button>
