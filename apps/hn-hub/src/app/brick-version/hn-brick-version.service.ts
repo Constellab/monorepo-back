@@ -159,7 +159,8 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         versionType: brickVersion.versionType,
         subPatch: brickVersion.subPatch,
         versionState: brickVersion.brickMajorVersion.versionState,
-        repoType: brickVersion.repoType
+        repoType: brickVersion.repoType,
+        technicalInfo: brickVersion.technicalInfo
       }]
     };
     this.transportService.emit('brick', brick);

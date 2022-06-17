@@ -33,7 +33,7 @@ export class HnBrickMajorVersionService {
       new CmVersion(+version.major, +version.minor, +version.patch, +version.subPatch) :
       new CmVersion(+version.major, +version.minor, +version.patch);
     let brickVersion: HnBrickVersion = new HnBrickVersion();
-    brickVersion.initialize(brickMajorVersion, cmVersion, repoType);
+    brickVersion.initialize(brickMajorVersion, cmVersion, repoType, null);
     brickVersion = await this.brickVersionService.createFirstBrickVersion(brickVersion, entityManager);
 
     await this.folderService.createMainFolders(brickMajorVersion, entityManager);

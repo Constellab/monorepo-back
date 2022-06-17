@@ -19,3 +19,17 @@ p, .technical-doc-content, .key-val{
 .technical-doc-content{
   white-space: pre-line;
 }
+
+.resource-color-div{
+  height: 1.2em;
+  width: 1.2em;
+  border-radius: 1.2em;
+  border: solid 1px black;
+  margin-right: 0.35em;
+}
+
+.parent-link-div{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}

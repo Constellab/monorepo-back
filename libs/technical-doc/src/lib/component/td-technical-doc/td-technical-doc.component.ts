@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {TdResourceType} from '../../model/td-resource-type.entity';
+import {FlColorHelper} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'td-technical-doc',
@@ -11,10 +12,13 @@ export class TdTechnicalDocComponent implements OnInit {
   @Input()
   technicalDoc: TdResourceType;
 
+
+
   constructor() {
   }
 
   ngOnInit(): void {
+
   }
 
 }

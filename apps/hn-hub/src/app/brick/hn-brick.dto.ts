@@ -19,6 +19,7 @@ export interface HnBrickVersionTransportDto {
   subPatch: number;
   versionState: HnVersionState;
   repoType: HnRepoType;
+  technicalInfo: Record<string, any>
 }
 
 export class HnCreateTechnicalDocContent{

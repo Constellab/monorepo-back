@@ -6,6 +6,8 @@ export type TdTypeObjectStatus = 'SUCCESS' | 'TYPE_UNAVAILABLE';
 
 export interface TdTypeEntity {
 
+  brickName: string;
+
   humanName: string;
 
   shortDescription: string | undefined;

@@ -1,4 +1,3 @@
-
 <div class="g-text-editor-hint g-text-editor-hint-warning deprecated-message-div" *ngIf="entity.deprecatedSince">
   <div><strong>{{'td.deprecated_since' | translate}} : {{entity.deprecatedSince}}</strong></div>
   <div>{{entity.deprecatedMessage}}</div>
@@ -8,10 +7,13 @@
   <fl-key>{{'td.status' | translate}}</fl-key>
   {{entity.status}}
 </fl-key-value>
-<fl-key-value *ngIf="entity.parentTypingName" class="key-val">
+<fl-key-value *ngIf="entity.parentTypingName" class="key-val parent-link-div">
   <fl-key>{{'td.parent' | translate}}</fl-key>
-  <td-tech-doc-link [uniqueElement]="uniqueEntityParent"></td-tech-doc-link>
-  v.{{entity.parentVersion}}
+  <div class="parent-link-div">
+    <div class="resource-color-div" [style.background-color]="color" *ngIf="entityParentType==='RESOURCE'"></div>
+    <td-tech-doc-link [uniqueElement]="uniqueEntityParent"></td-tech-doc-link>
+    v.{{entity.parentVersion}}
+  </div>
 </fl-key-value>
 <p>{{entity.shortDescription}}</p>
 
