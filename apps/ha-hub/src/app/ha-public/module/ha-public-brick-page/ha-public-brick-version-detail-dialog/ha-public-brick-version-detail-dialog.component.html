@@ -16,16 +16,27 @@
 </fl-key-value>
 
 <div *ngIf="references && references.length > 0">
-  <fl-key-value *ngIf="directReferences.length > 0">
-    <fl-key>Direct references</fl-key>
+  <fl-key-value *ngIf="directReferences.length > 0" class="tab-left">
+    <fl-key>{{'direct_references' | translate}}</fl-key>
     <div *ngFor="let r of directReferences">
       {{r.name}} v{{r.version}}
     </div>
   </fl-key-value>
-  <fl-key-value *ngIf="indirectReferences.length > 0">
-    <fl-key>Indirect references</fl-key>
+  <fl-key-value *ngIf="indirectReferences.length > 0" class="tab-left">
+    <fl-key>{{'indirect_references' | translate}}</fl-key>
     <div *ngFor="let r of indirectReferences">
       {{r.name}} v{{r.version}}
+    </div>
+  </fl-key-value>
+</div>
+
+<div *ngIf="bv.technicalInfo | flIsNotEmpty">
+  <fl-key-value>
+    <fl-key>{{'technical_information' | translate}}</fl-key>
+    <div *ngFor="let tI of bv.technicalInfo | flObjectKeys" class="tab-left">
+      <fl-key-value>
+        <fl-key>{{tI}}</fl-key>{{bv.technicalInfo[tI]}}
+      </fl-key-value>
     </div>
   </fl-key-value>
 </div>

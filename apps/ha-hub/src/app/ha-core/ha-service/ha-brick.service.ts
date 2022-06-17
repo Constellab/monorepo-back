@@ -82,10 +82,12 @@ export class HaBrickService {
     return this.apiService.get(this.route + `/root-folder/${brickId}/${version}`);
   }
 
-  public createNewVersion(newVersion: Partial<HaNewVersionDTO>, references?: HaReferenceDTO[]): Observable<any>{
+  public createNewVersion(newVersion: Partial<HaNewVersionDTO>, technicalInfo: Record<string, any>,
+                          references?: HaReferenceDTO[]): Observable<any>{
     if(references && references.length > 0){
       newVersion.references = references;
     }
+    newVersion.technicalInfo = technicalInfo;
     return this.apiService.post(this.route + '/new-version', newVersion);
   }
 

@@ -55,7 +55,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
       formValue.subPatch = +this.inputFile.version.split('-beta.')[1];
     }
     formValue.version = this.inputFile.version;
-    return this.brickService.createNewVersion(formValue, this.inputFile.brickVersionReferences);
+    return this.brickService.createNewVersion(formValue,  this.inputFile.technicalInfo, this.inputFile.brickVersionReferences);
   }
 
   update(formValue: Partial<HaNewVersionDTO>): Observable<Partial<HaNewVersionDTO>> {
@@ -79,9 +79,8 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
         const srcResult = JSON.parse(e.target.result);
 
         this.brickService.isActualBrickAndNewVersion(this.brickId, srcResult.name, srcResult.version).subscribe((res) => {
-          this.inputFile = new HaAddVersionInput(res, srcResult.name, srcResult.version, srcResult.environment);
+          this.inputFile = new HaAddVersionInput(res, srcResult.name, srcResult.version, srcResult.environment, srcResult.technical_info);
           this.isUpdate = res;
-          console.log(res);
         });
       };
 

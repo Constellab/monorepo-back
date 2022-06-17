@@ -25,6 +25,8 @@ export class HaNewVersionDTO {
 
   subPatch?: number;
 
+  technicalInfo?: Record<string, any>;
+
   references?: HaReferenceDTO[]
 }
 
@@ -34,11 +36,13 @@ export class HaAddVersionInput{
   name: string;
   version: string;
   brickVersionReferences: HaReferenceDTO[];
+  technicalInfo: Record<string, any>;
 
-  constructor(isNew: boolean, name: string, version: string, environment: HaEnvironmentDTO) {
+  constructor(isNew: boolean, name: string, version: string, environment: HaEnvironmentDTO, technicalInfo: Record<string, any>) {
     this.isNew = isNew;
     this.name = name;
     this.version = version;
+    this.technicalInfo = technicalInfo;
     this.brickVersionReferences = [];
     for(const d of environment.pip){
       for(const p of d.packages){

@@ -13,6 +13,7 @@ export class HaBrickVersion extends HaEntity{
   brickMajorVersion: HaBrickMajorVersion;
   repoType: HaRepoType;
   versionType: HaVersionType = HaVersionType.NORMAL;
+  technicalInfo: Record<string, any>;
   subPatch?: number;
 
   public get version(): CmVersion{

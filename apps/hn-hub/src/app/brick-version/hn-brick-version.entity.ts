@@ -1,12 +1,9 @@
-import {Column, Entity, ManyToOne, OneToMany, Unique} from 'typeorm';
+import {Column, Entity, ManyToOne, Unique} from 'typeorm';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CmVersion} from '@monorepo/common-model';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {
-  HnBrickVersionReference,
-  HnBrickVersionRefState
-} from '../brick-version-reference/hn-brick-version-reference.entity';
+import {HnBrickVersionRefState} from '../brick-version-reference/hn-brick-version-reference.entity';
 
 export class HnBrickPathVersion {
   id: string;
@@ -32,9 +29,11 @@ export class HnNewVersionDTO {
   repoType: HnRepoType;
 
   references?: HnReferenceDTO[];
+
+  technicalInfo?: Record<string, any>;
 }
 
-export interface HnReferenceDTO{
+export interface HnReferenceDTO {
   name: string;
   version: string;
   referenceState: HnBrickVersionRefState
@@ -63,10 +62,14 @@ export class HnBrickVersion extends HnBaseEntity {
   @ManyToOne(() => HnBrickMajorVersion, {eager: true, onDelete: "CASCADE"})
   brickMajorVersion: HnBrickMajorVersion;
 
-  initialize(brickMajorVersion: HnBrickMajorVersion, version: CmVersion, repoType: HnRepoType): void {
+  @Column({name: 'technicalInfo', type: 'simple-json', nullable: true})
+  technicalInfo?: Record<string, any>;
+
+  initialize(brickMajorVersion: HnBrickMajorVersion, version: CmVersion, repoType: HnRepoType, technicalInfo: Record<string, any>): void {
     this.brickMajorVersion = brickMajorVersion;
     this.version = version;
     this.repoType = repoType;
+    this.technicalInfo = technicalInfo;
   }
 
   // Default : '1.0.0'
