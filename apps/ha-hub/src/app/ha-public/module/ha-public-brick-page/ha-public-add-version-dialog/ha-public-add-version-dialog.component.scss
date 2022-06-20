@@ -27,3 +27,9 @@
 .divider, .input, .bt-input-div{
   margin-top: 1em;
 }
+
+.input-error-text{
+  width: 100%;
+  text-align: center;
+  color: var(--warn-color);
+}

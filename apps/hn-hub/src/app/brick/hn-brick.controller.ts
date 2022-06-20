@@ -9,8 +9,10 @@ import {
   HnBrickListDTO,
   HnCreateTechnicalDocContent,
   HnEditBrickDTO,
-  HnIsActualBrickAndNewVersionDTO
+  HnIsActualBrickAndNewVersionDTO,
+  HnTechnicalDocInputDTO
 } from './hn-brick.dto';
+import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 
 @Controller('brick')
 export class HnBrickController {
@@ -59,7 +61,11 @@ export class HnBrickController {
 
   @Post()
   create(@Body(new BlParsePipe(HnCreateBrickDTO)) createBrick: HnCreateBrickDTO): Promise<HnBrick> {
-    return this.brickService.create(createBrick);
+    if (!createBrick.name.includes(' ')) {
+      return this.brickService.create(createBrick);
+    } else {
+      return null;
+    }
   }
 
   @Delete(':id')
@@ -76,6 +82,12 @@ export class HnBrickController {
   @Get('technical-doc/:brickId/:version')
   async findTechnicalDoc(@Param('brickId') brickId: string, @Param('version') version: string): Promise<HnNode> {
     return this.brickService.findTechnicalDoc(await this.brickService.findById(brickId), version);
+  }
+
+  @BlPublic()
+  @Post('technical-doc-by-path')
+  async getTechDocByPath(@Body(new BlParsePipe(HnTechnicalDocInputDTO)) input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
+    return await this.brickService.findTechDoc(input);
   }
 
   @Post('new-version')
@@ -96,7 +108,7 @@ export class HnBrickController {
 
   @Post('is-actual-brick-and-new-version')
   async isActualBrickAndNewVersion(@Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
-    content: HnIsActualBrickAndNewVersionDTO): Promise<boolean> {
+    content: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
     return this.brickService.isActualBrickAndNewVersion(content);
   }
 }

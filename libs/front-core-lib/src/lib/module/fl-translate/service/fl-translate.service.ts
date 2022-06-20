@@ -141,8 +141,6 @@ export class FlTranslateService {
       console.error('Not supported in SSR');
     }
 
-    console.log('Language not supported. See the TranslateModuleConfig. ' +
-      'Supported languages : ' + this.config.availableLang);
     return this.getDefaultLanguage();
   }
 

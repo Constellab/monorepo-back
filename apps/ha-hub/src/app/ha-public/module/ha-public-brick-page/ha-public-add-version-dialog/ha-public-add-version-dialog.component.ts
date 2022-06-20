@@ -5,6 +5,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {
   HaAddVersionInput,
   HaNewVersionDTO,
+  HaNewVersionFile,
   HaRepoType
 } from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
@@ -22,6 +23,8 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
   brickId: string;
   isUpdate: boolean = false;
   inputFile: HaAddVersionInput;
+  errorFile: boolean;
+  errorFileText: string;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -37,6 +40,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
     this.isUpdate = this.dialogInput.mode == 'update';
     this.init();
     this.brickId = this.dialogInput.object.brickId;
+    this.errorFile = false;
   }
 
   buildForm(): FormGroup<Partial<HaNewVersionDTO>> {
@@ -55,7 +59,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
       formValue.subPatch = +this.inputFile.version.split('-beta.')[1];
     }
     formValue.version = this.inputFile.version;
-    return this.brickService.createNewVersion(formValue,  this.inputFile.technicalInfo, this.inputFile.brickVersionReferences);
+    return this.brickService.createNewVersion(formValue, this.inputFile.technicalInfo, this.inputFile.brickVersionReferences);
   }
 
   update(formValue: Partial<HaNewVersionDTO>): Observable<Partial<HaNewVersionDTO>> {
@@ -72,16 +76,31 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
 
 
   onFileSelected($event: any): void {
-    if (typeof (FileReader) !== 'undefined') {
+    this.errorFile = false;
+    if (!$event.target.files[0].name.endsWith('.json')) {
+      this.errorFile = true;
+      this.errorFileText = 'file_wrong_type';
+    }
+    if (typeof (FileReader) !== 'undefined' && !this.errorFile) {
       const reader = new FileReader();
 
       reader.onload = (e: any) => {
         const srcResult = JSON.parse(e.target.result);
-
-        this.brickService.isActualBrickAndNewVersion(this.brickId, srcResult.name, srcResult.version).subscribe((res) => {
-          this.inputFile = new HaAddVersionInput(res, srcResult.name, srcResult.version, srcResult.environment, srcResult.technical_info);
-          this.isUpdate = res;
-        });
+        if (srcResult as HaNewVersionFile) {
+          this.brickService.isActualBrickAndNewVersion(this.brickId, srcResult.name, srcResult.version)
+            .subscribe(([res, res2]) => {
+              if(res){
+                this.inputFile =
+                  new HaAddVersionInput(res, srcResult.name, srcResult.version, srcResult.environment, srcResult.technical_info);
+                this.isUpdate = res2;
+              } else {
+                this.errorFile = true;
+                this.errorFileText = 'file_wrong_brick_or_major';
+              }
+            });
+        } else {
+          console.log('NON')
+        }
       };
 
       reader.readAsText($event.target.files[0]);

@@ -140,5 +140,9 @@
   "indirect_references": "Indirect references",
   "references": "References",
   "brick_name" : "Brick name",
-  "replace_version_text": "This action will replace an existing version"
+  "replace_version_text": "This action will replace an existing version",
+  "brick_name_error": "The brick name must be referenced without space",
+  "file_wrong_type": "The imported file is not a valid json file",
+  "file_wrong_brick_or_major": "Wrong brick or major version"
+
 }

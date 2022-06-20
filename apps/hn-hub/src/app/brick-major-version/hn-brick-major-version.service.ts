@@ -8,7 +8,7 @@ import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnBrickVersion, HnNewVersionDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
 import {HnNode} from '../folder/hn-folder.dto';
-import {HnImportTechnicalDocDTO} from '../brick/hn-brick.dto';
+import {HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick/hn-brick.dto';
 import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
@@ -119,7 +119,7 @@ export class HnBrickMajorVersionService {
     return this.technicalFolderService.findTechnicalDoc(brickMajorVersion);
   }
 
-  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnGeneratedDocEntity>{
-    return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, path);
+  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity>{
+    return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input);
   }
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnInit} from '@angular/core';
 import {TdTypeEntity, TdUniqueType} from '../../model/td-type.entity';
 import {TdTypingName} from '../../model/td-typing-name.entity';
 import {FlColorHelper} from '@monorepo/front-core-lib';
@@ -8,7 +8,7 @@ import {FlColorHelper} from '@monorepo/front-core-lib';
   templateUrl: './td-main-doc.component.html',
   styleUrls: ['./td-main-doc.component.scss']
 })
-export class TdMainDocComponent implements OnInit {
+export class TdMainDocComponent implements OnInit, OnChanges {
 
   @Input()
   entity: TdTypeEntity;
@@ -23,6 +23,15 @@ export class TdMainDocComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.setupMain();
+  }
+
+  ngOnChanges(): void {
+    this.setupMain();
+  }
+
+
+  private setupMain(): void{
     this.uniqueEntityParent = {
       humanName: this.entity.parentHumanName,
       version: this.entity.parentVersion,
@@ -31,7 +40,5 @@ export class TdMainDocComponent implements OnInit {
     this.entityParentType = new TdTypingName(this.uniqueEntityParent.typingName).getType();
     this.color = FlColorHelper.stringToRGBColor(this.uniqueEntityParent.typingName);
   }
-
-
 
 }

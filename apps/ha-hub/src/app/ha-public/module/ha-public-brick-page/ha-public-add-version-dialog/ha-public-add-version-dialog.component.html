@@ -8,7 +8,7 @@
     {{'import-new-version-file' | translate}}
   </button>
   <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
-
+  <p class="input-error-text" *ngIf="errorFile">{{errorFileText | translate}}</p>
   <mat-divider class="divider" *ngIf="inputFile"></mat-divider>
 
 

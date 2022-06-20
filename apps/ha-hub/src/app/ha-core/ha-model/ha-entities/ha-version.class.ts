@@ -67,6 +67,13 @@ export interface HaReferenceDTO{
   referenceState?: HaBrickVersionReferenceState;
 }
 
+export interface HaNewVersionFile{
+  name: string;
+  version: string;
+  technical_info: Record<string, any>;
+  environment: HaEnvironmentDTO;
+}
+
 export enum HaBrickVersionReferenceState{
   DIRECT = 'DIRECT',
   INDIRECT = 'INDIRECT'

@@ -53,6 +53,7 @@ export interface HnImportTechnicalDocDTO{
 export interface HnImportEntity{
   unique_name: string;
   class_name: string;
+  typing_name: string;
   parent: HnImportParentDTO;
   human_name: string;
   short_description: string;
@@ -64,7 +65,7 @@ export interface HnImportEntity{
   status: string;
 }
 
-export type HnImportResourceDTO =HnImportEntity;
+export type HnImportResourceDTO = HnImportEntity;
 
 
 export interface HnImportTaskDTO extends HnImportEntity{
@@ -97,4 +98,11 @@ export class HnEditBrickDTO{
   description: string;
   pipRepo: string;
   gitRepo: string;
+}
+
+export class HnTechnicalDocInputDTO{
+  brickName: string;
+  brickVersion: string;
+  techDocType: string;
+  techDocUniqueName: string;
 }

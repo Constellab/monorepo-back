@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {getManager, Repository} from 'typeorm';
@@ -11,12 +11,12 @@ import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnFolderService} from '../folder/hn-folder.service';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnErrorText} from '../core/model/config/hn-error-text.class';
-import {CmVersion} from '@monorepo/common-model';
 import {
   HnBrickListDTO,
   HnCreateTechnicalDocContent,
   HnEditBrickDTO,
-  HnIsActualBrickAndNewVersionDTO
+  HnIsActualBrickAndNewVersionDTO,
+  HnTechnicalDocInputDTO
 } from './hn-brick.dto';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 import {HnBrickVersionReferenceService} from '../brick-version-reference/hn-brick-version-reference.service';
@@ -40,17 +40,17 @@ export class HnBrickService {
     let brickVersion: HnBrickVersion;
 
     const brickExist: HnBrick = await this.bricksRepository.findOne({where: {name: createdBrick.name}});
-    if(brickExist != null){
+    if (brickExist != null) {
       throw new BadRequestException(HnErrorText.BRICK_ALREADY_EXIST);
     }
 
     if (createdBrick) {
-      brick.initialize(createdBrick.name, createdBrick.description, false,createdBrick.repoPip, createdBrick.repoGit);
+      brick.initialize(createdBrick.name, createdBrick.description, false, createdBrick.repoPip, createdBrick.repoGit);
     }
 
     brick = await getManager().transaction(async entityManager => {
       brick = await entityManager.save(brick);
-      if(createdBrick.isBeta) createdBrick.version.subPatch = createdBrick.subPatch;
+      if (createdBrick.isBeta) createdBrick.version.subPatch = createdBrick.subPatch;
       brickVersion = await this.brickMajorVersionService.create(brick, createdBrick.version, createdBrick.repoType, entityManager);
 
 
@@ -65,7 +65,7 @@ export class HnBrickService {
   async find(): Promise<HnBrickListDTO[]> {
     const bricks: HnBrick[] = await this.bricksRepository.find();
     const res: HnBrickListDTO[] = [];
-    for(const brick of bricks) {
+    for (const brick of bricks) {
       const resBrick = new HnBrickListDTO()
       resBrick.id = brick.id;
       resBrick.name = brick.name;
@@ -107,13 +107,10 @@ export class HnBrickService {
   async findCurrentDoc(brick: HnBrick, path: string, version: string): Promise<HnDocumentation | HnGeneratedDocEntity> {
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
-    if(path.startsWith('technical-folder')){
-      return await this.brickMajorVersionService.findCurrentTecDoc(brickMajorVersion, path);
-    }
     return await this.documentationService.findCurrentDoc(brickMajorVersion, path);
   }
 
-  async findFirstDoc(brick: HnBrick, version:string): Promise<HnDocumentation>{
+  async findFirstDoc(brick: HnBrick, version: string): Promise<HnDocumentation> {
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, version);
     return await this.folderService.findFirstDoc(brickMajorVersion);
@@ -124,23 +121,23 @@ export class HnBrickService {
     await this.bricksRepository.delete(brick);
   }
 
-  async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO>{
+  async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     const brick: HnBrick = await this.bricksRepository.findOne(newVersion.brickId);
     return this.brickMajorVersionService.createNewVersion(brick, newVersion);
   }
 
-  async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion>{
+  async getLatestBrickVersion(brickName: string): Promise<HnBrickVersion> {
     return this.brickMajorVersionService.getLatestBrickVersion(brickName);
   }
 
-  async createTechnicalDoc(content: HnCreateTechnicalDocContent): Promise<boolean>{
-    if(content.brickName.toUpperCase() !== content.importFile.brick_name.toUpperCase()){
+  async createTechnicalDoc(content: HnCreateTechnicalDocContent): Promise<boolean> {
+    if (content.brickName.toUpperCase() !== content.importFile.brick_name.toUpperCase()) {
       return false;
     }
 
     const brick: HnBrick = await this.bricksRepository.findOne({where: {name: content.brickName}});
 
-    if(brick == null){
+    if (brick == null) {
       return false;
     }
 
@@ -153,9 +150,9 @@ export class HnBrickService {
     return this.brickMajorVersionService.findTechnicalDoc(brickMajorVersion);
   }
 
-  async editBrick(editedBrick: HnEditBrickDTO): Promise<HnBrick>{
+  async editBrick(editedBrick: HnEditBrickDTO): Promise<HnBrick> {
     const brick: HnBrick = await this.bricksRepository.findOne(editedBrick.id);
-    if(brick){
+    if (brick) {
       brick.description = editedBrick.description;
       brick.gitRepo = editedBrick.gitRepo;
       brick.pipRepo = editedBrick.pipRepo;
@@ -164,21 +161,29 @@ export class HnBrickService {
     return brick;
   }
 
-  async isActualBrickAndNewVersion(content: HnIsActualBrickAndNewVersionDTO): Promise<boolean>{
+  async isActualBrickAndNewVersion(content: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
     const brick: HnBrick = await this.bricksRepository.findOne(content.brickId);
 
-    if(brick && brick.name.toUpperCase() != content.inputBrickName.toUpperCase()){
-      return false;
+    if (brick && brick.name.toUpperCase() != content.inputBrickName.toUpperCase()) {
+      return [false, false];
     }
 
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, content.inputBrickVersion);
 
-    if(brickMajorVersion == null){
-      return false;
+    if (brickMajorVersion == null) {
+      throw new UnauthorizedException('Impossible to create a new major version');
+      return [false, false];
     }
 
     return this.brickVersionService.checkIfVersionExist(brickMajorVersion, content.inputBrickVersion);
+  }
+
+  async findTechDoc(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity>{
+    const brick: HnBrick = await this.bricksRepository.findOne({where: {name : input.brickName}});
+    const brickMajorVersion: HnBrickMajorVersion =
+      await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, input.brickVersion);
+    return this.brickMajorVersionService.findCurrentTecDoc(brickMajorVersion, input);
   }
 }
 

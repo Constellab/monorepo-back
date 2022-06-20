@@ -34,6 +34,7 @@ export class HnProtocolService {
       proto.technicalFolder = technicalFolder;
       proto.hide = p.hide;
       proto.brickMajor = technicalFolder.brickMajorVersion.major;
+      proto.typingName = p.typing_name;
       proto.uniqueName = p.unique_name;
 
       proto.humanName = p.human_name;

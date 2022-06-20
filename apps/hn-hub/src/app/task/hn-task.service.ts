@@ -5,6 +5,7 @@ import {HnTask} from './hn-task.entity';
 import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
 import {HnImportTaskDTO} from '../brick/hn-brick.dto';
 import {HnResource} from '../resource/hn-resource.entity';
+import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 
 @Injectable()
 export class HnTaskService {
@@ -36,6 +37,7 @@ export class HnTaskService {
       task.hide = t.hide;
       task.brickMajor = technicalFolder.brickMajorVersion.major;
       task.uniqueName = t.unique_name;
+      task.typingName = t.typing_name;
 
       task.humanName = t.human_name;
 
@@ -88,7 +90,7 @@ export class HnTaskService {
     });
   }
 
-  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<any> {
+  async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnGeneratedDocEntity> {
 
     const task: HnTask = await this.tasksRepository.findOne({
       technicalFolder: {

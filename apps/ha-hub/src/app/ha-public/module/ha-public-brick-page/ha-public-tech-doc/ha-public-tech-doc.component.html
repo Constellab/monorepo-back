@@ -1,0 +1,15 @@
+<div class="sidenavBody">
+  <div class="loader" *ngIf="isLoading">
+    <fl-loader size="medium"></fl-loader>
+  </div>
+  <div class="content" *ngIf="!isLoading">
+    <div class="doc-title-div" *ngIf="techDoc">
+      <td-technical-doc-header [technicalDoc]="techDoc"></td-technical-doc-header>
+    </div>
+    <div class="technical-doc-div g-styled-scrollbar g-max-article-width" *ngIf="techDoc">
+      <td-technical-doc [technicalDoc]="techDoc"></td-technical-doc>
+    </div>
+  </div>
+  <div class="side" fxHide.lt-lg>
+  </div>
+</div>

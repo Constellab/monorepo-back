@@ -4,7 +4,7 @@ import {HnTechnicalFolder} from './hn-technical-folder.entity';
 import {Repository} from 'typeorm';
 import {HnResourceService} from '../resource/hn-resource.service';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
-import {HnImportTechnicalDocDTO} from '../brick/hn-brick.dto';
+import {HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick/hn-brick.dto';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnResource} from '../resource/hn-resource.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
@@ -128,7 +128,7 @@ export class HnTechnicalFolderService {
     return nodes;
   }
 
-  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnGeneratedDocEntity> {
+  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
     const techFolder: HnTechnicalFolder = await this.technicalFolderRepository.findOne({
       where: {
         brickMajorVersion: {
@@ -137,18 +137,13 @@ export class HnTechnicalFolderService {
       }
     });
 
-    const arrayPath: string[] = path.split('/');
-    arrayPath.pop();
-
-    const currentTecDocClass: string = arrayPath[1];
-
-    switch (currentTecDocClass) {
+    switch (input.techDocType) {
       case 'resource':
-        return this.resourceService.findCurrentTecDoc(techFolder, arrayPath[2])
+        return this.resourceService.findCurrentTecDoc(techFolder, input.techDocUniqueName)
       case 'task':
-        return this.taskService.findCurrentTecDoc(techFolder, arrayPath[2]);
+        return this.taskService.findCurrentTecDoc(techFolder, input.techDocUniqueName);
       case 'protocol':
-        return this.protocolService.findCurrentTecDoc(techFolder, arrayPath[2]);
+        return this.protocolService.findCurrentTecDoc(techFolder, input.techDocUniqueName);
       default:
         return null;
     }

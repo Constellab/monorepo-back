@@ -21,7 +21,7 @@ export class HaPublicBrickVersionsTableComponent extends FlTableAbstractDirectiv
   ngOnInit(): void {
   }
 
-  openBrickVersionDetail(bv: HaBrickVersion): void{
+  openBrickVersionDetail(bv: HaBrickVersion): void {
     this.dialogService.openMediumDialog(HaPublicBrickVersionDetailDialogComponent, {data: bv});
   }
 

@@ -10,7 +10,6 @@ export * from './lib/model/td-resource-type.entity';
 export * from './lib/model/td-typing-name.entity';
 export * from './lib/model/td-protocol-type.entity';
 
-
 //component
 export * from './lib/component/td-technical-doc/td-technical-doc.component';
 export * from './lib/component/td-resource-doc/td-resource-doc.component';
@@ -21,6 +20,7 @@ export * from './lib/component/td-io-resource/td-io-resource.component';
 export * from './lib/component/td-tech-doc-link/td-tech-doc-link.component';
 export * from './lib/component/td-config/td-config.component';
 export * from './lib/component/td-technical-doc/td-technical-doc.component';
+export * from './lib/component/td-technical-doc-header/td-technical-doc-header.component';
 
 //service
 export * from './lib/service/td-service-config.config';

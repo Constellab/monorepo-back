@@ -7,6 +7,7 @@ import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
 import {HaNewVersionDTO, HaReferenceDTO, HaVersionType} from '../ha-model/ha-entities/ha-version.class';
 import {HaBrickVersion} from '../ha-model/ha-entities/ha-brick-version.class';
 import {CmVersion} from '@monorepo/common-model';
+import {TdTypeEntity} from '@monorepo/technical-doc';
 
 @Injectable({
   providedIn: 'root'
@@ -78,40 +79,55 @@ export class HaBrickService {
     return this.apiService.get(`${this.route}/name/${name}`, HaBrick);
   }
 
-  public getRootFolderId(brickId: string, version: string): Observable<any>{
+  public getRootFolderId(brickId: string, version: string): Observable<any> {
     return this.apiService.get(this.route + `/root-folder/${brickId}/${version}`);
   }
 
   public createNewVersion(newVersion: Partial<HaNewVersionDTO>, technicalInfo: Record<string, any>,
-                          references?: HaReferenceDTO[]): Observable<any>{
-    if(references && references.length > 0){
+                          references?: HaReferenceDTO[]): Observable<any> {
+    if (references && references.length > 0) {
       newVersion.references = references;
     }
     newVersion.technicalInfo = technicalInfo;
     return this.apiService.post(this.route + '/new-version', newVersion);
   }
 
-  public getLastVersion(brickName: string): Observable<HaBrickVersion>{
+  public getLastVersion(brickName: string): Observable<HaBrickVersion> {
     return this.apiService.get(`${this.route}/latest/${brickName}`)
   }
 
   /*Import the technical documentation of the brick*/
-  public importTechnicalDocumentation(object: any): Observable<boolean>{
+  public importTechnicalDocumentation(object: any): Observable<boolean> {
     return this.apiService.post(this.route + '/create-technical-doc', object);
   }
 
-  public getTechnicalDocumentation(brickId: string, version: string): Observable<HaNode>{
-    return this.apiService.get(`${this.route}/technical-doc/${brickId}/${version}`);;
+  public getTechnicalDocumentation(brickId: string, version: string): Observable<HaNode> {
+    return this.apiService.get(`${this.route}/technical-doc/${brickId}/${version}`);
+    ;
+  }
+
+  public getTechDocByPath(brickName: string, brickVersion: string,
+                          techDocType: string, techDocUniqueName: string): Observable<TdTypeEntity> {
+    return this.apiService.post(`${this.route}/technical-doc-by-path`, {
+      brickName: brickName,
+      brickVersion: brickVersion,
+      techDocType: techDocType,
+      techDocUniqueName: techDocUniqueName
+    });
   }
 
 
   //EDIT BRICK
-  public editBrick(editedBrick: HaEditBrickDTO): Observable<HaBrick>{
+  public editBrick(editedBrick: HaEditBrickDTO): Observable<HaBrick> {
     return this.apiService.put(`${this.route}/edit`, editedBrick);
   }
 
   //VERIFY IF BRICK IT'S A NEW BRICK VERSION
-  public isActualBrickAndNewVersion(brickId: string, inputBrickName: string, inputBrickVersion: string): Observable<boolean>{
-    return this.apiService.post(`${this.route}/is-actual-brick-and-new-version`,{brickId, inputBrickName, inputBrickVersion});
+  public isActualBrickAndNewVersion(brickId: string, inputBrickName: string, inputBrickVersion: string): Observable<[boolean, boolean]> {
+    return this.apiService.post(`${this.route}/is-actual-brick-and-new-version`, {
+      brickId,
+      inputBrickName,
+      inputBrickVersion
+    });
   }
 }

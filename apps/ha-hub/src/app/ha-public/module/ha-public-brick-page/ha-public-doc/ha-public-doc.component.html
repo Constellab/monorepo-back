@@ -3,20 +3,14 @@
     <fl-loader size="medium"></fl-loader>
   </div>
   <div class="content" *ngIf="!isLoading">
-    <div class="doc-title-div" *ngIf="documentation && !isTechnical">
+    <div class="doc-title-div" *ngIf="documentation">
       <h1 class="doc-title">{{documentation.title}}</h1>
     </div>
-    <form class="documentation-form" [formGroup]="formGp" *ngIf="!isTechnical">
+    <form class="documentation-form" [formGroup]="formGp">
       <fl-text-editor class="content-editor g-max-article-width" formControlName="content"
-                      [disabled]="(isAdmin | async) === false || isTechnical===true" mode="JSON" scrollContainer="child"
+                      [disabled]="(isAdmin | async) === false" mode="JSON" scrollContainer="child"
                       [config]="textEditorConfig" (textChange)="onContentUpdate($event)"></fl-text-editor>
     </form>
-    <div class="doc-title-div" *ngIf="isTechnical && technicalDocumentation">
-      <td-technical-doc-header [technicalDoc]="technicalDocumentation"></td-technical-doc-header>
-    </div>
-    <div class="technical-doc-div g-styled-scrollbar g-max-article-width" *ngIf="isTechnical && technicalDocumentation">
-      <td-technical-doc [technicalDoc]="technicalDocumentation"></td-technical-doc>
-    </div>
   </div>
   <div class="side" fxHide.lt-lg>
     <ng-container *ngFor="let title of titles; let i = index">

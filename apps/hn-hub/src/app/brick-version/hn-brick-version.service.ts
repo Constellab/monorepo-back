@@ -176,7 +176,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         }
       },
       order: {
-        lastModifiedAt: 'DESC'
+        createdAt: 'DESC'
       },
       relations: ['brickMajorVersion']
     }
@@ -198,7 +198,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     return brickVersions[0];
   }
 
-  async checkIfVersionExist(brickMajorVersion: HnBrickMajorVersion, version: string): Promise<boolean> {
+  async checkIfVersionExist(brickMajorVersion: HnBrickMajorVersion, version: string): Promise<[boolean, boolean]> {
     const v: CmVersion = CmVersion.fromString(version);
     const bv: HnBrickVersion = await this.brickVersionsRepository.findOne({
       where: {
@@ -213,7 +213,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     if(bv && bv.version.major != v.major){
       throw new UnauthorizedException('Impossible to create a new major version');
     }
-    return bv != null;
+    return [true, bv != null];
   }
 
   async findDirectReferences(id: string): Promise<HnBrickVersionReference[]>{

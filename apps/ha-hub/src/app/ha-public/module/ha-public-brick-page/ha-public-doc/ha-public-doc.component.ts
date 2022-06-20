@@ -12,7 +12,6 @@ import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-auth
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {Observable} from 'rxjs';
 import {HaDocTextEditorConfig} from '../ha-doc-text-editor-config.class';
-import {TdProcessType} from '@monorepo/technical-doc';
 
 @Component({
   selector: 'ha-public-doc-page',
@@ -23,7 +22,6 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
 
   private contentDebouncer: FlDebouncer<CmRichTextI>;
   documentation: HaDocumentation;
-  technicalDocumentation: TdProcessType;
   brickName: string;
   brickVersion: string;
   formGp: FormGroup<Partial<HaDocumentationContentFormDTO>>;
@@ -31,7 +29,6 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   richText: CmRichText;
   lastUrl: string = null;
   isAdmin: Observable<boolean> = this.authUserService.isAdmin();
-  isTechnical: boolean = false;
   isCheck: boolean = false;
   activatedRoute: ActivatedRoute = this.route;
   isLoading: boolean = true;
@@ -60,7 +57,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     this.contentDebouncer = new FlDebouncer(FlDebouncer.AUTO_SAVE_DEBOUNCE_TIME);
     this.contentDebouncer.getDebouncedValue().subscribe(
       value => {
-        if (this.isCheck && !this.isTechnical) {
+        if (this.isCheck) {
           this.saveContent(value);
         }
       }
@@ -84,10 +81,8 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   }
 
   private getDocumentationByPath(url: UrlSegment[]): void {
-    this.technicalDocumentation = null;
     this.documentation = null;
     this.isCheck = false;
-    this.isTechnical = false;
     let isFirstDoc: boolean = false;
     let path: string;
     if (url.length == 0) {
@@ -97,9 +92,6 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
         this.actionOnDoc(isFirstDoc, doc);
       });
     } else {
-      if (url[0].path === 'technical-folder') {
-        this.isTechnical = true;
-      }
       path = url.join('/') + '/';
       this.brickService.getDocByPath(this.brickName, path, this.brickVersion).subscribe(doc => {
         this.isCheck = true;
@@ -110,22 +102,17 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
 
   private actionOnDoc(isFirstDoc: boolean, doc: any): void {
     if (isFirstDoc) {
-
       this.router.navigate([`${this.router.url}/${doc.completePath}`]);
     }
-    if (this.isTechnical) {
-      this.titles = []
-      this.technicalDocumentation = doc
-    } else {
-      this.documentation = doc;
+    this.documentation = doc;
 
-      this.setFormGroupValue(doc);
-      this.titles = [];
-      if (this.formGp.value.content && doc.content) {
-        this.richText = new CmRichText(doc.content);
-        this.titles = this.richText.getHeaders([2, 3]);
-      }
+    this.setFormGroupValue(doc);
+    this.titles = [];
+    if (this.formGp.value.content && doc.content) {
+      this.richText = new CmRichText(doc.content);
+      this.titles = this.richText.getHeaders([2, 3]);
     }
+
 
     this.isLoading = false;
   }

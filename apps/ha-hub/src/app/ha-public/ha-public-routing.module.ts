@@ -1,14 +1,21 @@
 import {NgModule} from '@angular/core';
 import {Route, RouterModule} from '@angular/router';
-import {HaPublicListBricksPageComponent} from './module/ha-public-bricks/ha-public-list-bricks-page/ha-public-list-bricks-page.component';
-import {HaPublicBrickPageComponent}
-  from './module/ha-public-brick-page/ha-public-brick-page/ha-public-brick-page.component';
+import {
+  HaPublicListBricksPageComponent
+} from './module/ha-public-bricks/ha-public-list-bricks-page/ha-public-list-bricks-page.component';
+import {
+  HaPublicBrickPageComponent
+} from './module/ha-public-brick-page/ha-public-brick-page/ha-public-brick-page.component';
 import {HaPublicSidenavComponent} from './module/ha-public-brick-page/ha-public-sidenav/ha-public-sidenav.component';
 import {HaPublicDocComponent} from './module/ha-public-brick-page/ha-public-doc/ha-public-doc.component';
-import {HaPublicEditBrickPageComponent} from './module/ha-public-bricks/ha-public-edit-brick-page/ha-public-edit-brick-page.component';
+import {
+  HaPublicEditBrickPageComponent
+} from './module/ha-public-bricks/ha-public-edit-brick-page/ha-public-edit-brick-page.component';
 import {HaPublicVersionsComponent} from './module/ha-public-brick-page/ha-public-versions/ha-public-versions.component';
-import {HaPublicBrickDescriptionComponent} from './module/ha-public-brick-page/ha-public-brick-description/ha-public-brick-description.component';
-
+import {
+  HaPublicBrickDescriptionComponent
+} from './module/ha-public-brick-page/ha-public-brick-description/ha-public-brick-description.component';
+import {HaPublicTechDocComponent} from './module/ha-public-brick-page/ha-public-tech-doc/ha-public-tech-doc.component';
 
 
 const routes: Route[] = [
@@ -41,10 +48,15 @@ const routes: Route[] = [
       {
         path: 'doc',
         component: HaPublicSidenavComponent,
-        children: [{
-          path: '**',
-          component: HaPublicDocComponent
-        }]
+        children: [
+          {
+            path: 'technical-folder/:type/:uniqueName',
+            component: HaPublicTechDocComponent
+          },
+          {
+            path: '**',
+            component: HaPublicDocComponent
+          }]
       },
       {
         path: 'version',

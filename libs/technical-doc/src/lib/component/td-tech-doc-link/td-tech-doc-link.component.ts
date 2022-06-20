@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnInit} from '@angular/core';
 import {TdUniqueType} from '../../model/td-type.entity';
 import {TdServiceConfig} from '../../service/td-service-config.config';
 import {TdTypingName} from '../../model/td-typing-name.entity';
@@ -8,7 +8,7 @@ import {TdTypingName} from '../../model/td-typing-name.entity';
   templateUrl: './td-tech-doc-link.component.html',
   styleUrls: ['./td-tech-doc-link.component.scss']
 })
-export class TdTechDocLinkComponent implements OnInit {
+export class TdTechDocLinkComponent implements OnInit, OnChanges{
 
   @Input()
   uniqueElement: TdUniqueType;
@@ -22,7 +22,14 @@ export class TdTechDocLinkComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.setup();
+  }
 
+  ngOnChanges(): void{
+    this.setup();
+  }
+
+  private setup(): void{
     const typingName: TdTypingName = new TdTypingName(this.uniqueElement.typingName);
 
     const techDocUrl = this.tdServiceConfig.getTechnicalDocUrl(this.uniqueElement.version, typingName);

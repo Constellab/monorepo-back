@@ -3,8 +3,8 @@
   <mat-form-field class="g-form-input" appearance="fill">
     <mat-label>{{'name' | translate}}</mat-label>
     <input matInput type="text" formControlName="name">
-    <mat-error *ngIf="formGp.get('name').hasError('required')">
-      {{'name' | flErrorRequired}}
+    <mat-error *ngIf="formGp.get('name').errors">
+      {{'brick_name_error' | translate}}
     </mat-error>
   </mat-form-field>
 

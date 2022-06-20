@@ -22,6 +22,9 @@ export abstract class HnGeneratedDocEntity extends BlEntityWithId {
   @Column({type: 'text', nullable: true})
   doc: string;
 
+  @Column()
+  typingName: string;
+
   @Column({nullable: true})
   parentHumanName?: string;
 

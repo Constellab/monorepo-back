@@ -37,6 +37,7 @@ export class HnResourceService {
       resource.hide = r.hide;
       resource.brickMajor = technicalFolder.brickMajorVersion.major;
       resource.uniqueName = r.unique_name;
+      resource.typingName = r.typing_name;
 
       resource.humanName = r.human_name;
 
