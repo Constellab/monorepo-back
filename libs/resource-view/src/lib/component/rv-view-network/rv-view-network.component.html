@@ -1,4 +1,6 @@
-<fl-bio-network *ngIf="networks" [data]="networks"></fl-bio-network>
+<!--<fl-bio-network *ngIf="networks" [data]="networks"></fl-bio-network>-->
+
+<fl-bio-network-two *ngIf="networks" [networks]="$any(networks)"></fl-bio-network-two>
 
 <fl-error-text *ngIf="error" [errorMessage]="'biox.resource_is_not_a_network' | translate">
 </fl-error-text>

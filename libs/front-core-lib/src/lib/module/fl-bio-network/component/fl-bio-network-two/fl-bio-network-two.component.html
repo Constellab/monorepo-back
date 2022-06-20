@@ -1,0 +1,26 @@
+
+<mat-sidenav-container class="g-full-height" [hasBackdrop]="false">
+
+  <!-- Main content with chart -->
+  <mat-sidenav-content>
+    <div class="container" fxLayout="row">
+
+
+      <div class="g-full-height" fxFlex="auto" fxLayout="column">
+        <div #networkContainer fxFlex="auto" class="svg-container" (click)="closeDrawer()"></div>
+
+<!--        <fl-bio-network-action-bar></fl-bio-network-action-bar>-->
+
+      </div>
+
+      <!--   Drawer opener   -->
+      <fl-drawer-opener [drawer]="sidenav"></fl-drawer-opener>
+
+    </div>
+
+  </mat-sidenav-content>
+
+  <mat-sidenav mode="over" position="end" #sidenav>
+    <fl-bio-network-drawer></fl-bio-network-drawer>
+  </mat-sidenav>
+</mat-sidenav-container>

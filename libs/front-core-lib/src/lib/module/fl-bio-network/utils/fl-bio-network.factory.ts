@@ -137,8 +137,9 @@ export class FlBioNetworkFactory {
         let metaboliteNode: FlBioNetworkD3Node;
 
         if (metabolite.is_cofactor) {
-          metaboliteNode = this.createCofactor(metabolite);
-          reactionNode.addChildNode(metaboliteNode);
+          continue;
+          // metaboliteNode = this.createCofactor(metabolite);
+          // reactionNode.addChildNode(metaboliteNode);
         } else {
           metaboliteNode = this.metabolites.find(metabolite => metabolite.data.id === metaboliteId
             && metabolite.cluster.clusterId === reactionNode.cluster.clusterId);

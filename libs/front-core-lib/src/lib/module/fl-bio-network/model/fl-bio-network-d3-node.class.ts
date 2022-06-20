@@ -13,8 +13,11 @@ export const flBioNetworkNodeTextClass: string = 'node-text';
 export type FlBioNetworkD3NodeType = 'metabolite' | 'reaction' | 'cofactor';
 
 export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements SimulationNodeDatum {
+  private static globalId: number = 0;
 
+  // todo switch to string or int
   id: symbol = Symbol();
+
 
   // the following properties are set by d3
   // Node’s zero-based index into nodes array. This property is set during the initialization process of a simulation.
@@ -39,10 +42,16 @@ export abstract class FlBioNetworkD3Node extends FlBioNetworkD3Object implements
   public childNodes: FlBioNetworkD3Node[] = [];
 
 
+  // todo a voir quoi faire
+  readonly id2: number;
+  public readonly uniqueColor: string;
+
   protected constructor(public name: string, public type: FlBioNetworkD3NodeType,
                         public defaultColor: string, public strokeColor: string,
                         public data: FlBioNetworkMetabolite | FlBioNetworkReaction) {
     super();
+    this.id2 = FlBioNetworkD3Node.globalId++;
+    this.uniqueColor = '#' + ((this.id2 * 1234567) % Math.pow(2, 24)).toString(16).padStart(6, '0');
   }
 
 

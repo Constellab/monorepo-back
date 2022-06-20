@@ -14,6 +14,7 @@ export * from './component/fl-bio-network-node-links/fl-bio-network-node-links.c
 export * from './component/fl-bio-network-node-search/fl-bio-network-node-search.component';
 export * from './component/fl-bio-network-reaction-detail/fl-bio-network-reaction-detail.component';
 export * from './component/fl-bio-network-selection-info/fl-bio-network-selection-info.component';
+export * from './component/fl-bio-network-two/fl-bio-network-two.component';
 export * from './component/fl-bio-network-zoom/fl-bio-network-zoom.component';
 
 // Models
@@ -36,7 +37,9 @@ export * from './state/fl-bio-network-grid.state';
 export * from './state/fl-bio-network-group.state';
 export * from './state/fl-bio-network-options.state';
 export * from './state/fl-bio-network-renderer.state';
+export * from './state/fl-bio-network-renderer-two.state';
 export * from './state/fl-bio-network-selection.state';
+export * from './state/fl-bio-network-selection-two.state';
 export * from './state/fl-bio-network-zoom.state';
 
 // Utils

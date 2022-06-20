@@ -50,6 +50,10 @@ export class FlBioNetworkD3 {
     return this.reactions.filter(reaction => reaction.isInPathway(pathwayId));
   }
 
+  public getAllObjects(): FlBioNetworkD3Object[] {
+    return [...this.getAllNodes(), ...this.links];
+  }
+
   // return the min and max value of all links
   public getLinksDomain(): [number, number] {
     let min: number = 0;
@@ -118,6 +122,10 @@ export abstract class FlBioNetworkD3Object {
 
   // use to store the level if there is some calculation
   protected _level: number;
+
+  // todo a voir
+  public selected: boolean = false;
+
 
   defaultColor: string;
 

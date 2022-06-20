@@ -54,6 +54,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {
   FlBioNetworkClustersListComponent
 } from './component/fl-bio-network-clusters-list/fl-bio-network-clusters-list.component';
+import {FlBioNetworkTwoComponent} from './component/fl-bio-network-two/fl-bio-network-two.component';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -72,10 +73,12 @@ import {
     FlBioNetworkNodeSearchComponent,
     FlBioNetworkReactionDetailComponent,
     FlBioNetworkMetaboliteDetailComponent,
-    FlBioNetworkClustersListComponent
+    FlBioNetworkClustersListComponent,
+    FlBioNetworkTwoComponent
   ],
   exports: [
     FlBioNetworkComponent,
+    FlBioNetworkTwoComponent,
   ],
   imports: [
     CommonModule,
