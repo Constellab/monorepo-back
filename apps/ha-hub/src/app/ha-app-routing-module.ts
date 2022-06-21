@@ -16,7 +16,8 @@ const routes: Routes = [
       {
         preloadingStrategy: PreloadAllModules,
         scrollPositionRestoration: 'enabled',
-        relativeLinkResolution: 'legacy'
+        relativeLinkResolution: 'legacy',
+        paramsInheritanceStrategy: 'always'
       }
     ),
   ],

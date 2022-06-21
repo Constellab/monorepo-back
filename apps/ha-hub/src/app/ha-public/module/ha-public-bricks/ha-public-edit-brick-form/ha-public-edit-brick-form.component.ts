@@ -1,10 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {HaBrick, HaBrickDTO} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
+import {HaBrickCreationDTO, HaBrickDTO} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {Router} from '@angular/router';
 import {FlGlobalValidators} from '@monorepo/front-core-lib';
+import {HaAddVersionInput, HaRepoType} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
 
 @Component({
   selector: 'ha-public-edit-brick-form',
@@ -13,12 +14,15 @@ import {FlGlobalValidators} from '@monorepo/front-core-lib';
 })
 export class HaPublicEditBrickFormComponent implements OnInit {
 
-  @Input()
-  brick: HaBrick;
+  brick: HaBrickCreationDTO;
 
-  formGp: FormGroup;
+  formGp: FormGroup<HaBrickCreationDTO>;
 
   isLoading: boolean;
+  inputFile: HaAddVersionInput;
+  errorFile: boolean;
+  errorFileText: string;
+  errorInput: Record<string, boolean> = {};
 
   constructor(
     private brickService: HaBrickService,
@@ -33,15 +37,16 @@ export class HaPublicEditBrickFormComponent implements OnInit {
   buildForm(): void {
 
     this.formGp = new FormBuilder().group({
-      id: [null],
       name: [null, [Validators.required, Validators.pattern(/^\S*$/)]],
       description: [null, [Validators.required, Validators.maxLength(255)]],
       version: [null, [Validators.required, Validators.pattern(new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]],
-      repoType: [null, Validators.required],
+      repoType: [HaRepoType.PIP, Validators.required],
       isBeta: [false, Validators.required],
       subPatch: [null, [Validators.min(0), FlGlobalValidators.isInteger]],
       repoGit: [null],
-      repoPip: [null]
+      repoPip: [null],
+      technicalInfo: [null],
+      references: [null]
     });
   }
 
@@ -50,10 +55,6 @@ export class HaPublicEditBrickFormComponent implements OnInit {
     const formValue: Partial<HaBrickDTO> = this.formGp.value;
     if (this.formGp.valid && !this.isLoading) {
       this.isLoading = true;
-    }
-    if (formValue.id) {
-      //update
-    } else {
       this.brickService.create(formValue).subscribe(
         {
           next: (brick) => {
@@ -65,6 +66,53 @@ export class HaPublicEditBrickFormComponent implements OnInit {
           }
         }
       )
+    }
+  }
+
+  onFileSelected($event: any): void {
+    this.errorFile = false;
+    this.errorInput = {}
+    this.inputFile = null;
+    this.formGp.reset();
+    if (!$event.target.files[0].name.endsWith('.json')) {
+      this.errorFile = true;
+      this.errorFileText = 'file_wrong_type';
+    }
+    if (typeof (FileReader) !== 'undefined' && !this.errorFile) {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        const srcResult = JSON.parse(e.target.result);
+        this.brickService.getByName(srcResult.name).subscribe(res => {
+          if(res == null){
+            this.inputFile =
+              new HaAddVersionInput(true, srcResult.name, srcResult.version, srcResult.environment, srcResult.technical_info);
+            this.formGp.controls.name.setValue(this.inputFile.name);
+            const version: string[] = this.inputFile.version.split('-');
+            this.formGp.controls.version.setValue(version[0]);
+            this.formGp.controls.references.setValue(this.inputFile.brickVersionReferences);
+            this.formGp.controls.technicalInfo.setValue(this.inputFile.technicalInfo);
+            this.formGp.controls.isBeta.setValue(this.inputFile.isBeta);
+            this.formGp.controls.repoType.setValue(HaRepoType.PIP);
+            if(this.inputFile.isBeta){
+              this.formGp.controls.subPatch.setValue(this.inputFile.subPatch);
+            }
+
+            if(!this.formGp.controls.name.valid){
+              this.errorInput['name'] = true;
+            }
+            if(!this.formGp.controls.version.valid){
+              this.errorInput['version'] = true;
+            }
+          } else {
+            this.errorFile = true;
+            this.errorFileText = 'brick_already_exists'
+          }
+        })
+
+      };
+
+      reader.readAsText($event.target.files[0]);
     }
   }
 }

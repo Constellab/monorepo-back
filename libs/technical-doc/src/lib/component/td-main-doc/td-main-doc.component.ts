@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {TdTypeEntity, TdUniqueType} from '../../model/td-type.entity';
 import {TdTypingName} from '../../model/td-typing-name.entity';
 import {FlColorHelper} from '@monorepo/front-core-lib';
@@ -8,10 +8,14 @@ import {FlColorHelper} from '@monorepo/front-core-lib';
   templateUrl: './td-main-doc.component.html',
   styleUrls: ['./td-main-doc.component.scss']
 })
-export class TdMainDocComponent implements OnInit, OnChanges {
+export class TdMainDocComponent implements OnInit {
 
-  @Input()
-  entity: TdTypeEntity;
+  @Input() set entity(e: TdTypeEntity) {
+    this._entity = e;
+    this.setup();
+  }
+
+  _entity: TdTypeEntity;
 
   uniqueEntityParent: TdUniqueType;
 
@@ -23,22 +27,18 @@ export class TdMainDocComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.setupMain();
   }
 
-  ngOnChanges(): void {
-    this.setupMain();
-  }
-
-
-  private setupMain(): void{
+  private setup(): void {
     this.uniqueEntityParent = {
-      humanName: this.entity.parentHumanName,
-      version: this.entity.parentVersion,
-      typingName: this.entity.parentTypingName
+      humanName: this._entity.parentHumanName,
+      version: this._entity.parentVersion,
+      typingName: this._entity.parentTypingName
     }
-    this.entityParentType = new TdTypingName(this.uniqueEntityParent.typingName).getType();
-    this.color = FlColorHelper.stringToRGBColor(this.uniqueEntityParent.typingName);
+    if(this.uniqueEntityParent.typingName){
+      this.entityParentType = new TdTypingName(this.uniqueEntityParent.typingName).getType();
+      this.color = FlColorHelper.stringToRGBColor(this.uniqueEntityParent.typingName);
+    }
   }
 
 }

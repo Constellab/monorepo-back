@@ -1,20 +1,20 @@
-<div class="g-text-editor-hint g-text-editor-hint-warning deprecated-message-div" *ngIf="entity.deprecatedSince">
-  <div><strong>{{'td.deprecated_since' | translate}} : {{entity.deprecatedSince}}</strong></div>
-  <div>{{entity.deprecatedMessage}}</div>
+<div class="g-text-editor-hint g-text-editor-hint-warning deprecated-message-div" *ngIf="_entity.deprecatedSince">
+  <div><strong>{{'td.deprecated_since' | translate}} : {{_entity.deprecatedSince}}</strong></div>
+  <div>{{_entity.deprecatedMessage}}</div>
 </div>
 
-<fl-key-value *ngIf="entity.status" class="key-val">
+<fl-key-value *ngIf="_entity.status" class="key-val">
   <fl-key>{{'td.status' | translate}}</fl-key>
-  {{entity.status}}
+  {{_entity.status}}
 </fl-key-value>
-<fl-key-value *ngIf="entity.parentTypingName" class="key-val parent-link-div">
+<fl-key-value *ngIf="_entity.parentTypingName" class="key-val parent-link-div">
   <fl-key>{{'td.parent' | translate}}</fl-key>
   <div class="parent-link-div">
     <div class="resource-color-div" [style.background-color]="color" *ngIf="entityParentType==='RESOURCE'"></div>
     <td-tech-doc-link [uniqueElement]="uniqueEntityParent"></td-tech-doc-link>
-    v.{{entity.parentVersion}}
+    v.{{_entity.parentVersion}}
   </div>
 </fl-key-value>
-<p>{{entity.shortDescription}}</p>
+<p>{{_entity.shortDescription}}</p>
 
-<div class="technical-doc-content" [innerHTML]="entity.doc | tdMarkdown"></div>
+<div class="technical-doc-content" [innerHTML]="_entity.doc | tdMarkdown"></div>

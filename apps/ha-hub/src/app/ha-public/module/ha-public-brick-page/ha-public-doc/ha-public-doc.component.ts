@@ -51,7 +51,9 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
       this.brickName = url[0].path;
       this.brickVersion = url[1].path;
       this.getActiveDoc();
+
     });
+
 
     //create a debouncer to save the description after x second of idle
     this.contentDebouncer = new FlDebouncer(FlDebouncer.AUTO_SAVE_DEBOUNCE_TIME);
@@ -65,6 +67,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   }
 
   private getActiveDoc(): void {
+
     this.route.url.subscribe((url: UrlSegment[]) => {
       if (url.toString() != this.lastUrl && this.lastUrl != '') {
         this.getDocumentationByPath(url);
@@ -81,6 +84,8 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   }
 
   private getDocumentationByPath(url: UrlSegment[]): void {
+    this.isLoading = true;
+    this.titles = [];
     this.documentation = null;
     this.isCheck = false;
     let isFirstDoc: boolean = false;

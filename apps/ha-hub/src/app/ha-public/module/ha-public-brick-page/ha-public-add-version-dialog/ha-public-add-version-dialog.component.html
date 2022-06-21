@@ -4,10 +4,10 @@
 
 <mat-dialog-content>
   <p class="input-div" *ngIf="!inputFile">{{'import-new-version-text1' | translate}}</p>
-  <button mat-raised-button color="primary" (click)="fileInput.click()" class="bt-input-div">
+  <button mat-raised-button color="primary" (click)="input.click()" class="bt-input-div">
     {{'import-new-version-file' | translate}}
   </button>
-  <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
+  <input hidden (change)="onFileSelected($event)" #input type="file" id="file">
   <p class="input-error-text" *ngIf="errorFile">{{errorFileText | translate}}</p>
   <mat-divider class="divider" *ngIf="inputFile"></mat-divider>
 

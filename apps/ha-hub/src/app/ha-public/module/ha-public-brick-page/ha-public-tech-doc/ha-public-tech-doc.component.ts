@@ -35,17 +35,14 @@ export class HaPublicTechDocComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.route.parent.parent.url.subscribe(url => {
-      this.brickName = url[0].path;
-      this.brickVersion = url[1].path;
-      this.getActiveDoc();
-    });
-
+    this.getActiveDoc();
   }
 
   private getActiveDoc(): void {
     this.route.params.subscribe(params => {
-      this.brickService.getTechDocByPath(this.brickName, this.brickVersion, params['type'], params['uniqueName']).subscribe(techDoc => {
+      this.isLoading = true;
+      this.brickService.getTechDocByPath(params.brickName, params.version,
+        params.type, params.uniqueName).subscribe(techDoc => {
         this.techDoc = techDoc;
         this.isLoading = false;
       });

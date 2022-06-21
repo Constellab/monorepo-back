@@ -33,14 +33,26 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     return brickVersion;
   }
 
-  async createFirstBrickVersion(brickVersion: HnBrickVersion, entityManager: EntityManager): Promise<HnBrickVersion> {
-    return await entityManager.save(brickVersion);
+  async createFirstBrickVersion(brickMajorVersion: HnBrickMajorVersion,brickVersion: HnBrickVersion,
+                                references: HnReferenceDTO[], entityManager: EntityManager): Promise<HnBrickVersion> {
+    const newBrickVersion: HnBrickVersion = await entityManager.save(brickVersion);
+    return this.createNewBrickVersion(brickMajorVersion, {
+      version : brickVersion.version.toString(),
+      brickId: brickMajorVersion.brick.id,
+      technicalInfo: brickVersion.technicalInfo,
+      repoType: brickVersion.repoType,
+      references: references}
+    );
   }
 
 
-  async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO): Promise<HnBrickVersion> {
+  async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO,
+                              entityManager?: EntityManager): Promise<HnBrickVersion> {
     let res: HnBrickVersion = null;
-    res = await getManager().transaction(async entityManager => {
+    res = await getManager().transaction(async entityManager2 => {
+      if(entityManager != null){
+        entityManager2 = entityManager;
+      }
       const newBrickVersion: HnBrickVersion = new HnBrickVersion();
       const version: CmVersion = CmVersion.fromString(newVersion.version);
       const bv: HnBrickVersion = await this.brickVersionsRepository.findOne({
@@ -104,7 +116,9 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
 
       return res;
     });
-    await this.sendBrickVersionIdToTransport(res.id);
+    if(entityManager == null){
+      await this.sendBrickVersionIdToTransport(res.id);
+    }
     return res;
   }
 

@@ -1,42 +1,4 @@
 <div [formGroup]="formGp">
-  <!--  version  -->
-  <mat-form-field class="g-form-input" appearance="fill">
-    <mat-label>{{'version' | translate}}</mat-label>
-    <input matInput formControlName="version" required flInputMaxLength="50"
-           placeholder="{{'version' | translate}}">
-    <mat-error *ngIf="formGp.get('version').errors">
-      {{'version_error_pattern' | translate}}
-    </mat-error>
-  </mat-form-field>
 
-  <!--  type of repository  -->
-  <mat-form-field class="g-form-input" appearance="fill">
-    <mat-label>{{'type_of_repository' | translate}}</mat-label>
-    <mat-select placeholder="{{'type_of_repository' | translate}}" required formControlName="repoType" value="GIT">
-      <mat-option value="GIT" >GIT</mat-option>
-      <mat-option value="PIP">PIP</mat-option>
-    </mat-select>
-    <mat-error *ngIf="formGp.get('repoType').hasError('required')">
-      {{'type_of_repository' | flErrorRequired}}
-    </mat-error>
-  </mat-form-field>
-
-  <label>{{'is_it_a_beta_version' | translate}} ?</label>
-  <br>
-  <!--  isBeta  -->
-  <mat-radio-group formControlName="isBeta" name="type">
-    <mat-radio-button [value]="true" class="g-mat-radio-include-bottom" (change)="radioToggle(!formGp.value.isBeta)">{{'yes' | translate }}</mat-radio-button>
-    <mat-radio-button [value]="false" [checked]="true" class="g-mat-radio-include-bottom" (change)="radioToggle(!formGp.value.isBeta)">{{'no' | translate }}</mat-radio-button>
-  </mat-radio-group>
-
-  <!--  subPatch  -->
-  <mat-form-field class="g-form-input" *ngIf="formGp.value.isBeta" appearance="fill">
-    <mat-label>{{'sub_patch_number' | translate}}</mat-label>
-    <input matInput formControlName="subPatch" required flInputMaxLength="50"
-           placeholder="{{'sub_patch_number' | translate}}" type="number">
-    <mat-error *ngIf="formGp.get('subPatch').errors">
-      {{'sub_patch_number_error' | translate}}
-    </mat-error>
-  </mat-form-field>
 </div>
 

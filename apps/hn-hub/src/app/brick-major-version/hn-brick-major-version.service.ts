@@ -3,7 +3,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickMajorVersion, HnVersionState} from './hn-brick-major-version.entity';
 import {EntityManager, Repository} from 'typeorm';
 import {HnFolderService} from '../folder/hn-folder.service';
-import {HnBrick} from '../brick/hn-brick.entity';
+import {HnBrick, HnCreateBrickDTO} from '../brick/hn-brick.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
 import {HnBrickVersion, HnNewVersionDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
@@ -25,17 +25,24 @@ export class HnBrickMajorVersionService {
   ) {
   }
 
-  async create(brick: HnBrick, version: CmVersion, repoType: HnRepoType, entityManager: EntityManager): Promise<HnBrickVersion> {
+  async create(brick: HnBrick, createdBrick: HnCreateBrickDTO, entityManager: EntityManager): Promise<HnBrickVersion> {
     let brickMajorVersion: HnBrickMajorVersion = new HnBrickMajorVersion();
-    brickMajorVersion.initialize(brick, version.major);
+    brickMajorVersion.initialize(brick, createdBrick.version.major);
     brickMajorVersion = await entityManager.save(brickMajorVersion);
-    const cmVersion: CmVersion = version.subPatch != null ?
-      new CmVersion(+version.major, +version.minor, +version.patch, +version.subPatch) :
-      new CmVersion(+version.major, +version.minor, +version.patch);
+    const cmVersion: CmVersion = createdBrick.version.subPatch != null ?
+      new CmVersion(+createdBrick.version.major, +createdBrick.version.minor,
+        +createdBrick.version.patch, +createdBrick.version.subPatch) :
+      new CmVersion(+createdBrick.version.major, +createdBrick.version.minor, +createdBrick.version.patch);
     let brickVersion: HnBrickVersion = new HnBrickVersion();
-    brickVersion.initialize(brickMajorVersion, cmVersion, repoType, null);
-    brickVersion = await this.brickVersionService.createFirstBrickVersion(brickVersion, entityManager);
-
+    brickVersion.initialize(brickMajorVersion, cmVersion, createdBrick.repoType, createdBrick.technicalInfo);
+    brickVersion = await this.brickVersionService.createNewBrickVersion(brickMajorVersion,
+      {
+        version: brickVersion.version.toString(),
+        brickId: brickMajorVersion.brick.id,
+        references: createdBrick.references,
+        repoType: createdBrick.repoType,
+        technicalInfo: createdBrick.technicalInfo
+      }, entityManager);
     await this.folderService.createMainFolders(brickMajorVersion, entityManager);
 
     return brickVersion;

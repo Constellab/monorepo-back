@@ -1,7 +1,6 @@
 import {HaEntity} from './ha-entity.class';
 import {CmVersion} from '@monorepo/common-model';
-import {HaRepoType} from './ha-version.class';
-import {HaVersionType} from './ha-version.class';
+import {HaReferenceDTO, HaRepoType, HaVersionType} from './ha-version.class';
 
 export class HaBrick extends HaEntity {
   name: string;
@@ -17,6 +16,31 @@ export class HaBrick extends HaEntity {
   lastVersion: CmVersion;
 
   imageLink?: string;
+}
+
+export class HaBrickCreationDTO{
+  name: string;
+  description: string;
+  repoGit: string;
+  repoPip: string;
+  version: string;
+  repoType: HaRepoType;
+  isBeta: boolean = false;
+  subPatch?: number;
+  technicalInfo?: Record<string, any>;
+  references?: HaReferenceDTO[]
+
+  constructor(name: string, version: string, technicalInfo: Record<string, any>, references: HaReferenceDTO[]) {
+    this.name = name;
+    this.version = version;
+    this.technicalInfo = technicalInfo;
+    this.references = references;
+    this.description = '';
+    this.repoType = HaRepoType.PIP;
+    this.subPatch = 0;
+    this.repoGit = '';
+    this.repoPip = '';
+  }
 }
 
 

@@ -2,7 +2,7 @@ import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {Column, Entity, Unique} from 'typeorm';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CmVersion} from '@monorepo/common-model';
-import {HnRepoType} from '../brick-version/hn-brick-version.entity';
+import {HnReferenceDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
 
 export class HnCreateBrickDTO {
   name: string;
@@ -13,6 +13,8 @@ export class HnCreateBrickDTO {
   isBeta?: boolean;
   subPatch?: number;
   version: CmVersion;
+  references?: HnReferenceDTO[];
+  technicalInfo?: Record<string, any>
 }
 
 @Unique(['name'])

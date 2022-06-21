@@ -1,4 +1,5 @@
 import {HaEntity} from './ha-entity.class';
+import {CmVersion} from '@monorepo/common-model';
 
 export enum HaRepoType {
   PIP = 'PIP',
@@ -37,11 +38,17 @@ export class HaAddVersionInput{
   version: string;
   brickVersionReferences: HaReferenceDTO[];
   technicalInfo: Record<string, any>;
+  isBeta: boolean;
+  subPatch: number;
 
   constructor(isNew: boolean, name: string, version: string, environment: HaEnvironmentDTO, technicalInfo: Record<string, any>) {
     this.isNew = isNew;
     this.name = name;
     this.version = version;
+    this.isBeta = CmVersion.fromString(version).isBeta();
+    if(this.isBeta){
+      this.subPatch = CmVersion.fromString(version).subPatch;
+    }
     this.technicalInfo = technicalInfo;
     this.brickVersionReferences = [];
     for(const d of environment.pip){

@@ -10,7 +10,6 @@ import {HaBrick} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 })
 export class HaPublicEditBrickPageComponent implements OnInit {
 
-  brick: HaBrick;
   loaded = false;
 
   constructor(
@@ -20,20 +19,7 @@ export class HaPublicEditBrickPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      if (params.brickId)
-        this.getBrick(params.brickId);
-      else {
-        this.loaded = true;
-      }
-    });
-
-  }
-
-  private getBrick(id: string): void{
-    this.brickService.getById(id).subscribe(brick => {
-      this.brick = brick;
-    })
+    this.loaded = true;
   }
 
 }

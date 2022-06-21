@@ -136,6 +136,8 @@
   "import-new-version-file": "Import the file 'settings.json'",
   "import-new-version-text1": "To declare a new brick version, select the file 'settings.json' at the root of the brick project",
   "import-new-version-text2": "Here is the information extracted from the file, check if it's correct before saving the new version",
+  "import-new-brick-text1": "To declare a naw brick, select the file 'settings.json' at the root of the brick project",
+  "import-new-brick-text2": "Here is the information extracted from the file, check if it's correct before saving the new brick",
   "direct_references": "Direct references",
   "indirect_references": "Indirect references",
   "references": "References",
@@ -143,6 +145,6 @@
   "replace_version_text": "This action will replace an existing version",
   "brick_name_error": "The brick name must be referenced without space",
   "file_wrong_type": "The imported file is not a valid json file",
-  "file_wrong_brick_or_major": "Wrong brick or major version"
-
+  "file_wrong_brick_or_major": "Wrong brick or major version",
+  "brick_already_exists": "The brick referenced in the 'settings.json' file already exists"
 }

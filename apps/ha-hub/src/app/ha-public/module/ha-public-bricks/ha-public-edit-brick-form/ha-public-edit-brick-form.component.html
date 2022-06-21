@@ -1,12 +1,38 @@
-<form (ngSubmit)="submit()" class="brick-form" [formGroup]="formGp">
-  <!--  name  -->
-  <mat-form-field class="g-form-input" appearance="fill">
-    <mat-label>{{'name' | translate}}</mat-label>
-    <input matInput type="text" formControlName="name">
-    <mat-error *ngIf="formGp.get('name').errors">
-      {{'brick_name_error' | translate}}
-    </mat-error>
-  </mat-form-field>
+<div>
+  <p class="input-div" *ngIf="!inputFile">{{'import-new-brick-text1' | translate}}</p>
+  <button mat-raised-button color="primary" (click)="fileInput.click()" class="bt-input-div">
+    {{'import-new-version-file' | translate}}
+  </button>
+  <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
+  <p class="input-error-text" *ngIf="errorFile">{{errorFileText | translate}}</p>
+</div>
+
+
+
+<div *ngIf="inputFile && (errorInput | flIsNotEmpty)">
+  <p *ngFor="let e of errorInput | flObjectKeys">{{e}} : syntax invalid</p>
+</div>
+
+<form (ngSubmit)="submit()" class="brick-form" [formGroup]="formGp" *ngIf="inputFile && !(errorInput | flIsNotEmpty)">
+
+  <p>{{'import-new-brick-text2' | translate}}</p>
+
+  <fl-key-value class="input">
+    <fl-key>{{'name' |translate}}</fl-key>
+    {{inputFile.name}}
+  </fl-key-value>
+
+  <fl-key-value class="input">
+    <fl-key>{{'version' |translate}}</fl-key>
+    {{formGp.value.version}}
+  </fl-key-value>
+  <fl-key-value class="input" *ngIf="formGp.value.isBeta">
+    <fl-key>{{'sub_patch_number' |translate}}</fl-key>
+    {{inputFile.subPatch}}
+  </fl-key-value>
+
+  <mat-divider class="divider" *ngIf="inputFile"></mat-divider>
+
 
   <!--  description  -->
   <mat-form-field class="g-form-input" appearance="fill">
@@ -21,21 +47,25 @@
   <mat-form-field class="g-form-input" appearance="fill">
     <mat-label>{{'repo_git' | translate}}</mat-label>
     <input matInput type="text" formControlName="repoGit">
-    <mat-error *ngIf="formGp.get('repoGit').hasError('required')">
-      {{'repo_git' | flErrorRequired}}
-    </mat-error>
   </mat-form-field>
 
   <!--  pipRepo  -->
   <mat-form-field class="g-form-input" appearance="fill">
     <mat-label>{{'repo_pip' | translate}}</mat-label>
     <input matInput type="text" formControlName="repoPip">
-    <mat-error *ngIf="formGp.get('repoPip').hasError('required')">
-      {{'repo_pip' | flErrorRequired}}
-    </mat-error>
   </mat-form-field>
 
-  <ha-add-version-form [formGp]="formGp"></ha-add-version-form>
+  <!--  type of repository  -->
+  <mat-form-field class="g-form-input" appearance="fill">
+    <mat-label>{{'type_of_repository' | translate}}</mat-label>
+    <mat-select placeholder="{{'type_of_repository' | translate}}" required formControlName="repoType" value="GIT">
+      <mat-option value="GIT" >GIT</mat-option>
+      <mat-option value="PIP">PIP</mat-option>
+    </mat-select>
+    <mat-error *ngIf="formGp.get('repoType').hasError('required')">
+      {{'type_of_repository' | flErrorRequired}}
+    </mat-error>
+  </mat-form-field>
 
   <button mat-raised-button color="primary" type="submit" class="g-centered-forced">
     {{'save' | translate}}

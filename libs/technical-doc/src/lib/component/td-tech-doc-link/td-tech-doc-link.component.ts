@@ -8,10 +8,13 @@ import {TdTypingName} from '../../model/td-typing-name.entity';
   templateUrl: './td-tech-doc-link.component.html',
   styleUrls: ['./td-tech-doc-link.component.scss']
 })
-export class TdTechDocLinkComponent implements OnInit, OnChanges{
+export class TdTechDocLinkComponent implements OnInit{
 
-  @Input()
-  uniqueElement: TdUniqueType;
+  @Input() set uniqueElement(u: TdUniqueType){
+    this._uniqueElement = u;
+    this.setup();
+  }
+  _uniqueElement: TdUniqueType;
 
   isAbsolute: boolean;
   url: string;
@@ -22,17 +25,12 @@ export class TdTechDocLinkComponent implements OnInit, OnChanges{
   }
 
   ngOnInit(): void {
-    this.setup();
-  }
-
-  ngOnChanges(): void{
-    this.setup();
   }
 
   private setup(): void{
-    const typingName: TdTypingName = new TdTypingName(this.uniqueElement.typingName);
+    const typingName: TdTypingName = new TdTypingName(this._uniqueElement.typingName);
 
-    const techDocUrl = this.tdServiceConfig.getTechnicalDocUrl(this.uniqueElement.version, typingName);
+    const techDocUrl = this.tdServiceConfig.getTechnicalDocUrl(this._uniqueElement.version, typingName);
 
 
     this.isAbsolute = techDocUrl.isAbsolute; // true if getTechnicalDocUrl returned an absolute url

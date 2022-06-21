@@ -51,7 +51,7 @@ export class HnBrickService {
     brick = await getManager().transaction(async entityManager => {
       brick = await entityManager.save(brick);
       if (createdBrick.isBeta) createdBrick.version.subPatch = createdBrick.subPatch;
-      brickVersion = await this.brickMajorVersionService.create(brick, createdBrick.version, createdBrick.repoType, entityManager);
+      brickVersion = await this.brickMajorVersionService.create(brick, createdBrick, entityManager);
 
 
       return brick;

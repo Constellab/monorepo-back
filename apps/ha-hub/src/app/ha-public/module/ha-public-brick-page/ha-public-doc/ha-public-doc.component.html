@@ -1,18 +1,19 @@
 <div class="sidenavBody">
-  <div class="loader" *ngIf="isLoading">
-    <fl-loader size="medium"></fl-loader>
-  </div>
-  <div class="content" *ngIf="!isLoading">
-    <div class="doc-title-div" *ngIf="documentation">
+
+  <div class="content">
+    <div class="loader" *ngIf="isLoading">
+      <fl-loader size="medium"></fl-loader>
+    </div>
+    <div class="doc-title-div" *ngIf="documentation && !isLoading">
       <h1 class="doc-title">{{documentation.title}}</h1>
     </div>
-    <form class="documentation-form" [formGroup]="formGp">
+    <form class="documentation-form" [formGroup]="formGp" *ngIf="!isLoading">
       <fl-text-editor class="content-editor g-max-article-width" formControlName="content"
                       [disabled]="(isAdmin | async) === false" mode="JSON" scrollContainer="child"
                       [config]="textEditorConfig" (textChange)="onContentUpdate($event)"></fl-text-editor>
     </form>
   </div>
-  <div class="side" fxHide.lt-lg>
+  <div class="side" fxHide.lt-lg >
     <ng-container *ngFor="let title of titles; let i = index">
       <ng-container *ngIf="title[0] === 2; else e">
         <h4>{{title[1]}}</h4>
