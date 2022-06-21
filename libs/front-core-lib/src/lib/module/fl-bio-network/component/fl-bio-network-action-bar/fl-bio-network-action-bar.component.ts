@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {MatSliderChange} from '@angular/material/slider';
-import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {filter} from 'rxjs/operators';
 import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
 import {FlBioNetworkLinkColorScale, FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
 import {FlBioNetworkMetaboliteLevel} from '../../model/fl-bio-network.class';
+import {FlBioNetworkSelectionTwoState} from '../../state/fl-bio-network-selection-two.state';
 
 /**
  * Component inside the {@link FlBioNetworkComponent} to show the quick actions
@@ -31,7 +31,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   constructor(private cdr: ChangeDetectorRef,
               private state: FlBioNetworkState,
-              private selectionState: FlBioNetworkSelectionState,
+              private selectionState: FlBioNetworkSelectionTwoState,
               private optionState: FlBioNetworkOptionsState) {
   }
 

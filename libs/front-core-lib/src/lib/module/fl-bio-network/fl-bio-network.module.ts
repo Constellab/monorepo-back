@@ -74,7 +74,7 @@ import {FlBioNetworkTwoComponent} from './component/fl-bio-network-two/fl-bio-ne
     FlBioNetworkReactionDetailComponent,
     FlBioNetworkMetaboliteDetailComponent,
     FlBioNetworkClustersListComponent,
-    FlBioNetworkTwoComponent
+    FlBioNetworkTwoComponent,
   ],
   exports: [
     FlBioNetworkComponent,

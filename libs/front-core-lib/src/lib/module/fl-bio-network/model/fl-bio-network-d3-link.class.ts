@@ -93,11 +93,11 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
 
   ////////////////////////////////////// NODES //////////////////////////////////////
 
-  isLinkedToNode(nodeId: symbol): boolean {
+  isLinkedToNode(nodeId: number): boolean {
     return this.source.id === nodeId || this.target.id === nodeId;
   }
 
-  isLinkedToAnyNode(nodeIds: symbol[]): boolean {
+  isLinkedToAnyNode(nodeIds: number[]): boolean {
     return nodeIds.some(nodeIndex => this.isLinkedToNode(nodeIndex));
   }
 
@@ -106,13 +106,14 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
     return this.source instanceof FlBioNetworkD3Cofactor || this.target instanceof FlBioNetworkD3Cofactor;
   }
 
+  // todo to remove
   getLinkWidth(): number {
     const level = this.getLevel();
     switch (level) {
       case FlBioNetworkMetaboliteLevel.MAJOR:
-        return this.absLog10Value + 5;
+        return this.absLog10Value + 3;
       case FlBioNetworkMetaboliteLevel.MINOR:
-        return this.absLog10Value + 1.5;
+        return this.absLog10Value + 1;
       case FlBioNetworkMetaboliteLevel.COFACTOR:
         return Math.max(this.absLog10Value, 1);
     }

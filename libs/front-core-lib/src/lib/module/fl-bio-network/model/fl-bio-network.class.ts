@@ -106,7 +106,8 @@ export interface FlBioNetworkPathwayDetail {
 }
 
 // TODO to improve when the cluster will be fully activated
-export interface FlBioNetworkClusterSelection extends FlBioNetworkPathwayDetail {
+export interface FlBioNetworkClusterSelection {
+  name: string;
   selected: boolean;
   highlighted: boolean;
   color: string;

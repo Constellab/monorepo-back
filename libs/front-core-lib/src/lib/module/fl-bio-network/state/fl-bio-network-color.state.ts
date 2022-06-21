@@ -70,11 +70,11 @@ export class FlBioNetworkColorState {
     this.changeLinkColor(nodeLevels, colorFunction);
   }
 
-  private getClusterColorFunction(pathways: FlBioNetworkClusterSelection[]): FlColorFunction {
+  private getClusterColorFunction(clusters: FlBioNetworkClusterSelection[]): FlColorFunction {
     return (node: FlBioNetworkD3Object) => {
-      for (const pathway of pathways) {
-        if (node.isInCluster(pathway.id)) {
-          return pathway.color;
+      for (const cluster of clusters) {
+        if (node.isInCluster(cluster.name)) {
+          return cluster.color;
         }
       }
       return node.defaultColor;

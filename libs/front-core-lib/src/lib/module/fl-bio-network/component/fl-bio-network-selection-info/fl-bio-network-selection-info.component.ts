@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {Observable} from 'rxjs';
 import {FlBioNetworkSelectionEvent} from '../../model/fl-bio-network-selection.class';
 import {map} from 'rxjs/operators';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
+import {FlBioNetworkSelectionTwoState} from '../../state/fl-bio-network-selection-two.state';
 
 interface SelectionInfo {
   metabolites?: number;
@@ -26,7 +26,7 @@ export class FlBioNetworkSelectionInfoComponent implements OnInit {
 
   info$: Observable<SelectionInfo>;
 
-  constructor(private selectionState: FlBioNetworkSelectionState,
+  constructor(private selectionState: FlBioNetworkSelectionTwoState,
               private state: FlBioNetworkState) {
   }
 
@@ -38,7 +38,7 @@ export class FlBioNetworkSelectionInfoComponent implements OnInit {
 
   private countSelections(selection: FlBioNetworkSelectionEvent): SelectionInfo {
     // on none selection, get all the data
-    if(selection.mode === 'none'){
+    if (selection.mode === 'none') {
       return this.getAllSelectionInfo();
     }
 

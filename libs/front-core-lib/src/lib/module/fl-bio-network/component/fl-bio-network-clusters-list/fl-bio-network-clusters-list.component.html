@@ -15,21 +15,21 @@
   </mat-checkbox>
 </div>
 
-<div *ngFor="let pathway of clusters$ | async" fxLayout="row" fxLayoutAlign="start center">
+<div *ngFor="let cluster of clusters$ | async" fxLayout="row" fxLayoutAlign="start center">
   <button mat-icon-button class="highlight-icon g-button-icon-tiny"
-          (click)="toggleClusterColor(pathway)" [disabled]="!pathway.selected"
+          (click)="toggleClusterColor(cluster)" [disabled]="!cluster.selected"
           [matTooltip]="'flBioNetwork.highlight_pathway' | translate">
-    <mat-icon [style.color]="pathway.highlighted ? pathway.color: ''">
+    <mat-icon [style.color]="cluster.highlighted ? cluster.color: ''">
       colorize
     </mat-icon>
   </button>
 
   <mat-checkbox (click)="$event.stopPropagation()"
-                (change)="selectionChanged(pathway)"
-                [(ngModel)]="pathway.selected"
+                (change)="selectionChanged(cluster)"
+                [(ngModel)]="cluster.selected"
                 class="g-mat-checkbox-wrap-text">
     <div class="g-text-small g-text-capitalize-first">
-      {{pathway.name}} ({{pathway.id}})
+      {{cluster.name}}
     </div>
   </mat-checkbox>
 

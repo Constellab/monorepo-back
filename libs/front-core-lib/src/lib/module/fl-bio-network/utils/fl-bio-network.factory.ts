@@ -137,9 +137,9 @@ export class FlBioNetworkFactory {
         let metaboliteNode: FlBioNetworkD3Node;
 
         if (metabolite.is_cofactor) {
-          continue;
-          // metaboliteNode = this.createCofactor(metabolite);
-          // reactionNode.addChildNode(metaboliteNode);
+          // continue;
+          metaboliteNode = this.createCofactor(metabolite);
+          reactionNode.addChildNode(metaboliteNode);
         } else {
           metaboliteNode = this.metabolites.find(metabolite => metabolite.data.id === metaboliteId
             && metabolite.cluster.clusterId === reactionNode.cluster.clusterId);
@@ -171,39 +171,6 @@ export class FlBioNetworkFactory {
 
         find = true;
 
-
-        // const metabolite: FlBioNetworkMetabolite = metabolites.find(metabolite => metabolite.id === metaboliteId);
-        //
-        // }
-        //
-        // let metaboliteNode: FlBioNetworkD3Node;
-        // // if the metabolite is a cofactor, create a node for it
-        // // and use the cofactor id
-        // if (metabolite.is_cofactor) {
-        //   const cofactor = this.createCofactor(metabolite);
-        //   reactionNode.addChildNode(cofactor);
-        //   metaboliteNode = cofactor;
-        // } else {
-        //   // use the metabolite id
-        //   metaboliteNode = this.metabolites.find(m => m.data.id === metabolite.id);
-        // }
-        //
-        // // get the estimate with a default value if it doesn't exist
-        // const estimate: FlBioNetworkReactionEstimate = FlBioNetworkHelper.getReactionEstimate(reactionNode.data);
-        // const reactionLink: FlBioNetworkReactionLink = reactionNode.data.metabolites[metaboliteId];
-        //
-        // // right side of the link
-        // // if the estimate is negative, the link is inverted
-        // const estimateValue: number = typeof estimate.value === 'number' ? estimate.value : 1;
-        // if (reactionLink.stoich * estimateValue > 0) {
-        //   this.links.push(new FlBioNetworkD3Link(reactionNode, metaboliteNode,
-        //     estimate, reactionLink.points, this.themeDetail.greyLowContrast));
-        // }
-        // // left side of the link
-        // else {
-        //   this.links.push(new FlBioNetworkD3Link(metaboliteNode, reactionNode,
-        //     estimate, reactionLink.points, this.themeDetail.greyLowContrast));
-        // }
       }
 
       if (!find) {

@@ -83,7 +83,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
       this.data = chartData;
 
       if (chartData) {
-        this.enableSimulation = !chartData.hasPosition();
+        this.enableSimulation = !chartData.allNodesHavePositions();
         this.simulationEnded = !this.enableSimulation;
         console.log('Enable simulation :', this.enableSimulation);
 
@@ -180,7 +180,7 @@ export class FlBioNetworkRendererState implements OnDestroy {
     // use to round the position based on grid if closed enough
     const roundedCoord = this.gridState.roundCoordOnGrid(dragEvent.subject.convertFromCenterCoord(dragEvent));
 
-    let nodeToMoveIds: symbol[];
+    let nodeToMoveIds: number[];
     if (roundedCoord) {
       nodeToMoveIds = dragEvent.subject.setCenter(roundedCoord);
     } else {

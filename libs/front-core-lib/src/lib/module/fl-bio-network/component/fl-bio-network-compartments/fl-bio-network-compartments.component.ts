@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@an
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
-import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {FlBioNetworkCompartment} from '../../model/fl-bio-network-compartment.class';
+import {FlBioNetworkSelectionTwoState} from '../../state/fl-bio-network-selection-two.state';
 
 
 /**
@@ -22,7 +22,8 @@ export class FlBioNetworkCompartmentsComponent implements OnInit {
 
   private selectedCompartments: Set<string> = new Set();
 
-  constructor(private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState,
+  constructor(private state: FlBioNetworkState,
+              private selectionState: FlBioNetworkSelectionTwoState,
               private cdr: ChangeDetectorRef) {
   }
 

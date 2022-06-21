@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {Observable, Subscription} from 'rxjs';
 import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
 import {FlBioNetworkD3Metabolite} from '../../model/fl-bio-network-d3-metabolite.class';
 import {FormControl} from '@ngneat/reactive-forms';
 import {debounceTime, map, startWith} from 'rxjs/operators';
 import {FlBioNetworkMetabolite} from '../../model/fl-bio-network.class';
+import {FlBioNetworkSelectionTwoState} from '../../state/fl-bio-network-selection-two.state';
 
 /**
  * Component to search on metabolite and select a metabolite
@@ -26,7 +26,8 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
 
   private subscription: Subscription;
 
-  constructor(private state: FlBioNetworkState, private selectionState: FlBioNetworkSelectionState,
+  constructor(private state: FlBioNetworkState,
+              private selectionState: FlBioNetworkSelectionTwoState,
               private cdr: ChangeDetectorRef) {
   }
 

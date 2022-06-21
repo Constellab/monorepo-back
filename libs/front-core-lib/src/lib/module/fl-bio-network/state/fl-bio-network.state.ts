@@ -111,7 +111,7 @@ export class FlBioNetworkState implements OnDestroy {
   // select specific cluster in the network to display
   private selectClusters(clusters: FlBioNetworkClusterSelection[]): void {
     clusters.forEach(cluster => cluster.highlighted = false);
-    const clusterIds: string[] = clusters.filter(cluster => cluster.selected).map(pathway => pathway.id);
+    const clusterIds: string[] = clusters.filter(cluster => cluster.selected).map(cluster => cluster.name);
     // if no ids are selected, we return null
     if (ClHelpService.isNullOrEmpty(clusterIds) || this.getDatabase() == null ||
       this.getSelectedNetwork() == null) {
@@ -172,7 +172,6 @@ export class FlBioNetworkState implements OnDestroy {
 
 
     clusters.push({
-      id: FlBioNetworkHelper.defaultClusterId,
       name: FlBioNetworkHelper.defaultClusterId,
       color: FlColorHelper.stringToRGBColor(FlBioNetworkHelper.defaultClusterId),
       highlighted: false,
@@ -180,9 +179,8 @@ export class FlBioNetworkState implements OnDestroy {
     });
     for (const metabolite of network.metabolites) {
       for (const cluster of Object.values(metabolite.layout.clusters)) {
-        if (clusters.find(c => c.id === cluster.parent) == null) {
+        if (clusters.find(c => c.name === cluster.parent) == null) {
           clusters.push({
-            id: cluster.parent,
             name: cluster.parent,
             selected: false,
             highlighted: false,

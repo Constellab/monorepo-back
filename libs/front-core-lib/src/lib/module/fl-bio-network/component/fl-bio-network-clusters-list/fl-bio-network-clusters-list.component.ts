@@ -17,7 +17,6 @@ export class FlBioNetworkClustersListComponent implements OnInit {
 
   clusters$: Observable<FlBioNetworkClusterSelection[]>;
   clustersAllSelected: boolean = false;
-  clustersAllColored: boolean = false;
 
 
   constructor(private state: FlBioNetworkState, private optionState: FlBioNetworkOptionsState) {
@@ -32,6 +31,18 @@ export class FlBioNetworkClustersListComponent implements OnInit {
     this.state.selectNetwork(change.value);
   }
 
+
+  /////////////////////// CLUSTER SELECTION ///////////////////////
+
+  selectionChanged(cluster: FlBioNetworkClusterSelection): void {
+    // when unselecting the pathway, force the highlight to false
+    if (!cluster.selected) {
+      cluster.highlighted = false;
+    }
+    this.state.emitClustersSelectionChange();
+    this.emitClusterColored();
+  }
+
   selectAllClustersChange(select: boolean): void {
     this.clustersAllSelected = select;
     if (select) {
@@ -39,27 +50,8 @@ export class FlBioNetworkClustersListComponent implements OnInit {
     } else {
       this.state.unselectAllClusters();
     }
-  }
 
-  toggleClusterColor(cluster: FlBioNetworkClusterSelection): void {
-    cluster.highlighted = !cluster.highlighted;
-
-    const highlightedClusters: FlBioNetworkClusterSelection[] = this.getSelectedClusters()
-      .filter(cluster => cluster.highlighted);
-    this.optionState.setColoredClusters(highlightedClusters);
-  }
-
-
-  toggleAllClusterColors(): void {
-    this.clustersAllColored = !this.clustersAllColored;
-    const selectedClusters: FlBioNetworkClusterSelection[] = this.getSelectedClusters();
-    selectedClusters.forEach(cluster => cluster.highlighted = this.clustersAllColored);
-
-    if (this.clustersAllColored) {
-      this.optionState.setColoredClusters(selectedClusters);
-    } else {
-      this.optionState.setColoredClusters([]);
-    }
+    this.emitClusterColored();
   }
 
   private getSelectedClusters(): FlBioNetworkClusterSelection[] {
@@ -68,12 +60,36 @@ export class FlBioNetworkClustersListComponent implements OnInit {
     );
   }
 
-  selectionChanged(cluster: FlBioNetworkClusterSelection): void {
-    // when unselecting the pathway, force the highlight to false
-    if (!cluster.selected) {
-      cluster.highlighted = false;
-    }
-    this.state.emitClustersSelectionChange();
+  ////////////////// COLOR //////////////////
+
+  toggleClusterColor(cluster: FlBioNetworkClusterSelection): void {
+    cluster.highlighted = !cluster.highlighted;
+
+    this.emitClusterColored();
   }
+
+
+  toggleAllClusterColors(): void {
+    const selectedClusters: FlBioNetworkClusterSelection[] = this.getSelectedClusters();
+
+    if (!this.clustersAllColored) {
+      selectedClusters.forEach(cluster => cluster.highlighted = true);
+    } else {
+      selectedClusters.forEach(cluster => cluster.highlighted = false);
+    }
+    this.emitClusterColored();
+  }
+
+  private emitClusterColored(): void {
+    this.optionState.setColoredClusters(this.getSelectedClusters().filter(cluster => cluster.highlighted));
+  }
+
+  get clustersAllColored(): boolean {
+    const selectedClusters: FlBioNetworkClusterSelection[] = this.getSelectedClusters();
+    return selectedClusters.length > 0 && selectedClusters.every(cluster => cluster.highlighted);
+  }
+
+
+
 
 }

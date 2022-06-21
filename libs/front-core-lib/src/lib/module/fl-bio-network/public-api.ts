@@ -29,19 +29,32 @@ export * from './model/fl-bio-network-d3-reaction.class';
 export * from './model/fl-bio-network-drawer-action.class';
 export * from './model/fl-bio-network-selection.class';
 
+// Renderer
+export * from './renderer/fl-bio-network-cofactor.renderer';
+export * from './renderer/fl-bio-network-color.renderer';
+export * from './renderer/fl-bio-network-grid.renderer';
+export * from './renderer/fl-bio-network-links.renderer';
+export * from './renderer/fl-bio-network-main-two.renderer';
+export * from './renderer/fl-bio-network-metabolite.renderer';
+export * from './renderer/fl-bio-network-nodes.renderer';
+export * from './renderer/fl-bio-network-reaction.renderer';
+export * from './renderer/fl-bio-network-zoom.renderer';
+
 // States
 export * from './state/fl-bio-network.state';
 export * from './state/fl-bio-network-color.state';
 export * from './state/fl-bio-network-drawer.state';
 export * from './state/fl-bio-network-grid.state';
+export * from './state/fl-bio-network-grid-two.state';
 export * from './state/fl-bio-network-group.state';
 export * from './state/fl-bio-network-options.state';
 export * from './state/fl-bio-network-renderer.state';
-export * from './state/fl-bio-network-renderer-two.state';
 export * from './state/fl-bio-network-selection.state';
 export * from './state/fl-bio-network-selection-two.state';
+export * from './state/fl-bio-network-simulation.state';
 export * from './state/fl-bio-network-zoom.state';
 
 // Utils
 export * from './utils/fl-bio-network.factory';
 export * from './utils/fl-bio-network.helper';
+export * from './utils/fl-bio-network-canvas.helper';

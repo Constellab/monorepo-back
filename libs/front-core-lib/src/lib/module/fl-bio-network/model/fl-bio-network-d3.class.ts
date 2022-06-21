@@ -10,7 +10,6 @@ import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-netw
  */
 export class FlBioNetworkD3 {
 
-
   constructor(public metabolites: FlBioNetworkD3Metabolite[],
               public reactions: FlBioNetworkD3Reaction[],
               public cofactors: FlBioNetworkD3Cofactor[],
@@ -31,7 +30,7 @@ export class FlBioNetworkD3 {
   /**
    * return all the metabolites nodes
    */
-  public getMetaboliteAndCofactors(): FlBioNetworkD3Node[] {
+  public getMetaboliteAndCofactors(): (FlBioNetworkD3Metabolite | FlBioNetworkD3Cofactor)[] {
     return [...this.metabolites, ...this.cofactors];
   }
 
@@ -79,7 +78,7 @@ export class FlBioNetworkD3 {
     return Math.max(...this.links.map(link => link.absValue));
   }
 
-  public hasPosition(): boolean {
+  public allNodesHavePositions(): boolean {
     return this.metabolites.every(metabolite => metabolite.x != null && metabolite.y != null) &&
       this.reactions.every(reaction => reaction.x != null && reaction.y != null);
     // true if the node have a position, in this case, no need to launch simulation
@@ -112,8 +111,18 @@ export class FlBioNetworkD3 {
     return metabolitesData;
   }
 
-  public getMetabolitesNodes(metaboliteId: string): FlBioNetworkD3Metabolite[]{
+  public getMetabolitesNodes(metaboliteId: string): FlBioNetworkD3Metabolite[] {
     return this.metabolites.filter(metabolite => metabolite.data.id === metaboliteId);
+  }
+
+  /**
+   * Set all the cofactors position based on reaction position
+   */
+  public setCofactorsPositions(): void {
+    for (const reaction of this.reactions) {
+
+      reaction.setCofactorsPositions();
+    }
   }
 }
 
