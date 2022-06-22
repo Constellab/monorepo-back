@@ -3,8 +3,8 @@ import {Observable} from 'rxjs';
 import {FlBioNetworkSelectionEvent} from '../../model/fl-bio-network-selection.class';
 import {map} from 'rxjs/operators';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
-import {FlBioNetworkSelectionTwoState} from '../../state/fl-bio-network-selection-two.state';
+import {FlBioNetworkGraph} from '../../model/fl-bio-network-graph.class';
+import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 
 interface SelectionInfo {
   metabolites?: number;
@@ -26,7 +26,7 @@ export class FlBioNetworkSelectionInfoComponent implements OnInit {
 
   info$: Observable<SelectionInfo>;
 
-  constructor(private selectionState: FlBioNetworkSelectionTwoState,
+  constructor(private selectionState: FlBioNetworkSelectionState,
               private state: FlBioNetworkState) {
   }
 
@@ -74,7 +74,7 @@ export class FlBioNetworkSelectionInfoComponent implements OnInit {
   }
 
   private getAllSelectionInfo(): SelectionInfo {
-    const data: FlBioNetworkD3 = this.state.getCurrentChartData();
+    const data: FlBioNetworkGraph = this.state.getCurrentChartData();
     if (data) {
       return {
         metabolites: data.metabolites.length,

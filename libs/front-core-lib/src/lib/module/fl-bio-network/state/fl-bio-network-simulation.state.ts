@@ -1,23 +1,26 @@
 import {Injectable} from '@angular/core';
 import {Simulation} from 'd3-force';
-import {FlBioNetworkD3Node} from '../model/fl-bio-network-d3-node.class';
+import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
 import {forceLink, forceManyBody, forceSimulation} from 'd3';
-import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkGraph} from '../model/fl-bio-network-graph.class';
+import {FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
 
 
 @Injectable()
 export class FlBioNetworkSimulationState {
 
-  private simulation: Simulation<FlBioNetworkD3Node, any>;
+  private simulation: Simulation<FlBioNetworkNode, any>;
   private simulationEnded: boolean = false;
 
 
-  public initSimulation(data: FlBioNetworkD3): Promise<void> {
+  public initSimulation(data: FlBioNetworkGraph): Promise<void> {
     this.simulationEnded = false;
+    console.log('[BioNetwork] start simulation ');
+    const startTime = new Date().getTime();
     this.simulation = forceSimulation(data.getMetabolitesAndReactions())
       .force('link',
-        forceLink(data.links)
-        // forceLink(data.links.filter(link => link.getLevel() !== FlBioNetworkMetaboliteLevel.COFACTOR))
+        // forceLink(data.links)
+        forceLink(data.links.filter(link => link.getLevel() !== FlBioNetworkMetaboliteLevel.COFACTOR))
         // .id((d: FlBioNetworkD3Node) => d.id)
       )
       .force('charge', forceManyBody()).alphaDecay(0.05);
@@ -26,6 +29,7 @@ export class FlBioNetworkSimulationState {
       this.simulation.on('end', () => {
         this.endSimulation();
         resolve();
+        console.log(`[BioNetwork] end simulation ${(new Date().getTime() - startTime) / 1000} seconds`);
       });
     });
   }

@@ -31,7 +31,7 @@
 
     <mat-form-field class="g-form-field-compact g-form-field-no-hint">
       <mat-label>{{'flBioNetwork.link_colors' | translate}}</mat-label>
-      <mat-select [(ngModel)]="linkColorLogarithm" (selectionChange)="setLinksColors()"
+      <mat-select [(ngModel)]="linkColorMode" (selectionChange)="setLinksColors()"
                   [placeholder]="'flBioNetwork.link_colors' | translate">
         <mat-option value="linear">{{'flBioNetwork.link_color_linear' | translate}}</mat-option>
         <mat-option value="log2">{{'flBioNetwork.link_color_log_2' | translate}}</mat-option>

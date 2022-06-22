@@ -1,9 +1,11 @@
-import {FlBioNetworkD3Metabolite} from '../model/fl-bio-network-d3-metabolite.class';
+import {FlBioNetworkNodeMetabolite} from '../model/fl-bio-network-node-metabolite.class';
 import {flBioNetworkCompartmentBiomass} from '../model/fl-bio-network-compartment.class';
 import {FlBioNetworkCanvasHelper} from '../utils/fl-bio-network-canvas.helper';
-import {FlBioNetworkD3Object} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkObjectColorFunction} from './fl-bio-network-object.renderer';
 
-
+/**
+ * Draw metabolite node using canvas
+ */
 export class FlBioNetworkMetaboliteRenderer {
 
   public static biomassMetaboliteRadius: number = 20;
@@ -12,8 +14,8 @@ export class FlBioNetworkMetaboliteRenderer {
   public static majorMetaboliteStroke: number = 3;
   public static minorMetaboliteStroke: number = 1.5;
 
-  public static draw(ctx: CanvasRenderingContext2D, metabolite: FlBioNetworkD3Metabolite,
-                     colorFunc?: (node: FlBioNetworkD3Object) => string): void {
+  public static draw(ctx: CanvasRenderingContext2D, metabolite: FlBioNetworkNodeMetabolite,
+                     colorFunc: FlBioNetworkObjectColorFunction, showText: boolean): void {
 
     if (!metabolite.selected) {
       ctx.globalAlpha = 0.1;
@@ -30,30 +32,28 @@ export class FlBioNetworkMetaboliteRenderer {
     FlBioNetworkCanvasHelper.circle(ctx, metabolite.x, metabolite.y, globalRadius);
 
     // draw the circle
-    if (colorFunc == null) {
-      ctx.fillStyle = metabolite.defaultColor;
-    } else {
-      ctx.fillStyle = colorFunc(metabolite);
-    }
+    ctx.fillStyle = colorFunc(metabolite);
     FlBioNetworkCanvasHelper.circle(ctx, metabolite.x, metabolite.y, centerRadius);
 
     // draw the text
-    ctx.fillStyle = '#ffffff';
-    FlBioNetworkCanvasHelper.text(ctx, metabolite.x, metabolite.y + (globalRadius * 1.5), metabolite.data.name,
-      {
-        fontSize: FlBioNetworkMetaboliteRenderer.getFontTextSize(metabolite),
-        fontFamily: 'Sans-Serif', // todo to fix
-        textAlign: 'center',
-        shadow: {
-          blur: 7,
-          color: '#000000', // todo to fix
-        }
-      });
+    if (showText) {
+      ctx.fillStyle = '#ffffff';
+      FlBioNetworkCanvasHelper.text(ctx, metabolite.x, metabolite.y + (globalRadius * 1.5), metabolite.data.name.slice(0, 20),
+        {
+          fontSize: FlBioNetworkMetaboliteRenderer.getFontTextSize(metabolite),
+          fontFamily: 'Sans-Serif', // todo to fix
+          textAlign: 'center',
+          shadow: {
+            blur: 7,
+            color: '#000000', // todo to fix
+          }
+        });
+    }
 
     ctx.globalAlpha = 1;
   }
 
-  public static drawPointerArea(ctx: CanvasRenderingContext2D, metabolite: FlBioNetworkD3Metabolite, color: string): void {
+  public static drawPointerArea(ctx: CanvasRenderingContext2D, metabolite: FlBioNetworkNodeMetabolite, color: string): void {
     // use the unique color for the pointer area
     ctx.fillStyle = color;
 
@@ -65,18 +65,18 @@ export class FlBioNetworkMetaboliteRenderer {
     FlBioNetworkCanvasHelper.circle(ctx, metabolite.x, metabolite.y, globalRadius);
   }
 
-  private static getRadius(metabolite: FlBioNetworkD3Metabolite): number {
+  private static getRadius(metabolite: FlBioNetworkNodeMetabolite): number {
     if (metabolite.data.compartment === flBioNetworkCompartmentBiomass.id) return FlBioNetworkMetaboliteRenderer.biomassMetaboliteRadius;
     return metabolite.isMajor() ? FlBioNetworkMetaboliteRenderer.majorMetaboliteRadius
       : FlBioNetworkMetaboliteRenderer.minorMetaboliteRadius;
   }
 
-  private static getStrokeWidth(metabolite: FlBioNetworkD3Metabolite): number {
+  private static getStrokeWidth(metabolite: FlBioNetworkNodeMetabolite): number {
     return metabolite.isMajor() ? FlBioNetworkMetaboliteRenderer.majorMetaboliteStroke
       : FlBioNetworkMetaboliteRenderer.minorMetaboliteStroke;
   }
 
-  private static getFontTextSize(metabolite: FlBioNetworkD3Metabolite): string {
+  private static getFontTextSize(metabolite: FlBioNetworkNodeMetabolite): string {
     return metabolite.isMajor() ? '1.3em' : '0.5em';
   }
 }

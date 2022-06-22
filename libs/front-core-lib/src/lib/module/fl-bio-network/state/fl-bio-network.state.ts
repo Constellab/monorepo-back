@@ -7,7 +7,7 @@ import {FlBioNetworkHelper} from '../utils/fl-bio-network.helper';
 import {debounceTime, map} from 'rxjs/operators';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
 import {FlThemeService} from '../../../service/fl-theme.service';
-import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkGraph} from '../model/fl-bio-network-graph.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {FlFileHelper} from '../../../service/fl-file.helper';
 import {FlBioNetworkCompartment, flBioNetworkCompartments} from '../model/fl-bio-network-compartment.class';
@@ -21,7 +21,7 @@ export class FlBioNetworkState implements OnDestroy {
 
   public networks: FlBioNetwork[];
   private selectedNetwork$: BehaviorSubject<FlBioNetwork | null>;
-  private chartData$: BehaviorSubject<FlBioNetworkD3 | null>;
+  private chartData$: BehaviorSubject<FlBioNetworkGraph | null>;
   private database$: BehaviorSubject<FlPathwayDatabase | null>;
 
   private clusters$: BehaviorSubject<FlBioNetworkClusterSelection[]>;
@@ -118,7 +118,7 @@ export class FlBioNetworkState implements OnDestroy {
       this.chartData$.next(null);
       return;
     }
-    const chartData: FlBioNetworkD3 = new FlBioNetworkFactory(this.themeService.getCurrentThemeDetail())
+    const chartData: FlBioNetworkGraph = new FlBioNetworkFactory(this.themeService.getCurrentThemeDetail())
       .convertNetworkToNetworkD3(this.getSelectedNetwork(), clusterIds, this.getDatabase());
 
     this.chartData$.next(chartData);
@@ -239,11 +239,11 @@ export class FlBioNetworkState implements OnDestroy {
 
 
   /////////////////////////////////////// CHART DATA /////////////////////////////////////////
-  public getChartData$(): Observable<FlBioNetworkD3 | null> {
+  public getChartData$(): Observable<FlBioNetworkGraph | null> {
     return this.chartData$.asObservable();
   }
 
-  public getCurrentChartData(): FlBioNetworkD3 | null {
+  public getCurrentChartData(): FlBioNetworkGraph | null {
     return this.chartData$.value;
   }
 

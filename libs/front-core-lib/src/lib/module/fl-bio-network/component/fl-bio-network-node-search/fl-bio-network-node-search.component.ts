@@ -1,12 +1,12 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {Observable, Subscription} from 'rxjs';
-import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
-import {FlBioNetworkD3Metabolite} from '../../model/fl-bio-network-d3-metabolite.class';
+import {FlBioNetworkGraph} from '../../model/fl-bio-network-graph.class';
+import {FlBioNetworkNodeMetabolite} from '../../model/fl-bio-network-node-metabolite.class';
 import {FormControl} from '@ngneat/reactive-forms';
 import {debounceTime, map, startWith} from 'rxjs/operators';
 import {FlBioNetworkMetabolite} from '../../model/fl-bio-network.class';
-import {FlBioNetworkSelectionTwoState} from '../../state/fl-bio-network-selection-two.state';
+import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 
 /**
  * Component to search on metabolite and select a metabolite
@@ -27,7 +27,7 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   constructor(private state: FlBioNetworkState,
-              private selectionState: FlBioNetworkSelectionTwoState,
+              private selectionState: FlBioNetworkSelectionState,
               private cdr: ChangeDetectorRef) {
   }
 
@@ -50,7 +50,7 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
     );
   }
 
-  private onNewChartData(bioNetwork: FlBioNetworkD3): void {
+  private onNewChartData(bioNetwork: FlBioNetworkGraph): void {
     if (bioNetwork) {
       this.metabolites = bioNetwork.getMetabolitesData();
     } else {
@@ -60,7 +60,7 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  displayFn(metabolite: FlBioNetworkD3Metabolite): string {
+  displayFn(metabolite: FlBioNetworkNodeMetabolite): string {
     return metabolite ? metabolite.name : '';
   }
 

@@ -2,10 +2,10 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@an
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {MatSliderChange} from '@angular/material/slider';
 import {filter} from 'rxjs/operators';
-import {FlBioNetworkD3} from '../../model/fl-bio-network-d3.class';
+import {FlBioNetworkGraph} from '../../model/fl-bio-network-graph.class';
 import {FlBioNetworkLinkColorScale, FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
 import {FlBioNetworkMetaboliteLevel} from '../../model/fl-bio-network.class';
-import {FlBioNetworkSelectionTwoState} from '../../state/fl-bio-network-selection-two.state';
+import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 
 /**
  * Component inside the {@link FlBioNetworkComponent} to show the quick actions
@@ -23,21 +23,21 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   fluxThreshold: number = 0;
   maxFluxValue: number;
 
-  // if true the link colors switch to logarithm
-  linkColorLogarithm: FlBioNetworkLinkColorScale = 'linear';
+  // mode for the color of the links
+  linkColorMode: FlBioNetworkLinkColorScale = 'linear';
   // showCofactor: boolean = false;
   showMinors: boolean = false;
   showText: boolean = false;
 
   constructor(private cdr: ChangeDetectorRef,
               private state: FlBioNetworkState,
-              private selectionState: FlBioNetworkSelectionTwoState,
+              private selectionState: FlBioNetworkSelectionState,
               private optionState: FlBioNetworkOptionsState) {
   }
 
   ngOnInit(): void {
     const options = this.optionState.getCurrentOptions();
-    this.linkColorLogarithm = options.linkColorScale;
+    this.linkColorMode = options.linkColorScale;
     // this.showCofactor = this.rendererState.getShowCofactors();
     this.showMinors = options.visibleLevels.includes(FlBioNetworkMetaboliteLevel.MINOR);
     this.showText = options.showTexts;
@@ -52,7 +52,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
     );
   }
 
-  private onNewData(chartData: FlBioNetworkD3): void {
+  private onNewData(chartData: FlBioNetworkGraph): void {
     if (chartData) {
       this.maxFluxValue = Math.trunc(chartData.getLinksMaxAbsoluteValue());
       this.isReady = true;
@@ -66,7 +66,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
 
   setLinksColors(): void {
-    this.optionState.setLinkColorMode(this.linkColorLogarithm);
+    this.optionState.setLinkColorMode(this.linkColorMode);
   }
 
   toggleShowTexts(): void {

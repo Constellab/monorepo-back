@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
-import {FlBioNetworkMainTwoRenderer} from './fl-bio-network-main-two.renderer';
-import {FlBioNetworkSelectionTwoState} from '../state/fl-bio-network-selection-two.state';
+import {FlBioNetworkMainRenderer} from './fl-bio-network-main.renderer';
+import {FlBioNetworkSelectionState} from '../state/fl-bio-network-selection.state';
 import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.class';
-import {FlBioNetworkD3Node} from '../model/fl-bio-network-d3-node.class';
+import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
 import {combineLatest} from 'rxjs';
 import {ForceGraphInstance} from 'force-graph';
 
@@ -18,8 +18,8 @@ export class FlBioNetworkZoomRenderer {
 
   private readonly zoomDuration: number = 750;
 
-  constructor(private mainRenderer: FlBioNetworkMainTwoRenderer,
-              private selectionState: FlBioNetworkSelectionTwoState) {
+  constructor(private mainRenderer: FlBioNetworkMainRenderer,
+              private selectionState: FlBioNetworkSelectionState) {
   }
 
 
@@ -49,6 +49,6 @@ export class FlBioNetworkZoomRenderer {
 
   private zoomToSelectedElements(graph: ForceGraphInstance): void {
     graph.zoomToFit(this.zoomDuration, 20,
-      (node: FlBioNetworkD3Node) => node.selected);
+      (node: FlBioNetworkNode) => node.selected);
   }
 }

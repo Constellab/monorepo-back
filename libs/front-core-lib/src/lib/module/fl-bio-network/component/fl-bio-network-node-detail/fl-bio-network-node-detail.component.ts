@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {FlBioNetworkD3Node} from '../../model/fl-bio-network-d3-node.class';
+import {FlBioNetworkNode} from '../../model/fl-bio-network-node.class';
 import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -12,7 +12,7 @@ import {map} from 'rxjs/operators';
 })
 export class FlBioNetworkNodeDetailComponent implements OnInit {
 
-  node$: Observable<FlBioNetworkD3Node>;
+  node$: Observable<FlBioNetworkNode>;
 
   constructor(private drawerState: FlBioNetworkDrawerState) {
   }

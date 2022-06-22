@@ -1,55 +1,56 @@
-import {FlBioNetworkD3Metabolite} from './fl-bio-network-d3-metabolite.class';
-import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
-import {FlBioNetworkD3Cofactor} from './fl-bio-network-d3-cofactor.class';
-import {FlBioNetworkD3Link} from './fl-bio-network-d3-link.class';
-import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
+import {FlBioNetworkNodeMetabolite} from './fl-bio-network-node-metabolite.class';
+import {FlBioNetworkNodeReaction} from './fl-bio-network-node-reaction.class';
+import {FlBioNetworkNodeCofactor} from './fl-bio-network-node-cofactor.class';
+import {FlBioNetworkLink} from './fl-bio-network-node-link.class';
+import {FlBioNetworkNode} from './fl-bio-network-node.class';
 import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
+
 
 /**
  * Data used to construct to d3 network
  */
-export class FlBioNetworkD3 {
+export class FlBioNetworkGraph {
 
-  constructor(public metabolites: FlBioNetworkD3Metabolite[],
-              public reactions: FlBioNetworkD3Reaction[],
-              public cofactors: FlBioNetworkD3Cofactor[],
-              public links: FlBioNetworkD3Link[]) {
+  constructor(public metabolites: FlBioNetworkNodeMetabolite[],
+              public reactions: FlBioNetworkNodeReaction[],
+              public cofactors: FlBioNetworkNodeCofactor[],
+              public links: FlBioNetworkLink[]) {
   }
 
   /**
    * return all the nodes
    */
-  public getAllNodes(): FlBioNetworkD3Node[] {
+  public getAllNodes(): FlBioNetworkNode[] {
     return [...this.getMetaboliteAndCofactors(), ...this.reactions];
   }
 
-  public getMetabolitesAndReactions(): FlBioNetworkD3Node[] {
+  public getMetabolitesAndReactions(): FlBioNetworkNode[] {
     return [...this.metabolites, ...this.reactions];
   }
 
   /**
    * return all the metabolites nodes
    */
-  public getMetaboliteAndCofactors(): (FlBioNetworkD3Metabolite | FlBioNetworkD3Cofactor)[] {
+  public getMetaboliteAndCofactors(): (FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor)[] {
     return [...this.metabolites, ...this.cofactors];
   }
 
   // return all the nodes of a level
-  public getNodes(level: FlBioNetworkMetaboliteLevel): FlBioNetworkD3Node[] {
+  public getNodes(level: FlBioNetworkMetaboliteLevel): FlBioNetworkNode[] {
     return this.getAllNodes().filter(link => link.getLevel() === level);
   }
 
   // return all the link of a level
-  public getLinks(level: FlBioNetworkMetaboliteLevel): FlBioNetworkD3Link[] {
+  public getLinks(level: FlBioNetworkMetaboliteLevel): FlBioNetworkLink[] {
     return this.links.filter(link => link.getLevel() === level);
   }
 
   // return all the reaction of a pathway
-  public getReactionsOfPathway(pathwayId: string): FlBioNetworkD3Reaction[] {
+  public getReactionsOfPathway(pathwayId: string): FlBioNetworkNodeReaction[] {
     return this.reactions.filter(reaction => reaction.isInPathway(pathwayId));
   }
 
-  public getAllObjects(): FlBioNetworkD3Object[] {
+  public getAllObjects(): FlBioNetworkGraphObject[] {
     return [...this.getAllNodes(), ...this.links];
   }
 
@@ -111,7 +112,7 @@ export class FlBioNetworkD3 {
     return metabolitesData;
   }
 
-  public getMetabolitesNodes(metaboliteId: string): FlBioNetworkD3Metabolite[] {
+  public getMetabolitesNodes(metaboliteId: string): FlBioNetworkNodeMetabolite[] {
     return this.metabolites.filter(metabolite => metabolite.data.id === metaboliteId);
   }
 
@@ -126,13 +127,13 @@ export class FlBioNetworkD3 {
   }
 }
 
-// Any D3 object in the network
-export abstract class FlBioNetworkD3Object {
+// Any object in the network
+export abstract class FlBioNetworkGraphObject {
 
   // use to store the level if there is some calculation
   protected _level: number;
 
-  // todo a voir
+  // set to true when the object is selected (highlighted)
   public selected: boolean = false;
 
 
@@ -152,4 +153,6 @@ export abstract class FlBioNetworkD3Object {
   public abstract isInPathway(id: string): boolean;
 
   public abstract isInCluster(id: string): boolean;
+
+
 }

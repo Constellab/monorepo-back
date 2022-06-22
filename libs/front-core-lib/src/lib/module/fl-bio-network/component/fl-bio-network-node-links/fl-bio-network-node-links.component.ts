@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {FlExternalLinkService} from '../../../../service/fl-external-link.service';
-import {FlBioNetworkD3Node} from '../../model/fl-bio-network-d3-node.class';
+import {FlBioNetworkNode} from '../../model/fl-bio-network-node.class';
 
 interface Link {
   link: string;
@@ -20,7 +20,7 @@ interface Link {
 })
 export class FlBioNetworkNodeLinksComponent implements OnInit {
 
-  @Input() set node(node: FlBioNetworkD3Node) {
+  @Input() set node(node: FlBioNetworkNode) {
     this.setLinks(node);
   }
 
@@ -32,7 +32,7 @@ export class FlBioNetworkNodeLinksComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  private setLinks(node: FlBioNetworkD3Node): void {
+  private setLinks(node: FlBioNetworkNode): void {
     const links: Link[] = [];
 
     // google scholar search link

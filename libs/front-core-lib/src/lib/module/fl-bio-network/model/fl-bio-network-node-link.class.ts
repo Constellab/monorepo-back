@@ -1,24 +1,23 @@
 import {curveCatmullRom, line, select, SimulationLinkDatum} from 'd3';
 import {FlBioNetworkMetaboliteLevel, FlBioNetworkReactionEstimate} from './fl-bio-network.class';
-import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
-import {FlBioNetworkD3Cofactor} from './fl-bio-network-d3-cofactor.class';
-import {FlBioNetworkD3Reaction} from './fl-bio-network-d3-reaction.class';
-import {FlBioNetworkD3Object} from './fl-bio-network-d3.class';
+import {FlBioNetworkNode} from './fl-bio-network-node.class';
+import {FlBioNetworkNodeCofactor} from './fl-bio-network-node-cofactor.class';
+import {FlBioNetworkNodeReaction} from './fl-bio-network-node-reaction.class';
+import {FlBioNetworkGraphObject} from './fl-bio-network-graph.class';
 import {FlCoord, FlCoordHelper} from '../../../model/shared/fl-coord.class';
 
-export const flBioNetworkLinkElement = 'path';
 
 // const lineFunction = line<FlCoord>().x(d => d.x).y(d => d.y);
 // const lineFunction = line<FlCoord>().x(d => d.x).y(d => d.y).curve(curveStep);
 const lineFunction = line<FlCoord>().x(d => d.x).y(d => d.y).curve(curveCatmullRom.alpha(1));
 
-export class FlBioNetworkD3LinkPoint implements FlCoord {
+export class FlBioNetworkLinkPoint implements FlCoord {
   private static id: number = 0;
 
   id: number;
 
-  constructor(public x: number, public y: number, public link: FlBioNetworkD3Link) {
-    this.id = FlBioNetworkD3LinkPoint.id++;
+  constructor(public x: number, public y: number, public link: FlBioNetworkLink) {
+    this.id = FlBioNetworkLinkPoint.id++;
   }
 
   public setCoord(coord: FlCoord): void {
@@ -40,17 +39,17 @@ export class FlBioNetworkD3LinkPoint implements FlCoord {
 }
 
 
-export class FlBioNetworkD3Link extends FlBioNetworkD3Object
-  implements SimulationLinkDatum<FlBioNetworkD3Node> {
+export class FlBioNetworkLink extends FlBioNetworkGraphObject
+  implements SimulationLinkDatum<FlBioNetworkNode> {
 
   private static id: number = 0;
 
   id: number;
 
-  source: FlBioNetworkD3Node;
-  target: FlBioNetworkD3Node;
+  source: FlBioNetworkNode;
+  target: FlBioNetworkNode;
 
-  pointPositions: FlBioNetworkD3LinkPoint[] = [];
+  pointPositions: FlBioNetworkLinkPoint[] = [];
 
   // group element containing the link (path) and the points (circles)
   groupElement: SVGGElement;
@@ -58,17 +57,17 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
   value: number;
   absValue: number;
 
-  constructor(source: FlBioNetworkD3Node, target: FlBioNetworkD3Node,
+  constructor(source: FlBioNetworkNode, target: FlBioNetworkNode,
               public estimate: FlBioNetworkReactionEstimate, points: FlCoord[],
               public defaultColor: string) {
     super();
     this.source = source;
     this.target = target;
-    this.id = FlBioNetworkD3Link.id++;
+    this.id = FlBioNetworkLink.id++;
 
     // init each points
     if (points) {
-      points.forEach(point => this.pointPositions.push(new FlBioNetworkD3LinkPoint(point.x, point.y, this)));
+      points.forEach(point => this.pointPositions.push(new FlBioNetworkLinkPoint(point.x, point.y, this)));
     }
 
     // add the link to the source and target
@@ -103,21 +102,9 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
 
   // return true if the link is linked to a cofactor
   isLinkedToCofactor(): boolean {
-    return this.source instanceof FlBioNetworkD3Cofactor || this.target instanceof FlBioNetworkD3Cofactor;
+    return this.source instanceof FlBioNetworkNodeCofactor || this.target instanceof FlBioNetworkNodeCofactor;
   }
 
-  // todo to remove
-  getLinkWidth(): number {
-    const level = this.getLevel();
-    switch (level) {
-      case FlBioNetworkMetaboliteLevel.MAJOR:
-        return this.absLog10Value + 3;
-      case FlBioNetworkMetaboliteLevel.MINOR:
-        return this.absLog10Value + 1;
-      case FlBioNetworkMetaboliteLevel.COFACTOR:
-        return Math.max(this.absLog10Value, 1);
-    }
-  }
 
   ////////////////////////////////////// POINTS //////////////////////////////////////
   public getPathAttr(): string {
@@ -126,8 +113,8 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
   }
 
   public getPathPoints(): FlCoord[] {
-    const startCoord: FlCoord = this.source.getCenter();
-    const endCoord: FlCoord = this.target.getCenter();
+    const startCoord: FlCoord = this.source.getCoords();
+    const endCoord: FlCoord = this.target.getCoords();
     return [startCoord, ...this.pointPositions, endCoord];
   }
 
@@ -137,7 +124,7 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
    * @param coord
    */
   public insertPoint(coord: FlCoord): void {
-    const point: FlBioNetworkD3LinkPoint = new FlBioNetworkD3LinkPoint(coord.x, coord.y, this);
+    const point: FlBioNetworkLinkPoint = new FlBioNetworkLinkPoint(coord.x, coord.y, this);
 
     if (this.pointPositions.length === 0) {
       this.pointPositions.push(point);
@@ -173,7 +160,7 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
     }
 
     // remove the circle element
-    select(this.groupElement).selectAll('circle').filter((d: FlBioNetworkD3LinkPoint) => d.id === id).remove();
+    select(this.groupElement).selectAll('circle').filter((d: FlBioNetworkLinkPoint) => d.id === id).remove();
   }
 
   public pointsToCoords(): FlCoord[] {
@@ -181,7 +168,6 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
   }
 
   // save the coord points to the reaction
-  // todo to check with new format
   public savePoints(): void {
     const reaction = this.reaction;
     const metabolite = this.metabolite;
@@ -195,15 +181,15 @@ export class FlBioNetworkD3Link extends FlBioNetworkD3Object
   }
 
 
-  public get reaction(): FlBioNetworkD3Reaction {
-    if (this.target instanceof FlBioNetworkD3Reaction) return this.target;
-    if (this.source instanceof FlBioNetworkD3Reaction) return this.source;
+  public get reaction(): FlBioNetworkNodeReaction {
+    if (this.target instanceof FlBioNetworkNodeReaction) return this.target;
+    if (this.source instanceof FlBioNetworkNodeReaction) return this.source;
     return null;
   }
 
-  public get metabolite(): FlBioNetworkD3Node {
-    if (this.target instanceof FlBioNetworkD3Reaction) return this.source;
-    if (this.source instanceof FlBioNetworkD3Reaction) return this.target;
+  public get metabolite(): FlBioNetworkNode {
+    if (this.target instanceof FlBioNetworkNodeReaction) return this.source;
+    if (this.source instanceof FlBioNetworkNodeReaction) return this.target;
     return null;
   }
 

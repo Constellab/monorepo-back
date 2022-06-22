@@ -8,21 +8,21 @@ import {
   FlPathwayDatabase
 } from '../model/fl-bio-network.class';
 import {FlBioNetworkHelper} from './fl-bio-network.helper';
-import {FlBioNetworkD3Metabolite} from '../model/fl-bio-network-d3-metabolite.class';
-import {FlBioNetworkD3} from '../model/fl-bio-network-d3.class';
-import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class';
-import {FlBioNetworkD3Cofactor} from '../model/fl-bio-network-d3-cofactor.class';
-import {FlBioNetworkD3Link} from '../model/fl-bio-network-d3-link.class';
+import {FlBioNetworkNodeMetabolite} from '../model/fl-bio-network-node-metabolite.class';
+import {FlBioNetworkGraph} from '../model/fl-bio-network-graph.class';
+import {FlBioNetworkNodeReaction} from '../model/fl-bio-network-node-reaction.class';
+import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
+import {FlBioNetworkLink} from '../model/fl-bio-network-node-link.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {flBioNetworkCompartments} from '../model/fl-bio-network-compartment.class';
-import {FlBioNetworkD3Node} from '../model/fl-bio-network-d3-node.class';
+import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
 
 export class FlBioNetworkFactory {
-  private reactions: FlBioNetworkD3Reaction[] = [];
-  private metabolites: FlBioNetworkD3Metabolite[] = [];
-  private cofactors: FlBioNetworkD3Cofactor[] = [];
-  private links: FlBioNetworkD3Link[] = [];
+  private reactions: FlBioNetworkNodeReaction[] = [];
+  private metabolites: FlBioNetworkNodeMetabolite[] = [];
+  private cofactors: FlBioNetworkNodeCofactor[] = [];
+  private links: FlBioNetworkLink[] = [];
 
 
   constructor(private themeDetail: FlThemeDetail) {
@@ -30,7 +30,7 @@ export class FlBioNetworkFactory {
 
 
   public convertNetworkToNetworkD3(network: FlBioNetwork, selectedPathways: string[],
-                                   pathwayDatabase: FlPathwayDatabase): FlBioNetworkD3 {
+                                   pathwayDatabase: FlPathwayDatabase): FlBioNetworkGraph {
 
     // create the metabolites nodes form the reactions
     this.initMetabolitesNodes(network.metabolites, selectedPathways);
@@ -43,7 +43,7 @@ export class FlBioNetworkFactory {
 
     this.initReactionPositions();
 
-    return new FlBioNetworkD3(this.metabolites, this.reactions, this.cofactors, this.links);
+    return new FlBioNetworkGraph(this.metabolites, this.reactions, this.cofactors, this.links);
   }
 
   /**
@@ -53,7 +53,7 @@ export class FlBioNetworkFactory {
                              metabolites: FlBioNetworkMetabolite[],
                              selectedCluster: string[],
                              pathwayDatabase: FlPathwayDatabase): void {
-    const reactionNodes: FlBioNetworkD3Reaction[] = [];
+    const reactionNodes: FlBioNetworkNodeReaction[] = [];
 
     for (const reaction of reactions) {
 
@@ -66,7 +66,7 @@ export class FlBioNetworkFactory {
         if (!reactionCluster) continue;
 
         // add the reaction
-        const reactionNode = new FlBioNetworkD3Reaction(
+        const reactionNode = new FlBioNetworkNodeReaction(
           reaction.name ? reaction.name : reaction.id,
           reactionCluster,
           this.themeDetail.greyHighContrast, this.themeDetail.foreground, reaction, reactionPathways
@@ -101,13 +101,13 @@ export class FlBioNetworkFactory {
         const level = positionCluster?.level ?? metabolite.level;
 
 
-        const metaboliteNode = new FlBioNetworkD3Metabolite(metabolite.name ? metabolite.name : metabolite.id,
+        const metaboliteNode = new FlBioNetworkNodeMetabolite(metabolite.name ? metabolite.name : metabolite.id,
           metaboliteCluster, level, this.getMetaboliteColor(metabolite.compartment), this.themeDetail.foreground, metabolite);
 
         // for the metabolite position, take the position of the first sub cluster
         const clusterPosition = metabolite.layout.clusters[metaboliteCluster.subClusterIds[0]];
         if (clusterPosition && clusterPosition.x != null && clusterPosition.y != null) {
-          metaboliteNode.setCenterAndFreeze(clusterPosition);
+          metaboliteNode.setPositionAndFreeze(clusterPosition);
         }
 
         this.metabolites.push(metaboliteNode);
@@ -134,7 +134,7 @@ export class FlBioNetworkFactory {
         }
 
 
-        let metaboliteNode: FlBioNetworkD3Node;
+        let metaboliteNode: FlBioNetworkNode;
 
         if (metabolite.is_cofactor) {
           // continue;
@@ -160,12 +160,12 @@ export class FlBioNetworkFactory {
         // if the estimate is negative, the link is inverted
         const estimateValue: number = typeof estimate.value === 'number' ? estimate.value : 1;
         if (reactionLink.stoich * estimateValue > 0) {
-          this.links.push(new FlBioNetworkD3Link(reactionNode, metaboliteNode,
+          this.links.push(new FlBioNetworkLink(reactionNode, metaboliteNode,
             estimate, reactionLink.points, this.themeDetail.greyLowContrast));
         }
         // left side of the link
         else {
-          this.links.push(new FlBioNetworkD3Link(metaboliteNode, reactionNode,
+          this.links.push(new FlBioNetworkLink(metaboliteNode, reactionNode,
             estimate, reactionLink.points, this.themeDetail.greyLowContrast));
         }
 
@@ -180,9 +180,9 @@ export class FlBioNetworkFactory {
   }
 
   // create a cofactor and return the node
-  private createCofactor(metabolite: FlBioNetworkMetabolite): FlBioNetworkD3Cofactor {
+  private createCofactor(metabolite: FlBioNetworkMetabolite): FlBioNetworkNodeCofactor {
     // create a new object with the new created id
-    const cofactor = new FlBioNetworkD3Cofactor(metabolite.name ? metabolite.name : metabolite.id,
+    const cofactor = new FlBioNetworkNodeCofactor(metabolite.name ? metabolite.name : metabolite.id,
       this.themeDetail.foreground,
       metabolite
     );
@@ -211,14 +211,12 @@ export class FlBioNetworkFactory {
 
         // if there are at least 2 link nodes with position, set the reaction in the center of the 2
         if (nodes.length >= 2) {
-          const firstPosition = nodes[0].getCenter();
-          const secondPosition = nodes[1].getCenter();
-          reaction.setCenter({
+          const firstPosition = nodes[0].getCoords();
+          const secondPosition = nodes[1].getCoords();
+          reaction.setPositionAndFreeze({
             x: (firstPosition.x + secondPosition.x) / 2,
             y: (firstPosition.y + secondPosition.y) / 2
           });
-          // set the fixed positions
-          reaction.freezePosition();
         }
       }
     }

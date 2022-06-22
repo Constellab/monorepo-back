@@ -1,15 +1,16 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {FlBioNetwork} from '../../model/fl-bio-network.class';
-import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
-import {MatDrawer, MatSidenav} from '@angular/material/sidenav';
-import {FlBioNetworkRendererState} from '../../state/fl-bio-network-renderer.state';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
-import {FlBioNetworkZoomState} from '../../state/fl-bio-network-zoom.state';
-import {FlBioNetworkGridState} from '../../state/fl-bio-network-grid.state';
-import {FlBioNetworkGroupState} from '../../state/fl-bio-network-group.state';
+import {MatDrawer} from '@angular/material/sidenav';
+import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
 import {FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
-import {FlBioNetworkColorState} from '../../state/fl-bio-network-color.state';
+import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
+import {FlBioNetworkMainRenderer} from '../../renderer/fl-bio-network-main.renderer';
+import {FlBioNetworkGridRenderer} from '../../renderer/fl-bio-network-grid.renderer';
+import {FlBioNetworkGridState} from '../../state/fl-bio-network-grid.state';
+import {FlBioNetworkZoomRenderer} from '../../renderer/fl-bio-network-zoom.renderer';
+import {FlBioNetworkSimulationState} from '../../state/fl-bio-network-simulation.state';
+
 
 @Component({
   selector: 'fl-bio-network',
@@ -17,48 +18,37 @@ import {FlBioNetworkColorState} from '../../state/fl-bio-network-color.state';
   styleUrls: ['./fl-bio-network.component.scss'],
   providers: [
     FlBioNetworkState,
-    FlBioNetworkOptionsState,
-    FlBioNetworkGroupState,
-    FlBioNetworkRendererState,
     FlBioNetworkDrawerState,
-    FlBioNetworkZoomState,
+    FlBioNetworkOptionsState,
     FlBioNetworkSelectionState,
+    FlBioNetworkMainRenderer,
     FlBioNetworkGridState,
-    FlBioNetworkColorState,
-  ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+    FlBioNetworkGridRenderer,
+    FlBioNetworkZoomRenderer,
+    FlBioNetworkSimulationState,
+  ]
 })
-export class FlBioNetworkComponent implements OnInit, AfterViewInit {
+export class FlBioNetworkComponent implements OnInit {
+  @Input() networks: FlBioNetwork;
 
-  @Input() data: FlBioNetwork | FlBioNetwork[];
+  @ViewChild('networkContainer', {static: true}) networkContainer: ElementRef;
 
-  @Input() fullscreen: boolean = false;
+  @ViewChild(MatDrawer, {static: true}) drawer: MatDrawer;
 
-  @ViewChild('chart', {static: true}) chartHtmlContainer: ElementRef<HTMLElement>;
-  @ViewChild(MatSidenav, {static: true}) drawer: MatDrawer;
 
   constructor(private state: FlBioNetworkState,
               private drawerState: FlBioNetworkDrawerState,
-              private rendererState: FlBioNetworkRendererState) {
+              private rendererState: FlBioNetworkMainRenderer,
+              private zoomRenderer: FlBioNetworkZoomRenderer) {
   }
-
-  // ngDoCheck(): void {
-  //   console.log('Check');
-  // }
 
   ngOnInit(): void {
-    if (this.data == null) {
-      console.error('[FlChartPathwayComponent] Data not provided');
-    }
-
-    // init the pathway state
-    this.state.init(this.data, 'kegg');
+    this.state.init(this.networks, 'kegg');
     // init the drawer state
     this.drawerState.init(this.drawer);
-  }
 
-  ngAfterViewInit(): void {
-    this.rendererState.init(this.chartHtmlContainer.nativeElement);
+    this.rendererState.init(this.networkContainer.nativeElement);
+    this.zoomRenderer.init();
   }
 
   openDrawer(): void {
@@ -68,6 +58,5 @@ export class FlBioNetworkComponent implements OnInit, AfterViewInit {
   closeDrawer(): void {
     this.drawerState.closeDrawer();
   }
-
 
 }

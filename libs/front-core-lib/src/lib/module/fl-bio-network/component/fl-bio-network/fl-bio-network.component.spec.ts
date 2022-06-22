@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {FlBioNetworkComponent} from './fl-bio-network.component';
 
-describe('FlChartPathwayComponent', () => {
+describe('FlBioNetworkTwoComponent', () => {
   let component: FlBioNetworkComponent;
   let fixture: ComponentFixture<FlBioNetworkComponent>;
 

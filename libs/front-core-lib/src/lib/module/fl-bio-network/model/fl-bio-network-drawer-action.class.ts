@@ -1,4 +1,4 @@
-import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
+import {FlBioNetworkNode} from './fl-bio-network-node.class';
 
 // different possible actions for the drawer
 export type FlBioNetworkDrawerActionName = 'nodeDetail' | 'config';
@@ -9,7 +9,7 @@ export type FlBioNetworkDrawerActionName = 'nodeDetail' | 'config';
  */
 export interface FlBioNetworkDrawerStateValue {
   action: FlBioNetworkDrawerActionName;
-  selectedNode: FlBioNetworkD3Node;
+  selectedNode: FlBioNetworkNode;
 }
 
 // List of possible action for the pathway drawer
@@ -20,7 +20,7 @@ export type FlBioNetworkDrawerAction = FlBioNetworkActionNodeDetail | FlBioNetwo
  */
 export interface FlBioNetworkActionNodeDetail {
   action: 'nodeDetail';
-  selectedNode: FlBioNetworkD3Node;
+  selectedNode: FlBioNetworkNode;
 }
 
 /**

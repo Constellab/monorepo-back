@@ -1,16 +1,18 @@
-import {FlBioNetworkD3Reaction} from '../model/fl-bio-network-d3-reaction.class';
+import {FlBioNetworkNodeReaction} from '../model/fl-bio-network-node-reaction.class';
 import {FlBioNetworkCanvasHelper} from '../utils/fl-bio-network-canvas.helper';
-import {FlBioNetworkD3Object} from '../model/fl-bio-network-d3.class';
+import {FlBioNetworkObjectColorFunction} from './fl-bio-network-object.renderer';
 
-
+/**
+ * Draw reaction node using canvas
+ */
 export class FlBioNetworkReactionRenderer {
 
   public static size: number = 8;
   public static strokeWidth: number = 2;
   public static borderRadius: number = 2;
 
-  public static draw(ctx: CanvasRenderingContext2D, reaction: FlBioNetworkD3Reaction,
-                     colorFunc?: (node: FlBioNetworkD3Object) => string): void {
+  public static draw(ctx: CanvasRenderingContext2D, reaction: FlBioNetworkNodeReaction,
+                     colorFunc: FlBioNetworkObjectColorFunction): void {
 
     if (!reaction.selected) {
       ctx.globalAlpha = 0.1;
@@ -39,7 +41,7 @@ export class FlBioNetworkReactionRenderer {
     ctx.globalAlpha = 1;
   }
 
-  public static drawPointerArea(ctx: CanvasRenderingContext2D, reaction: FlBioNetworkD3Reaction, color: string): void {
+  public static drawPointerArea(ctx: CanvasRenderingContext2D, reaction: FlBioNetworkNodeReaction, color: string): void {
     // use the unique color for the pointer area
     ctx.fillStyle = color;
 

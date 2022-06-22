@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlThemeService} from '../../../service/fl-theme.service';
-import {FlBioNetworkGridTwoState} from '../state/fl-bio-network-grid-two.state';
+import {FlBioNetworkGridState} from '../state/fl-bio-network-grid.state';
 
 
 @Injectable()
@@ -16,22 +16,22 @@ export class FlBioNetworkGridRenderer {
     ctx.strokeStyle = this.gridColor;
     ctx.lineWidth = 0.1;
 
-    let i = -FlBioNetworkGridTwoState.gridSize;
-    while (i < FlBioNetworkGridTwoState.gridSize) {
+    let i = -FlBioNetworkGridState.gridSize;
+    while (i < FlBioNetworkGridState.gridSize) {
       // vertical lines
       ctx.beginPath();
-      ctx.moveTo(i, -FlBioNetworkGridTwoState.gridSize);
-      ctx.lineTo(i, FlBioNetworkGridTwoState.gridSize);
+      ctx.moveTo(i, -FlBioNetworkGridState.gridSize);
+      ctx.lineTo(i, FlBioNetworkGridState.gridSize);
       ctx.stroke();
 
       // horizontal lines
       ctx.beginPath();
-      ctx.moveTo(-FlBioNetworkGridTwoState.gridSize, i);
-      ctx.lineTo(FlBioNetworkGridTwoState.gridSize, i);
+      ctx.moveTo(-FlBioNetworkGridState.gridSize, i);
+      ctx.lineTo(FlBioNetworkGridState.gridSize, i);
       ctx.stroke();
 
       ctx.stroke();
-      i += FlBioNetworkGridTwoState.gridStep;
+      i += FlBioNetworkGridState.gridStep;
     }
   }
 }

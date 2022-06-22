@@ -1,5 +1,5 @@
-import {FlBioNetworkD3Node} from './fl-bio-network-d3-node.class';
-import {FlBioNetworkD3Link} from './fl-bio-network-d3-link.class';
+import {FlBioNetworkNode} from './fl-bio-network-node.class';
+import {FlBioNetworkLink} from './fl-bio-network-node-link.class';
 
 /**
  * Different selection modes
@@ -13,18 +13,18 @@ export type FlBioNetworkSelectionEvent = FlBioNetworkSelectionEventSingleNode | 
 
 export interface FlBioNetworkSelectionEventBase {
   mode: FlBioNetworkSelectionMode;
-  nodes?: FlBioNetworkD3Node[]; // list of selected nodes
-  links?: FlBioNetworkD3Link[]; // list of selected links
+  nodes?: FlBioNetworkNode[]; // list of selected nodes
+  links?: FlBioNetworkLink[]; // list of selected links
 }
 
 export interface FlBioNetworkSelectionEventSingleNode extends FlBioNetworkSelectionEventBase {
   mode: 'singleNode' | 'singleNodeByClick'; // to distinguish single node selection by click and by other selectoin
-  selectedNode: FlBioNetworkD3Node;
+  selectedNode: FlBioNetworkNode;
 }
 
 export interface FlBioNetworkSelectionEventMultipleNodes extends FlBioNetworkSelectionEventBase {
   mode: 'multipleNodes';
-  selectedNodes: FlBioNetworkD3Node[];
+  selectedNodes: FlBioNetworkNode[];
 }
 
 

@@ -25,7 +25,6 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {FlTranslateService} from '../fl-translate/service/fl-translate.service';
 import {flBioNetworkI18n} from './i18n/fl-bio-network.i18n';
-import {FlBioNetworkComponent} from './component/fl-bio-network/fl-bio-network.component';
 import {MatTabsModule} from '@angular/material/tabs';
 import {
   FlBioNetworkActionBarComponent
@@ -33,7 +32,6 @@ import {
 import {
   FlBioNetworkCompartmentsComponent
 } from './component/fl-bio-network-compartments/fl-bio-network-compartments.component';
-import {FlBioNetworkZoomComponent} from './component/fl-bio-network-zoom/fl-bio-network-zoom.component';
 import {
   FlBioNetworkSelectionInfoComponent
 } from './component/fl-bio-network-selection-info/fl-bio-network-selection-info.component';
@@ -54,31 +52,28 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {
   FlBioNetworkClustersListComponent
 } from './component/fl-bio-network-clusters-list/fl-bio-network-clusters-list.component';
-import {FlBioNetworkTwoComponent} from './component/fl-bio-network-two/fl-bio-network-two.component';
+import {FlBioNetworkComponent} from './component/fl-bio-network/fl-bio-network.component';
 
 /**
  * Module to handle specific chart to show a pathway
  */
 @NgModule({
   declarations: [
-    FlBioNetworkComponent,
     FlBioNetworkNodeDetailComponent,
     FlBioNetworkNodeLinksComponent,
     FlBioNetworkDrawerComponent,
     FlBioNetworkConfigComponent,
     FlBioNetworkActionBarComponent,
     FlBioNetworkCompartmentsComponent,
-    FlBioNetworkZoomComponent,
     FlBioNetworkSelectionInfoComponent,
     FlBioNetworkNodeSearchComponent,
     FlBioNetworkReactionDetailComponent,
     FlBioNetworkMetaboliteDetailComponent,
     FlBioNetworkClustersListComponent,
-    FlBioNetworkTwoComponent,
+    FlBioNetworkComponent,
   ],
   exports: [
     FlBioNetworkComponent,
-    FlBioNetworkTwoComponent,
   ],
   imports: [
     CommonModule,

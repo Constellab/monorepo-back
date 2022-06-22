@@ -3,7 +3,7 @@ import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {FlBioNetworkCompartment} from '../../model/fl-bio-network-compartment.class';
-import {FlBioNetworkSelectionTwoState} from '../../state/fl-bio-network-selection-two.state';
+import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 
 
 /**
@@ -23,7 +23,7 @@ export class FlBioNetworkCompartmentsComponent implements OnInit {
   private selectedCompartments: Set<string> = new Set();
 
   constructor(private state: FlBioNetworkState,
-              private selectionState: FlBioNetworkSelectionTwoState,
+              private selectionState: FlBioNetworkSelectionState,
               private cdr: ChangeDetectorRef) {
   }
 

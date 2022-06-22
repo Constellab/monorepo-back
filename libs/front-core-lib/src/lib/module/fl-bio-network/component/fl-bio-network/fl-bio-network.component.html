@@ -1,12 +1,13 @@
-<mat-sidenav-container class="g-full-height" [hasBackdrop]="false">
+
+<mat-drawer-container class="g-full-height" [hasBackdrop]="false">
 
   <!-- Main content with chart -->
-  <mat-sidenav-content>
+  <mat-drawer-content>
     <div class="container" fxLayout="row">
 
 
       <div class="g-full-height" fxFlex="auto" fxLayout="column">
-        <div #chart fxFlex="auto" class="svg-container" (click)="closeDrawer()"></div>
+        <div #networkContainer fxFlex="auto" class="svg-container" (click)="closeDrawer()"></div>
 
         <fl-bio-network-action-bar></fl-bio-network-action-bar>
 
@@ -17,9 +18,9 @@
 
     </div>
 
-  </mat-sidenav-content>
+  </mat-drawer-content>
 
-  <mat-sidenav mode="over" position="end" #sidenav>
+  <mat-drawer mode="over" position="end" #sidenav>
     <fl-bio-network-drawer></fl-bio-network-drawer>
-  </mat-sidenav>
-</mat-sidenav-container>
+  </mat-drawer>
+</mat-drawer-container>
