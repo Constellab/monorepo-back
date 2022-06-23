@@ -30,7 +30,7 @@ export interface FlSpreadsheetChartSerieSelectionInput {
 }
 
 /**
- * Config to generate a chart type from the sheet
+ * Config for the form to select values from spreadsheet to then generate a chart type from the sheet
  */
 export abstract class FlSheetChartConfig {
 

@@ -16,7 +16,8 @@ export class FlSheetChartSelectionBarPlot extends FlSheetChartSelection {
 
 
   constructor(sheet: FlSheet, private chartType: FlChartType.BAR_PLOT | FlChartType.STACKED_PLOT,
-              private series: FlSheetChartSerieSelectionForm[]) {
+              private series: FlSheetChartSerieSelectionForm[],
+              private xAxisLabel?: string, private yAxisLabel?: string) {
     super(sheet);
   }
 
@@ -26,6 +27,9 @@ export class FlSheetChartSelectionBarPlot extends FlSheetChartSelection {
       const ySelection: FlSheetSelection = this.getMultiSelectionFromSelectionRange(serie.y);
       series.addSerie(new FlChartSerie<any>(this.convertSelectionTo2dDatum(ySelection), serie.name));
     }
+
+    series.axisXLabel = this.xAxisLabel;
+    series.axisYLabel = this.yAxisLabel;
 
     if (this.chartType === FlChartType.BAR_PLOT) {
       return new FlChartBarPlot(series);
@@ -35,34 +39,13 @@ export class FlSheetChartSelectionBarPlot extends FlSheetChartSelection {
   }
 }
 
-// Basic bar plot and stack plot
-export class FlSheetChartSelectionStackedBarPlot extends FlSheetChartSelection {
-
-
-  constructor(sheet: FlSheet, private chartType: FlChartType.STACKED_PLOT,
-              private series: FlSheetChartSerieSelectionForm[]) {
-    super(sheet);
-  }
-
-  exportToChart(): FlChartConfig {
-    const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
-    for (const serie of this.series) {
-      const ySelection: FlSheetSelection = this.getMultiSelectionFromSelectionRange(serie.y);
-      series.addSerie(new FlChartSerie<any>(this.convertSelectionTo2dDatum(ySelection), serie.name));
-    }
-
-
-
-    return new FlChartStackedBar(series);
-
-  }
-}
-
 
 // Histogram
 export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
 
-  constructor(sheet: FlSheet, private series: FlSheetChartSerieSelectionForm[], private nbOfBins?: number) {
+  constructor(sheet: FlSheet, private series: FlSheetChartSerieSelectionForm[],
+              private nbOfBins?: number,
+              private xAxisLabel?: string, private yAxisLabel?: string) {
     super(sheet);
   }
 
@@ -80,11 +63,15 @@ export class FlSheetChartSelectionHistogram extends FlSheetChartSelection {
       this.series[0].name);
 
     // define the axisXLabelFormat
-    series.axisXLabelFormat = (index: number) => {
+    series.axisXLabelTicksFormat = (index: number) => {
       const ChartDataBin: FlChartDataBin = serie.data[index];
       return ChartDataBin.getIntervalText();
     };
     series.addSerie(serie);
+
+    series.axisXLabel = this.xAxisLabel;
+    series.axisYLabel = this.yAxisLabel;
+
     return new FlChartHistogram(series);
 
   }

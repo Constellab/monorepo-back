@@ -11,15 +11,21 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
 
   series: FlChartSerie<Data>[];
 
+  // name of the axis
+  axisXLabel: string
+  axisYLabel: string
+
   /**
    * Function to format the x-axis labels
    */
-  axisXLabelFormat: FlChartAxisTickFormat | null;
+  axisXLabelTicksFormat: FlChartAxisTickFormat | null;
 
   /**
    * Function to format the y-axis labels
    */
-  axisYLabelFormat: FlChartAxisTickFormat | null;
+  axisYLabelTicksFormat: FlChartAxisTickFormat | null;
+
+
 
   constructor(series: FlChartSerie<Data>[] = []) {
     this.series = series;
@@ -93,7 +99,7 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
    */
   public setXTickLabels(xTickLabels: string[]): void {
     if (xTickLabels) {
-      this.axisXLabelFormat = (value) => (xTickLabels[value] ?? value).toString();
+      this.axisXLabelTicksFormat = (value) => (xTickLabels[value] ?? value).toString();
     }
   }
 
@@ -103,7 +109,7 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
    */
   public setYTickLabels(yTickLabels: string[]): void {
     if (yTickLabels) {
-      this.axisYLabelFormat = (value) => (yTickLabels[value] ?? value).toString();
+      this.axisYLabelTicksFormat = (value) => (yTickLabels[value] ?? value).toString();
     }
   }
 

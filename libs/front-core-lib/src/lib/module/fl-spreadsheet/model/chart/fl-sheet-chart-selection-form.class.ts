@@ -62,6 +62,9 @@ export interface FlSheetChartSelectionFormAdditional {
   density?: boolean;
   // for the stack bar
   normalize?: boolean;
+  // for 2d charts
+  xAxisLabel?: string;
+  yAxisLabel?: string;
 }
 
 

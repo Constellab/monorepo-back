@@ -18,6 +18,10 @@ import {
  */
 export class FlChartHeatMapDataContainer implements FlChartDataContainer<FlChart3dDatum> {
 
+  // name of the axis
+  axisXLabel: string
+  axisYLabel: string
+
   /**
    * Function to format the x-axis labels
    */
@@ -102,7 +106,8 @@ export class FlChartHeatMap extends FlChartConfig {
     const xAxis: FlChartAxis = new FlChartAxisBand('bottom').setScale(xScale)
       .setTickFormat(this.dataContainer.axisXLabelFormat)
       .setMaxTickLength(FlChartAxisBand.xRotateTickMaxLength)
-      .rotateTickText();
+      .rotateTickText()
+      .setLabel(this.dataContainer.axisXLabel);
 
     // Build Y axis
     const yScale: FlChartScaleBand = new FlChartScaleBand()
@@ -111,7 +116,8 @@ export class FlChartHeatMap extends FlChartConfig {
       .padding(0.01);
     const yAxis: FlChartAxisBand = new FlChartAxisBand('left').setScale(yScale)
       .setMaxTickLength(FlChartAxisBand.yTickMaxLength)
-      .setTickFormat(this.dataContainer.axisYLabelFormat);
+      .setTickFormat(this.dataContainer.axisYLabelFormat)
+      .setLabel(this.dataContainer.axisYLabel);
 
     const chartContainer: FlChartContainer2Axis<FlChartHeatMapDataContainer> =
       new FlChartContainer2Axis();

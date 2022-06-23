@@ -12,6 +12,8 @@ export interface RvResourceViewHeatMapData  {
   table: any[][];
   rows: RvResourceViewHeaderMapHeader[];
   columns: RvResourceViewHeaderMapHeader[];
+  x_label: string; // name of the x-axis
+  y_label: string; // name of the y-axis
 }
 
 export interface RvResourceViewHeaderMapHeader {
@@ -51,6 +53,14 @@ export function rvHeatMapToChart(view: RvResourceViewHeatMap): FlChartConfig {
 
   if (!ClHelpService.isNullOrEmpty(view.data.rows)) {
     dataContainer.setYTickLabels(view.data.rows.map(row => row.name));
+  }
+
+  // set the labels
+  if(view.data.x_label) {
+    dataContainer.axisXLabel = view.data.x_label;
+  }
+  if(view.data.y_label) {
+    dataContainer.axisYLabel = view.data.y_label;
   }
 
   return new FlChartHeatMap(dataContainer);

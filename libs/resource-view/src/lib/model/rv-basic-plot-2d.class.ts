@@ -73,5 +73,13 @@ function labResourceBuildBasicChart2d(view: RvResourceViewBasicPlot2d): FlChart2
     series.setXTickLabels(view.data.x_tick_labels);
   }
 
+  // set the labels
+  if(view.data.x_label) {
+    series.axisXLabel = view.data.x_label;
+  }
+  if(view.data.y_label) {
+    series.axisYLabel = view.data.y_label;
+  }
+
   return series;
 }

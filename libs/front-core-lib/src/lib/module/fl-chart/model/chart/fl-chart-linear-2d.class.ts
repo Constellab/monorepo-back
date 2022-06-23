@@ -48,12 +48,14 @@ abstract class FlChartLinear2d extends FlChartConfig {
     const xScale: FlChartScaleLinear = new FlChartScaleNumber()
       .setInitialDomain(this.dataContainer.getDomainXLinear(this.getExtendDomain()));
     const xAxis: FlChartAxis = new FlChartAxis('bottom').setScale(xScale)
-      .setTickFormat(this.dataContainer.axisXLabelFormat);
+      .setTickFormat(this.dataContainer.axisXLabelTicksFormat)
+      .setLabel(this.dataContainer.axisXLabel);
 
     // Build Y axis
     const yScale: FlChartScaleLinear = new FlChartScaleNumber()
       .setInitialDomain(this.dataContainer.getDomainYLinear(this.getExtendDomain()));
-    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
+    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale)
+      .setLabel(this.dataContainer.axisYLabel);
 
     chartContainer
       .initXAxis(xAxis)

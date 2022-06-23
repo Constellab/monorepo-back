@@ -10,7 +10,8 @@ import {FlSheetMultiSelection} from '../selection/fl-sheet-multi-selection.class
 export class FlSheetChartSelectionHeatMap extends FlSheetChartSelection {
 
 
-  constructor(sheet: FlSheet, private serie: FlSheetChartSerieSelectionForm) {
+  constructor(sheet: FlSheet, private serie: FlSheetChartSerieSelectionForm,
+              private xAxisLabel?: string, private yAxisLabel?: string) {
     super(sheet);
   }
 
@@ -28,6 +29,10 @@ export class FlSheetChartSelectionHeatMap extends FlSheetChartSelection {
     }
 
     const dataContainer: FlChartHeatMapDataContainer = new FlChartHeatMapDataContainer(chartData);
+
+    dataContainer.axisXLabel = this.xAxisLabel;
+    dataContainer.axisYLabel = this.yAxisLabel;
+
     return new FlChartHeatMap(dataContainer);
   }
 

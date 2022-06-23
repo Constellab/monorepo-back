@@ -48,7 +48,7 @@ export function rvHistogramToChart(view: RvResourceViewHistogram): FlChartConfig
 
 
   // set the axisXRvelFormat but taking the interval text of the first serie
-  series.axisXLabelFormat = (_: number, index: number) => {
+  series.axisXLabelTicksFormat = (_: number, index: number) => {
     const dataHisto: FlChartDataBin = series.series[0].data[index];
     return dataHisto.getIntervalText();
   };

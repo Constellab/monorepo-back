@@ -99,7 +99,9 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
       additionalFields: new FormBuilder().group({
         nbOfBins: [null, [Validators.min(1), FlGlobalValidators.isInteger()]],
         density: [null],
-        normalize: [null]
+        normalize: [null],
+        xAxisLabel: [null],
+        yAxisLabel: [null],
       })
 
     });

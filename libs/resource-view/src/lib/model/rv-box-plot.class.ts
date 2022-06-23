@@ -68,5 +68,13 @@ export function rvBoxPlotToChart(view: RvResourceViewBoxPlot): FlChartConfig {
   if (view.data.x_tick_labels) {
     series.setXTickLabels(view.data.x_tick_labels);
   }
+
+  // set the labels
+  if(view.data.x_label) {
+    series.axisXLabel = view.data.x_label;
+  }
+  if(view.data.y_label) {
+    series.axisYLabel = view.data.y_label;
+  }
   return new FlChartBoxPlot(series);
 }

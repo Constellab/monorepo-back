@@ -44,7 +44,8 @@ export class FlChartBoxPlot extends FlChartConfig {
     const xAxis: FlChartAxis = new FlChartAxisBand('bottom').setScale(xScale)
       .rotateTickText()
       .setMaxTickLength(FlChartAxisBand.xRotateTickMaxLength)
-      .setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelFormat);
+      .setSmartTickFormat(FlChartAxisBand.tickXRotateWidth, this.dataContainer.axisXLabelTicksFormat)
+      .setLabel(this.dataContainer.axisXLabel);
 
 
     const data = this.dataContainer.getData();
@@ -55,7 +56,8 @@ export class FlChartBoxPlot extends FlChartConfig {
     // build the y-axis and scale linear
     const yScale: FlChartScaleLinear = new FlChartScaleNumber()
       .setInitialDomain(FlChartDomain.getLinearDomain(numberData, 0, 0));
-    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale);
+    const yAxis: FlChartAxis = new FlChartAxis('left').setScale(yScale)
+      .setLabel(this.dataContainer.axisYLabel);
 
     return chartContainer
       .initXAxis(xAxis)

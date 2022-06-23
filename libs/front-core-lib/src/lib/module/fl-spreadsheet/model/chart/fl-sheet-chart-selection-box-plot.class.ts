@@ -9,7 +9,8 @@ import {FlChartBoxPlot} from '../../../fl-chart/model/chart/fl-chart-box-plot.cl
 
 export class FlSheetChartSelectionBoxPlot extends FlSheetChartSelection {
 
-  constructor(sheet: FlSheet, private series: FlSheetChartSerieSelectionForm[]) {
+  constructor(sheet: FlSheet, private series: FlSheetChartSerieSelectionForm[],
+              private xAxisLabel?: string, private yAxisLabel?: string) {
     super(sheet);
   }
 
@@ -22,6 +23,9 @@ export class FlSheetChartSelectionBoxPlot extends FlSheetChartSelection {
 
       series.addSerie(new FlChartBoxPlotSerie([flChartGetBoxPlotData(values)], serie.name));
     }
+
+    series.axisXLabel = this.xAxisLabel;
+    series.axisYLabel = this.yAxisLabel;
 
     return new FlChartBoxPlot(series);
   }

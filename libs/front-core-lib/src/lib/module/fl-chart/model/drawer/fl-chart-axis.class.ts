@@ -4,6 +4,7 @@ import {Selection} from 'd3-selection';
 import {Axis, AxisScale} from 'd3-axis';
 import {FlChartAxisTickFormat} from '../data/fl-chart-data.class';
 import {ClStringHelper} from '@monorepo/core-lib';
+import {FlD3SelectionSimple} from '../fl-d3.class';
 
 
 /**
@@ -33,6 +34,8 @@ export class FlChartAxis {
   protected tickTextIsRotated: boolean = false;
 
   protected maxTickLength: number = null;
+
+  protected label: string;
 
   constructor(type: FlChartAxisType) {
     this.type = type;
@@ -69,7 +72,42 @@ export class FlChartAxis {
       .attr('transform', this.getAxisTransform(chartHeight, chartWidth))
       .call(this.createAxis());
 
+    this.drawLabel();
     this.refreshTickLabels();
+  }
+
+  // draw the axis label
+  private drawLabel(): void {
+    if (this.label) {
+      if (this.type === 'left') {
+        // on top of the axis, centered
+        this.axisContainer.append('text')
+          .text(this.label.slice(0, 30))
+          .attr('x', 0)
+          .attr('y', -10)
+          .attr('fill', 'currentcolor')
+          .attr('text-anchor', 'middle')
+          .style('font-size', 10)
+          .append('title')
+          .text(this.label);
+      } else if (this.type === 'bottom') {
+        // on axis left, centered vertically
+        this.axisContainer.append('text')
+          .text(this.label.slice(0, 30))
+          .attr('x', -20)
+          .attr('y', 17)
+          .attr('fill', 'currentcolor')
+          .attr('text-anchor', 'end')
+          .style('font-size', 10)
+          .append('title')
+          .text(this.label);
+      }
+    }
+  }
+
+  public setLabel(label: string): this {
+    this.label = label;
+    return this;
   }
 
   /**
@@ -84,7 +122,7 @@ export class FlChartAxis {
 
   private refreshTickTextRotation(): void {
     if (this.tickTextIsRotated) {
-      this.axisContainer.selectAll('text')
+      this.getTickTextSelection()
         // rotate the text of the legend
         .attr('transform', 'translate(-10,0)rotate(-45)')
         .style('text-anchor', 'end');
@@ -94,12 +132,15 @@ export class FlChartAxis {
   private refreshTickTitle(): void {
     // add title to tick (only if a tick format exist)
     if (this.tickFormat) {
-      this.axisContainer.selectAll('text')
+      this.getTickTextSelection()
         // add a title to each tick
         .append('title')
         .text(this.tickFormat);
     }
+  }
 
+  private getTickTextSelection(): FlD3SelectionSimple {
+    return this.axisContainer.selectAll('.tick').selectAll('text');
   }
 
   private createAxis(): Axis<Numeric> {

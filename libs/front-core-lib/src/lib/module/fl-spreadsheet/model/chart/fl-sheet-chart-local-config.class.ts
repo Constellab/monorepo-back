@@ -51,7 +51,8 @@ export class FlSheetLocalChartConfigLinePlot extends FlSheetLocalChartConfig {
 
   generateChart(series: FlSheetChart2dSerieSelectionForm[], additionalFields: FlSheetChartSelectionFormAdditional,
                 sheet: FlSheet, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
-    const selection = new FlSheetChartSelectionBasic(sheet, this.getChartType(), series);
+    const selection = new FlSheetChartSelectionBasic(sheet, this.getChartType(), series,
+      additionalFields.xAxisLabel, additionalFields.yAxisLabel);
     return this.openChartPortal(selection, contextMenuItems);
   }
 
@@ -67,6 +68,10 @@ export class FlSheetLocalChartConfigLinePlot extends FlSheetLocalChartConfig {
       xSelectionMode: 'multi'
     };
   }
+
+  getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
+    return ['xAxisLabel', 'yAxisLabel'];
+  }
 }
 
 //////////////////////////////////// SCATTER PLOT /////////////////////////////////////
@@ -78,7 +83,8 @@ export class FlSheetLocalChartConfigScatterPlot extends FlSheetLocalChartConfig 
 
   generateChart(series: FlSheetChart2dSerieSelectionForm[], additionalFields: FlSheetChartSelectionFormAdditional,
                 sheet: FlSheet, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
-    const selection = new FlSheetChartSelectionBasic(sheet, this.getChartType(), series);
+    const selection = new FlSheetChartSelectionBasic(sheet, this.getChartType(), series,
+      additionalFields.xAxisLabel, additionalFields.yAxisLabel);
     return this.openChartPortal(selection, contextMenuItems);
   }
 
@@ -94,6 +100,10 @@ export class FlSheetLocalChartConfigScatterPlot extends FlSheetLocalChartConfig 
       xSelectionMode: 'multi'
     };
   }
+
+  getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
+    return ['xAxisLabel', 'yAxisLabel'];
+  }
 }
 
 
@@ -106,7 +116,8 @@ export class FlSheetLocalChartConfigBarPlot extends FlSheetLocalChartConfig {
 
   generateChart(series: FlSheetChart2dSerieSelectionForm[], additionalFields: FlSheetChartSelectionFormAdditional,
                 sheet: FlSheet, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
-    const selection = new FlSheetChartSelectionBarPlot(sheet, this.getChartType(), series);
+    const selection = new FlSheetChartSelectionBarPlot(sheet, this.getChartType(), series,
+      additionalFields.xAxisLabel, additionalFields.yAxisLabel);
     return this.openChartPortal(selection, contextMenuItems);
   }
 
@@ -120,6 +131,10 @@ export class FlSheetLocalChartConfigBarPlot extends FlSheetLocalChartConfig {
       mode: 'onlyY',
       ySelectionMode: 'multi',
     };
+  }
+
+  getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
+    return ['xAxisLabel', 'yAxisLabel'];
   }
 }
 
@@ -132,7 +147,8 @@ export class FlSheetLocalChartConfigStackedBarPlot extends FlSheetLocalChartConf
 
   generateChart(series: FlSheetChart2dSerieSelectionForm[], additionalFields: FlSheetChartSelectionFormAdditional,
                 sheet: FlSheet, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
-    const selection = new FlSheetChartSelectionBarPlot(sheet, this.getChartType(), series);
+    const selection = new FlSheetChartSelectionBarPlot(sheet, this.getChartType(), series,
+      additionalFields.xAxisLabel, additionalFields.yAxisLabel);
     return this.openChartPortal(selection, contextMenuItems);
   }
 
@@ -147,6 +163,10 @@ export class FlSheetLocalChartConfigStackedBarPlot extends FlSheetLocalChartConf
       ySelectionMode: 'multi',
     };
   }
+
+  getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
+    return ['xAxisLabel', 'yAxisLabel'];
+  }
 }
 
 //////////////////////////////////// HISTOGRAM /////////////////////////////////////
@@ -157,7 +177,8 @@ export class FlSheetLocalChartConfigHistogram extends FlSheetLocalChartConfig {
 
   generateChart(series: FlSheetChart2dSerieSelectionForm[], additionalFields: FlSheetChartSelectionFormAdditional,
                 sheet: FlSheet, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
-    const selection = new FlSheetChartSelectionHistogram(sheet, series, additionalFields.nbOfBins);
+    const selection = new FlSheetChartSelectionHistogram(sheet, series, additionalFields.nbOfBins,
+      additionalFields.xAxisLabel, additionalFields.yAxisLabel);
     return this.openChartPortal(selection, contextMenuItems);
   }
 
@@ -167,7 +188,7 @@ export class FlSheetLocalChartConfigHistogram extends FlSheetLocalChartConfig {
   }
 
   getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
-    return ['nbOfBins'];
+    return ['nbOfBins', 'xAxisLabel', 'yAxisLabel'];
   }
 
 
@@ -194,7 +215,8 @@ export class FlSheetLocalChartConfigBoxPlot extends FlSheetLocalChartConfig {
 
   generateChart(series: FlSheetChart2dSerieSelectionForm[], additionalFields: FlSheetChartSelectionFormAdditional,
                 sheet: FlSheet, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
-    const selection = new FlSheetChartSelectionBoxPlot(sheet, series);
+    const selection = new FlSheetChartSelectionBoxPlot(sheet, series,
+      additionalFields.xAxisLabel, additionalFields.yAxisLabel);
     return this.openChartPortal(selection, contextMenuItems);
   }
 
@@ -209,6 +231,10 @@ export class FlSheetLocalChartConfigBoxPlot extends FlSheetLocalChartConfig {
       ySelectionMode: 'multi',
     };
   }
+
+  getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
+    return ['xAxisLabel', 'yAxisLabel'];
+  }
 }
 
 
@@ -221,7 +247,8 @@ export class FlSheetLocalChartConfigHeatMap extends FlSheetLocalChartConfig {
 
   generateChart(series: FlSheetChart2dSerieSelectionForm[], additionalFields: FlSheetChartSelectionFormAdditional,
                 sheet: FlSheet, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
-    const selection = new FlSheetChartSelectionHeatMap(sheet, series[0]);
+    const selection = new FlSheetChartSelectionHeatMap(sheet, series[0],
+      additionalFields.xAxisLabel, additionalFields.yAxisLabel);
     return this.openChartPortal(selection, contextMenuItems);
   }
 
@@ -239,6 +266,10 @@ export class FlSheetLocalChartConfigHeatMap extends FlSheetLocalChartConfig {
       mode: 'onlyY',
       ySelectionMode: 'single',
     };
+  }
+
+  getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
+    return ['xAxisLabel', 'yAxisLabel'];
   }
 }
 

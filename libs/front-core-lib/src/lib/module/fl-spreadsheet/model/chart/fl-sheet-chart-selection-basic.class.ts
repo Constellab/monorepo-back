@@ -13,7 +13,8 @@ export class FlSheetChartSelectionBasic extends FlSheetChartSelection {
 
 
   constructor(sheet: FlSheet, private chartType: FlChartType.LINE | FlChartType.SCATTER_PLOT,
-              private series: FlSheetChart2dSerieSelectionForm[]) {
+              private series: FlSheetChart2dSerieSelectionForm[],
+              private xAxisLabel?: string, private yAxisLabel?: string) {
     super(sheet);
   }
 
@@ -29,6 +30,9 @@ export class FlSheetChartSelectionBasic extends FlSheetChartSelection {
         series.addSerie(new FlChartSerie<any>(this.convertSelectionTo2dDatum(ySelection), serie.name));
       }
     }
+
+    series.axisXLabel = this.xAxisLabel;
+    series.axisYLabel = this.yAxisLabel;
 
     if (this.chartType === FlChartType.LINE) {
       return new FlChartLine2d(series);
