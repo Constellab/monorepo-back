@@ -57,17 +57,19 @@
           </mat-checkbox>
 
           <!-- X and Y labels -->
-          <mat-form-field appearance="outline" class="g-full" *ngIf="showAdditionalField('xAxisLabel')">
-            <mat-label>{{'flSpreadsheet.chart_x_axis_label' | translate}}</mat-label>
-            <input matInput formControlName="xAxisLabel"
-                   placeholder="{{'flSpreadsheet.chart_x_axis_label' | translate}}">
-          </mat-form-field>
+          <div fxLayout="row" fxLayoutAlign="space-between">
+            <mat-form-field appearance="outline" fxFlex="49%" *ngIf="showAdditionalField('xAxisLabel')">
+              <mat-label>{{'flSpreadsheet.chart_x_axis_label' | translate}}</mat-label>
+              <input matInput formControlName="xAxisLabel"
+                     placeholder="{{'flSpreadsheet.chart_x_axis_label' | translate}}">
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="g-full" *ngIf="showAdditionalField('yAxisLabel')">
-            <mat-label>{{'flSpreadsheet.chart_y_axis_label' | translate}}</mat-label>
-            <input matInput formControlName="yAxisLabel"
-                   placeholder="{{'flSpreadsheet.chart_y_axis_label' | translate}}">
-          </mat-form-field>
+            <mat-form-field appearance="outline" fxFlex="49%" *ngIf="showAdditionalField('yAxisLabel')">
+              <mat-label>{{'flSpreadsheet.chart_y_axis_label' | translate}}</mat-label>
+              <input matInput formControlName="yAxisLabel"
+                     placeholder="{{'flSpreadsheet.chart_y_axis_label' | translate}}">
+            </mat-form-field>
+          </div>
         </ng-container>
       </div>
 
