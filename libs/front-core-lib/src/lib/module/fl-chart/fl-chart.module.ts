@@ -41,9 +41,6 @@ import {FlResizeModule} from '../fl-resize/fl-resize.module';
 import {
   FlChartStackedBarDataPortalComponent
 } from './component/fl-chart-data-portal/fl-chart-stacked-bar-data-portal/fl-chart-stacked-bar-data-portal.component';
-import {
-  FlChartDataTagsComponent
-} from './component/fl-chart-data-portal/fl-chart-data-tags/fl-chart-data-tags.component';
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
 import {FlKeyValueModule} from '../fl-key-value/fl-key-value.module';
 import {
@@ -77,7 +74,6 @@ import {
 
     FlChartVennDataPortalComponent,
     FlChartStackedBarDataPortalComponent,
-    FlChartDataTagsComponent,
     FlChartLegendMultiSeriesComponent,
     FlChartLegendHeatMapComponent,
     FlChartLegendSeriesWithTagsComponent,
