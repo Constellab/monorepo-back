@@ -6,7 +6,7 @@ import {FlSpreadsheetHelper} from './fl-spreadsheet.helper';
 import {FlSheetSingleSelection, FlSheetSingleSelectionFull} from '../model/selection/fl-sheet-single-selection.class';
 
 /**
- * Class linked to {@link FlSpreadsheetChartSelectionComponent} to help handle different
+ * Class linked to {@link FlSheetChartSerieSelectionComponent} to help handle different
  * chart types
  */
 export class FlSpreadsheetChartSelectionHelper {
@@ -35,16 +35,7 @@ export class FlSpreadsheetChartSelectionHelper {
 
       const selection: FlSheetSingleSelection = FlSheetSingleSelectionFull.fromString(sheet, control.value);
 
-      if (!sheet.coordIsValid(selection.from)) {
-        return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.from)};
-      }
-
-      if (!sheet.coordIsValid(selection.to)) {
-        return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.to)};
-      }
-
-      return null;
-
+      return FlSpreadsheetChartSelectionHelper.checkSelectOutOfBound(sheet, selection);
     };
   }
 
@@ -68,16 +59,45 @@ export class FlSpreadsheetChartSelectionHelper {
       const selections: FlSheetMultiSelection = FlSheetMultiSelection.fromString(sheet, control.value);
 
       for (const selection of selections.selections) {
-        if (!sheet.coordIsValid(selection.from)) {
-          return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.from)};
+        const outOfBound = FlSpreadsheetChartSelectionHelper.checkSelectOutOfBound(sheet, selection);
+
+        if (outOfBound != null) {
+          return outOfBound;
         }
 
-        if (!sheet.coordIsValid(selection.to)) {
-          return {selectionOutOfBound: FlSpreadsheetHelper.coordToString(selection.to)};
-        }
       }
 
       return null;
     };
+  }
+
+  // Check if a selection is out of bound
+  private static checkSelectOutOfBound(sheet: FlSheet, selection: FlSheetSingleSelection): any {
+
+    // retrieve max cell coords for a cleaner error message
+    const maxCellCoord: string = FlSpreadsheetHelper.coordToString({
+      row: sheet.totalRowsCount - 1,
+      column: sheet.totalColumnsCount - 1
+    });
+
+    if (!sheet.coordIsValid(selection.from)) {
+      return {
+        selectionOutOfBound: {
+          errorSelection: FlSpreadsheetHelper.coordToString(selection.from),
+          maxSelection: maxCellCoord
+        }
+      };
+    }
+
+    if (!sheet.coordIsValid(selection.to)) {
+      return {
+        selectionOutOfBound: {
+          errorSelection: FlSpreadsheetHelper.coordToString(selection.to),
+          maxSelection: maxCellCoord
+        }
+      };
+    }
+
+    return null;
   }
 }

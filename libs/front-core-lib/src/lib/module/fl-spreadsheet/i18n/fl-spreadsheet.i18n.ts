@@ -1,6 +1,7 @@
 import {ClSupportedLanguage} from '@monorepo/core-lib';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
+/* eslint max-len: 0 */
 
 
 /**
@@ -24,7 +25,7 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     serie_name: 'Nom de la série',
     x_labels: 'Labels des abscisses',
     series_data_wrong_format: 'Format incorrect. Exemple:',
-    selection_out_of_bound: 'La sélection dépasse la taille du tableau',
+    selection_out_of_bound: 'La sélection \'{{errorSelection}\' est en dehors des limites du tableau. La sélection maximale est: \'{{maxSelection}}\'',
     chart_data_selection_tooltip: 'Cliquez pour sélection les cellules',
     chart_data_range: 'Plage de données du graphique',
     chart_add_serie: 'Ajouter une série',
@@ -82,7 +83,7 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     serie_name: 'Serie\'s name',
     x_labels: 'Abscissa\'s names',
     series_data_wrong_format: 'Incorrect format. Example:',
-    selection_out_of_bound: 'The selection is out of sheet bound',
+    selection_out_of_bound: 'The selection \'{{errorSelection}}\' is out of sheet bound. Max cell selection is: \'{{maxSelection}}\'',
     chart_data_selection_tooltip: 'Clic to select the cells',
     chart_data_range: 'Chart data range',
     chart_add_serie: 'Add serie',
