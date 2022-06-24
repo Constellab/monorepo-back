@@ -47,7 +47,7 @@ export class CaBrickVersion extends CaEntity {
 
   repoType: CaRepoType;
 
-  technicalInfo: Record<string, any>;
+  technicalInfo: Record<string, string>;
 
   isEqualOrHigher(version: CmVersion): boolean {
     const currentVersion = CmVersion.fromString(this.version);

@@ -41,5 +41,5 @@ export interface CnBrickVersionSaveDTO {
   versionType: CnVersionType;
   versionState: CnVersionState;
   repoType: CnRepoType;
-  technicalInfo?: Record<string, any>;
+  technicalInfo?: Record<string, string>;
 }

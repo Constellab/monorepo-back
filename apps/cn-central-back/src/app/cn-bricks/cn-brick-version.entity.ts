@@ -54,7 +54,7 @@ export class CnBrickVersion extends BlEntityWithId {
   repoType: CnRepoType;
 
   @Column({name: 'technicalInfo', type: 'simple-json', nullable: true})
-  technicalInfo?: Record<string, any>;
+  technicalInfo?: Record<string, string>;
 
   @CmVersionTransform()
   @Expose()
