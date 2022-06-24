@@ -42,19 +42,6 @@
         </fl-key-value>
       </div>
     </div>
-
-
-    <!--  type of repository  -->
-    <mat-form-field class="g-form-input input" appearance="fill" >
-      <mat-label>{{'type_of_repository' | translate}}</mat-label>
-      <mat-select placeholder="{{'type_of_repository' | translate}}" required formControlName="repoType">
-        <mat-option value="GIT">GIT</mat-option>
-        <mat-option value="PIP">PIP</mat-option>
-      </mat-select>
-      <mat-error *ngIf="formGp.get('repoType').hasError('required')">
-        {{'type_of_repository' | flErrorRequired}}
-      </mat-error>
-    </mat-form-field>
   </form>
 </mat-dialog-content>
 

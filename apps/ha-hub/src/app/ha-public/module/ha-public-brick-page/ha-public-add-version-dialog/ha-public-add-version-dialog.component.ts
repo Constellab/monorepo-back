@@ -46,7 +46,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
   buildForm(): FormGroup<Partial<HaNewVersionDTO>> {
     return new FormBuilder().group({
       version: [null, [Validators.pattern(new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]],
-      repoType: [HaRepoType.PIP, Validators.required],
+      repoType: [null],
       isBeta: [false],
       subPatch: [null]
     });

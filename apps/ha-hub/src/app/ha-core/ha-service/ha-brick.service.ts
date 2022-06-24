@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {HaBrick, HaBrickDTO, HaEditBrickDTO} from '../ha-model/ha-entities/ha-brick.class';
+import {HaBrick, HaBrickCreationDTO, HaBrickDTO, HaEditBrickDTO} from '../ha-model/ha-entities/ha-brick.class';
 import {HaNode} from '../ha-model/ha-entities/ha-node.class';
 import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
 import {HaNewVersionDTO, HaReferenceDTO, HaVersionType} from '../ha-model/ha-entities/ha-version.class';
@@ -23,16 +23,11 @@ export class HaBrickService {
    * Call http create
    * @param object json object
    */
-  public create(object: Partial<HaBrickDTO>): Observable<HaBrick> {
-    let versionArray: string[] = ['1', '0', '0']
-    if (!(object.version instanceof CmVersion)) {
-      versionArray = object.version.split('.');
-    }
-    object.version = object.versionType === HaVersionType.BETA ?
-      new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2], object.subPatch)
-      : new CmVersion(+versionArray[0], +versionArray[1], +versionArray[2])
+  public create(object: Partial<HaBrickCreationDTO>): Observable<HaBrick> {
+    object.version = object.isBeta ?
+      CmVersion.fromString(object.version + '-beta.' + object.subPatch)
+      : CmVersion.fromString(object.version as string);
     return this.apiService.post(this.route, object, HaBrick);
-    return null;
   }
 
   /**

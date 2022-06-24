@@ -45,7 +45,22 @@ export class HaPublicEditBrickDialogComponent extends FlFormDialogAbstractDirect
     return null;
   }
 
+  submit(): void {
+    if(!this.formGp.value.gitRepo && !this.formGp.value.pipRepo){
+      this.formGp.controls.pipRepo.setValidators(Validators.required);
+    } else {
+      this.formGp.controls.pipRepo.removeValidators(Validators.required);
+      if(this.formGp.valid){
+        this.update(this.formGp.value as HaEditBrickDTO).subscribe({
+          next: newEntity => this.onSaveSuccess(newEntity, this.getUpdateSuccessMessage()),
+          error: () => this.isLoading = false
+        });
+      }
+    }
+  }
+
   update(formValue: HaEditBrickDTO): Observable<HaBrick> {
+
     return this.brickService.editBrick(formValue);
   }
 

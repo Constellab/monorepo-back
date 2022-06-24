@@ -23,7 +23,7 @@ export class HaBrickCreationDTO{
   description: string;
   repoGit: string;
   repoPip: string;
-  version: string;
+  version: string | CmVersion;
   repoType: HaRepoType;
   isBeta: boolean = false;
   subPatch?: number;

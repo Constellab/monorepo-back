@@ -122,6 +122,10 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     return res;
   }
 
+  async saveUpdate(brickVersion: HnBrickVersion): Promise<HnBrickVersion>{
+    return await this.brickVersionsRepository.save(brickVersion);
+  }
+
   /**
    * Send all bricks to queue
    */

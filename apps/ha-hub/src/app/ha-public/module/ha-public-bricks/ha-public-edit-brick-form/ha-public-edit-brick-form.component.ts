@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {HaBrickCreationDTO, HaBrickDTO} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
@@ -22,6 +22,7 @@ export class HaPublicEditBrickFormComponent implements OnInit {
   inputFile: HaAddVersionInput;
   errorFile: boolean;
   errorFileText: string;
+  noRepoError: boolean;
   errorInput: Record<string, boolean> = {};
 
   constructor(
@@ -40,8 +41,8 @@ export class HaPublicEditBrickFormComponent implements OnInit {
       name: [null, [Validators.required, Validators.pattern(/^\S*$/)]],
       description: [null, [Validators.required, Validators.maxLength(255)]],
       version: [null, [Validators.required, Validators.pattern(new RegExp('^(\\d+\\.)(\\d+\\.)(\\*|\\d+)$'))]],
-      repoType: [HaRepoType.PIP, Validators.required],
-      isBeta: [false, Validators.required],
+      repoType: [HaRepoType.PIP],
+      isBeta: [false],
       subPatch: [null, [Validators.min(0), FlGlobalValidators.isInteger]],
       repoGit: [null],
       repoPip: [null],
@@ -52,20 +53,28 @@ export class HaPublicEditBrickFormComponent implements OnInit {
 
   submit(): void {
 
-    const formValue: Partial<HaBrickDTO> = this.formGp.value;
-    if (this.formGp.valid && !this.isLoading) {
-      this.isLoading = true;
-      this.brickService.create(formValue).subscribe(
-        {
-          next: (brick) => {
-            this.isLoading = false;
-            this.router.navigateByUrl('/bricks/' + brick.name);
-          },
-          error: () => {
-            this.isLoading = false;
-          }
+    const formValue: Partial<HaBrickCreationDTO> = this.formGp.value;
+    if(this.formGp.value.repoPip || this.formGp.value.repoGit){
+      this.formGp.controls.repoPip.removeValidators(Validators.required);
+      if (this.formGp.valid && !this.isLoading) {
+        if(this.formGp.value.repoGit && !this.formGp.value.repoPip){
+          formValue.repoType = HaRepoType.GIT;
         }
-      )
+        this.isLoading = true;
+        this.brickService.create(formValue).subscribe(
+          {
+            next: (brick) => {
+              this.isLoading = false;
+              this.router.navigateByUrl('/bricks/' + brick.name);
+            },
+            error: () => {
+              this.isLoading = false;
+            }
+          }
+        )
+      }
+    } else {
+      this.formGp.controls.repoPip.setValidators(Validators.required);
     }
   }
 

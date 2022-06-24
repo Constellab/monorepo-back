@@ -43,28 +43,19 @@
     </mat-error>
   </mat-form-field>
 
-  <!--  gitRepo  -->
-  <mat-form-field class="g-form-input" appearance="fill">
-    <mat-label>{{'repo_git' | translate}}</mat-label>
-    <input matInput type="text" formControlName="repoGit">
-  </mat-form-field>
-
   <!--  pipRepo  -->
   <mat-form-field class="g-form-input" appearance="fill">
     <mat-label>{{'repo_pip' | translate}}</mat-label>
     <input matInput type="text" formControlName="repoPip">
+    <mat-error  *ngIf="formGp.get('repoPip').hasError('required')">
+      {{'repo_pip' | flErrorRequired}}
+    </mat-error>
   </mat-form-field>
 
-  <!--  type of repository  -->
+  <!--  gitRepo  -->
   <mat-form-field class="g-form-input" appearance="fill">
-    <mat-label>{{'type_of_repository' | translate}}</mat-label>
-    <mat-select placeholder="{{'type_of_repository' | translate}}" required formControlName="repoType" value="GIT">
-      <mat-option value="GIT" >GIT</mat-option>
-      <mat-option value="PIP">PIP</mat-option>
-    </mat-select>
-    <mat-error *ngIf="formGp.get('repoType').hasError('required')">
-      {{'type_of_repository' | flErrorRequired}}
-    </mat-error>
+    <mat-label>{{'repo_git' | translate}}</mat-label>
+    <input matInput type="text" formControlName="repoGit">
   </mat-form-field>
 
   <button mat-raised-button color="primary" type="submit" class="g-centered-forced">

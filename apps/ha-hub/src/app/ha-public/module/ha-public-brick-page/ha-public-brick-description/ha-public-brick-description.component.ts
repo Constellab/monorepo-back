@@ -74,6 +74,7 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
       (res: HaBrick) => {
         if (res != null) {
           this.brick = res;
+          this.setLastBrickVersion(this.brick.name);
         }
       }
     );

@@ -4,7 +4,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {getManager, Repository} from 'typeorm';
 import {HnDocumentation} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
-import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
+import {HnBrickVersion, HnNewVersionDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
 import {HnBrickMajorVersionService} from '../brick-major-version/hn-brick-major-version.service';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
@@ -20,6 +20,7 @@ import {
 } from './hn-brick.dto';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 import {HnBrickVersionReferenceService} from '../brick-version-reference/hn-brick-version-reference.service';
+import {bin} from 'd3';
 
 @Injectable()
 export class HnBrickService {
@@ -123,6 +124,7 @@ export class HnBrickService {
 
   async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     const brick: HnBrick = await this.bricksRepository.findOne(newVersion.brickId);
+    newVersion.repoType = (await this.getLatestBrickVersion(brick.name)).repoType;
     return this.brickMajorVersionService.createNewVersion(brick, newVersion);
   }
 
@@ -152,11 +154,18 @@ export class HnBrickService {
 
   async editBrick(editedBrick: HnEditBrickDTO): Promise<HnBrick> {
     const brick: HnBrick = await this.bricksRepository.findOne(editedBrick.id);
+    const lastBrickMajorVersion: HnBrickVersion = await this.brickMajorVersionService.getLatestBrickVersion(brick.name);
     if (brick) {
       brick.description = editedBrick.description;
       brick.gitRepo = editedBrick.gitRepo;
       brick.pipRepo = editedBrick.pipRepo;
+      if(brick.gitRepo && !brick.pipRepo){
+        lastBrickMajorVersion.repoType = HnRepoType.GIT;
+      } else {
+        lastBrickMajorVersion.repoType = HnRepoType.PIP;
+      }
     }
+    await this.brickVersionService.saveUpdate(lastBrickMajorVersion);
     await this.bricksRepository.save(brick);
     return brick;
   }
