@@ -1,7 +1,7 @@
 <div *ngIf="node$ | async as node" flDisableAnimationInit>
 
   <ng-container *ngIf="labProcess$ | async as process">
-    <div class="g-text-light">
+    <div class="g-text-light text-info">
       <p>{{'biox.node_process_name' | translate}} : {{process.name}}</p>
       <p>
         {{'biox.node_type' | translate}} : {{process.processTypingName}}

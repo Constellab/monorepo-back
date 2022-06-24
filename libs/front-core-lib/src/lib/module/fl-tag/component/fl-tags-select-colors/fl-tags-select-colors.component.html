@@ -17,9 +17,12 @@
                [matTooltip]="tagValue.value" matTooltipPosition="below">
         <div class="tag-value">{{tagValue.value}}</div>
 
-        <div *ngIf="tagValue.activeColor" [style.background-color]="tagValue.color" class="color"
+        <div *ngIf="tagValue.activeColor; else fakeRound" [style.background-color]="tagValue.color" class="color"
              (click)="openColorSelector(tagValue, $event)" [(flColorSelector)]="tagValue.color"
              (flColorSelectorChange)="emitColors()"></div>
+        <ng-template #fakeRound>
+          <div class="color"></div>
+        </ng-template>
 
       </fl-chip>
     </div>
