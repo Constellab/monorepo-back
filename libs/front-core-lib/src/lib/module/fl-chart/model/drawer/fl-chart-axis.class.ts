@@ -82,23 +82,23 @@ export class FlChartAxis {
       if (this.type === 'left') {
         // on top of the axis, centered
         this.axisContainer.append('text')
-          .text(this.label.slice(0, 30))
+          .text(this.label.slice(0, FlChartAxis.yTickMaxLength))
           .attr('x', 0)
           .attr('y', -10)
           .attr('fill', 'currentcolor')
           .attr('text-anchor', 'middle')
-          .style('font-size', 10)
+          .style('font-size', 9)
           .append('title')
           .text(this.label);
       } else if (this.type === 'bottom') {
         // on axis left, centered vertically
         this.axisContainer.append('text')
-          .text(this.label.slice(0, 30))
+          .text(this.label.slice(0, FlChartAxis.yTickMaxLength))
           .attr('x', -20)
           .attr('y', 17)
           .attr('fill', 'currentcolor')
           .attr('text-anchor', 'end')
-          .style('font-size', 10)
+          .style('font-size', 9)
           .append('title')
           .text(this.label);
       }
