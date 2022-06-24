@@ -67,11 +67,11 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       })
       if(bv != null){
         bv.initialize(brickMajorVersion, version, newVersion.repoType, newVersion.technicalInfo);
-        res = await entityManager.save(bv);
+        res = await entityManager2.save(bv);
         await this.brickVersionReferenceService.deleteByBrickVersionId(res.id, entityManager);
       } else {
         newBrickVersion.initialize(brickMajorVersion, version, newVersion.repoType, newVersion.technicalInfo);
-        res = await entityManager.save(newBrickVersion);
+        res = await entityManager2.save(newBrickVersion);
       }
 
       if (newVersion.references && newVersion.references.length > 0) {
@@ -110,7 +110,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
           const ref: HnBrickVersionReference = new HnBrickVersionReference();
           Object.assign(ref, r);
 
-          r = await entityManager.save(ref);
+          r = await entityManager2.save(ref);
         }
       }
 
