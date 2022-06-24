@@ -50,22 +50,37 @@ export class LabTypeService {
       this.advancedSearch(route, page, pageSize, filters);
   }
 
-  public getTransformerAdvancedSearchFunction(resourceTypingName: string): FLSearchFunction<LabTypeEntity> {
-    const route: string = `${this.route}/transformers/search/${resourceTypingName}`;
-    return (page: number, pageSize: number, filters?: LabTypeSearchFields) =>
-      this.advancedSearch(route, page, pageSize, filters);
+  public getTransformerAdvancedSearchFunction(resourceTypingNames: string[]): FLSearchFunction<LabTypeEntity> {
+    const route: string = `${this.route}/transformers/search`;
+    return (page: number, pageSize: number, filters?: LabTypeSearchFields) => {
+      const searchData: FlAdvancedSearchInput = this.getSearchInput(filters);
+
+      // build an object with the list of resource and the search params
+      const body = {
+        resource_typing_names: resourceTypingNames,
+        search_params: searchData
+      };
+
+      return this.apiService.post(route, body, LabTypeEntity, {
+        page: page, pageSize: pageSize, resultIsPaginated: true
+      });
+    };
   }
 
   private advancedSearch(route: string, page: number, pageSize: number,
                          filters: LabTypeSearchFields): Observable<ClPageI<LabTypeEntity>> {
-    const data: FlAdvancedSearchInput = {
-      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, LabTypeSearch.advancedSearchConverter),
-      sortsCriteria: null
-    };
+    const data: FlAdvancedSearchInput = this.getSearchInput(filters);
 
     return this.apiService.post(route, data, LabTypeEntity, {
       page: page, pageSize: pageSize, resultIsPaginated: true
     });
+  }
+
+  private getSearchInput(filters: LabTypeSearchFields): FlAdvancedSearchInput {
+    return {
+      filtersCriteria: FlSearchConverter.convertObjectToSearchCriteriaList(filters, LabTypeSearch.advancedSearchConverter),
+      sortsCriteria: null
+    };
   }
 
 }

@@ -125,7 +125,7 @@ export class LabTransformResourceComponent implements OnInit {
     const data: LabSelectTypeDialogInput = {
       searchConfig: {
         mode: 'transformer',
-        resourceTypingName: this.resourceTypingName
+        resourceTypingNames: [this.resourceTypingName]
       }
     };
     this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: data}).afterClosed().subscribe(

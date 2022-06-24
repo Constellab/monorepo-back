@@ -54,4 +54,15 @@ export class LabWorkflowNodeProcess extends LabWorkflowNode<LabProcess> {
     // emit the current object
     this.updateObject(this.currentObject);
   }
+
+  // method to resource typing names associated to a port
+  getPortResourceTypingNames(portName: string, portType: 'input' | 'output'): string[] | null {
+    const io: LabIO = portType === 'input' ? this.currentObject.inputs[portName] : this.currentObject.outputs[portName];
+
+    if(io == null) return null;
+
+    // return all the typing names of the spec
+    return io.specs.resource_types.map(spec => spec.typing_name);
+  }
+
 }

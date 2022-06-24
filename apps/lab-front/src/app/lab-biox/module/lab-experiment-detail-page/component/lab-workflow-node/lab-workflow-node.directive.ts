@@ -11,9 +11,15 @@ import {
   LabSelectResourceDialogComponent
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
 import {LabResource} from '../../../../../lab-core/model/entities/resource/lab-resource.entity';
+import {
+  LabSelectTypeDialogComponent,
+  LabSelectTypeDialogInput
+} from '../../../../../lab-core/entity-module/lab-type-core/component/lab-select-type-dialog/lab-select-type-dialog.component';
+import {LabTypeEntity} from '../../../../../lab-core/model/entities/lab-type/lab-type.entity';
 
 /**
  * Abstract component directive to extends by Workflow node components
+ * It automatically listens to node ports to open a context menu
  */
 @Directive()
 export abstract class LabWorkflowNodeDirective implements OnDestroy {
@@ -32,6 +38,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
                         protected renderer: Renderer2,
                         protected menuDynamicService: FlMenuDynamicService) {
   }
+
 
   protected initNode(): void {
     this.node = this.workflowManager.findNodeWithNameInCurrentLayer(this.name) as LabWorkflowNodeProcess;
@@ -107,12 +114,29 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
   private addSource(resource: LabResource | null, inputPortName: string): void {
     if (resource == null) return;
 
-    this.workflowManager.addSourceToProcessInput(this.node.nodeName, inputPortName,
-      resource.id, resource.name);
+    this.workflowManager.addSourceToProcessInput(resource.id, this.node.nodeName, inputPortName, resource.name);
   }
 
   private addTaskOutput(outputPortName: string): void {
     this.workflowManager.addTaskOutput(this.node.nodeName, outputPortName);
+  }
+
+  private openTransformerSelection(portName: string, resourceTypingNames: string[]): void {
+    const data: LabSelectTypeDialogInput = {
+      searchConfig: {
+        mode: 'transformer',
+        resourceTypingNames: resourceTypingNames
+      }
+    };
+    this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: data}).afterClosed().subscribe(
+      processType => this.addTransformer(processType, portName)
+    );
+  }
+
+  private addTransformer(processType: LabTypeEntity | null, portName: string): void {
+    if (processType == null) return;
+
+    this.workflowManager.addProcessConnectedToOutput(processType.typingName, this.node.nodeName, this.node.nodeName, portName);
   }
 
   private getInputPortContextMenuConfig(port: LabWorkflowPort): FlMenuDynamic[] {
@@ -133,6 +157,8 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
   private getOutputPortContextMenuConfig(portName: string): FlMenuDynamic[] {
     const resourceId: string = this.node.currentObject.outputs[portName]?.resource_id ?? null;
 
+    const resourceTypingNames = this.node.getPortResourceTypingNames(portName, 'output');
+
     return [
       {
         type: 'button',
@@ -140,6 +166,13 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
         icon: 'output',
         onClick: () => this.addTaskOutput(portName),
         disabled: !this.experimentIsEditable
+      },
+      {
+        type: 'button',
+        text: {text: 'biox.add_transformer', translateText: true},
+        icon: 'transformer',
+        onClick: () => this.openTransformerSelection(portName, resourceTypingNames),
+        disabled: !this.experimentIsEditable || resourceTypingNames == null
       },
       this.getResourceDetailContextButton(resourceId)
     ];

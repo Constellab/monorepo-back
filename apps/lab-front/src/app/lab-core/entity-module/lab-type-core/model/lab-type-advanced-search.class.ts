@@ -14,7 +14,7 @@ export type LabTypeSearchConfig =
   // Mode to filter on transformer for a specific resource
   {
     mode: 'transformer';
-    resourceTypingName: string;
+    resourceTypingNames: string[];
   } |
 
   // Mode to filter on importers for a specific resource and extension

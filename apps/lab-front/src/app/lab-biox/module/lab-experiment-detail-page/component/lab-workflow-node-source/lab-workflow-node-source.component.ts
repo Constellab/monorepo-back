@@ -38,4 +38,6 @@ export class LabWorkflowNodeSourceComponent extends LabWorkflowNodeDirective imp
     this.title$ = this.node.getTitle$();
     this.resourceId$ = this.node.getResourceId$();
   }
+
+
 }

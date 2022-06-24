@@ -5,11 +5,10 @@
   <ng-container *ngIf="experiment.isEditable()">
     <!-- Add object button  -->
     <button mat-icon-button type="button"
-            [matTooltip]="'biox.add_process' | translate" matTooltipPosition="below"
-            (click)="addProcess()">
+            [matTooltip]="'biox.add_object' | translate" matTooltipPosition="below"
+            [matMenuTriggerFor]="menu">
       <mat-icon>add</mat-icon>
     </button>
-
 
     <button mat-icon-button type="button"
             [matTooltip]="'biox.experiment_save' | translate" matTooltipPosition="below"
@@ -31,3 +30,19 @@
     <mat-icon>stop</mat-icon>
   </button>
 </div>
+
+<!--  Add object menu  -->
+<mat-menu #menu="matMenu">
+  <button mat-menu-item type="button"
+          (click)="addProcess()">
+    <mat-icon flIcon="process"></mat-icon>
+    <span>{{'biox.add_process' | translate}}</span>
+  </button>
+
+  <button mat-menu-item type="button"
+          (click)="addResource()">
+    <mat-icon flIcon="resource"></mat-icon>
+    <span>{{'biox.add_resource' | translate}}</span>
+  </button>
+
+</mat-menu>

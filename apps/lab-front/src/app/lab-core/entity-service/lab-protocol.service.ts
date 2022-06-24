@@ -47,6 +47,21 @@ export class LabProtocolService {
       (result) => labInstantiateProcess(result));
   }
 
+  /**
+   * Route to add a process (from type) to an existing protocol (can be a sub protocol),
+   * and link it to the output of an existing process
+   * @param protocolId
+   * @param processTypingName
+   * @param outputProcessName name of the process to link to
+   * @param outputPortName name of the port to link to
+   */
+  public addProcessConnectedToOutput(protocolId: string, processTypingName: string,
+                                     outputProcessName: string, outputPortName: string): Observable<LabAddProcessWithLink> {
+    return this.apiService.post(
+      `${this.baseRoute}/${protocolId}/add-process/${processTypingName}/connected-to-output/${outputProcessName}/${outputPortName}`,
+      null, LabAddProcessWithLink);
+  }
+
   public deleteProcessInProtocol(protocolId: string, processInstanceName: string): Observable<any> {
     return this.apiService.delete(`${this.baseRoute}/${protocolId}/process/${processInstanceName}`);
   }
@@ -84,10 +99,15 @@ export class LabProtocolService {
 
   //////////////////////////////////////// SPECIFIC PROCESS /////////////////////////////////////
 
-  public addSourceToProcessInput(protocolId: string, processName: string,
-                                 inputPortName: string, resourceId: string): Observable<LabAddProcessWithLink> {
-    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-source/${processName}/${inputPortName}/${resourceId}`,
+  public addSourceToProcessInput(protocolId: string, resourceId: string,
+                                 processName: string, inputPortName: string,): Observable<LabAddProcessWithLink> {
+    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-source/${resourceId}/${processName}/${inputPortName}`,
       null, LabAddProcessWithLink);
+  }
+
+  public addSource(protocolId: string, resourceId: string): Observable<LabProcess> {
+    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-source/${resourceId}`,
+      null, (result) => labInstantiateProcess(result));
   }
 
   public addTaskOutput(protocolId: string, processName: string,

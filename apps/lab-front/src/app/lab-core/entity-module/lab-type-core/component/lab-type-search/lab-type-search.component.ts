@@ -74,7 +74,7 @@ export class LabTypeSearchComponent implements OnInit {
           'objectSubType', 'detail'];
         break;
       case 'transformer':
-        searchFunction = this.typeService.getTransformerAdvancedSearchFunction(this.config.resourceTypingName);
+        searchFunction = this.typeService.getTransformerAdvancedSearchFunction(this.config.resourceTypingNames);
 
         // don't set the objectSubType because it is always transformers
         this.columns = [

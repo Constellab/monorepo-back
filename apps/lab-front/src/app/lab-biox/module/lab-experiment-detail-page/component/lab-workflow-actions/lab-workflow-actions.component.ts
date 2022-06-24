@@ -15,6 +15,10 @@ import {
 import {LabTypeEntity} from '../../../../../lab-core/model/entities/lab-type/lab-type.entity';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
 import {Observable} from 'rxjs';
+import {LabResource} from '../../../../../lab-core/model/entities/resource/lab-resource.entity';
+import {
+  LabSelectResourceDialogComponent
+} from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
 
 /**
  * Actions button for the workflow
@@ -62,22 +66,26 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
     }
   }
 
-  addInterface(): void {
-    // this.workflowManager.addInterface();
+  addResource(): void {
+    this.dialogService.openBigDialog(LabSelectResourceDialogComponent).afterClosed().subscribe(
+      resource => this.onSelectResourceClosed(resource)
+    );
   }
 
-  addOuterface(): void {
-    // this.workflowManager.addOuterface();
+  private onSelectResourceClosed(resource?: LabResource): void {
+    if (resource) {
+      this.workflowManager.addSource(resource.id, resource.name);
+    }
   }
 
 
   save(): void {
     const experiment: LabExperiment = this.experimentState.currentExperiment;
     this.saveIsLoading = true;
-    this.experimentService.updateExperimentProtocol(experiment.id, this.workflowManager.workflow).subscribe(
-      newExp => this.onSaveSuccess(newExp),
-      () => this.saveIsLoading = false
-    );
+    this.experimentService.updateExperimentProtocol(experiment.id, this.workflowManager.workflow).subscribe({
+      next: newExp => this.onSaveSuccess(newExp),
+      error: () => this.saveIsLoading = false,
+    });
   }
 
 
@@ -91,10 +99,10 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
     const experiment: LabExperiment = this.experimentState.currentExperiment;
 
     this.startIsLoading = true;
-    this.experimentService.saveAndStartExperiment(experiment.id, this.workflowManager.workflow).subscribe(
-      (exp) => this.onStartSuccess(exp),
-      () => this.startIsLoading = false
-    );
+    this.experimentService.saveAndStartExperiment(experiment.id, this.workflowManager.workflow).subscribe({
+      next: (exp) => this.onStartSuccess(exp),
+      error: () => this.startIsLoading = false
+    });
   }
 
   private onStartSuccess(experiment: LabExperiment): void {

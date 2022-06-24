@@ -7,7 +7,6 @@ import {
   LabSelectResourceDialogComponent
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
 import {LabWorkflowNodeIO} from '../../model/lab-workflow-node-io.class';
-import {LabRouterService} from '../../../../../lab-core/service/lab-router.service';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
 
 /**
@@ -23,8 +22,6 @@ import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-pa
 export class LabTaskSourceConfigComponent implements OnInit, OnDestroy {
 
   selectedResource$: Observable<FlStatusEvent<LabResource>>;
-
-  resourceRoute: string;
 
   isEditable$: Observable<boolean>;
 
@@ -52,11 +49,6 @@ export class LabTaskSourceConfigComponent implements OnInit, OnDestroy {
     this.node = node;
     this.selectedResource$ = node.getLoadedResource$();
   }
-
-  getResourceRoute(resource: LabResource): string {
-    return LabRouterService.getResourceDetailRoute(resource.id);
-  }
-
 
   openResourceSelection(): void {
     this.dialogService.openBigDialog(LabSelectResourceDialogComponent).afterClosed().subscribe(

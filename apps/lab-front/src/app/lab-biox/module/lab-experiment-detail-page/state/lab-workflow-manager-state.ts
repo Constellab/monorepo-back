@@ -25,7 +25,8 @@ import {
   FlPortalAction,
   FlPortalActionResult,
   FlPortalActionsService,
-  FlSnackBarService
+  FlSnackBarService,
+  FlTranslatableText
 } from '@monorepo/front-core-lib';
 import {LabWorkflowNodeIO} from '../model/lab-workflow-node-io.class';
 import {LabResourceService} from '../../../../lab-core/entity-service/lab-resource.service';
@@ -156,70 +157,105 @@ export class LabWorkflowManagerState {
     // retrieve the protocol of the layer
     const currentProtocol: LabProtocol = this.workflow.currentLayer.object as LabProtocol;
 
-    // create an action to add this process
-    const action: FlPortalAction = {
-      text: {
+    this.addProcessAction(this.protocolService.addProcessToProtocol(currentProtocol.id, processTypingName),
+      {
         text: 'biox.adding_process', translateText: true,
         translateParam: {param: {processName: processName}}
-      },
+      });
+  }
+
+  public addSource(resourceId: string, resourceName: string): void {
+    // retrieve the protocol of the layer
+    const currentProtocol: LabProtocol = this.workflow.currentLayer.object as LabProtocol;
+
+    this.addProcessAction(this.protocolService.addSource(currentProtocol.id, resourceId),
+      {
+        text: 'biox.adding_source', translateText: true,
+        translateParam: {param: {resourceName: resourceName}}
+      });
+  }
+
+  // create the action to add a process
+  private addProcessAction(process$: Observable<LabProcess>, actionText: FlTranslatableText): void {
+    // create an action to add this process
+    const action: FlPortalAction = {
+      text: actionText,
       type: LabWorkflowAction.ADD_PROCESS,
       // create the process in the API and get the process
-      action: this.protocolService.addProcessToProtocol(currentProtocol.id, processTypingName),
+      action: process$,
       additionalInformation: this.workflow.currentLayer.id
     };
 
     this.actionsService.addAction(action, true);
   }
 
-  public addSourceToProcessInput(processNodeName: string, inputPortName: string, resourceId: string,
+  public addSourceToProcessInput(resourceId: string, processNodeName: string, inputPortName: string,
                                  resourceName: string): void {
     // retrieve the protocol of the layer
     const currentProtocol: LabProtocol = this.workflow.currentLayer.object as LabProtocol;
 
-    // relative coord to place the source node before the process
-    const relativeCoord: LabNodeRelativeCoord = {
-      nodeName: processNodeName,
-      position: 'before',
-      layerId: this.workflow.currentLayer.id
-    };
-    // create an action to add this process
-    const action: FlPortalAction = {
-      text: {
+    this.addProcessWithLinkAction(
+      this.protocolService.addSourceToProcessInput(currentProtocol.id, resourceId, processNodeName, inputPortName),
+      processNodeName,
+      'before',
+      {
         text: 'biox.adding_source', translateText: true,
         translateParam: {param: {resourceName: resourceName}}
-      },
-      type: LabWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
-      // create the process in the API and get the process
-      action: this.protocolService.addSourceToProcessInput(currentProtocol.id, processNodeName, inputPortName, resourceId),
-      additionalInformation: relativeCoord
-    };
-
-    this.actionsService.addAction(action, true);
+      });
   }
 
   public addTaskOutput(processNodeName: string, outputPortName: string): void {
     // retrieve the protocol of the layer
     const currentProtocol: LabProtocol = this.workflow.currentLayer.object as LabProtocol;
 
+    this.addProcessWithLinkAction(
+      this.protocolService.addTaskOutput(currentProtocol.id, processNodeName, outputPortName),
+      processNodeName,
+      'after',
+      {
+        text: 'biox.adding_output', translateText: true,
+      });
+  }
+
+  public addProcessConnectedToOutput(processTypingName: string, processName: string,
+                                     outputProcessName: string, outputPortName: string): void {
+    // retrieve the protocol of the layer
+    const currentProtocol: LabProtocol = this.workflow.currentLayer.object as LabProtocol;
+
+    this.addProcessWithLinkAction(
+      this.protocolService.addProcessConnectedToOutput(currentProtocol.id, processTypingName,
+        outputProcessName, outputPortName),
+      outputProcessName,
+      'after',
+      {
+        text: 'biox.adding_process', translateText: true,
+        translateParam: {param: {processName: processName}}
+      });
+  }
+
+  // create the action to add a process with a link
+  private addProcessWithLinkAction(processWithLink$: Observable<LabAddProcessWithLink>,
+                                   processNodeName: string,
+                                   newProcessPosition: 'before' | 'after',
+                                   actionText: FlTranslatableText): void {
     // relative coord to place the source node before the process
     const relativeCoord: LabNodeRelativeCoord = {
       nodeName: processNodeName,
-      position: 'after',
+      position: newProcessPosition,
       layerId: this.workflow.currentLayer.id
     };
     // create an action to add this process
     const action: FlPortalAction = {
-      text: {
-        text: 'biox.adding_output', translateText: true,
-      },
+      text: actionText,
       type: LabWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
       // create the process in the API and get the process
-      action: this.protocolService.addTaskOutput(currentProtocol.id, processNodeName, outputPortName),
+      action: processWithLink$,
       additionalInformation: relativeCoord
     };
 
     this.actionsService.addAction(action, true);
   }
+
 
   private onNewProcess(process: LabProcess, layerId: string, coordX: number = 0, coordY: number = 0): void {
     // convert to node
@@ -249,18 +285,6 @@ export class LabWorkflowManagerState {
       return new LabWorkflowNodeProcess(process, name, coordX, coordY);
     }
   }
-
-  // public addInterface(): void {
-  //   const interfaceNode: LabInterfaceNode = LabInterfaceNode.newGenericInterface(this.generateId('i_'));
-  //   // todo see pos and save on db
-  //   this.addNodeOnPosition(interfaceNode, 0, 0);
-  // }
-  //
-  // public addOuterface(): void {
-  //   const outerfaceNode: LabOuterfaceNode = LabOuterfaceNode.newGenericInterface(this.generateId('o_'));
-  //   // todo see pos and save on db
-  //   this.addNodeOnPosition(outerfaceNode, 0, 0);
-  // }
 
   //////////////////////// GETS ////////////////////////////
 

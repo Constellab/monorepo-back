@@ -86,7 +86,7 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
     );
   }
 
-  private getCurrentResource(): LabResource | null {
+  public getCurrentResource(): LabResource | null {
     const resourceStatus = this.loadedResource$.value;
     return resourceStatus?.status === 'success' && resourceStatus.object ? resourceStatus.object : null;
   }
@@ -125,6 +125,12 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
       return this.inputPorts[0];
     }
   }
+
+  getPortResourceTypingNames(): string[] | null {
+    const resource = this.getCurrentResource();
+    return resource != null ? [resource.resourceTypingName] : null;
+  }
+
 
 
   destroy(): void {
