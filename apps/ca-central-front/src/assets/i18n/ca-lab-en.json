@@ -70,5 +70,10 @@
   "adminer_gws_core_server": "Gws_core server",
   "adminer_gws_biota_server": "Gws_biota server",
   "brick": "Brick",
-  "brick_version": "Brick version"
+  "brick_version": "Brick version",
+  "brick_repo_type": "Repo type",
+  "brick_version_state": "Version state",
+  "brick_version_type": "Version type",
+  "brick_technical_info": "Technical info",
+  "brick_version_view_detail": "View detail"
 }

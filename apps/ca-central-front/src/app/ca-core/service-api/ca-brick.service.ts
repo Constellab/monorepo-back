@@ -17,6 +17,10 @@ export class CaBrickService {
   }
 
   public getBrickVersions(brickName: string): Observable<CaBrickVersion[]> {
-    return this.apiService.get(`${this.route}/versions/${brickName}`, CaBrickVersion);
+    return this.apiService.get(`${this.route}/${brickName}/versions`, CaBrickVersion);
+  }
+
+  public getBrickVersion(brickName: string, brickVersion: string): Observable<CaBrickVersion> {
+    return this.apiService.get(`${this.route}/${brickName}/versions/${brickVersion}`, CaBrickVersion);
   }
 }

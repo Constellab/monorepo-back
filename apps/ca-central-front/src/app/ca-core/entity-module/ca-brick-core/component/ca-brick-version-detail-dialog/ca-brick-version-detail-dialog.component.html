@@ -1,0 +1,13 @@
+<fl-dialog-header>
+  {{'brick_version' | translate}}
+</fl-dialog-header>
+
+<mat-dialog-content>
+
+  <fl-async-section [object]="brickVersion$">
+    <ng-container *flSectionBody="let brickVersion">
+      <ca-brick-version-detail [brickVersion]="brickVersion" [brickName]="brickName"></ca-brick-version-detail>
+    </ng-container>
+  </fl-async-section>
+
+</mat-dialog-content>

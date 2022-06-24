@@ -5,6 +5,10 @@ import {CaBrickVersionDTO, CaLabInstanceConfig} from '../../../ca-core/model/ent
 import {
   CaLabInstanceConfigBrickComponent
 } from '../ca-lab-instance-config-brick/ca-lab-instance-config-brick.component';
+import {
+  CaBrickVersionDetailDialogComponent,
+  CaBrickVersionDetailDialogInput
+} from '../../../ca-core/entity-module/ca-brick-core/component/ca-brick-version-detail-dialog/ca-brick-version-detail-dialog.component';
 
 /**
  * Form to update the lab instance config
@@ -29,9 +33,16 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  openBrickVersionDetailDialog(brickVersionDTO: CaBrickVersionDTO): void {
+    const data: CaBrickVersionDetailDialogInput = {
+      brickName: brickVersionDTO.name,
+      brickVersion: brickVersionDTO.version,
+    };
+
+    this.dialogService.openSmallDialog(CaBrickVersionDetailDialogComponent, {data: data});
+  }
 
   openBrickVersionForm(brickVersionDTO?: CaBrickVersionDTO): void {
-
     this.dialogService.openSmallDialog(CaLabInstanceConfigBrickComponent, {data: brickVersionDTO}).afterClosed().subscribe(
       brickVersion => this.onBrickDialogClosed(brickVersionDTO == null ? 'add' : 'update', brickVersion)
     );

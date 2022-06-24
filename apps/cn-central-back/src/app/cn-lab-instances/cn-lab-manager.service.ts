@@ -11,8 +11,7 @@ import {CnLabInstance} from './cn-lab-instance.entity';
 import {CnLabInstanceConfigDTO} from './cn-lab-instance.dto';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
 import {CmVersion} from '@monorepo/common-model';
-import {CnBrickGWS} from '../cn-bricks/cn-brick.dto';
-import {CnLabFrontVersionsService} from '../cn-lab-front-versions/cn-lab-front-versions.service';
+import {CnBrickGWS, CnBrickVersionTechnicalKey} from '../cn-bricks/cn-brick.dto';
 
 /**
  * Service to call the api of the lab manager
@@ -22,8 +21,7 @@ export class CnLabManagerService {
 
 
   constructor(private labManagerApiService: CnExternalLabManagerApiService,
-              private brickService: CnBricksService,
-              private labFrontService: CnLabFrontVersionsService) {
+              private brickService: CnBricksService) {
   }
 
   public async healthCheck(labManagerUrl: string): Promise<boolean> {
@@ -107,7 +105,10 @@ export class CnLabManagerService {
 
     // retrieve the lab front version
     const gwsCoreVersion = CmVersion.fromString(gwsCore.version);
-    const frontVersion = await this.labFrontService.findByGwsCoreVersion(gwsCoreVersion);
+    // get gws_core version
+    const gwsCoreBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_CORE, gwsCoreVersion);
+    // get the front version from the technical info
+    const frontVersion = gwsCoreBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_CORE_FRONT_VERSION];
     if (frontVersion == null) {
       throw new BadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCore.version}'`);
     }

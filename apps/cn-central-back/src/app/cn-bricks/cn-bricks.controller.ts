@@ -4,6 +4,7 @@ import {CnBrick} from './cn-brick.entity';
 import {CnBrickVersion} from './cn-brick-version.entity';
 import {EventPattern} from '@nestjs/microservices';
 import {CnBrickSaveDTO} from './cn-brick.dto';
+import {CmVersion} from '@monorepo/common-model';
 
 @Controller('bricks')
 export class CnBricksController {
@@ -16,9 +17,15 @@ export class CnBricksController {
     return this.service.getAllBricks();
   }
 
-  @Get('versions/:brickName')
+  @Get(':brickName/versions')
   public getBrickVersions(@Param('brickName') brickName: string): Promise<CnBrickVersion[]> {
     return this.service.getBrickVersions(brickName);
+  }
+
+  @Get(':brickName/versions/:version')
+  public getBrickVersion(@Param('brickName') brickName: string,
+                         @Param('version') brickVersion: string): Promise<CnBrickVersion> {
+    return this.service.getBrickVersion(brickName, CmVersion.fromString(brickVersion));
   }
 
   @EventPattern('brick')

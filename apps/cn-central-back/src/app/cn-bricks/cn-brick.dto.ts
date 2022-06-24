@@ -14,6 +14,14 @@ export enum CnBrickGWS {
 }
 
 /**
+ * List of knows key for technical info of the brick version
+ */
+export enum CnBrickVersionTechnicalKey {
+  // key for gws_core brick containing the front version
+  GWS_CORE_FRONT_VERSION = 'FRONT_VERSION'
+}
+
+/**
  * Object received from the queue to sync a brick and its versions
  */
 export interface CnBrickSaveDTO {
@@ -33,4 +41,5 @@ export interface CnBrickVersionSaveDTO {
   versionType: CnVersionType;
   versionState: CnVersionState;
   repoType: CnRepoType;
+  technicalInfo?: Record<string, any>;
 }

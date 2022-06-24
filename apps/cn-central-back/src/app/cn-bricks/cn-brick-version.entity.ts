@@ -53,6 +53,9 @@ export class CnBrickVersion extends BlEntityWithId {
   @Column({type: 'enum', enum: CnRepoType, nullable: false})
   repoType: CnRepoType;
 
+  @Column({name: 'technicalInfo', type: 'simple-json', nullable: true})
+  technicalInfo?: Record<string, any>;
+
   @CmVersionTransform()
   @Expose()
   public get version(): CmVersion {

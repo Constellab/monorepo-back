@@ -17,12 +17,7 @@ import {
   CaAdminLabInstancesListComponent
 } from './component/ca-admin-lab-instances-list/ca-admin-lab-instances-list.component';
 import {CaLabCoreModule} from '../ca-core/entity-module/ca-lab-core/ca-lab-core.module';
-import {
-  CaAdminLabFrontVersionListComponent
-} from './component/ca-admin-lab-front-version-list/ca-admin-lab-front-version-list.component';
-import {
-  CaLabFrontVersionCoreModule
-} from '../ca-core/entity-module/ca-lab-front-version-core/ca-lab-front-version-core.module';
+
 import {
   CaAdminOrganizationsListComponent
 } from './component/ca-admin-organizations-list/ca-admin-organizations-list.component';
@@ -38,7 +33,6 @@ import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization
     CaAdminAccountActivationButtonComponent,
     CaAdminServerInfoListComponent,
     CaAdminLabInstancesListComponent,
-    CaAdminLabFrontVersionListComponent,
     CaAdminOrganizationsListComponent,
   ],
   imports: [
@@ -47,7 +41,6 @@ import {CaOrganizationCoreModule} from '../ca-core/entity-module/ca-organization
     CaCoreModule,
     CaServerInfoCoreModule,
     CaLabCoreModule,
-    CaLabFrontVersionCoreModule,
     CaOrganizationCoreModule,
 
     CaAdminRoutingModule,

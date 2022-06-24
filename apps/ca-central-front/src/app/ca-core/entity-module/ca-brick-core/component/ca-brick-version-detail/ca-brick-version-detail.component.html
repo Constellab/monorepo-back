@@ -1,0 +1,38 @@
+<fl-key-value>
+  <fl-key>{{'brick' | translate}}</fl-key>
+  {{brickName}}
+</fl-key-value>
+
+<fl-key-value>
+  <fl-key>{{'brick_version' | translate}}</fl-key>
+  {{brickVersion.version}}
+</fl-key-value>
+
+<fl-key-value>
+  <fl-key>{{'brick_repo_type' | translate}}</fl-key>
+  {{brickVersion.repoType}}
+</fl-key-value>
+
+
+<fl-key-value>
+  <fl-key>{{'brick_version_state' | translate}}</fl-key>
+  {{brickVersion.versionState}}
+</fl-key-value>
+
+<fl-key-value>
+  <fl-key>{{'brick_version_type' | translate}}</fl-key>
+  {{brickVersion.versionType}}
+</fl-key-value>
+
+<!-- Technical infos-->
+<div class="technical-info-container">
+  <p>{{'brick_technical_info' | translate}}</p>
+
+  <div class="technical-info-list">
+    <fl-key-value *ngFor="let key of brickVersion.technicalInfo | flObjectKeys">
+      <fl-key>{{key}}</fl-key>
+      {{brickVersion.technicalInfo[key]}}
+    </fl-key-value>
+  </div>
+</div>
+

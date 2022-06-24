@@ -26,13 +26,28 @@ export class CaBrick extends CaEntity {
   gitRepo: string;
 }
 
+export enum CaVersionState {
+  STABLE = 'STABLE',
+  LATEST = 'LATEST',
+  NEXT = 'NEXT'
+}
+
+export enum CaVersionType {
+  NORMAL = 'NORMAL',
+  BETA = 'BETA'
+}
+
 export class CaBrickVersion extends CaEntity {
 
   version: string;
 
-  isLatest: boolean;
+  versionState: CaVersionState;
+
+  versionType: CaVersionType;
 
   repoType: CaRepoType;
+
+  technicalInfo: Record<string, any>;
 
   isEqualOrHigher(version: CmVersion): boolean {
     const currentVersion = CmVersion.fromString(this.version);
