@@ -63,7 +63,7 @@ export class LabExperimentDetailPageState {
 
   public getExperiment$(): Observable<LabExperiment> {
     return this.experiment$.asObservable().pipe(
-      filter(() => this.ready)
+      filter(() => this.ready),
     );
   }
 
@@ -123,6 +123,7 @@ export class LabExperimentDetailPageState {
       const notFinishedFlowIds: string[] = Object.values(this.flows)
         .filter(flow => !flow.object.isFinished()).map(flow => flow.object.id);
       this.refreshFlowsTick(notFinishedFlowIds);
+      this.refreshExperiment();
     }, this.refreshIntervalDuration);
   }
 
@@ -186,10 +187,6 @@ export class LabExperimentDetailPageState {
 
   private refreshFlowSuccess(flow: LabFlow<LabProtocol>): void {
     this.cacheFlow(flow);
-    // if the main flow is finished, refresh the experiment
-    if (flow.object.isFinished()) {
-      this.refreshExperiment();
-    }
     this.flowChange$.next(flow);
   }
 
