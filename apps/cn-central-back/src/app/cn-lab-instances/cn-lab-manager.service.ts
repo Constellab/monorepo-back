@@ -113,9 +113,24 @@ export class CnLabManagerService {
       throw new BadRequestException(`The front version does not exists for '${CnBrickGWS.GWS_CORE}' version '${gwsCore.version}'`);
     }
 
+    // get the maria db url
+    const gwsBiota = config.brickVersions.find(brickVersion => brickVersion.name.toLowerCase() === CnBrickGWS.GWS_BIOTA.toLowerCase());
+    if (gwsBiota == null) {
+      throw new BadRequestException(`The brick '${CnBrickGWS.GWS_BIOTA}' must be set in the config`);
+    }
+    // get gws_core version
+    const gwsBiotaBrickVersion = await this.brickService.getBrickVersion(CnBrickGWS.GWS_BIOTA,
+      CmVersion.fromString(gwsBiota.version));
+
+    const biotaMariaDbUrl = gwsBiotaBrickVersion.technicalInfo[CnBrickVersionTechnicalKey.GWS_BIOTA_MARIA_DB_URL];
+    if (biotaMariaDbUrl == null) {
+      throw new BadRequestException(`The maria db url does not exists for '${CnBrickGWS.GWS_BIOTA}' version '${gwsBiota.version}'`);
+    }
+
     const labManagerConfig: CnLabManagerUpdateConfigDTO = {
       labName: labInstance.name,
       frontVersion: frontVersion,
+      biotaMariaDbUrl: biotaMariaDbUrl,
       bricks: []
     };
 
@@ -128,6 +143,7 @@ export class CnLabManagerService {
         isHidden: brick.isHidden,
         repo: brickVersion.getRepo(),
         repoType: brickVersion.repoType,
+        technicalInfo: brickVersion.technicalInfo
       });
     }
 

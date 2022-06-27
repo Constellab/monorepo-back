@@ -55,6 +55,7 @@ export interface CnLabManagerInitConfig {
 export interface CnLabManagerUpdateConfigDTO {
   labName: string;
   frontVersion: string;
+  biotaMariaDbUrl: string;
   bricks: CnLabManagerBrickVersionDTO[];
 }
 
@@ -64,6 +65,7 @@ export interface CnLabManagerBrickVersionDTO {
   repoType: 'PIP' | 'GIT';
   version: string;
   isHidden: boolean;
+  technicalInfo: Record<string, string>;
 }
 
 export interface CnLabManagerConfigDTO {
