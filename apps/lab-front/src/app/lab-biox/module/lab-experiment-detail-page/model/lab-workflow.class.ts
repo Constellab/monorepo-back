@@ -82,6 +82,10 @@ export class LabWorkflow {
 
     this.editor.on('connectionCancel',
       () => this.ngZone.run(() => this.onConnectionCanceled()));
+
+    this.editor.on('nodeMoved',
+      (node) => this.ngZone.run(() => this.onNodeMoved(node))
+    );
   }
 
 
@@ -211,6 +215,14 @@ export class LabWorkflow {
     return null;
   }
 
+  // refresh the node position in the object
+  private onNodeMoved(nodeId: string): void {
+    const node = this.currentLayer.findNodeWithId(nodeId.toString());
+    if (node) {
+      node.refreshCoords();
+    }
+  }
+
   ////////////////////// CONNECTION ///////////////////////////
 
   private onConnectionCreated(connectionEvent: ConnectionEvent): void {
@@ -288,7 +300,7 @@ export class LabWorkflow {
   //////////////////// OTHER ///////////////////////
 
   public setMode(mode: LabWorkflowMode): void {
-    this.editor.editor_mode = mode === 'edit' ? 'edit' : 'fixed';
+    this.editor.editor_mode = mode === 'edit' ? 'edit' : 'view';
     this.mode = mode;
   }
 

@@ -11,8 +11,8 @@ export class LabWorkflowNodeProcess extends LabWorkflowNode<LabProcess> {
 
   constructor(process: LabProcess,
               processName: string,
-              initialCoordX: number = 0, initialCoordY: number = 0) {
-    super(processName, process.title, process, initialCoordX, initialCoordY);
+              x: number = 0, y: number = 0) {
+    super(processName, process.title, process, x, y);
   }
 
   getClassName(): string {

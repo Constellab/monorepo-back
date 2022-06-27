@@ -43,7 +43,6 @@ export class FlSnackBarInfoComponent implements OnInit {
 
   openDetailDialog(event: MouseEvent): void {
     this.data.additionalConfig.detailButton(event);
-    this.closeSnackBar();
   }
 
 }

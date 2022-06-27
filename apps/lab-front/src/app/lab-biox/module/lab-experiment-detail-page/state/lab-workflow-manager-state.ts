@@ -1,5 +1,5 @@
 import {Injectable, NgZone} from '@angular/core';
-import {LabWorkflow, LabWorkflowEvent, LabWorkflowMode} from '../model/lab-workflow.class';
+import {LabWorkflow, LabWorkflowEvent} from '../model/lab-workflow.class';
 import {LabWorkflowNodeProcess} from '../model/lab-workflow-node-process.class';
 import {LabProcess} from '../../../../lab-core/model/entities/process/lab-process.entity';
 import {
@@ -44,9 +44,14 @@ export enum LabWorkflowAction {
   DELETE_OUTERFACE = 'workflow-delete-outerface',
 }
 
-interface LabWorkflowEventAdditionalInfo {
+interface LabWorkflowEventConnectionAdditionalInfo {
   protocolId: string;
   connection: LabWorkflowConnection;
+}
+
+interface LabWorkflowEventNodeAdditionalInfo {
+  protocolId: string;
+  node: LabWorkflowNode<any>;
 }
 
 /**
@@ -297,10 +302,6 @@ export class LabWorkflowManagerState {
     return this.workflow.onConnectionSelected();
   }
 
-  public getMode(): LabWorkflowMode {
-    return this.workflow.getMode();
-  }
-
   public findNodeWithNameInCurrentLayer(name: string): LabWorkflowNode<any> {
     return this.workflow.findNodeWithNameInCurrentLayer(name);
   }
@@ -424,6 +425,10 @@ export class LabWorkflowManagerState {
             action: this.protocolService.deleteOuterface(workflowEvent.protocolId, process.portName),
           };
         } else {
+          const additionalInfo: LabWorkflowEventNodeAdditionalInfo = {
+            protocolId: workflowEvent.protocolId,
+            node: workflowEvent.node
+          };
           portalAction = {
             type: LabWorkflowAction.DELETE_PROCESS,
             text: {
@@ -432,6 +437,7 @@ export class LabWorkflowManagerState {
               translateParam: {param: {processName: process.name}}
             },
             action: this.protocolService.deleteProcessInProtocol(workflowEvent.protocolId, process.name),
+            additionalInformation: additionalInfo
           };
         }
         break;
@@ -453,7 +459,7 @@ export class LabWorkflowManagerState {
         const inputPort = workflowEvent.connection.inputPort.name;
 
 
-        const additionalInformation: LabWorkflowEventAdditionalInfo = {
+        const additionalInformation: LabWorkflowEventConnectionAdditionalInfo = {
           protocolId: workflowEvent.protocolId,
           connection: workflowEvent.connection
         };
@@ -496,17 +502,25 @@ export class LabWorkflowManagerState {
         this.onNewProcess(actionResult.result, actionResult.additionalInformation);
       } else if (actionResult.action.type === LabWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS) {
         this.onNewProcessWithConnector(actionResult.result, actionResult.additionalInformation);
+      } else if(actionResult.action.type === LabWorkflowAction.DELETE_PROCESS) {
+        // clear the node observable, if the deletion worked
+        const info: LabWorkflowEventNodeAdditionalInfo = actionResult.additionalInformation;
+        info.node.destroy();
       }
     } else {
       // revert the DELETE and ADD_CONNECTION actions
       if (actionResult.action.type === LabWorkflowAction.DELETE_CONNECTION) {
-        const info: LabWorkflowEventAdditionalInfo = actionResult.additionalInformation;
+        const info: LabWorkflowEventConnectionAdditionalInfo = actionResult.additionalInformation;
         const layer = this.workflow.findLayerWithId(info.protocolId);
         layer.addConnection(info.connection);
       } else if (actionResult.action.type === LabWorkflowAction.ADD_CONNECTION) {
-        const info: LabWorkflowEventAdditionalInfo = actionResult.additionalInformation;
+        const info: LabWorkflowEventConnectionAdditionalInfo = actionResult.additionalInformation;
         const layer = this.workflow.findLayerWithId(info.protocolId);
         layer.removeConnection(info.connection);
+      } else if (actionResult.action.type === LabWorkflowAction.DELETE_PROCESS) {
+        const info: LabWorkflowEventNodeAdditionalInfo = actionResult.additionalInformation;
+        const layer = this.workflow.findLayerWithId(info.protocolId);
+        layer.addNode(info.node);
       }
     }
   }
@@ -541,7 +555,7 @@ export class LabWorkflowManagerState {
     if (node == null) return {x: 0, y: 0};
 
     // calculate the X pos based on relative node
-    const baseNodeCoord = node.getNodeCoord();
+    const baseNodeCoord = node.getCoords();
 
     let xCoord: number;
     if (relativeCoord.position === 'before') {

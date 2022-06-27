@@ -8,8 +8,8 @@ import {LabWorkflowPort} from './lab-workflow-port.class';
  */
 export class LabWorkflowNodeOuterface extends LabWorkflowNode<LabOuterfaceNode> {
 
-  constructor(outerfaceNode: LabOuterfaceNode, initialPosX: number = 0, initialPosY: number = 0) {
-    super(outerfaceNode.name, outerfaceNode.name, outerfaceNode, initialPosX, initialPosY);
+  constructor(outerfaceNode: LabOuterfaceNode, x: number = 0, y: number = 0) {
+    super(outerfaceNode.name, outerfaceNode.name, outerfaceNode, x, y);
   }
 
   getClassName(): string {

@@ -23,8 +23,8 @@ export abstract class LabWorkflowNode<T> {
     public readonly nodeName: string,
     public readonly title: string,
     object: T,
-    public readonly initialCoordX: number = 0,
-    public readonly initialCoordY: number = 0) {
+    public x: number = 0,
+    public y: number = 0) {
     this.object$ = new BehaviorSubject<T>(object);
     this.initPorts(object);
   }
@@ -193,12 +193,25 @@ export abstract class LabWorkflowNode<T> {
     }
   }
 
-  public getNodeCoord(): FlCoord {
+  public getCoords(): FlCoord {
+    return {
+      x: this.x,
+      y: this.y
+    };
+  }
+
+  private getNodeCoord(): FlCoord {
     const drawflowNode: DrawflowNode = this.getDrawflowNode();
     return {
       x: drawflowNode.pos_x,
       y: drawflowNode.pos_y
     };
+  }
+
+  public refreshCoords(): void {
+    const coord: FlCoord = this.getNodeCoord();
+    this.x = coord.x;
+    this.y = coord.y;
   }
 
   public destroy(): void {

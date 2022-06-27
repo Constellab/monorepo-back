@@ -8,8 +8,8 @@ import {LabInterfaceNode} from '../../../../lab-core/model/global/lab-connection
  */
 export class LabWorkflowNodeInterface extends LabWorkflowNode<LabInterfaceNode> {
 
-  constructor(interfaceNode: LabInterfaceNode, initialCoordX: number = 0, initialCoordY: number = 0) {
-    super(interfaceNode.name, interfaceNode.name, interfaceNode, initialCoordX, initialCoordY);
+  constructor(interfaceNode: LabInterfaceNode, x: number = 0, y: number = 0) {
+    super(interfaceNode.name, interfaceNode.name, interfaceNode, x, y);
   }
 
   getClassName(): string {

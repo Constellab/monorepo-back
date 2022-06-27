@@ -102,7 +102,7 @@
     "class-transformer": "^0.5.1",
     "d3": "7.3.0",
     "document-register-element": "^1.7.2",
-    "drawflow": "0.0.55",
+    "drawflow": "0.0.58",
     "highlight.js": "^11.4.0",
     "image-size": "^1.0.1",
     "luxon": "^2.3.0",

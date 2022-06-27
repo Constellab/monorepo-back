@@ -80,8 +80,8 @@ export class LabWorkflowLayer {
    */
   private createAndInitNode(node: LabWorkflowNode<any>): void {
     const nodeId: number = this.editor.addNode(node.title,
-      node.countInputs(), node.countOutputs(), node.initialCoordX,
-      node.initialCoordY, node.getClassName(), {}, node.getHTML(), false);
+      node.countInputs(), node.countOutputs(), node.x,
+      node.y, node.getClassName(), {}, node.getHTML(), false);
 
     // set the nodeId in workflow node
     node.initNode(nodeId.toString(), (id: string) => this.editor.getNodeFromId(id));
