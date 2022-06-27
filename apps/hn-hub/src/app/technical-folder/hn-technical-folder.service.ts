@@ -44,12 +44,12 @@ export class HnTechnicalFolderService {
     let protocolsOk: boolean = false;
     //TODO: Faire pour les autres classes
 
-    if(importFile.resources && importFile.resources.length > 0)
+    if (importFile.resources && importFile.resources.length > 0)
       resourcesOk = await this.resourceService.createTechnicalDocResources(technicalFolder, importFile.resources);
-    if(importFile.tasks && importFile.tasks.length > 0)
+    if (importFile.tasks && importFile.tasks.length > 0)
       tasksOk = await this.taskService.createTechnicalDocTasks(technicalFolder, importFile.tasks);
-    if(importFile.protocols && importFile.protocols.length > 0)
-      protocolsOk = await  this.protocolService.createTechnicalDocProtocols(technicalFolder, importFile.protocols);
+    if (importFile.protocols && importFile.protocols.length > 0)
+      protocolsOk = await this.protocolService.createTechnicalDocProtocols(technicalFolder, importFile.protocols);
 
     return resourcesOk && tasksOk && protocolsOk;
   }
@@ -136,7 +136,6 @@ export class HnTechnicalFolderService {
         }
       }
     });
-
     switch (input.techDocType) {
       case 'resource':
         return this.resourceService.findCurrentTecDoc(techFolder, input.techDocUniqueName)
@@ -147,5 +146,6 @@ export class HnTechnicalFolderService {
       default:
         return null;
     }
+
   }
 }

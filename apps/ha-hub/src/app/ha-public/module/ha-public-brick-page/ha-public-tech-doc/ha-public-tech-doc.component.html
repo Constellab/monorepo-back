@@ -1,4 +1,6 @@
-<div class="sidenavBody">
+<ha-ha404 [errorText]="'error_tech_doc_not_found'" *ngIf="techDocNotFound"></ha-ha404>
+
+<div class="sidenavBody" *ngIf="!techDocNotFound">
   <div class="loader" *ngIf="isLoading">
     <fl-loader size="medium"></fl-loader>
   </div>

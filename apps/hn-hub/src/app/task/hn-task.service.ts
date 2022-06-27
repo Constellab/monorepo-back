@@ -4,7 +4,6 @@ import {Repository} from 'typeorm';
 import {HnTask} from './hn-task.entity';
 import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
 import {HnImportTaskDTO} from '../brick/hn-brick.dto';
-import {HnResource} from '../resource/hn-resource.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 
 @Injectable()
@@ -67,7 +66,7 @@ export class HnTaskService {
         task.configSpecs = t.config_specs;
       }
 
-      if(t.additional_info && Object.keys(t.additional_info).length > 0){
+      if (t.additional_info && Object.keys(t.additional_info).length > 0) {
         task.additionalInfo = t.additional_info;
       }
 
@@ -98,7 +97,9 @@ export class HnTaskService {
       },
       uniqueName: uniqueName
     });
-    task.objectType = 'TASK';
+    if (task != null) {
+      task.objectType = 'TASK';
+    }
 
     return task;
 

@@ -22,6 +22,7 @@ export class HaPublicTechDocComponent implements OnInit {
   activatedRoute: ActivatedRoute = this.route;
   isLoading: boolean = true;
   textEditorConfig: FlTextEditorConfig;
+  techDocNotFound: boolean = false;
 
   constructor(
     private brickService: HaBrickService,
@@ -40,9 +41,13 @@ export class HaPublicTechDocComponent implements OnInit {
 
   private getActiveDoc(): void {
     this.route.params.subscribe(params => {
+      this.techDocNotFound = false;
       this.isLoading = true;
       this.brickService.getTechDocByPath(params.brickName, params.version,
         params.type, params.uniqueName).subscribe(techDoc => {
+        if (techDoc == null) {
+          this.techDocNotFound = true;
+        }
         this.techDoc = techDoc;
         this.isLoading = false;
       });

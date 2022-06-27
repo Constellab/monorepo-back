@@ -56,7 +56,6 @@ export class HnResourceService {
 
       await this.resourceRepository.save(resource);
     }
-    ;
 
     return true;
   }
@@ -83,7 +82,9 @@ export class HnResourceService {
       },
       uniqueName: uniqueName
     });
-    resource.objectType = 'RESOURCE'
+    if(resource != null){
+      resource.objectType = 'RESOURCE'
+    }
     return resource;
   }
 }

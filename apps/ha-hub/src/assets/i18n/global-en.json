@@ -149,5 +149,6 @@
   "brick_already_exists": "The brick referenced in the 'settings.json' file already exists",
   "error_page_not_found": "Error : Page not found",
   "error_doc_not_found": "Error : Documentation not found",
-  "error_brick_not_found": "Error : Brick not found"
+  "error_brick_not_found": "Error : Brick not found",
+  "error_tech_doc_not_found": "Error : Technical documentation not found"
 }

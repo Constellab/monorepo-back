@@ -96,7 +96,9 @@ export class HnProtocolService {
       },
       uniqueName: uniqueName
     });
-    proto.objectType = 'PROTOCOL'
+    if(proto != null){
+      proto.objectType = 'PROTOCOL'
+    }
     return proto;
 
 
