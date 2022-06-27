@@ -10,7 +10,7 @@ describe('HaMainComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ HaMainComponent ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
