@@ -124,11 +124,9 @@
       <div class="sidenav-empty-space">
 
       </div>
-      <button mat-raised-button color="primary" (click)="fileInput.click()" class="bt-add-technical-doc"
-              *ngIf="(isAdmin | async)">
-        {{'import_technical_documentation' | translate}}
-      </button>
-      <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
+      <fl-input-file-container color="primary" [placeholder]="'import_technical_documentation' | translate" class="bt-add-technical-doc">
+        <input flInputFile type="file" [strictMode]="true" [clear]="true" accept="application/json" (change)="onFileSelected($event)">
+      </fl-input-file-container>
     </div>
 
 

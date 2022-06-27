@@ -1,9 +1,8 @@
 <div>
   <h3 class="input-div" *ngIf="!inputFile">{{'import-new-brick-text1' | translate}}</h3>
-  <button mat-raised-button color="primary" (click)="fileInput.click()" class="bt-input-div">
-    {{'import-new-version-file' | translate}}
-  </button>
-  <input hidden (change)="onFileSelected($event)" #fileInput type="file" id="file">
+  <fl-input-file-container color="primary" [placeholder]="'import-new-version-file' | translate" class="bt-input-div">
+    <input flInputFile type="file" [strictMode]="true" [clear]="true" accept="application/json" (change)="onFileSelected($event)">
+  </fl-input-file-container>
   <p class="input-error-text" *ngIf="errorFile">{{errorFileText | translate}}</p>
 </div>
 

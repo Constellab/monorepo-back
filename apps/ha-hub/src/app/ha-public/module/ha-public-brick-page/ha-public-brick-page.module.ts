@@ -15,7 +15,7 @@ import {
   HaPublicBrickVersionsTableComponent
 } from './ha-public-brick-versions-table/ha-public-brick-versions-table.component';
 import {MatTableModule} from "@angular/material/table";
-import {FlDateModule, FlKeyValueModule} from '@monorepo/front-core-lib';
+import {FlDateModule, FlInputFileModule, FlKeyValueModule} from '@monorepo/front-core-lib';
 import {HaPublicBrickDescriptionComponent} from './ha-public-brick-description/ha-public-brick-description.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatRadioModule} from '@angular/material/radio';
@@ -25,8 +25,11 @@ import {
 } from './ha-public-sidenav-import-tec-doc-dialog/ha-public-sidenav-import-tec-doc-dialog.component';
 import {HaPublicEditBrickDialogComponent} from './ha-public-edit-brick-dialog/ha-public-edit-brick-dialog.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
-import { HaPublicBrickVersionDetailDialogComponent } from './ha-public-brick-version-detail-dialog/ha-public-brick-version-detail-dialog.component';
-import { HaPublicTechDocComponent } from './ha-public-tech-doc/ha-public-tech-doc.component';
+import {
+  HaPublicBrickVersionDetailDialogComponent
+} from './ha-public-brick-version-detail-dialog/ha-public-brick-version-detail-dialog.component';
+import {HaPublicTechDocComponent} from './ha-public-tech-doc/ha-public-tech-doc.component';
+
 @NgModule({
   declarations: [
     HaPublicBrickPageComponent,
@@ -54,7 +57,8 @@ import { HaPublicTechDocComponent } from './ha-public-tech-doc/ha-public-tech-do
     FlKeyValueModule,
     MatRadioModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    FlInputFileModule
   ]
 })
 export class HaPublicBrickPageModule {

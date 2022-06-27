@@ -8,7 +8,7 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {HaCoreModule} from '../../../ha-core/ha-core.module';
 import {MatRadioModule} from "@angular/material/radio";
 import {HaPublicCoreModule} from '../ha-public-core/ha-public-core.module';
-import {FlKeyValueModule} from "@monorepo/front-core-lib";
+import {FlInputFileModule, FlKeyValueModule} from "@monorepo/front-core-lib";
 
 
 @NgModule({
@@ -20,7 +20,8 @@ import {FlKeyValueModule} from "@monorepo/front-core-lib";
     HaCoreModule,
     MatRadioModule,
     HaPublicCoreModule,
-    FlKeyValueModule
+    FlKeyValueModule,
+    FlInputFileModule
   ]
 })
 export class HaPublicListBricksPageModule {

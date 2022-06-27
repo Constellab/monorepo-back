@@ -16,7 +16,7 @@ export class HaTdServiceConfig extends TdServiceConfig{
     return {
       url : HaBrickRouteService.getTecDocUrl(
         typingName.getBrickName(),
-        parentVersion,
+        'v' + parentVersion.split('.')[0],
         typingName.getType().toLowerCase(),
         typingName.getUniqueName()),
       isAbsolute: false

@@ -46,6 +46,7 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
    * If true, the directive only accept the file types listed in the accepted attribute
    */
   @Input() strictMode: boolean = true;
+  @Input() clear: boolean = false;
 
 
   /**
@@ -85,6 +86,9 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
 
     this.emitCurrentValue();
     this.markAsTouched();
+    if(this.clear){
+      this.clearValue();
+    }
   }
 
   // change local value
