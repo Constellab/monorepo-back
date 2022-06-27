@@ -1,4 +1,6 @@
-<fl-async-section [object]="brick$" class="full-w">
+<ha-ha404 [errorText]="'error_brick_not_found'" *ngIf="brickNotFound"></ha-ha404>
+
+<fl-async-section [object]="brick$" class="full-w" *ngIf="!brickNotFound">
 
   <ng-container *flSectionBody="let brick">
     <nav mat-tab-nav-bar mat-align-tabs="center" class="test">

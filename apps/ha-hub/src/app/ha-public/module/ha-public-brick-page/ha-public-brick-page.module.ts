@@ -29,6 +29,7 @@ import {
   HaPublicBrickVersionDetailDialogComponent
 } from './ha-public-brick-version-detail-dialog/ha-public-brick-version-detail-dialog.component';
 import {HaPublicTechDocComponent} from './ha-public-tech-doc/ha-public-tech-doc.component';
+import {Ha404Component} from '../ha404/ha404.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import {HaPublicTechDocComponent} from './ha-public-tech-doc/ha-public-tech-doc.
     HaPublicEditBrickDialogComponent,
     HaPublicBrickVersionDetailDialogComponent,
     HaPublicTechDocComponent,
+    Ha404Component,
   ],
   imports: [
     HaPublicCoreModule,

@@ -125,11 +125,10 @@
 
       </div>
       <fl-input-file-container color="primary" [placeholder]="'import_technical_documentation' | translate" class="bt-add-technical-doc">
-        <input flInputFile type="file" [strictMode]="true" [clear]="true" accept="application/json" (change)="onFileSelected($event)">
+        <input flInputFile type="file" [strictMode]="true" [autoClearHtmlInput]="true" accept="application/json"
+               (fileChange)="onFileSelected($event)">
       </fl-input-file-container>
     </div>
-
-
   </mat-drawer>
 
   <mat-drawer-content class="sidenav-content">

@@ -75,9 +75,12 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
   }
 
 
-  onFileSelected($event: any): void {
+  onFileSelected($event: File): void {
+    if($event == null){
+      return;
+    }
     this.errorFile = false;
-    if (!$event.target.files[0].name.endsWith('.json')) {
+    if (!$event.name.endsWith('.json')) {
       this.errorFile = true;
       this.errorFileText = 'file_wrong_type';
     }
@@ -103,7 +106,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
         }
       };
 
-      reader.readAsText($event.target.files[0]);
+      reader.readAsText($event);
     }
   }
 

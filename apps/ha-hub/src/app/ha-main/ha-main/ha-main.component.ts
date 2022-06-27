@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {HaUser} from '../ha-core/ha-model/ha-entities/ha-user';
-import {HaAuthenticatedUserService} from '../ha-core/ha-service/ha-authenticated-user.service';
-import {HaMainLoginComponent} from './ha-main-login/ha-main-login.component';
+import {HaUser} from '../../ha-core/ha-model/ha-entities/ha-user';
+import {HaAuthenticatedUserService} from '../../ha-core/ha-service/ha-authenticated-user.service';
+import {HaMainLoginComponent} from '../ha-main-login/ha-main-login.component';
 import {FlDialogService} from '@monorepo/front-core-lib';
-import {HaAuthService} from '../ha-core/ha-service/ha-auth.service';
-import {HaApiServiceConfig} from '../ha-core/ha-model/ha-config/ha-api-module.config';
+import {HaAuthService} from '../../ha-core/ha-service/ha-auth.service';
+import {HaApiServiceConfig} from '../../ha-core/ha-model/ha-config/ha-api-module.config';
 
 @Component({
   selector: 'ha-main',

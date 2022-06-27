@@ -5,7 +5,7 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./ha-main/ha-main.module').then(m => m.HaMainModule)
-  }
+  },
 ];
 
 @NgModule({

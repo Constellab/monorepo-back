@@ -46,7 +46,11 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
    * If true, the directive only accept the file types listed in the accepted attribute
    */
   @Input() strictMode: boolean = true;
-  @Input() clear: boolean = false;
+
+  /**
+   * If true, the directive only accept the file types listed in the accepted attribute
+   */
+  @Input() autoClearHtmlInput: boolean = false;
 
 
   /**
@@ -56,6 +60,9 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
   @HostListener('change')
   listenOnChange(): void {
     this.fileChanged(this.elementRef.nativeElement.files);
+    if(this.autoClearHtmlInput){
+      this.elementRef.nativeElement.value = '';
+    }
   }
 
 
@@ -86,9 +93,6 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
 
     this.emitCurrentValue();
     this.markAsTouched();
-    if(this.clear){
-      this.clearValue();
-    }
   }
 
   // change local value

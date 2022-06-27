@@ -16,6 +16,7 @@ import {
   HaPublicBrickDescriptionComponent
 } from './module/ha-public-brick-page/ha-public-brick-description/ha-public-brick-description.component';
 import {HaPublicTechDocComponent} from './module/ha-public-brick-page/ha-public-tech-doc/ha-public-tech-doc.component';
+import {Ha404Component} from './module/ha404/ha404.component';
 
 
 const routes: Route[] = [
@@ -30,7 +31,7 @@ const routes: Route[] = [
   {
     component: HaPublicBrickPageComponent,
     matcher: (url: UrlSegment[]) => {
-      return url.length >= 2 && (url[1].path.match(/v\d+$/g) || url[1].path.match(/latest/))
+      return url.length >= 2 && (url[1].path.match(/^v\d+$/g) || url[1].path.match(/^latest$/g))
         ? {
           consumed: url.slice(0,2),
           posParams: {
@@ -65,8 +66,21 @@ const routes: Route[] = [
     ]
   },
   {
-    path: ':brickName',
+    matcher: (url: UrlSegment[]) => {
+      return url.length == 1
+        ? {
+          consumed: url.slice(0, 1),
+          posParams: {
+            brickName: new UrlSegment(url[0].path, {})
+          }
+        }
+        : null
+    },
     redirectTo: ':brickName/latest'
+  },
+  {
+    path: '**',
+    component: Ha404Component
   }
 ];
 

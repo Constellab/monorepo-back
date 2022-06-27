@@ -1,4 +1,6 @@
-<div class="sidenavBody">
+<ha-ha404 [errorText]="'error_doc_not_found'" *ngIf="docNotFound"></ha-ha404>
+
+<div class="sidenavBody" *ngIf="!docNotFound">
 
   <div class="content">
     <div class="loader" *ngIf="isLoading">

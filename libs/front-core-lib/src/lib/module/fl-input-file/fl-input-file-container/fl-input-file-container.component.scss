@@ -15,18 +15,18 @@
   display: block;
   font-size: 1em;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 30px;
   padding-left: 20px;
   padding-right: 10px;
 }
 
 .placeholder {
-  padding-top: 14px;
-  padding-bottom: 14px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   padding-right: 10px;
   text-align: center;
   width: 100%;
-  overflow: hidden;
+  overflow: initial;
   white-space: nowrap;
   text-overflow: ellipsis;
 }

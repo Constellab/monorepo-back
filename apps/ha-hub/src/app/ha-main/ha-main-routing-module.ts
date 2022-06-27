@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
-import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
-import {HaMainComponent} from './ha-main.component';
+import {RouterModule, Routes} from '@angular/router';
+import {HaMainComponent} from './ha-main/ha-main.component';
+import {Ha404Component} from '../ha-public/module/ha404/ha404.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,16 @@ const routes: Routes = [
     pathMatch: 'full',
     redirectTo: 'bricks'
   },
+  {
+    path: '**',
+    component: HaMainComponent,
+    children: [
+      {
+        path: '',
+        component: Ha404Component
+      }
+    ]
+  }
 ];
 
 @NgModule({

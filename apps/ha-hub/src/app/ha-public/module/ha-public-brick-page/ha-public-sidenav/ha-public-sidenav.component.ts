@@ -468,9 +468,8 @@ export class HaPublicSidenavComponent implements OnInit {
 
   }
 
-  onFileSelected($event: any): void {
-
-    if (typeof (FileReader) !== 'undefined') {
+  onFileSelected($event: File): void {
+    if (typeof (FileReader) !== 'undefined' && $event != null) {
       const reader = new FileReader();
 
       reader.onload = (e: any) => {
@@ -484,7 +483,7 @@ export class HaPublicSidenavComponent implements OnInit {
         });
       };
 
-      reader.readAsText($event.target.files[0]);
+      reader.readAsText($event);
     }
   }
 

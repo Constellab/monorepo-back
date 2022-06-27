@@ -33,6 +33,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   activatedRoute: ActivatedRoute = this.route;
   isLoading: boolean = true;
   textEditorConfig: FlTextEditorConfig;
+  docNotFound: boolean = false;
 
   constructor(
     private brickService: HaBrickService,
@@ -89,6 +90,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     this.documentation = null;
     this.isCheck = false;
     let isFirstDoc: boolean = false;
+    this.docNotFound = false;
     let path: string;
     if (url.length == 0) {
       isFirstDoc = true;
@@ -99,6 +101,9 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     } else {
       path = url.join('/') + '/';
       this.brickService.getDocByPath(this.brickName, path, this.brickVersion).subscribe(doc => {
+        if(doc == null){
+          this.docNotFound = true;
+        }
         this.isCheck = true;
         this.actionOnDoc(isFirstDoc, doc);
       });

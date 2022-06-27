@@ -78,12 +78,15 @@ export class HaPublicEditBrickFormComponent implements OnInit {
     }
   }
 
-  onFileSelected($event: any): void {
+  onFileSelected($event: File): void {
+    if($event == null){
+      return;
+    }
     this.errorFile = false;
     this.errorInput = {}
     this.inputFile = null;
     this.formGp.reset();
-    if (!$event.target.files[0].name.endsWith('.json')) {
+    if (!$event.name.endsWith('.json')) {
       this.errorFile = true;
       this.errorFileText = 'file_wrong_type';
     }
@@ -121,7 +124,7 @@ export class HaPublicEditBrickFormComponent implements OnInit {
 
       };
 
-      reader.readAsText($event.target.files[0]);
+      reader.readAsText($event);
     }
   }
 }
