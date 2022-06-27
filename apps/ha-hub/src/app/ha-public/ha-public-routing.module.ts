@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {Route, RouterModule} from '@angular/router';
+import {Route, RouterModule, UrlSegment} from '@angular/router';
 import {
   HaPublicListBricksPageComponent
 } from './module/ha-public-bricks/ha-public-list-bricks-page/ha-public-list-bricks-page.component';
@@ -27,23 +27,19 @@ const routes: Route[] = [
     path: 'edit',
     component: HaPublicEditBrickPageComponent
   },
-  // {
-  //   path: ':brickName/:brickVersion',
-  //   component: HaPublicBrickPageComponent,
-  //   children: [
-  //     {
-  //       path: 'doc',
-  //       component: HaPublicBrickPageComponent,
-  //       children: [{
-  //         path: '**',
-  //         component: HaPublicBrickPageComponent
-  //       }]
-  //     }
-  //   ]
-  // },
   {
-    path: ':brickName/:version',
     component: HaPublicBrickPageComponent,
+    matcher: (url: UrlSegment[]) => {
+      return url.length >= 2 && (url[1].path.match(/v\d+$/g) || url[1].path.match(/latest/))
+        ? {
+          consumed: url.slice(0,2),
+          posParams: {
+            brickName: new UrlSegment(url[0].path, {}),
+            version: new UrlSegment(url[1].path, {})
+          }
+        }
+        : null
+    },
     children: [
       {
         path: 'doc',
