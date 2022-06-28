@@ -46,6 +46,8 @@
   "resource_origin": "Origin",
   "resource_origin_imported": "Uploaded",
   "resource_origin_generated": "Generated",
+  "resource_include_children": "Include children resources (resources inside ResourceSet)",
+  "resource_include_children_short": "Children resources",
   "resource_data": "Data",
   "resource_include_archived": "Include archived resources",
   "select_resource": "Select a resource",

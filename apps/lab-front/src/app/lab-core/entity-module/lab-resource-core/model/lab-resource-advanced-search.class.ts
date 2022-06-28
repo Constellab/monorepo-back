@@ -29,6 +29,7 @@ export class LabResourceSearchFields {
   createdBy: string[];
 
   isArchived: boolean;
+  includeChildrenResource: boolean;
 }
 
 
@@ -47,6 +48,7 @@ export class LabResourceSearch {
     // group the creation date into one chip
     createdAt: 'creation_date',
     createdBy: 'created_by',
+    includeChildrenResource: 'resource_include_children_short',
   };
 
 
@@ -64,6 +66,10 @@ export class LabResourceSearch {
     createdAt: FlSearchConverter.dateInterval('created_at'),
     createdBy: {key: 'created_by', operator: 'IN'},
     isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.includeAllOnCheck},
+    includeChildrenResource: {
+      key: 'include_children_resource',
+      operator: 'EQ',
+    },
   };
 
 
@@ -83,7 +89,8 @@ export class LabResourceSearch {
         experiment: [null],
         createdAt: createAtFormGroup,
         createdBy: [null],
-        isArchived: [null]
+        isArchived: [null],
+        includeChildrenResource: [null],
       }
     );
   }
