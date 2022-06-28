@@ -58,6 +58,7 @@ import {
   LabConfigureResourceViewComponent
 } from './component/lab-configure-resource-view/lab-configure-resource-view.component';
 import {LabResourceDetailTabsComponent} from './component/lab-resource-detail-tabs/lab-resource-detail-tabs.component';
+import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module';
 
 
 @NgModule({
@@ -124,6 +125,7 @@ import {LabResourceDetailTabsComponent} from './component/lab-resource-detail-ta
     LabUserCoreModule,
     LabExperimentCoreModule,
     LabTagCoreModule,
+    LabProjectCoreModule,
   ],
 })
 export class LabResourceCoreModule {

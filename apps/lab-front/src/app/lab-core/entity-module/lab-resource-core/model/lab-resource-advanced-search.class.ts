@@ -11,6 +11,7 @@ import {LabSearchConverter} from '../../../model/global/lab-search-converter.cla
 import {Type} from 'class-transformer';
 import {LabResourceOrigin} from '../../../model/entities/resource/lab-resource.entity';
 import {LabExperiment} from '../../../model/entities/lab-experiment.entity';
+import {LabProject} from '../../../model/entities/lab-project.class';
 
 /**
  * Format of the data for the Advanced search form of the resource
@@ -27,6 +28,7 @@ export class LabResourceSearchFields {
   createdAt: FlSearchDateInterval;
 
   createdBy: string[];
+  project: LabProject[];
 
   isArchived: boolean;
   includeChildrenResource: boolean;
@@ -48,6 +50,7 @@ export class LabResourceSearch {
     // group the creation date into one chip
     createdAt: 'creation_date',
     createdBy: 'created_by',
+    project: 'biox.project',
     includeChildrenResource: 'resource_include_children_short',
   };
 
@@ -65,6 +68,7 @@ export class LabResourceSearch {
     // Date
     createdAt: FlSearchConverter.dateInterval('created_at'),
     createdBy: {key: 'created_by', operator: 'IN'},
+    project: {key: 'project', operator: 'IN', convertValue: FlSearchConverter.getEntitiesId},
     isArchived: {key: 'is_archived', operator: 'EQ', convertValue: LabSearchConverter.includeAllOnCheck},
     includeChildrenResource: {
       key: 'include_children_resource',
@@ -89,6 +93,7 @@ export class LabResourceSearch {
         experiment: [null],
         createdAt: createAtFormGroup,
         createdBy: [null],
+        project: [null],
         isArchived: [null],
         includeChildrenResource: [null],
       }

@@ -61,8 +61,19 @@
       <!--          <input matInput formControlName="data" [placeholder]="'resource_data' | translate" autocomplete="off">-->
       <!--        </mat-form-field>-->
 
+      <!--  Project  -->
+      <mat-form-field class="g-search-field">
+        <mat-label>
+          {{'biox.project' | translate }}
+        </mat-label>
+        <mat-select formControlName="project" multiple [placeholder]="'biox.project' | translate">
+          <lab-project-select-options></lab-project-select-options>
+        </mat-select>
+        <mat-icon matPrefix flIcon="project" class="g-text-light project-icon g-icon-small"></mat-icon>
+      </mat-form-field>
+
       <!--  Created by  -->
-      <mat-form-field class="g-full">
+      <mat-form-field class="g-search-field">
         <mat-label>{{'created_by' | translate }}</mat-label>
         <mat-select formControlName="createdBy" [placeholder]="'created_by' | translate" [multiple]="true">
           <lab-user-select-options></lab-user-select-options>
@@ -83,7 +94,6 @@
 
       <mat-checkbox formControlName="includeChildrenResource"
                     class="checkbox g-mat-checkbox-wrap-text">{{'resource_include_children' | translate }}</mat-checkbox>
-
 
     </div>
   </mat-expansion-panel>
