@@ -11,6 +11,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 export class FlObjectKeysPipe implements PipeTransform {
 
   transform(data: Record<string, unknown>): string[] {
+    if (data == null) return [];
     if (data instanceof Array) {
       return data;
     }

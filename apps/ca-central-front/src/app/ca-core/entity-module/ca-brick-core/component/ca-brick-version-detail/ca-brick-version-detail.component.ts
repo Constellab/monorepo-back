@@ -18,8 +18,4 @@ export class CaBrickVersionDetailComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
-  hasTechnicalInfo(): boolean {
-    return this.brickVersion.technicalInfo != null && this.brickVersion.technicalInfo.length > 0;
-  }
 }
