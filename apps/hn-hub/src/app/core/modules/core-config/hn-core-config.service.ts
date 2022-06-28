@@ -79,6 +79,21 @@ export class HnCoreConfigService {
     }
   }
 
+  public getFrontRootUrl(): string{
+    let res: string;
+    switch (this.getEnvironmentProfile()){
+      case "prod":
+        res = 'https://hub.gencovery.com/';
+        break;
+      case "preprod":
+        res = 'https://hub-pre-prod.gencovery.com/';
+        break;
+      case "dev":
+        res = 'http://localhost:4200/'
+    }
+    return res;
+  }
+
   public getLogLevel(): LogLevel {
     return this.configService.get('LOG_LEVEL') ?? 'log';
   }

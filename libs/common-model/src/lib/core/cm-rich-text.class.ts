@@ -36,11 +36,39 @@ export interface CmRichTextFigureOp extends CmRichTextOp {
 }
 
 
+export interface CmRichTextLink{
+  attributes: CmRichTextTitleAttribute,
+  insert: string;
+}
+
+export interface CmRichTextTitleAttribute{
+  link: string;
+  id?: string;
+}
+
+
+
 export class CmRichText {
+
 
   private static readonly figureOps = 'figure';
 
   constructor(private richText: CmRichTextI) {
+
+
+  }
+
+  public static getLinks(content: CmRichTextI): CmRichTextLink[]{
+    const titles: CmRichTextLink[] = [];
+    const contentData: any[] = content.ops;
+    if(contentData != null){
+      contentData.forEach((c) => {
+        if(c.attributes && c.insert && c.attributes.link){
+          titles.push(c as CmRichTextLink);
+        }
+      });
+    }
+    return titles;
   }
 
   public getContent(): CmRichTextI {

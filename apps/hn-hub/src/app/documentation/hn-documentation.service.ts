@@ -10,7 +10,7 @@ import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.se
 import {IncomingMessage} from 'http';
 import imageSize from 'image-size';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
-import {CmRichTextI} from '@monorepo/common-model';
+import {CmRichText, CmRichTextI, CmRichTextLink} from '@monorepo/common-model';
 import {HnFolder} from '../folder/hn-folder.entity';
 
 class HnDocImage {
@@ -25,7 +25,7 @@ export class HnDocumentationService {
     @InjectRepository(HnDocumentation)
     private documentationsRepository: Repository<HnDocumentation>,
     private objectStorageService: BlObjectStorageService,
-    private configService: HnCoreConfigService
+    private configService: HnCoreConfigService,
   ) {
   }
 
@@ -50,7 +50,7 @@ export class HnDocumentationService {
     doc.path = updatedDocumentation.title.toLowerCase().trim();
     doc.path = doc.path.replace(/ /gi, '-');
     doc.title = updatedDocumentation.title;
-    doc.completePath = doc.folder.completePath ?  doc.folder.completePath + doc.path + '/' : doc.path + '/';
+    doc.completePath = doc.folder.completePath ? doc.folder.completePath + doc.path + '/' : doc.path + '/';
     return this.documentationsRepository.save(doc);
   }
 
@@ -63,23 +63,74 @@ export class HnDocumentationService {
   }
 
   async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
-    return (await this.documentationsRepository.find(
+    const documentation: HnDocumentation = (await this.documentationsRepository.find(
       {
         where: {completePath: path},
         relations: ['folder']
       })).find(d => d.folder.brickMajorVersion.id == brickMajorVersion.id);
+
+    const links: CmRichTextLink[] = CmRichText.getLinks(documentation.content.ops);
+    for(const l of links){
+      if(l.attributes.id){
+        const linkDoc: HnDocumentation = await this.documentationsRepository.findOne(l.attributes.id);
+        if(linkDoc){
+          l.attributes.link = `${this.configService.getFrontRootUrl()}bricks/v${brickMajorVersion.major}/doc/${l.attributes.link}`;
+          console.log(documentation.content.ops.find((o: CmRichTextLink) => o.insert === l.insert && o.attributes.id === l.attributes.id));
+        }
+      }
+    }
+    return documentation;
   }
 
   async updateContent(id: string, updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
     const doc: HnDocumentation = await this.documentationsRepository.findOne(id);
     if (doc) {
-      doc.content = updateContentDoc;
+      doc.content = await this.editContent(updateContentDoc);
       const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
       if (!currentUser.isAdmin()) {
         throw new UnauthorizedException();
       }
     }
     return this.documentationsRepository.save(doc);
+  }
+
+  async editContent(content: CmRichTextI): Promise<CmRichTextI> {
+    const links: CmRichTextLink[] = CmRichText.getLinks(content);
+    for (const l of links) {
+      if (l.attributes.link.startsWith(this.configService.getFrontRootUrl())) {
+        const link: string[] = l.attributes.link.substring(this.configService.getFrontRootUrl().length).split('/');
+        if (link[0] === 'bricks' && link[3] === 'doc' && link[4] !== 'technical-doc') {
+          const [id, cp] = await this.getDocumentationIdAndCPByUrl(link);
+          if(id != null && cp != null){
+            l.attributes.id = id;
+            l.attributes.link = cp;
+          }
+        }
+      }
+    }
+    return content;
+  }
+
+  async getDocumentationIdAndCPByUrl(link: string[]): Promise<[string, string]>{
+    const brickName: string = link[1];
+    const majorVersion: number = 0;//+(link[2].slice(1))
+    link.splice(0, 4)
+    const completePath: string = link.join('/') + '/';
+    const documentation: HnDocumentation = await this.documentationsRepository.findOne({
+      where:{
+        completePath: completePath,
+        folder: {
+          brickMajorVersion: {
+            major : majorVersion,
+            brick: {
+              name: brickName
+            }
+          }
+        }
+      },
+      relations: ['folder']
+    });
+    return [documentation.id, completePath];
   }
 
   async saveImage(files: BlFile[]): Promise<HnDocImage> {
@@ -101,7 +152,7 @@ export class HnDocumentationService {
     return this.configService.getReportObjectStorageBucket();
   }
 
-  async updateCompletePath(doc: HnDocumentation, folder: HnFolder): Promise<void>{
+  async updateCompletePath(doc: HnDocumentation, folder: HnFolder): Promise<void> {
     doc.completePath = folder.completePath ? folder.completePath + doc.path + '/' : doc.path + '/';
     await this.documentationsRepository.save(doc);
   }
