@@ -69,16 +69,25 @@ export class HnDocumentationService {
         relations: ['folder']
       })).find(d => d.folder.brickMajorVersion.id == brickMajorVersion.id);
 
-    const links: CmRichTextLink[] = CmRichText.getLinks(documentation.content.ops);
-    for(const l of links){
-      if(l.attributes.id){
-        const linkDoc: HnDocumentation = await this.documentationsRepository.findOne(l.attributes.id);
-        if(linkDoc){
-          l.attributes.link = `${this.configService.getFrontRootUrl()}bricks/v${brickMajorVersion.major}/doc/${l.attributes.link}`;
-          console.log(documentation.content.ops.find((o: CmRichTextLink) => o.insert === l.insert && o.attributes.id === l.attributes.id));
+    if(documentation.content && documentation.content.ops){
+      const links: CmRichTextLink[] = CmRichText.getLinks(documentation.content as CmRichTextI);
+      for (const l of links) {
+        if (l.attributes.id) {
+          const linkDoc: HnDocumentation = await this.documentationsRepository.findOne(l.attributes.id, {relations: ['folder']});
+          if (linkDoc) {
+
+
+            // eslint-disable-next-line max-len
+            l.attributes.link = `${this.configService.getFrontRootUrl()}bricks/${linkDoc.folder.brickMajorVersion.brick.name}/v${linkDoc.folder.brickMajorVersion.major}/doc/${linkDoc.completePath}`;
+
+            documentation.content.ops.find(
+              (o: CmRichTextLink) => o.attributes && o.attributes.id && o.attributes.id === l.attributes.id)
+              .attributes.link = l.attributes.link;
+          }
         }
       }
     }
+
     return documentation;
   }
 
@@ -101,7 +110,7 @@ export class HnDocumentationService {
         const link: string[] = l.attributes.link.substring(this.configService.getFrontRootUrl().length).split('/');
         if (link[0] === 'bricks' && link[3] === 'doc' && link[4] !== 'technical-doc') {
           const [id, cp] = await this.getDocumentationIdAndCPByUrl(link);
-          if(id != null && cp != null){
+          if (id != null && cp != null) {
             l.attributes.id = id;
             l.attributes.link = cp;
           }
@@ -111,17 +120,17 @@ export class HnDocumentationService {
     return content;
   }
 
-  async getDocumentationIdAndCPByUrl(link: string[]): Promise<[string, string]>{
+  async getDocumentationIdAndCPByUrl(link: string[]): Promise<[string, string]> {
     const brickName: string = link[1];
     const majorVersion: number = 0;//+(link[2].slice(1))
     link.splice(0, 4)
     const completePath: string = link.join('/') + '/';
     const documentation: HnDocumentation = await this.documentationsRepository.findOne({
-      where:{
+      where: {
         completePath: completePath,
         folder: {
           brickMajorVersion: {
-            major : majorVersion,
+            major: majorVersion,
             brick: {
               name: brickName
             }

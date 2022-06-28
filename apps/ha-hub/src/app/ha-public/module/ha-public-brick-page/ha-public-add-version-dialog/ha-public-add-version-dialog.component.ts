@@ -6,7 +6,7 @@ import {
   HaAddVersionInput,
   HaNewVersionDTO,
   HaNewVersionFile,
-  HaRepoType
+  HaRepoType,
 } from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
@@ -25,6 +25,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
   inputFile: HaAddVersionInput;
   errorFile: boolean;
   errorFileText: string;
+  isLoadingImport: boolean = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -76,6 +77,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
 
 
   onFileSelected($event: File): void {
+    this.isLoadingImport = true;
     if($event == null){
       return;
     }
@@ -100,6 +102,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
                 this.errorFile = true;
                 this.errorFileText = 'file_wrong_brick_or_major';
               }
+              this.isLoadingImport = false;
             });
         } else {
           console.log('NON')

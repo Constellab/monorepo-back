@@ -3,11 +3,18 @@
 </fl-dialog-header>
 
 <mat-dialog-content>
-  <p class="input-div" *ngIf="!inputFile">{{'import-new-version-text1' | translate}}</p>
-  <fl-input-file-container color="primary" [placeholder]="'import-new-version-file' | translate" class="bt-input-div">
-    <input flInputFile type="file" [strictMode]="true" [autoClearHtmlInput]="true" accept="application/json" (fileChange)="onFileSelected($event)">
-  </fl-input-file-container>
-  <p class="input-error-text" *ngIf="errorFile">{{errorFileText | translate}}</p>
+  <div class="high-part" *ngIf="!isLoadingImport">
+    <p class="input-div" *ngIf="!inputFile">{{'import-new-version-text1' | translate}}</p>
+    <fl-input-file-container color="primary" [placeholder]="'import-new-version-file' | translate" class="bt-input-div">
+      <input flInputFile type="file" [strictMode]="true" [autoClearHtmlInput]="true" accept="application/json" (fileChange)="onFileSelected($event)">
+    </fl-input-file-container>
+    <p class="input-error-text" *ngIf="errorFile">{{errorFileText | translate}}</p>
+  </div>
+  <div class="import-loader" *ngIf="isLoadingImport">
+    <fl-loader></fl-loader>
+  </div>
+
+
   <mat-divider class="divider" *ngIf="inputFile"></mat-divider>
 
 
@@ -35,9 +42,8 @@
     <div *ngIf="inputFile.technicalInfo | flIsNotEmpty">
       <p class="kv">{{'technical_information' | translate}} :</p>
       <div *ngFor="let tI of inputFile.technicalInfo | flObjectKeys">
-        <fl-key-value>
-          <fl-key>{{tI}}</fl-key>
-          {{inputFile.technicalInfo[tI]}}
+        <fl-key-value class="info-value">
+          <fl-key>{{tI}}</fl-key>{{inputFile.technicalInfo[tI]}}
         </fl-key-value>
       </div>
     </div>

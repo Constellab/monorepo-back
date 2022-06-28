@@ -53,7 +53,7 @@
       {{latestBrickVersion.repoType}}
     </fl-key-value>
     <br>
-    <fl-key-value>
+    <fl-key-value *ngIf="references && references.length > 0">
       <fl-key>References</fl-key>
       <div *ngFor="let r of references">
         <a [routerLink]="'../../../' + r.name">{{r.name}}</a> v{{r.version}}

@@ -4,5 +4,7 @@ textarea{
 }
 
 .divider, .input, .bt-input-div, p{
+  min-width: 5em;
   margin-top: 1em;
+  max-width: 30em;
 }

@@ -30,6 +30,10 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
         icon: 'image', type: 'fileExplorer',
         onAction: file => this.insertImageFromFile(file, state)
       },
+      {
+        icon: 'add_link', type: 'button',
+        onAction: () => this.openSelectDocView(state)
+      },
       this.getCodeBlockAddButton(state),
       this.getHintBlockAddButton(state),
       this.getVideoAddButton(state, this.dialogService),
@@ -42,6 +46,13 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
       fileUrl => textEditorState.insertImageFromUrl(fileUrl, index)
     );
   }
+
+  private openSelectDocView(textEditorState: FlTextEditorState): void {
+  //   this.dialogService.openBigDialog().afterClosed()
+  //     .subscribe(link => this.insertLink(textEditorState, link));
+  }
+  //
+  // private insertLink(textEditorState: FlTextEditorState, link)
 
   public getImageUrl(filename: string): string {
     return this.docService.getImageUrl(filename);
