@@ -87,6 +87,12 @@
 
 
 //////////////////////////////////// BUTTON //////////////////////////////////
+// dirty fix to fix vertical align of icon in button. The initial font-size is 14px
+.mat-button, .mat-raised-button, .mat-icon-button, .mat-stroked-button,
+.mat-flat-button, .mat-fab, .mat-mini-fab {
+  font-size: 13px
+}
+
 // set the button texts to uppercase
 .mat-stroked-button, .mat-raised-button, .mat-button, .mat-flat-button {
   text-transform: uppercase;
@@ -151,8 +157,6 @@
   box-sizing: content-box !important;
 }
 
-
-
 .g-button-icon-small {
   &.mat-icon-button, & .mat-icon-button {
     width: 30px;
@@ -160,7 +164,7 @@
     line-height: 30px;
 
     mat-icon {
-      height: 20px;
+      height: 18px;
       width: 18px;
       font-size: 18px;
       line-height: 18px;
@@ -175,8 +179,8 @@
     line-height: 20px;
 
     mat-icon {
-      height: 16px;
-      width: 16px;
+      height: 15px;
+      width: 15px;
       font-size: 15px;
       line-height: 15px;
     }
@@ -198,8 +202,6 @@
   overflow: hidden;
   display: block;
 }
-
-
 
 
 /***************************** Table *****************************/
@@ -393,7 +395,7 @@ mat-tree {
 }
 
 // Class to be placed on a mat-option to allow multi line on the option
-.g-mat-option-multi-line .mat-option-text{
+.g-mat-option-multi-line .mat-option-text {
   line-height: initial;
 }
 
