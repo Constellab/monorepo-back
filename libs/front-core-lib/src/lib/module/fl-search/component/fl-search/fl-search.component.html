@@ -20,12 +20,9 @@
     <!--   Number of results   -->
     <p class="result-count g-text-light">
       <ng-container *ngIf="datasource.page?.totalElements > 0">
-        <ng-container *ngIf="datasource.page.totalIsApproximate; else exactCount">
-          {{'flSearch.approximate_result' | translate:{count: datasource.page?.totalElements} }}
-        </ng-container>
-        <ng-template #exactCount>
+        <ng-container *ngIf="!datasource.page.totalIsApproximate">
           {{'flSearch.count_result' | translate:{count: datasource.page?.totalElements} }}
-        </ng-template>
+        </ng-container>
       </ng-container>
     </p>
 

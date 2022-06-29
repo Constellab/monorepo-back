@@ -53,7 +53,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
 
   addProcess(): void {
     const data: LabSelectTypeDialogInput = {
-      searchConfig: {mode: 'taskOrProtocol'}
+      searchConfig: {mode: 'process'}
     };
     this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: data}).afterClosed().subscribe(
       processType => this.onSelectTypeClosed(processType)

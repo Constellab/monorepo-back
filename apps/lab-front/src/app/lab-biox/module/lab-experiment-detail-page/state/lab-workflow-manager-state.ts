@@ -238,6 +238,22 @@ export class LabWorkflowManagerState {
       });
   }
 
+  public addProcessConnectedToInput(processTypingName: string, processName: string,
+                                    inputProcessName: string, inputPortName: string): void {
+    // retrieve the protocol of the layer
+    const currentProtocol: LabProtocol = this.workflow.currentLayer.object as LabProtocol;
+
+    this.addProcessWithLinkAction(
+      this.protocolService.addProcessConnectedToInput(currentProtocol.id, processTypingName,
+        inputProcessName, inputPortName),
+      inputProcessName,
+      'after',
+      {
+        text: 'biox.adding_process', translateText: true,
+        translateParam: {param: {processName: processName}}
+      });
+  }
+
   // create the action to add a process with a link
   private addProcessWithLinkAction(processWithLink$: Observable<LabAddProcessWithLink>,
                                    processNodeName: string,
@@ -502,7 +518,7 @@ export class LabWorkflowManagerState {
         this.onNewProcess(actionResult.result, actionResult.additionalInformation);
       } else if (actionResult.action.type === LabWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS) {
         this.onNewProcessWithConnector(actionResult.result, actionResult.additionalInformation);
-      } else if(actionResult.action.type === LabWorkflowAction.DELETE_PROCESS) {
+      } else if (actionResult.action.type === LabWorkflowAction.DELETE_PROCESS) {
         // clear the node observable, if the deletion worked
         const info: LabWorkflowEventNodeAdditionalInfo = actionResult.additionalInformation;
         info.node.destroy();

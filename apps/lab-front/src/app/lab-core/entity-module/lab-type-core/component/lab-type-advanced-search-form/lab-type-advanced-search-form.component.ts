@@ -22,7 +22,7 @@ export class LabTypeAdvancedSearchFormComponent implements OnInit {
   }
 
   get showObjectSubTypeField(): boolean {
-    return this.config.mode === 'taskOrProtocol';
+    return this.config.mode === 'process';
   }
 
   get showImporterIgnoreExtensionField(): boolean {

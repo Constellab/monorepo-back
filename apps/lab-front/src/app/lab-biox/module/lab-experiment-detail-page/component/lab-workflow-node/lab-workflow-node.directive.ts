@@ -111,6 +111,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
     );
   }
 
+
   private addSource(resource: LabResource | null, inputPortName: string): void {
     if (resource == null) return;
 
@@ -129,18 +130,50 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
       }
     };
     this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: data}).afterClosed().subscribe(
-      processType => this.addTransformer(processType, portName)
+      processType => this.addProcessConnectedToOutput(processType, portName)
     );
   }
 
-  private addTransformer(processType: LabTypeEntity | null, portName: string): void {
+  private openProcessSuggestion(portName: string, resourceTypingNames: string[],
+                                portType: 'input' | 'output'): void {
+    const data: LabSelectTypeDialogInput = {
+      searchConfig: {
+        mode: 'processSuggestion',
+        // if the port type selected is an input, we need to suggest process where output matches the input
+        suggestBy: portType === 'input' ? 'outputs' : 'inputs',
+        resourceTypingNames: resourceTypingNames
+      }
+    };
+    this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: data}).afterClosed().subscribe(
+      processType => {
+        // if the process where suggested
+        if (portType == 'input') {
+          this.addProcessConnectedToInput(processType, portName);
+        } else {
+          this.addProcessConnectedToOutput(processType, portName);
+        }
+      }
+    );
+  }
+
+
+  private addProcessConnectedToOutput(processType: LabTypeEntity | null, portName: string): void {
     if (processType == null) return;
 
     this.workflowManager.addProcessConnectedToOutput(processType.typingName, this.node.nodeName, this.node.nodeName, portName);
   }
 
+  private addProcessConnectedToInput(processType: LabTypeEntity | null, portName: string): void {
+    if (processType == null) return;
+
+    this.workflowManager.addProcessConnectedToInput(processType.typingName, this.node.nodeName, this.node.nodeName, portName);
+  }
+
   private getInputPortContextMenuConfig(port: LabWorkflowPort): FlMenuDynamic[] {
     const resourceId: string = this.node.currentObject.inputs[port.name]?.resource_id ?? null;
+
+    const resourceTypingNames = this.node.getPortResourceTypingNames(port.name, 'input');
+
 
     return [
       {
@@ -148,8 +181,10 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
         text: {text: 'biox.add_source', translateText: true},
         icon: 'resource',
         onClick: () => this.openResourceSelection(port.name),
+        // only activated if is editable and the port is not connected
         disabled: this.node.inputPortIsConnected(port.drawFlowName) || !this.experimentIsEditable
       },
+      this.getProcessSuggestionButton(port.name, resourceTypingNames, 'input'),
       this.getResourceDetailContextButton(resourceId)
     ];
   }
@@ -174,6 +209,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
         onClick: () => this.openTransformerSelection(portName, resourceTypingNames),
         disabled: !this.experimentIsEditable || resourceTypingNames == null
       },
+      this.getProcessSuggestionButton(portName, resourceTypingNames, 'output'),
       this.getResourceDetailContextButton(resourceId)
     ];
   }
@@ -185,6 +221,16 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
       icon: 'visibility',
       onClick: () => this.openResourceDetail(resourceId),
       disabled: resourceId == null || resourceId.length === 0
+    };
+  }
+
+  private getProcessSuggestionButton(portName: string, resourceTypingNames: string[], portType: 'input' | 'output'): FlMenuDynamic {
+    return {
+      type: 'button',
+      text: {text: 'biox.suggested_processes', translateText: true},
+      icon: 'tips_and_updates',
+      onClick: () => this.openProcessSuggestion(portName, resourceTypingNames, portType),
+      disabled: !this.experimentIsEditable || resourceTypingNames == null
     };
   }
 

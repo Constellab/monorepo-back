@@ -8,8 +8,7 @@ import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
  */
 export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
 
-  // current page number
-  private pageNumber: number = 0;
+
 
   /**
    * Current page information
@@ -26,7 +25,7 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
   // changed to true after first loading
   private isReady: boolean = false;
 
-  // when the datasource it prevent all call to be made event if a filter of function are called
+  // when the datasource it prevents all call to be made event if a filter of function are called
   private disabled: boolean = false;
 
   // The request data is passed when calling the get page method
@@ -59,12 +58,16 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
       this.clearArray();
     }
 
-    this.pageNumber = 0;
     this.page = null;
     this.firstPageIsLoading = true;
     this.setRequestData(requestData);
 
-    this.callGetPageFunction();
+    this.callGetPageFunction(this.pageNumber);
+  }
+
+  // current page number
+  get pageNumber(): number{
+    return this.page ? this.page.currentPage : 0;
   }
 
   /**
@@ -76,15 +79,14 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
     }
 
     if (!this.isLoading) {
-      this.pageNumber++;
       this.nextPageIsLoading = true;
-      this.callGetPageFunction();
+      this.callGetPageFunction(this.pageNumber + 1);
     }
   }
 
-  private callGetPageFunction(): void {
+  private callGetPageFunction(pageNumber: number): void {
     this.isLoading = true;
-    this.getPageFunction(this.pageNumber, this.pageSize, this.requestData).subscribe(
+    this.getPageFunction(pageNumber, this.pageSize, this.requestData).subscribe(
       result => this.onSuccess(result),
       error => this.onError(error)
     );
@@ -108,13 +110,11 @@ export abstract class FlDatasourcePaginated<T> extends FlArrayObs<T> {
   private onError(error: any): void {
     this.isReady = true;
 
-    const isFirstPage: boolean = this.pageNumber === 0;
-    if (this.pageNumber > 0) {
-      this.pageNumber--;
-    }
+
     this.clearAfterCall();
     // emit the error status
     // if the page is the first one, close the observable
+    const isFirstPage: boolean = this.pageNumber === 0;
     this.error(error, isFirstPage);
   }
 

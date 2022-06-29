@@ -64,7 +64,7 @@ export class LabTypeSearchComponent implements OnInit {
     let searchFunction: FLSearchFunction;
 
     switch (this.config.mode) {
-      case 'taskOrProtocol':
+      case 'process':
         searchFunction = this.typeService.getAdvancedSearchFunction();
 
         hiddenFilters = {objectType: ['TASK', 'PROTOCOL']};
@@ -90,6 +90,14 @@ export class LabTypeSearchComponent implements OnInit {
           'name',
           {columnName: 'description', accessor: 'shortDescription'}, 'detail'];
         break;
+      case 'processSuggestion':
+        searchFunction = this.typeService.getProcessSuggestion(this.config.resourceTypingNames, this.config.suggestBy);
+        hiddenFilters = {objectType: ['TASK', 'PROTOCOL']};
+        this.columns = [
+          'name',
+          {columnName: 'description', accessor: 'shortDescription'},
+          'objectSubType', 'detail'];
+
     }
 
 

@@ -50,6 +50,28 @@ export class LabTypeService {
       this.advancedSearch(route, page, pageSize, filters);
   }
 
+  /**
+   * Suggest a list of process based on resource types
+   * @param resourceTypingNames
+   * @param suggestBy whether to compare the resource typings with process inputs or outputs
+   */
+  public getProcessSuggestion(resourceTypingNames: string[], suggestBy: 'inputs' | 'outputs'): FLSearchFunction<LabTypeEntity> {
+    const route: string = `${this.route}/processes/suggestion/${suggestBy}`;
+    return (page: number, pageSize: number, filters?: LabTypeSearchFields) => {
+      const searchData: FlAdvancedSearchInput = this.getSearchInput(filters);
+
+      // build an object with the list of resource and the search params
+      const body = {
+        resource_typing_names: resourceTypingNames,
+        search_params: searchData
+      };
+
+      return this.apiService.post(route, body, LabTypeEntity, {
+        page: page, pageSize: pageSize, resultIsPaginated: true
+      });
+    };
+  }
+
   public getTransformerAdvancedSearchFunction(resourceTypingNames: string[]): FLSearchFunction<LabTypeEntity> {
     const route: string = `${this.route}/transformers/search`;
     return (page: number, pageSize: number, filters?: LabTypeSearchFields) => {

@@ -83,6 +83,7 @@
     "add_source": "Sélectionner une resource",
     "add_output": "Ajouter un output",
     "delete_link_interface_error": "Impossible de supprimer une connexion liée à une interface ou une outerface, veuillez supprimer directement l'interface ou l'outerface",
+    "suggested_processes": "Processus suggérés",
     "project": "Projet",
     "no_project": "Aucun projet",
     "validate_experiment": "Valider l'expérience",

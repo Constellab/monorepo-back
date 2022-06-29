@@ -62,6 +62,21 @@ export class LabProtocolService {
       null, LabAddProcessWithLink);
   }
 
+  /**
+   * Route to add a process (from type) to an existing protocol (can be a sub protocol),
+   * and link it to the output of an existing process
+   * @param protocolId
+   * @param processTypingName
+   * @param inputProcessName name of the process to link to
+   * @param inputPortName name of the port to link to
+   */
+  public addProcessConnectedToInput(protocolId: string, processTypingName: string,
+                                    inputProcessName: string, inputPortName: string): Observable<LabAddProcessWithLink> {
+    return this.apiService.post(
+      `${this.baseRoute}/${protocolId}/add-process/${processTypingName}/connected-to-input/${inputProcessName}/${inputPortName}`,
+      null, LabAddProcessWithLink);
+  }
+
   public deleteProcessInProtocol(protocolId: string, processInstanceName: string): Observable<any> {
     return this.apiService.delete(`${this.baseRoute}/${protocolId}/process/${processInstanceName}`);
   }

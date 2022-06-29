@@ -84,6 +84,7 @@
     "add_source": "Select a resource",
     "add_output": "Add an output",
     "delete_link_interface_error": "Can't delete a connection linked to an interface or an outerface, please delete directly the interface or outerface",
+    "suggested_processes": "Suggested processes",
     "project": "Project",
     "validate_experiment": "Validate the experiment",
     "validate_experiment_help_text": "You're about to validate the experiment. During the validation, the experiment is sent to the collaborative space. Once it is validated, it can't be updated nor deleted. The experiment must be linked to a project",
