@@ -2,7 +2,7 @@ import {LabIO} from '../entities/lab-io.entity';
 import {Exclude} from 'class-transformer';
 import {LabTypingName} from '../entities/lab-typing-name.class';
 import {LabBaseEntityWithUser} from '../entities/lab-user.entity';
-import {TdIOSpecDTO, TdResourceTypeDTO} from '@monorepo/technical-doc';
+import {TdIOSpec, TdResourceTypeDTO} from '@monorepo/technical-doc';
 
 export interface LabConnectionPart {
 
@@ -77,7 +77,7 @@ export class LabInterfaceNode extends LabNode {
   portName: string;
 
   // types supported by the port
-  portType: TdIOSpecDTO;
+  portType: TdIOSpec;
 
   /**
    * Return a new interface with specs equals to resource
@@ -104,7 +104,7 @@ export class LabOuterfaceNode extends LabNode {
   portName: string;
 
   // types supported by the port
-  portType: TdIOSpecDTO;
+  portType: TdIOSpec;
 
   /**
    * Return a new outerface with specs equals to resource

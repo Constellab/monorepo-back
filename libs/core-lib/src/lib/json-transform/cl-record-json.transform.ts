@@ -20,7 +20,7 @@ import {ClRecordWrapper} from '../model/cl-record-wrapper.class';
  */
 export function ClRecordWrapperTransform<WRAPPER extends ClRecordWrapper<ITEM>, ITEM>(
   wrapperReference: new() => WRAPPER,
-  recordItemReference: new() => ITEM): PropertyDecorator {
+  recordItemReference?: new() => ITEM): PropertyDecorator {
   // convert date to time
   const transformToPlain = Transform(
     (params: ClTransformFnParams<WRAPPER>) => clSerializeRecordWrapper(params.value, ClCoreJsonConvert.classToPlain),
@@ -55,15 +55,20 @@ function clSerializeRecordWrapper(recordWrapper: ClRecordWrapper<any>,
  */
 export function clDeserializeRecordWrapper<T extends ClRecordWrapper<any>>(record: Record<string, any>,
                                                                            wrapperReference: new() => T,
-                                                                           itemReference: new() => any): T {
+                                                                           itemReference?: new() => any): T {
   if (record == null) {
     return null;
   }
 
   const result: T = new wrapperReference();
-  // deserialize the record
-  result.record = clDeserializeRecord(record,
-    (item: any) => ClCoreJsonConvert.deserializeObject(item, itemReference));
+
+  if (itemReference) {
+    // deserialize the record
+    result.record = clDeserializeRecord(record,
+      (item: any) => ClCoreJsonConvert.deserializeObject(item, itemReference));
+  } else {
+    result.record = record;
+  }
 
   return result;
 }

@@ -1,16 +1,16 @@
 import {TdTypeEntity} from './td-type.entity';
 
 export interface TdProcessType extends TdTypeEntity {
-  inputSpecs: Record<string, TdIOSpecDTO>;
+  inputSpecs: Record<string, TdIOSpec>;
 
-  outputSpecs: Record<string, TdIOSpecDTO>;
+  outputSpecs: Record<string, TdIOSpec>;
 
   configSpecs: Record<string, TdConfigSpec>;
 
   additionalInfo: TdAdditionalInfoDTO | undefined;
 }
 
-export interface TdIOSpecDTO {
+export interface TdIOSpec {
   resource_types: TdResourceTypeDTO[];
 
   human_name: string;

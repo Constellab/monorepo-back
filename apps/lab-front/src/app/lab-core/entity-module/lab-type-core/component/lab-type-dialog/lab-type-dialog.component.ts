@@ -2,6 +2,12 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
 import {LabRouterService} from '../../../../service/lab-router.service';
+import {LabTypeService} from '../../../../entity-service/lab-type.service';
+import {Observable} from 'rxjs';
+
+export interface LabTypeDialogInput {
+  typingName: string;
+}
 
 @Component({
   selector: 'lab-type-dialog',
@@ -10,16 +16,18 @@ import {LabRouterService} from '../../../../service/lab-router.service';
 })
 export class LabTypeDialogComponent implements OnInit {
 
-  type: LabTypeEntity;
+  type$: Observable<LabTypeEntity>;
 
   detailRoute: string;
 
-  constructor(@Inject(MAT_DIALOG_DATA) type: LabTypeEntity) {
-    this.type = type;
-    this.detailRoute = LabRouterService.getTechnicalDocRoute(type.typingName);
+  constructor(@Inject(MAT_DIALOG_DATA) private input: LabTypeDialogInput,
+              private typeService: LabTypeService) {
+    this.detailRoute = LabRouterService.getTechnicalDocRoute(input.typingName);
   }
 
   ngOnInit(): void {
+    this.type$ = this.typeService.getTyping(this.input.typingName);
   }
+
 
 }

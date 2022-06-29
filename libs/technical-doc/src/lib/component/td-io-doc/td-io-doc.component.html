@@ -1,12 +1,14 @@
 <div class="io-div" *ngFor="let io of ioSpecs|  flObjectKeys">
   <div class="io-div-head">
-    <h4>{{ioSpecs[io].human_name}} : </h4>
+    <div class="io-human-name">{{ioSpecs[io].human_name}} : </div>
     <span *ngFor="let r of ioSpecs[io].resource_types; let first= first">
       <span *ngIf="!first">,</span>
         <td-io-resource [resource]="r"></td-io-resource>
     </span>
   </div>
-  <p>{{ioSpecs[io].short_description}}</p>
+  <div *ngIf="ioSpecs[io].short_description" class="g-text-small-em g-text-light">
+    {{ioSpecs[io].short_description}}
+  </div>
 </div>
 
 

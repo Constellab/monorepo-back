@@ -25,7 +25,7 @@ import {
 } from '../entity-module/lab-resource-core/model/lab-resource-advanced-search.class';
 import {LabConfigValues} from '../model/entities/lab-config.entity';
 import {LabResourceImporterType} from '../model/entities/resource/lab-resource.dto';
-import {LabConfigSpecBase, LabConfigSpecs} from '../model/entities/lab-config-spec.entity';
+import {LabConfigSpecs} from '../model/entities/lab-config-spec.entity';
 import {LabTypeService} from './lab-type.service';
 import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
 import {LabTag} from '../model/entities/lab-tag.entity';
@@ -121,7 +121,7 @@ export class LabResourceService {
 
   public getResourceViewSpecsDetail(id: string, viewName: string): Observable<LabConfigSpecs> {
     return this.apiService.get(`${this.route}/${id}/views/${viewName}/specs`,
-      record => clDeserializeRecordWrapper(record, LabConfigSpecs, LabConfigSpecBase));
+      record => clDeserializeRecordWrapper(record, LabConfigSpecs));
   }
 
   /**

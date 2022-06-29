@@ -1,8 +1,9 @@
 import {LabBaseEntity} from '../global/lab-entity.entity';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {Type} from 'class-transformer';
-import {LabConfigSpecBase, LabConfigSpecs, LabConfigSpecVisibility} from './lab-config-spec.entity';
+import {LabConfigSpecs} from './lab-config-spec.entity';
 import {FlDynamicFormGroupConfig} from '@monorepo/front-core-lib';
+import {TdConfigSpecVisibility} from '@monorepo/technical-doc';
 
 export type LabConfigValues = Record<string, any>
 
@@ -21,7 +22,7 @@ export interface LabConfigureSpecsForm {
 export class LabConfigData {
 
   // object describing the type of the configs and default values
-  @ClRecordWrapperTransform(LabConfigSpecs, LabConfigSpecBase)
+  @ClRecordWrapperTransform(LabConfigSpecs)
   specs: LabConfigSpecs;
 
   // actual values of the config
@@ -49,11 +50,11 @@ export class LabConfigData {
   /**
    * Get a FlDynamicFormFieldConfig based on config spec and params to create a form
    */
-  public getDynamicFormFieldsConfig(visibility?: LabConfigSpecVisibility): FlDynamicFormGroupConfig {
+  public getDynamicFormFieldsConfig(visibility?: TdConfigSpecVisibility): FlDynamicFormGroupConfig {
     return this.specs.convertToFieldConfigs(visibility);
   }
 
-  public hasConfig(visibility?: LabConfigSpecVisibility): boolean {
+  public hasConfig(visibility?: TdConfigSpecVisibility): boolean {
     return this.specs.hasConfigs(visibility);
   }
 

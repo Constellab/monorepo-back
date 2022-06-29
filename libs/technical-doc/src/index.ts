@@ -2,7 +2,6 @@ export * from './lib/td-technical-doc.module';
 
 
 // model
-export * from './lib/model/td-io.entity';
 export * from './lib/model/td-process-type.entity';
 export * from './lib/model/td-task-type.entity';
 export * from './lib/model/td-type.entity';

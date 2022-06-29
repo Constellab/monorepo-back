@@ -24,7 +24,6 @@ import {LabExperimentDetailPageState} from './state/lab-experiment-detail-page.s
 import {
   LabWorkflowDrawerActionComponent
 } from './component/lab-workflow-drawer-action/lab-workflow-drawer-action.component';
-import {LabWorkflowPortsListComponent} from './component/lab-workflow-ports-list/lab-workflow-ports-list.component';
 import {LabWorkflowNodeConfigComponent} from './component/lab-workflow-node-config/lab-workflow-node-config.component';
 import {LabProgressBarInfoComponent} from './component/lab-progress-bar-info/lab-progress-bar-info.component';
 import {LabTaskSourceConfigComponent} from './component/lab-task-source-config/lab-task-source-config.component';
@@ -64,7 +63,6 @@ import {LabConfigureTaskComponent} from './component/lab-configure-task/lab-conf
     LabWorkflowActionsComponent,
     LabWorkflowNodeDetailComponent,
     LabWorkflowDrawerActionComponent,
-    LabWorkflowPortsListComponent,
     LabWorkflowNodeConfigComponent,
     LabProgressBarInfoComponent,
     LabTaskSourceConfigComponent,

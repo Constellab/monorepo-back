@@ -1,5 +1,5 @@
 import {labGetProcessPortColor} from '../../../../lab-core/entity-module/lab-type-core/utils/lab-process-port-color';
-import {TdIOSpecDTO} from '@monorepo/technical-doc';
+import {TdIOSpec} from '@monorepo/technical-doc';
 
 export class LabWorkflowPort {
 
@@ -8,7 +8,7 @@ export class LabWorkflowPort {
 
   constructor(public name: string,
               public drawFlowName: string,
-              public specs: TdIOSpecDTO) {
+              public specs: TdIOSpec) {
   }
 
   /**

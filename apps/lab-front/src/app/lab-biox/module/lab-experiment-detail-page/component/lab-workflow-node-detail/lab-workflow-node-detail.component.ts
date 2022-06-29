@@ -12,6 +12,10 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {LabWorkflowNodeProcess} from '../../model/lab-workflow-node-process.class';
 import {LabProcess} from '../../../../../lab-core/model/entities/process/lab-process.entity';
+import {
+  LabTypeDialogComponent,
+  LabTypeDialogInput
+} from '../../../../../lab-core/entity-module/lab-type-core/component/lab-type-dialog/lab-type-dialog.component';
 
 @Component({
   selector: 'lab-workflow-node-detail',
@@ -77,5 +81,12 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
       // save the config into the value
       this.nodeDetailState.updateConfigValues(config);
     }
+  }
+
+  openTypingDoc(typingName: string): void{
+    const data: LabTypeDialogInput = {
+      typingName: typingName
+    }
+    this.dialogService.openMediumDialog(LabTypeDialogComponent, {data: data});
   }
 }

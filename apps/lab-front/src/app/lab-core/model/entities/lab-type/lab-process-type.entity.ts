@@ -1,19 +1,19 @@
-import {LabConfigSpecBase, LabConfigSpecs} from '../lab-config-spec.entity';
+import {LabConfigSpecs} from '../lab-config-spec.entity';
 import {LabTypeEntity} from './lab-type.entity';
 import {Expose} from 'class-transformer';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
-import {TdIOSpecDTO} from '@monorepo/technical-doc';
+import {TdIOSpec} from '@monorepo/technical-doc';
 
 export class LabProcessType extends LabTypeEntity {
 
   @Expose({name: 'input_specs'})
-  inputSpecs: Record<string, TdIOSpecDTO>;
+  inputSpecs: Record<string, TdIOSpec>;
 
   @Expose({name: 'output_specs'})
-  outputSpecs: Record<string, TdIOSpecDTO>;
+  outputSpecs: Record<string, TdIOSpec>;
 
   @Expose({name: 'config_specs'})
-  @ClRecordWrapperTransform(LabConfigSpecs, LabConfigSpecBase)
+  @ClRecordWrapperTransform(LabConfigSpecs)
   configSpecs: LabConfigSpecs;
 
   @Expose({name: 'additional_info'})

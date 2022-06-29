@@ -13,9 +13,7 @@ import {
   LabTypeShowDetailButtonComponent
 } from './component/lab-type-show-detail-button/lab-type-show-detail-button.component';
 import {LabTypeDialogComponent} from './component/lab-type-dialog/lab-type-dialog.component';
-import {LabProcessPortComponent} from './component/lab-process-port/lab-process-port.component';
 import {LabProcessTypeTableComponent} from './component/lab-process-type-table/lab-process-type-table.component';
-import {LabProcessPortColorPipe} from './pipe/lab-process-port-color.pipe';
 import {RouterModule} from '@angular/router';
 
 @NgModule({
@@ -26,10 +24,7 @@ import {RouterModule} from '@angular/router';
     LabTypeDetailComponent,
     LabTypeDialogComponent,
     LabTypeShowDetailButtonComponent,
-    LabProcessPortComponent,
     LabProcessTypeTableComponent,
-
-    LabProcessPortColorPipe,
   ],
   exports: [
     LabTypeAdvancedSearchFormComponent,
@@ -38,10 +33,7 @@ import {RouterModule} from '@angular/router';
     LabTypeDetailComponent,
     LabTypeDialogComponent,
     LabTypeShowDetailButtonComponent,
-    LabProcessPortComponent,
     LabProcessTypeTableComponent,
-
-    LabProcessPortColorPipe,
   ],
   imports: [
     CommonModule,

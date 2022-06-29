@@ -6,7 +6,7 @@ import {ControlContainer} from '@angular/forms';
 
 
 /**
- * Use to create a form to create a configuration based on a spec {@link LabConfigSpec}
+ * Use to create a form to create a configuration based on a spec {@link TdConfigSpec}
  */
 @Component({
   selector: 'lab-configure-specs-form',

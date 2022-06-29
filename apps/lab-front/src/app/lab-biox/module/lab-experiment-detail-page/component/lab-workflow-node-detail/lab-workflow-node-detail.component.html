@@ -3,17 +3,20 @@
   <ng-container *ngIf="labProcess$ | async as process">
     <div class="g-text-light text-info">
       <p>{{'biox.node_process_name' | translate}} : {{process.name}}</p>
-      <p>
-        {{'biox.node_type' | translate}} : {{process.processTypingName}}
-        <lab-type-show-detail-button [typingName]="process.processTypingName"></lab-type-show-detail-button>
-      </p>
       <p *ngIf="process.data.description">{{process.data.description}}</p>
+
+
+      <button mat-stroked-button type="button" class="g-button-small doc-button"
+              (click)="openTypingDoc(process.processTypingName)">
+        {{'biox.process_type_doc' | translate}}
+        <mat-icon>info</mat-icon>
+      </button>
     </div>
 
     <!----------------------------  Progress ---------------------------->
     <mat-expansion-panel *ngIf="process.progressBar && process.status.value !== 'DRAFT'"
                          [expanded]="process.status.value === 'RUNNING'"
-                         class="g-scrollable-element">
+                         class="g-scrollable-element ">
       <mat-expansion-panel-header>
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
@@ -43,7 +46,8 @@
         </fl-text-icon>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <lab-workflow-ports-list [ports]="node.inputPorts"></lab-workflow-ports-list>
+
+    <td-io-doc [ioSpecs]="node.getInputSpecs()" class="g-text-small"></td-io-doc>
   </mat-expansion-panel>
 
 
@@ -57,7 +61,7 @@
         </fl-text-icon>
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <lab-workflow-ports-list [ports]="node.outputPorts"></lab-workflow-ports-list>
+    <td-io-doc [ioSpecs]="node.getOutputSpecs()" class="g-text-small"></td-io-doc>
   </mat-expansion-panel>
 
 

@@ -2,6 +2,7 @@ import {DrawflowConnectionDetail, DrawflowNode} from 'drawflow';
 import {LabWorkflowPort} from './lab-workflow-port.class';
 import {FlCoord} from '@monorepo/front-core-lib';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {TdIOSpec} from '@monorepo/technical-doc';
 
 /**
  * Single node in the workflow
@@ -110,6 +111,10 @@ export abstract class LabWorkflowNode<T> {
     return this.countInputs() > 0;
   }
 
+  public getInputSpecs(): Record<string, TdIOSpec> {
+    return this.getPortsSpecs(this.inputPorts);
+  }
+
   /////////////////////////////// OUTPUT //////////////////////////////
 
   public countOutputs(): number {
@@ -132,6 +137,10 @@ export abstract class LabWorkflowNode<T> {
 
   public hasOutputs(): boolean {
     return this.countOutputs() > 0;
+  }
+
+  public getOutputSpecs(): Record<string, TdIOSpec> {
+    return this.getPortsSpecs(this.outputPorts);
   }
 
   /////////////////////////////// OTHER //////////////////////////////
@@ -212,6 +221,15 @@ export abstract class LabWorkflowNode<T> {
     const coord: FlCoord = this.getNodeCoord();
     this.x = coord.x;
     this.y = coord.y;
+  }
+
+  private getPortsSpecs(ports: LabWorkflowPort[]): Record<string, TdIOSpec>{
+    const specs: Record<string, TdIOSpec> = {};
+
+    for (const port of ports) {
+      specs[port.name] = port.specs;
+    }
+    return specs;
   }
 
   public destroy(): void {

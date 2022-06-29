@@ -1,10 +1,10 @@
 import {FlColorHelper} from '@monorepo/front-core-lib';
-import {TdIOSpecDTO} from '@monorepo/technical-doc';
+import {TdIOSpec} from '@monorepo/technical-doc';
 
 /**
  * return the port color base on first type
  */
-export function labGetProcessPortColor(types: TdIOSpecDTO): string {
+export function labGetProcessPortColor(types: TdIOSpec): string {
   if (types == null || types.resource_types.length === 0) {
     return '#ffffff';
   } else {

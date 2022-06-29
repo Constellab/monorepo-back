@@ -1,4 +1,4 @@
-import {TdIOSpecDTO} from '@monorepo/technical-doc';
+import {TdIOSpec} from '@monorepo/technical-doc';
 
 
 /**
@@ -8,6 +8,6 @@ export class LabIO {
 
   resource_id: string;
 
-  specs: TdIOSpecDTO;
+  specs: TdIOSpec;
 }
 
