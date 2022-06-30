@@ -32,10 +32,10 @@
           </fl-key-value>
         </div>
 
-        <fl-async-section [object]="columnTagsColorer$" emptyText="flSpreadsheet.column_filters_no_tags"
+        <fl-async-section [object]="columnTagsColorer$" emptyText="flSpreadsheet.column_no_tags"
                           class="g-section">
           <fl-section-header>
-            <h2>{{'flSpreadsheet.column_filters' | translate}}</h2>
+            <h2>{{'flSpreadsheet.column_tags' | translate}}</h2>
           </fl-section-header>
 
           <ng-container *flSectionBody="let columnTagsColorer">
@@ -43,10 +43,10 @@
           </ng-container>
         </fl-async-section>
 
-        <fl-async-section [object]="rowTagsColorer$" emptyText="flSpreadsheet.row_filters_no_tags"
+        <fl-async-section [object]="rowTagsColorer$" emptyText="flSpreadsheet.row_no_tags"
                           class="g-section">
           <fl-section-header>
-            <h2>{{'flSpreadsheet.row_filters' | translate}}</h2>
+            <h2>{{'flSpreadsheet.row_tags' | translate}}</h2>
           </fl-section-header>
 
           <ng-container *flSectionBody="let rowTagColorer">
