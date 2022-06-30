@@ -21,7 +21,6 @@ export class HaPublicTechDocComponent implements OnInit {
   isCheck: boolean = false;
   activatedRoute: ActivatedRoute = this.route;
   isLoading: boolean = true;
-  textEditorConfig: FlTextEditorConfig;
   techDocNotFound: boolean = false;
 
   constructor(
@@ -29,9 +28,7 @@ export class HaPublicTechDocComponent implements OnInit {
     private documentationService: HaDocumentationService,
     private authUserService: HaAuthenticatedUserService,
     private route: ActivatedRoute,
-    private router: Router,
-    textEditorConfig: HaDocTextEditorConfig) {
-    this.textEditorConfig = textEditorConfig;
+    private router: Router) {
   }
 
 

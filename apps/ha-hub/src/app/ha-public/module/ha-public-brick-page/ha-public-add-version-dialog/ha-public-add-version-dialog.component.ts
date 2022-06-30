@@ -6,7 +6,6 @@ import {
   HaAddVersionInput,
   HaNewVersionDTO,
   HaNewVersionFile,
-  HaRepoType,
 } from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
@@ -78,7 +77,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
 
   onFileSelected($event: File): void {
     this.isLoadingImport = true;
-    if($event == null){
+    if ($event == null) {
       return;
     }
     this.errorFile = false;
@@ -94,7 +93,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
         if (srcResult as HaNewVersionFile) {
           this.brickService.isActualBrickAndNewVersion(this.brickId, srcResult.name, srcResult.version)
             .subscribe(([res, res2]) => {
-              if(res){
+              if (res) {
                 this.inputFile =
                   new HaAddVersionInput(res, srcResult.name, srcResult.version, srcResult.environment, srcResult.technical_info);
                 this.isUpdate = res2;

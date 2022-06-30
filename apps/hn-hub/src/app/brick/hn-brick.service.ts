@@ -2,7 +2,7 @@ import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/co
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {getManager, Repository} from 'typeorm';
-import {HnDocumentation} from '../documentation/hn-documentation.entity';
+import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
 import {HnBrickVersion, HnNewVersionDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
 import {HnBrickMajorVersionService} from '../brick-major-version/hn-brick-major-version.service';
@@ -19,8 +19,7 @@ import {
   HnTechnicalDocInputDTO
 } from './hn-brick.dto';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
-import {HnBrickVersionReferenceService} from '../brick-version-reference/hn-brick-version-reference.service';
-import {bin} from 'd3';
+import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
 
 @Injectable()
 export class HnBrickService {
@@ -32,7 +31,7 @@ export class HnBrickService {
     private documentationService: HnDocumentationService,
     private folderService: HnFolderService,
     private brickVersionService: HnBrickVersionService,
-    private brickVersionReferenceService: HnBrickVersionReferenceService
+    private configService: HnCoreConfigService
   ) {
   }
 
@@ -159,7 +158,7 @@ export class HnBrickService {
       brick.description = editedBrick.description;
       brick.gitRepo = editedBrick.gitRepo;
       brick.pipRepo = editedBrick.pipRepo;
-      if(brick.gitRepo && !brick.pipRepo){
+      if (brick.gitRepo && !brick.pipRepo) {
         lastBrickMajorVersion.repoType = HnRepoType.GIT;
       } else {
         lastBrickMajorVersion.repoType = HnRepoType.PIP;
@@ -188,11 +187,44 @@ export class HnBrickService {
     return this.brickVersionService.checkIfVersionExist(brickMajorVersion, content.inputBrickVersion);
   }
 
-  async findTechDoc(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity>{
-    const brick: HnBrick = await this.bricksRepository.findOne({where: {name : input.brickName}});
+  async findTechDoc(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
+    const brick: HnBrick = await this.bricksRepository.findOne({where: {name: input.brickName}});
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, input.brickVersion);
     return this.brickMajorVersionService.findCurrentTecDoc(brickMajorVersion, input);
   }
+
+  async getDocsByBrickNameMajor(brickName: string, major: number): Promise<HnDocumentationSearchDTO[]> {
+    return await this.brickMajorVersionService.getDocsByBrickNameMajor(await this.findByName(brickName), major);
+  }
+
+  async getDocByLink(link: string): Promise<HnDocumentationSearchDTO>{
+    const linkArray: string[] = link.substring(this.configService.getFrontRootUrl().length).split('/');
+    try{
+      const brick: HnBrick = await this.findByName(linkArray[1]);
+      const majorString: string = linkArray[2].substring(1);
+      let major: number;
+      if(majorString === 'atest'){
+        major = (await this.brickMajorVersionService.getLatestBrickVersion(linkArray[1])).version.major;
+      } else {
+        major = +majorString;
+      }
+
+      let completePath: string = linkArray.slice(4).join('/');
+      let anchor: string = null;
+      if(completePath.includes('#')){
+        [completePath, anchor] = completePath.split('#');
+      }
+
+      completePath = completePath + '/';
+
+      const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndMajor(brick, major);
+
+      return this.documentationService.getDocByLink(brickMajorVersion, completePath, anchor);
+    } catch (e){
+      return null;
+    }
+  }
+
 }
 

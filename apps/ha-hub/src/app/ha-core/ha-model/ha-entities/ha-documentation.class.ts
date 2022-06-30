@@ -39,3 +39,12 @@ export class HaDocumentationFormDTO extends HaEntity {
 export class HaDocumentationContentFormDTO extends HaEntity {
   content: CmRichTextI;
 }
+
+export interface HaDocumentationSearchDTO{
+  id: string;
+  name: string;
+  completePath: string;
+  anchor?: string;
+  brickName?: string;
+  major?: string;
+}

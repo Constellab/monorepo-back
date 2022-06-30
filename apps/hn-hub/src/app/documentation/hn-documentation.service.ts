@@ -1,7 +1,7 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
-import {HnDocumentation} from './hn-documentation.entity';
+import {HnDocumentation, HnDocumentationSearchDTO} from './hn-documentation.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 import {HnUser} from '../users/hn-user.entity';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
@@ -12,6 +12,7 @@ import imageSize from 'image-size';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
 import {CmRichText, CmRichTextI, CmRichTextLink} from '@monorepo/common-model';
 import {HnFolder} from '../folder/hn-folder.entity';
+import {HnBrick} from '../brick/hn-brick.entity';
 
 class HnDocImage {
   filename: string;
@@ -69,7 +70,7 @@ export class HnDocumentationService {
         relations: ['folder']
       })).find(d => d.folder.brickMajorVersion.id == brickMajorVersion.id);
 
-    if(documentation.content && documentation.content.ops){
+    if (documentation.content && documentation.content.ops) {
       const links: CmRichTextLink[] = CmRichText.getLinks(documentation.content as CmRichTextI);
       for (const l of links) {
         if (l.attributes.id) {
@@ -124,7 +125,16 @@ export class HnDocumentationService {
     const brickName: string = link[1];
     const majorVersion: number = 0;//+(link[2].slice(1))
     link.splice(0, 4)
-    const completePath: string = link.join('/') + '/';
+    if(link[link.length - 1] == ''){
+      link.pop();
+    }
+    let completePath: string = link.join('/');
+    let anchor: string;
+    if(completePath.includes('#')){
+      anchor = completePath.split('#')[1];
+      completePath = completePath.split('#')[0];
+    }
+    completePath = completePath + '/';
     const documentation: HnDocumentation = await this.documentationsRepository.findOne({
       where: {
         completePath: completePath,
@@ -139,7 +149,7 @@ export class HnDocumentationService {
       },
       relations: ['folder']
     });
-    return [documentation.id, completePath];
+    return [documentation.id, anchor ? completePath.slice(0, -1) + '#'+ anchor : completePath];
   }
 
   async saveImage(files: BlFile[]): Promise<HnDocImage> {
@@ -164,5 +174,29 @@ export class HnDocumentationService {
   async updateCompletePath(doc: HnDocumentation, folder: HnFolder): Promise<void> {
     doc.completePath = folder.completePath ? folder.completePath + doc.path + '/' : doc.path + '/';
     await this.documentationsRepository.save(doc);
+  }
+
+  async getDocByLink(brickMajorVersion: HnBrickMajorVersion, completePath: string, anchor?: string): Promise<HnDocumentationSearchDTO>{
+
+    const documentation: HnDocumentation = await this.documentationsRepository.findOne({
+      where: {
+        completePath: completePath,
+        folder: {
+          brickMajorVersion: {
+            id: brickMajorVersion.id
+          }
+        }
+      },
+      relations: ['folder']
+    });
+
+    return documentation ? {
+      id: documentation.id,
+      name: documentation.title,
+      completePath: documentation.completePath,
+      anchor: anchor? anchor : null,
+      major: brickMajorVersion.major.toString(),
+      brickName: brickMajorVersion.brick.name
+    } : null
   }
 }

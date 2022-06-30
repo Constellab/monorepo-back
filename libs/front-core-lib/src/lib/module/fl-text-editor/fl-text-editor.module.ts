@@ -35,6 +35,7 @@ import {
 } from './component/fl-text-editor-link-dialog/fl-text-editor-link-dialog.component';
 import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
 import {FlCorePipeModule} from '../fl-core-pipe/fl-core-pipe.module';
+import {FlTextEditorHeaderId} from './model/fl-text-editor-header-id.class';
 
 
 @NgModule({
@@ -82,6 +83,7 @@ export class FlTextEditorModule {
 
     // register default blots
     Quill.register(FlTextEditorHintBlot);
+    Quill.register(FlTextEditorHeaderId);
 
     FlTextEditorModule.registered = true;
 

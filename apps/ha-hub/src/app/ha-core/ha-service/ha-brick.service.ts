@@ -3,7 +3,7 @@ import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {HaBrick, HaBrickCreationDTO, HaBrickDTO, HaEditBrickDTO} from '../ha-model/ha-entities/ha-brick.class';
 import {HaNode} from '../ha-model/ha-entities/ha-node.class';
-import {HaDocumentation} from '../ha-model/ha-entities/ha-documentation.class';
+import {HaDocumentation, HaDocumentationSearchDTO} from '../ha-model/ha-entities/ha-documentation.class';
 import {HaNewVersionDTO, HaReferenceDTO, HaVersionType} from '../ha-model/ha-entities/ha-version.class';
 import {HaBrickVersion} from '../ha-model/ha-entities/ha-brick-version.class';
 import {CmVersion} from '@monorepo/common-model';
@@ -124,5 +124,13 @@ export class HaBrickService {
       inputBrickName,
       inputBrickVersion
     });
+  }
+
+  public findDocumentationByBrickNameMajor(brickName: string, major: string): Observable<HaDocumentationSearchDTO[]>{
+    return this.apiService.get(`${this.route}/get-docs-by-name/${brickName}/${major}`);
+  }
+
+  public findDocumentationByLink(link: string): Observable<HaDocumentationSearchDTO>{
+    return this.apiService.post(`${this.route}/get-doc-by-link`, {link: link});
   }
 }

@@ -3,7 +3,7 @@ import {HnBrickService} from './hn-brick.service';
 import {BlParsePipe, BlPublic} from '@monorepo/back-core-lib';
 import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
-import {HnDocumentation} from '../documentation/hn-documentation.entity';
+import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnNode} from '../folder/hn-folder.dto';
 import {
   HnBrickListDTO,
@@ -110,5 +110,20 @@ export class HnBrickController {
   async isActualBrickAndNewVersion(@Body(new BlParsePipe(HnIsActualBrickAndNewVersionDTO))
     content: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
     return this.brickService.isActualBrickAndNewVersion(content);
+  }
+
+  @Get('get-docs-by-name/:brickName/:major')
+  async getDocsByBrickNameMajor(
+    @Param('brickName') brickName: string,
+    @Param('major') major: string): Promise<HnDocumentationSearchDTO[]>{
+
+    return this.brickService.getDocsByBrickNameMajor(
+      brickName,
+      major === 'latest' ? (await this.getLatestBrickVersion(brickName)).version.major : +(major.slice(1)));
+  }
+
+  @Post('get-doc-by-link')
+  async getDocByLink(@Body() body: any): Promise<HnDocumentationSearchDTO>{
+    return this.brickService.getDocByLink(body.link);
   }
 }

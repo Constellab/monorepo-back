@@ -10,7 +10,7 @@ import {CmVersion} from '@monorepo/common-model';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick/hn-brick.dto';
 import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
-import {HnDocumentation} from '../documentation/hn-documentation.entity';
+import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 
 @Injectable()
@@ -128,5 +128,26 @@ export class HnBrickMajorVersionService {
 
   async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity>{
     return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input);
+  }
+
+  async getDocsByBrickNameMajor(brick: HnBrick, major: number): Promise<HnDocumentationSearchDTO[]>{
+    return await this.folderService.getDocsByBrickNameMajor(await this.brickMajorVersionsRepository.findOne({
+      brick: {
+        id: brick.id
+      },
+      major: major
+    }), major.toString(), brick.name);
+  }
+
+  async findBrickMajorVersionByBrickAndMajor(brick: HnBrick, major: number): Promise<HnBrickMajorVersion>{
+    return this.brickMajorVersionsRepository.findOne({
+      where: {
+        brick: {
+          id: brick.id
+        },
+        major: major
+      },
+      relations: ['brick']
+    })
   }
 }

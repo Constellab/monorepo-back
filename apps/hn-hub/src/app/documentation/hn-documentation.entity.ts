@@ -1,7 +1,15 @@
-import {BlEntityWithId} from '@monorepo/back-core-lib';
-import {Column, Entity, ManyToOne, Unique} from 'typeorm';
+import {Column, Entity, ManyToOne} from 'typeorm';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
+
+export interface HnDocumentationSearchDTO{
+  id: string;
+  name: string;
+  completePath: string;
+  anchor?: string;
+  brickName?: string;
+  major?: string
+}
 
 @Entity('Documentation')
 export class HnDocumentation extends HnBaseEntity {
@@ -25,8 +33,7 @@ export class HnDocumentation extends HnBaseEntity {
   folder: HnFolder;
 
   static newDoc(pId: string, pTitle: string, pPath: string
-    , pCompletePath: string, pOrder: number, pFolder: HnFolder): HnDocumentation
-  {
+    , pCompletePath: string, pOrder: number, pFolder: HnFolder): HnDocumentation {
     const newDoc: HnDocumentation = new HnDocumentation();
     newDoc.id = pId;
     newDoc.title = pTitle;

@@ -18,6 +18,7 @@ import {MatMenuModule} from '@angular/material/menu';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {MatChipsModule} from '@angular/material/chips';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 @NgModule({
   exports: [
@@ -37,7 +38,8 @@ import {MatChipsModule} from '@angular/material/chips';
     MatMenuModule,
     DragDropModule,
     ScrollingModule,
-    MatChipsModule
+    MatChipsModule,
+    MatAutocompleteModule
   ],
 
   providers: [

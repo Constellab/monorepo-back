@@ -7,7 +7,7 @@ import {
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {HaDocumentationService} from '../../../../ha-core/ha-service/ha-documentation.service';
-import {FlDebouncer, FlTextEditorConfig} from '@monorepo/front-core-lib';
+import {FlDebouncer, FlDialogService, FlTextEditorConfig} from '@monorepo/front-core-lib';
 import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {Observable} from 'rxjs';
@@ -39,10 +39,9 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     private brickService: HaBrickService,
     private documentationService: HaDocumentationService,
     private authUserService: HaAuthenticatedUserService,
+    private dialogService: FlDialogService,
     private route: ActivatedRoute,
-    private router: Router,
-    textEditorConfig: HaDocTextEditorConfig) {
-    this.textEditorConfig = textEditorConfig;
+    private router: Router) {
   }
 
 
@@ -123,6 +122,8 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
       this.titles = this.richText.getHeaders([2, 3]);
     }
 
+    this.textEditorConfig =
+      new HaDocTextEditorConfig(this.brickName, this.brickVersion, this.documentation.title, this.documentationService, this.dialogService);
 
     this.isLoading = false;
   }

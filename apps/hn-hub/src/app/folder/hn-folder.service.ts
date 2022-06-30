@@ -2,7 +2,7 @@ import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/co
 import {InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository, TreeRepository} from 'typeorm';
 import {HnFolder} from './hn-folder.entity';
-import {HnDocumentation} from '../documentation/hn-documentation.entity';
+import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
 import {HnUser} from '../users/hn-user.entity';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
@@ -252,5 +252,36 @@ export class HnFolderService {
     } else {
       throw new BadRequestException('Folders with children can\'t be deleted.');
     }
+  }
+
+  async getDocsByBrickNameMajor(brickMajorVersion: HnBrickMajorVersion, major: string, brickName: string):
+    Promise<HnDocumentationSearchDTO[]>{
+    const brickDocs: HnFolder =
+      await this.foldersTreeRepository.findDescendantsTree(
+        await this.findFolderByBrickMajorVersion(brickMajorVersion),
+        {relations: ['documentations', 'folders', 'folder']});
+
+    return this.getDocsByFolder(brickDocs, major, brickName);
+  }
+
+  private getDocsByFolder(folder: HnFolder, major: string, brickName: string): HnDocumentationSearchDTO[]{
+    const documentations: HnDocumentationSearchDTO[] = [];
+
+    for(const doc of folder.documentations){
+      documentations.push({
+        name: doc.title,
+        id: doc.id,
+        completePath: doc.completePath,
+        major: major,
+        brickName: brickName
+      });
+    }
+
+    for(const fol of folder.folders){
+      this.getDocsByFolder(fol, major, brickName).forEach(d => {
+        documentations.push(d);
+      })
+    }
+    return documentations;
   }
 }
