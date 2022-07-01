@@ -2,7 +2,7 @@ import {Directive, ElementRef, EventEmitter, Input, NgZone, OnDestroy, OnInit, O
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 
-export type FlResizeMode = 'width' | 'height' | 'both'
+export type FlResizeMode = 'width' | 'height' | 'both' | 'bothKeepRatio';
 
 export interface FlResizeEvent {
   mode: FlResizeMode;
@@ -46,6 +46,7 @@ export class FlResizeDirective implements OnInit, OnDestroy {
   // size of the host on mouse down event  relative to current mode
   private baseHostSize: FlCoord;
 
+
   constructor(private renderer: Renderer2,
               private elementRef: ElementRef<HTMLElement>,
               private ngZone: NgZone) {
@@ -55,19 +56,13 @@ export class FlResizeDirective implements OnInit, OnDestroy {
     // set the parent to relative
     this.renderer.setStyle(this.elementRef.nativeElement, 'position', 'relative');
 
+    // create the resizer
+    this.createResizer(this.flResize);
 
-    switch (this.flResize) {
-      case 'width':
-        this.createResizer('width');
-        break;
-      case 'height':
-        this.createResizer('height');
-        break;
-      case 'both':
-        this.createResizer('width');
-        this.createResizer('height');
-        this.createResizer('both');
-        break;
+    // when both mode, also activate width and height resizer
+    if (this.flResize === 'both' || this.flResize === 'bothKeepRatio') {
+      this.createResizer('width');
+      this.createResizer('height');
     }
   }
 
@@ -119,6 +114,7 @@ export class FlResizeDirective implements OnInit, OnDestroy {
         this.renderer.setStyle(div, 'cursor', 'n-resize');
         break;
       case 'both':
+      case 'bothKeepRatio':
         this.renderer.setStyle(div, 'right', `-${(this.flResizeSize / 2)}px`);
         this.renderer.setStyle(div, 'bottom', `-${(this.flResizeSize / 2)}px`);
         // place it so the host border is in div center
@@ -164,8 +160,21 @@ export class FlResizeDirective implements OnInit, OnDestroy {
   }
 
   private onMouseMove(event: MouseEvent): void {
-    const newWidth: number = this.baseHostSize.x + event.pageX - this.baseEventPos.x;
     const newHeight: number = this.baseHostSize.y + event.pageY - this.baseEventPos.y;
+
+    let newWidth: number;
+
+    if (this.currentResizeMode === 'bothKeepRatio') {
+      // get ratio of the image
+      const ratio = this.baseHostSize.x / this.baseHostSize.y;
+
+      // calculate width automatically bases on height and ratio
+      newWidth = newHeight * ratio;
+
+    } else {
+      // calculate width base on mouse position
+      newWidth = this.baseHostSize.x + event.pageX - this.baseEventPos.x;
+    }
 
     this.updateSize(newWidth, newHeight, this.currentResizeMode);
   }
@@ -179,6 +188,7 @@ export class FlResizeDirective implements OnInit, OnDestroy {
         this.setHeight(height);
         break;
       case 'both':
+      case 'bothKeepRatio':
         this.setWidth(width);
         this.setHeight(height);
         break;

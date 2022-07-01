@@ -1,5 +1,9 @@
 <span class="container g-text-light g-text-small">
-  <span *ngIf="title || caption"><strong>{{title}}</strong> | {{caption}}</span>
+  <span *ngIf="title || caption">
+    <strong>{{title}}</strong>
+    <ng-container *ngIf="title && caption">|</ng-container>
+    {{caption}}
+  </span>
   <button mat-icon-button type="button" *ngIf="editable"
           class="g-button-icon-tiny edit-button" (click)="openEditDialog()">
     <mat-icon>edit</mat-icon>
