@@ -1,6 +1,9 @@
 import {Injectable} from '@angular/core';
 import {
   FlDialogService,
+  FlOverlayRef,
+  FlPortalConfig,
+  FlPortalService,
   FlQuillConfig,
   FlTextEditorBlockAddButton,
   FlTextEditorConfig,
@@ -8,7 +11,7 @@ import {
   FlTextEditorState
 } from '@monorepo/front-core-lib';
 import {HaDocumentationService} from '../../../ha-core/ha-service/ha-documentation.service';
-import {HaPublicFindDocDialogComponent} from './ha-public-find-doc-dialog/ha-public-find-doc-dialog.component';
+import {HaPublicFindDocComponent} from './ha-public-find-doc/ha-public-find-doc.component';
 import {HaDocumentationSearchDTO} from '../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {environment} from '../../../../environments/ha-environment';
 
@@ -18,11 +21,14 @@ import {environment} from '../../../../environments/ha-environment';
 @Injectable({providedIn: 'root'})
 export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
+  private overlayRef: FlOverlayRef;
+
   constructor(private brickName: string,
               private major: string,
               private documentationName: string,
               private docService: HaDocumentationService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private portalService: FlPortalService) {
     super();
   }
 
@@ -54,25 +60,30 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
   }
 
   private openSelectDocView(textEditorState: FlTextEditorState): void {
-    this.dialogService.openMediumDialog(HaPublicFindDocDialogComponent, {
-      data:
-        {
-          brickName: this.brickName,
-          major: this.major
-        }
-    }).afterClosed()
-      .subscribe(documentation => {
-        if (documentation) {
-          this.documentationLink(textEditorState, documentation);
-        }
+    const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
+      {centerHorizontally: '0', top: '20%'},
+      {
+        disposeOnBackdropClick: true
       });
+
+    const config: any = {
+      brickName: this.brickName,
+      major: this.major
+    }
+
+    this.overlayRef = this.portalService.createPortal(HaPublicFindDocComponent, portalConfig, config);
+    this.overlayRef.detachments().subscribe((documentation: HaDocumentationSearchDTO) => {
+      if (documentation) {
+        this.documentationLink(textEditorState, documentation);
+      }
+    });
   }
 
   private documentationLink(textEditorState: FlTextEditorState, doc: HaDocumentationSearchDTO): void {
     const index: number = textEditorState.getCurrentSelectionIndex();
     const value: string = doc.anchor ?
       `${environment.hubUrl}bricks/${doc.brickName}/v${doc.major}/doc/${doc.completePath.slice(0, -1)}#${doc.anchor}`
-      :`${environment.hubUrl}bricks/${doc.brickName}/v${doc.major}/doc/${doc.completePath}`;
+      : `${environment.hubUrl}bricks/${doc.brickName}/v${doc.major}/doc/${doc.completePath}`;
     const name: string = doc.anchor ?
       (doc.name === this.documentationName ? doc.anchor : `${doc.name} > ${doc.anchor}`)
       : doc.name;

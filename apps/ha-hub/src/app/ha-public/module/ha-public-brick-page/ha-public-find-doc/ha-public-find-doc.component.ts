@@ -1,5 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Component, Inject, OnInit} from '@angular/core';
 import {HaDocumentationService} from '../../../../ha-core/ha-service/ha-documentation.service';
 import {HaDocumentationSearchDTO} from '../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {Observable, startWith} from 'rxjs';
@@ -7,13 +6,14 @@ import {FormControl} from '@ngneat/reactive-forms';
 import {map} from 'rxjs/operators';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {environment} from "../../../../../environments/ha-environment";
+import {FL_PORTAL_DATA, FlOverlayRef} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'ha-public-find-doc-dialog',
-  templateUrl: './ha-public-find-doc-dialog.component.html',
-  styleUrls: ['./ha-public-find-doc-dialog.component.scss']
+  templateUrl: './ha-public-find-doc.component.html',
+  styleUrls: ['./ha-public-find-doc.component.scss']
 })
-export class HaPublicFindDocDialogComponent implements OnInit, OnDestroy {
+export class HaPublicFindDocComponent implements OnInit {
   myControl = new FormControl<string | HaDocumentationSearchDTO>('');
   documentations: HaDocumentationSearchDTO[];
   documentationsByLink: HaDocumentationSearchDTO[];
@@ -23,8 +23,8 @@ export class HaPublicFindDocDialogComponent implements OnInit, OnDestroy {
   searchByLink: boolean = false;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) input: any,
-    private dialogRef: MatDialogRef<HaPublicFindDocDialogComponent>,
+    @Inject(FL_PORTAL_DATA) input: any,
+    private overlayRef: FlOverlayRef,
     private documentationService: HaDocumentationService,
     private brickService: HaBrickService
   ) {
@@ -55,7 +55,7 @@ export class HaPublicFindDocDialogComponent implements OnInit, OnDestroy {
             this.updateFilteredDocumentations();
           }
         });
-      } else if(typeof val === 'string') {
+      } else if (typeof val === 'string') {
         this.searchByLink = false;
         this.documentationsByLink = [];
       } else {
@@ -84,11 +84,7 @@ export class HaPublicFindDocDialogComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  submit(val : HaDocumentationSearchDTO): void {
-    this.dialogRef.close(val);
-  }
-
-  ngOnDestroy(): void {
-
+  submit(val: HaDocumentationSearchDTO): void {
+    this.overlayRef.dispose(val);
   }
 }

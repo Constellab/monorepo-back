@@ -12,7 +12,6 @@ import imageSize from 'image-size';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
 import {CmRichText, CmRichTextI, CmRichTextLink} from '@monorepo/common-model';
 import {HnFolder} from '../folder/hn-folder.entity';
-import {HnBrick} from '../brick/hn-brick.entity';
 
 class HnDocImage {
   filename: string;
@@ -79,7 +78,7 @@ export class HnDocumentationService {
 
 
             // eslint-disable-next-line max-len
-            l.attributes.link = `${this.configService.getFrontRootUrl()}bricks/${linkDoc.folder.brickMajorVersion.brick.name}/v${linkDoc.folder.brickMajorVersion.major}/doc/${linkDoc.completePath}`;
+            l.attributes.link = `${this.configService.getFrontRootUrl()}bricks/${linkDoc.folder.brickMajorVersion.brick.name}/v${linkDoc.folder.brickMajorVersion.major}/doc/${l.attributes.link}`;
 
             documentation.content.ops.find(
               (o: CmRichTextLink) => o.attributes && o.attributes.id && o.attributes.id === l.attributes.id)
@@ -125,12 +124,12 @@ export class HnDocumentationService {
     const brickName: string = link[1];
     const majorVersion: number = 0;//+(link[2].slice(1))
     link.splice(0, 4)
-    if(link[link.length - 1] == ''){
+    if (link[link.length - 1] == '') {
       link.pop();
     }
     let completePath: string = link.join('/');
     let anchor: string;
-    if(completePath.includes('#')){
+    if (completePath.includes('#')) {
       anchor = completePath.split('#')[1];
       completePath = completePath.split('#')[0];
     }
@@ -149,7 +148,7 @@ export class HnDocumentationService {
       },
       relations: ['folder']
     });
-    return [documentation.id, anchor ? completePath.slice(0, -1) + '#'+ anchor : completePath];
+    return [documentation.id, anchor ? completePath.slice(0, -1) + '#' + anchor : completePath];
   }
 
   async saveImage(files: BlFile[]): Promise<HnDocImage> {
@@ -176,7 +175,7 @@ export class HnDocumentationService {
     await this.documentationsRepository.save(doc);
   }
 
-  async getDocByLink(brickMajorVersion: HnBrickMajorVersion, completePath: string, anchor?: string): Promise<HnDocumentationSearchDTO>{
+  async getDocByLink(brickMajorVersion: HnBrickMajorVersion, completePath: string, anchor?: string): Promise<HnDocumentationSearchDTO> {
 
     const documentation: HnDocumentation = await this.documentationsRepository.findOne({
       where: {
@@ -194,7 +193,7 @@ export class HnDocumentationService {
       id: documentation.id,
       name: documentation.title,
       completePath: documentation.completePath,
-      anchor: anchor? anchor : null,
+      anchor: anchor ? anchor : null,
       major: brickMajorVersion.major.toString(),
       brickName: brickMajorVersion.brick.name
     } : null

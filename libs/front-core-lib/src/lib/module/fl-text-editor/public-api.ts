@@ -24,5 +24,6 @@ export * from './model/fl-text-editor-figure-blot.class';
 export * from './model/fl-text-editor-header-id.class';
 export * from './model/fl-text-editor-hint-blot.class';
 export * from './model/fl-text-editor-image.class';
+export * from './model/fl-text-editor-link-without-target.class';
 export * from './model/fl-text-editor-module-config.class';
 export * from './model/fl-text-editor-video-blot.class';
