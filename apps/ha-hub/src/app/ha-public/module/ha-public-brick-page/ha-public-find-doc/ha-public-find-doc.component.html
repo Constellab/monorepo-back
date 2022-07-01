@@ -1,9 +1,11 @@
 <fl-portal>
   <fl-portal-content class="portal-content">
 
+    <p class="info">{{'generate_link_text' | translate}}</p>
+
     <form>
       <mat-form-field class="research-bar" appearance="fill">
-        <mat-label>Assignee</mat-label>
+        <mat-label>{{'documentation' | translate}}</mat-label>
         <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
         <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
           <mat-option *ngFor="let doc of filteredDocumentations | async" [value]="doc">

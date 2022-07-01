@@ -152,5 +152,6 @@
   "error_brick_not_found": "Error : Brick not found",
   "error_tech_doc_not_found": "Error : Technical documentation not found",
   "from": "From",
-  "current_brick": "Current brick"
+  "current_brick": "Current brick",
+  "generate_link_text": "Generated a link to a documentation using the selection or a link to it"
 }
