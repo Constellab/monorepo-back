@@ -1,6 +1,8 @@
-<div class="g-text-editor-hint g-text-editor-hint-warning deprecated-message-div" *ngIf="_entity.deprecatedSince">
-  <div><strong>{{'td.deprecated_since' | translate}} : {{_entity.deprecatedSince}}</strong></div>
-  <div>{{_entity.deprecatedMessage}}</div>
+<div class="deprecated-message-div ql-editor" *ngIf="_entity.deprecatedSince">
+  <div class="g-text-editor-hint g-text-editor-hint-warning">
+    <div><strong>{{'td.deprecated_since' | translate}} : {{_entity.deprecatedSince}}</strong></div>
+    <div>{{_entity.deprecatedMessage}}</div>
+  </div>
 </div>
 
 <fl-key-value *ngIf="_entity.status" class="key-val">
@@ -17,4 +19,4 @@
 </fl-key-value>
 <p>{{_entity.shortDescription}}</p>
 
-<div class="technical-doc-content" [innerHTML]="_entity.doc | tdMarkdown"></div>
+<div class="technical-doc-content ql-editor markdown" [innerHTML]="_entity.doc | tdMarkdown"></div>

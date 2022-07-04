@@ -50,13 +50,13 @@ import {TdTechnicalDocHeaderComponent} from './component/td-technical-doc-header
     TdConfigComponent,
     TdTechnicalDocHeaderComponent
   ],
-    exports: [
-        TdTechnicalDocComponent,
-        TdResourceDocComponent,
-        TdMainDocComponent,
-        TdTechnicalDocHeaderComponent,
-        TdIoDocComponent
-    ]
+  exports: [
+    TdTechnicalDocComponent,
+    TdResourceDocComponent,
+    TdMainDocComponent,
+    TdTechnicalDocHeaderComponent,
+    TdIoDocComponent
+  ]
 })
 export class TdTechnicalDocModule {
 

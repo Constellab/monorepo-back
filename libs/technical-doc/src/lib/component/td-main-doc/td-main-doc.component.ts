@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {TdTypeEntity, TdUniqueType} from '../../model/td-type.entity';
 import {TdTypingName} from '../../model/td-typing-name.entity';
 import {FlColorHelper} from '@monorepo/front-core-lib';
@@ -6,7 +6,7 @@ import {FlColorHelper} from '@monorepo/front-core-lib';
 @Component({
   selector: 'td-main-doc',
   templateUrl: './td-main-doc.component.html',
-  styleUrls: ['./td-main-doc.component.scss']
+  styleUrls: ['./td-main-doc.component.scss'],
 })
 export class TdMainDocComponent implements OnInit {
 

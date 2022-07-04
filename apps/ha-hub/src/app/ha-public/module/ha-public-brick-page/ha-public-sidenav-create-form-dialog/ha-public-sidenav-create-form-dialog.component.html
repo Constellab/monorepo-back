@@ -15,7 +15,7 @@
     <mat-form-field class="g-form-input not-first-input">
       <mat-label>{{'title' | translate}}</mat-label>
       <input matInput formControlName="title" required flInputMaxLength="50"
-             placeholder="{{'title' | translate}}">
+             placeholder="{{'title' | translate}}" cdkFocusInitial>
       <mat-error *ngIf="formGp.get('title').hasError('required')">
         {{'title' | flErrorRequired}}
       </mat-error>

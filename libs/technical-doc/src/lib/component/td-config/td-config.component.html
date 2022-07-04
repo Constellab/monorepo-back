@@ -33,6 +33,7 @@
       <fl-key>{{'td.max_occurrence_number' |translate}}</fl-key>
       <code>{{getMaxParamSetOccurrences(configSpecs[c])}}</code>
     </fl-key-value>
-    <td-config [configSpecs]="getParamSet(configSpecs[c])" class="param-set-margin"></td-config>
+    <td-config [configSpecs]="getParamSet(configSpecs[c])" class="param-set-margin"
+    *ngIf="getParamSet(configSpecs[c]) | flIsNotEmpty"></td-config>
   </ng-template>
 </div>

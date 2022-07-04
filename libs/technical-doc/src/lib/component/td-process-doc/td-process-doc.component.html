@@ -1,4 +1,4 @@
-<td-main-doc [entity]="process" class="ql-editor"></td-main-doc>
+<td-main-doc [entity]="process" class=""></td-main-doc>
 
 <fl-key-value *ngIf="process.additionalInfo && process.additionalInfo.supported_extensions && process.additionalInfo.supported_extensions.length > 0"
               class="key-val ql-editor div-spec">
@@ -9,7 +9,7 @@
 <ng-container *ngIf="process.inputSpecs | flIsNotEmpty">
   <mat-divider class="divider"></mat-divider>
 
-  <div class="div-spec ql-editor">
+  <div class="div-spec">
     <div class="div-head">
       <mat-icon>login</mat-icon>
       <h3>{{'td.input' | translate}}</h3>
@@ -21,7 +21,7 @@
 <ng-container *ngIf="process.outputSpecs | flIsNotEmpty">
   <mat-divider class="divider"></mat-divider>
 
-  <div class="div-spec ql-editor">
+  <div class="div-spec">
     <div class="div-head">
       <mat-icon>logout</mat-icon>
       <h3>{{'td.output' | translate}}</h3>
@@ -33,7 +33,7 @@
 <ng-container *ngIf="process.configSpecs | flIsNotEmpty">
   <mat-divider class="divider" ></mat-divider>
 
-  <div class="div-spec ql-editor">
+  <div class="div-spec ql-editor markdown">
     <div class="div-head">
       <mat-icon>settings</mat-icon>
       <h3>{{'td.configuration' | translate}}</h3>

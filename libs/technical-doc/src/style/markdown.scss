@@ -1,0 +1,38 @@
+
+.markdown{
+
+  table{
+    min-width: 50%;
+    max-width: 100%;
+    margin: 0 auto;
+    border: solid 1px  var(--grey-low-contrast);
+    border-spacing: 0 !important;
+
+    tbody > tr:nth-child(odd){
+      background-color: var(--grey-low-contrast);
+    }
+
+    td{
+      vertical-align: middle;
+    }
+
+    th{
+      font-size: 1.6rem;
+      font-weight: bold;
+      min-width: 4em;
+      text-align: center;
+    }
+  }
+
+  p{
+    margin: 0 !important;
+  }
+
+  li{
+    padding: 0 !important;
+  }
+
+  pre{
+    display: inline-flex;
+  }
+}
