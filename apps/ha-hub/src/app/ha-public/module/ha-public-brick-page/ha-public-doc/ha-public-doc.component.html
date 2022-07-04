@@ -16,13 +16,15 @@
                       flAutoScrollToAnchor></fl-text-editor>
     </form>
   </div>
-  <div class="side" fxHide.lt-lg >
+  <div class="side" fxHide.lt-lg>
+    <h3 class="title-doc-side" *ngIf="documentation">{{documentation.title}}</h3>
+    <div *ngIf="documentation" class="title-side-line"></div>
     <ng-container *ngFor="let title of titles; let i = index">
-      <ng-container *ngIf="title[0] === 2; else e">
-        <h4>{{title[1]}}</h4>
+      <ng-container *ngIf="title.level === 2; else e">
+        <h4><a [routerLink]="'.'" [fragment]="title.id">{{title.title}}</a></h4>
       </ng-container>
       <ng-template #e>
-        <h5>{{title[1]}}</h5>
+        <h5><a [routerLink]="'.'" [fragment]="title.id">{{title.title}}</a></h5>
       </ng-template>
     </ng-container>
   </div>

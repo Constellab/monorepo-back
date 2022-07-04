@@ -81,10 +81,20 @@ export class CmRichText {
     if (contentData != null) {
       contentData.forEach((c, i) => {
         if (contentData[i + 1] && contentData[i + 1].attributes && contentData[i + 1].attributes.header
-          && (headersSize.includes(contentData[i + 1].attributes.header))) {
+          && (headersSize.includes(contentData[i + 1].attributes.header.level))) {
           const inserts: string[] = c.insert.split('\n');
-          if (inserts.length > 1) headers.push([contentData[i + 1].attributes.header, inserts[inserts.length - 1]]);
-          else headers.push([contentData[i + 1].attributes.header, c.insert]);
+          if (inserts.length > 1) {
+            headers.push({
+              level : contentData[i + 1].attributes.header.level,
+              id: contentData[i +1].attributes.header.id,
+              title: inserts[inserts.length - 1]
+            });
+          }
+          else headers.push({
+            level : contentData[i + 1].attributes.header.level,
+            id: contentData[i + 1].attributes.header.id,
+            title: c.insert
+          });
         }
       });
     }

@@ -118,12 +118,13 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     this.titles = [];
     if (this.formGp.value.content && doc.content) {
       this.richText = new CmRichText(doc.content);
+
       this.titles = this.richText.getHeaders([2, 3]);
     }
 
     this.textEditorConfig =
       new HaDocTextEditorConfig(this.brickName, this.brickVersion, this.documentation.title,
-        this.documentationService, this.dialogService, this.portalService);
+        this.documentationService, this.dialogService);
 
     this.isLoading = false;
   }

@@ -6,7 +6,7 @@ import {FormControl} from '@ngneat/reactive-forms';
 import {map} from 'rxjs/operators';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {environment} from "../../../../../environments/ha-environment";
-import {FL_PORTAL_DATA, FlOverlayRef} from '@monorepo/front-core-lib';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'ha-public-find-doc-dialog',
@@ -23,8 +23,8 @@ export class HaPublicFindDocComponent implements OnInit {
   searchByLink: boolean = false;
 
   constructor(
-    @Inject(FL_PORTAL_DATA) input: any,
-    private overlayRef: FlOverlayRef,
+    @Inject(MAT_DIALOG_DATA) input: any,
+    private dialogRef: MatDialogRef<HaPublicFindDocComponent>,
     private documentationService: HaDocumentationService,
     private brickService: HaBrickService
   ) {
@@ -85,6 +85,6 @@ export class HaPublicFindDocComponent implements OnInit {
   }
 
   submit(val: HaDocumentationSearchDTO): void {
-    this.overlayRef.dispose(val);
+    this.dialogRef.close(val);
   }
 }

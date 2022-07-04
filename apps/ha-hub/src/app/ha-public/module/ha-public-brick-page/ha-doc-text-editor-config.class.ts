@@ -2,8 +2,6 @@ import {Injectable} from '@angular/core';
 import {
   FlDialogService,
   FlOverlayRef,
-  FlPortalConfig,
-  FlPortalService,
   FlQuillConfig,
   FlTextEditorBlockAddButton,
   FlTextEditorConfig,
@@ -21,14 +19,11 @@ import {environment} from '../../../../environments/ha-environment';
 @Injectable({providedIn: 'root'})
 export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextEditorImageLoader {
 
-  private overlayRef: FlOverlayRef;
-
   constructor(private brickName: string,
               private major: string,
               private documentationName: string,
               private docService: HaDocumentationService,
-              private dialogService: FlDialogService,
-              private portalService: FlPortalService) {
+              private dialogService: FlDialogService) {
     super();
   }
 
@@ -60,21 +55,14 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
   }
 
   private openSelectDocView(textEditorState: FlTextEditorState): void {
-    const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
-      {centerHorizontally: '0', top: '20%'},
-      {
-        disposeOnBackdropClick: true
-      });
-
     const config: any = {
       brickName: this.brickName,
       major: this.major
     }
 
-    this.overlayRef = this.portalService.createPortal(HaPublicFindDocComponent, portalConfig, config);
-    this.overlayRef.detachments().subscribe((documentation: HaDocumentationSearchDTO) => {
-      if (documentation) {
-        this.documentationLink(textEditorState, documentation);
+    this.dialogService.openMediumDialog(HaPublicFindDocComponent, {data: config}).afterClosed().subscribe((doc) => {
+      if (doc) {
+        this.documentationLink(textEditorState, doc);
       }
     });
   }

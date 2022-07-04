@@ -25,8 +25,22 @@
 }
 
 .side h5{
+  border-left: 1px solid var(--grey-low-contrast);
+}
+
+.title-doc-side{
+  width: 100%;
+}
+
+.title-side-line{
+  width: 80%;
+  border-bottom: 2px solid var(--grey-low-contrast);
+}
+
+.side h5{
   padding-left: 1em;
-  margin-top: 0.5em;
+  padding-top: 0.5em;
+  margin: 0 !important;
 }
 
 .side{
