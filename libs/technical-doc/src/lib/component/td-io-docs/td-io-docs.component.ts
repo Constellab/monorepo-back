@@ -3,10 +3,10 @@ import {TdIOSpec} from '../../model/td-process-type.entity';
 
 @Component({
   selector: 'td-io-doc',
-  templateUrl: './td-io-doc.component.html',
-  styleUrls: ['./td-io-doc.component.scss']
+  templateUrl: './td-io-docs.component.html',
+  styleUrls: ['./td-io-docs.component.scss']
 })
-export class TdIoDocComponent implements OnInit {
+export class TdIoDocsComponent implements OnInit {
 
   @Input()
   ioSpecs: Record<string, TdIOSpec>;

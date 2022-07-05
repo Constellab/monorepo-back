@@ -60,9 +60,11 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
       major: this.major
     }
 
-    this.dialogService.openMediumDialog(HaPublicFindDocComponent, {data: config}).afterClosed().subscribe((doc) => {
-      if (doc) {
-        this.documentationLink(textEditorState, doc);
+    this.dialogService.openMediumDialog(HaPublicFindDocComponent, {data: config}).afterClosed().subscribe((link) => {
+      if (link && link.id) {
+        this.documentationLink(textEditorState, link);
+      } else {
+        //textEditorState.insertLink()
       }
     });
   }

@@ -67,8 +67,8 @@ export class FlTextEditorState implements OnDestroy {
     this.insertEmbed(index, 'video', data);
   }
 
-  public insertLink(index: number, value: string, name: string): void{
-    this.quill.insertText(index, name, 'link', value, Quill.sources.USER);
+  public insertLink(index: number, link: string, linkName: string): void{
+    this.quill.insertText(index, linkName, 'link', link, Quill.sources.USER);
   }
 
 

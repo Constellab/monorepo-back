@@ -13,7 +13,7 @@ import {
   FlTranslateModule,
   FlTranslateService
 } from '@monorepo/front-core-lib';
-import {TdIoDocComponent} from './component/td-io-doc/td-io-doc.component';
+import {TdIoDocsComponent} from './component/td-io-docs/td-io-docs.component';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDividerModule} from '@angular/material/divider';
 import {FlexModule} from '@angular/flex-layout';
@@ -24,6 +24,7 @@ import {TdTechDocLinkComponent} from './component/td-tech-doc-link/td-tech-doc-l
 import {TdMarkdownPipe} from './pipe/td-markdown.pipe';
 import {TdConfigComponent} from './component/td-config/td-config.component';
 import {TdTechnicalDocHeaderComponent} from './component/td-technical-doc-header/td-technical-doc-header.component';
+import {TdDocIoComponent} from './component/td-doc-io/td-doc-io.component';
 
 @NgModule({
   imports: [
@@ -43,19 +44,20 @@ import {TdTechnicalDocHeaderComponent} from './component/td-technical-doc-header
     TdTechnicalDocComponent,
     TdMainDocComponent,
     TdProcessDocComponent,
-    TdIoDocComponent,
+    TdIoDocsComponent,
     TdIoResourceComponent,
     TdTechDocLinkComponent,
     TdMarkdownPipe,
     TdConfigComponent,
-    TdTechnicalDocHeaderComponent
+    TdTechnicalDocHeaderComponent,
+    TdDocIoComponent
   ],
   exports: [
     TdTechnicalDocComponent,
     TdResourceDocComponent,
     TdMainDocComponent,
     TdTechnicalDocHeaderComponent,
-    TdIoDocComponent
+    TdIoDocsComponent
   ]
 })
 export class TdTechnicalDocModule {

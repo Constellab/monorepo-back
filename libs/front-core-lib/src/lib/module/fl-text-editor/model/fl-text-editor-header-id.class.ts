@@ -7,6 +7,8 @@ export interface FlRichTextHeader {
 }
 
 export class FlTextEditorHeaderId extends FlQuillHeader {
+
+  //Create the html element for a title with an attribute id
   static create(value: number | string | FlRichTextHeader): any {
     if (typeof value === 'number' || typeof value === 'string') {
       return super.create(value);
@@ -19,6 +21,7 @@ export class FlTextEditorHeaderId extends FlQuillHeader {
     }
   }
 
+  //Format the title values as a rich text header
   static formats(domNode: HTMLElement): FlRichTextHeader {
     const result = super.formats(domNode);
     const id = ClStringHelper.toKebabCase(domNode.innerText);

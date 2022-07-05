@@ -24,7 +24,9 @@
         <h4><a [routerLink]="'.'" [fragment]="title.id">{{title.title}}</a></h4>
       </ng-container>
       <ng-template #e>
-        <h5><a [routerLink]="'.'" [fragment]="title.id">{{title.title}}</a></h5>
+        <h5>
+          <a [routerLink]="'.'" [fragment]="title.id">{{title.title}}</a>
+        </h5>
       </ng-template>
     </ng-container>
   </div>

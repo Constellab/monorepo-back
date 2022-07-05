@@ -1,0 +1,10 @@
+<div class="io-div-head">
+  <div class="io-human-name">{{ioSpec.human_name}} : </div>
+  <span *ngFor="let r of ioSpec.resource_types; let first= first" class="io-specification">
+      <span *ngIf="!first">,</span>
+        <td-io-resource [resource]="r"></td-io-resource>
+    </span>
+</div>
+<div *ngIf="ioSpec.short_description" class="g-text-small-em g-text-light">
+  {{ioSpec.short_description}}
+</div>

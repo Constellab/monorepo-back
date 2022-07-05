@@ -1,12 +1,13 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {HaDocumentationService} from '../../../../ha-core/ha-service/ha-documentation.service';
 import {HaDocumentationSearchDTO} from '../../../../ha-core/ha-model/ha-entities/ha-documentation.class';
-import {Observable, startWith} from 'rxjs';
+import {mergeMap, Observable, of, startWith, tap} from 'rxjs';
 import {FormControl} from '@ngneat/reactive-forms';
 import {map} from 'rxjs/operators';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
-import {environment} from "../../../../../environments/ha-environment";
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {HaRouterService} from '../../../../ha-core/ha-service/ha-router.service';
+import {clRxjsDebug, clRxjsElasticSearch} from '@monorepo/core-lib';
 
 @Component({
   selector: 'ha-public-find-doc-dialog',
@@ -14,10 +15,9 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
   styleUrls: ['./ha-public-find-doc.component.scss']
 })
 export class HaPublicFindDocComponent implements OnInit {
-  myControl = new FormControl<string | HaDocumentationSearchDTO>('');
+  inputControl = new FormControl<string | HaDocumentationSearchDTO>('');
   documentations: HaDocumentationSearchDTO[];
-  documentationsByLink: HaDocumentationSearchDTO[];
-  filteredDocumentations: Observable<HaDocumentationSearchDTO[]>;
+  filteredDocumentations$: Observable<HaDocumentationSearchDTO[]>;
   brickName: string;
   major: string;
   searchByLink: boolean = false;
@@ -45,46 +45,34 @@ export class HaPublicFindDocComponent implements OnInit {
       this.documentations = docs;
       this.updateFilteredDocumentations();
     });
-
-    this.myControl.valueChanges.subscribe((val: string | HaDocumentationSearchDTO) => {
-      if (typeof val === 'string' && this.isAValidLink(val as string)) {
-        this.brickService.findDocumentationByLink(val).subscribe((doc: HaDocumentationSearchDTO) => {
-          if (doc && doc.id) {
-            this.documentationsByLink = [doc];
-            this.searchByLink = true;
-            this.updateFilteredDocumentations();
-          }
-        });
-      } else if (typeof val === 'string') {
-        this.searchByLink = false;
-        this.documentationsByLink = [];
-      } else {
-        this.submit(val);
-      }
-    });
   }
 
+  //Update possible options of the select from the input value
   private updateFilteredDocumentations(): void {
-    this.filteredDocumentations = this.myControl.valueChanges.pipe(
+    this.filteredDocumentations$ = this.inputControl.valueChanges.pipe(
       startWith(''),
-      map(value => {
-        const nameOrLink = typeof value === 'string' ? value : value?.name;
-        return nameOrLink ? this._filter(nameOrLink as string)
-          : (this.searchByLink ? this.documentationsByLink.slice() : this.documentations.slice());
-      }),
+      clRxjsElasticSearch(),
+      mergeMap(value => {
+        if (typeof value === 'string' && HaRouterService.isAValidUrl(value as string)) {
+          return this.getDocByLink(value as string);
+        } else if (typeof value === 'string') {
+          return of(this._filter(value as string));
+        }
+        return of([value] as HaDocumentationSearchDTO[]);
+      })
     );
   }
 
-  private isAValidLink(val: string): boolean {
-    if (val.startsWith(environment.hubUrl)) {
-      val = val.slice(environment.hubUrl.length);
-      const link: string[] = val.split('/');
-      return link.length >= 5 && link[0] === 'bricks' && link[3] == 'doc' && link[4] != 'technical-folder';
-    }
-    return false;
+  private getDocByLink(link: string): Observable<HaDocumentationSearchDTO[]>{
+    return this.brickService.findDocumentationByLink(link as string).pipe(
+      map(val => {
+        return [val]
+      })
+    );
   }
 
-  submit(val: HaDocumentationSearchDTO): void {
-    this.dialogRef.close(val);
+
+  submit(value: HaDocumentationSearchDTO): void {
+    this.dialogRef.close(value);
   }
 }

@@ -1,19 +1,17 @@
 <p class="info">{{'generate_link_text' | translate}}</p>
 
-<form>
-  <mat-form-field class="research-bar" appearance="fill">
-    <mat-label>{{'documentation' | translate}}</mat-label>
-    <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
-    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-      <mat-option *ngFor="let doc of filteredDocumentations | async" [value]="doc">
+<mat-form-field class="research-bar" appearance="fill">
+  <mat-label>{{'documentation' | translate}}</mat-label>
+  <input type="text" matInput [formControl]="inputControl" [matAutocomplete]="auto">
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+    <mat-option *ngFor="let doc of filteredDocumentations$ | async" [value]="doc" (onSelectionChange)="submit($event.source.value)">
         <span class="option">
           {{doc.anchor ? doc.name + ' - ' + doc.anchor : doc.name}}
           <span class="option-info g-text-light">
-            {{searchByLink && doc.brickName !== brickName ? ('from' | translate) + ' ' + doc.brickName + ' v' + doc.major : 'current_brick' | translate}}
+            {{doc.brickName !== brickName ? ('from' | translate) + ' ' + doc.brickName + ' v' + doc.major : 'current_brick' | translate}}
           </span>
         </span>
-      </mat-option>
-    </mat-autocomplete>
-  </mat-form-field>
-</form>
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>
 

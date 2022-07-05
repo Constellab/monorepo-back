@@ -1,11 +1,3 @@
-.io-div{
-  border-left: solid 2px var(--grey-low-contrast);;
-  padding-left: 1em;
-  padding-top: 1em;
-  display: flex;
-  flex-direction: column;
-}
-
 .io-div-head{
   display: flex;
 }
@@ -21,6 +13,7 @@
 
 .io-human-name{
   font-size: 1.2em;
+  word-break: break-word;
 }
 
 .io-specification{
@@ -28,3 +21,4 @@
   padding: 0 !important;
   font-size: 1.2em;
 }
+
