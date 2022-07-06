@@ -1,5 +1,5 @@
-<p class="execution-time">{{'biox.execution_time' | translate}} :
-  {{progressBar.data.elapsedTime | number:'1.0-3'}}s
+<p class="execution-time" *ngIf="progressBar.data.elapsedTime > 0">{{'biox.execution_time' | translate}} :
+  {{progressBar.data.elapsedTime | flDuration}}
 </p>
 
 <div>

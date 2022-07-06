@@ -252,6 +252,10 @@ export class ClDateHelper {
    */
   public static toPrettyDuration(milliseconds: number, precision: number = 2,
                                  maxPrecision: ClDateScale | null = 'seconds'): string {
+
+    if (milliseconds <= 0) {
+      return `0s`
+    }
     // store the rest of milliseconds to show
     let millisecondsRest: number = milliseconds;
     // let durationStr = '';
