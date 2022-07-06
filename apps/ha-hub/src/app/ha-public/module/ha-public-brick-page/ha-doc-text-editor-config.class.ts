@@ -63,8 +63,9 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
     this.dialogService.openMediumDialog(HaPublicFindDocComponent, {data: config}).afterClosed().subscribe((link) => {
       if (link && link.id) {
         this.documentationLink(textEditorState, link);
-      } else {
-        //textEditorState.insertLink()
+      } else if(link && link.name){
+        const index: number = textEditorState.getCurrentSelectionIndex();
+        textEditorState.insertLink(index, link.name, link.name);
       }
     });
   }

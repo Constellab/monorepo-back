@@ -45,7 +45,7 @@ export class HaRouterService {
     if (link.startsWith(this.getAppUrl())) {
       link = link.slice(this.getAppUrl().length);
       const url: string[] = link.split('/');
-      return [url.length >= 5 && url[0] === 'bricks' && url[3] == 'doc', url[4] != 'technical-folder'];
+      return [url.length >= 5 && url[0] === 'bricks' && url[3] == 'doc' && url[4].length > 0, url[4] != 'technical-folder'];
     }
     return [false, null];
   }

@@ -159,6 +159,7 @@
   "technical_documentations": "Technical documentations",
   "visibility": "Visibility",
   "private": "Private",
-  "public": "Public"
+  "public": "Public",
+  "private_brick": "Private brick"
 
 }

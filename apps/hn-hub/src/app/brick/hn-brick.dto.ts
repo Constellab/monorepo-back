@@ -93,6 +93,7 @@ export class HnBrickListDTO{
   lastVersion: CmVersion;
   isCertified?: boolean;
   imageLink?: string;
+  visibility: HnBrickVisibility;
 }
 
 export class HnEditBrickDTO{

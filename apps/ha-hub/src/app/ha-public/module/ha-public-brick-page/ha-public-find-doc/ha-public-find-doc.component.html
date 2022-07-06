@@ -5,7 +5,7 @@
   <input type="text" matInput [formControl]="inputControl" [matAutocomplete]="auto">
   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
 
-    <mat-optgroup [label]="'documentations' | translate">
+    <mat-optgroup [label]="'documentations' | translate" [hidden]="!documentationsNotEmpty">
       <mat-option *ngFor="let doc of filteredDocumentations$ | async" [value]="doc"
                   (onSelectionChange)="submit($event.source.value)">
         <span class="option">
@@ -23,7 +23,7 @@
       </mat-option>
     </mat-optgroup>
 
-    <mat-optgroup [label]="'technical_documentations' | translate">
+    <mat-optgroup [label]="'technical_documentations' | translate" [hidden]="!technicalDocumentationsNotEmpty">
       <mat-option *ngFor="let doc of filteredTechnicalDocumentations$ | async" [value]="doc"
                   (onSelectionChange)="submit($event.source.value)">
         <span class="option">
@@ -40,6 +40,11 @@
         </span>
       </mat-option>
     </mat-optgroup>
+
+    <mat-option *ngIf="!documentationsNotEmpty && !technicalDocumentationsNotEmpty && isALink(inputControl.value)" [value]="getCurrentInput()"
+                (onSelectionChange)="submit($event.source.value)">
+      {{inputControl.value}}
+    </mat-option>
 
   </mat-autocomplete>
 </mat-form-field>

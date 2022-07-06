@@ -41,9 +41,9 @@ export class HaDocumentationContentFormDTO extends HaEntity {
 }
 
 export interface HaDocumentationSearchDTO{
-  id: string;
+  id?: string;
   name: string;
-  completePath: string;
+  completePath?: string;
   anchor?: string;
   brickName?: string;
   major?: string;

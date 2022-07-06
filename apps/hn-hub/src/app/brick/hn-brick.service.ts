@@ -85,6 +85,7 @@ export class HnBrickService {
       resBrick.pipRepo = brick.pipRepo;
       resBrick.imageLink = brick.imageLink;
       resBrick.isCertified = brick.isCertified;
+      resBrick.visibility = brick.visibility;
       resBrick.lastVersion = (await this.brickMajorVersionService.getLatestBrickVersion(brick.name)).version;
       res.push(resBrick);
     }

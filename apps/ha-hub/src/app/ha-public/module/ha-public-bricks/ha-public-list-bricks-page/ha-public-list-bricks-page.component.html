@@ -10,28 +10,40 @@
 
 <section class="brick-list-section">
   <div class="brick-list">
-      <ng-container *ngFor="let brick of bricks" >
-        <a [href]="'bricks/' + brick.name" >
-           <div class="brick" >
-            <div class="brick-logo" [style.background-image]="
+    <ng-container *ngFor="let brick of bricks">
+
+      <a [href]="'bricks/' + brick.name">
+        <div class="brick">
+          <div class="brick-logo" [style.background-image]="
       brick.imageLink ? 'url(\''+ brick.imageLink +'\')' :
       'url(\'../../../../../assets/images/gencovery-logo.png\')'"
-            [style.background-size]="brick.imageLink ? '70%' : '100%'"></div>
-            <div class="brick-info">
-              <h2>{{brick.name}}</h2>
-              <fl-text-icon iconPosition="end" gap="0.2em"><mat-icon class="mat-primary">check</mat-icon>Verified</fl-text-icon>
-              <p>{{brick.lastVersion.toString()}}</p>
+               [style.background-size]="brick.imageLink ? '70%' : '100%'"></div>
+          <div class="brick-info">
+            <h2>{{brick.name}}</h2>
+            <div fxLayout="row">
+              <mat-icon class="lock-icon"
+                        matTooltip="{{'private_brick' | translate}}">
+                {{brick.visibility === 'private' ? 'lock' : 'public'}}
+              </mat-icon>
+              <div fxLayout="column">
+                <fl-text-icon iconPosition="end" gap="0.2em">
+                  <mat-icon class="mat-primary">check</mat-icon>
+                  Verified
+                </fl-text-icon>
+                <p>{{brick.lastVersion.toString()}}</p>
+              </div>
             </div>
-
           </div>
-        </a>
+        </div>
+      </a>
 
-      </ng-container>
+    </ng-container>
 
   </div>
 
   <button mat-flat-button color="primary" routerLink="edit" *haIsAdmin class="button-create">
-    {{'create' | translate}} <mat-icon>add</mat-icon>
+    {{'create' | translate}}
+    <mat-icon>add</mat-icon>
   </button>
 </section>
 

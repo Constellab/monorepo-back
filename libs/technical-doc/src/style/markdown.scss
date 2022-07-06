@@ -1,6 +1,11 @@
 
 .markdown{
 
+  table, td, th{
+    border: 1px solid var(--grey-high-contrast);
+    border-collapse: collapse;
+  }
+
   table{
     min-width: 50%;
     max-width: 100%;
@@ -11,18 +16,10 @@
       background-color: var(--grey-low-contrast);
     }
 
-    tbody > tr:last-child{
-      border-bottom: solid 1px  var(--grey-low-contrast);
-    }
 
     td{
       vertical-align: middle;
-      padding: 1em;
-      border-left: solid 1px  var(--grey-low-contrast);
-    }
-
-    td:last-child{
-      border-right: solid 1px var(--grey-low-contrast);
+      padding: 0.3em 1em;
     }
 
     th{
@@ -30,13 +27,8 @@
       font-weight: bold;
       min-width: 4em;
       text-align: center;
-      border-left: solid 1px  var(--grey-low-contrast);
-      border-top: solid 1px  var(--grey-low-contrast);
     }
 
-    th:last-child{
-      border-right: solid 1px var(--grey-low-contrast);
-    }
   }
 
   p{

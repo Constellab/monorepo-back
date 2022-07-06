@@ -7,8 +7,7 @@ import {map} from 'rxjs/operators';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {HaRouterService} from '../../../../ha-core/ha-service/ha-router.service';
-import {clRxjsElasticSearch} from '@monorepo/core-lib';
-import {HaTechnicalFolderService} from '../../../../ha-core/ha-service/ha-technical-folder.service';
+import {clRxjsElasticSearch, ClStringHelper} from '@monorepo/core-lib';
 
 @Component({
   selector: 'ha-public-find-doc-dialog',
@@ -19,8 +18,10 @@ export class HaPublicFindDocComponent implements OnInit {
   inputControl = new FormControl<string | HaDocumentationSearchDTO>('');
   documentations: HaDocumentationSearchDTO[];
   technicalDocumentations: HaDocumentationSearchDTO[];
+  documentationsNotEmpty: boolean = true;
   filteredDocumentations$: Observable<HaDocumentationSearchDTO[]>;
   filteredTechnicalDocumentations$: Observable<HaDocumentationSearchDTO[]>;
+  technicalDocumentationsNotEmpty: boolean = true;
   brickName: string;
   major: string;
   searchByLink: boolean = false;
@@ -56,7 +57,6 @@ export class HaPublicFindDocComponent implements OnInit {
   //Update possible options of the select from the input value
   private updateFilteredDocumentations(): void {
     this.filteredDocumentations$ = this.updateFiltered(false);
-
     this.filteredTechnicalDocumentations$ = this.updateFiltered(true);
   }
 
@@ -71,16 +71,27 @@ export class HaPublicFindDocComponent implements OnInit {
             this.getDocByLink(value as string) :
             this.getTechnicalDocByLink(value as string);
         } else if (typeof value === 'string') {
-          return of(this._filter(value as string, isTechnical));
+          const filteredRes: HaDocumentationSearchDTO[] = this._filter(value as string, isTechnical);
+          if (isTechnical) {
+            this.technicalDocumentationsNotEmpty = filteredRes.length > 0;
+          } else {
+            this.documentationsNotEmpty = filteredRes.length > 0;
+          }
+          return of(filteredRes);
         }
         return of([value] as HaDocumentationSearchDTO[]);
       }));
+
   }
 
   private getDocByLink(link: string): Observable<HaDocumentationSearchDTO[]> {
     return this.brickService.findDocumentationByLink(link as string).pipe(
       map(val => {
-        return [val];
+        if (val) {
+          this.documentationsNotEmpty = true;
+          return [val];
+        }
+        return [];
       })
     );
   }
@@ -88,9 +99,23 @@ export class HaPublicFindDocComponent implements OnInit {
   private getTechnicalDocByLink(link: string): Observable<HaDocumentationSearchDTO[]> {
     return this.brickService.findDocumentationByLink(link as string).pipe(
       map(val => {
-        return [val];
+        if (val) {
+          this.technicalDocumentationsNotEmpty = true;
+          return [val];
+        }
+        return [];
       })
     );
+  }
+
+  getCurrentInput(): HaDocumentationSearchDTO{
+    return {
+      name: this.inputControl.value as string
+    }
+  }
+
+  isALink(input: any): boolean{
+    return ClStringHelper.isHttpLink(input as string);
   }
 
 

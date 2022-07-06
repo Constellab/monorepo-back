@@ -6,6 +6,9 @@
       'url(\'../../../../../assets/images/gencovery-logo.png\')'"></div>
       <div class="brick-info">
         <span class="display-inline">
+          <mat-icon *ngIf="brick.visibility === 'private'" class="mat-primary" matTooltip="{{'private_brick' | translate}}">
+            lock
+          </mat-icon>
           <h2 class="brick-name">{{brick.name}}</h2>
           <fl-text-icon iconPosition="end" gap="0.2em"><mat-icon
             class="mat-primary">check</mat-icon>Verified
