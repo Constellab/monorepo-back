@@ -160,6 +160,7 @@
   "visibility": "Visibility",
   "private": "Private",
   "public": "Public",
-  "private_brick": "Private brick"
+  "private_brick": "Private brick",
+  "external_link": "External link"
 
 }

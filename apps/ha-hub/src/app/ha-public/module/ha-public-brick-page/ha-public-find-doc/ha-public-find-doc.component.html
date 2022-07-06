@@ -44,6 +44,9 @@
     <mat-option *ngIf="!documentationsNotEmpty && !technicalDocumentationsNotEmpty && isALink(inputControl.value)" [value]="getCurrentInput()"
                 (onSelectionChange)="submit($event.source.value)">
       {{inputControl.value}}
+      <span class="option-info g-text-light">
+            {{'external_link' | translate}}
+          </span>
     </mat-option>
 
   </mat-autocomplete>
