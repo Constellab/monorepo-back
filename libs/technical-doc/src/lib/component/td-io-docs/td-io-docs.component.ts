@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {TdIOSpec} from '../../model/td-process-type.entity';
 
 @Component({
-  selector: 'td-io-doc',
+  selector: 'td-io-docs',
   templateUrl: './td-io-docs.component.html',
   styleUrls: ['./td-io-docs.component.scss']
 })

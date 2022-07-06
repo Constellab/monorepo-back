@@ -5,15 +5,24 @@
     min-width: 50%;
     max-width: 100%;
     margin: 0 auto;
-    border: solid 1px  var(--grey-low-contrast);
     border-spacing: 0 !important;
 
     tbody > tr:nth-child(odd){
       background-color: var(--grey-low-contrast);
     }
 
+    tbody > tr:last-child{
+      border-bottom: solid 1px  var(--grey-low-contrast);
+    }
+
     td{
       vertical-align: middle;
+      padding: 1em;
+      border-left: solid 1px  var(--grey-low-contrast);
+    }
+
+    td:last-child{
+      border-right: solid 1px var(--grey-low-contrast);
     }
 
     th{
@@ -21,6 +30,12 @@
       font-weight: bold;
       min-width: 4em;
       text-align: center;
+      border-left: solid 1px  var(--grey-low-contrast);
+      border-top: solid 1px  var(--grey-low-contrast);
+    }
+
+    th:last-child{
+      border-right: solid 1px var(--grey-low-contrast);
     }
   }
 

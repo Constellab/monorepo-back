@@ -41,13 +41,13 @@ export class HaRouterService {
   // --------------------------------------------------------------------------------------------
 
   //Check if the url is valid for the hub
-  public static isAValidUrl(link: string): boolean {
+  public static isAValidDocUrl(link: string): [boolean, boolean] {
     if (link.startsWith(this.getAppUrl())) {
       link = link.slice(this.getAppUrl().length);
       const url: string[] = link.split('/');
-      return url.length >= 5 && url[0] === 'bricks' && url[3] == 'doc' && url[4] != 'technical-folder';
+      return [url.length >= 5 && url[0] === 'bricks' && url[3] == 'doc', url[4] != 'technical-folder'];
     }
-    return false;
+    return [false, null];
   }
 
 }

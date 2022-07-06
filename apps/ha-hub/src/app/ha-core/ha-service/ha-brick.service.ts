@@ -133,4 +133,5 @@ export class HaBrickService {
   public findDocumentationByLink(link: string): Observable<HaDocumentationSearchDTO>{
     return this.apiService.post(`${this.route}/get-doc-by-link`, {link: link});
   }
+
 }

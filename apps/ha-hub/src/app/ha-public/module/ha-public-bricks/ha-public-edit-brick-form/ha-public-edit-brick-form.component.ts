@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {HaBrickCreationDTO, HaBrickDTO} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
+import {HaBrickCreationDTO, HaBrickVisibility} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
@@ -22,8 +22,9 @@ export class HaPublicEditBrickFormComponent implements OnInit {
   inputFile: HaAddVersionInput;
   errorFile: boolean;
   errorFileText: string;
-  noRepoError: boolean;
+  repoError: boolean;
   errorInput: Record<string, boolean> = {};
+  test: boolean;
 
   constructor(
     private brickService: HaBrickService,
@@ -47,15 +48,19 @@ export class HaPublicEditBrickFormComponent implements OnInit {
       repoGit: [null],
       repoPip: [null],
       technicalInfo: [null],
-      references: [null]
+      references: [null],
+      visibility: [HaBrickVisibility.PUBLIC]
     });
+    this.test = this.formGp.value.visibility === 'public'
   }
 
   submit(): void {
 
     const formValue: Partial<HaBrickCreationDTO> = this.formGp.value;
     if(this.formGp.value.repoPip || this.formGp.value.repoGit){
+      this.repoError = false;
       this.formGp.controls.repoPip.removeValidators(Validators.required);
+      this.formGp.controls.repoGit.removeValidators(Validators.required);
       if (this.formGp.valid && !this.isLoading) {
         if(this.formGp.value.repoGit && !this.formGp.value.repoPip){
           formValue.repoType = HaRepoType.GIT;
@@ -74,7 +79,9 @@ export class HaPublicEditBrickFormComponent implements OnInit {
         )
       }
     } else {
+      this.repoError = true;
       this.formGp.controls.repoPip.setValidators(Validators.required);
+      this.formGp.controls.repoGit.setValidators(Validators.required);
     }
   }
 
@@ -105,6 +112,7 @@ export class HaPublicEditBrickFormComponent implements OnInit {
             this.formGp.controls.references.setValue(this.inputFile.brickVersionReferences);
             this.formGp.controls.technicalInfo.setValue(this.inputFile.technicalInfo);
             this.formGp.controls.isBeta.setValue(this.inputFile.isBeta);
+            this.formGp.controls.visibility.setValue(HaBrickVisibility.PUBLIC);
             this.formGp.controls.repoType.setValue(HaRepoType.PIP);
             if(this.inputFile.isBeta){
               this.formGp.controls.subPatch.setValue(this.inputFile.subPatch);

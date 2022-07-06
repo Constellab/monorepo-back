@@ -34,7 +34,7 @@
 
 
   <!--  description  -->
-  <mat-form-field class="g-form-input" appearance="fill">
+  <mat-form-field class="g-form-input no-margin-bottom" appearance="fill">
     <mat-label>{{'description' | translate}}</mat-label>
     <textarea matInput formControlName="description" maxlength="255"></textarea>
     <mat-error *ngIf="formGp.get('description').hasError('required')">
@@ -42,20 +42,36 @@
     </mat-error>
   </mat-form-field>
 
+  <!--  visibility  -->
+  <mat-label class="input-repo">{{'visibility' | translate}}</mat-label>
+  <div>
+    <mat-radio-group formControlName="visibility">
+      <mat-radio-button [value]="'private'" class="radio-bt" [checked]="formGp.value.visibility === 'private'">
+        {{'private' | translate}}</mat-radio-button>
+      <mat-radio-button [value]="'public'" class="radio-bt" [checked]="formGp.value.visibility === 'public'">
+        {{'public' | translate}}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+
   <!--  pipRepo  -->
-  <mat-form-field class="g-form-input" appearance="fill">
+  <mat-form-field class="g-form-input input-repo" appearance="fill">
     <mat-label>{{'repo_pip' | translate}}</mat-label>
     <input matInput type="text" formControlName="repoPip">
-    <mat-error  *ngIf="formGp.get('repoPip').hasError('required')">
-      {{'repo_pip' | flErrorRequired}}
-    </mat-error>
   </mat-form-field>
 
   <!--  gitRepo  -->
-  <mat-form-field class="g-form-input" appearance="fill">
+  <mat-form-field class="g-form-input no-margin-bottom" appearance="fill">
     <mat-label>{{'repo_git' | translate}}</mat-label>
     <input matInput type="text" formControlName="repoGit">
   </mat-form-field>
+
+  <p class="error-repo" *ngIf="repoError">
+    {{'repo_error' | translate}}
+  </p>
+
+
+
 
   <button mat-raised-button color="primary" type="submit" class="g-centered-forced">
     {{'save' | translate}}

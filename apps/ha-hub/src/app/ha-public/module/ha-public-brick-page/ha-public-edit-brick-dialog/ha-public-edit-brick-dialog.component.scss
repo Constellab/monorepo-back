@@ -2,3 +2,23 @@ textarea{
   min-height: 5em;
   resize: none !important;
 }
+
+.radio-bt{
+  margin-top: 0.3em;
+  margin-right: 1em;
+}
+
+.no-margin-bottom{
+  margin-bottom: 0;
+}
+
+.input-repo{
+  margin-top: 2em;
+}
+
+.error-repo{
+  font-size: 80%;
+  margin-top:  0.6666666667em;
+  padding-left: 1em;
+  color: var(--warn-color);
+}

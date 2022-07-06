@@ -16,6 +16,7 @@ export class HaPublicEditBrickDialogComponent extends FlFormDialogAbstractDirect
 
   isLoading: boolean = false;
   isUpdate: boolean = true;
+  repoError: boolean;
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -37,7 +38,8 @@ export class HaPublicEditBrickDialogComponent extends FlFormDialogAbstractDirect
       id: [null],
       description: [null, [Validators.required, Validators.maxLength(255)]],
       gitRepo: [null],
-      pipRepo: [null]
+      pipRepo: [null],
+      visibility: [null]
     });
   }
 
@@ -47,9 +49,13 @@ export class HaPublicEditBrickDialogComponent extends FlFormDialogAbstractDirect
 
   submit(): void {
     if(!this.formGp.value.gitRepo && !this.formGp.value.pipRepo){
+      this.repoError = true;
       this.formGp.controls.pipRepo.setValidators(Validators.required);
+      this.formGp.controls.gitRepo.setValidators(Validators.required);
     } else {
+      this.repoError = false;
       this.formGp.controls.pipRepo.removeValidators(Validators.required);
+      this.formGp.controls.gitRepo.removeValidators(Validators.required);
       if(this.formGp.valid){
         this.update(this.formGp.value as HaEditBrickDTO).subscribe({
           next: newEntity => this.onSaveSuccess(newEntity, this.getUpdateSuccessMessage()),

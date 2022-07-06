@@ -1,12 +1,14 @@
 import {HnRepoType, HnVersionType} from '../brick-version/hn-brick-version.entity';
 import {HnVersionState} from '../brick-major-version/hn-brick-major-version.entity';
 import {CmVersion} from '@monorepo/common-model';
+import {HnBrickVisibility} from './hn-brick.entity';
 
 export interface HnBrickTransportDto {
   id: string;
   name: string;
   pipRepo: string;
   gitRepo: string;
+  visibility: HnBrickVisibility;
   versions: HnBrickVersionTransportDto[];
 }
 
@@ -98,6 +100,7 @@ export class HnEditBrickDTO{
   description: string;
   pipRepo: string;
   gitRepo: string;
+  visibility: HnBrickVisibility;
 }
 
 export class HnTechnicalDocInputDTO{

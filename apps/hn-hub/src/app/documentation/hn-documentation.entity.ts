@@ -8,7 +8,8 @@ export interface HnDocumentationSearchDTO{
   completePath: string;
   anchor?: string;
   brickName?: string;
-  major?: string
+  major?: string;
+  isTechnical?: boolean;
 }
 
 @Entity('Documentation')

@@ -60,6 +60,7 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
     node.description = this.brick.description;
     node.gitRepo = this.brick.gitRepo;
     node.pipRepo = this.brick.pipRepo;
+    node.visibility = this.brick.visibility;
 
     const input: FlFormDialogInput<HaEditBrickDTO> = {
       mode: 'update',

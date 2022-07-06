@@ -20,17 +20,25 @@ export class HnJwtAuthGuard extends AuthGuard('jwt') {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Check if the route is annotated with @Public
-    // if yes, don't check the authorization
-    if (this.contextIsPublic(context)) {
-      return true;
-    }
+
+
 
 
     // jwt authentication
     try {
-      return await (super.canActivate(context) as Promise<boolean>);
+      if(await (super.canActivate(context) as Promise<boolean>)){
+        return true
+      } else {
+        // Check if the route is annotated with @Public
+        // if yes, authorize
+        return this.contextIsPublic(context);
+      }
     } catch (error) {
+      // Check if the route is annotated with @Public
+      // if yes, authorize
+      if (this.contextIsPublic(context)) {
+        return true;
+      }
       throw new UnauthorizedException(HnErrorText.WRONG_TOKEN);
     }
   }

@@ -131,12 +131,23 @@ export class HnBrickMajorVersionService {
   }
 
   async getDocsByBrickNameMajor(brick: HnBrick, major: number): Promise<HnDocumentationSearchDTO[]>{
-    return await this.folderService.getDocsByBrickNameMajor(await this.brickMajorVersionsRepository.findOne({
+    let res: HnDocumentationSearchDTO[] = [];
+    const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
       brick: {
         id: brick.id
       },
       major: major
-    }), major.toString(), brick.name);
+    });
+    res = res.concat(await this.folderService.getDocsByBrickNameMajor(brickMajorVersion, major.toString(), brick.name));
+
+    res = res.concat(await this.technicalFolderService.getTechDocsByBrickNameMajor(brickMajorVersion, major.toString(), brick.name));
+
+    return res.sort((a,b) => {
+      if(a.name < b.name) return -1;
+      if(b.name < a.name) return 1;
+      return 0;
+    });
+
   }
 
   async findBrickMajorVersionByBrickAndMajor(brick: HnBrick, major: number): Promise<HnBrickMajorVersion>{

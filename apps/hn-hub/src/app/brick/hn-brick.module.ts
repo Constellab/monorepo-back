@@ -22,6 +22,8 @@ import {HnProtocolService} from '../protocol/hn-protocol.service';
 import {HnProtocolModule} from '../protocol/hn-protocol.module';
 import {HnBrickVersionReferenceModule} from '../brick-version-reference/hn-brick-version-reference.module';
 import {HnBrickVersionReferenceService} from '../brick-version-reference/hn-brick-version-reference.service';
+import {HnUserService} from '../users/hn-user.service';
+import {HnUserModule} from '../users/hn-user.module';
 
 @Module({
   imports: [
@@ -35,14 +37,15 @@ import {HnBrickVersionReferenceService} from '../brick-version-reference/hn-bric
     HnResourceModule,
     HnTaskModule,
     HnProtocolModule,
-    HnBrickVersionReferenceModule
+    HnBrickVersionReferenceModule,
+    HnUserModule
   ],
   exports: [TypeOrmModule],
   controllers: [HnBrickController],
   providers: [HnBrickService, HnBrickMajorVersionService,
     HnBrickVersionService, HnFolderService,
     HnDocumentationService, HnTechnicalFolderService, HnResourceService,
-    HnTaskService, HnProtocolService, HnBrickVersionReferenceService]
+    HnTaskService, HnProtocolService, HnBrickVersionReferenceService, HnUserService]
 })
 export class HnBrickModule {
 }

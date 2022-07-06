@@ -2,6 +2,11 @@ import {HaEntity} from './ha-entity.class';
 import {CmVersion} from '@monorepo/common-model';
 import {HaReferenceDTO, HaRepoType, HaVersionType} from './ha-version.class';
 
+export enum HaBrickVisibility{
+  PRIVATE = 'private',
+  PUBLIC = 'public'
+}
+
 export class HaBrick extends HaEntity {
   name: string;
 
@@ -12,6 +17,8 @@ export class HaBrick extends HaEntity {
   gitRepo: string;
 
   pipRepo: string;
+
+  visibility: HaBrickVisibility;
 
   lastVersion: CmVersion;
 
@@ -26,9 +33,10 @@ export class HaBrickCreationDTO{
   version: string | CmVersion;
   repoType: HaRepoType;
   isBeta: boolean = false;
+  visibility: HaBrickVisibility;
   subPatch?: number;
   technicalInfo?: Record<string, any>;
-  references?: HaReferenceDTO[]
+  references?: HaReferenceDTO[];
 
   constructor(name: string, version: string, technicalInfo: Record<string, any>, references: HaReferenceDTO[]) {
     this.name = name;
@@ -40,6 +48,7 @@ export class HaBrickCreationDTO{
     this.subPatch = 0;
     this.repoGit = '';
     this.repoPip = '';
+    this.visibility = HaBrickVisibility.PUBLIC;
   }
 }
 
@@ -73,4 +82,5 @@ export class HaEditBrickDTO{
   description: string;
   gitRepo: string;
   pipRepo: string;
+  visibility: HaBrickVisibility;
 }

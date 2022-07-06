@@ -20,6 +20,9 @@ import {
 } from './hn-brick.dto';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.service';
+import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
+import {HnUserService} from '../users/hn-user.service';
+import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
 
 @Injectable()
 export class HnBrickService {
@@ -31,8 +34,14 @@ export class HnBrickService {
     private documentationService: HnDocumentationService,
     private folderService: HnFolderService,
     private brickVersionService: HnBrickVersionService,
+    private technicalFolderService: HnTechnicalFolderService,
+    private userService: HnUserService,
     private configService: HnCoreConfigService
   ) {
+  }
+
+  private isCurrentAdmin(): boolean{
+    return HnCurrentUserHelper.getCurrentUser() && HnCurrentUserHelper.getCurrentUser().isAdmin();
   }
 
   async create(createdBrick: HnCreateBrickDTO): Promise<HnBrick> {
@@ -45,7 +54,8 @@ export class HnBrickService {
     }
 
     if (createdBrick) {
-      brick.initialize(createdBrick.name, createdBrick.description, false, createdBrick.repoPip, createdBrick.repoGit);
+      brick.initialize(createdBrick.name, createdBrick.description, false,
+        createdBrick.visibility, createdBrick.repoPip, createdBrick.repoGit);
     }
 
     brick = await getManager().transaction(async entityManager => {
@@ -63,7 +73,8 @@ export class HnBrickService {
   }
 
   async find(): Promise<HnBrickListDTO[]> {
-    const bricks: HnBrick[] = await this.bricksRepository.find();
+    const bricks: HnBrick[] = this.isCurrentAdmin() ? await this.bricksRepository.find() :
+      await this.bricksRepository.find({where: {visibility: 'public'}});
     const res: HnBrickListDTO[] = [];
     for (const brick of bricks) {
       const resBrick = new HnBrickListDTO()
@@ -81,15 +92,21 @@ export class HnBrickService {
   }
 
   async findByName(name: string): Promise<HnBrick> {
-    return this.bricksRepository.findOne({
+    return this.isCurrentAdmin() ? this.bricksRepository.findOne({
       where: {
         name: name
+      }
+    }) : this.bricksRepository.findOne({
+      where: {
+        name: name,
+        visibility: 'public'
       }
     });
   }
 
   async findById(id: string): Promise<HnBrick> {
-    return this.bricksRepository.findOne(id);
+    return this.isCurrentAdmin() ? this.bricksRepository.findOne(id) :
+      this.bricksRepository.findOne(id, {where: {visibility: 'public'}});
   }
 
   async findDocsByBrickAndVersion(brick: HnBrick, version: string): Promise<HnNode> {
@@ -136,7 +153,9 @@ export class HnBrickService {
       return false;
     }
 
-    const brick: HnBrick = await this.bricksRepository.findOne({where: {name: content.brickName}});
+    const brick: HnBrick = this.isCurrentAdmin() ?
+      await this.bricksRepository.findOne({where: {name: content.brickName}}) :
+      await this.bricksRepository.findOne({where: {name: content.brickName, visibility: 'public'}});
 
     if (brick == null) {
       return false;
@@ -153,24 +172,21 @@ export class HnBrickService {
 
   async editBrick(editedBrick: HnEditBrickDTO): Promise<HnBrick> {
     const brick: HnBrick = await this.bricksRepository.findOne(editedBrick.id);
-    const lastBrickMajorVersion: HnBrickVersion = await this.brickMajorVersionService.getLatestBrickVersion(brick.name);
     if (brick) {
       brick.description = editedBrick.description;
       brick.gitRepo = editedBrick.gitRepo;
       brick.pipRepo = editedBrick.pipRepo;
-      if (brick.gitRepo && !brick.pipRepo) {
-        lastBrickMajorVersion.repoType = HnRepoType.GIT;
-      } else {
-        lastBrickMajorVersion.repoType = HnRepoType.PIP;
-      }
+      brick.visibility = editedBrick.visibility;
     }
-    await this.brickVersionService.saveUpdate(lastBrickMajorVersion);
+    const lastBrickMajorVersion: HnBrickVersion = await this.brickMajorVersionService.getLatestBrickVersion(brick.name);
     await this.bricksRepository.save(brick);
+    await this.brickVersionService.sendBrickVersionIdToTransport(lastBrickMajorVersion.id);
     return brick;
   }
 
   async isActualBrickAndNewVersion(content: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
-    const brick: HnBrick = await this.bricksRepository.findOne(content.brickId);
+    const brick: HnBrick = this.isCurrentAdmin() ? await this.bricksRepository.findOne(content.brickId) :
+      await this.bricksRepository.findOne(content.brickId, {where: {visibility: 'public'}});
 
     if (brick && brick.name.toUpperCase() != content.inputBrickName.toUpperCase()) {
       return [false, false];
@@ -188,7 +204,8 @@ export class HnBrickService {
   }
 
   async findTechDoc(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
-    const brick: HnBrick = await this.bricksRepository.findOne({where: {name: input.brickName}});
+    const brick: HnBrick = this.isCurrentAdmin() ? await this.bricksRepository.findOne({where: {name: input.brickName}}) :
+      await this.bricksRepository.findOne({where: {name: input.brickName, visibility: 'public'}});
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, input.brickVersion);
     return this.brickMajorVersionService.findCurrentTecDoc(brickMajorVersion, input);
@@ -198,21 +215,21 @@ export class HnBrickService {
     return await this.brickMajorVersionService.getDocsByBrickNameMajor(await this.findByName(brickName), major);
   }
 
-  async getDocByLink(link: string): Promise<HnDocumentationSearchDTO>{
+  async getDocByLink(link: string): Promise<HnDocumentationSearchDTO> {
     const linkArray: string[] = link.substring(this.configService.getFrontRootUrl().length).split('/');
-    try{
+    try {
       const brick: HnBrick = await this.findByName(linkArray[1]);
       const majorString: string = linkArray[2].substring(1);
       let major: number;
-      if(majorString === 'atest'){
+      if (majorString === 'atest') {
         major = (await this.brickMajorVersionService.getLatestBrickVersion(linkArray[1])).version.major;
       } else {
         major = +majorString;
       }
-
+      const isTechnical: boolean = linkArray[4] == 'technical-folder';
       let completePath: string = linkArray.slice(4).join('/');
       let anchor: string = null;
-      if(completePath.includes('#')){
+      if (completePath.includes('#')) {
         [completePath, anchor] = completePath.split('#');
       }
 
@@ -220,8 +237,9 @@ export class HnBrickService {
 
       const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionService.findBrickMajorVersionByBrickAndMajor(brick, major);
 
-      return this.documentationService.getDocByLink(brickMajorVersion, completePath, anchor);
-    } catch (e){
+      return isTechnical ? this.technicalFolderService.getTechDocByLink(brickMajorVersion, completePath, anchor)
+        : this.documentationService.getDocByLink(brickMajorVersion, completePath, anchor);
+    } catch (e) {
       return null;
     }
   }

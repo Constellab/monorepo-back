@@ -12,6 +12,7 @@ import {HnTaskService} from '../task/hn-task.service';
 import {HnTask} from '../task/hn-task.entity';
 import {HnProtocol} from '../protocol/hn-protocol.entity';
 import {HnProtocolService} from '../protocol/hn-protocol.service';
+import {HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 
 @Injectable()
 export class HnTechnicalFolderService {
@@ -146,6 +147,70 @@ export class HnTechnicalFolderService {
       default:
         return null;
     }
+  }
 
+  async getTechDocsByBrickNameMajor(brickMajorVersion: HnBrickMajorVersion,
+                                    major: string, brickName: string): Promise<HnDocumentationSearchDTO[]>{
+
+    const parentNode: HnNode = await this.findTechnicalDoc(brickMajorVersion);
+
+    let res: HnDocumentationSearchDTO[] = [];
+
+    if(parentNode && parentNode.children.length > 0){
+      for(const c of parentNode.children){
+        res = res.concat(this.getTechDocsForSearch(c, major, brickName));
+      }
+    }
+
+    return res;
+
+  }
+
+  private getTechDocsForSearch(folder: HnNode, major: string, brickName: string): HnDocumentationSearchDTO[]{
+    return folder.children.map(doc => {
+      return {
+        id: doc.id,
+        isTechnical: true,
+        major: major,
+        brickName: brickName,
+        completePath: doc.completePath,
+        name: doc.name
+      }
+    });
+  }
+
+  async getTechDocByLink(brickMajorVersion: HnBrickMajorVersion, completePath: string, anchor: string): Promise<HnDocumentationSearchDTO>{
+    const techFolder: HnTechnicalFolder = await this.technicalFolderRepository.findOne({
+      where: {
+        brickMajorVersion: {
+          id: brickMajorVersion.id
+        }
+      }
+    });
+
+    const linkBroken: string[] = completePath.split('/');
+    let techDoc: HnGeneratedDocEntity;
+
+    switch (linkBroken[1]){
+      case 'resource':
+        techDoc = await this.resourceService.findCurrentTecDoc(techFolder, linkBroken[2]);
+        break;
+      case 'task':
+        techDoc = await this.taskService.findCurrentTecDoc(techFolder, linkBroken[2]);
+        break;
+      case 'protocol':
+        techDoc = await this.protocolService.findCurrentTecDoc(techFolder, linkBroken[2]);
+        break;
+    }
+
+    return {
+      id: techDoc.id,
+      isTechnical: true,
+      name: techDoc.humanName,
+      major: brickMajorVersion.major.toString(),
+      completePath: completePath,
+      anchor: anchor,
+      brickName: brickMajorVersion.brick.name
+    };
   }
 }

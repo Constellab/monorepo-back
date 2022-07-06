@@ -1,10 +1,11 @@
-import {Controller,} from '@nestjs/common';
+import {Controller, Post,} from '@nestjs/common';
 import {HnTechnicalFolderService} from './hn-technical-folder.service';
 
-@Controller('hn-technical-folder')
+@Controller('technical-folder')
 export class HnTechnicalFolderController {
   constructor(
     private readonly TechnicalFolderService: HnTechnicalFolderService
   ) {
   }
+  
 }

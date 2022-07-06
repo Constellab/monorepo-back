@@ -4,14 +4,43 @@
   <mat-label>{{'documentation' | translate}}</mat-label>
   <input type="text" matInput [formControl]="inputControl" [matAutocomplete]="auto">
   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-    <mat-option *ngFor="let doc of filteredDocumentations$ | async" [value]="doc" (onSelectionChange)="submit($event.source.value)">
+
+    <mat-optgroup [label]="'documentations' | translate">
+      <mat-option *ngFor="let doc of filteredDocumentations$ | async" [value]="doc"
+                  (onSelectionChange)="submit($event.source.value)">
         <span class="option">
           {{doc.anchor ? doc.name + ' - ' + doc.anchor : doc.name}}
-          <span class="option-info g-text-light">
-            {{doc.brickName !== brickName ? ('from' | translate) + ' ' + doc.brickName + ' v' + doc.major : 'current_brick' | translate}}
+          <span class="option-info g-text-light" *ngIf="!doc.brickName">
+            {{('from' | translate) + ' ' + doc.brickName + ' v' + doc.major}}
+          </span>
+          <span class="option-info g-text-light" *ngIf="doc.brickName && doc.brickName !== brickName">
+            {{('from' | translate) + ' ' + doc.brickName + ' v' + doc.major}}
+          </span>
+          <span class="option-info g-text-light" *ngIf="doc.brickName && doc.brickName === brickName">
+            {{('documentation' | translate) + ' - ' + ('current_brick' | translate)}}
           </span>
         </span>
-    </mat-option>
+      </mat-option>
+    </mat-optgroup>
+
+    <mat-optgroup [label]="'technical_documentations' | translate">
+      <mat-option *ngFor="let doc of filteredTechnicalDocumentations$ | async" [value]="doc"
+                  (onSelectionChange)="submit($event.source.value)">
+        <span class="option">
+          {{doc.anchor ? doc.name + ' - ' + doc.anchor : doc.name}}
+          <span class="option-info g-text-light" *ngIf="!doc.brickName">
+            {{('from' | translate) + ' ' + doc.brickName + ' v' + doc.major}}
+          </span>
+          <span class="option-info g-text-light" *ngIf="doc.brickName && doc.brickName !== brickName">
+            {{('from' | translate) + ' ' + doc.brickName + ' v' + doc.major}}
+          </span>
+          <span class="option-info g-text-light" *ngIf="doc.brickName && doc.brickName === brickName">
+            {{('technical_documentation' | translate) + ' - ' + ('current_brick' | translate)}}
+          </span>
+        </span>
+      </mat-option>
+    </mat-optgroup>
+
   </mat-autocomplete>
 </mat-form-field>
 

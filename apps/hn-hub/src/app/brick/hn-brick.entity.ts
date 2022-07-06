@@ -14,7 +14,13 @@ export class HnCreateBrickDTO {
   subPatch?: number;
   version: CmVersion;
   references?: HnReferenceDTO[];
-  technicalInfo?: Record<string, any>
+  technicalInfo?: Record<string, any>;
+  visibility: HnBrickVisibility;
+}
+
+export enum HnBrickVisibility{
+  PRIVATE = 'private',
+  PUBLIC = 'public'
 }
 
 @Unique(['name'])
@@ -30,6 +36,9 @@ export class HnBrick extends HnBaseEntity {
   @Column()
   isCertified: boolean;
 
+  @Column({type: 'enum', enum: HnBrickVisibility, default: HnBrickVisibility.PUBLIC})
+  visibility: HnBrickVisibility;
+
   @Column({nullable: true})
   pipRepo: string;
 
@@ -39,11 +48,13 @@ export class HnBrick extends HnBaseEntity {
   @Column({nullable: true})
   imageLink?: string;
 
-  initialize(name: string, description: string, isCertified: boolean, repoPip?: string, repoGit?:string): void {
+  initialize(name: string, description: string, isCertified: boolean,
+             visibility: HnBrickVisibility, repoPip?: string, repoGit?:string): void {
     this.name = name;
     this.description = description;
     this.isCertified = isCertified;
     this.gitRepo = repoGit;
     this.pipRepo = repoPip;
+    this.visibility = visibility;
   }
 }

@@ -47,4 +47,5 @@ export interface HaDocumentationSearchDTO{
   anchor?: string;
   brickName?: string;
   major?: string;
+  isTechnical?: boolean;
 }

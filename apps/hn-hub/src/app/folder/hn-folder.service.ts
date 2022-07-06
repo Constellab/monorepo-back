@@ -273,7 +273,8 @@ export class HnFolderService {
         id: doc.id,
         completePath: doc.completePath,
         major: major,
-        brickName: brickName
+        brickName: brickName,
+        isTechnical: false
       });
     }
 

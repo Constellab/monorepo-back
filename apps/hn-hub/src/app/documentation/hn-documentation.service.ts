@@ -108,7 +108,7 @@ export class HnDocumentationService {
     for (const l of links) {
       if (l.attributes.link.startsWith(this.configService.getFrontRootUrl())) {
         const link: string[] = l.attributes.link.substring(this.configService.getFrontRootUrl().length).split('/');
-        if (link[0] === 'bricks' && link[3] === 'doc' && link[4] !== 'technical-doc') {
+        if (link[0] === 'bricks' && link[3] === 'doc' && link[4] !== 'technical-folder') {
           const [id, cp] = await this.getDocumentationIdAndCPByUrl(link);
           if (id != null && cp != null) {
             l.attributes.id = id;

@@ -33,15 +33,17 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     return brickVersion;
   }
 
-  async createFirstBrickVersion(brickMajorVersion: HnBrickMajorVersion,brickVersion: HnBrickVersion,
+  async createFirstBrickVersion(brickMajorVersion: HnBrickMajorVersion, brickVersion: HnBrickVersion,
                                 references: HnReferenceDTO[], entityManager: EntityManager): Promise<HnBrickVersion> {
     const newBrickVersion: HnBrickVersion = await entityManager.save(brickVersion);
-    return this.createNewBrickVersion(brickMajorVersion, {
-      version : brickVersion.version.toString(),
-      brickId: brickMajorVersion.brick.id,
-      technicalInfo: brickVersion.technicalInfo,
-      repoType: brickVersion.repoType,
-      references: references}
+    return this.createNewBrickVersion(brickMajorVersion,
+      {
+        version: brickVersion.version.toString(),
+        brickId: brickMajorVersion.brick.id,
+        technicalInfo: brickVersion.technicalInfo,
+        repoType: brickVersion.repoType,
+        references: references
+      }
     );
   }
 
@@ -50,7 +52,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
                               entityManager?: EntityManager): Promise<HnBrickVersion> {
     let res: HnBrickVersion = null;
     res = await getManager().transaction(async entityManager2 => {
-      if(entityManager != null){
+      if (entityManager != null) {
         entityManager2 = entityManager;
       }
       const newBrickVersion: HnBrickVersion = new HnBrickVersion();
@@ -58,14 +60,14 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       const bv: HnBrickVersion = await this.brickVersionsRepository.findOne({
         where: {
           brickMajorVersion: {
-            id : brickMajorVersion.id
+            id: brickMajorVersion.id
           },
           minor: version.minor,
           patch: version.patch,
           subPatch: version.subPatch
         }
       })
-      if(bv != null){
+      if (bv != null) {
         bv.initialize(brickMajorVersion, version, newVersion.repoType, newVersion.technicalInfo);
         res = await entityManager2.save(bv);
         await this.brickVersionReferenceService.deleteByBrickVersionId(res.id, entityManager);
@@ -116,13 +118,13 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
 
       return res;
     });
-    if(entityManager == null){
+    if (entityManager == null) {
       await this.sendBrickVersionIdToTransport(res.id);
     }
     return res;
   }
 
-  async saveUpdate(brickVersion: HnBrickVersion): Promise<HnBrickVersion>{
+  async saveUpdate(brickVersion: HnBrickVersion): Promise<HnBrickVersion> {
     return await this.brickVersionsRepository.save(brickVersion);
   }
 
@@ -169,6 +171,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
       name: brickVersion.brickMajorVersion.brick.name,
       pipRepo: brickVersion.brickMajorVersion.brick.pipRepo,
       gitRepo: brickVersion.brickMajorVersion.brick.gitRepo,
+      visibility: brickVersion.brickMajorVersion.brick.visibility,
       versions: [{
         id: brickVersion.id,
         major: brickVersion.brickMajorVersion.major,
@@ -185,19 +188,20 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   }
 
   async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>> {
-    return this.findPaginated(page, size, {
-      where: {
-        brickMajorVersion: {
-          brick: {
-            id: brickId
-          },
-        }
-      },
-      order: {
-        createdAt: 'DESC'
-      },
-      relations: ['brickMajorVersion']
-    }
+    return this.findPaginated(page, size,
+      {
+        where: {
+          brickMajorVersion: {
+            brick: {
+              id: brickId
+            },
+          }
+        },
+        order: {
+          createdAt: 'DESC'
+        },
+        relations: ['brickMajorVersion']
+      }
     );
   }
 
@@ -228,23 +232,23 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         subPatch: v.subPatch
       }
     });
-    if(bv && bv.version.major != v.major){
+    if (bv && bv.version.major != v.major) {
       throw new UnauthorizedException('Impossible to create a new major version');
     }
     return [true, bv != null];
   }
 
-  async findDirectReferences(id: string): Promise<HnBrickVersionReference[]>{
+  async findDirectReferences(id: string): Promise<HnBrickVersionReference[]> {
     return await this.brickVersionReferenceService.findByBrickVersionId(id);
   }
 
-  async findAllReferences(id: string, isUndirect?: boolean): Promise<HnBrickVersionReference[]>{
+  async findAllReferences(id: string, isUndirect?: boolean): Promise<HnBrickVersionReference[]> {
     const res: HnBrickVersionReference[] = await this.findDirectReferences(id);
-    if(res.length == 0){
+    if (res.length == 0) {
       return res;
     } else {
-      for(const bVR of res){
-        if(isUndirect){
+      for (const bVR of res) {
+        if (isUndirect) {
           bVR.versionState = HnBrickVersionRefState.INDIRECT;
         }
         res.push(...await this.findAllReferences(bVR.referenceId, true));
@@ -253,23 +257,23 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     }
   }
 
-  async getDirectReferences(id: string): Promise<HnReferenceDTO[]>{
+  async getDirectReferences(id: string): Promise<HnReferenceDTO[]> {
     const res: HnReferenceDTO[] = [];
-    for(const bVR of (await this.findDirectReferences(id))){
+    for (const bVR of (await this.findDirectReferences(id))) {
       res.push((await this.bVRToRef(bVR)));
     }
     return res;
   }
 
-  async getAllReferences(id: string): Promise<HnReferenceDTO[]>{
+  async getAllReferences(id: string): Promise<HnReferenceDTO[]> {
     const res: HnReferenceDTO[] = [];
-    for(const bVR of (await this.findAllReferences(id))){
+    for (const bVR of (await this.findAllReferences(id))) {
       res.push(await this.bVRToRef(bVR));
     }
-    return res.filter(function(value, index, array) {
+    return res.filter(function (value, index, array) {
       let t = true;
-      for(const e of array){
-        if(e.name == value.name && array.indexOf(e) != index){
+      for (const e of array) {
+        if (e.name == value.name && array.indexOf(e) != index) {
           t = CmVersion.fromString(e.version) < CmVersion.fromString(value.version);
           console.log(t);
         }
@@ -278,15 +282,15 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     });
   }
 
-  async bVRToRef(bVR: HnBrickVersionReference): Promise<HnReferenceDTO>{
+  async bVRToRef(bVR: HnBrickVersionReference): Promise<HnReferenceDTO> {
     return {
-      name : await this.getBrickName(bVR.referenceId),
-      version : (await this.brickVersionsRepository.findOne(bVR.referenceId)).version.toString(),
-      referenceState : bVR.versionState
+      name: await this.getBrickName(bVR.referenceId),
+      version: (await this.brickVersionsRepository.findOne(bVR.referenceId)).version.toString(),
+      referenceState: bVR.versionState
     };
   }
 
-  async getBrickName(id: string): Promise<string>{
+  async getBrickName(id: string): Promise<string> {
     return (await this.brickVersionsRepository.findOne(id)).brickMajorVersion.brick.name;
   }
 

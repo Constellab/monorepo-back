@@ -125,6 +125,7 @@
   "sub_patch_number_error": "Sub patch number must be a positif integer",
   "repo_git": "Git repository",
   "repo_pip": "Pip repository",
+  "repo_error": "A brick must reference at least one repository",
   "sub_patch_number": "Sub patch number",
   "import_technical_documentation": "Import technical documentation",
   "hub_home_title": "Share your applications and services in the Hub",
@@ -153,5 +154,11 @@
   "error_tech_doc_not_found": "Error : Technical documentation not found",
   "from": "From",
   "current_brick": "Current brick",
-  "generate_link_text": "Generate a link to a documentation using the selection or a link to it"
+  "generate_link_text": "Generate a link to a documentation using the selection or a link to it",
+  "technical_documentation": "Technical documentation",
+  "technical_documentations": "Technical documentations",
+  "visibility": "Visibility",
+  "private": "Private",
+  "public": "Public"
+
 }
