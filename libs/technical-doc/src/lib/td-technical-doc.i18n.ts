@@ -48,7 +48,7 @@ const tdTechnicalDocI18nEn: FlLangTranslation = {
     optional: 'Optional',
     constant: 'Constant',
     optional_tooltip: 'The task will be runned even if this input is not connected',
-    skippable_tooltip: 'The task will be runned even if this input was connected and the value no provided yet',
+    skippable_tooltip: 'The task will be runned even if this input was connected and the value not provided yet',
     constant_tooltip: 'This output will not create a new resource but reference an existing resource',
     advanced_parameter: 'Advanced parameter'
   }
