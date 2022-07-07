@@ -10,11 +10,14 @@ import {
   FlHtmlHelper,
   FlMenuDynamic,
   FlPortalConnectedPosition,
-  FlPortalService
+  FlPortalService,
+  FlSavedSearch,
+  flThemeDetailLight
 } from '@monorepo/front-core-lib';
 import {LabWorkflowPort} from '../../model/lab-workflow-port.class';
 import {
-  LabSelectResourceDialogComponent
+  LabSelectResourceDialogComponent,
+  LabSelectResourceDialogInput
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
 import {LabResource} from '../../../../../lab-core/model/entities/resource/lab-resource.entity';
 import {
@@ -26,6 +29,12 @@ import {
   LabWorkflowPortActionPortalComponent,
   LabWorkflowPortActionPortalInput
 } from '../lab-workflow-port-action-portal/lab-workflow-port-action-portal.component';
+import {
+  LabResourceSearchFields
+} from '../../../../../lab-core/entity-module/lab-resource-core/model/lab-resource-advanced-search.class';
+import {
+  labResourceSearchName
+} from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-search/lab-resource-search.component';
 
 /**
  * Abstract component directive to extends by Workflow node components
@@ -134,9 +143,27 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
   }
 
 
-  private openResourceSelection(portName: string): void {
-    this.dialogService.openBigDialog(LabSelectResourceDialogComponent).afterClosed().subscribe(
-      resource => this.addSource(resource, portName)
+  private openResourceSelection(port: LabWorkflowPort): void {
+    // add a default search filtered by resource type
+    const filter: Partial<LabResourceSearchFields> = {
+      resourceTypingName: port.specs.resource_types.map((type) => type.typing_name)
+    };
+    const savedSearch: FlSavedSearch = {
+      searchName: labResourceSearchName,
+      id: null,
+      label: 'Compatible resources',
+      color: flThemeDetailLight.primary,
+      version: 1,
+      default: true,
+      filtersCriteria: filter
+    };
+
+    const data: LabSelectResourceDialogInput = {
+      savedSearches: [savedSearch]
+    };
+
+    this.dialogService.openBigDialog(LabSelectResourceDialogComponent, {data: data}).afterClosed().subscribe(
+      resource => this.addSource(resource, port.name)
     );
   }
 
@@ -209,7 +236,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
         type: 'button',
         text: {text: 'biox.add_source', translateText: true},
         icon: 'resource',
-        onClick: () => this.openResourceSelection(port.name),
+        onClick: () => this.openResourceSelection(port),
         // only activated if is editable and the port is not connected
         disabled: this.node.inputPortIsConnected(port.drawFlowName) || !this.experimentIsEditable
       },

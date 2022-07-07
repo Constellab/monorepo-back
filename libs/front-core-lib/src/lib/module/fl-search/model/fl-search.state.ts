@@ -141,7 +141,6 @@ export class FlSearchState<T extends FlEntity> implements OnDestroy {
    * Call first search
    * If a search in the URL exist, call
    * Else if there is a default saved advanced search, call it
-   * Otherwise call the default search if it exists
    */
   private initFirstSearch(params?: FlSearchUrlObject): void {
     // call the advanced search from query params if they exists

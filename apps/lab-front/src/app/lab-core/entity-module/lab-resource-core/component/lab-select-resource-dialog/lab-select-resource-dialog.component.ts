@@ -1,6 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {MatDialogRef} from '@angular/material/dialog';
+import {Component, Inject, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
+import {FlSavedSearch} from '@monorepo/front-core-lib';
+
+export interface LabSelectResourceDialogInput {
+  savedSearches?: FlSavedSearch[];
+}
 
 /**
  * Dialog to search on resource and select one
@@ -14,7 +19,11 @@ import {LabResource} from '../../../../model/entities/resource/lab-resource.enti
 })
 export class LabSelectResourceDialogComponent implements OnInit {
 
-  constructor(private dialogRef: MatDialogRef<LabSelectResourceDialogComponent>) {
+  savedSearch: FlSavedSearch[];
+
+  constructor(@Inject(MAT_DIALOG_DATA) data: LabSelectResourceDialogInput,
+              private dialogRef: MatDialogRef<LabSelectResourceDialogComponent>) {
+    this.savedSearch = data?.savedSearches;
   }
 
   ngOnInit(): void {

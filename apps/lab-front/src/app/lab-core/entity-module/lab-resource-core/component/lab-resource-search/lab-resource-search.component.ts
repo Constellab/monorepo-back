@@ -25,10 +25,12 @@ import {Subscription} from 'rxjs';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
 import {LabRouterService} from '../../../../service/lab-router.service';
 
+export const labResourceSearchName: string = 'biox-resource';
+
 // list of predefined search of the resources
 const savedSearch: FlSavedSearch[] = [
   {
-    searchName: 'biox-resource',
+    searchName: labResourceSearchName,
     id: null,
     label: 'All',
     color: flThemeDetailLight.primary,
@@ -54,6 +56,12 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
   @Input() resourceSelectable: boolean = false;
 
   @Input() fullPageSearch: boolean = true;
+
+  /**
+   * Use to add custom searches in the list of saved search. If one of them is the default one,
+   * it overrides the other default.
+   */
+  @Input() customSavedSearches: FlSavedSearch[] = null;
 
   @Output() resourceSelected: EventEmitter<LabResource> = new EventEmitter<LabResource>();
 
@@ -81,12 +89,14 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
       this.columns.push('action');
     }
 
+
+
     const searchConfig: FlSearchConfig = {
       version: 1,
       searchFunc: this.resourceService.getAdvancedSearchFunction(),
       buildAdvancedForm: LabResourceSearch.getAdvancedSearchForm,
       advancedFormClass: LabResourceSearchFields,
-      savedSearch: savedSearch,
+      savedSearch: this.savedSearches(),
       advancedSearchFormManagerConfig: LabResourceSearch.advancedSearchManagerConfig,
       storeSearchInUrl: this.fullPageSearch
     };
@@ -181,6 +191,21 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  private savedSearches(): FlSavedSearch[]{
+    const savedSearchCloned: FlSavedSearch[] = ClHelpService.deepClone(savedSearch);
+    if (this.customSavedSearches?.length > 0) {
+      // if one of the custom saved search is the default one, we override the default
+      if (this.customSavedSearches.some(search => search.default)) {
+        savedSearchCloned.forEach(search => search.default = false);
+      }
+
+      // add the custom search to the list
+      savedSearchCloned.unshift(...this.customSavedSearches);
+    }
+
+    return savedSearchCloned;
   }
 
   ngOnDestroy(): void {

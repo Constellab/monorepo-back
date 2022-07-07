@@ -3,6 +3,8 @@
 </fl-dialog-header>
 
 <mat-dialog-content>
-  <lab-resource-search [resourceSelectable]="true" [fullPageSearch]="false" class="search"
-                            (resourceSelected)="onResourceSelected($event)"></lab-resource-search>
+  <lab-resource-search [resourceSelectable]="true" [fullPageSearch]="false"
+                       [customSavedSearches]="savedSearch"
+                       class="search"
+                       (resourceSelected)="onResourceSelected($event)"></lab-resource-search>
 </mat-dialog-content>
