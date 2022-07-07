@@ -14,7 +14,9 @@
     "select_file_type": "Type du fichier",
     "select_folder_type": "Type du dossier",
     "delete_resource": "Supprimer la resource",
-    "delete_resource_confirmation": "Êtes-vous sûr de vouloir supprimer cette ressource ? Si la ressource est utilisée dans une experiment, elle ne pourra pas être supprimé.",
+    "delete_resource_confirmation": "Êtes-vous sûr de vouloir supprimer cette ressource ? Si la ressource est utilisée dans une experiment, elle ne pourra pas être supprimée.",
+    "delete_imported_resource_confirmation": "Cela va supprimer l'expérience 'Importer' qui à créée cette resource.",
+    "delete_transformed_resource_confirmation": "Cela va supprimer l'expérience 'Transformer' qui à créée cette resource.",
     "resource_deleted": "Ressource supprimé"
   }
 }

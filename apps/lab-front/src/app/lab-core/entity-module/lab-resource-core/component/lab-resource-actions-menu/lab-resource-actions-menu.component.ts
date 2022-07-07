@@ -8,7 +8,8 @@ import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,
   FlDialogService,
-  FlTagDialogService
+  FlTagDialogService,
+  FlTranslateService
 } from '@monorepo/front-core-lib';
 import {LabTag} from '../../../../model/entities/lab-tag.entity';
 import {LabUpdateResourceTypeComponent} from '../lab-update-resource-type/lab-update-resource-type.component';
@@ -39,7 +40,8 @@ export class LabResourceActionsMenuComponent implements OnInit {
   constructor(private resourceService: LabResourceService,
               private dialogService: FlDialogService,
               private tagDialogService: FlTagDialogService,
-              private resourceDownloadService: LabResourceDownloadService) {
+              private resourceDownloadService: LabResourceDownloadService,
+              private translateService: FlTranslateService) {
   }
 
   ngOnInit(): void {
@@ -95,10 +97,19 @@ export class LabResourceActionsMenuComponent implements OnInit {
   }
 
   deleteResource(): void {
+    // build the confirmation message
+    let confirmation = `<p>${this.translateService.translate('databox.delete_resource_confirmation')}</p>`;
+    // for imported or transformed resources, we add an info message
+    if (this.resource.origin === 'IMPORTED') {
+      confirmation += `<p>${this.translateService.translate('databox.delete_imported_resource_confirmation')}</p>`;
+    } else if (this.resource.origin === 'TRANSFORMED') {
+      confirmation += `<p>${this.translateService.translate('databox.delete_transformed_resource_confirmation')}</p>`;
+    }
+
     const input: FlConfirmDialogInput = {
-      title: 'databox.delete_resource',
-      content: 'databox.delete_resource_confirmation',
-      translateTitleAndContent: true,
+      title: this.translateService.translate('databox.delete_resource'),
+      content: confirmation,
+      translateTitleAndContent: false,
       observable: this.resourceService.delete(this.resource.id),
       successMessage: 'databox.resource_deleted',
       translateMessage: true

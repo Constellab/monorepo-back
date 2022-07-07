@@ -2,6 +2,7 @@ import {LabEntity} from '../../global/lab-entity.entity';
 import {FlDatasourcePaginated, FlFileHelper} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {LabEntityWithTag} from '../lab-entity-with-tag.entity';
+import {LabExperimentType} from '../lab-experiment.entity';
 
 /**
  * Represent a file or a folder link to the resource
@@ -25,7 +26,7 @@ export class LabFsNodeEntity extends LabEntity {
   }
 }
 
-export type LabResourceOrigin = 'UPLOADED' | 'GENERATED';
+export type LabResourceOrigin = 'UPLOADED' | 'GENERATED' | 'IMPORTED' | 'TRANSFORMED';
 
 export class LabResource extends LabEntityWithTag {
   // typing name of the resource model
@@ -59,6 +60,7 @@ export class LabResource extends LabEntityWithTag {
   experiment: {
     id: string;
     title: string;
+    type: LabExperimentType;
   };
 
   isFsNode(): boolean {
@@ -74,7 +76,7 @@ export class LabResource extends LabEntityWithTag {
   }
 
   isDeletable(): boolean {
-    return this.origin === 'UPLOADED';
+    return this.origin !== 'GENERATED';
   }
 
 }
