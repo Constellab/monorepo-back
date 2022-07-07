@@ -35,24 +35,6 @@ const savedSearch: FlSavedSearch[] = [
     version: 1,
     default: true,
     filtersCriteria: {} as Partial<LabResourceSearchFields>
-  },
-  {
-    searchName: 'biox-resource',
-    id: null,
-    label: 'Uploaded',
-    color: flThemeDetailLight.primary,
-    version: 1,
-    default: false,
-    filtersCriteria: {origin: 'UPLOADED'} as Partial<LabResourceSearchFields>
-  },
-  {
-    searchName: 'biox-resource',
-    id: null,
-    label: 'Generated',
-    color: flThemeDetailLight.primary,
-    version: 1,
-    default: false,
-    filtersCriteria: {origin: 'GENERATED'} as Partial<LabResourceSearchFields>
   }];
 
 /**
@@ -77,8 +59,6 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
 
 
   datasource: FlDatasourcePaginated<LabResource>;
-
-  savedSearch: FlSavedSearch[] = savedSearch;
 
   columns: FlTableColumn<LabResource>[] = ['name', 'info',
     {columnName: 'resource_type', accessor: 'resourceTypeHumanName'},
