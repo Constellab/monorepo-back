@@ -5,7 +5,13 @@ import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
 import {
   LabResourceDetailDialogComponent
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-detail-dialog/lab-resource-detail-dialog.component';
-import {FlDialogService, FlHtmlHelper, FlMenuDynamic, FlMenuDynamicService} from '@monorepo/front-core-lib';
+import {
+  FlDialogService,
+  FlHtmlHelper,
+  FlMenuDynamic,
+  FlPortalConnectedPosition,
+  FlPortalService
+} from '@monorepo/front-core-lib';
 import {LabWorkflowPort} from '../../model/lab-workflow-port.class';
 import {
   LabSelectResourceDialogComponent
@@ -16,6 +22,10 @@ import {
   LabSelectTypeDialogInput
 } from '../../../../../lab-core/entity-module/lab-type-core/component/lab-select-type-dialog/lab-select-type-dialog.component';
 import {LabTypeEntity} from '../../../../../lab-core/model/entities/lab-type/lab-type.entity';
+import {
+  LabWorkflowPortActionPortalComponent,
+  LabWorkflowPortActionPortalInput
+} from '../lab-workflow-port-action-portal/lab-workflow-port-action-portal.component';
 
 /**
  * Abstract component directive to extends by Workflow node components
@@ -36,7 +46,7 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
                         protected dialogService: FlDialogService,
                         protected elementRef: ElementRef,
                         protected renderer: Renderer2,
-                        protected menuDynamicService: FlMenuDynamicService) {
+                        private portalService: FlPortalService) {
   }
 
 
@@ -89,19 +99,38 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
       const port = this.node.findOutputPortByDrawflowName(outputName);
       if (port == null) return;
 
-      this.onOutputClick(port.name, element);
+      this.onOutputClick(port, element);
     }
   }
 
   private onInputClick(port: LabWorkflowPort, element: Element): void {
-    const dynamicMenu = this.getInputPortContextMenuConfig(port);
-    this.menuDynamicService.openDynamicMenuRelative(dynamicMenu, element);
-
+    const menuDynamics = this.getInputPortContextMenuConfig(port);
+    this.openPortPortal(port, menuDynamics, element);
   }
 
-  private onOutputClick(portName: string, element: Element): void {
-    const dynamicMenu = this.getOutputPortContextMenuConfig(portName);
-    this.menuDynamicService.openDynamicMenuRelative(dynamicMenu, element);
+  private onOutputClick(port: LabWorkflowPort, element: Element): void {
+    const menuDynamics = this.getOutputPortContextMenuConfig(port.name);
+    this.openPortPortal(port, menuDynamics, element);
+  }
+
+  // open the portal for the input or output port
+  private openPortPortal(port: LabWorkflowPort, menuDynamics: FlMenuDynamic[], element: Element): void {
+    const data: LabWorkflowPortActionPortalInput = {
+      port: port,
+      menuDynamics: menuDynamics
+    };
+
+    const position: FlPortalConnectedPosition[] = [
+      {originX: 'end', originY: 'bottom', overlayX: 'start', overlayY: 'top'},
+      'right', 'top', 'left', 'bottom'];
+
+    const config = this.portalService.configureRelativePortal(element, position, {
+      disposeOnOutsideClick: true,
+      disposeOnNavigation: true,
+      elevation: true
+    });
+
+    this.portalService.createPortal(LabWorkflowPortActionPortalComponent, config, data);
   }
 
 

@@ -1,0 +1,10 @@
+<fl-portal class="portal">
+  <fl-portal-content>
+    <div class="spec">
+      <td-doc-io [ioSpec]="ioSpec"></td-doc-io>
+    </div>
+
+    <fl-menu-dynamic-button *ngFor="let menuDynamic of menuDynamics" [menuDynamic]="menuDynamic">
+    </fl-menu-dynamic-button>
+  </fl-portal-content>
+</fl-portal>

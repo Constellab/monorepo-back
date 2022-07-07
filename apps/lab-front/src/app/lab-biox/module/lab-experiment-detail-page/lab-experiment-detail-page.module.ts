@@ -54,6 +54,9 @@ import {LabConfigureTaskComponent} from './component/lab-configure-task/lab-conf
 import {
   LabWorkflowNodeProgressComponent
 } from './component/lab-workflow-node-progress/lab-workflow-node-progress.component';
+import {
+  LabWorkflowPortActionPortalComponent
+} from './component/lab-workflow-port-action-portal/lab-workflow-port-action-portal.component';
 
 
 @NgModule({
@@ -81,6 +84,7 @@ import {
     LabConfigureProcessComponent,
     LabConfigureTaskComponent,
     LabWorkflowNodeProgressComponent,
+    LabWorkflowPortActionPortalComponent,
   ],
   imports: [
     CommonModule,

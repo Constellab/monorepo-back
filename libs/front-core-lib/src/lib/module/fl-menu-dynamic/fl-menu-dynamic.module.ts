@@ -8,6 +8,7 @@ import {FlTranslateModule} from '../fl-translate/fl-translate.module';
 import {FlIconModule} from '../fl-svg-icon/fl-icon.module';
 import {MatDividerModule} from '@angular/material/divider';
 import {RouterModule} from '@angular/router';
+import {FlMenuDynamicButtonComponent} from './component/fl-menu-dynamic-button/fl-menu-dynamic-button.component';
 
 /**
  * Module to create mat menu dynamically
@@ -15,10 +16,12 @@ import {RouterModule} from '@angular/router';
 @NgModule({
   declarations: [
     FlMenuDynamicComponent,
-    FlMenuDynamicPortalComponent],
+    FlMenuDynamicPortalComponent,
+    FlMenuDynamicButtonComponent],
   exports: [
     FlMenuDynamicComponent,
-    FlMenuDynamicPortalComponent
+    FlMenuDynamicPortalComponent,
+    FlMenuDynamicButtonComponent
   ],
   imports: [
     CommonModule,

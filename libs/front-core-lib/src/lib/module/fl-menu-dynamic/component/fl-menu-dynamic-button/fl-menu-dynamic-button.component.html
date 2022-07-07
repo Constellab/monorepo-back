@@ -1,0 +1,13 @@
+
+<!--    Link    -->
+<a *ngIf="menuDynamic.type === 'link'" mat-menu-item [routerLink]="menuDynamic.link">
+  <mat-icon *ngIf="menuDynamic.icon" [flIcon]="menuDynamic.icon"></mat-icon>
+  {{menuDynamic.text | flTranslatableText}}
+</a>
+
+<!--    Button    -->
+<button *ngIf="menuDynamic.type === 'button'" mat-menu-item (click)="callItem(menuDynamic, $event)"
+        [disabled]="menuDynamic.disabled">
+  <mat-icon *ngIf="menuDynamic.icon" [flIcon]="menuDynamic.icon"></mat-icon>
+  {{menuDynamic.text | flTranslatableText}}
+</button>

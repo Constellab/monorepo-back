@@ -15,19 +15,7 @@
 
       <!-- Handle leaf node menu items -->
       <ng-template #leaf>
-
-        <!--    Link    -->
-        <a *ngIf="item.type === 'link'" mat-menu-item [routerLink]="item.link">
-          <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
-          {{item.text | flTranslatableText}}
-        </a>
-
-        <!--    Button    -->
-        <button *ngIf="item.type === 'button'" mat-menu-item (click)="callItem(item, $event)"
-                [disabled]="item.disabled">
-          <mat-icon *ngIf="item.icon" [flIcon]="item.icon"></mat-icon>
-          {{item.text | flTranslatableText}}
-        </button>
+        <fl-menu-dynamic-button [menuDynamic]="item"></fl-menu-dynamic-button>
       </ng-template>
     </ng-container>
   </div>

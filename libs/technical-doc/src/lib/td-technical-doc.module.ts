@@ -25,7 +25,7 @@ import {TdMarkdownPipe} from './pipe/td-markdown.pipe';
 import {TdConfigComponent} from './component/td-config/td-config.component';
 import {TdTechnicalDocHeaderComponent} from './component/td-technical-doc-header/td-technical-doc-header.component';
 import {TdDocIoComponent} from './component/td-doc-io/td-doc-io.component';
-import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   imports: [
@@ -54,13 +54,14 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     TdTechnicalDocHeaderComponent,
     TdDocIoComponent
   ],
-  exports: [
-    TdTechnicalDocComponent,
-    TdResourceDocComponent,
-    TdMainDocComponent,
-    TdTechnicalDocHeaderComponent,
-    TdIoDocsComponent
-  ]
+    exports: [
+        TdTechnicalDocComponent,
+        TdResourceDocComponent,
+        TdMainDocComponent,
+        TdTechnicalDocHeaderComponent,
+        TdIoDocsComponent,
+        TdDocIoComponent
+    ]
 })
 export class TdTechnicalDocModule {
 

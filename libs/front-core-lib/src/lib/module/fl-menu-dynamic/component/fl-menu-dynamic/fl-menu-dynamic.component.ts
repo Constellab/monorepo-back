@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, ViewChild} from '@angular/core';
-import {FlMenuDynamic, FlMenuDynamicButton, FlMenuDynamicLink} from '../../model/fl-menu-dynamic.class';
+import {FlMenuDynamic, FlMenuDynamicButton} from '../../model/fl-menu-dynamic.class';
 import {MatMenu, MatMenuTrigger} from '@angular/material/menu';
 
 @Component({
@@ -28,10 +28,6 @@ export class FlMenuDynamicComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
-
-  get menuItemsList(): (FlMenuDynamicButton & FlMenuDynamicLink)[] {
-    return this.menuItems as any;
   }
 
   callItem(menuItem: FlMenuDynamicButton, event: MouseEvent): void {

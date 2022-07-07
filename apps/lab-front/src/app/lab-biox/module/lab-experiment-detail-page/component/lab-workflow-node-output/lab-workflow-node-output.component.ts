@@ -4,7 +4,7 @@ import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
 import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
 import {Observable} from 'rxjs';
 import {LabWorkflowNodeIO} from '../../model/lab-workflow-node-io.class';
-import {FlDialogService, FlMenuDynamicService} from '@monorepo/front-core-lib';
+import {FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
 
 /**
  * Node of an experiment in the workflow specifically for the Output process
@@ -28,8 +28,8 @@ export class LabWorkflowNodeOutputComponent extends LabWorkflowNodeDirective imp
               dialogService: FlDialogService,
               elementRef: ElementRef,
               renderer: Renderer2,
-              menuDynamicService: FlMenuDynamicService) {
-    super(workflowManager, drawerState, dialogService, elementRef, renderer, menuDynamicService);
+              portalService: FlPortalService) {
+    super(workflowManager, drawerState, dialogService, elementRef, renderer, portalService);
   }
 
   ngOnInit(): void {

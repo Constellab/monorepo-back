@@ -3,6 +3,7 @@ export * from './fl-menu-dynamic.module';
 
 // Components
 export * from './component/fl-menu-dynamic/fl-menu-dynamic.component';
+export * from './component/fl-menu-dynamic-button/fl-menu-dynamic-button.component';
 export * from './component/fl-menu-dynamic-portal/fl-menu-dynamic-portal.component';
 
 // Service

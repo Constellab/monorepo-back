@@ -23,6 +23,7 @@ import {
   FlJsonEditorModule,
   FlKeyValueModule,
   FlLoaderModule,
+  FlMenuDynamicModule,
   FlPortalActionsModule,
   FlPortalModule,
   FlResizeModule,
@@ -82,6 +83,7 @@ import {TdTechnicalDocModule} from '@monorepo/technical-doc';
     FlColorModule,
     FlExpansionMenuModule,
     FlDragModule,
+    FlMenuDynamicModule,
 
     //  Other lib
     RvResourceViewModule,
