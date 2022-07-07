@@ -254,7 +254,7 @@ export class ClDateHelper {
                                  maxPrecision: ClDateScale | null = 'seconds'): string {
 
     if (milliseconds <= 0) {
-      return `0s`
+      return `0s`;
     }
     // store the rest of milliseconds to show
     let millisecondsRest: number = milliseconds;
@@ -289,6 +289,11 @@ export class ClDateHelper {
     // create a duration object with the right value set and return the duration
     // as human
     const duration = Duration.fromDurationLike(durationLike);
-    return duration.toHuman()
+    const strDuration = duration.toHuman();
+
+    if (strDuration === '') {
+      return '~0s';
+    }
+    return strDuration;
   }
 }

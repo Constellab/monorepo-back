@@ -13,28 +13,11 @@
       </button>
     </div>
 
-    <!----------------------------  Progress ---------------------------->
-    <mat-expansion-panel *ngIf="process.progressBar && process.status.value !== 'DRAFT'"
-                         [expanded]="process.status.value === 'RUNNING'"
-                         class="g-scrollable-element ">
-      <mat-expansion-panel-header>
-        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
-          <fl-text-icon>
-            <fl-status-chip [status]="process.status"></fl-status-chip>
-          </fl-text-icon>
-        </mat-panel-title>
-
-        <!--    Show the progress if it's running    -->
-        <mat-panel-description>
-          <div *ngIf="process.status.value === 'RUNNING'">
-            {{process.progressBar.getProgress()}} %
-          </div>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
-
-      <lab-progress-bar-info [progressBar]="process.progressBar"></lab-progress-bar-info>
-    </mat-expansion-panel>
+    <mat-divider class="divider"></mat-divider>
   </ng-container>
+
+  <!---------------------------- Progress ---------------------------->
+  <lab-workflow-node-progress [process$]="labProcess$"></lab-workflow-node-progress>
 
   <!---------------------------- Inputs ---------------------------->
   <mat-expansion-panel *ngIf="node.hasInputs()" [expanded]="true">

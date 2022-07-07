@@ -1,4 +1,10 @@
 
+.divider {
+  width: 80%;
+  margin: auto;
+  margin-bottom: 1em;
+}
+
 mat-panel-description {
   margin-right: 0;
 }
@@ -19,16 +25,16 @@ mat-expansion-panel {
   overflow: auto;
 }
 
-.edit-button{
+.edit-button {
   margin-right: 1em;
 }
 
-.text-info{
+.text-info {
   word-break: break-word;
   margin-bottom: 1em;
 }
 
-.doc-button{
+.doc-button {
   display: block;
   margin-inline: auto;
   margin-top: 1em;

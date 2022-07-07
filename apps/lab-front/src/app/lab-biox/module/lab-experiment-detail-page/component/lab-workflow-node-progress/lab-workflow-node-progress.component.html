@@ -1,0 +1,28 @@
+<div *ngIf="process$ | async as process">
+
+  <ng-container *ngIf="process.progressBar && process.status.value !== 'DRAFT'">
+
+    <fl-status-chip [status]="process.status"></fl-status-chip>
+
+    <div class="element">
+      <fl-key-value *ngIf="process.status.value === 'RUNNING'">
+        <fl-key>{{'biox.node_progress' | translate}}</fl-key>
+        {{process.progressBar.getProgress()}} %
+      </fl-key-value>
+
+      <fl-key-value *ngIf="process.progressBar.data.elapsedTime > 0">
+        <fl-key>{{'biox.execution_time' | translate}}</fl-key>
+        {{process.progressBar.data.elapsedTime * 1000 | flDuration}}
+      </fl-key-value>
+    </div>
+
+    <button mat-stroked-button type="button" (click)="openProgressDetails()"
+            class="g-button-small element detail-button">
+      <mat-icon>description</mat-icon>
+      {{'biox.node_progress_detail' | translate}}
+    </button>
+
+  </ng-container>
+
+
+</div>

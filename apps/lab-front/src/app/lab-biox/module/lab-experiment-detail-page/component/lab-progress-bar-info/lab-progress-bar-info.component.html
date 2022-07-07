@@ -1,6 +1,7 @@
-<p class="execution-time" *ngIf="progressBar.data.elapsedTime > 0">{{'biox.execution_time' | translate}} :
-  {{progressBar.data.elapsedTime | flDuration}}
-</p>
+<fl-key-value class="execution-time" *ngIf="progressBar.data.elapsedTime > 0">
+  <fl-key>{{'biox.execution_time' | translate}}</fl-key>
+  {{progressBar.data.elapsedTime * 1000 | flDuration}}
+</fl-key-value>
 
 <div>
   <div *ngFor="let message of progressBar.data.messages">
@@ -13,9 +14,9 @@
       </div>
     </div>
 
-    <div class="text">
+    <fl-limit-height class="text">
       {{message.text}}
-    </div>
+    </fl-limit-height>
     <!--      <div class="g-text-light date"-->
     <!--           [matTooltip]="message.datetime | flDate:'D, HH:mm:ss'">-->
     <!--        {{message.datetime | flDate : 'HH:mm:ss'}}-->

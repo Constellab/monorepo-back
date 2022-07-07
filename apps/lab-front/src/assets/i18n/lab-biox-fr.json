@@ -53,6 +53,7 @@
     "open_node_detail": "Détail",
     "node_type": "Type",
     "node_progress": "Avancement",
+    "node_progress_detail": "Détails et messages",
     "node_process_name": "Processus",
     "download_resource": "Télécharger",
     "download_resource_title": "Télécharger la resource",

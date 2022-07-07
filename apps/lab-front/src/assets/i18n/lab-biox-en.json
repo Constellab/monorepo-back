@@ -54,6 +54,7 @@
     "open_node_detail": "Detail",
     "node_type": "Type",
     "node_progress": "Progress",
+    "node_progress_detail": "Details and messages",
     "node_process_name": "Process",
     "download_resource": "Download",
     "download_resource_title": "Download resource",
