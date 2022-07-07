@@ -16,6 +16,12 @@ export interface TdIOSpec {
   human_name: string;
 
   short_description: string;
+
+  is_optional?: boolean;
+
+  is_skippable?: boolean;
+
+  is_constant?: boolean;
 }
 
 export interface TdResourceTypeDTO {

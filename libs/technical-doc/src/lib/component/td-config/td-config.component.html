@@ -2,8 +2,8 @@
   <div class="config-spec-head" fxLayout="row" fxLayoutAlign="space-between center">
     <h4>{{c}}</h4>
     <div>
-      <fl-chip class="g-primary-background chip" *ngIf="configSpecs[c].optional">Optional</fl-chip>
-      <fl-chip class="g-primary-background chip" *ngIf="configSpecs[c].visibility !== 'public'">Advanced parameter</fl-chip>
+      <fl-chip class="g-primary-background chip" *ngIf="configSpecs[c].optional">{{'td.optional' |translate}}</fl-chip>
+      <fl-chip class="g-primary-background chip" *ngIf="configSpecs[c].visibility !== 'public'">{{'td.advanced_parameter' | translate}}</fl-chip>
     </div>
   </div>
   <p>{{configSpecs[c].short_description}}</p>

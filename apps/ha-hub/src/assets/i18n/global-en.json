@@ -161,6 +161,7 @@
   "private": "Private",
   "public": "Public",
   "private_brick": "Private brick",
+  "public_brick": "Public brick",
   "external_link": "External link"
 
 }

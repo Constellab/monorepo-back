@@ -18,7 +18,14 @@ const tdTechnicalDocI18nFr: FlLangTranslation = {
     param_set: 'Liste',
     max_occurrence_number: 'Nombre maximum d\'occurrences',
     deprecated: 'Obsolète',
-    deprecated_since: 'Obsolète depuis la version'
+    deprecated_since: 'Obsolète depuis la version',
+    skippable: 'Ignorable',
+    optional: 'Optionnel',
+    constant: 'Constant',
+    optional_tooltip: 'La tâche sera exécutée même si cette entrée n\'est pas connectée',
+    skippable_tooltip: 'La tâche sera exécutée même si cette entrée a été connectée et que la valeur n\'a pas encore été fournie',
+    constant_tooltip: 'Cette sortie ne créera pas de nouvelle ressource mais fera référence à une ressource existante',
+    advanced_parameter: 'Parametre avancé'
   }
 };
 
@@ -36,7 +43,14 @@ const tdTechnicalDocI18nEn: FlLangTranslation = {
     param_set: 'List',
     max_occurrence_number: 'Maximum occurrences number',
     deprecated: 'Deprecated',
-    deprecated_since: 'Deprecated since the version'
+    deprecated_since: 'Deprecated since the version',
+    skippable: 'Skippable',
+    optional: 'Optional',
+    constant: 'Constant',
+    optional_tooltip: 'The task will be runned even if this input is not connected',
+    skippable_tooltip: 'The task will be runned even if this input was connected and the value no provided yet',
+    constant_tooltip: 'This output will not create a new resource but reference an existing resource',
+    advanced_parameter: 'Advanced parameter'
   }
 };
 

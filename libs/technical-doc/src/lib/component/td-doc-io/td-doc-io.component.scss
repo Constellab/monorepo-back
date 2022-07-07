@@ -14,11 +14,21 @@
 .io-human-name{
   font-size: 1.2em;
   word-break: break-word;
+  flex-shrink: 1;
 }
 
 .io-specification{
-  margin: auto 0;
+  width: auto;
   padding: 0 !important;
   font-size: 1.2em;
 }
 
+.io-chip-div{
+  flex: auto;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.chip{
+  margin-right: 1em !important;
+}

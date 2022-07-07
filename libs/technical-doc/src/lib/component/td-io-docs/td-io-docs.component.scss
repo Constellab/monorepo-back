@@ -1,7 +1,13 @@
-.io-div{
-  border-left: solid 2px var(--grey-low-contrast);;
-  padding-left: 1em;
-  padding-top: 1em;
+.ios-div{
   display: flex;
   flex-direction: column;
+}
+
+.io-div{
+  border-left: solid 2px var(--grey-low-contrast);
+  padding-left: 1em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  margin-top: 2em;
+
 }
