@@ -5,18 +5,24 @@
     <mat-header-cell *matHeaderCellDef class="g-cell-header-with-left-border">
       <span> {{'name' | translate}}</span>
     </mat-header-cell>
-    <mat-cell *matCellDef="let resource" class="g-cell-with-left-border"
+    <mat-cell *matCellDef="let resource" class="g-cell-with-left-border name-cell"
               [style.borderLeftColor]="resource.experiment?.id | flStringToRgb">
 
-      <button *ngIf="resource.hasChildren" mat-icon-button type="button"
+      <button *ngIf="resource.hasChildren; else leftPadding" mat-icon-button type="button"
               (click)="toggleResourceChildren(resource, $event)"
               [matTooltip]="'databox.resource_see_children' | translate"
-              [matTooltipDisabled]="expandedResource === resource">
+              [matTooltipDisabled]="expandedResource === resource"
+              class="expand-button">
         <mat-icon>{{expandedResource === resource ? 'expand_less' : 'expand_more'}}</mat-icon>
       </button>
 
-      <div>
-        <div class="name" [matTooltip]="resource.name"
+      <!--   If there is no button, use to set a left padding before the name    -->
+      <ng-template #leftPadding>
+        <div class="cell-left-padding"></div>
+      </ng-template>
+
+      <div class="name-container">
+        <div [matTooltip]="resource.name"
              [matTooltipShowDelay]="1000" matTooltipPosition="after">{{resource.name}}</div>
         <fl-text-icon class="g-text-tiny g-text-light" *ngIf="resource.experiment"
                       gap="0">
@@ -115,16 +121,16 @@
               [style.borderLeftColor]="resource.experiment?.id | flStringToRgb">
       <div class="expanded-cell-content" *ngIf="resource === expandedResource">
 
-          <lab-resource-table
-            [datasource]="expandedChildrenResources$" [selectableRow]="selectableRow"
-            [tagSelectable]="tagSelectable"
-            [columns]="_columnsInput" class="sub-table"
-            (resourceSelected)="emitResourceSelected($event)"
-            (tagSelected)="emitTagSelected($event)"></lab-resource-table>
+        <lab-resource-table
+          [datasource]="expandedChildrenResources$" [selectableRow]="selectableRow"
+          [tagSelectable]="tagSelectable"
+          [columns]="_columnsInput" class="sub-table"
+          (resourceSelected)="emitResourceSelected($event)"
+          (tagSelected)="emitTagSelected($event)"></lab-resource-table>
 
-          <div class="g-text-centered sub-loader-container">
-            <fl-loader size="small" *ngIf="(expandedChildrenStatus$ | async)?.status === 'waiting'"></fl-loader>
-          </div>
+        <div class="g-text-centered sub-loader-container">
+          <fl-loader size="small" *ngIf="(expandedChildrenStatus$ | async)?.status === 'waiting'"></fl-loader>
+        </div>
 
       </div>
     </mat-cell>

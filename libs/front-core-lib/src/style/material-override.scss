@@ -304,9 +304,6 @@
 .g-cell-with-left-border {
   border-left-style: solid;
   border-left-width: 10px;
-
-  // compensate the 10 more pixel in the left border
-  padding-left: 14px;
 }
 
 /******************************* MAT TREE ***************************/

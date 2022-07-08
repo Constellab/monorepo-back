@@ -2,8 +2,20 @@ mat-table {
   cursor: pointer;
 }
 
-.name {
+.name-cell {
+  padding-left: 0;
+}
+
+.expand-button {
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+.name-container {
   word-break: break-word;
+}
+
+.cell-left-padding{
+  padding-left: 24px;
 }
 
 .tags {
@@ -28,7 +40,7 @@ mat-table {
 .expanded-cell {
   border-left-style: solid;
   border-left-width: 10px;
-  padding-right: 0;
+  //padding-right: 0;
 }
 
 .expanded-cell-content {
@@ -40,7 +52,7 @@ mat-table {
   width: 100%;
 }
 
-.sub-loader-container{
+.sub-loader-container {
   padding-top: 0.5em;
   padding-bottom: 0.5em;
 }
