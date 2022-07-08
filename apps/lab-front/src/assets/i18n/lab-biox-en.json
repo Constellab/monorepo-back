@@ -136,6 +136,7 @@
     "no_transformers": "No transformers",
     "reorder_transformers": "Reorder transformers",
     "process_type_doc": "Documentation",
+    "resource_doc": "Documentation",
     "progress_bar_progress": "Progress",
     "import_resource": "Import resource",
     "import_resource_text": "Import a file or a folder to a resource. A new resource will be created.",

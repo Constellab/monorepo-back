@@ -18,6 +18,10 @@ import {
 } from '../lab-update-resource-name-dialog/lab-update-resource-name-dialog.component';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {LabResourceDownloadService} from '../../../../entity-service/lab-resource-download.service';
+import {
+  LabTypeDialogComponent,
+  LabTypeDialogInput
+} from '../../../lab-type-core/component/lab-type-dialog/lab-type-dialog.component';
 
 /**
  * Action menu button for resources, it has an ng-content for custom buttons
@@ -124,6 +128,13 @@ export class LabResourceActionsMenuComponent implements OnInit {
     if (result.choice) {
       this.delete.next(this.resource);
     }
+  }
+
+  openTypingDoc(): void{
+    const data: LabTypeDialogInput = {
+      typingName: this.resource.resourceTypingName
+    }
+    this.dialogService.openMediumDialog(LabTypeDialogComponent, {data: data});
   }
 
 

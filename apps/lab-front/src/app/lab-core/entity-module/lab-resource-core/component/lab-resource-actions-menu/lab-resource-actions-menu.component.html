@@ -35,9 +35,15 @@
     <span>{{'biox.update_resource_type' | translate}}</span>
   </button>
 
+  <button mat-menu-item type="button" (click)="openTypingDoc()">
+    <mat-icon>info</mat-icon>
+    <span>{{'biox.resource_doc' | translate}}</span>
+  </button>
+
   <button mat-menu-item type="button" (click)="deleteResource()" class="g-warn-text"
           *ngIf="resource.isDeletable() && !readOnly">
     <mat-icon color="warn">delete</mat-icon>
     <span>{{'databox.delete_resource' | translate}}</span>
   </button>
+
 </mat-menu>

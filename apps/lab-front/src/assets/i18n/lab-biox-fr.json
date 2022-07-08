@@ -136,6 +136,7 @@
     "no_transformers": "Aucun transformeurs",
     "reorder_transformers": "Réorganiser les transformeurs",
     "process_type_doc": "Documentation",
+    "resource_doc": "Documentation",
     "progress_bar_progress": "Avancement",
     "import_resource": "Importer la resource",
     "import_resource_text": "Importer un fichier ou un dossier en un ressource. Une nouvelle resource va être créée.",
