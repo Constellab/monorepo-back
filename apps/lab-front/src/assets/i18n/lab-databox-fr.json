@@ -17,6 +17,7 @@
     "delete_resource_confirmation": "Êtes-vous sûr de vouloir supprimer cette ressource ? Si la ressource est utilisée dans une experiment, elle ne pourra pas être supprimée.",
     "delete_imported_resource_confirmation": "Cela va supprimer l'expérience 'Importer' qui à créée cette resource.",
     "delete_transformed_resource_confirmation": "Cela va supprimer l'expérience 'Transformer' qui à créée cette resource.",
-    "resource_deleted": "Ressource supprimé"
+    "resource_deleted": "Ressource supprimé",
+    "resource_see_children": "Voir les ressources filles"
   }
 }

@@ -9,8 +9,10 @@ import {
 } from '@angular/core';
 import {
   FlArrayObs,
+  FlArrayObsStatus,
   FlDialogService,
   FlDropEvent,
+  FlEntityArrayObs,
   FlTableAbstractDirective,
   FlTag,
   FlTagSelectedEvent
@@ -21,6 +23,7 @@ import {LabTag} from '../../../../model/entities/lab-tag.entity';
 import {LabDragType} from '../../../../model/global/lab-drag-type.class';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {LabResourceDetailDialogComponent} from '../lab-resource-detail-dialog/lab-resource-detail-dialog.component';
+import {Observable} from 'rxjs';
 
 /**
  * Table to show resource with possibility actions on resource and a select mode
@@ -48,10 +51,17 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
   // enable drop tags
   supportedDropType: LabDragType = LabDragType.TAG;
 
+  // for parent resource only, store the current expanded resource
+  expandedResource: LabResource;
+  // store the children resources of the current expanded resource
+  expandedChildrenResources$: FlEntityArrayObs<LabResource>;
+  expandedChildrenStatus$: Observable<FlArrayObsStatus>;
+
   constructor(private cdr: ChangeDetectorRef,
               private resourceService: LabResourceService,
               private dialogService: FlDialogService) {
-    super(['created', 'action', 'name', 'info', 'tags', 'viewResource', 'openInNewTab']);
+    super(['created', 'action', 'name', 'info', 'tags', 'viewResource', 'openInNewTab',
+      'expandedDetail']);
   }
 
   ngOnInit(): void {
@@ -59,8 +69,12 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
 
   rowClicked(resource: LabResource): void {
     if (this.selectableRow) {
-      this.resourceSelected.next(resource);
+      this.emitResourceSelected(resource);
     }
+  }
+
+  emitResourceSelected(resource: LabResource): void {
+    this.resourceSelected.next(resource);
   }
 
 
@@ -86,8 +100,13 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
 
   onTagSelected(tagEvent: FlTagSelectedEvent): void {
     ClHelpService.stopEventPropagation(tagEvent.event);
-    this.tagSelected.next(tagEvent.tag);
+    this.emitTagSelected(tagEvent.tag);
   }
+
+  emitTagSelected(tag: LabTag): void {
+    this.tagSelected.next(tag);
+  }
+
 
   onDrop(resource: LabResource, event: FlDropEvent<FlTag>): void {
     if (!event.data) return;
@@ -104,6 +123,18 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
 
   openInNewTab(event: MouseEvent): void {
     event.stopPropagation();
+  }
+
+  /**
+   * Open the list of children resources of the current expanded resource
+   */
+  toggleResourceChildren(resource: LabResource, event: MouseEvent): void {
+    this.expandedResource = this.expandedResource === resource ? null : resource;
+
+    this.expandedChildrenResources$ = new FlEntityArrayObs(this.resourceService.getResourceChildren(resource.id));
+    this.expandedChildrenStatus$ = this.expandedChildrenResources$.getStatus$();
+
+    ClHelpService.stopEventPropagation(event);
   }
 
 }

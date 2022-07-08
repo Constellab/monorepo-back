@@ -2,14 +2,13 @@ import {Injectable} from '@angular/core';
 import {
   FlAdvancedSearchInput,
   FlApiService,
-  FlEntityPaginatedDatasource,
   FlFileHelper,
   FlSearchConverter,
   FLSearchFunction,
   FlTag
 } from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
-import {LabResource, LabResourceDatasource} from '../model/entities/resource/lab-resource.entity';
+import {LabResource} from '../model/entities/resource/lab-resource.entity';
 import {clDeserializeRecordWrapper, ClPageI} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
 import {LabTypeEntity} from '../model/entities/lab-type/lab-type.entity';
@@ -56,16 +55,9 @@ export class LabResourceService {
     return this.apiService.get(`${this.route}/${id}`, LabResource);
   }
 
-
-  public getResourcesByType(type: string, page: number, pageSize: number): Observable<ClPageI<LabResource>> {
-    return this.apiService.get(`${this.route}/by-type/${type}`, LabResource,
-      {resultIsPaginated: true, page: page, pageSize: pageSize});
-  }
-
-  public getResourcesByTypeDatasource(type: string): LabResourceDatasource {
-    return new FlEntityPaginatedDatasource(
-      (page: number, pageSize: number) => this.getResourcesByType(type, page, pageSize),
-      20, true);
+  public getResourceChildren(id: string): Observable<LabResource[]> {
+    // get the resource in the correct type
+    return this.apiService.get(`${this.route}/${id}/children`, LabResource);
   }
 
   public delete(id: string): Observable<void> {

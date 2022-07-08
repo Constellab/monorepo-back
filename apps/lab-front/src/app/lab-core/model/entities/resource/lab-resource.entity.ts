@@ -57,6 +57,9 @@ export class LabResource extends LabEntityWithTag {
   @Expose({name: 'experiment_id'})
   experimentId?: string;
 
+  @Expose({name: 'has_children'})
+  hasChildren: boolean;
+
   experiment: {
     id: string;
     title: string;

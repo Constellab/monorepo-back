@@ -17,6 +17,7 @@
     "delete_resource_confirmation": "Are you sure you want to delete this resource ? If this resource is used in an experiment, it can't be deleted.",
     "delete_imported_resource_confirmation": "It will delete the Importer experiment that created this resource.",
     "delete_transformed_resource_confirmation": "It will delete the Transformer experiment that created this resource.",
-    "resource_deleted": "Resource deleted"
+    "resource_deleted": "Resource deleted",
+    "resource_see_children": "See children resources"
   }
 }

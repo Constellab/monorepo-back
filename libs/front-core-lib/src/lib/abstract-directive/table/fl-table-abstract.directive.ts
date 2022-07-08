@@ -23,11 +23,14 @@ export abstract class FlTableAbstractDirective<T> {
 
   // tslint:disable-next-line:variable-name
   _columns: string[];
+  // store the column input without transformation
+  _columnsInput: FlTableColumn<T>[];
 
   private columnsDetails: FlTableColumnDetail<T>[];
 
   // setter for columns to refresh the other columns attribute
   @Input() set columns(columns: FlTableColumn<T>[]) {
+    this._columnsInput = columns;
     this._columns = columns.map(column => this.extractColumnName(column));
     this.columnsDetails = columns.map(column => this.convertToColumnDetail(column))
 
