@@ -20,6 +20,8 @@ export const flTooltipConfig: MatTooltipDefaultOptions = {
 };
 
 /**
- * Higher class of an cdk overlay
+ * Higher class of a cdk overlay
  */
 export const flCdkOverlayContainerClass = 'cdk-overlay-container';
+// Panel element of an overlay that is movable and resizable
+export const flCdkOverlayPanelClass = 'cdk-overlay-pane';

@@ -1,6 +1,6 @@
 <div fxLayout="row" fxLayoutAlign="space-between"
      [ngClass]="{'draggable': enableDrag}"
-     cdkDrag cdkDragRootElement=".cdk-overlay-pane" cdkDragHandle
+     cdkDrag [cdkDragRootElement]="dragRootElement" cdkDragHandle
      cdkDragBoundary="body" [cdkDragDisabled]="!enableDrag">
   <!-- Use to center the title -->
   <div class="fake-icon">
