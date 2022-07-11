@@ -3,17 +3,6 @@ import {HnBrick} from '../brick/hn-brick.entity';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 import {BlNotUpdatable} from '@monorepo/back-core-lib';
 
-export class HnBrickIdAndVersion {
-  id: string;
-  version?: number;
-}
-
-export class HnBrickPathVersion {
-  id: string;
-  path: string;
-  version?: number;
-}
-
 export enum HnVersionState {
   STABLE = 'STABLE',
   LATEST = 'LATEST'

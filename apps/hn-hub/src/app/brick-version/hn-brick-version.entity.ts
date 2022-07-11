@@ -5,12 +5,6 @@ import {CmVersion} from '@monorepo/common-model';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnBrickVersionRefState} from '../brick-version-reference/hn-brick-version-reference.entity';
 
-export class HnBrickPathVersion {
-  id: string;
-  path: string;
-  version: string;
-}
-
 export enum HnRepoType {
   PIP = 'PIP',
   GIT = 'GIT'
@@ -70,11 +64,6 @@ export class HnBrickVersion extends HnBaseEntity {
     this.version = version;
     this.repoType = repoType;
     this.technicalInfo = technicalInfo;
-  }
-
-  // Default : '1.0.0'
-  getVersion(): string {
-    return this.version.toString();
   }
 
   public get version(): CmVersion {

@@ -2,7 +2,7 @@ import {Column, Entity, ManyToOne} from 'typeorm';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {HnBaseEntity} from '../core/model/entities/hn-base.entity';
 
-export interface HnDocumentationSearchDTO{
+export interface HnDocumentationSearchDTO {
   id: string;
   name: string;
   completePath: string;
@@ -64,18 +64,3 @@ export class HnDocumentationDTO {
   }
 }
 
-export class HnDocumentationResDTO extends HnBaseEntity {
-  title: string;
-
-  content: Record<string, any>;
-
-  path: string;
-
-  order: number;
-
-  folderId: string;
-}
-
-export class HnDocumentationContentDTO extends HnBaseEntity {
-  content: Record<string, any>;
-}

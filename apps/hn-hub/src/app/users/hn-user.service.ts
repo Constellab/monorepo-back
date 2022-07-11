@@ -18,8 +18,7 @@ export class HnUserService implements BlUserService{
   }
 
   async findOne(id: string): Promise<HnUser> {
-    const user:HnUser = await this.userRepository.findOne(id);
-    return user;
+    return await this.userRepository.findOne(id);
   }
 
   async getCurrent(): Promise<HnUser>{

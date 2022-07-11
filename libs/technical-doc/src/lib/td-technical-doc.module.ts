@@ -28,19 +28,19 @@ import {TdDocIoComponent} from './component/td-doc-io/td-doc-io.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
-    imports: [
-        CommonModule,
-        RouterModule,
-        MatIconModule,
-        FlCorePipeModule,
-        MatChipsModule,
-        FlKeyValueModule,
-        MatDividerModule,
-        FlexModule,
-        FlCoreComponentModule,
-        FlTranslateModule,
-        MatTooltipModule
-    ],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatIconModule,
+    FlCorePipeModule,
+    MatChipsModule,
+    FlKeyValueModule,
+    MatDividerModule,
+    FlexModule,
+    FlCoreComponentModule,
+    FlTranslateModule,
+    MatTooltipModule
+  ],
   declarations: [
     TdResourceDocComponent,
     TdTechnicalDocComponent,
@@ -64,6 +64,10 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 })
 export class TdTechnicalDocModule {
 
+  constructor(translateService: FlTranslateService) {
+    translateService.addModuleTranslation('TdTechnicalDocModule', tdTechnicalDocI18n)
+  }
+
   public static forRoot(apiServiceConfig: Type<TdServiceConfig>): ModuleWithProviders<TdTechnicalDocModule> {
 
     const providers: Provider[] = [
@@ -74,9 +78,5 @@ export class TdTechnicalDocModule {
       ngModule: TdTechnicalDocModule,
       providers: providers
     }
-  }
-
-  constructor(translateService: FlTranslateService) {
-    translateService.addModuleTranslation('TdTechnicalDocModule', tdTechnicalDocI18n)
   }
 }

@@ -14,14 +14,6 @@ export class HnBrickVersionReferenceService extends BlAbstractService<HnBrickVer
     super(brickVersionReferenceRepository, HnBrickVersionReference);
   }
 
-  async createReferences(references: HnBrickVersionReference[], entityManager: EntityManager): Promise<HnBrickVersionReference[]> {
-    const res: HnBrickVersionReference[] = []
-    for (const r of references) {
-      res.push(await entityManager.save(r));
-    }
-    return res;
-  }
-
   async findByBrickVersionId(id: string): Promise<HnBrickVersionReference[]> {
     return this.brickVersionReferenceRepository.find({
       where: {

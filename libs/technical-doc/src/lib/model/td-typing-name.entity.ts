@@ -9,21 +9,23 @@ export class TdTypingName {
     this.typingName = typing_Name;
   }
 
+  private  static spitedTypename(typingName: string): string[] {
+    return typingName.split('.'); // 0: type, 1: brickName, 2: uniqueName
+  }
+
   getType(): string{
-    return this.spitedTypename(this.typingName)[0];
+    return TdTypingName.spitedTypename(this.typingName)[0];
   }
 
   getBrickName(): string{
-    return this.spitedTypename(this.typingName)[1];
+    return TdTypingName.spitedTypename(this.typingName)[1];
   }
 
   getUniqueName(): string{
-    return this.spitedTypename(this.typingName)[2];
+    return TdTypingName.spitedTypename(this.typingName)[2];
   }
 
-  private spitedTypename(typingName: string): string[] {
-    return typingName.split('.'); // 0: type, 1: brickName, 2: uniqueName
-  }
+
 
 
 }

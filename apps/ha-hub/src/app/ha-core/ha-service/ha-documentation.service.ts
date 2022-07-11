@@ -1,11 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiService, FlTextEditorUploadedImage} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {
-  HaDocumentation,
-  HaDocumentationContentFormDTO,
-  HaDocumentationDTO
-} from '../ha-model/ha-entities/ha-documentation.class';
+import {HaDocumentation, HaDocumentationContentFormDTO} from '../ha-model/ha-entities/ha-documentation.class';
 import {HaNodeDTO} from '../ha-model/ha-entities/ha-node.class';
 import {map} from 'rxjs/operators';
 
@@ -22,13 +18,6 @@ export class HaDocumentationService {
   constructor(private apiService: FlApiService) {
   }
 
-  /**
-   * Call http create
-   * @param object json object
-   */
-  public create(object: Partial<HaDocumentation>): Observable<HaDocumentation> {
-    return this.apiService.post('folder/doc', object, HaDocumentation);
-  }
 
   /**
    * Call http get one by id
@@ -44,13 +33,6 @@ export class HaDocumentationService {
    */
   public updateContent(object: HaDocumentationContentFormDTO): Observable<HaDocumentation> {
     return this.apiService.put(this.route + '/content/' + object.id, object.content);
-  }
-
-  /**
-   * Call http get
-   */
-  public get(): Observable<HaDocumentationDTO[]> {
-    return this.apiService.get(this.route, HaDocumentationDTO);
   }
 
   /**

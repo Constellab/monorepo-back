@@ -9,8 +9,6 @@ import {blIsDecoratedWithPublic} from '@monorepo/back-core-lib';
  * Methods and classes annotated with @Public decorator
  * don't need to check if authentication token exists
  *
- * Methods and classes annotated with @LabAuth are manager by the {@link LabAuthGuard}
- *
  * Others uses JWT authentication with {@link BlJwtStrategy}
  */
 @Injectable()

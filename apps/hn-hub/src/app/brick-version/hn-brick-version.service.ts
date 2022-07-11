@@ -22,7 +22,6 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     private brickVersionsRepository: Repository<HnBrickVersion>,
     private transportService: BlTransportService,
     private brickVersionReferenceService: HnBrickVersionReferenceService,
-    private entityManager: EntityManager
   ) {
     super(brickVersionsRepository, HnBrickVersion);
   }
@@ -32,21 +31,6 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     await this.sendBrickVersionIdToTransport(brickVersion.id);
     return brickVersion;
   }
-
-  async createFirstBrickVersion(brickMajorVersion: HnBrickMajorVersion, brickVersion: HnBrickVersion,
-                                references: HnReferenceDTO[], entityManager: EntityManager): Promise<HnBrickVersion> {
-    const newBrickVersion: HnBrickVersion = await entityManager.save(brickVersion);
-    return this.createNewBrickVersion(brickMajorVersion,
-      {
-        version: brickVersion.version.toString(),
-        brickId: brickMajorVersion.brick.id,
-        technicalInfo: brickVersion.technicalInfo,
-        repoType: brickVersion.repoType,
-        references: references
-      }
-    );
-  }
-
 
   async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO,
                               entityManager?: EntityManager): Promise<HnBrickVersion> {
@@ -124,10 +108,6 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     return res;
   }
 
-  async saveUpdate(brickVersion: HnBrickVersion): Promise<HnBrickVersion> {
-    return await this.brickVersionsRepository.save(brickVersion);
-  }
-
   /**
    * Send all bricks to queue
    */
@@ -163,28 +143,6 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     });
 
     this.sendBrickVersionToTransport(brickVersion);
-  }
-
-  private sendBrickVersionToTransport(brickVersion: HnBrickVersion): void {
-    const brick: HnBrickTransportDto = {
-      id: brickVersion.brickMajorVersion.brick.id,
-      name: brickVersion.brickMajorVersion.brick.name,
-      pipRepo: brickVersion.brickMajorVersion.brick.pipRepo,
-      gitRepo: brickVersion.brickMajorVersion.brick.gitRepo,
-      visibility: brickVersion.brickMajorVersion.brick.visibility,
-      versions: [{
-        id: brickVersion.id,
-        major: brickVersion.brickMajorVersion.major,
-        minor: brickVersion.minor,
-        patch: brickVersion.patch,
-        versionType: brickVersion.versionType,
-        subPatch: brickVersion.subPatch,
-        versionState: brickVersion.brickMajorVersion.versionState,
-        repoType: brickVersion.repoType,
-        technicalInfo: brickVersion.technicalInfo
-      }]
-    };
-    this.transportService.emit('brick', brick);
   }
 
   async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>> {
@@ -292,6 +250,28 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
 
   async getBrickName(id: string): Promise<string> {
     return (await this.brickVersionsRepository.findOne(id)).brickMajorVersion.brick.name;
+  }
+
+  private sendBrickVersionToTransport(brickVersion: HnBrickVersion): void {
+    const brick: HnBrickTransportDto = {
+      id: brickVersion.brickMajorVersion.brick.id,
+      name: brickVersion.brickMajorVersion.brick.name,
+      pipRepo: brickVersion.brickMajorVersion.brick.pipRepo,
+      gitRepo: brickVersion.brickMajorVersion.brick.gitRepo,
+      visibility: brickVersion.brickMajorVersion.brick.visibility,
+      versions: [{
+        id: brickVersion.id,
+        major: brickVersion.brickMajorVersion.major,
+        minor: brickVersion.minor,
+        patch: brickVersion.patch,
+        versionType: brickVersion.versionType,
+        subPatch: brickVersion.subPatch,
+        versionState: brickVersion.brickMajorVersion.versionState,
+        repoType: brickVersion.repoType,
+        technicalInfo: brickVersion.technicalInfo
+      }]
+    };
+    this.transportService.emit('brick', brick);
   }
 
 }

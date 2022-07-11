@@ -14,8 +14,7 @@ import {HttpModule} from '@nestjs/axios';
     BlTranslateModule,
     BlRequestContextModule
   ],
-  providers: [
-  ],
+  providers: [],
   exports: [
     HnCoreConfigModule,
     BlRequestContextModule,

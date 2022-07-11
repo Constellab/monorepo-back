@@ -70,8 +70,7 @@ export class HnFolderService {
 
     if (createDocumentationRes.folder == null) {
       createDocumentationRes.folder =
-        await this.foldersRepository.findOne(createDocumentationRes.folder ?
-          createDocumentationRes.folder.id : createDocumentationRes.folderId, {relations: ['documentations', 'folders']});
+        await this.foldersRepository.findOne(createDocumentationRes.folderId, {relations: ['documentations', 'folders']});
     }
 
     createDocumentationRes.path = HnFolderService.generatePathWithTitle(createDocumentationRes.title);

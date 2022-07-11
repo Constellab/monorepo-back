@@ -66,6 +66,6 @@
   "private_brick": "Private brick",
   "public_brick": "Public brick",
   "external_link": "External link",
-  "research_doc": "Research documentation"
-
+  "research_doc": "Research documentation",
+  "object_not_found": "Object not found"
 }

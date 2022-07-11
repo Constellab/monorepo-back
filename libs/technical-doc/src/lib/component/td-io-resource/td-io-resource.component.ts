@@ -26,12 +26,4 @@ export class TdIoResourceComponent implements OnInit {
     }
     this.color = FlColorHelper.stringToRGBColor(this.resource.typing_name);
   }
-
-  getIoBrickName(typingName: string): string {
-    return new TdTypingName(typingName).getBrickName();
-  }
-
-  getIoUniqueName(typingName: string): string {
-    return new TdTypingName(typingName).getUniqueName();
-  }
 }

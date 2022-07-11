@@ -59,6 +59,7 @@ export class HnBrickController {
     return this.brickService.findFirstDoc(await this.brickService.findByName(brickName), version);
   }
 
+
   @Post()
   create(@Body(new BlParsePipe(HnCreateBrickDTO)) createBrick: HnCreateBrickDTO): Promise<HnBrick> {
     if (!createBrick.name.includes(' ')) {
@@ -66,11 +67,6 @@ export class HnBrickController {
     } else {
       return null;
     }
-  }
-
-  @Delete(':id')
-  delete(@Param('id') id: string): Promise<void> {
-    return this.brickService.deleteBrickById(id);
   }
 
   @Post('create-technical-doc')

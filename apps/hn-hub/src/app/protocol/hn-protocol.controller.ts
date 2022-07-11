@@ -1,7 +1,7 @@
-import { Controller } from '@nestjs/common';
-import { HnProtocolService } from './hn-protocol.service';
+import {Controller} from '@nestjs/common';
 
 @Controller('protocol')
 export class HnProtocolController {
-  constructor(private readonly protocolService: HnProtocolService) {}
+  constructor() {
+  }
 }

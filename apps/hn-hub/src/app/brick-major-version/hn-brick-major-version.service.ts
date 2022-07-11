@@ -5,12 +5,12 @@ import {EntityManager, Repository} from 'typeorm';
 import {HnFolderService} from '../folder/hn-folder.service';
 import {HnBrick, HnCreateBrickDTO} from '../brick/hn-brick.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
-import {HnBrickVersion, HnNewVersionDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
+import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {CmVersion} from '@monorepo/common-model';
 import {HnNode} from '../folder/hn-folder.dto';
 import {HnImportTechnicalDocDTO, HnTechnicalDocInputDTO} from '../brick/hn-brick.dto';
 import {HnTechnicalFolderService} from '../technical-folder/hn-technical-folder.service';
-import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
+import {HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
 
 @Injectable()
@@ -115,22 +115,22 @@ export class HnBrickMajorVersionService {
       }
     });
 
-    if(brickMajorVersion == null){
+    if (brickMajorVersion == null) {
       return false;
     }
 
     return this.technicalFolderService.createTechnicalDoc(brickMajorVersion, importFile);
   }
 
-  async findTechnicalDoc(brickMajorVersion: HnBrickMajorVersion): Promise<HnNode>{
+  async findTechnicalDoc(brickMajorVersion: HnBrickMajorVersion): Promise<HnNode> {
     return this.technicalFolderService.findTechnicalDoc(brickMajorVersion);
   }
 
-  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity>{
+  async findCurrentTecDoc(brickMajorVersion: HnBrickMajorVersion, input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
     return await this.technicalFolderService.findCurrentTecDoc(brickMajorVersion, input);
   }
 
-  async getDocsByBrickNameMajor(brick: HnBrick, major: number): Promise<HnDocumentationSearchDTO[]>{
+  async getDocsByBrickNameMajor(brick: HnBrick, major: number): Promise<HnDocumentationSearchDTO[]> {
     let res: HnDocumentationSearchDTO[] = [];
     const brickMajorVersion: HnBrickMajorVersion = await this.brickMajorVersionsRepository.findOne({
       brick: {
@@ -142,15 +142,15 @@ export class HnBrickMajorVersionService {
 
     res = res.concat(await this.technicalFolderService.getTechDocsByBrickNameMajor(brickMajorVersion, major.toString(), brick.name));
 
-    return res.sort((a,b) => {
-      if(a.name < b.name) return -1;
-      if(b.name < a.name) return 1;
+    return res.sort((a, b) => {
+      if (a.name < b.name) return -1;
+      if (b.name < a.name) return 1;
       return 0;
     });
 
   }
 
-  async findBrickMajorVersionByBrickAndMajor(brick: HnBrick, major: number): Promise<HnBrickMajorVersion>{
+  async findBrickMajorVersionByBrickAndMajor(brick: HnBrick, major: number): Promise<HnBrickMajorVersion> {
     return this.brickMajorVersionsRepository.findOne({
       where: {
         brick: {

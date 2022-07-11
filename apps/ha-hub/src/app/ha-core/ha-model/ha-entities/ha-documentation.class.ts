@@ -18,11 +18,6 @@ export class HaDocumentation extends HaEntity {
   order: number;
 }
 
-export class HaDocumentationDTO extends HaEntity {
-  title: string;
-
-  completePath: string;
-}
 
 export class HaDocumentationContentFormDTO extends HaEntity {
   content: CmRichTextI;

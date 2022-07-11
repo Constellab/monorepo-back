@@ -130,11 +130,6 @@ export class HnBrickService {
     return await this.folderService.findFirstDoc(brickMajorVersion);
   }
 
-  async deleteBrickById(id: string): Promise<void> {
-    const brick: HnBrick = await this.bricksRepository.findOne(id);
-    await this.bricksRepository.delete(brick);
-  }
-
   async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
     const brick: HnBrick = await this.bricksRepository.findOne(newVersion.brickId);
     newVersion.repoType = (await this.getLatestBrickVersion(brick.name)).repoType;

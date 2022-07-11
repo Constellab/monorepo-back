@@ -9,7 +9,6 @@ export class HnBrickVersionController {
   constructor(private readonly brickVersionService: HnBrickVersionService) {
   }
 
-
   /**
    * Route to send all the brick version to the queue
    */
@@ -17,7 +16,6 @@ export class HnBrickVersionController {
   sendAllToQueue(): Promise<void> {
     return this.brickVersionService.sendAllBrickVersionToQueue();
   }
-
 
   @BlPublic()
   @Get('current/:brickId')

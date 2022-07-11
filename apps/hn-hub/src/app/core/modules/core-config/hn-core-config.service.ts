@@ -9,8 +9,8 @@ import {
   HN_RABBITMQ_USER_KEY,
   HnEnvironmentProfile
 } from '../../model/config/hn-config.class';
-import {DnDatabaseConfig} from '../../model/config/hn-database-config.class';
 import {BlObjectStorageModuleConfig, BlTransportModuleConfig, blTransportQueueHub} from '@monorepo/back-core-lib';
+import {HnDatabaseConfig} from '../../model/config/hn-database-config.class';
 
 @Injectable()
 export class HnCoreConfigService {
@@ -39,7 +39,7 @@ export class HnCoreConfigService {
     return this.configService.get('CENTRAL_API_URL');
   }
 
-  public getDatabaseConfig(): DnDatabaseConfig {
+  public getDatabaseConfig(): HnDatabaseConfig {
     return {
       host: this.configService.get('DATABASE_HOST'),
       port: this.configService.get('DATABASE_PORT'),
@@ -70,18 +70,9 @@ export class HnCoreConfigService {
     return this.isProduction() ? 'hub-documentation-prod' : 'hub-documentation-pre-prod';
   }
 
-  protected getConfigNumber(configName: string): number {
-    try {
-      return parseInt(this.configService.get(configName), 10);
-    } catch (error) {
-      console.error('Error while parsing config ' + configName + ' to number');
-      throw error;
-    }
-  }
-
-  public getFrontRootUrl(): string{
+  public getFrontRootUrl(): string {
     let res: string;
-    switch (this.getEnvironmentProfile()){
+    switch (this.getEnvironmentProfile()) {
       case "prod":
         res = 'https://hub.gencovery.com/';
         break;
@@ -101,5 +92,14 @@ export class HnCoreConfigService {
   public getLogPath(): string {
     return this.configService.get('LOG_PATH');
   }
+
+  // protected getConfigNumber(configName: string): number {
+  //   try {
+  //     return parseInt(this.configService.get(configName), 10);
+  //   } catch (error) {
+  //     console.error('Error while parsing config ' + configName + ' to number');
+  //     throw error;
+  //   }
+  // }
 }
 
