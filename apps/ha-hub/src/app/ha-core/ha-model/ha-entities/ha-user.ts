@@ -1,6 +1,5 @@
-import {HaEntity} from './ha-entity.class';
 import {DateTime} from 'luxon';
-import {ClLuxonDateTimeTransform, ClLuxonTransform, ClSupportedLanguage} from '@monorepo/core-lib';
+import {ClLuxonDateTimeTransform, ClSupportedLanguage} from '@monorepo/core-lib';
 import {FlEntity} from '@monorepo/front-core-lib';
 
 export class HaUser implements FlEntity {

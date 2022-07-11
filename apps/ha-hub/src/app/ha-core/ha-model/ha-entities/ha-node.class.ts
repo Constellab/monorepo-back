@@ -37,7 +37,14 @@ export class HaNodeDTO extends HaEntity{
   title: string;
   path: string;
   folderId?: string;
-  isFolder: boolean;
+  isFolder?: boolean;
+  type: HaNodeType;
+}
+
+export enum HaNodeType{
+  DOC = 'doc',
+  FOL = 'fol',
+  TEC = 'TEC'
 }
 
 export class EntityWithPotentialsChildren<T> implements FlEntity{
@@ -48,12 +55,6 @@ export class EntityWithPotentialsChildren<T> implements FlEntity{
 
 export class HaMateTreeFlatDataSource<T extends EntityWithPotentialsChildren<T>, F, K = F> extends MatTreeFlatDataSource<T, F, K>{
 
-  //Create Node
-  createNode(node: T, parentId: string): void{
-    const parent: T = this.findNode(parentId, this.data);
-    parent.children.push(node);
-  }
-
   findNode(nodeId: string, data: T[]): T{
     const node: T = data.find(n => n.id == nodeId);
     if(node) {
@@ -63,32 +64,6 @@ export class HaMateTreeFlatDataSource<T extends EntityWithPotentialsChildren<T>,
       return this.findNode(nodeId, n.children);
     });
     return null;
-  }
-
-  delete(id: string): void{
-    let res: boolean;
-    [this.data, res] = this.deleteNode(this.data, id);
-  }
-
-  //Delete Node
-  private deleteNode(nodes: T[], id: string): [T[], boolean]{
-    nodes.map(node => {
-      if(node.id == id){
-        nodes.splice(nodes.indexOf(node), 1);
-        return [nodes, true];
-      }
-      else{
-        if(node.children != null){
-          let r:boolean;
-          [node.children, r] = this.deleteNode(node.children, id);
-          return [nodes, r]
-        }
-        else{
-          return [nodes, false];
-        }
-      }
-    })
-    return [nodes, false];
   }
 
 

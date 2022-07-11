@@ -39,14 +39,6 @@ export class HaDocumentationService {
   }
 
   /**
-   * Call http get
-   * @param path path of the entity
-   */
-  public getByPath(path: string): Observable<HaDocumentation> {
-    return this.apiService.get(`${this.route}/path/?path=${path}`, HaDocumentation);
-  }
-
-  /**
    * Call http updateContent
    * @param object json object
    */

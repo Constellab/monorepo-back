@@ -48,7 +48,7 @@ export class FlInputFileDirective extends FlFormFieldMultipleDirective<File>
   @Input() strictMode: boolean = true;
 
   /**
-   * If true, the directive only accept the file types listed in the accepted attribute
+   * If true, clear the input value
    */
   @Input() autoClearHtmlInput: boolean = false;
 

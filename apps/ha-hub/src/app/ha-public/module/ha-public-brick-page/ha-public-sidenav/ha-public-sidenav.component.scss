@@ -32,14 +32,6 @@
   flex-direction: column;
 }
 
-.router{
-  height: 100%;
-}
-
-.small-router{
-  height: calc(100% - 3em);
-}
-
 @media (max-width: 959px) {
   .sidenav-content{
     z-index: 1;
@@ -54,12 +46,6 @@
 .tree{
   width: 100%;
   height: auto;
-}
-
-.tree-node{
-  padding: 0;
-  margin: 0;
-  width: 100%;
 }
 
 .item{
@@ -79,14 +65,8 @@
   cursor: grab;
 }
 
-
-
 .draggable-element{
   background-color: inherit;
-}
-
-.active{
-  color: var(--primary-color);
 }
 
 .line{
@@ -117,31 +97,13 @@
   align-items: center;
 }
 
-.custom-placeholder{
-  width: 100%;
-  border-bottom: 2px dashed var(--primary-color);
-}
-
 .placeholder-level{
   max-width: 100%;
-}
-
-.bt-add-technical-doc{
-  margin: 1em auto  ;
-  font-size: 0.8em;
-}
-
-.input-cont{
-  height: 100%;
-  line-height: 3em;
-  padding: 0;
-  margin: 0;
 }
 
 .bt-add-doc{
   width: 50%;
   margin: 1em 25%;
-
   font-size: 0.8em;
 }
 
@@ -157,4 +119,11 @@
   padding-left: 0.2em;
   padding-bottom: 0.3em;
   padding-right: 0.2em;
+}
+
+.input-tech-doc{
+  padding-bottom: 0!important;
+  margin-bottom: 0;
+  margin-top: 0.5em;
+  width: 100%;
 }

@@ -1,4 +1,4 @@
-import {Directive, Input, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, Input, OnDestroy, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
 import {FlAbstractIfDirective} from '@monorepo/front-core-lib';
 import {HaAuthenticatedUserService} from '../../../ha-service/ha-authenticated-user.service';
 import {Observable} from 'rxjs';
@@ -6,7 +6,7 @@ import {Observable} from 'rxjs';
 @Directive({
   selector: '[haIsAdmin]'
 })
-export class HaIsAdminDirective extends FlAbstractIfDirective implements OnInit {
+export class HaIsAdminDirective extends FlAbstractIfDirective implements OnInit, OnDestroy {
 
   @Input()
   set haIsAdminElse(templateRef: TemplateRef<any> | null){

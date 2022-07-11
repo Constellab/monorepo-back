@@ -4,7 +4,7 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {getManager, Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
-import {HnBrickVersion, HnNewVersionDTO, HnRepoType} from '../brick-version/hn-brick-version.entity';
+import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
 import {HnBrickMajorVersionService} from '../brick-major-version/hn-brick-major-version.service';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {HnBrickVersionService} from '../brick-version/hn-brick-version.service';
@@ -38,10 +38,6 @@ export class HnBrickService {
     private userService: HnUserService,
     private configService: HnCoreConfigService
   ) {
-  }
-
-  private isCurrentAdmin(): boolean{
-    return HnCurrentUserHelper.getCurrentUser() && HnCurrentUserHelper.getCurrentUser().isAdmin();
   }
 
   async create(createdBrick: HnCreateBrickDTO): Promise<HnBrick> {
@@ -189,7 +185,7 @@ export class HnBrickService {
     const brick: HnBrick = this.isCurrentAdmin() ? await this.bricksRepository.findOne(content.brickId) :
       await this.bricksRepository.findOne(content.brickId, {where: {visibility: 'public'}});
 
-    if (brick && brick.name.toUpperCase() != content.inputBrickName.toUpperCase()) {
+    if (!content.inputBrickName || (brick && brick.name.toUpperCase() != content.inputBrickName.toUpperCase())) {
       return [false, false];
     }
 
@@ -198,7 +194,6 @@ export class HnBrickService {
 
     if (brickMajorVersion == null) {
       throw new UnauthorizedException('Impossible to create a new major version');
-      return [false, false];
     }
 
     return this.brickVersionService.checkIfVersionExist(brickMajorVersion, content.inputBrickVersion);
@@ -243,6 +238,10 @@ export class HnBrickService {
     } catch (e) {
       return null;
     }
+  }
+
+  private isCurrentAdmin(): boolean {
+    return HnCurrentUserHelper.getCurrentUser() && HnCurrentUserHelper.getCurrentUser().isAdmin();
   }
 
 }

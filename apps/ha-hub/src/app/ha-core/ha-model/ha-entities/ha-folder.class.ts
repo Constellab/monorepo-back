@@ -26,14 +26,3 @@ export class HaFolder extends HaEntity {
   documentations: HaDocumentation[];
 
 }
-
-export class HaFolderDTO extends HaEntity {
-
-  title: string;
-
-  path: string;
-
-  folderId: string;
-
-  order: number;
-}

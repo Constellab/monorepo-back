@@ -24,7 +24,6 @@ export class HaPublicFindDocComponent implements OnInit {
   technicalDocumentationsNotEmpty: boolean = true;
   brickName: string;
   major: string;
-  searchByLink: boolean = false;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) input: any,

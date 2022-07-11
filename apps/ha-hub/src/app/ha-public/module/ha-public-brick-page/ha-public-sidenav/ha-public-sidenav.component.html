@@ -1,8 +1,16 @@
 <mat-drawer-container class="container" [hasBackdrop]="isSmallScreen" (backdropClick)="closeSideNav()">
-  <mat-drawer #drawer class="g-full-height g-styled-scrollbar" [mode]="isSmallScreen ? 'over' : 'side'"
+  <mat-drawer class="g-full-height g-styled-scrollbar" [mode]="isSmallScreen ? 'over' : 'side'"
               [opened]="!isSmallScreen || sideNavIsOpen">
     <div class="sidenav">
-      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree item g-full-height g-drag-anim-order"
+
+      <mat-form-field class="input-tech-doc g-form-field-compact-height" appearance="outline">
+        <mat-label>{{'research_doc' | translate}}</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input type="text" matInput [formControl]="searchTechDocControl" autocomplete="off">
+      </mat-form-field>
+
+      <mat-tree *ngIf="dataSource$ | async" [dataSource]="dataSource$ | async" [treeControl]="treeControl"
+                class="tree item g-full-height g-drag-anim-order"
                 cdkDropList (cdkDropListDropped)="drop($event)">
         <!-- This is the tree node template for leaf nodes -->
         <mat-tree-node *matTreeNodeDef="let node" cdkDrag
@@ -17,7 +25,7 @@
 
                 <span class="link-item"
 
-                   [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}">
+                      [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}">
                   {{node.name}}
                 </span>
                 <div class="line-icons" *ngIf="(isAdmin | async) && hoverId===node.id">
@@ -76,12 +84,9 @@
         </mat-tree-node>
       </mat-tree>
 
-      <button mat-raised-button color="primary" (click)="onClickMenu($event, true)" class="bt-add-doc"
-              *ngIf="(isAdmin | async)">
-        {{'create_element' | translate}}
-      </button>
+      <mat-tree *ngIf="technicalDataSource$ | async" [dataSource]="technicalDataSource$ | async"
+                [treeControl]="treeControl" class="tree item g-full-height">
 
-      <mat-tree [dataSource]="technicalDataSource" [treeControl]="treeControl" class="tree item g-full-height">
         <!-- This is the tree node template for leaf nodes -->
         <mat-tree-node *matTreeNodeDef="let node">
           <mat-nav-list class="line" *ngIf="node.id != null">
@@ -124,10 +129,11 @@
       <div class="sidenav-empty-space">
 
       </div>
-      <fl-input-file-container color="primary" [placeholder]="'import_technical_documentation' | translate" class="bt-add-technical-doc">
-        <input flInputFile type="file" [strictMode]="true" [autoClearHtmlInput]="true" accept="application/json"
-               (fileChange)="onFileSelected($event)">
-      </fl-input-file-container>
+
+      <button mat-raised-button color="primary" (click)="onClickMenu($event, true)" class="bt-add-doc"
+              *ngIf="(isAdmin | async)">
+        {{'create_element' | translate}}
+      </button>
     </div>
   </mat-drawer>
 

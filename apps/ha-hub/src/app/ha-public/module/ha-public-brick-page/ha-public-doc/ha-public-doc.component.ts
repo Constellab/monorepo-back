@@ -110,7 +110,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
 
   private actionOnDoc(isFirstDoc: boolean, doc: any): void {
     if (isFirstDoc) {
-      this.router.navigate([`${this.router.url}/${doc.completePath}`]);
+      this.router.navigate([`${this.router.url}/${doc.completePath}`]).then();
     }
     this.documentation = doc;
 

@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
   FlDialogService,
-  FlOverlayRef,
   FlQuillConfig,
   FlTextEditorBlockAddButton,
   FlTextEditorConfig,

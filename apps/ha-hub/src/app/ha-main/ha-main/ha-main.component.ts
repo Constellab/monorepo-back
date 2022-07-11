@@ -13,7 +13,7 @@ import {HaApiServiceConfig} from '../../ha-core/ha-model/ha-config/ha-api-module
   styleUrls: ['./ha-main.component.scss']
 })
 export class HaMainComponent implements OnInit {
-  userConnected: Observable<HaUser> = this.authUserService.getUser();
+  userConnected$: Observable<HaUser> = this.authUserService.getUser();
   constellabUrl: string;
   constructor(
     private authUserService: HaAuthenticatedUserService,

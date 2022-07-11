@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import {Router} from '@angular/router';
+import {Injectable} from '@angular/core';
 import {environment} from '../../../environments/ha-environment';
 
 @Injectable({
@@ -7,33 +6,34 @@ import {environment} from '../../../environments/ha-environment';
 })
 export class HaRouterService {
 
-  constructor(private router: Router) { }
+  constructor() {
+  }
 
-  public static getAppUrl(): string{
+  public static getAppUrl(): string {
     return environment.hubUrl;
   }
 
-  public static getBrickListRoute(): string{
+  public static getBrickListRoute(): string {
     return '/bricks/';
   }
 
-  public static getBrickPageRoute(brickName: string, brickMajor: string): string{
+  public static getBrickPageRoute(brickName: string, brickMajor: string): string {
     return `${this.getBrickListRoute()}${brickName}/${brickMajor === 'latest' ? 'latest' : `v${brickMajor}`}/`;
   }
 
-  public static getBrickDocsPageRoute(brickName: string, brickMajor: string): string{
+  public static getBrickDocsPageRoute(brickName: string, brickMajor: string): string {
     return `${this.getBrickPageRoute(brickName, brickMajor)}doc/`;
   }
 
-  public static getDocumentationRoute(brickName: string, brickMajor: string, completePath: string): string{
+  public static getDocumentationRoute(brickName: string, brickMajor: string, completePath: string): string {
     return `${this.getBrickDocsPageRoute(brickName, brickMajor)}${completePath}`;
   }
 
-  public static getTechDocRoute(parentBrickName:string, parentVersion:string, objectType:string, docParentUniqueName:string): string{
+  public static getTechDocRoute(parentBrickName: string, parentVersion: string, objectType: string, docParentUniqueName: string): string {
     return `${this.getBrickDocsPageRoute(parentBrickName, parentVersion)}technical-folder/${objectType}/${docParentUniqueName}`;
   }
 
-  public static getBrickListVersionPageRoute(brickName: string, brickMajor: string): string{
+  public static getBrickListVersionPageRoute(brickName: string, brickMajor: string): string {
     return `${this.getBrickPageRoute(brickName, brickMajor)}version/`;
   }
 

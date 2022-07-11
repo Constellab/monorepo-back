@@ -26,6 +26,13 @@ export class HaApiErrorService extends FlApiErrorService {
     super(snackBarService, translateService);
   }
 
+  /**
+   * Handle the error message for the not specific errors
+   */
+  private static getErrorMessage(error: CmNestApiError, defaultError: string): string {
+    return error.detail || defaultError;
+  }
+
   get defaultApiErrorDuration(): number {
     return null;
   }
@@ -62,7 +69,7 @@ export class HaApiErrorService extends FlApiErrorService {
       }
 
       // get the error message
-      serverError.logDetail.message = this.getErrorMessage(nestError, defaultError);
+      serverError.logDetail.message = HaApiErrorService.getErrorMessage(nestError, defaultError);
     }
 
     if (!hideError) {
@@ -71,7 +78,7 @@ export class HaApiErrorService extends FlApiErrorService {
     }
 
     // throw the error to propagate it
-    return throwError(serverError);
+    return throwError(() => serverError)
 
 
   }
@@ -94,14 +101,9 @@ export class HaApiErrorService extends FlApiErrorService {
     this.showError(serverError.logDetail.message, snackBarDuration);
 
     // throw the error to propagate it
-    return throwError(serverError);
+    return throwError(() => serverError);
   }
 
-  /**
-   * Handle the error message for the not specific errors
-   */
-  private getErrorMessage(error: CmNestApiError, defaultError: string): string {
-    return error.detail || defaultError;
-  }
+
 }
 

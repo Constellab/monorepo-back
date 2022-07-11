@@ -74,7 +74,6 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
     return '';
   }
 
-
   onFileSelected($event: File): void {
     this.isLoadingImport = true;
     if ($event == null) {
@@ -90,7 +89,7 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
 
       reader.onload = (e: any) => {
         const srcResult = JSON.parse(e.target.result);
-        if (srcResult as HaNewVersionFile) {
+        if (srcResult as HaNewVersionFile && this.isSettingJson(srcResult)) {
           this.brickService.isActualBrickAndNewVersion(this.brickId, srcResult.name, srcResult.version)
             .subscribe(([res, res2]) => {
               if (res) {
@@ -104,12 +103,18 @@ export class HaPublicAddVersionDialogComponent extends FlFormDialogAbstractDirec
               this.isLoadingImport = false;
             });
         } else {
-          console.log('NON')
+          this.isLoadingImport = false;
+          this.errorFile = true;
+          this.errorFileText = 'file_wrong_type';
         }
       };
 
       reader.readAsText($event);
     }
+  }
+
+  private isSettingJson(file: HaNewVersionFile): boolean {
+    return file.name != null && file.version != null && file.environment != null;
   }
 
 

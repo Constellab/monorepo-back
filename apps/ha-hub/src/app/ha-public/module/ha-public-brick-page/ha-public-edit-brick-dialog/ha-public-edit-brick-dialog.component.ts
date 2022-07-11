@@ -15,7 +15,6 @@ import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 export class HaPublicEditBrickDialogComponent extends FlFormDialogAbstractDirective<Partial<HaEditBrickDTO>> implements OnInit {
 
   isLoading: boolean = false;
-  isUpdate: boolean = true;
   repoError: boolean;
 
   constructor(

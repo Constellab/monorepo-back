@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {TdTypeEntity, TdUniqueType} from '../../model/td-type.entity';
 import {TdTypingName} from '../../model/td-typing-name.entity';
 import {FlColorHelper} from '@monorepo/front-core-lib';
@@ -35,7 +35,9 @@ export class TdMainDocComponent implements OnInit {
       version: this._entity.parentVersion,
       typingName: this._entity.parentTypingName
     }
-    if(this.uniqueEntityParent.typingName){
+
+
+    if (this.uniqueEntityParent.typingName) {
       this.entityParentType = new TdTypingName(this.uniqueEntityParent.typingName).getType();
       this.color = FlColorHelper.stringToRGBColor(this.uniqueEntityParent.typingName);
     }

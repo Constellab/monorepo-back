@@ -67,15 +67,6 @@ export class HaBrickDTO {
   subPatch?: number;
 }
 
-export class HaCreateBrickDTO {
-  id?: string;
-  name: string
-  description: string;
-  version: string;
-  isBeta: boolean = false;
-  subPatch?: number;
-  repoType: HaRepoType;
-}
 
 export class HaEditBrickDTO{
   id: string;

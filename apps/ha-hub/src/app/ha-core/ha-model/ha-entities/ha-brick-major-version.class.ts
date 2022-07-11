@@ -1,4 +1,3 @@
-import {FlEntityPaginatedDatasource} from '@monorepo/front-core-lib';
 import {HaEntity} from './ha-entity.class';
 import {HaBrick} from './ha-brick.class';
 import {Type} from 'class-transformer';
@@ -9,7 +8,7 @@ export enum HaVersionState {
   NEXT = 'NEXT'
 }
 
-export class HaBrickMajorVersion extends HaEntity{
+export class HaBrickMajorVersion extends HaEntity {
   @Type(() => HaBrick)
   brick: HaBrick;
   major: number;

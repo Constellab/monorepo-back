@@ -57,12 +57,12 @@ export class HaPublicEditBrickFormComponent implements OnInit {
   submit(): void {
 
     const formValue: Partial<HaBrickCreationDTO> = this.formGp.value;
-    if(this.formGp.value.repoPip || this.formGp.value.repoGit){
+    if (this.formGp.value.repoPip || this.formGp.value.repoGit) {
       this.repoError = false;
       this.formGp.controls.repoPip.removeValidators(Validators.required);
       this.formGp.controls.repoGit.removeValidators(Validators.required);
       if (this.formGp.valid && !this.isLoading) {
-        if(this.formGp.value.repoGit && !this.formGp.value.repoPip){
+        if (this.formGp.value.repoGit && !this.formGp.value.repoPip) {
           formValue.repoType = HaRepoType.GIT;
         }
         this.isLoading = true;
@@ -70,7 +70,7 @@ export class HaPublicEditBrickFormComponent implements OnInit {
           {
             next: (brick) => {
               this.isLoading = false;
-              this.router.navigateByUrl('/bricks/' + brick.name);
+              this.router.navigateByUrl('/bricks/' + brick.name).then();
             },
             error: () => {
               this.isLoading = false;
@@ -86,7 +86,7 @@ export class HaPublicEditBrickFormComponent implements OnInit {
   }
 
   onFileSelected($event: File): void {
-    if($event == null){
+    if ($event == null) {
       return;
     }
     this.errorFile = false;
@@ -103,7 +103,7 @@ export class HaPublicEditBrickFormComponent implements OnInit {
       reader.onload = (e: any) => {
         const srcResult = JSON.parse(e.target.result);
         this.brickService.getByName(srcResult.name).subscribe(res => {
-          if(res == null){
+          if (res == null) {
             this.inputFile =
               new HaAddVersionInput(true, srcResult.name, srcResult.version, srcResult.environment, srcResult.technical_info);
             this.formGp.controls.name.setValue(this.inputFile.name);
@@ -112,16 +112,20 @@ export class HaPublicEditBrickFormComponent implements OnInit {
             this.formGp.controls.references.setValue(this.inputFile.brickVersionReferences);
             this.formGp.controls.technicalInfo.setValue(this.inputFile.technicalInfo);
             this.formGp.controls.isBeta.setValue(this.inputFile.isBeta);
-            this.formGp.controls.visibility.setValue(HaBrickVisibility.PUBLIC);
+            if(this.formGp.controls.visibility.value === HaBrickVisibility.PRIVATE){
+              this.formGp.controls.visibility.setValue(HaBrickVisibility.PRIVATE);
+            } else {
+              this.formGp.controls.visibility.setValue(HaBrickVisibility.PUBLIC);
+            }
             this.formGp.controls.repoType.setValue(HaRepoType.PIP);
-            if(this.inputFile.isBeta){
+            if (this.inputFile.isBeta) {
               this.formGp.controls.subPatch.setValue(this.inputFile.subPatch);
             }
 
-            if(!this.formGp.controls.name.valid){
+            if (!this.formGp.controls.name.valid) {
               this.errorInput['name'] = true;
             }
-            if(!this.formGp.controls.version.valid){
+            if (!this.formGp.controls.version.valid) {
               this.errorInput['version'] = true;
             }
           } else {

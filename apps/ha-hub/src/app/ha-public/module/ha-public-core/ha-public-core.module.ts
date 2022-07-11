@@ -1,6 +1,5 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HaAddVersionFormComponent } from './ha-add-version-form/ha-add-version-form.component';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {MatRadioModule} from "@angular/material/radio";
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
@@ -10,14 +9,9 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
 
 
-
 @NgModule({
-  declarations: [
-    HaAddVersionFormComponent
-  ],
-  exports: [
-    HaAddVersionFormComponent
-  ],
+  declarations: [],
+  exports: [],
   imports: [
     CommonModule,
     MatRadioModule,
@@ -30,4 +24,5 @@ import {MatInputModule} from '@angular/material/input';
     FlCoreDirectiveModule
   ]
 })
-export class HaPublicCoreModule { }
+export class HaPublicCoreModule {
+}

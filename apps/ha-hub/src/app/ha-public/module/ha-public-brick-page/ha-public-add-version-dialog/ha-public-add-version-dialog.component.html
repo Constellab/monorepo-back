@@ -4,9 +4,10 @@
 
 <mat-dialog-content>
   <div class="high-part" *ngIf="!isLoadingImport">
-    <p class="input-div" *ngIf="!inputFile">{{'import-new-version-text1' | translate}}</p>
-    <fl-input-file-container color="primary" [placeholder]="'import-new-version-file' | translate" class="bt-input-div">
-      <input flInputFile type="file" [strictMode]="true" [autoClearHtmlInput]="true" accept="application/json" (fileChange)="onFileSelected($event)">
+    <p class="input-div" *ngIf="!inputFile">{{'import_new_version_text1' | translate}}</p>
+    <fl-input-file-container color="primary" [placeholder]="'import_new_version_file' | translate" class="bt-input-div">
+      <input flInputFile type="file" [strictMode]="true" [autoClearHtmlInput]="true"
+             accept="application/json" (fileChange)="onFileSelected($event)">
     </fl-input-file-container>
     <p class="input-error-text" *ngIf="errorFile">{{errorFileText | translate}}</p>
   </div>
@@ -21,7 +22,7 @@
 
   <form (ngSubmit)="submit()" id="add-version-form" [formGroup]="formGp" fxLayout="column" *ngIf="inputFile">
     <p *ngIf="isUpdate">{{'replace_version_text' | translate}}</p>
-    <p>{{'import-new-version-text2' | translate}}</p>
+    <p>{{'import_new_version_text2' | translate}}</p>
     <fl-key-value class="kv">
       <fl-key>{{'brick_name' | translate}}</fl-key>
       {{inputFile.name}}

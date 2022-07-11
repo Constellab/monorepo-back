@@ -8,7 +8,9 @@ import {ActivatedRoute} from '@angular/router';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FlDialogService, FlFormDialogInput, FlTableColumn} from '@monorepo/front-core-lib';
 import {HaNewVersionDTO} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
-import {HaPublicAddVersionDialogComponent} from '../ha-public-add-version-dialog/ha-public-add-version-dialog.component';
+import {
+  HaPublicAddVersionDialogComponent
+} from '../ha-public-add-version-dialog/ha-public-add-version-dialog.component';
 import {HaNodeDTO} from '../../../../ha-core/ha-model/ha-entities/ha-node.class';
 
 @Component({
@@ -39,10 +41,6 @@ export class HaPublicVersionsComponent implements OnInit {
     });
   }
 
-  private setDataSource(): void{
-    this.brickVersions = this.brickVersionService.getDataSource(this.brickId);
-  }
-
   openNewVersionDialog(brickId: string): void {
     const input: FlFormDialogInput<HaNewVersionDTO> = {
       mode: 'create',
@@ -63,5 +61,9 @@ export class HaPublicVersionsComponent implements OnInit {
         }
       }
     );
+  }
+
+  private setDataSource(): void {
+    this.brickVersions = this.brickVersionService.getDataSource(this.brickId);
   }
 }

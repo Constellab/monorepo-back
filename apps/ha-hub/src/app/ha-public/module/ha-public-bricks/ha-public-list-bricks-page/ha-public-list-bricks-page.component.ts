@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {HaBrick} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 import {CmVersion} from '@monorepo/common-model';
@@ -14,11 +14,12 @@ export class HaPublicListBricksPageComponent implements OnInit {
 
   constructor(
     private haBrickService: HaBrickService
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.haBrickService.get().subscribe((bricks: HaBrick[]) => {
-      for(const b of bricks){
+      for (const b of bricks) {
         b.lastVersion = new CmVersion(b.lastVersion.major, b.lastVersion.minor, b.lastVersion.patch, b.lastVersion.subPatch);
       }
       this.bricks = bricks;

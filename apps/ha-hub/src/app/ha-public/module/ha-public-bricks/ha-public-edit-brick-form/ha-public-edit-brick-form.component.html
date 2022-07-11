@@ -1,6 +1,6 @@
 <div>
-  <h3 class="input-div" *ngIf="!inputFile">{{'import-new-brick-text1' | translate}}</h3>
-  <fl-input-file-container color="primary" [placeholder]="'import-new-version-file' | translate" class="bt-input-div">
+  <h3 class="input-div" *ngIf="!inputFile">{{'import_new_brick_text1' | translate}}</h3>
+  <fl-input-file-container color="primary" [placeholder]="'import_new_version_file' | translate" class="bt-input-div">
     <input flInputFile type="file" [strictMode]="true" [autoClearHtmlInput]="true" accept="application/json" (fileChange)="onFileSelected($event)">
   </fl-input-file-container>
   <p class="input-error-text" *ngIf="errorFile">{{errorFileText | translate}}</p>
@@ -14,7 +14,7 @@
 
 <form (ngSubmit)="submit()" class="brick-form" [formGroup]="formGp" *ngIf="inputFile && !(errorInput | flIsNotEmpty)">
 
-  <p>{{'import-new-brick-text2' | translate}}</p>
+  <p>{{'import_new_brick_text2' | translate}}</p>
 
   <fl-key-value class="input">
     <fl-key>{{'name' |translate}}</fl-key>

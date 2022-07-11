@@ -24,23 +24,11 @@ export class HaDocumentationDTO extends HaEntity {
   completePath: string;
 }
 
-export class HaDocumentationFormDTO extends HaEntity {
-  title: string;
-
-  content: CmRichTextI;
-
-  folderId: string;
-
-  path: string;
-
-  order: number;
-}
-
 export class HaDocumentationContentFormDTO extends HaEntity {
   content: CmRichTextI;
 }
 
-export interface HaDocumentationSearchDTO{
+export interface HaDocumentationSearchDTO {
   id?: string;
   name: string;
   completePath?: string;

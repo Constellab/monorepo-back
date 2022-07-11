@@ -1,7 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
-import {ActivatedRoute} from '@angular/router';
-import {HaBrick} from '../../../../ha-core/ha-model/ha-entities/ha-brick.class';
 
 @Component({
   selector: 'ha-public-edit-brick-page',
@@ -12,10 +9,7 @@ export class HaPublicEditBrickPageComponent implements OnInit {
 
   loaded = false;
 
-  constructor(
-    private brickService: HaBrickService,
-    private route: ActivatedRoute
-  ) {
+  constructor() {
   }
 
   ngOnInit(): void {

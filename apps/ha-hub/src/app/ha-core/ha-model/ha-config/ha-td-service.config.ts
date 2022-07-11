@@ -9,7 +9,9 @@ import {HaRouterService} from '../../ha-service/ha-router.service';
   providedIn: 'root'
 })
 export class HaTdServiceConfig extends TdServiceConfig {
+
   getTechnicalDocUrl(parentVersion: string, typingName: TdTypingName): TdTechnicalDocUrl {
+
     return {
       url: HaRouterService.getTechDocRoute(
         typingName.getBrickName(),

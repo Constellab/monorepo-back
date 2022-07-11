@@ -29,7 +29,7 @@ export class HaAdminGuard implements CanActivate {
     this.currentUrl = this.router.url;
 
     this.dialogService.openSmallDialog(HaMainLoginComponent).afterClosed().subscribe(() => {
-      this.router.navigateByUrl(this.router.createUrlTree([this.currentUrl]));
+      this.router.navigateByUrl(this.router.createUrlTree([this.currentUrl])).then();
     });
 
     return false;
