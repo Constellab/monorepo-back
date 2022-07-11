@@ -1,5 +1,6 @@
 import {FlLangTranslation, FlTranslateObject} from '@monorepo/front-core-lib';
 import {ClSupportedLanguage} from '@monorepo/core-lib';
+/* eslint-disable max-len */
 
 /**
  * Translation file for the Spreadsheet module
@@ -25,7 +26,10 @@ const tdTechnicalDocI18nFr: FlLangTranslation = {
     optional_tooltip: 'La tâche sera exécutée même si cette entrée n\'est pas connectée',
     skippable_tooltip: 'La tâche sera exécutée même si cette entrée a été connectée et que la valeur n\'a pas encore été fournie',
     constant_tooltip: 'Cette sortie ne créera pas de nouvelle ressource mais fera référence à une ressource existante',
-    advanced_parameter: 'Parametre avancé'
+    advanced_parameter: 'Paramètre avancé',
+    type_unavailable_detail: 'Le type \'<strong>{typingName}</strong>\' de l\'objet n\'est pas disponible. Veuillez vérifiez que la brique \'<strong>{brickName}</strong>\' est correctement installé.',
+    type_unavailable_detail_resource: 'Tant que le type est indisponible, les ressources de ce type ne pourront pas être utilisées dans des processus ni visualisées via les vues.',
+    type_unavailable_detail_process: 'Tant que le type est indisponible, les processus de ce type ne pourront pas être utilisées dans des protocols.',
   }
 };
 
@@ -47,10 +51,14 @@ const tdTechnicalDocI18nEn: FlLangTranslation = {
     skippable: 'Skippable',
     optional: 'Optional',
     constant: 'Constant',
-    optional_tooltip: 'The task will be runned even if this input is not connected',
-    skippable_tooltip: 'The task will be runned even if this input was connected and the value not provided yet',
+    optional_tooltip: 'The task will be run even if this input is not connected',
+    skippable_tooltip: 'The task will be run even if this input was connected and the value not provided yet',
     constant_tooltip: 'This output will not create a new resource but reference an existing resource',
-    advanced_parameter: 'Advanced parameter'
+    advanced_parameter: 'Advanced parameter',
+    type_unavailable_detail: 'The type \'<strong>{{typingName}}</strong>\' of the object is not available. Please check if the brick \'<strong>{{brickName}}</strong>\' is correctly installed.',
+    type_unavailable_detail_resource: 'As long as the type is not available, the resources of this type cannot be used in any process nor visualized with views.',
+    type_unavailable_detail_process: 'As long as the type is not available, the processes of this type cannot be used in protocols.',
+
   }
 };
 

@@ -2,77 +2,102 @@
 
   <ng-container *flSectionBody="let resource">
 
-    <!--  Use an embed section to show header once the resource is loaded  -->
-    <fl-section fxFlex="auto" [object]="resource" class="section">
+    <ng-container *ngIf="resource.typeStatus === 'OK'; else typeUnavailable">
 
-      <fl-section-header class="header">
-        <h2 class="header-title">{{resource.name}} |
-          <span class="g-text-light">{{resource.resourceTypeHumanName}}</span>
-        </h2>
 
-        <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
-          <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
-             *ngIf="resource.experiment" class="g-text-link">
-            <fl-text-icon class="g-text-tiny g-text-light"
-                          gap="0">
-              <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
-              {{resource.experiment.title}}
-            </fl-text-icon>
-          </a>
+      <!--  Use an embed section to show header once the resource is loaded  -->
+      <fl-section fxFlex="auto" [object]="resource" class="section">
 
-          <fl-tag-list [tags]="resource.tags" [tagSelectable]="false" class="g-text-small"></fl-tag-list>
-        </div>
+        <fl-section-header class="header">
+          <h2 class="header-title">{{resource.name}} |
+            <span class="g-text-light">{{resource.resourceTypeHumanName}}</span>
+          </h2>
 
-        <fl-section-actions>
-          <rv-technical-info-button *ngIf="view$ | async as view"
-                                    [technicalInfo]="view.technical_info"></rv-technical-info-button>
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+            <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
+               *ngIf="resource.experiment" class="g-text-link">
+              <fl-text-icon class="g-text-tiny g-text-light"
+                            gap="0">
+                <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
+                {{resource.experiment.title}}
+              </fl-text-icon>
+            </a>
 
-          <fl-chip class="g-primary-background" [matTooltip]="'biox.pre_resource_tooltip' | translate"
-                   *ngIf="isTransformedView">
-            {{'biox.pre_resource' | translate}}
-          </fl-chip>
+            <fl-tag-list [tags]="resource.tags" [tagSelectable]="false" class="g-text-small"></fl-tag-list>
+          </div>
 
-          <button mat-stroked-button type="button" *ngIf="!isTransformedView"
-                  (click)="openViewSpecs($event)" class="button g-button-small">
-            <mat-icon>visibility</mat-icon>
-            {{'biox.view_specs' | translate}}
-          </button>
+          <fl-section-actions>
+            <rv-technical-info-button *ngIf="view$ | async as view"
+                                      [technicalInfo]="view.technical_info"></rv-technical-info-button>
 
-          <!--   Link to resource detail page only for readOnly       -->
-          <a mat-stroked-button type="button" *ngIf="readOnly"
-             [routerLink]="resource | labDetailRoute"
-             class="button g-button-small">
-            <mat-icon flIcon="preview"></mat-icon>
-            {{'biox.open_resource_page' | translate}}
-          </a>
+            <fl-chip class="g-primary-background" [matTooltip]="'biox.pre_resource_tooltip' | translate"
+                     *ngIf="isTransformedView">
+              {{'biox.pre_resource' | translate}}
+            </fl-chip>
 
-          <lab-resource-actions-menu [readOnly]="readOnly" [resource]="resource" (update)="onUpdate($event)"
-                                     (updateTags)="onUpdateTags($event)"
-                                     (delete)="onDelete()" *ngIf="!isTransformedView">
-
-            <button mat-menu-item type="button"
-                    (click)="openTransformerResource()">
-              <mat-icon flIcon="transformer"></mat-icon>
-              {{'biox.transformers' | translate}}
+            <button mat-stroked-button type="button" *ngIf="!isTransformedView"
+                    (click)="openViewSpecs($event)" class="button g-button-small">
+              <mat-icon>visibility</mat-icon>
+              {{'biox.view_specs' | translate}}
             </button>
 
-          </lab-resource-actions-menu>
-        </fl-section-actions>
-      </fl-section-header>
+            <!--   Link to resource detail page only for readOnly       -->
+            <a mat-stroked-button type="button" *ngIf="readOnly"
+               [routerLink]="resource | labDetailRoute"
+               class="button g-button-small">
+              <mat-icon flIcon="preview"></mat-icon>
+              {{'biox.open_resource_page' | translate}}
+            </a>
+
+            <lab-resource-actions-menu [readOnly]="readOnly" [resource]="resource" (update)="onUpdate($event)"
+                                       (updateTags)="onUpdateTags($event)"
+                                       (delete)="onDelete()" *ngIf="!isTransformedView">
+
+              <button mat-menu-item type="button"
+                      (click)="openTransformerResource()">
+                <mat-icon flIcon="transformer"></mat-icon>
+                {{'biox.transformers' | translate}}
+              </button>
+
+            </lab-resource-actions-menu>
+          </fl-section-actions>
+        </fl-section-header>
 
 
-      <ng-container *flSectionBody>
+        <ng-container *flSectionBody>
 
-        <!--  Header    -->
-        <div class="page-padding body">
-          <rv-resource-view *ngIf="view$ | async as view" [view]="view"
-                            [config]="viewConfig" [resourceId]="resourceId"
-                            class="resource-view">
-          </rv-resource-view>
+          <!--  Header    -->
+          <div class="page-padding body">
+            <rv-resource-view *ngIf="view$ | async as view" [view]="view"
+                              [config]="viewConfig" [resourceId]="resourceId"
+                              class="resource-view">
+            </rv-resource-view>
+          </div>
+        </ng-container>
+
+      </fl-section>
+
+    </ng-container>
+
+    <!--  Showed when the resource type is unavailable  -->
+    <ng-template #typeUnavailable>
+      <div class="header">
+
+        <h2 class="header-title">{{resource.name}}</h2>
+
+        <div>
+          <td-type-unavailable [typingName]="resource.resourceTypingName"></td-type-unavailable>
+
+          <p class="link">
+            <a  [routerLink]="monitoringPage">
+              {{'biox.type_unavailable_monitoring_link' | translate}}
+            </a>
+          </p>
         </div>
-      </ng-container>
 
-    </fl-section>
+      </div>
+
+    </ng-template>
 
   </ng-container>
 

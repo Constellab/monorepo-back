@@ -10,11 +10,12 @@ mat-table {
   margin-left: 0.5em;
   margin-right: 0.5em;
 }
+
 .name-container {
   word-break: break-word;
 }
 
-.cell-left-padding{
+.cell-left-padding {
   padding-left: 24px;
 }
 
@@ -30,6 +31,10 @@ mat-table {
 
 .drag-element {
   background-color: var(--grey-low-contrast);
+}
+
+.type-unavailable{
+  margin-right: 0.5em;
 }
 
 ///////////////////// SUB TABLE //////////////////////

@@ -196,6 +196,8 @@
     "type_include_deprecated": "Include deprecated objects",
     "type_importer_ignore_extension": "Ignore file extension",
     "process_type_unavailable_error": "The process is not available, you can't use it",
+    "resource_type_unavailable_error": "The resource type is not available, you can't use it",
+    "type_unavailable_monitoring_link": "You can check your brick installation in the monitoring page.",
     "technical_info": "Technical information",
     "open_type_in_page": "Open in full page"
   }

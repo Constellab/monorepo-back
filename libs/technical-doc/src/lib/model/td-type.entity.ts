@@ -2,7 +2,7 @@ export type TdTypeObjectType = 'TASK' | 'RESOURCE' | 'PROTOCOL' | 'MODEL';
 
 export type TdTypeObjectSubType = 'TASK' | 'RESOURCE' | 'PROTOCOL' | 'TRANSFORMER' | 'IMPORTER' | 'EXPORTER';
 
-export type TdTypeObjectStatus = 'SUCCESS' | 'TYPE_UNAVAILABLE';
+export type TdTypeObjectStatus = 'OK' | 'UNAVAILABLE';
 
 export interface TdTypeEntity {
 

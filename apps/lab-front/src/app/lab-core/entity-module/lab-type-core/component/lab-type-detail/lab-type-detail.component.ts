@@ -39,7 +39,9 @@ export class LabTypeDetailComponent implements OnInit {
   private convertLabProcessToTdProcess(process: LabProcessType): TdTaskType | TdProtocolType {
     // todo to improve
     const type: TdTaskType | TdProtocolType = Object.assign({}, process) as any;
-    type.configSpecs = ClHelpService.deepClone(process.configSpecs.record) as any;
+    if (type.configSpecs) {
+      type.configSpecs = ClHelpService.deepClone(process.configSpecs.record) as any;
+    }
     return type;
   }
 }

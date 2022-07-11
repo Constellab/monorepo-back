@@ -2,7 +2,6 @@ import {Pipe, PipeTransform, SecurityContext} from '@angular/core';
 import {marked} from 'marked';
 import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser';
 import {ClStringHelper, ClYoutubeHelper} from '@monorepo/core-lib';
-import {objectKeys} from 'codelyzer/util/objectKeys';
 
 @Pipe({
   name: 'tdMarkdown'
@@ -13,6 +12,7 @@ export class TdMarkdownPipe implements PipeTransform {
   }
 
   transform(value: string): SafeHtml {
+    if (!value) return null;
     const renderer = new marked.Renderer();
 
     const iframes: Record<string, string> = {};
@@ -50,7 +50,7 @@ export class TdMarkdownPipe implements PipeTransform {
     //return this.domSanitizer.sanitize(SecurityContext.NONE, marked.parse(value, {renderer: renderer}));
     const parsedDoc: string = marked.parse(value, {renderer: renderer});
     let safeDoc: string = this.domSanitizer.sanitize(SecurityContext.HTML, parsedDoc);
-    for(const key of objectKeys(iframes)){
+    for(const key of Object.keys(iframes)){
       safeDoc = safeDoc.replace(key,
         this.domSanitizer.sanitize(SecurityContext.RESOURCE_URL, this.domSanitizer.bypassSecurityTrustResourceUrl(iframes[key])))
     }

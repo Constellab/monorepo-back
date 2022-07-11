@@ -5,10 +5,16 @@
   </div>
 </div>
 
-<fl-key-value *ngIf="_entity.status" class="key-val">
-  <fl-key>{{'td.status' | translate}}</fl-key>
-  {{_entity.status}}
-</fl-key-value>
+<!-- Type unavailable -->
+<div *ngIf="_entity.status === 'UNAVAILABLE'">
+  <fl-key-value  class="key-val">
+    <fl-key>{{'td.status' | translate}}</fl-key>
+    {{_entity.status}}
+  </fl-key-value>
+
+  <td-type-unavailable [typingName]="_entity.typingName"></td-type-unavailable>
+</div>
+
 <fl-key-value *ngIf="_entity.parentTypingName" class="key-val parent-link-div">
   <fl-key>{{'td.parent' | translate}}</fl-key>
   <div class="parent-link-div">

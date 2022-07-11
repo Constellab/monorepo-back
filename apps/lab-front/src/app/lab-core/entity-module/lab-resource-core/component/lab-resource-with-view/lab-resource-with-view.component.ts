@@ -42,6 +42,8 @@ export class LabResourceWithViewComponent implements OnInit, OnDestroy {
   // if true it mean that the view is used transformers, so the resource edition button are disable
   isTransformedView: boolean;
 
+  monitoringPage = LabRouterService.getMonitoringRoute();
+
   private overlayRef: FlOverlayRef;
 
 

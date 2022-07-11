@@ -3,6 +3,7 @@ import {FlDatasourcePaginated, FlFileHelper} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {LabEntityWithTag} from '../lab-entity-with-tag.entity';
 import {LabExperimentType} from '../lab-experiment.entity';
+import {TdTypeObjectStatus} from '@monorepo/technical-doc';
 
 /**
  * Represent a file or a folder link to the resource
@@ -29,9 +30,6 @@ export class LabFsNodeEntity extends LabEntity {
 export type LabResourceOrigin = 'UPLOADED' | 'GENERATED' | 'IMPORTED' | 'TRANSFORMED';
 
 export class LabResource extends LabEntityWithTag {
-  // typing name of the resource model
-  @Expose({name: 'typing_name'})
-  typingName: string;
 
   // typing name of the resource
   @Expose({name: 'resource_typing_name'})
@@ -59,6 +57,9 @@ export class LabResource extends LabEntityWithTag {
 
   @Expose({name: 'has_children'})
   hasChildren: boolean;
+
+  @Expose({name: 'type_status'})
+  typeStatus: TdTypeObjectStatus
 
   experiment: {
     id: string;

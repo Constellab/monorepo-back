@@ -21,6 +21,10 @@
         <div class="cell-left-padding"></div>
       </ng-template>
 
+      <mat-icon *ngIf="resource.typeStatus === 'UNAVAILABLE'" color="warn"
+                class="type-unavailable" [matTooltip]="'biox.resource_type_unavailable_error' | translate">
+        error
+      </mat-icon>
       <div class="name-container">
         <div [matTooltip]="resource.name"
              [matTooltipShowDelay]="1000" matTooltipPosition="after">{{resource.name}}</div>

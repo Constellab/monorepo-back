@@ -21,6 +21,7 @@ export * from './lib/component/td-config/td-config.component';
 export * from './lib/component/td-technical-doc/td-technical-doc.component';
 export * from './lib/component/td-technical-doc-header/td-technical-doc-header.component';
 export * from './lib/component/td-doc-io/td-doc-io.component';
+export * from './lib/component/td-type-unavailable/td-type-unavailable.component';
 
 //service
 export * from './lib/service/td-service-config.config';
