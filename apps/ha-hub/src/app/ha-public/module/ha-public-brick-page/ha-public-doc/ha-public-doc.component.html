@@ -17,16 +17,16 @@
     </form>
   </div>
   <div class="side" fxHide.lt-lg>
-    <h3 class="title-doc-side" *ngIf="documentation">{{documentation.title}}</h3>
+    <h2 class="title-doc-side" *ngIf="documentation">{{documentation.title}}</h2>
     <div *ngIf="documentation" class="title-side-line"></div>
     <ng-container *ngFor="let title of titles; let i = index">
       <ng-container *ngIf="title.level === 2; else e">
-        <h4><a [routerLink]="'.'" [fragment]="title.id">{{title.title}}</a></h4>
+        <h3><a [routerLink]="'.'" [fragment]="title.id">{{title.title}}</a></h3>
       </ng-container>
       <ng-template #e>
-        <h5>
+        <h4>
           <a [routerLink]="'.'" [fragment]="title.id">{{title.title}}</a>
-        </h5>
+        </h4>
       </ng-template>
     </ng-container>
   </div>

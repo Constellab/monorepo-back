@@ -103,11 +103,11 @@ export class HaPublicSidenavCreateFormDialogComponent extends FlFormDialogAbstra
   }
 
   getCreateSuccessMessage(): string {
-    return 'element_created';
+    return this.formGp.value.isFolder ? 'folder_created' : 'documentation_created';
   }
 
   getUpdateSuccessMessage(): string {
-    return 'element_updated';
+    return this.formGp.value.isFolder ? 'folder_updated' : 'documentation_updated';
   }
 
 

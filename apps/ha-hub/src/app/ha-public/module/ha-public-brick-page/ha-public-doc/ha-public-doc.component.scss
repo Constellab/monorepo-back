@@ -19,12 +19,12 @@
   position: relative;
 }
 
-.side h4, .side h5{
+.side h3, .side h4{
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.side h5{
+.side h4{
   border-left: 1px solid var(--grey-low-contrast);
 }
 
@@ -37,7 +37,7 @@
   border-bottom: 2px solid var(--grey-low-contrast);
 }
 
-.side h5{
+.side h4{
   padding-left: 1em;
   padding-top: 0.5em;
   margin: 0 !important;

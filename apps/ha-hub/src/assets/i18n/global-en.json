@@ -5,8 +5,12 @@
   "documentation_deleted": "Documentation deleted",
   "folder": "Folder",
   "folder_deleted": "Folder deleted",
-  "element_created": "Element created",
-  "element_updated": "Element updated",
+  "brick_created": "Brick created",
+  "brick_updated": "Brick updated",
+  "documentation_created": "Documentation created",
+  "documentation_updated": "Documentation updated",
+  "folder_created": "Folder created",
+  "folder_updated": "Folder updated",
   "confirm_deletion": "Confirm deletion",
   "confirm_deletion_message": "Confirm the deletion ?",
   "login": "Login",
@@ -67,5 +71,8 @@
   "public_brick": "Public brick",
   "external_link": "External link",
   "research_doc": "Research documentation",
-  "object_not_found": "Object not found"
+  "object_not_found": "Object not found",
+  "error_required": "The field '{{field}}' is mandatory",
+  "close": "Close",
+  "ok": "ok"
 }

@@ -5,8 +5,12 @@
   "documentation_deleted": "Documentation supprimée",
   "folder": "Dossier",
   "folder_deleted": "Dossier supprimé",
-  "element_created": "Élément créé",
-  "element_updated": "Élément mis à jour",
+  "brick_created": "Brique créée",
+  "brick_updated": "Brique mise à jour",
+  "documentation_created": "Documentation créée",
+  "documentation_updated": "Documentation mise à jour",
+  "folder_created": "Dossier créé",
+  "folder_updated": "Dossier mis à jour",
   "confirm_deletion": "Confirmer la suppression",
   "confirm_deletion_message": "Confirmer la suppression ?",
   "login": "Connection",
@@ -67,5 +71,8 @@
   "public_brick": "Brique publique",
   "external_link": "Lien externe",
   "research_doc": "Recherche de documentation",
-  "object_not_found": "Objet non trouvé"
+  "object_not_found": "Objet non trouvé",
+  "error_required": "Le champ '{{field}}' est obligatoire",
+  "close": "Fermer",
+  "ok": "ok"
 }

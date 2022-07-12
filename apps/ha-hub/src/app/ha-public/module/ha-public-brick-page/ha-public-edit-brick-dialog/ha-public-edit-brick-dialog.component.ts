@@ -70,11 +70,11 @@ export class HaPublicEditBrickDialogComponent extends FlFormDialogAbstractDirect
   }
 
   getCreateSuccessMessage(): string {
-    return 'element_created';
+    return 'brick_created';
   }
 
   getUpdateSuccessMessage(): string {
-    return 'element_updated';
+    return 'brick_updated';
   }
 
 }

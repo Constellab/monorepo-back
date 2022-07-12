@@ -42,8 +42,8 @@ export class HaNodeDTO extends HaEntity{
 }
 
 export enum HaNodeType{
-  DOC = 'doc',
-  FOL = 'fol',
+  DOC = 'DOC',
+  FOL = 'FOL',
   TEC = 'TEC'
 }
 
