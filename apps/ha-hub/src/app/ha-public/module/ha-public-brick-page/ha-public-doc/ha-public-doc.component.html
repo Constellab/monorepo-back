@@ -17,7 +17,7 @@
     </form>
   </div>
   <div class="side" fxHide.lt-lg>
-    <h2 class="title-doc-side" *ngIf="documentation">{{documentation.title}}</h2>
+    <h1 class="title-doc-side" *ngIf="documentation">{{documentation.title}}</h1>
     <div *ngIf="documentation" class="title-side-line"></div>
     <ng-container *ngFor="let title of titles; let i = index">
       <ng-container *ngIf="title.level === 2; else e">

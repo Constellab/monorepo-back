@@ -10,8 +10,9 @@ import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.se
 import {IncomingMessage} from 'http';
 import imageSize from 'image-size';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
-import {CmRichText, CmRichTextI, CmRichTextLink} from '@monorepo/common-model';
+import {CmRichText, CmRichTextI, CmRichTextImageCP, CmRichTextLink} from '@monorepo/common-model';
 import {HnFolder} from '../folder/hn-folder.entity';
+import {ISizeCalculationResult} from 'image-size/dist/types/interface';
 
 class HnDocImage {
   filename: string;
@@ -113,6 +114,31 @@ export class HnDocumentationService {
           if (id != null && cp != null) {
             l.attributes.id = id;
             l.attributes.link = cp;
+          }
+        }
+      }
+    }
+    const imageCP: CmRichTextImageCP[] = CmRichText.getImageCP(content);
+    for(const im of imageCP){
+      if('image' in im.insert){
+        const base64Img: string = im.insert.image.split(',')[1];
+        const imgBuffer: Buffer = new Buffer(base64Img, "base64");
+        const imgBlFile: BlFile = {
+          buffer: imgBuffer,
+          encoding: null,
+          mimetype: 'image',
+          size: null,
+          originalname: 'any.png'
+        }
+        const imgSize: ISizeCalculationResult = imageSize(imgBuffer);
+        const imgName: string = await this.objectStorageService.uploadObject(imgBlFile, this.getReportBucket(),true);
+        im.insert = {
+          figure: {
+            filename: imgName,
+            height: imgSize.height,
+            width: imgSize.width,
+            naturalWidth: imgSize.width,
+            naturalHeight: imgSize.height
           }
         }
       }

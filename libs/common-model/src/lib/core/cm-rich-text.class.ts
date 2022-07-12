@@ -36,16 +36,27 @@ export interface CmRichTextFigureOp extends CmRichTextOp {
 }
 
 
-export interface CmRichTextLink{
+export interface CmRichTextLink {
   attributes: CmRichTextTitleAttribute,
   insert: string;
 }
 
-export interface CmRichTextTitleAttribute{
+export interface CmRichTextImageCP {
+  insert: CmRichTextInsertImage | CmRichTextInsertFigure;
+}
+
+export interface CmRichTextInsertImage{
+  image: string;
+}
+
+export interface CmRichTextInsertFigure{
+  figure: CmRichTextFigure
+}
+
+export interface CmRichTextTitleAttribute {
   link: string;
   id?: string;
 }
-
 
 
 export class CmRichText {
@@ -58,18 +69,35 @@ export class CmRichText {
 
   }
 
-  public static getLinks(content: CmRichTextI): CmRichTextLink[]{
+  public static getLinks(content: CmRichTextI): CmRichTextLink[] {
     const titles: CmRichTextLink[] = [];
     const contentData: any[] = content.ops;
-    if(contentData != null){
+    if (contentData != null) {
       contentData.forEach((c) => {
-        if(c.attributes && c.insert && c.attributes.link){
+        if (c.attributes && c.insert && c.attributes.link) {
           titles.push(c as CmRichTextLink);
         }
       });
     }
     return titles;
   }
+
+  public static getImageCP(content: CmRichTextI): CmRichTextImageCP[] {
+    const imgs: CmRichTextImageCP[] = [];
+    const contentData: any[] = content.ops;
+    if (contentData != null) {
+      contentData.forEach((c) => {
+        if (c.insert && c.insert.image) {
+          const imgLink: string = c.insert.image;
+          if(imgLink.startsWith('data:image/')){
+            imgs.push(c);
+          }
+        }
+      })
+    }
+    return imgs;
+  }
+
 
   public getContent(): CmRichTextI {
     return this.richText;
@@ -85,13 +113,12 @@ export class CmRichText {
           const inserts: string[] = c.insert.split('\n');
           if (inserts.length > 1) {
             headers.push({
-              level : contentData[i + 1].attributes.header.level,
-              id: contentData[i +1].attributes.header.id,
+              level: contentData[i + 1].attributes.header.level,
+              id: contentData[i + 1].attributes.header.id,
               title: inserts[inserts.length - 1]
             });
-          }
-          else headers.push({
-            level : contentData[i + 1].attributes.header.level,
+          } else headers.push({
+            level: contentData[i + 1].attributes.header.level,
             id: contentData[i + 1].attributes.header.id,
             title: c.insert
           });
