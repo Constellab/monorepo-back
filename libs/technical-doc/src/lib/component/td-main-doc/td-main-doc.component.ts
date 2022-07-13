@@ -35,10 +35,8 @@ export class TdMainDocComponent implements OnInit {
       version: this._entity.parentVersion,
       typingName: this._entity.parentTypingName
     }
-
-
-    if (this.uniqueEntityParent.typingName) {
-      this.entityParentType = new TdTypingName(this.uniqueEntityParent.typingName).getType();
+    if(this.uniqueEntityParent.typingName){
+      this.entityParentType = new TdTypingName(this.uniqueEntityParent.typingName).type;
       this.color = FlColorHelper.stringToRGBColor(this.uniqueEntityParent.typingName);
     }
   }

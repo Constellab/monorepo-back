@@ -20,8 +20,8 @@ export class TdTypeUnavailableComponent implements OnInit {
 
   ngOnInit(): void {
     const typingName = new TdTypingName(this.typingName);
-    this.brickName = typingName.getBrickName();
-    this.objectType = typingName.getType();
+    this.brickName = typingName.brickName;
+    this.objectType = typingName.type;
   }
 
   get objectTypeText(): string {

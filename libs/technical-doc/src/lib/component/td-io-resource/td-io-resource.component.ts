@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {TdTypingName} from '../../model/td-typing-name.entity';
 import {FlColorHelper} from '@monorepo/front-core-lib';
 import {TdResourceTypeDTO} from '../../model/td-process-type.entity';
 import {TdUniqueType} from '../../model/td-type.entity';
@@ -23,7 +22,7 @@ export class TdIoResourceComponent implements OnInit {
       typingName: this.resource.typing_name,
       version: this.resource.brick_version ? this.resource.brick_version : 'latest',
       humanName: this.resource.human_name
-    }
+    };
     this.color = FlColorHelper.stringToRGBColor(this.resource.typing_name);
   }
 }

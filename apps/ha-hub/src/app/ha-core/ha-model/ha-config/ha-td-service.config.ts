@@ -14,10 +14,10 @@ export class HaTdServiceConfig extends TdServiceConfig {
 
     return {
       url: HaRouterService.getTechDocRoute(
-        typingName.getBrickName(),
+        typingName.brickName,
         parentVersion.split('.')[0],
-        typingName.getType().toLowerCase(),
-        typingName.getUniqueName()),
+        typingName.type.toLowerCase(),
+        typingName.uniqueName),
       isAbsolute: false
     };
   }

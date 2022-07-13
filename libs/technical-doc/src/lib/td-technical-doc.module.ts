@@ -27,6 +27,7 @@ import {TdTechnicalDocHeaderComponent} from './component/td-technical-doc-header
 import {TdDocIoComponent} from './component/td-doc-io/td-doc-io.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {TdTypeUnavailableComponent} from './component/td-type-unavailable/td-type-unavailable.component';
+import {TdTypingNamePipe} from './pipe/td-typing-name.pipe';
 
 @NgModule({
   imports: [
@@ -54,17 +55,19 @@ import {TdTypeUnavailableComponent} from './component/td-type-unavailable/td-typ
     TdConfigComponent,
     TdTechnicalDocHeaderComponent,
     TdDocIoComponent,
-    TdTypeUnavailableComponent
+    TdTypeUnavailableComponent,
+    TdTypingNamePipe
   ],
-    exports: [
-        TdTechnicalDocComponent,
-        TdResourceDocComponent,
-        TdMainDocComponent,
-        TdTechnicalDocHeaderComponent,
-        TdIoDocsComponent,
-        TdDocIoComponent,
-        TdTypeUnavailableComponent
-    ]
+  exports: [
+    TdTechnicalDocComponent,
+    TdResourceDocComponent,
+    TdMainDocComponent,
+    TdTechnicalDocHeaderComponent,
+    TdIoDocsComponent,
+    TdDocIoComponent,
+    TdTypeUnavailableComponent,
+    TdTypingNamePipe
+  ]
 })
 export class TdTechnicalDocModule {
 
@@ -81,6 +84,6 @@ export class TdTechnicalDocModule {
     return {
       ngModule: TdTechnicalDocModule,
       providers: providers
-    }
+    };
   }
 }

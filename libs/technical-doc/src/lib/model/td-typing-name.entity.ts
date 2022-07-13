@@ -7,25 +7,16 @@ export class TdTypingName {
 
   typingName: string;
 
-  constructor(typing_Name: string) {
-    this.typingName = typing_Name;
+  type: TdTypeObjectType;
+  brickName: string;
+  uniqueName: string;
+
+  constructor(typingName: string) {
+    this.typingName = typingName;
+
+    const split = typingName.split('.'); // 0: type, 1: brickName, 2: uniqueName;
+    this.type = split[0] as TdTypeObjectType;
+    this.brickName = split[1];
+    this.uniqueName = split[2];
   }
-
-  getType(): TdTypeObjectType {
-    return this.spitedTypename(this.typingName)[0] as TdTypeObjectType;
-  }
-
-  getBrickName(): string {
-    return this.spitedTypename(this.typingName)[1];
-  }
-
-  getUniqueName(): string {
-    return this.spitedTypename(this.typingName)[2];
-  }
-
-  private spitedTypename(typingName: string): string[] {
-    return typingName.split('.'); // 0: type, 1: brickName, 2: uniqueName
-  }
-
-
 }

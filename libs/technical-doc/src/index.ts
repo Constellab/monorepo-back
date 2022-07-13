@@ -29,3 +29,4 @@ export * from './lib/service/td-service-config.config';
 
 //pipe
 export * from './lib/pipe/td-markdown.pipe';
+export * from './lib/pipe/td-typing-name.pipe';
