@@ -15,6 +15,7 @@ import {FlBioNetworkLinksRenderer} from './fl-bio-network-links.renderer';
 import {FlBioNetworkGridState} from '../state/fl-bio-network-grid.state';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
+import {FlCoord} from '../../../model/shared/fl-coord.class';
 
 export interface FlBioNetworkGraphRenderer {
   graph: ForceGraphInstance;
@@ -32,12 +33,12 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
 
   private nodesRenderer: FlBioNetworkNodesRenderer;
   private linksRenderer: FlBioNetworkLinksRenderer;
+  private gridRenderer: FlBioNetworkGridRenderer;
 
   constructor(private state: FlBioNetworkState,
               private selectionState: FlBioNetworkSelectionState,
               private optionState: FlBioNetworkOptionsState,
               private simulationState: FlBioNetworkSimulationState,
-              private gridRenderer: FlBioNetworkGridRenderer,
               private gridState: FlBioNetworkGridState,
               private themeService: FlThemeService) {
   }
@@ -82,7 +83,6 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
       .graphData(graphData).width(width).height(height)
       .cooldownTicks(0) // pre-defined layout, cancel force engine iterations
       .autoPauseRedraw(true) // prevent redraw on every tick
-      .onRenderFramePre((ctx: CanvasRenderingContext2D) => this.gridRenderer.drawGrid(ctx))
       .maxZoom(FlBioNetworkZoomRenderer.maxZoomScale)
       .minZoom(FlBioNetworkZoomRenderer.minZoomScale);
 
@@ -94,6 +94,8 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
 
     const themeDetail: FlThemeDetail = this.themeService.getCurrentThemeDetail();
     const grey = themeDetail.greyLowContrast;
+
+    this.gridRenderer = new FlBioNetworkGridRenderer(graphRenderer, grey, this.optionState.getOptions$());
     this.nodesRenderer = new FlBioNetworkNodesRenderer(graphRenderer, this.optionState.getOptions$(),
       this.selectionState.getSelectionMode$(), grey,
       this.selectionState, this.gridState);
@@ -106,6 +108,39 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
 
     this.selectionState.init(data);
     this._graph$.next(graphRenderer);
+
+    graph.onZoom((transform) => {
+      const canvasSize = this.getCanvasSize();
+      const xWidth = canvasSize.x / transform.k;
+      const yHeight = canvasSize.y / transform.k;
+
+      const fromX = transform.x - xWidth / 2;
+      const fromY = transform.y - yHeight / 2;
+      const toX = transform.x + xWidth / 2;
+      const toY = transform.y + yHeight / 2;
+      const positions = {
+        fromX: fromX,
+        fromY: fromY,
+        toX: toX,
+        toY: toY
+      };
+
+      for (const node of data.getMetabolitesAndReactions()) {
+        // set visibility of nodes from position
+        node.isVisible = node.x >= fromX && node.x <= toX &&
+          node.y >= fromY && node.y <= toY;
+        // node.isVisible = true
+      }
+      for(const link of data.getMetaboliteAndReactionLinks()){
+        // set visibility of links from position
+        link.isVisible = link.source.isVisible || link.target.isVisible;
+        // link.isVisible = link.source.isVisible || link.target.isVisible;
+      }
+
+
+      // this.nodesRenderer.updateVisibility([FlBioNetworkMetaboliteLevel.MAJOR, FlBioNetworkMetaboliteLevel.MINOR],
+      //   false, positions);
+    });
 
   }
 
@@ -142,6 +177,13 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
     this.linksRenderer?.destroy();
 
     this.graphRenderer?.graph.graphData({nodes: [], links: []});
+  }
+
+  private getCanvasSize(): FlCoord {
+    return {
+      x: this.container.clientWidth,
+      y: this.container.clientHeight
+    };
   }
 
   ngOnDestroy(): void {

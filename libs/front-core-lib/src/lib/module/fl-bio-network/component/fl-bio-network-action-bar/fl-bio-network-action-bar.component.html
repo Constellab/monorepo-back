@@ -29,6 +29,14 @@
       {{'flBioNetwork.toggle_show_texts' | translate}}
     </mat-checkbox>
 
+    <mat-checkbox [(ngModel)]="showGrid" (change)="toggleShowGrid()" color="primary">
+      {{'flBioNetwork.toggle_show_grid' | translate}}
+    </mat-checkbox>
+
+    <mat-checkbox [(ngModel)]="showArrows" (change)="toggleShowArrows()" color="primary">
+      {{'flBioNetwork.toggle_show_link_arrow' | translate}}
+    </mat-checkbox>
+
     <mat-form-field class="g-form-field-compact g-form-field-no-hint">
       <mat-label>{{'flBioNetwork.link_colors' | translate}}</mat-label>
       <mat-select [(ngModel)]="linkColorMode" (selectionChange)="setLinksColors()"

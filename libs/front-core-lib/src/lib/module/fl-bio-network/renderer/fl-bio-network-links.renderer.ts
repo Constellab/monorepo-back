@@ -26,10 +26,12 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
   public render(): void {
     this.graphRenderer.graph
       // size based on link weight, set to 1 when the link is not selected
-      .linkWidth((link: FlBioNetworkLink) =>
-        link.selected ? this.getLinkWidth(link) : 1)
-      .linkDirectionalArrowLength((link: FlBioNetworkLink) => link.isLinkedToCofactor() ? 3 : 10)
-      .linkDirectionalArrowRelPos(0.5);
+      // .linkWidth((link: FlBioNetworkLink) =>
+      //   link.selected ? this.getLinkWidth(link) : 1)
+      // .linkDirectionalArrowLength((link: FlBioNetworkLink) => link.isLinkedToCofactor() ? 3 : 10)
+      // .linkDirectionalArrowRelPos(0.5)
+      // .linkDirectionalParticles(1)
+    ;
   }
 
   protected updateObjectColors(options: FlBioNetworkOptions): void {
@@ -41,6 +43,16 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
     }
 
     this.setColorFunction(colorFunc);
+
+    // link arrow visibility
+    if (options.showArrows) {
+      this.graphRenderer.graph.linkDirectionalArrowLength(
+        (link: FlBioNetworkLink) => link.isLinkedToCofactor() ? 3 : 10)
+        .linkDirectionalArrowRelPos(0.5);
+    } else {
+      this.graphRenderer.graph.linkDirectionalArrowLength(null);
+    }
+
   }
 
   protected updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[], showRelatedCofactor: boolean): void {
@@ -59,7 +71,7 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
         return levelVisibility(link);
       };
     } else {
-      visibilityLink = levelVisibility;
+      visibilityLink = (object: FlBioNetworkLink) => object.isVisible && levelVisibility(object);
     }
 
     this.graphRenderer.graph.linkVisibility(visibilityLink);

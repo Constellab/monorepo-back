@@ -20,6 +20,12 @@ import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.clas
  */
 export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
 
+  public positions: {
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number
+  };
 
   constructor(graphRenderer: FlBioNetworkGraphRenderer,
               options$: Observable<FlBioNetworkOptions>,
@@ -65,7 +71,7 @@ export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
       this.nodePaint(node, ctx, colorFunc, options.showTexts));
   }
 
-  protected updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[], showRelatedCofactor: boolean): void {
+  public updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[], showRelatedCofactor: boolean): void {
     let visibilityNode: (object: FlBioNetworkGraphObject) => boolean;
 
     const levelVisibility = this.getLevelVisibilityFunction(visibleLevels);
@@ -78,8 +84,9 @@ export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
         }
         return levelVisibility(object);
       };
-    } else {
-      visibilityNode = levelVisibility;
+    }
+    else {
+      visibilityNode = (object: FlBioNetworkNode) => object.isVisible && levelVisibility(object);
     }
 
     this.graphRenderer.graph.nodeVisibility(visibilityNode);
@@ -88,6 +95,12 @@ export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
 
   private nodePaint(node: FlBioNetworkNode, ctx: CanvasRenderingContext2D,
                     colorFunc: FlBioNetworkObjectColorFunction, showText: boolean): void {
+    // if node position are not  inside positions
+    if (this.positions && (node.x < this.positions.fromX || node.x > this.positions.toX ||
+      node.y < this.positions.fromY || node.y > this.positions.toY)) {
+      return;
+    }
+
     if (node instanceof FlBioNetworkNodeMetabolite) {
       FlBioNetworkMetaboliteRenderer.draw(ctx, node, colorFunc, showText);
     } else if (node instanceof FlBioNetworkNodeReaction) {

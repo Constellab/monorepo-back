@@ -6,7 +6,6 @@ import {FlBioNetworkDrawerState} from '../../state/fl-bio-network-drawer.state';
 import {FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 import {FlBioNetworkMainRenderer} from '../../renderer/fl-bio-network-main.renderer';
-import {FlBioNetworkGridRenderer} from '../../renderer/fl-bio-network-grid.renderer';
 import {FlBioNetworkGridState} from '../../state/fl-bio-network-grid.state';
 import {FlBioNetworkZoomRenderer} from '../../renderer/fl-bio-network-zoom.renderer';
 import {FlBioNetworkSimulationState} from '../../state/fl-bio-network-simulation.state';
@@ -23,7 +22,6 @@ import {FlBioNetworkSimulationState} from '../../state/fl-bio-network-simulation
     FlBioNetworkSelectionState,
     FlBioNetworkMainRenderer,
     FlBioNetworkGridState,
-    FlBioNetworkGridRenderer,
     FlBioNetworkZoomRenderer,
     FlBioNetworkSimulationState,
   ]

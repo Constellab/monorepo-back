@@ -9,15 +9,18 @@ import {FlBioNetworkClusterSelection, FlBioNetworkMetaboliteLevel} from '../mode
  */
 export type FlBioNetworkLinkColorScale = 'linear' | 'log2' | 'log10' | 'threshold-75' | 'threshold-95';
 
-export type FlBioNetworkOptionsAction = 'init' | 'toggleText' | 'updateVisibilityLevel' | 'color';
+export type FlBioNetworkOptionsAction = 'init' | 'toggleText' | 'toggleGrid' | 'toggleArrow'
+  | 'updateVisibilityLevel' | 'color';
 
 /**
  * Object containing options visible element on the pathways
  */
 export type FlBioNetworkOptions = {
-  action: 'init' | 'toggleText' | 'updateVisibilityLevel' | 'color';
+  action: FlBioNetworkOptionsAction;
   visibleLevels: FlBioNetworkMetaboliteLevel[];
   showTexts: boolean;
+  showGrid: boolean;
+  showArrows: boolean;
   linkColorScale: FlBioNetworkLinkColorScale;
   coloredClusters: FlBioNetworkClusterSelection[];
 };
@@ -30,6 +33,8 @@ export class FlBioNetworkOptionsState implements OnDestroy {
     action: 'init',
     visibleLevels: [FlBioNetworkMetaboliteLevel.MAJOR],
     showTexts: true,
+    showGrid: true,
+    showArrows: true,
     linkColorScale: 'linear',
     coloredClusters: [],
   });
@@ -50,6 +55,14 @@ export class FlBioNetworkOptionsState implements OnDestroy {
 
   public setShowText(showText: boolean): void {
     this.emitConfig('toggleText', {showTexts: showText});
+  }
+
+  public setShowGrid(showGrid: boolean): void {
+    this.emitConfig('toggleGrid', {showGrid: showGrid});
+  }
+
+  public setShowArrows(showArrows: boolean): void {
+    this.emitConfig('toggleArrow', {showArrows: showArrows});
   }
 
 

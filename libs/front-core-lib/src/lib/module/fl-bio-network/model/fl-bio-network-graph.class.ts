@@ -45,6 +45,10 @@ export class FlBioNetworkGraph {
     return this.links.filter(link => link.getLevel() === level);
   }
 
+  public getMetaboliteAndReactionLinks(): FlBioNetworkLink[] {
+    return this.links.filter(link => link.getLevel() !== FlBioNetworkMetaboliteLevel.COFACTOR);
+  }
+
   // return all the reaction of a pathway
   public getReactionsOfPathway(pathwayId: string): FlBioNetworkNodeReaction[] {
     return this.reactions.filter(reaction => reaction.isInPathway(pathwayId));

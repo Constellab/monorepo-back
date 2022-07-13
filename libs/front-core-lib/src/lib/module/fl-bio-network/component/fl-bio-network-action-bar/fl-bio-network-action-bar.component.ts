@@ -28,6 +28,8 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   // showCofactor: boolean = false;
   showMinors: boolean = false;
   showText: boolean = false;
+  showGrid: boolean = false;
+  showArrows: boolean = false;
 
   constructor(private cdr: ChangeDetectorRef,
               private state: FlBioNetworkState,
@@ -41,6 +43,8 @@ export class FlBioNetworkActionBarComponent implements OnInit {
     // this.showCofactor = this.rendererState.getShowCofactors();
     this.showMinors = options.visibleLevels.includes(FlBioNetworkMetaboliteLevel.MINOR);
     this.showText = options.showTexts;
+    this.showGrid = options.showGrid;
+    this.showArrows = options.showArrows;
     this.state.getChartData$().subscribe(
       chartData => this.onNewData(chartData)
     );
@@ -71,6 +75,14 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   toggleShowTexts(): void {
     this.optionState.setShowText(this.showText);
+  }
+
+  toggleShowGrid(): void {
+    this.optionState.setShowGrid(this.showGrid);
+  }
+
+  toggleShowArrows(): void {
+    this.optionState.setShowArrows(this.showArrows);
   }
 
   toggleShowMinors(): void {

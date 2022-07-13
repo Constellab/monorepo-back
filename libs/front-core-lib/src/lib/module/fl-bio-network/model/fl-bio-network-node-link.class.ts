@@ -57,6 +57,8 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
   value: number;
   absValue: number;
 
+  isVisible: boolean = true;
+
   constructor(source: FlBioNetworkNode, target: FlBioNetworkNode,
               public estimate: FlBioNetworkReactionEstimate, points: FlCoord[],
               public defaultColor: string) {

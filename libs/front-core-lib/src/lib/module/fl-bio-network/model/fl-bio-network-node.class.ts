@@ -36,6 +36,8 @@ export abstract class FlBioNetworkNode extends FlBioNetworkGraphObject implement
   public childNodes: FlBioNetworkNode[] = [];
   public parentNode: FlBioNetworkNode;
 
+  public isVisible: boolean = true;
+
   protected constructor(public name: string, public type: FlBioNetworkNodeType,
                         public defaultColor: string, public strokeColor: string,
                         public data: FlBioNetworkMetabolite | FlBioNetworkReaction) {

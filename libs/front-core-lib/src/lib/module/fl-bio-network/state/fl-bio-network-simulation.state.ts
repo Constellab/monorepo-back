@@ -23,7 +23,7 @@ export class FlBioNetworkSimulationState {
         forceLink(data.links.filter(link => link.getLevel() !== FlBioNetworkMetaboliteLevel.COFACTOR))
         // .id((d: FlBioNetworkD3Node) => d.id)
       )
-      .force('charge', forceManyBody()).alphaDecay(0.05);
+      .force('charge', forceManyBody()).alphaDecay(0.5);
 
     return new Promise((resolve) => {
       this.simulation.on('end', () => {
