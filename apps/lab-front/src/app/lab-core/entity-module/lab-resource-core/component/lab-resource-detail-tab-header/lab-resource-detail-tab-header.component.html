@@ -6,7 +6,7 @@
 
 <ng-template #notLoading>
 
-  <div>
+  <div (auxclick)="onTabClick($event)">
     <ng-container *ngIf="isError; else notError">{{'biox.resource_tab_error' | translate}}</ng-container>
     <ng-template #notError>
       {{view.title}}

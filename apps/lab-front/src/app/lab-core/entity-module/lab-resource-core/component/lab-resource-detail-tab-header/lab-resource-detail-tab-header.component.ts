@@ -1,8 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {LabResourceDetailTabsState} from '../../state/lab-resource-detail-tabs-state';
 import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
-import {Observable} from 'rxjs';
+import {firstValueFrom, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {FlMouseButton} from '@monorepo/front-core-lib';
 
 /**
  * Header of the tab of a resource with view, its also show a loading indicator while the view is loading
@@ -45,6 +46,13 @@ export class LabResourceDetailTabHeaderComponent implements OnInit {
   private onError(): void {
     this.isError = true;
     this.isLoading = false;
+  }
+
+  async onTabClick(event: MouseEvent): Promise<void> {
+    const showCloseButton = await firstValueFrom(this.showCloseButton$);
+    if (showCloseButton && event.button === FlMouseButton.MIDDLE) {
+      this.closeTab();
+    }
   }
 
   closeTab(): void {
