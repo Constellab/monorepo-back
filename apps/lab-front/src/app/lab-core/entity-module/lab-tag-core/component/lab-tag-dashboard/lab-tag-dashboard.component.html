@@ -6,6 +6,11 @@
       <button mat-icon-button type="button" (click)="openAddTagDialog($event)">
         <mat-icon>add</mat-icon>
       </button>
+
+      <button mat-icon-button type="button" (click)="openTagHelpDialog($event)"
+              [matTooltip]="'tag_help_tooltip' | translate">
+        <mat-icon>help</mat-icon>
+      </button>
     </mat-panel-title>
   </mat-expansion-panel-header>
   <fl-section [object]="tags" [isLoading]="isLoading" emptyText="no_tags_dashboard">

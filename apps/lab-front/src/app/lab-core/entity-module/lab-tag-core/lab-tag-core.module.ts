@@ -5,13 +5,15 @@ import {LabTagDashboardComponent} from './component/lab-tag-dashboard/lab-tag-da
 import {LabTagEntityDetailComponent} from './component/lab-tag-entity-detail/lab-tag-entity-detail.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabTagFormDialogComponent} from './component/lab-tag-form-dialog/lab-tag-form-dialog.component';
+import {LabTagHelpDialogComponent} from './component/lab-tag-help-dialog/lab-tag-help-dialog.component';
 
 
 @NgModule({
   declarations: [
     LabTagDashboardComponent,
     LabTagEntityDetailComponent,
-    LabTagFormDialogComponent
+    LabTagFormDialogComponent,
+    LabTagHelpDialogComponent
   ],
   imports: [
     CommonModule,
@@ -22,7 +24,8 @@ import {LabTagFormDialogComponent} from './component/lab-tag-form-dialog/lab-tag
   ],
   exports: [
     LabTagDashboardComponent,
-    LabTagEntityDetailComponent
+    LabTagEntityDetailComponent,
+    LabTagHelpDialogComponent
   ]
 })
 export class LabTagCoreModule { }

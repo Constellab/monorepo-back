@@ -13,6 +13,7 @@ import {LabTagEntity} from '../../../../model/entities/lab-tag.entity';
 import {LabTagFormDialogComponent} from '../lab-tag-form-dialog/lab-tag-form-dialog.component';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {LabTagHelpDialogComponent} from '../lab-tag-help-dialog/lab-tag-help-dialog.component';
 
 
 interface LabTagEntityWithSelection {
@@ -206,5 +207,10 @@ export class LabTagDashboardComponent extends FlFormFieldDirective<FlTag[]> impl
 
     const keys = this.tags.map(tag => tag.tag.key);
     this.tagService.reorderTags(keys).subscribe();
+  }
+
+  openTagHelpDialog(event: MouseEvent): void {
+    ClHelpService.stopEventPropagation(event);
+    this.dialogService.openSmallDialog(LabTagHelpDialogComponent);
   }
 }
