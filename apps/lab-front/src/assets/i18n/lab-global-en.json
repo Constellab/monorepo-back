@@ -112,5 +112,7 @@
   "empty_queue": "There is no experiment in the execution queue",
   "dashboard": "Dashboard",
   "settings": "Settings",
-  "reduce_menu": "Reduce"
+  "reduce_menu": "Reduce",
+  "validated_by": "Validated by",
+  "validated_on": "Validated on"
 }

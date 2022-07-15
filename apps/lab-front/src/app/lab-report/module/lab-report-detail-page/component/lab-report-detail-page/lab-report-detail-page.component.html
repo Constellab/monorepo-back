@@ -41,6 +41,14 @@
             {{'biox.project' | translate}} : <span class="g-text-light">{{report.project.title | translate}}</span>
           </div>
 
+          <!--  Validated info  -->
+          <p class="separator" *ngIf="report.validatedBy">
+            {{'validated_by' | translate}} {{report.validatedBy.fullname}}
+          </p>
+          <p *ngIf="report.validatedAt" [matTooltip]="report.validatedAt | flDate:'D HH:mm'">
+            {{'validated_on' | translate}} {{report.validatedAt | flDate}}
+          </p>
+
           <!--  Created by & Last modified bt  -->
           <p class="g-text-small g-text-light separator">
             <fl-creation-info [createdBy]="report.createdBy.fullname"

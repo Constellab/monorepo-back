@@ -9,6 +9,9 @@ import {
 } from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {LabEntityWithTag} from './lab-entity-with-tag.entity';
+import {LabUser} from './lab-user.entity';
+import {ClLuxonTransform} from '@monorepo/core-lib';
+import {DateTime} from 'luxon';
 
 export type LabExperimentStatus = 'DRAFT' | 'IN_QUEUE' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
@@ -54,6 +57,14 @@ export class LabExperiment extends LabEntityWithTag {
 
   @Expose({name: 'is_validated'})
   isValidated: boolean;
+
+  @Expose({name: 'validated_by'})
+  @Type(() => LabUser)
+  validatedBy?: LabUser;
+
+  @Expose({name: 'validated_at'})
+  @ClLuxonTransform()
+  validatedAt?: DateTime;
 
   project: {
     id: string;
