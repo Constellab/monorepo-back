@@ -47,7 +47,7 @@ export class CnExternalLabsController {
   @Put('project/:projectId/report')
   saveReport(
     @Param('projectId', new ParseUUIDPipe()) projectId: string,
-    @Body() createReportDto: CnCreateReportWithConfigDto): Promise<CnReport> {
+    @Body(new BlParsePipe(CnCreateReportWithConfigDto)) createReportDto: CnCreateReportWithConfigDto): Promise<CnReport> {
     return this.projectAggregator.createReport(createReportDto, projectId);
   }
 

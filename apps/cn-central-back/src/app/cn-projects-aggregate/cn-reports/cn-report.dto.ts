@@ -2,18 +2,26 @@ import {CnBaseEntityDTO} from '../../cn-core/model/entities/cn-base.entity';
 import {CnReport} from './cn-report.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnLabConfigDto} from '../../cn-lab-configs/cn-lab-config.dto';
-
-export interface CnCreateReportWithConfigDto {
-  report: CnCreateReportDto;
-  lab_config: CnLabConfigDto;
-  experiment_ids: string[];
-}
+import {Type} from 'class-transformer';
+import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {DateTime} from 'luxon';
 
 
-export interface CnCreateReportDto extends CnBaseEntityDTO {
+export class CnCreateReportDto extends CnBaseEntityDTO {
   title: string;
   content: CmRichTextI;
 
+  validated_by?: { id: string };
+
+  @BlLuxonDateTimeColumn()
+  validated_at?: DateTime;
+}
+
+export class CnCreateReportWithConfigDto {
+  @Type(() => CnCreateReportDto)
+  report: CnCreateReportDto;
+  lab_config: CnLabConfigDto;
+  experiment_ids: string[];
 }
 
 

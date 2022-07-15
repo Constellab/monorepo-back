@@ -3,6 +3,9 @@ import {CaLabInstance} from './ca-lab-instance.class';
 import {CaStatusHistory} from './ca-status-history.class';
 import {FlQuillJson, FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
+import {ClLuxonTransform} from '@monorepo/core-lib';
+import {DateTime} from 'luxon';
+import {CaUser} from './ca-user.class';
 
 export type CaExperimentStatus = 'DRAFT' | 'SUCCESS' | 'ERROR' | 'ARCHIVED';
 
@@ -31,6 +34,12 @@ export class CaExperiment extends CaBaseEntity {
   status: FlStatus<CaExperimentStatus>;
 
   projectId: string;
+
+  @Type(() => CaUser)
+  validatedBy?: CaUser;
+
+  @ClLuxonTransform()
+  validatedAt?: DateTime;
 
   statusIsDraft(): boolean {
     return this.status.value === 'DRAFT';

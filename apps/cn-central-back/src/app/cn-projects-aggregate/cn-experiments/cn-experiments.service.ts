@@ -7,6 +7,7 @@ import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {BlAbstractService} from '@monorepo/back-core-lib';
+import {CnUser} from '../../cn-users/cn-user.entity';
 
 @Injectable()
 export class CnExperimentsService extends BlAbstractService<CnExperiment> {
@@ -54,6 +55,13 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     experiment.status = labExperimentDto.status;
     experiment.labConfig = labConfig;
     experiment.protocol = createLabExperimentDto.protocol;
+    experiment.validatedAt = labExperimentDto.validated_at;
+
+    if (labExperimentDto.validated_by) {
+      const validatedBy = new CnUser();
+      validatedBy.id = labExperimentDto.validated_by.id;
+      experiment.validatedBy = validatedBy;
+    }
 
     if (experimentDB) {
       return await this.updateWithCompare(experiment, experimentDB);

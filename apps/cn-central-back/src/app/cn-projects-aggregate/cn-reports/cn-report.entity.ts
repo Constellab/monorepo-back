@@ -5,6 +5,9 @@ import {Type} from 'class-transformer';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
+import {CnUser} from '../../cn-users/cn-user.entity';
+import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
+import {DateTime} from 'luxon';
 
 @Entity('report')
 export class CnReport extends CnBaseEntity {
@@ -29,4 +32,11 @@ export class CnReport extends CnBaseEntity {
   @Type(() => CnLabConfig)
   @ManyToOne(() => CnLabConfig, {nullable: false})
   labConfig: CnLabConfig;
+
+  @Type(() => CnUser)
+  @ManyToOne(() => CnUser, {eager: true, nullable: true})
+  validatedBy: CnUser;
+
+  @BlLuxonDateTimeColumn()
+  validatedAt: DateTime;
 }

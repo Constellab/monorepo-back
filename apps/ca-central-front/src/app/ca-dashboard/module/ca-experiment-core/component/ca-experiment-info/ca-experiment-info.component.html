@@ -1,3 +1,14 @@
+
+<!--  Validated info  -->
+<div *ngIf="experiment.validatedBy" class="validated-info">
+  <p *ngIf="experiment.validatedBy">
+    {{'validated_by' | translate}} {{experiment.validatedBy.fullname}}
+  </p>
+  <p *ngIf="experiment.validatedAt" [matTooltip]="experiment.validatedAt | flDate:'D HH:mm'">
+    {{'validated_on' | translate}} {{experiment.validatedAt | flDate}}
+  </p>
+</div>
+
 <fl-text-editor *ngIf="experiment.description; else noDesc"
                 [ngModel]="experiment.description" [disabled]="true"
                 mode="JSON" [config]="textEditorConfig"></fl-text-editor>

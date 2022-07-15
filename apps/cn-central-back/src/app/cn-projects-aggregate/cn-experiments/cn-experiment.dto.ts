@@ -5,12 +5,7 @@ import {CnBaseEntityDTO} from '../../cn-core/model/entities/cn-base.entity';
 import {CnExperiment, CnExperimentProtocol} from './cn-experiment.entity';
 import {CnLabConfigDto} from '../../cn-lab-configs/cn-lab-config.dto';
 import {CmRichTextI} from '@monorepo/common-model';
-
-export class CnCreateLabExperimentDto {
-  experiment: CnLabExperimentDto;
-  protocol: CnExperimentProtocol;
-  lab_config: CnLabConfigDto;
-}
+import {Type} from 'class-transformer';
 
 
 /**
@@ -27,7 +22,21 @@ export class CnLabExperimentDto {
 
   @ClLuxonDateTimeTransform()
   last_modified_at: DateTime;
+
+  validated_by?: { id: string };
+
+  @ClLuxonDateTimeTransform()
+  validated_at?: DateTime;
 }
+
+export class CnCreateLabExperimentDto {
+
+  @Type(() => CnLabExperimentDto)
+  experiment: CnLabExperimentDto;
+  protocol: CnExperimentProtocol;
+  lab_config: CnLabConfigDto;
+}
+
 
 // experiment object smaller
 export class CnExperimentDTO extends CnBaseEntityDTO {

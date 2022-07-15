@@ -3,6 +3,16 @@
 <fl-article-container>
 
   <fl-article-left-side>
+    <!--  Validated info  -->
+    <div *ngIf="report.validatedBy" class="validated-info">
+      <p *ngIf="report.validatedBy">
+        {{'validated_by' | translate}} {{report.validatedBy.fullname}}
+      </p>
+      <p *ngIf="report.validatedAt" [matTooltip]="report.validatedAt | flDate:'D HH:mm'">
+        {{'validated_on' | translate}} {{report.validatedAt | flDate}}
+      </p>
+    </div>
+
     <!--  Created by & Last modified bt  -->
     <p class="g-text-small g-text-light separator">
       <fl-creation-info [createdBy]="report.createdBy.fullname"

@@ -13,6 +13,7 @@ import {AxiosResponse} from 'axios';
 import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
+import {CnUser} from '../../cn-users/cn-user.entity';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
@@ -58,6 +59,13 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     report.project = project;
     report.experiments = experiments;
     report.labConfig = labConfig;
+    report.validatedAt = reportDto.validated_at;
+
+    if (reportDto.validated_by) {
+      const validatedBy = new CnUser();
+      validatedBy.id = reportDto.validated_by.id;
+      report.validatedBy = validatedBy;
+    }
 
     return await this.repository.save(report);
   }

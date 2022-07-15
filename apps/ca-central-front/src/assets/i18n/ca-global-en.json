@@ -129,5 +129,7 @@
   "team_remove_user": "Remove user from the team",
   "team_remove_user_confirmation": "Are you sure you want to remove this user from the team ? He will not be able to access team's objects",
   "team_user_removed": "User removed from team",
-  "team_projects": "Team's projects"
+  "team_projects": "Team's projects",
+  "validated_by": "Validated by",
+  "validated_on": "Validated on"
 }

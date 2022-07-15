@@ -113,6 +113,6 @@
   "dashboard": "Dashboard",
   "settings": "Paramètre",
   "reduce_menu": "Réduire",
-  "validate_by": "Valider par",
-  "validated_on": "Valider le"
+  "validate_by": "Validé par",
+  "validated_on": "Validé le"
 }
