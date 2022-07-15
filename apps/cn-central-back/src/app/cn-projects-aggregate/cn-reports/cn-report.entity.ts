@@ -37,6 +37,7 @@ export class CnReport extends CnBaseEntity {
   @ManyToOne(() => CnUser, {eager: true, nullable: true})
   validatedBy: CnUser;
 
+  @Column({nullable: true})
   @BlLuxonDateTimeColumn()
   validatedAt: DateTime;
 }
