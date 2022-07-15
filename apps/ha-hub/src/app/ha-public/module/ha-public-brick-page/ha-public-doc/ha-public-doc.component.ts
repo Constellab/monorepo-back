@@ -32,7 +32,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   isCheck: boolean = false;
   activatedRoute: ActivatedRoute = this.route;
   isLoading: boolean = true;
-  textEditorConfig: FlTextEditorConfig;
+  textEditorConfig: HaDocTextEditorConfig;
   docNotFound: boolean = false;
 
   constructor(

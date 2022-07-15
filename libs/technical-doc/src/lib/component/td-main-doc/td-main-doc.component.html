@@ -19,4 +19,4 @@
 </fl-key-value>
 <p>{{_entity.shortDescription}}</p>
 
-<div class="technical-doc-content ql-editor markdown" [innerHTML]="_entity.doc | tdMarkdown"></div>
+<div class="technical-doc-content ql-editor markdown" [innerHTML]="(_entity.doc | tdMarkdown)"></div>

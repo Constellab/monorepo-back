@@ -32,6 +32,7 @@ import {FlTextEditorsManagerState} from '../../state/fl-text-editors-manager.sta
 import {FlTextEditorConfig} from '../../model/fl-text-editor-config.class';
 import {FlQuillBlock, FlQuillDelta} from '../../model/fl-quill-export.class';
 import {FlHtmlHelper} from '../../../../utils/fl-html.helper';
+import {FlFileHelper} from '../../../../service/fl-file.helper';
 
 hljs.registerLanguage('python', python);
 
@@ -98,13 +99,38 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
         modules: {
           syntax: {
             highlight: (text: string) => hljs.highlight(text, {language: 'python'}).value
-          },              // Include syntax module
+          }, // Include syntax module
           toolbar: this.config.getToolbarConfig(),
         },
         placeholder: this.placeholder,
         scrollingContainer: this.getScrollingContainer()
       }
     );
+    this.quill.clipboard.addMatcher('IMG', (node, delta) => {
+      const insertImage: any = delta.ops[0].insert;
+      const imageData: string = insertImage.image;
+      if (imageData.startsWith('http')) {
+        delta.ops[0] = {
+          insert: {
+            figure: {
+              filename: imageData,
+              width: null,
+              height: null,
+              naturalWidth: null,
+              naturalHeight: null,
+              title: '',
+              caption: ''
+            }
+          }
+        }
+        console.log(delta.ops)
+      } else if (imageData.startsWith('data')) {
+        const blob: Blob = FlFileHelper.convertBase64ToBlob(insertImage.image.split(',')[1], 'image/png');
+        this.config.getAndSaveImage(blob, this.state);
+        delta.ops = [];
+      }
+      return delta;
+    });
 
     this.state.init(this.quill, this.config, this.editorElement.nativeElement, this.disabled);
 
@@ -138,6 +164,33 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     this.value = value;
   }
 
+  onDisableChange(disable: boolean): void {
+    if (this.quill) {
+      if (disable) {
+        this.quill.disable();
+      } else {
+        this.quill.enable();
+      }
+    }
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.state.setDisabled(isDisabled);
+  }
+
+  outsideClick(event: MouseEvent): void {
+    // we consider all elements with parent marked as text-editor-overlay to be in the text editor element
+    const parent = FlHtmlHelper.getParent(event.target as HTMLElement, {className: 'text-editor-overlay'});
+    if (parent) return;
+    this.state.outsideClick(event);
+    this.blockAddButtonOverlay?.dispose();
+  }
+
+  ngOnDestroy(): void {
+    this.closeBlockAddButtonOverlay();
+    this.managerState.unregisterTextEditor(this.editorElement.nativeElement);
+  }
+
   private setQuillValue(value: any): void {
     if (this.mode === 'HTML') {
       this.setHTML(value);
@@ -162,16 +215,6 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
   private setJsonDelta(json: FlQuillJson): void {
     const delta = json?.ops != null ? new FlQuillDelta(json.ops) : [];
     this.quill.setContents(delta);
-  }
-
-  onDisableChange(disable: boolean): void {
-    if (this.quill) {
-      if (disable) {
-        this.quill.disable();
-      } else {
-        this.quill.enable();
-      }
-    }
   }
 
   private onEditorChange(changeEvent: 'text-change' | 'selection-change', obj: any): void {
@@ -211,10 +254,6 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
     this.blockAddButtonOverlay?.dispose();
   }
 
-  setDisabledState(isDisabled: boolean): void {
-    this.state.setDisabled(isDisabled);
-  }
-
   // retrieve the first parent that is scrollable
   private getScrollingContainer(): HTMLElement | string {
     if (this.scrollContainer === 'child') {
@@ -230,19 +269,5 @@ export class FlTextEditorComponent extends FlFormFieldDirective<string> implemen
 
     // otherwise, use document as scrolling container
     return this.document.documentElement;
-  }
-
-  outsideClick(event: MouseEvent): void {
-    // we consider all elements with parent marked as text-editor-overlay to be in the text editor element
-    const parent = FlHtmlHelper.getParent(event.target as HTMLElement, {className: 'text-editor-overlay'});
-    if (parent) return;
-    this.state.outsideClick(event);
-    this.blockAddButtonOverlay?.dispose();
-  }
-
-
-  ngOnDestroy(): void {
-    this.closeBlockAddButtonOverlay();
-    this.managerState.unregisterTextEditor(this.editorElement.nativeElement);
   }
 }

@@ -2,7 +2,8 @@ import {
   FlQuillConfig,
   FlTextEditorBlockAddButton,
   FlTextEditorConfig,
-  FlTextEditorImageLoader
+  FlTextEditorImageLoader,
+  FlTextEditorState
 } from '@monorepo/front-core-lib';
 import {CaReportService} from '../../service-api/ca-report.service';
 import {RvResourceView} from '@monorepo/resource-view';
@@ -32,5 +33,9 @@ export class CaTextEditorConfig extends FlTextEditorConfig implements FlTextEdit
 
   public getView(filename: string): Observable<RvResourceView> {
     return this.reportService.getView(this.reportId, filename);
+  }
+
+  getAndSaveImage(imgBlob: Blob, state: FlTextEditorState): any {
+    return null;
   }
 }

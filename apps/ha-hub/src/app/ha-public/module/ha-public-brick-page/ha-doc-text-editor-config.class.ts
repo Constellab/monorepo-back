@@ -11,6 +11,8 @@ import {HaDocumentationService} from '../../../ha-core/ha-service/ha-documentati
 import {HaPublicFindDocComponent} from './ha-public-find-doc/ha-public-find-doc.component';
 import {HaDocumentationSearchDTO} from '../../../ha-core/ha-model/ha-entities/ha-documentation.class';
 import {environment} from '../../../../environments/ha-environment';
+import {Observable} from 'rxjs';
+import {ClStringHelper} from '@monorepo/core-lib';
 
 /**
  * Config for the text editor in the report
@@ -46,11 +48,15 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
     ];
   }
 
-  public insertImageFromFile(file: File, textEditorState: FlTextEditorState): void {
+  insertImageFromFile(file: File, textEditorState: FlTextEditorState): void {
     const index = textEditorState.getCurrentSelectionIndex();
     this.docService.uploadImage(file).subscribe(
       fileUrl => textEditorState.insertImageFromUrl(fileUrl, index)
     );
+  }
+
+  public getImageUrl(filename: string): string {
+    return this.docService.getImageUrl(filename);
   }
 
   private openSelectDocView(textEditorState: FlTextEditorState): void {
@@ -62,12 +68,15 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
     this.dialogService.openMediumDialog(HaPublicFindDocComponent, {data: config}).afterClosed().subscribe((link) => {
       if (link && link.id) {
         this.documentationLink(textEditorState, link);
-      } else if(link && link.name){
+      } else if (link && link.name) {
         const index: number = textEditorState.getCurrentSelectionIndex();
         textEditorState.insertLink(index, link.name, link.name);
       }
     });
   }
+
+  //
+  // private insertLink(textEditorState: FlTextEditorState, link)
 
   private documentationLink(textEditorState: FlTextEditorState, doc: HaDocumentationSearchDTO): void {
     const index: number = textEditorState.getCurrentSelectionIndex();
@@ -80,10 +89,8 @@ export class HaDocTextEditorConfig extends FlTextEditorConfig implements FlTextE
     textEditorState.insertLink(index, value, name);
   }
 
-  //
-  // private insertLink(textEditorState: FlTextEditorState, link)
 
-  public getImageUrl(filename: string): string {
-    return this.docService.getImageUrl(filename);
+  getAndSaveImage(imgBlob: Blob, state: FlTextEditorState): any{
+    return this.insertImageFromFile(new File([imgBlob], ClStringHelper.generateUUID()), state);
   }
 }

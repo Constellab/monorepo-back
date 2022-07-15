@@ -15,6 +15,8 @@ export abstract class FlTextEditorConfig {
 
   public abstract getBlockAddButtons(state: FlTextEditorState): FlTextEditorBlockAddButton[];
 
+  public abstract getAndSaveImage(imgBlob: Blob, state: FlTextEditorState): any;
+
   protected getCodeBlockAddButton(state: FlTextEditorState): FlTextEditorBlockAddButton {
     return {
       icon: 'code',

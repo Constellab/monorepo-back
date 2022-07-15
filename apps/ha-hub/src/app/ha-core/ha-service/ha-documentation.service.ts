@@ -59,7 +59,6 @@ export class HaDocumentationService {
   }
 
   uploadImage(file: File): Observable<FlTextEditorUploadedImage> {
-    console.log('AAAAAAAAAAAALDADA PIEZJ DOAIJ DÄIJ d')
     const formData = new FormData();
     formData.append('file', file);
     return this.apiService.put(`${this.route}/image`, formData).pipe(

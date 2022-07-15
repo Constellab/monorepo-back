@@ -1,6 +1,6 @@
 import {Pipe, PipeTransform, SecurityContext} from '@angular/core';
 import {marked} from 'marked';
-import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
+import {DomSanitizer, SafeHtml, SafeResourceUrl} from '@angular/platform-browser';
 import {ClStringHelper, ClYoutubeHelper} from '@monorepo/core-lib';
 import {objectKeys} from 'codelyzer/util/objectKeys';
 
@@ -25,9 +25,9 @@ export class TdMarkdownPipe implements PipeTransform {
       let out: string = '';
 
       if(ClYoutubeHelper.isYoutubeVideoUrl(href)){
-        const embedHref: string = ClYoutubeHelper.convertToEmbedUrl(href);
+        const embedHref: SafeResourceUrl = ClYoutubeHelper.convertToEmbedUrl(href);
         // eslint-disable-next-line max-len
-        let iframe: string = `<div class="iframe-div"><iframe src="${embedHref}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen`;
+        let iframe: string = `<div class="iframe-div"><iframe src="${embedHref}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen property="binding"`;
         if (title) {
           iframe += ` title="${title}">`;
         } else {
@@ -51,7 +51,8 @@ export class TdMarkdownPipe implements PipeTransform {
     const parsedDoc: string = marked.parse(value, {renderer: renderer});
     let safeDoc: string = this.domSanitizer.sanitize(SecurityContext.HTML, parsedDoc);
     for(const key of objectKeys(iframes)){
-      safeDoc = safeDoc.replace(key, iframes[key]);
+      safeDoc = safeDoc.replace(key,
+        this.domSanitizer.sanitize(SecurityContext.RESOURCE_URL, this.domSanitizer.bypassSecurityTrustResourceUrl(iframes[key])))
     }
     return this.domSanitizer.bypassSecurityTrustHtml(safeDoc);
   }

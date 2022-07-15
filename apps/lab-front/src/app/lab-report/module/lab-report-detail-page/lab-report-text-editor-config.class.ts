@@ -43,6 +43,14 @@ export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlT
     ];
   }
 
+  public getImageUrl(filename: string): string {
+    return this.reportService.getImageUrl(filename);
+  }
+
+  getAndSaveImage(imgBlob: Blob, state: FlTextEditorState): any {
+    return null;
+  }
+
   private insertImageFromFile(file: File, textEditorState: FlTextEditorState): void {
     const index = textEditorState.getCurrentSelectionIndex();
     this.reportService.uploadImage(file).subscribe(
@@ -70,9 +78,4 @@ export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlT
 
     textEditorState.insertEmbed(index, LabReportContentViewBlot.blotName, contentView);
   }
-
-  public getImageUrl(filename: string): string {
-    return this.reportService.getImageUrl(filename);
-  }
-
 }
