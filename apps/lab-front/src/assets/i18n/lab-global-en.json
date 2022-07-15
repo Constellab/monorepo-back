@@ -50,6 +50,8 @@
   "resource_origin_transformed": "Transformed",
   "resource_include_children": "Include children resources (resources inside ResourceSet)",
   "resource_include_children_short": "Children resources",
+  "resource_include_intermediate": "Include intermediate resources (not provided as output)",
+  "resource_include_intermediate_short": "Intermediate resources",
   "resource_data": "Data",
   "resource_include_archived": "Include archived resources",
   "select_resource": "Select a resource",

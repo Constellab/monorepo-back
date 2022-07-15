@@ -50,6 +50,8 @@
   "resource_origin_transformed": "Transformée",
   "resource_include_children": "Inclure les ressources filles (ressources dans les ResourceSet)",
   "resource_include_children_short": "Ressources filles",
+  "resource_include_intermediate": "Inclure les ressources intermédiaires (non renseignées dans des output)",
+  "resource_include_intermediate_short": "Ressources intermédiaires",
   "resource_data": "Données",
   "resource_include_archived": "Inclure les ressources archivées",
   "select_resource": "Sélectionner une ressource",
