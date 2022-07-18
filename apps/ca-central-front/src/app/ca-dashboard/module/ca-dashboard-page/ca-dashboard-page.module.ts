@@ -14,6 +14,8 @@ import {CaDashboardSmartDbsComponent} from './component/ca-dashboard-smart-dbs/c
 import {CaSmartDbCoreModule} from '../../../ca-core/entity-module/ca-smart-db-core/ca-smart-db-core.module';
 import {CaDashboardGroupsComponent} from './component/ca-dashboard-groups/ca-dashboard-groups.component';
 import {CaGroupCoreModule} from '../../../ca-core/entity-module/ca-group-core/ca-group-core.module';
+import { CaDashboardMyActivityComponent } from './component/ca-dashboard-my-activity/ca-dashboard-my-activity.component';
+import { CaDashboardTaskOfTheDayComponent } from './component/ca-dashboard-task-of-the-day/ca-dashboard-task-of-the-day.component';
 
 /**
  * Module for the dashboard page
@@ -26,6 +28,8 @@ import {CaGroupCoreModule} from '../../../ca-core/entity-module/ca-group-core/ca
     CaDashboardLabInstancesComponent,
     CaDashboardSmartDbsComponent,
     CaDashboardGroupsComponent,
+    CaDashboardMyActivityComponent,
+    CaDashboardTaskOfTheDayComponent,
   ],
   imports: [
     CommonModule,

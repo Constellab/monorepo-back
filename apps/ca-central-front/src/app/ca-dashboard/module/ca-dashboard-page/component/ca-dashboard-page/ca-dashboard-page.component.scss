@@ -3,6 +3,28 @@
   line-height: 2em;
 }
 
+.dashboard-left{
+}
+
+.dashboard-right{
+  min-width: 25%;
+}
+
 .section{
   margin-bottom: 2em;
+  width: auto;
+}
+
+.bt{
+  width: 100%;
+}
+
+.bt button{
+  margin-right: 1em;
+  height: 5em;
+  width: 6em;
+}
+
+.rs-section{
+  margin-top: 1em;
 }

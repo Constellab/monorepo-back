@@ -13,6 +13,7 @@ import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {SelectQueryBuilder} from 'typeorm/query-builder/SelectQueryBuilder';
 import {CnUsersService} from '../../cn-users/cn-users.service';
+import {DateTime} from 'luxon';
 
 @Injectable()
 export class CnProjectsService extends CnAbstractWithStatusService<CnProject, CnProjectStatus> {
@@ -45,20 +46,6 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
   }
 
   /**
-   * Get project by groups of user
-   */
-  private async getProjectOfUser(user: CnUser, page: number, size: number): Promise<ClPageI<CnProject>> {
-    const groupIds = await this.groupService.getGroupIdsFromUser(user);
-
-    const queryBuilder: SelectQueryBuilder<CnProject> = this.repository.createQueryBuilder('project')
-      // the join is one project_group and group table, should be more optimized to only join on project_group
-      .leftJoin('project.sharedGroups', 'group')
-      .where('group.id IN(:groupIds)', {groupIds: groupIds});
-
-    return this.getProjectFromBuilder(queryBuilder, page, size);
-  }
-
-  /**
    * Get all projects shared with a group paginated
    */
   public async getProjectsOfGroup(groupId: string, page: number, size: number): Promise<ClPageI<CnProject>> {
@@ -67,22 +54,6 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
       .leftJoin('project.sharedGroups', 'group')
       .where('group.id = :groupId', {groupId: groupId});
     return this.getProjectFromBuilder(queryBuilder, page, size);
-  }
-
-  private async getProjectFromBuilder(builder: SelectQueryBuilder<CnProject>,
-                                      page: number, size: number): Promise<ClPageI<CnProject>> {
-    const safePage: number = this.getSafePage(page);
-    const safeSize: number = this.getSafePageSize(size);
-
-    const [result, totalElements] = await builder
-      .leftJoinAndSelect('project.createdBy', 'created_by')
-      .leftJoinAndSelect('project.lastModifiedBy', 'last_modified_by')
-      .innerJoinAndSelect('project.currentStatus', 'status')
-      .skip(page * size)
-      .take(size)
-      .getManyAndCount();
-
-    return ClPage.fromPagination(safePage, safeSize, totalElements, result);
   }
 
   public async shareProject(project: CnProject, groupId: string): Promise<CnGroup> {
@@ -107,6 +78,44 @@ export class CnProjectsService extends CnAbstractWithStatusService<CnProject, Cn
 
   public async getProjectWithSharedGroups(projectId: string): Promise<CnProject> {
     return this.findByIdAndCheck(projectId, {relations: ['sharedGroups']});
+  }
+
+  public async getOnGoingProjectsNumber(): Promise<number> {
+    const user: CnUser = this.userService.getCurrent();
+    const projects: CnProject[] = await this.getProjectsOfUserId(user.id);
+    return (projects.filter(project =>
+      project.startingDate < DateTime.fromJSDate(new Date()) &&
+      project.endingDate > DateTime.fromJSDate(new Date()))).length;
+  }
+
+  /**
+   * Get project by groups of user
+   */
+  private async getProjectOfUser(user: CnUser, page: number, size: number): Promise<ClPageI<CnProject>> {
+    const groupIds = await this.groupService.getGroupIdsFromUser(user);
+
+    const queryBuilder: SelectQueryBuilder<CnProject> = this.repository.createQueryBuilder('project')
+      // the join is one project_group and group table, should be more optimized to only join on project_group
+      .leftJoin('project.sharedGroups', 'group')
+      .where('group.id IN(:groupIds)', {groupIds: groupIds});
+
+    return this.getProjectFromBuilder(queryBuilder, page, size);
+  }
+
+  private async getProjectFromBuilder(builder: SelectQueryBuilder<CnProject>,
+                                      page: number, size: number): Promise<ClPageI<CnProject>> {
+    const safePage: number = this.getSafePage(page);
+    const safeSize: number = this.getSafePageSize(size);
+
+    const [result, totalElements] = await builder
+      .leftJoinAndSelect('project.createdBy', 'created_by')
+      .leftJoinAndSelect('project.lastModifiedBy', 'last_modified_by')
+      .innerJoinAndSelect('project.currentStatus', 'status')
+      .skip(page * size)
+      .take(size)
+      .getManyAndCount();
+
+    return ClPage.fromPagination(safePage, safeSize, totalElements, result);
   }
 
 }

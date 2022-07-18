@@ -34,8 +34,8 @@ export class CnProjectsController {
 
   @Get('group/:groupId')
   public getByTeam(@Param('groupId', new ParseUUIDPipe()) groupId: string,
-                    @Query('page', ParseIntPipe) page: number,
-                    @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
+                   @Query('page', ParseIntPipe) page: number,
+                   @Query('size', ParseIntPipe) size: number): Promise<ClPageI<CnProject>> {
     return this.projectAggregate.getProjectOfTeam(groupId, page, size);
   }
 

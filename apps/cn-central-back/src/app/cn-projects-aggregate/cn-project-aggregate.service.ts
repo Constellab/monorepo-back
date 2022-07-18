@@ -86,6 +86,10 @@ export class CnProjectAggregateService {
     return this.projectService.getProjectsOfUserId(userId);
   }
 
+  public async getOnGoingProjectsNumber(): Promise<number>{
+    return this.projectService.getOnGoingProjectsNumber();
+  }
+
 
   /////////////////////////////////////// PROJECT STATUS //////////////////////////////////
 

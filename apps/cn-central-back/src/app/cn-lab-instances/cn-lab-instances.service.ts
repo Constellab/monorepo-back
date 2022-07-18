@@ -65,15 +65,30 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
 
     // TODO fix this route, problem to filter on status because user also has a status
+    // return this.repository.find({
+    //   where: (qb: ObjectLiteral) => {
+    //     qb.where({owner: user.id})
+    //       .andWhere('sh.status = :status', {status: CnLabInstanceStatus.RUNNING});
+    //   },
+    //   // join: {alias: 'lll', leftJoinAndSelect: {sh: 'currentStatus'}},
+    //   // join: {},
+    //   order: {lastModifiedAt: 'DESC'},
+    // });
+
     return this.repository.find({
-      where: (qb: ObjectLiteral) => {
-        qb.where({owner: user.id})
-          .andWhere('sh.status = :status', {status: CnLabInstanceStatus.RUNNING});
+      where:{
+        owner: {
+          id: user.id
+        },
+        currentStatus: {
+          status: CnLabInstanceStatus.RUNNING
+        }
       },
-      // join: {alias: 'lll', leftJoinAndSelect: {sh: 'currentStatus'}},
-      // join: {},
-      order: {lastModifiedAt: 'DESC'},
-    });
+      relations: ['currentStatus'],
+      order: {
+        lastModifiedAt: 'DESC'
+      }
+    })
   }
 
   public startInstance(id: string): Promise<CnLabInstance> {

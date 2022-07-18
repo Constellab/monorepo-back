@@ -75,4 +75,5 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     return this.findByIdAndCheck(id, {relations: ['reports']});
   }
 
+
 }

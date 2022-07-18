@@ -6,9 +6,17 @@ import {
   CaProjectStatusHistory
 } from '../model/entities/ca-project.class';
 import {Observable} from 'rxjs';
-import {FlApiService, FlArrayObs, FlEntityArrayObs, FlEntityPaginatedDatasource,} from '@monorepo/front-core-lib';
+import {
+  FlApiService,
+  FlArrayObs,
+  FlEntityArrayObs,
+  FlEntityPaginatedDatasource,
+  FlUserAccountService,
+} from '@monorepo/front-core-lib';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
 import {CaGroup} from '../model/entities/ca-group.entity';
+import {CaUsersService} from './ca-users.service';
+import {CaUser} from '../model/entities/ca-user.class';
 
 /**
  * Service to manage project entity
@@ -100,5 +108,9 @@ export class CaProjectService {
 
   public getProjectsByTeamDatasource(groupId: string): CaProjectDatasource {
     return new FlEntityPaginatedDatasource((page: number, pageSize: number)  => this.getProjectsByTeam(groupId, page, pageSize), 20);
+  }
+
+  public getOnGoingProjectsNumber(): Observable<number>{
+    return this.apiService.get(`${this.route}/on-going-projects-number`);
   }
 }
