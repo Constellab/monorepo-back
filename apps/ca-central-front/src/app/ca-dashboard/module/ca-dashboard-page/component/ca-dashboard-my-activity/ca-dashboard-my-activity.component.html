@@ -1,14 +1,32 @@
 <div>
-  <div class="card-header">
-    <h1>My activity</h1>
-  </div>
+  <fl-section-header class="g-headline">
+    <div>
+      <fl-text-icon iconPosition="start">
+        <mat-icon class="g-icon-big" flIcon="analytics"></mat-icon>
+        <h2>{{'my_activity' | translate}}</h2>
+      </fl-text-icon>
+    </div>
+  </fl-section-header>
+
   <fl-card class="card">
-    <fl-card-body>
-      <p>{{stats.onGoingProjectNumber}} ongoing projects</p>
-      <p>{{stats.teamsNumber}} teams</p>
-      <p>{{stats.runningLabNumber}} running lab</p>
-      <p>{{stats.validatedExperimentNumber}} validated experiments</p>
-      <p>{{stats.validatedReportNumber}} validated report</p>
-    </fl-card-body>
+        <fl-card-body *ngIf="stats">
+          <div class="activities-div">
+            <div class="activity g-primary-background">
+              <ca-dashboard-activity-card [activityLogo]="'project'" [activityNumber]="stats.onGoingProjectNumber" [activityText]="'ongoing_projects'"></ca-dashboard-activity-card>
+            </div>
+            <div class="activity g-primary-background">
+              <ca-dashboard-activity-card [activityLogo]="'group'" [activityNumber]="stats.teamsNumber" [activityText]="'teams'"></ca-dashboard-activity-card>
+            </div>
+            <div class="activity g-primary-background">
+              <ca-dashboard-activity-card [activityLogo]="'lab'" [activityNumber]="stats.runningLabNumber" [activityText]="'running_labs'"></ca-dashboard-activity-card>
+            </div>
+            <div class="activity g-primary-background">
+              <ca-dashboard-activity-card [activityLogo]="'experiment'" [activityNumber]="stats.validatedExperimentNumber" [activityText]="'validated_experiments'"></ca-dashboard-activity-card>
+            </div>
+            <div class="activity g-primary-background">
+              <ca-dashboard-activity-card [activityLogo]="'report'" [activityNumber]="stats.validatedReportNumber" [activityText]="'validated_reports'"></ca-dashboard-activity-card>
+            </div>
+          </div>
+        </fl-card-body>
   </fl-card>
 </div>

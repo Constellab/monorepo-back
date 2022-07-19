@@ -10,6 +10,11 @@ export class CnExperimentsController {
   }
 
 
+  @Get('current-last-experiments')
+  getCurrentUserLastExperiments(): Promise<CnExperiment[]>{
+    return this.projectAggregate.getCurrentUserLastExperiments();
+  }
+
   @Get(':id')
   findById(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnExperiment> {
     return this.projectAggregate.findExperiment(id);
@@ -30,4 +35,6 @@ export class CnExperimentsController {
     const experiments = await this.projectAggregate.getExperimentsAssociatedToReports(reportId);
     return experiments.map(experiment => new CnExperimentDTO().copyEntity(experiment));
   }
+
+
 }

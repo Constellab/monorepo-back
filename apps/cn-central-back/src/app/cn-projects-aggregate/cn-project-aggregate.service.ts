@@ -134,7 +134,10 @@ export class CnProjectAggregateService {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     await this.experimentService.createLabExperiment(project, createLabExperimentDto);
+  }
 
+  async getCurrentUserLastExperiments(): Promise<CnExperiment[]>{
+    return this.experimentService.getCurrentUserLastExperiments();
   }
 
   /////////////////////////////////////// REPORT //////////////////////////////////

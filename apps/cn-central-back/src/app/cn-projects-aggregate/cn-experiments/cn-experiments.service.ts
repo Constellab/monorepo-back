@@ -8,12 +8,14 @@ import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {BlAbstractService} from '@monorepo/back-core-lib';
 import {CnUser} from '../../cn-users/cn-user.entity';
+import {CnUsersService} from '../../cn-users/cn-users.service';
 
 @Injectable()
 export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
   constructor(@InjectRepository(CnExperiment) private repository: Repository<CnExperiment>,
-              private labConfigService: CnLabConfigsService) {
+              private labConfigService: CnLabConfigsService,
+              private userService: CnUsersService) {
     super(repository, CnExperiment);
   }
 
@@ -75,5 +77,25 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     return this.findByIdAndCheck(id, {relations: ['reports']});
   }
 
+
+  public async getCurrentUserValidatedExperiment(): Promise<CnExperiment[]> {
+    const currentUser: CnUser = this.userService.getCurrent();
+    return await this.repository.find({
+      where: {
+        validatedBy: {
+          id: currentUser.id
+        }
+      },
+      order: {
+        lastModifiedAt: 'DESC'
+      },
+      relations: ['project']
+    });
+  }
+
+  //Get user last 3 experiments
+  public async getCurrentUserLastExperiments(): Promise<CnExperiment[]>{
+    return (await this.getCurrentUserValidatedExperiment()).slice(0, 3);
+  }
 
 }

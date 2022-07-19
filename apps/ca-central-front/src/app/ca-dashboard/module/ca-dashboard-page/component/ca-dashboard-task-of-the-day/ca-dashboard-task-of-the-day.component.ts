@@ -1,4 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {environment} from '../../../../../../environments/ca-environment';
+
+export interface CaTask{
+  id: string;
+  brickName: string;
+  brickMajor: number;
+  humanName: string;
+  uniqueName: string;
+  shortDescription: string;
+}
 
 @Component({
   selector: 'ca-dashboard-task-of-the-day',
@@ -7,9 +18,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CaDashboardTaskOfTheDayComponent implements OnInit {
 
-  constructor() { }
+  task: CaTask;
+  taskHubUrl: string;
+
+  constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
+    this.http.get(`${environment.hubApiUrl}task/task-of-the-day`).subscribe((res: CaTask) => {
+      this.task = res;
+      this.taskHubUrl = 'https://hub.gencovery.com/bricks/' +
+        `${this.task.brickName}/latest/doc/technical-folder/task/${this.task.uniqueName}`;
+    });
   }
 
 }

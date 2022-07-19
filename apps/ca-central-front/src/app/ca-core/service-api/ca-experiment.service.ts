@@ -13,6 +13,10 @@ export class CaExperimentService {
   constructor(private apiService: FlApiService) {
   }
 
+  public findCurrentUserLastExperiments(): Observable<CaExperiment[]>{
+    return this.apiService.get(`${this.route}/current-last-experiments`, CaExperiment);
+  }
+
   public findById(id: string): Observable<CaExperiment> {
     return this.apiService.get(`${this.route}/${id}`, CaExperiment);
   }

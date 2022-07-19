@@ -16,6 +16,8 @@ import {CaDashboardGroupsComponent} from './component/ca-dashboard-groups/ca-das
 import {CaGroupCoreModule} from '../../../ca-core/entity-module/ca-group-core/ca-group-core.module';
 import { CaDashboardMyActivityComponent } from './component/ca-dashboard-my-activity/ca-dashboard-my-activity.component';
 import { CaDashboardTaskOfTheDayComponent } from './component/ca-dashboard-task-of-the-day/ca-dashboard-task-of-the-day.component';
+import { CaDashboardActivityCardComponent } from './component/ca-dashboard-activity-card/ca-dashboard-activity-card.component';
+import { CaDashboardLastExperiencesComponent } from './component/ca-dashboard-last-experiences/ca-dashboard-last-experiences.component';
 
 /**
  * Module for the dashboard page
@@ -30,6 +32,8 @@ import { CaDashboardTaskOfTheDayComponent } from './component/ca-dashboard-task-
     CaDashboardGroupsComponent,
     CaDashboardMyActivityComponent,
     CaDashboardTaskOfTheDayComponent,
+    CaDashboardActivityCardComponent,
+    CaDashboardLastExperiencesComponent,
   ],
   imports: [
     CommonModule,

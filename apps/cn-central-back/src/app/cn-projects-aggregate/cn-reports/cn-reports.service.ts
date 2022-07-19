@@ -14,6 +14,7 @@ import {CnReportContent, CnReportViewConfig} from './cn-report-content.class';
 import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {CnCurrentUserHelper} from '../../cn-core/utils/cn-current-user.helper';
 import {CnUser} from '../../cn-users/cn-user.entity';
+import {CnUsersService} from '../../cn-users/cn-users.service';
 
 @Injectable()
 export class CnReportsService extends BlAbstractService<CnReport> {
@@ -22,7 +23,8 @@ export class CnReportsService extends BlAbstractService<CnReport> {
               private objectStorageService: BlObjectStorageService,
               private configService: CnCoreConfigService,
               private externalLabService: CnExternalLabApiService,
-              private labConfigService: CnLabConfigsService) {
+              private labConfigService: CnLabConfigsService,
+              private userService: CnUsersService) {
     super(repository, CnReport);
   }
 
@@ -70,6 +72,29 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     return await this.repository.save(report);
   }
 
+  findByIdAndCheckWithExperiments(id: string): Promise<CnReport> {
+    return this.findByIdAndCheck(id, {relations: ['experiments']});
+  }
+
+  async getImage(filename: string): Promise<IncomingMessage> {
+    return await this.objectStorageService.getObject(filename, this.getReportImageBucket());
+  }
+
+  async getView(filename: string): Promise<IncomingMessage> {
+    return await this.objectStorageService.getObject(filename, this.getReportViewBucket());
+  }
+
+  public async getCurrentUserValidatedReport(): Promise<CnReport[]> {
+    const currentUser: CnUser = this.userService.getCurrent();
+    return this.repository.find({
+      where: {
+        validatedBy: {
+          id: currentUser.id
+        }
+      }
+    });
+  }
+
   /**
    * Method to load the image of the report and store them in the object storage
    * @param richText
@@ -108,18 +133,6 @@ export class CnReportsService extends BlAbstractService<CnReport> {
       // save the filename in the content
       specialOp.insert.resource_view.filename = await this.objectStorageService.uploadJson(view, this.getReportViewBucket());
     }
-  }
-
-  findByIdAndCheckWithExperiments(id: string): Promise<CnReport> {
-    return this.findByIdAndCheck(id, {relations: ['experiments']});
-  }
-
-  async getImage(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(filename, this.getReportImageBucket());
-  }
-
-  async getView(filename: string): Promise<IncomingMessage> {
-    return await this.objectStorageService.getObject(filename, this.getReportViewBucket());
   }
 
   private getReportImageBucket(): string {

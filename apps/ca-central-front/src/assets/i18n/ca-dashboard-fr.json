@@ -25,5 +25,17 @@
   "report": "Rapport validé",
   "url": "URL",
   "print_report": "Imprimer",
-  "project_shared_groups" : "Partage"
+  "project_shared_groups" : "Partage",
+  "hub": "Hub",
+  "ticket": "Ticket",
+  "ongoing_projects": "Projets en cours",
+  "teams": "Equipes",
+  "running_labs": "Labs en marche",
+  "validated_experiments": "Experiences validées",
+  "validated_reports": "Rapport validés",
+  "more_info_on_the_hub": "Plus d'informations sur le hub",
+  "task_of_the_day": "Tâche du jour",
+  "my_activity": "Mon activité",
+  "last_experiences": "Dernières expériences",
+  "no_experiences": "Aucune expériences"
 }

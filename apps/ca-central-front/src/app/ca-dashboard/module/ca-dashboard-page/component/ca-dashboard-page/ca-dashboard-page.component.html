@@ -1,4 +1,4 @@
-<div fxLayout="row">
+<div fxLayout="column" fxLayout.gt-sm="row">
 
   <div class="dashboard-left" fxFill fxFlex="nogrow">
     <div fxLayout="row" fxLayoutAlign="start end" class="g-page-title">
@@ -29,11 +29,24 @@
     </div>
   </div>
 
-  <div class="dashboard-right"  fxFlex>
+  <div class="dashboard-right" fxFlex>
 
     <div class="bt">
-      <button mat-flat-button color="accent">Ticket</button>
-      <button mat-flat-button color="accent">Hub</button>
+      <div class="bt-div-text">
+        <a><div class="link-bt g-primary-background">
+          <mat-icon class="g-icon-huge icon" fontSet="material-icons-outlined">help</mat-icon>
+        </div></a>
+        <a class="link">{{'ticket' | translate}}</a>
+      </div>
+
+      <div class="bt-div-text">
+        <a [href]="'https://hub.gencovery.com'">
+          <div class="link-bt g-primary-background">
+          <mat-icon class="g-icon-huge icon" fontSet="material-icons-outlined">hub</mat-icon>
+        </div>
+        </a>
+        <a [href]="'https://hub.gencovery.com'" class="link">{{'hub' | translate}}</a>
+      </div>
     </div>
 
     <!-- My Activity  -->
@@ -41,10 +54,17 @@
       <ca-dashboard-my-activity></ca-dashboard-my-activity>
     </div>
 
+    <!-- Last experiences -->
+    <div class="rs-section">
+      <ca-dashboard-last-experiences></ca-dashboard-last-experiences>
+    </div>
+
     <!-- Task of the day -->
     <div class="rs-section">
       <ca-dashboard-task-of-the-day></ca-dashboard-task-of-the-day>
     </div>
+
+
 
   </div>
 

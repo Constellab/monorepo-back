@@ -8,10 +8,16 @@ import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.enti
 
 @Injectable()
 export class HnTaskService {
+
+  tasksOfTheDay: HnTask[];
+
   constructor(
     @InjectRepository(HnTask)
     private readonly tasksRepository: Repository<HnTask>
   ) {
+    // eslint-disable-next-line max-len
+    this.tasksOfTheDay = JSON.parse('[{"brickName": "gws_core","uniqueName": "TableColumnTagUnfold"}, { "brickName": "gws_core", "uniqueName": "TableColumnTagsSelector" }, {"brickName": "gws_core","uniqueName": "TableRowTagGrouper"},{"brickName": "gws_core","uniqueName": "TableRowsSelector"},{"brickName": "gws_core","uniqueName": "TableColumnMassOperations"},{"brickName": "gws_core","uniqueName": "TableAggregatorFilter"},{"brickName": "gws_core",  "uniqueName": "TableRowsDeleter"},{"brickName": "gws_core","uniqueName": "TableColumnsSelector" }, {"brickName": "gws_core","uniqueName": "TableRowAnnotator" }, {"brickName": "gws_core", "uniqueName": "TableColumnOperations"},{"brickName": "gws_core","uniqueName": "TableColumnTagsDeleter"}, {  "brickName": "gws_core","uniqueName": "TableDataFilter"},{"brickName": "gws_core","uniqueName": "TableRowTagUnfold"}, { "brickName": "gws_core","uniqueName": "TableScaler" }, { "brickName": "gws_core", "uniqueName": "TableColumnsDeleter" }, {"brickName": "gws_core","uniqueName": "TableRowTagsDeleter"},{"brickName": "gws_core","uniqueName": "TableRowTagsSelector"},{"brickName": "gws_core","uniqueName": "TableColumnTagGrouper"}, { "brickName": "gws_core", "uniqueName": "TableColumnAnnotator"},{"brickName": "gws_core","uniqueName": "TableTransposer"}]')
+
   }
 
   async createTechnicalDocTasks(technicalFolder: HnTechnicalFolder, tasks: HnImportTaskDTO[]): Promise<boolean> {
@@ -102,7 +108,19 @@ export class HnTaskService {
     }
 
     return task;
+  }
 
 
+  //Get a task in the array tasksOfTheDay according to the day number
+  async getTaskOfTheDay(): Promise<HnTask>{
+    const dayNumber: number = Math.floor(new Date().getTime() / (24 * 60 * 60 * 1000));
+
+    const index: number = dayNumber % this.tasksOfTheDay.length;
+    return this.tasksRepository.findOne({
+      where: {
+        uniqueName: this.tasksOfTheDay[index].uniqueName,
+        brickName: this.tasksOfTheDay[index].brickName
+      }
+    });
   }
 }

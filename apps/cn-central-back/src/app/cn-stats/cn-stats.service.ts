@@ -5,13 +5,15 @@ import {CnGroupsService} from '../cn-groups/cn-groups.service';
 import {CnProjectsService} from '../cn-projects-aggregate/cn-projects/cn-projects.service';
 import {CnGroupType} from '../cn-groups/cn-group-type.enum';
 import {CnExperimentsService} from '../cn-projects-aggregate/cn-experiments/cn-experiments.service';
+import {CnReportsService} from '../cn-projects-aggregate/cn-reports/cn-reports.service';
 
 @Injectable()
 export class CnStatsService {
   constructor(private projectService: CnProjectsService,
               private labInstanceService: CnLabInstancesService,
               private groupService: CnGroupsService,
-              private experimentService: CnExperimentsService) {
+              private experimentService: CnExperimentsService,
+              private reportService: CnReportsService) {
   }
 
   public async getStats(): Promise<CnStats>{
@@ -20,6 +22,8 @@ export class CnStatsService {
     stats.onGoingProjectNumber = await this.projectService.getOnGoingProjectsNumber();
     stats.teamsNumber = ((await this.groupService.getCurrentUserAllGroups()).filter(group => group.type == CnGroupType.TEAM)).length;
     stats.runningLabNumber = (await this.labInstanceService.getCurrentRunningLabInstances()).length;
+    stats.validatedExperimentNumber = (await this.experimentService.getCurrentUserValidatedExperiment()).length;
+    stats.validatedReportNumber = (await this.reportService.getCurrentUserValidatedReport()).length;
 
     return stats;
   }

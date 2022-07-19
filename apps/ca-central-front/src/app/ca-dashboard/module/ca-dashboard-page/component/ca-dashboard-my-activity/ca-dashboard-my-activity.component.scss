@@ -1,3 +1,18 @@
 .card-header{
   margin-bottom: 0.5em;
 }
+
+.activity{
+  width: 47%;
+  height: 5.5em;
+  margin-left: 2%;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  border-radius: 1em;
+}
+
+.activities-div{
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+}
