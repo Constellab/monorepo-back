@@ -16,6 +16,8 @@ import {FlBioNetworkGridState} from '../state/fl-bio-network-grid.state';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
+import {FlBioNetworkEngineState} from '../state/fl-bio-network-engine.state';
+import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
 
 export interface FlBioNetworkGraphRenderer {
   graph: ForceGraphInstance;
@@ -35,12 +37,16 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
   private linksRenderer: FlBioNetworkLinksRenderer;
   private gridRenderer: FlBioNetworkGridRenderer;
 
+  // all node outside the screen + this margin will not be rendered
+  private hideScreenMargin: number = 20;
+
   constructor(private state: FlBioNetworkState,
               private selectionState: FlBioNetworkSelectionState,
               private optionState: FlBioNetworkOptionsState,
               private simulationState: FlBioNetworkSimulationState,
               private gridState: FlBioNetworkGridState,
-              private themeService: FlThemeService) {
+              private themeService: FlThemeService,
+              private engineState: FlBioNetworkEngineState) {
   }
 
 
@@ -58,11 +64,13 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
 
     const enableSimulation = !data.allNodesHavePositions();
 
-    if (enableSimulation) {
-      await this.simulationState.initSimulation(data);
+    const engineConfig = this.engineState.engineConfig;
+
+    if (enableSimulation && !engineConfig.liveDrawing) {
+      await this.simulationState.initSimulation(data, engineConfig);
 
       // once the simulation is over, save the new positions
-      data.savePositions();
+      // data.savePositions();
     }
 
     data.setCofactorsPositions();
@@ -77,20 +85,58 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
 
-    const graphData: GraphData = this.dataToGraph(data);
+    const engineConfig = this.engineState.engineConfig;
+    // get data, if we draw in live, we don't include the cofactors to disturb the graph. We add them later.
+    const graphData: GraphData = this.dataToGraph(data, !engineConfig.liveDrawing);
+
 
     const graph = ForceGraph()(this.container)
       .graphData(graphData).width(width).height(height)
-      .cooldownTicks(0) // pre-defined layout, cancel force engine iterations
       .autoPauseRedraw(true) // prevent redraw on every tick
       .maxZoom(FlBioNetworkZoomRenderer.maxZoomScale)
-      .minZoom(FlBioNetworkZoomRenderer.minZoomScale);
+      .minZoom(FlBioNetworkZoomRenderer.minZoomScale)
+      .onBackgroundClick(() => this.selectionState.clearSelection())
+      .cooldownTime(engineConfig.liveDrawing ? 60000 : null)
+      // if live drawing, we set null so it will calculate positions
+      // otherwise we set 0 because positions where calculated already
+      .cooldownTicks(engineConfig.liveDrawing ? undefined : 0)
+      .d3AlphaDecay(engineConfig.alphaDecay)
+      .d3AlphaMin(engineConfig.alphaMin)
+      .d3VelocityDecay(engineConfig.velocityDecay)
+      .d3Force('link', this.simulationState.getLinkForce(data, engineConfig))
+      .d3Force('charge', this.simulationState.getChargeForce(engineConfig))
+      .d3Force('center', this.simulationState.getCenterForce(engineConfig))
+      .onEngineTick(() => this.simulationState.newTick())
+    ;
+
+
+    if (engineConfig.liveDrawing) {
+      this.simulationState.markAsStarted(engineConfig);
+      // once the simulation is over, stop the simulation
+      graph.onEngineStop(() => {
+        // clear the engine stop listener
+        graph.onEngineStop(() => {
+        });
+
+        graph.cooldownTicks(0);
+        // set the data with the cofactors
+        graph.graphData(this.dataToGraph(data, true));
+
+        this.simulationState.markAsEnded();
+      });
+    }
 
 
     const graphRenderer: FlBioNetworkGraphRenderer = {
       graph: graph,
       data: data
     };
+
+    for (const link of data.links) {
+      if (link.source instanceof FlBioNetworkNodeCofactor && link.target instanceof FlBioNetworkNodeCofactor) {
+        console.log(link);
+      }
+    }
 
     const themeDetail: FlThemeDetail = this.themeService.getCurrentThemeDetail();
     const grey = themeDetail.greyLowContrast;
@@ -109,37 +155,26 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
     this.selectionState.init(data);
     this._graph$.next(graphRenderer);
 
+    // hide nodes and links that are outside the screen
     graph.onZoom((transform) => {
       const canvasSize = this.getCanvasSize();
       const xWidth = canvasSize.x / transform.k;
       const yHeight = canvasSize.y / transform.k;
 
-      const fromX = transform.x - xWidth / 2;
-      const fromY = transform.y - yHeight / 2;
-      const toX = transform.x + xWidth / 2;
-      const toY = transform.y + yHeight / 2;
-      const positions = {
-        fromX: fromX,
-        fromY: fromY,
-        toX: toX,
-        toY: toY
-      };
+      const fromX = transform.x - xWidth / 2 - this.hideScreenMargin;
+      const fromY = transform.y - yHeight / 2 - this.hideScreenMargin;
+      const toX = transform.x + xWidth / 2 + this.hideScreenMargin;
+      const toY = transform.y + yHeight / 2 + this.hideScreenMargin;
 
       for (const node of data.getMetabolitesAndReactions()) {
         // set visibility of nodes from position
         node.isVisible = node.x >= fromX && node.x <= toX &&
           node.y >= fromY && node.y <= toY;
-        // node.isVisible = true
       }
-      for(const link of data.getMetaboliteAndReactionLinks()){
+      for (const link of data.getMetaboliteAndReactionLinks()) {
         // set visibility of links from position
         link.isVisible = link.source.isVisible || link.target.isVisible;
-        // link.isVisible = link.source.isVisible || link.target.isVisible;
       }
-
-
-      // this.nodesRenderer.updateVisibility([FlBioNetworkMetaboliteLevel.MAJOR, FlBioNetworkMetaboliteLevel.MINOR],
-      //   false, positions);
     });
 
   }
@@ -150,12 +185,18 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
     this.graphRenderer.graph.graphData(graphData);
   }
 
-  private dataToGraph(data: FlBioNetworkGraph): GraphData {
-
-    return {
-      nodes: data.getAllNodes(),
-      links: data.links
-    };
+  private dataToGraph(data: FlBioNetworkGraph, includeCofactors: boolean): GraphData {
+    if (includeCofactors) {
+      return {
+        nodes: data.getAllNodes(),
+        links: data.links
+      };
+    } else {
+      return {
+        nodes: data.getMetabolitesAndReactions(),
+        links: data.getMetaboliteAndReactionLinks()
+      };
+    }
   }
 
   private get graphRenderer(): FlBioNetworkGraphRenderer {

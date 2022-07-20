@@ -11,6 +11,7 @@ import {FlBioNetworkGraph} from '../model/fl-bio-network-graph.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {FlFileHelper} from '../../../service/fl-file.helper';
 import {FlBioNetworkCompartment, flBioNetworkCompartments} from '../model/fl-bio-network-compartment.class';
+import {FlBioNetworkEngineState} from './fl-bio-network-engine.state';
 
 
 /**
@@ -22,7 +23,7 @@ export class FlBioNetworkState implements OnDestroy {
   public networks: FlBioNetwork[];
   private selectedNetwork$: BehaviorSubject<FlBioNetwork | null>;
   private chartData$: BehaviorSubject<FlBioNetworkGraph | null>;
-  private database$: BehaviorSubject<FlPathwayDatabase | null>;
+  // private database$: BehaviorSubject<FlPathwayDatabase | null>;
 
   private clusters$: BehaviorSubject<FlBioNetworkClusterSelection[]>;
   private clustersSelectionChange$: BehaviorSubject<void>;
@@ -30,23 +31,24 @@ export class FlBioNetworkState implements OnDestroy {
   // used to cache the list of pathway
   private pathwayListCache: Record<FlPathwayDatabase | string, FlBioNetworkClusterSelection[]>;
 
-  constructor(private translateService: FlTranslateService, private themeService: FlThemeService) {
+  constructor(private translateService: FlTranslateService, private themeService: FlThemeService,
+              private engineState: FlBioNetworkEngineState) {
   }
 
 
-  public init(networks: FlBioNetwork | FlBioNetwork[], defaultDb: FlPathwayDatabase): void {
+  public init(networks: FlBioNetwork | FlBioNetwork[]): void {
     this.initNetworks(networks);
 
     this.selectedNetwork$ = new BehaviorSubject(this.networks[0]);
     this.chartData$ = new BehaviorSubject(null);
-    this.database$ = new BehaviorSubject(null);
+    // this.database$ = new BehaviorSubject(null);
     this.clusters$ = new BehaviorSubject([]);
     this.clustersSelectionChange$ = new BehaviorSubject(null);
 
     this.pathwayListCache = {};
 
     // load the db and the list of pathways
-    this.selectDatabase(defaultDb);
+    this.selectDatabase();
 
     this.clustersSelectionChange$.pipe(
       // use a debounce time to prevent rebuilding the graph to much
@@ -84,8 +86,8 @@ export class FlBioNetworkState implements OnDestroy {
 
   /////////////////////////////////////// DATABASE  /////////////////////////////////////////
 
-  public selectDatabase(database: FlPathwayDatabase): void {
-    this.database$.next(database);
+  public selectDatabase(): void {
+    // this.database$.next(database);
 
     const clusterList: FlBioNetworkClusterSelection[] = this.getClustersList();
     this.clusters$.next(clusterList);
@@ -98,12 +100,14 @@ export class FlBioNetworkState implements OnDestroy {
     this.emitClustersSelectionChange();
   }
 
-  public getDatabase$(): Observable<FlPathwayDatabase> {
-    return this.database$.asObservable();
-  }
+  //
+  // public getDatabase$(): Observable<FlPathwayDatabase> {
+  //   return this.database$.asObservable();
+  // }
 
   public getDatabase(): FlPathwayDatabase {
-    return this.database$.value;
+    return 'kegg';
+    // return this.database$.value;
   }
 
   /////////////////////////////////////// CLUSTERS  /////////////////////////////////////////
@@ -118,8 +122,9 @@ export class FlBioNetworkState implements OnDestroy {
       this.chartData$.next(null);
       return;
     }
-    const chartData: FlBioNetworkGraph = new FlBioNetworkFactory(this.themeService.getCurrentThemeDetail())
-      .convertNetworkToNetworkD3(this.getSelectedNetwork(), clusterIds, this.getDatabase());
+
+    const factory = new FlBioNetworkFactory(this.themeService.getCurrentThemeDetail(), this.engineState.engineConfig.ignoreNodePositions);
+    const chartData: FlBioNetworkGraph = factory.convertNetworkToNetworkD3(this.getSelectedNetwork(), clusterIds, this.getDatabase());
 
     this.chartData$.next(chartData);
   }
@@ -284,7 +289,7 @@ export class FlBioNetworkState implements OnDestroy {
   ngOnDestroy(): void {
     this.selectedNetwork$.complete();
     this.chartData$.complete();
-    this.database$.complete();
+    // this.database$.complete();
 
     this.clusters$.complete();
     this.clustersSelectionChange$.complete();

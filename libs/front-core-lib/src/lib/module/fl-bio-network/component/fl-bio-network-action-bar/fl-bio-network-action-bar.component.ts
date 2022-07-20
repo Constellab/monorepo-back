@@ -30,6 +30,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   showText: boolean = false;
   showGrid: boolean = false;
   showArrows: boolean = false;
+  showParticles: boolean = false;
 
   constructor(private cdr: ChangeDetectorRef,
               private state: FlBioNetworkState,
@@ -45,6 +46,7 @@ export class FlBioNetworkActionBarComponent implements OnInit {
     this.showText = options.showTexts;
     this.showGrid = options.showGrid;
     this.showArrows = options.showArrows;
+    this.showParticles = options.showParticles;
     this.state.getChartData$().subscribe(
       chartData => this.onNewData(chartData)
     );
@@ -83,6 +85,10 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   toggleShowArrows(): void {
     this.optionState.setShowArrows(this.showArrows);
+  }
+
+  toggleShowParticles(): void {
+    this.optionState.setShowParticles(this.showParticles);
   }
 
   toggleShowMinors(): void {

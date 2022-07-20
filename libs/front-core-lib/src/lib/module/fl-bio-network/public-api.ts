@@ -8,6 +8,8 @@ export * from './component/fl-bio-network-clusters-list/fl-bio-network-clusters-
 export * from './component/fl-bio-network-compartments/fl-bio-network-compartments.component';
 export * from './component/fl-bio-network-config/fl-bio-network-config.component';
 export * from './component/fl-bio-network-drawer/fl-bio-network-drawer.component';
+export * from './component/fl-bio-network-engine-config/fl-bio-network-engine-config.component';
+export * from './component/fl-bio-network-engine-progress/fl-bio-network-engine-progress.component';
 export * from './component/fl-bio-network-metabolite-detail/fl-bio-network-metabolite-detail.component';
 export * from './component/fl-bio-network-node-detail/fl-bio-network-node-detail.component';
 export * from './component/fl-bio-network-node-links/fl-bio-network-node-links.component';
@@ -41,6 +43,7 @@ export * from './renderer/fl-bio-network-zoom.renderer';
 // States
 export * from './state/fl-bio-network.state';
 export * from './state/fl-bio-network-drawer.state';
+export * from './state/fl-bio-network-engine.state';
 export * from './state/fl-bio-network-grid.state';
 export * from './state/fl-bio-network-options.state';
 export * from './state/fl-bio-network-selection.state';

@@ -8,11 +8,13 @@ import {FlBioNetworkObjectColorFunction} from './fl-bio-network-object.renderer'
  */
 export class FlBioNetworkMetaboliteRenderer {
 
-  public static biomassMetaboliteRadius: number = 20;
-  public static minorMetaboliteRadius: number = 6;
-  public static majorMetaboliteRadius: number = 12;
-  public static majorMetaboliteStroke: number = 3;
-  public static minorMetaboliteStroke: number = 1.5;
+  public static biomassMetaboliteRadius: number = 8;
+  public static minorMetaboliteRadius: number = 3;
+  public static majorMetaboliteRadius: number = 6;
+  public static majorMetaboliteStroke: number = 1.5;
+  public static minorMetaboliteStroke: number = 0.75;
+  public static majorMetaboliteFontSize: string = '0.7em';
+  public static minorMetaboliteFontSize: string = '0.4em';
 
   public static draw(ctx: CanvasRenderingContext2D, metabolite: FlBioNetworkNodeMetabolite,
                      colorFunc: FlBioNetworkObjectColorFunction, showText: boolean): void {
@@ -77,6 +79,6 @@ export class FlBioNetworkMetaboliteRenderer {
   }
 
   private static getFontTextSize(metabolite: FlBioNetworkNodeMetabolite): string {
-    return metabolite.isMajor() ? '1.3em' : '0.5em';
+    return metabolite.isMajor() ? FlBioNetworkMetaboliteRenderer.majorMetaboliteFontSize : FlBioNetworkMetaboliteRenderer.minorMetaboliteFontSize;
   }
 }

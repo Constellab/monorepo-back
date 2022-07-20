@@ -25,7 +25,7 @@ export class FlBioNetworkFactory {
   private links: FlBioNetworkLink[] = [];
 
 
-  constructor(private themeDetail: FlThemeDetail) {
+  constructor(private themeDetail: FlThemeDetail, private ignoreNodePositions: boolean) {
   }
 
 
@@ -106,7 +106,7 @@ export class FlBioNetworkFactory {
 
         // for the metabolite position, take the position of the first sub cluster
         const clusterPosition = metabolite.layout.clusters[metaboliteCluster.subClusterIds[0]];
-        if (clusterPosition && clusterPosition.x != null && clusterPosition.y != null) {
+        if (!this.ignoreNodePositions && clusterPosition && clusterPosition.x != null && clusterPosition.y != null) {
           metaboliteNode.setPositionAndFreeze(clusterPosition);
         }
 
@@ -137,7 +137,17 @@ export class FlBioNetworkFactory {
         let metaboliteNode: FlBioNetworkNode;
 
         if (metabolite.is_cofactor) {
-          // continue;
+
+          // check if the cofactor is in the cluster of the reaction
+          const metaboliteClusters: FlBioNetworkClusterInfo[] = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
+          const metaboliteCluster: FlBioNetworkClusterInfo = metaboliteClusters.find(c => c.clusterId === reactionNode.cluster.clusterId);
+
+          // if not in the cluster, skip
+          if(metaboliteCluster == null){
+            continue;
+          }
+
+          // if the cofactor is in the cluster, create the node
           metaboliteNode = this.createCofactor(metabolite);
           reactionNode.addChildNode(metaboliteNode);
         } else {
@@ -210,7 +220,7 @@ export class FlBioNetworkFactory {
         nodes = nodes.sort((a, b) => a.getLevel() - b.getLevel());
 
         // if there are at least 2 link nodes with position, set the reaction in the center of the 2
-        if (nodes.length >= 2) {
+        if (!this.ignoreNodePositions && nodes.length >= 2) {
           const firstPosition = nodes[0].getCoords();
           const secondPosition = nodes[1].getCoords();
           reaction.setPositionAndFreeze({

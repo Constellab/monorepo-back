@@ -334,10 +334,16 @@ mat-tree {
   flex: 1;
 }
 
+// Set all the mat-tab smaller
+.g-mat-tab-dense .mat-tab-label {
+  //padding: 0 14px;
+  min-width: 0;
+}
+
 // set the mat-tab full height of the mat-tab-group
 // to be place on mat-tab-group
 .g-mat-tab-full-height .mat-tab-body-wrapper {
-  flex-grow: 1;
+flex-grow: 1;
 }
 
 /************************************* MAT SELECT ***********************************/

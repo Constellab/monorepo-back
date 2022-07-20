@@ -12,6 +12,8 @@
         {{'flBioNetwork.details' | translate}}
       </mat-panel-title>
     </mat-expansion-panel-header>
+    <div>x: {{node.x}}</div>
+    <div>y: {{node.y}}</div>
     <fl-pretty-json class="g-section json" [object]="node.data" [previewMaxTextLength]="30"></fl-pretty-json>
   </mat-expansion-panel>
 
@@ -19,6 +21,5 @@
 </div>
 
 <ng-template #noNode>
-  <fl-error-text [errorMessage]="'flBioNetwork.select_node_help_text' | translate">
-  </fl-error-text>
+  <fl-error-text [errorMessage]="'flBioNetwork.select_node_help_text' | translate"></fl-error-text>
 </ng-template>

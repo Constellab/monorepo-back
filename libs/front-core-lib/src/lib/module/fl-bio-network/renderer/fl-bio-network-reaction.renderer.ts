@@ -7,9 +7,9 @@ import {FlBioNetworkObjectColorFunction} from './fl-bio-network-object.renderer'
  */
 export class FlBioNetworkReactionRenderer {
 
-  public static size: number = 8;
-  public static strokeWidth: number = 2;
-  public static borderRadius: number = 2;
+  public static size: number = 4;
+  public static strokeWidth: number = 1;
+  public static borderRadius: number = 1;
 
   public static draw(ctx: CanvasRenderingContext2D, reaction: FlBioNetworkNodeReaction,
                      colorFunc: FlBioNetworkObjectColorFunction): void {

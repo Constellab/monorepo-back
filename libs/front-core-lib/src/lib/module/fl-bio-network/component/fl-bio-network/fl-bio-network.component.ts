@@ -9,6 +9,7 @@ import {FlBioNetworkMainRenderer} from '../../renderer/fl-bio-network-main.rende
 import {FlBioNetworkGridState} from '../../state/fl-bio-network-grid.state';
 import {FlBioNetworkZoomRenderer} from '../../renderer/fl-bio-network-zoom.renderer';
 import {FlBioNetworkSimulationState} from '../../state/fl-bio-network-simulation.state';
+import {FlBioNetworkEngineState} from '../../state/fl-bio-network-engine.state';
 
 
 @Component({
@@ -23,6 +24,7 @@ import {FlBioNetworkSimulationState} from '../../state/fl-bio-network-simulation
     FlBioNetworkMainRenderer,
     FlBioNetworkGridState,
     FlBioNetworkZoomRenderer,
+    FlBioNetworkEngineState,
     FlBioNetworkSimulationState,
   ]
 })
@@ -41,7 +43,7 @@ export class FlBioNetworkComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.state.init(this.networks, 'kegg');
+    this.state.init(this.networks);
     // init the drawer state
     this.drawerState.init(this.drawer);
 

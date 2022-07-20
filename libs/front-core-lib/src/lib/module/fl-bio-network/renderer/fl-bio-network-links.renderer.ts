@@ -25,12 +25,12 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
 
   public render(): void {
     this.graphRenderer.graph
-      // size based on link weight, set to 1 when the link is not selected
-      // .linkWidth((link: FlBioNetworkLink) =>
-      //   link.selected ? this.getLinkWidth(link) : 1)
-      // .linkDirectionalArrowLength((link: FlBioNetworkLink) => link.isLinkedToCofactor() ? 3 : 10)
-      // .linkDirectionalArrowRelPos(0.5)
-      // .linkDirectionalParticles(1)
+    // size based on link weight, set to 1 when the link is not selected
+    // .linkWidth((link: FlBioNetworkLink) =>
+    //   link.selected ? this.getLinkWidth(link) : 1)
+    // .linkDirectionalArrowLength((link: FlBioNetworkLink) => link.isLinkedToCofactor() ? 3 : 10)
+    // .linkDirectionalArrowRelPos(0.5)
+    // .linkDirectionalParticles(1)
     ;
   }
 
@@ -51,6 +51,13 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
         .linkDirectionalArrowRelPos(0.5);
     } else {
       this.graphRenderer.graph.linkDirectionalArrowLength(null);
+    }
+
+    // link directional particles
+    if (options.showParticles) {
+      this.graphRenderer.graph.linkDirectionalParticles(1);
+    } else {
+      this.graphRenderer.graph.linkDirectionalParticles(0);
     }
 
   }
@@ -114,7 +121,10 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
   private getLinkColorScale(colorMode: FlBioNetworkLinkColorScale): ScaleLinear<string, any, any> {
     const range: [string, string] = [this.greyColor, FlColorHelper.pinkShiny];
 
-    const max = this.getLinkColorMaxDomain(colorMode);
+    let max = this.getLinkColorMaxDomain(colorMode);
+    if (max === 0) {
+      max = 1;
+    }
     return scaleLinear<string>().domain(
       [0, max])
       .range(range)

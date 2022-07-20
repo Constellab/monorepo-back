@@ -53,6 +53,14 @@ import {
   FlBioNetworkClustersListComponent
 } from './component/fl-bio-network-clusters-list/fl-bio-network-clusters-list.component';
 import {FlBioNetworkComponent} from './component/fl-bio-network/fl-bio-network.component';
+import {
+  FlBioNetworkEngineConfigComponent
+} from './component/fl-bio-network-engine-config/fl-bio-network-engine-config.component';
+import {
+  FlBioNetworkEngineProgressComponent
+} from './component/fl-bio-network-engine-progress/fl-bio-network-engine-progress.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {FlDateModule} from '../fl-date/fl-date.module';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -71,6 +79,8 @@ import {FlBioNetworkComponent} from './component/fl-bio-network/fl-bio-network.c
     FlBioNetworkMetaboliteDetailComponent,
     FlBioNetworkClustersListComponent,
     FlBioNetworkComponent,
+    FlBioNetworkEngineConfigComponent,
+    FlBioNetworkEngineProgressComponent,
   ],
   exports: [
     FlBioNetworkComponent,
@@ -94,6 +104,7 @@ import {FlBioNetworkComponent} from './component/fl-bio-network/fl-bio-network.c
     MatInputModule,
     MatAutocompleteModule,
     MatExpansionModule,
+    MatProgressBarModule,
 
 
     FlTranslateModule,
@@ -102,6 +113,7 @@ import {FlBioNetworkComponent} from './component/fl-bio-network/fl-bio-network.c
     FlCoreComponentModule,
     FlDrawerModule,
     FlKeyValueModule,
+    FlDateModule,
   ],
 })
 export class FlBioNetworkModule {

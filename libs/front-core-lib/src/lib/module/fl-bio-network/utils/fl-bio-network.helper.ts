@@ -148,7 +148,7 @@ export class FlBioNetworkHelper {
     // the reaction is the clusters of all metabolites associated to the reaction
     for (const metaboliteId of Object.keys(reaction.metabolites)) {
       const metabolite: FlBioNetworkMetabolite = metabolites.find(m => m.id === metaboliteId);
-      if (metabolite && !metabolite.is_cofactor) {
+      if (metabolite) {
 
         const metabolitesClusters = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
         for (const cluster of metabolitesClusters) {

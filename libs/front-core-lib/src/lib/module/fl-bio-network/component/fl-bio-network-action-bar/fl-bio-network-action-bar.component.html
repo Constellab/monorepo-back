@@ -1,9 +1,54 @@
 <!--    Action bar on the bottom  -->
-<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em" class="action-bar"
-     *ngIf="isReady">
+<div class="action-bar" *ngIf="isReady; else notReady">
 
-  <!--   Slider to hide link     -->
+
+  <div fxLayout="row">
+    <fl-bio-network-compartments fxFlex="50%"></fl-bio-network-compartments>
+
+    <fl-bio-network-selection-info fxFlex="50%"></fl-bio-network-selection-info>
+  </div>
+
+  <p>{{'flBioNetwork.options' | translate}}</p>
+
+
+  <div fxLayout="row wrap" class="g-mat-checkbox-include-bottom">
+
+    <mat-checkbox [(ngModel)]="showMinors" (change)="toggleShowMinors()" color="primary" fxFlex="50%">
+      {{'flBioNetwork.toggle_show_minor' | translate}}
+    </mat-checkbox>
+
+    <mat-checkbox [(ngModel)]="showText" (change)="toggleShowTexts()" color="primary" fxFlex="50%">
+      {{'flBioNetwork.toggle_show_texts' | translate}}
+    </mat-checkbox>
+
+    <mat-checkbox [(ngModel)]="showGrid" (change)="toggleShowGrid()" color="primary" fxFlex="50%">
+      {{'flBioNetwork.toggle_show_grid' | translate}}
+    </mat-checkbox>
+
+    <mat-checkbox [(ngModel)]="showArrows" (change)="toggleShowArrows()" color="primary" fxFlex="50%">
+      {{'flBioNetwork.toggle_show_link_arrow' | translate}}
+    </mat-checkbox>
+
+    <mat-checkbox [(ngModel)]="showParticles" (change)="toggleShowParticles()" color="primary" fxFlex="50%">
+      {{'flBioNetwork.toggle_show_link_particles' | translate}}
+    </mat-checkbox>
+
+  </div>
+
   <div *ngIf="maxFluxValue > 0">
+    <mat-form-field class="g-full">
+      <mat-label>{{'flBioNetwork.link_colors' | translate}}</mat-label>
+      <mat-select [(ngModel)]="linkColorMode" (selectionChange)="setLinksColors()"
+                  [placeholder]="'flBioNetwork.link_colors' | translate">
+        <mat-option value="linear">{{'flBioNetwork.link_color_linear' | translate}}</mat-option>
+        <mat-option value="log2">{{'flBioNetwork.link_color_log_2' | translate}}</mat-option>
+        <mat-option value="log10">{{'flBioNetwork.link_color_log_10' | translate}}</mat-option>
+        <mat-option value="threshold-75">{{'flBioNetwork.link_color_threshold_75' | translate}}</mat-option>
+        <mat-option value="threshold-95">{{'flBioNetwork.link_color_threshold_95' | translate}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!--   Slider to hide link     -->
     <p class="g-text-small g-text-light">{{'flBioNetwork.flux_threshold' | translate}} : {{fluxThreshold}}</p>
     <mat-slider class="slider" color="primary"
                 [max]="maxFluxValue"
@@ -17,47 +62,18 @@
 
   </div>
 
-  <fl-bio-network-compartments></fl-bio-network-compartments>
-
-  <div fxLayout="column" class="g-mat-checkbox-include-bottom">
-
-    <mat-checkbox [(ngModel)]="showMinors" (change)="toggleShowMinors()" color="primary">
-      {{'flBioNetwork.toggle_show_minor' | translate}}
-    </mat-checkbox>
-
-    <mat-checkbox [(ngModel)]="showText" (change)="toggleShowTexts()" color="primary">
-      {{'flBioNetwork.toggle_show_texts' | translate}}
-    </mat-checkbox>
-
-    <mat-checkbox [(ngModel)]="showGrid" (change)="toggleShowGrid()" color="primary">
-      {{'flBioNetwork.toggle_show_grid' | translate}}
-    </mat-checkbox>
-
-    <mat-checkbox [(ngModel)]="showArrows" (change)="toggleShowArrows()" color="primary">
-      {{'flBioNetwork.toggle_show_link_arrow' | translate}}
-    </mat-checkbox>
-
-    <mat-form-field class="g-form-field-compact g-form-field-no-hint">
-      <mat-label>{{'flBioNetwork.link_colors' | translate}}</mat-label>
-      <mat-select [(ngModel)]="linkColorMode" (selectionChange)="setLinksColors()"
-                  [placeholder]="'flBioNetwork.link_colors' | translate">
-        <mat-option value="linear">{{'flBioNetwork.link_color_linear' | translate}}</mat-option>
-        <mat-option value="log2">{{'flBioNetwork.link_color_log_2' | translate}}</mat-option>
-        <mat-option value="log10">{{'flBioNetwork.link_color_log_10' | translate}}</mat-option>
-        <mat-option value="threshold-75">{{'flBioNetwork.link_color_threshold_75' | translate}}</mat-option>
-        <mat-option value="threshold-95">{{'flBioNetwork.link_color_threshold_95' | translate}}</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-
-  <fl-bio-network-selection-info class="g-full-height"></fl-bio-network-selection-info>
-
   <fl-bio-network-node-search></fl-bio-network-node-search>
 
-  <button mat-icon-button (click)="exportAllNetwork()" type="button" color="primary"
-          [matTooltip]="'flBioNetwork.export_position_to_json' | translate">
-    <mat-icon>file_download</mat-icon>
-  </button>
+  <div class="g-text-centered download-button">
+    <button mat-stroked-button (click)="exportAllNetwork()" type="button" color="primary">
+      {{'flBioNetwork.export_position_to_json' | translate}}
+      <mat-icon>file_download</mat-icon>
+    </button>
+  </div>
 
   <!--  <fl-bio-network-zoom></fl-bio-network-zoom>-->
 </div>
+
+<ng-template #notReady>
+  <fl-error-text [errorMessage]="'flBioNetwork.select_pathway_help_text' | translate"></fl-error-text>
+</ng-template>

@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
-import {BehaviorSubject, Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.class';
 import {FlBioNetworkDrawerState} from './fl-bio-network-drawer.state';
 import {FlBioNetworkGraph} from '../model/fl-bio-network-graph.class';
@@ -18,7 +18,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
   private selection$: BehaviorSubject<FlBioNetworkSelectionEvent> = new BehaviorSubject({mode: 'none'});
 
-  private subscription: Subscription;
+  // private subscription: Subscription;
 
   constructor(private drawerState: FlBioNetworkDrawerState) {
   }
@@ -29,13 +29,13 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     this.emitNone();
     this.selectAll();
 
-    this.subscription?.unsubscribe();
-    this.subscription = this.drawerState.drawerClosed$().subscribe(
-      () => {
-        this.selectAll();
-        this.emitNone();
-      }
-    );
+    // this.subscription?.unsubscribe();
+    // this.subscription = this.drawerState.drawerClosed$().subscribe(
+    //   () => {
+    //     this.selectAll();
+    //     this.emitNone();
+    //   }
+    // );
   }
 
 
@@ -45,6 +45,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   public selectNodeAndDirectLinks(node: FlBioNetworkNode, mode: 'singleNode' | 'singleNodeByClick'): void {
     this.unselectAll();
 
+    // TODO fix when the node does not have links
     const links: FlBioNetworkLink[] = this.getConnectedReactionsLinks([node.id]);
 
     // select the connected nodes
@@ -233,12 +234,17 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     this.selection$.next({mode: 'none'});
   }
 
+  public clearSelection(): void {
+    this.selectAll();
+    this.emitNone();
+  }
+
   public getSelectionMode$(): Observable<FlBioNetworkSelectionEvent> {
     return this.selection$.asObservable();
   }
 
 
   ngOnDestroy(): void {
-    this.selection$.complete();
+    // this.selection$.complete();
   }
 }

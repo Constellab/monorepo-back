@@ -35,6 +35,7 @@ export class FlBioNetworkDrawerComponent implements OnInit, OnDestroy {
   }
 
   private changeTab(action: FlBioNetworkDrawerActionName): void {
+    // TODO this trigger a mark for check error when is triggered by the search
     switch (action) {
       case 'config':
         this.tabIndex = 0;
@@ -43,7 +44,7 @@ export class FlBioNetworkDrawerComponent implements OnInit, OnDestroy {
         this.tabIndex = 1;
         break;
     }
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
   }
 
   closeDrawer(): void {

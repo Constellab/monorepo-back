@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {FlBioNetwork, FlPathwayDatabase, flPathwayDatabases} from '../../model/fl-bio-network.class';
+import {FlBioNetwork} from '../../model/fl-bio-network.class';
 import {MatSelectChange} from '@angular/material/select';
 
 /**
@@ -17,8 +17,8 @@ export class FlBioNetworkConfigComponent implements OnInit {
   networks: FlBioNetwork[] | null;
   networkName: string;
 
-  database: FlPathwayDatabase;
-  pathwayDatabases: FlPathwayDatabase[] = flPathwayDatabases;
+  // database: FlPathwayDatabase;
+  // pathwayDatabases: FlPathwayDatabase[] = flPathwayDatabases;
 
   constructor(private state: FlBioNetworkState) {
   }
@@ -30,15 +30,15 @@ export class FlBioNetworkConfigComponent implements OnInit {
     }
 
     this.networkName = this.state.getSelectedNetwork().name;
-    this.database = this.state.getDatabase();
+    // this.database = this.state.getDatabase();
   }
 
   onNetworkChange(change: MatSelectChange): void {
     this.state.selectNetwork(change.value);
   }
 
-  onDatabaseChange(change: MatSelectChange): void {
-    this.state.selectDatabase(change.value);
-  }
+  // onDatabaseChange(change: MatSelectChange): void {
+  //   this.state.selectDatabase(change.value);
+  // }
 
 }

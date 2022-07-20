@@ -44,6 +44,7 @@ export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
       .nodePointerAreaPaint((node: FlBioNetworkNode, color: string, ctx: CanvasRenderingContext2D) =>
         this.nodePaintPointerArea(node, ctx, color))
       .nodeVal(() => 5)
+      // .nodeRelSize(6)
       .onNodeClick((node: FlBioNetworkNode) => this.selectionState.selectNodeAndDirectLinks(node, 'singleNodeByClick'))
       .onNodeDrag((node: FlBioNetworkNode) => {
         const coord = {x: node.x, y: node.y};
@@ -57,7 +58,6 @@ export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
         }
       });
   }
-
 
   protected updateObjectColors(options: FlBioNetworkOptions): void {
     let colorFunc: FlBioNetworkObjectColorFunction;
