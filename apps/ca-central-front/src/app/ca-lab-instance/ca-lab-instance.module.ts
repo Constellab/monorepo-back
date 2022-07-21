@@ -44,6 +44,7 @@ import {
 } from './component/ca-lab-instance-config-brick/ca-lab-instance-config-brick.component';
 import {CaBrickCoreModule} from '../ca-core/entity-module/ca-brick-core/ca-brick-core.module';
 import {CaLabDockerContainersComponent} from './component/ca-lab-docker-containers/ca-lab-docker-containers.component';
+import { CaLabInstanceCityComponent } from './component/ca-lab-instance-city/ca-lab-instance-city.component';
 
 /**
  * Module the lab instance detail page with iframe for the lab
@@ -66,6 +67,7 @@ import {CaLabDockerContainersComponent} from './component/ca-lab-docker-containe
     CaLabInstanceConfigFormComponent,
     CaLabInstanceConfigBrickComponent,
     CaLabDockerContainersComponent,
+    CaLabInstanceCityComponent,
   ],
   imports: [
     CommonModule,

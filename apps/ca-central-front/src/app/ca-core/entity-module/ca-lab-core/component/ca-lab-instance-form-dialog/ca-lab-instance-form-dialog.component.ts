@@ -6,6 +6,9 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 import {Validators} from '@angular/forms';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
+import {CaCity} from '../../../../model/entities/ca-city.entity';
+import {CaCountryService} from '../../../../service-api/ca-country.service';
+import {CaCountry} from '../../../../model/entities/ca-country.entity';
 
 @Component({
   selector: 'ca-lab-instance-form-dialog',
@@ -15,14 +18,22 @@ import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} fro
 export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirective<Partial<CaLabInstance>, CaLabInstance>
   implements OnInit {
 
+  countries: CaCountry[];
+
   constructor(snackBarService: FlSnackBarService,
               dialogRef: MatDialogRef<CaLabInstanceFormDialogComponent>,
               @Inject(MAT_DIALOG_DATA) dialogInput: FlFormDialogInput<CaLabInstance>,
-              private labInstanceService: CaLabInstanceService) {
+              private labInstanceService: CaLabInstanceService,
+              private countryService: CaCountryService) {
     super(dialogInput, snackBarService, dialogRef);
   }
 
   ngOnInit(): void {
+
+    this.countryService.get().subscribe(cities => {
+      this.countries = cities;
+      console.log(this.countries)
+    });
     this.init();
   }
 
@@ -41,6 +52,7 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
       glabApiKey: [null],
       labManagerApiKey: [null],
       codelabToken: [null],
+      city: [null, Validators.required]
     });
   }
 

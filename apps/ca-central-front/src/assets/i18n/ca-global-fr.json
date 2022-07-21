@@ -131,5 +131,6 @@
   "team_user_removed": "Utilisateur retiré de l'équipe",
   "team_projects": "Projets de l'équipe",
   "validate_by": "Validé par",
-  "validated_on": "Validé le"
+  "validated_on": "Validé le",
+  "location": "Localisation"
 }

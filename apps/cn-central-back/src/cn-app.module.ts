@@ -54,6 +54,8 @@ import { CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
 import { SnSmartDbModule } from './app/sn-smart-db/sn-smart-db.module';
 import { CnProjectsAggregateModule } from './app/cn-projects-aggregate/cn-project-aggregate.module';
 import { CnStatsModule } from './app/cn-stats/cn-stats.module';
+import { CnCountryModule } from './app/cn-country/cn-country.module';
+import { CnCityModule } from './app/cn-city/cn-city.module';
 
 function typeOrmConfig(
   configService: CnCoreConfigService
@@ -195,6 +197,8 @@ function configureTransportModule(
     CnFrontErrorsModule,
     SnSmartDbModule,
     CnStatsModule,
+    CnCountryModule,
+    CnCityModule,
   ],
   controllers: [],
   providers: [

@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {CaDashboardLastExperiencesComponent} from './ca-dashboard-last-experiences.component';
+import {CaDashboardLastExperimentsComponent} from './ca-dashboard-last-experiments.component';
 
 describe('CaDashboardLastExperiencesComponent', () => {
-  let component: CaDashboardLastExperiencesComponent;
-  let fixture: ComponentFixture<CaDashboardLastExperiencesComponent>;
+  let component: CaDashboardLastExperimentsComponent;
+  let fixture: ComponentFixture<CaDashboardLastExperimentsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CaDashboardLastExperiencesComponent]
+      declarations: [CaDashboardLastExperimentsComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CaDashboardLastExperiencesComponent);
+    fixture = TestBed.createComponent(CaDashboardLastExperimentsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

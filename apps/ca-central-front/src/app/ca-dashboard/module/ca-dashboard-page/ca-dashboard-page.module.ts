@@ -17,7 +17,7 @@ import {CaGroupCoreModule} from '../../../ca-core/entity-module/ca-group-core/ca
 import { CaDashboardMyActivityComponent } from './component/ca-dashboard-my-activity/ca-dashboard-my-activity.component';
 import { CaDashboardTaskOfTheDayComponent } from './component/ca-dashboard-task-of-the-day/ca-dashboard-task-of-the-day.component';
 import { CaDashboardActivityCardComponent } from './component/ca-dashboard-activity-card/ca-dashboard-activity-card.component';
-import { CaDashboardLastExperiencesComponent } from './component/ca-dashboard-last-experiences/ca-dashboard-last-experiences.component';
+import { CaDashboardLastExperimentsComponent } from './component/ca-dashboard-last-experiments/ca-dashboard-last-experiments.component';
 
 /**
  * Module for the dashboard page
@@ -33,7 +33,7 @@ import { CaDashboardLastExperiencesComponent } from './component/ca-dashboard-la
     CaDashboardMyActivityComponent,
     CaDashboardTaskOfTheDayComponent,
     CaDashboardActivityCardComponent,
-    CaDashboardLastExperiencesComponent,
+    CaDashboardLastExperimentsComponent,
   ],
   imports: [
     CommonModule,

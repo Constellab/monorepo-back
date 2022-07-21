@@ -5,6 +5,7 @@ import {CnServerInfo} from '../cn-servers-info/cn-server-info.entity';
 import {BlBaseEntityDto} from '@monorepo/back-core-lib';
 import {CnBrickVersionDTO} from '../cn-bricks/cn-brick.dto';
 import {CnLabConfigDto} from '../cn-lab-configs/cn-lab-config.dto';
+import {CnCity} from '../cn-city/cn-city.entity';
 
 
 export class CnLabInstanceDto extends BlBaseEntityDto {
@@ -19,6 +20,7 @@ export class CnLabInstanceDto extends BlBaseEntityDto {
   codelabToken: string = undefined;
   frontUrl: string = undefined;
   serverInfo: CnServerInfo = undefined;
+  city: CnCity = undefined;
 }
 
 

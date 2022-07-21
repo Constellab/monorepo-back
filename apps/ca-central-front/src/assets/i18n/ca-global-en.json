@@ -131,5 +131,6 @@
   "team_user_removed": "User removed from team",
   "team_projects": "Team's projects",
   "validated_by": "Validated by",
-  "validated_on": "Validated on"
+  "validated_on": "Validated on",
+  "location": "Location"
 }

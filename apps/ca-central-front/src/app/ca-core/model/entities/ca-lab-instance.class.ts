@@ -11,6 +11,8 @@ import {
   FlStatusTransform
 } from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
+import {CaCity} from './ca-city.entity';
+import {CaCountry} from './ca-country.entity';
 
 export type CaLabInstanceStatus = 'RUNNING' | 'STOPPED';
 
@@ -46,6 +48,9 @@ export class CaLabInstance extends CaBaseEntity {
 
   virtualHost: string;
 
+  @Type(() => CaCity)
+  city: CaCity;
+
   @Type(() => CaServerInfo)
   serverInfo: CaServerInfo;
 
@@ -53,6 +58,8 @@ export class CaLabInstance extends CaBaseEntity {
   glabApiKey?: string;
   labManagerApiKey?: string;
   codelabToken?: string;
+
+
 
   public isRunning(): boolean {
     return this.currentStatus.status.value === 'RUNNING';

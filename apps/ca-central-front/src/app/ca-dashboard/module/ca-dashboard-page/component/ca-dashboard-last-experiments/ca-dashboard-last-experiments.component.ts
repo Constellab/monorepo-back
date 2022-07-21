@@ -4,11 +4,11 @@ import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.
 import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
 
 @Component({
-  selector: 'ca-dashboard-last-experiences',
-  templateUrl: './ca-dashboard-last-experiences.component.html',
-  styleUrls: ['./ca-dashboard-last-experiences.component.scss']
+  selector: 'ca-dashboard-last-experiments',
+  templateUrl: './ca-dashboard-last-experiments.component.html',
+  styleUrls: ['./ca-dashboard-last-experiments.component.scss']
 })
-export class CaDashboardLastExperiencesComponent implements OnInit {
+export class CaDashboardLastExperimentsComponent implements OnInit {
 
   lastExperiments: CaExperiment[];
 

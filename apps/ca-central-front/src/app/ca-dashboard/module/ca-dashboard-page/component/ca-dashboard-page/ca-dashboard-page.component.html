@@ -33,17 +33,19 @@
 
     <div class="bt">
       <div class="bt-div-text">
-        <a><div class="link-bt g-primary-background">
-          <mat-icon class="g-icon-huge icon" fontSet="material-icons-outlined">help</mat-icon>
-        </div></a>
+        <a>
+          <div class="link-bt g-primary-background">
+            <mat-icon class="g-icon-huge icon" fontSet="material-icons-outlined">help</mat-icon>
+          </div>
+        </a>
         <a class="link">{{'ticket' | translate}}</a>
       </div>
 
       <div class="bt-div-text">
         <a [href]="'https://hub.gencovery.com'">
           <div class="link-bt g-primary-background">
-          <mat-icon class="g-icon-huge icon" fontSet="material-icons-outlined">hub</mat-icon>
-        </div>
+            <mat-icon class="g-icon-big icon" fontSet="material-icons-outlined">hub</mat-icon>
+          </div>
         </a>
         <a [href]="'https://hub.gencovery.com'" class="link">{{'hub' | translate}}</a>
       </div>
@@ -56,14 +58,13 @@
 
     <!-- Last experiences -->
     <div class="rs-section">
-      <ca-dashboard-last-experiences></ca-dashboard-last-experiences>
+      <ca-dashboard-last-experiments></ca-dashboard-last-experiments>
     </div>
 
     <!-- Task of the day -->
     <div class="rs-section">
       <ca-dashboard-task-of-the-day></ca-dashboard-task-of-the-day>
     </div>
-
 
 
   </div>

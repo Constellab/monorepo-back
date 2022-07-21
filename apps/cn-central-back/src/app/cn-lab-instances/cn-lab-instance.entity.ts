@@ -9,6 +9,7 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CnEntityWithOwner} from '../cn-core/model/entities/cn-entity-with-owner.entity';
 import {randomBytes} from 'crypto';
 import {CnExternalApiInfo} from '../cn-core/model/config/cn-config.class';
+import {CnCity} from '../cn-city/cn-city.entity';
 
 
 /**
@@ -76,6 +77,9 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     (serverInfo: CnServerInfo) => serverInfo.labInstances,
     {nullable: false, eager: true})
   serverInfo: CnServerInfo;
+
+  @ManyToOne(()=> CnCity, {onDelete: 'CASCADE', eager: true})
+  city: CnCity;
 
   // generate the apiKey
   @BeforeInsert()

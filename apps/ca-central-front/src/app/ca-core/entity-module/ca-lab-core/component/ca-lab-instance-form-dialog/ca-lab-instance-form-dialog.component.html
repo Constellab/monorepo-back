@@ -34,6 +34,18 @@
       </mat-error>
     </mat-form-field>
 
+    <mat-form-field class="g-form-input">
+      <mat-label>{{'location' | translate}}</mat-label>
+      <mat-select formControlName="city">
+        <mat-option>-- None --</mat-option>
+        <mat-optgroup *ngFor="let country of countries" [label]="country.name">
+          <mat-option *ngFor="let city of country.cities" [value]="city">
+            {{city.name}}
+          </mat-option>
+        </mat-optgroup>
+      </mat-select>
+    </mat-form-field>
+
     <!--  Owner  -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'owner' | translate}}</mat-label>
