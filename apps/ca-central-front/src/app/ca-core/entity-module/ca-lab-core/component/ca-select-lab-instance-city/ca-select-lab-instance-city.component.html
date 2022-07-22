@@ -1,0 +1,15 @@
+<ng-container *ngIf="isLoading; else notLoading">
+  <mat-option disabled>
+    {{'loading' | translate}}
+  </mat-option>
+</ng-container>
+
+<ng-template #notLoading>
+  <ng-container *ngIf="countries?.length > 0">
+    <mat-optgroup *ngFor="let country of countries" [label]="country.name">
+      <mat-option *ngFor="let city of country.cities" [value]="city">
+        {{city.name}}
+      </mat-option>
+    </mat-optgroup>
+  </ng-container>
+</ng-template>

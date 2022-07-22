@@ -21,6 +21,10 @@ import {
   CaLabInstanceStatusDialogComponent
 } from './component/ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
 import {CaLabLoginButtonComponent} from './component/ca-lab-login-button/ca-lab-login-button.component';
+import {
+  CaSelectLabInstanceCityComponent
+} from './component/ca-select-lab-instance-city/ca-select-lab-instance-city.component';
+import {CaLabInstanceCityComponent} from './component/ca-lab-instance-city/ca-lab-instance-city.component';
 
 /**
  * Core module for Lab and LabInstance
@@ -36,6 +40,8 @@ import {CaLabLoginButtonComponent} from './component/ca-lab-login-button/ca-lab-
     CaLabConfigTableComponent,
     CaLabInstanceStatusDialogComponent,
     CaLabLoginButtonComponent,
+    CaSelectLabInstanceCityComponent,
+    CaLabInstanceCityComponent
   ],
   exports: [
     CaLabInstanceCardComponent,
@@ -46,6 +52,7 @@ import {CaLabLoginButtonComponent} from './component/ca-lab-login-button/ca-lab-
     CaLabInstanceFormDialogComponent,
     CaLabConfigTableComponent,
     CaLabLoginButtonComponent,
+    CaLabInstanceCityComponent
   ],
   imports: [
     CommonModule,

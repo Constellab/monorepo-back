@@ -18,6 +18,9 @@ import { CaDashboardMyActivityComponent } from './component/ca-dashboard-my-acti
 import { CaDashboardTaskOfTheDayComponent } from './component/ca-dashboard-task-of-the-day/ca-dashboard-task-of-the-day.component';
 import { CaDashboardActivityCardComponent } from './component/ca-dashboard-activity-card/ca-dashboard-activity-card.component';
 import { CaDashboardLastExperimentsComponent } from './component/ca-dashboard-last-experiments/ca-dashboard-last-experiments.component';
+import {
+  CaLabInstanceCityComponent
+} from '../../../ca-core/entity-module/ca-lab-core/component/ca-lab-instance-city/ca-lab-instance-city.component';
 
 /**
  * Module for the dashboard page
@@ -33,7 +36,7 @@ import { CaDashboardLastExperimentsComponent } from './component/ca-dashboard-la
     CaDashboardMyActivityComponent,
     CaDashboardTaskOfTheDayComponent,
     CaDashboardActivityCardComponent,
-    CaDashboardLastExperimentsComponent,
+    CaDashboardLastExperimentsComponent
   ],
   imports: [
     CommonModule,

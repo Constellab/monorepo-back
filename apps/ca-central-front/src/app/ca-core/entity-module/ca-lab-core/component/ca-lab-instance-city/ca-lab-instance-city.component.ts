@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaCity} from '../../../ca-core/model/entities/ca-city.entity';
+import {CaCity} from '../../../../model/entities/ca-city.entity';
 
 @Component({
   selector: 'ca-lab-instance-city',

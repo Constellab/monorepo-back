@@ -34,15 +34,11 @@
       </mat-error>
     </mat-form-field>
 
+    <!-- City -->
     <mat-form-field class="g-form-input">
       <mat-label>{{'location' | translate}}</mat-label>
       <mat-select [formControlName]="'city'" [compareWith]="compareSelectCity">
-        <mat-option>-- None --</mat-option>
-        <mat-optgroup *ngFor="let country of countries" [label]="country.name">
-          <mat-option *ngFor="let city of country.cities" [value]="city">
-            {{city.name}}
-          </mat-option>
-        </mat-optgroup>
+        <ca-select-lab-instance-city></ca-select-lab-instance-city>
       </mat-select>
     </mat-form-field>
 
