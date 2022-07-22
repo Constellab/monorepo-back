@@ -36,7 +36,7 @@
 
     <mat-form-field class="g-form-input">
       <mat-label>{{'location' | translate}}</mat-label>
-      <mat-select formControlName="city">
+      <mat-select [formControlName]="'city'" [compareWith]="compareSelectCity">
         <mat-option>-- None --</mat-option>
         <mat-optgroup *ngFor="let country of countries" [label]="country.name">
           <mat-option *ngFor="let city of country.cities" [value]="city">

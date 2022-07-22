@@ -6,9 +6,9 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {CaLabInstanceService} from '../../../../service-api/ca-lab-instance.service';
 import {Validators} from '@angular/forms';
 import {FlFormDialogAbstractDirective, FlFormDialogInput, FlSnackBarService} from '@monorepo/front-core-lib';
-import {CaCity} from '../../../../model/entities/ca-city.entity';
 import {CaCountryService} from '../../../../service-api/ca-country.service';
 import {CaCountry} from '../../../../model/entities/ca-country.entity';
+import {CaCity} from '../../../../model/entities/ca-city.entity';
 
 @Component({
   selector: 'ca-lab-instance-form-dialog',
@@ -28,19 +28,17 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
     super(dialogInput, snackBarService, dialogRef);
   }
 
-  ngOnInit(): void {
-
-    this.countryService.get().subscribe(cities => {
-      this.countries = cities;
-      console.log(this.countries)
-    });
-    this.init();
-  }
-
   get title(): string {
     return this.isCreateMode() ? 'create_lab_instance' : 'update_lab_instance';
   }
 
+  ngOnInit(): void {
+
+    this.countryService.get().subscribe(cities => {
+      this.countries = cities;
+    });
+    this.init();
+  }
 
   buildForm(): FormGroup<Partial<CaLabInstance>> {
     return new FormBuilder().group({
@@ -70,6 +68,10 @@ export class CaLabInstanceFormDialogComponent extends FlFormDialogAbstractDirect
 
   getUpdateSuccessMessage(): string {
     return 'lab_instance_updated';
+  }
+
+  compareSelectCity(x: CaCity, y: CaCity): boolean{
+    return x && y ? x.id === y.id : x === y;
   }
 
 
