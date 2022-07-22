@@ -28,7 +28,8 @@
     <fl-card-body>
 
       <!--   Lab url   -->
-      <fl-text-icon iconPosition="end">
+      <fl-text-icon iconPosition="start">
+        <mat-icon>link</mat-icon>
         <fl-key-value>
           <fl-key>{{'url' | translate}}</fl-key>
           <a [href]="labInstance.frontUrl" target="_blank" class="g-text-link"
@@ -39,7 +40,8 @@
       </fl-text-icon>
 
 
-      <fl-text-icon iconPosition="end">
+      <fl-text-icon iconPosition="start">
+        <mat-icon>location_on</mat-icon>
         <fl-key-value class="key-val-inline">
           <fl-key class="key">{{'location' | translate}}</fl-key>
           <ca-lab-instance-city [city]="labInstance.city"></ca-lab-instance-city>

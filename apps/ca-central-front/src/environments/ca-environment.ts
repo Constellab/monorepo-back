@@ -7,7 +7,8 @@ export const environment = {
   apiUrl: 'http://localhost:3001/',
   smartDbApiUrl: 'http://localhost:3340/',
   // apiUrl: 'https://pre-prod-back.gws.gencovery.com/',
-  hubApiUrl: 'http://localhost:3333/'
+  hubApiUrl: 'http://localhost:3333/',
+  hubUrl: 'http://localhost:4200/'
 };
 
 /*

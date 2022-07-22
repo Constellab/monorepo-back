@@ -26,7 +26,7 @@ export class CaDashboardTaskOfTheDayComponent implements OnInit {
   ngOnInit(): void {
     this.http.get(`${environment.hubApiUrl}task/task-of-the-day`).subscribe((res: CaTask) => {
       this.task = res;
-      this.taskHubUrl = 'https://hub.gencovery.com/bricks/' +
+      this.taskHubUrl = `${environment.hubUrl}bricks/` +
         `${this.task.brickName}/latest/doc/technical-folder/task/${this.task.uniqueName}`;
     });
   }

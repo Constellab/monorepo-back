@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CaUser} from '../../../../../ca-core/model/entities/ca-user.class';
 import {CaAuthenticatedUserService} from '../../../../../ca-core/service-api/ca-authenticated-user.service';
+import {environment} from '../../../../../../environments/ca-environment';
 
 /**
  * Page containing the user dashboard
@@ -12,6 +13,8 @@ import {CaAuthenticatedUserService} from '../../../../../ca-core/service-api/ca-
 })
 export class CaDashboardPageComponent implements OnInit {
 
+  hubLink: string;
+
   authenticatedUser: CaUser;
 
   currentDate: Date = new Date();
@@ -21,7 +24,7 @@ export class CaDashboardPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.hubLink = environment.hubUrl;
   }
 
 }
