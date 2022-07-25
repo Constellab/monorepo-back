@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {CnReport} from './cn-report.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
@@ -61,15 +61,39 @@ export class CnReportsService extends BlAbstractService<CnReport> {
     report.project = project;
     report.experiments = experiments;
     report.labConfig = labConfig;
-    report.validatedAt = reportDto.validated_at;
 
+    // handle validated
+    report.isValidated = reportDto.is_validated;
+    report.validatedAt = reportDto.validated_at;
     if (reportDto.validated_by) {
       const validatedBy = new CnUser();
       validatedBy.id = reportDto.validated_by.id;
       report.validatedBy = validatedBy;
     }
 
+    // handle last_sync
+    report.lastSyncAt = reportDto.last_sync_at;
+    if (reportDto.last_sync_by) {
+      const lastSyncBy = new CnUser();
+      lastSyncBy.id = reportDto.last_sync_by.id;
+      report.lastSyncBy = lastSyncBy;
+    }
+
     return await this.repository.save(report);
+  }
+
+  public async deleteReport(id: string): Promise<void> {
+    const report = await this.findById(id);
+
+    // no error if report not found for more resilience
+    if (!report) {
+      return;
+    }
+
+    if (report.isValidated) {
+      throw new BadRequestException('Can\'t delete a validated report');
+    }
+    await this.deleteById(id);
   }
 
   findByIdAndCheckWithExperiments(id: string): Promise<CnReport> {

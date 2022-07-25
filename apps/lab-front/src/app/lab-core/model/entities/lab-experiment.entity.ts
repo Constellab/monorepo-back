@@ -12,6 +12,7 @@ import {LabEntityWithTag} from './lab-entity-with-tag.entity';
 import {LabUser} from './lab-user.entity';
 import {ClLuxonTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
+import {LabProjectObject} from './lab-project.class';
 
 export type LabExperimentStatus = 'DRAFT' | 'IN_QUEUE' | 'WAITING_FOR_CLI_PROCESS' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
@@ -36,7 +37,7 @@ export const labExperimentTypeDict: FlStatusDict<LabExperimentType> = {
   FS_NODE_EXTRACTOR: FlStatusHelper.getInfoStatus('FS_NODE_EXTRACTOR', 'biox.experiment_type_extractor'),
 };
 
-export class LabExperiment extends LabEntityWithTag {
+export class LabExperiment extends LabEntityWithTag implements LabProjectObject {
 
   score: any;
 
@@ -65,6 +66,18 @@ export class LabExperiment extends LabEntityWithTag {
   @Expose({name: 'validated_at'})
   @ClLuxonTransform()
   validatedAt?: DateTime;
+
+  @Expose({name: 'last_sync_at'})
+  @ClLuxonTransform()
+  lastSyncAt?: DateTime;
+
+  @Expose({name: 'last_sync_by'})
+  @Type(() => LabUser)
+  lastSyncBy?: LabUser;
+
+  get isSynced(): boolean {
+    return this.lastSyncAt != null;
+  }
 
   project: {
     id: string;

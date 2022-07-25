@@ -12,6 +12,7 @@ import {
 } from '../../../lab-core/entity-module/lab-view-config-core/lab-view-config-core.module';
 import {LabReportContentViewComponent} from './component/lab-report-content-view/lab-report-content-view.component';
 import {LabResourceCoreModule} from '../../../lab-core/entity-module/lab-resource-core/lab-resource-core.module';
+import {LabProjectCoreModule} from '../../../lab-core/entity-module/lab-project-core/lab-project-core.module';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import {LabResourceCoreModule} from '../../../lab-core/entity-module/lab-resourc
     LabCoreModule,
     LabViewConfigCoreModule,
     LabResourceCoreModule,
+    LabProjectCoreModule,
   ],
   exports: [
     LabReportContentViewComponent

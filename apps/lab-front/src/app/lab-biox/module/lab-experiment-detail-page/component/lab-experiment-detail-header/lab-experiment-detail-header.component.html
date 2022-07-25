@@ -8,6 +8,11 @@
     <h1>{{experiment.title}}</h1>
   </fl-text-icon>
 
+  <lab-sync-object-button [object]="experiment" [syncObjectFunc]="syncObjectFunc"
+                          (objectUpdate)="onExperimentUpdate($event)">
+  </lab-sync-object-button>
+
+
   <button mat-icon-button type="button" [matMenuTriggerFor]="menu">
     <mat-icon>more_vert</mat-icon>
   </button>

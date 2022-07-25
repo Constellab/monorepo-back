@@ -1,4 +1,4 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {CnExperiment} from './cn-experiment.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
@@ -38,7 +38,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     });
   }
 
-  public async createLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto): Promise<CnExperiment> {
+  public async saveLabExperiment(project: CnProject, createLabExperimentDto: CnCreateLabExperimentDto): Promise<CnExperiment> {
     const experimentDB: CnExperiment = await this.findById(createLabExperimentDto.experiment.id);
 
     if (experimentDB && experimentDB.projectId !== project.id) {
@@ -58,12 +58,22 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     experiment.status = labExperimentDto.status;
     experiment.labConfig = labConfig;
     experiment.protocol = createLabExperimentDto.protocol;
-    experiment.validatedAt = labExperimentDto.validated_at;
 
+    // handle validated
+    experiment.isValidated = labExperimentDto.is_validated;
+    experiment.validatedAt = labExperimentDto.validated_at;
     if (labExperimentDto.validated_by) {
       const validatedBy = new CnUser();
       validatedBy.id = labExperimentDto.validated_by.id;
       experiment.validatedBy = validatedBy;
+    }
+
+    // handle last_sync
+    experiment.lastSyncAt = labExperimentDto.last_sync_at;
+    if(labExperimentDto.last_sync_by){
+      const lastSyncBy = new CnUser();
+      lastSyncBy.id = labExperimentDto.last_sync_by.id;
+      experiment.lastSyncBy = lastSyncBy;
     }
 
     if (experimentDB) {
@@ -72,6 +82,20 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
       experiment.labInstance = CnCurrentUserHelper.getLabInstance();
       return this.create(experiment);
     }
+  }
+
+  public async deleteExperiment(id: string): Promise<void> {
+    const experiment = await this.findById(id);
+
+    // no error if experiment not found for more resilience
+    if (!experiment) {
+      return;
+    }
+
+    if (experiment.isValidated) {
+      throw new BadRequestException('Can\'t delete a validated experiment');
+    }
+    await this.deleteById(id);
   }
 
   findByIdAndCheckWithReports(id: string): Promise<CnExperiment> {
@@ -95,7 +119,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
   }
 
   //Get user last 3 experiments
-  public async getCurrentUserLastExperiments(): Promise<CnExperiment[]>{
+  public async getCurrentUserLastExperiments(): Promise<CnExperiment[]> {
     return (await this.getCurrentUserValidatedExperiment()).slice(0, 3);
   }
 

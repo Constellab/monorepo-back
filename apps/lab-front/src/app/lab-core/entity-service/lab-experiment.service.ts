@@ -70,6 +70,10 @@ export class LabExperimentService {
     return this.apiService.put(`${this.route}/${experimentId}/protocol`, graph, LabExperiment);
   }
 
+  public syncWithCentral(id: string): Observable<LabExperiment> {
+    return this.apiService.put(`${this.route}/${id}/sync-with-central`, null, LabExperiment);
+  }
+
   // launch an experiment
   public startExperiment(experimentId: string): Observable<LabExperiment> {
     return this.apiService.post(`${this.route}/${experimentId}/start`, null, LabExperiment);

@@ -36,6 +36,9 @@ export class LabReportDetailPageComponent implements OnInit, OnDestroy {
 
   textEditorConfig: FlTextEditorConfig;
 
+  syncObjectFunc: (id: string) => Observable<LabReport>;
+
+
   private contentDebouncer: FlDebouncer<LabReportContent>;
 
   constructor(private reportService: LabReportService,
@@ -46,6 +49,7 @@ export class LabReportDetailPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.syncObjectFunc = (id: string) => this.reportService.syncWithCentral(id);
     this.route.params.subscribe(
       params => this.init(params.id)
     );
@@ -75,7 +79,8 @@ export class LabReportDetailPageComponent implements OnInit, OnDestroy {
       object: {
         title: report.title,
         project: report.project
-      }
+      },
+      disableProject: report.isSynced
     };
 
     this.dialogService.openSmallDialog(LabReportFormDialogComponent, {data: input}).afterClosed().subscribe(
@@ -115,11 +120,11 @@ export class LabReportDetailPageComponent implements OnInit, OnDestroy {
     };
 
     this.dialogService.openSmallDialog(LabValidateObjectDialogComponent, {data: input}).afterClosed().subscribe(
-      result => this.validatedClosed(result)
+      result => this.onReportUpdate(result)
     );
   }
 
-  private validatedClosed(report?: LabReport): void {
+  onReportUpdate(report?: LabReport): void {
     if (report) {
       this.state.updateReport(report);
     }

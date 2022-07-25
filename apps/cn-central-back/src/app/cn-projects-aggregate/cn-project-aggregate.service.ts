@@ -134,7 +134,14 @@ export class CnProjectAggregateService {
     // check that the user can update the project
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
-    await this.experimentService.createLabExperiment(project, createLabExperimentDto);
+    await this.experimentService.saveLabExperiment(project, createLabExperimentDto);
+  }
+
+  async deleteLabExperiment(projectId: string, experimentId: string): Promise<void>{
+    // check that the user can update the project
+    await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    await this.experimentService.deleteExperiment(experimentId);
   }
 
   async getCurrentUserLastExperiments(): Promise<CnExperiment[]>{
@@ -158,7 +165,7 @@ export class CnProjectAggregateService {
     return report;
   }
 
-  async createReport(createReportDto: CnCreateReportWithConfigDto, projectId: string): Promise<CnReport> {
+  async createLabReport(createReportDto: CnCreateReportWithConfigDto, projectId: string): Promise<CnReport> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
     // get and check all experiment
@@ -176,6 +183,13 @@ export class CnProjectAggregateService {
       experiments.push(experiment);
     }
     return this.reportService.createReport(createReportDto, experiments, project);
+  }
+
+  async deleteLabReport(projectId: string, reportId: string): Promise<void>{
+    // check that the user can update the project
+    await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    await this.reportService.deleteReport(reportId);
   }
 
   async getReportAssociatedToExperiment(experimentId: string): Promise<CnReport[]> {

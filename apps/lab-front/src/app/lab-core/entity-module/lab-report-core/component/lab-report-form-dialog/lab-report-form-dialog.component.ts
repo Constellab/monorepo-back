@@ -12,6 +12,7 @@ export interface LabReportFormDialogInput extends FlFormDialogInput<LabReportFor
   reportId?: string;
   experimentId?: string; // can be provided during create to associate the report directly to an experiment
   project?: LabEntity;
+  disableProject?: boolean;
 }
 
 @Component({
@@ -39,10 +40,16 @@ export class LabReportFormDialogComponent extends FlFormDialogAbstractDirective<
   }
 
   buildForm(): FormGroup<LabReportForm> {
-    return new FormBuilder().group({
+    const formGroup: FormGroup<LabReportForm> = new FormBuilder().group({
       title: [null, Validators.required],
       project: [{value: this.dialogInput.project, disabled: this.isCreateMode() && this.dialogInput.project != null}]
     });
+
+    if(this.dialogInput.disableProject) {
+      formGroup.get('project').disable();
+    }
+
+    return formGroup;
   }
 
   create(formValue: LabReportForm): Observable<LabReport> {

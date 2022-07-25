@@ -30,6 +30,9 @@
       {{'validated_on' | translate}} {{experiment.validatedAt | flDate}}
     </p>
 
+    <!--  Sync info  -->
+    <lab-object-sync-info class="separator" [object]="experiment"></lab-object-sync-info>
+
     <!--  Created by & Last modified bt  -->
     <p class="g-text-small g-text-light separator">
       <fl-creation-info [createdBy]="experiment.createdBy.fullname"

@@ -1,22 +1,23 @@
 import {LabBaseEntityWithUser, LabUser} from './lab-user.entity';
 import {Expose, Type} from 'class-transformer';
 import {FlQuillJson} from '@monorepo/front-core-lib';
-import {LabProject} from './lab-project.class';
+import {LabProjectObject} from './lab-project.class';
 import {LabEntity} from '../global/lab-entity.entity';
 import {ClLuxonTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 
 export type LabReportContent = FlQuillJson;
 
-export class LabReport extends LabBaseEntityWithUser {
+export class LabReport extends LabBaseEntityWithUser implements LabProjectObject {
 
   title: string;
 
   content: LabReportContent;
 
-
-  @Type(() => LabProject)
-  project: LabProject;
+  project: {
+    id: string;
+    title: string;
+  };
 
   @Expose({name: 'is_validated'})
   isValidated: boolean;
@@ -28,6 +29,18 @@ export class LabReport extends LabBaseEntityWithUser {
   @Expose({name: 'validated_at'})
   @ClLuxonTransform()
   validatedAt?: DateTime;
+
+  @Expose({name: 'last_sync_at'})
+  @ClLuxonTransform()
+  lastSyncAt?: DateTime;
+
+  @Expose({name: 'last_sync_by'})
+  @Type(() => LabUser)
+  lastSyncBy?: LabUser;
+
+  get isSynced(): boolean {
+    return this.lastSyncAt != null;
+  }
 }
 
 export interface LabReportForm {

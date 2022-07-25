@@ -1,0 +1,9 @@
+<div [matTooltip]="'biox.sync_object_need_project' | translate"
+     [matTooltipDisabled]="object.project != null">
+  <button mat-stroked-button type="button" class="g-button-small"
+          [disabled]="!object.project" (click)="syncClick()">
+    <mat-icon>sync</mat-icon>
+    {{'biox.sync_with_central' | translate}}
+    <fl-button-loader *ngIf="isLoading" size="small"></fl-button-loader>
+  </button>
+</div>

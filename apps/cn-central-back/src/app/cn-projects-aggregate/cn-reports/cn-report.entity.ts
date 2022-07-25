@@ -33,6 +33,9 @@ export class CnReport extends CnBaseEntity {
   @ManyToOne(() => CnLabConfig, {nullable: false})
   labConfig: CnLabConfig;
 
+  @Column({nullable: false, default: false})
+  isValidated: boolean;
+
   @Type(() => CnUser)
   @ManyToOne(() => CnUser, {eager: true, nullable: true})
   validatedBy: CnUser;
@@ -40,4 +43,12 @@ export class CnReport extends CnBaseEntity {
   @Column({nullable: true})
   @BlLuxonDateTimeColumn()
   validatedAt: DateTime;
+
+  @Type(() => CnUser)
+  @ManyToOne(() => CnUser, {eager: true, nullable: true})
+  lastSyncBy: CnUser;
+
+  @Column({nullable: true})
+  @BlLuxonDateTimeColumn()
+  lastSyncAt: DateTime;
 }

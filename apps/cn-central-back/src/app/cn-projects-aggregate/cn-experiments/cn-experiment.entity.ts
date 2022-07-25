@@ -58,6 +58,9 @@ export class CnExperiment extends CnBaseEntity {
   @Column({ type: 'simple-json', nullable: false})
   protocol: CnExperimentProtocol;
 
+  @Column({nullable: false, default: false})
+  isValidated: boolean;
+
   @Type(() => CnUser)
   @ManyToOne(() => CnUser, {eager: true, nullable: true})
   validatedBy: CnUser;
@@ -65,5 +68,13 @@ export class CnExperiment extends CnBaseEntity {
   @Column({nullable: true})
   @BlLuxonDateTimeColumn()
   validatedAt: DateTime;
+
+  @Type(() => CnUser)
+  @ManyToOne(() => CnUser, {eager: true, nullable: true})
+  lastSyncBy: CnUser;
+
+  @Column({nullable: true})
+  @BlLuxonDateTimeColumn()
+  lastSyncAt: DateTime;
 
 }

@@ -9,6 +9,7 @@ import {Validators} from '@angular/forms';
 
 export interface LabExperimentFormDialogInput extends FlFormDialogInput<LabExperimentSimpleForm> {
   experimentId?: string;
+  disabledProject?: boolean;
 }
 
 /**
@@ -34,10 +35,16 @@ export class LabExperimentFormDialogComponent extends FlFormDialogAbstractDirect
   }
 
   buildForm(): FormGroup<LabExperimentSimpleForm> {
-    return new FormBuilder().group({
+    const formGroup: FormGroup<LabExperimentSimpleForm> = new FormBuilder().group({
       title: [null, Validators.required],
       project: [null]
     });
+
+    if (this.isUpdateMode() && this.dialogInput.disabledProject) {
+      formGroup.get('project').disable();
+    }
+
+    return formGroup;
   }
 
   create(formValue: LabExperimentSimpleForm): Observable<LabExperiment> {
@@ -59,7 +66,6 @@ export class LabExperimentFormDialogComponent extends FlFormDialogAbstractDirect
   getUpdateSuccessMessage(): string {
     return 'biox.experiment_updated';
   }
-
 
 
 }

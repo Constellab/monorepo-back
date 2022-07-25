@@ -23,10 +23,17 @@ export class CnLabExperimentDto {
   @ClLuxonDateTimeTransform()
   last_modified_at: DateTime;
 
+  is_validated: boolean;
+
   validated_by?: { id: string };
 
   @ClLuxonDateTimeTransform()
   validated_at?: DateTime;
+
+  last_sync_by?: { id: string };
+
+  @ClLuxonDateTimeTransform()
+  last_sync_at?: DateTime;
 }
 
 export class CnCreateLabExperimentDto {

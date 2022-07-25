@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put} from '@nestjs/common';
 import {CnLabInstancesService} from '../cn-lab-instances/cn-lab-instances.service';
 import {ClLabGuard} from '../cn-core/decorators/cn-lab-guard.decorator';
 import {CnReport} from '../cn-projects-aggregate/cn-reports/cn-report.entity';
@@ -43,12 +43,26 @@ export class CnExternalLabsController {
     return this.projectAggregator.createLabExperiment(projectId, createLabExperimentDto);
   }
 
+  @Delete('project/:projectId/experiment/:experimentId')
+  deleteExperiment(
+    @Param('projectId', new ParseUUIDPipe()) projectId: string,
+    @Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<void> {
+    return this.projectAggregator.deleteLabExperiment(projectId, experimentId);
+  }
+
 
   @Put('project/:projectId/report')
   saveReport(
     @Param('projectId', new ParseUUIDPipe()) projectId: string,
     @Body(new BlParsePipe(CnCreateReportWithConfigDto)) createReportDto: CnCreateReportWithConfigDto): Promise<CnReport> {
-    return this.projectAggregator.createReport(createReportDto, projectId);
+    return this.projectAggregator.createLabReport(createReportDto, projectId);
+  }
+
+  @Delete('project/:projectId/report/:reportId')
+  deleteReport(
+    @Param('projectId', new ParseUUIDPipe()) projectId: string,
+    @Param('reportId', new ParseUUIDPipe()) reportId: string): Promise<void> {
+    return this.projectAggregator.deleteLabReport(projectId, reportId);
   }
 
   /**

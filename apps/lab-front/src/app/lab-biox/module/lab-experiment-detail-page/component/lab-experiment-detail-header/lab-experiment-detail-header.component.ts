@@ -9,7 +9,8 @@ import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,
   FlDialogService,
-  FlTagDialogService
+  FlTagDialogService,
+  FlTranslateService
 } from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {
@@ -42,17 +43,21 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
 
   experiment$: Observable<LabExperiment>;
 
+  syncObjectFunc: (id: string) => Observable<LabExperiment>;
+
 
   constructor(private experimentState: LabExperimentDetailPageState,
               private dialogService: FlDialogService,
               private experimentService: LabExperimentService,
               private tagDialogService: FlTagDialogService,
               private routerService: LabRouterService,
-              private queueService: LabQueueService) {
+              private queueService: LabQueueService,
+              private translateService: FlTranslateService) {
   }
 
   ngOnInit(): void {
     this.experiment$ = this.experimentState.getExperiment$();
+    this.syncObjectFunc = (id: string) => this.experimentService.syncWithCentral(id)
   }
 
   openUpdateDialog(): void {
@@ -65,7 +70,8 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     const input: LabExperimentFormDialogInput = {
       object: experimentForm,
       mode: 'update',
-      experimentId: experiment.id
+      experimentId: experiment.id,
+      disabledProject: experiment.isSynced
     };
 
     this.dialogService.openSmallDialog(LabExperimentFormDialogComponent,
@@ -113,7 +119,7 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     }
   }
 
-  private onExperimentUpdate(experiment?: LabExperiment): void {
+  onExperimentUpdate(experiment?: LabExperiment): void {
     if (experiment) {
       this.experimentState.updateExperiment(experiment);
     }
@@ -208,11 +214,20 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
   }
 
   deleteExperiment(): void {
+    const experiment = this.experimentState.currentExperiment
+
+    let content = `</p>${this.translateService.translate('biox.delete_experiment_confirmation')}</p>`;
+
+    if(experiment.isSynced) {
+      content += `<p>${this.translateService.translate('biox.delete_experiment_sync_confirmation')}</p>`;
+    }
+
+
     const data: FlConfirmDialogInput = {
-      title: 'biox.delete_experiment',
-      content: 'biox.delete_experiment_confirmation',
-      translateTitleAndContent: true,
-      observable: this.experimentService.deleteExperiment(this.experimentState.currentExperiment.id),
+      title: this.translateService.translate('biox.delete_experiment'),
+      content: content,
+      translateTitleAndContent: false,
+      observable: this.experimentService.deleteExperiment(experiment.id),
       successMessage: 'biox.experiment_deleted',
       translateMessage: true
     };

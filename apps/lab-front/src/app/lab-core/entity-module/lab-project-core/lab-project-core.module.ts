@@ -8,16 +8,22 @@ import {
   LabValidateObjectDialogComponent
 } from './component/lab-validate-object-dialog/lab-validate-object-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {LabSyncObjectButtonComponent} from './component/lab-sync-object-button/lab-sync-object-button.component';
+import {LabObjectSyncInfoComponent} from './component/lab-object-sync-info/lab-object-sync-info.component';
 
 
 @NgModule({
   declarations: [
     LabProjectSelectOptionsComponent,
     LabValidateObjectDialogComponent,
+    LabSyncObjectButtonComponent,
+    LabObjectSyncInfoComponent,
   ],
   exports: [
     LabProjectSelectOptionsComponent,
     LabValidateObjectDialogComponent,
+    LabSyncObjectButtonComponent,
+    LabObjectSyncInfoComponent,
   ],
   imports: [
     CommonModule,

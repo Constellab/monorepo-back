@@ -53,6 +53,10 @@ export class LabReportService {
     return this.apiService.put(`${this.route}/${id}/content`, content, LabReport);
   }
 
+  public syncWithCentral(id: string): Observable<LabReport> {
+    return this.apiService.put(`${this.route}/${id}/sync-with-central`, null, LabReport);
+  }
+
   public delete(id: string): Observable<void> {
     return this.apiService.deleteById(this.route, id);
   }

@@ -11,10 +11,16 @@ export class CnCreateReportDto extends CnBaseEntityDTO {
   title: string;
   content: CmRichTextI;
 
+  is_validated: boolean;
   validated_by?: { id: string };
 
   @BlLuxonDateTimeColumn()
   validated_at?: DateTime;
+
+  last_sync_by?: { id: string };
+
+  @BlLuxonDateTimeColumn()
+  last_sync_at?: DateTime;
 }
 
 export class CnCreateReportWithConfigDto {
