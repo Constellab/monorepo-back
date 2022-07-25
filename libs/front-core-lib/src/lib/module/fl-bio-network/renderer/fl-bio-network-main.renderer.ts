@@ -95,6 +95,7 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
       .autoPauseRedraw(true) // prevent redraw on every tick
       .maxZoom(FlBioNetworkZoomRenderer.maxZoomScale)
       .minZoom(FlBioNetworkZoomRenderer.minZoomScale)
+      .zoom(FlBioNetworkZoomRenderer.defaultZoomScale)
       .onBackgroundClick(() => this.selectionState.clearSelection())
       .cooldownTime(engineConfig.liveDrawing ? 60000 : null)
       // if live drawing, we set null so it will calculate positions

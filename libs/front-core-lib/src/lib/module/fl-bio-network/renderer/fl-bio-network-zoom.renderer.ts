@@ -10,8 +10,9 @@ import {ForceGraphInstance} from 'force-graph';
 @Injectable()
 export class FlBioNetworkZoomRenderer {
 
-  public static readonly minZoomScale: number = 0.1;
+  public static readonly minZoomScale: number = 0.01;
   public static readonly maxZoomScale: number = 10;
+  public static readonly defaultZoomScale: number = 0.25;
 
   // Default zoom scale when zooming to a position
   private readonly zoomToPositionScale: number = 0.5;

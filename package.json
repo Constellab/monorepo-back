@@ -38,7 +38,7 @@
     "ca-central-front:lint": "nx run ca-central-front:lint",
     "lab-front:serve": "nx serve lab-front",
     "lab-front:build-prod": "nx build lab-front --prod",
-    "lab-front:build-dev": "nx build lab-front --configuration=devevelopment",
+    "lab-front:build-dev": "nx build lab-front --configuration=development",
     "lab-front:caprover-deploy-preprod": "caprover deploy --host https://captain.constellab-pre-prod.gencovery.com --appName pre-prod-lab-front --branch master",
     "lab-front:build-stats": "nx build lab-front --prod --stats-json && npm run lab-front:view-stats",
     "lab-front:view-stats": "webpack-bundle-analyzer.cmd dist/apps/lab-front/stats.json",
