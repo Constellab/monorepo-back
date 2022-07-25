@@ -6,16 +6,35 @@ import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab
 import {RouterModule} from '@angular/router';
 import {CaExperimentInfoComponent} from './component/ca-experiment-info/ca-experiment-info.component';
 import {CaExperimentsListComponent} from './component/ca-experiments-list/ca-experiments-list.component';
+import {
+  CaExperimentTechnicalReportComponent
+} from './component/ca-experiment-technical-report/ca-experiment-technical-report.component';
+import {
+  CaExperimentTechnicalReportNodeComponent
+} from './component/ca-experiment-technical-report-node/ca-experiment-technical-report-node.component';
+import {
+  CaExperimentTechnicalReportGraphComponent
+} from './component/ca-experiment-technical-report-graph/ca-experiment-technical-report-graph.component';
+import {
+  CaExperimentTechnicalReportLinkComponent
+} from './component/ca-experiment-technical-report-link/ca-experiment-technical-report-link.component';
+import { CaExperimentLabConfigDialogComponent } from './component/ca-experiment-lab-config-dialog/ca-experiment-lab-config-dialog.component';
 
 
 @NgModule({
   declarations: [
     CaExperimentInfoComponent,
     CaExperimentsListComponent,
+    CaExperimentTechnicalReportComponent,
+    CaExperimentTechnicalReportNodeComponent,
+    CaExperimentTechnicalReportGraphComponent,
+    CaExperimentTechnicalReportLinkComponent,
+    CaExperimentLabConfigDialogComponent,
   ],
   exports: [
     CaExperimentInfoComponent,
     CaExperimentsListComponent,
+    CaExperimentTechnicalReportComponent,
   ],
   imports: [
     CommonModule,
@@ -28,4 +47,5 @@ import {CaExperimentsListComponent} from './component/ca-experiments-list/ca-exp
   ]
 })
 export class CaExperimentCoreModule {
+
 }

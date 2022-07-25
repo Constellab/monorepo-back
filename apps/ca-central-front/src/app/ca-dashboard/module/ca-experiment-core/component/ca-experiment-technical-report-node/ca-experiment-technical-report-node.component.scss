@@ -1,0 +1,42 @@
+
+.node-main{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.node-l{
+  width: 50%;
+}
+
+.button-more-info{
+  position: relative;
+  bottom: 0;
+}
+
+.node-r{
+  padding-left: 2em;
+}
+
+
+
+.node-conf{
+  margin-top: 0.5em;
+  margin-left: 1em;
+}
+
+.child-div{
+  padding-top: 1em;
+  margin-left: 1.5em;
+  padding-left: 1.5em;
+  border-left: var(--grey-low-contrast) 2px solid;
+}
+
+.node-divider{
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+}
+
+.link-hub{
+  margin-top: 1em;
+}

@@ -16,5 +16,4 @@ export class CaLabInstanceCityComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
 }

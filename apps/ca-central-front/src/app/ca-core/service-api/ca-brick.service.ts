@@ -12,6 +12,10 @@ export class CaBrickService {
   constructor(private apiService: FlApiService) {
   }
 
+  public getBrickByBrickVersionId(id: string): Observable<CaBrick>{
+    return this.apiService.get(`${this.route}/brick-version/${id}`, CaBrick);
+  }
+
   public getAll(): Observable<CaBrick[]> {
     return this.apiService.get(this.route, CaBrick);
   }

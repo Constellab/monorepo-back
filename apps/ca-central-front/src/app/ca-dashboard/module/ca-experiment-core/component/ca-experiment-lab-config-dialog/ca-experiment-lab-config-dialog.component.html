@@ -1,0 +1,16 @@
+<ng-container *ngIf="labConfig">
+  <h2>{{labConfig.label}}</h2>
+
+  <h4>Bricks</h4>
+  <ul *ngIf="!isLoading">
+    <li *ngFor="let bAV of bricksAndVersions">
+      <fl-key-value>
+        <fl-key><a [href]="getBrickLink(bAV)" target="_blank" class="g-text-link g-primary-text">{{bAV.brick.name}}</a></fl-key>
+        v{{bAV.brickVersion.version}}
+      </fl-key-value>
+
+    </li>
+
+  </ul>
+  <fl-loader *ngIf="isLoading"></fl-loader>
+</ng-container>

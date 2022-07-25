@@ -9,7 +9,7 @@ import {CnProjectStatusHistory} from './cn-projects/cn-project-status-history.en
 import {CnProjectStatus} from './cn-projects/cn-project-status.enum';
 import {CnExperimentsService} from './cn-experiments/cn-experiments.service';
 import {CnReportsService} from './cn-reports/cn-reports.service';
-import {CnExperiment} from './cn-experiments/cn-experiment.entity';
+import {CnExperiment, CnExperimentProtocol} from './cn-experiments/cn-experiment.entity';
 import {CnCreateLabExperimentDto} from './cn-experiments/cn-experiment.dto';
 import {CnCreateReportWithConfigDto} from './cn-reports/cn-report.dto';
 import {CnReport} from './cn-reports/cn-report.entity';
@@ -17,6 +17,7 @@ import {IncomingMessage} from 'http';
 import {CnGroupsService} from '../cn-groups/cn-groups.service';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnReportContent} from './cn-reports/cn-report-content.class';
+import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -138,6 +139,14 @@ export class CnProjectAggregateService {
 
   async getCurrentUserLastExperiments(): Promise<CnExperiment[]>{
     return this.experimentService.getCurrentUserLastExperiments();
+  }
+
+  async findExperimentTechnicalReport(experimentId: string): Promise<CnExperimentProtocol>{
+    return (await this.findExperiment(experimentId)).protocol;
+  }
+
+  async findExperimentLabConfig(experimentId: string): Promise<CnLabConfig>{
+    return this.experimentService.getExperimentLabConfig(experimentId);
   }
 
   /////////////////////////////////////// REPORT //////////////////////////////////

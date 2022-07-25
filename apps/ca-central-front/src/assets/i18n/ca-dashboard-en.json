@@ -27,7 +27,7 @@
   "print_report": "Print",
   "project_shared_groups" : "Share",
   "hub": "Hub",
-  "ticket": "Ticket",
+  "support": "Support",
   "ongoing_projects": "Ongoing projects",
   "teams": "Teams",
   "running_labs": "Running labs",
@@ -37,5 +37,14 @@
   "task_of_the_day": "Task of the day",
   "my_activity": "My activity",
   "last_experiments": "Last experiments",
-  "no_experiences": "No experiences"
+  "no_experiences": "No experiences",
+  "technical_report": "Technical report",
+  "instance": "Instance",
+  "type": "Type",
+  "documentation": "Documentation",
+  "field_protocol_process": "{{field}}'s process",
+  "protocol_process": "Protocol's process",
+  "field_protocol_links": "{{field}}'s links",
+  "protocol_links": "Protocol's links",
+  "view_lab_config": "View lab config"
 }

@@ -1,7 +1,8 @@
 import {Controller, Get, Param, ParseUUIDPipe} from '@nestjs/common';
-import {CnExperiment} from './cn-experiments/cn-experiment.entity';
+import {CnExperiment, CnExperimentProtocol} from './cn-experiments/cn-experiment.entity';
 import {CnExperimentDTO} from './cn-experiments/cn-experiment.dto';
 import {CnProjectAggregateService} from './cn-project-aggregate.service';
+import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
 
 @Controller('experiments')
 export class CnExperimentsController {
@@ -11,7 +12,7 @@ export class CnExperimentsController {
 
 
   @Get('current-last-experiments')
-  getCurrentUserLastExperiments(): Promise<CnExperiment[]>{
+  getCurrentUserLastExperiments(): Promise<CnExperiment[]> {
     return this.projectAggregate.getCurrentUserLastExperiments();
   }
 
@@ -36,5 +37,20 @@ export class CnExperimentsController {
     return experiments.map(experiment => new CnExperimentDTO().copyEntity(experiment));
   }
 
+  /**
+   * Get experiment's reports
+   */
+  @Get('experiment-technical-report/:experimentId')
+  async getExperimentTechnicalReport(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnExperimentProtocol> {
+    return this.projectAggregate.findExperimentTechnicalReport(experimentId);
+  }
+
+  /**
+   * Get experiment's lab config
+   */
+  @Get('experiment-lab-config/:experimentId')
+  async getExperimentLabConfig(@Param('experimentId', new ParseUUIDPipe()) experimentId: string): Promise<CnLabConfig> {
+    return this.projectAggregate.findExperimentLabConfig(experimentId);
+  }
 
 }

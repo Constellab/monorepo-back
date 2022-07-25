@@ -1,0 +1,15 @@
+<fl-card>
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon flIcon="protocol"></mat-icon>
+      <h2>{{'technical_report' | translate}}</h2>
+    </fl-text-icon>
+    <fl-card-actions>
+      <button mat-stroked-button color="primary" (click)="openLabConfigDialog()">{{'view_lab_config' | translate}}</button>
+    </fl-card-actions>
+  </fl-card-header>
+
+  <fl-card-body *ngIf="technicalReport">
+    <ca-experiment-technical-report-graph [graph]="technicalReport.data.graph"></ca-experiment-technical-report-graph>
+  </fl-card-body>
+</fl-card>

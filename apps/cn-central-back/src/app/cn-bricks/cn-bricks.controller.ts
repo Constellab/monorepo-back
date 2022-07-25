@@ -1,4 +1,4 @@
-import {Controller, Get, Param} from '@nestjs/common';
+import {Controller, Get, Param, ParseUUIDPipe} from '@nestjs/common';
 import {CnBricksService} from './cn-bricks.service';
 import {CnBrick} from './cn-brick.entity';
 import {CnBrickVersion} from './cn-brick-version.entity';
@@ -15,6 +15,11 @@ export class CnBricksController {
   @Get()
   public getAllBricks(): Promise<CnBrick[]> {
     return this.service.getAllBricks();
+  }
+
+  @Get('brick-version/:brickVersionId')
+  public getById(@Param('brickVersionId', ParseUUIDPipe) brickVersionId: string):Promise<CnBrick>{
+    return this.service.getByBrickVersionId(brickVersionId);
   }
 
   @Get(':brickName/versions')

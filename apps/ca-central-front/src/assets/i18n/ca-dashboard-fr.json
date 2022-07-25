@@ -27,7 +27,7 @@
   "print_report": "Imprimer",
   "project_shared_groups" : "Partage",
   "hub": "Hub",
-  "ticket": "Ticket",
+  "support": "Support",
   "ongoing_projects": "Projets en cours",
   "teams": "Equipes",
   "running_labs": "Labs en marche",
@@ -37,5 +37,14 @@
   "task_of_the_day": "Tâche du jour",
   "my_activity": "Mon activité",
   "last_experiences": "Dernières expériences",
-  "no_experiences": "Aucune expériences"
+  "no_experiences": "Aucune expériences",
+  "technical_report": "Rapport technique",
+  "instance": "Instance",
+  "type": "Type",
+  "documentation": "Documentation",
+  "field_protocol_process": "Processus de {{field}}",
+  "protocol_process": "Processus du protocole",
+  "field_protocol_links": "Liens de {{field}}",
+  "protocol_links": "Lien du protocole",
+  "view_lab_config": "Voir la configuration du lab"
 }

@@ -1,0 +1,18 @@
+<div>
+  <h3 *ngIf="protocolName">{{'field_protocol_process' | translate:{field: protocolName} }}</h3>
+  <h3 *ngIf="!protocolName">{{'protocol_process' | translate}}</h3>
+  <div *ngFor="let iName of graph.nodes |  flObjectKeys">
+    <ca-experiment-technical-report-node [node]="graph.nodes[iName]"></ca-experiment-technical-report-node>
+  </div>
+</div>
+
+
+<div>
+  <h3 *ngIf="protocolName">{{'field_protocol_links' | translate:{field: protocolName} }}</h3>
+  <h3 *ngIf="!protocolName">{{'protocol_links' | translate}}</h3>
+  <div *ngFor="let link of graph.links" class="row">
+  <ca-experiment-technical-report-link [link]="link"
+                                       ></ca-experiment-technical-report-link>
+  </div>
+
+</div>

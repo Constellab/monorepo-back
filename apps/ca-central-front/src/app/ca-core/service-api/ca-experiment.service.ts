@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CaExperiment} from '../model/entities/ca-experiment.class';
 import {FlApiService} from '@monorepo/front-core-lib';
+import {CaTechnicalReport} from '../model/entities/ca-technical-report.class';
+import {CaLabConfig} from '../model/entities/ca-lab-config.class';
 
 @Injectable({
   providedIn: 'root'
@@ -31,5 +33,13 @@ export class CaExperimentService {
 
   public update(experiment: Partial<CaExperiment>): Observable<CaExperiment> {
     return this.apiService.put(`${this.route}`, experiment, CaExperiment);
+  }
+
+  public getExperimentTechnicalReport(experimentId: string): Observable<CaTechnicalReport>{
+    return this.apiService.get(`${this.route}/experiment-technical-report/${experimentId}`, CaTechnicalReport);
+  }
+
+  public getExperimentLabConfig(experimentId: string): Observable<CaLabConfig>{
+    return this.apiService.get(`${this.route}/experiment-lab-config/${experimentId}`, CaLabConfig);
   }
 }

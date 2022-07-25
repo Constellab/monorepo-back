@@ -16,7 +16,6 @@ import {
 } from './component/ca-lab-instance-form-dialog/ca-lab-instance-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CaServerInfoCoreModule} from '../ca-server-info-core/ca-server-info-core.module';
-import {CaLabConfigTableComponent} from './component/ca-lab-table-config/ca-lab-config-table.component';
 import {
   CaLabInstanceStatusDialogComponent
 } from './component/ca-lab-instance-status-dialog/ca-lab-instance-status-dialog.component';
@@ -37,11 +36,10 @@ import {CaLabInstanceCityComponent} from './component/ca-lab-instance-city/ca-la
     CaLabInstancesListComponent,
     CaLabInstanceTableComponent,
     CaLabInstanceFormDialogComponent,
-    CaLabConfigTableComponent,
     CaLabInstanceStatusDialogComponent,
     CaLabLoginButtonComponent,
     CaSelectLabInstanceCityComponent,
-    CaLabInstanceCityComponent
+    CaLabInstanceCityComponent,
   ],
   exports: [
     CaLabInstanceCardComponent,
@@ -50,7 +48,6 @@ import {CaLabInstanceCityComponent} from './component/ca-lab-instance-city/ca-la
     CaLabInstancesListComponent,
     CaLabInstanceTableComponent,
     CaLabInstanceFormDialogComponent,
-    CaLabConfigTableComponent,
     CaLabLoginButtonComponent,
     CaLabInstanceCityComponent
   ],

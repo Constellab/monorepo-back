@@ -91,4 +91,8 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
     // useful to sort with sub patch
     return brickVersions.sort((a, b) => b.version.getDif(a.version));
   }
+
+  public async getByBrickVersionId(brickVersionId: string): Promise<CnBrick> {
+    return (await this.brickVersionRepo.findOne(brickVersionId, {relations: ['brick']})).brick;
+  }
 }

@@ -9,6 +9,7 @@ import {CnLabConfigsService} from '../../cn-lab-configs/cn-lab-configs.service';
 import {BlAbstractService} from '@monorepo/back-core-lib';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {CnUsersService} from '../../cn-users/cn-users.service';
+import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 
 @Injectable()
 export class CnExperimentsService extends BlAbstractService<CnExperiment> {
@@ -98,4 +99,8 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     return (await this.getCurrentUserValidatedExperiment()).slice(0, 3);
   }
 
+  public async getExperimentLabConfig(experimentId: string): Promise<CnLabConfig>{
+    const labConf: CnLabConfig = (await this.repository.findOne(experimentId, {relations: ['labConfig']})).labConfig;
+    return this.labConfigService.findByIdAndCheck(labConf.id, {relations: ['brickVersions']});
+  }
 }

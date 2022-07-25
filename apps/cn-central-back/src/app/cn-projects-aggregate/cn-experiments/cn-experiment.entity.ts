@@ -1,5 +1,5 @@
 import {Column, Entity, ManyToMany, ManyToOne} from 'typeorm';
-import {Type} from 'class-transformer';
+import {Exclude, Type} from 'class-transformer';
 import {CnLabInstance} from '../../cn-lab-instances/cn-lab-instance.entity';
 import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnProject} from '../cn-projects/cn-project.entity';
@@ -54,6 +54,7 @@ export class CnExperiment extends CnBaseEntity {
   @ManyToMany(() => CnReport, report => report.experiments)
   reports: CnReport[];
 
+  @Exclude()
   @Column({ type: 'simple-json', nullable: false})
   protocol: CnExperimentProtocol;
 
