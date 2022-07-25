@@ -6,7 +6,7 @@ import {Type} from 'class-transformer';
 import {ClLuxonTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {CaUser} from './ca-user.class';
-import {CaProject} from './ca-project.class';
+import {CaProject, CaProjectObject} from './ca-project.class';
 
 export type CaExperimentStatus = 'DRAFT' | 'SUCCESS' | 'ERROR' | 'ARCHIVED';
 
@@ -22,7 +22,7 @@ export class CaExperimentStatusHistory extends CaStatusHistory<CaExperimentStatu
   status: FlStatus<CaExperimentStatus>;
 }
 
-export class CaExperiment extends CaBaseEntity {
+export class CaExperiment extends CaBaseEntity implements CaProjectObject{
 
   title: string;
 
@@ -38,11 +38,19 @@ export class CaExperiment extends CaBaseEntity {
 
   project?: CaProject;
 
+  isValidated: boolean;
+
   @Type(() => CaUser)
   validatedBy?: CaUser;
 
   @ClLuxonTransform()
   validatedAt?: DateTime;
+
+  @ClLuxonTransform()
+  lastSyncAt?: DateTime;
+
+  @Type(() => CaUser)
+  lastSyncBy?: CaUser;
 
   statusIsDraft(): boolean {
     return this.status.value === 'DRAFT';

@@ -6,6 +6,7 @@ import {CaCoreModule} from '../../../ca-core/ca-core.module';
 import {FormsModule} from '@angular/forms';
 import {RouterModule} from '@angular/router';
 import {CaExperimentCoreModule} from '../ca-experiment-core/ca-experiment-core.module';
+import {CaDashboardCoreModule} from '../ca-dashboard-core/ca-dashboard-core.module';
 
 
 @NgModule({
@@ -20,6 +21,7 @@ import {CaExperimentCoreModule} from '../ca-experiment-core/ca-experiment-core.m
 
     CaCoreModule,
     CaExperimentCoreModule,
+    CaDashboardCoreModule,
   ]
 })
 export class CaReportDetailPageModule {

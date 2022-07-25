@@ -130,7 +130,8 @@
   "team_remove_user_confirmation": "Are you sure you want to remove this user from the team ? He will not be able to access team's objects",
   "team_user_removed": "User removed from team",
   "team_projects": "Team's projects",
-  "validated_by": "Validated by",
-  "validated_on": "Validated on",
+  "validation_info": "Validated on {{date}} by {{user}}",
+  "location": "Location",
+  "last_sync_info": "Last sync {{date}} by {{user}}",
   "region": "Region"
 }

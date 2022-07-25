@@ -11,7 +11,7 @@ export class LabProject extends LabEntity {
 }
 
 /**
- * Interface representing a object inside a project that can be validated and synchronized with central
+ * Interface representing an object inside a project that can be validated and synchronized with central
  */
 export interface LabProjectObject extends FlEntity {
   project: {

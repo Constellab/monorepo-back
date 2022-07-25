@@ -40,21 +40,21 @@
       <!--   Content   -->
       <fl-article-container fxFlex="auto">
         <fl-article-left-side>
+
           <!--  Project  -->
-          <div *ngIf="report.project" class="separator">
-            {{'biox.project' | translate}} : <span class="g-text-light">{{report.project.title | translate}}</span>
-          </div>
+          <fl-text-icon *ngIf="report.project" class="separator">
+            <mat-icon flIcon="project"></mat-icon>
+            <fl-key-value>
+              <fl-key>{{'biox.project' | translate}}</fl-key>
+              {{report.project.title | translate}}
+            </fl-key-value>
+          </fl-text-icon>
 
           <!--  Validated info  -->
-          <p class="separator" *ngIf="report.validatedBy">
-            {{'validated_by' | translate}} {{report.validatedBy.fullname}}
-          </p>
-          <p *ngIf="report.validatedAt" [matTooltip]="report.validatedAt | flDate:'D HH:mm'">
-            {{'validated_on' | translate}} {{report.validatedAt | flDate}}
-          </p>
+          <lab-object-validation-info  class="separator" [object]="report"></lab-object-validation-info>
 
           <!--  Sync info  -->
-          <lab-object-sync-info class="separator" [object]="report"></lab-object-sync-info>
+          <lab-object-sync-info class="separator" [object]="report" *ngIf="report.isValidated"></lab-object-sync-info>
 
 
           <!--  Created by & Last modified bt  -->

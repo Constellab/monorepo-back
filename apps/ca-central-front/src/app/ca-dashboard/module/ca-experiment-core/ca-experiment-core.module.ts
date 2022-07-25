@@ -6,6 +6,7 @@ import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab
 import {RouterModule} from '@angular/router';
 import {CaExperimentInfoComponent} from './component/ca-experiment-info/ca-experiment-info.component';
 import {CaExperimentsListComponent} from './component/ca-experiments-list/ca-experiments-list.component';
+import {CaDashboardCoreModule} from '../ca-dashboard-core/ca-dashboard-core.module';
 import {
   CaExperimentTechnicalReportComponent
 } from './component/ca-experiment-technical-report/ca-experiment-technical-report.component';
@@ -56,6 +57,7 @@ import {TdTechnicalDocModule} from "@monorepo/technical-doc";
     CaCoreModule,
     CaLabCoreModule,
     TdTechnicalDocModule,
+    CaDashboardCoreModule,
   ]
 })
 export class CaExperimentCoreModule {

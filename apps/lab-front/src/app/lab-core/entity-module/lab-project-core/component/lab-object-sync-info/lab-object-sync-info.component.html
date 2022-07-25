@@ -1,14 +1,12 @@
 <!--  Sync info  -->
-<p class="separator" *ngIf="object.isSynced; else notSynced"
-   [matTooltip]="object.lastSyncAt | flDate:'DATETIME_MED'">
-  <fl-text-icon>
-    <mat-icon>sync</mat-icon>
-    {{'biox.last_sync_info' | translate: {
-    date: object.lastSyncAt | flFromNow,
-    user: object.lastSyncBy.fullname
-  } }}
-  </fl-text-icon>
-</p>
+<fl-text-icon *ngIf="object.isSynced; else notSynced"
+              [matTooltip]="object.lastSyncAt | flDate:'DATETIME_MED'">
+  <mat-icon>sync</mat-icon>
+  {{'biox.last_sync_info' | translate: {
+  date: object.lastSyncAt | flFromNow,
+  user: object.lastSyncBy.fullname
+} }}
+</fl-text-icon>
 <ng-template #notSynced>
   <fl-text-icon class="separator">
     <mat-icon>sync_disabled</mat-icon>

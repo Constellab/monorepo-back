@@ -1,17 +1,15 @@
-
 <!--  Validated info  -->
-<div *ngIf="experiment.validatedBy" class="validated-info">
-  <p *ngIf="experiment.validatedBy">
-    {{'validated_by' | translate}} {{experiment.validatedBy.fullname}}
-  </p>
-  <p *ngIf="experiment.validatedAt" [matTooltip]="experiment.validatedAt | flDate:'D HH:mm'">
-    {{'validated_on' | translate}} {{experiment.validatedAt | flDate}}
-  </p>
-</div>
+<ca-validated-object-info class="separator" [object]="experiment" *ngIf="experiment.isValidated"></ca-validated-object-info>
 
-<fl-text-editor *ngIf="experiment.description; else noDesc"
-                [ngModel]="experiment.description" [disabled]="true"
-                mode="JSON" [config]="textEditorConfig"></fl-text-editor>
-<ng-template #noDesc>
-  <fl-error-text [errorMessage]="'no_description' | translate"></fl-error-text>
-</ng-template>
+<!-- Sync ino -->
+<ca-sync-object-info class="separator" [object]="experiment"></ca-sync-object-info>
+
+<div>
+  <!-- Description-->
+  <fl-text-editor *ngIf="experiment.description; else noDesc"
+                  [ngModel]="experiment.description" [disabled]="true"
+                  mode="JSON" [config]="textEditorConfig"></fl-text-editor>
+  <ng-template #noDesc>
+    <fl-error-text [errorMessage]="'no_description' | translate"></fl-error-text>
+  </ng-template>
+</div>

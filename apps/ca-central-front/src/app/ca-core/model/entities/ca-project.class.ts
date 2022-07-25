@@ -3,6 +3,7 @@ import {CaStatusHistory} from './ca-status-history.class';
 import {DateTime} from 'luxon';
 import {ClLuxonDateTransform} from '@monorepo/core-lib';
 import {
+  FlEntity,
   FlEntityPaginatedDatasource,
   FlSanitizeTransform,
   FlStatus,
@@ -12,6 +13,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {Type} from 'class-transformer';
 import {SecurityContext} from '@angular/core';
+import {CaUser} from './ca-user.class';
 
 export type CaProjectStatus = 'ACTIVE' | 'IN_PROGRESS' | 'ARCHIVED';
 
@@ -49,3 +51,16 @@ export class CaProject extends CaBaseEntity {
 
 export type CaProjectDatasource = FlEntityPaginatedDatasource<CaProject>;
 
+
+/**
+ * Interface representing an object inside a project that can be validated and synchronized with central
+ */
+export interface CaProjectObject extends FlEntity {
+
+  isValidated: boolean;
+  validatedBy?: CaUser;
+  validatedAt?: DateTime;
+
+  lastSyncAt?: DateTime;
+  lastSyncBy?: CaUser;
+}

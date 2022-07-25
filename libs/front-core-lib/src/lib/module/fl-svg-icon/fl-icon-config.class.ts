@@ -59,4 +59,5 @@ export const flIconsDefault: FlIcon[] = [
   {name: 'organization', matIconName: 'business'},
   {name: 'group', matIconName: 'group'},
   {name: 'transformer', matIconName: 'move_down'},
+  {name: 'validated', matIconName: 'verified'},
 ]

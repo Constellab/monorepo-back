@@ -10,6 +10,9 @@ import {
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabSyncObjectButtonComponent} from './component/lab-sync-object-button/lab-sync-object-button.component';
 import {LabObjectSyncInfoComponent} from './component/lab-object-sync-info/lab-object-sync-info.component';
+import {
+  LabObjectValidationInfoComponent
+} from './component/lab-object-validation-info/lab-object-validation-info.component';
 
 
 @NgModule({
@@ -18,12 +21,14 @@ import {LabObjectSyncInfoComponent} from './component/lab-object-sync-info/lab-o
     LabValidateObjectDialogComponent,
     LabSyncObjectButtonComponent,
     LabObjectSyncInfoComponent,
+    LabObjectValidationInfoComponent,
   ],
   exports: [
     LabProjectSelectOptionsComponent,
     LabValidateObjectDialogComponent,
     LabSyncObjectButtonComponent,
     LabObjectSyncInfoComponent,
+    LabObjectValidationInfoComponent,
   ],
   imports: [
     CommonModule,

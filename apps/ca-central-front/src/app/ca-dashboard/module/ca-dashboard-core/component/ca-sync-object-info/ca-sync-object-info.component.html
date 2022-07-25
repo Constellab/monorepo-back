@@ -1,0 +1,8 @@
+<!--  Sync info  -->
+<fl-text-icon [matTooltip]="object.lastSyncAt | flDate:'DATETIME_MED'">
+  <mat-icon>sync</mat-icon>
+  {{'last_sync_info' | translate: {
+  date: object.lastSyncAt | flFromNow,
+  user: object.lastSyncBy.fullname
+} }}
+</fl-text-icon>

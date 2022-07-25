@@ -13,25 +13,28 @@
     </div>
 
     <!--  Project  -->
-    <div *ngIf="experiment.project" class="separator">
-      {{'biox.project' | translate}} : <span class="g-text-light">{{experiment.project.title | translate}}</span>
-    </div>
+    <fl-text-icon *ngIf="experiment.project" class="separator">
+      <mat-icon flIcon="project"></mat-icon>
+      <fl-key-value>
+        <fl-key>{{'biox.project' | translate}}</fl-key>
+        {{experiment.project.title | translate}}
+      </fl-key-value>
+    </fl-text-icon>
 
     <!--  Type  -->
-    <div class="separator">
-      {{'biox.experiment_type' | translate}} : <span class="g-text-light">{{experiment.type.name | translate}}</span>
-    </div>
+    <fl-text-icon class="separator">
+      <mat-icon flIcon="experiment"></mat-icon>
+      <fl-key-value>
+        <fl-key>{{'biox.experiment_type' | translate}}</fl-key>
+        {{experiment.type.name | translate}}
+      </fl-key-value>
+    </fl-text-icon>
 
     <!--  Validated info  -->
-    <p class="separator" *ngIf="experiment.validatedBy">
-      {{'validated_by' | translate}} {{experiment.validatedBy.fullname}}
-    </p>
-    <p *ngIf="experiment.validatedAt" [matTooltip]="experiment.validatedAt | flDate:'D HH:mm'">
-      {{'validated_on' | translate}} {{experiment.validatedAt | flDate}}
-    </p>
+    <lab-object-validation-info class="separator" [object]="experiment"></lab-object-validation-info>
 
     <!--  Sync info  -->
-    <lab-object-sync-info class="separator" [object]="experiment"></lab-object-sync-info>
+    <lab-object-sync-info class="separator" [object]="experiment" *ngIf="experiment.isValidated"></lab-object-sync-info>
 
     <!--  Created by & Last modified bt  -->
     <p class="g-text-small g-text-light separator">
