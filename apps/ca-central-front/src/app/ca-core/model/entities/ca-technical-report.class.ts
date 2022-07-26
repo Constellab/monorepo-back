@@ -36,7 +36,8 @@ export interface CaTechnicalReportNode{
 
 export interface CaTechnicalReportConfig{
   specs: any;
-  data:any;
+
+  data: any;
 }
 
 export interface CaTechnicalReportLink{
