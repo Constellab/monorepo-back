@@ -37,7 +37,7 @@
     <mat-cell *matCellDef="let experiment">
       <mat-icon *ngIf="experiment.isValidated"
                 [matTooltip]="'biox.experiment_validated' | translate"
-                class="verified-icon">verified
+                class="verified-icon" flIcon="validated">
       </mat-icon>
 
       <fl-status-chip [status]="experiment.status" mode="iconText">

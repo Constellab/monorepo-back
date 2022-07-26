@@ -20,7 +20,8 @@
       <div *ngFor="let experiment of experiments; let index = index" fxLayout="row" fxLayoutAlign="start center"
            class="g-full">
         <fl-text-icon fxFlex="auto">
-          <mat-icon [matTooltip]="'biox.experiment_validated' | translate" *ngIf="experiment.isValidated">verified
+          <mat-icon [matTooltip]="'biox.experiment_validated' | translate" *ngIf="experiment.isValidated"
+                    flIcon="validated">
           </mat-icon>
           <a [routerLink]="experiment | labDetailRoute" class="g-text-link">
             {{experiment.title}}

@@ -2,8 +2,8 @@
 
   <fl-text-icon fxFlex="auto">
     <mat-icon *ngIf="experiment.isValidated" class="g-icon-big"
-              [matTooltip]="'biox.experiment_validated' | translate">
-      verified
+              [matTooltip]="'biox.experiment_validated' | translate"
+              flIcon="validated">
     </mat-icon>
     <h1>{{experiment.title}}</h1>
   </fl-text-icon>
@@ -31,7 +31,7 @@
       </button>
 
       <button mat-menu-item type="button" (click)="openValidationDialog()">
-        <mat-icon>verified</mat-icon>
+        <mat-icon flIcon="validated"></mat-icon>
         {{'biox.validate_experiment' | translate}}
       </button>
 

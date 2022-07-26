@@ -5,7 +5,8 @@
 
       <div fxLayout="row" fxLayoutAlign="start center">
         <mat-icon [matTooltip]="'biox.report_validated' | translate"
-                  class="g-icon-big verified-icon" *ngIf="report.isValidated">verified
+                  class="g-icon-big verified-icon" *ngIf="report.isValidated"
+                  flIcon="validated">
         </mat-icon>
         <h2 fxFlex="auto">{{report.title}}</h2>
 
@@ -21,7 +22,7 @@
 
           <button mat-icon-button type="button" [matTooltip]="'biox.validate_report' | translate"
                   (click)="validate()">
-            <mat-icon>verified</mat-icon>
+            <mat-icon flIcon="validated"></mat-icon>
           </button>
 
           <button mat-icon-button type="button" [matTooltip]="'biox.print_report' | translate"
