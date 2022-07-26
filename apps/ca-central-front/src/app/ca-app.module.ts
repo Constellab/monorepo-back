@@ -38,6 +38,8 @@ import {CaReportContentViewBlot} from './ca-dashboard/module/ca-report-core/mode
 import {
   CaReportContentViewComponent
 } from './ca-dashboard/module/ca-report-core/component/ca-report-content-view/ca-report-content-view.component';
+import {TdTechnicalDocModule} from '@monorepo/technical-doc';
+import {CaTdServiceConfig} from './ca-core/model/config/ca-td-service.config';
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -95,6 +97,8 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
         }]
     }),
     RvResourceViewModule.forRoot({availableViews: rvDefaultViewTypeInfos}),
+
+    TdTechnicalDocModule.forRoot(CaTdServiceConfig),
 
 
     ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production}),

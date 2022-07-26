@@ -18,7 +18,16 @@ import {
 import {
   CaExperimentTechnicalReportLinkComponent
 } from './component/ca-experiment-technical-report-link/ca-experiment-technical-report-link.component';
-import { CaExperimentLabConfigDialogComponent } from './component/ca-experiment-lab-config-dialog/ca-experiment-lab-config-dialog.component';
+import {
+  CaExperimentLabConfigDialogComponent
+} from './component/ca-experiment-lab-config-dialog/ca-experiment-lab-config-dialog.component';
+import {
+  CaExperimentTechnicalReportIntOutComponent
+} from './component/ca-experiment-technical-report-int-out/ca-experiment-technical-report-int-out.component';
+import {
+  CaExperimentTechnicalReportProcessDocDialogComponent
+} from './component/ca-experiment-technical-report-process-doc-dialog/ca-experiment-technical-report-process-doc-dialog.component';
+import {TdTechnicalDocModule} from "@monorepo/technical-doc";
 
 
 @NgModule({
@@ -30,6 +39,8 @@ import { CaExperimentLabConfigDialogComponent } from './component/ca-experiment-
     CaExperimentTechnicalReportGraphComponent,
     CaExperimentTechnicalReportLinkComponent,
     CaExperimentLabConfigDialogComponent,
+    CaExperimentTechnicalReportIntOutComponent,
+    CaExperimentTechnicalReportProcessDocDialogComponent,
   ],
   exports: [
     CaExperimentInfoComponent,
@@ -44,6 +55,7 @@ import { CaExperimentLabConfigDialogComponent } from './component/ca-experiment-
 
     CaCoreModule,
     CaLabCoreModule,
+    TdTechnicalDocModule,
   ]
 })
 export class CaExperimentCoreModule {

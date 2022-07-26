@@ -212,7 +212,7 @@ export class HnBrickService {
       const brick: HnBrick = await this.findByName(linkArray[1]);
       const majorString: string = linkArray[2].substring(1);
       let major: number;
-      if (majorString === 'atest') {
+      if (majorString === 'latest') {
         major = (await this.brickMajorVersionService.getLatestBrickVersion(linkArray[1])).version.major;
       } else {
         major = +majorString;

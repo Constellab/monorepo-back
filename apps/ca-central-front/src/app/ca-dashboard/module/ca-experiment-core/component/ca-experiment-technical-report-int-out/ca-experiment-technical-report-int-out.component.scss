@@ -1,0 +1,18 @@
+.link{
+  display: flex;
+  flex-direction: row;
+}
+
+.node-port{
+  display: flex;
+  flex-direction: column;
+  width: 10em;
+}
+
+.icon-box{
+  vertical-align: middle;
+}
+
+.icon{
+  margin: 0 0.5em;
+}

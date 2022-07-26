@@ -1,7 +1,15 @@
 <div class="node">
   <div class="node-main">
     <div class="node-l">
-      <h4>{{node.human_name}}</h4>
+      <h4>{{node.human_name}}
+        <button type="button" (click)="openTechDocDialog()" mat-stroked-button
+                class="button-more-info g-button-small g-text-light">
+          <fl-text-icon [iconPosition]="'end'">
+            {{'documentation' | translate}}
+            <mat-icon>info</mat-icon>
+          </fl-text-icon>
+        </button>
+      </h4>
       <fl-key-value>
         <fl-key>{{'instance' | translate}}</fl-key>
         {{node.instance_name}}
@@ -21,23 +29,16 @@
     </div>
     <div class="node-r">
       <fl-key-value *ngIf="node.config | flIsNotEmpty">
-        <fl-key>{{'configuration' | translate}}</fl-key>
+        <fl-key>{{'configuration_data' | translate}}</fl-key>
         <div class="node-conf">
-          <fl-pretty-json [object]="node.config" [dense]="true" ></fl-pretty-json>
+          <fl-pretty-json [object]="node.config" [dense]="true"></fl-pretty-json>
         </div>
       </fl-key-value>
     </div>
   </div>
 
   <div class="child-div" *ngIf="node.graph">
-    <ca-experiment-technical-report-graph [graph]="node.graph" [protocolName]="node.human_name"></ca-experiment-technical-report-graph>
-  </div>
-
-  <div class="node-l link-hub">
-    <a [href]="getHubLink()" target="_blank" mat-stroked-button color="primary" class="button-more-info g-button-small">
-      {{'documentation' | translate}}<mat-icon>arrow_forward_ios</mat-icon>
-    </a>
+    <ca-experiment-technical-report-graph [graph]="node.graph"
+                                          [protocolName]="node.human_name"></ca-experiment-technical-report-graph>
   </div>
 </div>
-
-<mat-divider class="node-divider"></mat-divider>

@@ -1,4 +1,12 @@
 
+h4{
+  display: inline-flex;
+}
+
+h4 > button{
+  margin-left: 1.5em;
+}
+
 .node-main{
   width: 100%;
   display: flex;
@@ -26,17 +34,8 @@
 }
 
 .child-div{
-  padding-top: 1em;
+  margin-top: 0.5em;
   margin-left: 1.5em;
   padding-left: 1.5em;
   border-left: var(--grey-low-contrast) 2px solid;
-}
-
-.node-divider{
-  margin-top: 0.5em;
-  margin-bottom: 1em;
-}
-
-.link-hub{
-  margin-top: 1em;
 }

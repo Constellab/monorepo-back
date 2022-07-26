@@ -12,6 +12,10 @@ export interface CaTechnicalReportGraph{
   nodes: Record<string, CaTechnicalReportNode>;
 
   links: CaTechnicalReportLink[];
+
+  interfaces: Record<string, CaTechnicalReportIntOut>;
+
+  outerfaces: Record<string, CaTechnicalReportIntOut>;
 }
 
 export interface CaTechnicalReportNode{
@@ -30,10 +34,19 @@ export interface CaTechnicalReportNode{
   graph?: CaTechnicalReportGraph;
 }
 
+// export interface CaTechnicalReportConfig{
+//   specs: any;
+//   data:any;
+// }
+
 export interface CaTechnicalReportLink{
   from: CaTechnicalReportLinkNode;
 
   to: CaTechnicalReportLinkNode;
+}
+
+export interface CaTechnicalReportIntOut extends CaTechnicalReportLink{
+  name: string;
 }
 
 export interface CaTechnicalReportLinkNode{

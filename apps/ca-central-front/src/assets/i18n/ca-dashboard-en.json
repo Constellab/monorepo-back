@@ -46,5 +46,10 @@
   "protocol_process": "Protocol's process",
   "field_protocol_links": "{{field}}'s links",
   "protocol_links": "Protocol's links",
-  "view_lab_config": "View lab config"
+  "field_protocol_interfaces": "{{field}}'s interfaces",
+  "protocol_interfaces": "Protocol's interfaces",
+  "field_protocol_outerfaces": "{{field}}'s outerfaces",
+  "protocol_outerfaces": "Protocol's outerfaces",
+  "view_lab_config": "View lab config",
+  "configuration_data": "Configuration's data"
 }
