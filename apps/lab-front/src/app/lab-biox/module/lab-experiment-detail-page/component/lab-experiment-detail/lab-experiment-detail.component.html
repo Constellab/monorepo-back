@@ -31,10 +31,11 @@
     </fl-text-icon>
 
     <!--  Validated info  -->
-    <lab-object-validation-info class="separator" [object]="experiment"></lab-object-validation-info>
+    <lab-object-validation-info class="separator" [object]="experiment"
+                                *ngIf="experiment.isValidated"></lab-object-validation-info>
 
     <!--  Sync info  -->
-    <lab-object-sync-info class="separator" [object]="experiment" *ngIf="experiment.isValidated"></lab-object-sync-info>
+    <lab-object-sync-info class="separator" [object]="experiment" *ngIf="experiment.isSynced"></lab-object-sync-info>
 
     <!--  Created by & Last modified bt  -->
     <p class="g-text-small g-text-light separator">
