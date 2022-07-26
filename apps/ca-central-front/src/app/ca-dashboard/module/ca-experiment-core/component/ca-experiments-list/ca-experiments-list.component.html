@@ -13,6 +13,8 @@
           <ng-container *ngFor="let experiment of experiments">
             <a mat-list-item class="g-full g-full-height"
                [routerLink]=" getExperimentRoute(experiment)">
+              <mat-icon mat-list-icon flIcon="validated" [matTooltip]="'experiment_validated' | translate"
+                        class="validated-icon" *ngIf="experiment.isValidated"></mat-icon>
               {{ experiment.title }}
             </a>
             <mat-divider></mat-divider>

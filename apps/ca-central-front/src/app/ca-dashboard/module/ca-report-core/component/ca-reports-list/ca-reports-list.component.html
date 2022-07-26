@@ -12,6 +12,8 @@
         <mat-nav-list>
           <ng-container *ngFor="let report of reports">
             <a mat-list-item class="g-full g-full-height" [routerLink]="getReportLink(report)">
+              <mat-icon mat-list-icon flIcon="validated" [matTooltip]="'report_validated' | translate"
+                        class="validated-icon" *ngIf="report.isValidated"></mat-icon>
               {{ report.title }}
             </a>
             <mat-divider></mat-divider>

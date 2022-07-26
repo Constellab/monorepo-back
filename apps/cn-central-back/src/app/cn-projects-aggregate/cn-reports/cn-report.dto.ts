@@ -36,11 +36,13 @@ export class CnReportDTO extends CnBaseEntityDTO {
 
   title: string;
   projectId: string;
+  isValidated: boolean;
 
   copyEntity(entity: CnReport): this {
     super.copyEntity(entity);
     this.title = entity.title;
     this.projectId = entity.projectId;
+    this.isValidated = entity.isValidated;
     return this;
   }
 }

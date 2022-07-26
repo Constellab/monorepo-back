@@ -49,5 +49,7 @@
   "field_protocol_outerfaces": "{{field}}'s outerfaces",
   "protocol_outerfaces": "Protocol's outerfaces",
   "view_lab_config": "View lab config",
-  "configuration_data": "Configuration's data"
+  "configuration_data": "Configuration's data",
+  "experiment_validated": "Validated experiment",
+  "report_validated": "Validated report"
 }
