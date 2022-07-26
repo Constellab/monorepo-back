@@ -112,12 +112,9 @@
   border-width: 2px !important;
 }
 
-// resize the icons used in a button to be smaller
+// add margin to the button's icons
 .mat-stroked-button, .mat-raised-button, .mat-button, .mat-flat-button {
   .material-icons {
-    font-size: 18px;
-    height: 19px; // 1px more than font to center
-    width: 19px;
     margin-right: 5px;
     margin-left: 5px;
   }
@@ -149,6 +146,10 @@
   .material-icons {
     margin-right: 2px;
     margin-left: 2px;
+    margin-top: -2px;
+    font-size: 19px;
+    height: 19px;
+    width: 19px;
   }
 }
 
