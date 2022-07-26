@@ -29,15 +29,15 @@ export interface CaTechnicalReportNode{
 
   short_description: string;
 
-  config: any;
+  config: CaTechnicalReportConfig;
 
   graph?: CaTechnicalReportGraph;
 }
 
-// export interface CaTechnicalReportConfig{
-//   specs: any;
-//   data:any;
-// }
+export interface CaTechnicalReportConfig{
+  specs: any;
+  data:any;
+}
 
 export interface CaTechnicalReportLink{
   from: CaTechnicalReportLinkNode;

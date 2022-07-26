@@ -28,10 +28,10 @@
       </fl-key-value>
     </div>
     <div class="node-r">
-      <fl-key-value *ngIf="node.config | flIsNotEmpty">
+      <fl-key-value *ngIf="node.config & node.config.data | flIsNotEmpty">
         <fl-key>{{'configuration_data' | translate}}</fl-key>
         <div class="node-conf">
-          <fl-pretty-json [object]="node.config" [dense]="true"></fl-pretty-json>
+          <fl-pretty-json [object]="node.config.data" [dense]="true"></fl-pretty-json>
         </div>
       </fl-key-value>
     </div>
