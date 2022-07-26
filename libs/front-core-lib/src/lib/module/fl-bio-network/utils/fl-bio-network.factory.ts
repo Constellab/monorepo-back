@@ -138,16 +138,7 @@ export class FlBioNetworkFactory {
 
         if (metabolite.is_cofactor) {
 
-          // check if the cofactor is in the cluster of the reaction
-          const metaboliteClusters: FlBioNetworkClusterInfo[] = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
-          const metaboliteCluster: FlBioNetworkClusterInfo = metaboliteClusters.find(c => c.clusterId === reactionNode.cluster.clusterId);
-
-          // if not in the cluster, skip
-          if(metaboliteCluster == null){
-            continue;
-          }
-
-          // if the cofactor is in the cluster, create the node
+          // create the cofactor node (ignore its cluster)
           metaboliteNode = this.createCofactor(metabolite);
           reactionNode.addChildNode(metaboliteNode);
         } else {

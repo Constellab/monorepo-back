@@ -41,6 +41,9 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
     // to this reaction with the level or lower
     if (levels.length >= 2) {
       return levels[1];
+      // if there is only one metabolite linked, return the level of this metabolite
+    }else if(levels.length === 1){
+      return levels[0];
     }
 
     return FlBioNetworkMetaboliteLevel.MINOR;

@@ -23,7 +23,9 @@ export class FlBioNetworkNodeCofactor extends FlBioNetworkNode {
 
   isInCluster(id: string): boolean {
     // check if any connected reaction is in the cluster
-    return this.getConnectedNodes().filter(n => n instanceof FlBioNetworkNodeReaction).some(n => n.isInCluster(id));
+    // return this.getConnectedNodes().filter(n => n instanceof FlBioNetworkNodeReaction).some(n => n.isInCluster(id));
+    // the cofactors do not have a cluster, so we return false
+    return false;
   }
 
 
