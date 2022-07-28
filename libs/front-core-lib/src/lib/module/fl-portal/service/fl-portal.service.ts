@@ -134,7 +134,7 @@ export class FlPortalService {
    * This portal is not linked to a host element
    */
   public configureAbsolutePortalFromMouseEvent(mouseEvent: MouseEvent, configuration: FlOverlayConfig = {}): FlPortalConfig {
-    return this.configureAbsolutePortal({top: mouseEvent.pageY + 'px', left: mouseEvent.pageX + 'px'}, configuration);
+    return this.configureAbsolutePortal({top: mouseEvent.clientY + 'px', left: mouseEvent.clientX + 'px'}, configuration);
   }
 
   /**
