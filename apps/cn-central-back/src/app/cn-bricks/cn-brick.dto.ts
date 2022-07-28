@@ -3,7 +3,6 @@ import {CnRepoType, CnVersionState, CnVersionType} from './cn-brick-version.enti
 export interface CnBrickVersionDTO {
   name: string;
   version: string;
-  isHidden: boolean,
 }
 
 /**

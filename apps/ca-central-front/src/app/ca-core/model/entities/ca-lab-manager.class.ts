@@ -78,7 +78,6 @@ export class CaLabManagerStatus {
 export class CaBrickVersionDTO {
   name: string;
   version: string;
-  isHidden: boolean;
 }
 
 export class CaLabInstanceConfig {

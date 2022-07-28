@@ -140,7 +140,7 @@ export class CnLabManagerService {
       labManagerConfig.bricks.push({
         name: brickVersion.brick.name,
         version: brickVersion.version.toString(),
-        isHidden: brick.isHidden,
+        isHidden: true, // force all bricks to be hidden
         repo: brickVersion.getRepo(),
         repoType: brickVersion.repoType,
         technicalInfo: brickVersion.technicalInfo
@@ -161,7 +161,6 @@ export class CnLabManagerService {
       labInstanceConfig.brickVersions.push({
         name: brick.name,
         version: brick.version,
-        isHidden: brick.isHidden
       });
     }
 

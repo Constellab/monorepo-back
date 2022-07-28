@@ -64,7 +64,6 @@
   "lab_instance_config_updated": "Configuration sauvegardée. Il faut redémarrer le lab pour que les changements soient appliqués",
   "lab_instance_add_brick": "Ajouter une brique",
   "lab_instance_update_brick": "Modifier une brique",
-  "lab_instance_brick_hidden": "Cacher la brique",
   "lab_instance_brick_already_exists": "La brique {{brickName}} existe déjà dans le lab",
   "brick": "Brique",
   "brick_version": "Version de la brique",

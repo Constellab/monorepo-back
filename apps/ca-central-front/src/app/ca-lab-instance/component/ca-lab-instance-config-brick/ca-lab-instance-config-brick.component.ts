@@ -31,7 +31,6 @@ export class CaLabInstanceConfigBrickComponent implements OnInit {
     this.formGp = new FormBuilder().group({
       name: [null, Validators.required],
       version: [null, Validators.required],
-      isHidden: [false]
     });
 
     if (this.brickVersionDTO) {

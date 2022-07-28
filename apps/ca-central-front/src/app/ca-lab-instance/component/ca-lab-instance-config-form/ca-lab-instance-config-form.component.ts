@@ -66,7 +66,6 @@ export class CaLabInstanceConfigFormComponent implements OnInit {
     // if this is an update
     if (brick) {
       brick.version = brickVersionDTO.version;
-      brick.isHidden = brickVersionDTO.isHidden;
     } else {
       this.labConfig.brickVersions.push(brickVersionDTO);
     }

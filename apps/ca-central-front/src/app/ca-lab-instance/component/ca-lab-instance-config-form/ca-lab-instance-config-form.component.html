@@ -14,8 +14,6 @@
     <mat-list class="g-mat-list-dense">
       <mat-list-item *ngFor="let brickVersion of labConfig.brickVersions">
         <div matLine>{{brickVersion.name}} : {{brickVersion.version}}</div>
-        <p matLine class="g-text-small">{{'lab_instance_brick_hidden' | translate}}
-          : {{brickVersion.isHidden | flYesNo}}</p>
 
         <!-- Info button -->
         <button mat-icon-button type="button" class="g-button-icon-small"
