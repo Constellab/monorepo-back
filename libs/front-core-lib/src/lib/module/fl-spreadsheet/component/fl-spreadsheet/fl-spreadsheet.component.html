@@ -1,6 +1,7 @@
 <mat-drawer-container class="g-full g-full-height" [hasBackdrop]="false">
 
-  <mat-drawer #drawer mode="over" position="end">
+  <!-- Drawer with auto focus to false because this scroll the element when use in report -->
+  <mat-drawer #drawer mode="over" position="end" [autoFocus]="false">
     <fl-spreadsheet-drawer></fl-spreadsheet-drawer>
   </mat-drawer>
 

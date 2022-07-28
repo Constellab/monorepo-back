@@ -17,7 +17,8 @@
 
   </mat-drawer-content>
 
-  <mat-drawer mode="over" position="end" #sidenav>
+  <!-- Drawer with auto focus to false because this scroll the element when use in report -->
+  <mat-drawer mode="over" position="end" #sidenav  [autoFocus]="false">
     <fl-bio-network-drawer></fl-bio-network-drawer>
   </mat-drawer>
 </mat-drawer-container>
