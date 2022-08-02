@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {
   LabResourceViewSpec,
-  LabResourceViewSpecsByType,
   LabResourceViewSpecWithConfig
 } from '../../../../model/entities/resource/lab-resource-view.entity';
 import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
@@ -10,6 +9,7 @@ import {
   LabConfigureResourceViewInput,
 } from '../lab-configure-resource-view/lab-configure-resource-view.component';
 import {LabResourceViewState} from '../../state/lab-resource-view.state';
+import {LabResourceViewSpecsByType} from '../../../../model/entities/resource/lab-resource-view-type.class';
 
 /**
  * List of view specs class by type and possibility to select a view specs

@@ -3,13 +3,13 @@ import {LabResourceService} from '../../../entity-service/lab-resource.service';
 import {ClCachedObservable} from '@monorepo/core-lib';
 import {
   LabResourceView,
-  LabResourceViewSpecsByType,
   LabResourceViewSpecWithConfig
 } from '../../../model/entities/resource/lab-resource-view.entity';
 import {LabResourceDetailTabsState} from './lab-resource-detail-tabs-state';
 import {firstValueFrom, Observable} from 'rxjs';
 import {LabResource} from '../../../model/entities/resource/lab-resource.entity';
 import {LabTag} from '../../../model/entities/lab-tag.entity';
+import {LabResourceViewSpecsByType} from '../../../model/entities/resource/lab-resource-view-type.class';
 
 /**
  * State for the resource with view component. it is for one resource and one view.

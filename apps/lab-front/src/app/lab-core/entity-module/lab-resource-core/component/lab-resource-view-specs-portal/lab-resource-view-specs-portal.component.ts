@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {LabResourceViewSpecsByType} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {FlOverlayRef} from '@monorepo/front-core-lib';
 import {LabResourceViewState} from '../../state/lab-resource-view.state';
+import {LabResourceViewSpecsByType} from '../../../../model/entities/resource/lab-resource-view-type.class';
 
 /**
  * Portal to list the view specs of a resource and possibility to select one

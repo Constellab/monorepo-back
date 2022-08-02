@@ -12,12 +12,7 @@ import {LabResource} from '../model/entities/resource/lab-resource.entity';
 import {clDeserializeRecordWrapper, ClPageI} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
 import {LabTypeEntity} from '../model/entities/lab-type/lab-type.entity';
-import {
-  labGroupResourceViewSpecsByType,
-  LabResourceView,
-  LabResourceViewSpec,
-  LabResourceViewSpecsByType
-} from '../model/entities/resource/lab-resource-view.entity';
+import {LabResourceView, LabResourceViewSpec,} from '../model/entities/resource/lab-resource-view.entity';
 import {
   LabResourceSearch,
   LabResourceSearchFields
@@ -29,6 +24,10 @@ import {LabTypeService} from './lab-type.service';
 import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
 import {LabTag} from '../model/entities/lab-tag.entity';
 import {RvTransformerParams} from '@monorepo/resource-view';
+import {
+  labGroupResourceViewSpecsByType,
+  LabResourceViewSpecsByType
+} from '../model/entities/resource/lab-resource-view-type.class';
 
 
 @Injectable({
