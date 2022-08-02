@@ -4,6 +4,7 @@
   "include": [],
   "compilerOptions": {
     "module": "commonjs",
+    "resolveJsonModule": true,
     "declaration": true,
     "removeComments": true,
     "allowSyntheticDefaultImports": true,

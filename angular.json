@@ -13,6 +13,7 @@
     "hn-hub": "apps/hn-hub",
     "lab-front": "apps/lab-front",
     "lab-front-e2e": "apps/lab-front-e2e",
+    "protocol": "libs/protocol",
     "resource-view": "libs/resource-view",
     "technical-doc": "libs/technical-doc"
   }

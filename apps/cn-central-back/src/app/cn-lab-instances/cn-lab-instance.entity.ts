@@ -78,7 +78,7 @@ export class CnLabInstance extends CnEntityWithStatus<CnLabInstanceStatusHistory
     {nullable: false, eager: true})
   serverInfo: CnServerInfo;
 
-  @ManyToOne(()=> CnCity, {onDelete: 'CASCADE', eager: true})
+  @ManyToOne(()=> CnCity, {onDelete: 'RESTRICT', eager: true})
   city: CnCity;
 
   // generate the apiKey

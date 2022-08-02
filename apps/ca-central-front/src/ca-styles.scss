@@ -13,11 +13,18 @@
 // Import quill style
 @import "libs/front-core-lib/src/style/quill";
 
-// Import markdown style
-@import "libs/technical-doc/src/style/markdown";
-
 // Style to highlight code in text editor
 @import 'highlight.js/styles/monokai-sublime.css';
+
+
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
 
 .g-page, .g-page-fixed {
   padding: 2em 2em 0 2em;

@@ -5,6 +5,7 @@ import {HnTask} from './hn-task.entity';
 import {HnTechnicalFolder} from '../technical-folder/hn-technical-folder.entity';
 import {HnImportTaskDTO} from '../brick/hn-brick.dto';
 import {HnGeneratedDocEntity} from '../core/model/entities/hn-generated-doc.entity';
+import * as TASKS_OF_THE_DAY from '../../assets/data/tasks-of-the-day.json';
 
 @Injectable()
 export class HnTaskService {
@@ -15,9 +16,10 @@ export class HnTaskService {
     @InjectRepository(HnTask)
     private readonly tasksRepository: Repository<HnTask>
   ) {
-    // eslint-disable-next-line max-len
-    this.tasksOfTheDay = JSON.parse('[{"brickName": "gws_core","uniqueName": "TableColumnTagUnfold"}, { "brickName": "gws_core", "uniqueName": "TableColumnTagsSelector" }, {"brickName": "gws_core","uniqueName": "TableRowTagGrouper"},{"brickName": "gws_core","uniqueName": "TableRowsSelector"},{"brickName": "gws_core","uniqueName": "TableColumnMassOperations"},{"brickName": "gws_core","uniqueName": "TableAggregatorFilter"},{"brickName": "gws_core",  "uniqueName": "TableRowsDeleter"},{"brickName": "gws_core","uniqueName": "TableColumnsSelector" }, {"brickName": "gws_core","uniqueName": "TableRowAnnotator" }, {"brickName": "gws_core", "uniqueName": "TableColumnOperations"},{"brickName": "gws_core","uniqueName": "TableColumnTagsDeleter"}, {  "brickName": "gws_core","uniqueName": "TableDataFilter"},{"brickName": "gws_core","uniqueName": "TableRowTagUnfold"}, { "brickName": "gws_core","uniqueName": "TableScaler" }, { "brickName": "gws_core", "uniqueName": "TableColumnsDeleter" }, {"brickName": "gws_core","uniqueName": "TableRowTagsDeleter"},{"brickName": "gws_core","uniqueName": "TableRowTagsSelector"},{"brickName": "gws_core","uniqueName": "TableColumnTagGrouper"}, { "brickName": "gws_core", "uniqueName": "TableColumnAnnotator"},{"brickName": "gws_core","uniqueName": "TableTransposer"}]')
-
+    this.tasksOfTheDay = TASKS_OF_THE_DAY
+      .map(value => ({ value, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ value }) => value as HnTask);
   }
 
   async createTechnicalDocTasks(technicalFolder: HnTechnicalFolder, tasks: HnImportTaskDTO[]): Promise<boolean> {
@@ -114,13 +116,22 @@ export class HnTaskService {
   //Get a task in the array tasksOfTheDay according to the day number
   async getTaskOfTheDay(): Promise<HnTask>{
     const dayNumber: number = Math.floor(new Date().getTime() / (24 * 60 * 60 * 1000));
+    let i: number = dayNumber % this.tasksOfTheDay.length;
+    let task: HnTask = await this.findTaskOfTheDay(this.tasksOfTheDay[i].uniqueName, this.tasksOfTheDay[i].brickName);
+    while (task == null){
+      i = i + 1;
+      task = await this.findTaskOfTheDay(this.tasksOfTheDay[i].uniqueName, this.tasksOfTheDay[i].brickName);
+    }
+    return task;
+  }
 
-    const index: number = dayNumber % this.tasksOfTheDay.length;
+  async findTaskOfTheDay(uniqueName: string, brickName: string): Promise<HnTask>{
     return this.tasksRepository.findOne({
-      where: {
-        uniqueName: this.tasksOfTheDay[index].uniqueName,
-        brickName: this.tasksOfTheDay[index].brickName
+      where:{
+        uniqueName: uniqueName,
+        brickName: brickName
       }
     });
   }
+
 }

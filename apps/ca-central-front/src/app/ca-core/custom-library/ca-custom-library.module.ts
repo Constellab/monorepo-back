@@ -29,6 +29,7 @@ import {
   FlUserModule
 } from '@monorepo/front-core-lib';
 import {RvResourceViewModule} from '@monorepo/resource-view';
+import {PrProtocolModule} from '@monorepo/protocol';
 
 /**
  * Regrouped all the needed import from library
@@ -70,6 +71,7 @@ import {RvResourceViewModule} from '@monorepo/resource-view';
 
 
     RvResourceViewModule,
+    PrProtocolModule,
   ]
 })
 export class CaCustomLibraryModule {

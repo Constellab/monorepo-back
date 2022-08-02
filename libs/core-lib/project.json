@@ -6,17 +6,23 @@
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": ["libs/core-lib/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/core-lib/**/*.ts"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/core-lib"],
+      "outputs": [
+        "coverage/libs/core-lib"
+      ],
       "options": {
         "jestConfig": "libs/core-lib/jest.config.ts",
         "passWithNoTests": true
       }
     }
   },
-  "tags": ["ts-core"]
+  "tags": [
+    "ts-core"
+  ]
 }

@@ -1,6 +1,9 @@
 @import "libs/front-core-lib/src/style/theme/base/base-light-theme";
 @import "libs/front-core-lib/src/style/theme/quill/quill-theme-light";
-
+@import "libs/protocol/src/style/pr-drawflow";
 
 // include dark theme for quill
 @include _quill-theme-light($theme);
+
+// include drawflow theme
+@include drawflow-theme($theme);

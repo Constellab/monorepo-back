@@ -6,17 +6,23 @@
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": ["libs/back-core-lib/**/*.ts"]
+        "lintFilePatterns": [
+          "libs/back-core-lib/**/*.ts"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/back-core-lib"],
+      "outputs": [
+        "coverage/libs/back-core-lib"
+      ],
       "options": {
         "jestConfig": "libs/back-core-lib/jest.config.ts",
         "passWithNoTests": true
       }
     }
   },
-  "tags": ["back"]
+  "tags": [
+    "back"
+  ]
 }

@@ -1,0 +1,20 @@
+<div>
+
+  <div fxLayout="column" fxLayoutAlign="space-between center">
+
+    <!-- Title   -->
+    <div class="name g- g-text-small">
+      {{title$ | async}}
+    </div>
+
+
+    <!--  actions -->
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+      <button mat-icon-button type="button"
+              (click)="openNodeDetail()" [matTooltip]="'biox.open_node_detail' | translate">
+        <mat-icon>info</mat-icon>
+      </button>
+    </div>
+  </div>
+
+</div>

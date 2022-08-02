@@ -40,6 +40,7 @@ import {
 } from './ca-dashboard/module/ca-report-core/component/ca-report-content-view/ca-report-content-view.component';
 import {TdTechnicalDocModule} from '@monorepo/technical-doc';
 import {CaTdServiceConfig} from './ca-core/model/config/ca-td-service.config';
+import {PrProtocolModule} from '@monorepo/protocol';
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -66,6 +67,8 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
 
     // Core Modules
     CaCoreModule,
+
+    PrProtocolModule.forRoot(),
 
     FlApiModule.forRoot(CaApiServiceConfig, CaApiErrorService, 'front-errors'),
 

@@ -1,0 +1,69 @@
+// Import drawflow style
+@use '@angular/material' as mat;
+@import "~drawflow/dist/drawflow.min.css";
+
+@mixin drawflow-theme($theme) {
+  $primary: map-get($theme, primary);
+  $warn: map-get($theme, warn);
+
+  .drawflow{
+    // set a border to the main drawflow element so the user knows the limits
+    border: 1px solid var(--grey-low-contrast);
+    height: auto !important;
+  }
+
+  // style drawflow
+  .drawflow .drawflow-node {
+    width: initial;
+    border: 1px solid var(--grey-low-contrast) !important;
+    // Padding of the nodes
+    padding: 5px 15px !important;
+    border-radius: 30px;
+
+    // style for the process node
+    &.node-process {
+      color: var(--color-foreground);
+      background-color: var(--card-background);
+    }
+
+    // style for interface nodes
+    &.interface {
+      color: white;
+      background-color: #569cd6;
+    }
+
+    // style for outerface nodes
+    &.outerface {
+      color: white;
+      background-color: #a0d982;
+    }
+
+    &.task-source {
+      color: mat.get-color-from-palette($primary, default-contrast);
+      background-color: mat.get-color-from-palette($primary);
+    }
+
+    &.task-output {
+      color: mat.get-color-from-palette($warn, default-contrast);
+      background-color: mat.get-color-from-palette($warn);
+    }
+
+    // width and height of input and output port
+    .input, .output {
+      width: 12px;
+      height: 12px;
+    }
+
+    // adapt output position
+    .output {
+      right: -7px;
+    }
+
+    // adapt input position
+    .input {
+      left: -23px;
+      cursor: auto;
+    }
+
+  }
+}

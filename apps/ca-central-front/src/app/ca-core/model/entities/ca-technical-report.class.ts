@@ -1,3 +1,5 @@
+import {TdIOSpec} from '@monorepo/technical-doc';
+
 export class CaTechnicalReport{
   version: number;
 
@@ -30,6 +32,10 @@ export interface CaTechnicalReportNode{
   short_description: string;
 
   config: CaTechnicalReportConfig;
+
+  input_specs: Record<string, TdIOSpec>;
+
+  output_specs: Record<string, TdIOSpec>;
 
   graph?: CaTechnicalReportGraph;
 }

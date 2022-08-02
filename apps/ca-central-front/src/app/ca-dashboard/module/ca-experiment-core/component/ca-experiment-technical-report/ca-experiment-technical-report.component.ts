@@ -20,7 +20,6 @@ export class CaExperimentTechnicalReportComponent implements OnInit {
 
   technicalReport: CaTechnicalReport;
 
-
   constructor(
     private experimentService: CaExperimentService,
     private dialogService: FlDialogService
@@ -30,6 +29,7 @@ export class CaExperimentTechnicalReportComponent implements OnInit {
   ngOnInit(): void {
     this.experimentService.getExperimentTechnicalReport(this.experiment.id).subscribe((res: CaTechnicalReport) => {
       this.technicalReport = res;
+      console.log('TT', this.technicalReport)
     });
   }
 

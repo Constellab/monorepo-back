@@ -1,0 +1,118 @@
+[
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableColumnTagUnfold"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableColumnTagsSelector"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableRowTagGrouper"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableRowsSelector"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableColumnMassOperations"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableAggregatorFilter"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableRowsDeleter"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableColumnsSelector"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableRowAnnotator"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableColumnOperations"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableColumnTagsDeleter"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableDataFilter"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableRowTagUnfold"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableScaler"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableColumnsDeleter"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableRowTagsDeleter"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableRowTagsSelector"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableColumnTagGrouper"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableColumnAnnotator"
+  },
+  {
+    "brickName": "gws_core",
+    "uniqueName": "TableTransposer"
+  },
+  {
+    "brickName": "gws_stats",
+    "uniqueName": "PairwiseOneWayAnova"
+  },
+  {
+    "brickName": "gws_stats",
+    "uniqueName": "PairwiseKruskalWallis"
+  },
+  {
+    "brickName": "gws_stats",
+    "uniqueName": "MannWhitney"
+  },
+  {
+    "brickName": "gws_stats",
+    "uniqueName": "PearsonCorrelation"
+  },
+  {
+    "brickName": "gws_stats",
+    "uniqueName": "SpearmanCorrelation"
+  },
+  {
+    "brickName": "gws_stats",
+    "uniqueName": "NormalTest"
+  },
+  {
+    "brickName": "gws_stats",
+    "uniqueName": "Wilcoxon"
+  },
+  {
+    "brickName": "gws_stats",
+    "uniqueName": "SpearmanCorrelation"
+  },
+  {
+    "brickName": "gws_stats",
+    "uniqueName": "TTestTwoIndepSamples"
+  }
+]

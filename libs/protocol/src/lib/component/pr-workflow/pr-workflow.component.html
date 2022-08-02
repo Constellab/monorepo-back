@@ -1,0 +1,26 @@
+<div fxLayout="column" class="g-full-height" *ngIf="!error; else showError">
+
+  <!--  Workflow header  -->
+  <div class="header" fxLayout="row" fxLayoutAlign="start center"
+       fxLayoutGap="1em" *ngIf="!flowIsLoading">
+<!--    <lab-workflow-actions></lab-workflow-actions>-->
+
+<!--    <div class="divider"></div>-->
+
+    <pr-workflow-layers-breadcrumb></pr-workflow-layers-breadcrumb>
+
+  </div>
+
+  <!--  Workflow zone  -->
+  <div class="workflow" #workflow fxFlex="auto">
+
+    <div class="g-text-centered" *ngIf="flowIsLoading">
+      <fl-loader></fl-loader>
+    </div>
+
+  </div>
+</div>
+
+<ng-template #showError>
+  <fl-error-text [errorMessage]="'error' | translate"></fl-error-text>
+</ng-template>

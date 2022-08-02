@@ -6,7 +6,6 @@ import {CaLabCoreModule} from '../../../ca-core/entity-module/ca-lab-core/ca-lab
 import {RouterModule} from '@angular/router';
 import {CaExperimentInfoComponent} from './component/ca-experiment-info/ca-experiment-info.component';
 import {CaExperimentsListComponent} from './component/ca-experiments-list/ca-experiments-list.component';
-import {CaDashboardCoreModule} from '../ca-dashboard-core/ca-dashboard-core.module';
 import {
   CaExperimentTechnicalReportComponent
 } from './component/ca-experiment-technical-report/ca-experiment-technical-report.component';
@@ -29,6 +28,7 @@ import {
   CaExperimentTechnicalReportProcessDocDialogComponent
 } from './component/ca-experiment-technical-report-process-doc-dialog/ca-experiment-technical-report-process-doc-dialog.component';
 import {TdTechnicalDocModule} from "@monorepo/technical-doc";
+import {MatTabsModule} from "@angular/material/tabs";
 
 
 @NgModule({
@@ -57,7 +57,7 @@ import {TdTechnicalDocModule} from "@monorepo/technical-doc";
     CaCoreModule,
     CaLabCoreModule,
     TdTechnicalDocModule,
-    CaDashboardCoreModule,
+    MatTabsModule
   ]
 })
 export class CaExperimentCoreModule {

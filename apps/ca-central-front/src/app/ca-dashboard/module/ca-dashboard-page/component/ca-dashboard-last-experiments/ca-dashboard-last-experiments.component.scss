@@ -20,6 +20,9 @@
 
 .experiment-title{
   font-size: 1em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .experiment-project{
@@ -27,6 +30,7 @@
 }
 
 .experiment-date{
+  padding-left: 1em;
   width: 25%;
   font-size: 0.7em;
   color: var(--grey-high-contr);

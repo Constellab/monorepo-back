@@ -130,8 +130,8 @@
   "team_remove_user_confirmation": "Êtes-vous sûr de vouloir retirer l'utilisateur de l'équipe ? Il ne pourra plus accéder aux objets de l'équipe",
   "team_user_removed": "Utilisateur retiré de l'équipe",
   "team_projects": "Projets de l'équipe",
-  "validation_info": "Validé le {{date}} par {{user}}",
-  "location": "Localisation",
-  "last_sync_info": "Dernière synchronisation {{date}} par {{user}}",
-  "region": "Region"
+  "validate_by": "Validé par",
+  "validated_on": "Validé le",
+  "region": "Region",
+  "no_technical_report": "Aucun rapport technique"
 }

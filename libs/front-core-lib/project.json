@@ -15,12 +15,16 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/front-core-lib"],
+      "outputs": [
+        "coverage/libs/front-core-lib"
+      ],
       "options": {
         "jestConfig": "libs/front-core-lib/jest.config.ts",
         "passWithNoTests": true
       }
     }
   },
-  "tags": ["front"]
+  "tags": [
+    "front"
+  ]
 }
