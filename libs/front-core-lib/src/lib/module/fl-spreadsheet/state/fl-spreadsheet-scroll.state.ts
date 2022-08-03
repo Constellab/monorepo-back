@@ -10,6 +10,7 @@ import {flRxjsEnterNgZone} from '../../../utils/fl-rxjs-enter-ng-zone';
 import {FlSpreadsheetElementState} from './fl-spreadsheet-element.state';
 import {FlHtmlHelper} from '../../../utils/fl-html.helper';
 import {FlSheetSingleSelection} from '../model/selection/fl-sheet-single-selection.class';
+import {FlSpreadsheetPaginationState} from './fl-spreadsheet-pagination.state';
 
 export interface Interval {
   from: number;
@@ -48,7 +49,8 @@ export class FlSpreadsheetScrollState {
               private state: FlSpreadsheetState,
               private ngZone: NgZone,
               private selectionState: FlSpreadsheetSelectionState,
-              private elementState: FlSpreadsheetElementState) {
+              private elementState: FlSpreadsheetElementState,
+              private paginationState: FlSpreadsheetPaginationState) {
   }
 
 
@@ -91,13 +93,23 @@ export class FlSpreadsheetScrollState {
   }
 
   private onWheelEvent(event: WheelEvent): void {
-    // if we reached the top or bottom of the vertical scroller,
+
+    // if we reached the bottom of the vertical scroller.
     // we don't override the scroll logic
-    if ((this.verticalScroller.scrollTop === (this.verticalScroller.scrollHeight - this.verticalScroller.offsetHeight)
-        && event.deltaY > 0) ||
-      this.verticalScroller.scrollTop === 0 && event.deltaY < 0) {
+    if (this.verticalScroller.scrollTop === (this.verticalScroller.scrollHeight - this.verticalScroller.offsetHeight)
+        && event.deltaY > 0)  {
+      this.paginationState.callNextPage();
       return;
     }
+
+    // if we reached the top of the vertical scroller.
+    // we don't override the scroll logic
+    if (this.verticalScroller.scrollTop === 0 && event.deltaY < 0) {
+      this.paginationState.callPreviousPage();
+      return;
+    }
+
+
     ClHelpService.stopEventPropagation(event);
     this.triggerScrollY(event.deltaY);
     this.triggerScrollX(event.deltaX);

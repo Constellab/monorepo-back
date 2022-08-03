@@ -141,6 +141,9 @@ export class FlSheetSingleSelection implements FlSheetSelection {
     return this.range.toString();
   }
 
+  /**
+   * Export to a FlSheetSelectionRange and includes the offset of the sheet
+   */
   public toFlSheetSelectionRange(): FlSheetSelectionRange {
     if (this.type === 'columns') {
       return {
@@ -148,9 +151,13 @@ export class FlSheetSingleSelection implements FlSheetSelection {
         selection: this.sheet.getColumnNames(this.from.column, this.to.column)
       };
     } else {
+      const coords = this.getRange().toCoords();
       return {
         type: 'range',
-        selection: [this.getRange().toCoords()]
+        selection: [{
+          from: this.sheet.getCoordsWithOffset(coords.from),
+          to: this.sheet.getCoordsWithOffset(coords.to)
+        }]
       };
     }
   }
@@ -200,7 +207,7 @@ export class FlSheetSingleSelectionFull extends FlSheetSingleSelection {
   public static ColumnName(sheet: FlSheet, columnName: string): FlSheetSingleSelectionFull {
     const index = sheet.findColumnIndex(columnName);
 
-    if(index === -1) {
+    if (index === -1) {
       throw new Error(`Column '${columnName}' not found`);
     }
 
@@ -217,6 +224,10 @@ export class FlSheetSingleSelectionFull extends FlSheetSingleSelection {
 
   public static FromCellCoordsRange(sheet: FlSheet, cellsRange: FlCellCoordRange): FlSheetSingleSelectionFull {
     const range = FlCellsRange.MultipleFromCellCoordsRange(cellsRange);
+    range.to.column -= sheet.columnOffset;
+    range.to.row -= sheet.rowOffset;
+    range.from.column -= sheet.columnOffset;
+    range.from.row -= sheet.rowOffset;
     return new FlSheetSingleSelectionFull(sheet, range);
   }
 

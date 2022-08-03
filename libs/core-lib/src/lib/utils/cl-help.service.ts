@@ -13,6 +13,7 @@ export class ClHelpService {
    * @param object object to clone
    */
   public static deepClone<A>(object: A): A {
+    if (object == null) return null;
     return JSON.parse(JSON.stringify(object));
   }
 

@@ -8,7 +8,6 @@ import {FlCellsMultipleRange} from '../../model/selection/fl-cells-multiple-rang
 import {FlSheetSelectionRange} from '../../model/chart/fl-sheet-chart-selection-form.class';
 import {FlSheetSingleSelection} from '../../model/selection/fl-sheet-single-selection.class';
 import {FlSpreadsheetChartSelectionHelper} from '../../utils/fl-spreadsheet-chart-selection.helper';
-import {FlTranslateService} from '../../../fl-translate/service/fl-translate.service';
 
 interface FlSpreadsheetRangeForm {
   type: 'range' | 'columns';
@@ -50,8 +49,7 @@ export class FlSheetRangesInputComponent extends FlFormFieldDirective<FlSpreadsh
   private subscription: Subscription;
 
   constructor(@Optional() @Self() ngControl: NgControl,
-              private state: FlSpreadsheetState,
-              private translateService: FlTranslateService) {
+              private state: FlSpreadsheetState) {
     super(ngControl);
 
 
@@ -156,7 +154,6 @@ export class FlSheetRangesInputComponent extends FlFormFieldDirective<FlSpreadsh
 
     this.writeValue(selection.toFlSheetSelectionRange());
   }
-
 
 
   ngOnDestroy(): void {

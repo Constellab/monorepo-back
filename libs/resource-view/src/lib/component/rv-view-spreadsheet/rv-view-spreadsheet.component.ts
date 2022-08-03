@@ -24,7 +24,8 @@ export class RvViewSpreadsheetComponent extends RvResourceViewDirective<RvResour
   }
 
   ngOnInit(): void {
-    this.spreadSheet = rvTableToSpreadsheet(this.view);
+    // ignore the table offset (fromRow and fromCol) because it doesn't work with local chart
+    this.spreadSheet = rvTableToSpreadsheet(this.view, true);
   }
 
 }

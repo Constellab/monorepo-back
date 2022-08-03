@@ -59,6 +59,8 @@ import {FlSpreadsheetCellInfoComponent} from './component/fl-spreadsheet-cell-in
 import {
   FlSpreadsheetHeaderTagsComponent
 } from './component/fl-spreadsheet-header-tags/fl-spreadsheet-header-tags.component';
+import {FlLoaderModule} from '../fl-loader/fl-loader.module';
+import {FlPortalActionsModule} from '../fl-portal-actions/fl-portal-actions.module';
 
 
 @NgModule({
@@ -100,6 +102,8 @@ import {
     FlKeyValueModule,
     FlAutocompleteMultipleModule,
     FlResizeModule,
+    FlLoaderModule,
+    FlPortalActionsModule,
 
     ScrollingModule,
     MatMenuModule,

@@ -1,6 +1,6 @@
 <div class="g-not-selectable g-text-centered container"
      flMouseHover [flMouseEnterDelay]="500" (flMouseEnter)="openHeaderPortal()" (flMouseLeave)="closePortal()">
-  <div class="index">{{index | flCellHeader:type}}</div>
+  <div class="index">{{index | flCellHeader:type | async}}</div>
 
   <div fxLayout="column" class="grid-right">
     <div class="g-text-tiny g-text-light header-name">{{header.name}}</div>

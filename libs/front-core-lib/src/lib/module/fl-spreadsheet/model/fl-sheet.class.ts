@@ -2,7 +2,14 @@ import {FlBasicCell, FlCell} from './fl-cell.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {debounceTime, map} from 'rxjs/operators';
 import {FlCellCoord} from './fl-cell-coord.class';
-import {FlSheetHeader, FlSheetHeaderInfo, FlSheetHeaders, FlSheetRow} from './fl-sheet-headers.class';
+import {
+  FlSheetHeader,
+  FlSheetHeaderInfo,
+  FlSheetHeaderInfoInput,
+  FlSheetHeaders,
+  FlSheetRow
+} from './fl-sheet-headers.class';
+import {FlSpreadsheetHelper} from '../utils/fl-spreadsheet.helper';
 
 
 /**
@@ -31,6 +38,10 @@ export class FlSheet {
   public totalRowsCount: number = 0;
   public totalColumnsCount: number = 0;
 
+  // offset (nb of rows or column) when not starting at the row or columns
+  public rowOffset: number = 0;
+  public columnOffset: number = 0;
+
   public rows: FlSheetHeaders = new FlSheetHeaders();
   public columns: FlSheetHeaders = new FlSheetHeaders();
 
@@ -44,38 +55,55 @@ export class FlSheet {
   }
 
   ////////////////////////////// COLUMN ///////////////////////////////
-  public appendMultipleColumns(count: number): void {
+  /**
+   * Append columns at the end of the sheet
+   * @param count
+   * @param updateTotalCount if true the column are considered as new and the total column count is incremented
+   * otherwise is it considered as a lazy loaded column( included in the total count)
+   */
+  public appendMultipleColumns(count: number, updateTotalCount: boolean = true): void {
     for (let i = 0; i < count; i++) {
-      this.createColumn(this.loadedColumnsCount);
+      this.createColumn(this.loadedColumnsCount, updateTotalCount);
     }
 
     this.emitCellChange();
     this.emitColumnsChange();
   }
 
-
-  public insertMultipleColumns(from: number, to: number): void {
+  /**
+   * Insert multiple column columns at the end of the sheet
+   * @param from
+   * @param to inclusive
+   * @param updateTotalCount if true the column are considered as new and the total column count is incremented
+   * otherwise is it considered as a lazy loaded column( included in the total count)
+   */
+  public insertMultipleColumns(from: number, to: number, updateTotalCount: boolean = true): void {
     for (let i = from; i <= to; i++) {
-      this.createColumn(i);
+      this.createColumn(i, updateTotalCount);
     }
     this.emitCellChange();
     this.emitColumnsChange();
   }
 
-
-  public insertColumn(position?: number): void {
+  /**
+   * Insert a column at the given position
+   * @param position
+   * @param updateTotalCount if true the column are considered as new and the total column count is incremented
+   * otherwise is it considered as a lazy loaded column( included in the total count)
+   */
+  public insertColumn(position?: number, updateTotalCount: boolean = true): void {
     if (position == null || position > this.loadedColumnsCount) {
       position = this.loadedColumnsCount;
     }
 
-    this.createColumn(position);
+    this.createColumn(position, updateTotalCount);
 
     this.emitCellChange();
     this.emitColumnsChange();
   }
 
   // create an empty column without emitting
-  private createColumn(position: number): void {
+  private createColumn(position: number, updateTotalCount: boolean = true): void {
     // add cell for each row
     for (let i = 0; i < this.loadedRowsCount; i++) {
       this.insertCell(i, position);
@@ -84,11 +112,13 @@ export class FlSheet {
     this.columns.createInfo(position);
 
     this.loadedColumnsCount++;
-    this.totalColumnsCount++;
+    if (updateTotalCount) {
+      this.totalColumnsCount++;
+    }
   }
 
   // delete columns in the interval inclusive
-  public deleteColumns(from: number, to: number): void {
+  public deleteColumns(from: number, to: number, updateTotalCount: boolean = true): void {
     const fromIndex: number = Math.min(from, to);
     const deleteCount: number = Math.max(from, to) - fromIndex + 1;
 
@@ -98,7 +128,9 @@ export class FlSheet {
     }
 
     this.loadedColumnsCount -= deleteCount;
-    this.totalColumnsCount -= deleteCount;
+    if (updateTotalCount) {
+      this.totalColumnsCount -= deleteCount;
+    }
 
     // security to prevent sheet without columns
     if (this.loadedColumnsCount <= 0) {
@@ -123,6 +155,21 @@ export class FlSheet {
 
   public findColumnIndex(name: string): number {
     return this.columns.findIndexByName(name);
+  }
+
+  /**
+   * return the name of a column index including the column offset
+   * @param index
+   */
+  public getColumnOffsetIndexName$(index: number): Observable<string> {
+    return this.getColumnsCount$().pipe(
+      map(() => FlSpreadsheetHelper.columnIndexToName(this.getColumnOffsetIndex(index)))
+    );
+  }
+
+  // get the real index of a column when including the offset
+  public getColumnOffsetIndex(index: number): number {
+    return index + this.columnOffset ;
   }
 
   ////////////////////////////// COLUMN HEADER ////////////////////////////////
@@ -165,36 +212,54 @@ export class FlSheet {
   }
 
   ////////////////////////////// ROW ///////////////////////////////
-  public appendMultipleRows(count: number): void {
+  /**
+   * Append multiple rows at the end of the sheet
+   * @param count
+   * @param updateTotalCount if true the column are considered as new and the total column count is incremented
+   * otherwise is it considered as a lazy loaded column( included in the total count)
+   */
+  public appendMultipleRows(count: number, updateTotalCount: boolean = true): void {
     for (let i = 0; i < count; i++) {
-      this.createRow(this.loadedRowsCount);
+      this.createRow(this.loadedRowsCount, updateTotalCount);
     }
 
     this.emitCellChange();
     this.emitRowsChange();
   }
 
-  public insertMultipleRows(from: number, to: number): void {
+  /**
+   * Insert multiple rows at a given position
+   * @param from
+   * @param to inclusive
+   * @param updateTotalCount if true the column are considered as new and the total column count is incremented
+   * otherwise is it considered as a lazy loaded column( included in the total count)
+   */
+  public insertMultipleRows(from: number, to: number, updateTotalCount: boolean = true): void {
     for (let i = from; i <= to; i++) {
-      this.createRow(i);
+      this.createRow(i, updateTotalCount);
     }
     this.emitCellChange();
     this.emitRowsChange();
   }
 
-
-  public insertRow(position?: number): void {
+  /**
+   * Insert a column at the given position
+   * @param position
+   * @param updateTotalCount if true the column are considered as new and the total column count is incremented
+   * otherwise is it considered as a lazy loaded column( included in the total count)
+   */
+  public insertRow(position?: number, updateTotalCount: boolean = true): void {
     if (position == null || position > this.loadedRowsCount) {
       position = this.loadedRowsCount;
     }
 
-    this.createRow(position);
+    this.createRow(position, updateTotalCount);
     this.emitCellChange();
     this.emitRowsChange();
   }
 
   // create an empty column without emitting
-  private createRow(position: number): void {
+  private createRow(position: number, updateTotalCount: boolean = true): void {
     // create the row
     this.cells.splice(position, 0, []);
 
@@ -206,11 +271,14 @@ export class FlSheet {
     this.rows.createInfo(position);
 
     this.loadedRowsCount++;
-    this.totalRowsCount++;
+
+    if (updateTotalCount) {
+      this.totalRowsCount++;
+    }
   }
 
   // delete rows in the interval inclusive
-  public deleteRows(from: number, to: number): void {
+  public deleteRows(from: number, to: number, updateTotalCount: boolean = true): void {
     const fromIndex: number = Math.min(from, to);
     const deleteCount: number = Math.max(from, to) - fromIndex + 1;
 
@@ -218,7 +286,9 @@ export class FlSheet {
     this.cells.splice(fromIndex, deleteCount);
 
     this.loadedRowsCount -= deleteCount;
-    this.totalRowsCount -= deleteCount;
+    if (updateTotalCount) {
+      this.totalRowsCount -= deleteCount;
+    }
 
     // security to prevent sheet without rows
     if (this.loadedRowsCount <= 0) {
@@ -258,6 +328,75 @@ export class FlSheet {
         return rows;
       })
     );
+  }
+
+  /**
+   * Append lazy loaded rows (from pagination) data at the end of the sheet.
+   */
+  public appendLazyLoadedNextRows(data: any[][], rowInfos: FlSheetHeaderInfoInput[]): void {
+    // first index of the new rows
+    const fromRowIndex = this.loadedRowsCount;
+    // append rows at the end
+    this.appendMultipleRows(data.length, false);
+
+    // set cell values
+    this.setValuesFromCoord(data, {row: fromRowIndex, column: 0});
+    // set row info
+    this.rows.setInfoFromIndex(rowInfos, fromRowIndex);
+  }
+
+  /**
+   * Insert lazy loaded rows (from pagination) data at the beginning of the sheet.
+   */
+  public insertLazyLoadedPreviousRows(data: any[][], rowInfos: FlSheetHeaderInfoInput[]): void {
+    // insert the rows at the beginning
+    this.insertMultipleRows(0, data.length - 1, false);
+
+    // set cell values
+    this.setValuesFromCoord(data, {row: 0, column: 0});
+    // set row info
+    this.rows.setInfoFromIndex(rowInfos, 0);
+
+    // recalculate the offset (can't be lower than 0)
+    this.rowOffset = Math.max(0, this.rowOffset - data.length);
+  }
+
+  /**
+   * Return true if not all the rows are loaded and a previous page exists for pagination
+   * */
+  public hasPreviousRowsPage(): boolean {
+    return this.rowOffset > 0;
+  }
+
+  /**
+   * Return true if not all the rows are loaded and a next page exists for pagination
+   */
+  public hasNextRowsPage(): boolean {
+    return this.getLastRowsOffsetIndex() + 1 < this.totalRowsCount;
+  }
+
+  /**
+   * return the name of a row index including the row offset
+   * @param index
+   */
+  public getRowOffsetIndexName$(index: number): Observable<string> {
+    return this.getRowsCount$().pipe(
+      map(() => FlSpreadsheetHelper.rowIndexToName(this.getRowOffsetIndex(index)))
+    );
+  }
+
+  // get the real index of a row when including the offset
+  public getRowOffsetIndex(index: number): number {
+    return index + this.rowOffset;
+  }
+
+  // get the real index of the last row when including the offset
+  public getLastRowsOffsetIndex(): number {
+    return this.getRowOffsetIndex(this.loadedRowsCount - 1);
+  }
+
+  public getFirstRowsOffsetIndex(): number {
+    return this.getRowOffsetIndex(0);
   }
 
   /////////////////////////////////// ROWS HEADER /////////////////////
@@ -397,6 +536,13 @@ export class FlSheet {
   public coordIsValid(coord: FlCellCoord): boolean {
     return coord.row >= 0 && coord.row < this.totalRowsCount &&
       coord.column >= 0 && coord.column < this.totalColumnsCount;
+  }
+
+  public getCoordsWithOffset(coord: FlCellCoord): FlCellCoord {
+    return {
+      row: this.getRowOffsetIndex(coord.row),
+      column: this.getColumnOffsetIndex(coord.column),
+    };
   }
 
   public destroy(): void {

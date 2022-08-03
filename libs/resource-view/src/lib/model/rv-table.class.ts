@@ -23,7 +23,12 @@ export interface RvResourceViewTableHeader {
   tags: Record<string, string>;
 }
 
-export function rvTableToSpreadsheet(table: RvResourceViewTable): FlSpreadsheet {
+/**
+ * Convert a Table view to a Spreadsheet
+ * @param table
+ * @param ignoreOffsets if true the offsets (fromRow and fromCol) are ignored
+ */
+export function rvTableToSpreadsheet(table: RvResourceViewTable, ignoreOffsets: boolean = false): FlSpreadsheet {
   const spreadSheet: FlSpreadsheet = new FlSpreadsheet();
   // if the resource is a csv file
   const sheet: FlSheet = FlSpreadsheetFactory.fromArray(table.data.table, table.title ?? 'Sheet 1');
@@ -32,6 +37,11 @@ export function rvTableToSpreadsheet(table: RvResourceViewTable): FlSpreadsheet 
   sheet.totalRowsCount = table.data.total_number_of_rows;
   sheet.columns = new FlSheetHeaders(table.data.columns);
   sheet.rows = new FlSheetHeaders(table.data.rows);
+
+  if (!ignoreOffsets) {
+    sheet.rowOffset = table.data.from_row - 1; // -1 because communication are based on 1-based index
+    sheet.columnOffset = table.data.from_column - 1; // -1 because communication are based on 1-based index
+  }
   spreadSheet.addSheet(sheet);
   return spreadSheet;
 }

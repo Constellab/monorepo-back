@@ -12,6 +12,7 @@ import {
   LabTableChartConfigVennDiagram
 } from '../../model/lab-table-chart-config.class';
 import {LabResourceTableService} from '../../../../entity-service/lab-resource-table.service';
+import {LabResourceSpreadsheetPageLoader} from '../../model/lab-resource-spreadsheet-page-loader.class';
 
 /**
  * Component to display a resource in a spreadsheet
@@ -28,6 +29,8 @@ export class LabResourceSpreadsheetComponent extends RvResourceViewDirective<RvR
   spreadSheet: FlSpreadsheet;
 
   chartConfig: FlSheetChartConfig[];
+
+  pagination: LabResourceSpreadsheetPageLoader;
 
   constructor(private resourceTableService: LabResourceTableService, private portalService: FlPortalService) {
     super();
@@ -56,6 +59,9 @@ export class LabResourceSpreadsheetComponent extends RvResourceViewDirective<RvR
 
 
     this.spreadSheet = rvTableToSpreadsheet(this.view);
+
+    this.pagination = new LabResourceSpreadsheetPageLoader(this.resourceTableService,
+      this.resourceId, this.config);
   }
 
 }

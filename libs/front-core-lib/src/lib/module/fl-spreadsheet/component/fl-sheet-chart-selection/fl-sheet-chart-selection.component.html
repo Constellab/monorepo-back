@@ -16,7 +16,7 @@
           <mat-label>{{'flSpreadsheet.chart_type' | translate}}</mat-label>
           <mat-select formControlName="chartType" required
                       placeholder="{{'flSpreadsheet.chart_type' | translate}}">
-            <mat-select-trigger>
+            <mat-select-trigger *ngIf="formGp.value.chartType">
               {{'flChart.' + formGp.value.chartType | translate}}
             </mat-select-trigger>
             <fl-chart-type-select-options [availableChartTypes]="availableChartTypes"></fl-chart-type-select-options>

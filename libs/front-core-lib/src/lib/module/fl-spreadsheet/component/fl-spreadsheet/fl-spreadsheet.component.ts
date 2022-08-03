@@ -25,6 +25,8 @@ import {map} from 'rxjs/operators';
 import {FlSheetHeader, FlSheetRow} from '../../model/fl-sheet-headers.class';
 import {FlSheetChartConfig} from '../../model/chart/fl-sheet-chart-config.class';
 import {FlSpreadsheetElementState} from '../../state/fl-spreadsheet-element.state';
+import {FlSpreadsheetPageLoader} from '../../model/fl-spreadsheet-page.class';
+import {FlSpreadsheetPaginationState} from '../../state/fl-spreadsheet-pagination.state';
 
 @Component({
   selector: 'fl-spreadsheet',
@@ -42,6 +44,7 @@ import {FlSpreadsheetElementState} from '../../state/fl-spreadsheet-element.stat
     FlSpreadsheetActions,
     FlSpreadsheetChartState,
     FlSpreadsheetScrollState,
+    FlSpreadsheetPaginationState,
     FlPortalService, // providers to access the state in portal
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -53,6 +56,8 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
   @Input() readOnly: boolean = false;
 
   @Input() chartConfigs: FlSheetChartConfig[];
+
+  @Input() pagination: FlSpreadsheetPageLoader;
 
   @ViewChild('tableContainer', {static: true}) tableContainer: ElementRef<HTMLElement>;
   @ViewChild('horizontalScroller', {static: true}) horizontalScroller: ElementRef<HTMLElement>;
@@ -67,7 +72,8 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
               private selectionState: FlSpreadsheetSelectionState,
               private keyboardState: FlSpreadsheetKeyboardManagerState,
               private mouseState: FlSpreadsheetMouseManagerState,
-              private scrollState: FlSpreadsheetScrollState) {
+              private scrollState: FlSpreadsheetScrollState,
+              private paginationState: FlSpreadsheetPaginationState) {
   }
 
 
@@ -77,6 +83,7 @@ export class FlSpreadsheetComponent implements OnInit, OnDestroy {
     this.selectionState.init();
     this.keyboardState.init();
     this.mouseState.init();
+    this.paginationState.init(this.pagination);
     this.scrollState.init(this.tableContainer.nativeElement, this.scroller.nativeElement,
       this.heightSimulator.nativeElement, this.horizontalScroller.nativeElement);
 

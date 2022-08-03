@@ -61,7 +61,9 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     total_rows_count: 'Nombre total de lignes',
     total_columns_count: 'Nombre total de colonnes',
     column: 'Colonne',
-    row: 'Ligne'
+    row: 'Ligne',
+    loading_next_rows: 'Lignes suivantes',
+    loading_previous_rows: 'Lignes précédentes',
   }
 };
 
@@ -119,7 +121,9 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     total_rows_count: 'Total number of rows',
     total_columns_count: 'Total number of columns',
     column: 'Column',
-    row: 'Row'
+    row: 'Row',
+    loading_next_rows: 'Loading next rows',
+    loading_previous_rows: 'Loading previous rows',
   }
 };
 

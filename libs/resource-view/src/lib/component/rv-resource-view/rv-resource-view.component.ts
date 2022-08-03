@@ -6,6 +6,7 @@ import {RvResourceViewDirective} from '../../model/rv-resource-view.directive';
 import {RvResourceViewTypeInfo} from '../../model/rv-type-info.class';
 import {RV_MODULE_CONFIG, RvResourceViewModuleConfig} from '../../model/rv-resource-view-module.config';
 import {FlMenuDynamic} from '@monorepo/front-core-lib';
+import {ClHelpService} from '@monorepo/core-lib';
 
 @Component({
   selector: 'rv-resource-view',
@@ -68,7 +69,7 @@ export class RvResourceViewComponent implements OnInit, OnDestroy {
       this.viewComponentRef = this.viewContainer.createComponent(viewTypeInfo.viewComponent);
       this.viewComponentRef.instance.view = view;
       this.viewComponentRef.instance.resourceId = this.resourceId;
-      this.viewComponentRef.instance.config = this.config;
+      this.viewComponentRef.instance.config = ClHelpService.deepClone(this.config);
       this.viewComponentRef.instance.displayMode = this.displayMode;
       this.viewComponentRef.instance.contextMenuItems = this.contextMenuItems;
     }, 0);

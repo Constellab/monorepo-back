@@ -63,6 +63,21 @@ export class FlSheetHeaders {
     };
   }
 
+  /**
+   * Set the header info from an index. It overwrites the existing info.
+   * @param infos
+   * @param fromIndex
+   */
+  public setInfoFromIndex(infos: FlSheetHeaderInfoInput[], fromIndex: number): void {
+    for (let i = 0; i < infos.length; i++) {
+      this._info[fromIndex + i] = infos[i];
+    }
+
+    // update the tag colors
+    const groupedTags = FlTagHelper.groupTagsByKey(this.info.map(info => info.tags));
+    this.tagColorer.addTags(groupedTags);
+  }
+
   public hasInfo(index: number): boolean {
     const info = this.getInfo(index);
     return !ClHelpService.isNullOrEmpty(info.name) || !ClHelpService.isNullOrEmpty(info.tags);

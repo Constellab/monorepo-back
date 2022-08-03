@@ -1,8 +1,19 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  TrackByFunction
+} from '@angular/core';
 import {ThemePalette} from '@angular/material/core';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlTagWithColor} from '../../fl-tag.class';
-import {FlTagColorer} from '../../fl-tag-colorer.class';
+import {FlTagColorer, FlTagColorWithSelection} from '../../fl-tag-colorer.class';
+import {Subscription} from 'rxjs';
 
 interface FlTagGroupColor {
   key: string;
@@ -24,24 +35,36 @@ interface FlTagColor {
   styleUrls: ['./fl-tags-select-colors.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FlTagsSelectColorsComponent implements OnInit {
+export class FlTagsSelectColorsComponent implements OnInit, OnDestroy {
 
   @Input() tagColorer: FlTagColorer;
 
   @Input() groupLayout: 'column' | 'row wrap' = 'row wrap';
   @Output() colorChange: EventEmitter<FlTagWithColor[]> = new EventEmitter();
 
-
   tagGroups: FlTagGroupColor[];
 
-  constructor() {
+  private subscription: Subscription;
+
+  // use track by function because the initTagGroups is called after each change(double binding with FlTagColorer)
+  trackByGroupKey: TrackByFunction<FlTagGroupColor> = (_: number, item: FlTagGroupColor) => item.key;
+  trackByTag: TrackByFunction<FlTagColor> = (_: number, item: FlTagColor) => item.value;
+
+
+
+
+  constructor(private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
+    this.subscription = this.tagColorer.getTags$().subscribe(
+      tags => this.initTagGroups(tags)
+    );
+  }
+
+  private initTagGroups(tags: FlTagColorWithSelection[]): void {
     const tagGroups: FlTagGroupColor[] = [];
-
-
-    for (const tag of this.tagColorer.getTags()) {
+    for (const tag of tags) {
       let tagGroup = tagGroups.find(tagGroup => tagGroup.key === tag.key);
 
       // create the group if it doesn't exist yet
@@ -53,11 +76,12 @@ export class FlTagsSelectColorsComponent implements OnInit {
       tagGroup.tags.push({
         value: tag.value,
         color: tag.color,
-        activeColor: false
+        activeColor: tag.selected
       });
     }
 
     this.tagGroups = tagGroups;
+    this.cdr.markForCheck();
   }
 
   toggleGroupColor(group: FlTagGroupColor): void {
@@ -120,6 +144,10 @@ export class FlTagsSelectColorsComponent implements OnInit {
 
   openColorSelector(tag: FlTagColor, event: MouseEvent): void {
     ClHelpService.stopEventPropagation(event);
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
 

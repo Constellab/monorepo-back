@@ -1,5 +1,6 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {FlSpreadsheetHelper} from '../utils/fl-spreadsheet.helper';
+import {mergeMap, Observable, of} from 'rxjs';
+import {FlSpreadsheetState} from '../state/fl-spreadsheet.state';
 
 
 /**
@@ -10,14 +11,21 @@ import {FlSpreadsheetHelper} from '../utils/fl-spreadsheet.helper';
 })
 export class FlCellHeaderPipe implements PipeTransform {
 
-  transform(index: number, type: 'row' | 'column'): string {
-    if (index == null) {
-      return '';
+  constructor(private state: FlSpreadsheetState) {
+  }
+
+  transform(index: number, type: 'row' | 'column'): Observable<string> {
+    if (index == null || index < 0) {
+      return of('');
     }
     if (type === 'row') {
-      return FlSpreadsheetHelper.rowIndexToName(index);
+      return this.state.currentSheet$.pipe(
+        mergeMap(sheet => sheet.getRowOffsetIndexName$(index))
+      );
     } else {
-      return FlSpreadsheetHelper.columnIndexToName(index);
+      return this.state.currentSheet$.pipe(
+        mergeMap(sheet => sheet.getColumnOffsetIndexName$(index))
+      );
     }
   }
 

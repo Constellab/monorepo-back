@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ClHelpService} from '@monorepo/core-lib';
 
-interface FlTagColorWithSelection extends FlTagWithColor {
+export interface FlTagColorWithSelection extends FlTagWithColor {
   selected: boolean;
 }
 
@@ -14,13 +14,13 @@ export class FlTagColorer {
 
   private tags$: BehaviorSubject<FlTagColorWithSelection[]>;
 
-  constructor(tagsColors: FlTagWithColor[]) {
+  constructor(tagsColors: FlTagWithColor[], private colors: string[]) {
     this.tags$ = new BehaviorSubject(this.tagsWithColorToTagsWithSelection(tagsColors));
   }
 
   public static fromGroupedTags(tags: Record<string, string[]>, colorList: string[]): FlTagColorer {
     const tagWithColor = FlTagHelper.tagGroupsToTagWithColors(tags, colorList);
-    return new FlTagColorer(tagWithColor);
+    return new FlTagColorer(tagWithColor, colorList);
   }
 
   /**
@@ -41,8 +41,38 @@ export class FlTagColorer {
     return defaultColor;
   }
 
-  public getTags(): FlTagColorWithSelection[] {
-    return this.tags$.value;
+  /**
+   * Add tags to the list of tags, keep the original tags and colors and append the new tags
+   * @param tags
+   */
+  public addTags(tags: Record<string, string[]>): void {
+    const currentTags = ClHelpService.deepClone(this.tags$.value);
+
+    // set the index from the length of the current tags to get next colors
+    let colorIndex = currentTags.length;
+
+    Object.keys(tags).forEach(tagKey => {
+      // generate a color for each tag value
+      tags[tagKey].forEach(tagValue => {
+
+        // generate a new color only if the tag is not already in the list
+        if (currentTags.find(t => t.key === tagKey && t.value === tagValue) == null) {
+          currentTags.push({
+            key: tagKey,
+            value: tagValue,
+            color: this.colors[colorIndex % this.colors.length],
+            selected: false
+          });
+          colorIndex++;
+        }
+      });
+    });
+
+    this.tags$.next(currentTags);
+  }
+
+  public getTags$(): Observable<FlTagColorWithSelection[]> {
+    return this.tags$.asObservable();
   }
 
   public getTagColor(tags: FlTag, defaultColor: string = 'black'): string {

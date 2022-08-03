@@ -1,5 +1,5 @@
 <div [fxLayout]="groupLayout" fxLayoutGap="1em">
-  <div *ngFor="let tagGroup of tagGroups; let groupIndex = index" class="group">
+  <div *ngFor="let tagGroup of tagGroups; trackBy:trackByGroupKey" class="group">
 
     <div class="g-full" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5em">
       <div>{{tagGroup.key}}</div>
@@ -10,17 +10,17 @@
       </button>
     </div>
     <div class="g-text-small value-list g-styled-scrollbar">
-      <fl-chip *ngFor="let tagValue of tagGroup.tags"
+      <fl-chip *ngFor="let tagValue of tagGroup.tags; trackBy:trackByTag"
                fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5em"
                size="small" class="tag"
                (click)="toggleTagColor(tagValue)"
                [matTooltip]="tagValue.value" matTooltipPosition="below">
         <div class="tag-value">{{tagValue.value}}</div>
 
-        <div *ngIf="tagValue.activeColor; else fakeRound" [style.background-color]="tagValue.color" class="color"
+        <div *ngIf="tagValue.activeColor; else fakeCircle" [style.background-color]="tagValue.color" class="color"
              (click)="openColorSelector(tagValue, $event)" [(flColorSelector)]="tagValue.color"
              (flColorSelectorChange)="emitColors()"></div>
-        <ng-template #fakeRound>
+        <ng-template #fakeCircle>
           <div class="color"></div>
         </ng-template>
 
