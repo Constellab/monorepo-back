@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {FL_PORTAL_DATA} from '../../../fl-portal/model/fl-portal.class';
-import {ClHelpService} from '@monorepo/core-lib';
 import {FlSheetHeaderInfo} from '../../model/fl-sheet-headers.class';
 
 /**
@@ -26,9 +25,4 @@ export class FlSpreadsheetHeaderInfoComponent implements OnInit {
   hasTitle(): boolean {
     return this.headerInfo.name != null && this.headerInfo.name.toString().length > 0;
   }
-
-  hasTags(): boolean {
-    return !ClHelpService.isNullOrEmpty(this.headerInfo.tags);
-  }
-
 }

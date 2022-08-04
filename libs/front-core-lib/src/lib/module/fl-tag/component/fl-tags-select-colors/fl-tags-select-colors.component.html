@@ -1,4 +1,4 @@
-<div [fxLayout]="groupLayout" fxLayoutGap="1em">
+<div [fxLayout]="groupLayout" fxLayoutGap="1em" *ngIf="tagGroups?.length > 0; else noTag">
   <div *ngFor="let tagGroup of tagGroups; trackBy:trackByGroupKey" class="group">
 
     <div class="g-full" fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="0.5em">
@@ -30,3 +30,6 @@
 
 </div>
 
+<ng-template #noTag>
+  <fl-error-text [errorMessage]="'flTag.no_tags' | translate"></fl-error-text>
+</ng-template>

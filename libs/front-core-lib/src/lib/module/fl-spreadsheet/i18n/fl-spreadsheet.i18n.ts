@@ -60,10 +60,18 @@ const flSpreadsheetI18nFr: FlLangTranslation = {
     header_tags: 'Tags',
     total_rows_count: 'Nombre total de lignes',
     total_columns_count: 'Nombre total de colonnes',
+    loaded_rows_count: 'Nombre de lignes chargées',
+    loaded_columns_count: 'Nombre de colonnes chargées',
     column: 'Colonne',
     row: 'Ligne',
     loading_next_rows: 'Lignes suivantes',
     loading_previous_rows: 'Lignes précédentes',
+    header_type: 'Type',
+    header_type_STRING: 'Chaîne',
+    header_type_INTEGER: 'Entier',
+    header_type_FLOAT: 'Flottant',
+    header_type_BOOLEAN: 'Booléen',
+    header_type_OBJECT: 'Objet',
   }
 };
 
@@ -120,10 +128,18 @@ const flSpreadsheetI18nEn: FlLangTranslation = {
     header_tags: 'Tags',
     total_rows_count: 'Total number of rows',
     total_columns_count: 'Total number of columns',
+    loaded_rows_count: 'Number of loaded rows',
+    loaded_columns_count: 'Number of loaded columns',
     column: 'Column',
     row: 'Row',
     loading_next_rows: 'Loading next rows',
     loading_previous_rows: 'Loading previous rows',
+    header_type: 'Type',
+    header_type_STRING: 'String',
+    header_type_INTEGER: 'Integer',
+    header_type_FLOAT: 'Float',
+    header_type_BOOLEAN: 'Boolean',
+    header_type_OBJECT: 'Object',
   }
 };
 

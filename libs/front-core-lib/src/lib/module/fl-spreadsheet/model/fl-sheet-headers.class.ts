@@ -18,12 +18,16 @@ export interface FlSheetRow extends FlSheetHeader {
   cells: FlCell[];
 }
 
+// type of the header (mainly for column)
+export type FlSheetHeaderType = 'INTEGER'| 'FLOAT' | 'STRING' | 'BOOLEAN' | 'OBJECT';
+
 /**
  * Input object about row or column information
  */
 export interface FlSheetHeaderInfoInput {
   name?: string;
   tags?: Record<string, string>;
+  type?: FlSheetHeaderType;
 }
 
 /**
@@ -33,6 +37,7 @@ export interface FlSheetHeaderInfo {
   name?: string;
   tags?: Record<string, string>;
   tagColorer: FlTagColorer;
+  type?: FlSheetHeaderType;
 }
 
 
@@ -59,7 +64,8 @@ export class FlSheetHeaders {
     return {
       name: headerInfo.name,
       tags: headerInfo.tags,
-      tagColorer: this.tagColorer
+      tagColorer: this.tagColorer,
+      type: headerInfo.type
     };
   }
 

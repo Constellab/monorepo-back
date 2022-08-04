@@ -21,15 +21,27 @@
 
         <!--   Information about the current sheet     -->
         <div *ngIf="currentSheet$ | async as sheet">
+
           <fl-key-value>
-            <fl-key>{{'flSpreadsheet.total_columns_count' | translate}}</fl-key>
-            {{sheet.totalColumnsCount}}
+            <fl-key>{{'flSpreadsheet.loaded_rows_count' | translate}}</fl-key>
+            {{sheet.getLoadedRowsCount()}}
+          </fl-key-value>
+
+          <fl-key-value>
+            <fl-key>{{'flSpreadsheet.loaded_columns_count' | translate}}</fl-key>
+            {{sheet.getLoadedColumnsCount()}}
           </fl-key-value>
 
           <fl-key-value>
             <fl-key>{{'flSpreadsheet.total_rows_count' | translate}}</fl-key>
             {{sheet.totalRowsCount}}
           </fl-key-value>
+
+          <fl-key-value>
+            <fl-key>{{'flSpreadsheet.total_columns_count' | translate}}</fl-key>
+            {{sheet.totalColumnsCount}}
+          </fl-key-value>
+
         </div>
 
         <fl-async-section [object]="columnTagsColorer$" emptyText="flSpreadsheet.column_no_tags"
