@@ -60,8 +60,11 @@ export class LabResourceSpreadsheetComponent extends RvResourceViewDirective<RvR
 
     this.spreadSheet = rvTableToSpreadsheet(this.view);
 
-    this.pagination = new LabResourceSpreadsheetPageLoader(this.resourceTableService,
-      this.resourceId, this.config);
+    // activate the pagination only for the table-view
+    if (this.view.type === 'table-view') {
+      this.pagination = new LabResourceSpreadsheetPageLoader(this.resourceTableService,
+        this.resourceId, this.config);
+    }
   }
 
 }

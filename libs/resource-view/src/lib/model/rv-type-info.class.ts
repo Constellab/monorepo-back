@@ -45,6 +45,13 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     forceDefaultDisplayMode: true,
     viewComponent: RvViewSpreadsheetComponent,
   },
+  'tabular-view': {
+    icon: 'calendar_view_month',
+    text: 'biox.resource_view_spreadsheet',
+    defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: true,
+    viewComponent: RvViewSpreadsheetComponent,
+  },
   'dataset-view': {
     icon: 'calendar_view_month',
     text: 'biox.resource_view_dataset_view',

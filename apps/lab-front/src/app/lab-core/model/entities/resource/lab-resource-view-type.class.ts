@@ -24,6 +24,14 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     forceDefaultDisplayMode: true,
     viewComponent: LabResourceSpreadsheetComponent,
   },
+  // override the table view to add functionalities like chart from api
+  'tabular-view': {
+    icon: 'calendar_view_month',
+    text: 'biox.resource_view_spreadsheet',
+    defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: true,
+    viewComponent: LabResourceSpreadsheetComponent,
+  },
   // override the text view to enable pagination
   'text-view': {
     icon: 'text_snippet',

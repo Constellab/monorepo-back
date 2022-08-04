@@ -10,7 +10,7 @@ import {RvResourceViewTable} from './rv-table.class';
 export type RvResourceViewType =
   'json-view'
   | 'text-view'
-  | 'table-view' | 'dataset-view'
+  | 'table-view' | 'dataset-view' | 'tabular-view'
   | 'network-view'
   | 'image-view'
   | 'scatter-plot-2d-view' | 'line-plot-2d-view'

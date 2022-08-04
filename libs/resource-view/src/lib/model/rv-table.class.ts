@@ -2,7 +2,7 @@ import {RvResourceViewBase} from './rv-resource-view.class';
 import {FlSheet, FlSheetHeaders, FlSpreadsheet, FlSpreadsheetFactory} from '@monorepo/front-core-lib';
 
 export interface RvResourceViewTable extends RvResourceViewBase {
-  type: 'table-view' | 'dataset-view';
+  type: 'table-view' | 'dataset-view' | 'tabular-view';
   data: RvResourceViewTableData;
 }
 
