@@ -4,6 +4,7 @@ import {FlLocalStorageService} from './fl-local-storage.service';
 import {DOCUMENT} from '@angular/common';
 import {clDefaultTheme, ClTheme, clThemeIsSupported} from '@monorepo/core-lib';
 import {FlThemeDetail, flThemeDetailDark, flThemeDetailLight} from './model/fl-theme-detail.class';
+import {flRootInjector} from '../utils/fl-root-injector';
 
 /**
  * Service to manage light and dark theme
@@ -22,6 +23,10 @@ export class FlThemeService {
               @Inject(DOCUMENT) private document: Document,
               rendererFactory: RendererFactory2) {
     this.renderer = rendererFactory.createRenderer(null, null);
+  }
+
+  public static getInstance(): FlThemeService {
+    return flRootInjector.get(FlThemeService);
   }
 
   public init(): void {

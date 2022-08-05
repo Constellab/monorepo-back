@@ -17,6 +17,11 @@ export interface FlChartSerieWithColor {
   color: string;
 }
 
+export interface FlChartSerieSimple{
+  name: string;
+  key: number | string;
+}
+
 
 export class FlChartSerie<Data extends FlChartData> implements FlChartDataContainer<Data>, FlLegend {
 

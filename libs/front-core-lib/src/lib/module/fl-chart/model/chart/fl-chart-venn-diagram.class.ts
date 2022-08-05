@@ -7,9 +7,10 @@ import {FlChartVennData} from '../data/fl-chart-venn-data.class';
 import {FlChartLegendMultiSeries, FlLegend} from '../legend/fl-chart-legend-multi-series.class';
 import {FlChartRendererVennDiagram} from '../../renderer/fl-chart-renderer-venn-diagram.plot';
 import {
-  FlChartLegendMultiSeriesComponent
+  FlChartLegendMultiSeriesComponent,
+  FlChartLegendMultiSeriesInput
 } from '../../component/fl-chart-right-section/fl-chart-legend-multi-series/fl-chart-legend-multi-series.component';
-import {FlChartSerieWithColor} from '../data/fl-chart-serie.class';
+import {FlChartSerieSimple} from '../data/fl-chart-serie.class';
 
 export class FlChartVennDiagram extends FlChartConfig {
 
@@ -37,13 +38,18 @@ export class FlChartVennDiagram extends FlChartConfig {
   }
 
   getRightSectionConfig(): FlChartRightSectionConfig {
-    const serieColors: FlChartSerieWithColor[] = this.dataContainer.groupNames.map(groupName => ({
+    const series: FlChartSerieSimple[] = this.dataContainer.groupNames.map(groupName => ({
       name: groupName,
+      key: groupName,
       color: this.colorScale.scale(groupName)
     }));
+    const data: FlChartLegendMultiSeriesInput = {
+      series: series,
+      seriesColorScale: this.colorScale
+    };
     return {
       componentType: FlChartLegendMultiSeriesComponent,
-      data: serieColors
+      data: data
     };
   }
 

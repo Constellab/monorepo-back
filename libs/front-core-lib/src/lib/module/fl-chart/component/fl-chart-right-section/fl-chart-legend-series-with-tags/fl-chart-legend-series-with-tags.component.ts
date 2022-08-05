@@ -1,12 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {FlChartSerieWithColor} from '../../../model/data/fl-chart-serie.class';
+import {FlChartSerieSimple} from '../../../model/data/fl-chart-serie.class';
 import {FlChartRightSectionDirective} from '../fl-chart-right-section.directive';
 import {FlTagWithColor} from '../../../../fl-tag/fl-tag.class';
 import {FlTagColorer} from '../../../../fl-tag/fl-tag-colorer.class';
 import {Observable} from 'rxjs';
+import {FlChartScaleColor} from '../../../model/scale/fl-chart-scale-color.class';
 
 export interface FlChartLegendSerieWithTagsInput {
-  legends: FlChartSerieWithColor[];
+  series: FlChartSerieSimple[];
+  seriesColorScale: FlChartScaleColor;
   tagColorer: FlTagColorer;
 }
 

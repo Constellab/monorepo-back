@@ -1,4 +1,4 @@
-import {FlChartScaleColor, FlChartScaleColorMulti} from '../scale/fl-chart-scale-color.class';
+import {FlChartColorFunction, FlChartScaleColorMulti} from '../scale/fl-chart-scale-color.class';
 import {FlChart2dMultiSerie} from '../data/fl-chart-multi-serie.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
 import {FlChartScaleLinear, FlChartScaleNumber} from '../scale/fl-chart-scale.class';
@@ -11,7 +11,8 @@ import {FlChartRendererLinePlot} from '../../renderer/fl-chart-renderer-line.plo
 import {FlChartRendererScatterPlot} from '../../renderer/fl-chart-renderer-scatter.plot';
 import {FlChartConfig, FlChartRightSectionConfig} from '../fl-chart-config.class';
 import {
-  FlChartLegendMultiSeriesComponent
+  FlChartLegendMultiSeriesComponent,
+  FlChartLegendMultiSeriesInput
 } from '../../component/fl-chart-right-section/fl-chart-legend-multi-series/fl-chart-legend-multi-series.component';
 import {FlChart2dDatum} from '../data/fl-chart-data.class';
 import {
@@ -20,11 +21,12 @@ import {
 } from '../../component/fl-chart-right-section/fl-chart-legend-series-with-tags/fl-chart-legend-series-with-tags.component';
 import {FlColorHelper} from '../../../../utils/fl-color-helper.class';
 import {FlTagColorer} from '../../../fl-tag/fl-tag-colorer.class';
+import {FlChartDataWithSerie} from '../data/fl-chart-serie.class';
 
 // abstract class to build line or scatter plot
 export abstract class FlChartLinear2d extends FlChartConfig {
 
-  protected readonly seriesColorScale: FlChartScaleColor;
+  protected readonly seriesColorScale: FlChartScaleColorMulti;
 
   protected readonly tagColorer: FlTagColorer;
 
@@ -75,6 +77,10 @@ export abstract class FlChartLinear2d extends FlChartConfig {
 
   protected abstract getExtendDomain(): number;
 
+  protected getSeriesColorFunction(): FlChartColorFunction<FlChartDataWithSerie<FlChart2dDatum>> {
+    return this.seriesColorScale.exportToColorSeriesFunction();
+  }
+
   destroy(): void {
     this.tagColorer.destroy();
   }
@@ -83,7 +89,8 @@ export abstract class FlChartLinear2d extends FlChartConfig {
 export class FlChartLine2d extends FlChartLinear2d {
 
   createRenderers(): FlChart2AxisRenderer<FlChart2dMultiSerie<any>>[] {
-    return [new FlChartRendererLinePlot(this.seriesColorScale), new FlChartRendererScatterPlot(this.seriesColorScale, this.tagColorer)];
+    return [new FlChartRendererLinePlot(this.seriesColorScale), new FlChartRendererScatterPlot(this.getSeriesColorFunction(),
+      this.tagColorer)];
   }
 
   protected getExtendDomain(): number {
@@ -91,9 +98,13 @@ export class FlChartLine2d extends FlChartLinear2d {
   }
 
   getRightSectionConfig(): FlChartRightSectionConfig {
+    const data: FlChartLegendMultiSeriesInput = {
+      series: this.dataContainer.series,
+      seriesColorScale: this.seriesColorScale
+    };
     return {
       componentType: FlChartLegendMultiSeriesComponent,
-      data: this.dataContainer.getSerieWithColors(this.seriesColorScale)
+      data: data
     };
   }
 }
@@ -101,7 +112,7 @@ export class FlChartLine2d extends FlChartLinear2d {
 export class FlChartScatterPlot2d extends FlChartLinear2d {
 
   createRenderers(): FlChart2AxisRenderer<FlChart2dMultiSerie<any>>[] {
-    return [new FlChartRendererScatterPlot(this.seriesColorScale, this.tagColorer)];
+    return [new FlChartRendererScatterPlot(this.getSeriesColorFunction(), this.tagColorer)];
   }
 
   protected getExtendDomain(): number {
@@ -110,7 +121,8 @@ export class FlChartScatterPlot2d extends FlChartLinear2d {
 
   getRightSectionConfig(): FlChartRightSectionConfig {
     const data: FlChartLegendSerieWithTagsInput = {
-      legends: this.dataContainer.getSerieWithColors(this.seriesColorScale),
+      series: this.dataContainer.series,
+      seriesColorScale: this.seriesColorScale,
       tagColorer: this.tagColorer
     };
     return {

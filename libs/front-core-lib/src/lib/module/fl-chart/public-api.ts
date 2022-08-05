@@ -84,4 +84,3 @@ export * from './renderer/fl-chart-renderer-line.plot';
 export * from './renderer/fl-chart-renderer-scatter.plot';
 export * from './renderer/fl-chart-renderer-stacked-bar.plot';
 export * from './renderer/fl-chart-renderer-venn-diagram.plot';
-export * from './renderer/fl-chart-renderer-vulcano.plot';

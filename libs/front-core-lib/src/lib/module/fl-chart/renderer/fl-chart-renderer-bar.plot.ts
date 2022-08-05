@@ -9,7 +9,7 @@ import {
   FlChartBinDataPortalComponent,
   FlChartBinDataPortalInput
 } from '../component/fl-chart-data-portal/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
-import {FlChartColorFunction, FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
+import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
 
@@ -116,7 +116,7 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
     if (d.data instanceof FlChartDataBin) {
       const data: FlChartBinDataPortalInput = {
         data: d as any,
-        seriesColorScale: this.colorScale
+        color: this.colorScale.scale(d.serieKey)
       };
       // create the portal
       this.portalHandler.openPortal(event.target as any, FlChartBinDataPortalComponent, data);
@@ -124,7 +124,7 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
       // basic portal
     } else {
       // create the portal
-      this.portalWithSerieHandler.openPortal(event.target as any, d, this.getColorFunction());
+      this.portalWithSerieHandler.openPortal(event.target as any, d, this.colorScale.scale(d.serieKey));
     }
   }
 
@@ -132,9 +132,4 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
     this.portalHandler.closePortal();
     this.portalWithSerieHandler.closePortal();
   }
-
-  protected getColorFunction(): FlChartColorFunction<FlChartDataWithSerie<FlChart2dDatum>> {
-    return (d: FlChartDataWithSerie<FlChart2dDatum>) => this.colorScale.scale(d.serieKey);
-  }
-
 }

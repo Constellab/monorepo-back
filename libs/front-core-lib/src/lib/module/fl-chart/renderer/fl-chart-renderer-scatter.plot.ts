@@ -3,7 +3,7 @@ import {FlChart2AxisRendererWithColors} from './fl-chart-renderer.class';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
-import {FlChartColorFunction, FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
+import {FlChartColorFunction} from '../model/scale/fl-chart-scale-color.class';
 import {FlTagColorer} from '../../fl-tag/fl-tag-colorer.class';
 import {FlTagWithColor} from '../../fl-tag/fl-tag.class';
 
@@ -12,9 +12,9 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRendererWithColors<F
 
   private portalHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
 
-  constructor(private defaultColorScale: FlChartScaleColor,
+  constructor(defaultColorFunction: FlChartColorFunction<FlChartDataWithSerie<FlChart2dDatum>>,
               private tagColorer: FlTagColorer) {
-    super();
+    super(defaultColorFunction);
   }
 
   renderFirst(): void {
@@ -51,10 +51,6 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRendererWithColors<F
       .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.scale(d.data.getY()));
   }
 
-  protected getDefaultColorFunction(): FlChartColorFunction<FlChartDataWithSerie<FlChart2dDatum>> {
-    return (d: FlChartDataWithSerie<FlChart2dDatum>) => this.defaultColorScale.scale(d.serieKey);
-  }
-
   protected refreshColor(colorFunction: FlChartColorFunction<FlChartDataWithSerie<FlChart2dDatum>>): void {
     this.data.container
       .selectAll(`circle`)
@@ -62,7 +58,7 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRendererWithColors<F
   }
 
   private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {
-    this.portalHandler.openPortal(event.target as any, d, this.currentColorFunction, this.tagColorer);
+    this.portalHandler.openPortal(event.target as any, d, this.currentColorFunction(d), this.tagColorer);
   }
 
   private onMouseOut(): void {

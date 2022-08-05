@@ -1,7 +1,6 @@
 import {Selection} from 'd3-selection';
 import {FlChartScale} from '../model/scale/fl-chart-scale.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
-import {flRootInjector} from '../../../utils/fl-root-injector';
 import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlChartColorFunction} from '../model/scale/fl-chart-scale-color.class';
 
@@ -41,7 +40,7 @@ export abstract class FlChartNoAxisRenderer<Data> {
 
   protected getTheme(): FlThemeDetail {
     if (this._theme == null) {
-      this._theme = flRootInjector.get(FlThemeService).getCurrentThemeDetail();
+      this._theme = FlThemeService.getInstance().getCurrentThemeDetail();
     }
     return this._theme;
   }
@@ -70,19 +69,15 @@ export abstract class FlChart2AxisRenderer<Data> extends FlChartNoAxisRenderer<D
  */
 export abstract class FlChart2AxisRendererWithColors<Data, Datum> extends FlChart2AxisRenderer<Data> {
 
+
   // function to return the color for a datum
   protected currentColorFunction: FlChartColorFunction<Datum>;
 
-  protected constructor() {
+  protected constructor(protected defaultColorFunction: FlChartColorFunction<Datum>) {
     super();
     // init the current color function
-    this.currentColorFunction = this.getDefaultColorFunction();
+    this.currentColorFunction = defaultColorFunction
   }
-
-  /**
-   * Method the retrieve the default color function for the data
-   */
-  protected abstract getDefaultColorFunction(): FlChartColorFunction<Datum>;
 
   /**
    * Method called when the color function changed to refresh the color on the chart
@@ -96,7 +91,7 @@ export abstract class FlChart2AxisRendererWithColors<Data, Datum> extends FlChar
    * Set the default color function
    */
   resetColors(): void {
-    this.setColorFunction(this.getDefaultColorFunction());
+    this.setColorFunction(this.defaultColorFunction);
   }
 
   /**

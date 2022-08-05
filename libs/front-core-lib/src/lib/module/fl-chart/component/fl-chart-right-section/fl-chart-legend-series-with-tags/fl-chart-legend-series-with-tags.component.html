@@ -1,7 +1,7 @@
 <div fxLayout="column" class="container">
 
   <div class="section g-scrollable-element">
-    <fl-chart-legend-multi-series [data]="data.legends" [disableLegends]="tagAreSelected"></fl-chart-legend-multi-series>
+    <fl-chart-legend-multi-series *ngIf="data.series" [data]="data" [disableLegends]="tagAreSelected"></fl-chart-legend-multi-series>
   </div>
 
   <div class="section tag-section g-scrollable-element" *ngIf="hasTag$ | async">

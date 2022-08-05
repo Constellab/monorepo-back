@@ -3,6 +3,8 @@ import {FlChartSVGLegend} from './legend/fl-chart-legend.class';
 import {FlChartBrush} from './drawer/fl-chart-brush.class';
 import {Type} from '@angular/core';
 import {FlChartRightSectionDirective} from '../component/fl-chart-right-section/fl-chart-right-section.directive';
+import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
+import {FlThemeService} from '../../../service/fl-theme.service';
 
 /**
  * Configuration to create the component for the right section of the chart (usually the legend)
@@ -16,6 +18,9 @@ export interface FlChartRightSectionConfig {
  * Config object to draw a new chart
  */
 export abstract class FlChartConfig {
+
+  private _theme: FlThemeDetail;
+
   abstract getChartContainer(): FlChartContainer<any>;
 
   abstract getRightSectionConfig(): FlChartRightSectionConfig;
@@ -25,4 +30,11 @@ export abstract class FlChartConfig {
   abstract getZoomBrush(): FlChartBrush;
 
   abstract destroy(): void;
+
+  protected getTheme(): FlThemeDetail {
+    if (this._theme == null) {
+      this._theme = FlThemeService.getInstance().getCurrentThemeDetail();
+    }
+    return this._theme;
+  }
 }

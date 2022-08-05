@@ -1,6 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlChartRightSectionDirective} from '../fl-chart-right-section.directive';
-import {FlChartSerieWithColor} from '../../../model/data/fl-chart-serie.class';
+import {FlChartSerieSimple} from '../../../model/data/fl-chart-serie.class';
+import {FlChartScaleColor} from '../../../model/scale/fl-chart-scale-color.class';
+
+export interface FlChartLegendMultiSeriesInput {
+  series: FlChartSerieSimple[];
+  seriesColorScale: FlChartScaleColor;
+}
 
 /**
  * Component to display legend for multi series chart
@@ -10,7 +16,7 @@ import {FlChartSerieWithColor} from '../../../model/data/fl-chart-serie.class';
   templateUrl: './fl-chart-legend-multi-series.component.html',
   styleUrls: ['./fl-chart-legend-multi-series.component.scss']
 })
-export class FlChartLegendMultiSeriesComponent extends FlChartRightSectionDirective<FlChartSerieWithColor[]>
+export class FlChartLegendMultiSeriesComponent extends FlChartRightSectionDirective<FlChartLegendMultiSeriesInput>
   implements OnInit {
 
   // when disable the color is replace with a grey color

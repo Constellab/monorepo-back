@@ -1,13 +1,12 @@
 import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {FL_PORTAL_DATA} from '../../../../fl-portal/model/fl-portal.class';
 import {FlChartDataWithSerie} from '../../../model/data/fl-chart-serie.class';
-import {FlChartColorFunction} from '../../../model/scale/fl-chart-scale-color.class';
 import {FlChart2dDatum} from '../../../model/data/fl-chart-data.class';
 import {FlTagColorer} from '../../../../fl-tag/fl-tag-colorer.class';
 
 export interface FlChartDataWithSeriePortalInput {
   data: FlChartDataWithSerie<FlChart2dDatum>;
-  colorFunction: FlChartColorFunction<FlChartDataWithSerie<any>>;
+  color: string;
   tagColorer?: FlTagColorer;
 }
 
@@ -24,12 +23,12 @@ export class FlChartDataWithSeriePortalComponent implements OnInit {
 
 
   data: FlChartDataWithSerie<FlChart2dDatum>;
-  colorFunction: FlChartColorFunction<FlChartDataWithSerie<any>>;
+  color: string;
   tagColorer?: FlTagColorer;
 
   constructor(@Inject(FL_PORTAL_DATA) input: FlChartDataWithSeriePortalInput) {
     this.data = input.data;
-    this.colorFunction = input.colorFunction;
+    this.color = input.color;
     this.tagColorer = input.tagColorer;
   }
 

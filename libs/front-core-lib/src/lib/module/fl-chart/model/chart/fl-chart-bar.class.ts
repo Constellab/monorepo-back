@@ -11,7 +11,8 @@ import {FlChartRendererStackedBarPlot} from '../../renderer/fl-chart-renderer-st
 import {FlChartRendererBarPlot} from '../../renderer/fl-chart-renderer-bar.plot';
 import {FlChartScaleBand, FlChartScaleLinear, FlChartScaleNumber} from '../scale/fl-chart-scale.class';
 import {
-  FlChartLegendMultiSeriesComponent
+  FlChartLegendMultiSeriesComponent,
+  FlChartLegendMultiSeriesInput
 } from '../../component/fl-chart-right-section/fl-chart-legend-multi-series/fl-chart-legend-multi-series.component';
 
 abstract class FlChartBar extends FlChartConfig {
@@ -54,9 +55,13 @@ abstract class FlChartBar extends FlChartConfig {
   }
 
   getRightSectionConfig(): FlChartRightSectionConfig {
+    const data: FlChartLegendMultiSeriesInput = {
+      series: this.dataContainer.series,
+      seriesColorScale: this.seriesColorScale
+    };
     return {
       componentType: FlChartLegendMultiSeriesComponent,
-      data: this.dataContainer.getSerieWithColors(this.seriesColorScale)
+      data: data
     };
   }
 

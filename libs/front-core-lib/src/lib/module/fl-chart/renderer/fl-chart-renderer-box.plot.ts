@@ -9,7 +9,7 @@ import {
   FlChartBoxPlotDataPortalInput
 } from '../component/fl-chart-data-portal/fl-chart-box-plot-data-portal/fl-chart-box-plot-data-portal.component';
 import {FlChartMultiSerie} from '../model/data/fl-chart-multi-serie.class';
-import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
+import {FlChartColorFunction} from '../model/scale/fl-chart-scale-color.class';
 import {FlTagColorer} from '../../fl-tag/fl-tag-colorer.class';
 import {FlTagWithColor} from '../../fl-tag/fl-tag.class';
 
@@ -26,9 +26,9 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
 
-  constructor(private defaultColorScale: FlChartScaleColor,
+  constructor(defaultColorFunction: FlChartColorFunction<FlChartDataWithSerie<FlChartBoxPlotData>>,
               private tagColorer: FlTagColorer) {
-    super();
+    super(defaultColorFunction);
   }
 
   renderFirst(): void {
@@ -141,7 +141,7 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
   private onMouseHover(event: MouseEvent, data: FlChartDataWithSerie<FlChartBoxPlotData>): void {
     const input: FlChartBoxPlotDataPortalInput = {
       data: data,
-      seriesColorScale: this.defaultColorScale,
+      color: this.defaultColorFunction(data),
       tagColorer: this.tagColorer
     };
     this.portalHandler.openPortal(event.target as any, FlChartBoxPlotDataPortalComponent, input);
@@ -160,10 +160,6 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
     } else {
       this.resetColors();
     }
-  }
-
-  protected getDefaultColorFunction(): (d: FlChartDataWithSerie<FlChartBoxPlotData>) => string {
-    return (d: FlChartDataWithSerie<FlChartBoxPlotData>) => this.defaultColorScale.scale(d.serieKey);
   }
 
   protected refreshColor(colorFunction: (d: FlChartDataWithSerie<FlChartBoxPlotData>) => string): void {

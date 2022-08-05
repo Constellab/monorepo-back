@@ -1,7 +1,7 @@
 <div class="g-scrollable-element">
-  <div *ngFor="let serie of data" class="g-text-tiny">
+  <div *ngFor="let serie of data.series" class="g-text-tiny">
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
-      <div class="color" [style.background-color]="serie.color" [ngClass]="{'disable-color': disableLegends}"></div>
+      <div class="color" [style.background-color]="serie.key | flChartScale:data.seriesColorScale" [ngClass]="{'disable-color': disableLegends}"></div>
       <div class="text">
         {{serie.name}}
       </div>

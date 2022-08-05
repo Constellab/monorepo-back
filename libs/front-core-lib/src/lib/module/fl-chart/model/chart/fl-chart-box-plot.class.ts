@@ -2,7 +2,7 @@ import {FlChartConfig, FlChartRightSectionConfig} from '../fl-chart-config.class
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
 import {FlChartSVGLegend} from '../legend/fl-chart-legend.class';
 import {FlChart2dBrushX, FlChartBrush} from '../drawer/fl-chart-brush.class';
-import {FlChartScaleColor, FlChartScaleColorMulti} from '../scale/fl-chart-scale-color.class';
+import {FlChartScaleColorMulti} from '../scale/fl-chart-scale-color.class';
 import {FlChartMultiSerie} from '../data/fl-chart-multi-serie.class';
 import {FlChartBoxPlotData} from '../data/fl-chart-box-plot-data.class';
 import {FlChartLegendMultiSeries} from '../legend/fl-chart-legend-multi-series.class';
@@ -20,7 +20,7 @@ import {FlTagColorer} from '../../../fl-tag/fl-tag-colorer.class';
 // Config box plot
 export class FlChartBoxPlot extends FlChartConfig {
 
-  protected readonly seriesColorScale: FlChartScaleColor;
+  protected readonly seriesColorScale: FlChartScaleColorMulti;
   private readonly tagColorer: FlTagColorer;
 
   constructor(protected dataContainer: FlChartMultiSerie<FlChartBoxPlotData>) {
@@ -59,7 +59,7 @@ export class FlChartBoxPlot extends FlChartConfig {
     return chartContainer
       .initXAxis(xAxis)
       .initAxisY(yAxis)
-      .addRenderer(new FlChartRendererBoxPlot(this.seriesColorScale, this.tagColorer))
+      .addRenderer(new FlChartRendererBoxPlot(this.seriesColorScale.exportToColorSeriesFunction(), this.tagColorer))
       .initData(this.dataContainer);
   }
 
@@ -70,7 +70,8 @@ export class FlChartBoxPlot extends FlChartConfig {
 
   getRightSectionConfig(): FlChartRightSectionConfig {
     const data: FlChartLegendSerieWithTagsInput = {
-      legends: this.dataContainer.getSerieWithColors(this.seriesColorScale),
+      series: this.dataContainer.series,
+      seriesColorScale: this.seriesColorScale,
       tagColorer: this.tagColorer
     };
 
@@ -83,6 +84,7 @@ export class FlChartBoxPlot extends FlChartConfig {
   getZoomBrush(): FlChartBrush {
     return new FlChart2dBrushX();
   }
+
 
   destroy(): void {
     this.tagColorer.destroy();
