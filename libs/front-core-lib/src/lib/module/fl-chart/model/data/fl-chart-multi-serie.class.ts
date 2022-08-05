@@ -12,8 +12,8 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
   series: FlChartSerie<Data>[];
 
   // name of the axis
-  axisXLabel: string
-  axisYLabel: string
+  axisXLabel: string;
+  axisYLabel: string;
 
   /**
    * Function to format the x-axis labels
@@ -24,7 +24,6 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
    * Function to format the y-axis labels
    */
   axisYLabelTicksFormat: FlChartAxisTickFormat | null;
-
 
 
   constructor(series: FlChartSerie<Data>[] = []) {
@@ -129,11 +128,7 @@ export class FlChartMultiSerie<Data extends FlChartData> implements FlChartDataC
     const tags: Record<string, string>[] = [];
 
     for (const serie of this.series) {
-      for (const data of serie.data) {
-        if (data.tags && Object.keys(data.tags).length > 0) {
-          tags.push(data.tags);
-        }
-      }
+      tags.push(...serie.getAllTags());
     }
     return FlTagHelper.groupTagsByKey(tags);
   }

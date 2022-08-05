@@ -3,7 +3,7 @@ import {
   FlChartDataWithSeriePortalInput
 } from '../../component/fl-chart-data-portal/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 import {FlChartDataWithSerie} from '../data/fl-chart-serie.class';
-import {FlChartScaleColor} from '../scale/fl-chart-scale-color.class';
+import {FlChartColorFunction} from '../scale/fl-chart-scale-color.class';
 import {FlChartPortalHandler} from './fl-chart-portal-handler.class';
 import {FlChart2dDatum} from '../data/fl-chart-data.class';
 import {FlTagColorer} from '../../../fl-tag/fl-tag-colorer.class';
@@ -20,11 +20,12 @@ export class FlChartDataWithSeriePortalHandler {
     this.handler = new FlChartPortalHandler();
   }
 
-  public openPortal(element: Element, d: FlChartDataWithSerie<FlChart2dDatum>, colorScale: FlChartScaleColor,
+  public openPortal(element: Element, d: FlChartDataWithSerie<FlChart2dDatum>,
+                    colorFunction: FlChartColorFunction<FlChartDataWithSerie<any>>,
                     tagColorer?: FlTagColorer): void {
     const data: FlChartDataWithSeriePortalInput = {
       data: d,
-      seriesColorScale: colorScale,
+      colorFunction: colorFunction,
       tagColorer: tagColorer
     };
     // create the portal

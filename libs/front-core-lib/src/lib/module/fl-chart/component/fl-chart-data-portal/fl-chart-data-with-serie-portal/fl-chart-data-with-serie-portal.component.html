@@ -5,7 +5,7 @@
         <div>x : {{data.data.getX()}}</div>
         <div>y : {{data.data.getY()}}</div>
 
-        <fl-chart-serie-inline class="serie" [color]="data.serieKey | flChartScale:seriesColorScale"
+        <fl-chart-serie-inline class="serie" [color]="data | flChartColorFunction:colorFunction"
                                [serieName]="data.serieName">
         </fl-chart-serie-inline>
       </div>

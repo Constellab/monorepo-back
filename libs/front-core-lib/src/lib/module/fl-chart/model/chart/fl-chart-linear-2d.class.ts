@@ -1,4 +1,3 @@
-// abstract class to build line or scatter plot
 import {FlChartScaleColor, FlChartScaleColorMulti} from '../scale/fl-chart-scale-color.class';
 import {FlChart2dMultiSerie} from '../data/fl-chart-multi-serie.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../drawer/fl-chart-container.class';
@@ -8,7 +7,7 @@ import {FlChartSVGLegend} from '../legend/fl-chart-legend.class';
 import {FlChartLegendMultiSeries} from '../legend/fl-chart-legend-multi-series.class';
 import {FlChart2dBrush, FlChartBrush} from '../drawer/fl-chart-brush.class';
 import {FlChart2AxisRenderer} from '../../renderer/fl-chart-renderer.class';
-import {FlChartRendererLine} from '../../renderer/fl-chart-renderer-line.plot';
+import {FlChartRendererLinePlot} from '../../renderer/fl-chart-renderer-line.plot';
 import {FlChartRendererScatterPlot} from '../../renderer/fl-chart-renderer-scatter.plot';
 import {FlChartConfig, FlChartRightSectionConfig} from '../fl-chart-config.class';
 import {
@@ -22,11 +21,10 @@ import {
 import {FlColorHelper} from '../../../../utils/fl-color-helper.class';
 import {FlTagColorer} from '../../../fl-tag/fl-tag-colorer.class';
 
-abstract class FlChartLinear2d extends FlChartConfig {
+// abstract class to build line or scatter plot
+export abstract class FlChartLinear2d extends FlChartConfig {
 
   protected readonly seriesColorScale: FlChartScaleColor;
-
-  protected readonly renderers: FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>>[];
 
   protected readonly tagColorer: FlTagColorer;
 
@@ -37,8 +35,6 @@ abstract class FlChartLinear2d extends FlChartConfig {
     // init tag colorer
     this.tagColorer = FlTagColorer.fromGroupedTags(this.dataContainer.getTagsGroupByKey(),
       FlColorHelper.getColorList(0.8));
-
-    this.renderers = this.createRenderers();
   }
 
   getChartContainer(): FlChartContainer<any> {
@@ -60,7 +56,7 @@ abstract class FlChartLinear2d extends FlChartConfig {
     chartContainer
       .initXAxis(xAxis)
       .initAxisY(yAxis)
-      .addRenderer(this.renderers)
+      .addRenderer(this.createRenderers())
       .initData(this.dataContainer);
 
     return chartContainer;
@@ -87,7 +83,7 @@ abstract class FlChartLinear2d extends FlChartConfig {
 export class FlChartLine2d extends FlChartLinear2d {
 
   createRenderers(): FlChart2AxisRenderer<FlChart2dMultiSerie<any>>[] {
-    return [new FlChartRendererLine(this.seriesColorScale), new FlChartRendererScatterPlot(this.seriesColorScale, this.tagColorer)];
+    return [new FlChartRendererLinePlot(this.seriesColorScale), new FlChartRendererScatterPlot(this.seriesColorScale, this.tagColorer)];
   }
 
   protected getExtendDomain(): number {

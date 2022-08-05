@@ -26,3 +26,4 @@ export * from './lib/model/rv-technical-info.class';
 export * from './lib/model/rv-type-info.class';
 export * from './lib/model/rv-venn-diagram.class';
 export * from './lib/model/rv-view-config.class';
+export * from './lib/model/rv-vulcano-plot.class';

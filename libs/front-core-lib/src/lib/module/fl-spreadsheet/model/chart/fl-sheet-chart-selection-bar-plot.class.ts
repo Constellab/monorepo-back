@@ -24,8 +24,7 @@ export class FlSheetChartSelectionBarPlot extends FlSheetChartSelection {
   exportToChart(): FlChartConfig {
     const series: FlChart2dMultiSerie<any> = new FlChart2dMultiSerie();
     for (const serie of this.series) {
-      const ySelection: FlSheetSelection = this.getMultiSelectionFromSelectionRange(serie.y);
-      series.addSerie(new FlChartSerie<any>(this.convertSelectionTo2dDatum(ySelection), serie.name));
+      series.addSerie(this.convert2DFormSelectionToChartSerie(serie));
     }
 
     series.axisXLabel = this.xAxisLabel;

@@ -53,6 +53,7 @@ import {FlTagModule} from '../fl-tag/fl-tag.module';
 import {
   FlChartLegendSeriesWithTagsComponent
 } from './component/fl-chart-right-section/fl-chart-legend-series-with-tags/fl-chart-legend-series-with-tags.component';
+import {FlChartColorFunctionPipe} from './pipe/fl-chart-color-function.pipe';
 
 /**
  * Main module exporting all the chart modules
@@ -77,6 +78,7 @@ import {
     FlChartLegendMultiSeriesComponent,
     FlChartLegendHeatMapComponent,
     FlChartLegendSeriesWithTagsComponent,
+    FlChartColorFunctionPipe,
 
   ],
   exports: [

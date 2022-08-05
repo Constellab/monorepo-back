@@ -18,8 +18,11 @@ export * from './component/fl-chart-data-portal/fl-chart-venn-data-portal/fl-cha
 // Right section
 export * from './component/fl-chart-right-section/fl-chart-legend-heat-map/fl-chart-legend-heat-map.component';
 export * from './component/fl-chart-right-section/fl-chart-legend-multi-series/fl-chart-legend-multi-series.component';
-export * from './component/fl-chart-right-section/fl-chart-legend-series-with-tags/fl-chart-legend-series-with-tags.component';
+export *
+  from './component/fl-chart-right-section/fl-chart-legend-series-with-tags/fl-chart-legend-series-with-tags.component';
+
 // Pipes
+export * from './pipe/fl-chart-color-function.pipe';
 export * from './pipe/fl-chart-scale.pipe';
 
 // Export the service
@@ -36,6 +39,7 @@ export * from './model/chart/fl-chart-box-plot.class';
 export * from './model/chart/fl-chart-heat-map.class';
 export * from './model/chart/fl-chart-linear-2d.class';
 export * from './model/chart/fl-chart-venn-diagram.class';
+export * from './model/chart/fl-chart-vulcano-plot.class';
 
 // Data
 export * from './model/data/fl-chart-box-plot-data.class';
@@ -74,8 +78,10 @@ export * from './model/fl-d3.class';
 export * from './renderer/fl-chart-renderer.class';
 export * from './renderer/fl-chart-renderer-box.plot';
 export * from './renderer/fl-chart-renderer-heat-map.plot';
+export * from './renderer/fl-chart-renderer-straight-lines.class';
 export * from './renderer/fl-chart-renderer-bar.plot';
 export * from './renderer/fl-chart-renderer-line.plot';
 export * from './renderer/fl-chart-renderer-scatter.plot';
 export * from './renderer/fl-chart-renderer-stacked-bar.plot';
 export * from './renderer/fl-chart-renderer-venn-diagram.plot';
+export * from './renderer/fl-chart-renderer-vulcano.plot';

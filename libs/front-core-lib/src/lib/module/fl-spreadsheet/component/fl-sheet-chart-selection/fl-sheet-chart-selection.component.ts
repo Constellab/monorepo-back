@@ -102,6 +102,8 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
         normalize: [null],
         xAxisLabel: [null],
         yAxisLabel: [null],
+        xThreshold: [0.05, Validators.required],
+        yThreshold: [0.05, Validators.required],
       })
 
     });
@@ -192,6 +194,10 @@ export class FlSheetChartSelectionComponent implements OnInit, OnDestroy {
   showAdditionalField(key: keyof FlSheetChartSelectionFormAdditional): boolean {
     if (this.formConfig == null) return false;
     return this.formConfig.getAdditionalFieldsName().includes(key);
+  }
+
+  get additionalFieldFormGp(): FormGroup<FlSheetChartSelectionFormAdditional> {
+    return this.formGp.get('additionalFields') as FormGroup<FlSheetChartSelectionFormAdditional>;
   }
 
   addSerie(): void {

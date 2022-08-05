@@ -7,6 +7,7 @@ import {rvHeatMapToChart} from '../../model/rv-heat-map.class';
 import {rvHistogramToChart} from '../../model/rv-histogram.class';
 import {rvVennDiagramToChart} from '../../model/rv-venn-diagram.class';
 import {RvViewChartType} from '../../model/rv-resource-view.class';
+import {rvVulcanoPlotToChart} from '../../model/rv-vulcano-plot.class';
 
 /**
  * Resource view component to show 2d charts (Line plot, Scatter plot, heatmap, venn diagram...)
@@ -45,6 +46,9 @@ export class RvViewChart2dComponent
         break;
       case 'venn-diagram-view':
         this.chart = rvVennDiagramToChart(this.view);
+        break;
+      case 'vulcano-plot-view':
+        this.chart = rvVulcanoPlotToChart(this.view);
         break;
       default:
         console.error(`[BioxResourceChart2dComponent] view type ${(this.view as any).type} not supported`);

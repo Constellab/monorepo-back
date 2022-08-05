@@ -14,6 +14,7 @@ import {FlPortalConfig} from '../../../fl-portal/model/fl-portal-config.class';
 import {FlMenuDynamic} from '../../../fl-menu-dynamic/model/fl-menu-dynamic.class';
 import {FlSheetChartSelection} from './fl-sheet-chart-selection.class';
 import {FlSheetChartConfig, FlSpreadsheetChartSerieSelectionInput} from './fl-sheet-chart-config.class';
+import {FlSheetChartSelectionVulcanoPlot} from './fl-sheet-chart-selection-vulcano-plot.class';
 
 
 /**
@@ -106,6 +107,45 @@ export class FlSheetLocalChartConfigScatterPlot extends FlSheetLocalChartConfig 
   }
 }
 
+//////////////////////////////////// VULCANO PLOT /////////////////////////////////////
+export class FlSheetLocalChartConfigVulcanoPlot extends FlSheetLocalChartConfig {
+
+  getChartType(): FlChartType.VULCANO_PLOT {
+    return FlChartType.VULCANO_PLOT;
+  }
+
+  generateChart(series: FlSheetChart2dSerieSelectionForm[], additionalFields: FlSheetChartSelectionFormAdditional,
+                sheet: FlSheet, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
+    // create the selection object, only take the first serie
+    const selection = new FlSheetChartSelectionVulcanoPlot(sheet, series[0],
+      additionalFields.xThreshold, additionalFields.yThreshold,
+      additionalFields.xAxisLabel, additionalFields.yAxisLabel);
+    return this.openChartPortal(selection, contextMenuItems);
+  }
+
+  createSeriesFromDataRange(sheet: FlSheet, selectionRange: FlSheetSelectionRange): FlSheetChart2dSerieSelectionForm[] {
+    return this.createMultipleSeriesForXAndY(sheet, selectionRange);
+  }
+
+  getSelectSerieConfig(serie: FlSheetChart2dSerieSelectionForm): FlSpreadsheetChartSerieSelectionInput {
+    return {
+      serie: serie,
+      mode: 'full',
+      ySelectionMode: 'multi',
+      xSelectionMode: 'multi'
+    };
+  }
+
+
+  getNbMaxOfSeries(): number {
+    return 1;
+  }
+
+  getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
+    return ['xThreshold', 'yThreshold', 'xAxisLabel', 'yAxisLabel'];
+  }
+}
+
 
 //////////////////////////////////// BAR PLOT /////////////////////////////////////
 export class FlSheetLocalChartConfigBarPlot extends FlSheetLocalChartConfig {
@@ -168,6 +208,8 @@ export class FlSheetLocalChartConfigStackedBarPlot extends FlSheetLocalChartConf
     return ['xAxisLabel', 'yAxisLabel'];
   }
 }
+
+
 
 //////////////////////////////////// HISTOGRAM /////////////////////////////////////
 export class FlSheetLocalChartConfigHistogram extends FlSheetLocalChartConfig {

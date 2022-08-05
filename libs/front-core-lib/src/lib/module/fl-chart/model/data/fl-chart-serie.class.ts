@@ -1,6 +1,7 @@
 import {FlChartData, FlChartDataContainer} from './fl-chart-data.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlLegend} from '../legend/fl-chart-legend-multi-series.class';
+import {FlTagHelper} from '../../../fl-tag/fl-tag.class';
 
 /**
  * Key to distinguish a serie form another
@@ -71,5 +72,23 @@ export class FlChartSerie<Data extends FlChartData> implements FlChartDataContai
   public addData(data: Data | Data[]): void {
     const dataArray = ClHelpService.convertObjectOrArrayToArray(data);
     this.data.push(...dataArray);
+  }
+
+  /**
+   * Return all the tags value of the data grouped by key
+   */
+  public getTagsGroupByKey(): Record<string, string[]> {
+    return FlTagHelper.groupTagsByKey(this.getAllTags());
+  }
+
+  public getAllTags(): Record<string, string>[] {
+    const tags: Record<string, string>[] = [];
+
+    for (const data of this.data) {
+      if (data.tags && Object.keys(data.tags).length > 0) {
+        tags.push(data.tags);
+      }
+    }
+    return tags;
   }
 }

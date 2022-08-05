@@ -5,16 +5,13 @@ import {FlChart2dDatum} from '../model/data/fl-chart-data.class';
 import {FlChartScale, FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
 import {FlChartDataBin} from '../model/data/fl-chart-data-bin.class';
-import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
-import {
-  FlChartDataWithSeriePortalComponent,
-  FlChartDataWithSeriePortalInput
-} from '../component/fl-chart-data-portal/fl-chart-data-with-serie-portal/fl-chart-data-with-serie-portal.component';
 import {
   FlChartBinDataPortalComponent,
   FlChartBinDataPortalInput
 } from '../component/fl-chart-data-portal/fl-chart-bin-data-portal/fl-chart-bin-data-portal.component';
-import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
+import {FlChartColorFunction, FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
+import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
+import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
 
 
 /**
@@ -25,6 +22,7 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
   private readonly groupClassName: string = 'serie';
 
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
+  private portalWithSerieHandler: FlChartDataWithSeriePortalHandler = new FlChartDataWithSeriePortalHandler();
 
   constructor(private colorScale: FlChartScaleColor) {
     super();
@@ -125,18 +123,18 @@ export class FlChartRendererBarPlot extends FlChart2AxisRenderer<FlChart2dMultiS
 
       // basic portal
     } else {
-      const data: FlChartDataWithSeriePortalInput = {
-        data: d,
-        seriesColorScale: this.colorScale
-      };
       // create the portal
-      this.portalHandler.openPortal(event.target as any, FlChartDataWithSeriePortalComponent, data);
+      this.portalWithSerieHandler.openPortal(event.target as any, d, this.getColorFunction());
     }
   }
 
   private onMouseOut(): void {
     this.portalHandler.closePortal();
+    this.portalWithSerieHandler.closePortal();
   }
 
+  protected getColorFunction(): FlChartColorFunction<FlChartDataWithSerie<FlChart2dDatum>> {
+    return (d: FlChartDataWithSerie<FlChart2dDatum>) => this.colorScale.scale(d.serieKey);
+  }
 
 }

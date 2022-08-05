@@ -6,8 +6,9 @@ import {LabConfigValues} from '../model/entities/lab-config.entity';
 import {RvResourceViewTable, RvTransformerParams} from '@monorepo/resource-view';
 import {LabResourceService} from './lab-resource.service';
 
-export type LabTableChartType = 'line-plot-2d' | 'scatter-plot-2d' | 'bar-plot' |
-  'stack-bar-plot' | 'histogram' | 'box-plot' | 'heatmap' | 'venn-diagram';
+export type LabTableChartType = 'line-plot-2d' | 'scatter-plot-2d' | 'vulcano-plot' |
+  'bar-plot' | 'stack-bar-plot' | 'histogram' |
+  'box-plot' | 'heatmap' | 'venn-diagram';
 
 /**
  * Service to call methods on table resource

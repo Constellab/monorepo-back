@@ -11,7 +11,7 @@ import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 /**
  * Class to manage line chart with multiple series
  */
-export class FlChartRendererLine extends FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
+export class FlChartRendererLinePlot extends FlChart2AxisRenderer<FlChart2dMultiSerie<FlChart2dDatum>> {
 
   private readonly serieClassName: string = 'serie';
 

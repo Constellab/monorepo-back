@@ -21,8 +21,6 @@ import {FlTagColorer} from '../../../fl-tag/fl-tag-colorer.class';
 export class FlChartBoxPlot extends FlChartConfig {
 
   protected readonly seriesColorScale: FlChartScaleColor;
-
-  private readonly renderer: FlChartRendererBoxPlot;
   private readonly tagColorer: FlTagColorer;
 
   constructor(protected dataContainer: FlChartMultiSerie<FlChartBoxPlotData>) {
@@ -30,7 +28,6 @@ export class FlChartBoxPlot extends FlChartConfig {
     this.seriesColorScale = FlChartScaleColorMulti.fromMultiSeries(dataContainer);
     this.tagColorer = FlTagColorer.fromGroupedTags(this.dataContainer.getTagsGroupByKey(),
       FlColorHelper.getColorList());
-    this.renderer = new FlChartRendererBoxPlot(this.seriesColorScale, this.tagColorer);
   }
 
   getChartContainer(): FlChartContainer<any> {
@@ -62,7 +59,7 @@ export class FlChartBoxPlot extends FlChartConfig {
     return chartContainer
       .initXAxis(xAxis)
       .initAxisY(yAxis)
-      .addRenderer(this.renderer)
+      .addRenderer(new FlChartRendererBoxPlot(this.seriesColorScale, this.tagColorer))
       .initData(this.dataContainer);
   }
 

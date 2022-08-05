@@ -34,3 +34,5 @@ export interface FlD3DragEvent<T = any> extends DragEvent {
   active: boolean;
   subject: T;
 }
+
+export const flD3DefaultTransitionDuration = 250;

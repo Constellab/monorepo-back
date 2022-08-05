@@ -4,7 +4,8 @@ import {FlSheetSelection} from '../selection/fl-sheet-selection.class';
 import {FlChart2dDatum} from '../../../fl-chart/model/data/fl-chart-data.class';
 import {ClHelpService, ClNumberHelper} from '@monorepo/core-lib';
 import {FlChartConfig} from '../../../fl-chart/model/fl-chart-config.class';
-import {FlSheetSelectionRange} from './fl-sheet-chart-selection-form.class';
+import {FlSheetChart2dSerieSelectionForm, FlSheetSelectionRange} from './fl-sheet-chart-selection-form.class';
+import {FlChartSerie} from '../../../fl-chart/model/data/fl-chart-serie.class';
 
 /**
  * Object to store the chart selection and contain a method to export the selection to series
@@ -46,6 +47,22 @@ export abstract class FlSheetChartSelection {
       data.push(new FlChart2dDatum(xValues[i], yValues[i]));
     }
     return data;
+  }
+
+  /**
+   * Convert a formSelection serie to a chart serie including x values if provided
+   * @param formSelection
+   * @protected
+   */
+  protected convert2DFormSelectionToChartSerie(formSelection: FlSheetChart2dSerieSelectionForm): FlChartSerie<any>{
+    const ySelection: FlSheetSelection = this.getMultiSelectionFromSelectionRange(formSelection.y);
+
+    if (!ClHelpService.isNullOrEmpty(formSelection.x)) {
+      const xSelection: FlSheetSelection = this.getMultiSelectionFromSelectionRange(formSelection.x);
+      return new FlChartSerie<any>(this.convertSelectionTo2dDatumWithXData(xSelection, ySelection), formSelection.name);
+    } else {
+      return new FlChartSerie<any>(this.convertSelectionTo2dDatum(ySelection), formSelection.name);
+    }
   }
 
   /**

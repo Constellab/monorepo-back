@@ -19,7 +19,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
   // override the table view to add functionalities like chart from api
   'table-view': {
     icon: 'calendar_view_month',
-    text: 'biox.resource_view_spreadsheet',
+    text: 'rvResourceView.resource_view_spreadsheet',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: LabResourceSpreadsheetComponent,
@@ -27,7 +27,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
   // override the table view to add functionalities like chart from api
   'tabular-view': {
     icon: 'calendar_view_month',
-    text: 'biox.resource_view_spreadsheet',
+    text: 'rvResourceView.resource_view_spreadsheet',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: LabResourceSpreadsheetComponent,
@@ -35,7 +35,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
   // override the text view to enable pagination
   'text-view': {
     icon: 'text_snippet',
-    text: 'biox.resource_view_text',
+    text: 'rvResourceView.resource_view_text',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: LabResourceTextComponent,

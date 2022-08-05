@@ -15,7 +15,8 @@ import {
   FlSheetLocalChartConfigHistogram,
   FlSheetLocalChartConfigLinePlot,
   FlSheetLocalChartConfigScatterPlot,
-  FlSheetLocalChartConfigStackedBarPlot
+  FlSheetLocalChartConfigStackedBarPlot,
+  FlSheetLocalChartConfigVulcanoPlot
 } from '../model/chart/fl-sheet-chart-local-config.class';
 import {FlChartPortalService} from '../../fl-chart/service/fl-chart-portal.service';
 
@@ -116,12 +117,13 @@ export class FlSpreadsheetState implements OnDestroy {
     return [
       new FlSheetLocalChartConfigLinePlot(this.chartPortalService),
       new FlSheetLocalChartConfigScatterPlot(this.chartPortalService),
+      new FlSheetLocalChartConfigVulcanoPlot(this.chartPortalService),
       new FlSheetLocalChartConfigBarPlot(this.chartPortalService),
       new FlSheetLocalChartConfigStackedBarPlot(this.chartPortalService),
       new FlSheetLocalChartConfigHistogram(this.chartPortalService),
       new FlSheetLocalChartConfigBoxPlot(this.chartPortalService),
       new FlSheetLocalChartConfigHeatMap(this.chartPortalService),
-    ]
+    ];
   }
 
   //////////////////////////////////// OTHER ////////////////////////////////////

@@ -153,6 +153,47 @@ export class LabTableChartConfigScatterPlot extends LabTableChart2dConfig {
   }
 }
 
+//////////////////////////////////// VULCANO PLOT /////////////////////////////////////
+export class LabTableChartConfigVulcanoPlot extends LabTableChart2dConfig {
+
+  getChartType(): FlChartType {
+    return FlChartType.VULCANO_PLOT;
+  }
+
+  generateChart(series: FlSheetChart2dSerieSelectionForm[], additionalFields: FlSheetChartSelectionFormAdditional,
+                sheet: FlSheet, contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
+    return this.generate2dChart('vulcano-plot',
+      {
+        series: series,
+        x_threshold: additionalFields.xThreshold,
+        y_threshold: additionalFields.yThreshold,
+      },
+      additionalFields, contextMenuItems);
+  }
+
+  createSeriesFromDataRange(sheet: FlSheet, selectionRange: FlSheetSelectionRange): FlSheetChart2dSerieSelectionForm[] {
+    return this.createMultipleSeriesForXAndY(sheet, selectionRange);
+  }
+
+  getSelectSerieConfig(serie: FlSheetChart2dSerieSelectionForm): FlSpreadsheetChartSerieSelectionInput {
+    return {
+      serie: serie,
+      mode: 'full',
+      ySelectionMode: 'multi',
+      xSelectionMode: 'multi'
+    };
+  }
+
+
+  getNbMaxOfSeries(): number {
+    return 1;
+  }
+
+  getAdditionalFieldsName(): (keyof FlSheetChartSelectionFormAdditional)[] {
+    return ['xThreshold', 'yThreshold', 'xAxisLabel', 'yAxisLabel'];
+  }
+}
+
 
 //////////////////////////////////// BAR PLOT /////////////////////////////////////
 export class LabTableChartConfigBarPlot extends LabTableChart2dConfig {

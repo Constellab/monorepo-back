@@ -65,6 +65,9 @@ export interface FlSheetChartSelectionFormAdditional {
   // for 2d charts
   xAxisLabel?: string;
   yAxisLabel?: string;
+  // for vulcano plot
+  xThreshold?: number;
+  yThreshold?: number;
 }
 
 

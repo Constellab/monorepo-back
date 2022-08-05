@@ -9,7 +9,8 @@ import {
   LabTableChartConfigLinePlot,
   LabTableChartConfigScatterPlot,
   LabTableChartConfigStackedBarPlot,
-  LabTableChartConfigVennDiagram
+  LabTableChartConfigVennDiagram,
+  LabTableChartConfigVulcanoPlot
 } from '../../model/lab-table-chart-config.class';
 import {LabResourceTableService} from '../../../../entity-service/lab-resource-table.service';
 import {LabResourceSpreadsheetPageLoader} from '../../model/lab-resource-spreadsheet-page-loader.class';
@@ -42,6 +43,8 @@ export class LabResourceSpreadsheetComponent extends RvResourceViewDirective<RvR
       new LabTableChartConfigLinePlot(this.resourceId, this.config.methodName, this.config.configValues, this.config.transformers,
         this.resourceTableService, this.portalService),
       new LabTableChartConfigScatterPlot(this.resourceId, this.config.methodName, this.config.configValues, this.config.transformers,
+        this.resourceTableService, this.portalService),
+      new LabTableChartConfigVulcanoPlot(this.resourceId, this.config.methodName, this.config.configValues, this.config.transformers,
         this.resourceTableService, this.portalService),
       new LabTableChartConfigBarPlot(this.resourceId, this.config.methodName, this.config.configValues, this.config.transformers,
         this.resourceTableService, this.portalService),

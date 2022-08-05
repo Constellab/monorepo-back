@@ -3,7 +3,7 @@ import {FlChart2AxisRendererWithColors} from './fl-chart-renderer.class';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartDataWithSeriePortalHandler} from '../model/portal-handler/fl-chart-data-with-serie-portal-handler.class';
 import {FlChart2dMultiSerie} from '../model/data/fl-chart-multi-serie.class';
-import {FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
+import {FlChartColorFunction, FlChartScaleColor} from '../model/scale/fl-chart-scale-color.class';
 import {FlTagColorer} from '../../fl-tag/fl-tag-colorer.class';
 import {FlTagWithColor} from '../../fl-tag/fl-tag.class';
 
@@ -51,24 +51,18 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRendererWithColors<F
       .attr('cy', (d: FlChartDataWithSerie<FlChart2dDatum>) => this.data.yScale.scale(d.data.getY()));
   }
 
-  // set function to return color of points based on tags
-  setTagColors(colorScale: FlChartScaleColor): void {
-    this.setColorFunction((d: FlChartDataWithSerie<FlChart2dDatum>) => colorScale.scale(d.data.tags));
-  }
-
-
-  protected getDefaultColorFunction(): (d: FlChartDataWithSerie<FlChart2dDatum>) => string {
+  protected getDefaultColorFunction(): FlChartColorFunction<FlChartDataWithSerie<FlChart2dDatum>> {
     return (d: FlChartDataWithSerie<FlChart2dDatum>) => this.defaultColorScale.scale(d.serieKey);
   }
 
-  protected refreshColor(colorFunction: (d: FlChartDataWithSerie<FlChart2dDatum>) => string): void {
+  protected refreshColor(colorFunction: FlChartColorFunction<FlChartDataWithSerie<FlChart2dDatum>>): void {
     this.data.container
       .selectAll(`circle`)
       .style('fill', colorFunction);
   }
 
   private onMouseHover(event: MouseEvent, d: FlChartDataWithSerie<FlChart2dDatum>): void {
-    this.portalHandler.openPortal(event.target as any, d, this.defaultColorScale, this.tagColorer);
+    this.portalHandler.openPortal(event.target as any, d, this.currentColorFunction, this.tagColorer);
   }
 
   private onMouseOut(): void {
@@ -77,7 +71,7 @@ export class FlChartRendererScatterPlot extends FlChart2AxisRendererWithColors<F
 
   private onSelectedTagUpdate(selectedTags: FlTagWithColor[]): void {
     if (selectedTags.length > 0) {
-      const colorFunction: (d: FlChartDataWithSerie<FlChart2dDatum>) => string = (d: FlChartDataWithSerie<FlChart2dDatum>) => {
+      const colorFunction: FlChartColorFunction<FlChartDataWithSerie<FlChart2dDatum>> = (d: FlChartDataWithSerie<FlChart2dDatum>) => {
         return FlTagColorer.getObjectColor(d.data.tags, selectedTags);
       };
       this.setColorFunction(colorFunction);

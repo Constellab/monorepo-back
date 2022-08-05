@@ -5,6 +5,7 @@ import {RvResourceViewBasicPlot2d} from './rv-basic-plot-2d.class';
 import {RvResourceVennDiagram} from './rv-venn-diagram.class';
 import {RvResourceViewHeatMap} from './rv-heat-map.class';
 import {RvResourceViewTable} from './rv-table.class';
+import {RvResourceViewVulcanoPlot} from './rv-vulcano-plot.class';
 
 // list of available view type
 export type RvResourceViewType =
@@ -13,7 +14,7 @@ export type RvResourceViewType =
   | 'table-view' | 'dataset-view' | 'tabular-view'
   | 'network-view'
   | 'image-view'
-  | 'scatter-plot-2d-view' | 'line-plot-2d-view'
+  | 'scatter-plot-2d-view' | 'line-plot-2d-view' | 'vulcano-plot-view'
   | 'bar-plot-view' | 'stacked-bar-plot-view' | 'histogram-view'
   | 'box-plot-view'
   | 'multi-view'
@@ -91,4 +92,5 @@ export type RvViewChartType =
   | RvResourceViewBoxPlot
   | RvResourceViewHeatMap
   | RvResourceViewHistogram
-  | RvResourceVennDiagram;
+  | RvResourceVennDiagram
+  | RvResourceViewVulcanoPlot;

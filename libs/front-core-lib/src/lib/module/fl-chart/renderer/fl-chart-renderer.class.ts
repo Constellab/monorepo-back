@@ -1,5 +1,9 @@
 import {Selection} from 'd3-selection';
 import {FlChartScale} from '../model/scale/fl-chart-scale.class';
+import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
+import {flRootInjector} from '../../../utils/fl-root-injector';
+import {FlThemeService} from '../../../service/fl-theme.service';
+import {FlChartColorFunction} from '../model/scale/fl-chart-scale-color.class';
 
 
 /**
@@ -27,10 +31,19 @@ export abstract class FlChartNoAxisRenderer<Data> {
 
   protected data: FlChartNoAxisRendererInput<Data>;
 
+  private _theme: FlThemeDetail;
+
   abstract renderFirst(): void;
 
   setData(data: FlChartNoAxisRendererInput<Data>): void {
     this.data = data;
+  }
+
+  protected getTheme(): FlThemeDetail {
+    if (this._theme == null) {
+      this._theme = flRootInjector.get(FlThemeService).getCurrentThemeDetail();
+    }
+    return this._theme;
   }
 }
 
@@ -58,7 +71,7 @@ export abstract class FlChart2AxisRenderer<Data> extends FlChartNoAxisRenderer<D
 export abstract class FlChart2AxisRendererWithColors<Data, Datum> extends FlChart2AxisRenderer<Data> {
 
   // function to return the color for a datum
-  protected currentColorFunction: (d: Datum) => string;
+  protected currentColorFunction: FlChartColorFunction<Datum>;
 
   protected constructor() {
     super();
@@ -69,14 +82,14 @@ export abstract class FlChart2AxisRendererWithColors<Data, Datum> extends FlChar
   /**
    * Method the retrieve the default color function for the data
    */
-  protected abstract getDefaultColorFunction(): (d: Datum) => string;
+  protected abstract getDefaultColorFunction(): FlChartColorFunction<Datum>;
 
   /**
    * Method called when the color function changed to refresh the color on the chart
    * @param colorFunction
    * @protected
    */
-  protected abstract refreshColor(colorFunction: (d: Datum) => string): void;
+  protected abstract refreshColor(colorFunction: FlChartColorFunction<Datum>): void;
 
 
   /**
@@ -90,8 +103,11 @@ export abstract class FlChart2AxisRendererWithColors<Data, Datum> extends FlChar
    * Set a new color function
    * @param colorFunction
    */
-  setColorFunction(colorFunction: (d: Datum) => string): void {
+  setColorFunction(colorFunction: FlChartColorFunction<Datum>): void {
     this.currentColorFunction = colorFunction;
-    this.refreshColor(colorFunction);
+
+    if (this.data) {
+      this.refreshColor(colorFunction);
+    }
   }
 }

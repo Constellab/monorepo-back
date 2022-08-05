@@ -56,6 +56,34 @@
             {{'flSpreadsheet.chart_normalize' | translate}}
           </mat-checkbox>
 
+          <!--    Vulcano plot      -->
+          <div fxLayout="row" fxLayoutAlign="space-between">
+
+            <!-- X Threshold -->
+            <mat-form-field appearance="outline" fxFlex="49%" *ngIf="showAdditionalField('xThreshold')"
+                            class="g-form-input-bottom">
+              <mat-label>{{'flSpreadsheet.chart_x_threshold' | translate}}</mat-label>
+              <input matInput formControlName="xThreshold" required
+                     placeholder="{{'flSpreadsheet.chart_x_threshold' | translate}}" type="number">
+              <mat-error *ngIf="additionalFieldFormGp.get('xThreshold').hasError('required')">
+                {{'flSpreadsheet.chart_x_threshold' | flErrorRequired}}
+              </mat-error>
+            </mat-form-field>
+
+
+            <!-- Y Threshold -->
+            <mat-form-field appearance="outline" fxFlex="49%" *ngIf="showAdditionalField('yThreshold')"
+                            class="g-form-input-bottom">
+              <mat-label>{{'flSpreadsheet.chart_y_threshold' | translate}}</mat-label>
+              <input matInput formControlName="yThreshold" required
+                     placeholder="{{'flSpreadsheet.chart_y_threshold' | translate}}" type="number">
+              <mat-error *ngIf="additionalFieldFormGp.get('yThreshold').hasError('required')">
+                {{'flSpreadsheet.chart_y_threshold' | flErrorRequired}}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+
           <!-- X and Y labels -->
           <div fxLayout="row" fxLayoutAlign="space-between">
             <mat-form-field appearance="outline" fxFlex="49%" *ngIf="showAdditionalField('xAxisLabel')">

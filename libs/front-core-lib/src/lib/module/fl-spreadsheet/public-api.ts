@@ -48,6 +48,7 @@ export * from './model/chart/fl-sheet-chart-selection-basic.class';
 export * from './model/chart/fl-sheet-chart-selection-box-plot.class';
 export * from './model/chart/fl-sheet-chart-selection-form.class';
 export * from './model/chart/fl-sheet-chart-selection-heat-map.class';
+export * from './model/chart/fl-sheet-chart-selection-vulcano-plot.class';
 
 // Selection
 export * from './model/selection/fl-cells-multiple-range.class';

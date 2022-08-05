@@ -3,6 +3,27 @@ import {FlChartScaleI} from './fl-chart-scale.class';
 import {ScaleLinear} from 'd3-scale';
 import {FlColorHelper} from '../../../../utils/fl-color-helper.class';
 import {FlChartMultiSerie} from '../data/fl-chart-multi-serie.class';
+import {FlChartDataWithSerie} from '../data/fl-chart-serie.class';
+
+
+export type FlChartColorFunction<T = any> = (d: T) => string;
+export const flChartTransparentColorOpacity = 0.8;
+
+export function flChartGetColorMultiSerieFunction(dataContainer: FlChartMultiSerie<any>,
+                                                  transparentColor: boolean = false): FlChartColorFunction<FlChartDataWithSerie<any>> {
+  const keys = dataContainer.series.map(d => d.key);
+  const transparency: number = transparentColor ? 0.8 : 1;
+  const colors = FlColorHelper.getColorList(transparency);
+
+  const keyColors: Record<string, string> = {};
+  for (let i = 0; i < keys.length; i++) {
+    keyColors[keys[i]] = colors[i % colors.length];
+  }
+
+  return (d: FlChartDataWithSerie<any>) => {
+    return keyColors[d.serieKey];
+  };
+}
 
 /**
  * Specific scale to return a color based on a value
@@ -34,7 +55,7 @@ export class FlChartScaleColorMulti implements FlChartScaleColor {
   }
 
   private initScale(): ScaleOrdinal<string, string> {
-    const transparency: number = this.transparentColor ? 0.8 : 1;
+    const transparency: number = this.transparentColor ? flChartTransparentColorOpacity : 1;
     const colors = FlColorHelper.getColorList(transparency);
     // the range contains all available colors
     return scaleOrdinal<string>(colors);

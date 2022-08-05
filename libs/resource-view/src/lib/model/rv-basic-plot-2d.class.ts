@@ -36,7 +36,7 @@ export interface RvResourceViewChart2dSerie {
  * @param view
  */
 export function rvBasicPlotToChart(view: RvResourceViewBasicPlot2d): FlChartConfig {
-  const series: FlChart2dMultiSerie<FlChart2dDatum> = labResourceBuildBasicChart2d(view);
+  const series: FlChart2dMultiSerie<FlChart2dDatum> = rvResourceBuildBasicChart2d(view.data);
 
   switch (view.type) {
     case 'scatter-plot-2d-view':
@@ -51,11 +51,11 @@ export function rvBasicPlotToChart(view: RvResourceViewBasicPlot2d): FlChartConf
 }
 
 
-function labResourceBuildBasicChart2d(view: RvResourceViewBasicPlot2d): FlChart2dMultiSerie<FlChart2dDatum> {
+export function rvResourceBuildBasicChart2d(viewData: RvResourceViewChart2dData): FlChart2dMultiSerie<FlChart2dDatum> {
   const series: FlChart2dMultiSerie<FlChart2dDatum> = new FlChart2dMultiSerie();
 
   let serieIndex: number = 1;
-  for (const viewSerie of view.data.series) {
+  for (const viewSerie of viewData.series) {
     const data: FlChart2dDatum[] = [];
 
     for (let i = 0; i < viewSerie.data.x.length; i++) {
@@ -69,16 +69,16 @@ function labResourceBuildBasicChart2d(view: RvResourceViewBasicPlot2d): FlChart2
   }
 
   // if there are some tick labels
-  if (view.data.x_tick_labels?.length > 0) {
-    series.setXTickLabels(view.data.x_tick_labels);
+  if (viewData.x_tick_labels?.length > 0) {
+    series.setXTickLabels(viewData.x_tick_labels);
   }
 
   // set the labels
-  if(view.data.x_label) {
-    series.axisXLabel = view.data.x_label;
+  if(viewData.x_label) {
+    series.axisXLabel = viewData.x_label;
   }
-  if(view.data.y_label) {
-    series.axisYLabel = view.data.y_label;
+  if(viewData.y_label) {
+    series.axisYLabel = viewData.y_label;
   }
 
   return series;

@@ -2,9 +2,6 @@ import {FlChart2AxisRendererWithColors} from './fl-chart-renderer.class';
 import {select} from 'd3';
 import {FlChartDataWithSerie} from '../model/data/fl-chart-serie.class';
 import {FlChartScale, FlChartScaleBand} from '../model/scale/fl-chart-scale.class';
-import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
-import {flRootInjector} from '../../../utils/fl-root-injector';
-import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlChartBoxPlotData} from '../model/data/fl-chart-box-plot-data.class';
 import {FlChartPortalHandler} from '../model/portal-handler/fl-chart-portal-handler.class';
 import {
@@ -28,7 +25,6 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
 
   private portalHandler: FlChartPortalHandler = new FlChartPortalHandler();
 
-  private theme: FlThemeDetail;
 
   constructor(private defaultColorScale: FlChartScaleColor,
               private tagColorer: FlTagColorer) {
@@ -36,7 +32,6 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
   }
 
   renderFirst(): void {
-    this.initTheme();
 
     this.refreshRender();
 
@@ -96,6 +91,8 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
     const x1 = padding;
     const width = groupWidth - (padding * 2);
 
+    const theme = this.getTheme();
+
     // Place the main vertical line
     select(group)
       .selectAll(`.${this.verticalLineClassName}`)
@@ -106,7 +103,7 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
       .attr('x2', xCenter)
       .attr('y1', d => this.data.yScale.scale(d.data.lowerWhisker))
       .attr('y2', d => this.data.yScale.scale(d.data.upperWhisker))
-      .attr('stroke', this.theme.foreground);
+      .attr('stroke', theme.foreground);
 
     // Place the box
     select(group)
@@ -117,7 +114,7 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
       .attr('y', d => this.data.yScale.scale(d.data.q3))
       .attr('height', d => (this.data.yScale.scale(d.data.q1) - this.data.yScale.scale(d.data.q3)))
       .attr('width', width)
-      .attr('stroke', this.theme.foreground)
+      .attr('stroke', theme.foreground)
       .attr('class', this.rectColorClassName)
       .style('fill', this.currentColorFunction);
 
@@ -131,7 +128,7 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
       .attr('x2', width + padding)
       .attr('y1', (d) => this.data.yScale.scale(d))
       .attr('y2', (d) => this.data.yScale.scale(d))
-      .attr('stroke', this.theme.foreground);
+      .attr('stroke', theme.foreground);
   }
 
   // return the position of the group
@@ -139,10 +136,6 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
     const scale: number = xScale.scale(index);
     // if the scale return null set the group outside chart
     return 'translate(' + (scale == null ? (chartWidth + 10) : scale) + ',0)';
-  }
-
-  private initTheme(): void {
-    this.theme = flRootInjector.get(FlThemeService).getCurrentThemeDetail();
   }
 
   private onMouseHover(event: MouseEvent, data: FlChartDataWithSerie<FlChartBoxPlotData>): void {
@@ -156,11 +149,6 @@ export class FlChartRendererBoxPlot extends FlChart2AxisRendererWithColors<FlCha
 
   private onMouseOut(): void {
     this.portalHandler.closePortal();
-  }
-
-  // set function to return color of points based on tags
-  setTagColors(colorScale: FlChartScaleColor): void {
-    this.setColorFunction((d: FlChartDataWithSerie<FlChartBoxPlotData>) => colorScale.scale(d.data.tags));
   }
 
   private onSelectedTagUpdate(selectedTags: FlTagWithColor[]): void {
