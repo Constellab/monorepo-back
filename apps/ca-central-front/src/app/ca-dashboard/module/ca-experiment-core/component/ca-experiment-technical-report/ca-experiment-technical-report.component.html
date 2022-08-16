@@ -13,14 +13,14 @@
   <fl-card-body class="body-tech-report">
     <mat-tab-group mat-align-tabs="start" animationDuration="0ms" dynamicHeight
                    *ngIf="technicalReport.data && technicalReport.data.graph; else noGraph">
-      <mat-tab label="Protocol">
+      <mat-tab label="{{'protocol' | translate}}">
         <ng-template matTabContent>
           <div class="tech-report-workflow">
             <pr-workflow [mainProtocolGraph]="technicalReport.data.graph"></pr-workflow>
           </div>
         </ng-template>
       </mat-tab>
-      <mat-tab label="Detail">
+      <mat-tab label="{{'list' | translate}}">
         <ng-template matTabContent>
           <ca-experiment-technical-report-graph
             [graph]="technicalReport.data.graph"></ca-experiment-technical-report-graph>

@@ -133,5 +133,7 @@
   "validate_by": "Validé par",
   "validated_on": "Validé le",
   "region": "Region",
-  "no_technical_report": "Aucun rapport technique"
+  "no_technical_report": "Aucun rapport technique",
+  "list": "Liste",
+  "protocol": "Protocole"
 }
