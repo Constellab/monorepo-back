@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FlMenuDynamic, FlMenuDynamicButton} from '../../model/fl-menu-dynamic.class';
 
 /**
@@ -13,6 +13,8 @@ export class FlMenuDynamicButtonComponent implements OnInit {
 
   @Input() menuDynamic: FlMenuDynamic;
 
+  @Output() buttonClick: EventEmitter<FlMenuDynamic> = new EventEmitter();
+
   constructor() {
   }
 
@@ -23,5 +25,6 @@ export class FlMenuDynamicButtonComponent implements OnInit {
     if (menuItem.onClick) {
       menuItem.onClick(event);
     }
+    this.buttonClick.next(menuItem);
   }
 }

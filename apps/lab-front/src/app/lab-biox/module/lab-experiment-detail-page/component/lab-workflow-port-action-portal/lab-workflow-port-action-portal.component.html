@@ -4,7 +4,8 @@
       <td-doc-io [ioSpec]="ioSpec"></td-doc-io>
     </div>
 
-    <fl-menu-dynamic-button *ngFor="let menuDynamic of menuDynamics" [menuDynamic]="menuDynamic">
+    <fl-menu-dynamic-button *ngFor="let menuDynamic of menuDynamics" [menuDynamic]="menuDynamic"
+                            (buttonClick)="closePortal()">
     </fl-menu-dynamic-button>
   </fl-portal-content>
 </fl-portal>

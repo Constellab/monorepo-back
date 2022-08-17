@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {TdIOSpec} from '@monorepo/technical-doc';
-import {FL_PORTAL_DATA, FlMenuDynamic} from '@monorepo/front-core-lib';
+import {FL_PORTAL_DATA, FlMenuDynamic, FlOverlayRef} from '@monorepo/front-core-lib';
 import {LabWorkflowPort} from '../../model/lab-workflow-port.class';
 
 export interface LabWorkflowPortActionPortalInput {
@@ -22,7 +22,8 @@ export class LabWorkflowPortActionPortalComponent implements OnInit {
   menuDynamics: FlMenuDynamic[];
 
 
-  constructor(@Inject(FL_PORTAL_DATA) private data: LabWorkflowPortActionPortalInput) {
+  constructor(@Inject(FL_PORTAL_DATA) private data: LabWorkflowPortActionPortalInput,
+              private overlayRef: FlOverlayRef) {
     this.ioSpec = data.port.specs;
     this.menuDynamics = data.menuDynamics;
   }
@@ -30,4 +31,7 @@ export class LabWorkflowPortActionPortalComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  closePortal(): void {
+    this.overlayRef.dispose();
+  }
 }
