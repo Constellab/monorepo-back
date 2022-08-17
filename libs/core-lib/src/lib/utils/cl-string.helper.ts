@@ -181,6 +181,10 @@ export class ClStringHelper {
   public static limiteLength(str: string, length: number): string {
     if (!str) return str;
 
+    if (typeof str !== 'string') {
+      str = (str as any).toString();
+    }
+
     if (str.length <= length) return str;
     // when stripping, remove few more characters so the '...' doesn't not overlap
     return str.substring(0, length - 3) + '...';
