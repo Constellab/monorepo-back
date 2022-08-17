@@ -1,6 +1,6 @@
 {
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "root": "apps/lab-front",
   "sourceRoot": "apps/lab-front/src",
   "prefix": "lab",
   "targets": {
@@ -44,7 +44,14 @@
           }
         ],
         "scripts": [],
-        "allowedCommonJsDependencies": ["class-transformer", "highlight.js"]
+        "allowedCommonJsDependencies": [
+          "class-transformer",
+          "highlight.js",
+          "drawflow",
+          "quill",
+          "luxon",
+          "lodash.throttle"
+        ]
       },
       "configurations": {
         "development": {
@@ -127,12 +134,16 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/lab-front"],
+      "outputs": [
+        "coverage/apps/lab-front"
+      ],
       "options": {
-        "jestConfig": "apps/lab-front/jest.config.js",
+        "jestConfig": "apps/lab-front/jest.config.ts",
         "passWithNoTests": true
       }
     }
   },
-  "tags": ["front"]
+  "tags": [
+    "front"
+  ]
 }

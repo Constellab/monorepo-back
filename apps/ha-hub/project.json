@@ -1,6 +1,6 @@
 {
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "root": "apps/ha-hub",
   "sourceRoot": "apps/ha-hub/src",
   "prefix": "ha",
   "targets": {
@@ -43,7 +43,12 @@
             "inject": false
           }
         ],
-        "scripts": []
+        "scripts": [],
+        "allowedCommonJsDependencies": [
+          "quill",
+          "luxon",
+          "lodash.throttle"
+        ]
       },
       "configurations": {
         "development": {
@@ -155,12 +160,16 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/ha-hub"],
+      "outputs": [
+        "coverage/apps/ha-hub"
+      ],
       "options": {
-        "jestConfig": "apps/ha-hub/jest.config.js",
+        "jestConfig": "apps/ha-hub/jest.config.ts",
         "passWithNoTests": true
       }
     }
   },
-  "tags": ["front"]
+  "tags": [
+    "front"
+  ]
 }

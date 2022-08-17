@@ -1,4 +1,4 @@
-import {AbstractControl, FormArray, FormControl, FormGroup} from '@angular/forms';
+import {AbstractControl, UntypedFormArray, UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {ClHelpService} from '@monorepo/core-lib';
 
 /**
@@ -16,9 +16,9 @@ export class FlFormHelper {
       return false;
     }
 
-    if (control instanceof FormControl) {
+    if (control instanceof UntypedFormControl) {
       return ClHelpService.isNullOrEmpty(control.value);
-    } else if (control instanceof FormArray || control instanceof FormGroup) {
+    } else if (control instanceof UntypedFormArray || control instanceof UntypedFormGroup) {
       for (const key of Object.keys(control.controls)) {
         if (!FlFormHelper.isControlEmpty(control.get(key))) {
           return false;
@@ -43,7 +43,7 @@ export class FlFormHelper {
     control.markAsTouched();
     // update validity with onlySelf because parent were already updated
     control.updateValueAndValidity({onlySelf: true});
-    if (control instanceof FormArray || control instanceof FormGroup) {
+    if (control instanceof UntypedFormArray || control instanceof UntypedFormGroup) {
       for (const key of Object.keys(control.controls)) {
         FlFormHelper.markAllAsTouched(control.get(key));
       }

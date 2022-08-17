@@ -1,4 +1,4 @@
-import {AbstractControl, FormArray, ValidationErrors, ValidatorFn} from '@angular/forms';
+import {AbstractControl, UntypedFormArray, ValidationErrors, ValidatorFn} from '@angular/forms';
 
 export class FlGlobalValidators {
 
@@ -104,7 +104,7 @@ export class FlGlobalValidators {
    * @param length
    */
   public static arrayMinLength(length: number): ValidatorFn {
-    return (control: FormArray): { [key: string]: any } => {
+    return (control: UntypedFormArray): { [key: string]: any } => {
       const arrayLength = control.value?.length ?? 0;
 
       if (arrayLength < length) {

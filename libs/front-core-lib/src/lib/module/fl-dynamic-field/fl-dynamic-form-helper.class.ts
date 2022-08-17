@@ -1,4 +1,11 @@
-import {AbstractControl, FormArray, FormControl, FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  UntypedFormArray,
+  UntypedFormControl,
+  UntypedFormGroup,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import {
   FlDynamicFieldConfig,
   FlDynamicFormAbstractControl,
@@ -23,8 +30,8 @@ export class FlDynamicFormHelper {
     }
   }
 
-  public static generateFormGroup(config: FlDynamicFormGroupConfig, value: any = {}): FormGroup {
-    const formGroup: FormGroup = new FormGroup({});
+  public static generateFormGroup(config: FlDynamicFormGroupConfig, value: any = {}): UntypedFormGroup {
+    const formGroup: UntypedFormGroup = new UntypedFormGroup({});
 
     for (const key in config.subConfigs) {
       const val = value ? value[key] : null;
@@ -33,8 +40,8 @@ export class FlDynamicFormHelper {
     return formGroup;
   }
 
-  public static generateFormArray(config: FlDynamicFormArrayConfig, values: any[] = []): FormArray {
-    const formArray: FormArray = new FormArray([]);
+  public static generateFormArray(config: FlDynamicFormArrayConfig, values: any[] = []): UntypedFormArray {
+    const formArray: UntypedFormArray = new UntypedFormArray([]);
 
     if (values) {
       for (const value of values) {
@@ -52,13 +59,13 @@ export class FlDynamicFormHelper {
     return formArray;
   }
 
-  public static addFormGroupToFormArray(formArray: FormArray, config: FlDynamicFormArrayConfig, value: any = null): void {
+  public static addFormGroupToFormArray(formArray: UntypedFormArray, config: FlDynamicFormArrayConfig, value: any = null): void {
     formArray.push(FlDynamicFormHelper.generateForm(config.formGpConfig, value));
   }
 
 
-  public static generateFormControl(config: FlDynamicFieldConfig, value: any = null): FormControl {
-    const control = new FormControl(value, FlDynamicFormHelper.getControlValidators(config));
+  public static generateFormControl(config: FlDynamicFieldConfig, value: any = null): UntypedFormControl {
+    const control = new UntypedFormControl(value, FlDynamicFormHelper.getControlValidators(config));
 
     if (config.disabled) {
       control.disable();

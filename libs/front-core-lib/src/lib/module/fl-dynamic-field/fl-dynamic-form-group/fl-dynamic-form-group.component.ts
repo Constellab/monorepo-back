@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {UntypedFormGroup} from '@angular/forms';
 import {FlDynamicFormAbstractControl, FlDynamicFormGroupConfig} from '../fl-dynamic-field-config.class';
 import {FlDynamicAbstractFormDirective} from '../fl-dynamic-abstract-form.directive';
 
@@ -17,7 +17,7 @@ export class FlDynamicFormGroupComponent implements OnInit, FlDynamicAbstractFor
   /**
    * Form where control will be added
    */
-  @Input() control: FormGroup;
+  @Input() control: UntypedFormGroup;
 
   @Input() config: FlDynamicFormGroupConfig;
 

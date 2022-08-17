@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {UntypedFormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabConfigData, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {LabConfigureSpecsFormComponent} from '../lab-configure-specs-form/lab-configure-specs-form.component';
@@ -20,7 +20,7 @@ export interface LabConfigureSpecsFormDialogInput {
 })
 export class LabConfigureSpecsFormDialogComponent implements OnInit {
 
-  formGp: FormGroup;
+  formGp: UntypedFormGroup;
 
   input: LabConfigureSpecsFormDialogInput;
   configData: LabConfigData;

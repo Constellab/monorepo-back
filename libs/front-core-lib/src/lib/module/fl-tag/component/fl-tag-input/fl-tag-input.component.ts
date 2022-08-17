@@ -12,7 +12,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {MatChipInputEvent} from '@angular/material/chips';
-import {FormControl, NgControl} from '@angular/forms';
+import {UntypedFormControl, NgControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, mergeMap, startWith, tap} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
@@ -51,7 +51,7 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[], FlTagInpu
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger: MatAutocompleteTrigger;
 
   separatorKeysCodes: number[] = [ENTER, TAB];
-  inputCtrl = new FormControl();
+  inputCtrl = new UntypedFormControl();
 
   filteredOptions: Observable<string[]>;
 

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {UntypedFormGroup} from '@angular/forms';
 import {FlSearchState} from '@monorepo/front-core-lib';
 import {LabTypeSearchConfig} from '../../model/lab-type-advanced-search.class';
 
@@ -12,7 +12,7 @@ export class LabTypeAdvancedSearchFormComponent implements OnInit {
 
   @Input() config: LabTypeSearchConfig;
 
-  formGp: FormGroup;
+  formGp: UntypedFormGroup;
 
   constructor(private searchState: FlSearchState<any>) {
   }

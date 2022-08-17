@@ -1,5 +1,6 @@
-module.exports = {
-  displayName: 'lab-front',
+/* eslint-disable */
+export default {
+  displayName: 'ha-hub',
   preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   globals: {
@@ -14,7 +15,7 @@ module.exports = {
       },
     },
   },
-  coverageDirectory: '../../coverage/apps/lab-front',
+  coverageDirectory: '../../coverage/apps/ha-hub',
   snapshotSerializers: [
     'jest-preset-angular/build/AngularNoNgAttributesSnapshotSerializer.js',
     'jest-preset-angular/build/AngularSnapshotSerializer.js',

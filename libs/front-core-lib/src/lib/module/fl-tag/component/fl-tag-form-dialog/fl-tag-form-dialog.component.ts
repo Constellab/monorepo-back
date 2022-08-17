@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {FlTag} from '../../fl-tag.class';
 import {Observable} from 'rxjs';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 
 export type FlTagUpdateMethod = (tags: FlTag[]) => Observable<FlTag[]>;
 
@@ -22,7 +22,7 @@ export interface FlTagFormDialogInput {
 })
 export class FlTagFormDialogComponent implements OnInit {
 
-  formCtrl: FormControl;
+  formCtrl: UntypedFormControl;
 
   isLoading: boolean = false;
 
@@ -39,7 +39,7 @@ export class FlTagFormDialogComponent implements OnInit {
   }
 
   private initCtrl(): void {
-    this.formCtrl = new FormControl(this.input.tags);
+    this.formCtrl = new UntypedFormControl(this.input.tags);
   }
 
   submit(): void {

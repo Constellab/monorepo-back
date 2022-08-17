@@ -1,6 +1,6 @@
 {
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "root": "libs/front-core-lib",
   "sourceRoot": "libs/front-core-lib/src",
   "prefix": "fl",
   "targets": {
@@ -17,7 +17,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/front-core-lib"],
       "options": {
-        "jestConfig": "libs/front-core-lib/jest.config.js",
+        "jestConfig": "libs/front-core-lib/jest.config.ts",
         "passWithNoTests": true
       }
     }

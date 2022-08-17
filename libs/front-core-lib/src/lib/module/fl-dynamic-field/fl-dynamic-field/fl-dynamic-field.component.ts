@@ -5,7 +5,7 @@ import {
   FlDynamicFieldConfigMaterialInput,
   FlDynamicFieldConfigSelect
 } from '../fl-dynamic-field-config.class';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import {FlDynamicAbstractFormDirective} from '../fl-dynamic-abstract-form.directive';
 
 /**
@@ -21,7 +21,7 @@ export class FlDynamicFieldComponent implements OnInit, FlDynamicAbstractFormDir
 
   @Input() config: FlDynamicFieldConfig;
 
-  @Input() control: FormControl;
+  @Input() control: UntypedFormControl;
 
   @Output() valueChange: EventEmitter<any> = new EventEmitter<any>();
 

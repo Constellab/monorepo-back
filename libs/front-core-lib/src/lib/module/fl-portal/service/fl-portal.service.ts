@@ -22,7 +22,6 @@ import {ComponentPortal, TemplatePortal} from '@angular/cdk/portal';
 import {NavigationStart, Router} from '@angular/router';
 import {filter, first, map} from 'rxjs/operators';
 import {merge, Observable} from 'rxjs';
-import {CloseScrollStrategyConfig} from '@angular/cdk/overlay/scroll/close-scroll-strategy';
 import {FlPortalConfig, FlRelativePortalConfig} from '../model/fl-portal-config.class';
 import {
   FL_PORTAL_DATA,
@@ -373,7 +372,7 @@ export class FlPortalService {
    * Get the strategy to close the portal on scroll
    * @param config strategy config
    */
-  public getCloseOnScrollStrategy(config?: CloseScrollStrategyConfig | undefined): CloseScrollStrategy {
+  public getCloseOnScrollStrategy(config?: { threshold: number } | undefined): CloseScrollStrategy {
     return this.overlay.scrollStrategies.close(config);
   }
 

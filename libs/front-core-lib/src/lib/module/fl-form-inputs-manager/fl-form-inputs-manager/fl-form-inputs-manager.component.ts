@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Optional, Output} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, FormGroupDirective, NgForm} from '@angular/forms';
+import {AbstractControl, UntypedFormControl, UntypedFormGroup, FormGroupDirective, NgForm} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {FlFormFilledInput, FlFormInputName, FlFormInputsManagerConfig} from '../fl-form-inputs-manager.class';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
@@ -24,7 +24,7 @@ export class FlFormInputsManagerComponent implements OnInit, OnDestroy {
   /**
    * FormGroup of the form. To be provided only if this component is not under the wanted form
    */
-  @Input() formGp: FormGroup;
+  @Input() formGp: UntypedFormGroup;
 
   /**
    * Default value use for translation. If not translate field is provided
@@ -114,7 +114,7 @@ export class FlFormInputsManagerComponent implements OnInit, OnDestroy {
     }
 
     // if this is not a nested config
-    if (typeof config === 'string' || (config != null && typeof config.name === 'string') || control instanceof FormControl) {
+    if (typeof config === 'string' || (config != null && typeof config.name === 'string') || control instanceof UntypedFormControl) {
 
       // skip false boolean, consider them like null
       if (this.skipFalseBoolean && control.value === false) {
@@ -130,7 +130,7 @@ export class FlFormInputsManagerComponent implements OnInit, OnDestroy {
       // avoid null config
       config = config || {};
       // loop through nested control to check values
-      for (const childKey of Object.keys((control as FormGroup).controls)) {
+      for (const childKey of Object.keys((control as UntypedFormGroup).controls)) {
         // recursive call to check children
         this.checkControlValue(childKey, control.get(childKey), config[childKey]);
       }

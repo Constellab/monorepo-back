@@ -1,11 +1,11 @@
 {
-  "root": "apps/hn-hub",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/hn-hub/src",
   "projectType": "application",
   "prefix": "hn-hub",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
+      "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/hn-hub",
@@ -28,7 +28,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:execute",
+      "executor": "@nrwl/node:node",
       "options": {
         "buildTarget": "hn-hub:build"
       }
@@ -43,7 +43,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/hn-hub"],
       "options": {
-        "jestConfig": "apps/hn-hub/jest.config.js",
+        "jestConfig": "apps/hn-hub/jest.config.ts",
         "passWithNoTests": true
       }
     }

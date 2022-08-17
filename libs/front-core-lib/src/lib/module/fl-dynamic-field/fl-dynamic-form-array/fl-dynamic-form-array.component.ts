@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {FormArray} from '@angular/forms';
+import {UntypedFormArray} from '@angular/forms';
 import {FlDynamicFormArrayConfig} from '../fl-dynamic-field-config.class';
 import {FlDynamicFormHelper} from '../fl-dynamic-form-helper.class';
 import {FlDynamicAbstractFormDirective} from '../fl-dynamic-abstract-form.directive';
@@ -13,7 +13,7 @@ import {FlTranslateService} from '../../fl-translate/service/fl-translate.servic
 })
 export class FlDynamicFormArrayComponent implements OnInit, FlDynamicAbstractFormDirective {
 
-  @Input() control: FormArray;
+  @Input() control: UntypedFormArray;
 
   @Input() config: FlDynamicFormArrayConfig;
 

@@ -1,11 +1,11 @@
-import {NgModule} from '@angular/core';
-import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
+import { NgModule } from '@angular/core';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
     path: '',
     redirectTo: '/biox',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
 ];
 
@@ -18,10 +18,10 @@ const routes: Routes = [
         preloadingStrategy: PreloadAllModules,
         scrollPositionRestoration: 'enabled',
         relativeLinkResolution: 'legacy',
-        initialNavigation: 'enabled'
+        initialNavigation: 'enabledBlocking',
       }
-    )],
-  exports: [RouterModule]
+    ),
+  ],
+  exports: [RouterModule],
 })
-export class LabAppRoutingModule {
-}
+export class LabAppRoutingModule {}

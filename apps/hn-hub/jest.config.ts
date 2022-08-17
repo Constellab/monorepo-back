@@ -1,4 +1,5 @@
-module.exports = {
+/* eslint-disable */
+export default {
   displayName: 'cn-central-back',
   preset: '../../jest.preset.js',
   globals: {

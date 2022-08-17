@@ -1,6 +1,6 @@
 {
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "root": "libs/resource-view",
   "sourceRoot": "libs/resource-view/src",
   "prefix": "rv",
   "targets": {
@@ -8,7 +8,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/libs/resource-view"],
       "options": {
-        "jestConfig": "libs/resource-view/jest.config.js",
+        "jestConfig": "libs/resource-view/jest.config.ts",
         "passWithNoTests": true
       }
     },

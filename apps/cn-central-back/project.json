@@ -1,11 +1,11 @@
 {
-  "root": "apps/cn-central-back",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/cn-central-back/src",
   "projectType": "application",
   "prefix": "cn-central-back",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:build",
+      "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/cn-central-back",
@@ -25,7 +25,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:execute",
+      "executor": "@nrwl/node:node",
       "options": {
         "buildTarget": "cn-central-back:build"
       }
@@ -40,7 +40,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/apps/cn-central-back"],
       "options": {
-        "jestConfig": "apps/cn-central-back/jest.config.js",
+        "jestConfig": "apps/cn-central-back/jest.config.ts",
         "passWithNoTests": true
       }
     }

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ControlContainer, FormGroup} from '@angular/forms';
+import {ControlContainer, UntypedFormGroup} from '@angular/forms';
 
 /**
  * Component to use in the search form to create form for a search interval
@@ -11,13 +11,13 @@ import {ControlContainer, FormGroup} from '@angular/forms';
 })
 export class FlSearchDateIntervalComponent implements OnInit {
 
-  formGp: FormGroup;
+  formGp: UntypedFormGroup;
 
   constructor(private controlContainer: ControlContainer) {
   }
 
   ngOnInit(): void {
-    this.formGp = this.controlContainer.control as FormGroup;
+    this.formGp = this.controlContainer.control as UntypedFormGroup;
   }
 
 }

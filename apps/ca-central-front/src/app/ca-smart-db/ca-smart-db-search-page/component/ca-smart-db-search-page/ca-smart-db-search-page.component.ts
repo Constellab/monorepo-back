@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormControl} from '@angular/forms';
+import {UntypedFormControl} from '@angular/forms';
 import {CaSmartDbService} from '../../../../ca-core/service-api/ca-smart-db.service';
 import {CaSmartDbDocSearchDatasource, CaSmartDbDocSearchResult} from '../../../model/ca-smart-db-doc.class';
 import {CaSmartDbSearchPageState} from '../../ca-smart-db-search-page.state';
@@ -19,7 +19,7 @@ export class CaSmartDbSearchPageComponent implements OnInit {
   smartDbId: string;
   smartDb$: Observable<CaSmartDb>;
 
-  formControl: FormControl;
+  formControl: UntypedFormControl;
 
   datasource: CaSmartDbDocSearchDatasource;
 
@@ -41,7 +41,7 @@ export class CaSmartDbSearchPageComponent implements OnInit {
   private init(smartDbId: string): void {
     this.smartDbId = smartDbId;
     this.adminRoute = CaRouterService.getSmartDbAdminRoute(smartDbId);
-    this.formControl = new FormControl(null);
+    this.formControl = new UntypedFormControl(null);
 
     this.state.onNewSearch().subscribe(
       search => this.formControl.patchValue(search)

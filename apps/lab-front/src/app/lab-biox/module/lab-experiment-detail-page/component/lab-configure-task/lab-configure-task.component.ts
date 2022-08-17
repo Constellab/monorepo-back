@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {LabProcess} from '../../../../../lab-core/model/entities/process/lab-process.entity';
-import {FormGroup} from '@angular/forms';
+import {UntypedFormGroup} from '@angular/forms';
 import {LabConfigureSpecsForm} from '../../../../../lab-core/model/entities/lab-config.entity';
 import {
   LabConfigureSpecsFormComponent
@@ -16,7 +16,7 @@ export class LabConfigureTaskComponent implements OnInit {
 
   @Input() task: LabProcess;
 
-  formGp: FormGroup = new FormGroup({});
+  formGp: UntypedFormGroup = new UntypedFormGroup({});
 
 
   constructor(private experimentState: LabExperimentDetailPageState) {

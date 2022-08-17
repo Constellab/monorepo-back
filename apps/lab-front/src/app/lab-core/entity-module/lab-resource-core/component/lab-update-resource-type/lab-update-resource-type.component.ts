@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabFileResourceService} from '../../../../entity-service/lab-file-resource.service';
-import {FormControl, Validators} from '@angular/forms';
+import {UntypedFormControl, Validators} from '@angular/forms';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
@@ -18,7 +18,7 @@ import {LabResourceService} from '../../../../entity-service/lab-resource.servic
 })
 export class LabUpdateResourceTypeComponent implements OnInit {
 
-  formControl: FormControl;
+  formControl: UntypedFormControl;
 
   fsNodeTypes: Observable<LabTypeEntity[]>;
 
@@ -32,7 +32,7 @@ export class LabUpdateResourceTypeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formControl = new FormControl(this.resource.resourceTypingName, [Validators.required]);
+    this.formControl = new UntypedFormControl(this.resource.resourceTypingName, [Validators.required]);
 
     if (this.resource.isFile()) {
       this.fsNodeTypes = this.labFileService.getFileTypes();

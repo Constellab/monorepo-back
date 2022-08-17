@@ -4,16 +4,10 @@
     "module": "commonjs",
     "outDir": "../../dist/out-tsc",
     "declaration": true,
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "target": "es6",
     "allowSyntheticDefaultImports": true
   },
-  "exclude": [
-    "**/*.spec.ts"
-  ],
-  "include": [
-    "**/*.ts"
-  ]
+  "exclude": ["**/*.spec.ts", "jest.config.ts"],
+  "include": ["**/*.ts"]
 }
