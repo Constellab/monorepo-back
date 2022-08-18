@@ -1,6 +1,4 @@
-import {Exclude} from 'class-transformer';
 import {TdIOSpec, TdResourceTypeDTO} from '@monorepo/technical-doc';
-import {PrBaseEntityWithUser} from './pr-user.entity';
 import {PrTypingName} from './pr-typing-name.class';
 import {PrIO} from './pr-io.class';
 
@@ -24,14 +22,14 @@ export interface PrConnection {
   to: PrConnectionPart;
 }
 
-export abstract class PrNode extends PrBaseEntityWithUser {
+export abstract class PrNode {
+
+  id: string;
 
   // inputConnections automatically set by the ConnectionManager
-  @Exclude()
   inputConnections: Record<string, PrConnectionPart> = {};
 
   // outputConnections automatically set by the ConnectionManager
-  @Exclude()
   outputConnections: Record<string, PrConnectionPart[]> = {};
 
   // name automatically set by the ConnectionManager

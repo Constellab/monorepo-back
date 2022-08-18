@@ -3,7 +3,6 @@ import {PrWorkflowNodeProcess} from '../model/pr-workflow-node-process.class';
 
 import {PrWorkflowManagerState} from '../state/pr-workflow-manager-state';
 import {PrWorkflowActionState} from '../state/pr-workflow-action-state';
-import {FlHtmlHelper} from '@monorepo/front-core-lib';
 
 @Directive({
   selector: '[prWorkflowNode]'

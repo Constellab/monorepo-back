@@ -7,9 +7,7 @@ export * from './lib/model/pr-workflow-connection.class';
 export * from './lib/model/pr-workflow-layer.class';
 export * from './lib/model/pr-workflow-port.class';
 export * from './lib/model/pr-workflow.class';
-export * from './lib/model/pr-user.entity';
 export * from './lib/model/pr-connection.class';
-export * from './lib/model/pr-entity.entity';
 export * from './lib/model/pr-workflow-node-io.class';
 export * from './lib/model/pr-typing-name.class';
 export * from './lib/model/pr-io.class';
@@ -26,15 +24,11 @@ export * from './lib/model/pr-workflow-action.class';
 export * from './lib/model/pr-task.entity';
 export * from './lib/model/pr-protocol-graph-input.class';
 export * from './lib/model/pr-workflow-drawer-event.class';
-export * from './lib/model/pr-experiment.entity';
-export * from './lib/model/pr-entity-with-tag.entity';
-export * from './lib/model/pr-tag.entity';
 
 // state
 export * from './lib/state/pr-workflow-manager-state';
 export * from './lib/state/pr-workflow-node-detail-state';
 export * from './lib/state/pr-workflow-action-state';
-export * from './lib/state/pr-experiment-detail-page-state';
 
 
 // component

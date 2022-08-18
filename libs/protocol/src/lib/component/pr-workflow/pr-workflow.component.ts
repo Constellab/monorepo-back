@@ -3,8 +3,6 @@ import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {PrProtocol, PrProtocolData} from '../../model/pr-protocol.entity';
 import {PrFlow} from '../../model/pr-connection.class';
 import {PrProtocolGraphInput} from '../../model/pr-protocol-graph-input.class';
-import {PrWorkflowActionState} from '../../state/pr-workflow-action-state';
-import {PrExperimentDetailPageState} from '../../state/pr-experiment-detail-page-state';
 
 
 @Component({
@@ -26,8 +24,6 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(
     private workflowManagerState: PrWorkflowManagerState,
-    private actionState: PrWorkflowActionState,
-    private experimentState: PrExperimentDetailPageState
   ) {
   }
 
@@ -47,13 +43,8 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadExperimentFlowSuccess(flow: PrFlow<PrProtocol>): void {
-    this.workflowManagerState.init(this.container.nativeElement, flow, this.experimentState);
+    this.workflowManagerState.init(this.container.nativeElement, flow, 'report');
     this.flowIsLoading = false;
-  }
-
-  private onError(): void {
-    this.flowIsLoading = false;
-    this.error = true;
   }
 
   ngOnDestroy(): void {

@@ -6,9 +6,8 @@ import {BehaviorSubject, map, Observable, Subject} from 'rxjs';
 import {PrFlowManager} from './pr-connection.class';
 import {NgZone} from '@angular/core';
 import {PrWorkflowPort} from './pr-workflow-port.class';
-import {ClStringHelper} from '@monorepo/core-lib';
 
-export type PrWorkflowMode = 'edit' | 'readOnly';
+export type PrWorkflowMode = 'edit' | 'readOnly' | 'report';
 
 export type PrWorkflowEvent =
   PrWorkflowDeleteNodeEvent
@@ -176,13 +175,35 @@ export class PrWorkflow {
   ////////////////////// NODE ///////////////////////////
 
   private onNodeRemoved(nodeId: number): void {
-    const node = this.currentLayer.removeNode(nodeId.toString());
-    if (node) {
+    console.log('CONNECTIONS A', this.currentLayer.connections.length)
+    const node: PrWorkflowNode<any> = this.currentLayer.removeNode(nodeId.toString());
+    if (node && this.mode === 'report') {
       this.workflowEvent$.next({
         action: 'deleteNode',
         node: node,
         protocolId: this.currentLayer.object.id
       });
+    } else {
+      this.rebuildNode(node)
+    }
+  }
+
+  private rebuildNode(node: PrWorkflowNode<any>): void{
+    this.currentLayer.addNode(node);
+    console.log('CONNECTIONS B', this.currentLayer.connections.length)
+    for(const connection of this.currentLayer.connections){
+
+      if (connection.inputNode.nodeName == node.nodeName){
+        this.currentLayer.removeConnection(connection);
+        connection.inputNode.nodeId = node.nodeId;
+        this.currentLayer.addConnection(connection);
+      }
+
+      if(connection.outputNode.nodeName == node.nodeName){
+        this.currentLayer.removeConnection(connection);
+        connection.outputNode.nodeId = node.nodeId;
+        this.currentLayer.addConnection(connection);
+      }
     }
   }
 
@@ -271,12 +292,18 @@ export class PrWorkflow {
     // this happened when the removeConnection is called and the connection was deleted by code not user
     const connection = this.currentLayer.findConnectionByConnectionEvent(connectionEvent);
     if (connection) {
-      this.currentLayer.saveUserConnectionRemoved(connection);
-      this.workflowEvent$.next({
-        action: 'deleteConnection',
-        connection: connection,
-        protocolId: this.currentLayer.object.id
-      });
+      if(this.mode !== 'report'){
+        this.currentLayer.saveUserConnectionRemoved(connection);
+
+        this.workflowEvent$.next({
+          action: 'deleteConnection',
+          connection: connection,
+          protocolId: this.currentLayer.object.id
+        });
+      } else {
+        this.currentLayer.addConnection(connection);
+      }
+
     }
   }
 
@@ -305,8 +332,11 @@ export class PrWorkflow {
   //////////////////// OTHER ///////////////////////
 
   public setMode(mode: PrWorkflowMode): void {
-    this.editor.editor_mode = mode === 'edit' ? 'edit' : 'view';
     this.mode = mode;
+    if(mode === 'report'){
+      mode = 'edit';
+    }
+    this.editor.editor_mode = mode === 'edit' ? 'edit' : 'view';
   }
 
   public getMode(): PrWorkflowMode {

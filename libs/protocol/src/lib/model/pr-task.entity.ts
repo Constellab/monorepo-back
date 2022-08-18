@@ -1,9 +1,8 @@
-import {Expose, Type} from 'class-transformer';
 import {PrProcess, PrProcessData} from './pr-process.entity';
 import {PrProtocolGraphInputNode} from './pr-protocol-graph-input.class';
 
 
-export class PrTaskData implements PrProcessData {
+export interface PrTaskData extends PrProcessData {
   title: string;
 
   description?: string;
@@ -14,10 +13,8 @@ export class PrTaskData implements PrProcessData {
 
 export class PrTask extends PrProcess {
 
-  @Type(() => PrTaskData)
   data: PrTaskData;
 
-  @Expose({name: 'is_protocol'})
   isProtocol: false;
 
   constructor(inputNode?: PrProtocolGraphInputNode) {

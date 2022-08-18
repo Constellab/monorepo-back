@@ -1,5 +1,4 @@
 import {PrProcess, PrProcessData} from './pr-process.entity';
-import {Exclude, Expose, Type} from 'class-transformer';
 import {PrConnection, PrFlowManager, PrNode} from './pr-connection.class';
 import {PrIO} from './pr-io.class';
 import {PrProtocolIOFace, PrProtocolLink} from './pr-protocol-link.entity';
@@ -96,16 +95,12 @@ export class PrProtocol extends PrProcess implements PrFlowManager {
 
   }
 
-  @Type(() => PrProtocolData)
   data: PrProtocolData;
 
-  @Expose({name: 'is_protocol'})
   isProtocol: true;
 
-  @Exclude()
   interfaceNodes: Record<string, PrNode>;
 
-  @Exclude()
   outerfaceNodes: Record<string, PrNode>;
 
   public static empty(): PrProtocol {

@@ -29,6 +29,7 @@ import {
 } from './component/ca-experiment-technical-report-process-doc-dialog/ca-experiment-technical-report-process-doc-dialog.component';
 import {TdTechnicalDocModule} from "@monorepo/technical-doc";
 import {MatTabsModule} from "@angular/material/tabs";
+import {CaDashboardCoreModule} from "../ca-dashboard-core/ca-dashboard-core.module";
 
 
 @NgModule({
@@ -57,7 +58,8 @@ import {MatTabsModule} from "@angular/material/tabs";
     CaCoreModule,
     CaLabCoreModule,
     TdTechnicalDocModule,
-    MatTabsModule
+    MatTabsModule,
+    CaDashboardCoreModule
   ]
 })
 export class CaExperimentCoreModule {

@@ -2,7 +2,6 @@
  * Part of a link between different process in protocol
  */
 
-import {Exclude, Expose, Type} from 'class-transformer';
 import {PrConnection, PrConnectionPart, PrNode} from './pr-connection.class';
 import {
   PrProtocolGraphInputIntOut,
@@ -12,13 +11,11 @@ import {
 
 export class PrProtocolLinkPart implements PrConnectionPart {
 
-  @Expose({name: 'node'})
   nodeName: string;
 
   port: string;
 
   // node init by the connection manager with setNode method
-  @Exclude()
   labNode: PrNode;
 
   getNodeName(): string {
@@ -54,10 +51,8 @@ export class PrProtocolLinkPart implements PrConnectionPart {
  */
 export class PrProtocolLink implements PrConnection {
 
-  @Type(() => PrProtocolLinkPart)
   from: PrProtocolLinkPart;
 
-  @Type(() => PrProtocolLinkPart)
   to: PrProtocolLinkPart;
 
   constructor(inputLink?: PrProtocolGraphInputLink) {

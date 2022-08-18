@@ -1,8 +1,6 @@
-import {Expose, Type} from 'class-transformer';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
-import {PrBaseEntity} from './pr-entity.entity';
 
 
 export type PrProgressBarMessageType = 'SUCCESS' | 'INFO' | 'ERROR' | 'WARNING' | 'PROGRESS'
@@ -29,43 +27,35 @@ export class PrProgressMessage {
   type: FlStatus<PrProgressBarMessageType>;
 }
 
-export class PrProgressBarData extends PrBaseEntity {
+export class PrProgressBarData {
 
   // % per second
-  @Expose({name: 'average_speed'})
   averageSpeed: number;
 
   // time when the execution ended
-  @Expose({name: 'current_time'})
   currentTime: number;
 
   // duration of the process in second
-  @Expose({name: 'elapsed_time'})
   elapsedTime: number;
 
-  @Expose({name: 'max_value'})
   maxValue: number;
 
   // list of messages for the different steps of the progress
-  @Type(() => PrProgressMessage)
   messages: PrProgressMessage[];
 
   // in second
-  @Expose({name: 'remaining_time'})
   remainingTime: number;
 
   // time when the execution started
-  @Expose({name: 'start_time'})
   startTime: number;
 
   value: number;
 }
 
-export class PrProgressBar extends PrBaseEntity {
+export class PrProgressBar {
 
   process: { id: string, type: string };
 
-  @Type(() => PrProgressBarData)
   data: PrProgressBarData;
 
   // return true if the progress as started (can be running or finished)

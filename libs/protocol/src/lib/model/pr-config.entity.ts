@@ -1,8 +1,5 @@
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
-import {Type} from 'class-transformer';
-import {FlDynamicFormGroupConfig} from '@monorepo/front-core-lib';
 import {TdConfigSpecVisibility} from '@monorepo/technical-doc';
-import {PrBaseEntity} from './pr-entity.entity';
 import {PrConfigSpecs} from './pr-config-spec.entity';
 
 export type PrConfigValues = Record<string, any>
@@ -31,21 +28,6 @@ export class PrConfigData {
     return config;
   }
 
-  /**
-   * Merge a config with the default to get the complete config
-   * if not all the field are provided
-   */
-  public mergeConfigWithDefault(): any {
-    return this.specs.mergeConfigWithDefault(this.values);
-  }
-
-  /**
-   * Get a FlDynamicFormFieldConfig based on config spec and params to create a form
-   */
-  public getDynamicFormFieldsConfig(visibility?: TdConfigSpecVisibility): FlDynamicFormGroupConfig {
-    return this.specs.convertToFieldConfigs(visibility);
-  }
-
   public hasConfig(visibility?: TdConfigSpecVisibility): boolean {
     return this.specs.hasConfigs(visibility);
   }
@@ -59,10 +41,9 @@ export class PrConfigData {
 /**
  * Config object for a process
  */
-export class PrConfig extends PrBaseEntity {
+export class PrConfig {
 
   // object containing the current configuration values
-  @Type(() => PrConfigData)
   data: PrConfigData;
 
   public updateConfig(config: PrConfigValues): void {

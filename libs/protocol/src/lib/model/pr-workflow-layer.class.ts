@@ -1,5 +1,4 @@
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
-import {PrEntity} from './pr-entity.entity';
 import {PrWorkflowNode} from './pr-workflow-node.class';
 import {PrWorkflowConnection} from './pr-workflow-connection.class';
 import {PrFlow, PrFlowManager, PrNode} from './pr-connection.class';
@@ -11,7 +10,7 @@ export class PrWorkflowLayer {
 
   public readonly children: Record<string, PrWorkflowLayer> = {};
 
-  public readonly nodes: PrWorkflowNode<PrEntity>[] = [];
+  public readonly nodes: PrWorkflowNode<any>[] = [];
 
   public readonly connections: PrWorkflowConnection[] = [];
 
@@ -79,7 +78,6 @@ export class PrWorkflowLayer {
   // this method is triggered when the connection is created by program
   public addConnection(connection: PrWorkflowConnection): void {
     this.connections.push(connection);
-
     this.editor.addConnection(connection.outputNode.nodeId, connection.inputNode.nodeId,
       connection.outputPort.drawFlowName,
       connection.inputPort.drawFlowName);
@@ -120,6 +118,7 @@ export class PrWorkflowLayer {
 
   // this method is triggered when the user manually remove a connection
   public saveUserConnectionRemoved(connection: PrWorkflowConnection): PrWorkflowConnection | undefined {
+
     const connectionIndex: number = this.findConnectionIndex(connection.outputNode.nodeId,
       connection.inputNode.nodeId, connection.outputPort.name, connection.inputPort.name);
     if (connectionIndex >= 0) {

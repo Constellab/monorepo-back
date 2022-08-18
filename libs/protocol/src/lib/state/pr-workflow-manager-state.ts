@@ -1,6 +1,6 @@
 import {PrWorkflowConnection} from '../model/pr-workflow-connection.class';
 import {PrWorkflowNode} from '../model/pr-workflow-node.class';
-import {PrWorkflow, PrWorkflowEvent} from '../model/pr-workflow.class';
+import {PrWorkflow, PrWorkflowEvent, PrWorkflowMode} from '../model/pr-workflow.class';
 import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
 import {
@@ -8,8 +8,7 @@ import {
   FlPortalAction,
   FlPortalActionResult,
   FlPortalActionsService,
-  FlSnackBarService,
-  FlTranslatableText
+  FlSnackBarService
 } from '@monorepo/front-core-lib';
 import {
   PrConnection,
@@ -19,7 +18,7 @@ import {
   PrNode,
   PrOuterfaceNode
 } from '../model/pr-connection.class';
-import {PrProtocol, PrProtocolData} from '../model/pr-protocol.entity';
+import {PrProtocol} from '../model/pr-protocol.entity';
 import {PrProcess} from '../model/pr-process.entity';
 import {PrWorkflowLayer} from '../model/pr-workflow-layer.class';
 import {PrWorkflowNodeProcess} from '../model/pr-workflow-node-process.class';
@@ -28,7 +27,6 @@ import {PrWorkflowNodeOuterface} from '../model/pr-workflow-node-outerface.class
 import {PrWorkflowPort} from '../model/pr-workflow-port.class';
 import {PrAddProcessWithLink, PrNodeRelativeCoord} from '../model/pr-workflow-action.class';
 import {PrWorkflowNodeIo} from '../model/pr-workflow-node-io.class';
-import {PrExperimentDetailPageState} from './pr-experiment-detail-page-state';
 
 export enum PrWorkflowAction {
   ADD_PROCESS = 'workflow-add-process',
@@ -65,11 +63,8 @@ export class PrWorkflowManagerState {
   private readonly htmlOffsetX: number = 10;
   private readonly htmlOffsetY: number = 10;
 
-  private experimentState: PrExperimentDetailPageState;
-
   private idGenerator: number = 0;
   private actionSubscription: Subscription;
-  private flowsSubscription: Subscription;
 
   constructor(
     private actionsService: FlPortalActionsService,
@@ -87,9 +82,9 @@ export class PrWorkflowManagerState {
 
   //////////////////////// LAYER ////////////////////////////
 
-  public init(element: HTMLElement, mainFlow: PrFlow<PrProtocol>, experimentState: PrExperimentDetailPageState): void {
-    this.experimentState = experimentState;
-    this.workflow = new PrWorkflow(element, 'Main protocol', mainFlow.object, 'edit', this.ngZone);
+  public init(element: HTMLElement, mainFlow: PrFlow<PrProtocol>,
+              mode: PrWorkflowMode = 'edit'): void {
+    this.workflow = new PrWorkflow(element, 'Main protocol', mainFlow.object, mode, this.ngZone);
 
     this.workflow.getWorkflowEvent$().subscribe(
       (event: PrWorkflowEvent) => this.onWorkflowEvent(event)
@@ -101,7 +96,6 @@ export class PrWorkflowManagerState {
     this.initFlow(this.workflow.currentLayer, mainFlow);
 
 
-
     // listen to the new Process actions
     this.actionSubscription = this.actionsService.getResult$([
       PrWorkflowAction.ADD_PROCESS, PrWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
@@ -109,9 +103,6 @@ export class PrWorkflowManagerState {
       result => this.onWorkflowActionResult(result)
     );
 
-    this.flowsSubscription = experimentState.getFlowUpdate$().subscribe(
-      flow => this.refreshFlow(flow)
-    );
   }
 
   public selectLayer(layerId: string, layerProtocol?: PrProtocol): void {
@@ -143,14 +134,6 @@ export class PrWorkflowManagerState {
     this.workflow = null;
     this._layerIsLoading$.complete();
     this.actionSubscription?.unsubscribe();
-    this.flowsSubscription?.unsubscribe();
-  }
-
-  private refreshFlow(flow: PrFlow<PrProtocol>): void {
-    const layer = this.workflow.findLayerWithId(flow.object.id);
-    if (layer) {
-      layer.refreshObject(flow);
-    }
   }
 
   //////////////////////// GETS ////////////////////////////
@@ -161,43 +144,6 @@ export class PrWorkflowManagerState {
   private addProtocolLayer(flow: PrFlow<PrProtocol>): void {
     const layer = this.workflow.createSubLayerIfNotExists(flow.object.name, flow.object.title, flow.object);
     this.initFlow(layer, flow);
-  }
-
-  // create the action to add a process
-  private addProcessAction(process$: Observable<PrProcess>, actionText: FlTranslatableText): void {
-    // create an action to add this process
-    const action: FlPortalAction = {
-      text: actionText,
-      type: PrWorkflowAction.ADD_PROCESS,
-      // create the process in the API and get the process
-      action: process$,
-      additionalInformation: this.workflow.currentLayer.id
-    };
-
-    this.actionsService.addAction(action, true);
-  }
-
-  // create the action to add a process with a link
-  private addProcessWithLinkAction(processWithLink$: Observable<PrAddProcessWithLink>,
-                                   processNodeName: string,
-                                   newProcessPosition: 'before' | 'after',
-                                   actionText: FlTranslatableText): void {
-    // relative coord to place the source node before the process
-    const relativeCoord: PrNodeRelativeCoord = {
-      nodeName: processNodeName,
-      position: newProcessPosition,
-      layerId: this.workflow.currentLayer.id
-    };
-    // create an action to add this process
-    const action: FlPortalAction = {
-      text: actionText,
-      type: PrWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
-      // create the process in the API and get the process
-      action: processWithLink$,
-      additionalInformation: relativeCoord
-    };
-
-    this.actionsService.addAction(action, true);
   }
 
   private onNewProcess(process: PrProcess, layerId: string, coordX: number = 0, coordY: number = 0): void {

@@ -16,7 +16,6 @@ import {
 } from './component/pr-workflow-node-interface/pr-workflow-node-interface.component';
 import {PrWorkflowActionState} from './state/pr-workflow-action-state';
 import {PrWorkflowNodeDetailState} from './state/pr-workflow-node-detail-state';
-import {PrExperimentDetailPageState} from './state/pr-experiment-detail-page-state';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatButtonModule} from '@angular/material/button';
 import {
@@ -81,7 +80,7 @@ export class PrProtocolModule {
   public static forRoot(): ModuleWithProviders<PrProtocolModule> {
     return {
       ngModule: PrProtocolModule,
-      providers: [PrWorkflowManagerState, PrWorkflowActionState, PrWorkflowNodeDetailState, PrExperimentDetailPageState]
+      providers: [PrWorkflowManagerState, PrWorkflowActionState, PrWorkflowNodeDetailState]
     };
   }
 }

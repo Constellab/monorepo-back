@@ -70,17 +70,6 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
     return defaultConfig;
   }
 
-  /**
-   * Merge a config with the default to get the complete config
-   * if not all the field are provided
-   */
-  public mergeConfigWithDefault(config?: any): any {
-    if (config == null) {
-      config = {};
-    }
-    return Object.assign(this.getNullConfig(), this.getDefaultConfig(), config);
-  }
-
   public hasConfigs(visibility?: TdConfigSpecVisibility): boolean {
     if (visibility == null) {
       return this.record != null && Object.keys(this.record).length > 0;
@@ -89,14 +78,6 @@ export class PrConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
     }
   }
 
-  // get the config value with only null vales
-  public getNullConfig(): Record<string, null> {
-    const nullConfig: Record<string, null> = {};
-    for (const recordKey in this.record) {
-      nullConfig[recordKey] = null;
-    }
-    return nullConfig;
-  }
 
   private convertToAbstractConfig(spec: TdConfigSpec, defaultPlaceholder: string): FlDynamicFormAbstractControl {
     if (spec.type === 'param_set') {

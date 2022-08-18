@@ -12,7 +12,7 @@
 
   <fl-card-body class="body-tech-report">
     <mat-tab-group mat-align-tabs="start" animationDuration="0ms" dynamicHeight
-                   *ngIf="technicalReport.data && technicalReport.data.graph; else noGraph">
+                   *ngIf="technicalReport && technicalReport.data && technicalReport.data.graph; else noGraph">
       <mat-tab label="{{'protocol' | translate}}">
         <ng-template matTabContent>
           <div class="tech-report-workflow">

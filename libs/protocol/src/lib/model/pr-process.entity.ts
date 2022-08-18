@@ -1,5 +1,4 @@
 import {ClRecordTransform} from '@monorepo/core-lib';
-import {Expose, Type} from 'class-transformer';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {PrNode} from './pr-connection.class';
 import {PrIO} from './pr-io.class';
@@ -45,15 +44,12 @@ export function createRecordSpecs(record: Record<string, TdIOSpec>): Record<stri
  */
 export class PrProcess extends PrNode {
 
-  @Expose({name: 'process_typing_name'})
   processTypingName: string;
 
   data: PrProcessData;
 
-  @Expose({name: 'experiment_id'})
   experimentId: string;
 
-  @Expose({name: 'parent_protocol_id'})
   parentProtocolId: string;
 
   @FlStatusTransform(prProcessStatusDict)
@@ -61,10 +57,8 @@ export class PrProcess extends PrNode {
 
   brickVersion?: string;
 
-  @Type(() => PrConfig)
   config: PrConfig;
 
-  @Expose({name: 'instance_name'})
   name: string;
 
   @ClRecordTransform(PrIO)
@@ -73,17 +67,12 @@ export class PrProcess extends PrNode {
   @ClRecordTransform(PrIO)
   outputs: Record<string, PrIO>;
 
-  @Expose({name: 'progress_bar'})
-  @Type(() => PrProgressBar)
   progressBar: PrProgressBar;
 
-  @Expose({name: 'is_archived'})
   isArchived: boolean;
 
-  @Expose({name: 'is_deleted'})
   isDeleted: boolean;
 
-  @Expose({name: 'is_protocol'})
   isProtocol: boolean;
 
   constructor(inputNode?: PrProtocolGraphInputNode) {
