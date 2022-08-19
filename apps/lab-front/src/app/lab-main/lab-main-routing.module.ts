@@ -7,7 +7,8 @@ import {
   labConstDataboxRoute,
   labConstDocRoute,
   labConstMonitoringRoute,
-  labConstReportRoute
+  labConstReportRoute,
+  labConstViewboxRoute
 } from '../lab-core/utils/lab-base-route';
 import {LabMainAppComponent} from './component/lab-main-app/lab-main-app.component';
 import {LabAutoLoginGuard} from './guard/lab-auto-login.guard';
@@ -51,6 +52,11 @@ const routes: Routes = [
       {
         path: labConstReportRoute,
         loadChildren: () => import('../lab-report/lab-report.module').then(m => m.LabReportModule)
+      },
+      ////////////////////////  VIEWBOX  /////////////////////////
+      {
+        path: labConstViewboxRoute,
+        loadChildren: () => import('../lab-viewbox/lab-viewbox.module').then(m => m.LabViewboxModule)
       },
       ////////////////////////  DOC  /////////////////////////
       {

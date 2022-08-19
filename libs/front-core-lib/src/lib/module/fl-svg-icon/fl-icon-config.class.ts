@@ -54,7 +54,7 @@ export const flIconsDefault: FlIcon[] = [
   {name: 'archive', filename: 'archive-solid.svg'},
   {name: 'report', matIconName: 'grading'},
   {name: 'resource', matIconName: 'folder'},
-  {name: 'view', matIconName: 'bar_chart'},
+  {name: 'view', matIconName: 'insert_chart'},
   {name: 'smart_db', matIconName: 'search'},
   {name: 'organization', matIconName: 'business'},
   {name: 'group', matIconName: 'group'},

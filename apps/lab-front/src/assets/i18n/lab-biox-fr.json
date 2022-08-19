@@ -176,7 +176,6 @@
     "folder_extract_file": "Extraire le fichier",
     "folder_extract_folder": "Extraire le dossier",
     "view_type": "Type de vue",
-    "view_configs": "Historique des configurations de vue",
     "view_config_date": "Viewed",
     "view_config_select": "Sélectionner une config de vue",
     "view_config_select_help": "Voici l'historique des vues que vous avez généré. Vous pouvez seulement rechercher les vues des ressources qui on été générées ou utilisées par une des expériences associées à ce rapport. \nSi vous ne trouvez pas la vues souhaitez, re-générer la depuis la page de la ressource et re-lancer la recherche, la vues devrait apparaître en première.",
@@ -190,6 +189,7 @@
     "resource_type_unavailable_error": "Le type de ressource n'est pas disponible, la ressource ne peut pas être utilisée",
     "type_unavailable_monitoring_link": "Vous pouvez vérifier l'installation de la brick dans la page de monitoring.",
     "technical_info": "Informations techniques",
-    "open_type_in_page": "Ouvrir en page entière"
+    "open_type_in_page": "Ouvrir en page entière",
+    "viewbox": "Viewbox"
   }
 }

@@ -11,7 +11,7 @@ import {LabResourceViewType} from '../../../model/entities/resource/lab-resource
 export class LabViewConfigSearchFields {
   title: string;
 
-  viewType: LabResourceViewType;
+  viewType: LabResourceViewType[];
 
   @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
@@ -19,6 +19,10 @@ export class LabViewConfigSearchFields {
 }
 
 export class LabViewConfigSearch {
+  // list of the view types that are not searchable
+  public static excludedViewTypes: LabResourceViewType[] = ['tabular-view', 'dataset-view', 'view', 'image-view', 'folder-view',
+    'resources-list-view'];
+
   /**
    * Const to configure Form Input Manager for advanced search
    */
@@ -35,7 +39,7 @@ export class LabViewConfigSearch {
    */
   public static advancedSearchConverter: FlSearchCriteriaConverter<LabViewConfigSearchFields> = {
     title: {key: 'title', operator: 'CONTAINS'},
-    viewType: {key: 'view_type', operator: 'EQ'},
+    viewType: {key: 'view_type', operator: 'IN', convertValue: LabViewConfigSearch.viewTypeConverter},
     // Date
     createdAt: FlSearchConverter.dateInterval('created_at'),
   };
@@ -53,4 +57,21 @@ export class LabViewConfigSearch {
       }
     );
   }
+
+
+  /**
+   * Simple converter for the view type param to add similar view type when a type is selected
+   * @param viewTypes
+   * @private
+   */
+  private static viewTypeConverter(viewTypes: LabResourceViewType[]): LabResourceViewType[] {
+    if (viewTypes == null) return null;
+    const vT: LabResourceViewType[] = [...viewTypes];
+    if (vT.includes('table-view')) {
+      vT.push('tabular-view', 'dataset-view');
+    }
+
+    return vT;
+  }
+
 }

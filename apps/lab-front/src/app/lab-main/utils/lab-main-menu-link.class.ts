@@ -2,7 +2,8 @@ import {
   labConstBiotaFullRoute,
   labConstBioxFullRoute,
   labConstDataboxFullRoute,
-  labConstReportFullRoute
+  labConstReportFullRoute,
+  labConstViewboxFullRoute
 } from '../../lab-core/utils/lab-base-route';
 import {technicalBricks} from './lab-technical-brick.class';
 
@@ -32,6 +33,11 @@ export const mainMenuLinks: MainMenuLink[] = [
     label: 'biox.reports',
     icon: 'report',
     route: labConstReportFullRoute
+  },
+  {
+    label: 'biox.viewbox',
+    icon: 'view',
+    route: labConstViewboxFullRoute
   },
   {
     label: technicalBricks.BIOTA.label,

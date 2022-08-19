@@ -6,7 +6,8 @@
     <!--  ViewType  -->
     <mat-form-field class="g-full">
       <mat-label>{{'biox.view_type' | translate }}</mat-label>
-      <mat-select formControlName="viewType" [placeholder]="'biox.view_type' | translate">
+      <mat-select formControlName="viewType" [placeholder]="'biox.view_type' | translate"
+                  multiple>
         <mat-select-trigger *ngIf="formGp.value.viewType | labViewTypeInfo as viewType">
           <fl-text-icon>
             <mat-icon [flIcon]="viewType.icon"></mat-icon>

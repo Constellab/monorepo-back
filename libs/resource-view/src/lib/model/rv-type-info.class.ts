@@ -143,6 +143,5 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
   },
-
 };
 

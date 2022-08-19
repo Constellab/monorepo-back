@@ -36,6 +36,7 @@ const rvResourceViewI18nEn: FlLangTranslation = {
     resource_view_pathway: 'Pathway',
     resource_view_image: 'Image',
     resource_view_scatter_plot_2d: 'Scatter plot 2d',
+    resource_view_line_plot_2d: 'Line plot',
     resource_view_bar_plot: 'Bar plot',
     resource_view_stacked_bar_plot: 'Stacked bar plot',
     resource_view_histogram: 'Histogram',

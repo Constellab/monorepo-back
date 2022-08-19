@@ -8,8 +8,8 @@ import {
   flThemeDetailLight
 } from '@monorepo/front-core-lib';
 import {LabViewConfig} from '../../../../model/entities/resource/lab-view-config.entity';
-import {LabReportService} from '../../../../entity-service/lab-report.service';
 import {LabViewConfigSearch, LabViewConfigSearchFields} from '../../model/lab-view-config-search.class';
+import {LabViewConfigService} from '../../../../entity-service/lab-view-config.service';
 
 const savedSearch: FlSavedSearch[] = [{
   searchName: 'lab-view-config',
@@ -41,13 +41,13 @@ export class LabViewConfigSearchComponent implements OnInit {
   columns: FlTableColumn<LabViewConfig>[] = ['viewType', 'resource', 'title', 'createdAt', 'preview'];
 
   constructor(private searchState: FlSearchState<any>,
-              private reportService: LabReportService) {
+              private viewConfigService: LabViewConfigService) {
   }
 
   ngOnInit(): void {
     const config: FlSearchConfig = {
       version: 1,
-      searchFunc: this.reportService.getViewConfigSearchFunction(this.reportId),
+      searchFunc: this.viewConfigService.getViewConfigSearchFunction(this.reportId),
       buildAdvancedForm: LabViewConfigSearch.getAdvancedSearchForm,
       advancedFormClass: LabViewConfigSearchFields,
       savedSearch: savedSearch,
