@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {MatDrawer} from '@angular/material/sidenav';
 import {PrWorkflowActionEvent} from '../model/pr-workflow-drawer-event.class';
 import {PrWorkflowNodeDetailState} from './pr-workflow-node-detail-state';
@@ -33,9 +33,6 @@ export class PrWorkflowActionState {
     }
   }
 
-  public getAction$(): Observable<PrWorkflowActionEvent> {
-    return this.action$.asObservable();
-  }
 
   public clear(): void {
     this.action$.complete();

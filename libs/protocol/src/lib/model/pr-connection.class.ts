@@ -104,20 +104,6 @@ export class PrOuterfaceNode extends PrNode {
   // types supported by the port
   portType: TdIOSpec;
 
-  /**
-   * Return a new outerface with specs equals to resource
-   */
-  public static newGenericInterface(portName: string): PrOuterfaceNode {
-    const node = new PrOuterfaceNode();
-    node.portName = portName;
-    node.name = portName;
-    node.portType = {
-      resource_types: [resourceSpec],
-      human_name: '',
-      short_description: ''
-    };
-    return node;
-  }
 }
 
 

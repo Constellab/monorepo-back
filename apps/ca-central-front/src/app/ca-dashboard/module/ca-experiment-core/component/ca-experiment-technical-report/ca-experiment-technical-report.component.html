@@ -16,7 +16,7 @@
       <mat-tab label="{{'protocol' | translate}}">
         <ng-template matTabContent>
           <div class="tech-report-workflow">
-            <pr-workflow [mainProtocolGraph]="technicalReport.data.graph"></pr-workflow>
+            <pr-workflow [mainProtocolGraph]="technicalReport.data.graph" mode="report" (action)="actionEvent($event)"></pr-workflow>
           </div>
         </ng-template>
       </mat-tab>

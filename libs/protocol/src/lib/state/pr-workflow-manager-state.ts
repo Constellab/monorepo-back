@@ -100,7 +100,9 @@ export class PrWorkflowManagerState {
     this.actionSubscription = this.actionsService.getResult$([
       PrWorkflowAction.ADD_PROCESS, PrWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
       PrWorkflowAction.DELETE_PROCESS, PrWorkflowAction.DELETE_CONNECTION, PrWorkflowAction.ADD_CONNECTION]).subscribe(
-      result => this.onWorkflowActionResult(result)
+      result =>{
+        this.onWorkflowActionResult(result);
+      }
     );
 
   }
@@ -115,12 +117,11 @@ export class PrWorkflowManagerState {
       this._layerIsLoading$.next(true);
       if(layerProtocol){
         const flow: PrFlow<PrProtocol> = new PrFlow<PrProtocol>(layerProtocol);
-
         if (!this.workflow.hasLayer(flow.object.id)) {
           this.addProtocolLayer(flow);
+          this._layerIsLoading$.next(false);
         }
       }
-      this._layerIsLoading$.next(false);
     }
   }
 
@@ -325,9 +326,13 @@ export class PrWorkflowManagerState {
   ///////////////////////////// OTHER ////////////////////////////////////
   private onWorkflowEvent(workflowEvent: PrWorkflowEvent): void {
 
-    let portalAction: FlPortalAction;
 
-    this.actionsService.addAction(portalAction);
+    if(this.workflow.getMode() === 'edit'){
+      let portalAction: FlPortalAction;
+
+      this.actionsService.addAction(portalAction);
+    }
+
   }
 
 

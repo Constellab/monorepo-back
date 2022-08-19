@@ -1,8 +1,20 @@
-import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {PrProtocol, PrProtocolData} from '../../model/pr-protocol.entity';
 import {PrFlow} from '../../model/pr-connection.class';
 import {PrProtocolGraphInput} from '../../model/pr-protocol-graph-input.class';
+import {PrWorkflowEvent, PrWorkflowMode} from '../../model/pr-workflow.class';
+import {Subscription} from 'rxjs';
 
 
 @Component({
@@ -22,6 +34,15 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input()
   mainProtocolGraph: PrProtocolGraphInput;
 
+  @Input()
+  mode: PrWorkflowMode;
+
+  @Output()
+  action = new EventEmitter<PrWorkflowEvent>();
+
+  sub: Subscription;
+
+
   constructor(
     private workflowManagerState: PrWorkflowManagerState,
   ) {
@@ -32,6 +53,16 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     setTimeout(() => this.loadExperimentFlow(), 0);
+
+    if (this.mode === 'report') {
+      this.container.nativeElement.addEventListener('contextmenu', (event) => {
+        event.stopImmediatePropagation()
+      }, true);
+
+      this.container.nativeElement.addEventListener('keydown', (event) => {
+        event.stopImmediatePropagation()
+      }, true);
+    }
   }
 
   private loadExperimentFlow(): void {
@@ -40,14 +71,19 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
     mainProtocol.data = new PrProtocolData(this.mainProtocolGraph, 'Test');
     PrWorkflowComponent.mainFlow = new PrFlow<PrProtocol>(mainProtocol);
     this.loadExperimentFlowSuccess(PrWorkflowComponent.mainFlow);
-  }
 
-  private loadExperimentFlowSuccess(flow: PrFlow<PrProtocol>): void {
-    this.workflowManagerState.init(this.container.nativeElement, flow, 'report');
-    this.flowIsLoading = false;
   }
 
   ngOnDestroy(): void {
     this.workflowManagerState.clear();
+    this.sub?.unsubscribe();
+  }
+
+  private loadExperimentFlowSuccess(flow: PrFlow<PrProtocol>): void {
+    this.workflowManagerState.init(this.container.nativeElement, flow, this.mode);
+    this.sub = this.workflowManagerState.workflow?.getWorkflowEvent$().subscribe((res) => {
+      this.action.emit(res);
+    });
+    this.flowIsLoading = false;
   }
 }

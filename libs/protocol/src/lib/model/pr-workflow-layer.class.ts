@@ -123,7 +123,6 @@ export class PrWorkflowLayer {
       connection.inputNode.nodeId, connection.outputPort.name, connection.inputPort.name);
     if (connectionIndex >= 0) {
       const connection: PrWorkflowConnection = this.connections[connectionIndex];
-      console.log('aaaaa', connection)
       this.connections.splice(connectionIndex, 1);
       return connection;
     }

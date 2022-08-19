@@ -175,38 +175,15 @@ export class PrWorkflow {
   ////////////////////// NODE ///////////////////////////
 
   private onNodeRemoved(nodeId: number): void {
-    console.log('CONNECTIONS A', this.currentLayer.connections.length)
     const node: PrWorkflowNode<any> = this.currentLayer.removeNode(nodeId.toString());
-    if (node && this.mode === 'report') {
+    if (node) {
       this.workflowEvent$.next({
         action: 'deleteNode',
         node: node,
         protocolId: this.currentLayer.object.id
       });
-    } else {
-      this.rebuildNode(node)
     }
   }
-
-  private rebuildNode(node: PrWorkflowNode<any>): void{
-    this.currentLayer.addNode(node);
-    console.log('CONNECTIONS B', this.currentLayer.connections.length)
-    for(const connection of this.currentLayer.connections){
-
-      if (connection.inputNode.nodeName == node.nodeName){
-        this.currentLayer.removeConnection(connection);
-        connection.inputNode.nodeId = node.nodeId;
-        this.currentLayer.addConnection(connection);
-      }
-
-      if(connection.outputNode.nodeName == node.nodeName){
-        this.currentLayer.removeConnection(connection);
-        connection.outputNode.nodeId = node.nodeId;
-        this.currentLayer.addConnection(connection);
-      }
-    }
-  }
-
 
   public generateNodeName(): string {
     return `n${this.nodeGeneration++}`;

@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 import {PrWorkflowNodeProcess} from '../model/pr-workflow-node-process.class';
-import {PrWorkflowManagerState} from './pr-workflow-manager-state';
 import {PrProcess} from '../model/pr-process.entity';
 
 /**
@@ -13,7 +12,7 @@ export class PrWorkflowNodeDetailState {
 
   private node$: BehaviorSubject<PrWorkflowNodeProcess>;
 
-  constructor(private workflowManagerState: PrWorkflowManagerState) {
+  constructor() {
   }
 
   public init(): void {

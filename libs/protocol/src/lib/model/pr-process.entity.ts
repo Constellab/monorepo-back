@@ -42,7 +42,7 @@ export function createRecordSpecs(record: Record<string, TdIOSpec>): Record<stri
 /**
  * Task or protocol inside a flow
  */
-export class PrProcess extends PrNode {
+export abstract class PrProcess extends PrNode {
 
   processTypingName: string;
 
@@ -71,11 +71,9 @@ export class PrProcess extends PrNode {
 
   isArchived: boolean;
 
-  isDeleted: boolean;
-
   isProtocol: boolean;
 
-  constructor(inputNode?: PrProtocolGraphInputNode) {
+  protected constructor(inputNode?: PrProtocolGraphInputNode) {
     super();
     if (inputNode) {
       this.data = {
