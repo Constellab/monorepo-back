@@ -35,7 +35,6 @@ import {
 import {
   LabProgressBarInfoDialogComponent
 } from './component/lab-progress-bar-info-dialog/lab-progress-bar-info-dialog.component';
-import {LabProjectCoreModule} from '../../../lab-core/entity-module/lab-project-core/lab-project-core.module';
 import {LabWorkflowNodeSourceComponent} from './component/lab-workflow-node-source/lab-workflow-node-source.component';
 import {LabExperimentDetailComponent} from './component/lab-experiment-detail/lab-experiment-detail.component';
 import {
@@ -57,6 +56,7 @@ import {
 import {
   LabWorkflowPortActionPortalComponent
 } from './component/lab-workflow-port-action-portal/lab-workflow-port-action-portal.component';
+import {LabEntityCoreModule} from '../../../lab-core/entity-module/lab-entity-core/lab-entity-core.module';
 
 
 @NgModule({
@@ -96,7 +96,7 @@ import {
     LabExperimentCoreModule,
     LabResourceCoreModule,
     LabConfigCoreModule,
-    LabProjectCoreModule,
+    LabEntityCoreModule,
     LabTypeCoreModule,
   ],
   providers: [

@@ -3,7 +3,9 @@ import {
   FlFormInputsManagerConfig,
   FlSearchConverter,
   FlSearchCriteriaConverter,
-  FlSearchDateInterval
+  FlSearchDateInterval,
+  FlTag,
+  FlTagHelper
 } from '@monorepo/front-core-lib';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {LabResourceViewType} from '../../../model/entities/resource/lab-resource-view.entity';
@@ -15,6 +17,9 @@ export class LabViewConfigSearchFields {
 
   @Type(() => FlSearchDateInterval)
   createdAt: FlSearchDateInterval;
+
+  tags: FlTag[];
+
 
 }
 
@@ -31,6 +36,7 @@ export class LabViewConfigSearch {
     viewType: 'biox.view_type',
     // group the creation date into one chip
     createdAt: 'creation_date',
+    tags: 'flTag.tags'
   };
 
 
@@ -42,6 +48,7 @@ export class LabViewConfigSearch {
     viewType: {key: 'view_type', operator: 'IN', convertValue: LabViewConfigSearch.viewTypeConverter},
     // Date
     createdAt: FlSearchConverter.dateInterval('created_at'),
+    tags: {key: 'tags', operator: 'EQ', convertValue: FlTagHelper.tagsToString},
   };
 
 
@@ -53,7 +60,8 @@ export class LabViewConfigSearch {
         createdAt: new FormBuilder().group<FlSearchDateInterval>({
           from: [null],
           to: [null],
-        })
+        }),
+        tags: [null]
       }
     );
   }

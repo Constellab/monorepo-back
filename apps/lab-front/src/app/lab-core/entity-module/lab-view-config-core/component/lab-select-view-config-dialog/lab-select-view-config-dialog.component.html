@@ -5,6 +5,6 @@
 <mat-dialog-content>
   <p class="g-text-light help-text">{{'biox.view_config_select_help' | translate}}</p>
 
-  <lab-view-config-search [reportId]="reportId"
+  <lab-view-config-search [reportId]="reportId" [fullPageSearch]="false"
                           (viewConfigSelected)="onViewConfigSelected($event)"></lab-view-config-search>
 </mat-dialog-content>

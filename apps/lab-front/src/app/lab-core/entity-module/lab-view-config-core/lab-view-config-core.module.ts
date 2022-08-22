@@ -14,6 +14,13 @@ import {
 } from './component/lab-select-view-type-options/lab-select-view-type-options.component';
 import {LabViewConfigTableComponent} from './component/lab-view-config-table/lab-view-config-table.component';
 import {LabViewTypeInfoPipe} from './pipe/lab-view-type-info.pipe';
+import {
+  LabViewConfigActionsMenuComponent
+} from './component/lab-view-config-actions-menu/lab-view-config-actions-menu.component';
+import {
+  LabUpdateViewConfigDialogComponent
+} from './component/lab-update-view-config-dialog/lab-update-view-config-dialog.component';
+import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 
 
 @NgModule({
@@ -23,21 +30,27 @@ import {LabViewTypeInfoPipe} from './pipe/lab-view-type-info.pipe';
     LabSelectViewConfigDialogComponent,
     LabSelectViewTypeOptionsComponent,
     LabViewConfigTableComponent,
-    LabViewTypeInfoPipe
+    LabViewTypeInfoPipe,
+    LabViewConfigActionsMenuComponent,
+    LabUpdateViewConfigDialogComponent
   ],
   exports: [
     LabViewConfigSearchComponent,
     LabSelectViewConfigDialogComponent,
     LabSelectViewTypeOptionsComponent,
     LabViewConfigTableComponent,
-    LabViewTypeInfoPipe
+    LabViewTypeInfoPipe,
+    LabViewConfigActionsMenuComponent,
+    LabUpdateViewConfigDialogComponent
   ],
   imports: [
     CommonModule,
-
-    LabCoreModule,
     ReactiveFormsModule,
     FormsModule,
+
+    LabCoreModule,
+    LabTagCoreModule,
+
   ],
 })
 export class LabViewConfigCoreModule {

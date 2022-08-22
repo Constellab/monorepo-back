@@ -17,4 +17,9 @@ export class LabViewConfigSearchFormComponent implements OnInit {
   ngOnInit(): void {
     this.formGp = this.searchState.advancedSearchFormGroup;
   }
+
+  onTagSelectionChange(): void {
+    this.searchState.callAdvancedSearchFromForm();
+  }
+
 }

@@ -1,9 +1,11 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {
   FlOverlayRef,
   FlPaginatedTableAbstractDirective,
   FlPortalConfig,
-  FlPortalService
+  FlPortalService,
+  FlTag,
+  FlTagSelectedEvent
 } from '@monorepo/front-core-lib';
 import {LabViewConfig} from '../../../../model/entities/resource/lab-view-config.entity';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
@@ -13,6 +15,7 @@ import {
 } from '../../../lab-resource-core/component/lab-resource-view-portal/lab-resource-view-portal.component';
 import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {ClHelpService} from '@monorepo/core-lib';
+import {LabTag} from '../../../../model/entities/lab-tag.entity';
 
 @Component({
   selector: 'lab-view-config-table',
@@ -21,13 +24,17 @@ import {ClHelpService} from '@monorepo/core-lib';
 })
 export class LabViewConfigTableComponent extends FlPaginatedTableAbstractDirective<LabViewConfig> implements OnInit, OnDestroy {
 
+  @Input() tagSelectable: boolean = true;
+
+  @Output() tagSelected: EventEmitter<FlTag> = new EventEmitter();
+
   @Output() viewConfigSelected: EventEmitter<LabViewConfig> = new EventEmitter();
 
   private previewOverlay: FlOverlayRef;
 
   constructor(private portalService: FlPortalService,
               private resourceService: LabResourceService) {
-    super(['viewType', 'createdAt', 'preview', 'resource']);
+    super(['viewType', 'createdAt', 'preview', 'resource', 'action', 'tags']);
   }
 
   ngOnInit(): void {
@@ -72,6 +79,22 @@ export class LabViewConfigTableComponent extends FlPaginatedTableAbstractDirecti
 
   private closeOverlay(): void {
     this.previewOverlay?.dispose();
+  }
+
+  onUpdate(viewConfig: LabViewConfig): void {
+    this.datasource.updateItem(viewConfig);
+  }
+
+
+  onUpdateTags(viewConfig: LabViewConfig, newTags: LabTag[]): void {
+    if (newTags != null) {
+      viewConfig.tags = newTags;
+    }
+  }
+
+  onTagSelected(tagEvent: FlTagSelectedEvent): void {
+    ClHelpService.stopEventPropagation(tagEvent.event);
+    this.tagSelected.next(tagEvent.tag);
   }
 
   ngOnDestroy(): void {

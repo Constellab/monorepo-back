@@ -1,13 +1,13 @@
 import {LabConfigValues} from '../lab-config.entity';
 import {Expose} from 'class-transformer';
 import {LabResourceViewType} from './lab-resource-view.entity';
-import {LabBaseEntityWithUser} from '../lab-user.entity';
 import {RvTransformerParams} from '@monorepo/resource-view';
+import {LabEntityWithTag} from '../lab-entity-with-tag.entity';
 
 /**
  * Represent a view config that the user viewed
  */
-export class LabViewConfig extends LabBaseEntityWithUser {
+export class LabViewConfig extends LabEntityWithTag {
 
   title: string;
 

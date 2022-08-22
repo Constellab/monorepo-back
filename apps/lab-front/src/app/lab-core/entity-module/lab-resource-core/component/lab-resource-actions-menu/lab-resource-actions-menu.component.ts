@@ -24,7 +24,7 @@ import {
 } from '../../../lab-type-core/component/lab-type-dialog/lab-type-dialog.component';
 
 /**
- * Action menu button for resources, it has an ng-content for custom buttons
+ * Action menu button for resources, it has a ng-content for custom buttons
  */
 @Component({
   selector: 'lab-resource-actions-menu',

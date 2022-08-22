@@ -5,6 +5,7 @@ import {
   FlSearchConfig,
   FlSearchState,
   FlTableColumn,
+  FlTag,
   flThemeDetailLight
 } from '@monorepo/front-core-lib';
 import {LabViewConfig} from '../../../../model/entities/resource/lab-view-config.entity';
@@ -34,11 +35,13 @@ export class LabViewConfigSearchComponent implements OnInit {
 
   @Input() reportId: string;
 
+  @Input() fullPageSearch: boolean = true;
+
   @Output() viewConfigSelected: EventEmitter<LabViewConfig> = new EventEmitter();
 
   datasource: FlDatasourcePaginated<LabViewConfig>;
 
-  columns: FlTableColumn<LabViewConfig>[] = ['viewType', 'resource', 'title', 'createdAt', 'preview'];
+  columns: FlTableColumn<LabViewConfig>[];
 
   constructor(private searchState: FlSearchState<any>,
               private viewConfigService: LabViewConfigService) {
@@ -56,10 +59,27 @@ export class LabViewConfigSearchComponent implements OnInit {
     };
     this.searchState.init(config);
     this.datasource = this.searchState.datasource;
+
+    this.columns = ['viewType', 'resource', 'title', 'tags', 'preview'];
+    // add the action column only when the search is in full page (view box)
+    if (this.fullPageSearch) {
+      this.columns.push('action');
+    }
+
   }
 
   selectViewConfig(viewConfig: LabViewConfig): void {
     this.viewConfigSelected.next(viewConfig);
   }
+
+  searchOnTag(tag: FlTag): void {
+    const tags = this.searchState.advancedSearchFormGroup.value.tags ?? [];
+    const newTags = [...tags, tag];
+    const search: Partial<LabViewConfigSearchFields> = {
+      tags: newTags
+    };
+    this.searchState.patchFormValueAndCallSearch(search);
+  }
+
 
 }

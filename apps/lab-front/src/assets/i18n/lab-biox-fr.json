@@ -179,6 +179,8 @@
     "view_config_date": "Viewed",
     "view_config_select": "Sélectionner une config de vue",
     "view_config_select_help": "Voici l'historique des vues que vous avez généré. Vous pouvez seulement rechercher les vues des ressources qui on été générées ou utilisées par une des expériences associées à ce rapport. \nSi vous ne trouvez pas la vues souhaitez, re-générer la depuis la page de la ressource et re-lancer la recherche, la vues devrait apparaître en première.",
+    "update_view_config_title": "Modifier le titre",
+    "view_config_title_updated": "Titre modifié",
     "report_add_view": "Ajouter une vue de ressource",
     "view_preview": "Aperçu de la vue",
     "type_deprecated_since": "Obsolète depuis",

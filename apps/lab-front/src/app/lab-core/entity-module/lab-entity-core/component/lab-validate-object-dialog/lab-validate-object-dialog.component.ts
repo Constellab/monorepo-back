@@ -3,7 +3,6 @@ import {LabProject} from '../../../../model/entities/lab-project.class';
 import {Observable} from 'rxjs';
 import {FormControl} from '@ngneat/reactive-forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {LabExperimentService} from '../../../../entity-service/lab-experiment.service';
 import {FlSnackBarService} from '@monorepo/front-core-lib';
 import {Validators} from '@angular/forms';
 import {LabEntity} from '../../../../model/global/lab-entity.entity';
@@ -40,7 +39,6 @@ export class LabValidateObjectDialogComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) private dialogInput: LabValidateObjectDialogInput,
               private dialogRef: MatDialogRef<LabValidateObjectDialogComponent>,
-              private experimentService: LabExperimentService,
               private snackBarService: FlSnackBarService) {
     this.title = this.dialogInput.title;
     this.helpText = this.dialogInput.helpText;

@@ -19,7 +19,7 @@ import {Observable} from 'rxjs';
 import {
   LabValidateObjectDialogComponent,
   LabValidateObjectDialogInput
-} from '../../../../../lab-core/entity-module/lab-project-core/component/lab-validate-object-dialog/lab-validate-object-dialog.component';
+} from '../../../../../lab-core/entity-module/lab-entity-core/component/lab-validate-object-dialog/lab-validate-object-dialog.component';
 import {LabProject} from '../../../../../lab-core/model/entities/lab-project.class';
 import {LabReportTextEditorConfig} from '../../lab-report-text-editor-config.class';
 

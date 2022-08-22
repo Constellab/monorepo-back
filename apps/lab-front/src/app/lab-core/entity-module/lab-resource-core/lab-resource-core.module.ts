@@ -58,6 +58,7 @@ import {
   LabConfigureResourceViewComponent
 } from './component/lab-configure-resource-view/lab-configure-resource-view.component';
 import {LabResourceDetailTabsComponent} from './component/lab-resource-detail-tabs/lab-resource-detail-tabs.component';
+import {LabEntityCoreModule} from '../lab-entity-core/lab-entity-core.module';
 import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module';
 
 
@@ -125,6 +126,7 @@ import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module'
     LabUserCoreModule,
     LabExperimentCoreModule,
     LabTagCoreModule,
+    LabEntityCoreModule,
     LabProjectCoreModule,
   ],
 })

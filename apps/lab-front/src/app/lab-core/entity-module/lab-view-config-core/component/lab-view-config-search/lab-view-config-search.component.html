@@ -23,7 +23,8 @@
 
   <fl-search-result>
     <lab-view-config-table [datasource]="datasource" [columns]="columns"
-                           (viewConfigSelected)="selectViewConfig($event)"></lab-view-config-table>
+                           (viewConfigSelected)="selectViewConfig($event)"
+                           (tagSelected)="searchOnTag($event)"></lab-view-config-table>
   </fl-search-result>
 
 </fl-search>

@@ -8,7 +8,6 @@ import {
   LabExperimentFormDialogComponent
 } from './component/lab-experiment-form-dialog/lab-experiment-form-dialog.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module';
 import {LabExperimentSearchComponent} from './component/lab-experiment-search/lab-experiment-search.component';
 import {
   LabExperimentAdvancedSearchFormComponent
@@ -25,6 +24,8 @@ import {
 import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
 import {LabSelectExperimentComponent} from './component/lab-select-experiment/lab-select-experiment.component';
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
+import {LabEntityCoreModule} from '../lab-entity-core/lab-entity-core.module';
+import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module';
 
 
 @NgModule({
@@ -57,9 +58,10 @@ import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
     ReactiveFormsModule,
 
     LabCoreModule,
-    LabProjectCoreModule,
+    LabEntityCoreModule,
     LabUserCoreModule,
     LabTagCoreModule,
+    LabProjectCoreModule,
   ]
 })
 export class LabExperimentCoreModule {

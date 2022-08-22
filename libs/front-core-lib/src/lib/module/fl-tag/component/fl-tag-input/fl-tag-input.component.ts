@@ -12,11 +12,11 @@ import {
   ViewChild
 } from '@angular/core';
 import {MatChipInputEvent} from '@angular/material/chips';
-import {UntypedFormControl, NgControl} from '@angular/forms';
+import {NgControl, UntypedFormControl} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {map, mergeMap, startWith, tap} from 'rxjs/operators';
 import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
-import {ENTER, TAB} from '@angular/cdk/keycodes';
+import {TAB} from '@angular/cdk/keycodes';
 import {clRxjsElasticSearch} from '@monorepo/core-lib';
 import {FlFormFieldDirective} from '../../../../abstract-directive/form/fl-form-field.directive';
 import {FlTag, FlTagEntity, FlTagHelper, FlTagService} from '../../fl-tag.class';
@@ -50,7 +50,7 @@ export class FlTagInputComponent extends FlFormFieldDirective<FlTag[], FlTagInpu
   @ViewChild('input') input: ElementRef<HTMLInputElement>;
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger: MatAutocompleteTrigger;
 
-  separatorKeysCodes: number[] = [ENTER, TAB];
+  separatorKeysCodes: number[] = [TAB];
   inputCtrl = new UntypedFormControl();
 
   filteredOptions: Observable<string[]>;

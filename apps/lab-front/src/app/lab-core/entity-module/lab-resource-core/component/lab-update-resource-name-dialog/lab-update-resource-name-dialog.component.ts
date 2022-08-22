@@ -7,7 +7,7 @@ import {FormControl} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 
 @Component({
-  selector: 'lab-lab-update-resource-name-dialog',
+  selector: 'lab-update-resource-name-dialog',
   templateUrl: './lab-update-resource-name-dialog.component.html',
   styleUrls: ['./lab-update-resource-name-dialog.component.scss']
 })
