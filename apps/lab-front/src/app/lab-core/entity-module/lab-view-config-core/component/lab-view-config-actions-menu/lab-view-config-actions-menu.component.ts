@@ -6,6 +6,7 @@ import {LabViewConfigService} from '../../../../entity-service/lab-view-config.s
 import {
   LabUpdateViewConfigDialogComponent
 } from '../lab-update-view-config-dialog/lab-update-view-config-dialog.component';
+import {ClHelpService} from '@monorepo/core-lib';
 
 /**
  * Actions menu button for view configs, it has a ng-content for custom buttons
@@ -28,6 +29,10 @@ export class LabViewConfigActionsMenuComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  stopPropagation(event: MouseEvent): void {
+    ClHelpService.stopEventPropagation(event);
   }
 
   openUpdateName(): void {

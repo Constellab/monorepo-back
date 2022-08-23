@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {LabResourceView} from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {LabViewConfigService} from '../../../../../lab-core/entity-service/lab-view-config.service';
 import {RvViewConfig} from '@monorepo/resource-view';
+import {FlTag} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'lab-view-config-detail',
@@ -28,7 +29,15 @@ export class LabViewConfigDetailComponent implements OnInit {
       methodName: this.viewConfig.viewName,
       configValues: this.viewConfig.configValues,
       transformers: this.viewConfig.transformers
-    }
+    };
+  }
+
+  onUpdate(viewConfig: LabViewConfig): void {
+    this.viewConfig = viewConfig;
+  }
+
+  onTagUpdate(tags: FlTag[]): void {
+    this.viewConfig.tags = tags;
   }
 
 }

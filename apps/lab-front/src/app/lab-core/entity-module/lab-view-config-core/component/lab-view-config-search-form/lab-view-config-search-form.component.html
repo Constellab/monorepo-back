@@ -32,15 +32,16 @@
       </fl-search-date-interval>
     </div>
 
-    <!--   Tags    -->
-    <lab-tag-dashboard formControlName="tags" (selectionChange)="onTagSelectionChange()"
-                       class="tags"></lab-tag-dashboard>
-
 <!--  Include none highlighted  -->
     <mat-checkbox formControlName="includeNotFlagged"
                   class="checkbox g-mat-checkbox-wrap-text">
       {{'biox.view_include_not_flagged' | translate }}
     </mat-checkbox>
+
+    <!--   Tags    -->
+    <lab-tag-dashboard formControlName="tags" (selectionChange)="onTagSelectionChange()"
+                       class="tags"></lab-tag-dashboard>
+
 
 
   </div>

@@ -24,6 +24,10 @@
 
       <fl-section-actions>
         <lab-flag-button [entity]="viewConfig"></lab-flag-button>
+
+        <lab-view-config-actions-menu [viewConfig]="viewConfig"
+                                      (update)="onUpdate($event)"
+                                      (updateTags)="onTagUpdate($event)"></lab-view-config-actions-menu>
       </fl-section-actions>
     </fl-section-header>
 
