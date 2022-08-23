@@ -23,6 +23,7 @@ import {
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 import {LabEntityCoreModule} from '../lab-entity-core/lab-entity-core.module';
 import {RouterModule} from '@angular/router';
+import {LabViewConfigPreviewComponent} from './component/lab-view-config-preview/lab-view-config-preview.component';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import {RouterModule} from '@angular/router';
     LabViewConfigTableComponent,
     LabViewTypeInfoPipe,
     LabViewConfigActionsMenuComponent,
-    LabUpdateViewConfigDialogComponent
+    LabUpdateViewConfigDialogComponent,
+    LabViewConfigPreviewComponent
   ],
   exports: [
     LabViewConfigSearchComponent,
@@ -43,7 +45,8 @@ import {RouterModule} from '@angular/router';
     LabViewConfigTableComponent,
     LabViewTypeInfoPipe,
     LabViewConfigActionsMenuComponent,
-    LabUpdateViewConfigDialogComponent
+    LabUpdateViewConfigDialogComponent,
+    LabViewConfigPreviewComponent
   ],
   imports: [
     CommonModule,

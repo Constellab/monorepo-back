@@ -1,0 +1,6 @@
+<button mat-icon-button type="button" (click)="showPreview($event)"
+        [matTooltip]="'biox.view_preview' | translate">
+  <mat-icon>visibility</mat-icon>
+
+  <fl-button-loader *ngIf="isLoading" position="override"></fl-button-loader>
+</button>
