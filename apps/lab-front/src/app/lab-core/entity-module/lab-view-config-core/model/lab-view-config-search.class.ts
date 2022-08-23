@@ -20,7 +20,7 @@ export class LabViewConfigSearchFields {
 
   tags: FlTag[];
 
-
+  includeNoneHighlighted: boolean;
 }
 
 export class LabViewConfigSearch {
@@ -36,7 +36,8 @@ export class LabViewConfigSearch {
     viewType: 'biox.view_type',
     // group the creation date into one chip
     createdAt: 'creation_date',
-    tags: 'flTag.tags'
+    tags: 'flTag.tags',
+    includeNoneHighlighted: 'biox.view_include_none_highlighted'
   };
 
 
@@ -49,6 +50,7 @@ export class LabViewConfigSearch {
     // Date
     createdAt: FlSearchConverter.dateInterval('created_at'),
     tags: {key: 'tags', operator: 'EQ', convertValue: FlTagHelper.tagsToString},
+    includeNoneHighlighted: {key: 'include_none_highlighted', operator: 'EQ'}
   };
 
 
@@ -61,7 +63,8 @@ export class LabViewConfigSearch {
           from: [null],
           to: [null],
         }),
-        tags: [null]
+        tags: [null],
+        includeNoneHighlighted: [null]
       }
     );
   }

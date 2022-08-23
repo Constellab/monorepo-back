@@ -3,11 +3,12 @@ import {Expose} from 'class-transformer';
 import {LabResourceViewType} from './lab-resource-view.entity';
 import {RvTransformerParams} from '@monorepo/resource-view';
 import {LabEntityWithTag} from '../lab-entity-with-tag.entity';
+import {LabHighlightedEntity} from '../../global/lab-highlighted-entity.class';
 
 /**
  * Represent a view config that the user viewed
  */
-export class LabViewConfig extends LabEntityWithTag {
+export class LabViewConfig extends LabEntityWithTag implements LabHighlightedEntity {
 
   title: string;
 
@@ -19,6 +20,8 @@ export class LabViewConfig extends LabEntityWithTag {
 
   @Expose({name: 'config_values'})
   configValues: LabConfigValues;
+
+  highlighted: boolean;
 
   transformers: RvTransformerParams[];
 

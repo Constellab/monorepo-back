@@ -12,6 +12,7 @@
           {{viewTypeInfo.text | translate}}
         </fl-text-icon>
       </ng-container>
+
     </mat-cell>
   </ng-container>
 
@@ -20,13 +21,13 @@
     <mat-header-cell *matHeaderCellDef>
       <span>{{'resource' | translate}}</span>
     </mat-header-cell>
-    <mat-cell *matCellDef="let viewTypeInfo">
+    <mat-cell *matCellDef="let viewConfig">
       <div>
-        <div class="name">{{viewTypeInfo.resource.name}}</div>
-        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="viewTypeInfo.experiment"
+        <div class="name">{{viewConfig.resource.name}}</div>
+        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="viewConfig.experiment"
                       gap="0">
           <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
-          {{viewTypeInfo.experiment.title}}
+          {{viewConfig.experiment.title}}
         </fl-text-icon>
       </div>
     </mat-cell>
@@ -48,8 +49,8 @@
     <mat-header-cell *matHeaderCellDef>
       <span>{{'biox.view_config_date' | translate}}</span>
     </mat-header-cell>
-    <mat-cell *matCellDef="let viewTypeInfo">
-      <fl-from-now [date]="viewTypeInfo.createdAt"></fl-from-now>
+    <mat-cell *matCellDef="let viewConfig">
+      <fl-from-now [date]="viewConfig.createdAt"></fl-from-now>
     </mat-cell>
   </ng-container>
 
@@ -57,9 +58,9 @@
   <ng-container matColumnDef="preview">
     <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
     </mat-header-cell>
-    <mat-cell *matCellDef="let viewTypeInfo" class="g-table-icon-button-cell">
+    <mat-cell *matCellDef="let viewConfig" class="g-table-icon-button-cell">
 
-      <button mat-icon-button type="button" (click)="showPreview(viewTypeInfo, $event)"
+      <button mat-icon-button type="button" (click)="showPreview(viewConfig, $event)"
               [matTooltip]="'biox.view_preview' | translate">
         <mat-icon>visibility</mat-icon>
       </button>
@@ -68,14 +69,23 @@
 
   <!-- Action -->
   <ng-container matColumnDef="action">
-    <mat-header-cell *matHeaderCellDef class="action-column">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
     </mat-header-cell>
-    <mat-cell *matCellDef="let viewTypeInfo" class="action-column">
+    <mat-cell *matCellDef="let viewConfig" class="g-table-icon-button-cell">
 
-      <lab-view-config-actions-menu [viewConfig]="viewTypeInfo"
+      <lab-view-config-actions-menu [viewConfig]="viewConfig"
                                     (update)="onUpdate($event)"
-                                    (updateTags)="onUpdateTags(viewTypeInfo, $event)">
+                                    (updateTags)="onUpdateTags(viewConfig, $event)">
       </lab-view-config-actions-menu>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Highlighted -->
+  <ng-container matColumnDef="highlighted">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let viewConfig" class="g-table-icon-button-cell">
+      <lab-highlight-button [entity]="viewConfig"></lab-highlight-button>
     </mat-cell>
   </ng-container>
 

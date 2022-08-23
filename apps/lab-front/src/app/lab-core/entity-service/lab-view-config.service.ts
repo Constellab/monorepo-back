@@ -27,6 +27,12 @@ export class LabViewConfigService {
     return this.apiService.put(`${this.route}/${id}/title`, {title: title}, LabViewConfig);
   }
 
+  // update highlighted
+  public updateHighlighted(id: string, highlighted: boolean): Observable<LabViewConfig> {
+    return this.apiService.put(`${this.route}/${id}/highlighted`, {highlighted: highlighted}, LabViewConfig);
+  }
+
+
   public saveTags(id: string, tags: FlTag[]): Observable<LabTag[]> {
     return this.apiService.put(`${this.route}/${id}/tags`, tags, LabTag);
   }

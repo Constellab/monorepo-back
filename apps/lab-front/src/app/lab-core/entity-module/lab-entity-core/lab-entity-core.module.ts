@@ -11,6 +11,7 @@ import {
 } from './component/lab-object-validation-info/lab-object-validation-info.component';
 import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {LabHighlightButtonComponent} from './component/lab-highlight-button/lab-highlight-button.component';
 
 /**
  * Module for generic components of entities
@@ -21,12 +22,14 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     LabSyncObjectButtonComponent,
     LabObjectSyncInfoComponent,
     LabObjectValidationInfoComponent,
+    LabHighlightButtonComponent,
   ],
   exports: [
     LabValidateObjectDialogComponent,
     LabSyncObjectButtonComponent,
     LabObjectSyncInfoComponent,
     LabObjectValidationInfoComponent,
+    LabHighlightButtonComponent,
   ],
   imports: [
     CommonModule,

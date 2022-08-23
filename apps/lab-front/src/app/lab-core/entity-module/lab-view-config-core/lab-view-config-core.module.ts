@@ -21,6 +21,7 @@ import {
   LabUpdateViewConfigDialogComponent
 } from './component/lab-update-view-config-dialog/lab-update-view-config-dialog.component';
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
+import {LabEntityCoreModule} from '../lab-entity-core/lab-entity-core.module';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 
     LabCoreModule,
     LabTagCoreModule,
+    LabEntityCoreModule,
 
   ],
 })

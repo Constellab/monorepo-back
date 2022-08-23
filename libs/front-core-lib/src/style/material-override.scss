@@ -415,6 +415,11 @@ flex-grow: 1;
   font-size: 0.8rem
 }
 
+// use in the matTooltipClass to allow multiline in the tooltip with '\n'
+.g-tooltip-multiline{
+  white-space: pre;
+}
+
 /************************************* MAT LiST ***********************************/
 
 .g-mat-list-dense {
