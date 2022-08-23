@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {
+  FlDropEvent,
   FlOverlayRef,
   FlPaginatedTableAbstractDirective,
   FlPortalConfig,
@@ -8,7 +9,6 @@ import {
   FlTagSelectedEvent
 } from '@monorepo/front-core-lib';
 import {LabViewConfig} from '../../../../model/entities/resource/lab-view-config.entity';
-import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {
   LabResourceViewPortalComponent,
   LabResourceViewPortalInput
@@ -16,6 +16,8 @@ import {
 import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {LabTag} from '../../../../model/entities/lab-tag.entity';
+import {LabDragType} from '../../../../model/global/lab-drag-type.class';
+import {LabViewConfigService} from '../../../../entity-service/lab-view-config.service';
 
 @Component({
   selector: 'lab-view-config-table',
@@ -24,16 +26,22 @@ import {LabTag} from '../../../../model/entities/lab-tag.entity';
 })
 export class LabViewConfigTableComponent extends FlPaginatedTableAbstractDirective<LabViewConfig> implements OnInit, OnDestroy {
 
+  // when true, the row become clickable and resourceSelected event is trigger
+  @Input() selectableRow: boolean = false;
+
   @Input() tagSelectable: boolean = true;
 
   @Output() tagSelected: EventEmitter<FlTag> = new EventEmitter();
 
   @Output() viewConfigSelected: EventEmitter<LabViewConfig> = new EventEmitter();
 
+  // enable drop tags
+  supportedDropType: LabDragType = LabDragType.TAG;
+
   private previewOverlay: FlOverlayRef;
 
   constructor(private portalService: FlPortalService,
-              private resourceService: LabResourceService) {
+              private viewConfigService: LabViewConfigService) {
     super(['viewType', 'createdAt', 'preview', 'resource', 'action', 'tags', 'flagged']);
   }
 
@@ -41,7 +49,9 @@ export class LabViewConfigTableComponent extends FlPaginatedTableAbstractDirecti
   }
 
   rowClicked(viewConfig: LabViewConfig): void {
-    this.viewConfigSelected.next(viewConfig);
+    if (this.selectableRow) {
+      this.viewConfigSelected.next(viewConfig);
+    }
   }
 
   showPreview(viewConfig: LabViewConfig, event: MouseEvent): void {
@@ -49,8 +59,7 @@ export class LabViewConfigTableComponent extends FlPaginatedTableAbstractDirecti
     this.closeOverlay();
 
     // load the view and show it in a portal
-    this.resourceService.callResourceView(viewConfig.resource.id, viewConfig.viewName, viewConfig.configValues,
-      viewConfig.transformers).subscribe(
+    this.viewConfigService.callViewConfig(viewConfig.id).subscribe(
       view => this.openPortal(viewConfig, view, event.target as any),
     );
   }
@@ -95,6 +104,13 @@ export class LabViewConfigTableComponent extends FlPaginatedTableAbstractDirecti
   onTagSelected(tagEvent: FlTagSelectedEvent): void {
     ClHelpService.stopEventPropagation(tagEvent.event);
     this.tagSelected.next(tagEvent.tag);
+  }
+
+  onDrop(viewConfig: LabViewConfig, event: FlDropEvent<FlTag>): void {
+    if (!event.data) return;
+
+    viewConfig.addTag(event.data);
+    this.viewConfigService.saveTags(viewConfig.id, viewConfig.tags).subscribe();
   }
 
   ngOnDestroy(): void {

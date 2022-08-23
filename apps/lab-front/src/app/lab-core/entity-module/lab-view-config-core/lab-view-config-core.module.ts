@@ -22,6 +22,7 @@ import {
 } from './component/lab-update-view-config-dialog/lab-update-view-config-dialog.component';
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 import {LabEntityCoreModule} from '../lab-entity-core/lab-entity-core.module';
+import {RouterModule} from '@angular/router';
 
 
 @NgModule({
@@ -48,6 +49,7 @@ import {LabEntityCoreModule} from '../lab-entity-core/lab-entity-core.module';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
+    RouterModule,
 
     LabCoreModule,
     LabTagCoreModule,

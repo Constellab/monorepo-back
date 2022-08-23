@@ -169,7 +169,7 @@
              [routerLink]="row | labDetailRoute"
              flDragHover="drag-element" [flDragHoverMode]="supportedDropType" (flDrop)="onDrop(row, $event)"></mat-row>
     <mat-row *matRowDef="let row; columns: ['expandedDetail']" class="expandable-row"></mat-row>
-
   </ng-template>
+
 </mat-table>
 

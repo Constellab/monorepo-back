@@ -5,7 +5,8 @@ import {
   labConstDataboxFullRoute,
   labConstDocFullRoute,
   labConstMonitoringFullRoute,
-  labConstReportFullRoute
+  labConstReportFullRoute,
+  labConstViewboxFullRoute
 } from '../utils/lab-base-route';
 import {Router} from '@angular/router';
 
@@ -39,6 +40,14 @@ export class LabRouterService {
 
   public static getResourceDetailRoute(id: string): string {
     return `${labConstDataboxFullRoute}/resource/${id}`;
+  }
+
+  public static getViewBoxRoute(): string{
+    return labConstViewboxFullRoute;
+  }
+
+  public static getViewConfigDetailRoute(id: string): string{
+    return `${this.getViewBoxRoute()}/view-config/${id}`;
   }
 
   public static getMonitoringRoute(): string {

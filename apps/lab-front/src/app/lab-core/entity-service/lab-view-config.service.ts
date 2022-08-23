@@ -14,6 +14,7 @@ import {
   LabViewConfigSearchFields
 } from '../entity-module/lab-view-config-core/model/lab-view-config-search.class';
 import {LabTag} from '../model/entities/lab-tag.entity';
+import {LabResourceView} from '../model/entities/resource/lab-resource-view.entity';
 
 @Injectable({providedIn: 'root'})
 export class LabViewConfigService {
@@ -21,6 +22,14 @@ export class LabViewConfigService {
   private route: string = 'view-config';
 
   constructor(private apiService: FlApiService) {
+  }
+
+  public getById(id: string): Observable<LabViewConfig> {
+    return this.apiService.get(`${this.route}/${id}`, LabViewConfig);
+  }
+
+  public callViewConfig(id: string):Observable<LabResourceView>{
+    return this.apiService.post(`${this.route}/${id}/call`, null);
   }
 
   public updateTitle(id: string, title: string): Observable<LabViewConfig> {

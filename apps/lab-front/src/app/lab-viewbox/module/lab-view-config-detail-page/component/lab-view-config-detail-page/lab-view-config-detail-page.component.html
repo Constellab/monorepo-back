@@ -1,0 +1,9 @@
+<div class="g-page-fixed page">
+
+  <fl-async-section [object]="viewConfig$" class="g-full-height">
+
+    <ng-container *flSectionBody="let viewConfig">
+      <lab-view-config-detail [viewConfig]="viewConfig" class="view-config"></lab-view-config-detail>
+    </ng-container>
+  </fl-async-section>
+</div>

@@ -4,8 +4,9 @@ import {LabRouterService} from '../../service/lab-router.service';
 import {LabReport} from '../../model/entities/lab-report.entity';
 import {LabExperiment} from '../../model/entities/lab-experiment.entity';
 import {LabResource} from '../../model/entities/resource/lab-resource.entity';
+import {LabViewConfig} from '../../model/entities/resource/lab-view-config.entity';
 
-type LabObjectType = 'experiment' | 'resource' | 'report';
+type LabObjectType = 'experiment' | 'resource' | 'report' | 'viewConfig';
 
 /**
  * Pipe to get the detail route of an object
@@ -35,6 +36,8 @@ export class LabDetailRoutePipe implements PipeTransform {
         return LabRouterService.getResourceDetailRoute(id);
       case 'report':
         return LabRouterService.getReportDetailRoute(id);
+      case 'viewConfig':
+        return LabRouterService.getViewConfigDetailRoute(id);
       default:
         console.error(`[labDetailRoute] object type ${objectType} not supported`);
         return null;
@@ -49,6 +52,8 @@ export class LabDetailRoutePipe implements PipeTransform {
       return 'resource';
     } else if (obj instanceof LabReport) {
       return 'report';
+    } else if (obj instanceof LabViewConfig) {
+      return 'viewConfig';
     } else {
       console.error('[labDetailRoute] The object is not supported');
       return null;
