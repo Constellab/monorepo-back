@@ -30,14 +30,14 @@ export const mainMenuLinks: MainMenuLink[] = [
     route: labConstDataboxFullRoute
   },
   {
-    label: 'biox.reports',
-    icon: 'report',
-    route: labConstReportFullRoute
-  },
-  {
     label: 'biox.viewbox',
     icon: 'view',
     route: labConstViewboxFullRoute
+  },
+  {
+    label: 'biox.reports',
+    icon: 'report',
+    route: labConstReportFullRoute
   },
   {
     label: technicalBricks.BIOTA.label,

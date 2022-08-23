@@ -1,6 +1,6 @@
 <button mat-icon-button type="button" (click)="toggleHighlight($event)"
         [matTooltip]="tooltip | translate" matTooltipClass="g-tooltip-multiline">
-  <mat-icon>{{icon}}</mat-icon>
+  <mat-icon [fontSet]="fontSet">flag</mat-icon>
 </button>
 
 

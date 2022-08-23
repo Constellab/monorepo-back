@@ -1,20 +1,20 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LabHighlightedEntity} from '../../../../model/global/lab-highlighted-entity.class';
+import {LabFlaggedEntity} from '../../../../model/global/lab-flagged-entity.class';
 import {LabViewConfigService} from '../../../../entity-service/lab-view-config.service';
 import {LabViewConfig} from '../../../../model/entities/resource/lab-view-config.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 
 /**
- * Button to toggle the highlight of an element.
+ * Button to toggle the flag of an element.
  */
 @Component({
-  selector: 'lab-highlight-button',
-  templateUrl: './lab-highlight-button.component.html',
-  styleUrls: ['./lab-highlight-button.component.scss']
+  selector: 'lab-flag-button',
+  templateUrl: './lab-flag-button.component.html',
+  styleUrls: ['./lab-flag-button.component.scss']
 })
-export class LabHighlightButtonComponent implements OnInit {
+export class LabFlagButtonComponent implements OnInit {
 
-  @Input() entity: LabHighlightedEntity;
+  @Input() entity: LabFlaggedEntity;
 
   private isLoading: boolean = false;
 
@@ -29,12 +29,12 @@ export class LabHighlightButtonComponent implements OnInit {
 
     if (this.isLoading) return;
 
-    this.entity.highlighted = !this.entity.highlighted;
+    this.entity.flagged = !this.entity.flagged;
     if (this.entity instanceof LabViewConfig) {
       this.isLoading = true;
-      this.viewConfigService.updateHighlighted(this.entity.id, this.entity.highlighted).subscribe({
+      this.viewConfigService.updateFlagged(this.entity.id, this.entity.flagged).subscribe({
         next: () => this.onSuccess(),
-        error: () => this.onError(this.entity.highlighted)
+        error: () => this.onError(this.entity.flagged)
       });
     } else {
       console.error('[LabHighlightButtonComponent] type is not supported');
@@ -46,16 +46,18 @@ export class LabHighlightButtonComponent implements OnInit {
   }
 
   private onError(highlighted: boolean): void {
-    this.entity.highlighted = !highlighted;
+    this.entity.flagged = !highlighted;
     this.isLoading = false;
   }
 
-  get icon(): string {
-    return this.entity.highlighted ? 'star' : 'star_outline';
+
+
+  get fontSet(): string {
+    return this.entity.flagged ? 'material-icons' : 'material-icons-outlined';
   }
 
   get tooltip(): string{
-    return this.entity.highlighted ? 'biox.highlighted_tooltip': 'biox.not_highlighted_tooltip'
+    return this.entity.flagged ? 'biox.flagged_tooltip': 'biox.not_flagged_tooltip'
   }
 
 }

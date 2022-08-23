@@ -27,9 +27,8 @@ export class LabViewConfigService {
     return this.apiService.put(`${this.route}/${id}/title`, {title: title}, LabViewConfig);
   }
 
-  // update highlighted
-  public updateHighlighted(id: string, highlighted: boolean): Observable<LabViewConfig> {
-    return this.apiService.put(`${this.route}/${id}/highlighted`, {highlighted: highlighted}, LabViewConfig);
+  public updateFlagged(id: string, flagged: boolean): Observable<LabViewConfig> {
+    return this.apiService.put(`${this.route}/${id}/flagged`, {flagged: flagged}, LabViewConfig);
   }
 
 
