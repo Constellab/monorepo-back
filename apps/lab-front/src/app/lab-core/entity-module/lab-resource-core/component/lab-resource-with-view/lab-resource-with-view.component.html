@@ -27,13 +27,17 @@
           </div>
 
           <fl-section-actions>
-            <rv-technical-info-button *ngIf="view$ | async as view"
-                                      [technicalInfo]="view.technical_info"></rv-technical-info-button>
+            <ng-container *ngIf="labView$ | async as view">
+              <lab-flag-button *ngIf="view.viewConfig" [entity]="view.viewConfig"></lab-flag-button>
+
+              <rv-technical-info-button [technicalInfo]="view.view.technical_info"></rv-technical-info-button>
+            </ng-container>
 
             <fl-chip class="g-primary-background" [matTooltip]="'biox.pre_resource_tooltip' | translate"
                      *ngIf="isTransformedView">
               {{'biox.pre_resource' | translate}}
             </fl-chip>
+
 
             <button mat-stroked-button type="button" *ngIf="!isTransformedView"
                     (click)="openViewSpecs($event)" class="button g-button-small">
@@ -68,7 +72,7 @@
 
           <!--  Header    -->
           <div class="page-padding body">
-            <rv-resource-view *ngIf="view$ | async as view" [view]="view"
+            <rv-resource-view *ngIf="labView$ | async as labView" [view]="labView.view"
                               [config]="viewConfig" [resourceId]="resourceId"
                               class="resource-view">
             </rv-resource-view>
@@ -89,7 +93,7 @@
           <td-type-unavailable [typingName]="resource.resourceTypingName"></td-type-unavailable>
 
           <p class="link">
-            <a  [routerLink]="monitoringPage">
+            <a [routerLink]="monitoringPage">
               {{'biox.type_unavailable_monitoring_link' | translate}}
             </a>
           </p>

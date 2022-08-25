@@ -28,8 +28,8 @@ export class LabViewConfigService {
     return this.apiService.get(`${this.route}/${id}`, LabViewConfig);
   }
 
-  public callViewConfig(id: string):Observable<LabResourceView>{
-    return this.apiService.post(`${this.route}/${id}/call`, null);
+  public callViewConfig(id: string): Observable<LabResourceView> {
+    return this.apiService.post(`${this.route}/${id}/call`, null, LabResourceView);
   }
 
   public updateTitle(id: string, title: string): Observable<LabViewConfig> {

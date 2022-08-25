@@ -45,7 +45,7 @@ export abstract class LabTableChartConfig extends FlSheetChartConfig {
    * Open the chart portal after chart selection
    * @private
    */
-  protected openChartPortal(view: LabResourceView, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
+  protected openChartPortal(labView: LabResourceView, contextMenuItems?: FlMenuDynamic[]): FlOverlayRef {
 
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
       {centerHorizontally: '0', top: '0'},
@@ -55,7 +55,7 @@ export abstract class LabTableChartConfig extends FlSheetChartConfig {
       });
 
     const config: LabResourceViewPortalInput = {
-      view: view,
+      labView: labView,
       config: {
         methodName: this.tableViewMethodName,
         configValues: this.tableViewConfig,

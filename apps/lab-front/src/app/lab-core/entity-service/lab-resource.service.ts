@@ -12,7 +12,11 @@ import {LabResource} from '../model/entities/resource/lab-resource.entity';
 import {clDeserializeRecordWrapper, ClPageI} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
 import {LabTypeEntity} from '../model/entities/lab-type/lab-type.entity';
-import {LabResourceView, LabResourceViewSpec,} from '../model/entities/resource/lab-resource-view.entity';
+import {
+  LabResourceView,
+  LabResourceViewData,
+  LabResourceViewSpec,
+} from '../model/entities/resource/lab-resource-view.entity';
 import {
   LabResourceSearch,
   LabResourceSearchFields
@@ -123,6 +127,13 @@ export class LabResourceService {
    * @param transformers
    * @param saveViewConfig if true the config is saved in the historic
    */
+  public callResourceViewData(id: string, viewMethodName: string, config: LabConfigValues,
+                              transformers: RvTransformerParams[], saveViewConfig: boolean = false): Observable<LabResourceViewData> {
+    return this.callResourceView(id, viewMethodName, config, transformers, saveViewConfig).pipe(
+      map(labView => labView.view)
+    );
+  }
+
   public callResourceView(id: string, viewMethodName: string, config: LabConfigValues,
                           transformers: RvTransformerParams[], saveViewConfig: boolean = false): Observable<LabResourceView> {
     for (const key in config) {
@@ -134,11 +145,7 @@ export class LabResourceService {
       values: config,
       transformers: transformers,
       save_view_config: saveViewConfig
-    });
-  }
-
-  public callResourceDefaultView(id: string): Observable<LabResourceView> {
-    return this.callResourceView(id, LabResourceService.defaultViewName, {}, [], true);
+    }, LabResourceView);
   }
 
   //////////////////////////////////////// TRANSFORMERS  ///////////////////////////////////////

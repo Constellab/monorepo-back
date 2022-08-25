@@ -190,7 +190,7 @@ export class LabResourceDetailTabsState implements OnDestroy {
     );
   }
 
-  private openViewInPortal(view: LabResourceView, viewSpecConfigured: LabResourceViewSpecWithConfig): void {
+  private openViewInPortal(labView: LabResourceView, viewSpecConfigured: LabResourceViewSpecWithConfig): void {
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
       {centerHorizontally: '0', top: '0'},
       {
@@ -205,7 +205,7 @@ export class LabResourceDetailTabsState implements OnDestroy {
     };
 
     const config: LabResourceViewPortalInput = {
-      view: view,
+      labView: labView,
       config: viewConfig,
       resourceId: viewSpecConfigured.resourceId
     };

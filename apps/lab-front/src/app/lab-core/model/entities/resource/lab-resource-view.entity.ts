@@ -1,4 +1,4 @@
-import {Expose} from 'class-transformer';
+import {Expose, Type} from 'class-transformer';
 import {LabTransformerWithConfig} from '../../global/lab-transformer.class';
 import {LabConfigValues} from '../lab-config.entity';
 import {
@@ -9,6 +9,7 @@ import {
   RvViewDisplayMode
 } from '@monorepo/resource-view';
 import {LabResourceViewFolder} from './lab-resource-view-folder.class';
+import {LabViewConfig} from './lab-view-config.entity';
 
 // list of available view type
 export type LabResourceViewType = RvResourceViewType | 'view'
@@ -62,8 +63,20 @@ export interface LabResourceViewResourcesList extends RvResourceViewBase {
   data: any[]; // list of LabResource
 }
 
+export class LabResourceView {
+
+  view: LabResourceViewData;
+
+  @Expose({name: 'resource_id'})
+  resourceId: string;
+
+  @Expose({name: 'view_config'})
+  @Type(() => LabViewConfig)
+  viewConfig: LabViewConfig;
+}
+
 //////////////////////////// TYPE THAT GROUP ALL VIEW TYPES /////////////////////////////
-export type LabResourceView = RvResourceView | LabResourceViewResourcesList | LabResourceViewFolder;
+export type LabResourceViewData = RvResourceView | LabResourceViewResourcesList | LabResourceViewFolder;
 
 // Information of the view type
 export interface LabResourceViewTypeInfo {

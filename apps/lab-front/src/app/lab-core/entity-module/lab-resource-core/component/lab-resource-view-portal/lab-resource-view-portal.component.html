@@ -1,15 +1,17 @@
 <fl-portal class="portal" flResize="both" flPortalZIndex [style.width]="width" [style.height]="height">
   <fl-portal-header [enableDrag]="true">
-    <div class="title">{{view.title}}</div>
+    <div class="title">{{labView.view.title}}</div>
 
     <fl-portal-header-buttons>
-      <rv-technical-info-button [technicalInfo]="view.technical_info"></rv-technical-info-button>
+      <lab-flag-button *ngIf="labView.viewConfig" [entity]="labView.viewConfig"></lab-flag-button>
+
+      <rv-technical-info-button [technicalInfo]="labView.view.technical_info"></rv-technical-info-button>
       <fl-resize-portal-fullscreen-button></fl-resize-portal-fullscreen-button>
     </fl-portal-header-buttons>
   </fl-portal-header>
 
   <fl-portal-content>
-    <rv-resource-view [view]="view" [config]="config" [resourceId]="resourceId" [displayMode]="'portal'"
+    <rv-resource-view [view]="labView.view" [config]="config" [resourceId]="resourceId" [displayMode]="'portal'"
                       [contextMenuItems]="contextMenuItems"></rv-resource-view>
   </fl-portal-content>
 </fl-portal>

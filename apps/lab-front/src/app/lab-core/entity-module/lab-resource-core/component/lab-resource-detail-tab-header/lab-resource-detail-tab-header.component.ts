@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {LabResourceDetailTabsState} from '../../state/lab-resource-detail-tabs-state';
-import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
+import {LabResourceViewData} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {firstValueFrom, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {FlMouseButton} from '@monorepo/front-core-lib';
@@ -17,7 +17,7 @@ export class LabResourceDetailTabHeaderComponent implements OnInit {
 
   @Input() viewSymbol: symbol;
 
-  view: LabResourceView;
+  view: LabResourceViewData;
 
   isLoading: boolean = true;
   isError: boolean = false;
@@ -29,7 +29,7 @@ export class LabResourceDetailTabHeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.state.getView$(this.viewSymbol).subscribe({
-      next: view => this.onSuccess(view),
+      next: view => this.onSuccess(view.view),
       error: () => this.onError()
     });
 
@@ -38,7 +38,7 @@ export class LabResourceDetailTabHeaderComponent implements OnInit {
     );
   }
 
-  private onSuccess(view: LabResourceView): void {
+  private onSuccess(view: LabResourceViewData): void {
     this.view = view;
     this.isLoading = false;
   }

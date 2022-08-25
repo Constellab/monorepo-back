@@ -43,7 +43,7 @@ export class LabResourceTableService {
       chart_config_values: chartConfig
     };
 
-    return this.apiService.post(`${this.route}/${resourceId}/call-chart`, data);
+    return this.apiService.post(`${this.route}/${resourceId}/call-chart`, data, LabResourceView);
   }
 
   /**
@@ -61,7 +61,7 @@ export class LabResourceTableService {
     // add 1 to the fromRow because communication are made using 1-based index
     const viewConfig = Object.assign(config, {[this.tableViewFromRowParam]: fromRow + 1});
 
-    return this.resourceService.callResourceView(id, viewMethodName,
+    return this.resourceService.callResourceViewData(id, viewMethodName,
       viewConfig, transformers) as Observable<RvResourceViewTable>;
   }
 
@@ -93,7 +93,7 @@ export class LabResourceTableService {
       [this.tableViewNbOfRowsPerPageParam]: pageSize
     });
 
-    return this.resourceService.callResourceView(id, viewMethodName,
+    return this.resourceService.callResourceViewData(id, viewMethodName,
       viewConfig, transformers) as Observable<RvResourceViewTable>;
   }
 }

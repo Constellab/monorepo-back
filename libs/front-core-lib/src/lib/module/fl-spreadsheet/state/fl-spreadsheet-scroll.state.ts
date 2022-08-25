@@ -95,16 +95,17 @@ export class FlSpreadsheetScrollState {
   private onWheelEvent(event: WheelEvent): void {
 
     // if we reached the bottom of the vertical scroller.
-    // we don't override the scroll logic
-    if (this.verticalScroller.scrollTop === (this.verticalScroller.scrollHeight - this.verticalScroller.offsetHeight)
+    // we load the next page and don't override the scroll logic
+    // # Use round to
+    if (Math.round(this.verticalScroller.scrollTop + 0.5) >= (this.verticalScroller.scrollHeight - this.verticalScroller.offsetHeight)
         && event.deltaY > 0)  {
       this.paginationState.callNextPage();
       return;
     }
 
     // if we reached the top of the vertical scroller.
-    // we don't override the scroll logic
-    if (this.verticalScroller.scrollTop === 0 && event.deltaY < 0) {
+    // we load the previous page and don't override the scroll logic
+    if (Math.trunc(this.verticalScroller.scrollTop) <= 0 && event.deltaY < 0) {
       this.paginationState.callPreviousPage();
       return;
     }

@@ -44,7 +44,7 @@ export class LabViewConfigPreviewComponent implements OnInit, OnDestroy {
     });
   }
 
-  private openPortal(viewConfig: LabViewConfig, view: LabResourceView, element: HTMLElement): void {
+  private openPortal(viewConfig: LabViewConfig, labView: LabResourceView, element: HTMLElement): void {
     const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(
       element, ['left', 'bottom', 'right', 'top'],
       {
@@ -54,7 +54,7 @@ export class LabViewConfigPreviewComponent implements OnInit, OnDestroy {
       });
 
     const config: LabResourceViewPortalInput = {
-      view: view,
+      labView: labView,
       config: {
         methodName: viewConfig.viewName,
         configValues: viewConfig.configValues,

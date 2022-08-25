@@ -82,7 +82,7 @@ export class LabResourceTextComponent extends RvResourceViewDirective<RvResource
     // merge config with pagination config
     const viewConfig = Object.assign(this.config.configValues, {[labResourceViewTextSpecPage]: page});
 
-    return this.resourceService.callResourceView(this.resourceId, this.config.methodName,
+    return this.resourceService.callResourceViewData(this.resourceId, this.config.methodName,
       viewConfig,
       this.config.transformers) as Observable<RvResourceViewText>;
   }

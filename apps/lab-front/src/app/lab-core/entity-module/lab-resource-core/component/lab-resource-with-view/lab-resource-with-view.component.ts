@@ -35,7 +35,7 @@ export class LabResourceWithViewComponent implements OnInit, OnDestroy {
   @Input() readOnly: boolean = false;
 
   resource$: Observable<LabResource>;
-  view$: Observable<LabResourceView>;
+  labView$: Observable<LabResourceView>;
 
   viewConfig: RvViewConfig;
 
@@ -55,7 +55,7 @@ export class LabResourceWithViewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.state.init(this.resourceId, this.viewSymbol);
     this.resource$ = this.state.getResource$();
-    this.view$ = this.state.getView$();
+    this.labView$ = this.state.getView$();
 
 
     const viewWithConfig = this.state.getViewConfig();

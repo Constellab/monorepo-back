@@ -1,8 +1,8 @@
 import {Component, ElementRef, HostBinding, Input, OnInit} from '@angular/core';
 import {LabResourceService} from '../../../../../lab-core/entity-service/lab-resource.service';
 import {
-  LabResourceView,
-  LabResourceViewConfig
+  LabResourceViewConfig,
+  LabResourceViewData
 } from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {FlTextEditorElementDirective, FlTextEditorsManagerState} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
@@ -27,7 +27,7 @@ export class LabReportContentViewComponent extends FlTextEditorElementDirective 
   @HostBinding('attr.caption')
   @Input() caption: string;
 
-  view$: Observable<LabResourceView>;
+  view$: Observable<LabResourceViewData>;
 
   disabled$: Observable<boolean>;
 
@@ -39,7 +39,7 @@ export class LabReportContentViewComponent extends FlTextEditorElementDirective 
   }
 
   ngOnInit(): void {
-    this.view$ = this.resourceService.callResourceView(this.resourceId, this.viewConfig.methodName,
+    this.view$ = this.resourceService.callResourceViewData(this.resourceId, this.viewConfig.methodName,
       this.viewConfig.configValues, this.viewConfig.transformers);
 
     this.disabled$ = this.getDisabled$();
