@@ -20,14 +20,14 @@ import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module'
     LabReportAdvancedSearchFormComponent,
     LabReportTableComponent,
     LabReportFormDialogComponent,
-    LabSelectReportDialogComponent
+    LabSelectReportDialogComponent,
   ],
   exports: [
     LabReportSearchComponent,
     LabReportAdvancedSearchFormComponent,
     LabReportTableComponent,
     LabReportFormDialogComponent,
-    LabSelectReportDialogComponent
+    LabSelectReportDialogComponent,
   ],
   imports: [
     CommonModule,

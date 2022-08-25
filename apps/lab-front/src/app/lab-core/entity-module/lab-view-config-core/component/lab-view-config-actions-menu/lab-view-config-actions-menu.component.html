@@ -14,5 +14,11 @@
     <span>{{'biox.update_view_config_title' | translate}}</span>
   </button>
 
+  <button mat-menu-item type="button" (click)="openSelectReport()">
+    <mat-icon flIcon="report"></mat-icon>
+    <span>{{'biox.add_view_to_report' | translate}}</span>
+    <fl-button-loader *ngIf="addToReportIsLoading"></fl-button-loader>
+  </button>
+
 
 </mat-menu>

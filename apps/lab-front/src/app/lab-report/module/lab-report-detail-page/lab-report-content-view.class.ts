@@ -8,6 +8,7 @@ import {RvTransformerParams} from '@monorepo/resource-view';
 export interface LabReportContentView {
   id: string;
   resource_id: string;
+  experiment_id?: string;
   view_method_name: string;
   view_config: LabConfigValues;
   transformers: RvTransformerParams[];

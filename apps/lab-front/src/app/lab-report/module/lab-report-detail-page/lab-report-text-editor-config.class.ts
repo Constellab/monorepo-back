@@ -69,6 +69,7 @@ export class LabReportTextEditorConfig extends FlTextEditorConfig implements FlT
     const contentView: LabReportContentView = {
       id: viewConfig.id + '_' + new Date().getTime(),
       resource_id: viewConfig.resource.id,
+      experiment_id: viewConfig.experiment?.id,
       view_method_name: viewConfig.viewName,
       view_config: viewConfig.configValues,
       transformers: viewConfig.transformers,

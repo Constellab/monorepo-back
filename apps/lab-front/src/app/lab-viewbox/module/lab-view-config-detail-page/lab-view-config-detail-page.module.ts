@@ -10,6 +10,7 @@ import {
 import {LabViewConfigDetailComponent} from './component/lab-view-config-detail/lab-view-config-detail.component';
 import {LabEntityCoreModule} from '../../../lab-core/entity-module/lab-entity-core/lab-entity-core.module';
 import {RouterModule} from '@angular/router';
+import {LabReportCoreModule} from '../../../lab-core/entity-module/lab-report-core/lab-report-core.module';
 
 
 @NgModule({
@@ -24,6 +25,7 @@ import {RouterModule} from '@angular/router';
     LabCoreModule,
     LabViewConfigCoreModule,
     LabEntityCoreModule,
+    LabReportCoreModule,
   ]
 })
 export class LabViewConfigDetailPageModule {
