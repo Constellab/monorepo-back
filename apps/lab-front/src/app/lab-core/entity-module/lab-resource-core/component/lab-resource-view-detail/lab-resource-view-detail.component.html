@@ -1,10 +1,10 @@
 <fl-section [object]="labView" class="g-full-height">
   <fl-section-header class="header">
 
-    <fl-text-icon>
-      <mat-icon class="g-icon-big">{{(labView.viewConfig.viewType | labViewTypeInfo).icon}}</mat-icon>
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1em">
+      <lab-view-type-image [viewType]="labView.viewConfig.viewType" size="2em"></lab-view-type-image>
       <h1 class="header-title">{{labView.viewConfig.title}}</h1>
-    </fl-text-icon>
+    </div>
 
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
       <a [routerLink]="labView.viewConfig.resource.id | labDetailRoute:'resource'"

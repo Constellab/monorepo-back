@@ -9,14 +9,10 @@
            [ngClass]="{'default-view-spec' : viewSpec.defaultView}">
     <fl-card-body>
 
-      <ng-container *ngIf="viewSpec.viewType | labViewTypeInfo as viewTypeInfo">
-        <img *ngIf="viewTypeInfo.image; else icon"
-             [src]="viewTypeInfo.image" [alt]="viewTypeInfo.text"
-             class="view-image"/>
-        <ng-template #icon>
-          <mat-icon [flIcon]="viewTypeInfo.icon" class="view-icon"></mat-icon>
-        </ng-template>
-      </ng-container>
+      <div fxLayout="row" fxLayoutAlign="center">
+        <lab-view-type-image [viewType]="viewSpec.viewType" size="4em">
+        </lab-view-type-image>
+      </div>
 
       <div class="view-info">
         <div>{{viewSpec.getName()}}</div>

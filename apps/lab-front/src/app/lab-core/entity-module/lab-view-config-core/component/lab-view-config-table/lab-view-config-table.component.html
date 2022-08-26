@@ -1,18 +1,15 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource">
 
-  <!-- ViewType -->
-  <ng-container matColumnDef="viewType">
+  <!-- Title -->
+  <ng-container matColumnDef="title">
     <mat-header-cell *matHeaderCellDef>
-      <span> {{'biox.view_type' | translate}}</span>
+      <span> {{'title' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let viewConfig">
-      <ng-container *ngIf="viewConfig.viewType | labViewTypeInfo as viewTypeInfo">
-        <fl-text-icon>
-          <mat-icon [flIcon]="viewTypeInfo.icon"></mat-icon>
-          {{viewTypeInfo.text | translate}}
-        </fl-text-icon>
-      </ng-container>
-
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <lab-view-type-image [viewType]="viewConfig.viewType" size="2em"></lab-view-type-image>
+        <div>{{viewConfig.title | translate}}</div>
+      </div>
     </mat-cell>
   </ng-container>
 

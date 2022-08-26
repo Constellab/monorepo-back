@@ -60,7 +60,7 @@ export class LabViewConfigSearchComponent implements OnInit {
     this.searchState.init(config);
     this.datasource = this.searchState.datasource;
 
-    this.columns = ['viewType', 'resource', 'title', 'tags', 'preview', 'flagged'];
+    this.columns = ['title', 'resource', 'tags', 'preview', 'flagged'];
     // add the action column only when the search is in full page (view box)
     if (this.fullPageSearch) {
       this.columns.push('action');
