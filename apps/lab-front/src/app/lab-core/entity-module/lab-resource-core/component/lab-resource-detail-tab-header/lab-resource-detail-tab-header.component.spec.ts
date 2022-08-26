@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {LabResourceDetailTabHeaderComponent} from './lab-resource-detail-tab-header.component';
 
-describe('LabResourceDetailTabHeaderComponent', () => {
+describe('LabResourceDetailTabHeader2Component', () => {
   let component: LabResourceDetailTabHeaderComponent;
   let fixture: ComponentFixture<LabResourceDetailTabHeaderComponent>;
 
@@ -11,9 +11,7 @@ describe('LabResourceDetailTabHeaderComponent', () => {
       declarations: [ LabResourceDetailTabHeaderComponent ]
     })
     .compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(LabResourceDetailTabHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

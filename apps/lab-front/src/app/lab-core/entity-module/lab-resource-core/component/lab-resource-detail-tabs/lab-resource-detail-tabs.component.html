@@ -1,15 +1,23 @@
 <mat-tab-group class="g-full-height g-mat-tab-full-height" [animationDuration]="'0'"
                [(selectedIndex)]="selectedTabIndex">
-  <mat-tab *ngFor="let resourceWithView of resourceWithViews; let i = index">
+  <mat-tab *ngFor="let tab of tabs; let first = first">
 
     <ng-template mat-tab-label>
-      <lab-resource-detail-tab-header [viewSymbol]="resourceWithView.viewSymbol"></lab-resource-detail-tab-header>
+      <lab-resource-detail-tab-header [tab]="tab" [showCloseButton]="!first"></lab-resource-detail-tab-header>
     </ng-template>
 
+    <fl-async-section [object]="$any(tab.obs)" fxLayout="column" class="g-full-height main-section">
 
-    <lab-resource-with-view [resourceId]="resourceWithView.resourceId" [viewSymbol]="resourceWithView.viewSymbol"
-                             [readOnly]="readOnly">
-    </lab-resource-with-view>
+      <ng-container *flSectionBody="let result">
+        <lab-resource-detail *ngIf="tab.type === 'resource'; else view"
+                              [resource]="result" class="content resource"></lab-resource-detail>
+
+        <ng-template #view>
+          <lab-view-config-detail [labView]="result" class="content"></lab-view-config-detail>
+        </ng-template>
+      </ng-container>
+    </fl-async-section>
+
   </mat-tab>
 
 </mat-tab-group>

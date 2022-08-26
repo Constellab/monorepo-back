@@ -11,7 +11,8 @@
   </fl-portal-header>
 
   <fl-portal-content>
-    <rv-resource-view [view]="labView.view" [config]="config" [resourceId]="resourceId" [displayMode]="'portal'"
-                      [contextMenuItems]="contextMenuItems"></rv-resource-view>
+    <rv-resource-view [view]="labView.view" [config]="rvConfig" [resourceId]="labView.resourceId"
+                      [displayMode]="'portal'" [contextMenuItems]="contextMenuItems">
+    </rv-resource-view>
   </fl-portal-content>
 </fl-portal>

@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {LabViewConfigService} from '../../../../../lab-core/entity-service/lab-view-config.service';
 import {mergeMap, Observable} from 'rxjs';
-import {LabViewConfig} from '../../../../../lab-core/model/entities/resource/lab-view-config.entity';
+import {LabResourceView} from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 
 /**
  * Page to see the detail of a stored view
@@ -14,15 +14,15 @@ import {LabViewConfig} from '../../../../../lab-core/model/entities/resource/lab
 })
 export class LabViewConfigDetailPageComponent implements OnInit {
 
-  viewConfig$: Observable<LabViewConfig>;
+  labView$: Observable<LabResourceView>;
 
   constructor(private route: ActivatedRoute,
               private viewConfigService: LabViewConfigService) {
   }
 
   ngOnInit(): void {
-    this.viewConfig$ = this.route.params.pipe(
-      mergeMap(params => this.viewConfigService.getById(params.id))
+    this.labView$ = this.route.params.pipe(
+      mergeMap(params => this.viewConfigService.callViewConfig(params.id))
     );
   }
 }

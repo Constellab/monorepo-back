@@ -113,6 +113,10 @@ export class LabReportService {
     });
   }
 
+  public getByResource(resourceId: string): Observable<ClPageI<LabReport>>{
+    return this.apiService.get(`${this.route}/resource/${resourceId}`, LabReport);
+  }
+
   ///////////////////////////////////////////// IMAGE /////////////////////////////////////////////
 
 

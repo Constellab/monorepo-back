@@ -56,12 +56,6 @@ export abstract class LabTableChartConfig extends FlSheetChartConfig {
 
     const config: LabResourceViewPortalInput = {
       labView: labView,
-      config: {
-        methodName: this.tableViewMethodName,
-        configValues: this.tableViewConfig,
-        transformers: this.tableTransformers,
-      },
-      resourceId: this.resourceId,
       contextMenuItems: contextMenuItems
     };
 

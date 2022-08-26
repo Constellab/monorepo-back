@@ -46,20 +46,21 @@ import {LabViewResourcesListComponent} from './component/lab-view-resources-list
 import {LabExperimentCoreModule} from '../lab-experiment-core/lab-experiment-core.module';
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 import {LabTypeCoreModule} from '../lab-type-core/lab-type-core.module';
-import {LabResourceWithViewComponent} from './component/lab-resource-with-view/lab-resource-with-view.component';
-import {
-  LabResourceDetailTabHeaderComponent
-} from './component/lab-resource-detail-tab-header/lab-resource-detail-tab-header.component';
-import {LabResourceViewSpecsComponent} from './component/lab-resource-view-specs/lab-resource-view-specs.component';
-import {
-  LabResourceViewSpecsPortalComponent
-} from './component/lab-resource-view-specs-portal/lab-resource-view-specs-portal.component';
 import {
   LabConfigureResourceViewComponent
 } from './component/lab-configure-resource-view/lab-configure-resource-view.component';
-import {LabResourceDetailTabsComponent} from './component/lab-resource-detail-tabs/lab-resource-detail-tabs.component';
 import {LabEntityCoreModule} from '../lab-entity-core/lab-entity-core.module';
 import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module';
+import {LabViewConfigTabComponent} from './component/lab-view-config-tab/lab-view-config-tab.component';
+import {LabResourceDetailTabsComponent} from './component/lab-resource-detail-tabs/lab-resource-detail-tabs.component';
+import {
+  LabResourceDetailTabHeaderComponent
+} from './component/lab-resource-detail-tab-header/lab-resource-detail-tab-header.component';
+import {LabResourceDetailComponent} from './component/lab-resource-detail/lab-resource-detail.component';
+import {
+  LabResourceViewSpecListComponent
+} from './component/lab-resource-view-spec-list/lab-resource-view-spec-list.component';
+import {LabViewConfigCoreModule} from '../lab-view-config-core/lab-view-config-core.module';
 
 
 @NgModule({
@@ -83,12 +84,12 @@ import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module'
     LabResourceActionsMenuComponent,
     LabResourceFolderComponent,
     LabViewResourcesListComponent,
-    LabResourceWithViewComponent,
-    LabResourceDetailTabHeaderComponent,
-    LabResourceViewSpecsComponent,
-    LabResourceViewSpecsPortalComponent,
     LabConfigureResourceViewComponent,
-    LabResourceDetailTabsComponent
+    LabViewConfigTabComponent,
+    LabResourceDetailTabsComponent,
+    LabResourceDetailTabHeaderComponent,
+    LabResourceDetailComponent,
+    LabResourceViewSpecListComponent
   ],
   exports: [
     LabResourceInfoComponent,
@@ -106,12 +107,11 @@ import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module'
     LabUpdateResourceTypeComponent,
     LabUpdateResourceNameDialogComponent,
     LabResourceActionsMenuComponent,
-    LabResourceWithViewComponent,
-    LabResourceDetailTabHeaderComponent,
-    LabResourceViewSpecsComponent,
-    LabResourceViewSpecsPortalComponent,
     LabConfigureResourceViewComponent,
-    LabResourceDetailTabsComponent
+    LabViewConfigTabComponent,
+    LabResourceDetailTabsComponent,
+    LabResourceDetailTabHeaderComponent,
+    LabResourceDetailComponent
   ],
   imports: [
     CommonModule,
@@ -128,6 +128,7 @@ import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module'
     LabTagCoreModule,
     LabEntityCoreModule,
     LabProjectCoreModule,
+    LabViewConfigCoreModule,
   ],
 })
 export class LabResourceCoreModule {

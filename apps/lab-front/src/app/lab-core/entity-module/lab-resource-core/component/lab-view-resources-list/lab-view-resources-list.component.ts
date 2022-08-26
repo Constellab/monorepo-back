@@ -4,7 +4,7 @@ import {FlArrayObs, FlEntityArrayObs, FlTableColumn} from '@monorepo/front-core-
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {ClCoreJsonConvert} from '@monorepo/core-lib';
 import {RvResourceViewDirective} from '@monorepo/resource-view';
-import {LabResourceDetailTabsState} from '../../state/lab-resource-detail-tabs-state';
+import {LabResourceDetailTabsState} from '../../state/lab-resource-detail-tabs-state.service';
 
 /**
  * View of resource that show a list of other resources
@@ -39,7 +39,7 @@ export class LabViewResourcesListComponent extends RvResourceViewDirective<LabRe
 
   openInNewTab(resource: LabResource): void {
     if (this.resourceTabState) {
-      this.resourceTabState.loadDefaultView(resource.id);
+      this.resourceTabState.addResourceTab(resource.id);
     }
   }
 

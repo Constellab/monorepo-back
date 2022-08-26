@@ -1,0 +1,50 @@
+<fl-section [object]="resource" class="container">
+
+  <fl-section-header>
+
+    <h2 class="header-title">{{resource.name}} |
+      <span class="g-text-light">{{resource.resourceTypeHumanName}}</span>
+    </h2>
+
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+      <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
+         *ngIf="resource.experiment" class="g-text-link">
+        <fl-text-icon class="g-text-tiny g-text-light"
+                      gap="0">
+          <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
+          {{resource.experiment.title}}
+        </fl-text-icon>
+      </a>
+
+      <fl-tag-list [tags]="resource.tags" [tagSelectable]="false" class="g-text-small"></fl-tag-list>
+    </div>
+
+    <fl-section-actions>
+      <!--   Link to resource detail page only for readOnly       -->
+      <a mat-stroked-button type="button" *ngIf="readOnly"
+         [routerLink]="resource | labDetailRoute"
+         class="button g-button-small">
+        <mat-icon flIcon="preview"></mat-icon>
+        {{'biox.open_resource_page' | translate}}
+      </a>
+
+      <lab-resource-actions-menu [readOnly]="readOnly" [resource]="resource" (update)="onUpdate($event)"
+                                 (updateTags)="onUpdateTags($event)"
+                                 (delete)="onDelete()">
+
+        <button mat-menu-item type="button"
+                (click)="openTransformerResource()">
+          <mat-icon flIcon="transformer"></mat-icon>
+          {{'biox.transformers' | translate}}
+        </button>
+
+      </lab-resource-actions-menu>
+    </fl-section-actions>
+  </fl-section-header>
+
+  <ng-container *flSectionBody>
+    <lab-resource-view-spec-list [resourceId]="resource.id"
+                                 (callView)="callView($event)">
+    </lab-resource-view-spec-list>
+  </ng-container>
+</fl-section>

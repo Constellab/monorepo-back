@@ -1,4 +1,9 @@
-<div *ngFor="let viewByType of viewsByType" class="group">
+<fl-text-icon>
+  <mat-icon flIcon="view"></mat-icon>
+  <h2>{{'biox.available_views' | translate}}</h2>
+</fl-text-icon>
+
+<div *ngFor="let viewByType of viewsByType$ | async" class="group">
   <fl-text-icon>
     {{viewByType.viewTypeInfo.text | translate}}
     <mat-icon [flIcon]="viewByType.viewTypeInfo.icon"></mat-icon>
@@ -7,9 +12,8 @@
   <div fxLayout="row wrap" fxLayoutGap="1em">
 
     <div *ngFor="let view of viewByType.viewSpec"
-         [ngClass]="getSelectedClass(view)"
          class="view-box"
-         (click)="selectView(view, viewByType)">
+         (click)="openConfigPortal(view, viewByType)">
       <div fxLayout="row" fxLayoutAlign="space-between">
         <div class="text">{{view.getName()}}</div>
         <mat-icon *ngIf="view.defaultView" color="primary"

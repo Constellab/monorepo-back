@@ -6,8 +6,6 @@ import {RvViewConfig} from '@monorepo/resource-view';
 
 export interface LabResourceViewPortalInput {
   labView: LabResourceView;
-  resourceId: string;
-  config: RvViewConfig;
   contextMenuItems?: FlMenuDynamic[];
 }
 
@@ -19,8 +17,7 @@ export interface LabResourceViewPortalInput {
 export class LabResourceViewPortalComponent implements OnInit {
 
   labView: LabResourceView;
-  resourceId: string;
-  config: RvViewConfig;
+  rvConfig: RvViewConfig;
   contextMenuItems?: FlMenuDynamic[];
 
   width: string;
@@ -29,8 +26,11 @@ export class LabResourceViewPortalComponent implements OnInit {
 
   constructor(@Inject(FL_PORTAL_DATA) private input: LabResourceViewPortalInput) {
     this.labView = input.labView;
-    this.resourceId = input.resourceId;
-    this.config = input.config;
+    this.rvConfig = {
+      methodName: input.labView.viewConfig.viewName,
+      configValues: input.labView.viewConfig.configValues,
+      transformers: input.labView.viewConfig.transformers
+    };
     this.contextMenuItems = input.contextMenuItems;
 
     if (input.labView.view.type === 'multi-view') {

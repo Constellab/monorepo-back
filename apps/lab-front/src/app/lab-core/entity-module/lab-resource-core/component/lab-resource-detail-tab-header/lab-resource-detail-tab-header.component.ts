@@ -1,13 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LabResourceDetailTabsState} from '../../state/lab-resource-detail-tabs-state';
-import {LabResourceViewData} from '../../../../model/entities/resource/lab-resource-view.entity';
-import {firstValueFrom, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {LabResourceDetailTabsState, LabResourceTab} from '../../state/lab-resource-detail-tabs-state.service';
+import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {FlMouseButton} from '@monorepo/front-core-lib';
+import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 
-/**
- * Header of the tab of a resource with view, its also show a loading indicator while the view is loading
- */
 @Component({
   selector: 'lab-resource-detail-tab-header',
   templateUrl: './lab-resource-detail-tab-header.component.html',
@@ -15,31 +11,41 @@ import {FlMouseButton} from '@monorepo/front-core-lib';
 })
 export class LabResourceDetailTabHeaderComponent implements OnInit {
 
-  @Input() viewSymbol: symbol;
+  @Input() tab: LabResourceTab;
+  @Input() showCloseButton: boolean = false;
 
-  view: LabResourceViewData;
-
+  title: string;
+  icon: string;
   isLoading: boolean = true;
   isError: boolean = false;
-
-  showCloseButton$: Observable<boolean>;
 
   constructor(private state: LabResourceDetailTabsState) {
   }
 
-  ngOnInit(): void {
-    this.state.getView$(this.viewSymbol).subscribe({
-      next: view => this.onSuccess(view.view),
-      error: () => this.onError()
-    });
 
-    this.showCloseButton$ = this.state.getTabs$().pipe(
-      map(resourceWithViews => resourceWithViews.length > 1)
-    );
+  ngOnInit(): void {
+    if (this.tab.type === 'resource') {
+      this.tab.obs.subscribe({
+        next: resource => this.onResourceSuccess(resource),
+        error: () => this.onError()
+      });
+    } else {
+      this.tab.obs.subscribe({
+        next: view => this.onViewSuccess(view),
+        error: () => this.onError()
+      });
+    }
   }
 
-  private onSuccess(view: LabResourceViewData): void {
-    this.view = view;
+  private onResourceSuccess(resource: LabResource): void {
+    this.title = resource.name;
+    this.icon = 'resource';
+    this.isLoading = false;
+  }
+
+  private onViewSuccess(view: LabResourceView): void {
+    this.title = view.viewConfig.title;
+    this.icon = 'view';
     this.isLoading = false;
   }
 
@@ -49,14 +55,13 @@ export class LabResourceDetailTabHeaderComponent implements OnInit {
   }
 
   async onTabClick(event: MouseEvent): Promise<void> {
-    const showCloseButton = await firstValueFrom(this.showCloseButton$);
-    if (showCloseButton && event.button === FlMouseButton.MIDDLE) {
+    if (this.showCloseButton && event.button === FlMouseButton.MIDDLE) {
       this.closeTab();
     }
   }
 
   closeTab(): void {
-    this.state.closeTab(this.viewSymbol);
+    this.state.closeTab(this.tab.viewSymbol);
   }
 
 }

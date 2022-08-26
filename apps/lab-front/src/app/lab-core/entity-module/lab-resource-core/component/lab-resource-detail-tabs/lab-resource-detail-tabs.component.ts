@@ -1,7 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {LabResourceDetailTabsState, LabResourceTab} from '../../state/lab-resource-detail-tabs-state';
+import {LabResourceDetailTabsState, LabResourceTab} from '../../state/lab-resource-detail-tabs-state.service';
 
+/**
+ * Component to show a resource detail with tabs to show other resources or views
+ */
 @Component({
   selector: 'lab-resource-detail-tabs',
   templateUrl: './lab-resource-detail-tabs.component.html',
@@ -15,9 +18,8 @@ export class LabResourceDetailTabsComponent implements OnInit {
   // when true, the transform, import button are deactivate
   @Input() readOnly: boolean = false;
 
+  tabs: LabResourceTab[];
   selectedTabIndex: number = 0;
-
-  resourceWithViews: LabResourceTab[];
 
   constructor(private state: LabResourceDetailTabsState) {
   }
@@ -32,7 +34,7 @@ export class LabResourceDetailTabsComponent implements OnInit {
     }
 
     this.state.getTabs$().subscribe(
-      resourceWithViews => this.onNewResourceWithView(resourceWithViews)
+      tabs => this.onNewTabs(tabs)
     );
   }
 
@@ -40,12 +42,13 @@ export class LabResourceDetailTabsComponent implements OnInit {
     this.state.init(id);
   }
 
-  private onNewResourceWithView(resourceWithViews: LabResourceTab[]): void {
+  private onNewTabs(tabs: LabResourceTab[]): void {
     // select th last tab only if a view was added
-    if (this.resourceWithViews && resourceWithViews.length > this.resourceWithViews.length) {
-      this.selectedTabIndex = resourceWithViews.length - 1;
+    if (this.tabs && tabs.length > this.tabs.length) {
+      this.selectedTabIndex = tabs.length - 1;
     }
-    this.resourceWithViews = resourceWithViews;
+    this.tabs = tabs;
   }
+
 
 }

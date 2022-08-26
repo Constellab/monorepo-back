@@ -1,5 +1,4 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {LabViewConfig} from '../../../../model/entities/resource/lab-view-config.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
@@ -19,7 +18,7 @@ import {LabViewConfigService} from '../../../../entity-service/lab-view-config.s
 })
 export class LabViewConfigPreviewComponent implements OnInit, OnDestroy {
 
-  @Input() viewConfig: LabViewConfig;
+  @Input() viewConfigId: string;
 
   isLoading: boolean = false;
 
@@ -38,13 +37,13 @@ export class LabViewConfigPreviewComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
     // load the view and show it in a portal
-    this.viewConfigService.callViewConfig(this.viewConfig.id).subscribe({
-      next: (view) => this.openPortal(this.viewConfig, view, event.target as any),
+    this.viewConfigService.callViewConfig(this.viewConfigId).subscribe({
+      next: (view) => this.openPortal(view, event.target as any),
       error: () => this.isLoading = false
     });
   }
 
-  private openPortal(viewConfig: LabViewConfig, labView: LabResourceView, element: HTMLElement): void {
+  private openPortal(labView: LabResourceView, element: HTMLElement): void {
     const portalConfig: FlPortalConfig = this.portalService.configureRelativePortal(
       element, ['left', 'bottom', 'right', 'top'],
       {
@@ -55,12 +54,6 @@ export class LabViewConfigPreviewComponent implements OnInit, OnDestroy {
 
     const config: LabResourceViewPortalInput = {
       labView: labView,
-      config: {
-        methodName: viewConfig.viewName,
-        configValues: viewConfig.configValues,
-        transformers: viewConfig.transformers
-      },
-      resourceId: viewConfig.resource.id
     };
 
     this.overlay = this.portalService.createPortal(LabResourceViewPortalComponent, portalConfig, config);

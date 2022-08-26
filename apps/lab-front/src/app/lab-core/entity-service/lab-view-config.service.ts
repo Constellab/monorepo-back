@@ -45,6 +45,10 @@ export class LabViewConfigService {
     return this.apiService.put(`${this.route}/${id}/tags`, tags, LabTag);
   }
 
+  public getByResource(resourceId: string): Observable<ClPageI<LabViewConfig>> {
+    return this.apiService.get(`${this.route}/resource/${resourceId}`, LabViewConfig);
+  }
+
 
   ///////////////////////////////////////////// SEARCH /////////////////////////////////////////////
 

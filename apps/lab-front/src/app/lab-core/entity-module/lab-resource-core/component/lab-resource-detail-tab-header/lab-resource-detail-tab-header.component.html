@@ -6,13 +6,15 @@
 
 <ng-template #notLoading>
 
-  <div (auxclick)="onTabClick($event)">
+  <div (auxclick)="onTabClick($event)" fxLayout="row"
+       fxLayoutAlign="start center" fxLayoutGap="10px">
     <ng-container *ngIf="isError; else notError">{{'biox.resource_tab_error' | translate}}</ng-container>
     <ng-template #notError>
-      {{view.title}}
+      <mat-icon [flIcon]="icon"></mat-icon>
+      <div>{{title}}</div>
     </ng-template>
 
-    <button mat-icon-button (click)="closeTab()" class="g-button-icon-small" *ngIf="showCloseButton$ | async">
+    <button mat-icon-button (click)="closeTab()" class="g-button-icon-small" *ngIf="showCloseButton">
       <mat-icon>close</mat-icon>
     </button>
   </div>

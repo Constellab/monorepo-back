@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {LabResourceDetailTabsComponent} from './lab-resource-detail-tabs.component';
 
-describe('LabResourceDetailThreeComponent', () => {
+describe('LabResourceDetailTabs2Component', () => {
   let component: LabResourceDetailTabsComponent;
   let fixture: ComponentFixture<LabResourceDetailTabsComponent>;
 
@@ -11,9 +11,7 @@ describe('LabResourceDetailThreeComponent', () => {
       declarations: [ LabResourceDetailTabsComponent ]
     })
     .compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(LabResourceDetailTabsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

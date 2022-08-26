@@ -1,0 +1,36 @@
+<fl-section [object]="labView" class="g-full-height">
+  <fl-section-header class="header">
+
+    <fl-text-icon>
+      <mat-icon class="g-icon-big">{{(labView.viewConfig.viewType | labViewTypeInfo).icon}}</mat-icon>
+      <h2 class="header-title">{{labView.viewConfig.title}}</h2>
+    </fl-text-icon>
+
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+      <a [routerLink]="labView.viewConfig.resource.id | labDetailRoute:'resource'"
+         *ngIf="labView.viewConfig.resource" class="g-text-link">
+        <fl-text-icon class="g-text-tiny g-text-light"
+                      gap="5px">
+          <mat-icon flIcon="resource" class="g-icon-tiny"></mat-icon>
+          {{labView.viewConfig.resource.name}}
+        </fl-text-icon>
+      </a>
+
+      <fl-tag-list [tags]="labView.viewConfig.tags" [tagSelectable]="false" class="g-text-small"></fl-tag-list>
+    </div>
+
+    <fl-section-actions>
+      <lab-flag-button [entity]="labView.viewConfig"></lab-flag-button>
+
+      <lab-view-config-actions-menu [viewConfig]="labView.viewConfig"
+                                    (update)="onUpdate($event)"
+                                    (updateTags)="onTagUpdate($event)"></lab-view-config-actions-menu>
+    </fl-section-actions>
+  </fl-section-header>
+
+  <ng-container *flSectionBody>
+    <rv-resource-view [view]="labView.view"
+                      [config]="rvViewConfig" [resourceId]="labView.viewConfig.resource.id">
+    </rv-resource-view>
+  </ng-container>
+</fl-section>
