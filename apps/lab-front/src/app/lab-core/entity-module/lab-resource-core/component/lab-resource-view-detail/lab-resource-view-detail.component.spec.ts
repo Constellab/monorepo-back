@@ -1,18 +1,18 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabViewConfigDetailComponent} from './lab-view-config-detail.component';
+import {LabResourceViewDetailComponent} from './lab-resource-view-detail.component';
 
 describe('LabViewConfigDetailComponent', () => {
-  let component: LabViewConfigDetailComponent;
-  let fixture: ComponentFixture<LabViewConfigDetailComponent>;
+  let component: LabResourceViewDetailComponent;
+  let fixture: ComponentFixture<LabResourceViewDetailComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabViewConfigDetailComponent ]
+      declarations: [ LabResourceViewDetailComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LabViewConfigDetailComponent);
+    fixture = TestBed.createComponent(LabResourceViewDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

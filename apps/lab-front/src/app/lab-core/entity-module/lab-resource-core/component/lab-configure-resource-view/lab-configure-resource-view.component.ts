@@ -1,9 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
-import {
-  LabResourceViewSpecWithConfig,
-  LabResourceViewTypeInfo
-} from '../../../../model/entities/resource/lab-resource-view.entity';
+import {LabResourceViewSpecWithConfig,} from '../../../../model/entities/resource/lab-resource-view.entity';
 import {Validators} from '@angular/forms';
 import {LabConfigData, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {FL_PORTAL_DATA, FlFormHelper, FlOverlayRef} from '@monorepo/front-core-lib';
@@ -17,12 +14,12 @@ import {
 } from '../../../lab-transformer/component/lab-transform-resource/lab-transform-resource.component';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {LabConfigSpecs} from '../../../../model/entities/lab-config-spec.entity';
-import {RvViewDisplayMode} from '@monorepo/resource-view';
+import {RvResourceViewTypeInfo, RvViewDisplayMode} from '@monorepo/resource-view';
 
 export interface LabConfigureResourceViewInput {
   title: string;
   viewSpecConfig: LabResourceViewSpecWithConfig;
-  viewTypeInfo: LabResourceViewTypeInfo;
+  viewTypeInfo: RvResourceViewTypeInfo;
   resourceTypingName: string;
   resourceId: string;
 }

@@ -11,6 +11,7 @@ import {RvViewTextComponent} from '../component/rv-view-text/rv-view-text.compon
 // Information of the view type
 export interface RvResourceViewTypeInfo {
   icon: string;
+  image: string;
   text: string;
   // Whether the view show in a portal or component by default
   defaultDisplayMode: RvViewDisplayMode;
@@ -30,6 +31,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewJsonComponent,
+    image: '',
   },
   'text-view': {
     icon: 'text_snippet',
@@ -37,6 +39,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewTextComponent,
+    image: ''
   },
   'table-view': {
     icon: 'calendar_view_month',
@@ -44,6 +47,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: RvViewSpreadsheetComponent,
+    image: 'assets/views/tabular.png'
   },
   'tabular-view': {
     icon: 'calendar_view_month',
@@ -51,6 +55,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: RvViewSpreadsheetComponent,
+    image: 'assets/views/tabular.png'
   },
   'dataset-view': {
     icon: 'calendar_view_month',
@@ -58,6 +63,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: RvViewSpreadsheetComponent,
+    image: 'assets/views/tabular.png'
   },
   'network-view': {
     icon: 'share',
@@ -65,6 +71,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: RvViewNetworkComponent,
+    image: 'assets/views/network.png'
   },
   'image-view': {
     icon: 'insert_photo',
@@ -72,6 +79,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: null,
+    image: '',
   },
   'scatter-plot-2d-view': {
     icon: 'scatter_plot',
@@ -79,6 +87,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
+    image: 'assets/views/scatter-plot.png'
   },
   'line-plot-2d-view': {
     icon: 'show_chart',
@@ -86,6 +95,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
+    image: 'assets/views/line-plot.png'
   },
   'vulcano-plot-view': {
     icon: 'scatter_plot',
@@ -93,6 +103,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
+    image: 'assets/views/scatter-plot.png'
   },
   'bar-plot-view': {
     icon: 'bar_chart',
@@ -100,6 +111,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
+    image: 'assets/views/bar-plot.png'
   },
   'stacked-bar-plot-view': {
     icon: 'stacked_bar_chart',
@@ -107,6 +119,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
+    image: 'assets/views/stacked-bar-plot.png'
   },
   'histogram-view': {
     icon: 'bar_chart',
@@ -114,6 +127,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
+    image: 'assets/views/histogram.png'
   },
   'box-plot-view': {
     icon: 'multiline_chart',
@@ -121,13 +135,15 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
+    image: 'assets/views/box-plot.png'
   },
   'multi-view': {
     icon: 'multiline_chart',
     text: 'rvResourceView.resource_view_multi_views',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
-    viewComponent: RvViewMultiViewsComponent
+    viewComponent: RvViewMultiViewsComponent,
+    image: ''
   },
   'venn-diagram-view': {
     icon: 'join_full',
@@ -135,6 +151,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
+    image: 'assets/views/venn.png'
   },
   'heatmap-view': {
     icon: 'multiline_chart',
@@ -142,6 +159,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
+    image: 'assets/views/heatmap.png'
   },
 };
 

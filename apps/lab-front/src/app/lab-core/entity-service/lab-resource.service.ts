@@ -28,10 +28,6 @@ import {LabTypeService} from './lab-type.service';
 import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
 import {LabTag} from '../model/entities/lab-tag.entity';
 import {RvTransformerParams} from '@monorepo/resource-view';
-import {
-  labGroupResourceViewSpecsByType,
-  LabResourceViewSpecsByType
-} from '../model/entities/resource/lab-resource-view-type.class';
 
 
 @Injectable({
@@ -106,12 +102,10 @@ export class LabResourceService {
   //////////////////////////////////////// RESOURCE VIEWS  ///////////////////////////////////////
 
   public getResourceViewsList(id: string): Observable<LabResourceViewSpec[]> {
-    return this.apiService.get(`${this.route}/${id}/views`, LabResourceViewSpec);
-  }
-
-  public getResourceViewsListGrouped(id: string): Observable<LabResourceViewSpecsByType[]> {
-    return this.getResourceViewsList(id).pipe(
-      map(views => labGroupResourceViewSpecsByType(views)));
+    return this.apiService.get(`${this.route}/${id}/views`, LabResourceViewSpec).pipe(
+      map((views: LabResourceViewSpec[]) =>
+        views.sort(view => view.defaultView ? -1 : 1))
+    );
   }
 
   public getResourceViewSpecsDetail(id: string, viewName: string): Observable<LabConfigSpecs> {

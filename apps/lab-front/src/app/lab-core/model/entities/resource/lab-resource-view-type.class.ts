@@ -12,7 +12,6 @@ import {
 import {
   LabResourceFolderComponent
 } from '../../../entity-module/lab-resource-core/component/lab-resource-folder/lab-resource-folder.component';
-import {LabResourceViewSpec, LabResourceViewType, LabResourceViewTypeInfo} from './lab-resource-view.entity';
 
 export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInfo> = {
   ...rvDefaultViewTypeInfos,
@@ -23,6 +22,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: LabResourceSpreadsheetComponent,
+    image: 'assets/views/tabular.png'
   },
   // override the table view to add functionalities like chart from api
   'tabular-view': {
@@ -31,6 +31,16 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: LabResourceSpreadsheetComponent,
+    image: 'assets/views/tabular.png'
+  },
+  // override the table view to add functionalities like chart from api
+  'dataset-view': {
+    icon: 'calendar_view_month',
+    text: 'rvResourceView.resource_view_dataset_view',
+    defaultDisplayMode: 'fullScreen',
+    forceDefaultDisplayMode: true,
+    viewComponent: LabResourceSpreadsheetComponent,
+    image: 'assets/views/tabular.png'
   },
   // override the text view to enable pagination
   'text-view': {
@@ -39,6 +49,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: LabResourceTextComponent,
+    image: ''
   },
   view: {
     icon: 'view_quilt',
@@ -46,13 +57,15 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: null,
+    image: ''
   },
   'resources-list-view': {
     icon: 'list',
     text: 'biox.resource_view_resources_list',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
-    viewComponent: LabViewResourcesListComponent
+    viewComponent: LabViewResourcesListComponent,
+    image: ''
   },
   'folder-view': {
     icon: 'folder',
@@ -60,35 +73,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: LabResourceFolderComponent,
+    image: ''
   }
 };
 
-/**
- * Object that group view specs by type
- */
-export interface LabResourceViewSpecsByType {
-  viewTypeInfo: LabResourceViewTypeInfo;
-  viewSpec: LabResourceViewSpec[];
-}
-
-export function labGroupResourceViewSpecsByType(views: LabResourceViewSpec[]): LabResourceViewSpecsByType[] {
-  const viewsByType: Record<string, LabResourceViewSpecsByType> = {};
-
-  for (const view of views) {
-    // get the type with 'view' by default if the type is not known
-    const type: LabResourceViewType = labConstResourceViewTypeInfos[view.viewType] != null ? view.viewType : 'view';
-
-    if (viewsByType[type] == null) {
-      const viewTypeInfo = labConstResourceViewTypeInfos[type];
-
-      viewsByType[type] = {
-        viewTypeInfo: viewTypeInfo,
-        viewSpec: []
-      };
-    }
-
-    viewsByType[type].viewSpec.push(view);
-  }
-
-  return Object.values(viewsByType);
-}

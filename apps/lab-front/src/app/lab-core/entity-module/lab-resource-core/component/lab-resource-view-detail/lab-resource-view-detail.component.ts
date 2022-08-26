@@ -5,11 +5,11 @@ import {RvViewConfig} from '@monorepo/resource-view';
 import {FlTag} from '@monorepo/front-core-lib';
 
 @Component({
-  selector: 'lab-view-config-detail',
-  templateUrl: './lab-view-config-detail.component.html',
-  styleUrls: ['./lab-view-config-detail.component.scss']
+  selector: 'lab-resource-view-detail',
+  templateUrl: './lab-resource-view-detail.component.html',
+  styleUrls: ['./lab-resource-view-detail.component.scss']
 })
-export class LabViewConfigDetailComponent implements OnInit {
+export class LabResourceViewDetailComponent implements OnInit {
 
   @Input() labView: LabResourceView;
 

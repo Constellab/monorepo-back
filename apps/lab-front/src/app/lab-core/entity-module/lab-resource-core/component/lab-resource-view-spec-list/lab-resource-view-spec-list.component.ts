@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {Observable} from 'rxjs';
-import {LabResourceViewSpecsByType} from '../../../../model/entities/resource/lab-resource-view-type.class';
+import {labConstResourceViewTypeInfos} from '../../../../model/entities/resource/lab-resource-view-type.class';
 import {
   LabResourceViewSpec,
   LabResourceViewSpecWithConfig
@@ -11,6 +11,7 @@ import {
   LabConfigureResourceViewInput
 } from '../lab-configure-resource-view/lab-configure-resource-view.component';
 import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
+import {RvResourceViewTypeInfo} from '@monorepo/resource-view';
 
 @Component({
   selector: 'lab-resource-view-spec-list',
@@ -26,7 +27,7 @@ export class LabResourceViewSpecListComponent implements OnInit, OnDestroy {
 
   @Output() callView: EventEmitter<LabResourceViewSpecWithConfig> = new EventEmitter();
 
-  viewsByType$: Observable<LabResourceViewSpecsByType[]>;
+  viewSpecs$: Observable<LabResourceViewSpec[]>;
 
   private overlay: FlOverlayRef;
 
@@ -37,17 +38,18 @@ export class LabResourceViewSpecListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.viewsByType$ = this.resourceService.getResourceViewsListGrouped(this.resourceId);
+    this.viewSpecs$ = this.resourceService.getResourceViewsList(this.resourceId);
   }
 
   // prepare the data and open the view configuration portal
-  openConfigPortal(view: LabResourceViewSpec, viewByType: LabResourceViewSpecsByType): void {
+  openConfigPortal(view: LabResourceViewSpec): void {
+    const viewTypeInfo: RvResourceViewTypeInfo = labConstResourceViewTypeInfos[view.viewType];
 
     const specWithConfig: LabResourceViewSpecWithConfig = {
       resourceId: this.resourceId,
       viewName: view.getName(),
       viewMethodName: view.methodName,
-      displayMode: viewByType.viewTypeInfo.defaultDisplayMode,
+      displayMode: viewTypeInfo.defaultDisplayMode,
       viewConfigValues: {},
       transformersWithConfig: [],
       isDefaultView: view.defaultView
@@ -62,7 +64,7 @@ export class LabResourceViewSpecListComponent implements OnInit, OnDestroy {
     const data: LabConfigureResourceViewInput = {
       viewSpecConfig: specWithConfig,
       title: view.getName(),
-      viewTypeInfo: viewByType.viewTypeInfo,
+      viewTypeInfo: viewTypeInfo,
       resourceTypingName: this.resourceTypingName,
       resourceId: this.resourceId
     };

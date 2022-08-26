@@ -3,25 +3,25 @@
   <h2>{{'biox.available_views' | translate}}</h2>
 </fl-text-icon>
 
-<div *ngFor="let viewByType of viewsByType$ | async" class="group">
-  <fl-text-icon>
-    {{viewByType.viewTypeInfo.text | translate}}
-    <mat-icon [flIcon]="viewByType.viewTypeInfo.icon"></mat-icon>
-  </fl-text-icon>
+<div fxLayout="row wrap">
+  <fl-card *ngFor="let viewSpec of viewSpecs$ | async" class="view-spec"
+           (click)="openConfigPortal(viewSpec)"
+           [ngClass]="{'default-view-spec' : viewSpec.defaultView}">
+    <fl-card-body>
 
-  <div fxLayout="row wrap" fxLayoutGap="1em">
+      <ng-container *ngIf="viewSpec.viewType | labViewTypeInfo as viewTypeInfo">
+        <img *ngIf="viewTypeInfo.image; else icon"
+             [src]="viewTypeInfo.image" [alt]="viewTypeInfo.text"
+             class="view-image"/>
+        <ng-template #icon>
+          <mat-icon [flIcon]="viewTypeInfo.icon" class="view-icon"></mat-icon>
+        </ng-template>
+      </ng-container>
 
-    <div *ngFor="let view of viewByType.viewSpec"
-         class="view-box"
-         (click)="openConfigPortal(view, viewByType)">
-      <div fxLayout="row" fxLayoutAlign="space-between">
-        <div class="text">{{view.getName()}}</div>
-        <mat-icon *ngIf="view.defaultView" color="primary"
-                  [matTooltip]="'biox.default_view' | translate">done
-        </mat-icon>
+      <div class="view-info">
+        <div>{{viewSpec.getName()}}</div>
+        <p class="text g-text-small g-text-tiny">{{viewSpec.shortDescription}}</p>
       </div>
-
-      <p class="text g-text-small g-text-tiny">{{view.shortDescription}}</p>
-    </div>
-  </div>
+    </fl-card-body>
+  </fl-card>
 </div>

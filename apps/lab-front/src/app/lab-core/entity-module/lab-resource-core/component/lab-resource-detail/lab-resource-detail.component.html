@@ -2,9 +2,9 @@
 
   <fl-section-header>
 
-    <h2 class="header-title">{{resource.name}} |
+    <h1 class="header-title">{{resource.name}} |
       <span class="g-text-light">{{resource.resourceTypeHumanName}}</span>
-    </h2>
+    </h1>
 
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
       <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
@@ -43,8 +43,10 @@
   </fl-section-header>
 
   <ng-container *flSectionBody>
-    <lab-resource-view-spec-list [resourceId]="resource.id"
-                                 (callView)="callView($event)">
-    </lab-resource-view-spec-list>
+    <div fxLayout="row">
+      <lab-resource-view-spec-list fxFlex="34%" [resourceId]="resource.id"
+                                   (callView)="callView($event)">
+      </lab-resource-view-spec-list>
+    </div>
   </ng-container>
 </fl-section>

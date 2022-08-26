@@ -78,14 +78,3 @@ export class LabResourceView {
 //////////////////////////// TYPE THAT GROUP ALL VIEW TYPES /////////////////////////////
 export type LabResourceViewData = RvResourceView | LabResourceViewResourcesList | LabResourceViewFolder;
 
-// Information of the view type
-export interface LabResourceViewTypeInfo {
-  icon: string;
-  text: string;
-  // Where the view show in a portal or component by default
-  defaultDisplayMode: RvViewDisplayMode;
-  // if true the default display mode can be modified
-  forceDefaultDisplayMode: boolean;
-}
-
-

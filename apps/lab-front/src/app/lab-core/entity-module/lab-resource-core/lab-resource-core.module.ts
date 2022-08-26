@@ -61,6 +61,7 @@ import {
   LabResourceViewSpecListComponent
 } from './component/lab-resource-view-spec-list/lab-resource-view-spec-list.component';
 import {LabViewConfigCoreModule} from '../lab-view-config-core/lab-view-config-core.module';
+import {LabResourceViewDetailComponent} from './component/lab-resource-view-detail/lab-resource-view-detail.component';
 
 
 @NgModule({
@@ -89,7 +90,8 @@ import {LabViewConfigCoreModule} from '../lab-view-config-core/lab-view-config-c
     LabResourceDetailTabsComponent,
     LabResourceDetailTabHeaderComponent,
     LabResourceDetailComponent,
-    LabResourceViewSpecListComponent
+    LabResourceViewSpecListComponent,
+    LabResourceViewDetailComponent,
   ],
   exports: [
     LabResourceInfoComponent,
@@ -111,7 +113,8 @@ import {LabViewConfigCoreModule} from '../lab-view-config-core/lab-view-config-c
     LabViewConfigTabComponent,
     LabResourceDetailTabsComponent,
     LabResourceDetailTabHeaderComponent,
-    LabResourceDetailComponent
+    LabResourceDetailComponent,
+    LabResourceViewDetailComponent
   ],
   imports: [
     CommonModule,
