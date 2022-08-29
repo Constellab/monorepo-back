@@ -75,22 +75,32 @@
     </mat-cell>
   </ng-container>
 
+
   <!-- Preview -->
   <ng-container matColumnDef="preview">
-    <mat-header-cell *matHeaderCellDef class="button-column">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
     </mat-header-cell>
-    <mat-cell *matCellDef="let resource" class="button-column">
+    <mat-cell *matCellDef="let resource" class="g-table-icon-button-cell">
 
       <lab-resource-preview-button [resourceId]="resource.id" [resourceName]="resource.name"
                                    [stopPropagation]="true"></lab-resource-preview-button>
     </mat-cell>
   </ng-container>
 
+  <!-- Flagged -->
+  <ng-container matColumnDef="flagged">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let resource" class="g-table-icon-button-cell">
+      <lab-flag-button [entity]="resource"></lab-flag-button>
+    </mat-cell>
+  </ng-container>
+
   <!-- Action -->
   <ng-container matColumnDef="action">
-    <mat-header-cell *matHeaderCellDef class="button-column">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
     </mat-header-cell>
-    <mat-cell *matCellDef="let resource" class="button-column">
+    <mat-cell *matCellDef="let resource" class="g-table-icon-button-cell">
 
       <lab-resource-actions-menu [resource]="resource" (update)="onUpdate($event)"
                                  (updateTags)="onUpdateTags(resource, $event)"

@@ -32,7 +32,7 @@ export class LabResourceSearchFields {
 
   isArchived: boolean;
   includeChildrenResource: boolean;
-  includeIntermediateResource: boolean;
+  includeNotFlagged: boolean;
 }
 
 
@@ -53,7 +53,7 @@ export class LabResourceSearch {
     createdBy: 'created_by',
     project: 'biox.project',
     includeChildrenResource: 'resource_include_children_short',
-    includeIntermediateResource: 'resource_include_intermediate_short',
+    includeNotFlagged: 'biox.include_not_flagged_short',
   };
 
 
@@ -76,8 +76,8 @@ export class LabResourceSearch {
       key: 'include_children_resource',
       operator: 'EQ',
     },
-    includeIntermediateResource: {
-      key: 'include_intermediate_resource',
+    includeNotFlagged: {
+      key: 'include_not_flagged',
       operator: 'EQ',
     }
   };
@@ -102,7 +102,7 @@ export class LabResourceSearch {
         project: [null],
         isArchived: [null],
         includeChildrenResource: [null],
-        includeIntermediateResource: [null],
+        includeNotFlagged: [null],
       }
     );
   }

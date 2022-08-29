@@ -37,7 +37,7 @@ export class LabViewConfigSearch {
     // group the creation date into one chip
     createdAt: 'creation_date',
     tags: 'flTag.tags',
-    includeNotFlagged: 'biox.view_include_not_flagged'
+    includeNotFlagged: 'biox.include_not_flagged_short'
   };
 
 

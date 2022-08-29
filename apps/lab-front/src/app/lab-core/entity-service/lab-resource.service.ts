@@ -86,6 +86,11 @@ export class LabResourceService {
     });
   }
 
+  public updateFlagged(id: string, flagged: boolean): Observable<LabResource> {
+    return this.apiService.put(`${this.route}/${id}/flagged`, {flagged: flagged}, LabResource);
+  }
+
+
   public saveTags(id: string, tags: FlTag[]): Observable<LabTag[]> {
     return this.apiService.put(`${this.route}/${id}/tags`, tags, LabTag);
   }

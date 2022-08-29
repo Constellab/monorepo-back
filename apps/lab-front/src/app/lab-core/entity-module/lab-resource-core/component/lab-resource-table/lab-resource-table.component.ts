@@ -61,7 +61,7 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
               private resourceService: LabResourceService,
               private dialogService: FlDialogService) {
     super(['created', 'action', 'name', 'info', 'tags', 'viewResource', 'openInNewTab',
-      'expandedDetail', 'preview']);
+      'expandedDetail', 'preview', 'flagged']);
   }
 
   ngOnInit(): void {

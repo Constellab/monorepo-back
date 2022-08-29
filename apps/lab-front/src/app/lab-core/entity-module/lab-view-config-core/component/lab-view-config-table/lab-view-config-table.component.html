@@ -61,6 +61,15 @@
     </mat-cell>
   </ng-container>
 
+  <!-- Flagged -->
+  <ng-container matColumnDef="flagged">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let viewConfig" class="g-table-icon-button-cell">
+      <lab-flag-button [entity]="viewConfig"></lab-flag-button>
+    </mat-cell>
+  </ng-container>
+
   <!-- Action -->
   <ng-container matColumnDef="action">
     <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
@@ -71,15 +80,6 @@
                                     (update)="onUpdate($event)"
                                     (updateTags)="onUpdateTags(viewConfig, $event)">
       </lab-view-config-actions-menu>
-    </mat-cell>
-  </ng-container>
-
-  <!-- Flagged -->
-  <ng-container matColumnDef="flagged">
-    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
-    </mat-header-cell>
-    <mat-cell *matCellDef="let viewConfig" class="g-table-icon-button-cell">
-      <lab-flag-button [entity]="viewConfig"></lab-flag-button>
     </mat-cell>
   </ng-container>
 
