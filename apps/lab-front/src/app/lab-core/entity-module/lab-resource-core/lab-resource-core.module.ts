@@ -73,6 +73,12 @@ import {
 } from './component/lab-reports-using-resource/lab-reports-using-resource.component';
 import {LabReportCoreModule} from '../lab-report-core/lab-report-core.module';
 import {LabResourceInfoComponent} from './component/lab-resource-info/lab-resource-info.component';
+import {
+  LabResourcePreviewButtonComponent
+} from './component/lab-resource-preview-button/lab-resource-preview-button.component';
+import {
+  LabResourceViewDetailDialogComponent
+} from './component/lab-resource-view-detail-dialog/lab-resource-view-detail-dialog.component';
 
 
 @NgModule({
@@ -105,6 +111,8 @@ import {LabResourceInfoComponent} from './component/lab-resource-info/lab-resour
     LabExperimentsUsingResourceComponent,
     LabReportsUsingResourceComponent,
     LabResourceInfoComponent,
+    LabResourcePreviewButtonComponent,
+    LabResourceViewDetailDialogComponent,
   ],
   exports: [
     LabResourceTypeSelectOptionsComponent,
@@ -123,7 +131,9 @@ import {LabResourceInfoComponent} from './component/lab-resource-info/lab-resour
     LabResourceDetailTabsComponent,
     LabResourceDetailTabHeaderComponent,
     LabResourceDetailComponent,
-    LabResourceViewDetailComponent
+    LabResourceViewDetailComponent,
+    LabResourcePreviewButtonComponent,
+    LabResourceViewDetailDialogComponent
   ],
   imports: [
     CommonModule,

@@ -142,6 +142,10 @@ export class LabResourceService {
     }, LabResourceView);
   }
 
+  public callResourceDefaultView(id: string): Observable<LabResourceView> {
+    return this.callResourceView(id, LabResourceService.defaultViewName, {}, [], true);
+  }
+
   //////////////////////////////////////// TRANSFORMERS  ///////////////////////////////////////
   /**
    * Create an experiment for a resource, with a list of transformers

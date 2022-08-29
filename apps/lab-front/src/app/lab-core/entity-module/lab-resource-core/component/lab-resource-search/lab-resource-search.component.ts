@@ -70,7 +70,7 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
 
   columns: FlTableColumn<LabResource>[] = ['name', 'info',
     {columnName: 'resource_type', accessor: 'resourceTypeHumanName'},
-    'tags', 'created'];
+    'tags', 'created', 'preview'];
 
   files: File[];
 
