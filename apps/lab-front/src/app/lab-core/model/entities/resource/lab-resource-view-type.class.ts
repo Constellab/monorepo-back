@@ -1,17 +1,17 @@
 // Record of view type, icon
 import {rvDefaultViewTypeInfos, RvResourceViewTypeInfo} from '@monorepo/resource-view';
 import {
-  LabResourceSpreadsheetComponent
-} from '../../../entity-module/lab-resource-core/component/lab-resource-spreadsheet/lab-resource-spreadsheet.component';
+  LabResourceViewSpreadsheetComponent
+} from '../../../entity-module/lab-resource-core/component/lab-resource-view-spreadsheet/lab-resource-view-spreadsheet.component';
 import {
-  LabResourceTextComponent
-} from '../../../entity-module/lab-resource-core/component/lab-resource-text/lab-resource-text.component';
+  LabResourceViewTextComponent
+} from '../../../entity-module/lab-resource-core/component/lab-resource-view-text/lab-resource-view-text.component';
 import {
-  LabViewResourcesListComponent
-} from '../../../entity-module/lab-resource-core/component/lab-view-resources-list/lab-view-resources-list.component';
+  LabResourceViewListComponent
+} from '../../../entity-module/lab-resource-core/component/lab-resource-view-list/lab-resource-view-list.component';
 import {
-  LabResourceFolderComponent
-} from '../../../entity-module/lab-resource-core/component/lab-resource-folder/lab-resource-folder.component';
+  LabResourceViewFolderComponent
+} from '../../../entity-module/lab-resource-core/component/lab-resource-view-folder/lab-resource-view-folder.component';
 
 export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInfo> = {
   ...rvDefaultViewTypeInfos,
@@ -21,7 +21,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     text: 'rvResourceView.resource_view_spreadsheet',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
-    viewComponent: LabResourceSpreadsheetComponent,
+    viewComponent: LabResourceViewSpreadsheetComponent,
     image: 'assets/views/tabular.png'
   },
   // override the table view to add functionalities like chart from api
@@ -30,7 +30,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     text: 'rvResourceView.resource_view_spreadsheet',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
-    viewComponent: LabResourceSpreadsheetComponent,
+    viewComponent: LabResourceViewSpreadsheetComponent,
     image: 'assets/views/tabular.png'
   },
   // override the table view to add functionalities like chart from api
@@ -39,7 +39,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     text: 'rvResourceView.resource_view_dataset_view',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
-    viewComponent: LabResourceSpreadsheetComponent,
+    viewComponent: LabResourceViewSpreadsheetComponent,
     image: 'assets/views/tabular.png'
   },
   // override the text view to enable pagination
@@ -48,7 +48,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     text: 'rvResourceView.resource_view_text',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
-    viewComponent: LabResourceTextComponent,
+    viewComponent: LabResourceViewTextComponent,
     image: ''
   },
   view: {
@@ -64,7 +64,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     text: 'biox.resource_view_resources_list',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
-    viewComponent: LabViewResourcesListComponent,
+    viewComponent: LabResourceViewListComponent,
     image: ''
   },
   'folder-view': {
@@ -72,7 +72,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     text: 'biox.resource_view_folder',
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
-    viewComponent: LabResourceFolderComponent,
+    viewComponent: LabResourceViewFolderComponent,
     image: ''
   }
 };

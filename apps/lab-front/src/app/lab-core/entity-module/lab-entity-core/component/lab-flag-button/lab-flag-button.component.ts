@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {LabFlaggedEntity} from '../../../../model/global/lab-flagged-entity.class';
 import {LabViewConfigService} from '../../../../entity-service/lab-view-config.service';
 import {LabViewConfig} from '../../../../model/entities/resource/lab-view-config.entity';
@@ -10,7 +10,8 @@ import {ClHelpService} from '@monorepo/core-lib';
 @Component({
   selector: 'lab-flag-button',
   templateUrl: './lab-flag-button.component.html',
-  styleUrls: ['./lab-flag-button.component.scss']
+  styleUrls: ['./lab-flag-button.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LabFlagButtonComponent implements OnInit {
 
@@ -51,13 +52,17 @@ export class LabFlagButtonComponent implements OnInit {
   }
 
 
-
   get fontSet(): string {
     return this.entity.flagged ? 'material-icons' : 'material-icons-outlined';
   }
 
-  get tooltip(): string{
-    return this.entity.flagged ? 'biox.flagged_tooltip': 'biox.not_flagged_tooltip'
+  get tooltip(): string {
+    if (this.entity instanceof LabViewConfig) {
+      return this.entity.flagged ? 'biox.view_flagged_tooltip' : 'biox.view_not_flagged_tooltip';
+    } else {
+      console.error('[LabFlagButtonComponent] Object type unknown');
+      return '';
+    }
   }
 
 }

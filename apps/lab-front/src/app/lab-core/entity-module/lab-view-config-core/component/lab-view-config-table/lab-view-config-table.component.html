@@ -8,7 +8,7 @@
     <mat-cell *matCellDef="let viewConfig">
       <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
         <lab-view-type-image [viewType]="viewConfig.viewType" size="2em"></lab-view-type-image>
-        <div>{{viewConfig.title | translate}}</div>
+        <div>{{viewConfig.title}}</div>
       </div>
     </mat-cell>
   </ng-container>

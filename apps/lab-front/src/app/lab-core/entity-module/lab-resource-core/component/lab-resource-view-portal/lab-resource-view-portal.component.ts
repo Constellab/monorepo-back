@@ -9,6 +9,9 @@ export interface LabResourceViewPortalInput {
   contextMenuItems?: FlMenuDynamic[];
 }
 
+/**
+ * Portal to show a resource view
+ */
 @Component({
   selector: 'lab-resource-view-portal',
   templateUrl: './lab-resource-view-portal.component.html',

@@ -1,10 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {LabResourceInfoComponent} from './component/lab-resource-info/lab-resource-info.component';
 import {LabCoreModule} from '../../lab-core.module';
-import {LabResourceSpreadsheetComponent} from './component/lab-resource-spreadsheet/lab-resource-spreadsheet.component';
 import {RouterModule} from '@angular/router';
-import {LabResourceTextComponent} from './component/lab-resource-text/lab-resource-text.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   LabResourceTypeSelectOptionsComponent
@@ -25,7 +22,7 @@ import {LabResourceCardComponent} from './component/lab-resource-card/lab-resour
 import {
   LabFsNodeTypesSelectionDialogComponent
 } from './component/lab-fs-node-types-selection-dialog/lab-fs-node-types-selection-dialog.component';
-import {LabTransformerModule} from '../lab-transformer/lab-transformer.module';
+import {LabTransformerCoreModule} from '../lab-transformer-core/lab-transformer-core.module';
 import {
   LabImportResourceDialogComponent
 } from './component/lab-import-resource-dialog/lab-import-resource-dialog.component';
@@ -41,8 +38,6 @@ import {
   LabResourceActionsMenuComponent
 } from './component/lab-resource-actions-menu/lab-resource-actions-menu.component';
 import {LabUserCoreModule} from '../lab-user-core/lab-user-core.module';
-import {LabResourceFolderComponent} from './component/lab-resource-folder/lab-resource-folder.component';
-import {LabViewResourcesListComponent} from './component/lab-view-resources-list/lab-view-resources-list.component';
 import {LabExperimentCoreModule} from '../lab-experiment-core/lab-experiment-core.module';
 import {LabTagCoreModule} from '../lab-tag-core/lab-tag-core.module';
 import {LabTypeCoreModule} from '../lab-type-core/lab-type-core.module';
@@ -51,7 +46,6 @@ import {
 } from './component/lab-configure-resource-view/lab-configure-resource-view.component';
 import {LabEntityCoreModule} from '../lab-entity-core/lab-entity-core.module';
 import {LabProjectCoreModule} from '../lab-project-core/lab-project-core.module';
-import {LabViewConfigTabComponent} from './component/lab-view-config-tab/lab-view-config-tab.component';
 import {LabResourceDetailTabsComponent} from './component/lab-resource-detail-tabs/lab-resource-detail-tabs.component';
 import {
   LabResourceDetailTabHeaderComponent
@@ -62,13 +56,29 @@ import {
 } from './component/lab-resource-view-spec-list/lab-resource-view-spec-list.component';
 import {LabViewConfigCoreModule} from '../lab-view-config-core/lab-view-config-core.module';
 import {LabResourceViewDetailComponent} from './component/lab-resource-view-detail/lab-resource-view-detail.component';
+import {
+  LabResourceViewSpreadsheetComponent
+} from './component/lab-resource-view-spreadsheet/lab-resource-view-spreadsheet.component';
+import {LabResourceViewTextComponent} from './component/lab-resource-view-text/lab-resource-view-text.component';
+import {LabResourceViewListComponent} from './component/lab-resource-view-list/lab-resource-view-list.component';
+import {LabResourceViewFolderComponent} from './component/lab-resource-view-folder/lab-resource-view-folder.component';
+import {
+  LabResourceViewHistoricComponent
+} from './component/lab-resource-view-historic/lab-resource-view-historic.component';
+import {
+  LabExperimentsUsingResourceComponent
+} from './component/lab-experiments-using-resource/lab-experiments-using-resource.component';
+import {
+  LabReportsUsingResourceComponent
+} from './component/lab-reports-using-resource/lab-reports-using-resource.component';
+import {LabReportCoreModule} from '../lab-report-core/lab-report-core.module';
+import {LabResourceInfoComponent} from './component/lab-resource-info/lab-resource-info.component';
 
 
 @NgModule({
   declarations: [
-    LabResourceInfoComponent,
-    LabResourceSpreadsheetComponent,
-    LabResourceTextComponent,
+    LabResourceViewSpreadsheetComponent,
+    LabResourceViewTextComponent,
     LabResourceTypeSelectOptionsComponent,
     LabResourceViewPortalComponent,
     LabResourceTableComponent,
@@ -83,20 +93,20 @@ import {LabResourceViewDetailComponent} from './component/lab-resource-view-deta
     LabUpdateResourceTypeComponent,
     LabUpdateResourceNameDialogComponent,
     LabResourceActionsMenuComponent,
-    LabResourceFolderComponent,
-    LabViewResourcesListComponent,
+    LabResourceViewFolderComponent,
+    LabResourceViewListComponent,
     LabConfigureResourceViewComponent,
-    LabViewConfigTabComponent,
     LabResourceDetailTabsComponent,
     LabResourceDetailTabHeaderComponent,
     LabResourceDetailComponent,
     LabResourceViewSpecListComponent,
     LabResourceViewDetailComponent,
+    LabResourceViewHistoricComponent,
+    LabExperimentsUsingResourceComponent,
+    LabReportsUsingResourceComponent,
+    LabResourceInfoComponent,
   ],
   exports: [
-    LabResourceInfoComponent,
-    LabResourceSpreadsheetComponent,
-    LabResourceTextComponent,
     LabResourceTypeSelectOptionsComponent,
     LabResourceViewPortalComponent,
     LabResourceTableComponent,
@@ -110,7 +120,6 @@ import {LabResourceViewDetailComponent} from './component/lab-resource-view-deta
     LabUpdateResourceNameDialogComponent,
     LabResourceActionsMenuComponent,
     LabConfigureResourceViewComponent,
-    LabViewConfigTabComponent,
     LabResourceDetailTabsComponent,
     LabResourceDetailTabHeaderComponent,
     LabResourceDetailComponent,
@@ -123,7 +132,7 @@ import {LabResourceViewDetailComponent} from './component/lab-resource-view-deta
     ReactiveFormsModule,
 
     LabCoreModule,
-    LabTransformerModule,
+    LabTransformerCoreModule,
     LabConfigCoreModule,
     LabTypeCoreModule,
     LabUserCoreModule,
@@ -132,6 +141,7 @@ import {LabResourceViewDetailComponent} from './component/lab-resource-view-deta
     LabEntityCoreModule,
     LabProjectCoreModule,
     LabViewConfigCoreModule,
+    LabReportCoreModule,
   ],
 })
 export class LabResourceCoreModule {

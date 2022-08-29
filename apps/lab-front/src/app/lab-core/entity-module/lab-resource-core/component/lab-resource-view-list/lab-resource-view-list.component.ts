@@ -10,11 +10,11 @@ import {LabResourceDetailTabsState} from '../../state/lab-resource-detail-tabs-s
  * View of resource that show a list of other resources
  */
 @Component({
-  selector: 'lab-view-resources-list',
-  templateUrl: './lab-view-resources-list.component.html',
-  styleUrls: ['./lab-view-resources-list.component.scss']
+  selector: 'lab-resource-view-list',
+  templateUrl: './lab-resource-view-list.component.html',
+  styleUrls: ['./lab-resource-view-list.component.scss']
 })
-export class LabViewResourcesListComponent extends RvResourceViewDirective<LabResourceViewResourcesList>
+export class LabResourceViewListComponent extends RvResourceViewDirective<LabResourceViewResourcesList>
   implements OnInit {
 
   datasource: FlArrayObs<LabResource>;

@@ -41,6 +41,18 @@ export class LabResourceViewSpecListComponent implements OnInit, OnDestroy {
     this.viewSpecs$ = this.resourceService.getResourceViewsList(this.resourceId);
   }
 
+  callDefaultView(): void {
+    this.callView.next({
+      resourceId: this.resourceId,
+      viewName: 'Default view',
+      viewMethodName: LabResourceService.defaultViewName,
+      transformersWithConfig: [],
+      viewConfigValues: {},
+      isDefaultView: true,
+      displayMode: 'fullScreen'
+    });
+  }
+
   // prepare the data and open the view configuration portal
   openConfigPortal(view: LabResourceViewSpec): void {
     const viewTypeInfo: RvResourceViewTypeInfo = labConstResourceViewTypeInfos[view.viewType];

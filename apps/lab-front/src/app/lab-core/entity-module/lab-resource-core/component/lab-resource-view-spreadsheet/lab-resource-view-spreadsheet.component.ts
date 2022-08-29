@@ -19,11 +19,11 @@ import {LabResourceSpreadsheetPageLoader} from '../../model/lab-resource-spreads
  * Component to display a resource in a spreadsheet
  */
 @Component({
-  selector: 'lab-resource-spreadsheet',
-  templateUrl: './lab-resource-spreadsheet.component.html',
-  styleUrls: ['./lab-resource-spreadsheet.component.scss']
+  selector: 'lab-resource-view-spreadsheet',
+  templateUrl: './lab-resource-view-spreadsheet.component.html',
+  styleUrls: ['./lab-resource-view-spreadsheet.component.scss']
 })
-export class LabResourceSpreadsheetComponent extends RvResourceViewDirective<RvResourceViewTable> implements OnInit {
+export class LabResourceViewSpreadsheetComponent extends RvResourceViewDirective<RvResourceViewTable> implements OnInit {
 
   @Input() view: RvResourceViewTable;
 

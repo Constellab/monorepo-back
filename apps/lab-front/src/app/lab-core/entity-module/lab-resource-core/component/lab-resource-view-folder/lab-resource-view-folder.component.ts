@@ -21,11 +21,11 @@ import {RvResourceViewDirective} from '@monorepo/resource-view';
  * Resource view for folder
  */
 @Component({
-  selector: 'lab-resource-folder',
-  templateUrl: './lab-resource-folder.component.html',
-  styleUrls: ['./lab-resource-folder.component.scss']
+  selector: 'lab-resource-view-folder',
+  templateUrl: './lab-resource-view-folder.component.html',
+  styleUrls: ['./lab-resource-view-folder.component.scss']
 })
-export class LabResourceFolderComponent extends RvResourceViewDirective<LabResourceViewFolder> implements OnInit {
+export class LabResourceViewFolderComponent extends RvResourceViewDirective<LabResourceViewFolder> implements OnInit {
 
   treeControl: FlFlatTreeControl<LabResourceViewFolderContentFlat>;
 

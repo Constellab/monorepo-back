@@ -1,0 +1,9 @@
+<div class="container g-scrollable-element" (flInfiniteScroll)="loadMoreResults()"
+     [flInfiniteDisabled]="datasource.isLoading || datasource.page?.last">
+  <ng-content></ng-content>
+  <fl-infinite-load-more-result [datasource]="datasource" class="load-more-button"></fl-infinite-load-more-result>
+
+  <div class="g-text-centered">
+    <fl-loader size="medium" *ngIf="datasource.firstPageIsLoading"></fl-loader>
+  </div>
+</div>

@@ -125,7 +125,8 @@ export class LabExperimentService {
     return this.apiService.deleteById(this.route, id);
   }
 
-  public getByInputResource(resourceId: string): Observable<ClPageI<LabExperiment>>{
-    return this.apiService.get(`${this.route}/input-resource/${resourceId}`, LabExperiment)
+  public getByInputResource(resourceId: string, page: number, pageSize: number): Observable<ClPageI<LabExperiment>> {
+    return this.apiService.get(`${this.route}/input-resource/${resourceId}`, LabExperiment,
+      {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 }

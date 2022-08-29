@@ -14,12 +14,12 @@ const labResourceViewTextSpecPage: string = 'page';
  * Support pagination to previous or next page
  */
 @Component({
-  selector: 'lab-resource-text',
-  templateUrl: './lab-resource-text.component.html',
-  styleUrls: ['./lab-resource-text.component.scss'],
+  selector: 'lab-resource-view-text',
+  templateUrl: './lab-resource-view-text.component.html',
+  styleUrls: ['./lab-resource-view-text.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LabResourceTextComponent extends RvResourceViewDirective<RvResourceViewText> implements OnInit {
+export class LabResourceViewTextComponent extends RvResourceViewDirective<RvResourceViewText> implements OnInit {
 
   @Input() view: RvResourceViewText;
 

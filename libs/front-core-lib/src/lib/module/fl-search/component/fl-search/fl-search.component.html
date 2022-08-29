@@ -26,21 +26,9 @@
       </ng-container>
     </p>
 
-    <div fxFlex="grow" class="g-scrollable-element"
-         fxLayout="column" (flInfiniteScroll)="loadMoreResults()"
-         [flInfiniteDisabled]="datasource.isLoading || datasource.page?.last">
-      <div>
-
-        <div>
+    <fl-infinite-table-container fxFlex="grow" [datasource]="datasource" class="table-container">
           <ng-content select="fl-search-result"></ng-content>
-        </div>
-
-        <fl-infinite-load-more-result [datasource]="datasource" class="load-more-button"></fl-infinite-load-more-result>
-      </div>
-
-      <fl-loader size="medium" *ngIf="datasource.firstPageIsLoading" class="g-centered"></fl-loader>
-    </div>
-
+    </fl-infinite-table-container>
 
   </mat-drawer-content>
 

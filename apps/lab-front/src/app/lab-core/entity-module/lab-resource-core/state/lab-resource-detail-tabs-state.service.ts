@@ -18,6 +18,7 @@ import {
   LabResourceViewPortalComponent,
   LabResourceViewPortalInput
 } from '../component/lab-resource-view-portal/lab-resource-view-portal.component';
+import {LabViewConfigService} from '../../../entity-service/lab-view-config.service';
 
 type LabResourceTabType = 'resource' | 'view';
 
@@ -55,7 +56,8 @@ export class LabResourceDetailTabsState implements OnDestroy {
 
   constructor(private resourceService: LabResourceService,
               private actionService: FlPortalActionsService,
-              private portalService: FlPortalService) {
+              private portalService: FlPortalService,
+              private viewConfigService: LabViewConfigService) {
   }
 
 
@@ -79,6 +81,14 @@ export class LabResourceDetailTabsState implements OnDestroy {
 
 
   ////////////////////////////////////// VIEWS /////////////////////////////////////
+
+  public addViewConfigTab(viewConfigId: string): void {
+    this.createTab({
+      viewSymbol: Symbol(),
+      type: 'view',
+      obs: new ClCachedObservable(this.viewConfigService.callViewConfig(viewConfigId))
+    });
+  }
 
   public addView(config: LabResourceViewSpecWithConfig): void {
     if (config.displayMode === 'fullScreen') {

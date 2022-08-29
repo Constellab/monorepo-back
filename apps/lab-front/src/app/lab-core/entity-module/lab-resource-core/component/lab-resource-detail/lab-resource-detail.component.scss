@@ -1,3 +1,38 @@
+.container{
+  height: 100%;
+  margin-bottom: 0;
+  --test: 1234px
+}
+
 .header-title {
   word-break: break-word;
+}
+
+.content-grid{
+  display: grid;
+  grid-template-columns: 34fr 33fr 33fr;
+  grid-template-rows: 49% 49%;
+  height: 100%;
+  gap: 1%;
+  min-height: 40em;
+}
+
+.section{
+  display: block;
+  margin-top: 1em;
+}
+
+.view-specs{
+  grid-row: span 2;
+}
+
+
+@media (max-width: 1290px){
+  .content-grid{
+    grid-template-columns: 34fr 66fr;
+  }
+
+  .view-specs{
+    grid-row: span 4;
+  }
 }

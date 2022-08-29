@@ -1,3 +1,11 @@
+.container {
+  height: 100%;
+}
+
+.view-list {
+  min-height: 0;
+}
+
 .view-spec {
   margin-top: 0.6em;
   margin-left: 0.3em;
@@ -16,6 +24,6 @@
   margin-top: 0.3em;
 }
 
-.text{
+.text {
   min-height: 2em;
 }

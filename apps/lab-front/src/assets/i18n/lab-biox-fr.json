@@ -180,8 +180,8 @@
     "update_view_config_title": "Modifier le titre",
     "view_config_title_updated": "Titre modifié",
     "view_include_not_flagged": "Inclure les vues non marquées",
-    "not_flagged_tooltip": "Objet non marqué\nCliquer pour le marquer",
-    "flagged_tooltip": "Object marqué\nCliquer pour ne plus marquer",
+    "view_not_flagged_tooltip": "Vue non marqué\nCliquer pour le marquer",
+    "view_flagged_tooltip": "Vue marqué\nCliquer pour ne plus marquer",
     "report_add_view": "Ajouter une vue de ressource",
     "view_preview": "Aperçu de la vue",
     "type_deprecated_since": "Obsolète depuis",
@@ -196,6 +196,15 @@
     "viewbox": "Viewbox",
     "add_view_to_report": "Ajouter la vue a un rapport",
     "view_added_to_report": "Vue ajouté au rapport",
-    "available_views": "Vues"
+    "available_views": "Vues",
+    "resource_view_historic": "Historique des vues",
+    "experiments_that_use_the_resource": "Les expériences qui utilisent la resources",
+    "reports_that_use_the_resource": "Les rapports qui utilisent la resources",
+    "resource_origin": "Origin",
+    "resource_origin_UPLOADED": "Uploadée",
+    "resource_origin_GENERATED": "Générée",
+    "resource_origin_IMPORTED": "Importée",
+    "resource_origin_TRANSFORMED": "Transformée",
+    "resource_origin_ACTIONS": "Actions"
   }
 }

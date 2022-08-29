@@ -4,6 +4,7 @@ import {LabResourceViewType} from './lab-resource-view.entity';
 import {RvTransformerParams} from '@monorepo/resource-view';
 import {LabEntityWithTag} from '../lab-entity-with-tag.entity';
 import {LabFlaggedEntity} from '../../global/lab-flagged-entity.class';
+import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
 
 /**
  * Represent a view config that the user viewed
@@ -35,3 +36,5 @@ export class LabViewConfig extends LabEntityWithTag implements LabFlaggedEntity 
     title: string;
   };
 }
+
+export type LabViewConfigDatasource = FlDatasourcePaginated<LabViewConfig>;

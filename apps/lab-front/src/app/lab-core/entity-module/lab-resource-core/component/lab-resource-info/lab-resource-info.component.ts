@@ -1,8 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LabRouterService} from '../../../../service/lab-router.service';
+import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
+import {
+  LabTypeDialogComponent,
+  LabTypeDialogInput
+} from '../../../lab-type-core/component/lab-type-dialog/lab-type-dialog.component';
+import {FlDialogService} from '@monorepo/front-core-lib';
 
 /**
- * Simple component to display information about a {@link LabResource}
+ * Component to show info about a resource
  */
 @Component({
   selector: 'lab-resource-info',
@@ -11,15 +16,18 @@ import {LabRouterService} from '../../../../service/lab-router.service';
 })
 export class LabResourceInfoComponent implements OnInit {
 
-  @Input() resourceId: string;
+  @Input() resource: LabResource;
 
-  resourceDetailUrl: string;
-
-  constructor() {
+  constructor(private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
-    this.resourceDetailUrl = LabRouterService.getResourceDetailRoute(this.resourceId);
   }
 
+  openTypingDoc(): void{
+    const data: LabTypeDialogInput = {
+      typingName: this.resource.resourceTypingName
+    }
+    this.dialogService.openMediumDialog(LabTypeDialogComponent, {data: data});
+  }
 }

@@ -2,7 +2,6 @@ import {LabEntity} from '../../global/lab-entity.entity';
 import {FlDatasourcePaginated, FlFileHelper} from '@monorepo/front-core-lib';
 import {Expose, Type} from 'class-transformer';
 import {LabEntityWithTag} from '../lab-entity-with-tag.entity';
-import {LabExperimentType} from '../lab-experiment.entity';
 import {TdTypeObjectStatus} from '@monorepo/technical-doc';
 
 /**
@@ -27,7 +26,7 @@ export class LabFsNodeEntity extends LabEntity {
   }
 }
 
-export type LabResourceOrigin = 'UPLOADED' | 'GENERATED' | 'IMPORTED' | 'TRANSFORMED';
+export type LabResourceOrigin = 'UPLOADED' | 'GENERATED' | 'IMPORTED' | 'TRANSFORMED' | 'ACTIONS';
 
 export class LabResource extends LabEntityWithTag {
 
@@ -52,9 +51,6 @@ export class LabResource extends LabEntityWithTag {
 
   name: string;
 
-  @Expose({name: 'experiment_id'})
-  experimentId?: string;
-
   @Expose({name: 'has_children'})
   hasChildren: boolean;
 
@@ -64,7 +60,6 @@ export class LabResource extends LabEntityWithTag {
   experiment: {
     id: string;
     title: string;
-    type: LabExperimentType;
   };
 
   isFsNode(): boolean {

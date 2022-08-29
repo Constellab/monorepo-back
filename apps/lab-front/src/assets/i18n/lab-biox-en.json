@@ -180,8 +180,8 @@
     "update_view_config_title": "Update title",
     "view_config_title_updated": "View title updated",
     "view_include_not_flagged": "Include not flagged views",
-    "not_flagged_tooltip": "Object not flagged\nClick to flag it",
-    "flagged_tooltip": "Object flagged\nClick to un-flag it",
+    "view_not_flagged_tooltip": "View not flagged\nClick to flag it",
+    "view_flagged_tooltip": "View flagged\nClick to un-flag it",
     "report_add_view": "Add resource view",
     "view_preview": "Preview view",
     "type_deprecated_since": "Deprecated since",
@@ -196,6 +196,15 @@
     "viewbox": "Viewbox",
     "add_view_to_report": "Add the view to a report",
     "view_added_to_report": "View added to the report",
-    "available_views": "Views"
+    "available_views": "Views",
+    "resource_view_historic": "View historic",
+    "experiments_that_use_the_resource": "Experiments that use the resource",
+    "reports_that_use_the_resource": "Reports that use the resource",
+    "resource_origin": "Origin",
+    "resource_origin_UPLOADED": "Uploaded",
+    "resource_origin_GENERATED": "Generated",
+    "resource_origin_IMPORTED": "Imported",
+    "resource_origin_TRANSFORMED": "Transformed",
+    "resource_origin_ACTIONS": "Actions"
   }
 }

@@ -31,5 +31,5 @@ import {LabTypeCoreModule} from '../lab-type-core/lab-type-core.module';
     LabConfigCoreModule,
   ]
 })
-export class LabTransformerModule {
+export class LabTransformerCoreModule {
 }

@@ -2,22 +2,7 @@
 
   <fl-section-header>
 
-    <h1 class="header-title">{{resource.name}} |
-      <span class="g-text-light">{{resource.resourceTypeHumanName}}</span>
-    </h1>
-
-    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
-      <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
-         *ngIf="resource.experiment" class="g-text-link">
-        <fl-text-icon class="g-text-tiny g-text-light"
-                      gap="0">
-          <mat-icon flIcon="experiment" class="g-icon-tiny"></mat-icon>
-          {{resource.experiment.title}}
-        </fl-text-icon>
-      </a>
-
-      <fl-tag-list [tags]="resource.tags" [tagSelectable]="false" class="g-text-small"></fl-tag-list>
-    </div>
+    <h1 class="header-title">{{resource.name}}</h1>
 
     <fl-section-actions>
       <!--   Link to resource detail page only for readOnly       -->
@@ -43,10 +28,20 @@
   </fl-section-header>
 
   <ng-container *flSectionBody>
-    <div fxLayout="row">
-      <lab-resource-view-spec-list fxFlex="34%" [resourceId]="resource.id"
+    <div class="content-grid">
+
+
+      <lab-resource-view-spec-list class="view-specs" [resourceId]="resource.id"
                                    (callView)="callView($event)">
       </lab-resource-view-spec-list>
+
+      <lab-resource-info [resource]="resource"></lab-resource-info>
+
+      <lab-resource-view-historic [resourceId]="resource.id"></lab-resource-view-historic>
+
+      <lab-experiments-using-resource [resourceId]="resource.id"></lab-experiments-using-resource>
+
+      <lab-reports-using-resource [resourceId]="resource.id"></lab-reports-using-resource>
     </div>
   </ng-container>
 </fl-section>

@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabResourceTextComponent} from './lab-resource-text.component';
+import {LabResourceViewTextComponent} from './lab-resource-view-text.component';
 
 describe('BioxResourceTextComponent', () => {
-  let component: LabResourceTextComponent;
-  let fixture: ComponentFixture<LabResourceTextComponent>;
+  let component: LabResourceViewTextComponent;
+  let fixture: ComponentFixture<LabResourceViewTextComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabResourceTextComponent ]
+      declarations: [ LabResourceViewTextComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabResourceTextComponent);
+    fixture = TestBed.createComponent(LabResourceViewTextComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

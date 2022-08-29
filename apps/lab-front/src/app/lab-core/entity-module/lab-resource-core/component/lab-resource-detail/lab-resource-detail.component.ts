@@ -8,7 +8,7 @@ import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-cor
 import {
   LabTransformResourcePortalComponent,
   LabTransformResourcePortalInput
-} from '../../../lab-transformer/component/lab-transform-resource-portal/lab-transform-resource-portal.component';
+} from '../../../lab-transformer-core/component/lab-transform-resource-portal/lab-transform-resource-portal.component';
 
 /**
  * Component to show detail of a resource

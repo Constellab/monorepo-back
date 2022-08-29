@@ -11,7 +11,7 @@ import {
 import {
   LabTransformResourceComponent,
   LabTransformResourceForm
-} from '../../../lab-transformer/component/lab-transform-resource/lab-transform-resource.component';
+} from '../../../lab-transformer-core/component/lab-transform-resource/lab-transform-resource.component';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {LabConfigSpecs} from '../../../../model/entities/lab-config-spec.entity';
 import {RvResourceViewTypeInfo, RvViewDisplayMode} from '@monorepo/resource-view';

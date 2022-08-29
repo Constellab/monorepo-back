@@ -113,8 +113,9 @@ export class LabReportService {
     });
   }
 
-  public getByResource(resourceId: string): Observable<ClPageI<LabReport>>{
-    return this.apiService.get(`${this.route}/resource/${resourceId}`, LabReport);
+  public getByResource(resourceId: string, page: number, pageSize: number): Observable<ClPageI<LabReport>> {
+    return this.apiService.get(`${this.route}/resource/${resourceId}`, LabReport,
+      {resultIsPaginated: true, page: page, pageSize: pageSize});
   }
 
   ///////////////////////////////////////////// IMAGE /////////////////////////////////////////////

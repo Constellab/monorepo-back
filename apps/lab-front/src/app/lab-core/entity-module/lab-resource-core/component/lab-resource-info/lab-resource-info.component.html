@@ -1,15 +1,61 @@
-<div>
-<!--  <fl-pretty-json [object]="resource.data"></fl-pretty-json>-->
+<fl-card class="g-full-height">
+
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon flIcon="resource"></mat-icon>
+      <h2>{{'resource' | translate}}</h2>
+    </fl-text-icon>
+  </fl-card-header>
+
+  <fl-card-body class="card-body">
+
+    <fl-tag-list [tags]="resource.tags" [tagSelectable]="false" class="g-text-small"></fl-tag-list>
+
+    <!--  Experiment  -->
+    <fl-text-icon *ngIf="resource.experiment" class="line">
+      <mat-icon flIcon="experiment" class="g-icon-align"></mat-icon>
+      <a [routerLink]="resource.experiment.id | labDetailRoute:'experiment'"
+         class="g-text-link">{{resource.experiment.title}}</a>
+    </fl-text-icon>
 
 
-  <div fxLayout="row" fxLayoutAlign="space-between center" class="g-section">
-    <a [routerLink]="resourceDetailUrl" mat-flat-button color="primary">
-      {{'open_resource_detail' | translate}}
-    </a>
+    <!--  Origin  -->
+    <fl-text-icon class="line">
+      <mat-icon class="g-icon-align">trip_origin</mat-icon>
+      {{'biox.resource_origin' | translate}} : <span
+      class="g-text-light">{{'biox.resource_origin_' + resource.origin | translate}}</span>
+    </fl-text-icon>
 
-<!--    <p class="g-text-small g-text-light created-at">-->
-<!--      {{'created_at' | translate}} {{resource.createdAt | flDate: 'D HH:mm'}}-->
-<!--    </p>-->
+    <!--  File  -->
+    <fl-text-icon class="line" *ngIf="resource.isFsNode()">
+      <mat-icon class="g-icon-align">
+        {{resource.fsNode.isFile ? 'description' : 'folder'}}
+      </mat-icon>
+      {{resource.fsNode.name}} : {{resource.fsNode.size | flByteText}}
+    </fl-text-icon>
 
-  </div>
-</div>
+    <!--  Resource type  -->
+    <fl-text-icon class="line">
+      <mat-icon class="g-icon-align">info</mat-icon>
+      <div class="g-text-link" (click)="openTypingDoc()">
+        {{'biox.resource_type' | translate}} : <span class="g-text-light">{{resource.resourceTypeHumanName}}</span>
+      </div>
+    </fl-text-icon>
+
+    <!--  Resource type short description  -->
+    <fl-text-icon class="line" *ngIf="resource.resourceTypeShortDescription">
+      <mat-icon>text_snippet</mat-icon>
+      <p>
+        {{resource.resourceTypeShortDescription}}
+      </p>
+    </fl-text-icon>
+
+    <!--  Creation info  -->
+    <fl-text-icon class="line">
+      <mat-icon>save</mat-icon>
+      <fl-creation-info [createdBy]="resource.createdBy.fullname" [createdAt]="resource.createdAt"></fl-creation-info>
+    </fl-text-icon>
+
+  </fl-card-body>
+
+</fl-card>

@@ -27,6 +27,10 @@
   }
 }
 
+.g-dialog-main-background mat-dialog-container{
+  background-color: var(--main-background);
+}
+
 /********************* SMALL DIALOG ***********************/
 .g-small-dialog {
   width: 30vw;

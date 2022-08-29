@@ -1,23 +1,34 @@
-<fl-text-icon>
-  <mat-icon flIcon="view"></mat-icon>
-  <h2>{{'biox.available_views' | translate}}</h2>
-</fl-text-icon>
+<div class="container" fxLayout="column">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
 
-<div fxLayout="row wrap">
-  <fl-card *ngFor="let viewSpec of viewSpecs$ | async" class="view-spec"
-           (click)="openConfigPortal(viewSpec)"
-           [ngClass]="{'default-view-spec' : viewSpec.defaultView}">
-    <fl-card-body>
+    <fl-text-icon>
+      <mat-icon flIcon="view"></mat-icon>
+      <h2>{{'biox.available_views' | translate}}</h2>
+    </fl-text-icon>
 
-      <div fxLayout="row" fxLayoutAlign="center">
-        <lab-view-type-image [viewType]="viewSpec.viewType" size="4em">
-        </lab-view-type-image>
-      </div>
+    <button mat-stroked-button type="button" class="g-button-small" (click)="callDefaultView()"
+            color="primary">
+      <mat-icon>visibility</mat-icon>
+      {{'biox.default_view' | translate}}
+    </button>
+  </div>
 
-      <div class="view-info">
-        <div>{{viewSpec.getName()}}</div>
-        <p class="text g-text-small g-text-tiny">{{viewSpec.shortDescription}}</p>
-      </div>
-    </fl-card-body>
-  </fl-card>
+  <div fxLayout="row wrap" fxLayoutAlign="start start" fxFlex="grow" class="view-list g-scrollable-element">
+    <fl-card *ngFor="let viewSpec of viewSpecs$ | async" class="view-spec"
+             (click)="openConfigPortal(viewSpec)"
+             [ngClass]="{'default-view-spec' : viewSpec.defaultView}">
+      <fl-card-body class="g-scrollable-element">
+
+        <div fxLayout="row" fxLayoutAlign="center">
+          <lab-view-type-image [viewType]="viewSpec.viewType" size="4em">
+          </lab-view-type-image>
+        </div>
+
+        <div class="view-info">
+          <div>{{viewSpec.getName()}}</div>
+          <p class="text g-text-small g-text-tiny">{{viewSpec.shortDescription}}</p>
+        </div>
+      </fl-card-body>
+    </fl-card>
+  </div>
 </div>

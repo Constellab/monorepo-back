@@ -1,6 +1,6 @@
 import {LabBaseEntityWithUser, LabUser} from './lab-user.entity';
 import {Expose, Type} from 'class-transformer';
-import {FlQuillJson} from '@monorepo/front-core-lib';
+import {FlDatasourcePaginated, FlQuillJson} from '@monorepo/front-core-lib';
 import {LabProjectObject} from './lab-project.class';
 import {LabEntity} from '../global/lab-entity.entity';
 import {ClLuxonTransform} from '@monorepo/core-lib';
@@ -42,6 +42,8 @@ export class LabReport extends LabBaseEntityWithUser implements LabProjectObject
     return this.lastSyncAt != null;
   }
 }
+
+export type LabReportDatasource = FlDatasourcePaginated<LabReport>;
 
 export interface LabReportForm {
   title: string;

@@ -1,12 +1,5 @@
 // use to limit the height of the body and enable scroll on child
-.card-body {
+.card-body{
   height: 100%;
   display: flex;
-  flex-direction: column;
-}
-
-
-.line {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
 }

@@ -1,20 +1,20 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {LabResourceFolderComponent} from './lab-resource-folder.component';
+import {LabResourceViewFolderComponent} from './lab-resource-view-folder.component';
 
 describe('LabResourceFolderComponent', () => {
-  let component: LabResourceFolderComponent;
-  let fixture: ComponentFixture<LabResourceFolderComponent>;
+  let component: LabResourceViewFolderComponent;
+  let fixture: ComponentFixture<LabResourceViewFolderComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LabResourceFolderComponent ]
+      declarations: [ LabResourceViewFolderComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LabResourceFolderComponent);
+    fixture = TestBed.createComponent(LabResourceViewFolderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

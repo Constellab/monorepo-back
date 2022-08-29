@@ -1,0 +1,16 @@
+<fl-card class="g-full-height">
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon flIcon="report"></mat-icon>
+      <h2>{{'biox.reports_that_use_the_resource' | translate}}</h2>
+    </fl-text-icon>
+  </fl-card-header>
+
+  <fl-card-body class="card-body">
+
+    <fl-infinite-table-container [datasource]="datasource">
+      <lab-report-table [datasource]="datasource" [columns]="columns"></lab-report-table>
+    </fl-infinite-table-container>
+  </fl-card-body>
+</fl-card>
+

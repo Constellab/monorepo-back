@@ -344,7 +344,12 @@ mat-tree {
 // set the mat-tab full height of the mat-tab-group
 // to be place on mat-tab-group
 .g-mat-tab-full-height .mat-tab-body-wrapper {
-flex-grow: 1;
+  flex-grow: 1;
+}
+
+.g-mat-tab-header-card-background .mat-tab-header {
+  background-color: var(--card-background);
+
 }
 
 /************************************* MAT SELECT ***********************************/
@@ -416,7 +421,7 @@ flex-grow: 1;
 }
 
 // use in the matTooltipClass to allow multiline in the tooltip with '\n'
-.g-tooltip-multiline{
+.g-tooltip-multiline {
   white-space: pre;
 }
 

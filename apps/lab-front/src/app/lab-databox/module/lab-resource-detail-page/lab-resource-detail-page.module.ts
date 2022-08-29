@@ -6,7 +6,9 @@ import {LabResourceDetailPageComponent} from './component/lab-resource-detail-pa
 import {RouterModule} from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {LabConfigCoreModule} from '../../../lab-core/entity-module/lab-config-core/lab-config-core.module';
-import {LabTransformerModule} from '../../../lab-core/entity-module/lab-transformer/lab-transformer.module';
+import {
+  LabTransformerCoreModule
+} from '../../../lab-core/entity-module/lab-transformer-core/lab-transformer-core.module';
 
 /**
  * Simple module for the resource detail page
@@ -24,7 +26,7 @@ import {LabTransformerModule} from '../../../lab-core/entity-module/lab-transfor
     LabCoreModule,
     LabResourceCoreModule,
     LabConfigCoreModule,
-    LabTransformerModule,
+    LabTransformerCoreModule,
   ]
 })
 export class LabResourceDetailPageModule {
