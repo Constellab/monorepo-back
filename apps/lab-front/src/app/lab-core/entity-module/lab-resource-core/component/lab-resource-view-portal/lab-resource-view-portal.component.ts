@@ -1,7 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {LabResourceView} from '../../../../model/entities/resource/lab-resource-view.entity';
-import {FL_PORTAL_DATA, FlMenuDynamic} from '@monorepo/front-core-lib';
+import {FL_PORTAL_DATA, FlMenuDynamic, FlTag} from '@monorepo/front-core-lib';
 import {RvViewConfig} from '@monorepo/resource-view';
+import {LabViewConfig} from '../../../../model/entities/resource/lab-view-config.entity';
 
 
 export interface LabResourceViewPortalInput {
@@ -46,6 +47,14 @@ export class LabResourceViewPortalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  onUpdate(viewConfig: LabViewConfig): void {
+    this.labView.viewConfig = viewConfig;
+  }
+
+  onTagUpdate(tags: FlTag[]): void {
+    this.labView.viewConfig.tags = tags;
   }
 
 }
