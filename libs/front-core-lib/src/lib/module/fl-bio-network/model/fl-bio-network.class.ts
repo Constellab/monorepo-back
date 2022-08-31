@@ -7,7 +7,7 @@ export interface FlBioNetwork {
   name?: string;
   metabolites: FlBioNetworkMetabolite[];
   reactions: FlBioNetworkReaction[];
-  compartments: Record<string, string>;
+  compartments: FlBioNetworkCompartment[];
 }
 
 // Level of the metabolite 3 = cofactor
@@ -18,11 +18,6 @@ export enum FlBioNetworkMetaboliteLevel {
   COFACTOR = 3
 }
 
-export const flBioNetworkMetaboliteMaxLevel = FlBioNetworkMetaboliteLevel.COFACTOR;
-export const flBioNetworkMetaboliteLevels = [
-  FlBioNetworkMetaboliteLevel.MAJOR, FlBioNetworkMetaboliteLevel.MINOR,
-  FlBioNetworkMetaboliteLevel.COFACTOR
-];
 
 export interface FlBioNetworkMetabolite {
   id: string;
@@ -45,7 +40,7 @@ export interface FlBioNetworkReaction {
   lower_bound?: number;
   upper_bound?: number;
   enzyme?: FlBioNetworkEnzyme;
-  estimate: FlBioNetworkReactionEstimate;
+  data: FlBioNetworkReactionData;
   layout?: FlCoord;
   level?: FlBioNetworkMetaboliteLevel;
 }
@@ -64,8 +59,15 @@ export interface FlBioNetworkCluster extends FlCoord {
   parent: string;
 }
 
+export interface FlBioNetworkCompartment {
+  id: string;
+  go_id: string;
+  bigg_d: string;
+  name: string;
+}
+
 // TODO rename and review format with cluster
-export interface FlBioNetworkClusterInfo  {
+export interface FlBioNetworkClusterInfo {
   clusterId: string;
   subClusterIds: string[];
 }
@@ -122,14 +124,19 @@ export interface FlBioNetworkClusterSelection2 {
   name: string;
 }
 
-export interface FlBioNetworkReactionEstimate {
-  value: number;
-  lower_bound: number;
-  upper_bound: number;
+export interface FlBioNetworkReactionData {
+  flux_estimates: FlBioNetworkReactionDataFlux;
 }
 
-export const flDefaultPathwayReactionValue: FlBioNetworkReactionEstimate = {
-  value: 1, lower_bound: 1, upper_bound: 1
+export interface FlBioNetworkReactionDataFlux {
+  values: number[];
+  lower_bounds: number[];
+  upper_bounds: number[];
+  // labels?: [];
+}
+
+export const flDefaultPathwayReactionValue: FlBioNetworkReactionData = {
+  flux_estimates: {values: [1], lower_bounds: [1], upper_bounds: [1]}
 };
 
 export const flDefaultPathway: FlBioNetworkPathwayDetail = {

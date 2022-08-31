@@ -1,29 +1,31 @@
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 
-export interface FlBioNetworkCompartment {
-  id: string;
-  name: string;
-  color: string;
-}
-
-export const flBioNetworkCompartmentBiomass: FlBioNetworkCompartment =
-  {id: 'b', name: 'Biomass', color: FlColorHelper.brown};
+export const flBioNetworkCompartmentBiomassId: string = 'b';
 
 /**
  * List available compartments
  */
-export const flBioNetworkCompartments: FlBioNetworkCompartment[] = [
-  flBioNetworkCompartmentBiomass,
-  {id: 'c', name: 'Cytosol', color: FlColorHelper.blue},
-  {id: 'n', name: 'Nucleus', color: FlColorHelper.green},
-  {id: 'm', name: 'Mitochondrion', color: FlColorHelper.orange},
-  {id: 'e', name: 'Extracellular', color: FlColorHelper.pink},
-  {id: 's', name: 'Sink', color: FlColorHelper.grey},
-  {id: 'r', name: 'Endoplasmic reticulum', color: FlColorHelper.paleGreen},
-  {id: 'v', name: 'Vacuole', color: FlColorHelper.blueGrey},
-  {id: 'x', name: 'Peroxisome glyoxysome', color: FlColorHelper.yellow},
-  {id: 'g', name: 'Golgi apparatus', color: FlColorHelper.mallow},
-  {id: 'p', name: 'Periplasm', color: FlColorHelper.greenShiny},
-  {id: 'l', name: 'Lysosome', color: FlColorHelper.lightBlue},
-  {id: 'z', name: 'Other', color: FlColorHelper.palePurple},
-];
+export const flBioNetworkCompartmentColors: Record<string, string> = {
+  [flBioNetworkCompartmentBiomassId]: FlColorHelper.brown,
+  'c': FlColorHelper.blue, // Cytosol
+  'n': FlColorHelper.green, // Nucleus
+  'm': FlColorHelper.orange, // Mitochondrion
+  'e': FlColorHelper.pink, // Extracellular
+  's': FlColorHelper.grey, // Sink
+  'r': FlColorHelper.paleGreen, // Endoplas micreticulum
+  'v': FlColorHelper.blueGrey, // Vacuole
+  'x': FlColorHelper.yellow, // Peroxisome glyoxysome
+  'g': FlColorHelper.mallow, // Golgi apparatus
+  'p': FlColorHelper.greenShiny, // Periplasm
+  'l': FlColorHelper.lightBlue, // Lysosome
+  'z': FlColorHelper.palePurple, // Other
+};
+
+export function flBioNetworkCompartmentGetColor(compartmentId: string): string{
+  const compartmentColor = flBioNetworkCompartmentColors[compartmentId];
+  if (compartmentColor) return compartmentColor;
+
+  // as the compartment is a single letter, we duplicate it to have really different colors
+  return FlColorHelper.stringToRGBColor(compartmentId + compartmentId + compartmentId
+    + compartmentId + compartmentId + compartmentId + compartmentId + compartmentId + compartmentId);
+}

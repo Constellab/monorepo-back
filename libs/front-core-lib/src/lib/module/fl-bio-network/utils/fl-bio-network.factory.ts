@@ -3,7 +3,7 @@ import {
   FlBioNetworkClusterInfo,
   FlBioNetworkMetabolite,
   FlBioNetworkReaction,
-  FlBioNetworkReactionEstimate,
+  FlBioNetworkReactionData,
   FlBioNetworkReactionLink,
   FlPathwayDatabase
 } from '../model/fl-bio-network.class';
@@ -14,8 +14,7 @@ import {FlBioNetworkNodeReaction} from '../model/fl-bio-network-node-reaction.cl
 import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
 import {FlBioNetworkLink} from '../model/fl-bio-network-node-link.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
-import {FlColorHelper} from '../../../utils/fl-color-helper.class';
-import {flBioNetworkCompartments} from '../model/fl-bio-network-compartment.class';
+import {flBioNetworkCompartmentGetColor} from '../model/fl-bio-network-compartment.class';
 import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
 
 export class FlBioNetworkFactory {
@@ -102,7 +101,7 @@ export class FlBioNetworkFactory {
 
 
         const metaboliteNode = new FlBioNetworkNodeMetabolite(metabolite.name ? metabolite.name : metabolite.id,
-          metaboliteCluster, level, this.getMetaboliteColor(metabolite.compartment), this.themeDetail.foreground, metabolite);
+          metaboliteCluster, level, flBioNetworkCompartmentGetColor(metabolite.compartment), this.themeDetail.foreground, metabolite);
 
         // for the metabolite position, take the position of the first sub cluster
         const clusterPosition = metabolite.layout.clusters[metaboliteCluster.subClusterIds[0]];
@@ -154,20 +153,21 @@ export class FlBioNetworkFactory {
 
 
         // get the estimate with a default value if it doesn't exist
-        const estimate: FlBioNetworkReactionEstimate = FlBioNetworkHelper.getReactionEstimate(reactionNode.data);
+        const reactionData: FlBioNetworkReactionData = FlBioNetworkHelper.getReactionData(reactionNode.data);
         const reactionLink: FlBioNetworkReactionLink = reactionNode.data.metabolites[metaboliteId];
 
         // right side of the link
         // if the estimate is negative, the link is inverted
-        const estimateValue: number = typeof estimate.value === 'number' ? estimate.value : 1;
+        const estimateValue: number = typeof reactionData.flux_estimates?.values[0] === 'number' ?
+          reactionData.flux_estimates?.values[0] : 1;
         if (reactionLink.stoich * estimateValue > 0) {
           this.links.push(new FlBioNetworkLink(reactionNode, metaboliteNode,
-            estimate, reactionLink.points, this.themeDetail.greyLowContrast));
+            reactionData, reactionLink.points, this.themeDetail.greyLowContrast));
         }
         // left side of the link
         else {
           this.links.push(new FlBioNetworkLink(metaboliteNode, reactionNode,
-            estimate, reactionLink.points, this.themeDetail.greyLowContrast));
+            reactionData, reactionLink.points, this.themeDetail.greyLowContrast));
         }
 
         find = true;
@@ -189,16 +189,6 @@ export class FlBioNetworkFactory {
     );
     this.cofactors.push(cofactor);
     return cofactor;
-  }
-
-
-  private getMetaboliteColor(compartment: string): string {
-    const compartmentColor = flBioNetworkCompartments.find(c => c.id === compartment);
-    if (compartmentColor) return compartmentColor.color;
-
-    // as the compartment is a single letter, we duplicate it to have really different colors
-    return FlColorHelper.stringToRGBColor(compartment + compartment + compartment
-      + compartment + compartment + compartment + compartment + compartment + compartment);
   }
 
   // calculate position of reactions that are not set if possible

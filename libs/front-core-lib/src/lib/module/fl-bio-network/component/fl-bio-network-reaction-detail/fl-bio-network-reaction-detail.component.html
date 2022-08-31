@@ -19,35 +19,7 @@
 </fl-key-value>
 
 
-<div class="flux">
-  <fl-key-value [matTooltip]="fluxConstraintsTooltip" matTooltipPosition="before">
-    <fl-key>{{'flBioNetwork.flux_constraints' | translate}}</fl-key>
-    <span *ngIf="hasConstraints">
-      [{{node.lower_bound | number : '1.2-2'}}, {{node.upper_bound | number : '1.2-2'}}]
-    </span>
-  </fl-key-value>
-
-
-  <!--  Flux estimate information -->
-  <span>{{'flBioNetwork.flux_estimate' | translate}} :</span>
-  <ul>
-    <li>
-      <fl-key-value [matTooltip]="node.estimate.value?.toString()" matTooltipPosition="before">
-        <fl-key>{{'flBioNetwork.flux_value' | translate}}</fl-key>
-        {{node.estimate.value | number : '1.2-2'}}
-      </fl-key-value>
-    </li>
-
-    <li>
-      <fl-key-value [matTooltip]="fluxEstimateInterval" matTooltipPosition="before">
-        <fl-key>{{'flBioNetwork.flux_interval' | translate}}</fl-key>
-        <span *ngIf="hasEstimateInterval">
-          [{{node.estimate.lower_bound | number : '1.2-2'}}, {{node.estimate.upper_bound | number : '1.2-2'}}]
-        </span>
-      </fl-key-value>
-    </li>
-  </ul>
-</div>
+<fl-bio-network-reaction-flux [reaction]="node"></fl-bio-network-reaction-flux>
 
 <ng-container *ngIf="pathways?.length > 0">
   <fl-key-value class="pathways">

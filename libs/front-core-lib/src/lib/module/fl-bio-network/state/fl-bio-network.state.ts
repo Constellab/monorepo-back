@@ -1,5 +1,10 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {FlBioNetwork, FlBioNetworkClusterSelection, FlPathwayDatabase} from '../model/fl-bio-network.class';
+import {
+  FlBioNetwork,
+  FlBioNetworkClusterSelection,
+  FlBioNetworkCompartment,
+  FlPathwayDatabase
+} from '../model/fl-bio-network.class';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {FlBioNetworkFactory} from '../utils/fl-bio-network.factory';
 import {ClHelpService} from '@monorepo/core-lib';
@@ -10,7 +15,6 @@ import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlBioNetworkGraph} from '../model/fl-bio-network-graph.class';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {FlFileHelper} from '../../../service/fl-file.helper';
-import {FlBioNetworkCompartment, flBioNetworkCompartments} from '../model/fl-bio-network-compartment.class';
 import {FlBioNetworkEngineState} from './fl-bio-network-engine.state';
 
 
@@ -273,16 +277,7 @@ export class FlBioNetworkState implements OnDestroy {
 
   public getCompartments$(): Observable<FlBioNetworkCompartment[]> {
     return this.selectedNetwork$.pipe(
-      map(network => {
-        const compartments: FlBioNetworkCompartment[] = [];
-        for (const key of Object.keys(network.compartments)) {
-          const compartment = flBioNetworkCompartments.find(c => c.id === key);
-          if (compartment) {
-            compartments.push(compartment);
-          }
-        }
-        return compartments;
-      })
+      map(network => network.compartments)
     );
   }
 

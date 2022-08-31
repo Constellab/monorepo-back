@@ -61,6 +61,10 @@ import {
 } from './component/fl-bio-network-engine-progress/fl-bio-network-engine-progress.component';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {FlDateModule} from '../fl-date/fl-date.module';
+import {FlBioNetworkCompartmentColorPipe} from './pipe/fl-bio-network-compartment-color.pipe';
+import {
+  FlBioNetworkReactionFluxComponent
+} from './component/fl-bio-network-reaction-flux/fl-bio-network-reaction-flux.component';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -81,6 +85,8 @@ import {FlDateModule} from '../fl-date/fl-date.module';
     FlBioNetworkComponent,
     FlBioNetworkEngineConfigComponent,
     FlBioNetworkEngineProgressComponent,
+    FlBioNetworkCompartmentColorPipe,
+    FlBioNetworkReactionFluxComponent,
   ],
   exports: [
     FlBioNetworkComponent,

@@ -6,7 +6,7 @@ import {
   FlBioNetworkPathwayDetail,
   flBioNetworkPathwayIdSeparator,
   FlBioNetworkReaction,
-  FlBioNetworkReactionEstimate,
+  FlBioNetworkReactionData,
   flDefaultPathway,
   flDefaultPathwayReactionValue,
   FlPathwayDatabase
@@ -107,8 +107,8 @@ export class FlBioNetworkHelper {
   }
 
   // return the estimate values of a reaction, with a default value if it doesn't exist
-  public static getReactionEstimate(reaction: FlBioNetworkReaction): FlBioNetworkReactionEstimate {
-    return reaction.estimate ?? flDefaultPathwayReactionValue;
+  public static getReactionData(reaction: FlBioNetworkReaction): FlBioNetworkReactionData {
+    return reaction.data ?? flDefaultPathwayReactionValue;
   }
 
   public static getMetaboliteCluster(metabolite: FlBioNetworkMetabolite, parentClusterId: string): FlBioNetworkClusterInfo | undefined {

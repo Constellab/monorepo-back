@@ -33,28 +33,4 @@ export class FlBioNetworkReactionDetailComponent implements OnInit {
     if (!pathways) return null;
     return FlBioNetworkHelper.splitReactionPathway(pathways);
   }
-
-  get hasConstraints(): boolean {
-    return this.node.lower_bound != null && this.node.upper_bound != null;
-  }
-
-  get hasEstimateInterval(): boolean {
-    return this.node.estimate.lower_bound != null && this.node.estimate.upper_bound != null;
-  }
-
-  get fluxConstraintsTooltip(): string {
-    if (this.hasConstraints) {
-      return `[${this.node.lower_bound},${this.node.upper_bound}]`;
-    }
-    return null;
-  }
-
-  get fluxEstimateInterval(): string {
-    if (this.hasEstimateInterval) {
-      return `[${this.node.estimate.lower_bound},${this.node.estimate.upper_bound}]`;
-    }
-    return null;
-  }
-
-
 }

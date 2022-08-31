@@ -1,5 +1,5 @@
 import {curveCatmullRom, line, select, SimulationLinkDatum} from 'd3';
-import {FlBioNetworkMetaboliteLevel, FlBioNetworkReactionEstimate} from './fl-bio-network.class';
+import {FlBioNetworkMetaboliteLevel, FlBioNetworkReactionData} from './fl-bio-network.class';
 import {FlBioNetworkNode} from './fl-bio-network-node.class';
 import {FlBioNetworkNodeCofactor} from './fl-bio-network-node-cofactor.class';
 import {FlBioNetworkNodeReaction} from './fl-bio-network-node-reaction.class';
@@ -60,7 +60,7 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
   isVisible: boolean = true;
 
   constructor(source: FlBioNetworkNode, target: FlBioNetworkNode,
-              public estimate: FlBioNetworkReactionEstimate, points: FlCoord[],
+              public reactionData: FlBioNetworkReactionData, points: FlCoord[],
               public defaultColor: string) {
     super();
     this.source = source;
@@ -76,7 +76,7 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
     this.source.departureLinks.push(this);
     this.target.arrivalLinks.push(this);
 
-    this.value = typeof this.estimate.value === 'number' ? this.estimate.value : 0;
+    this.value = typeof this.reactionData.flux_estimates?.values[0] === 'number' ? this.reactionData.flux_estimates?.values[0] : 0;
     this.absValue = Math.abs(this.value);
   }
 

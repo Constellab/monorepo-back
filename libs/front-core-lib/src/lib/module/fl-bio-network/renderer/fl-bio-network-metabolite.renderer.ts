@@ -1,5 +1,5 @@
 import {FlBioNetworkNodeMetabolite} from '../model/fl-bio-network-node-metabolite.class';
-import {flBioNetworkCompartmentBiomass} from '../model/fl-bio-network-compartment.class';
+import {flBioNetworkCompartmentBiomassId} from '../model/fl-bio-network-compartment.class';
 import {FlBioNetworkCanvasHelper} from '../utils/fl-bio-network-canvas.helper';
 import {FlBioNetworkObjectColorFunction} from './fl-bio-network-object.renderer';
 
@@ -68,7 +68,7 @@ export class FlBioNetworkMetaboliteRenderer {
   }
 
   private static getRadius(metabolite: FlBioNetworkNodeMetabolite): number {
-    if (metabolite.data.compartment === flBioNetworkCompartmentBiomass.id) return FlBioNetworkMetaboliteRenderer.biomassMetaboliteRadius;
+    if (metabolite.data.compartment === flBioNetworkCompartmentBiomassId) return FlBioNetworkMetaboliteRenderer.biomassMetaboliteRadius;
     return metabolite.isMajor() ? FlBioNetworkMetaboliteRenderer.majorMetaboliteRadius
       : FlBioNetworkMetaboliteRenderer.minorMetaboliteRadius;
   }
