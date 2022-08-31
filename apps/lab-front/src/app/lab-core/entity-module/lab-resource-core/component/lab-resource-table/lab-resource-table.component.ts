@@ -118,7 +118,10 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
 
   openResourceDetail(resource: LabResource, event: MouseEvent): void {
     ClHelpService.stopEventPropagation(event);
-    this.dialogService.openBigDialog(LabResourceDetailDialogComponent, {data: resource.id});
+    this.dialogService.openBigDialog(LabResourceDetailDialogComponent, {
+      data: resource.id,
+      panelClass: 'g-dialog-main-background'
+    });
   }
 
   openInNewTab(event: MouseEvent): void {

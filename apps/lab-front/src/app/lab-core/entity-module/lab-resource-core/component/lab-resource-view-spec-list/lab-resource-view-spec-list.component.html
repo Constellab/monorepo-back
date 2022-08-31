@@ -14,7 +14,7 @@
   </div>
 
   <div fxLayout="row wrap" fxLayoutAlign="start start" fxFlex="grow" class="view-list g-scrollable-element">
-    <fl-card *ngFor="let viewSpec of viewSpecs$ | async" class="view-spec"
+    <fl-card *ngFor="let viewSpec of viewSpecs$ | async" class="view-spec" fxFlexAlign="stretch"
              (click)="openConfigPortal(viewSpec)"
              [ngClass]="{'default-view-spec' : viewSpec.defaultView}">
       <fl-card-body class="g-scrollable-element">
