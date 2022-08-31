@@ -68,7 +68,7 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
 
   datasource: FlDatasourcePaginated<LabResource>;
 
-  columns: FlTableColumn<LabResource>[] = ['name', 'info',
+  columns: FlTableColumn<LabResource>[] = ['name',
     {columnName: 'resource_type', accessor: 'resourceTypeHumanName'},
     'tags', 'created', 'preview', 'flagged'];
 
