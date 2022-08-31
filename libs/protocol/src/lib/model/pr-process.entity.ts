@@ -2,7 +2,6 @@ import {ClRecordTransform} from '@monorepo/core-lib';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
 import {PrNode} from './pr-connection.class';
 import {PrIO} from './pr-io.class';
-import {PrProgressBar} from './pr-progress-bar.entity';
 import {PrTypingName} from './pr-typing-name.class';
 import {PrConfig, PrConfigData, PrConfigValues} from './pr-config.entity';
 import {PrProtocolGraphInputNode} from './pr-protocol-graph-input.class';
@@ -50,8 +49,6 @@ export abstract class PrProcess extends PrNode {
 
   experimentId: string;
 
-  parentProtocolId: string;
-
   @FlStatusTransform(prProcessStatusDict)
   status: FlStatus<PrProcessStatus>;
 
@@ -66,8 +63,6 @@ export abstract class PrProcess extends PrNode {
 
   @ClRecordTransform(PrIO)
   outputs: Record<string, PrIO>;
-
-  progressBar: PrProgressBar;
 
   isArchived: boolean;
 
@@ -119,10 +114,6 @@ export abstract class PrProcess extends PrNode {
   // return true if the process is of type Output
   isOutput(): boolean {
     return this.processTypingName === PrTypingName.task.output;
-  }
-
-  isFinished(): boolean {
-    return this.status.value === 'SUCCESS' || this.status.value === 'ERROR';
   }
 
   isRunning(): boolean {

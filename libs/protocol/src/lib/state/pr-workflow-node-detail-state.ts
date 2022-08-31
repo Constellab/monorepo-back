@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {switchMap} from 'rxjs/operators';
+import {BehaviorSubject} from 'rxjs';
 import {PrWorkflowNodeProcess} from '../model/pr-workflow-node-process.class';
-import {PrProcess} from '../model/pr-process.entity';
 
 /**
  * State to manage the selected node to show it in the drawer
@@ -21,14 +19,6 @@ export class PrWorkflowNodeDetailState {
 
   public setNode(node: PrWorkflowNodeProcess): void {
     this.node$.next(node);
-  }
-
-  public getNode$(): Observable<PrWorkflowNodeProcess> {
-    return this.node$.asObservable();
-  }
-
-  public getProcess$(): Observable<PrProcess> {
-    return this.getNode$().pipe(switchMap(node => node.getObject$()));
   }
 
   public clear(): void {

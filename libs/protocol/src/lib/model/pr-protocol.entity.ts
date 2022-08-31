@@ -135,10 +135,6 @@ export class PrProtocol extends PrProcess implements PrFlowManager {
     return this.outputs;
   }
 
-  public getProcess(instanceName: string): PrProcess {
-    return this.getNodes()[instanceName];
-  }
-
   addNode(node: PrNode): void {
     this.data.graph.nodes[node.name] = node as PrProcess;
   }

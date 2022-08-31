@@ -36,8 +36,6 @@ export class PrWorkflow {
   private readonly layers: PrWorkflowLayer[];
   private currentLayer$: BehaviorSubject<PrWorkflowLayer>;
 
-  private nodeGeneration: number = 0;
-
   // subject to trigger event when selected a workflow connection
   private connectionSelected$: Subject<PrWorkflowConnection> = new Subject<PrWorkflowConnection>();
 
@@ -168,9 +166,6 @@ export class PrWorkflow {
     this.currentLayer.resetPortColors();
   }
 
-  public getRootLayer(): PrWorkflowLayer {
-    return this.layers[0];
-  }
 
   ////////////////////// NODE ///////////////////////////
 
@@ -183,10 +178,6 @@ export class PrWorkflow {
         protocolId: this.currentLayer.object.id
       });
     }
-  }
-
-  public generateNodeName(): string {
-    return `n${this.nodeGeneration++}`;
   }
 
   public findNodeWithId(nodeId: string): PrWorkflowNode<any> {
@@ -282,10 +273,6 @@ export class PrWorkflow {
       }
 
     }
-  }
-
-  public onConnectionSelected(): Observable<PrWorkflowConnection> {
-    return this.connectionSelected$.asObservable();
   }
 
   private emitConnectionSelected(connectionEvent: ConnectionEvent): void {

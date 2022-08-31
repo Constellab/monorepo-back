@@ -40,6 +40,9 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output()
   action = new EventEmitter<PrWorkflowEvent>();
 
+  @Input()
+  config: any;
+
   sub: Subscription;
 
 
@@ -84,6 +87,14 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sub = this.workflowManagerState.workflow?.getWorkflowEvent$().subscribe((res) => {
       this.action.emit(res);
     });
+    if(this.config){
+      this.modifyWorkflowConfig();
+    }
     this.flowIsLoading = false;
+  }
+
+  private modifyWorkflowConfig(): void{
+    //Modify the workflow config with the variable config
+
   }
 }

@@ -1,4 +1,3 @@
-
 import {PrWorkflowNode} from './pr-workflow-node.class';
 import {PrInterfaceNode} from './pr-connection.class';
 import {PrWorkflowPort} from './pr-workflow-port.class';

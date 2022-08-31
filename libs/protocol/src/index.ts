@@ -15,7 +15,6 @@ export * from './lib/model/pr-workflow-node-interface.class';
 export * from './lib/model/pr-workflow-node-outerface.class';
 export * from './lib/model/pr-workflow-node-process.class';
 export * from './lib/model/pr-process.entity';
-export * from './lib/model/pr-progress-bar.entity';
 export * from './lib/model/pr-config.entity';
 export * from './lib/model/pr-config-spec.entity';
 export * from './lib/model/pr-protocol.entity';

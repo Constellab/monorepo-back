@@ -1,8 +1,7 @@
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 import {PrWorkflowNode} from './pr-workflow-node.class';
 import {PrWorkflowConnection} from './pr-workflow-connection.class';
-import {PrFlow, PrFlowManager, PrNode} from './pr-connection.class';
-import {PrWorkflowNodeProcess} from './pr-workflow-node-process.class';
+import {PrFlowManager} from './pr-connection.class';
 import {PrWorkflowPort} from './pr-workflow-port.class';
 
 export class PrWorkflowLayer {
@@ -69,10 +68,6 @@ export class PrWorkflowLayer {
       console.error('Couldn\'t find node with id ' + nodeId);
       return null;
     }
-  }
-
-  public getProcessNodes(): PrWorkflowNodeProcess[] {
-    return this.nodes.filter(node => node instanceof PrWorkflowNodeProcess) as PrWorkflowNodeProcess[];
   }
 
   // this method is triggered when the connection is created by program
@@ -188,20 +183,6 @@ export class PrWorkflowLayer {
   public resetPortColors(): void {
     for (const node of this.nodes) {
       node.initPortColors();
-    }
-  }
-
-  /**
-   * Refresh the layer node objects with flow object
-   */
-  public refreshObject(flow: PrFlow<PrFlowManager>): void {
-    // update the layer object
-    this.object = flow.object;
-    for (const workflowNode of this.nodes) {
-      const node: PrNode = flow.getAllNodesArray().find(n => n.id === workflowNode.currentObject.id);
-
-      if (node == null) continue;
-      workflowNode.updateObject(node);
     }
   }
 

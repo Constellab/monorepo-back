@@ -1,7 +1,6 @@
 import {PrWorkflowPort} from './pr-workflow-port.class';
 import {DrawflowConnectionDetail, DrawflowNode} from 'drawflow';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {TdIOSpec} from '@monorepo/technical-doc';
 import {FlCoord} from '@monorepo/front-core-lib';
 
 /**
@@ -75,11 +74,6 @@ export abstract class PrWorkflowNode<T>{
     return connection.length;
   }
 
-  // return true if the port is already connected
-  public inputPortIsConnected(portDrawflowName: string): boolean {
-    return this.countInputConnections(portDrawflowName) > 0;
-  }
-
   public countInputs(): number {
     return this.inputPorts.length;
   }
@@ -106,14 +100,6 @@ export abstract class PrWorkflowNode<T>{
     }
   }
 
-  public hasInputs(): boolean {
-    return this.countInputs() > 0;
-  }
-
-  public getInputSpecs(): Record<string, TdIOSpec> {
-    return this.getPortsSpecs(this.inputPorts);
-  }
-
   /////////////////////////////// OUTPUT //////////////////////////////
 
   public countOutputs(): number {
@@ -132,14 +118,6 @@ export abstract class PrWorkflowNode<T>{
     for (const port of this.outputPorts) {
       this.disabledPort(port);
     }
-  }
-
-  public hasOutputs(): boolean {
-    return this.countOutputs() > 0;
-  }
-
-  public getOutputSpecs(): Record<string, TdIOSpec> {
-    return this.getPortsSpecs(this.outputPorts);
   }
 
   /////////////////////////////// OTHER //////////////////////////////
@@ -220,14 +198,6 @@ export abstract class PrWorkflowNode<T>{
     const coord: FlCoord = this.getNodeCoord();
     this.x = coord.x;
     this.y = coord.y;
-  }
-
-  private getPortsSpecs(ports: PrWorkflowPort[]): Record<string, TdIOSpec>{
-    const specs: Record<string, TdIOSpec> = {};
-    for (const port of ports) {
-      specs[port.name] = port.specs;
-    }
-    return specs;
   }
 
   public destroy(): void {
