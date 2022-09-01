@@ -4,7 +4,7 @@ FROM node:14-alpine as buildContainer
 # Ebnvironement profile for the build 'dev', 'pre-prod' or 'prod'
 ARG ENVIRONMENT_PROFILE=${ENVIRONMENT_PROFILE}
 WORKDIR /app
-k
+
 # Copy package.json
 COPY /package.json /package-lock.json ./
 
