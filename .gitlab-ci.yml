@@ -14,7 +14,7 @@ stages:
 
 # Build lab front an create an artifact with dist folder
 build-lab:
-  image: node:14-alpine
+  image: node:16.13.0-alpine
   stage: build-lab
   script:
     - npm ci

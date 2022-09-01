@@ -1,5 +1,5 @@
 # Build step
-FROM node:12-alpine as buildContainer
+FROM node:16.13.0-alpine as buildContainer
 
 # Ebnvironement profile for the build 'dev', 'pre-prod' or 'prod'
 ARG ENVIRONMENT_PROFILE=${ENVIRONMENT_PROFILE}
