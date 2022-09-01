@@ -2,12 +2,12 @@ import {Component, Input, OnInit} from '@angular/core';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 import {CaTechnicalReport} from '../../../../../ca-core/model/entities/ca-technical-report.class';
-import {FlDialogService, FlPortalActionResult} from '@monorepo/front-core-lib';
+import {FlDialogService} from '@monorepo/front-core-lib';
 import {
   CaExperimentLabConfigDialogComponent
 } from '../ca-experiment-lab-config-dialog/ca-experiment-lab-config-dialog.component';
-import {Observable, Subscription} from 'rxjs';
-import {PrWorkflowEvent} from '@monorepo/protocol';
+import {Observable, Subject} from 'rxjs';
+import {PrProcess, PrWorkflowEvent, PrWorkflowInputEvent} from '@monorepo/protocol';
 
 
 @Component({
@@ -22,6 +22,8 @@ export class CaExperimentTechnicalReportComponent implements OnInit {
 
   technicalReport: CaTechnicalReport;
 
+  inputAction: Subject<PrWorkflowInputEvent> = new Subject<PrWorkflowInputEvent>();
+
   constructor(
     private experimentService: CaExperimentService,
     private dialogService: FlDialogService
@@ -34,12 +36,25 @@ export class CaExperimentTechnicalReportComponent implements OnInit {
     });
   }
 
-  actionEvent(action: PrWorkflowEvent): void{
-    console.log('BLABLA', action);
+  actionEvent(action: PrWorkflowEvent): void {
+    //Action on workflow event
   }
 
   openLabConfigDialog(): void {
     this.dialogService.openSmallDialog(CaExperimentLabConfigDialogComponent, {data: this.experiment});
   }
+
+  addProcessToWorkflow(typingName: string): void {
+    const addProcessEvent: PrWorkflowInputEvent = {
+      action: 'addProcess',
+      addProcess: (protocolId: string) => {
+        //Call the service to create a process from typingName and protocolId
+        //return this.service.addProcess(typingName, protocolId)
+        return new Observable<PrProcess>();
+      }
+    }
+    this.inputAction.next(addProcessEvent);
+  }
+
 
 }

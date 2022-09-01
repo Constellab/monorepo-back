@@ -6,12 +6,21 @@ import {BehaviorSubject, map, Observable, Subject} from 'rxjs';
 import {PrFlowManager} from './pr-connection.class';
 import {NgZone} from '@angular/core';
 import {PrWorkflowPort} from './pr-workflow-port.class';
+import {PrProcess} from './pr-process.entity';
 
 export type PrWorkflowMode = 'edit' | 'readOnly' | 'report';
+
+export type PrWorkflowInputEvent =
+  PrWorkflowAddProcessEvent
 
 export type PrWorkflowEvent =
   PrWorkflowDeleteNodeEvent
   | PrWorkflowConnectionEvent
+
+export interface PrWorkflowAddProcessEvent{
+  action: 'addProcess';
+  addProcess: (protocolId: string) => Observable<PrProcess>;
+}
 
 export interface PrWorkflowDeleteNodeEvent {
   action: 'deleteNode';
