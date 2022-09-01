@@ -50,6 +50,7 @@
           "class-transformer",
           "highlight.js",
           "quill",
+          "drawflow",
           "luxon",
           "lodash.throttle"
         ]
