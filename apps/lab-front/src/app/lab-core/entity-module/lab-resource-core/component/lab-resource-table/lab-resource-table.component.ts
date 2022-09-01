@@ -60,7 +60,7 @@ export class LabResourceTableComponent extends FlTableAbstractDirective<LabResou
   constructor(private cdr: ChangeDetectorRef,
               private resourceService: LabResourceService,
               private dialogService: FlDialogService) {
-    super(['created', 'action', 'name', 'info', 'tags', 'viewResource', 'openInNewTab',
+    super(['created', 'action', 'name', 'type', 'tags', 'viewResource', 'openInNewTab',
       'expandedDetail', 'preview', 'flagged']);
   }
 

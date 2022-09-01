@@ -51,16 +51,16 @@
     </mat-cell>
   </ng-container>
 
-
-  <!-- Info -->
-  <ng-container matColumnDef="info">
+  <!-- Type -->
+  <ng-container matColumnDef="type">
     <mat-header-cell *matHeaderCellDef>
-      <span> {{'resource_info' | translate}}</span>
+      <span> {{'resource_type' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let resource">
-      <div *ngIf="resource.fsNode?.size != null">
-        {{resource.fsNode.size | flByteText}}
-      </div>
+      {{resource.resourceTypeHumanName}}
+      <span *ngIf="resource.fsNode?.size != null" class="g-text-light">
+        &nbsp;({{resource.fsNode.size | flByteText}})
+      </span>
     </mat-cell>
   </ng-container>
 

@@ -31,13 +31,20 @@
     <div class="content-grid">
 
 
-      <lab-resource-view-spec-list class="view-specs" [resourceId]="resource.id"
-                                   (callView)="callView($event)">
-      </lab-resource-view-spec-list>
+      <div class="left-section" fxLayout="column" fxLayoutGap="1em">
+        <lab-resource-view-spec-list [resourceId]="resource.id"
+                                     (callView)="callView($event)"
+                                     [ngClass]="{'view-specs' : !resource.hasChildren}"
+                                     fxFlex="grow">
+        </lab-resource-view-spec-list>
+        <lab-resource-children-list *ngIf="resource.hasChildren" fxFlex="50%"
+                                    [resourceId]="resource.id"></lab-resource-children-list>
+      </div>
 
       <lab-resource-info [resource]="resource"></lab-resource-info>
 
       <lab-resource-view-historic [resourceId]="resource.id"></lab-resource-view-historic>
+
 
       <lab-experiments-using-resource [resourceId]="resource.id"></lab-experiments-using-resource>
 

@@ -79,6 +79,9 @@ import {
 import {
   LabResourceViewDetailDialogComponent
 } from './component/lab-resource-view-detail-dialog/lab-resource-view-detail-dialog.component';
+import {
+  LabResourceChildrenListComponent
+} from './component/lab-resource-children-list/lab-resource-children-list.component';
 
 
 @NgModule({
@@ -113,6 +116,7 @@ import {
     LabResourceInfoComponent,
     LabResourcePreviewButtonComponent,
     LabResourceViewDetailDialogComponent,
+    LabResourceChildrenListComponent,
   ],
   exports: [
     LabResourceTypeSelectOptionsComponent,

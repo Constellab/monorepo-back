@@ -1,0 +1,18 @@
+<fl-card class="g-full-height">
+  <fl-card-header>
+    <fl-text-icon>
+      <mat-icon flIcon="resource"></mat-icon>
+      <h2>{{'biox.resource_children' | translate}}</h2>
+    </fl-text-icon>
+  </fl-card-header>
+
+  <fl-card-body class="card-body">
+
+    <fl-async-section [arrayObs]="resources$" class="g-full">
+      <ng-container *flSectionBody>
+        <lab-resource-table [datasource]="resources$" [columns]="columns"
+                            [selectableRow]="true" (resourceSelected)="openInNewTab($event)"></lab-resource-table>
+      </ng-container>
+    </fl-async-section>
+  </fl-card-body>
+</fl-card>

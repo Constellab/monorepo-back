@@ -68,8 +68,7 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
 
   datasource: FlDatasourcePaginated<LabResource>;
 
-  columns: FlTableColumn<LabResource>[] = ['name',
-    {columnName: 'resource_type', accessor: 'resourceTypeHumanName'},
+  columns: FlTableColumn<LabResource>[] = ['name', 'type',
     'tags', 'created', 'preview', 'flagged'];
 
   files: File[];
@@ -88,7 +87,6 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
     if (!this.resourceSelectable) {
       this.columns.push('action');
     }
-
 
 
     const searchConfig: FlSearchConfig = {
@@ -193,7 +191,7 @@ export class LabResourceSearchComponent implements OnInit, OnDestroy {
     );
   }
 
-  private savedSearches(): FlSavedSearch[]{
+  private savedSearches(): FlSavedSearch[] {
     const savedSearchCloned: FlSavedSearch[] = ClHelpService.deepClone(savedSearch);
     if (this.customSavedSearches?.length > 0) {
       // if one of the custom saved search is the default one, we override the default

@@ -19,8 +19,7 @@ export class LabResourceViewListComponent extends RvResourceViewDirective<LabRes
 
   datasource: FlArrayObs<LabResource>;
 
-  columns: FlTableColumn<LabResource>[] = ['name',
-    {columnName: 'resource_type', accessor: 'resourceTypeHumanName'}, 'tags', 'preview', 'openInNewTab'];
+  columns: FlTableColumn<LabResource>[] = ['name', 'type', 'tags', 'preview', 'openInNewTab'];
 
   selectableRow: boolean;
 
