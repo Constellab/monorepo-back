@@ -3,7 +3,7 @@ import {PrWorkflowNodeDirective} from '../../directive/pr-workflow-node.directiv
 import {map} from 'rxjs/operators';
 import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {Observable} from 'rxjs';
-import {FlStatus} from '@monorepo/front-core-lib';
+import {FlDialogService, FlStatus} from '@monorepo/front-core-lib';
 import {PrWorkflowActionState} from '../../state/pr-workflow-action-state';
 import {PrProtocol} from '../../model/pr-protocol.entity';
 
@@ -18,11 +18,12 @@ export class PrWorkflowNodeComponent extends PrWorkflowNodeDirective implements 
   status$: Observable<FlStatus>;
   isProtocol$: Observable<boolean>;
 
-  constructor(workflowManager: PrWorkflowManagerState,
+  constructor(worflowManager: PrWorkflowManagerState,
               drawerState: PrWorkflowActionState,
+              dialogService: FlDialogService,
               elementRef: ElementRef,
               renderer: Renderer2) {
-    super(workflowManager, drawerState, elementRef, renderer);
+    super(worflowManager, drawerState, dialogService, elementRef, renderer);
   }
 
   ngOnInit(): void {

@@ -1,4 +1,3 @@
-import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {TdConfigSpecVisibility} from '@monorepo/technical-doc';
 import {PrConfigSpecs} from './pr-config-spec.entity';
 
@@ -11,7 +10,6 @@ export type PrConfigValues = Record<string, any>
 export class PrConfigData {
 
   // object describing the type of the configs and default values
-  @ClRecordWrapperTransform(PrConfigSpecs)
   specs: PrConfigSpecs;
 
   // actual values of the config

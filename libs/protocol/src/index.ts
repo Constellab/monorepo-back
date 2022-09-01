@@ -23,6 +23,7 @@ export * from './lib/model/pr-workflow-action.class';
 export * from './lib/model/pr-task.entity';
 export * from './lib/model/pr-protocol-graph-input.class';
 export * from './lib/model/pr-workflow-drawer-event.class';
+export * from './lib/model/pr-config-event.class';
 
 // state
 export * from './lib/state/pr-workflow-manager-state';

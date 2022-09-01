@@ -4,6 +4,7 @@ import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {PrWorkflowNodeIo} from '../../model/pr-workflow-node-io.class';
 import {Observable} from 'rxjs';
 import {PrWorkflowActionState} from '../../state/pr-workflow-action-state';
+import {FlDialogService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'pr-workflow-node-source',
@@ -17,11 +18,12 @@ export class PrWorkflowNodeSourceComponent extends PrWorkflowNodeDirective imple
 
   node: PrWorkflowNodeIo;
 
-  constructor(workflowManager: PrWorkflowManagerState,
+  constructor(worflowManager: PrWorkflowManagerState,
               drawerState: PrWorkflowActionState,
+              dialogService: FlDialogService,
               elementRef: ElementRef,
               renderer: Renderer2) {
-    super(workflowManager, drawerState, elementRef, renderer);
+    super(worflowManager, drawerState, dialogService, elementRef, renderer);
   }
 
   ngOnInit(): void {

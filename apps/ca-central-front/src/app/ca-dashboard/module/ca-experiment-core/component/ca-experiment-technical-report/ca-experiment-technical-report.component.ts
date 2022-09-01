@@ -6,8 +6,7 @@ import {FlDialogService} from '@monorepo/front-core-lib';
 import {
   CaExperimentLabConfigDialogComponent
 } from '../ca-experiment-lab-config-dialog/ca-experiment-lab-config-dialog.component';
-import {Observable, Subject} from 'rxjs';
-import {PrProcess, PrWorkflowEvent, PrWorkflowInputEvent} from '@monorepo/protocol';
+import {PrWorkflowEvent} from '@monorepo/protocol';
 
 
 @Component({
@@ -21,8 +20,6 @@ export class CaExperimentTechnicalReportComponent implements OnInit {
   experiment: CaExperiment;
 
   technicalReport: CaTechnicalReport;
-
-  inputAction: Subject<PrWorkflowInputEvent> = new Subject<PrWorkflowInputEvent>();
 
   constructor(
     private experimentService: CaExperimentService,
@@ -43,18 +40,5 @@ export class CaExperimentTechnicalReportComponent implements OnInit {
   openLabConfigDialog(): void {
     this.dialogService.openSmallDialog(CaExperimentLabConfigDialogComponent, {data: this.experiment});
   }
-
-  addProcessToWorkflow(typingName: string): void {
-    const addProcessEvent: PrWorkflowInputEvent = {
-      action: 'addProcess',
-      addProcess: (protocolId: string) => {
-        //Call the service to create a process from typingName and protocolId
-        //return this.service.addProcess(typingName, protocolId)
-        return new Observable<PrProcess>();
-      }
-    }
-    this.inputAction.next(addProcessEvent);
-  }
-
 
 }

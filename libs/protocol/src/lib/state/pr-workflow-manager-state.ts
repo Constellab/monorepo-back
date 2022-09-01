@@ -8,7 +8,8 @@ import {
   FlPortalAction,
   FlPortalActionResult,
   FlPortalActionsService,
-  FlSnackBarService
+  FlSnackBarService,
+  FlTranslatableText
 } from '@monorepo/front-core-lib';
 import {
   PrConnection,
@@ -156,9 +157,116 @@ export class PrWorkflowManagerState {
     layer.addNode(node);
   }
 
-  public getCurrentLayerHierarchy(): Observable<PrWorkflowLayer[]>{
+  public getCurrentLayerHierarchy(): Observable<PrWorkflowLayer[]> {
     return this.workflow.getCurrentLayerHierarchy();
   }
+
+  //////////////////////// NODE //////////////////////////////
+
+  public addProcessNode(processObs: Observable<PrProcess>, processName: string): void {
+
+    this.addProcessAction(processObs,
+      {
+        text: 'pr.adding_process', translateText: true,
+        translateParam: {param: {processName: processName}}
+      });
+  }
+
+  public addSource(processObs: Observable<PrProcess>, resourceName: string): void {
+
+    this.addProcessAction(processObs,
+      {
+        text: 'pr.adding_source', translateText: true,
+        translateParam: {param: {resourceName: resourceName}}
+      });
+  }
+
+  public addSourceToProcessInput(obsProcessWithLink: Observable<PrAddProcessWithLink>,
+                                 processNodeName: string, resourceName: string): void {
+    this.addProcessWithLinkAction(
+      obsProcessWithLink,
+      processNodeName,
+      'before',
+      {
+        text: 'pr.adding_source', translateText: true,
+        translateParam: {param: {resourceName: resourceName}}
+      });
+  }
+
+  public addTaskOutput(obsProcessWithLink: Observable<PrAddProcessWithLink>, processNodeName: string): void {
+
+    this.addProcessWithLinkAction(
+      obsProcessWithLink,
+      processNodeName,
+      'after',
+      {
+        text: 'pr.adding_output', translateText: true,
+      });
+  }
+
+  public addProcessConnectedToOutput(obsProcessWithLink: Observable<PrAddProcessWithLink>,
+                                     processName: string, outputProcessName: string): void {
+
+    this.addProcessWithLinkAction(
+      obsProcessWithLink,
+      outputProcessName,
+      'after',
+      {
+        text: 'pr.adding_process', translateText: true,
+        translateParam: {param: {processName: processName}}
+      });
+  }
+
+  public addProcessConnectedToInput(obsProcessWithLink: Observable<PrAddProcessWithLink>, processName: string,
+                                    inputProcessName: string): void {
+
+    this.addProcessWithLinkAction(
+      obsProcessWithLink,
+      inputProcessName,
+      'after',
+      {
+        text: 'pr.adding_process', translateText: true,
+        translateParam: {param: {processName: processName}}
+      });
+  }
+
+  // create the action to add a process
+  private addProcessAction(process$: Observable<PrProcess>, actionText: FlTranslatableText): void {
+    // create an action to add this process
+    const action: FlPortalAction = {
+      text: actionText,
+      type: PrWorkflowAction.ADD_PROCESS,
+      // create the process in the API and get the process
+      action: process$,
+      additionalInformation: this.workflow.currentLayer.id
+    };
+
+    this.actionsService.addAction(action, true);
+  }
+
+  // create the action to add a process with a link
+  private addProcessWithLinkAction(processWithLink$: Observable<PrAddProcessWithLink>,
+                                   processNodeName: string,
+                                   newProcessPosition: 'before' | 'after',
+                                   actionText: FlTranslatableText): void {
+    // relative coord to place the source node before the process
+    const relativeCoord: PrNodeRelativeCoord = {
+      nodeName: processNodeName,
+      position: newProcessPosition,
+      layerId: this.workflow.currentLayer.id
+    };
+    // create an action to add this process
+    const action: FlPortalAction = {
+      text: actionText,
+      type: PrWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
+      // create the process in the API and get the process
+      action: processWithLink$,
+      additionalInformation: relativeCoord
+    };
+
+    this.actionsService.addAction(action, true);
+  }
+
 
   //////////////////////// INIT NODES AND CONNECTIONS FOR FLOW ////////////////////////////
 

@@ -13,8 +13,9 @@ import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {PrProtocol, PrProtocolData} from '../../model/pr-protocol.entity';
 import {PrFlow} from '../../model/pr-connection.class';
 import {PrProtocolGraphInput} from '../../model/pr-protocol-graph-input.class';
-import {PrWorkflowEvent, PrWorkflowInputEvent, PrWorkflowMode} from '../../model/pr-workflow.class';
-import {Observable, Subscription} from 'rxjs';
+import {PrWorkflowEvent, PrWorkflowMode} from '../../model/pr-workflow.class';
+import {Subscription} from 'rxjs';
+import {PrConfigEdit} from '../../model/pr-config-event.class';
 
 
 @Component({
@@ -41,10 +42,7 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   action = new EventEmitter<PrWorkflowEvent>();
 
   @Input()
-  config: any;
-
-  @Input()
-  inputAction$: Observable<PrWorkflowInputEvent>;
+  configEvent?: PrConfigEdit;
 
   sub: Subscription;
   inputActionSub: Subscription;
@@ -89,35 +87,11 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private loadExperimentFlowSuccess(flow: PrFlow<PrProtocol>): void {
     this.workflowManagerState.init(this.container.nativeElement, flow, this.mode);
-    this.sub = this.workflowManagerState.workflow?.getWorkflowEvent$().subscribe((res) => {
-      this.action.emit(res);
-    });
 
-    if(this.mode === 'edit'){
-      this.inputActionSub = this.inputAction$?.subscribe(action => {
-        console.log('TESTTTTTTTT')
-        this.onInputAction(action);
-      });
+    if (this.mode === 'edit' && this.configEvent) {
+      this.configEvent.setState(this.workflowManagerState);
     }
 
-    if(this.config){
-      this.modifyWorkflowConfig();
-    }
     this.flowIsLoading = false;
-  }
-
-  private modifyWorkflowConfig(): void{
-    //Modify the workflow config with the variable config
-
-  }
-
-  private onInputAction(action: PrWorkflowInputEvent): void{
-    const protocolId: string = this.workflowManagerState.workflow.currentLayer.id;
-    if(action.action === 'addProcess'){
-      action.addProcess(protocolId).subscribe(process => {
-        //Add process to workflow
-        console.log(process)
-      });
-    }
   }
 }

@@ -2,7 +2,13 @@ import {Injector, ModuleWithProviders, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {PrWorkflowManagerState} from './state/pr-workflow-manager-state';
 import {PrWorkflowComponent} from './component/pr-workflow/pr-workflow.component';
-import {FlCoreComponentModule, FlLoaderModule, FlStatusModule, FlTranslateModule} from "@monorepo/front-core-lib";
+import {
+  FlCoreComponentModule,
+  FlLoaderModule,
+  FlStatusModule,
+  FlTranslateModule,
+  FlTranslateService
+} from "@monorepo/front-core-lib";
 import {FlexModule} from '@angular/flex-layout';
 import {PrWorkflowNodeComponent} from './component/pr-workflow-node/pr-workflow-node.component';
 import {PrWorkflowNodeDirective} from './directive/pr-workflow-node.directive';
@@ -21,6 +27,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {
   PrWorkflowLayersBreadcrumbComponent
 } from './component/pr-workflow-layers-breadcrumb/pr-workflow-layers-breadcrumb.component';
+import {prProtocolI18n} from './pr-protocol.i18n';
 
 @NgModule({
   imports: [
@@ -51,7 +58,8 @@ import {
 export class PrProtocolModule {
   private static registered: boolean = false;
 
-  constructor(injector: Injector) {
+  constructor(injector: Injector, translateService: FlTranslateService) {
+
     if (PrProtocolModule.registered) return;
 
     customElements.define('pr-workflow-node',
@@ -75,6 +83,8 @@ export class PrProtocolModule {
       }));
 
     PrProtocolModule.registered = true;
+
+    translateService.addModuleTranslation('PrProtocolModule', prProtocolI18n);
   }
 
   public static forRoot(): ModuleWithProviders<PrProtocolModule> {
