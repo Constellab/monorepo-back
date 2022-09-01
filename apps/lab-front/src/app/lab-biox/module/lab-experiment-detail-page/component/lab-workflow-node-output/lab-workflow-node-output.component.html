@@ -13,8 +13,8 @@
       <ng-container *ngIf="resourceId$ | async as resourceId">
         <button mat-stroked-button type="button" class="g-button-small" *ngIf="resourceId"
                 (click)="openResourceDetail(resourceId)">
-          <mat-icon>visibility</mat-icon>
-          {{'biox.view_resource' | translate}}
+          <mat-icon flIcon="resource"></mat-icon>
+          {{'resource' | translate}}
         </button>
       </ng-container>
 <!--      <fl-status-chip mode="iconOnly" [status]="node.object.status"></fl-status-chip>-->

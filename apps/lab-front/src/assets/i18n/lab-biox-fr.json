@@ -162,7 +162,6 @@
     "process_sub_type_EXPORTER": "Exporteur",
     "process_sub_type_TRANSFORMER": "Transformeur",
     "biox.process_sub_type_RESOURCE": "Ressource",
-    "view_resource": "Ressource",
     "open_resource_page": "Ouvrir la ressource",
     "open_resource_in_new_tab": "Ouvrir dans un nouvel onglet",
     "update_resource_type": "Modifier le type de la ressource",

@@ -274,8 +274,8 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
   private getResourceDetailContextButton(resourceId: string | null): FlMenuDynamic {
     return {
       type: 'button',
-      text: {text: 'biox.view_resource', translateText: true},
-      icon: 'visibility',
+      text: {text: 'resource', translateText: true},
+      icon: 'resource',
       onClick: () => this.openResourceDetail(resourceId),
       disabled: resourceId == null || resourceId.length === 0
     };

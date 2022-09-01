@@ -18,8 +18,8 @@
       <!--      <fl-status-chip mode="iconOnly" [status]="node.object.status"></fl-status-chip>-->
       <ng-container *ngIf="resourceId$ | async as resourceId">
         <button *ngIf="resourceId" mat-icon-button (click)="openResourceDetail(resourceId)"
-                type="button" [matTooltip]="'biox.resource_preview' | translate">
-          <mat-icon>visibility</mat-icon>
+                type="button" [matTooltip]="'resource' | translate">
+          <mat-icon flIcon="resource">visibility</mat-icon>
         </button>
       </ng-container>
     </div>

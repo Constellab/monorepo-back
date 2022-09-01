@@ -121,7 +121,7 @@ export class LabResourceViewFolderComponent extends RvResourceViewDirective<LabR
     if (node.resource_model_id) {
       menuDynamic.push({
         type: 'link',
-        text: {text: 'biox.view_resource', translateText: true},
+        text: {text: 'resource', translateText: true},
         link: LabRouterService.getResourceDetailRoute(node.resource_model_id),
         icon: 'visibility',
       });
