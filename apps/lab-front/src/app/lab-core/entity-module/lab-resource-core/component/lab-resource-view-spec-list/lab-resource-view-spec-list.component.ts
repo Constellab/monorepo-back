@@ -8,7 +8,8 @@ import {
 } from '../../../../model/entities/resource/lab-resource-view.entity';
 import {
   LabConfigureResourceViewComponent,
-  LabConfigureResourceViewInput
+  LabConfigureResourceViewInput,
+  LabConfigureResourceViewOutput
 } from '../lab-configure-resource-view/lab-configure-resource-view.component';
 import {FlOverlayRef, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {RvResourceViewTypeInfo} from '@monorepo/resource-view';
@@ -21,11 +22,23 @@ import {RvResourceViewTypeInfo} from '@monorepo/resource-view';
 })
 export class LabResourceViewSpecListComponent implements OnInit, OnDestroy {
 
-  @Input() resourceId: string;
+  @Input() set resourceTypingName(resourceTypingName: string) {
+    this._resourceTypingName = resourceTypingName;
+    if (resourceTypingName) {
+      this.viewSpecs$ = this.resourceService.getResourceViewsList(resourceTypingName);
+    }
+  }
 
-  @Input() resourceTypingName: string;
+  /**
+   * The resourceId is optional
+   */
+  @Input() resourceId?: string;
 
-  @Output() callView: EventEmitter<LabResourceViewSpecWithConfig> = new EventEmitter();
+  @Input() enableDisplayMode: boolean = true;
+
+  @Output() viewConfigured: EventEmitter<LabResourceViewSpecWithConfig> = new EventEmitter();
+
+  private _resourceTypingName: string;
 
   viewSpecs$: Observable<LabResourceViewSpec[]>;
 
@@ -38,17 +51,14 @@ export class LabResourceViewSpecListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.viewSpecs$ = this.resourceService.getResourceViewsList(this.resourceId);
   }
 
   callDefaultView(): void {
-    this.callView.next({
-      resourceId: this.resourceId,
+    this.viewConfigured.next({
       viewName: 'Default view',
       viewMethodName: LabResourceService.defaultViewName,
       transformersWithConfig: [],
       viewConfigValues: {},
-      isDefaultView: true,
       displayMode: 'fullScreen'
     });
   }
@@ -58,13 +68,11 @@ export class LabResourceViewSpecListComponent implements OnInit, OnDestroy {
     const viewTypeInfo: RvResourceViewTypeInfo = labConstResourceViewTypeInfos[view.viewType];
 
     const specWithConfig: LabResourceViewSpecWithConfig = {
-      resourceId: this.resourceId,
       viewName: view.getName(),
       viewMethodName: view.methodName,
       displayMode: viewTypeInfo.defaultDisplayMode,
       viewConfigValues: {},
       transformersWithConfig: [],
-      isDefaultView: view.defaultView
     };
 
     // if this view was previously selected, pre fill the config and transformer with previous values
@@ -74,11 +82,13 @@ export class LabResourceViewSpecListComponent implements OnInit, OnDestroy {
     }
 
     const data: LabConfigureResourceViewInput = {
-      viewSpecConfig: specWithConfig,
+      resourceTypingName: this._resourceTypingName,
+      resourceId: this.resourceId,
       title: view.getName(),
-      viewTypeInfo: viewTypeInfo,
-      resourceTypingName: this.resourceTypingName,
-      resourceId: this.resourceId
+      viewMethodName: view.methodName,
+      // don't show the button mode if the view type support only one mode
+      showDisplayModeControl: !viewTypeInfo.forceDefaultDisplayMode && this.enableDisplayMode,
+      preConfiguration: specWithConfig,
     };
 
     const portalConfig: FlPortalConfig = this.portalService.configureAbsolutePortal(
@@ -89,14 +99,23 @@ export class LabResourceViewSpecListComponent implements OnInit, OnDestroy {
       });
 
     this.portalService.createPortal(LabConfigureResourceViewComponent, portalConfig, data).detachments().subscribe(
-      config => this.onConfigDialogClosed(config)
+      config => this.onConfigDialogClosed(config, view.getName())
     );
   }
 
-  private onConfigDialogClosed(config: LabResourceViewSpecWithConfig): void {
+  private onConfigDialogClosed(config: LabConfigureResourceViewOutput, viewName: string): void {
     if (config == null) return;
-    this.callView.next(config);
-    this.lastView = config;
+
+    const fullConfig: LabResourceViewSpecWithConfig = {
+      displayMode: config.displayMode,
+      viewConfigValues: config.viewConfigValues,
+      viewMethodName: config.viewMethodName,
+      transformersWithConfig: config.transformersWithConfig,
+      viewName: viewName
+    };
+
+    this.viewConfigured.next(fullConfig);
+    this.lastView = fullConfig;
   }
 
   ngOnDestroy(): void {

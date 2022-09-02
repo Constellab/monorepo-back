@@ -17,6 +17,8 @@ import {
   LabTypeDialogInput
 } from '../../../../../lab-core/entity-module/lab-type-core/component/lab-type-dialog/lab-type-dialog.component';
 
+type ConfigMode = 'config' | 'source' | 'view-task' | 'protocol' | null;
+
 @Component({
   selector: 'lab-workflow-node-detail',
   templateUrl: './lab-workflow-node-detail.component.html',
@@ -27,7 +29,7 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
   labProcess$: Observable<LabProcess>;
   node$: Observable<LabWorkflowNodeProcess>;
 
-  configMode$: Observable<'config' | 'source' | 'protocol' | null>;
+  configMode$: Observable<ConfigMode>;
 
   isEditable$: Observable<boolean>;
 
@@ -46,14 +48,10 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
     this.isEditable$ = this.experimentState.isEditable$();
   }
 
-  private getConfigMode(process: LabProcess): 'config' | 'source' | 'protocol' | null {
-    if (process.isSource()) {
-      return 'source';
-    }
-
-    if (process.isProtocol) {
-      return 'protocol';
-    }
+  private getConfigMode(process: LabProcess): ConfigMode {
+    if (process.isSource()) return 'source';
+    if (process.isViewer()) return 'view-task';
+    if (process.isProtocol) return 'protocol';
 
     return process.hasConfig() ? 'config' : null;
   }
@@ -83,10 +81,10 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
     }
   }
 
-  openTypingDoc(typingName: string): void{
+  openTypingDoc(typingName: string): void {
     const data: LabTypeDialogInput = {
       typingName: typingName
-    }
+    };
     this.dialogService.openMediumDialog(LabTypeDialogComponent, {data: data});
   }
 }

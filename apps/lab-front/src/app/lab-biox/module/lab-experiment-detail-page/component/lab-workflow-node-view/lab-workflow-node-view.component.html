@@ -15,13 +15,17 @@
         <mat-icon>info</mat-icon>
       </button>
 
-      <!--      <fl-status-chip mode="iconOnly" [status]="node.object.status"></fl-status-chip>-->
-      <ng-container *ngIf="resourceId$ | async as resourceId">
-        <button *ngIf="resourceId" mat-icon-button (click)="openResourceDetail(resourceId)"
-                type="button" [matTooltip]="'resource' | translate">
-          <mat-icon flIcon="resource"></mat-icon>
-        </button>
-      </ng-container>
+      <button mat-icon-button type="button" *ngIf="(isConfigured$ | async) === false"
+              (click)="openNodeDetail()" [matTooltip]="'biox.viewer_not_configured' | translate">
+        <mat-icon>warnings</mat-icon>
+      </button>
+
+      <button *ngIf="isSuccess$ | async" mat-stroked-button type="button" (click)="callView()"
+              [matTooltip]="'biox.show_view' | translate" class="g-button-small">
+        <mat-icon>visibility</mat-icon>
+      </button>
+
+
     </div>
   </div>
 

@@ -131,5 +131,9 @@ export class LabProtocolService {
       null, LabAddProcessWithLink);
   }
 
-
+  public addViewerToProcessOutput(protocolId: string, processName: string,
+                                  outputPortName: string): Observable<LabAddProcessWithLink> {
+    return this.apiService.post(`${this.baseRoute}/${protocolId}/add-viewer/${processName}/${outputPortName}`,
+      null, LabAddProcessWithLink);
+  }
 }

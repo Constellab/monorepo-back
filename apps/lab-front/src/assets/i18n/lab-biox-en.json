@@ -71,11 +71,14 @@
     "deleting_connection": "Deleting connection",
     "adding_source": "Adding '{{resourceName}}'",
     "adding_output": "Adding output",
+    "adding_viewer": "Adding a viewer",
     "saving_config": "Saving configuration",
     "edit_config": "Edit configuration",
     "process_no_config": "No configuration",
     "add_source": "Select a resource",
     "add_output": "Add an output",
+    "add_view": "Add view",
+    "add_viewer": "Add a viewer",
     "delete_link_interface_error": "Can't delete a connection linked to an interface or an outerface, please delete directly the interface or outerface",
     "suggested_processes": "Suggested processes",
     "project": "Project",
@@ -210,6 +213,11 @@
     "resource_origin_TRANSFORMED": "Transformed",
     "resource_origin_ACTIONS": "Actions",
     "open_view_in_new_tab": "Open in new tab",
-    "resource_children": "Children resources"
+    "resource_children": "Children resources",
+    "configure_viewer": "Viewer configuration",
+    "configure_viewer_help": " Resource type for the view. If you change it, be sure that the input resource type is compatible with the provided type.",
+    "configure_viewer_help_2": "Configure the view for the resource",
+    "viewer_selected_configuration": "Configuration",
+    "viewer_not_configured": "The viewer is not configured yet"
   }
 }

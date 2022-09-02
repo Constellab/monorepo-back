@@ -1,0 +1,11 @@
+<ng-container *ngIf="isEditable$ | async">
+  <div *ngIf="node$ | async as node">
+    <button mat-stroked-button type="button"
+            (click)="openViewerConfiguration(node)" class="g-centered-forced">
+      {{'biox.configure_viewer' | translate }}
+    </button>
+  </div>
+</ng-container>
+
+<lab-task-viewer-show-config class="configuration" [config]="config$ | async"></lab-task-viewer-show-config>
+

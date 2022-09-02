@@ -9,13 +9,14 @@ import {
 } from '@monorepo/front-core-lib';
 import {Observable, of} from 'rxjs';
 import {LabResource} from '../model/entities/resource/lab-resource.entity';
-import {clDeserializeRecordWrapper, ClPageI} from '@monorepo/core-lib';
+import {ClPageI} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
 import {LabTypeEntity} from '../model/entities/lab-type/lab-type.entity';
 import {
   LabResourceView,
   LabResourceViewData,
   LabResourceViewSpec,
+  LabResourceViewSpecComplete,
 } from '../model/entities/resource/lab-resource-view.entity';
 import {
   LabResourceSearch,
@@ -23,7 +24,6 @@ import {
 } from '../entity-module/lab-resource-core/model/lab-resource-advanced-search.class';
 import {LabConfigValues} from '../model/entities/lab-config.entity';
 import {LabResourceImporterType} from '../model/entities/resource/lab-resource.dto';
-import {LabConfigSpecs} from '../model/entities/lab-config-spec.entity';
 import {LabTypeService} from './lab-type.service';
 import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
 import {LabTag} from '../model/entities/lab-tag.entity';
@@ -95,7 +95,7 @@ export class LabResourceService {
     return this.apiService.put(`${this.route}/${id}/tags`, tags, LabTag);
   }
 
-  //////////////////////////////////////// RESOURCE TYPE///////////////////////////////////////
+  //////////////////////////////////////// RESOURCE TYPE ///////////////////////////////////////
 
 
   // get the list of resource types
@@ -103,19 +103,25 @@ export class LabResourceService {
     return this.apiService.get(this.resourceTypeRoute, LabTypeEntity);
   }
 
+  // get the view specs for a resource type
+  public getResourceTypeViewSpecsDetail(resourceTypingName: string, viewName: string): Observable<LabResourceViewSpecComplete> {
+    return this.apiService.get(`${this.resourceTypeRoute}/${resourceTypingName}/views/${viewName}/specs`, LabResourceViewSpecComplete);
+  }
 
-  //////////////////////////////////////// RESOURCE VIEWS  ///////////////////////////////////////
-
-  public getResourceViewsList(id: string): Observable<LabResourceViewSpec[]> {
-    return this.apiService.get(`${this.route}/${id}/views`, LabResourceViewSpec).pipe(
+  public getResourceViewsList(resourceTypingName: string): Observable<LabResourceViewSpec[]> {
+    return this.apiService.get(`${this.resourceTypeRoute}/${resourceTypingName}/views`, LabResourceViewSpec).pipe(
       map((views: LabResourceViewSpec[]) =>
         views.sort(view => view.defaultView ? -1 : 1))
     );
   }
 
-  public getResourceViewSpecsDetail(id: string, viewName: string): Observable<LabConfigSpecs> {
-    return this.apiService.get(`${this.route}/${id}/views/${viewName}/specs`,
-      record => clDeserializeRecordWrapper(record, LabConfigSpecs));
+
+  //////////////////////////////////////// RESOURCE VIEWS  ///////////////////////////////////////
+
+
+  // get the view specs for a resource
+  public getResourceViewSpecsDetail(id: string, viewName: string): Observable<LabResourceViewSpecComplete> {
+    return this.apiService.get(`${this.route}/${id}/views/${viewName}/specs`, LabResourceViewSpecComplete);
   }
 
   /**
@@ -133,22 +139,22 @@ export class LabResourceService {
     );
   }
 
-  public callResourceView(id: string, viewMethodName: string, config: LabConfigValues,
+  public callResourceView(id: string, viewMethodName: string, configValue: LabConfigValues,
                           transformers: RvTransformerParams[], saveViewConfig: boolean = false): Observable<LabResourceView> {
-    for (const key in config) {
-      if (config[key] == null) {
-        delete config[key];
+    for (const key in configValue) {
+      if (configValue[key] == null) {
+        delete configValue[key];
       }
     }
     return this.apiService.post(`${this.route}/${id}/views/${viewMethodName}`, {
-      values: config,
+      values: configValue,
       transformers: transformers,
       save_view_config: saveViewConfig
     }, LabResourceView);
   }
 
-  public callResourceDefaultView(id: string): Observable<LabResourceView> {
-    return this.callResourceView(id, LabResourceService.defaultViewName, {}, [], true);
+  public callResourceDefaultView(id: string, saveViewConfig: boolean = false): Observable<LabResourceView> {
+    return this.callResourceView(id, LabResourceService.defaultViewName, {}, [], saveViewConfig);
   }
 
   //////////////////////////////////////// TRANSFORMERS  ///////////////////////////////////////

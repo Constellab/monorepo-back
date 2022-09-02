@@ -13,6 +13,8 @@
     </button>
   </div>
 
+  <ng-content></ng-content>
+
   <div fxLayout="row wrap" fxLayoutAlign="start start" fxFlex="grow" class="view-list g-scrollable-element">
     <fl-card *ngFor="let viewSpec of viewSpecs$ | async" class="view-spec" fxFlexAlign="stretch"
              (click)="openConfigPortal(viewSpec)"

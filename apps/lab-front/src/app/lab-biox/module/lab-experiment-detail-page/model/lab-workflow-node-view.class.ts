@@ -6,13 +6,12 @@ import {FlStatusEvent} from '@monorepo/front-core-lib';
 import {LabWorkflowPort} from './lab-workflow-port.class';
 import {labGetTypingNameColor} from '../../../../lab-core/entity-module/lab-type-core/utils/lab-process-port-color';
 import {map, switchMap} from 'rxjs/operators';
-import {LabTaskSourceConfig, LabTypingName} from '../../../../lab-core/model/entities/lab-typing-name.class';
 
 
 /**
  * Representation of a Source or Output process
  */
-export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
+export class LabWorkflowNodeView extends LabWorkflowNodeProcess {
 
   private loadedResource$: BehaviorSubject<FlStatusEvent<LabResource>> = new BehaviorSubject({status: 'loading'});
 
@@ -27,10 +26,9 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
 
   private getResourceId(process: LabProcess): string | null {
     if (this.currentObject.isSource()) {
-      const config: LabTaskSourceConfig = process.getConfigValues() as LabTaskSourceConfig;
-      return config?.resource_id ?? null;
+      return process.config.data.values?.resource_id ?? null;
     } else {
-      return process.inputs[LabTypingName.task.output.resourceInput].resource_id;
+      return process.inputs['resource'].resource_id;
     }
   }
 
@@ -48,20 +46,17 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
   getHTML(): string {
     if (this.currentObject.isSource()) {
       return `<lab-workflow-node-source name="${this.nodeName}"></lab-workflow-node-source>`;
-    } else if (this.currentObject.isOutput()) {
-      return `<lab-workflow-node-output name="${this.nodeName}"></lab-workflow-node-output>`;
     } else {
-      return `<lab-workflow-node-view name="${this.nodeName}"></lab-workflow-node-view>`;
+      return `<lab-workflow-node-output name="${this.nodeName}"></lab-workflow-node-output>`;
+
     }
   }
 
   getClassName(): string {
     if (this.currentObject.isSource()) {
       return 'task-source';
-    } else if (this.currentObject.isOutput()) {
-      return 'task-output';
     } else {
-      return 'task-view';
+      return 'task-output';
     }
   }
 
@@ -135,6 +130,7 @@ export class LabWorkflowNodeIO extends LabWorkflowNodeProcess {
     const resource = this.getCurrentResource();
     return resource != null ? [resource.resourceTypingName] : null;
   }
+
 
 
   destroy(): void {

@@ -81,6 +81,19 @@
       <lab-task-source-config></lab-task-source-config>
     </mat-expansion-panel>
 
+    <!-------------------------- Specific to View Task ---------------------------->
+    <mat-expansion-panel *ngSwitchCase="'view-task'" [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
+          <fl-text-icon>
+            <mat-icon flIcon="view"></mat-icon>
+            {{'biox.configure_viewer' | translate}}
+          </fl-text-icon>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <lab-task-viewer-config></lab-task-viewer-config>
+    </mat-expansion-panel>
+
     <!-------------------------- Specific to Protocol ---------------------------->
     <mat-expansion-panel *ngSwitchCase="'protocol'" [expanded]="true">
       <mat-expansion-panel-header>

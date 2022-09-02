@@ -10,6 +10,8 @@ import {
 } from '@monorepo/resource-view';
 import {LabResourceViewFolder} from './lab-resource-view-folder.class';
 import {LabViewConfig} from './lab-view-config.entity';
+import {LabConfigSpecs} from '../lab-config-spec.entity';
+import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 
 // list of available view type
 export type LabResourceViewType = RvResourceViewType | 'view'
@@ -36,14 +38,19 @@ export class LabResourceViewSpec {
   }
 }
 
+export class LabResourceViewSpecComplete extends LabResourceViewSpec{
+
+  @Expose({name: 'config_specs'})
+  @ClRecordWrapperTransform(LabConfigSpecs)
+  configSpecs: LabConfigSpecs;
+}
+
 /**
  * Object that contains the resource view spec and its configuration
  */
 export interface LabResourceViewSpecWithConfig {
-  resourceId: string;
   viewName: string;
   viewMethodName: string;
-  isDefaultView: boolean;
   viewConfigValues: LabConfigValues;
   displayMode: RvViewDisplayMode;
   transformersWithConfig: LabTransformerWithConfig[];

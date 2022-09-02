@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
-  FlDatasourcePaginated,
   FlSavedSearch,
   FlSearchConfig,
   FlSearchState,
@@ -8,7 +7,7 @@ import {
   FlTag,
   flThemeDetailLight
 } from '@monorepo/front-core-lib';
-import {LabViewConfig} from '../../../../model/entities/resource/lab-view-config.entity';
+import {LabViewConfig, LabViewConfigDatasource} from '../../../../model/entities/resource/lab-view-config.entity';
 import {LabViewConfigSearch, LabViewConfigSearchFields} from '../../model/lab-view-config-search.class';
 import {LabViewConfigService} from '../../../../entity-service/lab-view-config.service';
 
@@ -39,7 +38,7 @@ export class LabViewConfigSearchComponent implements OnInit {
 
   @Output() viewConfigSelected: EventEmitter<LabViewConfig> = new EventEmitter();
 
-  datasource: FlDatasourcePaginated<LabViewConfig>;
+  datasource: LabViewConfigDatasource;
 
   columns: FlTableColumn<LabViewConfig>[];
 

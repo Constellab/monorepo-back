@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, TrackByFunction} from '@angular/core';
 import {Observable} from 'rxjs';
 import {LabResourceDetailTabsState, LabResourceTab} from '../../state/lab-resource-detail-tabs-state.service';
 
@@ -20,6 +20,9 @@ export class LabResourceDetailTabsComponent implements OnInit {
 
   tabs: LabResourceTab[];
   selectedTabIndex: number = 0;
+
+  trackByViewSymbol: TrackByFunction<LabResourceTab> =
+    (_, resourceTab: LabResourceTab) => resourceTab.viewSymbol;
 
   constructor(private state: LabResourceDetailTabsState) {
   }

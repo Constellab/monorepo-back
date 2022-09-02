@@ -33,7 +33,8 @@
 
       <div class="left-section" fxLayout="column" fxLayoutGap="1em">
         <lab-resource-view-spec-list [resourceId]="resource.id"
-                                     (callView)="callView($event)"
+                                     [resourceTypingName]="resource.resourceTypingName"
+                                     (viewConfigured)="callView($event)"
                                      [ngClass]="{'view-specs' : !resource.hasChildren}"
                                      fxFlex="grow">
         </lab-resource-view-spec-list>

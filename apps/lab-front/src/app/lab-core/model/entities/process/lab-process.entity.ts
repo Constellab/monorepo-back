@@ -80,6 +80,9 @@ export class LabProcess extends LabNode {
     this.config.updateConfig(config);
   }
 
+  public getConfigValues(): LabConfigValues {
+    return this.config.data.values;
+  }
 
   // return true if the process is of type Source
   isSource(): boolean {
@@ -88,7 +91,11 @@ export class LabProcess extends LabNode {
 
   // return true if the process is of type Output
   isOutput(): boolean {
-    return this.processTypingName === LabTypingName.task.output;
+    return this.processTypingName === LabTypingName.task.output.typingName;
+  }
+
+  isViewer(): boolean {
+    return this.processTypingName === LabTypingName.task.viewer;
   }
 
   get title(): string {

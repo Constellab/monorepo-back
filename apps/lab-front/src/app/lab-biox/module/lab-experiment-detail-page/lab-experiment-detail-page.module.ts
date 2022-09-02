@@ -57,6 +57,14 @@ import {
   LabWorkflowPortActionPortalComponent
 } from './component/lab-workflow-port-action-portal/lab-workflow-port-action-portal.component';
 import {LabEntityCoreModule} from '../../../lab-core/entity-module/lab-entity-core/lab-entity-core.module';
+import {LabWorkflowNodeViewComponent} from './component/lab-workflow-node-view/lab-workflow-node-view.component';
+import {
+  LabConfigureViewerDialogComponent
+} from './component/lab-configure-viewer-dialog/lab-configure-viewer-dialog.component';
+import {LabTaskViewerConfigComponent} from './component/lab-task-viewer-config/lab-task-viewer-config.component';
+import {
+  LabTaskViewerShowConfigComponent
+} from './component/lab-task-viewer-show-config/lab-task-viewer-show-config.component';
 
 
 @NgModule({
@@ -85,6 +93,10 @@ import {LabEntityCoreModule} from '../../../lab-core/entity-module/lab-entity-co
     LabConfigureTaskComponent,
     LabWorkflowNodeProgressComponent,
     LabWorkflowPortActionPortalComponent,
+    LabWorkflowNodeViewComponent,
+    LabConfigureViewerDialogComponent,
+    LabTaskViewerConfigComponent,
+    LabTaskViewerShowConfigComponent,
   ],
   imports: [
     CommonModule,
@@ -135,6 +147,13 @@ export class LabExperimentDetailPageModule {
     // lab-workflow-node-interface work natively
     customElements.define('lab-workflow-node-interface',
       createCustomElement(LabWorkflowNodeInterfaceComponent, {
+        injector,
+      }));
+
+    // declare the LabWorkflowNodeViewComponent as angular element to make the tag
+    // lab-workflow-node-view work natively
+    customElements.define('lab-workflow-node-view',
+      createCustomElement(LabWorkflowNodeViewComponent, {
         injector,
       }));
   }

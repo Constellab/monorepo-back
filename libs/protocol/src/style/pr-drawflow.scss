@@ -5,6 +5,7 @@
 @mixin drawflow-theme($theme) {
   $primary: map-get($theme, primary);
   $warn: map-get($theme, warn);
+  $accent: map-get($theme, accent);
 
   .drawflow{
     // set a border to the main drawflow element so the user knows the limits
@@ -43,7 +44,7 @@
       background-color: mat.get-color-from-palette($primary);
     }
 
-    &.task-output {
+    &.task-output, &.task-view {
       color: mat.get-color-from-palette($warn, default-contrast);
       background-color: mat.get-color-from-palette($warn);
     }

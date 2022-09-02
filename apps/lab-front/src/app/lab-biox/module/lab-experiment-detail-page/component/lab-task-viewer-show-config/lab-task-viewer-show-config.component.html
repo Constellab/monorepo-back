@@ -1,0 +1,10 @@
+<!-- Show the config -->
+<fl-text-icon>
+  <mat-icon>settings</mat-icon>
+  <h2>{{'biox.viewer_selected_configuration' | translate}}</h2>
+</fl-text-icon>
+<fl-pretty-json *ngIf="config.view_config; else notConfigured" [object]="config.view_config"></fl-pretty-json>
+
+<ng-template #notConfigured>
+  <fl-error-text [errorMessage]="'biox.viewer_not_configured' | translate"></fl-error-text>
+</ng-template>

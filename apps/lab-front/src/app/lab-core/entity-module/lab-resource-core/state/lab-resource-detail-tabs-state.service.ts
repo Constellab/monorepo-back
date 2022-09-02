@@ -7,7 +7,7 @@ import {
   LabResourceView,
   LabResourceViewSpecWithConfig
 } from '../../../model/entities/resource/lab-resource-view.entity';
-import {filter, map} from 'rxjs/operators';
+import {filter} from 'rxjs/operators';
 import {FlPortalActionResult, FlPortalActionsService, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
 import {LabConfigValues} from '../../../model/entities/lab-config.entity';
 import {
@@ -19,14 +19,6 @@ import {
   LabResourceViewPortalInput
 } from '../component/lab-resource-view-portal/lab-resource-view-portal.component';
 import {LabViewConfigService} from '../../../entity-service/lab-view-config.service';
-
-type LabResourceTabType = 'resource' | 'view';
-
-interface LabResourceTabInternal {
-  viewSymbol: symbol;
-  type: LabResourceTabType;
-  obs: ClCachedObservable<LabResource | LabResourceView>;
-}
 
 
 export type LabResourceTab = {
@@ -50,7 +42,7 @@ export class LabResourceDetailTabsState implements OnDestroy {
   private readonly actionType: string = 'view-portal-loader';
 
   // store the list of tabs to show
-  private tabs$: BehaviorSubject<LabResourceTabInternal[]> = new BehaviorSubject([]);
+  private tabs$: BehaviorSubject<LabResourceTab[]> = new BehaviorSubject([]);
 
   private viewPortalSubscription: Subscription;
 
@@ -75,7 +67,7 @@ export class LabResourceDetailTabsState implements OnDestroy {
     this.createTab({
       viewSymbol: Symbol(),
       type: 'resource',
-      obs: new ClCachedObservable(this.resourceService.getById(resourceId))
+      obs: new ClCachedObservable(this.resourceService.getById(resourceId)).getObs()
     });
   }
 
@@ -86,20 +78,20 @@ export class LabResourceDetailTabsState implements OnDestroy {
     this.createTab({
       viewSymbol: Symbol(),
       type: 'view',
-      obs: new ClCachedObservable(this.viewConfigService.callViewConfig(viewConfigId))
+      obs: new ClCachedObservable(this.viewConfigService.callViewConfig(viewConfigId)).getObs()
     });
   }
 
-  public addView(config: LabResourceViewSpecWithConfig): void {
+  public addView(resourceId: string, config: LabResourceViewSpecWithConfig): void {
     if (config.displayMode === 'fullScreen') {
       this.createTab({
         viewSymbol: Symbol(),
         type: 'view',
-        obs: new ClCachedObservable(this.callResourceView(config.resourceId,
-          config.viewMethodName, config.viewConfigValues, config.transformersWithConfig))
+        obs: new ClCachedObservable(this.callResourceView(resourceId,
+          config.viewMethodName, config.viewConfigValues, config.transformersWithConfig)).getObs()
       });
     } else {
-      this.loadViewInPortal(config);
+      this.loadViewInPortal(resourceId, config);
     }
   }
 
@@ -113,15 +105,13 @@ export class LabResourceDetailTabsState implements OnDestroy {
 
   /**
    * Call and open the view in a portal, using the action service
-   * @param viewSpecConfigured
-   * @private
    */
-  private loadViewInPortal(viewSpecConfigured: LabResourceViewSpecWithConfig): void {
+  private loadViewInPortal(resourceId: string, viewSpecConfigured: LabResourceViewSpecWithConfig): void {
     this.actionService.addAction(
       {
         type: this.actionType,
         text: viewSpecConfigured.viewName,
-        action: this.callResourceView(viewSpecConfigured.resourceId, viewSpecConfigured.viewMethodName,
+        action: this.callResourceView(resourceId, viewSpecConfigured.viewMethodName,
           viewSpecConfigured.viewConfigValues, viewSpecConfigured.transformersWithConfig),
       },
       true);
@@ -160,7 +150,7 @@ export class LabResourceDetailTabsState implements OnDestroy {
 
   ////////////////////////////////////// TABS /////////////////////////////////////
 
-  private createTab(tab: LabResourceTabInternal): void {
+  private createTab(tab: LabResourceTab): void {
     // emit the list of resources with the view
     const resourceWithViews = [...this.tabs$.value];
     resourceWithViews.push(tab);
@@ -168,17 +158,7 @@ export class LabResourceDetailTabsState implements OnDestroy {
   }
 
   public getTabs$(): Observable<LabResourceTab[]> {
-    return this.tabs$.asObservable().pipe(
-      map(tabs => this.toExternalLabResourceTab(tabs))
-    );
-  }
-
-  private toExternalLabResourceTab(tabs: LabResourceTabInternal[]): LabResourceTab[] {
-    return tabs.map(tab => ({
-      viewSymbol: tab.viewSymbol,
-      type: tab.type,
-      obs: tab.obs.getObs()
-    })) as any;
+    return this.tabs$.asObservable();
   }
 
   public closeTab(viewSymbol: symbol): void {

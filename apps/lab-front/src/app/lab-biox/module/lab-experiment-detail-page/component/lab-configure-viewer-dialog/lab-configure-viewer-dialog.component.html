@@ -1,0 +1,43 @@
+<fl-dialog-header>
+  <h2>{{'biox.configure_viewer' | translate}}</h2>
+</fl-dialog-header>
+
+<mat-dialog-content>
+
+  <p class="g-text-light">{{'biox.configure_viewer_help' | translate}}</p>
+
+  <!--  Resource Type  -->
+  <mat-form-field class="g-search-field">
+    <mat-label>{{'resource_type' | translate }}</mat-label>
+    <mat-select [(ngModel)]="taskConfig.resource_typing_name" [placeholder]="'resource_type' | translate"
+                (selectionChange)="onResourceTypingChange()">
+      <lab-resource-type-select-options></lab-resource-type-select-options>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-divider class="divider"></mat-divider>
+
+
+  <!-- View spec list -->
+  <lab-resource-view-spec-list [resourceTypingName]="taskConfig.resource_typing_name"
+                               [enableDisplayMode]="false"
+                               (viewConfigured)="onViewConfigured($event)"
+                               class="spec-list">
+    <p class="g-text-light">{{'biox.configure_viewer_help_2' | translate}}</p>
+
+  </lab-resource-view-spec-list>
+
+  <mat-divider class="divider"></mat-divider>
+
+  <!-- Show the config -->
+  <lab-task-viewer-show-config [config]="taskConfig"></lab-task-viewer-show-config>
+
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" type="button" class="g-centered-forced"
+          (click)="save()">
+    {{'save' | translate}}
+  </button>
+
+</div>

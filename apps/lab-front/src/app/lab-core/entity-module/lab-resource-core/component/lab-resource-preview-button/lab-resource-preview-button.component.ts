@@ -33,8 +33,10 @@ export class LabResourcePreviewButtonComponent implements OnInit {
       ClHelpService.stopEventPropagation(event);
     }
     const data: LabResourceViewDetailDialogInput = {
+      mode: 'defaultView',
       resourceId: this.resourceId,
-      resourceName: this.resourceName
+      resourceName: this.resourceName,
+      saveViewConfig: true
     };
     this.dialogService.openBigDialog(LabResourceViewDetailDialogComponent, {data: data});
   }

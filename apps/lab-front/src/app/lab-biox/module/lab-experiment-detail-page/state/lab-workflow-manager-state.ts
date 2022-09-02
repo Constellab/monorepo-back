@@ -222,6 +222,19 @@ export class LabWorkflowManagerState {
       });
   }
 
+  public addViewerToOutput(processNodeName: string, outputPortName: string): void {
+    // retrieve the protocol of the layer
+    const currentProtocol: LabProtocol = this.workflow.currentLayer.object as LabProtocol;
+
+    this.addProcessWithLinkAction(
+      this.protocolService.addViewerToProcessOutput(currentProtocol.id, processNodeName, outputPortName),
+      processNodeName,
+      'after',
+      {
+        text: 'biox.adding_viewer', translateText: true,
+      });
+  }
+
   public addProcessConnectedToOutput(processTypingName: string, processName: string,
                                      outputProcessName: string, outputPortName: string): void {
     // retrieve the protocol of the layer
@@ -298,9 +311,7 @@ export class LabWorkflowManagerState {
   private createNodeFromProcess(process: LabProcess, name: string, coordX: number = 0, coordY: number = 0): LabWorkflowNode<any> {
     // create a specific node for the source
     const getResource = (id: string): Observable<LabResource> => this.resourceService.getById(id);
-    if (process.isSource()) {
-      return new LabWorkflowNodeIO(process, name, getResource, coordX, coordY);
-    } else if (process.isOutput()) {
+    if (process.isSource() || process.isOutput() || process.isViewer()) {
       return new LabWorkflowNodeIO(process, name, getResource, coordX, coordY);
     } else {
       return new LabWorkflowNodeProcess(process, name, coordX, coordY);

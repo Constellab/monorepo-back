@@ -35,7 +35,7 @@ export class LabResourceDetailComponent implements OnInit, OnDestroy {
   }
 
   callView(config: LabResourceViewSpecWithConfig): void {
-    this.state.addView(config);
+    this.state.addView(this.resource.id, config);
   }
 
   onUpdate(resource: LabResource): void {

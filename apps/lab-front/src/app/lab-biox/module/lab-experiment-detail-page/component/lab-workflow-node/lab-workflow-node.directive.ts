@@ -179,6 +179,10 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
     this.workflowManager.addTaskOutput(this.node.nodeName, outputPortName);
   }
 
+  private addViewerToOutput(outputPortName: string): void {
+    this.workflowManager.addViewerToOutput(this.node.nodeName, outputPortName);
+  }
+
   private openTransformerSelection(portName: string, resourceTypingNames: string[]): void {
     const data: LabSelectTypeDialogInput = {
       searchConfig: {
@@ -257,6 +261,13 @@ export abstract class LabWorkflowNodeDirective implements OnDestroy {
         text: {text: 'biox.add_output', translateText: true},
         icon: 'output',
         onClick: () => this.addTaskOutput(portName),
+        disabled: !this.experimentIsEditable
+      },
+      {
+        type: 'button',
+        text: {text: 'biox.add_viewer', translateText: true},
+        icon: 'view',
+        onClick: () => this.addViewerToOutput(portName),
         disabled: !this.experimentIsEditable
       },
       {
