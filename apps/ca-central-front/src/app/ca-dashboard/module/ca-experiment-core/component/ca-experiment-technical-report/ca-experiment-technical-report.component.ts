@@ -6,7 +6,8 @@ import {FlDialogService} from '@monorepo/front-core-lib';
 import {
   CaExperimentLabConfigDialogComponent
 } from '../ca-experiment-lab-config-dialog/ca-experiment-lab-config-dialog.component';
-import {PrWorkflowEvent} from '@monorepo/protocol';
+import {PrWorkflowEvent, PrWorkflowMode} from '@monorepo/protocol';
+import {Observable, of, Subject} from 'rxjs';
 
 
 @Component({
@@ -21,6 +22,8 @@ export class CaExperimentTechnicalReportComponent implements OnInit {
 
   technicalReport: CaTechnicalReport;
 
+  workflowMode$: Observable<PrWorkflowMode>;
+
   constructor(
     private experimentService: CaExperimentService,
     private dialogService: FlDialogService
@@ -31,6 +34,7 @@ export class CaExperimentTechnicalReportComponent implements OnInit {
     this.experimentService.getExperimentTechnicalReport(this.experiment.id).subscribe((res: CaTechnicalReport) => {
       this.technicalReport = res;
     });
+    this.workflowMode$ = of('report');
   }
 
   actionEvent(action: PrWorkflowEvent): void {

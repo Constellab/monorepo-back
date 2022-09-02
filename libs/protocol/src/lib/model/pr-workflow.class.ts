@@ -47,6 +47,8 @@ export class PrWorkflow {
 
   private mode: PrWorkflowMode;
 
+  private mode$: Subject<PrWorkflowMode> = new Subject<PrWorkflowMode>();
+
   private workflowEvent$: Subject<PrWorkflowEvent> = new Subject<PrWorkflowEvent>();
 
   constructor(private element: HTMLElement,
@@ -303,7 +305,8 @@ export class PrWorkflow {
 
   public setMode(mode: PrWorkflowMode): void {
     this.mode = mode;
-    if(mode === 'report'){
+    this.mode$.next(mode);
+    if (mode === 'report') {
       mode = 'edit';
     }
     this.editor.editor_mode = mode === 'edit' ? 'edit' : 'view';
@@ -311,6 +314,12 @@ export class PrWorkflow {
 
   public getMode(): PrWorkflowMode {
     return this.mode;
+  }
+
+  public getMode$(): Observable<PrWorkflowMode> {
+    this.mode$.subscribe(mode => {
+    })
+    return this.mode$.asObservable();
   }
 
   public getWorkflowEvent$(): Observable<PrWorkflowEvent> {

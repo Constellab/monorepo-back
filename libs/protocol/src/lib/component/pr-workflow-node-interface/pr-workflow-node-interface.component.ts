@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnInit, Renderer2} from '@angular/core';
 import {PrWorkflowNode} from '../../model/pr-workflow-node.class';
 import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {PrWorkflowNodeInterface} from '../../model/pr-workflow-node-interface.class';
@@ -14,7 +14,7 @@ type NodeType = 'interface' | 'outerface';
   templateUrl: './pr-workflow-node-interface.component.html',
   styleUrls: ['./pr-workflow-node-interface.component.scss']
 })
-export class PrWorkflowNodeInterfaceComponent implements OnInit {
+export class PrWorkflowNodeInterfaceComponent implements OnInit, AfterViewInit {
 
   // Name of the node
   @Input() name: string;
@@ -23,7 +23,26 @@ export class PrWorkflowNodeInterfaceComponent implements OnInit {
 
   node: PrWorkflowNode<void>;
 
-  constructor(private workflowManager: PrWorkflowManagerState) {
+  stopEventFunction = (event: any): void => {
+    event.stopImmediatePropagation()
+  }
+
+  constructor(private workflowManager: PrWorkflowManagerState,
+              protected elementRef: ElementRef,
+              protected renderer: Renderer2) {
+  }
+
+
+  ngAfterViewInit(): void {
+    this.workflowManager.workflow.getMode$().subscribe(mode => {
+      for (const o of this.elementRef.nativeElement.parentElement.parentElement.querySelectorAll('.output')) {
+        if (mode !== 'edit') {
+          o.addEventListener('mousedown', this.stopEventFunction, true);
+        } else {
+          o.removeEventListener('mousedown', this.stopEventFunction, true);
+        }
+      }
+    });
   }
 
   ngOnInit(): void {

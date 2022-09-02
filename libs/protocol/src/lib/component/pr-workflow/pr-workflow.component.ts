@@ -14,7 +14,7 @@ import {PrProtocol, PrProtocolData} from '../../model/pr-protocol.entity';
 import {PrFlow} from '../../model/pr-connection.class';
 import {PrProtocolGraphInput} from '../../model/pr-protocol-graph-input.class';
 import {PrWorkflowEvent, PrWorkflowMode} from '../../model/pr-workflow.class';
-import {Subscription} from 'rxjs';
+import {Observable, Subject, Subscription} from 'rxjs';
 import {PrConfigEdit} from '../../model/pr-config-event.class';
 
 
@@ -36,7 +36,7 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   mainProtocolGraph: PrProtocolGraphInput;
 
   @Input()
-  mode: PrWorkflowMode;
+  mode$: Observable<PrWorkflowMode>;
 
   @Output()
   action = new EventEmitter<PrWorkflowEvent>();
@@ -58,16 +58,6 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     setTimeout(() => this.loadExperimentFlow(), 0);
-
-    if (this.mode === 'report') {
-      this.container.nativeElement.addEventListener('contextmenu', (event) => {
-        event.stopImmediatePropagation()
-      }, true);
-
-      this.container.nativeElement.addEventListener('keydown', (event) => {
-        event.stopImmediatePropagation()
-      }, true);
-    }
   }
 
   private loadExperimentFlow(): void {
@@ -86,11 +76,17 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadExperimentFlowSuccess(flow: PrFlow<PrProtocol>): void {
-    this.workflowManagerState.init(this.container.nativeElement, flow, this.mode);
+    this.workflowManagerState.init(this.container.nativeElement, flow, 'edit');
 
-    if (this.mode === 'edit' && this.configEvent) {
-      this.configEvent.setState(this.workflowManagerState);
-    }
+    this.mode$.subscribe(mode => {
+      console.log('Mode', mode)
+      this.workflowManagerState.workflow.setMode(mode);
+      if (mode === 'edit' && this.configEvent) {
+        this.configEvent.setState(this.workflowManagerState);
+      }
+    });
+
+
 
     this.flowIsLoading = false;
   }

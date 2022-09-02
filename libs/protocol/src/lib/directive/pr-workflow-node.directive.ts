@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Input, OnDestroy, Renderer2} from '@angular/core';
+import {AfterViewInit, Directive, ElementRef, Input, OnDestroy, Renderer2} from '@angular/core';
 import {PrWorkflowNodeProcess} from '../model/pr-workflow-node-process.class';
 import {PrWorkflowManagerState} from '../state/pr-workflow-manager-state';
 import {PrWorkflowActionState} from '../state/pr-workflow-action-state';
@@ -7,7 +7,7 @@ import {FlDialogService, FlHtmlHelper} from '@monorepo/front-core-lib';
 @Directive({
   selector: '[prWorkflowNode]'
 })
-export class PrWorkflowNodeDirective implements OnDestroy {
+export class PrWorkflowNodeDirective implements OnDestroy, AfterViewInit {
 
   // Name of the node
   @Input() name: string;
@@ -16,14 +16,29 @@ export class PrWorkflowNodeDirective implements OnDestroy {
 
   private listener: () => void;
 
+  stopEventFunction = (event: any): void => {
+    event.stopImmediatePropagation()
+  }
 
   constructor(protected workflowManager: PrWorkflowManagerState,
               protected drawerState: PrWorkflowActionState,
               protected dialogService: FlDialogService,
               protected elementRef: ElementRef,
-              protected renderer: Renderer2,) {
+              protected renderer: Renderer2) {
   }
 
+
+  ngAfterViewInit(): void {
+    this.workflowManager.workflow.getMode$().subscribe(mode => {
+      for (const o of this.elementRef.nativeElement.parentElement.parentElement.querySelectorAll('.output')) {
+        if (mode !== 'edit') {
+          o.addEventListener('mousedown', this.stopEventFunction, true);
+        } else {
+          o.removeEventListener('mousedown', this.stopEventFunction, true);
+        }
+      }
+    });
+  }
 
   protected initNode(): void {
     this.node = this.workflowManager.findNodeWithNameInCurrentLayer(this.name) as PrWorkflowNodeProcess;

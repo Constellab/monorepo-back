@@ -80,6 +80,9 @@ export class PrWorkflowManagerState {
     return this._layerIsLoading$.asObservable();
   }
 
+  stopEventFunction = (event: any): void => {
+    event.stopImmediatePropagation()
+  }
 
   //////////////////////// LAYER ////////////////////////////
 
@@ -96,6 +99,15 @@ export class PrWorkflowManagerState {
     // init the nodes with the job list
     this.initFlow(this.workflow.currentLayer, mainFlow);
 
+    this.workflow.getMode$().subscribe(mode => {
+      if (mode === 'report') {
+        element.addEventListener('contextmenu', this.stopEventFunction, true);
+        element.addEventListener('keydown',  this.stopEventFunction, true);
+      } else {
+        element.removeEventListener('contextmenu', this.stopEventFunction, true);
+        element.removeEventListener('keydown', this.stopEventFunction, true);
+      }
+    })
 
     // listen to the new Process actions
     this.actionSubscription = this.actionsService.getResult$([
@@ -434,12 +446,14 @@ export class PrWorkflowManagerState {
   ///////////////////////////// OTHER ////////////////////////////////////
   private onWorkflowEvent(workflowEvent: PrWorkflowEvent): void {
 
+    this.workflow.getMode$().subscribe(mode => {
+      if(mode === 'edit'){
+        let portalAction: FlPortalAction;
 
-    if(this.workflow.getMode() === 'edit'){
-      let portalAction: FlPortalAction;
+        this.actionsService.addAction(portalAction);
+      }
+    })
 
-      this.actionsService.addAction(portalAction);
-    }
 
   }
 
