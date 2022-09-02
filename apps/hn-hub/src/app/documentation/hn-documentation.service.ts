@@ -64,6 +64,7 @@ export class HnDocumentationService {
   }
 
   async findCurrentDoc(brickMajorVersion: HnBrickMajorVersion, path: string): Promise<HnDocumentation> {
+
     const documentation: HnDocumentation = (await this.documentationsRepository.find(
       {
         where: {completePath: path},

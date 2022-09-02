@@ -41,7 +41,7 @@ export class HaBrickService {
    * Call http post to get the brick current doc
    */
   public getDocByPath(brickName: string, path: string, version: string): Observable<HaDocumentation> {
-    return this.apiService.post(`${this.route}/doc/${brickName}/${version}`, {path: path});
+    return this.apiService.post(`${this.route}/doc/${brickName}/${version}`, {path: decodeURI(path)});
   }
 
   /**
