@@ -68,7 +68,7 @@ export class FlBioNetworkSimulationState implements OnDestroy {
 
   // disable all force so the user can move the node independently
   private endSimulation(): void {
-    if (!this.simulationEnded) {
+    if (!this.simulationEnded && this.simulation) {
       // clear all forces, so the user can drag easily
       this.simulation.force('link', null);
       this.simulation.force('charge', null);
