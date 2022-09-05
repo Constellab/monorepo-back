@@ -2,6 +2,7 @@
   <div *ngIf="node$ | async as node">
     <button mat-stroked-button type="button"
             (click)="openViewerConfiguration(node)" class="g-centered-forced">
+      <mat-icon>settings</mat-icon>
       {{'biox.configure_viewer' | translate }}
     </button>
   </div>

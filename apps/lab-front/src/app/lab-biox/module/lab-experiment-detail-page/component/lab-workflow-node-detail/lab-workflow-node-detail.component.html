@@ -20,7 +20,7 @@
   <lab-workflow-node-progress [process$]="labProcess$"></lab-workflow-node-progress>
 
   <!---------------------------- Inputs ---------------------------->
-  <mat-expansion-panel *ngIf="node.hasInputs()" [expanded]="true">
+  <mat-expansion-panel *ngIf="showInputs$ | async" [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title class="g-not-selectable">
         <fl-text-icon>
@@ -35,7 +35,7 @@
 
 
   <!---------------------------- Outputs ---------------------------->
-  <mat-expansion-panel *ngIf="node.hasOutputs()" [expanded]="true">
+  <mat-expansion-panel *ngIf="showOutput$ | async" [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title class="g-not-selectable">
         <fl-text-icon>
@@ -60,7 +60,7 @@
         </mat-panel-title>
         <mat-panel-description fxLayout="row" fxLayoutAlign="end" *ngIf="isEditable$ | async">
           <button mat-icon-button type="button" class="g-default-color-text g-button-icon-small edit-button"
-                  (click)="openConfig($event, configPanel, node)">
+                  (click)="openConfig($event, configPanel)">
             <mat-icon>edit</mat-icon>
           </button>
         </mat-panel-description>
@@ -87,7 +87,7 @@
         <mat-panel-title fxLayout="column" fxLayoutAlign="center" class="g-not-selectable">
           <fl-text-icon>
             <mat-icon flIcon="view"></mat-icon>
-            {{'biox.configure_viewer' | translate}}
+            {{'biox.viewer_configuration' | translate}}
           </fl-text-icon>
         </mat-panel-title>
       </mat-expansion-panel-header>

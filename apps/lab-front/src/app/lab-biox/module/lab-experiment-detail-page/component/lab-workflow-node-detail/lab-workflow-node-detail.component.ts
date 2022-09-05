@@ -16,6 +16,7 @@ import {
   LabTypeDialogComponent,
   LabTypeDialogInput
 } from '../../../../../lab-core/entity-module/lab-type-core/component/lab-type-dialog/lab-type-dialog.component';
+import {LabWorkflowNodeIO} from '../../model/lab-workflow-node-io.class';
 
 type ConfigMode = 'config' | 'source' | 'view-task' | 'protocol' | null;
 
@@ -31,6 +32,8 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
 
   configMode$: Observable<ConfigMode>;
 
+  showInputs$: Observable<boolean>;
+  showOutput$: Observable<boolean>;
   isEditable$: Observable<boolean>;
 
   constructor(private dialogService: FlDialogService,
@@ -46,6 +49,13 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
       process => this.getConfigMode(process)
     ));
     this.isEditable$ = this.experimentState.isEditable$();
+
+    this.showInputs$ = this.nodeDetailState.getNode$().pipe(map(
+      node => node.hasInputs() && !(node instanceof LabWorkflowNodeIO)
+    ));
+    this.showOutput$ = this.nodeDetailState.getNode$().pipe(map(
+      node => node.hasOutputs() && !(node instanceof LabWorkflowNodeIO)
+    ));
   }
 
   private getConfigMode(process: LabProcess): ConfigMode {
@@ -56,12 +66,12 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
     return process.hasConfig() ? 'config' : null;
   }
 
-  openConfig(event: MouseEvent, panel: MatExpansionPanel,
-             node: LabWorkflowNodeProcess): void {
+  async openConfig(event: MouseEvent, panel: MatExpansionPanel): Promise<void> {
     ClHelpService.stopEventPropagation(event);
 
+    const process = await this.nodeDetailState.getProcessPromise();
     const input: LabConfigureSpecsFormDialogInput = {
-      configData: node.currentObject.config.data,
+      configData: process.config.data,
       title: 'biox.configuration',
       submitButtonText: 'save'
     };

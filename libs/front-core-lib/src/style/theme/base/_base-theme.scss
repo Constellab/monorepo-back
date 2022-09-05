@@ -135,24 +135,10 @@
   /**
    Background color based on the theme and set the text color
    */
-  .g-primary-background-extra-light {
-    background-color: mat.get-color-from-palette($primary, 50);
-    color: mat.get-color-from-palette($primary, default-contrast, 50);
-  }
 
   .g-primary-background-light {
     background-color: mat.get-color-from-palette($primary, 200);
-    color: mat.get-color-from-palette($primary, default-contrast, 200);
-  }
-
-  .g-primary-background-dark {
-    background-color: mat.get-color-from-palette($primary, 600);
-    color: mat.get-color-from-palette($primary, default-contrast, 600);
-  }
-
-  .g-primary-background-extra-dark {
-    background-color: mat.get-color-from-palette($primary, 800);
-    color: mat.get-color-from-palette($primary, default-contrast, 800);
+    color: mat.get-color-from-palette($primary, '100-contrast');
   }
 
 
