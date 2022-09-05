@@ -6,18 +6,12 @@ import {BehaviorSubject, map, Observable, Subject} from 'rxjs';
 import {PrFlowManager} from './pr-connection.class';
 import {NgZone} from '@angular/core';
 import {PrWorkflowPort} from './pr-workflow-port.class';
-import {PrConfigEdit} from './pr-config-event.class';
 
-export type PrWorkflowMode = 'edit' | 'readOnly' | 'report';
+export type PrWorkflowMode = 'edit' | 'readOnly';
 
 export type PrWorkflowEvent =
   PrWorkflowDeleteNodeEvent
   | PrWorkflowConnectionEvent
-
-export interface PrWorkflowInputEvent {
-  action: string;
-  configEvent: PrConfigEdit;
-}
 
 export interface PrWorkflowDeleteNodeEvent {
   action: 'deleteNode';
@@ -268,7 +262,7 @@ export class PrWorkflow {
     // this happened when the removeConnection is called and the connection was deleted by code not user
     const connection = this.currentLayer.findConnectionByConnectionEvent(connectionEvent);
     if (connection) {
-      if(this.mode !== 'report'){
+      if(this.mode !== 'readOnly'){
         this.currentLayer.saveUserConnectionRemoved(connection);
 
         this.workflowEvent$.next({
@@ -306,7 +300,7 @@ export class PrWorkflow {
   public setMode(mode: PrWorkflowMode): void {
     this.mode = mode;
     this.mode$.next(mode);
-    if (mode === 'report') {
+    if (mode === 'readOnly') {
       mode = 'edit';
     }
     this.editor.editor_mode = mode === 'edit' ? 'edit' : 'view';

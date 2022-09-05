@@ -1,0 +1,38 @@
+<div *ngIf="nodeSelected$ | flIsNotEmpty" [style.width]="drawerWidth"
+     fxLayout="column" class="g-full-height">
+  <fl-async-section [object]="nodeSelected$">
+    <ng-container *flSectionBody="let nodeSelected">
+      <div fxLayout="row" fxLayoutAlign="space-between center" class="header">
+        <div class="g-text-big title">
+          {{nodeSelected.title}}
+        </div>
+
+        <button mat-icon-button type="button" flDrawerClose tabindex="-1"
+                [matTooltip]="'close' | translate">
+          <mat-icon>clear</mat-icon>
+        </button>
+      </div>
+
+      <div class="container" fxFlex="auto">
+
+        <ng-container *ngIf="nodeSelected.processNode">
+          <div class="g-text-light text-info">
+            <p>{{'node_process_name' | translate}} : {{nodeSelected.processNode.currentObject.name}}</p>
+            <p *ngIf="nodeSelected.processNode.currentObject.data.description">{{nodeSelected.processNode.currentObject.data.description}}</p>
+
+
+            <!--          <button mat-stroked-button type="button" class="g-button-small doc-button"-->
+            <!--                  (click)="openTypingDoc(process.processTypingName)">-->
+            <!--            {{'biox.process_type_doc' | translate}}-->
+            <!--            <mat-icon>info</mat-icon>-->
+            <!--          </button>-->
+          </div>
+
+          <mat-divider class="divider"></mat-divider>
+        </ng-container>
+      </div>
+    </ng-container>
+  </fl-async-section>
+
+</div>
+

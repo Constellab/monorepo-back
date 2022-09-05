@@ -135,5 +135,6 @@
   "region": "Region",
   "no_technical_report": "Aucun rapport technique",
   "list": "Liste",
-  "protocol": "Protocole"
+  "protocol": "Protocole",
+  "node_process_name": "Processus"
 }

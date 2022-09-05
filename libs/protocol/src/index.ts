@@ -23,7 +23,7 @@ export * from './lib/model/pr-workflow-action.class';
 export * from './lib/model/pr-task.entity';
 export * from './lib/model/pr-protocol-graph-input.class';
 export * from './lib/model/pr-workflow-drawer-event.class';
-export * from './lib/model/pr-config-event.class';
+export * from './lib/model/pr-config-edit.class';
 
 // state
 export * from './lib/state/pr-workflow-manager-state';
@@ -38,7 +38,7 @@ export * from './lib/component/pr-workflow-node-source/pr-workflow-node-source.c
 export * from './lib/component/pr-workflow-node-output/pr-workflow-node-output.component';
 export * from './lib/component/pr-workflow-node-interface/pr-workflow-node-interface.component';
 export * from './lib/component/pr-workflow-layers-breadcrumb/pr-workflow-layers-breadcrumb.component';
-
+export * from './lib/component/pr-workflow-port-action-portal/pr-workflow-port-action-portal.component';
 
 // directive
 export * from './lib/directive/pr-workflow-node.directive';

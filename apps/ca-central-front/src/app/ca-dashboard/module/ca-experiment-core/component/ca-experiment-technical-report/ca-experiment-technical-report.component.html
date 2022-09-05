@@ -16,7 +16,7 @@
       <mat-tab label="{{'protocol' | translate}}">
         <ng-template matTabContent>
           <div class="tech-report-workflow">
-            <pr-workflow [mainProtocolGraph]="technicalReport.data.graph" [mode$]="workflowMode$" (action)="actionEvent($event)"></pr-workflow>
+            <pr-workflow [mainProtocolGraph]="technicalReport.data.graph" [mode$]="workflowMode$" [config]="workflowConfig"></pr-workflow>
           </div>
         </ng-template>
       </mat-tab>
@@ -35,3 +35,7 @@
     </ng-template>
   </fl-card-body>
 </fl-card>
+
+<mat-drawer class="drawer workflow-drawer" position="end" mode="over">
+  <ca-experiment-technical-report-workflow-drawer [nodeSelected$]="currentNodeSelected"></ca-experiment-technical-report-workflow-drawer>
+</mat-drawer>

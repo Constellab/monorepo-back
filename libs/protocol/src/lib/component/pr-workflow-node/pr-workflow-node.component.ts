@@ -3,7 +3,7 @@ import {PrWorkflowNodeDirective} from '../../directive/pr-workflow-node.directiv
 import {map} from 'rxjs/operators';
 import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {Observable} from 'rxjs';
-import {FlDialogService, FlStatus} from '@monorepo/front-core-lib';
+import {FlDialogService, FlPortalService, FlStatus} from '@monorepo/front-core-lib';
 import {PrWorkflowActionState} from '../../state/pr-workflow-action-state';
 import {PrProtocol} from '../../model/pr-protocol.entity';
 
@@ -22,8 +22,9 @@ export class PrWorkflowNodeComponent extends PrWorkflowNodeDirective implements 
               drawerState: PrWorkflowActionState,
               dialogService: FlDialogService,
               elementRef: ElementRef,
-              renderer: Renderer2) {
-    super(worflowManager, drawerState, dialogService, elementRef, renderer);
+              renderer: Renderer2,
+              portalService: FlPortalService) {
+    super(worflowManager, drawerState, dialogService, elementRef, renderer, portalService);
   }
 
   ngOnInit(): void {

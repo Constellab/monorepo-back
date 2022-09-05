@@ -2,12 +2,26 @@ import {AfterViewInit, Directive, ElementRef, Input, OnDestroy, Renderer2} from 
 import {PrWorkflowNodeProcess} from '../model/pr-workflow-node-process.class';
 import {PrWorkflowManagerState} from '../state/pr-workflow-manager-state';
 import {PrWorkflowActionState} from '../state/pr-workflow-action-state';
-import {FlDialogService, FlHtmlHelper} from '@monorepo/front-core-lib';
+import {
+  FlDialogService,
+  FlHtmlHelper,
+  FlMenuDynamic,
+  FlOverlayRef,
+  FlPortalConnectedPosition,
+  FlPortalService
+} from '@monorepo/front-core-lib';
+import {
+  PrWorkflowPortActionPortalComponent,
+  PrWorkflowPortActionPortalInput
+} from '../component/pr-workflow-port-action-portal/pr-workflow-port-action-portal.component';
+import {PrWorkflowPort} from '../model/pr-workflow-port.class';
 
 @Directive({
   selector: '[prWorkflowNode]'
 })
 export class PrWorkflowNodeDirective implements OnDestroy, AfterViewInit {
+
+  static currentOverlayRef: FlOverlayRef = null;
 
   // Name of the node
   @Input() name: string;
@@ -24,19 +38,15 @@ export class PrWorkflowNodeDirective implements OnDestroy, AfterViewInit {
               protected drawerState: PrWorkflowActionState,
               protected dialogService: FlDialogService,
               protected elementRef: ElementRef,
-              protected renderer: Renderer2) {
+              protected renderer: Renderer2,
+              private portalService: FlPortalService) {
   }
 
 
   ngAfterViewInit(): void {
-    this.workflowManager.workflow.getMode$().subscribe(mode => {
-      for (const o of this.elementRef.nativeElement.parentElement.parentElement.querySelectorAll('.output')) {
-        if (mode !== 'edit') {
-          o.addEventListener('mousedown', this.stopEventFunction, true);
-        } else {
-          o.removeEventListener('mousedown', this.stopEventFunction, true);
-        }
-      }
+    this.listenToNodeMouseDown();
+    this.workflowManager.workflow.getMode$().subscribe((mode) => {
+      this.listenToNodeMouseDown();
     });
   }
 
@@ -45,6 +55,11 @@ export class PrWorkflowNodeDirective implements OnDestroy, AfterViewInit {
     if (this.node == null) {
       console.error('Couldn\'t find node with name : ' + this.name);
     }
+
+    this.listenToNodeClick();
+
+
+
 
   }
 
@@ -59,6 +74,25 @@ export class PrWorkflowNodeDirective implements OnDestroy, AfterViewInit {
   // private get experimentIsEditable(): boolean {
   //   return this.workflowManager.getExperiment().isEditable();
   // }
+
+  protected listenToNodeMouseDown(): void {
+    // retrieve the drawflow element that wrap the node
+    const parent: HTMLElement = FlHtmlHelper.getParent(this.elementRef.nativeElement, {className: 'parent-node'});
+
+    if (parent == null) return;
+
+    parent.querySelectorAll('.output').forEach((c: HTMLElement) => {
+      this.onNodeMouseDown(c);
+    })
+  }
+
+  private onNodeMouseDown(c: HTMLElement): void {
+    if (this.workflowManager.workflow.getMode() !== 'edit') {
+      c.addEventListener('mousedown', this.stopEventFunction, true);
+    } else {
+      c.removeEventListener('mousedown', this.stopEventFunction, true);
+    }
+  }
 
   protected listenToNodeClick(): void {
     // retrieve the drawflow element that wrap the node
@@ -80,7 +114,7 @@ export class PrWorkflowNodeDirective implements OnDestroy, AfterViewInit {
       const port = this.node.findInputPortByDrawflowName(inputName);
       if (port == null) return;
 
-      // this.onInputClick(port, element);
+      this.onInputClick(port, element);
     } else if (classes.includes('output')) {
       const outputName: string = classes.find((cls) => cls.startsWith('output_'));
       if (outputName == null) return;
@@ -88,40 +122,43 @@ export class PrWorkflowNodeDirective implements OnDestroy, AfterViewInit {
       const port = this.node.findOutputPortByDrawflowName(outputName);
       if (port == null) return;
 
-      // this.onOutputClick(port, element);
+      this.onOutputClick(port, element);
     }
   }
 
-  //
-  // private onInputClick(port: PrWorkflowPort, element: Element): void {
-  //   const menuDynamics = this.getInputPortContextMenuConfig(port);
-  //   this.openPortPortal(port, menuDynamics, element);
-  // }
-  //
-  // private onOutputClick(port: PrWorkflowPort, element: Element): void {
-  //   const menuDynamics = this.getOutputPortContextMenuConfig(port.name);
-  //   this.openPortPortal(port, menuDynamics, element);
-  //}
 
-  // // open the portal for the input or output port
-  // private openPortPortal(port: PrWorkflowPort, menuDynamics: FlMenuDynamic[], element: Element): void {
-  //   const data: LabWorkflowPortActionPortalInput = {
-  //     port: port,
-  //     menuDynamics: menuDynamics
-  //   };
-  //
-  //   const position: FlPortalConnectedPosition[] = [
-  //     {originX: 'end', originY: 'bottom', overlayX: 'start', overlayY: 'top'},
-  //     'right', 'top', 'left', 'bottom'];
-  //
-  //   const config = this.portalService.configureRelativePortal(element, position, {
-  //     disposeOnOutsideClick: true,
-  //     disposeOnNavigation: true,
-  //     elevation: true
-  //   });
-  //
-  //   this.portalService.createPortal(LabWorkflowPortActionPortalComponent, config, data);
-  // }
+  private onInputClick(port: PrWorkflowPort, element: Element): void {
+    const menuDynamics: FlMenuDynamic[] = this.workflowManager.config ? this.workflowManager.config.getInputMenu(port, this.node) : [];
+    this.openPortPortal(port, menuDynamics, element);
+  }
+
+  private onOutputClick(port: PrWorkflowPort, element: Element): void {
+    const menuDynamics: FlMenuDynamic[] = this.workflowManager.config ? this.workflowManager.config.getOutputMenu(port, this.node) : [];
+    this.openPortPortal(port, menuDynamics, element);
+  }
+
+  // open the portal for the input or output port
+  private openPortPortal(port: PrWorkflowPort, menuDynamics: FlMenuDynamic[], element: Element): void {
+    const data: PrWorkflowPortActionPortalInput = {
+      port: port,
+      menuDynamics: menuDynamics
+    };
+
+    const position: FlPortalConnectedPosition[] = [
+      {originX: 'end', originY: 'bottom', overlayX: 'start', overlayY: 'top'},
+      'right', 'top', 'left', 'bottom'];
+
+    const config = this.portalService.configureRelativePortal(element, position, {
+      disposeOnOutsideClick: true,
+      disposeOnNavigation: true,
+      elevation: true
+    });
+
+    if (PrWorkflowNodeDirective.currentOverlayRef) {
+      PrWorkflowNodeDirective.currentOverlayRef.dispose();
+    }
+    PrWorkflowNodeDirective.currentOverlayRef = this.portalService.createPortal(PrWorkflowPortActionPortalComponent, config, data);
+  }
 
   // private openResourceSelection(port: LabWorkflowPort): void {
   //   // add a default search filtered by resource type

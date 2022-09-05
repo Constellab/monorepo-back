@@ -3,6 +3,7 @@ import {PrWorkflowNode} from '../../model/pr-workflow-node.class';
 import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {PrWorkflowNodeInterface} from '../../model/pr-workflow-node-interface.class';
 import {PrWorkflowNodeOuterface} from '../../model/pr-workflow-node-outerface.class';
+import {FlHtmlHelper} from '@monorepo/front-core-lib';
 
 type NodeType = 'interface' | 'outerface';
 
@@ -35,14 +36,9 @@ export class PrWorkflowNodeInterfaceComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.workflowManager.workflow.getMode$().subscribe(mode => {
-      for (const o of this.elementRef.nativeElement.parentElement.parentElement.querySelectorAll('.output')) {
-        if (mode !== 'edit') {
-          o.addEventListener('mousedown', this.stopEventFunction, true);
-        } else {
-          o.removeEventListener('mousedown', this.stopEventFunction, true);
-        }
-      }
+      this.listenToNodeMouseDown();
     });
+    this.listenToNodeMouseDown();
   }
 
   ngOnInit(): void {
@@ -57,6 +53,25 @@ export class PrWorkflowNodeInterfaceComponent implements OnInit, AfterViewInit {
       this.type = 'outerface';
     } else {
       console.error('Wrong type for the node');
+    }
+  }
+
+  protected listenToNodeMouseDown(): void {
+    // retrieve the drawflow element that wrap the node
+    const parent: HTMLElement = FlHtmlHelper.getParent(this.elementRef.nativeElement, {className: 'parent-node'});
+
+    if (parent == null) return;
+
+    parent.querySelectorAll('.output').forEach((c: HTMLElement) => {
+      this.onNodeMouseDown(c);
+    })
+  }
+
+  private onNodeMouseDown(c: HTMLElement): void {
+    if (this.workflowManager.workflow.getMode() !== 'edit') {
+      c.addEventListener('mousedown', this.stopEventFunction, true);
+    } else {
+      c.removeEventListener('mousedown', this.stopEventFunction, true);
     }
   }
 

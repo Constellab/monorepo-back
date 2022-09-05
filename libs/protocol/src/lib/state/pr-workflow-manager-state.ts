@@ -28,6 +28,7 @@ import {PrWorkflowNodeOuterface} from '../model/pr-workflow-node-outerface.class
 import {PrWorkflowPort} from '../model/pr-workflow-port.class';
 import {PrAddProcessWithLink, PrNodeRelativeCoord} from '../model/pr-workflow-action.class';
 import {PrWorkflowNodeIo} from '../model/pr-workflow-node-io.class';
+import {PrConfigEdit} from '../model/pr-config-edit.class';
 
 export enum PrWorkflowAction {
   ADD_PROCESS = 'workflow-add-process',
@@ -56,6 +57,7 @@ interface PrWorkflowEventNodeAdditionalInfo {
 export class PrWorkflowManagerState {
 
   public workflow: PrWorkflow = null;
+  public config: PrConfigEdit = null;
 
   private readonly htmlNodeWidth: number = 200;
   private readonly htmlNodeHeight: number = 100;
@@ -100,7 +102,7 @@ export class PrWorkflowManagerState {
     this.initFlow(this.workflow.currentLayer, mainFlow);
 
     this.workflow.getMode$().subscribe(mode => {
-      if (mode === 'report') {
+      if (mode === 'readOnly') {
         element.addEventListener('contextmenu', this.stopEventFunction, true);
         element.addEventListener('keydown',  this.stopEventFunction, true);
       } else {

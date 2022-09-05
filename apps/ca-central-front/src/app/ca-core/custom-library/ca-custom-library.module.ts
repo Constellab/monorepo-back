@@ -9,6 +9,7 @@ import {
   FlCorePipeModule,
   FlDateModule,
   FlDialogModule,
+  FlDrawerModule,
   FlDynamicFieldModule,
   FlFormModule,
   FlIconModule,
@@ -18,6 +19,7 @@ import {
   FlJsonEditorModule,
   FlKeyValueModule,
   FlLoaderModule,
+  FlMenuDynamicModule,
   FlPortalActionsModule,
   FlPortalModule,
   FlSectionModule,
@@ -68,6 +70,8 @@ import {PrProtocolModule} from '@monorepo/protocol';
     FlInputFileModule,
     FlDynamicFieldModule,
     FlUserModule,
+    FlMenuDynamicModule,
+    FlDrawerModule,
 
 
     RvResourceViewModule,

@@ -4,7 +4,7 @@ import {PrWorkflowNodeIo} from '../../model/pr-workflow-node-io.class';
 import {PrWorkflowNodeDirective} from '../../directive/pr-workflow-node.directive';
 import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {PrWorkflowActionState} from '../../state/pr-workflow-action-state';
-import {FlDialogService} from '@monorepo/front-core-lib';
+import {FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'pr-workflow-node-output',
@@ -22,8 +22,9 @@ export class PrWorkflowNodeOutputComponent extends PrWorkflowNodeDirective imple
               drawerState: PrWorkflowActionState,
               dialogService: FlDialogService,
               elementRef: ElementRef,
-              renderer: Renderer2) {
-    super(worflowManager, drawerState, dialogService, elementRef, renderer);
+              renderer: Renderer2,
+              portalService: FlPortalService) {
+    super(worflowManager, drawerState, dialogService, elementRef, renderer, portalService);
   }
 
   ngOnInit(): void {

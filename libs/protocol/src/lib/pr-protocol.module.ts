@@ -3,8 +3,10 @@ import {CommonModule} from '@angular/common';
 import {PrWorkflowManagerState} from './state/pr-workflow-manager-state';
 import {PrWorkflowComponent} from './component/pr-workflow/pr-workflow.component';
 import {
-  FlCoreComponentModule,
+  FlCoreComponentModule, FlDrawerModule,
   FlLoaderModule,
+  FlMenuDynamicModule,
+  FlPortalModule,
   FlStatusModule,
   FlTranslateModule,
   FlTranslateService
@@ -28,6 +30,12 @@ import {
   PrWorkflowLayersBreadcrumbComponent
 } from './component/pr-workflow-layers-breadcrumb/pr-workflow-layers-breadcrumb.component';
 import {prProtocolI18n} from './pr-protocol.i18n';
+import {
+  PrWorkflowPortActionPortalComponent
+} from './component/pr-workflow-port-action-portal/pr-workflow-port-action-portal.component';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatSidenavModule} from '@angular/material/sidenav';
+
 
 @NgModule({
   imports: [
@@ -40,7 +48,12 @@ import {prProtocolI18n} from './pr-protocol.i18n';
     FlStatusModule,
     FlTranslateModule,
     MatTooltipModule,
-    MatButtonModule
+    MatButtonModule,
+    FlPortalModule,
+    FlMenuDynamicModule,
+    MatMenuModule,
+    FlDrawerModule,
+    MatSidenavModule
   ],
   exports: [
     PrWorkflowComponent
@@ -52,7 +65,8 @@ import {prProtocolI18n} from './pr-protocol.i18n';
     PrWorkflowNodeSourceComponent,
     PrWorkflowNodeOutputComponent,
     PrWorkflowNodeInterfaceComponent,
-    PrWorkflowLayersBreadcrumbComponent
+    PrWorkflowLayersBreadcrumbComponent,
+    PrWorkflowPortActionPortalComponent,
   ]
 })
 export class PrProtocolModule {

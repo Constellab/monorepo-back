@@ -1,21 +1,13 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
 import {PrProtocol, PrProtocolData} from '../../model/pr-protocol.entity';
 import {PrFlow} from '../../model/pr-connection.class';
 import {PrProtocolGraphInput} from '../../model/pr-protocol-graph-input.class';
-import {PrWorkflowEvent, PrWorkflowMode} from '../../model/pr-workflow.class';
-import {Observable, Subject, Subscription} from 'rxjs';
-import {PrConfigEdit} from '../../model/pr-config-event.class';
+import {PrWorkflowMode} from '../../model/pr-workflow.class';
+import {Observable, Subscription} from 'rxjs';
+import {PrConfigEdit} from '../../model/pr-config-edit.class';
+import {MatDrawer} from '@angular/material/sidenav';
+import {PrWorkflowActionState} from '../../state/pr-workflow-action-state';
 
 
 @Component({
@@ -27,33 +19,29 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public static mainFlow: PrFlow<PrProtocol> = null;
 
+  @Input()
+  mainProtocolGraph: PrProtocolGraphInput;
+  @Input()
+  mode$: Observable<PrWorkflowMode>;
+  @Input()
+  config?: PrConfigEdit;
+
   @ViewChild('workflow', {static: false}) container: ElementRef<HTMLElement>;
 
   flowIsLoading: boolean = true;
   error: boolean = false;
-
-  @Input()
-  mainProtocolGraph: PrProtocolGraphInput;
-
-  @Input()
-  mode$: Observable<PrWorkflowMode>;
-
-  @Output()
-  action = new EventEmitter<PrWorkflowEvent>();
-
-  @Input()
-  configEvent?: PrConfigEdit;
-
   sub: Subscription;
   inputActionSub: Subscription;
 
 
   constructor(
     private workflowManagerState: PrWorkflowManagerState,
+    private actionState: PrWorkflowActionState
   ) {
   }
 
   ngOnInit(): void {
+    this.actionState.init();
   }
 
   ngAfterViewInit(): void {
@@ -78,11 +66,12 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   private loadExperimentFlowSuccess(flow: PrFlow<PrProtocol>): void {
     this.workflowManagerState.init(this.container.nativeElement, flow, 'edit');
 
+
     this.mode$.subscribe(mode => {
-      console.log('Mode', mode)
       this.workflowManagerState.workflow.setMode(mode);
-      if (mode === 'edit' && this.configEvent) {
-        this.configEvent.setState(this.workflowManagerState);
+      if (this.config) {
+        this.config.setState(this.workflowManagerState, this.actionState);
+        this.workflowManagerState.config = this.config;
       }
     });
 

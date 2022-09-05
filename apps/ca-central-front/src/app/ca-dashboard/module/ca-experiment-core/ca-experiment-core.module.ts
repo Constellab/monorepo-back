@@ -30,6 +30,7 @@ import {
 import {TdTechnicalDocModule} from "@monorepo/technical-doc";
 import {MatTabsModule} from "@angular/material/tabs";
 import {CaDashboardCoreModule} from "../ca-dashboard-core/ca-dashboard-core.module";
+import { CaExperimentTechnicalReportWorkflowDrawerComponent } from './component/ca-experiment-technical-report-workflow-drawer/ca-experiment-technical-report-workflow-drawer.component';
 
 
 @NgModule({
@@ -43,6 +44,7 @@ import {CaDashboardCoreModule} from "../ca-dashboard-core/ca-dashboard-core.modu
     CaExperimentLabConfigDialogComponent,
     CaExperimentTechnicalReportIntOutComponent,
     CaExperimentTechnicalReportProcessDocDialogComponent,
+    CaExperimentTechnicalReportWorkflowDrawerComponent,
   ],
   exports: [
     CaExperimentInfoComponent,
