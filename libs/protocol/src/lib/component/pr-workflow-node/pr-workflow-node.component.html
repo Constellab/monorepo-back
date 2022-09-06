@@ -4,25 +4,25 @@
 
     <!-- Title   -->
     <div class="text title">
-      {{node.title}}
+      {{title$ | async | flTranslatableText}}
     </div>
     <div class="text name g-text-light">
-      {{(node.currentObject.processTypingName | tdTypingName).brickName}}
+      {{subTitle$ | async}}
     </div>
 
 
     <!--  actions -->
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
       <!--   Only for protocol, possibility to zoom in   -->
-      <button *ngIf="isProtocol$ | async" (click)="zoomInProtocol()"
+      <button *ngIf="isProtocol" (click)="zoomInProtocol()"
               mat-icon-button type="button" [disabled]="layerIsLoading$ | async">
         <mat-icon>loupe</mat-icon>
       </button>
 
-<!--      <button mat-icon-button type="button"-->
-<!--              (click)="openNodeDetail()" [matTooltip]="'pr.open_node_detail' | translate">-->
-<!--        <mat-icon>info</mat-icon>-->
-<!--      </button>-->
+      <button mat-icon-button type="button"
+              (click)="openNodeDetail()" [matTooltip]="'pr.open_node_detail' | translate">
+        <mat-icon>info</mat-icon>
+      </button>
 
       <fl-status-chip mode="iconOnly" [status]="status$"></fl-status-chip>
     </div>

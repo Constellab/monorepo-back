@@ -3,17 +3,18 @@ import {CommonModule} from '@angular/common';
 import {PrWorkflowManagerState} from './state/pr-workflow-manager-state';
 import {PrWorkflowComponent} from './component/pr-workflow/pr-workflow.component';
 import {
-  FlCoreComponentModule, FlDrawerModule,
+  FlCoreComponentModule,
+  FlDrawerModule,
+  FlIconModule,
   FlLoaderModule,
   FlMenuDynamicModule,
   FlPortalModule,
   FlStatusModule,
   FlTranslateModule,
   FlTranslateService
-} from "@monorepo/front-core-lib";
-import {FlexModule} from '@angular/flex-layout';
+} from '@monorepo/front-core-lib';
+import {FlexLayoutModule} from '@angular/flex-layout';
 import {PrWorkflowNodeComponent} from './component/pr-workflow-node/pr-workflow-node.component';
-import {PrWorkflowNodeDirective} from './directive/pr-workflow-node.directive';
 import {TdTechnicalDocModule} from '@monorepo/technical-doc';
 import {MatIconModule} from '@angular/material/icon';
 import {createCustomElement} from '@angular/elements';
@@ -23,7 +24,6 @@ import {
   PrWorkflowNodeInterfaceComponent
 } from './component/pr-workflow-node-interface/pr-workflow-node-interface.component';
 import {PrWorkflowActionState} from './state/pr-workflow-action-state';
-import {PrWorkflowNodeDetailState} from './state/pr-workflow-node-detail-state';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatButtonModule} from '@angular/material/button';
 import {
@@ -35,25 +35,31 @@ import {
 } from './component/pr-workflow-port-action-portal/pr-workflow-port-action-portal.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import {PrWorkflowNodeViewerComponent} from './component/pr-workflow-node-viewer/pr-workflow-node-viewer.component';
+import {PrWorkflowActionState2} from './state/pr-workflow-external-event.state';
 
 
 @NgModule({
   imports: [
     CommonModule,
-    FlLoaderModule,
-    FlCoreComponentModule,
-    FlexModule,
-    TdTechnicalDocModule,
+    FlexLayoutModule,
+
     MatIconModule,
-    FlStatusModule,
-    FlTranslateModule,
     MatTooltipModule,
     MatButtonModule,
+    MatMenuModule,
+    MatSidenavModule,
+
+    FlStatusModule,
+    FlTranslateModule,
     FlPortalModule,
     FlMenuDynamicModule,
-    MatMenuModule,
     FlDrawerModule,
-    MatSidenavModule
+    FlLoaderModule,
+    FlCoreComponentModule,
+    FlIconModule,
+
+    TdTechnicalDocModule,
   ],
   exports: [
     PrWorkflowComponent
@@ -61,12 +67,12 @@ import {MatSidenavModule} from '@angular/material/sidenav';
   declarations: [
     PrWorkflowComponent,
     PrWorkflowNodeComponent,
-    PrWorkflowNodeDirective,
     PrWorkflowNodeSourceComponent,
     PrWorkflowNodeOutputComponent,
     PrWorkflowNodeInterfaceComponent,
     PrWorkflowLayersBreadcrumbComponent,
     PrWorkflowPortActionPortalComponent,
+    PrWorkflowNodeViewerComponent,
   ]
 })
 export class PrProtocolModule {
@@ -91,6 +97,11 @@ export class PrProtocolModule {
         injector
       }));
 
+    customElements.define('pr-workflow-node-viewer',
+      createCustomElement(PrWorkflowNodeViewerComponent, {
+        injector,
+      }));
+
     customElements.define('pr-workflow-node-interface',
       createCustomElement(PrWorkflowNodeInterfaceComponent, {
         injector,
@@ -104,7 +115,11 @@ export class PrProtocolModule {
   public static forRoot(): ModuleWithProviders<PrProtocolModule> {
     return {
       ngModule: PrProtocolModule,
-      providers: [PrWorkflowManagerState, PrWorkflowActionState, PrWorkflowNodeDetailState]
+      providers: [
+        PrWorkflowActionState2,
+        PrWorkflowManagerState,
+        PrWorkflowActionState,
+      ]
     };
   }
 }

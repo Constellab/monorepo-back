@@ -1,15 +1,17 @@
-import {PrWorkflowNodeProcess} from './pr-workflow-node-process.class';
-import {PrWorkflowNodeInterface} from './pr-workflow-node-interface.class';
-import {PrWorkflowNodeOuterface} from './pr-workflow-node-outerface.class';
+import {PrWorkflowNodeProcess} from './node/pr-workflow-node-process.class';
+import {PrWorkflowNodeInterface} from './node/pr-workflow-node-interface.class';
+import {PrWorkflowNodeOuterface} from './node/pr-workflow-node-outerface.class';
+import {TdTaskViewerConfig} from '@monorepo/technical-doc';
 
 export type PrWorkflowActionEvent =
   PrWorkflowActionSelectNode
   | PrWorkflowActionSelectInterface
-  | PrWorkflowActionSelectOuterface;
+  | PrWorkflowActionSelectOuterface
+  | PrWorkflowActionShowResource
+  | PrWorkflowActionShowView;
 
 export interface PrWorkflowActionBase {
   action: string;
-  title: string;
 }
 
 /**
@@ -36,3 +38,20 @@ export interface PrWorkflowActionSelectOuterface extends PrWorkflowActionBase {
   node: PrWorkflowNodeOuterface;
 }
 
+/**
+ * Action called when selecting a resource
+ */
+export interface PrWorkflowActionShowResource extends PrWorkflowActionBase {
+  action: 'showResource';
+  resourceId: string;
+}
+
+/**
+ * Action called when selecting a resource
+ */
+export interface PrWorkflowActionShowView extends PrWorkflowActionBase {
+  action: 'showView';
+  resourceId: string;
+  resourceName: string;
+  config: TdTaskViewerConfig;
+}

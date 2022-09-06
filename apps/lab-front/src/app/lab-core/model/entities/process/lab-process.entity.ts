@@ -1,18 +1,16 @@
 import {LabConfig, LabConfigValues} from '../lab-config.entity';
 import {ClRecordTransform} from '@monorepo/core-lib';
-import {LabNode} from '../../global/lab-connection.class';
 import {Expose, Type} from 'class-transformer';
 import {LabIO} from '../lab-io.entity';
 import {LabProgressBar} from '../lab-progress-bar.entity';
 import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
-import {LabTypingName} from '../lab-typing-name.class';
+import {LabBaseEntityWithUser} from '../lab-user.entity';
+import {TdTypingName} from '@monorepo/technical-doc';
 
 export interface LabProcessData {
   title: string;
 
   description?: string;
-
-  doc?: string;
 
   graph?: any;
 }
@@ -29,7 +27,7 @@ const labProcessStatusDict: FlStatusDict<LabProcessStatus> = {
 /**
  * Task or protocol inside a flow
  */
-export class LabProcess extends LabNode {
+export class LabProcess extends LabBaseEntityWithUser {
 
   @Expose({name: 'process_typing_name'})
   processTypingName: string;
@@ -71,6 +69,9 @@ export class LabProcess extends LabNode {
   @Expose({name: 'is_protocol'})
   isProtocol: boolean;
 
+  @Expose({name: 'brick_version'})
+  brickVersion: string;
+
 
   public hasConfig(): boolean {
     return this.config?.data.specs.hasProperties() ?? false;
@@ -86,16 +87,16 @@ export class LabProcess extends LabNode {
 
   // return true if the process is of type Source
   isSource(): boolean {
-    return this.processTypingName === LabTypingName.task.source;
+    return this.processTypingName === TdTypingName.task.source;
   }
 
   // return true if the process is of type Output
   isOutput(): boolean {
-    return this.processTypingName === LabTypingName.task.output.typingName;
+    return this.processTypingName === TdTypingName.task.output.typingName;
   }
 
   isViewer(): boolean {
-    return this.processTypingName === LabTypingName.task.viewer;
+    return this.processTypingName === TdTypingName.task.viewer;
   }
 
   get title(): string {

@@ -4,7 +4,7 @@
 
     <!-- Title   -->
     <div class="name g- g-text-small">
-      {{title$ | async}}
+      {{title$ | async | flTranslatableText}}
     </div>
 
 
@@ -14,6 +14,13 @@
               (click)="openNodeDetail()" [matTooltip]="'pr.open_node_detail' | translate">
         <mat-icon>info</mat-icon>
       </button>
+
+      <ng-container *ngIf="resourceId$ | async as resourceId">
+        <button *ngIf="resourceId" mat-icon-button (click)="openResourceDetail(resourceId)"
+                type="button" [matTooltip]="'resource' | translate">
+          <mat-icon flIcon="resource"></mat-icon>
+        </button>
+      </ng-container>
     </div>
   </div>
 

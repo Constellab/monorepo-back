@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
-import {LabWorkflowActionEvent} from '../../model/lab-workflow-drawer-event.class';
 import {Observable} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {LabWorkflowNodeDetailState} from '../../state/lab-workflow-node-detail.state';
+import {LabProcess} from '../../../../../lab-core/model/entities/process/lab-process.entity';
 
 /**
  * This component is the content of the drawer,
@@ -15,24 +14,14 @@ import {tap} from 'rxjs/operators';
 })
 export class LabWorkflowDrawerActionComponent implements OnInit {
 
-  action$: Observable<LabWorkflowActionEvent>;
+  process$: Observable<LabProcess>;
 
-  drawerWidth: string = '25em';
-
-  constructor(private actionState: LabWorkflowActionState) {
+  constructor(private nodeDetailState: LabWorkflowNodeDetailState) {
   }
 
   ngOnInit(): void {
-    this.action$ = this.actionState.getAction$().pipe(tap(action => this.getDrawerWidth(action)));
+    this.process$ = this.nodeDetailState.getProcess$();
   }
 
-  // set specific drawer width base on action
-  private getDrawerWidth(action: LabWorkflowActionEvent): void {
-    switch (action?.action ?? null) {
-      default:
-        this.drawerWidth = '25em';
-        return;
-    }
-  }
 
 }

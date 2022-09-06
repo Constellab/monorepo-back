@@ -5,8 +5,9 @@ import {LabExperiment} from '../../../../../lab-core/model/entities/lab-experime
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {MatDrawer} from '@angular/material/sidenav';
-import {LabWorkflowActionState} from '../../state/lab-workflow-action-state';
 import {first} from 'rxjs/operators';
+import {PrWorkflowActionState} from '@monorepo/protocol';
+import {LabWorkflowNodeDetailState} from '../../state/lab-workflow-node-detail.state';
 
 /**
  * Page for the biox experiment detail with workflow view/edit
@@ -28,7 +29,8 @@ export class LabExperimentDetailPageComponent implements OnInit, OnDestroy {
               private router: Router,
               private experimentState: LabExperimentDetailPageState,
               private dialogService: FlDialogService,
-              private actionState: LabWorkflowActionState) {
+              private actionState: PrWorkflowActionState,
+              private nodeDetailState: LabWorkflowNodeDetailState) {
   }
 
   ngOnInit(): void {
@@ -41,7 +43,8 @@ export class LabExperimentDetailPageComponent implements OnInit, OnDestroy {
       queryParams => this.selectedTabIndex = queryParams.tab ?? 0
     );
 
-    this.actionState.init(this.drawer);
+    this.actionState.init();
+    this.nodeDetailState.init(this.drawer);
   }
 
   private init(experimentId: string): void {

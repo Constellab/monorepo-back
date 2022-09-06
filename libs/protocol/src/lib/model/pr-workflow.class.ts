@@ -1,9 +1,8 @@
-import {PrWorkflowNode} from './pr-workflow-node.class';
+import {PrWorkflowNode} from './node/pr-workflow-node.class';
 import {PrWorkflowConnection} from './pr-workflow-connection.class';
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
 import {PrWorkflowLayer} from './pr-workflow-layer.class';
 import {BehaviorSubject, map, Observable, Subject} from 'rxjs';
-import {PrFlowManager} from './pr-connection.class';
 import {NgZone} from '@angular/core';
 import {PrWorkflowPort} from './pr-workflow-port.class';
 
@@ -15,7 +14,7 @@ export type PrWorkflowEvent =
 
 export interface PrWorkflowDeleteNodeEvent {
   action: 'deleteNode';
-  node: PrWorkflowNode<any>;
+  node: PrWorkflowNode;
   protocolId: string;
 }
 
@@ -41,13 +40,11 @@ export class PrWorkflow {
 
   private mode: PrWorkflowMode;
 
-  private mode$: Subject<PrWorkflowMode> = new Subject<PrWorkflowMode>();
-
   private workflowEvent$: Subject<PrWorkflowEvent> = new Subject<PrWorkflowEvent>();
 
   constructor(private element: HTMLElement,
               name: string,
-              object: PrFlowManager,
+              id: string,
               mode: PrWorkflowMode = 'edit',
               private ngZone: NgZone) {
 
@@ -60,7 +57,7 @@ export class PrWorkflow {
     this.setMode(mode);
 
     // init layers
-    const currentLayer: PrWorkflowLayer = new PrWorkflowLayer(this.editor, name, object, null);
+    const currentLayer: PrWorkflowLayer = new PrWorkflowLayer(this.editor, name, id, null);
     this.layers = [currentLayer];
 
     // init subject
@@ -129,17 +126,17 @@ export class PrWorkflow {
     layer.selectLayer();
   }
 
-  public createSubLayerIfNotExists(name: string, title: string, object: PrFlowManager, selectLayer: boolean = true): PrWorkflowLayer {
+  public createSubLayerIfNotExists(name: string, title: string, id: string, selectLayer: boolean = true): PrWorkflowLayer {
 
-    let layer: PrWorkflowLayer = this.findLayerWithId(object.id);
+    let layer: PrWorkflowLayer = this.findLayerWithId(id);
     if (layer == null) {
-      this.editor.addModule(object.id);
-      layer = this.currentLayer.createSubLayer(name, title, object);
+      this.editor.addModule(id);
+      layer = this.currentLayer.createSubLayer(name, title, id);
       this.layers.push(layer);
     }
 
     if (selectLayer) {
-      this.selectLayer(object.id);
+      this.selectLayer(id);
     }
     return layer;
   }
@@ -168,21 +165,24 @@ export class PrWorkflow {
     this.currentLayer.resetPortColors();
   }
 
+  public getRootLayer(): PrWorkflowLayer {
+    return this.layers[0];
+  }
 
   ////////////////////// NODE ///////////////////////////
 
   private onNodeRemoved(nodeId: number): void {
-    const node: PrWorkflowNode<any> = this.currentLayer.removeNode(nodeId.toString());
+    const node: PrWorkflowNode = this.currentLayer.removeNode(nodeId.toString());
     if (node) {
       this.workflowEvent$.next({
         action: 'deleteNode',
         node: node,
-        protocolId: this.currentLayer.object.id
+        protocolId: this.currentLayer.id
       });
     }
   }
 
-  public findNodeWithId(nodeId: string): PrWorkflowNode<any> {
+  public findNodeWithId(nodeId: string): PrWorkflowNode {
     for (const layer of this.layers) {
       const node = layer.findNodeWithId(nodeId);
       if (node != null) {
@@ -196,11 +196,11 @@ export class PrWorkflow {
    * Find (in the current layer) the node with the given name
    * We must search in current layer because in multiple layer we can have the same
    */
-  public findNodeWithNameInCurrentLayer(nodeName: string): PrWorkflowNode<any> {
+  public findNodeWithNameInCurrentLayer(nodeName: string): PrWorkflowNode {
     return this.currentLayer.findNodeWithName(nodeName);
   }
 
-  public findNode(predicate: (node: PrWorkflowNode<any>) => boolean): PrWorkflowNode<any> {
+  public findNode(predicate: (node: PrWorkflowNode) => boolean): PrWorkflowNode {
     for (const layer of this.layers) {
       const node = layer.findNode(predicate);
       if (node != null) {
@@ -222,8 +222,8 @@ export class PrWorkflow {
 
   private onConnectionCreated(connectionEvent: ConnectionEvent): void {
     // check if input is available for the node
-    const inputNode: PrWorkflowNode<any> = this.findNodeWithId(connectionEvent.input_id);
-    const outputNode: PrWorkflowNode<any> = this.findNodeWithId(connectionEvent.output_id);
+    const inputNode: PrWorkflowNode = this.findNodeWithId(connectionEvent.input_id);
+    const outputNode: PrWorkflowNode = this.findNodeWithId(connectionEvent.output_id);
     const inputPort: PrWorkflowPort = inputNode.findInputPortByDrawflowName(connectionEvent.input_class);
     const outputPort: PrWorkflowPort = outputNode.findOutputPortByDrawflowName(connectionEvent.output_class);
 
@@ -252,7 +252,7 @@ export class PrWorkflow {
       this.workflowEvent$.next({
         action: 'addConnection',
         connection: newConnection,
-        protocolId: this.currentLayer.object.id
+        protocolId: this.currentLayer.id
       });
     }
   }
@@ -262,13 +262,13 @@ export class PrWorkflow {
     // this happened when the removeConnection is called and the connection was deleted by code not user
     const connection = this.currentLayer.findConnectionByConnectionEvent(connectionEvent);
     if (connection) {
-      if(this.mode !== 'readOnly'){
+      if (this.mode !== 'readOnly') {
         this.currentLayer.saveUserConnectionRemoved(connection);
 
         this.workflowEvent$.next({
           action: 'deleteConnection',
           connection: connection,
-          protocolId: this.currentLayer.object.id
+          protocolId: this.currentLayer.id
         });
       } else {
         this.currentLayer.addConnection(connection);
@@ -299,22 +299,11 @@ export class PrWorkflow {
 
   public setMode(mode: PrWorkflowMode): void {
     this.mode = mode;
-    this.mode$.next(mode);
-    if (mode === 'readOnly') {
-      mode = 'edit';
-    }
-    this.editor.editor_mode = mode === 'edit' ? 'edit' : 'view';
+
+    // use always edit mode
+    this.editor.editor_mode = 'edit';
   }
 
-  public getMode(): PrWorkflowMode {
-    return this.mode;
-  }
-
-  public getMode$(): Observable<PrWorkflowMode> {
-    this.mode$.subscribe(mode => {
-    })
-    return this.mode$.asObservable();
-  }
 
   public getWorkflowEvent$(): Observable<PrWorkflowEvent> {
     return this.workflowEvent$.asObservable();

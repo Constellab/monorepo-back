@@ -33,12 +33,10 @@ export class PrWorkflowPort {
    * If one is null, it is compatible with anything
    */
   public isCompatible(port: PrWorkflowPort): boolean {
-    // todo check what to do when null
     if (this.specs == null || port.specs == null) {
       return true;
     }
 
-    // todo re-enable a smarter check
     return true;
     // for (const type of port.types) {
     //   if (this.types.includes(type)) {
@@ -61,5 +59,9 @@ export class PrWorkflowPort {
         return FlColorHelper.stringToRGBColor(this.specs.resource_types[0].typing_name);
       }
     }
+  }
+
+  public getResourceTypingNames(): string[] {
+    return this.specs.resource_types.map(spec => spec.typing_name);
   }
 }

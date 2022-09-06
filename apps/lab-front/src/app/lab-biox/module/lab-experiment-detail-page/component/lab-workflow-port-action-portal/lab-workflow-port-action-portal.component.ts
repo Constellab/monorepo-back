@@ -1,10 +1,10 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {TdIOSpec} from '@monorepo/technical-doc';
 import {FL_PORTAL_DATA, FlMenuDynamic, FlOverlayRef} from '@monorepo/front-core-lib';
-import {LabWorkflowPort} from '../../model/lab-workflow-port.class';
+import {PrWorkflowPort} from '@monorepo/protocol';
 
 export interface LabWorkflowPortActionPortalInput {
-  port: LabWorkflowPort;
+  port: PrWorkflowPort;
   menuDynamics: FlMenuDynamic[];
 }
 

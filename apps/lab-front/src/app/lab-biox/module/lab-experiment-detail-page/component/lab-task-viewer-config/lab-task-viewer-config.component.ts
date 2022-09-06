@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {LabWorkflowNodeIO} from '../../model/lab-workflow-node-io.class';
 import {mergeMap, Observable, of} from 'rxjs';
 import {LabWorkflowNodeDetailState} from '../../state/lab-workflow-node-detail.state';
 import {FlDialogService} from '@monorepo/front-core-lib';
@@ -8,8 +7,9 @@ import {
   LabConfigureViewerDialogComponent,
   LabConfigureViewerDialogInput
 } from '../lab-configure-viewer-dialog/lab-configure-viewer-dialog.component';
-import {LabTaskViewerConfig} from '../../../../../lab-core/model/entities/lab-typing-name.class';
 import {map} from 'rxjs/operators';
+import {PrWorkflowNodeViewer} from '@monorepo/protocol';
+import {TdTaskViewerConfig} from '@monorepo/technical-doc';
 
 /**
  * Specific component to configure a task of type ViewTask
@@ -25,8 +25,8 @@ export class LabTaskViewerConfigComponent implements OnInit {
 
   isEditable$: Observable<boolean>;
 
-  node$: Observable<LabWorkflowNodeIO>;
-  config$: Observable<LabTaskViewerConfig>;
+  node$: Observable<PrWorkflowNodeViewer>;
+  config$: Observable<TdTaskViewerConfig>;
 
   constructor(private nodeDetail: LabWorkflowNodeDetailState,
               private dialogService: FlDialogService,
@@ -36,7 +36,7 @@ export class LabTaskViewerConfigComponent implements OnInit {
   ngOnInit(): void {
     this.node$ = this.nodeDetail.getNode$().pipe(
       map(node => {
-        if (node instanceof LabWorkflowNodeIO) {
+        if (node instanceof PrWorkflowNodeViewer) {
           return node;
         } else {
           return null;
@@ -48,7 +48,7 @@ export class LabTaskViewerConfigComponent implements OnInit {
       mergeMap(node => {
         if (node == null) return of(null);
         return node.getObject$()
-          .pipe(map(process => process.getConfigValues() as LabTaskViewerConfig));
+          .pipe(map(process => process.config.values as TdTaskViewerConfig));
       })
     );
 
@@ -56,8 +56,8 @@ export class LabTaskViewerConfigComponent implements OnInit {
   }
 
 
-  openViewerConfiguration(node: LabWorkflowNodeIO): void {
-    const data: LabConfigureViewerDialogInput = node.currentObject.getConfigValues() as LabTaskViewerConfig;
+  openViewerConfiguration(node: PrWorkflowNodeViewer): void {
+    const data: LabConfigureViewerDialogInput = node.currentObject.config.values as TdTaskViewerConfig;
 
     this.dialogService.openMediumDialog(LabConfigureViewerDialogComponent,
       {data: data, panelClass: 'g-dialog-main-background'}).afterClosed().subscribe(
@@ -65,7 +65,7 @@ export class LabTaskViewerConfigComponent implements OnInit {
     );
   }
 
-  private onConfigurationClosed(config?: LabTaskViewerConfig): void {
+  private onConfigurationClosed(config?: TdTaskViewerConfig): void {
     if (config) {
       this.nodeDetail.updateConfigValues(config);
     }

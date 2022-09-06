@@ -3,7 +3,6 @@ import {LabExperimentService} from '../../../../lab-core/entity-service/lab-expe
 import {BehaviorSubject, merge, Observable, of, Subject, Subscription} from 'rxjs';
 import {LabExperiment} from '../../../../lab-core/model/entities/lab-experiment.entity';
 import {filter, map, tap} from 'rxjs/operators';
-import {LabFlow} from '../../../../lab-core/model/global/lab-connection.class';
 import {LabProtocol} from '../../../../lab-core/model/entities/process/lab-protocol.entity';
 import {LabProtocolService} from '../../../../lab-core/entity-service/lab-protocol.service';
 import {LabTag} from '../../../../lab-core/model/entities/lab-tag.entity';
@@ -17,11 +16,11 @@ export class LabExperimentDetailPageState {
   private experiment$: BehaviorSubject<LabExperiment>;
   private experimentDescription$: BehaviorSubject<FlQuillJson>;
 
-  // observable where flow are emitted when there are retrieved form DB
-  private flowChange$: Subject<LabFlow<LabProtocol>>;
+  // observable where protocol are emitted when there are retrieved form DB
+  private protocolChange$: Subject<LabProtocol>;
 
   // save the list flows where the key is the protocol id
-  private flows: Record<string, LabFlow<LabProtocol>>;
+  private protocols: Record<string, LabProtocol>;
 
   // does not emit experiment until ready is true
   private ready: boolean = false;
@@ -42,8 +41,8 @@ export class LabExperimentDetailPageState {
     this.ready = false;
     this.experiment$ = new BehaviorSubject(null);
     this.experimentDescription$ = new BehaviorSubject(null);
-    this.flowChange$ = new Subject();
-    this.flows = {};
+    this.protocolChange$ = new Subject();
+    this.protocols = {};
     this.experimentService.getExperiment(experimentId).subscribe(
       {
         next: experiment => this.getExperimentSuccess(experiment),
@@ -78,14 +77,14 @@ export class LabExperimentDetailPageState {
   /**
    * Update the experiment locally
    * @param experiment
-   * @param refreshWorkflow if true, the flow are reloaded
+   * @param refreshWorkflow if true, the protocol are reloaded
    */
   public updateExperiment(experiment: LabExperiment, refreshWorkflow: boolean = false): void {
     if (experiment == null) return;
     this.experiment$.next(experiment);
 
     if (refreshWorkflow) {
-      this.refreshAllFlows();
+      this.refreshAllProtocols();
     }
   }
 
@@ -109,61 +108,61 @@ export class LabExperimentDetailPageState {
 
 
   /**
-   * Check if the experiment is waiting or running and start to refresh the flow if yes
+   * Check if the experiment is waiting or running and start to refresh the protocol if yes
    */
-  public checkAndStartRefreshFlow(): void {
+  public checkAndStartRefreshProtocol(): void {
     this.timeout = setTimeout(() => {
 
-      const mainFlow = this.getCurrentMainFlow();
+      const mainProtocol = this.getCurrentProtocol();
       const experiment = this.currentExperiment;
-      // Stop refresh if experiment is not running (including queue) and the main flow is finished
-      if ((!experiment.isRunning() && experiment.status.value !== 'IN_QUEUE') || mainFlow.object.isFinished()) return;
+      // Stop refresh if experiment is not running (including queue) and the main protocol is finished
+      if ((!experiment.isRunning() && experiment.status.value !== 'IN_QUEUE') || mainProtocol.isFinished()) return;
 
       // retrieve all not finished protocols
-      const notFinishedFlowIds: string[] = Object.values(this.flows)
-        .filter(flow => !flow.object.isFinished()).map(flow => flow.object.id);
-      this.refreshFlowsTick(notFinishedFlowIds);
+      const notFinishedProtocolIds: string[] = Object.values(this.protocols)
+        .filter(protocol => !protocol.isFinished()).map(protocol => protocol.id);
+      this.refreshProtocolsTick(notFinishedProtocolIds);
       this.refreshExperiment();
     }, this.refreshIntervalDuration);
   }
 
   /**
-   * Start to refresh the flow
+   * Start to refresh the protocol
    */
-  public startFlowsRefresh(): void {
+  public startProtocolsRefresh(): void {
     // retrieve all not finished protocols
-    const allFlows: string[] = [
-      ...Object.values(this.flows).map(flow => flow.object.id)
+    const allProtocols: string[] = [
+      ...Object.values(this.protocols).map(protocol => protocol.id)
     ];
-    this.refreshFlowsTick(allFlows);
+    this.refreshProtocolsTick(allProtocols);
   }
 
   /**
-   * One tick to refresh the flow, after getting all flow, it calls get flow again
+   * One tick to refresh the protocol, after getting all protocol, it calls get protocol again
    * @param flowIds
    * @private
    */
-  private refreshFlowsTick(flowIds: string[]): void {
-    this.refreshSubscription = this.refreshFlows(flowIds).subscribe(
+  private refreshProtocolsTick(flowIds: string[]): void {
+    this.refreshSubscription = this.refreshProtocols(flowIds).subscribe(
       {
-        complete: () => this.checkAndStartRefreshFlow()
+        complete: () => this.checkAndStartRefreshProtocol()
       }
     );
   }
 
-  private refreshAllFlows(): void {
-    this.refreshFlows(Object.keys(this.flows)).subscribe();
+  private refreshAllProtocols(): void {
+    this.refreshProtocols(Object.keys(this.protocols)).subscribe();
   }
 
-  private refreshFlows(flowIds: string[]): Observable<LabFlow<LabProtocol>> {
-    const obs: Observable<LabFlow<LabProtocol>>[] = flowIds.map(id => this.protocolService.getProtocolAsFlow(id));
+  private refreshProtocols(flowIds: string[]): Observable<LabProtocol> {
+    const obs: Observable<LabProtocol>[] = flowIds.map(id => this.protocolService.getProtocol(id));
     return merge(...obs).pipe(
-      tap(flow => this.refreshFlowSuccess(flow)),
+      tap(protocol => this.refreshProtocolSuccess(protocol)),
     );
 
   }
 
-  public stopFlowsRefresh(): void {
+  public stopProtocolsRefresh(): void {
     if (this.timeout) {
       clearTimeout(this.timeout);
       this.timeout = null;
@@ -174,42 +173,42 @@ export class LabExperimentDetailPageState {
   /////////////////////////////////// FLOW ////////////////////////////////////
 
   /**
-   * Get a flow from cache is possible, otherwise load it
+   * Get a protocol from cache is possible, otherwise load it
    * @param protocolId
    */
-  public getFlow(protocolId: string): Observable<LabFlow<LabProtocol>> {
-    if (this.flows[protocolId]) return of(this.flows[protocolId]);
+  public getProtocol(protocolId: string): Observable<LabProtocol> {
+    if (this.protocols[protocolId]) return of(this.protocols[protocolId]);
 
-    return this.protocolService.getProtocolAsFlow(protocolId).pipe(tap({
-      next: flow => this.cacheFlow(flow),
+    return this.protocolService.getProtocol(protocolId).pipe(tap({
+      next: protocol => this.cacheProtocol(protocol),
     }));
   }
 
-  private refreshFlowSuccess(flow: LabFlow<LabProtocol>): void {
-    this.cacheFlow(flow);
-    this.flowChange$.next(flow);
+  private refreshProtocolSuccess(protocol: LabProtocol): void {
+    this.cacheProtocol(protocol);
+    this.protocolChange$.next(protocol);
   }
 
 
-  private cacheFlow(flow: LabFlow<LabProtocol>): void {
-    // save the sub flow
-    this.flows[flow.object.id] = flow;
+  private cacheProtocol(protocol: LabProtocol): void {
+    // save the sub protocol
+    this.protocols[protocol.id] = protocol;
   }
 
 
-  public getMainFlow$(): Observable<LabFlow<LabProtocol>> {
-    return this.getFlow(this.mainProtocolId);
+  public getMainProtocol$(): Observable<LabProtocol> {
+    return this.getProtocol(this.mainProtocolId);
   }
 
-  private getCurrentMainFlow(): LabFlow<LabProtocol> {
-    return this.flows[this.mainProtocolId];
+  private getCurrentProtocol(): LabProtocol {
+    return this.protocols[this.mainProtocolId];
   }
 
   /**
-   * Notify each time of flow is retrieved
+   * Notify each time of protocol is retrieved
    */
-  public getFlowUpdate$(): Observable<LabFlow<LabProtocol>> {
-    return this.flowChange$.asObservable();
+  public getProtocolUpdate$(): Observable<LabProtocol> {
+    return this.protocolChange$.asObservable();
   }
 
 
@@ -222,11 +221,11 @@ export class LabExperimentDetailPageState {
       return;
     }
 
-    const flow = this.flows[protocolId];
+    const protocol = this.protocols[protocolId];
 
     node.updateConfig(config);
-    // refresh the complete flow to trigger object update
-    this.refreshFlowSuccess(flow);
+    // refresh the complete protocol to trigger object update
+    this.refreshProtocolSuccess(protocol);
 
     const obs = this.protocolService.saveProcessConfig(protocolId, processInstanceName, config);
     this.actionsService.addAction({
@@ -237,16 +236,16 @@ export class LabExperimentDetailPageState {
   }
 
   private findNodeWithName(protocolId: string, processInstanceName: string): LabProcess {
-    const flow = this.flows[protocolId];
-    if (!flow) return null;
+    const protocol = this.protocols[protocolId];
+    if (!protocol) return null;
 
-    return flow.object.getProcess(processInstanceName);
+    return protocol.getProcess(processInstanceName);
   }
 
   public clear(): void {
     this.experiment$.complete();
-    this.flowChange$.complete();
+    this.protocolChange$.complete();
     this.experimentDescription$.complete();
-    this.stopFlowsRefresh();
+    this.stopProtocolsRefresh();
   }
 }

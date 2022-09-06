@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import {FlApiWithCacheService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {LabFlow} from '../model/global/lab-connection.class';
 import {LabProtocol} from '../model/entities/process/lab-protocol.entity';
 import {LabProcess} from '../model/entities/process/lab-process.entity';
 import {LabAddProcessWithLink} from '../../lab-biox/module/lab-experiment-detail-page/model/lab-workflow-action.class';
@@ -22,18 +20,6 @@ export class LabProtocolService {
 
   public getProtocol(protocolId: string): Observable<LabProtocol> {
     return this.apiService.get(`${this.baseRoute}/${protocolId}`, LabProtocol);
-  }
-
-
-  public getProtocolAsFlow(protocolId: string): Observable<LabFlow<LabProtocol>> {
-    return this.getProtocol(protocolId).pipe(
-      map(flow => this.initProtocolFlow(flow)),
-    );
-  }
-
-
-  private initProtocolFlow(protocol: LabProtocol): LabFlow<LabProtocol> {
-    return new LabFlow<LabProtocol>(protocol);
   }
 
   //////////////////////////////////////// PROCESS /////////////////////////////////////

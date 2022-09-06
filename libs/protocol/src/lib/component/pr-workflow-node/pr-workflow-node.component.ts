@@ -1,41 +1,28 @@
-import {Component, ElementRef, OnDestroy, OnInit, Renderer2} from '@angular/core';
-import {PrWorkflowNodeDirective} from '../../directive/pr-workflow-node.directive';
-import {map} from 'rxjs/operators';
-import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {PrWorkflowNodeProcessDirective} from '../../directive/pr-workflow-node-process.directive';
 import {Observable} from 'rxjs';
-import {FlDialogService, FlPortalService, FlStatus} from '@monorepo/front-core-lib';
-import {PrWorkflowActionState} from '../../state/pr-workflow-action-state';
-import {PrProtocol} from '../../model/pr-protocol.entity';
+import {PrWorkflowNodeProtocol} from '../../model/node/pr-workflow-node-protocol.class';
 
 @Component({
   selector: 'pr-workflow-node',
   templateUrl: './pr-workflow-node.component.html',
   styleUrls: ['./pr-workflow-node.component.scss']
 })
-export class PrWorkflowNodeComponent extends PrWorkflowNodeDirective implements OnInit, OnDestroy {
+export class PrWorkflowNodeComponent extends PrWorkflowNodeProcessDirective implements OnInit, OnDestroy {
 
   layerIsLoading$: Observable<boolean>;
-  status$: Observable<FlStatus>;
-  isProtocol$: Observable<boolean>;
-
-  constructor(worflowManager: PrWorkflowManagerState,
-              drawerState: PrWorkflowActionState,
-              dialogService: FlDialogService,
-              elementRef: ElementRef,
-              renderer: Renderer2,
-              portalService: FlPortalService) {
-    super(worflowManager, drawerState, dialogService, elementRef, renderer, portalService);
-  }
+  isProtocol: boolean;
 
   ngOnInit(): void {
     this.initNode();
     this.layerIsLoading$ = this.workflowManager.layerIsLoading$;
-    this.isProtocol$ = this.node.getObject$().pipe(map(process => process.isProtocol));
-    this.status$ = this.node.getObject$().pipe(map(process => process.status));
+    this.isProtocol = this.node instanceof PrWorkflowNodeProtocol;
   }
 
   zoomInProtocol(): void {
-    this.workflowManager.selectLayer(this.node.currentObject.id, this.node.currentObject as PrProtocol);
+    if (this.node instanceof PrWorkflowNodeProtocol) {
+      this.workflowManager.selectLayer(this.node.currentObject.id, this.node);
+    }
   }
 
   ngOnDestroy(): void {

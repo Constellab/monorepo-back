@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LabTaskViewerConfig} from '../../../../../lab-core/model/entities/lab-typing-name.class';
+import {TdTaskViewerConfig} from '@monorepo/technical-doc';
 
 /**
  * Component to show the configuration of the viewer
@@ -11,7 +11,7 @@ import {LabTaskViewerConfig} from '../../../../../lab-core/model/entities/lab-ty
 })
 export class LabTaskViewerShowConfigComponent implements OnInit {
 
-  @Input() config: LabTaskViewerConfig;
+  @Input() config: TdTaskViewerConfig;
 
   constructor() {
   }

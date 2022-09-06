@@ -6,8 +6,8 @@ import {LabResource} from '../../../../../lab-core/model/entities/resource/lab-r
 import {
   LabSelectResourceDialogComponent
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
-import {LabWorkflowNodeIO} from '../../model/lab-workflow-node-io.class';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
+import {PrWorkflowNodeSource} from '@monorepo/protocol';
 
 /**
  * Specific component to configure a task of type gws.plug.Source
@@ -25,7 +25,7 @@ export class LabTaskSourceConfigComponent implements OnInit, OnDestroy {
 
   isEditable$: Observable<boolean>;
 
-  private node: LabWorkflowNodeIO;
+  private node: PrWorkflowNodeSource;
   private subscription: Subscription;
 
 
@@ -36,18 +36,18 @@ export class LabTaskSourceConfigComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscription = this.nodeDetail.getNode$().subscribe(
-      node => this.setNode(node as LabWorkflowNodeIO)
+      node => this.setNode(node as PrWorkflowNodeSource)
     );
 
     this.isEditable$ = this.experimentState.isEditable$();
   }
 
-  private setNode(node: LabWorkflowNodeIO): void {
+  private setNode(node: PrWorkflowNodeSource): void {
     // security to prevent not source node
     // it can be called because the state change before the component is destroy
-    if (!(node instanceof LabWorkflowNodeIO)) return;
+    if (!(node instanceof PrWorkflowNodeSource)) return;
     this.node = node;
-    this.selectedResource$ = node.getLoadedResource$();
+    this.selectedResource$ = node.getLoadedResource$() as Observable<FlStatusEvent<LabResource>>;
   }
 
   openResourceSelection(): void {

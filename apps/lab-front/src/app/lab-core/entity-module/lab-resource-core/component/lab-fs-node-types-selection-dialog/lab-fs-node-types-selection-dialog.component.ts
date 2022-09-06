@@ -4,9 +4,9 @@ import {LabFileResourceService} from '../../../../entity-service/lab-file-resour
 import {FormArray, FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
-import {LabTypingName} from '../../../../model/entities/lab-typing-name.class';
 import {ClCachedObservable} from '@monorepo/core-lib';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
+import {TdTypingName} from '@monorepo/technical-doc';
 
 
 export type LabFsNodeTypesSelectionDialogMode = 'files' | 'folder' | 'filesOrFolder';
@@ -107,7 +107,7 @@ export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
     // detect the typing name automatically
     for (const filename of this.input.filenames) {
       // set the file as default typing name
-      filesWithType.push({filename: filename, typingName: LabTypingName.resource.file});
+      filesWithType.push({filename: filename, typingName: TdTypingName.resource.file});
     }
 
     for (const file of filesWithType) {
@@ -118,7 +118,7 @@ export class LabFsNodeTypesSelectionDialogComponent implements OnInit {
   private initFormFolder(): void {
     this.resourceTypes$ = this.folderTypes$.getObs();
 
-    this.addItemToFormArray({filename: null, typingName: LabTypingName.resource.folder});
+    this.addItemToFormArray({filename: null, typingName: TdTypingName.resource.folder});
   }
 
   private addItemToFormArray(fileWithType: LabFsNodeWithType): void {

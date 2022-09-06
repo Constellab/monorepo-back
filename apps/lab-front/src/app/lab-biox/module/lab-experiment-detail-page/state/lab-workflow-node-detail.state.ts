@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, firstValueFrom, Observable} from 'rxjs';
+import {BehaviorSubject, filter, firstValueFrom, Observable, Subscription} from 'rxjs';
 import {LabProcess} from '../../../../lab-core/model/entities/process/lab-process.entity';
-import {switchMap} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
-import {LabWorkflowNodeProcess} from '../model/lab-workflow-node-process.class';
-import {LabWorkflowManagerState} from './lab-workflow-manager-state';
 import {LabExperimentDetailPageState} from './lab-experiment-detail-page.state';
+import {PrWorkflowActionSelectNode, PrWorkflowActionState, PrWorkflowNodeProcess} from '@monorepo/protocol';
+import {MatDrawer} from '@angular/material/sidenav';
 
 /**
  * State to manage the selected node to show it in the drawer
@@ -13,26 +13,39 @@ import {LabExperimentDetailPageState} from './lab-experiment-detail-page.state';
 @Injectable()
 export class LabWorkflowNodeDetailState {
 
-  private node$: BehaviorSubject<LabWorkflowNodeProcess>;
+  private node$: BehaviorSubject<PrWorkflowNodeProcess>;
 
-  constructor(private workflowManagerState: LabWorkflowManagerState,
-              private experimentState: LabExperimentDetailPageState) {
+  private drawer: MatDrawer;
+  private subscription: Subscription;
+
+  constructor(private experimentState: LabExperimentDetailPageState,
+              private actionState: PrWorkflowActionState) {
   }
 
-  public init(): void {
+  public init(drawer: MatDrawer): void {
     this.node$ = new BehaviorSubject(null);
+    this.drawer = drawer;
+
+    this.subscription = this.actionState.getAction$().pipe(
+      filter(action => action?.action === 'selectNode')
+    ).subscribe(
+      (action: PrWorkflowActionSelectNode) => {
+        this.setNode(action.processNode);
+        this.drawer.open();
+      }
+    );
   }
 
-  public setNode(node: LabWorkflowNodeProcess): void {
+  public setNode(node: PrWorkflowNodeProcess): void {
     this.node$.next(node);
   }
 
-  public getNode$(): Observable<LabWorkflowNodeProcess> {
+  public getNode$(): Observable<PrWorkflowNodeProcess> {
     return this.node$.asObservable();
   }
 
   public getProcess$(): Observable<LabProcess> {
-    return this.getNode$().pipe(switchMap(node => node.getObject$()));
+    return this.getNode$().pipe(map(node => node?.additionalObject ?? null));
   }
 
   public getProcessPromise(): Promise<LabProcess> {
@@ -41,10 +54,12 @@ export class LabWorkflowNodeDetailState {
 
   public clear(): void {
     this.node$.complete();
+    this.subscription?.unsubscribe();
   }
 
+  // TODO to improve
   public updateConfigValues(config: LabConfigValues): void {
     const node = this.node$.value;
-    this.experimentState.updateProcessConfig(node.currentObject.parentProtocolId, node.currentObject.name, config);
+    this.experimentState.updateProcessConfig(node.currentObject.parentProtocolId, node.nodeName, config);
   }
 }

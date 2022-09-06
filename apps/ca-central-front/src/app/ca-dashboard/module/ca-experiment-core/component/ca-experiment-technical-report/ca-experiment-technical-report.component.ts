@@ -67,15 +67,10 @@ export class CaExperimentTechnicalReportComponent implements OnInit {
 
 }
 
-export interface CaNodeSelected{
-  processNode: PrWorkflowNodeProcess;
-  title: string;
-}
-
 
 export class CaWorkflowConfig extends PrConfigEdit {
 
-  onNodeSelected$: Subject<CaNodeSelected> = new Subject<CaNodeSelected>();
+  onNodeSelected$: Subject<PrWorkflowNodeProcess> = new Subject<PrWorkflowNodeProcess>();
 
   setInputMenu(port: PrWorkflowPort, node: PrWorkflowNodeProcess): PrMenuDynamicButton[] {
     return [
@@ -120,7 +115,7 @@ export class CaWorkflowConfig extends PrConfigEdit {
   onDeleteConnection(connection: PrWorkflowConnection, protocolId: string): void {
   }
 
-  onDeleteNode(node: PrWorkflowNode<any>, protocolId: string): void {
+  onDeleteNode(node: PrWorkflowNode, protocolId: string): void {
   }
 
   saveProcess(typingName: string, protocolId: string): Observable<PrProcess> {
@@ -150,8 +145,8 @@ export class CaWorkflowConfig extends PrConfigEdit {
     return undefined;
   }
 
-  onSelectNodeInfo(processNode: PrWorkflowNodeProcess, title: string): void {
-    this.onNodeSelected$.next({processNode: processNode, title: title});
+  onSelectNodeInfo(processNode: PrWorkflowNodeProcess): void {
+    this.onNodeSelected$.next(processNode);
   }
 
 }

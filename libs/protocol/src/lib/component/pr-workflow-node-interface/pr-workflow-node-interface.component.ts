@@ -1,9 +1,7 @@
-import {AfterViewInit, Component, ElementRef, Input, OnInit, Renderer2} from '@angular/core';
-import {PrWorkflowNode} from '../../model/pr-workflow-node.class';
-import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
-import {PrWorkflowNodeInterface} from '../../model/pr-workflow-node-interface.class';
-import {PrWorkflowNodeOuterface} from '../../model/pr-workflow-node-outerface.class';
-import {FlHtmlHelper} from '@monorepo/front-core-lib';
+import {Component, OnInit} from '@angular/core';
+import {PrWorkflowNodeInterface} from '../../model/node/pr-workflow-node-interface.class';
+import {PrWorkflowNodeOuterface} from '../../model/node/pr-workflow-node-outerface.class';
+import {PrWorkflowNodeDirective} from '../../directive/pr-workflow-node.directive';
 
 type NodeType = 'interface' | 'outerface';
 
@@ -15,37 +13,13 @@ type NodeType = 'interface' | 'outerface';
   templateUrl: './pr-workflow-node-interface.component.html',
   styleUrls: ['./pr-workflow-node-interface.component.scss']
 })
-export class PrWorkflowNodeInterfaceComponent implements OnInit, AfterViewInit {
-
-  // Name of the node
-  @Input() name: string;
+export class PrWorkflowNodeInterfaceComponent extends PrWorkflowNodeDirective
+  implements OnInit {
 
   type: NodeType;
 
-  node: PrWorkflowNode<void>;
-
-  stopEventFunction = (event: any): void => {
-    event.stopImmediatePropagation()
-  }
-
-  constructor(private workflowManager: PrWorkflowManagerState,
-              protected elementRef: ElementRef,
-              protected renderer: Renderer2) {
-  }
-
-
-  ngAfterViewInit(): void {
-    this.workflowManager.workflow.getMode$().subscribe(mode => {
-      this.listenToNodeMouseDown();
-    });
-    this.listenToNodeMouseDown();
-  }
-
   ngOnInit(): void {
-    this.node = this.workflowManager.findNodeWithNameInCurrentLayer(this.name);
-    if (this.node == null) {
-      console.error('Couldn\'t find node with name : ' + this.name);
-    }
+    super.initNode();
 
     if (this.node instanceof PrWorkflowNodeInterface) {
       this.type = 'interface';
@@ -53,25 +27,6 @@ export class PrWorkflowNodeInterfaceComponent implements OnInit, AfterViewInit {
       this.type = 'outerface';
     } else {
       console.error('Wrong type for the node');
-    }
-  }
-
-  protected listenToNodeMouseDown(): void {
-    // retrieve the drawflow element that wrap the node
-    const parent: HTMLElement = FlHtmlHelper.getParent(this.elementRef.nativeElement, {className: 'parent-node'});
-
-    if (parent == null) return;
-
-    parent.querySelectorAll('.output').forEach((c: HTMLElement) => {
-      this.onNodeMouseDown(c);
-    })
-  }
-
-  private onNodeMouseDown(c: HTMLElement): void {
-    if (this.workflowManager.workflow.getMode() !== 'edit') {
-      c.addEventListener('mousedown', this.stopEventFunction, true);
-    } else {
-      c.removeEventListener('mousedown', this.stopEventFunction, true);
     }
   }
 

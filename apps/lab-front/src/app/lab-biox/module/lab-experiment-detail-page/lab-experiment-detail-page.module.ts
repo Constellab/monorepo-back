@@ -1,25 +1,15 @@
-import {Injector, NgModule} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {LabCoreModule} from '../../../lab-core/lab-core.module';
 import {
   LabExperimentDetailPageComponent
 } from './component/lab-experiment-detail-page/lab-experiment-detail-page.component';
 import {LabExperimentCoreModule} from '../../../lab-core/entity-module/lab-experiment-core/lab-experiment-core.module';
-import {LabWorkflowNodeComponent} from './component/lab-workflow-node/lab-workflow-node.component';
 import {LabWorkflowComponent} from './component/lab-workflow/lab-workflow.component';
-import {createCustomElement} from '@angular/elements';
-import {
-  LabWorkflowLayersBreadcrumbComponent
-} from './component/lab-workflow-layers-breadcrumb/lab-workflow-layers-breadcrumb.component';
 import {LabResourceCoreModule} from '../../../lab-core/entity-module/lab-resource-core/lab-resource-core.module';
 import {LabConfigCoreModule} from '../../../lab-core/entity-module/lab-config-core/lab-config-core.module';
-import {
-  LabWorkflowNodeInterfaceComponent
-} from './component/lab-workflow-interface/lab-workflow-node-interface.component';
 import {LabWorkflowActionsComponent} from './component/lab-workflow-actions/lab-workflow-actions.component';
-import {LabWorkflowManagerState} from './state/lab-workflow-manager-state';
 import {LabWorkflowNodeDetailComponent} from './component/lab-workflow-node-detail/lab-workflow-node-detail.component';
-import {LabWorkflowActionState} from './state/lab-workflow-action-state';
 import {LabExperimentDetailPageState} from './state/lab-experiment-detail-page.state';
 import {
   LabWorkflowDrawerActionComponent
@@ -35,14 +25,12 @@ import {
 import {
   LabProgressBarInfoDialogComponent
 } from './component/lab-progress-bar-info-dialog/lab-progress-bar-info-dialog.component';
-import {LabWorkflowNodeSourceComponent} from './component/lab-workflow-node-source/lab-workflow-node-source.component';
 import {LabExperimentDetailComponent} from './component/lab-experiment-detail/lab-experiment-detail.component';
 import {
   LabExperimentAssociatedReportsComponent
 } from './component/lab-experiment-associated-reports/lab-experiment-associated-reports.component';
 import {RouterModule} from '@angular/router';
 import {LabTypeCoreModule} from '../../../lab-core/entity-module/lab-type-core/lab-type-core.module';
-import {LabWorkflowNodeOutputComponent} from './component/lab-workflow-node-output/lab-workflow-node-output.component';
 import {LabProtocolConfigComponent} from './component/lab-protocol-config/lab-protocol-config.component';
 import {
   LabConfigureProtocolDialogComponent
@@ -57,7 +45,6 @@ import {
   LabWorkflowPortActionPortalComponent
 } from './component/lab-workflow-port-action-portal/lab-workflow-port-action-portal.component';
 import {LabEntityCoreModule} from '../../../lab-core/entity-module/lab-entity-core/lab-entity-core.module';
-import {LabWorkflowNodeViewComponent} from './component/lab-workflow-node-view/lab-workflow-node-view.component';
 import {
   LabConfigureViewerDialogComponent
 } from './component/lab-configure-viewer-dialog/lab-configure-viewer-dialog.component';
@@ -70,10 +57,7 @@ import {
 @NgModule({
   declarations: [
     LabExperimentDetailPageComponent,
-    LabWorkflowNodeComponent,
     LabWorkflowComponent,
-    LabWorkflowLayersBreadcrumbComponent,
-    LabWorkflowNodeInterfaceComponent,
     LabWorkflowActionsComponent,
     LabWorkflowNodeDetailComponent,
     LabWorkflowDrawerActionComponent,
@@ -82,10 +66,8 @@ import {
     LabTaskSourceConfigComponent,
     LabExperimentDetailHeaderComponent,
     LabProgressBarInfoDialogComponent,
-    LabWorkflowNodeSourceComponent,
     LabExperimentDetailComponent,
     LabExperimentAssociatedReportsComponent,
-    LabWorkflowNodeOutputComponent,
     LabProtocolConfigComponent,
     LabConfigureProtocolDialogComponent,
     LabConfigureProtocolComponent,
@@ -93,7 +75,6 @@ import {
     LabConfigureTaskComponent,
     LabWorkflowNodeProgressComponent,
     LabWorkflowPortActionPortalComponent,
-    LabWorkflowNodeViewComponent,
     LabConfigureViewerDialogComponent,
     LabTaskViewerConfigComponent,
     LabTaskViewerShowConfigComponent,
@@ -114,47 +95,8 @@ import {
   providers: [
     // declare the state here otherwise the angular element can't access them
     LabExperimentDetailPageState,
-    LabWorkflowManagerState,
-    LabWorkflowActionState,
     LabWorkflowNodeDetailState,
   ]
 })
 export class LabExperimentDetailPageModule {
-  constructor(injector: Injector) {
-
-    // declare the LabWorkflowNodeComponent as angular element to make the tag
-    // lab-workflow-node work natively
-    customElements.define('lab-workflow-node',
-      createCustomElement(LabWorkflowNodeComponent, {
-        injector,
-      }));
-
-    // declare the LabWorkflowNodeSourceComponent as angular element to make the tag
-    // lab-workflow-node-source work natively
-    customElements.define('lab-workflow-node-source',
-      createCustomElement(LabWorkflowNodeSourceComponent, {
-        injector,
-      }));
-
-    // declare the LabWorkflowNodeInterfaceComponent as angular element to make the tag
-    // lab-workflow-node-output work natively
-    customElements.define('lab-workflow-node-output',
-      createCustomElement(LabWorkflowNodeOutputComponent, {
-        injector,
-      }));
-
-    // declare the LabWorkflowNodeInterfaceComponent as angular element to make the tag
-    // lab-workflow-node-interface work natively
-    customElements.define('lab-workflow-node-interface',
-      createCustomElement(LabWorkflowNodeInterfaceComponent, {
-        injector,
-      }));
-
-    // declare the LabWorkflowNodeViewComponent as angular element to make the tag
-    // lab-workflow-node-view work natively
-    customElements.define('lab-workflow-node-view',
-      createCustomElement(LabWorkflowNodeViewComponent, {
-        injector,
-      }));
-  }
 }

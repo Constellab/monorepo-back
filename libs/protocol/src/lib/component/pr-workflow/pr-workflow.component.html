@@ -3,9 +3,10 @@
   <!--  Workflow header  -->
   <div class="header" fxLayout="row" fxLayoutAlign="start center"
        fxLayoutGap="1em" *ngIf="!flowIsLoading">
-<!--    <lab-workflow-actions></lab-workflow-actions>-->
+    <ng-content></ng-content>
+    <!--    <lab-workflow-actions></lab-workflow-actions>-->
 
-<!--    <div class="divider"></div>-->
+    <div class="divider"></div>
 
     <pr-workflow-layers-breadcrumb></pr-workflow-layers-breadcrumb>
 

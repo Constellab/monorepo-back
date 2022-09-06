@@ -129,8 +129,8 @@ export class LabExperimentDetailHeaderComponent implements OnInit {
     this.dialogService.openSmallDialog(LabProgressBarInfoDialogComponent,
       {
         data:
-          this.experimentState.getMainFlow$().pipe(
-            map(flow => flow.object.progressBar)
+          this.experimentState.getMainProtocol$().pipe(
+            map(flow => flow.progressBar)
           )
       });
   }

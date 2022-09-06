@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {PrWorkflowActionEvent} from '../model/pr-workflow-drawer-event.class';
-import {PrWorkflowNodeDetailState} from './pr-workflow-node-detail-state';
 
 
 /**
@@ -12,23 +11,16 @@ export class PrWorkflowActionState {
 
   private action$: BehaviorSubject<PrWorkflowActionEvent>;
 
-  constructor(private nodeDetailState: PrWorkflowNodeDetailState) {
+  constructor() {
   }
 
   public init(): void {
     this.action$ = new BehaviorSubject<PrWorkflowActionEvent>(null);
-    this.nodeDetailState.init();
   }
 
   // open the drawer and emit the action
   public newAction(action: PrWorkflowActionEvent): void {
-
     this.action$.next(action);
-
-    if (action.action === 'selectNode') {
-
-      this.nodeDetailState.setNode(action.processNode);
-    }
   }
 
   public getAction$(): Observable<PrWorkflowActionEvent> {
@@ -38,6 +30,5 @@ export class PrWorkflowActionState {
 
   public clear(): void {
     this.action$.complete();
-    this.nodeDetailState.clear();
   }
 }

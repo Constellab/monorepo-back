@@ -1,26 +1,23 @@
 import Drawflow, {ConnectionEvent, ConnectionStartEvent} from 'drawflow';
-import {PrWorkflowNode} from './pr-workflow-node.class';
+import {PrWorkflowNode} from './node/pr-workflow-node.class';
 import {PrWorkflowConnection} from './pr-workflow-connection.class';
-import {PrFlowManager} from './pr-connection.class';
 import {PrWorkflowPort} from './pr-workflow-port.class';
+import {PrConnection} from './pr-workflow-action.class';
+import {PrWorkflowNodeProcess} from './node/pr-workflow-node-process.class';
 
 export class PrWorkflowLayer {
-  public readonly id: string;
 
   public readonly children: Record<string, PrWorkflowLayer> = {};
 
-  public readonly nodes: PrWorkflowNode<any>[] = [];
+  public readonly nodes: PrWorkflowNode[] = [];
 
   public readonly connections: PrWorkflowConnection[] = [];
 
   constructor(private readonly editor: Drawflow,
               // generated unique id of the layer
               public readonly name: string,
-              // Flow object corresponding to this layer
-              public object: PrFlowManager,
+              public readonly id: string,
               public readonly parentLayer: PrWorkflowLayer) {
-
-    this.id = object.id;
   }
 
   // function to call when this layer is selected
@@ -32,43 +29,70 @@ export class PrWorkflowLayer {
 
   ///////////////////////////// NODE ////////////////////////////////
 
-  public addNode(node: PrWorkflowNode<any>): void {
+  public addNode(node: PrWorkflowNode): void {
     this.nodes.push(node);
     this.createAndInitNode(node);
-
-    // update the pr flow object
-    if (this.object.getNodes()[node.nodeName] == null) {
-      this.object.addNode(node.currentObject)
-    }
   }
 
-  public findNodeWithId(nodeId: string): PrWorkflowNode<any> {
+  public findNodeWithId(nodeId: string): PrWorkflowNode {
     return this.findNode((node) => node.nodeId === nodeId);
   }
 
-  public findNodeWithName(nodeName: string): PrWorkflowNode<any> {
+  public findNodeWithName(nodeName: string): PrWorkflowNode {
     return this.findNode((node) => node.nodeName === nodeName);
   }
 
-  public findNode(predicate: (node: PrWorkflowNode<any>) => boolean): PrWorkflowNode<any> {
+  public findNode(predicate: (node: PrWorkflowNode) => boolean): PrWorkflowNode {
     return this.nodes.find((node) => predicate(node));
   }
 
-  public removeNode(nodeId: string): PrWorkflowNode<any> | undefined {
+  public removeNode(nodeId: string): PrWorkflowNode | undefined {
     // remove the node in the local array
     const index: number = this.nodes.findIndex((node) => node.nodeId === nodeId);
     if (index >= 0) {
-      const node: PrWorkflowNode<any> = this.nodes[index];
+      const node: PrWorkflowNode = this.nodes[index];
       this.nodes.splice(index, 1);
 
-      // update the pr flow object
-      this.object.removeNode(node.nodeName);
       return node;
     } else {
       console.error('Couldn\'t find node with id ' + nodeId);
       return null;
     }
   }
+
+  // return the nodes that do not have any inputs
+  public getRootNodes(): PrWorkflowNode[] {
+    const roots: PrWorkflowNode[] = [];
+
+    for (const node of this.nodes) {
+      // the nodes that are not connected to any other node (in input) are root nodes
+      if (this.connections.find(connection => connection.inputNode.nodeName === node.nodeName) == undefined) {
+        roots.push(node);
+      }
+    }
+
+    return roots;
+  }
+
+  public getNextNodes(nodeName: string): PrWorkflowNode[] {
+    const nextNodes: PrWorkflowNode[] = [];
+
+    for (const connection of this.connections) {
+      if (connection.outputNode.nodeName === nodeName) {
+        nextNodes.push(connection.inputNode);
+      }
+    }
+
+    return nextNodes;
+  }
+
+  public getProcessNodes(): PrWorkflowNodeProcess[] {
+    return this.nodes.filter(node => node instanceof PrWorkflowNodeProcess) as PrWorkflowNodeProcess[];
+  }
+
+
+  ///////////////////////////////// CONNECTION //////////////////////////////////////
+
 
   // this method is triggered when the connection is created by program
   public addConnection(connection: PrWorkflowConnection): void {
@@ -78,8 +102,21 @@ export class PrWorkflowLayer {
       connection.inputPort.drawFlowName);
   }
 
+  public addPrConnection(connection: PrConnection): PrWorkflowConnection {
+    const outputNode: PrWorkflowNode = this.findNodeWithName(connection.fromNode);
+    const inputNode: PrWorkflowNode = this.findNodeWithName(connection.toNode);
+
+    const outputPort: PrWorkflowPort = outputNode.findOutputPortByName(connection.fromPort);
+    const inputPort: PrWorkflowPort = inputNode.findInputPortByName(connection.toPort);
+
+    const workflowConnection: PrWorkflowConnection = new PrWorkflowConnection(outputNode, inputNode,
+      outputPort, inputPort);
+    this.addConnection(workflowConnection);
+    return workflowConnection;
+  }
+
   // this method is triggered when the user manually creates a connection
-  public saveUserConnectionAdded(outputNode: PrWorkflowNode<any>, inputNode: PrWorkflowNode<any>,
+  public saveUserConnectionAdded(outputNode: PrWorkflowNode, inputNode: PrWorkflowNode,
                                  outputPort: PrWorkflowPort, inputPort: PrWorkflowPort): PrWorkflowConnection | undefined {
 
     this.resetPortColors();
@@ -92,8 +129,6 @@ export class PrWorkflowLayer {
     this.connections.push(workflowConnection);
     return workflowConnection;
   }
-
-  ///////////////////////////////// CONNECTION //////////////////////////////////////
 
   // add the connection in the local array and in the editor
 
@@ -134,9 +169,9 @@ export class PrWorkflowLayer {
   // remove the connection from the local list
 
   public findConnectionIndexByConnectionEvent(connectionEvent: ConnectionEvent): number {
-    // check if input is avaiprle for the node
-    const inputNode: PrWorkflowNode<any> = this.findNodeWithId(connectionEvent.input_id);
-    const outputNode: PrWorkflowNode<any> = this.findNodeWithId(connectionEvent.output_id);
+    // check if input is available for the node
+    const inputNode: PrWorkflowNode = this.findNodeWithId(connectionEvent.input_id);
+    const outputNode: PrWorkflowNode = this.findNodeWithId(connectionEvent.output_id);
     const inputPort: PrWorkflowPort = inputNode.findInputPortByDrawflowName(connectionEvent.input_class);
     const outputPort: PrWorkflowPort = outputNode.findOutputPortByDrawflowName(connectionEvent.output_class);
 
@@ -157,8 +192,8 @@ export class PrWorkflowLayer {
       c.outputPort.name === outputPortName && c.inputPort.name === inputPortName);
   }
 
-  public createSubLayer(name: string, title: string, object: PrFlowManager): PrWorkflowLayer {
-    const subLayer: PrWorkflowLayer = new PrWorkflowLayer(this.editor, title, object, this);
+  public createSubLayer(name: string, title: string, id: string): PrWorkflowLayer {
+    const subLayer: PrWorkflowLayer = new PrWorkflowLayer(this.editor, title, id, this);
     this.children[name] = subLayer;
     return subLayer;
   }
@@ -175,7 +210,7 @@ export class PrWorkflowLayer {
   ///////////////////////// OTHER //////////////////////////
 
   public onConnectionStarted(event: ConnectionStartEvent): void {
-    const outputNode: PrWorkflowNode<any> = this.findNodeWithId(event.output_id);
+    const outputNode: PrWorkflowNode = this.findNodeWithId(event.output_id);
     const port: PrWorkflowPort = outputNode.findOutputPortByDrawflowName(event.output_class);
     this.disableIncompatiblePorts(outputNode, port);
   }
@@ -201,8 +236,8 @@ export class PrWorkflowLayer {
   /**
    * Create the node in the editor and init those values
    */
-  private createAndInitNode(node: PrWorkflowNode<any>): void {
-    const nodeId: number = this.editor.addNode(node.title,
+  private createAndInitNode(node: PrWorkflowNode): void {
+    const nodeId: number = this.editor.addNode(node.getCurrentTitle(),
       node.countInputs(), node.countOutputs(), node.x,
       node.y, node.getClassName(), {}, node.getHTML(), false);
 
@@ -213,7 +248,7 @@ export class PrWorkflowLayer {
   /**
    * Disable incompatible port when a new connection starts
    */
-  private disableIncompatiblePorts(outputNode: PrWorkflowNode<any>, port: PrWorkflowPort): void {
+  private disableIncompatiblePorts(outputNode: PrWorkflowNode, port: PrWorkflowPort): void {
     for (const node of this.nodes) {
       node.disableIncompatibleInputPort(port);
       if (node.nodeId !== outputNode.nodeId) {

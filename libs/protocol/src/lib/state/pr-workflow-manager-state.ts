@@ -1,54 +1,21 @@
 import {PrWorkflowConnection} from '../model/pr-workflow-connection.class';
-import {PrWorkflowNode} from '../model/pr-workflow-node.class';
-import {PrWorkflow, PrWorkflowEvent, PrWorkflowMode} from '../model/pr-workflow.class';
+import {PrWorkflowNode} from '../model/node/pr-workflow-node.class';
+import {PrWorkflow, PrWorkflowMode} from '../model/pr-workflow.class';
 import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject, Observable, Subscription} from 'rxjs';
-import {
-  FlCoord,
-  FlPortalAction,
-  FlPortalActionResult,
-  FlPortalActionsService,
-  FlSnackBarService,
-  FlTranslatableText
-} from '@monorepo/front-core-lib';
-import {
-  PrConnection,
-  PrFlow,
-  PrFlowManager,
-  PrInterfaceNode,
-  PrNode,
-  PrOuterfaceNode
-} from '../model/pr-connection.class';
-import {PrProtocol} from '../model/pr-protocol.entity';
-import {PrProcess} from '../model/pr-process.entity';
+import {FlCoord, FlPortalActionResult, FlSnackBarService} from '@monorepo/front-core-lib';
+import {PrProtocolFlow} from '../model/pr-connection.class';
 import {PrWorkflowLayer} from '../model/pr-workflow-layer.class';
-import {PrWorkflowNodeProcess} from '../model/pr-workflow-node-process.class';
-import {PrWorkflowNodeInterface} from '../model/pr-workflow-node-interface.class';
-import {PrWorkflowNodeOuterface} from '../model/pr-workflow-node-outerface.class';
-import {PrWorkflowPort} from '../model/pr-workflow-port.class';
 import {PrAddProcessWithLink, PrNodeRelativeCoord} from '../model/pr-workflow-action.class';
-import {PrWorkflowNodeIo} from '../model/pr-workflow-node-io.class';
-import {PrConfigEdit} from '../model/pr-config-edit.class';
+import {PrWorkflowNodeProtocol} from '../model/node/pr-workflow-node-protocol.class';
+import {
+  PrWorkflowAction,
+  PrWorkflowActionState2,
+  PrWorkflowEventConnectionAdditionalInfo,
+  PrWorkflowEventNodeAdditionalInfo
+} from './pr-workflow-external-event.state';
+import {PrConfigView} from '../model/pr-config-view.class';
 
-export enum PrWorkflowAction {
-  ADD_PROCESS = 'workflow-add-process',
-  ADD_PROCESS_WITH_CONNECTIONS = 'workflow-add-process-with-connections',
-  DELETE_PROCESS = 'workflow-remove-process',
-  ADD_CONNECTION = 'workflow-add-connection',
-  DELETE_CONNECTION = 'workflow-delete-connection',
-  DELETE_INTERFACE = 'workflow-delete-interface',
-  DELETE_OUTERFACE = 'workflow-delete-outerface',
-}
-
-interface PrWorkflowEventConnectionAdditionalInfo {
-  protocolId: string;
-  connection: PrWorkflowConnection;
-}
-
-interface PrWorkflowEventNodeAdditionalInfo {
-  protocolId: string;
-  node: PrWorkflowNode<any>;
-}
 
 /**
  * State for the workflow, it is created for the module and can only manage on state a the time
@@ -57,7 +24,9 @@ interface PrWorkflowEventNodeAdditionalInfo {
 export class PrWorkflowManagerState {
 
   public workflow: PrWorkflow = null;
-  public config: PrConfigEdit = null;
+  public viewConfig: PrConfigView = null;
+
+  private workflowElement: HTMLElement;
 
   private readonly htmlNodeWidth: number = 200;
   private readonly htmlNodeHeight: number = 100;
@@ -69,8 +38,11 @@ export class PrWorkflowManagerState {
   private idGenerator: number = 0;
   private actionSubscription: Subscription;
 
+  private mode$: Observable<PrWorkflowMode>;
+  private currentMode: PrWorkflowMode;
+
   constructor(
-    private actionsService: FlPortalActionsService,
+    private actionState: PrWorkflowActionState2,
     private snackBarService: FlSnackBarService,
     private ngZone: NgZone) {
   }
@@ -82,47 +54,36 @@ export class PrWorkflowManagerState {
     return this._layerIsLoading$.asObservable();
   }
 
-  stopEventFunction = (event: any): void => {
-    event.stopImmediatePropagation()
-  }
+  // unique function stored to override workflow event
+  private stopEventFunction = (event: any): void => {
+    event.stopImmediatePropagation();
+  };
 
   //////////////////////// LAYER ////////////////////////////
 
-  public init(element: HTMLElement, mainFlow: PrFlow<PrProtocol>,
-              mode: PrWorkflowMode = 'edit'): void {
-    this.workflow = new PrWorkflow(element, 'Main protocol', mainFlow.object, mode, this.ngZone);
-
-    this.workflow.getWorkflowEvent$().subscribe(
-      (event: PrWorkflowEvent) => this.onWorkflowEvent(event)
-    );
+  public init(element: HTMLElement, mainFlow: PrProtocolFlow,
+              mode$: Observable<PrWorkflowMode>): PrWorkflow {
+    this.workflowElement = element;
+    this.mode$ = mode$;
+    this.currentMode = 'edit';
+    this.workflow = new PrWorkflow(element, 'Main protocol', mainFlow.id, this.currentMode, this.ngZone);
 
     this.workflow.start();
 
     // init the nodes with the job list
     this.initFlow(this.workflow.currentLayer, mainFlow);
 
-    this.workflow.getMode$().subscribe(mode => {
-      if (mode === 'readOnly') {
-        element.addEventListener('contextmenu', this.stopEventFunction, true);
-        element.addEventListener('keydown',  this.stopEventFunction, true);
-      } else {
-        element.removeEventListener('contextmenu', this.stopEventFunction, true);
-        element.removeEventListener('keydown', this.stopEventFunction, true);
-      }
-    })
+    this.subscribeToMode();
 
     // listen to the new Process actions
-    this.actionSubscription = this.actionsService.getResult$([
-      PrWorkflowAction.ADD_PROCESS, PrWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
-      PrWorkflowAction.DELETE_PROCESS, PrWorkflowAction.DELETE_CONNECTION, PrWorkflowAction.ADD_CONNECTION]).subscribe(
-      result =>{
-        this.onWorkflowActionResult(result);
-      }
+    this.actionSubscription = this.actionState.getActions$().subscribe(
+      result => this.onWorkflowActionResult(result)
     );
 
+    return this.workflow;
   }
 
-  public selectLayer(layerId: string, layerProtocol?: PrProtocol): void {
+  public selectLayer(layerId: string, protocolNode?: PrWorkflowNodeProtocol): void {
     if (this.workflow.hasLayer(layerId)) {
       this.workflow.selectLayer(layerId);
     } else {
@@ -130,17 +91,22 @@ export class PrWorkflowManagerState {
       if (this._layerIsLoading$.value) return;
       // load a new layer
       this._layerIsLoading$.next(true);
-      if(layerProtocol){
-        const flow: PrFlow<PrProtocol> = new PrFlow<PrProtocol>(layerProtocol);
-        if (!this.workflow.hasLayer(flow.object.id)) {
-          this.addProtocolLayer(flow);
-          this._layerIsLoading$.next(false);
-        }
+      if (protocolNode) {
+        protocolNode.flow$.subscribe({
+          next: flow => {
+            this._layerIsLoading$.next(false);
+            if (!this.workflow.hasLayer(flow.id)) {
+              this.addProtocolLayer(flow);
+              this._layerIsLoading$.next(false);
+            }
+          },
+          error: () => this._layerIsLoading$.next(false)
+        });
       }
     }
   }
 
-  public findNodeWithNameInCurrentLayer(name: string): PrWorkflowNode<any> {
+  public findNodeWithNameInCurrentLayer(name: string): PrWorkflowNode {
     return this.workflow.findNodeWithNameInCurrentLayer(name);
   }
 
@@ -157,14 +123,15 @@ export class PrWorkflowManagerState {
   /**
    * Create a new layer and init it with the protocol information
    */
-  private addProtocolLayer(flow: PrFlow<PrProtocol>): void {
-    const layer = this.workflow.createSubLayerIfNotExists(flow.object.name, flow.object.title, flow.object);
+  private addProtocolLayer(flow: PrProtocolFlow): void {
+    const layer = this.workflow.createSubLayerIfNotExists(flow.name, flow.title, flow.id);
     this.initFlow(layer, flow);
   }
 
-  private onNewProcess(process: PrProcess, layerId: string, coordX: number = 0, coordY: number = 0): void {
-    // convert to node
-    const node: PrWorkflowNode<any> = this.createNodeFromProcess(process, process.name, coordX, coordY);
+  private onNewNode(node: PrWorkflowNode, layerId: string, coordX: number = 0, coordY: number = 0): void {
+    // Override the coords
+    node.x = coordX;
+    node.y = coordY;
 
     // add the node to the workflow
     const layer: PrWorkflowLayer = this.workflow.findLayerWithId(layerId);
@@ -175,154 +142,37 @@ export class PrWorkflowManagerState {
     return this.workflow.getCurrentLayerHierarchy();
   }
 
-  //////////////////////// NODE //////////////////////////////
-
-  public addProcessNode(processObs: Observable<PrProcess>, processName: string): void {
-
-    this.addProcessAction(processObs,
-      {
-        text: 'pr.adding_process', translateText: true,
-        translateParam: {param: {processName: processName}}
-      });
-  }
-
-  public addSource(processObs: Observable<PrProcess>, resourceName: string): void {
-
-    this.addProcessAction(processObs,
-      {
-        text: 'pr.adding_source', translateText: true,
-        translateParam: {param: {resourceName: resourceName}}
-      });
-  }
-
-  public addSourceToProcessInput(obsProcessWithLink: Observable<PrAddProcessWithLink>,
-                                 processNodeName: string, resourceName: string): void {
-    this.addProcessWithLinkAction(
-      obsProcessWithLink,
-      processNodeName,
-      'before',
-      {
-        text: 'pr.adding_source', translateText: true,
-        translateParam: {param: {resourceName: resourceName}}
-      });
-  }
-
-  public addTaskOutput(obsProcessWithLink: Observable<PrAddProcessWithLink>, processNodeName: string): void {
-
-    this.addProcessWithLinkAction(
-      obsProcessWithLink,
-      processNodeName,
-      'after',
-      {
-        text: 'pr.adding_output', translateText: true,
-      });
-  }
-
-  public addProcessConnectedToOutput(obsProcessWithLink: Observable<PrAddProcessWithLink>,
-                                     processName: string, outputProcessName: string): void {
-
-    this.addProcessWithLinkAction(
-      obsProcessWithLink,
-      outputProcessName,
-      'after',
-      {
-        text: 'pr.adding_process', translateText: true,
-        translateParam: {param: {processName: processName}}
-      });
-  }
-
-  public addProcessConnectedToInput(obsProcessWithLink: Observable<PrAddProcessWithLink>, processName: string,
-                                    inputProcessName: string): void {
-
-    this.addProcessWithLinkAction(
-      obsProcessWithLink,
-      inputProcessName,
-      'after',
-      {
-        text: 'pr.adding_process', translateText: true,
-        translateParam: {param: {processName: processName}}
-      });
-  }
-
-  // create the action to add a process
-  private addProcessAction(process$: Observable<PrProcess>, actionText: FlTranslatableText): void {
-    // create an action to add this process
-    const action: FlPortalAction = {
-      text: actionText,
-      type: PrWorkflowAction.ADD_PROCESS,
-      // create the process in the API and get the process
-      action: process$,
-      additionalInformation: this.workflow.currentLayer.id
-    };
-
-    this.actionsService.addAction(action, true);
-  }
-
-  // create the action to add a process with a link
-  private addProcessWithLinkAction(processWithLink$: Observable<PrAddProcessWithLink>,
-                                   processNodeName: string,
-                                   newProcessPosition: 'before' | 'after',
-                                   actionText: FlTranslatableText): void {
-    // relative coord to place the source node before the process
-    const relativeCoord: PrNodeRelativeCoord = {
-      nodeName: processNodeName,
-      position: newProcessPosition,
-      layerId: this.workflow.currentLayer.id
-    };
-    // create an action to add this process
-    const action: FlPortalAction = {
-      text: actionText,
-      type: PrWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
-      // create the process in the API and get the process
-      action: processWithLink$,
-      additionalInformation: relativeCoord
-    };
-
-    this.actionsService.addAction(action, true);
-  }
-
 
   //////////////////////// INIT NODES AND CONNECTIONS FOR FLOW ////////////////////////////
 
-  private onNewProcessWithConnector(processWithLink: PrAddProcessWithLink, relativeCoord: PrNodeRelativeCoord): void {
+  private onNewNodeWithConnector(processWithLink: PrAddProcessWithLink, relativeCoord: PrNodeRelativeCoord): void {
     const coord = this.getRelativeNodePosition(relativeCoord);
-    this.onNewProcess(processWithLink.process, relativeCoord.layerId, coord.x, coord.y);
+    this.onNewNode(processWithLink.process, relativeCoord.layerId, coord.x, coord.y);
 
+    // add the connection
     const layer: PrWorkflowLayer = this.workflow.findLayerWithId(relativeCoord.layerId);
-    this.addConnection(layer, processWithLink.link);
-  }
-
-  private createNodeFromProcess(process: PrProcess, name: string, coordX: number = 0, coordY: number = 0): PrWorkflowNode<any> {
-    // create a specific node for the source
-    if (process.isSource()) {
-      return new PrWorkflowNodeIo(process, name, coordX, coordY);
-    } else if (process.isOutput()) {
-      return new PrWorkflowNodeIo(process, name, coordX, coordY);
-    } else {
-      return new PrWorkflowNodeProcess(process, name, coordX, coordY);
-    }
+    layer.addPrConnection(processWithLink.connection);
   }
 
   // create nodes and connection for a flow
-  private initFlow(layer: PrWorkflowLayer, protocol: PrFlow<PrFlowManager>): void {
+  private initFlow(layer: PrWorkflowLayer, protocol: PrProtocolFlow): void {
     // add all nodes
-    this.addNodesRecursively(layer, protocol.getRootNodes(), 0, 0);
+    this.addNodesRecursively(layer, protocol.getRootNodes(), protocol, 0, 0);
 
     // create the connections
-    for (const step of protocol.getAllConnections()) {
-
-      this.addConnection(layer, step);
+    for (const connection of protocol.connections) {
+      this.addConnection2(layer, connection);
     }
   }
 
   /**
    * Add the nodes if there have ot already been added and call method on output nodes
    */
-  private addNodesRecursively(layer: PrWorkflowLayer, nodes: PrNode[], posX: number, basePosY: number): number {
+  private addNodesRecursively(layer: PrWorkflowLayer, nodes: PrWorkflowNode[], flow: PrProtocolFlow, posX: number, basePosY: number): number {
     let currentPosY: number = basePosY - 1;
     for (const node of nodes) {
       // check if the node has already been added
-      if (layer.findNodeWithName(node.name) != null) {
+      if (layer.findNodeWithName(node.nodeName) != null) {
         continue;
       }
 
@@ -331,15 +181,41 @@ export class PrWorkflowManagerState {
       // and the node and mark it as added
       this.addNodeOnPosition(layer, node, posX, currentPosY);
 
-      for (const key of Object.keys(node.outputConnections)) {
-        const outputNodes: PrNode[] = node.outputConnections[key].map(output => output.getNode());
-        currentPosY = this.addNodesRecursively(layer, outputNodes, posX + 1, currentPosY);
-      }
+      const nextNodes = flow.getNextNodes(node.nodeName);
+      currentPosY = this.addNodesRecursively(layer, nextNodes, flow, posX + 1, currentPosY);
     }
 
     // can't return an Y lower than the base Y
     return Math.max(currentPosY, basePosY);
   }
+
+  //////////////////////// MODE ////////////////////////////
+
+  /**
+   * Subscribe to mode to disable or enable workflow events
+   * @private
+   */
+  private subscribeToMode(): void {
+    this.mode$.subscribe(mode => {
+      this.currentMode = mode;
+      if (mode === 'readOnly') {
+        this.workflowElement.addEventListener('contextmenu', this.stopEventFunction, true);
+        this.workflowElement.addEventListener('keydown', this.stopEventFunction, true);
+      } else {
+        this.workflowElement.removeEventListener('contextmenu', this.stopEventFunction, true);
+        this.workflowElement.removeEventListener('keydown', this.stopEventFunction, true);
+      }
+    });
+  }
+
+  public getMode$(): Observable<PrWorkflowMode> {
+    return this.mode$;
+  }
+
+  public getCurrentMode(): PrWorkflowMode {
+    return this.currentMode;
+  }
+
 
   //////////////////////// OTHER ////////////////////////////
 
@@ -350,46 +226,29 @@ export class PrWorkflowManagerState {
    * @param posX position in the workflow like in 2d array
    * @param posY position in the workflow like in 2d array
    */
-  private addNodeOnPosition(layer: PrWorkflowLayer, node: PrNode, posX: number, posY: number): void {
+  private addNodeOnPosition(layer: PrWorkflowLayer, node: PrWorkflowNode, posX: number, posY: number): void {
     // convert the 2D position to coords
-    const coordX = ((this.htmlNodeWidth + this.htmlDefaultNodeSpaceX) * posX) + this.htmlOffsetX;
-    const coordY = ((this.htmlNodeHeight + this.htmlDefaultNodeSpaceY) * posY) + this.htmlOffsetY;
-
-    let workflowNode: PrWorkflowNode<any>;
-    if (node instanceof PrProcess) {
-      workflowNode = this.createNodeFromProcess(node, node.name, coordX, coordY);
-    } else if (node instanceof PrInterfaceNode) {
-      workflowNode = new PrWorkflowNodeInterface(node, coordX, coordY);
-    } else if (node instanceof PrOuterfaceNode) {
-      workflowNode = new PrWorkflowNodeOuterface(node, coordX, coordY);
-    } else {
-      throw new Error('Node type unknown');
-    }
-
+    // Override the coords
+    node.x = ((this.htmlNodeWidth + this.htmlDefaultNodeSpaceX) * posX) + this.htmlOffsetX;
+    node.y = ((this.htmlNodeHeight + this.htmlDefaultNodeSpaceY) * posY) + this.htmlOffsetY;
     // and the node and mark it as added
-    layer.addNode(workflowNode);
+    layer.addNode(node);
   }
 
   /**
    * Convert a Connection to a WorkflowConnection and add it to the current layer
    */
-  private addConnection(layer: PrWorkflowLayer, connection: PrConnection): void {
-    const outputNode: PrWorkflowNode<any> = this.findNodeWithNameInCurrentLayer(connection.from.getNodeName());
-    const inputNode: PrWorkflowNode<any> = this.findNodeWithNameInCurrentLayer(connection.to.getNodeName());
-
-    const inputPort: PrWorkflowPort = inputNode.findInputPortByName(connection.to.getPort());
-    const outputPort: PrWorkflowPort = outputNode.findOutputPortByName(connection.from.getPort());
-    const workflowConnectionLink: PrWorkflowConnection = new PrWorkflowConnection(outputNode, inputNode,
-      outputPort, inputPort);
-    layer.addConnection(workflowConnectionLink);
+  private addConnection2(layer: PrWorkflowLayer, connection: PrWorkflowConnection): void {
+    layer.addConnection(connection);
   }
+
 
   private onWorkflowActionResult(actionResult: FlPortalActionResult): void {
     if (actionResult.status === 'success') {
       if (actionResult.action.type === PrWorkflowAction.ADD_PROCESS) {
-        this.onNewProcess(actionResult.result, actionResult.additionalInformation);
+        this.onNewNode(actionResult.result, actionResult.additionalInformation);
       } else if (actionResult.action.type === PrWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS) {
-        this.onNewProcessWithConnector(actionResult.result, actionResult.additionalInformation);
+        this.onNewNodeWithConnector(actionResult.result, actionResult.additionalInformation);
       } else if (actionResult.action.type === PrWorkflowAction.DELETE_PROCESS) {
         // clear the node observable, if the deletion worked
         const info: PrWorkflowEventNodeAdditionalInfo = actionResult.additionalInformation;
@@ -426,7 +285,7 @@ export class PrWorkflowManagerState {
     const layer = this.workflow.findLayerWithId(relativeCoord.layerId);
     if (layer == null) return {x: 0, y: 0};
 
-    const node: PrWorkflowNode<any> = layer.findNodeWithName(relativeCoord.nodeName);
+    const node: PrWorkflowNode = layer.findNodeWithName(relativeCoord.nodeName);
     if (node == null) return {x: 0, y: 0};
 
     // calculate the X pos based on relative node
@@ -443,22 +302,6 @@ export class PrWorkflowManagerState {
       y: baseNodeCoord.y
     };
   }
-
-
-  ///////////////////////////// OTHER ////////////////////////////////////
-  private onWorkflowEvent(workflowEvent: PrWorkflowEvent): void {
-
-    this.workflow.getMode$().subscribe(mode => {
-      if(mode === 'edit'){
-        let portalAction: FlPortalAction;
-
-        this.actionsService.addAction(portalAction);
-      }
-    })
-
-
-  }
-
 
 }
 

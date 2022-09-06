@@ -39,6 +39,7 @@ import {
 } from '@monorepo/front-core-lib';
 import {RvResourceViewModule} from '@monorepo/resource-view';
 import {TdTechnicalDocModule} from '@monorepo/technical-doc';
+import {PrProtocolModule} from '@monorepo/protocol';
 
 /**
  * Regrouped all the needed import for this app from library
@@ -88,6 +89,7 @@ import {TdTechnicalDocModule} from '@monorepo/technical-doc';
     //  Other lib
     RvResourceViewModule,
     TdTechnicalDocModule,
+    PrProtocolModule,
   ]
 })
 export class LabCustomLibraryModule {

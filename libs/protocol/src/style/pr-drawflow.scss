@@ -44,9 +44,14 @@
       background-color: mat.get-color-from-palette($primary);
     }
 
-    &.task-output, &.task-view {
+    &.task-output {
       color: mat.get-color-from-palette($warn, default-contrast);
       background-color: mat.get-color-from-palette($warn);
+    }
+
+    &.task-viewer {
+      color: mat.get-color-from-palette($accent, '100-contrast');
+      background-color: mat.get-color-from-palette($accent, 100);
     }
 
     // width and height of input and output port

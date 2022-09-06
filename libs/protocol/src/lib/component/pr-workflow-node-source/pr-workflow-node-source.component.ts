@@ -1,37 +1,22 @@
-import {Component, ElementRef, OnInit, Renderer2} from '@angular/core';
-import {PrWorkflowNodeDirective} from '../../directive/pr-workflow-node.directive';
-import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
-import {PrWorkflowNodeIo} from '../../model/pr-workflow-node-io.class';
+import {Component, OnInit} from '@angular/core';
+import {PrWorkflowNodeProcessDirective} from '../../directive/pr-workflow-node-process.directive';
+import {PrWorkflowNodeIo} from '../../model/node/pr-workflow-node-io.class';
 import {Observable} from 'rxjs';
-import {PrWorkflowActionState} from '../../state/pr-workflow-action-state';
-import {FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'pr-workflow-node-source',
   templateUrl: './pr-workflow-node-source.component.html',
   styleUrls: ['./pr-workflow-node-source.component.scss']
 })
-export class PrWorkflowNodeSourceComponent extends PrWorkflowNodeDirective implements OnInit {
+export class PrWorkflowNodeSourceComponent extends PrWorkflowNodeProcessDirective implements OnInit {
 
-  title$: Observable<string>;
   resourceId$: Observable<string>;
 
   node: PrWorkflowNodeIo;
 
-  constructor(worflowManager: PrWorkflowManagerState,
-              drawerState: PrWorkflowActionState,
-              dialogService: FlDialogService,
-              elementRef: ElementRef,
-              renderer: Renderer2,
-              portalService: FlPortalService) {
-    super(worflowManager, drawerState, dialogService, elementRef, renderer, portalService);
-  }
-
   ngOnInit(): void {
     this.initNode();
-
-    this.title$ = this.node.getTitle$();
-    this.resourceId$ = null
+    this.resourceId$ = this.node.getResourceId$();
   }
 
 

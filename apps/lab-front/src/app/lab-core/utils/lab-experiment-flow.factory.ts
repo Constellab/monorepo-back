@@ -1,11 +1,7 @@
 import {LabProcess} from '../model/entities/process/lab-process.entity';
-import {LabWorkflow} from '../../lab-biox/module/lab-experiment-detail-page/model/lab-workflow.class';
-import {LabWorkflowLayer} from '../../lab-biox/module/lab-experiment-detail-page/model/lab-workflow-layer.class';
 import {LabProtocolIOFace, LabProtocolLink, LabProtocolLinkPart} from '../model/entities/lab-protocol-link.entity';
 import {LabProtocolGraph} from '../model/entities/process/lab-protocol.entity';
-import {
-  LabWorkflowConnection
-} from '../../lab-biox/module/lab-experiment-detail-page/model/lab-workflow-connection.class';
+import {PrWorkflow, PrWorkflowConnection, PrWorkflowLayer} from '@monorepo/protocol';
 
 
 /**
@@ -17,16 +13,16 @@ export class LabExperimentFlowFactory {
    * Convert a workflow to a protocol graph to be saved in the lab
    * @param workflow
    */
-  public static convertWorkflowToProtocolGraph(workflow: LabWorkflow): LabProtocolGraph {
+  public static convertWorkflowToProtocolGraph(workflow: PrWorkflow): LabProtocolGraph {
     return LabExperimentFlowFactory.convertWorkflowToProtocolGraphRecur(workflow.getRootLayer());
   }
 
-  private static convertWorkflowToProtocolGraphRecur(layer: LabWorkflowLayer): LabProtocolGraph {
+  private static convertWorkflowToProtocolGraphRecur(layer: PrWorkflowLayer): LabProtocolGraph {
     const graph: LabProtocolGraph = LabProtocolGraph.empty();
 
     // get nodes
     for (const node of layer.getProcessNodes()) {
-      const process: LabProcess = node.currentObject;
+      const process: LabProcess = node.additionalObject;
 
       if (layer.children[process.name] != null) {
         process.data.graph = LabExperimentFlowFactory.convertWorkflowToProtocolGraphRecur(layer.children[process.name]);
@@ -60,7 +56,7 @@ export class LabExperimentFlowFactory {
     return graph;
   }
 
-  private static workflowConnection(connection: LabWorkflowConnection): LabProtocolLink | LabProtocolIOFace {
+  private static workflowConnection(connection: PrWorkflowConnection): LabProtocolLink | LabProtocolIOFace {
     let link: LabProtocolLink | LabProtocolIOFace;
     if (connection.isIOFaceConnection()) {
       link = new LabProtocolIOFace();

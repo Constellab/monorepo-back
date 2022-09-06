@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {LabWorkflowManagerState} from '../../state/lab-workflow-manager-state';
 import {LabExperimentService} from '../../../../../lab-core/entity-service/lab-experiment.service';
 import {LabExperiment} from '../../../../../lab-core/model/entities/lab-experiment.entity';
 import {
@@ -19,6 +18,7 @@ import {LabResource} from '../../../../../lab-core/model/entities/resource/lab-r
 import {
   LabSelectResourceDialogComponent
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
+import {PrWorkflowActionState2} from '@monorepo/protocol';
 
 /**
  * Actions button for the workflow
@@ -35,7 +35,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
 
   experiment$: Observable<LabExperiment>;
 
-  constructor(private workflowManager: LabWorkflowManagerState,
+  constructor(private workflowAction: PrWorkflowActionState2,
               private experimentService: LabExperimentService,
               private snackBarService: FlSnackBarService,
               private dialogService: FlDialogService,
@@ -44,7 +44,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.experiment$ = this.experimentState.getExperiment$();
-    this.experimentState.checkAndStartRefreshFlow();
+    this.experimentState.checkAndStartRefreshProtocol();
   }
 
   get isLoading(): boolean {
@@ -62,7 +62,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
 
   private onSelectTypeClosed(processType ?: LabTypeEntity): void {
     if (processType) {
-      this.workflowManager.addProcessNode(processType.typingName, processType.name);
+      this.workflowAction.addNode(processType.typingName, processType.name);
     }
   }
 
@@ -74,32 +74,32 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
 
   private onSelectResourceClosed(resource?: LabResource): void {
     if (resource) {
-      this.workflowManager.addSource(resource.id, resource.name);
+      this.workflowAction.addSource(resource.id, resource.name);
     }
   }
 
 
-  save(): void {
-    const experiment: LabExperiment = this.experimentState.currentExperiment;
-    this.saveIsLoading = true;
-    this.experimentService.updateExperimentProtocol(experiment.id, this.workflowManager.workflow).subscribe({
-      next: newExp => this.onSaveSuccess(newExp),
-      error: () => this.saveIsLoading = false,
-    });
-  }
+  // save(): void {
+  //   const experiment: LabExperiment = this.experimentState.currentExperiment;
+  //   this.saveIsLoading = true;
+  //   this.experimentService.updateExperimentProtocol(experiment.id, this.workflowManager.workflow).subscribe({
+  //     next: newExp => this.onSaveSuccess(newExp),
+  //     error: () => this.saveIsLoading = false,
+  //   });
+  // }
 
 
-  private onSaveSuccess(experiment: LabExperiment): void {
-    this.snackBarService.openSuccessMessage({text: 'biox.experiment_saved', translateText: true});
-    this.saveIsLoading = false;
-    this.experimentState.updateExperiment(experiment);
-  }
+  // private onSaveSuccess(experiment: LabExperiment): void {
+  //   this.snackBarService.openSuccessMessage({text: 'biox.experiment_saved', translateText: true});
+  //   this.saveIsLoading = false;
+  //   this.experimentState.updateExperiment(experiment);
+  // }
 
   start(): void {
     const experiment: LabExperiment = this.experimentState.currentExperiment;
 
     this.startIsLoading = true;
-    this.experimentService.saveAndStartExperiment(experiment.id, this.workflowManager.workflow).subscribe({
+    this.experimentService.startExperiment(experiment.id).subscribe({
       next: (exp) => this.onStartSuccess(exp),
       error: () => this.startIsLoading = false
     });
@@ -109,7 +109,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
     this.snackBarService.openSuccessMessage({text: 'biox.experiment_started', translateText: true});
     this.startIsLoading = false;
     this.experimentState.updateExperiment(experiment);
-    this.experimentState.startFlowsRefresh();
+    this.experimentState.startProtocolsRefresh();
   }
 
   stopExperiment(): void {
@@ -135,7 +135,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.experimentState.stopFlowsRefresh();
+    this.experimentState.stopProtocolsRefresh();
   }
 
 

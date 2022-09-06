@@ -10,13 +10,12 @@ import {MatExpansionPanel} from '@angular/material/expansion';
 import {LabWorkflowNodeDetailState} from '../../state/lab-workflow-node-detail.state';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {LabWorkflowNodeProcess} from '../../model/lab-workflow-node-process.class';
 import {LabProcess} from '../../../../../lab-core/model/entities/process/lab-process.entity';
 import {
   LabTypeDialogComponent,
   LabTypeDialogInput
 } from '../../../../../lab-core/entity-module/lab-type-core/component/lab-type-dialog/lab-type-dialog.component';
-import {LabWorkflowNodeIO} from '../../model/lab-workflow-node-io.class';
+import {PrWorkflowNodeIo, PrWorkflowNodeProcess} from '@monorepo/protocol';
 
 type ConfigMode = 'config' | 'source' | 'view-task' | 'protocol' | null;
 
@@ -28,7 +27,7 @@ type ConfigMode = 'config' | 'source' | 'view-task' | 'protocol' | null;
 export class LabWorkflowNodeDetailComponent implements OnInit {
 
   labProcess$: Observable<LabProcess>;
-  node$: Observable<LabWorkflowNodeProcess>;
+  node$: Observable<PrWorkflowNodeProcess>;
 
   configMode$: Observable<ConfigMode>;
 
@@ -51,10 +50,10 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
     this.isEditable$ = this.experimentState.isEditable$();
 
     this.showInputs$ = this.nodeDetailState.getNode$().pipe(map(
-      node => node.hasInputs() && !(node instanceof LabWorkflowNodeIO)
+      node => node.hasInputs() && !(node instanceof PrWorkflowNodeIo)
     ));
     this.showOutput$ = this.nodeDetailState.getNode$().pipe(map(
-      node => node.hasOutputs() && !(node instanceof LabWorkflowNodeIO)
+      node => node.hasOutputs() && !(node instanceof PrWorkflowNodeIo)
     ));
   }
 

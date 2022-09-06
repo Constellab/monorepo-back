@@ -1,11 +1,17 @@
-import {PrProcess} from './pr-process.entity';
-import {PrProtocolLink} from './pr-protocol-link.entity';
+import {PrWorkflowNode} from './node/pr-workflow-node.class';
 
 export class PrAddProcessWithLink {
 
-  process: PrProcess;
+  process: PrWorkflowNode;
 
-  link: PrProtocolLink;
+  connection: PrConnection;
+}
+
+export interface PrConnection {
+  fromNode: string;
+  fromPort: string;
+  toNode: string;
+  toPort: string;
 }
 
 

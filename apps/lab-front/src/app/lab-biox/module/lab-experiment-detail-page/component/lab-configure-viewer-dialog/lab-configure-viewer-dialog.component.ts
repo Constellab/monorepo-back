@@ -1,12 +1,12 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {LabTaskViewerConfig} from '../../../../../lab-core/model/entities/lab-typing-name.class';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {LabResourceViewSpecWithConfig} from '../../../../../lab-core/model/entities/resource/lab-resource-view.entity';
 import {labConvertTransformersWithConfigToParams} from '../../../../../lab-core/model/global/lab-transformer.class';
 import {ClHelpService} from '@monorepo/core-lib';
+import {TdTaskViewerConfig} from '@monorepo/technical-doc';
 
 
-export type LabConfigureViewerDialogInput = LabTaskViewerConfig;
+export type LabConfigureViewerDialogInput = TdTaskViewerConfig;
 
 /**
  * Component used in the workflow to configure the ViewTask
@@ -18,7 +18,7 @@ export type LabConfigureViewerDialogInput = LabTaskViewerConfig;
 })
 export class LabConfigureViewerDialogComponent implements OnInit {
 
-  taskConfig: LabTaskViewerConfig;
+  taskConfig: TdTaskViewerConfig;
 
   constructor(@Inject(MAT_DIALOG_DATA) private input: LabConfigureViewerDialogInput,
               private dialogRef: MatDialogRef<LabConfigureViewerDialogComponent>) {

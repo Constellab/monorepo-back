@@ -3,7 +3,6 @@ import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-pa
 import {BehaviorSubject, Observable} from 'rxjs';
 import {LabProcess} from '../../../../../lab-core/model/entities/process/lab-process.entity';
 import {filter, map} from 'rxjs/operators';
-import {LabFlow} from '../../../../../lab-core/model/global/lab-connection.class';
 import {LabProtocol} from '../../../../../lab-core/model/entities/process/lab-protocol.entity';
 
 /**
@@ -28,14 +27,14 @@ export class LabConfigureProtocolComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.processes$ = this.experimentState.getFlow(this.protocolId).pipe(
+    this.processes$ = this.experimentState.getProtocol(this.protocolId).pipe(
       map(flow => this.getConfigurableNodes(flow))
     );
     this.selectedProcess$ = this.selectedProcessSubject.asObservable().pipe(filter(process => process != null));
   }
 
-  private getConfigurableNodes(flow: LabFlow<LabProtocol>): LabProcess[] {
-    const nodes = flow.object.getNodes();
+  private getConfigurableNodes(protocol: LabProtocol): LabProcess[] {
+    const nodes = protocol.getNodes();
     return Object.values(nodes).filter(node => node.hasConfig() || node.isProtocol);
   }
 

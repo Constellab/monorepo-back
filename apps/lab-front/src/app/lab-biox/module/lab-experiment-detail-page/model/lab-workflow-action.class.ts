@@ -13,12 +13,3 @@ export class LabAddProcessWithLink {
   link: LabProtocolLink;
 }
 
-
-/**
- * Object to describe the position of a new node relative to another node (usually because they are linked)
- */
-export interface LabNodeRelativeCoord {
-  nodeName: string;
-  position: 'before' | 'after';
-  layerId: string;
-}

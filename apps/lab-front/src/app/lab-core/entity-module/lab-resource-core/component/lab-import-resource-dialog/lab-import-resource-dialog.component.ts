@@ -10,13 +10,13 @@ import {FlDialogService, FlFormHelper, FlOverlayRef, FlSnackBarService} from '@m
 import {LabRouterService} from '../../../../service/lab-router.service';
 import {LabResource} from '../../../../model/entities/resource/lab-resource.entity';
 import {LabProcessType} from '../../../../model/entities/lab-type/lab-process-type.entity';
-import {LabTypingName} from '../../../../model/entities/lab-typing-name.class';
 import {
   LabSelectTypeDialogComponent,
   LabSelectTypeDialogInput
 } from '../../../lab-type-core/component/lab-select-type-dialog/lab-select-type-dialog.component';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
 import {LabTypeService} from '../../../../entity-service/lab-type.service';
+import {TdTypingName} from '@monorepo/technical-doc';
 
 export interface LabImportResourceDialogInput {
   resourceId: string;
@@ -138,11 +138,11 @@ export class LabImportResourceDialogComponent implements OnInit, OnDestroy {
   // get default importer typing name based on file extension
   private getDefaultImporterTypingName(extension: string): string | null {
     if (['csv', 'tsv', 'xls', 'xlsx'].includes(extension)) {
-      return LabTypingName.importer.tableImporter;
+      return TdTypingName.importer.tableImporter;
     } else if (extension === 'json') {
-      return LabTypingName.importer.jsonImporter;
+      return TdTypingName.importer.jsonImporter;
     } else if (extension === 'txt') {
-      return LabTypingName.importer.textImporter;
+      return TdTypingName.importer.textImporter;
     }
 
     return null;
