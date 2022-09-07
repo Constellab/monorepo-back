@@ -79,6 +79,7 @@ export class FlBioNetworkMetaboliteRenderer {
   }
 
   private static getFontTextSize(metabolite: FlBioNetworkNodeMetabolite): string {
-    return metabolite.isMajor() ? FlBioNetworkMetaboliteRenderer.majorMetaboliteFontSize : FlBioNetworkMetaboliteRenderer.minorMetaboliteFontSize;
+    return metabolite.isMajor() ? FlBioNetworkMetaboliteRenderer.majorMetaboliteFontSize
+      : FlBioNetworkMetaboliteRenderer.minorMetaboliteFontSize;
   }
 }

@@ -158,8 +158,8 @@ export class FlBioNetworkSelectionState implements OnDestroy {
       .filter(link => nodeIds.includes(link.target.id) || nodeIds.includes(link.source.id));
   }
 
-  // return all the connected links to a node and if the connected node is a reaction
-  // return also the link connected to the reaction
+  // return all the connected links to a node
+  // if the connected node is a reaction return also the link connected to the reaction
   private getConnectedReactionsLinks(nodeIds: number[]): FlBioNetworkLink[] {
     const links: FlBioNetworkLink[] = [];
 

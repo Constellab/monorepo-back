@@ -23,7 +23,7 @@ export class FlBioNetworkLinkPoint implements FlCoord {
   public setCoord(coord: FlCoord): void {
     this.x = coord.x;
     this.y = coord.y;
-    this.link.savePoints();
+    // this.link.savePoints();
   }
 
   public toCoord(): FlCoord {
@@ -60,7 +60,7 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
   isVisible: boolean = true;
 
   constructor(source: FlBioNetworkNode, target: FlBioNetworkNode,
-              public reactionData: FlBioNetworkReactionData, points: FlCoord[],
+              public reactionData: FlBioNetworkReactionData,
               public defaultColor: string) {
     super();
     this.source = source;
@@ -68,9 +68,9 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
     this.id = FlBioNetworkLink.id++;
 
     // init each points
-    if (points) {
-      points.forEach(point => this.pointPositions.push(new FlBioNetworkLinkPoint(point.x, point.y, this)));
-    }
+    // if (points) {
+    //   points.forEach(point => this.pointPositions.push(new FlBioNetworkLinkPoint(point.x, point.y, this)));
+    // }
 
     // add the link to the source and target
     this.source.departureLinks.push(this);
@@ -151,36 +151,36 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
       this.pointPositions.splice(minDistIndex, 0, point);
     }
 
-    this.savePoints();
+    // this.savePoints();
   }
 
   public deletePoint(id: number): void {
     const index = this.pointPositions.findIndex(point => point.id === id);
     if (index !== -1) {
       this.pointPositions.splice(index, 1);
-      this.savePoints();
+      // this.savePoints();
     }
 
     // remove the circle element
     select(this.groupElement).selectAll('circle').filter((d: FlBioNetworkLinkPoint) => d.id === id).remove();
   }
 
-  public pointsToCoords(): FlCoord[] {
-    return this.pointPositions.map(point => point.toCoord());
-  }
+  // public pointsToCoords(): FlCoord[] {
+  //   return this.pointPositions.map(point => point.toCoord());
+  // }
 
   // save the coord points to the reaction
-  public savePoints(): void {
-    const reaction = this.reaction;
-    const metabolite = this.metabolite;
-    if (reaction) {
-      if (!reaction.data.metabolites[metabolite.data.id]) {
-        console.error(`Can't find the metabolite ${metabolite.name} in reaction ${reaction.name}`);
-        return;
-      }
-      reaction.data.metabolites[metabolite.data.id].points = this.pointsToCoords();
-    }
-  }
+  // public savePoints(): void {
+  //   const reaction = this.reaction;
+  //   const metabolite = this.metabolite;
+  //   if (reaction) {
+  //     if (!reaction.data.metabolites[metabolite.data.id]) {
+  //       console.error(`Can't find the metabolite ${metabolite.name} in reaction ${reaction.name}`);
+  //       return;
+  //     }
+  //     reaction.data.metabolites[metabolite.data.id].points = this.pointsToCoords();
+  //   }
+  // }
 
 
   public get reaction(): FlBioNetworkNodeReaction {

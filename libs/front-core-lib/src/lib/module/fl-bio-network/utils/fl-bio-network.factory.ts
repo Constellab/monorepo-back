@@ -1,10 +1,10 @@
 import {
   FlBioNetwork,
   FlBioNetworkClusterInfo,
+  FlBioNetworkCompartment,
   FlBioNetworkMetabolite,
   FlBioNetworkReaction,
   FlBioNetworkReactionData,
-  FlBioNetworkReactionLink,
   FlPathwayDatabase
 } from '../model/fl-bio-network.class';
 import {FlBioNetworkHelper} from './fl-bio-network.helper';
@@ -14,14 +14,17 @@ import {FlBioNetworkNodeReaction} from '../model/fl-bio-network-node-reaction.cl
 import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
 import {FlBioNetworkLink} from '../model/fl-bio-network-node-link.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
-import {flBioNetworkCompartmentGetColor} from '../model/fl-bio-network-compartment.class';
 import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
+import {ClHelpService} from '@monorepo/core-lib';
+import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 
 export class FlBioNetworkFactory {
   private reactions: FlBioNetworkNodeReaction[] = [];
   private metabolites: FlBioNetworkNodeMetabolite[] = [];
   private cofactors: FlBioNetworkNodeCofactor[] = [];
   private links: FlBioNetworkLink[] = [];
+
+  private compartments: FlBioNetworkCompartment[];
 
 
   constructor(private themeDetail: FlThemeDetail, private ignoreNodePositions: boolean) {
@@ -30,6 +33,7 @@ export class FlBioNetworkFactory {
 
   public convertNetworkToNetworkD3(network: FlBioNetwork, selectedPathways: string[],
                                    pathwayDatabase: FlPathwayDatabase): FlBioNetworkGraph {
+    this.initCompartmentColors(network.compartments);
 
     // create the metabolites nodes form the reactions
     this.initMetabolitesNodes(network.metabolites, selectedPathways);
@@ -99,9 +103,11 @@ export class FlBioNetworkFactory {
         const positionCluster = metabolite.layout.clusters[metaboliteCluster.subClusterIds[0]];
         const level = positionCluster?.level ?? metabolite.level;
 
+        // find compartment info
+        const compartmentColor = this.getCompartmentColor(metabolite.compartment);
 
         const metaboliteNode = new FlBioNetworkNodeMetabolite(metabolite.name ? metabolite.name : metabolite.id,
-          metaboliteCluster, level, flBioNetworkCompartmentGetColor(metabolite.compartment), this.themeDetail.foreground, metabolite);
+          metaboliteCluster, level, compartmentColor, this.themeDetail.foreground, metabolite);
 
         // for the metabolite position, take the position of the first sub cluster
         const clusterPosition = metabolite.layout.clusters[metaboliteCluster.subClusterIds[0]];
@@ -154,20 +160,20 @@ export class FlBioNetworkFactory {
 
         // get the estimate with a default value if it doesn't exist
         const reactionData: FlBioNetworkReactionData = FlBioNetworkHelper.getReactionData(reactionNode.data);
-        const reactionLink: FlBioNetworkReactionLink = reactionNode.data.metabolites[metaboliteId];
+        const reactionValue = reactionNode.data.metabolites[metaboliteId];
 
         // right side of the link
         // if the estimate is negative, the link is inverted
         const estimateValue: number = typeof reactionData.flux_estimates?.values[0] === 'number' ?
           reactionData.flux_estimates?.values[0] : 1;
-        if (reactionLink.stoich * estimateValue > 0) {
+        if (reactionValue * estimateValue > 0) {
           this.links.push(new FlBioNetworkLink(reactionNode, metaboliteNode,
-            reactionData, reactionLink.points, this.themeDetail.greyLowContrast));
+            reactionData, this.themeDetail.greyLowContrast));
         }
         // left side of the link
         else {
           this.links.push(new FlBioNetworkLink(metaboliteNode, reactionNode,
-            reactionData, reactionLink.points, this.themeDetail.greyLowContrast));
+            reactionData, this.themeDetail.greyLowContrast));
         }
 
         find = true;
@@ -211,5 +217,33 @@ export class FlBioNetworkFactory {
         }
       }
     }
+  }
+
+  private initCompartmentColors(compartments: FlBioNetworkCompartment[]): void {
+    for (const compartment of compartments) {
+      if (ClHelpService.isNullOrEmpty(compartment.color)) {
+        // generate a default color
+        compartment.color = this.compartmentIdToColor(compartment.id);
+      }
+    }
+
+    this.compartments = compartments;
+  }
+
+  private getCompartmentColor(compartmentId: string): string {
+    // find compartment info
+    const compartment = this.compartments.find(c => c.id === compartmentId);
+    if (compartment == null) {
+      console.error(`Compartment '${compartmentId}' not found`);
+      return this.compartmentIdToColor(compartmentId);
+    }
+
+    return compartment.color;
+  }
+
+  private compartmentIdToColor(compartmentId: string): string {
+    // as the compartment is a single letter, we duplicate it to have really different colors
+    return FlColorHelper.stringToRGBColor(compartmentId + compartmentId + compartmentId
+      + compartmentId + compartmentId + compartmentId + compartmentId + compartmentId + compartmentId);
   }
 }

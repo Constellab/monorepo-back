@@ -148,21 +148,21 @@ export class FlBioNetworkHelper {
     // the reaction is the clusters of all metabolites associated to the reaction
     for (const metaboliteId of Object.keys(reaction.metabolites)) {
       const metabolite: FlBioNetworkMetabolite = metabolites.find(m => m.id === metaboliteId);
-      if (metabolite) {
+      if (!metabolite) continue;
 
-        const metabolitesClusters = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
-        for (const cluster of metabolitesClusters) {
+      const metabolitesClusters = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
+      for (const cluster of metabolitesClusters) {
 
-          const reactionCluster = clusters.find(c => c.clusterId === cluster.clusterId);
-          // add the metabolite cluster to the reaction cluster
-          if (!reactionCluster) {
-            clusters.push(ClHelpService.deepClone(cluster));
-          }else{
-            // todo merge sub cluster ids and remove duplicate
-            reactionCluster.subClusterIds = reactionCluster.subClusterIds.concat(cluster.subClusterIds);
+        const reactionCluster = clusters.find(c => c.clusterId === cluster.clusterId);
+        // add the metabolite cluster to the reaction cluster
+        if (!reactionCluster) {
+          clusters.push(ClHelpService.deepClone(cluster));
+        } else {
+          // todo merge sub cluster ids and remove duplicate
+          reactionCluster.subClusterIds = reactionCluster.subClusterIds.concat(cluster.subClusterIds);
 
-          }
         }
+
       }
     }
 

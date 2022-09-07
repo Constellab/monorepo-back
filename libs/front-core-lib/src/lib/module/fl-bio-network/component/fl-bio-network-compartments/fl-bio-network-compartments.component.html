@@ -6,7 +6,7 @@
          (click)="toggleCompartment(compartment.id)"
          [style.opacity]="getCompartmentOpacity(compartment.id)"
          class="element g-text-not-selectable">
-      <div class="round" [style.backgroundColor]="compartment.id | flBioNetworkCompartmentColor"></div>
+      <div class="round" [style.backgroundColor]="compartment.color"></div>
       <div class="g-text-capitalize-first g-text-small g-text-light">{{compartment.name}}</div>
     </div>
   </div>

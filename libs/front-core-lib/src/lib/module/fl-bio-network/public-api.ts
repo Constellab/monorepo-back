@@ -30,9 +30,6 @@ export * from './model/fl-bio-network-node-metabolite.class';
 export * from './model/fl-bio-network-node-reaction.class';
 export * from './model/fl-bio-network-selection.class';
 
-// Pipes
-export * from './pipe/fl-bio-network-compartment-color.pipe';
-
 // Renderer
 export * from './renderer/fl-bio-network-cofactor.renderer';
 export * from './renderer/fl-bio-network-grid.renderer';

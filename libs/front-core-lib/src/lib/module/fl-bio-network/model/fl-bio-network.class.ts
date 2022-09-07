@@ -36,7 +36,7 @@ export interface FlBioNetworkMetabolite {
 export interface FlBioNetworkReaction {
   id: string;
   name: string;
-  metabolites: Record<string, FlBioNetworkReactionLink>;
+  metabolites: Record<string, number>;
   lower_bound?: number;
   upper_bound?: number;
   enzyme?: FlBioNetworkEnzyme;
@@ -64,18 +64,13 @@ export interface FlBioNetworkCompartment {
   go_id: string;
   bigg_d: string;
   name: string;
+  color: string;
 }
 
 // TODO rename and review format with cluster
 export interface FlBioNetworkClusterInfo {
   clusterId: string;
   subClusterIds: string[];
-}
-
-
-export interface FlBioNetworkReactionLink {
-  stoich: number;
-  points: FlCoord[];
 }
 
 // Information about the enzyme in the reaction
