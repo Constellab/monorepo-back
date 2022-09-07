@@ -71,9 +71,9 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
       // show all links and links to cofactors if the cofactor parent reaction is selection
       visibilityLink = (link: FlBioNetworkLink) => {
         if (link.source instanceof FlBioNetworkNodeCofactor) {
-          return link.source.parentNode.selected;
+          return link.source.showCofactor(visibleLevels);
         } else if (link.target instanceof FlBioNetworkNodeCofactor) {
-          return link.target.parentNode.selected;
+          return link.target.showCofactor(visibleLevels);
         }
         return levelVisibility(link);
       };

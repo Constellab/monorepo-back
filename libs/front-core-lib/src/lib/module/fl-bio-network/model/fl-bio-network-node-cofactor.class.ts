@@ -28,5 +28,14 @@ export class FlBioNetworkNodeCofactor extends FlBioNetworkNode {
     return false;
   }
 
+  /**
+   * Function to decide whether to show the cofactor
+   * Only shows it if the parent reaction is selected and the reaction is visible based on levels
+   * @param visibleLevels
+   */
+  showCofactor(visibleLevels: FlBioNetworkMetaboliteLevel[]): boolean {
+    return this.parentNode.selected && visibleLevels.includes(this.parentNode.getLevel());
+  }
+
 
 }

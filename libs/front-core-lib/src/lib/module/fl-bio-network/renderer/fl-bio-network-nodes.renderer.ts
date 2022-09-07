@@ -78,14 +78,13 @@ export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
 
     if (showRelatedCofactor) {
       visibilityNode = (object: FlBioNetworkNode) => {
-        // show the cofactor only if the parent reaction is selected
+        // show the cofactor only if the parent reaction is selected and visible
         if (object instanceof FlBioNetworkNodeCofactor) {
-          return object.parentNode?.selected;
+          return object.showCofactor(visibleLevels);
         }
         return levelVisibility(object);
       };
-    }
-    else {
+    } else {
       visibilityNode = (object: FlBioNetworkNode) => object.isVisible && levelVisibility(object);
     }
 

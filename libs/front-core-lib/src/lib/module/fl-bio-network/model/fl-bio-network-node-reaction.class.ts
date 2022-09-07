@@ -37,16 +37,12 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
       .filter(node => !(node instanceof FlBioNetworkNodeReaction))
       .map(node => node.getLevel()).sort();
 
-    // return the second-lowest level, this mean that there is at least 2 metabolites linked
-    // to this reaction with the level or lower
-    if (levels.length >= 2) {
-      return levels[1];
-      // if there is only one metabolite linked, return the level of this metabolite
-    }else if(levels.length === 1){
-      return levels[0];
+    // if the reaction is connected to at least 2 major, it is major, otherwise it is minor
+    if (levels.filter(l => l === FlBioNetworkMetaboliteLevel.MAJOR).length >= 2) {
+      return FlBioNetworkMetaboliteLevel.MAJOR;
+    } else {
+      return FlBioNetworkMetaboliteLevel.MINOR;
     }
-
-    return FlBioNetworkMetaboliteLevel.MINOR;
   }
 
   /**
