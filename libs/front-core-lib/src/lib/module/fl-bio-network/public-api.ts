@@ -23,6 +23,7 @@ export * from './model/fl-bio-network.class';
 export * from './model/fl-bio-network-compartment.class';
 export * from './model/fl-bio-network-drawer-action.class';
 export * from './model/fl-bio-network-graph.class';
+export * from './model/fl-bio-network-particle-color.class';
 export * from './model/fl-bio-network-node.class';
 export * from './model/fl-bio-network-node-cofactor.class';
 export * from './model/fl-bio-network-node-link.class';

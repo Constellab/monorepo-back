@@ -20,7 +20,7 @@ const FL_BIO_NETWORK_DEFAULT_ENGINE_CONFIG: FlBioNetworkEngineConfig = {
   ignoreNodePositions: false,
 
   alphaMin: 0.001,
-  alphaDecay: 0.0228,
+  alphaDecay: 0.05,
   velocityDecay: 0.4,
   nodeStrength: -30,
   centerStrength: 1,

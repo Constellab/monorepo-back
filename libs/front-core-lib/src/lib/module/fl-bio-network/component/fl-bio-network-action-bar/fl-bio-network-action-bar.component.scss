@@ -8,9 +8,20 @@
 }
 
 .slider {
-  width: 15em;
+  min-width: 15em;
+  width: 100%;
 }
 
-.download-button{
+.download-button {
   margin-top: 1em;
+}
+
+.toggle-particles {
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+}
+
+.input {
+  margin-left: 0.3em;
+  margin-right: 0.3em;
 }

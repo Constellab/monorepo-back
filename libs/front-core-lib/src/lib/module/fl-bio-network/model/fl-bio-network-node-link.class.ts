@@ -5,6 +5,7 @@ import {FlBioNetworkNodeCofactor} from './fl-bio-network-node-cofactor.class';
 import {FlBioNetworkNodeReaction} from './fl-bio-network-node-reaction.class';
 import {FlBioNetworkGraphObject} from './fl-bio-network-graph.class';
 import {FlCoord, FlCoordHelper} from '../../../model/shared/fl-coord.class';
+import {FlBioNetworkHelper} from '../utils/fl-bio-network.helper';
 
 
 // const lineFunction = line<FlCoord>().x(d => d.x).y(d => d.y);
@@ -76,7 +77,8 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
     this.source.departureLinks.push(this);
     this.target.arrivalLinks.push(this);
 
-    this.value = typeof this.reactionData.flux_estimates?.values[0] === 'number' ? this.reactionData.flux_estimates?.values[0] : 0;
+    const flux = FlBioNetworkHelper.getReactionFlux(this.reactionData);
+    this.value = flux ? flux.value : 0;
     this.absValue = Math.abs(this.value);
   }
 
@@ -193,6 +195,10 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
     if (this.target instanceof FlBioNetworkNodeReaction) return this.source;
     if (this.source instanceof FlBioNetworkNodeReaction) return this.target;
     return null;
+  }
+
+  public getLength(): number {
+    return Math.sqrt((this.source.x - this.target.x) ** 2 + (this.source.y - this.target.y) ** 2);
   }
 
 

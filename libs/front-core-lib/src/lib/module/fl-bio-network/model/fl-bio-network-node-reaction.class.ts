@@ -1,5 +1,6 @@
 import {FlBioNetworkClusterInfo, FlBioNetworkMetaboliteLevel, FlBioNetworkReaction} from './fl-bio-network.class';
 import {FlBioNetworkNode} from './fl-bio-network-node.class';
+import {FlBioNetworkNodeCofactor} from './fl-bio-network-node-cofactor.class';
 
 export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
 
@@ -33,9 +34,13 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
 
 
     // Exclude connected FlBioNetworkD3Reaction to avoid infinite loop
+    // ignore cofactors
     const levels: number[] = this.getConnectedNodes()
-      .filter(node => !(node instanceof FlBioNetworkNodeReaction))
+      .filter(node => !(node instanceof FlBioNetworkNodeReaction) && !(node instanceof FlBioNetworkNodeCofactor))
       .map(node => node.getLevel()).sort();
+
+    // if there is only 1 level, return it
+    if(levels.length === 1) return levels[0];
 
     // if the reaction is connected to at least 2 major, it is major, otherwise it is minor
     if (levels.filter(l => l === FlBioNetworkMetaboliteLevel.MAJOR).length >= 2) {

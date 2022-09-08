@@ -164,8 +164,8 @@ export class FlBioNetworkFactory {
 
         // right side of the link
         // if the estimate is negative, the link is inverted
-        const estimateValue: number = typeof reactionData.flux_estimates?.values[0] === 'number' ?
-          reactionData.flux_estimates?.values[0] : 1;
+        const simulation = FlBioNetworkHelper.getReactionFlux(reactionNode.data.data);
+        const estimateValue: number = (simulation && typeof simulation.value === 'number') ? simulation.value : 1;
         if (reactionValue * estimateValue > 0) {
           this.links.push(new FlBioNetworkLink(reactionNode, metaboliteNode,
             reactionData, this.themeDetail.greyLowContrast));

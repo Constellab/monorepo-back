@@ -78,7 +78,7 @@ export class FlBioNetworkGraph {
     return this.links.map(link => link.absValue);
   }
 
-  // return the min and max value of all links
+  // return the max value of all links
   public getLinksMaxAbsoluteValue(): number {
     return Math.max(...this.links.map(link => link.absValue));
   }

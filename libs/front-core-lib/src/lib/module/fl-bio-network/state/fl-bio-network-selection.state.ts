@@ -235,6 +235,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   }
 
   public clearSelection(): void {
+    if (this.selection$.value.mode === 'none') return;
     this.selectAll();
     this.emitNone();
   }

@@ -120,18 +120,18 @@ export interface FlBioNetworkClusterSelection2 {
 }
 
 export interface FlBioNetworkReactionData {
-  flux_estimates: FlBioNetworkReactionDataFlux;
+  simulations?: Record<string, FlBioNetworkReactionDataFlux>;
 }
 
 export interface FlBioNetworkReactionDataFlux {
-  values: number[];
-  lower_bounds: number[];
-  upper_bounds: number[];
+  value: number;
+  lower_bound: number;
+  upper_bound: number;
   // labels?: [];
 }
 
 export const flDefaultPathwayReactionValue: FlBioNetworkReactionData = {
-  flux_estimates: {values: [1], lower_bounds: [1], upper_bounds: [1]}
+  simulations: {'default': {value: 1, lower_bound: 1, upper_bound: 1}}
 };
 
 export const flDefaultPathway: FlBioNetworkPathwayDetail = {

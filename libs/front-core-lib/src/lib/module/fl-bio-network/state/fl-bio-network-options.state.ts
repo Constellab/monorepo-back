@@ -7,10 +7,10 @@ import {FlBioNetworkClusterSelection, FlBioNetworkMetaboliteLevel} from '../mode
  * normal --> normal linear scale
  * log --> logarithmic scale
  */
-export type FlBioNetworkLinkColorScale = 'linear' | 'log2' | 'log10' | 'threshold-75' | 'threshold-95';
+export type FlBioNetworkParticleColorScale = 'linear' | 'log2' | 'log10' | 'threshold-75' | 'threshold-95';
 
-export type FlBioNetworkOptionsAction = 'init' | 'toggleText' | 'toggleGrid' | 'toggleArrow' | 'toggleParticles'
-  | 'updateVisibilityLevel' | 'color';
+export type FlBioNetworkOptionsAction = 'init' | 'toggleText' | 'toggleGrid' | 'toggleArrow' |
+  'particles' | 'updateVisibilityLevel' | 'color';
 
 /**
  * Object containing options visible element on the pathways
@@ -22,7 +22,10 @@ export type FlBioNetworkOptions = {
   showGrid: boolean;
   showArrows: boolean;
   showParticles: boolean;
-  linkColorScale: FlBioNetworkLinkColorScale;
+  particleSize: number;
+  particleDensityThreshold: number; // threshold to normalize density of particles
+  particleSpeedThreshold: number; // threshold to normalize speed of particles
+  particleColorScale: FlBioNetworkParticleColorScale;
   coloredClusters: FlBioNetworkClusterSelection[];
 };
 
@@ -37,7 +40,10 @@ export class FlBioNetworkOptionsState implements OnDestroy {
     showGrid: false,
     showArrows: false,
     showParticles: false,
-    linkColorScale: 'linear',
+    particleSize: 3,
+    particleSpeedThreshold: 0.1,
+    particleDensityThreshold: 0.1,
+    particleColorScale: 'linear',
     coloredClusters: [],
   });
 
@@ -68,15 +74,26 @@ export class FlBioNetworkOptionsState implements OnDestroy {
   }
 
   public setShowParticles(showParticles: boolean): void {
-    this.emitConfig('toggleParticles', {showParticles: showParticles});
+    this.emitConfig('particles', {showParticles: showParticles});
   }
 
+  public setParticleSize(particleSize: number): void {
+    this.emitConfig('particles', {particleSize: particleSize});
+  }
+
+  public setParticleDensityThreshold(particleNbThreshold: number): void {
+    this.emitConfig('particles', {particleDensityThreshold: particleNbThreshold});
+  }
+
+  public setParticleSpeedThreshold(particleSpeedThreshold: number): void {
+    this.emitConfig('particles', {particleSpeedThreshold: particleSpeedThreshold});
+  }
 
   //////////////////////////////// COLOR OPTIONS ////////////////////////////////
 
 
-  public setLinkColorMode(mode: FlBioNetworkLinkColorScale): void {
-    this.emitConfig('color', {linkColorScale: mode});
+  public setParticleColorMode(mode: FlBioNetworkParticleColorScale): void {
+    this.emitConfig('color', {particleColorScale: mode});
   }
 
   public setColoredClusters(clusters: FlBioNetworkClusterSelection[]): void {

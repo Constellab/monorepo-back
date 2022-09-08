@@ -8,22 +8,22 @@
 
 
   <!--  Flux estimate information -->
-  <ng-container *ngIf="hasFlux">
+  <ng-container *ngIf="getFlux as flux">
     <span>{{'flBioNetwork.flux_estimate' | translate}} :</span>
     <ul>
       <li>
-        <fl-key-value [matTooltip]="reaction.data.flux_estimates.values[0]?.toString()" matTooltipPosition="before">
+        <fl-key-value [matTooltip]="flux.value?.toString()" matTooltipPosition="before">
           <fl-key>{{'flBioNetwork.flux_value' | translate}}</fl-key>
-          {{reaction.data.flux_estimates.values[0] | number : '1.2-2'}}
+          {{flux.value | number : '1.2-2'}}
         </fl-key-value>
       </li>
 
       <li>
-        <fl-key-value [matTooltip]="fluxEstimateInterval" matTooltipPosition="before">
+        <fl-key-value [matTooltip]="fluxEstimateInterval(flux)" matTooltipPosition="before">
           <fl-key>{{'flBioNetwork.flux_interval' | translate}}</fl-key>
-          <span *ngIf="hasEstimateInterval">
-          [{{reaction.data.flux_estimates.lower_bounds[0] | number : '1.2-2'}}
-            , {{reaction.data.flux_estimates.upper_bounds[0] | number : '1.2-2'}}]
+          <span *ngIf="flux.lower_bound && flux.upper_bound">
+          [{{flux.lower_bound | number : '1.2-2'}}
+            , {{flux.upper_bound | number : '1.2-2'}}]
         </span>
         </fl-key-value>
       </li>

@@ -29,37 +29,63 @@
       {{'flBioNetwork.toggle_show_link_arrow' | translate}}
     </mat-checkbox>
 
-    <mat-checkbox [(ngModel)]="showParticles" (change)="toggleShowParticles()" color="primary" fxFlex="50%">
+  </div>
+
+
+  <div *ngIf="maxFluxValue > 0" fxLayout="column">
+    <p>{{'flBioNetwork.flux_options' | translate}}</p>
+
+    <mat-checkbox [(ngModel)]="showParticles" (change)="toggleShowParticles()"
+                  color="primary" class="toggle-particles">
       {{'flBioNetwork.toggle_show_link_particles' | translate}}
     </mat-checkbox>
 
-  </div>
+    <div fxLayout="row wrap" fxLayoutAlign="start center"
+         class="g-full g-form-field-compact g-form-field-no-hint">
 
-  <div *ngIf="maxFluxValue > 0">
-    <mat-form-field class="g-full">
-      <mat-label>{{'flBioNetwork.link_colors' | translate}}</mat-label>
-      <mat-select [(ngModel)]="linkColorMode" (selectionChange)="setLinksColors()"
-                  [placeholder]="'flBioNetwork.link_colors' | translate">
-        <mat-option value="linear">{{'flBioNetwork.link_color_linear' | translate}}</mat-option>
-        <mat-option value="log2">{{'flBioNetwork.link_color_log_2' | translate}}</mat-option>
-        <mat-option value="log10">{{'flBioNetwork.link_color_log_10' | translate}}</mat-option>
-        <mat-option value="threshold-75">{{'flBioNetwork.link_color_threshold_75' | translate}}</mat-option>
-        <mat-option value="threshold-95">{{'flBioNetwork.link_color_threshold_95' | translate}}</mat-option>
-      </mat-select>
-    </mat-form-field>
+      <mat-form-field class="g-search-field input">
+        <mat-label>{{'flBioNetwork.particle_size' | translate}}</mat-label>
+        <input type="number" matInput [(ngModel)]="particleSize" (change)="particleSizeChange()">
+      </mat-form-field>
+
+      <mat-form-field class="g-search-field input">
+        <mat-label>{{'flBioNetwork.particle_density_threshold' | translate}}</mat-label>
+        <input type="number" matInput [(ngModel)]="particleDensityThreshold" (change)="particleDensityThresholdChange()"
+               [max]="1">
+      </mat-form-field>
+
+      <mat-form-field class="g-search-field input">
+        <mat-label>{{'flBioNetwork.particle_speed_threshold' | translate}}</mat-label>
+        <input type="number" matInput [(ngModel)]="particleSpeedThreshold" (change)="particleSpeedThresholdChange()"
+               [max]="1">
+      </mat-form-field>
+
+      <mat-form-field class="g-search-field input">
+        <mat-label>{{'flBioNetwork.particles_color' | translate}}</mat-label>
+        <mat-select [(ngModel)]="particlesColorMode" (selectionChange)="setParticlesColors()"
+                    [placeholder]="'flBioNetwork.particles_color' | translate">
+          <mat-option value="linear">{{'flBioNetwork.particle_color_linear' | translate}}</mat-option>
+          <mat-option value="log2">{{'flBioNetwork.particle_color_log_2' | translate}}</mat-option>
+          <mat-option value="log10">{{'flBioNetwork.particle_color_log_10' | translate}}</mat-option>
+          <mat-option value="threshold-75">{{'flBioNetwork.particle_color_threshold_75' | translate}}</mat-option>
+          <mat-option value="threshold-95">{{'flBioNetwork.particle_color_threshold_95' | translate}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
 
     <!--   Slider to hide link     -->
-    <p class="g-text-small g-text-light">{{'flBioNetwork.flux_threshold' | translate}} : {{fluxThreshold}}</p>
-    <mat-slider class="slider" color="primary"
-                [max]="maxFluxValue"
-                [min]="0"
-                [step]="1"
-                [thumbLabel]="true"
-                tickInterval="auto"
-                [(ngModel)]="fluxThreshold"
-                (change)="fluxThresholdChange($event)">
-    </mat-slider>
-
+    <div class="g-full">
+      <p class="g-text-small g-text-light">{{'flBioNetwork.flux_threshold' | translate}} : {{fluxThreshold}}</p>
+      <mat-slider class="slider" color="primary"
+                  [max]="maxFluxValue"
+                  [min]="0"
+                  [step]="1"
+                  [thumbLabel]="true"
+                  tickInterval="auto"
+                  [(ngModel)]="fluxThreshold"
+                  (change)="fluxThresholdChange($event)">
+      </mat-slider>
+    </div>
   </div>
 
   <fl-bio-network-node-search></fl-bio-network-node-search>

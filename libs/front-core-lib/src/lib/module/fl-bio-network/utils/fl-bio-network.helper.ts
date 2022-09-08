@@ -7,6 +7,7 @@ import {
   flBioNetworkPathwayIdSeparator,
   FlBioNetworkReaction,
   FlBioNetworkReactionData,
+  FlBioNetworkReactionDataFlux,
   flDefaultPathway,
   flDefaultPathwayReactionValue,
   FlPathwayDatabase
@@ -145,10 +146,10 @@ export class FlBioNetworkHelper {
                                     metabolites: FlBioNetworkMetabolite[]): FlBioNetworkClusterInfo[] {
     const clusters: FlBioNetworkClusterInfo[] = [];
 
-    // the reaction is the clusters of all metabolites associated to the reaction
+    // the reaction is the clusters of all metabolites associated to the reaction (excluding the cofactors)
     for (const metaboliteId of Object.keys(reaction.metabolites)) {
       const metabolite: FlBioNetworkMetabolite = metabolites.find(m => m.id === metaboliteId);
-      if (!metabolite) continue;
+      if (!metabolite || metabolite.is_cofactor) continue;
 
       const metabolitesClusters = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
       for (const cluster of metabolitesClusters) {
@@ -167,5 +168,10 @@ export class FlBioNetworkHelper {
     }
 
     return clusters;
+  }
+
+  public static getReactionFlux(reactionData: FlBioNetworkReactionData): FlBioNetworkReactionDataFlux | null {
+    if (ClHelpService.isNullOrEmpty(reactionData.simulations)) return null;
+    return Object.values(reactionData.simulations)[0];
   }
 }

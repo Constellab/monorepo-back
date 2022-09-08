@@ -1,17 +1,12 @@
 import {FlBioNetworkLink} from '../model/fl-bio-network-node-link.class';
 import {FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
-import {FlBioNetworkLinkColorScale, FlBioNetworkOptions} from '../state/fl-bio-network-options.state';
-import {ScaleLinear} from 'd3-scale';
-import {FlColorHelper} from '../../../utils/fl-color-helper.class';
-import {quantile, scaleLinear} from 'd3';
-import {ClNumberHelper} from '@monorepo/core-lib';
+import {FlBioNetworkOptions} from '../state/fl-bio-network-options.state';
 import {FlBioNetworkGraphRenderer} from './fl-bio-network-main.renderer';
 import {FlBioNetworkObjectColorFunction, FlBioNetworkObjectRenderer} from './fl-bio-network-object.renderer';
 import {Observable} from 'rxjs';
 import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.class';
 import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
-
-type FlLinkColorFunction = (node: FlBioNetworkLink) => string;
+import {FlBioNetworkLinkColorFunction, FlBioNetworkParticleColor} from '../model/fl-bio-network-particle-color.class';
 
 
 export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
@@ -24,14 +19,7 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
   }
 
   public render(): void {
-    this.graphRenderer.graph
-    // size based on link weight, set to 1 when the link is not selected
-    // .linkWidth((link: FlBioNetworkLink) =>
-    //   link.selected ? this.getLinkWidth(link) : 1)
-    // .linkDirectionalArrowLength((link: FlBioNetworkLink) => link.isLinkedToCofactor() ? 3 : 10)
-    // .linkDirectionalArrowRelPos(0.5)
-    // .linkDirectionalParticles(1)
-    ;
+    this.graphRenderer.graph;
   }
 
   protected updateObjectColors(options: FlBioNetworkOptions): void {
@@ -39,10 +27,12 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
     if (options.coloredClusters?.length > 0) {
       colorFunc = this.getClusterColorFunction(options.coloredClusters);
     } else {
-      colorFunc = this.getLinkColorScaleFunction(options.linkColorScale);
+      colorFunc = null;
     }
 
     this.setColorFunction(colorFunc);
+    const linkColor = new FlBioNetworkParticleColor(options.particleColorScale,
+      this.graphRenderer.data.getLinksValues(), this.greyColor);
 
     // link arrow visibility
     if (options.showArrows) {
@@ -53,13 +43,54 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
       this.graphRenderer.graph.linkDirectionalArrowLength(null);
     }
 
+
     // link directional particles
     if (options.showParticles) {
-      this.graphRenderer.graph.linkDirectionalParticles(1);
+      // particle width from param
+      this.graphRenderer.graph.linkDirectionalParticleWidth(options.particleSize);
+
+      // color of the particles based on link value
+      this.graphRenderer.graph.linkDirectionalParticleColor(
+        (link: FlBioNetworkLink) => {
+          // if the link is not selected, always return grey
+          if (!link.selected) return this.greyColor;
+          return linkColor.getColor(link);
+        });
+
+      // get the transformed media of the link values
+      const quantile = linkColor.transformValue(linkColor.getQuantile(0.5));
+
+      // nb of particules in a link based on the link value and the length of the link
+      this.graphRenderer.graph.linkDirectionalParticles(
+        (link: FlBioNetworkLink) => {
+
+          const linkValue = linkColor.transformValue(link.absValue);
+
+          // threshold function to limit density of particles based on link value
+          const density = (options.particleDensityThreshold * linkValue) / (quantile + linkValue);
+
+          // have the total number of particle by multiplying by the particle density by the length of the link
+          return Math.round(link.getLength() * density);
+          // return Math.round((link.absValue * link.getLength()) / (maxValue * 10));
+        }
+      );
+
+      // speed of the particles based on the link value
+      // the speed of the lib is the time the particles take to travel through the link (whatever the length of the link)
+      // So we use the link in the calculation to have a speed of the particles that does not depend on the link length
+      this.graphRenderer.graph.linkDirectionalParticleSpeed(
+        (link: FlBioNetworkLink) => {
+          const linkValue = linkColor.transformValue(link.absValue);
+          // calculate the speed of the particles based on link length
+          // the 5 is used to speed up all the particles
+          const speed = (linkValue / link.getLength()) * 5;
+          // threshold function to have value between 0 and 0.1
+          return (options.particleSpeedThreshold * speed) / (quantile + speed);
+        });
     } else {
+      // disable the particles
       this.graphRenderer.graph.linkDirectionalParticles(0);
     }
-
   }
 
   protected updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[], showRelatedCofactor: boolean): void {
@@ -84,85 +115,11 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
     this.graphRenderer.graph.linkVisibility(visibilityLink);
   }
 
-
-  private getLinkWidth(link: FlBioNetworkLink): number {
-    const level = link.getLevel();
-    switch (level) {
-      case FlBioNetworkMetaboliteLevel.MAJOR:
-        return link.absLog10Value + 3;
-      case FlBioNetworkMetaboliteLevel.MINOR:
-        return link.absLog10Value + 1;
-      case FlBioNetworkMetaboliteLevel.COFACTOR:
-        return Math.max(link.absLog10Value, 1);
-    }
-  }
-
-  private setColorFunction(colorFunction: FlLinkColorFunction): void {
+  private setColorFunction(colorFunction: FlBioNetworkLinkColorFunction): void {
     this.graphRenderer.graph.linkColor((link: FlBioNetworkLink) => {
       // if the link is not selected, always return grey
-      if (!link.selected) return this.greyColor;
+      if (!link.selected || colorFunction == null) return this.greyColor;
       return colorFunction(link);
     });
-  }
-
-  private setColorScaleFunction(colorMode: FlBioNetworkLinkColorScale): void {
-    const colorFunction = this.getLinkColorScaleFunction(colorMode);
-    this.setColorFunction(colorFunction);
-  }
-
-
-  private getLinkColorScaleFunction(linkColorScale: FlBioNetworkLinkColorScale): FlLinkColorFunction {
-    const colorTransform: (value: number) => number = this.getLinkColorTransformFunction(linkColorScale);
-    const colorScale = this.getLinkColorScale(linkColorScale);
-    return (link: FlBioNetworkLink) => colorScale(colorTransform(link.absValue));
-  }
-
-  // create a color scale for link
-  private getLinkColorScale(colorMode: FlBioNetworkLinkColorScale): ScaleLinear<string, any, any> {
-    const range: [string, string] = [this.greyColor, FlColorHelper.pinkShiny];
-
-    let max = this.getLinkColorMaxDomain(colorMode);
-    if (max === 0) {
-      max = 1;
-    }
-    return scaleLinear<string>().domain(
-      [0, max])
-      .range(range)
-      .clamp(true); // value outside domain are clamped to the edges
-  }
-
-  /**
-   * Return the link color max domain based on mode
-   */
-  private getLinkColorMaxDomain(colorMode: FlBioNetworkLinkColorScale): number {
-
-    if (colorMode === 'threshold-75' || colorMode === 'threshold-95') {
-      const threshold = colorMode === 'threshold-75' ? 0.75 : 0.95;
-
-      // round all value to merge similar values
-      const values = this.graphRenderer.data.getLinksValues().map(value => ClNumberHelper.round(value, 1));
-      // remove duplicates
-      const uniqueValues = new Set(values);
-
-      // return the quantile
-      return quantile(uniqueValues, threshold);
-    }
-
-    // for other color modes, return the max value
-    const func = this.getLinkColorTransformFunction(colorMode);
-    return func(this.graphRenderer.data.getLinksMaxAbsoluteValue());
-  }
-
-
-  // return a function to apply on link value before calling the color scale
-  private getLinkColorTransformFunction(colorMode: FlBioNetworkLinkColorScale): (absValue: number) => number {
-    switch (colorMode) {
-      case 'log2':
-        return (absValue => Math.log2(absValue + 1));
-      case 'log10':
-        return (absValue => Math.log10(absValue + 1));
-      default:
-        return (absValue => absValue);
-    }
   }
 }

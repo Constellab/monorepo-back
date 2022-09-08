@@ -3,7 +3,7 @@ import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {MatSliderChange} from '@angular/material/slider';
 import {filter} from 'rxjs/operators';
 import {FlBioNetworkGraph} from '../../model/fl-bio-network-graph.class';
-import {FlBioNetworkLinkColorScale, FlBioNetworkOptionsState} from '../../state/fl-bio-network-options.state';
+import {FlBioNetworkOptionsState, FlBioNetworkParticleColorScale} from '../../state/fl-bio-network-options.state';
 import {FlBioNetworkMetaboliteLevel} from '../../model/fl-bio-network.class';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
 
@@ -23,14 +23,17 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   fluxThreshold: number = 0;
   maxFluxValue: number;
 
-  // mode for the color of the links
-  linkColorMode: FlBioNetworkLinkColorScale = 'linear';
+  // mode for the color of the particles
+  particlesColorMode: FlBioNetworkParticleColorScale = 'linear';
   // showCofactor: boolean = false;
   showMinors: boolean = false;
   showText: boolean = false;
   showGrid: boolean = false;
   showArrows: boolean = false;
   showParticles: boolean = false;
+  particleSize: number;
+  particleDensityThreshold: number;
+  particleSpeedThreshold: number;
 
   constructor(private cdr: ChangeDetectorRef,
               private state: FlBioNetworkState,
@@ -40,13 +43,17 @@ export class FlBioNetworkActionBarComponent implements OnInit {
 
   ngOnInit(): void {
     const options = this.optionState.getCurrentOptions();
-    this.linkColorMode = options.linkColorScale;
+    this.particlesColorMode = options.particleColorScale;
     // this.showCofactor = this.rendererState.getShowCofactors();
     this.showMinors = options.visibleLevels.includes(FlBioNetworkMetaboliteLevel.MINOR);
     this.showText = options.showTexts;
     this.showGrid = options.showGrid;
     this.showArrows = options.showArrows;
     this.showParticles = options.showParticles;
+    this.particleSize = options.particleSize;
+    this.particleDensityThreshold = options.particleDensityThreshold;
+    this.particleSpeedThreshold = options.particleSpeedThreshold;
+
     this.state.getChartData$().subscribe(
       chartData => this.onNewData(chartData)
     );
@@ -71,8 +78,8 @@ export class FlBioNetworkActionBarComponent implements OnInit {
   }
 
 
-  setLinksColors(): void {
-    this.optionState.setLinkColorMode(this.linkColorMode);
+  setParticlesColors(): void {
+    this.optionState.setParticleColorMode(this.particlesColorMode);
   }
 
   toggleShowTexts(): void {
@@ -91,9 +98,21 @@ export class FlBioNetworkActionBarComponent implements OnInit {
     this.optionState.setShowParticles(this.showParticles);
   }
 
+  particleSizeChange(): void {
+    this.optionState.setParticleSize(this.particleSize);
+  }
+
   toggleShowMinors(): void {
     this.optionState.setVisibleLevels(this.showMinors ?
       [FlBioNetworkMetaboliteLevel.MAJOR, FlBioNetworkMetaboliteLevel.MINOR] : [FlBioNetworkMetaboliteLevel.MAJOR]);
+  }
+
+  particleDensityThresholdChange(): void {
+    this.optionState.setParticleDensityThreshold(this.particleDensityThreshold);
+  }
+
+  particleSpeedThresholdChange(): void {
+    this.optionState.setParticleSpeedThreshold(this.particleSpeedThreshold);
   }
 
   // set opacity to 0.1 to link where abs value is lower than slider value

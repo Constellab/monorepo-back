@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {FlBioNetworkReaction} from '../../model/fl-bio-network.class';
+import {FlBioNetworkReaction, FlBioNetworkReactionDataFlux} from '../../model/fl-bio-network.class';
+import {FlBioNetworkHelper} from '../../utils/fl-bio-network.helper';
 
 /**
  * Show the information about a reaction flux
@@ -20,16 +21,12 @@ export class FlBioNetworkReactionFluxComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  get hasFlux(): boolean {
-    return this.reaction.data?.flux_estimates != null ?? false;
+  get getFlux(): FlBioNetworkReactionDataFlux {
+    return FlBioNetworkHelper.getReactionFlux(this.reaction.data);
   }
 
   get hasConstraints(): boolean {
     return this.reaction.lower_bound != null && this.reaction.upper_bound != null;
-  }
-
-  get hasEstimateInterval(): boolean {
-    return this.reaction.data?.flux_estimates.lower_bounds != null && this.reaction.data?.flux_estimates.upper_bounds != null;
   }
 
   get fluxConstraintsTooltip(): string {
@@ -39,9 +36,9 @@ export class FlBioNetworkReactionFluxComponent implements OnInit {
     return null;
   }
 
-  get fluxEstimateInterval(): string {
-    if (this.hasEstimateInterval) {
-      return `[${this.reaction.data.flux_estimates.lower_bounds[0]},${this.reaction.data.flux_estimates.upper_bounds[0]}]`;
+  fluxEstimateInterval(flux: FlBioNetworkReactionDataFlux): string {
+    if (flux.upper_bound != null && flux.lower_bound != null) {
+      return `[${flux.lower_bound},${flux.upper_bound}]`;
     }
     return null;
   }
