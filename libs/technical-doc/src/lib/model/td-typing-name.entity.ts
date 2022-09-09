@@ -1,5 +1,6 @@
 import {TdTypeObjectType} from './td-type.entity';
 import {RvConfigValues, RvTransformerParams} from '@monorepo/resource-view';
+import {FlColorHelper} from '@monorepo/front-core-lib';
 
 /**
  * Base class to find the unique name or brick name of a typing name
@@ -61,5 +62,16 @@ export interface TdTaskViewerConfig {
     view_method_name: string;
     config_values: RvConfigValues;
     transformers: RvTransformerParams[];
+  }
+}
+
+/**
+ * Return the color for a Typing name
+ */
+export function tdGetTypingNameColor(typingName: string): string {
+  if (typingName == null || typingName.length === 0) {
+    return '#ffffff';
+  } else {
+    return FlColorHelper.stringToRGBColor(typingName);
   }
 }

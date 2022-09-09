@@ -198,6 +198,10 @@ export class PrWorkflowLayer {
     return subLayer;
   }
 
+  public findConnectionsByNode(nodeName: string): PrWorkflowConnection[] {
+    return this.connections.filter(connection => connection.isConnectedToNode(nodeName));
+  }
+
   public getLayerHierarchy(): PrWorkflowLayer[] {
     const layers: PrWorkflowLayer[] = [this];
     if (this.parentLayer == null) {

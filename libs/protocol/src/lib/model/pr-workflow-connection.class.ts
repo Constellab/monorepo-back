@@ -42,4 +42,8 @@ export class PrWorkflowConnection {
   public isIOFaceConnection(): boolean {
     return this.isInterfaceConnection() || this.isOuterfaceConnection();
   }
+
+  public isConnectedToNode(nodeName: string): boolean {
+    return this.outputNode.nodeName == nodeName || this.inputNode.nodeName == nodeName;
+  }
 }

@@ -15,6 +15,7 @@ export type PrWorkflowEvent =
 export interface PrWorkflowDeleteNodeEvent {
   action: 'deleteNode';
   node: PrWorkflowNode;
+  connections: PrWorkflowConnection[]; // list of connections that were also deleted
   protocolId: string;
 }
 
@@ -172,11 +173,13 @@ export class PrWorkflow {
   ////////////////////// NODE ///////////////////////////
 
   private onNodeRemoved(nodeId: number): void {
-    const node: PrWorkflowNode = this.currentLayer.removeNode(nodeId.toString());
+    const layer = this.currentLayer;
+    const node: PrWorkflowNode = layer.removeNode(nodeId.toString());
     if (node) {
       this.workflowEvent$.next({
         action: 'deleteNode',
         node: node,
+        connections: layer.findConnectionsByNode(node.nodeName),
         protocolId: this.currentLayer.id
       });
     }
@@ -262,18 +265,32 @@ export class PrWorkflow {
     // this happened when the removeConnection is called and the connection was deleted by code not user
     const connection = this.currentLayer.findConnectionByConnectionEvent(connectionEvent);
     if (connection) {
-      if (this.mode !== 'readOnly') {
-        this.currentLayer.saveUserConnectionRemoved(connection);
+
+      const layer = this.currentLayer;
+      // for readonly mode cancel the deletion
+      if (this.mode === 'readOnly') {
+        layer.addConnection(connection);
+        return;
+      }
+
+      // This is used to prevent emitting an deleteConnection event when a node with connections is deleted
+      // The deleteConnection event is triggered before the delete node event
+      // So we wait a bit to make the deleteNode event before the deleteConnection event
+      // Then if one of the connected node was deleted, we don't emit because this mean the connection
+      // was deleted because a node was deleted
+      setTimeout(() => {
+        layer.saveUserConnectionRemoved(connection);
+        if (layer.findNodeWithName(connection.inputNode.nodeName) == null
+          || layer.findNodeWithName(connection.outputNode.nodeName) == null) {
+          return;
+        }
 
         this.workflowEvent$.next({
           action: 'deleteConnection',
           connection: connection,
           protocolId: this.currentLayer.id
         });
-      } else {
-        this.currentLayer.addConnection(connection);
-      }
-
+      }, 0);
     }
   }
 

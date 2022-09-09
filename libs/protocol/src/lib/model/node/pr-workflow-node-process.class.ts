@@ -87,9 +87,6 @@ export class PrWorkflowNodeProcess extends PrWorkflowNode<PrProcess> {
     );
   }
 
-  public hasConfig(): boolean {
-    return this.currentObject.config.hasConfig();
-  }
 
   isSuccess$(): Observable<boolean> {
     return this.getStatus$().pipe(

@@ -100,7 +100,10 @@ export class PrWorkflowManagerState {
               this._layerIsLoading$.next(false);
             }
           },
-          error: () => this._layerIsLoading$.next(false)
+          error: (error) => {
+            console.error(error);
+            this._layerIsLoading$.next(false);
+          }
         });
       }
     }
@@ -168,7 +171,8 @@ export class PrWorkflowManagerState {
   /**
    * Add the nodes if there have ot already been added and call method on output nodes
    */
-  private addNodesRecursively(layer: PrWorkflowLayer, nodes: PrWorkflowNode[], flow: PrProtocolFlow, posX: number, basePosY: number): number {
+  private addNodesRecursively(layer: PrWorkflowLayer, nodes: PrWorkflowNode[], flow: PrProtocolFlow,
+                              posX: number, basePosY: number): number {
     let currentPosY: number = basePosY - 1;
     for (const node of nodes) {
       // check if the node has already been added
@@ -264,10 +268,17 @@ export class PrWorkflowManagerState {
         const info: PrWorkflowEventConnectionAdditionalInfo = actionResult.additionalInformation;
         const layer = this.workflow.findLayerWithId(info.protocolId);
         layer.removeConnection(info.connection);
-      } else if (actionResult.action.type === PrWorkflowAction.DELETE_PROCESS) {
+      } else if ([PrWorkflowAction.DELETE_PROCESS, PrWorkflowAction.DELETE_INTERFACE, PrWorkflowAction.DELETE_OUTERFACE]
+        .includes(actionResult.action.type as any)) {
+        // re-create the node and connection
         const info: PrWorkflowEventNodeAdditionalInfo = actionResult.additionalInformation;
         const layer = this.workflow.findLayerWithId(info.protocolId);
+        // re-create the node
         layer.addNode(info.node);
+        // re-create the connections
+        for (const connection of info.connections) {
+          layer.addConnection(connection);
+        }
       }
     }
   }

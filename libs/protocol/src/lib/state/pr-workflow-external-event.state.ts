@@ -33,6 +33,7 @@ export interface PrWorkflowEventConnectionAdditionalInfo {
 export interface PrWorkflowEventNodeAdditionalInfo {
   protocolId: string;
   node: PrWorkflowNode;
+  connections: PrWorkflowConnection[];
 }
 
 @Injectable()
@@ -190,6 +191,11 @@ export class PrWorkflowActionState2 {
     switch (workflowEvent.action) {
       case 'deleteNode':
         const node: PrWorkflowNode = workflowEvent.node;
+        const additionalInfo: PrWorkflowEventNodeAdditionalInfo = {
+          protocolId: workflowEvent.protocolId,
+          node: workflowEvent.node,
+          connections: workflowEvent.connections
+        };
 
         if (node instanceof PrWorkflowNodeInterface) {
           portalAction = {
@@ -199,7 +205,8 @@ export class PrWorkflowActionState2 {
               translateText: true,
               translateParam: {param: {name: node.getCurrentTitle()}}
             },
-            action: this.config.deleteInterface(workflowEvent.protocolId, node.getCurrentTitle()),
+            action: this.config.deleteInterface(workflowEvent.protocolId, node.getPort().name),
+            additionalInformation: additionalInfo
           };
         } else if (node instanceof PrWorkflowNodeOuterface) {
           portalAction = {
@@ -207,15 +214,12 @@ export class PrWorkflowActionState2 {
             text: {
               text: 'pr.deleting_outerface',
               translateText: true,
-              translateParam: {param: {name: node.getCurrentTitle()}}
+              translateParam: {param: {name: node.getCurrentTitle()}},
             },
-            action: this.config.deleteOuterface(workflowEvent.protocolId, node.getCurrentTitle()),
+            action: this.config.deleteOuterface(workflowEvent.protocolId, node.getPort().name),
+            additionalInformation: additionalInfo
           };
         } else {
-          const additionalInfo: PrWorkflowEventNodeAdditionalInfo = {
-            protocolId: workflowEvent.protocolId,
-            node: workflowEvent.node
-          };
           portalAction = {
             type: PrWorkflowAction.DELETE_PROCESS,
             text: {
@@ -273,7 +277,9 @@ export class PrWorkflowActionState2 {
   public getActions$(): Observable<FlPortalActionResult> {
     return this.actionsService.getResult$([
       PrWorkflowAction.ADD_PROCESS, PrWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS,
-      PrWorkflowAction.DELETE_PROCESS, PrWorkflowAction.DELETE_CONNECTION, PrWorkflowAction.ADD_CONNECTION]);
+      PrWorkflowAction.DELETE_PROCESS,
+      PrWorkflowAction.DELETE_INTERFACE, PrWorkflowAction.DELETE_OUTERFACE,
+      PrWorkflowAction.DELETE_CONNECTION, PrWorkflowAction.ADD_CONNECTION]);
   }
 
   public clear(): void {

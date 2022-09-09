@@ -49,7 +49,7 @@ export class PrProtocolFlow {
 
     for (const node of this.getAllNodes()) {
       // the nodes that are not connected to any other node (in input) are root nodes
-      if(this.connections.find(connection => connection.inputNode.nodeName === node.nodeName) == undefined) {
+      if (this.connections.find(connection => connection.inputNode.nodeName === node.nodeName) == undefined) {
         roots.push(node);
       }
     }
@@ -71,6 +71,50 @@ export class PrProtocolFlow {
 
   public findNode(nodeName: string): PrWorkflowNode {
     return this.getAllNodes().find(node => node.nodeName === nodeName);
+  }
+
+  public addInterface(interfaceName: string, nodeName: string, portName: string): void {
+    const node = this.findNode(nodeName);
+
+    if (node == null) {
+      console.error('[PrProtocol] can\'t find node with name ' + nodeName);
+      return;
+    }
+    const port = node.findInputPortByName(portName);
+    const interfaceNode = new PrWorkflowNodeInterface({
+      // append 'i_' to name to make it unique with outerface
+      name: 'i_' + interfaceName,
+      portName: port.name,
+      portType: port.specs
+    });
+    this.interfaces.push(interfaceNode);
+
+    // add to connection of the interface
+    const connection = new PrWorkflowConnection(interfaceNode, node,
+      interfaceNode.getPort(), port);
+    this.connections.push(connection);
+  }
+
+  public addOuterface(outerfaceName: string, nodeName: string, portName: string): void {
+    const node = this.findNode(nodeName);
+
+    if (node == null) {
+      console.error('[PrProtocol] can\'t find node with name ' + nodeName);
+      return;
+    }
+    const port = node.findOutputPortByName(portName);
+    const outerfaceNode = new PrWorkflowNodeOuterface({
+      // append 'o_' to name to make it unique with interface
+      name: 'o_' + outerfaceName,
+      portName: port.name,
+      portType: port.specs
+    });
+    this.outerfaces.push(outerfaceNode);
+
+    // add to connection of the outerface
+    const connection = new PrWorkflowConnection(node, outerfaceNode,
+      port, outerfaceNode.getPort());
+    this.connections.push(connection);
   }
 
 }

@@ -5,9 +5,7 @@ import {BehaviorSubject, distinctUntilChanged, map, Observable} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 import {FlStatusEvent, FlTranslatableText} from '@monorepo/front-core-lib';
 import {PrResource} from '../pr-resource.class';
-import {
-  labGetTypingNameColor
-} from '../../../../../../apps/lab-front/src/app/lab-core/entity-module/lab-type-core/utils/lab-process-port-color';
+import {tdGetTypingNameColor} from '@monorepo/technical-doc';
 
 export abstract class PrWorkflowNodeIo extends PrWorkflowNodeProcess {
 
@@ -52,7 +50,7 @@ export abstract class PrWorkflowNodeIo extends PrWorkflowNodeProcess {
     if (portElement == null) return;
 
     if (resource) {
-      this.setPortElementColor(portElement, labGetTypingNameColor(resource.resourceTypingName));
+      this.setPortElementColor(portElement, tdGetTypingNameColor(resource.resourceTypingName));
     } else {
       this.setPortElementColor(portElement, port.getDefaultColor());
     }

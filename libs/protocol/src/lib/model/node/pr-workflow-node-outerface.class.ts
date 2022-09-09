@@ -44,5 +44,8 @@ export class PrWorkflowNodeOuterface extends PrWorkflowNode<PrOuterfaceNode> {
     );
   }
 
+  getPort(): PrWorkflowPort {
+    return this.inputPorts[0];
+  }
 
 }

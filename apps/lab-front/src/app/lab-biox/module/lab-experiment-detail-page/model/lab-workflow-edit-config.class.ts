@@ -112,6 +112,7 @@ export class LabWorkflowEditConfig extends PrConfigEdit {
     for (const key in protocol.data.graph.nodes) {
       const process: LabProcess = protocol.data.graph.nodes[key];
       const node: PrWorkflowNodeProcess = this.labProcessToWorkflowNode(process);
+
       flow.nodes.push(node);
     }
 
@@ -123,6 +124,13 @@ export class LabWorkflowEditConfig extends PrConfigEdit {
       const inputPort: PrWorkflowPort = inputNode.findInputPortByName(link.to.port);
       const connection = new PrWorkflowConnection(outputNode, inputNode, outputPort, inputPort);
       flow.connections.push(connection);
+    }
+
+    for (const inter of Object.values(protocol.data.graph.interfaces)) {
+      flow.addInterface(inter.name, inter.to.nodeName, inter.to.port);
+    }
+    for (const outer of Object.values(protocol.data.graph.outerfaces)) {
+      flow.addOuterface(outer.name, outer.from.nodeName, outer.from.port);
     }
 
     return flow;
@@ -185,6 +193,5 @@ export class LabWorkflowEditConfig extends PrConfigEdit {
 
     return prProcess;
   }
-
 
 }
