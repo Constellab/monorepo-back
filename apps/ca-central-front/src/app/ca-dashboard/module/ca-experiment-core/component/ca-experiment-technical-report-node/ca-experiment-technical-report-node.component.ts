@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaTechnicalReportNode} from '../../../../../ca-core/model/entities/ca-technical-report.class';
+import {CaTechnicalReportProcess} from '../../../../../ca-core/model/entities/ca-technical-report.class';
 import {TdTypeEntity, TdTypingName} from '@monorepo/technical-doc';
 import {FlDialogService} from '@monorepo/front-core-lib';
 import {HttpClient} from '@angular/common/http';
@@ -15,8 +15,7 @@ import {
 })
 export class CaExperimentTechnicalReportNodeComponent implements OnInit {
 
-  @Input()
-  node: CaTechnicalReportNode;
+  @Input() node: CaTechnicalReportProcess;
 
   typingName: TdTypingName;
 

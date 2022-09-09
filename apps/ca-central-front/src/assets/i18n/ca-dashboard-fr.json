@@ -51,5 +51,6 @@
   "view_lab_config": "Voir la configuration du lab",
   "configuration_data": "Données de la configuration",
   "experiment_validated": "Expérience validée",
-  "report_validated": "Rapport validé"
+  "report_validated": "Rapport validé",
+  "last_sync_info": "Dernière synchronisation {{date}} par {{user}}"
 }

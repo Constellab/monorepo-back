@@ -1,6 +1,5 @@
 import {
   PrAddProcessWithLink,
-  PrConfig,
   PrConfigEdit,
   PrConfigSpecs,
   PrProcess,
@@ -11,13 +10,11 @@ import {
   PrWorkflowNodeProcess,
   PrWorkflowNodeProtocol,
   PrWorkflowNodeSource,
-  PrWorkflowNodeViewer,
-  PrWorkflowPort
+  PrWorkflowNodeViewer
 } from '@monorepo/protocol';
 import {Observable} from 'rxjs';
 import {LabProtocolService} from '../../../../lab-core/entity-service/lab-protocol.service';
 import {LabProcess} from '../../../../lab-core/model/entities/process/lab-process.entity';
-import {LabTask} from '../../../../lab-core/model/entities/process/lab-task.entity';
 import {map} from 'rxjs/operators';
 import {LabAddProcessWithLink} from './lab-workflow-action.class';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
@@ -112,18 +109,11 @@ export class LabWorkflowEditConfig extends PrConfigEdit {
     for (const key in protocol.data.graph.nodes) {
       const process: LabProcess = protocol.data.graph.nodes[key];
       const node: PrWorkflowNodeProcess = this.labProcessToWorkflowNode(process);
-
-      flow.nodes.push(node);
+      flow.addNode(node);
     }
 
     for (const link of protocol.data.graph.links) {
-      const outputNode: PrWorkflowNode = flow.findNode(link.from.nodeName);
-      const inputNode: PrWorkflowNode = flow.findNode(link.to.nodeName);
-
-      const outputPort: PrWorkflowPort = outputNode.findOutputPortByName(link.from.port);
-      const inputPort: PrWorkflowPort = inputNode.findInputPortByName(link.to.port);
-      const connection = new PrWorkflowConnection(outputNode, inputNode, outputPort, inputPort);
-      flow.connections.push(connection);
+      flow.addConnection(link.from.nodeName, link.to.nodeName, link.from.port, link.to.port);
     }
 
     for (const inter of Object.values(protocol.data.graph.interfaces)) {
@@ -152,7 +142,7 @@ export class LabWorkflowEditConfig extends PrConfigEdit {
 
 
   private labProcessToWorkflowNode(process: LabProcess): PrWorkflowNodeProcess {
-    const prProcess = this.labProcessToPrProcess(process as LabTask);
+    const prProcess = this.labProcessToPrProcess(process);
 
     const getResource = (id: string): Observable<LabResource> => this.resourceService.getById(id);
     if (process.isSource()) {
@@ -172,26 +162,20 @@ export class LabWorkflowEditConfig extends PrConfigEdit {
   }
 
   public labProcessToPrProcess(process: LabProcess): PrProcess {
-    const prProcess: PrProcess = {
+    return {
       id: process.id,
       humanName: process.data.title,
       name: process.name,
       processTypingName: process.processTypingName,
-      inputs: {},
-      outputs: {},
-      config: new PrConfig(new PrConfigSpecs(process.config.data.specs.record), process.config.data.values),
+      inputs: process.inputs,
+      outputs: process.outputs,
+      config: {
+        specs: new PrConfigSpecs(process.config.data.specs.record),
+        values: process.config.data.values,
+      },
       status: process.status,
       parentProtocolId: process.parentProtocolId
     };
-
-    for (const key in process.inputs) {
-      prProcess.inputs[key] = process.inputs[key];
-    }
-    for (const key in process.outputs) {
-      prProcess.outputs[key] = process.outputs[key];
-    }
-
-    return prProcess;
   }
 
 }

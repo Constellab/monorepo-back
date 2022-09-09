@@ -3,9 +3,10 @@ import {ClRecordTransform} from '@monorepo/core-lib';
 import {Expose, Type} from 'class-transformer';
 import {LabIO} from '../lab-io.entity';
 import {LabProgressBar} from '../lab-progress-bar.entity';
-import {FlStatus, FlStatusDict, FlStatusHelper, FlStatusTransform} from '@monorepo/front-core-lib';
+import {FlStatus, FlStatusTransform} from '@monorepo/front-core-lib';
 import {LabBaseEntityWithUser} from '../lab-user.entity';
 import {TdTypingName} from '@monorepo/technical-doc';
+import {prProcessStatusDict} from '@monorepo/protocol';
 
 export interface LabProcessData {
   title: string;
@@ -17,12 +18,6 @@ export interface LabProcessData {
 
 export type LabProcessStatus = 'DRAFT' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
-const labProcessStatusDict: FlStatusDict<LabProcessStatus> = {
-  DRAFT: FlStatusHelper.getDraftStatus('DRAFT'),
-  RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
-  SUCCESS: FlStatusHelper.getSuccessStatus('SUCCESS'),
-  ERROR: FlStatusHelper.getErrorStatus('ERROR'),
-};
 
 /**
  * Task or protocol inside a flow
@@ -40,7 +35,7 @@ export class LabProcess extends LabBaseEntityWithUser {
   @Expose({name: 'parent_protocol_id'})
   parentProtocolId: string;
 
-  @FlStatusTransform(labProcessStatusDict)
+  @FlStatusTransform(prProcessStatusDict)
   status: FlStatus<LabProcessStatus>;
 
 

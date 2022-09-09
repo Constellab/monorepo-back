@@ -1,26 +1,28 @@
-import {TdIOSpec} from '@monorepo/technical-doc';
+import {PrConfigValues, PrIO, PrProcessStatus} from '@monorepo/protocol';
 
-export class CaTechnicalReport{
+export class CaTechnicalReport {
   version: number;
 
   data: CaTechnicalReportData;
 }
 
-export interface CaTechnicalReportData{
+export interface CaTechnicalReportData {
   graph: CaTechnicalReportGraph;
+  human_name: string;
 }
 
-export interface CaTechnicalReportGraph{
-  nodes: Record<string, CaTechnicalReportNode>;
+export interface CaTechnicalReportGraph {
+  nodes: Record<string, CaTechnicalReportProcess>;
 
   links: CaTechnicalReportLink[];
 
   interfaces: Record<string, CaTechnicalReportIntOut>;
 
   outerfaces: Record<string, CaTechnicalReportIntOut>;
+
 }
 
-export interface CaTechnicalReportNode{
+export interface CaTechnicalReportProcess {
   brick_version: string;
 
   human_name: string;
@@ -33,30 +35,32 @@ export interface CaTechnicalReportNode{
 
   config: CaTechnicalReportConfig;
 
-  input_specs: Record<string, TdIOSpec>;
+  inputs: Record<string, PrIO>;
 
-  output_specs: Record<string, TdIOSpec>;
+  outputs: Record<string, PrIO>;
 
   graph?: CaTechnicalReportGraph;
+
+  status: PrProcessStatus;
 }
 
-export interface CaTechnicalReportConfig{
+export interface CaTechnicalReportConfig {
   specs: any;
 
-  data: any;
+  values: PrConfigValues;
 }
 
-export interface CaTechnicalReportLink{
+export interface CaTechnicalReportLink {
   from: CaTechnicalReportLinkNode;
 
   to: CaTechnicalReportLinkNode;
 }
 
-export interface CaTechnicalReportIntOut extends CaTechnicalReportLink{
+export interface CaTechnicalReportIntOut extends CaTechnicalReportLink {
   name: string;
 }
 
-export interface CaTechnicalReportLinkNode{
+export interface CaTechnicalReportLinkNode {
   node: string;
 
   port: string;

@@ -3,6 +3,7 @@ import {PrWorkflowNode} from './node/pr-workflow-node.class';
 import {PrWorkflowNodeInterface} from './node/pr-workflow-node-interface.class';
 import {PrWorkflowNodeOuterface} from './node/pr-workflow-node-outerface.class';
 import {PrWorkflowConnection} from './pr-workflow-connection.class';
+import {PrWorkflowPort} from './pr-workflow-port.class';
 
 
 /**
@@ -39,38 +40,34 @@ export class PrProtocolFlow {
               public readonly title: string) {
   }
 
-  public getAllNodes(): PrWorkflowNode[] {
-    return [...this.nodes, ...this.interfaces, ...this.outerfaces];
+  public addNode(node: PrWorkflowNode): void {
+    this.nodes.push(node);
   }
 
-  // return the nodes that do not have any inputs
-  public getRootNodes(): PrWorkflowNode[] {
-    const roots: PrWorkflowNode[] = [];
-
-    for (const node of this.getAllNodes()) {
-      // the nodes that are not connected to any other node (in input) are root nodes
-      if (this.connections.find(connection => connection.inputNode.nodeName === node.nodeName) == undefined) {
-        roots.push(node);
-      }
+  public addConnection(outputNodeName: string, inputNodeName: string,
+                       outputPortName: string, inputPortName: string): void {
+    const outputNode: PrWorkflowNode = this.findNode(outputNodeName);
+    if(outputNode == null){
+      console.error('[PrProtocol] can\'t find output node with name ' + outputNodeName);
+      return;
+    }
+    const inputNode: PrWorkflowNode = this.findNode(inputNodeName);
+    if(inputNode == null){
+      console.error('[PrProtocol] can\'t find input node with name ' + inputNodeName);
+      return;
     }
 
-    return roots;
-  }
-
-  public getNextNodes(nodeName: string): PrWorkflowNode[] {
-    const nextNodes: PrWorkflowNode[] = [];
-
-    for (const connection of this.connections) {
-      if (connection.outputNode.nodeName === nodeName) {
-        nextNodes.push(connection.inputNode);
-      }
+    const outputPort: PrWorkflowPort = outputNode.findOutputPortByName(outputPortName);
+    if(outputPort == null){
+      console.error('[PrProtocol] can\'t find output port with name ' + outputPortName);
+      return;
     }
-
-    return nextNodes;
-  }
-
-  public findNode(nodeName: string): PrWorkflowNode {
-    return this.getAllNodes().find(node => node.nodeName === nodeName);
+    const inputPort: PrWorkflowPort = inputNode.findInputPortByName(inputPortName);
+    if(inputPort == null){
+      console.error('[PrProtocol] can\'t find input port with name ' + inputPortName);
+      return;
+    }
+    this.connections.push(new PrWorkflowConnection(outputNode, inputNode, outputPort, inputPort));
   }
 
   public addInterface(interfaceName: string, nodeName: string, portName: string): void {
@@ -116,5 +113,41 @@ export class PrProtocolFlow {
       port, outerfaceNode.getPort());
     this.connections.push(connection);
   }
+
+  public getAllNodes(): PrWorkflowNode[] {
+    return [...this.nodes, ...this.interfaces, ...this.outerfaces];
+  }
+
+  // return the nodes that do not have any inputs
+  public getRootNodes(): PrWorkflowNode[] {
+    const roots: PrWorkflowNode[] = [];
+
+    for (const node of this.getAllNodes()) {
+      // the nodes that are not connected to any other node (in input) are root nodes
+      if (this.connections.find(connection => connection.inputNode.nodeName === node.nodeName) == undefined) {
+        roots.push(node);
+      }
+    }
+
+    return roots;
+  }
+
+  public getNextNodes(nodeName: string): PrWorkflowNode[] {
+    const nextNodes: PrWorkflowNode[] = [];
+
+    for (const connection of this.connections) {
+      if (connection.outputNode.nodeName === nodeName) {
+        nextNodes.push(connection.inputNode);
+      }
+    }
+
+    return nextNodes;
+  }
+
+  public findNode(nodeName: string): PrWorkflowNode {
+    return this.getAllNodes().find(node => node.nodeName === nodeName);
+  }
+
+
 
 }

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {CaNodeSelected} from '../ca-experiment-technical-report/ca-experiment-technical-report.component';
 import {Observable} from 'rxjs';
+import {PrWorkflowNodeProcess} from '@monorepo/protocol';
 
 @Component({
   selector: 'ca-experiment-technical-report-workflow-drawer',
@@ -9,10 +9,7 @@ import {Observable} from 'rxjs';
 })
 export class CaExperimentTechnicalReportWorkflowDrawerComponent implements OnInit {
 
-  @Input()
-  nodeSelected$: Observable<CaNodeSelected>;
-
-  drawerWidth: string = '25em'
+  @Input() nodeSelected$: Observable<PrWorkflowNodeProcess>;
 
   constructor() {
   }

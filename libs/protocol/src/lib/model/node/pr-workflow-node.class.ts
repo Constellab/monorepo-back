@@ -244,7 +244,7 @@ export abstract class PrWorkflowNode<T = any> {
   }
 
   public getCurrentTitle(): string {
-    if(this.currentTitle == null) return '';
+    if (this.currentTitle == null) return '';
     return FlTranslateService.getInstance().translatableText(this.currentTitle);
   }
 

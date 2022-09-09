@@ -12,11 +12,11 @@
 
   <fl-card-body class="body-tech-report">
     <mat-tab-group mat-align-tabs="start" animationDuration="0ms" dynamicHeight
-                   *ngIf="technicalReport && technicalReport.data && technicalReport.data.graph; else noGraph">
+                   *ngIf="prProtocol; else noGraph">
       <mat-tab label="{{'protocol' | translate}}">
         <ng-template matTabContent>
           <div class="tech-report-workflow">
-            <pr-workflow [mainProtocolGraph]="technicalReport.data.graph" [mode$]="workflowMode$" [editConfig]="workflowConfig"></pr-workflow>
+            <pr-workflow [flow]="prProtocol" [mode$]="workflowMode$" [viewConfig]="workflowConfig"></pr-workflow>
           </div>
         </ng-template>
       </mat-tab>
@@ -37,5 +37,5 @@
 </fl-card>
 
 <mat-drawer class="drawer workflow-drawer" position="end" mode="over">
-  <ca-experiment-technical-report-workflow-drawer [nodeSelected$]="currentNodeSelected"></ca-experiment-technical-report-workflow-drawer>
+    <ca-experiment-technical-report-workflow-drawer [nodeSelected$]="currentNodeSelected"></ca-experiment-technical-report-workflow-drawer>
 </mat-drawer>
