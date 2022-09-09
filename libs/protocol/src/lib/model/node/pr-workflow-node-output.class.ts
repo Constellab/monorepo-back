@@ -19,7 +19,7 @@ export class PrWorkflowNodeOutput extends PrWorkflowNodeIo {
   }
 
   protected getResourceId(process: PrProcess): string | null {
-    return process.inputs[TdTypingName.task.output.resourceInput].resource_id;
+    return process.inputs[TdTypingName.task.output.resourceInput].resource_id  ?? null;
   }
 
 

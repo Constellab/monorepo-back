@@ -44,7 +44,7 @@ export class LabTaskSourceConfigComponent implements OnInit, OnDestroy {
 
   private setNode(node: PrWorkflowNodeSource): void {
     // security to prevent not source node
-    // it can be called because the state change before the component is destroy
+    // it can be called because the state change before the component is destroyed
     if (!(node instanceof PrWorkflowNodeSource)) return;
     this.node = node;
     this.selectedResource$ = node.getLoadedResource$() as Observable<FlStatusEvent<LabResource>>;

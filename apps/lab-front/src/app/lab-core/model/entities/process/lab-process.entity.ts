@@ -1,12 +1,10 @@
 import {LabConfig, LabConfigValues} from '../lab-config.entity';
-import {ClRecordTransform} from '@monorepo/core-lib';
 import {Expose, Type} from 'class-transformer';
-import {LabIO} from '../lab-io.entity';
 import {LabProgressBar} from '../lab-progress-bar.entity';
 import {FlStatus, FlStatusTransform} from '@monorepo/front-core-lib';
 import {LabBaseEntityWithUser} from '../lab-user.entity';
 import {TdTypingName} from '@monorepo/technical-doc';
-import {prProcessStatusDict} from '@monorepo/protocol';
+import {PrIO, prProcessStatusDict} from '@monorepo/protocol';
 
 export interface LabProcessData {
   title: string;
@@ -45,11 +43,9 @@ export class LabProcess extends LabBaseEntityWithUser {
   @Expose({name: 'instance_name'})
   name: string;
 
-  @ClRecordTransform(LabIO)
-  inputs: Record<string, LabIO>;
+  inputs: Record<string, PrIO>;
 
-  @ClRecordTransform(LabIO)
-  outputs: Record<string, LabIO>;
+  outputs: Record<string, PrIO>;
 
   @Expose({name: 'progress_bar'})
   @Type(() => LabProgressBar)
