@@ -105,4 +105,12 @@ export class LabTypeService {
     };
   }
 
+  public deleteUnavailableTypings(brickName?: string): Observable<void> {
+    if(brickName) {
+      return this.apiService.delete(`${this.route}/unavailable/${brickName}`);
+    }
+    else{
+      return this.apiService.delete(`${this.route}/unavailable`);
+    }
+  }
 }

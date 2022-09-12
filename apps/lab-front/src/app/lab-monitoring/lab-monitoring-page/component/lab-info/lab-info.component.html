@@ -4,22 +4,31 @@
 
 <ng-template #loadingFinished>
 
-  <fl-text-icon *ngIf="labInfo else error">
-    <mat-icon color="primary" class="g-icon-big">check</mat-icon>
+  <div *ngIf="labInfo else error">
 
-    <p class="g-text-big">{{'monitoring.lab_running' | translate}}</p>
+    <fl-text-icon>
+      <mat-icon color="primary" class="g-icon-big">check</mat-icon>
 
-    <fl-key-value>
-      <fl-key>{{'monitoring.lab_name' | translate}}</fl-key>
-      {{labInfo.labName}}
-    </fl-key-value>
+      <p class="g-text-big">{{'monitoring.lab_running' | translate}}</p>
 
-    <fl-key-value *ngIf="labInfo.frontVersion">
-      <fl-key>{{'monitoring.front_version' | translate}}</fl-key>
-      {{labInfo.frontVersion}}
-    </fl-key-value>
-  </fl-text-icon>
+      <fl-key-value>
+        <fl-key>{{'monitoring.lab_name' | translate}}</fl-key>
+        {{labInfo.labName}}
+      </fl-key-value>
 
+      <fl-key-value *ngIf="labInfo.frontVersion">
+        <fl-key>{{'monitoring.front_version' | translate}}</fl-key>
+        {{labInfo.frontVersion}}
+      </fl-key-value>
+    </fl-text-icon>
+
+    <div class="action">
+      <button mat-stroked-button type="button" class="g-button-small"
+              (click)="deleteUnavailableTypings()">
+        {{'monitoring.delete_unavailable_typings' | translate}}
+      </button>
+    </div>
+  </div>
 
   <ng-template #error>
     <fl-text-icon>

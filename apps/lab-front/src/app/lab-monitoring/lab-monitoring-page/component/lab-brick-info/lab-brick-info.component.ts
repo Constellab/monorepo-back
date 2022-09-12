@@ -5,6 +5,7 @@ import {FlDialogService, FlFileHelper} from '@monorepo/front-core-lib';
 import {
   LabBrickCallMigrationDialogComponent
 } from '../lab-brick-call-migration-dialog/lab-brick-call-migration-dialog.component';
+import {LabTypeService} from '../../../../lab-core/entity-service/lab-type.service';
 
 /**
  * Show information and messages about a brick
@@ -23,7 +24,8 @@ export class LabBrickInfoComponent implements OnInit {
 
   constructor(private labBrickService: LabBrickService,
               private cdr: ChangeDetectorRef,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private typeService: LabTypeService) {
   }
 
   ngOnInit(): void {
@@ -52,5 +54,15 @@ export class LabBrickInfoComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  deleteUnavailableTypings(): void {
+    this.dialogService.openConfirmDialog({
+      title: 'monitoring.delete_unavailable_typings',
+      content: 'monitoring.delete_unavailable_typings_confirmation',
+      translateTitleAndContent: true,
+      observable: this.typeService.deleteUnavailableTypings(this.brick.name),
+      successMessage: 'monitoring.delete_unavailable_typings_success',
+      translateMessage: true
+    });
+  }
 
 }

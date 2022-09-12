@@ -16,6 +16,10 @@
     "call_migration": "Call migration",
     "call_migration_success": "Call migration success",
     "lab_name": "Lab name",
-    "front_version": "Interface version"
+    "front_version": "Interface version",
+    "delete_all_unavailable_typings": "Delete all unavailable typings",
+    "delete_unavailable_typings": "Delete unavailable typings",
+    "delete_unavailable_typings_confirmation": "Are you sure you want to remove the unavailable typings from the database ?",
+    "delete_unavailable_typings_success": "Unavailable typings have been deleted"
   }
 }
