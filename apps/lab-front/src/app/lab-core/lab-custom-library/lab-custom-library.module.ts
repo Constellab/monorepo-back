@@ -2,6 +2,7 @@ import {NgModule} from '@angular/core';
 import {
   FlArticleModule,
   FlAuthModule,
+  FlAutocompleteMultipleModule,
   FlBioNetworkModule,
   FlCardModule,
   FlChartModule,
@@ -85,6 +86,7 @@ import {PrProtocolModule} from '@monorepo/protocol';
     FlExpansionMenuModule,
     FlDragModule,
     FlMenuDynamicModule,
+    FlAutocompleteMultipleModule,
 
     //  Other lib
     RvResourceViewModule,

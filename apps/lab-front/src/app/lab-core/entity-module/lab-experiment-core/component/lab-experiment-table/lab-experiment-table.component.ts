@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FlDropEvent, FlPaginatedTableAbstractDirective, FlTag, FlTagSelectedEvent} from '@monorepo/front-core-lib';
+import {FlDropEvent, FlTableAbstractDirective, FlTag, FlTagSelectedEvent} from '@monorepo/front-core-lib';
 import {LabExperiment} from '../../../../model/entities/lab-experiment.entity';
 import {ClHelpService} from '@monorepo/core-lib';
 import {LabDragType} from '../../../../model/global/lab-drag-type.class';
@@ -10,7 +10,7 @@ import {LabExperimentService} from '../../../../entity-service/lab-experiment.se
   templateUrl: './lab-experiment-table.component.html',
   styleUrls: ['./lab-experiment-table.component.scss']
 })
-export class LabExperimentTableComponent extends FlPaginatedTableAbstractDirective<LabExperiment>
+export class LabExperimentTableComponent extends FlTableAbstractDirective<LabExperiment>
   implements OnInit {
 
   // when true, the row become clickable and resourceSelected event is trigger

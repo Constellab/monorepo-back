@@ -4,7 +4,6 @@ export * from './form/fl-form-field.directive';
 export * from './form/fl-form-field-multiple.directive';
 
 // Table
-export * from './table/fl-paginated-table-abstract.directive';
 export * from './table/fl-table-abstract.directive';
 
 // Mouse Hover

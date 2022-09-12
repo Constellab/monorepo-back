@@ -13,21 +13,13 @@
   </fl-section-header>
 
   <ng-container *flSectionBody>
-    <div>
-      <div *ngFor="let report of reports; let index = index" fxLayout="row" fxLayoutAlign="start center"
-           class="g-full">
-        <fl-text-icon fxFlex="auto">
-          <mat-icon [matTooltip]="'biox.report_validated' | translate" *ngIf="report.isValidated" flIcon="validated">
-          </mat-icon>
-          <a [routerLink]="report | labDetailRoute" class="g-text-link">
-            {{report.title}}
-          </a>
-        </fl-text-icon>
-        <button mat-icon-button type="button" (click)="disassociateReport(report, index)"
-                [matTooltip]="'biox.report_disassociate_experiment' | translate">
-          <mat-icon>clear</mat-icon>
-        </button>
-      </div>
-    </div>
+    <lab-report-table *ngIf="!reports.isEmpty(); else empty" [datasource]="reports" [columns]="columns"
+                      (reportDisassociate)="disassociateReport($event)">
+    </lab-report-table>
+
+    <ng-template #empty>
+      <fl-error-text *ngIf="reports.isEmpty()"
+                     [errorMessage]="'biox.no_experiment_associated_report' | translate"></fl-error-text>
+    </ng-template>
   </ng-container>
 </fl-section>

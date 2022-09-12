@@ -46,6 +46,14 @@
       <fl-last-modification-info [lastModifiedBy]="experiment.lastModifiedBy.fullname"
                                  [lastModifiedAt]="experiment.lastModifiedAt"></fl-last-modification-info>
     </p>
+
+
+    <fl-autocomplete>
+      <mat-option *flAutocompleteOption="let option" [value]="option">
+        Hello : {{ option }}
+      </mat-option>
+    </fl-autocomplete>
+
   </fl-article-left-side>
 
   <fl-article>
@@ -57,6 +65,10 @@
 
   <fl-article-right-side>
 
-    <lab-experiment-associated-reports [experimentId]="experiment.id"></lab-experiment-associated-reports>
+    <fl-card>
+      <fl-card-body>
+        <lab-experiment-associated-reports [experimentId]="experiment.id"></lab-experiment-associated-reports>
+      </fl-card-body>
+    </fl-card>
   </fl-article-right-side>
 </fl-article-container>

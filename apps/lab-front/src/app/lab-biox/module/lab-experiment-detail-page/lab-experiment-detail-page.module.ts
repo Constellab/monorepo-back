@@ -52,6 +52,7 @@ import {LabTaskViewerConfigComponent} from './component/lab-task-viewer-config/l
 import {
   LabTaskViewerShowConfigComponent
 } from './component/lab-task-viewer-show-config/lab-task-viewer-show-config.component';
+import {LabReportCoreModule} from '../../../lab-core/entity-module/lab-report-core/lab-report-core.module';
 
 
 @NgModule({
@@ -91,6 +92,7 @@ import {
     LabConfigCoreModule,
     LabEntityCoreModule,
     LabTypeCoreModule,
+    LabReportCoreModule,
   ],
   providers: [
     // declare the state here otherwise the angular element can't access them

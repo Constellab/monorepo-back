@@ -3,8 +3,10 @@ import {LabReport} from '../../../../../lab-core/model/entities/lab-report.entit
 import {
   FlConfirmDialogResult,
   FlDialogService,
+  FlEntityArrayObs,
   FlPortalActionResult,
-  FlPortalActionsService
+  FlPortalActionsService,
+  FlTableColumn
 } from '@monorepo/front-core-lib';
 import {Subscription} from 'rxjs';
 import {LabReportService} from '../../../../../lab-core/entity-service/lab-report.service';
@@ -25,9 +27,11 @@ export class LabExperimentAssociatedReportsComponent implements OnInit, OnDestro
 
   @Input() experimentId: string;
 
+  reports: FlEntityArrayObs<LabReport>;
 
-  reports: LabReport[];
   isLoading: boolean = false;
+
+  columns: FlTableColumn<LabReport>[] = ['title', 'disassociateReport'];
 
   private readonly actionName: string = 'experiment-associate-report';
 
@@ -55,13 +59,13 @@ export class LabExperimentAssociatedReportsComponent implements OnInit, OnDestro
   }
 
   private getReportsSuccess(reports: LabReport[]): void {
-    this.reports = reports;
     this.isLoading = false;
+    this.reports = new FlEntityArrayObs(reports);
   }
 
   private onAddAction(result: FlPortalActionResult<LabReport>): void {
     if (result.status === 'success') {
-      this.reports = [...this.reports, result.result];
+      this.reports.addItem(result.result);
     }
   }
 
@@ -83,16 +87,15 @@ export class LabExperimentAssociatedReportsComponent implements OnInit, OnDestro
     }
   }
 
-  disassociateReport(report: LabReport, index: number): void {
+  disassociateReport(report: LabReport): void {
     this.reportService.removeExperimentWithConfirmation(report.id, this.experimentId).subscribe(
-      result => this.disassociateClosed(result, index)
+      result => this.disassociateClosed(result, report)
     );
   }
 
-  private disassociateClosed(result: FlConfirmDialogResult<void>, index: number): void {
+  private disassociateClosed(result: FlConfirmDialogResult<void>, report: LabReport): void {
     if (result.choice) {
-      this.reports.splice(index, 1);
-      this.reports = [...this.reports];
+      this.reports.removeItem(report);
     }
   }
 

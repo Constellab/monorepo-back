@@ -1,5 +1,5 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {FlPaginatedTableAbstractDirective} from '@monorepo/front-core-lib';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FlDatasourcePaginated, FlTableAbstractDirective} from '@monorepo/front-core-lib';
 import {LabBiotaData} from '../../../model/lab-biota-data.class';
 
 @Component({
@@ -7,8 +7,11 @@ import {LabBiotaData} from '../../../model/lab-biota-data.class';
   templateUrl: './lab-biota-database-table.component.html',
   styleUrls: ['./lab-biota-database-table.component.scss']
 })
-export class LabBiotaDatabaseTableComponent extends FlPaginatedTableAbstractDirective<LabBiotaData>
+export class LabBiotaDatabaseTableComponent extends FlTableAbstractDirective<LabBiotaData>
   implements OnInit {
+
+  @Input() datasource: FlDatasourcePaginated<LabBiotaData>;
+
 
   @Output() showDetail: EventEmitter<LabBiotaData> = new EventEmitter();
 

@@ -2,16 +2,11 @@
 
   <!-- Title -->
   <ng-container matColumnDef="title">
-    <mat-header-cell *matHeaderCellDef>
+    <mat-header-cell *matHeaderCellDef class="g-cell-header-with-left-border">
       <span> {{'title' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let report" class="g-cell-with-left-border"
               [style.borderLeftColor]="report.project?.id | flStringToRgb">
-      <div class="validated-icon">
-        <mat-icon *ngIf="report.isValidated"
-                  [matTooltip]="'biox.report_validated' | translate" flIcon="validated">
-        </mat-icon>
-      </div>
 
       <div>
         <div>{{report.title}}</div>
@@ -21,6 +16,10 @@
           {{report.project.title}}
         </fl-text-icon>
       </div>
+
+      <mat-icon class="validated-icon" *ngIf="report.isValidated"
+                [matTooltip]="'biox.report_validated' | translate" flIcon="validated">
+      </mat-icon>
 
     </mat-cell>
   </ng-container>
@@ -33,6 +32,18 @@
     </mat-header-cell>
     <mat-cell *matCellDef="let report">
       <span>{{report.createdAt | flDate}}</span>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Custom action where template is defined by parent -->
+  <ng-container matColumnDef="disassociateReport">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let report" class="g-table-icon-button-cell">
+      <button mat-icon-button type="button" (click)="disassociateReport(report, $event)"
+              [matTooltip]="'biox.report_disassociate_experiment' | translate">
+        <mat-icon>clear</mat-icon>
+      </button>
     </mat-cell>
   </ng-container>
 
