@@ -20,11 +20,14 @@ export class LabExperimentTableComponent extends FlTableAbstractDirective<LabExp
 
   @Output() tagSelected: EventEmitter<FlTag> = new EventEmitter();
 
+  @Output() experimentDisassociate: EventEmitter<LabExperiment> = new EventEmitter();
+
+
   // enable drop tags
   supportedDropType: LabDragType = LabDragType.TAG;
 
   constructor(private experimentService: LabExperimentService) {
-    super(['title', 'score', 'status', 'createdAt', 'tags']);
+    super(['title', 'score', 'status', 'createdAt', 'tags', 'disassociate']);
   }
 
   ngOnInit(): void {
@@ -46,5 +49,10 @@ export class LabExperimentTableComponent extends FlTableAbstractDirective<LabExp
 
     experiment.addTag(event.data);
     this.experimentService.saveTags(experiment.id, experiment.tags).subscribe();
+  }
+
+  disassociateExperiment(experiment: LabExperiment, event: MouseEvent): void {
+    ClHelpService.stopEventPropagation(event);
+    this.experimentDisassociate.next(experiment);
   }
 }

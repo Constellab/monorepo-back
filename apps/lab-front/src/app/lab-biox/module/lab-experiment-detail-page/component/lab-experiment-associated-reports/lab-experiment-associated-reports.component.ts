@@ -29,9 +29,7 @@ export class LabExperimentAssociatedReportsComponent implements OnInit, OnDestro
 
   reports: FlEntityArrayObs<LabReport>;
 
-  isLoading: boolean = false;
-
-  columns: FlTableColumn<LabReport>[] = ['title', 'disassociateReport'];
+  columns: FlTableColumn<LabReport>[] = ['title', 'disassociate'];
 
   private readonly actionName: string = 'experiment-associate-report';
 
@@ -47,20 +45,7 @@ export class LabExperimentAssociatedReportsComponent implements OnInit, OnDestro
       result => this.onAddAction(result)
     );
 
-    this.getReports();
-  }
-
-  // retrieve the reports associated with this experiment
-  private getReports(): void {
-    this.reportService.getByExperiment(this.experimentId).subscribe(
-      reports => this.getReportsSuccess(reports),
-      () => this.isLoading = false
-    );
-  }
-
-  private getReportsSuccess(reports: LabReport[]): void {
-    this.isLoading = false;
-    this.reports = new FlEntityArrayObs(reports);
+    this.reports = new FlEntityArrayObs(this.reportService.getByExperiment(this.experimentId));
   }
 
   private onAddAction(result: FlPortalActionResult<LabReport>): void {

@@ -19,7 +19,7 @@ export class LabReportTableComponent extends FlTableAbstractDirective<LabReport>
   @Output() reportDisassociate: EventEmitter<LabReport> = new EventEmitter();
 
   constructor() {
-    super(['title', 'isValidated', 'createdAt', 'disassociateReport']);
+    super(['title', 'isValidated', 'createdAt', 'disassociate']);
   }
 
   ngOnInit(): void {

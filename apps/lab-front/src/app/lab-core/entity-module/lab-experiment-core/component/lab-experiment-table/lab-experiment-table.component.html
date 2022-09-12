@@ -63,9 +63,21 @@
     <mat-header-cell *matHeaderCellDef class="g-column-width-2">
       <span> {{'tags' | translate}}</span>
     </mat-header-cell>
-    <mat-cell *matCellDef="let resource" class="g-column-width-2 tags">
-      <fl-tag-list [tags]="resource.tags"
+    <mat-cell *matCellDef="let experiment" class="g-column-width-2 tags">
+      <fl-tag-list [tags]="experiment.tags"
                    [tagSelectable]="true" (tagSelected)="onTagSelected($event)"></fl-tag-list>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Disassociate experiment -->
+  <ng-container matColumnDef="disassociate">
+    <mat-header-cell *matHeaderCellDef class="g-table-icon-button-cell">
+    </mat-header-cell>
+    <mat-cell *matCellDef="let experiment" class="g-table-icon-button-cell">
+      <button mat-icon-button type="button" (click)="disassociateExperiment(experiment, $event)"
+              [matTooltip]="'biox.report_disassociate_experiment' | translate">
+        <mat-icon>clear</mat-icon>
+      </button>
     </mat-cell>
   </ng-container>
 

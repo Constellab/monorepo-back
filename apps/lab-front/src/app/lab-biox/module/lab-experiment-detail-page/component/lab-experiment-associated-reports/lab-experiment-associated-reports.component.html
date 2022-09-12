@@ -1,4 +1,4 @@
-<fl-section [object]="reports" [isLoading]="isLoading" emptyText="biox.no_experiment_associated_report">
+<fl-async-section [arrayObs]="reports" emptyText="biox.no_experiment_associated_report">
 
   <fl-section-header>
     <h3>{{'biox.experiment_associated_report' | translate}}</h3>
@@ -13,13 +13,8 @@
   </fl-section-header>
 
   <ng-container *flSectionBody>
-    <lab-report-table *ngIf="!reports.isEmpty(); else empty" [datasource]="reports" [columns]="columns"
+    <lab-report-table [datasource]="reports" [columns]="columns"
                       (reportDisassociate)="disassociateReport($event)">
     </lab-report-table>
-
-    <ng-template #empty>
-      <fl-error-text *ngIf="reports.isEmpty()"
-                     [errorMessage]="'biox.no_experiment_associated_report' | translate"></fl-error-text>
-    </ng-template>
   </ng-container>
-</fl-section>
+</fl-async-section>

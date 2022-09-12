@@ -1,4 +1,4 @@
-<fl-section [object]="experiments" [isLoading]="isLoading" emptyText="biox.no_report_associated_experiment">
+<fl-async-section [arrayObs]="experiments" emptyText="biox.no_report_associated_experiment">
 
   <fl-section-header>
     <fl-text-icon>
@@ -16,23 +16,7 @@
   </fl-section-header>
 
   <ng-container *flSectionBody>
-    <div>
-      <div *ngFor="let experiment of experiments; let index = index" fxLayout="row" fxLayoutAlign="start center"
-           class="g-full">
-        <fl-text-icon fxFlex="auto">
-          <mat-icon [matTooltip]="'biox.experiment_validated' | translate" *ngIf="experiment.isValidated"
-                    flIcon="validated">
-          </mat-icon>
-          <a [routerLink]="experiment | labDetailRoute" class="g-text-link">
-            {{experiment.title}}
-          </a>
-        </fl-text-icon>
-        <button mat-icon-button type="button" (click)="disassociateExperiment(experiment, index)"
-                [matTooltip]="'biox.report_disassociate_experiment' | translate"
-                *ngIf="canEdit">
-          <mat-icon>clear</mat-icon>
-        </button>
-      </div>
-    </div>
+    <lab-experiment-table [datasource]="experiments" [columns]="columns"
+                          (experimentDisassociate)="disassociateExperiment($event)"></lab-experiment-table>
   </ng-container>
-</fl-section>
+</fl-async-section>

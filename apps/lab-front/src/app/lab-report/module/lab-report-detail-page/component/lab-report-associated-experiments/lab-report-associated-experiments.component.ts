@@ -1,10 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LabReportService} from '../../../../../lab-core/entity-service/lab-report.service';
 import {
+  FlArrayObs,
   FlConfirmDialogResult,
   FlDialogService,
+  FlEntityArrayObs,
   FlPortalActionResult,
-  FlPortalActionsService
+  FlPortalActionsService,
+  FlTableColumn
 } from '@monorepo/front-core-lib';
 import {
   LabSelectExperimentDialogComponent
@@ -24,10 +27,11 @@ import {LabReportDetailPageState} from '../../lab-report-detail-page.state';
 })
 export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestroy {
 
-  experiments: LabExperiment[] = [];
-  isLoading: boolean = false;
+  experiments: FlArrayObs<LabExperiment>;
 
   canEdit: boolean = false;
+
+  columns: FlTableColumn<LabExperiment>[];
 
   private readonly actionName: string = 'report-associate-experiment';
 
@@ -42,10 +46,13 @@ export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestro
   ngOnInit(): void {
     // refresh the can edit bool
     this.state.getReport$().subscribe(
-      report => this.canEdit = !report.isValidated
+      report => {
+        this.canEdit = !report.isValidated;
+        this.columns = this.canEdit ? ['title', 'disassociate'] : ['title'];
+      }
     );
 
-    this.getExperiments();
+    this.experiments = new FlEntityArrayObs(this.reportService.getExperimentByReports(this.state.currentReport.id));
 
     this.subscription = this.actionService.getResult$(this.actionName).subscribe(
       result => this.onAddAction(result)
@@ -54,20 +61,8 @@ export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestro
 
   private onAddAction(result: FlPortalActionResult<LabExperiment>): void {
     if (result.status === 'success') {
-      this.experiments = [...this.experiments, result.result];
+      this.experiments.addItem(result.result);
     }
-  }
-
-  private getExperiments(): void {
-    this.reportService.getExperimentByReports(this.state.currentReport.id).subscribe(
-      experiments => this.getExperimentSuccess(experiments),
-      () => this.isLoading = false
-    );
-  }
-
-  private getExperimentSuccess(experiments: LabExperiment[]): void {
-    this.experiments = experiments;
-    this.isLoading = false;
   }
 
   associateExperiment(): void {
@@ -86,16 +81,15 @@ export class LabReportAssociatedExperimentsComponent implements OnInit, OnDestro
     }
   }
 
-  disassociateExperiment(experiment: LabExperiment, index: number): void {
+  disassociateExperiment(experiment: LabExperiment): void {
     this.reportService.removeExperimentWithConfirmation(this.state.currentReport.id, experiment.id).subscribe(
-      result => this.disassociateClosed(result, index)
+      result => this.disassociateClosed(result, experiment)
     );
   }
 
-  private disassociateClosed(result: FlConfirmDialogResult<void>, index: number): void {
+  private disassociateClosed(result: FlConfirmDialogResult<void>, experiment: LabExperiment): void {
     if (result.choice) {
-      this.experiments.splice(index, 1);
-      this.experiments = [...this.experiments];
+      this.experiments.removeItem(experiment);
     }
   }
 
