@@ -4,12 +4,31 @@
 
 <mat-dialog-content>
 
-  <fl-section [object]="jobs" [isLoading]="isLoading" emptyText="empty_queue">
+  <fl-async-section [arrayObs]="runningExperiments" emptyText="biox.no_running_experiment">
+
+    <fl-section-header>
+      <h2>{{'biox.running_experiment_list' | translate}}</h2>
+    </fl-section-header>
+
+    <ng-container *flSectionBody>
+      <lab-experiment-table [datasource]="runningExperiments" [columns]="experimentColumns"></lab-experiment-table>
+    </ng-container>
+
+  </fl-async-section>
+
+
+  <fl-section [object]="jobs" [isLoading]="isLoading" emptyText="empty_queue"
+              class="queue">
+
+    <fl-section-header>
+      <h2>{{'biox.experiments_in_queue_list' | translate}}</h2>
+    </fl-section-header>
 
     <ng-container *flSectionBody>
       <mat-list>
         <mat-list-item *ngFor="let job of jobs; let index = index">
-          <h3 matLine><a [routerLink]="job.experiment | labDetailRoute" class="g-text-link">{{job.experiment.title}}</a> </h3>
+          <h3 matLine><a [routerLink]="job.experiment | labDetailRoute" class="g-text-link">{{job.experiment.title}}</a>
+          </h3>
           <p matLine>
             <span> {{job.user.fullname}} </span>
           </p>

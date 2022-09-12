@@ -25,6 +25,7 @@ import {MatRadioModule} from '@angular/material/radio';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 /**
  * Regrouped all the needed import for this app from material
@@ -56,6 +57,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     MatDatepickerModule,
     MatCheckboxModule,
     MatRippleModule,
+    MatProgressBarModule,
 
     DragDropModule,
 

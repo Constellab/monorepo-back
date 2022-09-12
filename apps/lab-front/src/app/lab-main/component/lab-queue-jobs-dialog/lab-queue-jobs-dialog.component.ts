@@ -1,9 +1,17 @@
 import {Component, OnInit} from '@angular/core';
 import {LabExperiment} from '../../../lab-core/model/entities/lab-experiment.entity';
-import {FlConfirmDialogInput, FlConfirmDialogResult, FlDialogService} from '@monorepo/front-core-lib';
+import {
+  FlArrayObs,
+  FlConfirmDialogInput,
+  FlConfirmDialogResult,
+  FlDialogService,
+  FlEntityArrayObs,
+  FlTableColumn
+} from '@monorepo/front-core-lib';
 import {MatDialogRef} from '@angular/material/dialog';
 import {LabQueueService} from '../../../lab-core/entity-service/lab-queue.service';
 import {LabQueueJob} from '../../../lab-core/model/entities/lab-queue.entity';
+import {LabExperimentService} from '../../../lab-core/entity-service/lab-experiment.service';
 
 @Component({
   selector: 'lab-queue-jobs-dialog',
@@ -12,17 +20,23 @@ import {LabQueueJob} from '../../../lab-core/model/entities/lab-queue.entity';
 })
 export class LabQueueJobsDialogComponent implements OnInit {
 
+  runningExperiments: FlArrayObs<LabExperiment>;
+  experimentColumns: FlTableColumn<LabExperiment>[] = ['title', 'tags'];
+
+
   jobs: LabQueueJob[];
 
   isLoading: boolean = true;
 
   constructor(private dialogRef: MatDialogRef<LabQueueJobsDialogComponent>,
               private queueService: LabQueueService,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private experimentService: LabExperimentService) {
   }
 
   ngOnInit(): void {
     this.getJobs();
+    this.runningExperiments = new FlEntityArrayObs(this.experimentService.getRunningExperiments());
   }
 
   private getJobs(): void {

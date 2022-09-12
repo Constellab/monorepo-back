@@ -121,6 +121,10 @@ export class LabExperimentService {
     });
   }
 
+  public getRunningExperiments(): Observable<LabExperiment[]> {
+    return this.apiService.get(`${this.route}/running`, LabExperiment);
+  }
+
   public deleteExperiment(id: string): Observable<void> {
     return this.apiService.deleteById(this.route, id);
   }

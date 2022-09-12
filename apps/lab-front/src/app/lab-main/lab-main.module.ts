@@ -9,6 +9,7 @@ import {LabEnvironmentToggleComponent} from './component/lab-environment-toggle/
 import {LabErrorDetailComponent} from './component/lab-error-detail/lab-error-detail.component';
 import {LabMainMenuSettingsComponent} from './component/lab-main-menu-settings/lab-main-menu-settings.component';
 import {LabQueueJobsDialogComponent} from './component/lab-queue-jobs-dialog/lab-queue-jobs-dialog.component';
+import {LabExperimentCoreModule} from '../lab-core/entity-module/lab-experiment-core/lab-experiment-core.module';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import {LabQueueJobsDialogComponent} from './component/lab-queue-jobs-dialog/lab
     LabCoreModule,
 
     // Routing
-    LabMainRoutingModule
+    LabMainRoutingModule,
+    LabExperimentCoreModule
   ]
 })
 

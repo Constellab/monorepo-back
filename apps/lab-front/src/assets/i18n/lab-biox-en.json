@@ -76,6 +76,7 @@
     "experiment_validated": "Experiment validated",
     "experiment_include_validated": "Include validated experiments",
     "experiment_include_archived": "Include archived experiments",
+    "experiments_in_queue_list": "Experiments in queue",
     "remove_experiment_from_queue": "Remove experiment from queue",
     "remove_experiment_from_queue_confirmation": "Remove the experiment from execution queue ? It will not be executed.",
     "experiment_removed_from_queue": "Experiment removed from queue",
@@ -207,6 +208,8 @@
     "configure_viewer_help": " Resource type for the view. If you change it, be sure that the input resource type is compatible with the provided type.",
     "configure_viewer_help_2": "Configure the view for the resource",
     "viewer_selected_configuration": "Configuration",
-    "viewer_not_configured": "The viewer is not configured yet"
+    "viewer_not_configured": "The viewer is not configured yet",
+    "running_experiment_list": "Running experiments",
+    "no_running_experiment": "No running experiment"
   }
 }
