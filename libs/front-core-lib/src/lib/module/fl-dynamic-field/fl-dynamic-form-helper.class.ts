@@ -13,6 +13,7 @@ import {
   FlDynamicFormGroupConfig
 } from './fl-dynamic-field-config.class';
 import {FlGlobalValidators} from '../../utils/fl-global.validators';
+import {ClHelpService} from '@monorepo/core-lib';
 
 /**
  * Helper to generate AbstractControl based on FlDynamicConfig
@@ -52,7 +53,7 @@ export class FlDynamicFormHelper {
     // add values to reach the min size
     if (config.minSize != null && formArray.length < config.minSize) {
       for (let i = 0; i < config.minSize; i++) {
-        FlDynamicFormHelper.addFormGroupToFormArray(formArray, config);
+        FlDynamicFormHelper.addFormGroupToFormArray(formArray, config, ClHelpService.deepClone(config.newElementDefaultValue));
       }
     }
 

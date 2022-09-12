@@ -4,6 +4,7 @@ import {FlDynamicFormArrayConfig} from '../fl-dynamic-field-config.class';
 import {FlDynamicFormHelper} from '../fl-dynamic-form-helper.class';
 import {FlDynamicAbstractFormDirective} from '../fl-dynamic-abstract-form.directive';
 import {FlTranslateService} from '../../fl-translate/service/fl-translate.service';
+import {ClHelpService} from '@monorepo/core-lib';
 
 @Component({
   selector: 'fl-dynamic-form-array',
@@ -25,7 +26,8 @@ export class FlDynamicFormArrayComponent implements OnInit, FlDynamicAbstractFor
   }
 
   addGroup(): void {
-    FlDynamicFormHelper.addFormGroupToFormArray(this.control, this.config);
+    FlDynamicFormHelper.addFormGroupToFormArray(this.control, this.config,
+      ClHelpService.deepClone(this.config.newElementDefaultValue));
   }
 
   removeGroup(index: number): void {

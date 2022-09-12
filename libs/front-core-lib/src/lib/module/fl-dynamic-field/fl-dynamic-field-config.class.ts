@@ -29,6 +29,7 @@ export interface FlDynamicFormArrayConfig extends FlDynamicFormConfigBase {
   formGpConfig: FlDynamicFormGroupConfig;
   minSize?: number; // if set the formArray must contain at least minSize number
   maxSize?: number; // if set the formArray can't contain more than maxSize values
+  newElementDefaultValue?: any; // value used to initialize a new element in the array
 }
 
 

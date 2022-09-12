@@ -52,13 +52,15 @@ export class LabConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
 
   private convertToAbstractConfig(spec: TdConfigSpec, defaultPlaceholder: string): FlDynamicFormAbstractControl {
     if (spec.type === 'param_set') {
+      const defaultValues = this.getConfigSpecDefaultValue(spec);
       return {
         controlType: 'formArray',
         formGpConfig: this.convertRecordToFieldConfigs(spec.param_set),
         placeholder: spec.human_name ?? defaultPlaceholder,
         hint: spec.short_description,
         minSize: spec.optional ? 0 : 1,
-        maxSize: spec.max_number_of_occurrences > 0 ? spec.max_number_of_occurrences : null
+        maxSize: spec.max_number_of_occurrences > 0 ? spec.max_number_of_occurrences : null,
+        newElementDefaultValue: defaultValues != null ? defaultValues[0] : null,
       };
     } else {
       return this.convertToControlConfig(spec, defaultPlaceholder);
@@ -82,7 +84,7 @@ export class LabConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
       const config: FlDynamicFieldConfigBoolean = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'boolean';
       return config;
-    } else if(spec.type === 'tags_param'){
+    } else if (spec.type === 'tags_param') {
       const config: FlDynamicFieldConfigTags = this.convertToBaseFieldConfig(spec, defaultPlaceholder) as any;
       config.type = 'tags';
       return config;
@@ -119,11 +121,35 @@ export class LabConfigSpecs extends ClRecordWrapper<TdConfigSpec> {
     const defaultConfig: LabConfigValues = {};
     for (const specName of Object.keys(this.record)) {
       const spec: TdConfigSpec = this.record[specName];
-      if (spec.optional) {
-        defaultConfig[specName] = spec.default_value;
+      if (spec.type === 'param_set' && spec.optional) {
+        defaultConfig[specName] = null;
+      } else {
+        defaultConfig[specName] = this.getConfigSpecDefaultValue(this.record[specName]);
       }
     }
     return defaultConfig;
+  }
+
+  /**
+   * return the default value for 1 config spec.
+   * If the config is a param_set, return the default value with recursive call
+   * @param spec
+   * @private
+   */
+  private getConfigSpecDefaultValue(spec: TdConfigSpec): any {
+    if (spec.type === 'param_set') {
+
+      const defaultConfig: any = {};
+      for (const subSpecName of Object.keys(spec.param_set)) {
+        const subSpec: TdConfigSpec = spec.param_set[subSpecName];
+        defaultConfig[subSpecName] = this.getConfigSpecDefaultValue(subSpec);
+      }
+
+      // return an array of 1 element with the default value
+      return [defaultConfig];
+    } else {
+      return spec.default_value ?? undefined;
+    }
   }
 
   /**
