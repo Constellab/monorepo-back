@@ -40,10 +40,10 @@ export class LabQueueJobsDialogComponent implements OnInit {
   }
 
   private getJobs(): void {
-    this.queueService.getQueueJobs().subscribe(
-      jobs => this.getJobSuccess(jobs),
-      () => this.isLoading = false
-    );
+    this.queueService.getQueueJobs().subscribe({
+      next: jobs => this.getJobSuccess(jobs),
+      error: () => this.isLoading = false
+    });
   }
 
   private getJobSuccess(jobs: LabQueueJob[]): void {
