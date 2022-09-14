@@ -1,19 +1,16 @@
 import {PrWorkflowNode} from './pr-workflow-node.class';
-import {PrProcess, PrProcessStatus} from '../pr-process.entity';
+import {PrProcess, PrProcessStatus} from '../pr-process.class';
 import {PrWorkflowPort} from '../pr-workflow-port.class';
 import {PrIO} from '../pr-io.class';
-import {PrConfigValues} from '../pr-config.entity';
+import {PrConfigValues} from '../pr-config.class';
 import {map, Observable} from 'rxjs';
 import {FlStatus, FlTranslatableText} from '@monorepo/front-core-lib';
 import {TdTypingName} from '@monorepo/technical-doc';
 
 export class PrWorkflowNodeProcess extends PrWorkflowNode<PrProcess> {
 
-  constructor(process: PrProcess,
-              x: number = 0, y: number = 0,
-              // TODO improve this
-              public additionalObject: any = null) {
-    super(process.name, process, x, y);
+  constructor(process: PrProcess) {
+    super(process.instanceName, process.parentProtocolId, process);
   }
 
   getClassName(): string {
@@ -53,12 +50,6 @@ export class PrWorkflowNodeProcess extends PrWorkflowNode<PrProcess> {
     return ports;
   }
 
-  public updateConfig(configValues: PrConfigValues): void {
-    this.currentObject.config.values = configValues;
-    // emit the current object
-    this.updateObject(this.currentObject);
-  }
-
   getStatus$(): Observable<FlStatus<PrProcessStatus> | null> {
     return this.getObject$().pipe(
       map((process: PrProcess) => process.status)
@@ -67,7 +58,7 @@ export class PrWorkflowNodeProcess extends PrWorkflowNode<PrProcess> {
 
   getTitle$(): Observable<FlTranslatableText> {
     return this.getObject$().pipe(
-      map((process: PrProcess) => process.humanName ?? process.name)
+      map((process: PrProcess) => process.title ?? process.instanceName)
     );
   }
 
@@ -87,6 +78,11 @@ export class PrWorkflowNodeProcess extends PrWorkflowNode<PrProcess> {
     );
   }
 
+  updateConfigValues(configValues: PrConfigValues): void {
+    this.currentObject.config.values = configValues;
+    // refresh the current object
+    this.updateObject(this.currentObject);
+  }
 
   isSuccess$(): Observable<boolean> {
     return this.getStatus$().pipe(

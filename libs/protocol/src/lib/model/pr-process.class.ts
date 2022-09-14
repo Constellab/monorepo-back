@@ -1,6 +1,6 @@
 import {FlStatus, FlStatusDict, FlStatusHelper} from '@monorepo/front-core-lib';
 import {PrIO} from './pr-io.class';
-import {PrConfig} from './pr-config.entity';
+import {PrConfig} from './pr-config.class';
 import {
   LabProcessStatus
 } from '../../../../../apps/lab-front/src/app/lab-core/model/entities/process/lab-process.entity';
@@ -23,11 +23,11 @@ export interface PrProcess {
 
   id: string;
 
-  name: string;
+  instanceName: string;
 
   processTypingName: string;
 
-  humanName: string;
+  title: string;
 
   status: FlStatus<PrProcessStatus>;
 

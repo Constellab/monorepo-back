@@ -1,23 +1,17 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {LabExperimentDetailPageState} from '../../state/lab-experiment-detail-page.state';
-import {LabProtocol} from '../../../../../lab-core/model/entities/process/lab-protocol.entity';
-import {LabProtocolService} from '../../../../../lab-core/entity-service/lab-protocol.service';
 import {Observable, of, Subscription} from 'rxjs';
 import {
-  PrProtocolFlow,
+  PrWorkflow,
   PrWorkflowActionEvent,
   PrWorkflowActionShowView,
   PrWorkflowActionState,
-  PrWorkflowActionState2,
   PrWorkflowManagerState,
-  PrWorkflowMode,
-  PrWorkflowNode,
-  PrWorkflowNodeProcess
+  PrWorkflowMode
 } from '@monorepo/protocol';
 import {LabWorkflowEditConfig} from '../../model/lab-workflow-edit-config.class';
 import {LabWorkflowViewConfig} from '../../model/lab-workflow-view-config.class';
 import {FlDialogService} from '@monorepo/front-core-lib';
-import {LabResourceService} from '../../../../../lab-core/entity-service/lab-resource.service';
 import {
   LabResourceDetailDialogComponent
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-detail-dialog/lab-resource-detail-dialog.component';
@@ -25,40 +19,36 @@ import {
   LabResourceViewDetailDialogComponent,
   LabResourceViewDetailDialogInput
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-resource-view-detail-dialog/lab-resource-view-detail-dialog.component';
+import {first} from 'rxjs/operators';
 
 
 @Component({
   selector: 'lab-workflow',
   templateUrl: './lab-workflow.component.html',
-  styleUrls: ['./lab-workflow.component.scss']
+  styleUrls: ['./lab-workflow.component.scss'],
+  providers: [LabWorkflowEditConfig]
 })
 export class LabWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @ViewChild('workflow', {static: false}) container: ElementRef<HTMLElement>;
-
-  flowIsLoading: boolean = true;
+  workflowIsLoading: boolean = true;
   error: boolean = false;
 
-  flow: PrProtocolFlow;
+  workflow: PrWorkflow;
   mode$: Observable<PrWorkflowMode> = of('edit');
 
-  editConfig: LabWorkflowEditConfig;
   viewConfig: LabWorkflowViewConfig;
 
   private subscription: Subscription;
 
   constructor(private workflowManagerState: PrWorkflowManagerState,
               private experimentState: LabExperimentDetailPageState,
-              private protocolService: LabProtocolService,
-              private resourceService: LabResourceService,
               private workflowAction: PrWorkflowActionState,
-              private workflowAction2: PrWorkflowActionState2,
-              private dialogService: FlDialogService) {
+              private dialogService: FlDialogService,
+              private editConfig: LabWorkflowEditConfig) {
   }
 
   ngOnInit(): void {
-    this.editConfig = new LabWorkflowEditConfig(this.protocolService, this.resourceService);
-    this.viewConfig = new LabWorkflowViewConfig(this.dialogService, this.workflowAction2);
+    this.viewConfig = new LabWorkflowViewConfig(this.dialogService, this.editConfig);
 
     // TODO to move
     this.subscription = this.workflowAction.getAction$().subscribe(
@@ -82,35 +72,17 @@ export class LabWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private loadExperimentFlow(): void {
-    this.experimentState.getMainProtocol$().subscribe(
-      protocol => this.loadExperimentFlowSuccess(protocol),
-    );
-    // TODO to improve
-    this.experimentState.getProtocolUpdate$().subscribe(
-      protocol => this.refreshProtocol(protocol)
-    );
+    // wait for the main protocol to be loaded
+    this.experimentState.getMainProtocol$().pipe(first()).subscribe({
+      next: () => this.loadExperimentFlowSuccess(),
+      error: () => this.onError()
+    });
   }
 
-  private refreshProtocol(protocol: LabProtocol): void {
-    const layer = this.workflowManagerState.workflow.findLayerWithId(protocol.id);
-    if (layer) {
-      for (const labProcess of Object.values(protocol.data.graph.nodes)) {
-        const node: PrWorkflowNode = layer.findNodeWithName(labProcess.name);
-
-        if (node == null) continue;
-        const prProcess = this.editConfig.labProcessToPrProcess(labProcess);
-        node.updateObject(prProcess);
-        // TODO to improve
-        if (node instanceof PrWorkflowNodeProcess) {
-          node.additionalObject = labProcess;
-        }
-      }
-    }
-  }
-
-  private loadExperimentFlowSuccess(protocol: LabProtocol): void {
-    this.flow = this.editConfig.protocolToFlow(protocol);
-    this.flowIsLoading = false;
+  private loadExperimentFlowSuccess(): void {
+    this.workflow = this.experimentState.workflow;
+    this.editConfig.setWorkflow(this.workflow);
+    this.workflowIsLoading = false;
   }
 
   openResourceDetail(resourceId: string): void {
@@ -132,13 +104,8 @@ export class LabWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  get experimentIsUpdatable(): boolean {
-    return this.experimentState.currentExperiment.isEditable();
-  }
-
-
   private onError(): void {
-    this.flowIsLoading = false;
+    this.workflowIsLoading = false;
     this.error = true;
   }
 

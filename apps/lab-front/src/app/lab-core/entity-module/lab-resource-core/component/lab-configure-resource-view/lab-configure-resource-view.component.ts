@@ -5,7 +5,7 @@ import {
   LabResourceViewSpecWithConfig,
 } from '../../../../model/entities/resource/lab-resource-view.entity';
 import {Validators} from '@angular/forms';
-import {LabConfigData, LabConfigureSpecsForm, LabConfigValues} from '../../../../model/entities/lab-config.entity';
+import {LabConfig, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {FL_PORTAL_DATA, FlFormHelper, FlOverlayRef} from '@monorepo/front-core-lib';
 import {LabTransformerWithConfig} from '../../../../model/global/lab-transformer.class';
 import {
@@ -18,6 +18,7 @@ import {
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {RvViewDisplayMode} from '@monorepo/resource-view';
 import {Observable} from 'rxjs';
+import {PrConfigValues} from '@monorepo/protocol';
 
 export interface LabConfigureResourceViewInput {
   resourceTypingName: string;
@@ -31,7 +32,7 @@ export interface LabConfigureResourceViewInput {
 
 export interface LabConfigureResourceViewOutput {
   viewMethodName: string;
-  viewConfigValues: LabConfigValues;
+  viewConfigValues: PrConfigValues;
   displayMode: RvViewDisplayMode;
   transformersWithConfig: LabTransformerWithConfig[];
 }
@@ -56,7 +57,7 @@ export interface LabConfigureResourceViewForm {
 export class LabConfigureResourceViewComponent implements OnInit {
 
   formGp: FormGroup<LabConfigureResourceViewForm>;
-  configs: LabConfigData;
+  configs: LabConfig;
 
   title: string;
   showDisplayModeControl: boolean;
@@ -97,7 +98,7 @@ export class LabConfigureResourceViewComponent implements OnInit {
   }
 
   private init(specs: LabResourceViewSpecComplete): void {
-    this.configs = LabConfigData.fromSpecs(specs.configSpecs, this.input.preConfiguration?.viewConfigValues ?? {});
+    this.configs = LabConfig.fromSpecs(specs.configSpecs, this.input.preConfiguration?.viewConfigValues ?? {});
 
     const displayMode: RvViewDisplayMode = this.input.preConfiguration?.displayMode ?? 'fullScreen';
 

@@ -23,7 +23,7 @@ export class LabConfigureTaskComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formGp = LabConfigureSpecsFormComponent.buildFormGroup(this.task.config.data);
+    this.formGp = LabConfigureSpecsFormComponent.buildFormGroup(this.task.config);
   }
 
   submit(): void {
@@ -34,7 +34,7 @@ export class LabConfigureTaskComponent implements OnInit {
 
   private saveConfig(config: LabConfigureSpecsForm): void {
     const configValue = {...config.public, ...config.protected};
-    this.experimentState.updateProcessConfig(this.task.parentProtocolId, this.task.name, configValue);
+    this.experimentState.updateProcessConfig(this.task.parentProtocolId, this.task.instanceName, configValue);
   }
 
 }

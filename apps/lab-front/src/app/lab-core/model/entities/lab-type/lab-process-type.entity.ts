@@ -1,8 +1,8 @@
-import {LabConfigSpecs} from '../lab-config-spec.entity';
 import {LabTypeEntity} from './lab-type.entity';
 import {Expose} from 'class-transformer';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
 import {TdIOSpec} from '@monorepo/technical-doc';
+import {PrConfigSpecs} from '@monorepo/protocol';
 
 export class LabProcessType extends LabTypeEntity {
 
@@ -13,8 +13,8 @@ export class LabProcessType extends LabTypeEntity {
   outputSpecs: Record<string, TdIOSpec>;
 
   @Expose({name: 'config_specs'})
-  @ClRecordWrapperTransform(LabConfigSpecs)
-  configSpecs: LabConfigSpecs;
+  @ClRecordWrapperTransform(PrConfigSpecs)
+  configSpecs: PrConfigSpecs;
 
   @Expose({name: 'additional_info'})
   additionalInfo: {
@@ -23,7 +23,7 @@ export class LabProcessType extends LabTypeEntity {
   };
 
   hasConfigSpecs(): boolean {
-    const config: LabConfigSpecs = this.configSpecs;
+    const config: PrConfigSpecs = this.configSpecs;
     return config != null && config.hasConfigs();
   }
 

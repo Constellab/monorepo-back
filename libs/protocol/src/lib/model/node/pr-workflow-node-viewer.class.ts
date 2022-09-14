@@ -1,7 +1,7 @@
 import {PrWorkflowPort} from '../pr-workflow-port.class';
 import {PrWorkflowNodeIo} from './pr-workflow-node-io.class';
 import {map, Observable} from 'rxjs';
-import {PrProcess} from '../pr-process.entity';
+import {PrProcess} from '../pr-process.class';
 import {TdTaskViewerConfig, TdTypingName} from '@monorepo/technical-doc';
 
 export class PrWorkflowNodeViewer extends PrWorkflowNodeIo {

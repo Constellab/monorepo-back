@@ -70,7 +70,7 @@ export class LabWorkflowNodeDetailComponent implements OnInit {
 
     const process = await this.nodeDetailState.getProcessPromise();
     const input: LabConfigureSpecsFormDialogInput = {
-      configData: process.config.data,
+      configData: process.config,
       title: 'biox.configuration',
       submitButtonText: 'save'
     };

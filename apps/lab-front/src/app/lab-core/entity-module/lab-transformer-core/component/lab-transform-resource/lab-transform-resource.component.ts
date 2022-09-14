@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
-import {LabConfigData, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
+import {LabConfig, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {LabProcessType} from '../../../../model/entities/lab-type/lab-process-type.entity';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {ClHelpService} from '@monorepo/core-lib';
@@ -19,7 +19,7 @@ import {
 
 interface LabSelectedTransformer {
   transformer: LabProcessType;
-  configData: LabConfigData;
+  configData: LabConfig;
   hasConfig: boolean;
 }
 
@@ -65,7 +65,7 @@ export class LabTransformResourceComponent implements OnInit {
   }
 
   private static buildFormGroup(transformer: LabTransformerWithConfig): FormGroup<LabTransformResourceForm> {
-    const configData = LabConfigData.fromSpecs(transformer.transformer.configSpecs, transformer.config);
+    const configData = LabConfig.fromSpecs(transformer.transformer.configSpecs, transformer.config);
     return (new FormBuilder().group({
       transformer: [transformer.transformer],
       config: LabConfigureSpecsFormComponent.buildFormGroup(configData)
@@ -95,7 +95,7 @@ export class LabTransformResourceComponent implements OnInit {
   }
 
   private createSelectedTransformer(transformer: LabProcessType): LabSelectedTransformer {
-    const configData = LabConfigData.fromSpecs(transformer.configSpecs);
+    const configData = LabConfig.fromSpecs(transformer.configSpecs);
 
     const selectedTransformer: LabSelectedTransformer = {
       transformer: transformer,

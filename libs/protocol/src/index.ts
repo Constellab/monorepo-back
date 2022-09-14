@@ -7,14 +7,14 @@ export * from './lib/model/pr-workflow-connection.class';
 export * from './lib/model/pr-workflow-layer.class';
 export * from './lib/model/pr-workflow-port.class';
 export * from './lib/model/pr-workflow.class';
-export * from './lib/model/pr-connection.class';
+export * from './lib/model/pr-interface.class';
 export * from './lib/model/node/pr-workflow-node-io.class';
 export * from './lib/model/pr-io.class';
 export * from './lib/model/node/pr-workflow-node-interface.class';
 export * from './lib/model/node/pr-workflow-node-outerface.class';
 export * from './lib/model/node/pr-workflow-node-process.class';
-export * from './lib/model/pr-process.entity';
-export * from './lib/model/pr-config.entity';
+export * from './lib/model/pr-process.class';
+export * from './lib/model/pr-config.class';
 export * from './lib/model/pr-config-spec.entity';
 export * from './lib/model/pr-workflow-action.class';
 export * from './lib/model/pr-workflow-drawer-event.class';
@@ -28,7 +28,6 @@ export * from './lib/model/pr-resource.class';
 
 // state
 export * from './lib/state/pr-workflow-action-state';
-export * from './lib/state/pr-workflow-external-event.state';
 export * from './lib/state/pr-workflow-manager-state';
 
 

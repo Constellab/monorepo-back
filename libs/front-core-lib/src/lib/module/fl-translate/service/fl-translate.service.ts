@@ -70,6 +70,7 @@ export class FlTranslateService {
    * @param translatableText
    */
   public translatableText(translatableText: FlTranslatableText): string {
+    if(translatableText == null)  return null;
     if (typeof translatableText === 'string') {
       return translatableText;
     } else if (!translatableText.translateText) {

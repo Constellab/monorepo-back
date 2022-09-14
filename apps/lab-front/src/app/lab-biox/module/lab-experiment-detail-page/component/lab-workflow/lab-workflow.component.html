@@ -1,14 +1,16 @@
 <div fxLayout="column" class="g-full-height" *ngIf="!error; else showError">
 
   <!--  Workflow zone  -->
-  <div class="experiment-workflow" #workflow fxFlex="auto">
-    <pr-workflow *ngIf="flow" [flow]="flow" [mode$]="mode$" [viewConfig]="viewConfig" [editConfig]="editConfig">
+  <div class="experiment-workflow" fxFlex="auto">
+    <pr-workflow *ngIf="workflow" [workflow]="workflow"
+                 [mode$]="mode$"
+                 [viewConfig]="viewConfig">
       <lab-workflow-actions></lab-workflow-actions>
 
     </pr-workflow>
 
 
-    <div class="g-text-centered" *ngIf="flowIsLoading">
+    <div class="g-text-centered" *ngIf="workflowIsLoading">
       <fl-loader></fl-loader>
     </div>
 

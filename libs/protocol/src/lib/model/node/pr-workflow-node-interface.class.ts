@@ -1,5 +1,5 @@
 import {PrWorkflowNode} from './pr-workflow-node.class';
-import {PrInterfaceNode} from '../pr-connection.class';
+import {PrInterface} from '../pr-interface.class';
 import {PrWorkflowPort} from '../pr-workflow-port.class';
 import {map, Observable, of} from 'rxjs';
 import {FlStatus} from '@monorepo/front-core-lib';
@@ -7,10 +7,10 @@ import {FlStatus} from '@monorepo/front-core-lib';
 /**
  * Node for the interfaces
  */
-export class PrWorkflowNodeInterface extends PrWorkflowNode<PrInterfaceNode> {
+export class PrWorkflowNodeInterface extends PrWorkflowNode<PrInterface> {
 
-  constructor(interfaceNode: PrInterfaceNode, x: number = 0, y: number = 0) {
-    super(interfaceNode.name, interfaceNode, x, y);
+  constructor(interfaceNode: PrInterface, parentLayerId: string) {
+    super(interfaceNode.name, parentLayerId, interfaceNode);
   }
 
   getClassName(): string {
@@ -21,7 +21,7 @@ export class PrWorkflowNodeInterface extends PrWorkflowNode<PrInterfaceNode> {
     return `<pr-workflow-node-interface name="${this.nodeName}"></pr-workflow-node-interface>`;
   }
 
-  protected initPorts(object: PrInterfaceNode): void {
+  protected initPorts(object: PrInterface): void {
     // no input ports
     this.inputPorts = [];
     this.outputPorts = [new PrWorkflowPort(object.portName,

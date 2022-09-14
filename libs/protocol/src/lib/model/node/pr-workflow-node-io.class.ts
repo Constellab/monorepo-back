@@ -1,4 +1,4 @@
-import {PrProcess} from '../pr-process.entity';
+import {PrProcess} from '../pr-process.class';
 import {PrWorkflowPort} from '../pr-workflow-port.class';
 import {PrWorkflowNodeProcess} from './pr-workflow-node-process.class';
 import {BehaviorSubject, distinctUntilChanged, map, Observable} from 'rxjs';
@@ -13,10 +13,8 @@ export abstract class PrWorkflowNodeIo extends PrWorkflowNodeProcess {
 
   constructor(process: PrProcess,
               // observable of the resource defined in the config
-              private loadResource: (id: string) => Observable<PrResource>,
-              initialCoordX: number = 0, initialCoordY: number = 0,
-              additionalObject: any = null) {
-    super(process, initialCoordX, initialCoordY, additionalObject);
+              private loadResource: (id: string) => Observable<PrResource>) {
+    super(process);
     this.initLoadedResource();
   }
 
@@ -31,11 +29,11 @@ export abstract class PrWorkflowNodeIo extends PrWorkflowNodeProcess {
     return this.getLoadedResource$().pipe(
       map(resource => {
         if (resource.status === 'success') {
-          return resource.object != null ? resource.object.name : this.currentObject.humanName;
+          return resource.object != null ? resource.object.name : this.currentObject.title;
         } else if (resource.status === 'error') {
           return {text: 'pr.error', translateText: true};
         } else {
-          return this.currentObject.humanName;
+          return this.currentObject.title;
         }
       })
     );

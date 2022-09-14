@@ -45,7 +45,6 @@ export abstract class PrWorkflowNodeProcessDirective extends PrWorkflowNodeDirec
 
   protected initNode(): void {
     super.initNode();
-    this.node = this.workflowManager.findNodeWithNameInCurrentLayer(this.name) as PrWorkflowNodeProcess;
 
     this.title$ = this.node.getTitle$();
     this.subTitle$ = this.node.getSubTitle$();

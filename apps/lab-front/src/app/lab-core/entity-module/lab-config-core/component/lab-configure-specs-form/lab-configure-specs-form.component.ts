@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlDynamicFormGroupConfig, FlDynamicFormHelper} from '@monorepo/front-core-lib';
-import {LabConfigData, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
+import {LabConfig, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {ControlContainer} from '@angular/forms';
 
@@ -15,7 +15,7 @@ import {ControlContainer} from '@angular/forms';
 })
 export class LabConfigureSpecsFormComponent implements OnInit {
 
-  @Input() configData: LabConfigData;
+  @Input() configData: LabConfig;
 
   publicFormGp: FormGroup;
   protectedFormGp: FormGroup;
@@ -30,7 +30,7 @@ export class LabConfigureSpecsFormComponent implements OnInit {
   }
 
   // build the form group to configure specs
-  public static buildFormGroup(configData: LabConfigData): FormGroup<LabConfigureSpecsForm> {
+  public static buildFormGroup(configData: LabConfig): FormGroup<LabConfigureSpecsForm> {
     const value = configData.mergeConfigWithDefault();
 
     return new FormBuilder().group({

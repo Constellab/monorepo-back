@@ -1,6 +1,5 @@
 import {PrConfigSpecs} from './pr-config-spec.entity';
 
-// todo TO REMOVE
 export type PrConfigValues = Record<string, any>
 
 

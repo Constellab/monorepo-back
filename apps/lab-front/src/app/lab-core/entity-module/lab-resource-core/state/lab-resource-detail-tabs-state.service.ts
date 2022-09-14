@@ -9,7 +9,6 @@ import {
 } from '../../../model/entities/resource/lab-resource-view.entity';
 import {filter} from 'rxjs/operators';
 import {FlPortalActionResult, FlPortalActionsService, FlPortalConfig, FlPortalService} from '@monorepo/front-core-lib';
-import {LabConfigValues} from '../../../model/entities/lab-config.entity';
 import {
   labConvertTransformersWithConfigToParams,
   LabTransformerWithConfig
@@ -19,6 +18,7 @@ import {
   LabResourceViewPortalInput
 } from '../component/lab-resource-view-portal/lab-resource-view-portal.component';
 import {LabViewConfigService} from '../../../entity-service/lab-view-config.service';
+import {PrConfigValues} from '@monorepo/protocol';
 
 
 export type LabResourceTab = {
@@ -95,7 +95,7 @@ export class LabResourceDetailTabsState implements OnDestroy {
     }
   }
 
-  private callResourceView(resourceId: string, methodName: string, configValues: LabConfigValues,
+  private callResourceView(resourceId: string, methodName: string, configValues: PrConfigValues,
                            transformers: LabTransformerWithConfig[]): Observable<LabResourceView> {
     return this.resourceService.callResourceView(resourceId, methodName, configValues,
       labConvertTransformersWithConfigToParams(transformers), true);

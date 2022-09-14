@@ -36,7 +36,6 @@ import {
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {PrWorkflowNodeViewerComponent} from './component/pr-workflow-node-viewer/pr-workflow-node-viewer.component';
-import {PrWorkflowActionState2} from './state/pr-workflow-external-event.state';
 
 
 @NgModule({
@@ -116,7 +115,6 @@ export class PrProtocolModule {
     return {
       ngModule: PrProtocolModule,
       providers: [
-        PrWorkflowActionState2,
         PrWorkflowManagerState,
         PrWorkflowActionState,
       ]

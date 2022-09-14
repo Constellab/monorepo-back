@@ -18,7 +18,7 @@ import {LabResource} from '../../../../../lab-core/model/entities/resource/lab-r
 import {
   LabSelectResourceDialogComponent
 } from '../../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
-import {PrWorkflowActionState2} from '@monorepo/protocol';
+import {LabWorkflowEditConfig} from '../../model/lab-workflow-edit-config.class';
 
 /**
  * Actions button for the workflow
@@ -35,7 +35,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
 
   experiment$: Observable<LabExperiment>;
 
-  constructor(private workflowAction: PrWorkflowActionState2,
+  constructor(private workflowEditState: LabWorkflowEditConfig,
               private experimentService: LabExperimentService,
               private snackBarService: FlSnackBarService,
               private dialogService: FlDialogService,
@@ -62,7 +62,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
 
   private onSelectTypeClosed(processType ?: LabTypeEntity): void {
     if (processType) {
-      this.workflowAction.addNode(processType.typingName, processType.name);
+      this.workflowEditState.addNode(processType.typingName, processType.name);
     }
   }
 
@@ -74,7 +74,7 @@ export class LabWorkflowActionsComponent implements OnInit, OnDestroy {
 
   private onSelectResourceClosed(resource?: LabResource): void {
     if (resource) {
-      this.workflowAction.addSource(resource.id, resource.name);
+      this.workflowEditState.addSource(resource.id, resource.name);
     }
   }
 

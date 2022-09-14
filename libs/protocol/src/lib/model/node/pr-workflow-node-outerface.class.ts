@@ -1,5 +1,5 @@
 import {PrWorkflowNode} from './pr-workflow-node.class';
-import {PrOuterfaceNode} from '../pr-connection.class';
+import {PrOuterface} from '../pr-interface.class';
 import {PrWorkflowPort} from '../pr-workflow-port.class';
 import {map, Observable, of} from 'rxjs';
 import {FlStatus} from '@monorepo/front-core-lib';
@@ -8,9 +8,9 @@ import {FlStatus} from '@monorepo/front-core-lib';
 /**
  * Node for the outerfaces
  */
-export class PrWorkflowNodeOuterface extends PrWorkflowNode<PrOuterfaceNode> {
-  constructor(outerfaceNode: PrOuterfaceNode, x: number = 0, y: number = 0) {
-    super(outerfaceNode.name, outerfaceNode, x, y);
+export class PrWorkflowNodeOuterface extends PrWorkflowNode<PrOuterface> {
+  constructor(outerfaceNode: PrOuterface, parentLayerId: string) {
+    super(outerfaceNode.name, parentLayerId, outerfaceNode);
   }
 
   getClassName(): string {
@@ -22,7 +22,7 @@ export class PrWorkflowNodeOuterface extends PrWorkflowNode<PrOuterfaceNode> {
   }
 
 
-  protected initPorts(object: PrOuterfaceNode): void {
+  protected initPorts(object: PrOuterface): void {
     this.inputPorts = [new PrWorkflowPort(object.portName,
       PrWorkflowPort.getInputDrawflowName(1),
       object.portType)];

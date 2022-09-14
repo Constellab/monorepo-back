@@ -22,12 +22,12 @@ import {
   LabResourceSearch,
   LabResourceSearchFields
 } from '../entity-module/lab-resource-core/model/lab-resource-advanced-search.class';
-import {LabConfigValues} from '../model/entities/lab-config.entity';
 import {LabResourceImporterType} from '../model/entities/resource/lab-resource.dto';
 import {LabTypeService} from './lab-type.service';
 import {LabProcessType} from '../model/entities/lab-type/lab-process-type.entity';
 import {LabTag} from '../model/entities/lab-tag.entity';
 import {RvTransformerParams} from '@monorepo/resource-view';
+import {PrConfigValues} from '@monorepo/protocol';
 
 
 @Injectable({
@@ -132,14 +132,14 @@ export class LabResourceService {
    * @param transformers
    * @param saveViewConfig if true the config is saved in the historic
    */
-  public callResourceViewData(id: string, viewMethodName: string, config: LabConfigValues,
+  public callResourceViewData(id: string, viewMethodName: string, config: PrConfigValues,
                               transformers: RvTransformerParams[], saveViewConfig: boolean = false): Observable<LabResourceViewData> {
     return this.callResourceView(id, viewMethodName, config, transformers, saveViewConfig).pipe(
       map(labView => labView.view)
     );
   }
 
-  public callResourceView(id: string, viewMethodName: string, configValue: LabConfigValues,
+  public callResourceView(id: string, viewMethodName: string, configValue: PrConfigValues,
                           transformers: RvTransformerParams[], saveViewConfig: boolean = false): Observable<LabResourceView> {
     for (const key in configValue) {
       if (configValue[key] == null) {
@@ -172,7 +172,7 @@ export class LabResourceService {
     return this.apiService.get(`${this.resourceTypeRoute}/${resourceTypingName}/${extension ?? ' '}/importer`, LabResourceImporterType);
   }
 
-  public callImporter(resourceId: string, importerType: string, config: LabConfigValues): Observable<LabResource> {
+  public callImporter(resourceId: string, importerType: string, config: PrConfigValues): Observable<LabResource> {
     return this.apiService.post(`${this.route}/${resourceId}/import/${importerType}`, config, LabResource);
   }
 
@@ -182,7 +182,7 @@ export class LabResourceService {
     return this.apiService.get(`${this.route}/${resourceTypingName}/exporter`, LabTypeService.deserializeTyping);
   }
 
-  public downloadResource(resourceId: string, exporterTypingName: string, config: LabConfigValues): void {
+  public downloadResource(resourceId: string, exporterTypingName: string, config: PrConfigValues): void {
     // create the download url, with config params
     const fullUrl = this.apiService.getBaseRouteUrl(`resource/${resourceId}/download/${exporterTypingName}`) + '?' +
       this.apiService.convertRecordToURLParams(config);

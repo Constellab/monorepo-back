@@ -1,10 +1,13 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, filter, firstValueFrom, Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, filter, firstValueFrom, Observable, Subscription, switchMap} from 'rxjs';
 import {LabProcess} from '../../../../lab-core/model/entities/process/lab-process.entity';
-import {map} from 'rxjs/operators';
-import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
 import {LabExperimentDetailPageState} from './lab-experiment-detail-page.state';
-import {PrWorkflowActionSelectNode, PrWorkflowActionState, PrWorkflowNodeProcess} from '@monorepo/protocol';
+import {
+  PrConfigValues,
+  PrWorkflowActionSelectNode,
+  PrWorkflowActionState,
+  PrWorkflowNodeProcess
+} from '@monorepo/protocol';
 import {MatDrawer} from '@angular/material/sidenav';
 
 /**
@@ -45,7 +48,9 @@ export class LabWorkflowNodeDetailState {
   }
 
   public getProcess$(): Observable<LabProcess> {
-    return this.getNode$().pipe(map(node => node?.additionalObject ?? null));
+    return this.getNode$().pipe(
+      filter(node => node != null),
+      switchMap(node => node.getObject$() as Observable<LabProcess>));
   }
 
   public getProcessPromise(): Promise<LabProcess> {
@@ -58,8 +63,8 @@ export class LabWorkflowNodeDetailState {
   }
 
   // TODO to improve
-  public updateConfigValues(config: LabConfigValues): void {
+  public updateConfigValues(config: PrConfigValues): void {
     const node = this.node$.value;
-    this.experimentState.updateProcessConfig(node.currentObject.parentProtocolId, node.nodeName, config);
+    this.experimentState.updateProcessConfig(node.parentLayerId, node.nodeName, config);
   }
 }

@@ -12,11 +12,11 @@
 
   <fl-card-body class="body-tech-report">
     <mat-tab-group mat-align-tabs="start" animationDuration="0ms" dynamicHeight
-                   *ngIf="prProtocol; else noGraph">
+                   *ngIf="workflow; else noGraph">
       <mat-tab label="{{'protocol' | translate}}">
         <ng-template matTabContent>
           <div class="tech-report-workflow">
-            <pr-workflow [flow]="prProtocol" [mode$]="workflowMode$" [viewConfig]="workflowConfig"></pr-workflow>
+            <pr-workflow [workflow]="workflow" [mode$]="workflowMode$" [viewConfig]="workflowConfig"></pr-workflow>
           </div>
         </ng-template>
       </mat-tab>

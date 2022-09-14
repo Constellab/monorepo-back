@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {CaExperimentService} from '../../../../../ca-core/service-api/ca-experiment.service';
 import {
@@ -13,10 +13,11 @@ import {
 import {
   PrProcess,
   prProcessStatusDict,
-  PrProtocolFlow,
   PrResource,
+  PrWorkflow,
   PrWorkflowActionSelectNode,
   PrWorkflowActionState,
+  PrWorkflowLayer,
   PrWorkflowMode,
   PrWorkflowNodeOutput,
   PrWorkflowNodeProcess,
@@ -44,7 +45,7 @@ export class CaExperimentTechnicalReportComponent implements OnInit, OnDestroy {
 
   technicalReport: CaTechnicalReport;
 
-  prProtocol: PrProtocolFlow;
+  workflow: PrWorkflow;
 
   workflowMode$: Observable<PrWorkflowMode> = of('readOnly');
 
@@ -54,23 +55,20 @@ export class CaExperimentTechnicalReportComponent implements OnInit, OnDestroy {
 
   constructor(private experimentService: CaExperimentService,
               private dialogService: FlDialogService,
-              private actionState: PrWorkflowActionState) {
+              private actionState: PrWorkflowActionState,
+              private ngZone: NgZone) {
   }
 
   ngOnInit(): void {
     this.experimentService.getExperimentTechnicalReport(this.experiment.id).subscribe((res: CaTechnicalReport) => {
       this.technicalReport = res;
-      this.prProtocol = this.technicalReportToPrProtocol(res.data.graph, ClStringHelper.generateUUID(),
-        'Main protocol', res.data.human_name);
+      this.workflow = this.technicalReportToWorkflow(res.data.graph, ClStringHelper.generateUUID());
     });
 
     this.workflowConfig = new CaWorkflowConfig();
     this.actionState.init();
 
-    // this.workflowConfig.onNodeSelected$.subscribe((nodeSelected) => {
-    //   this.currentNodeSelected = of(nodeSelected);
-    //   this.drawer.open();
-    // });
+
     this.currentNodeSelected = this.actionState.getAction$().pipe(
       filter(action => action?.action === 'selectNode'),
       tap(() => this.drawer.open()),
@@ -82,58 +80,74 @@ export class CaExperimentTechnicalReportComponent implements OnInit, OnDestroy {
     this.dialogService.openSmallDialog(CaExperimentLabConfigDialogComponent, {data: this.experiment});
   }
 
-  private technicalReportToPrProtocol(graph: CaTechnicalReportGraph, id: string, name: string, title: string): PrProtocolFlow {
-    const protocol = new PrProtocolFlow(id, name, title);
+  private technicalReportToWorkflow(graph: CaTechnicalReportGraph, id: string): PrWorkflow {
+    const layer = this.createLayer(graph, true, id);
+    return new PrWorkflow(layer, 'readOnly', this.ngZone);
+  }
 
+  private createLayer(graph: CaTechnicalReportGraph, rootLayer: boolean,
+                      id: string, title?: string): PrWorkflowLayer {
+
+    let layer: PrWorkflowLayer;
+    if (rootLayer) {
+      layer = PrWorkflowLayer.rootLayer(id);
+    } else {
+      layer = new PrWorkflowLayer(id, id, title);
+    }
 
     for (const key of Object.keys(graph.nodes)) {
       const caProcess = graph.nodes[key];
-      const node = this.caProcessToPrProcessNode(caProcess, key, protocol.id);
-      protocol.addNode(node);
+      const node = this.caProcessToPrProcessNode(caProcess, key, id);
+      layer.addNode(node);
     }
 
     for (const link of graph.links) {
-      protocol.addConnection(link.from.node, link.to.node, link.from.port, link.to.port);
+      layer.addPrConnection({
+        fromNode: link.from.node,
+        toNode: link.to.node,
+        fromPort: link.from.port,
+        toPort: link.to.port
+      });
     }
 
     for (const key of Object.keys(graph.interfaces)) {
       const inter = graph.interfaces[key];
-      protocol.addInterface(inter.name, inter.to.node, inter.to.port);
+      layer.addInterface(inter.name, inter.to.node, inter.to.port);
     }
 
     for (const key of Object.keys(graph.outerfaces)) {
       const outer = graph.outerfaces[key];
-      protocol.addOuterface(outer.name, outer.from.node, outer.from.port);
+      layer.addOuterface(outer.name, outer.from.node, outer.from.port);
     }
 
-    return protocol;
-  }
+    layer.initNodesPositions();
 
+    return layer;
+  }
 
   private caProcessToPrProcessNode(caProcess: CaTechnicalReportProcess, name: string, protocolId: string): PrWorkflowNodeProcess {
     const prProcess = this.caProcessToPrProcess(caProcess, name, protocolId);
 
     const getResource = (): Observable<PrResource> => of(null);
     if (caProcess.process_typing_name === TdTypingName.task.source) {
-      return new PrWorkflowNodeSource(prProcess, getResource, 0, 0, prProcess);
+      return new PrWorkflowNodeSource(prProcess, getResource);
     } else if (caProcess.process_typing_name === TdTypingName.task.output.typingName) {
-      return new PrWorkflowNodeOutput(prProcess, getResource, 0, 0, prProcess);
+      return new PrWorkflowNodeOutput(prProcess, getResource);
     } else if (caProcess.process_typing_name === TdTypingName.task.viewer) {
-      return new PrWorkflowNodeViewer(prProcess, getResource, 0, 0, prProcess);
+      return new PrWorkflowNodeViewer(prProcess, getResource);
     } else if (caProcess.graph != null) {
-      const flow$: Observable<PrProtocolFlow> = of(this.technicalReportToPrProtocol(caProcess.graph, prProcess.id,
-        name, caProcess.human_name));
-      return new PrWorkflowNodeProtocol(prProcess, flow$, 0, 0, prProcess);
+      const layer$: Observable<PrWorkflowLayer> = of(this.createLayer(caProcess.graph, false, prProcess.id, name));
+      return new PrWorkflowNodeProtocol(prProcess, layer$);
     } else {
-      return new PrWorkflowNodeProcess(prProcess, 0, 0, prProcess);
+      return new PrWorkflowNodeProcess(prProcess);
     }
   }
 
   private caProcessToPrProcess(caProcess: CaTechnicalReportProcess, name: string, protocolId: string): PrProcess {
     return {
       id: ClStringHelper.generateUUID(),
-      name: name,
-      humanName: caProcess.human_name,
+      instanceName: name,
+      title: caProcess.human_name,
       config: caProcess.config,
       parentProtocolId: protocolId,
       outputs: caProcess.outputs,
@@ -145,6 +159,7 @@ export class CaExperimentTechnicalReportComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.actionState.clear();
+    this.workflow?.destroy();
   }
 
 

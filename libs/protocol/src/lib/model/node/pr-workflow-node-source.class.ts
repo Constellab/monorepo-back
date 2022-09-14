@@ -1,6 +1,6 @@
 import {PrWorkflowPort} from '../pr-workflow-port.class';
 import {PrWorkflowNodeIo} from './pr-workflow-node-io.class';
-import {PrProcess} from '../pr-process.entity';
+import {PrProcess} from '../pr-process.class';
 import {TdTaskSourceConfig} from '@monorepo/technical-doc';
 
 export class PrWorkflowNodeSource extends PrWorkflowNodeIo {

@@ -1,8 +1,8 @@
 import {PrWorkflowNode} from './node/pr-workflow-node.class';
 
-export class PrAddProcessWithLink {
+export interface PrAddNodeWithConnection {
 
-  process: PrWorkflowNode;
+  node: PrWorkflowNode;
 
   connection: PrConnection;
 }

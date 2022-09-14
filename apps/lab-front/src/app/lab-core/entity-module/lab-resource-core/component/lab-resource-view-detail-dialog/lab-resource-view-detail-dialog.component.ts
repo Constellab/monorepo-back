@@ -3,8 +3,8 @@ import {LabResourceView} from '../../../../model/entities/resource/lab-resource-
 import {Observable} from 'rxjs';
 import {LabResourceService} from '../../../../entity-service/lab-resource.service';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {LabConfigValues} from '../../../../model/entities/lab-config.entity';
 import {RvTransformerParams} from '@monorepo/resource-view';
+import {PrConfigValues} from '@monorepo/protocol';
 
 export type LabResourceViewDetailDialogInput = {
   mode: 'defaultView',
@@ -17,7 +17,7 @@ export type LabResourceViewDetailDialogInput = {
   resourceName: string;
   viewMethodName: string;
   saveViewConfig: boolean;
-  config: LabConfigValues;
+  config: PrConfigValues;
   transformers: RvTransformerParams[];
 }
 

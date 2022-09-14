@@ -1,42 +1,43 @@
 import {LabBaseEntity} from '../global/lab-entity.entity';
 import {ClRecordWrapperTransform} from '@monorepo/core-lib';
-import {Type} from 'class-transformer';
-import {LabConfigSpecs} from './lab-config-spec.entity';
 import {FlDynamicFormGroupConfig} from '@monorepo/front-core-lib';
 import {TdConfigSpecVisibility} from '@monorepo/technical-doc';
-
-export type LabConfigValues = Record<string, any>
+import {PrConfigSpecs, PrConfigValues} from '@monorepo/protocol';
 
 /**
  * form structure for the {@link LabConfigureSpecsFormComponent}
  */
 export interface LabConfigureSpecsForm {
-  public: LabConfigValues;
-  protected: LabConfigValues;
+  public: PrConfigValues;
+  protected: PrConfigValues;
 }
 
 
 /**
  * Config object for a process
  */
-export class LabConfigData {
+export class LabConfig extends LabBaseEntity {
 
   // object describing the type of the configs and default values
-  @ClRecordWrapperTransform(LabConfigSpecs)
-  specs: LabConfigSpecs;
+  @ClRecordWrapperTransform(PrConfigSpecs)
+  specs: PrConfigSpecs;
 
   // actual values of the config
-  values: LabConfigValues;
+  values: PrConfigValues;
 
   /**
    * Create a ConfigData with defined specs and empty params
    * if the values are not provided, use the default config
    */
-  public static fromSpecs(specs: LabConfigSpecs, values?: LabConfigValues): LabConfigData {
-    const config = new LabConfigData();
+  public static fromSpecs(specs: PrConfigSpecs, values?: PrConfigValues): LabConfig {
+    const config = new LabConfig();
     config.specs = specs;
     config.values = values ?? specs.getDefaultConfig();
     return config;
+  }
+
+  public updateConfig(config: PrConfigValues): void {
+    this.values = config;
   }
 
   /**
@@ -58,23 +59,8 @@ export class LabConfigData {
     return this.specs.hasConfigs(visibility);
   }
 
-  public updateValues(config: LabConfigValues): void {
+  public updateValues(config: PrConfigValues): void {
     this.values = config;
-  }
-}
-
-
-/**
- * Config object for a process
- */
-export class LabConfig extends LabBaseEntity {
-
-  // object containing the current configuration values
-  @Type(() => LabConfigData)
-  data: LabConfigData;
-
-  public updateConfig(config: LabConfigValues): void {
-    this.data.updateValues(config);
   }
 }
 

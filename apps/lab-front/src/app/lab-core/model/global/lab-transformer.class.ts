@@ -1,6 +1,7 @@
-import {LabConfigureSpecsForm, LabConfigValues} from '../entities/lab-config.entity';
+import {LabConfigureSpecsForm} from '../entities/lab-config.entity';
 import {LabProcessType} from '../entities/lab-type/lab-process-type.entity';
 import {RvTransformerParams} from '@monorepo/resource-view';
+import {PrConfigValues} from '@monorepo/protocol';
 
 
 export interface LabTransformForm {
@@ -10,7 +11,7 @@ export interface LabTransformForm {
 
 export interface LabTransformerWithConfig {
   transformer: LabProcessType;
-  config: LabConfigValues;
+  config: PrConfigValues;
 }
 
 export function labConvertTransformFormToParams(formValue: LabTransformForm[]): RvTransformerParams[] {

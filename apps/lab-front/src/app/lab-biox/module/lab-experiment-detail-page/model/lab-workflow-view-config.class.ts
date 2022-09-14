@@ -1,11 +1,4 @@
-import {
-  PrConfigView,
-  PrWorkflowActionState2,
-  PrWorkflowMode,
-  PrWorkflowNode,
-  PrWorkflowNodeProcess,
-  PrWorkflowPort
-} from '@monorepo/protocol';
+import {PrConfigView, PrWorkflowMode, PrWorkflowNode, PrWorkflowNodeProcess, PrWorkflowPort} from '@monorepo/protocol';
 import {FlDialogService, FlMenuDynamicButton, FlSavedSearch, flThemeDetailLight} from '@monorepo/front-core-lib';
 import {
   LabResourceDetailDialogComponent
@@ -27,11 +20,12 @@ import {
 } from '../../../../lab-core/entity-module/lab-resource-core/component/lab-select-resource-dialog/lab-select-resource-dialog.component';
 import {LabResource} from '../../../../lab-core/model/entities/resource/lab-resource.entity';
 import {ClHelpService} from '@monorepo/core-lib';
+import {LabWorkflowEditConfig} from './lab-workflow-edit-config.class';
 
 export class LabWorkflowViewConfig extends PrConfigView {
 
   constructor(private dialogService: FlDialogService,
-              private actionState: PrWorkflowActionState2) {
+              private editState: LabWorkflowEditConfig) {
     super();
   }
 
@@ -113,15 +107,15 @@ export class LabWorkflowViewConfig extends PrConfigView {
   private addSource(resource: LabResource | null, port: PrWorkflowPort, node: PrWorkflowNodeProcess): void {
     if (resource == null) return;
 
-    this.actionState.addSourceToProcessInput(resource.id, node.nodeName, port.name, resource.name);
+    this.editState.addSourceToProcessInput(resource.id, node.nodeName, port.name, resource.name);
   }
 
   private addTaskOutput(processNodeName: string, outputPortName: string): void {
-    this.actionState.addTaskOutput(processNodeName, outputPortName);
+    this.editState.addTaskOutput(processNodeName, outputPortName);
   }
 
   private addViewerToOutput(processNodeName: string, outputPortName: string): void {
-    this.actionState.addViewerToOutput(processNodeName, outputPortName);
+    this.editState.addViewerToOutput(processNodeName, outputPortName);
   }
 
   private getResourceDetailContextButton(resourceId: string | null): FlMenuDynamicButton {
@@ -175,13 +169,13 @@ export class LabWorkflowViewConfig extends PrConfigView {
   private addProcessConnectedToOutput(processType: LabTypeEntity | null, outputProcessName: string, outputPortName: string): void {
     if (processType == null) return;
 
-    this.actionState.addProcessConnectedToOutput(processType.typingName, processType.humanName, outputProcessName, outputPortName);
+    this.editState.addProcessConnectedToOutput(processType.typingName, processType.humanName, outputProcessName, outputPortName);
   }
 
   private addProcessConnectedToInput(processType: LabTypeEntity | null, inputProcessName: string, inputPortName: string): void {
     if (processType == null) return;
 
-    this.actionState.addProcessConnectedToInput(processType.typingName, processType.humanName, inputProcessName, inputPortName);
+    this.editState.addProcessConnectedToInput(processType.typingName, processType.humanName, inputProcessName, inputPortName);
   }
 
 

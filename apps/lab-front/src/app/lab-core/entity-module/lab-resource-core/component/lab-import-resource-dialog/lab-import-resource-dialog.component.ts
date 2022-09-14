@@ -4,7 +4,7 @@ import {LabResourceService} from '../../../../entity-service/lab-resource.servic
 import {
   LabConfigureSpecsFormComponent
 } from '../../../lab-config-core/component/lab-configure-specs-form/lab-configure-specs-form.component';
-import {LabConfigData, LabConfigureSpecsForm, LabConfigValues} from '../../../../model/entities/lab-config.entity';
+import {LabConfig, LabConfigureSpecsForm} from '../../../../model/entities/lab-config.entity';
 import {FormGroup} from '@ngneat/reactive-forms';
 import {FlDialogService, FlFormHelper, FlOverlayRef, FlSnackBarService} from '@monorepo/front-core-lib';
 import {LabRouterService} from '../../../../service/lab-router.service';
@@ -17,6 +17,7 @@ import {
 import {LabTypeEntity} from '../../../../model/entities/lab-type/lab-type.entity';
 import {LabTypeService} from '../../../../entity-service/lab-type.service';
 import {TdTypingName} from '@monorepo/technical-doc';
+import {PrConfigValues} from '@monorepo/protocol';
 
 export interface LabImportResourceDialogInput {
   resourceId: string;
@@ -38,7 +39,7 @@ export class LabImportResourceDialogComponent implements OnInit, OnDestroy {
   formGp: FormGroup<LabConfigureSpecsForm>;
 
   selectedImporterType: LabProcessType = null;
-  configData: LabConfigData;
+  configData: LabConfig;
 
   processTypeIsLoading: boolean = false;
   callIsLoading: boolean = false;
@@ -101,7 +102,7 @@ export class LabImportResourceDialogComponent implements OnInit, OnDestroy {
     this.processTypeIsLoading = false;
 
     this.selectedImporterType = importer;
-    this.configData = LabConfigData.fromSpecs(importer.configSpecs);
+    this.configData = LabConfig.fromSpecs(importer.configSpecs);
     this.formGp = LabConfigureSpecsFormComponent.buildFormGroup(this.configData);
   }
 
@@ -112,14 +113,14 @@ export class LabImportResourceDialogComponent implements OnInit, OnDestroy {
   submit(): void {
     if (this.callIsLoading) return;
     if (this.formGp.valid) {
-      const value: LabConfigValues = {...this.formGp.value.public, ...this.formGp.value.protected};
+      const value: PrConfigValues = {...this.formGp.value.public, ...this.formGp.value.protected};
       this.callImport(value);
     } else {
       FlFormHelper.markAllAsTouched(this.formGp);
     }
   }
 
-  private callImport(configValue: LabConfigValues): void {
+  private callImport(configValue: PrConfigValues): void {
     this.callIsLoading = true;
     this.resourceService.callImporter(this.input.resourceId, this.selectedImporterType.typingName, configValue)
       .subscribe({

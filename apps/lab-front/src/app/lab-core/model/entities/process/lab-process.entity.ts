@@ -1,10 +1,10 @@
-import {LabConfig, LabConfigValues} from '../lab-config.entity';
+import {LabConfig} from '../lab-config.entity';
 import {Expose, Type} from 'class-transformer';
 import {LabProgressBar} from '../lab-progress-bar.entity';
 import {FlStatus, FlStatusTransform} from '@monorepo/front-core-lib';
 import {LabBaseEntityWithUser} from '../lab-user.entity';
 import {TdTypingName} from '@monorepo/technical-doc';
-import {PrIO, prProcessStatusDict} from '@monorepo/protocol';
+import {PrConfigValues, PrIO, PrProcess, prProcessStatusDict} from '@monorepo/protocol';
 
 export interface LabProcessData {
   title: string;
@@ -20,7 +20,7 @@ export type LabProcessStatus = 'DRAFT' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 /**
  * Task or protocol inside a flow
  */
-export class LabProcess extends LabBaseEntityWithUser {
+export class LabProcess extends LabBaseEntityWithUser implements PrProcess {
 
   @Expose({name: 'process_typing_name'})
   processTypingName: string;
@@ -36,12 +36,11 @@ export class LabProcess extends LabBaseEntityWithUser {
   @FlStatusTransform(prProcessStatusDict)
   status: FlStatus<LabProcessStatus>;
 
-
   @Type(() => LabConfig)
   config: LabConfig;
 
   @Expose({name: 'instance_name'})
-  name: string;
+  instanceName: string;
 
   inputs: Record<string, PrIO>;
 
@@ -54,9 +53,6 @@ export class LabProcess extends LabBaseEntityWithUser {
   @Expose({name: 'is_archived'})
   isArchived: boolean;
 
-  @Expose({name: 'is_deleted'})
-  isDeleted: boolean;
-
   @Expose({name: 'is_protocol'})
   isProtocol: boolean;
 
@@ -65,15 +61,15 @@ export class LabProcess extends LabBaseEntityWithUser {
 
 
   public hasConfig(): boolean {
-    return this.config?.data.specs.hasProperties() ?? false;
+    return this.config?.specs.hasProperties() ?? false;
   }
 
-  public updateConfig(config: LabConfigValues): void {
+  public updateConfig(config: PrConfigValues): void {
     this.config.updateConfig(config);
   }
 
-  public getConfigValues(): LabConfigValues {
-    return this.config.data.values;
+  public getConfigValues(): PrConfigValues {
+    return this.config.values;
   }
 
   // return true if the process is of type Source
@@ -91,7 +87,7 @@ export class LabProcess extends LabBaseEntityWithUser {
   }
 
   get title(): string {
-    return this.data.title || this.name;
+    return this.data.title || this.instanceName;
   }
 
   isFinished(): boolean {

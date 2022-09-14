@@ -8,9 +8,10 @@ import {
   LabConfigureSpecsFormDialogComponent,
   LabConfigureSpecsFormDialogInput
 } from '../entity-module/lab-config-core/component/lab-configure-specs-form-dialog/lab-configure-specs-form-dialog.component';
-import {LabConfigData, LabConfigValues} from '../model/entities/lab-config.entity';
+import {LabConfig} from '../model/entities/lab-config.entity';
 import {Observable, of} from 'rxjs';
 import {mergeMap, tap} from 'rxjs/operators';
+import {PrConfigValues} from '@monorepo/protocol';
 
 /**
  * Service to download any downloadable resource
@@ -66,7 +67,7 @@ export class LabResourceDownloadService {
     }
 
     const input: LabConfigureSpecsFormDialogInput = {
-      configData: LabConfigData.fromSpecs(exporterType.configSpecs),
+      configData: LabConfig.fromSpecs(exporterType.configSpecs),
       title: 'biox.download_resource_title',
       submitButtonText: 'biox.download_resource',
     };
@@ -79,7 +80,7 @@ export class LabResourceDownloadService {
   }
 
   // on dialog closed, download the resource with the configuration (if it exists)
-  private callDownloadResource(resourceId: string, exporterTypingName: string, config?: LabConfigValues): void {
+  private callDownloadResource(resourceId: string, exporterTypingName: string, config?: PrConfigValues): void {
     // cancel the process
     if (config == null) {
       throw Error('Canceled');

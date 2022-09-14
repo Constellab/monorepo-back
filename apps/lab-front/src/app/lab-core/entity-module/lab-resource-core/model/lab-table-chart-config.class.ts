@@ -14,13 +14,13 @@ import {
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {LabResourceTableService, LabTableChartType} from '../../../entity-service/lab-resource-table.service';
-import {LabConfigValues} from '../../../model/entities/lab-config.entity';
 import {LabResourceView} from '../../../model/entities/resource/lab-resource-view.entity';
 import {
   LabResourceViewPortalComponent,
   LabResourceViewPortalInput
 } from '../component/lab-resource-view-portal/lab-resource-view-portal.component';
 import {RvTransformerParams} from '@monorepo/resource-view';
+import {PrConfigValues} from '@monorepo/protocol';
 
 /**
  * Main config class to generate chart from the sheet by calling the resource service
@@ -28,12 +28,12 @@ import {RvTransformerParams} from '@monorepo/resource-view';
 export abstract class LabTableChartConfig extends FlSheetChartConfig {
 
   constructor(private resourceId: string, private tableViewMethodName: string,
-              private tableViewConfig: LabConfigValues, private tableTransformers: RvTransformerParams[],
+              private tableViewConfig: PrConfigValues, private tableTransformers: RvTransformerParams[],
               private resourceTableService: LabResourceTableService, private portalService: FlPortalService) {
     super();
   }
 
-  protected callChartOnTable(chartType: LabTableChartType, chartConfig: LabConfigValues,
+  protected callChartOnTable(chartType: LabTableChartType, chartConfig: PrConfigValues,
                              contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
     return this.resourceTableService.callChartOnTable(this.resourceId, this.tableViewMethodName,
       this.tableViewConfig, this.tableTransformers, chartType, chartConfig).pipe(
@@ -68,10 +68,10 @@ export abstract class LabTableChartConfig extends FlSheetChartConfig {
  */
 export abstract class LabTableChart2dConfig extends LabTableChartConfig {
 
-  generate2dChart(chartType: LabTableChartType, chartConfig: LabConfigValues,
+  generate2dChart(chartType: LabTableChartType, chartConfig: PrConfigValues,
                   additionalFields: FlSheetChartSelectionFormAdditional,
                   contextMenuItems?: FlMenuDynamic[]): Observable<FlOverlayRef> {
-    const fullChartConfig: LabConfigValues = Object.assign({
+    const fullChartConfig: PrConfigValues = Object.assign({
       x_axis_label: additionalFields.xAxisLabel,
       y_axis_label: additionalFields.yAxisLabel,
     }, chartConfig);

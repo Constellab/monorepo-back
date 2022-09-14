@@ -9,7 +9,7 @@ import {TdIOSpec} from '@monorepo/technical-doc';
  */
 export abstract class PrWorkflowNode<T = any> {
 
-  public nodeId: string;
+  public drawflowId: string;
 
   public inputPorts: PrWorkflowPort[];
   public outputPorts: PrWorkflowPort[];
@@ -21,25 +21,32 @@ export abstract class PrWorkflowNode<T = any> {
   private titleSubscription: Subscription;
   private currentTitle: FlTranslatableText;
 
+  public x: number = null;
+  public y: number = null;
 
   protected constructor(
     // unique node name in the layer
     public readonly nodeName: string,
-    object: T,
-    public x: number = 0,
-    public y: number = 0) {
+    public readonly parentLayerId: string,
+    object: T) {
     this.object$ = new BehaviorSubject<T>(object);
     this.initPorts(object);
   }
 
   public initNode(nodeId: string, getDrawflowNodeMethod: (id: string) => DrawflowNode): void {
-    this.nodeId = nodeId;
+    this.drawflowId = nodeId;
     this.getDrawflowNodeMethod = getDrawflowNodeMethod;
     this.initPortColors();
 
     this.titleSubscription = this.getTitle$().subscribe(
       title => this.currentTitle = title
     );
+  }
+
+  public deInitDrawflow(): void {
+    this.drawflowId = null;
+    this.getDrawflowNodeMethod = null;
+    this.titleSubscription?.unsubscribe();
   }
 
   protected abstract initPorts(object: T): void;
@@ -65,6 +72,7 @@ export abstract class PrWorkflowNode<T = any> {
   }
 
   public updateObject(object: T): void {
+    console.log('Update object', object);
     this.object$.next(object);
   }
 
@@ -157,11 +165,11 @@ export abstract class PrWorkflowNode<T = any> {
   /////////////////////////////// OTHER //////////////////////////////
 
   private getDrawflowNode(): DrawflowNode {
-    return this.getDrawflowNodeMethod(this.nodeId);
+    return this.getDrawflowNodeMethod(this.drawflowId);
   }
 
   private getHTMLId(): string {
-    return 'node-' + this.nodeId;
+    return 'node-' + this.drawflowId;
   }
 
   private getHTMLElement(): HTMLElement {
@@ -213,11 +221,20 @@ export abstract class PrWorkflowNode<T = any> {
     }
   }
 
+  public hasCoords(): boolean {
+    return this.x != null && this.y != null;
+  }
+
   public getCoords(): FlCoord {
     return {
       x: this.x,
       y: this.y
     };
+  }
+
+  public setCoords(coords: FlCoord): void {
+    this.x = coords.x;
+    this.y = coords.y;
   }
 
   private getNodeCoord(): FlCoord {

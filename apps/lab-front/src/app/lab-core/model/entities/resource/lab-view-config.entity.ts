@@ -1,10 +1,10 @@
-import {LabConfigValues} from '../lab-config.entity';
 import {Expose} from 'class-transformer';
 import {LabResourceViewType} from './lab-resource-view.entity';
 import {RvTransformerParams} from '@monorepo/resource-view';
 import {LabEntityWithTag} from '../lab-entity-with-tag.entity';
 import {LabFlaggedEntity} from '../../global/lab-flagged-entity.class';
 import {FlDatasourcePaginated} from '@monorepo/front-core-lib';
+import {PrConfigValues} from '@monorepo/protocol';
 
 /**
  * Represent a view config that the user viewed
@@ -20,7 +20,7 @@ export class LabViewConfig extends LabEntityWithTag implements LabFlaggedEntity 
   viewName: string;
 
   @Expose({name: 'config_values'})
-  configValues: LabConfigValues;
+  configValues: PrConfigValues;
 
   flagged: boolean;
 

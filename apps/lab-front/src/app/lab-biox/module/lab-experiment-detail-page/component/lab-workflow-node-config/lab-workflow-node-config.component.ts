@@ -20,8 +20,9 @@ export class LabWorkflowNodeConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.configValue$ = this.nodeDetailState.getProcess$().pipe(
-      map(process => process.config.data.mergeConfigWithDefault())
+      map(process => process.config.mergeConfigWithDefault())
     );
-  }
 
+
+  }
 }

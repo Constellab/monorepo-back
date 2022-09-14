@@ -5,7 +5,7 @@ import {LabProtocol} from '../model/entities/process/lab-protocol.entity';
 import {LabProcess} from '../model/entities/process/lab-process.entity';
 import {LabAddProcessWithLink} from '../../lab-biox/module/lab-experiment-detail-page/model/lab-workflow-action.class';
 import {labInstantiateProcess} from '../model/entities/process/lab-process.transform';
-import {LabConfigValues} from '../model/entities/lab-config.entity';
+import {PrConfigValues} from '@monorepo/protocol';
 
 @Injectable({
   providedIn: 'root'
@@ -84,7 +84,7 @@ export class LabProtocolService {
 
   //////////////////////////////////////// CONFIG /////////////////////////////////////
 
-  public saveProcessConfig(protocolId: string, processInstanceName: string, config: LabConfigValues): Observable<void> {
+  public saveProcessConfig(protocolId: string, processInstanceName: string, config: PrConfigValues): Observable<void> {
     return this.apiService.put(`${this.baseRoute}/${protocolId}/process/${processInstanceName}/config`, config);
   }
 

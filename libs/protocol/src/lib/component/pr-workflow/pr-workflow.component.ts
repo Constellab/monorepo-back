@@ -1,10 +1,8 @@
 import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {PrWorkflowManagerState} from '../../state/pr-workflow-manager-state';
-import {PrProtocolFlow} from '../../model/pr-connection.class';
-import {PrWorkflowMode} from '../../model/pr-workflow.class';
+import {PrWorkflow, PrWorkflowMode} from '../../model/pr-workflow.class';
 import {Observable, Subscription} from 'rxjs';
 import {PrConfigEdit} from '../../model/pr-config-edit.class';
-import {PrWorkflowActionState2} from '../../state/pr-workflow-external-event.state';
 import {PrConfigView} from '../../model/pr-config-view.class';
 
 
@@ -15,7 +13,8 @@ import {PrConfigView} from '../../model/pr-config-view.class';
 })
 export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @Input() flow: PrProtocolFlow;
+
+  @Input() workflow: PrWorkflow;
 
   @Input() mode$: Observable<PrWorkflowMode>;
 
@@ -31,9 +30,7 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
   inputActionSub: Subscription;
 
 
-  constructor(private workflowManagerState: PrWorkflowManagerState,
-              private actionState2: PrWorkflowActionState2
-  ) {
+  constructor(private workflowManagerState: PrWorkflowManagerState) {
   }
 
   ngOnInit(): void {
@@ -41,8 +38,6 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
       console.error('[PrWorkflowComponent] the view config was not provided');
       return;
     }
-    // TODO improve
-    this.workflowManagerState.viewConfig = this.viewConfig;
   }
 
   ngAfterViewInit(): void {
@@ -56,8 +51,7 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   private loadExperimentFlowSuccess(): void {
-    const workflow = this.workflowManagerState.init(this.container.nativeElement, this.flow, this.mode$);
-    this.actionState2.init(this.editConfig, workflow);
+    this.workflowManagerState.init(this.container.nativeElement, this.workflow, this.mode$, this.viewConfig);
 
     this.flowIsLoading = false;
   }
@@ -67,6 +61,5 @@ export class PrWorkflowComponent implements OnInit, AfterViewInit, OnDestroy {
     this.workflowManagerState.clear();
     this.sub?.unsubscribe();
     this.inputActionSub?.unsubscribe();
-    this.actionState2.clear();
   }
 }

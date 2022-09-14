@@ -19,10 +19,10 @@ export class PrWorkflowLayersBreadcrumbComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.layers$ = this.workflowManager.getCurrentLayerHierarchy();
+    this.layers$ = this.workflowManager.getCurrentLayerHierarchy$();
   }
 
-  selectLayer(layerId: string): void{
+  selectLayer(layerId: string): void {
     this.workflowManager.selectLayer(layerId);
   }
 

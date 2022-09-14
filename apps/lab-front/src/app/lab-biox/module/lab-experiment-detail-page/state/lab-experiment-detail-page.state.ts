@@ -1,14 +1,22 @@
 import {Injectable} from '@angular/core';
 import {LabExperimentService} from '../../../../lab-core/entity-service/lab-experiment.service';
-import {BehaviorSubject, merge, Observable, of, Subject, Subscription} from 'rxjs';
+import {BehaviorSubject, merge, Observable, of, Subscription} from 'rxjs';
 import {LabExperiment} from '../../../../lab-core/model/entities/lab-experiment.entity';
 import {filter, map, tap} from 'rxjs/operators';
 import {LabProtocol} from '../../../../lab-core/model/entities/process/lab-protocol.entity';
 import {LabProtocolService} from '../../../../lab-core/entity-service/lab-protocol.service';
 import {LabTag} from '../../../../lab-core/model/entities/lab-tag.entity';
 import {FlPortalActionsService, FlQuillJson} from '@monorepo/front-core-lib';
-import {LabConfigValues} from '../../../../lab-core/model/entities/lab-config.entity';
 import {LabProcess} from '../../../../lab-core/model/entities/process/lab-process.entity';
+import {
+  PrConfigValues,
+  PrWorkflow,
+  PrWorkflowLayer,
+  PrWorkflowNode,
+  PrWorkflowNodeProcess,
+  PrWorkflowNodeProtocol
+} from '@monorepo/protocol';
+import {LabWorkflowFactory} from '../model/lab-workflow.factory';
 
 @Injectable()
 export class LabExperimentDetailPageState {
@@ -16,11 +24,8 @@ export class LabExperimentDetailPageState {
   private experiment$: BehaviorSubject<LabExperiment>;
   private experimentDescription$: BehaviorSubject<FlQuillJson>;
 
-  // observable where protocol are emitted when there are retrieved form DB
-  private protocolChange$: Subject<LabProtocol>;
-
-  // save the list flows where the key is the protocol id
-  private protocols: Record<string, LabProtocol>;
+  public workflow: PrWorkflow;
+  private mainProtocol$: BehaviorSubject<LabProtocol>;
 
   // does not emit experiment until ready is true
   private ready: boolean = false;
@@ -30,19 +35,18 @@ export class LabExperimentDetailPageState {
   private timeout: any;
   private refreshSubscription: Subscription;
 
-  private mainProtocolId: string;
 
   constructor(private experimentService: LabExperimentService,
               private protocolService: LabProtocolService,
-              private actionsService: FlPortalActionsService) {
+              private actionsService: FlPortalActionsService,
+              private workflowFactory: LabWorkflowFactory) {
   }
 
   public init(experimentId: string): void {
     this.ready = false;
     this.experiment$ = new BehaviorSubject(null);
     this.experimentDescription$ = new BehaviorSubject(null);
-    this.protocolChange$ = new Subject();
-    this.protocols = {};
+    this.mainProtocol$ = new BehaviorSubject(null);
     this.experimentService.getExperiment(experimentId).subscribe(
       {
         next: experiment => this.getExperimentSuccess(experiment),
@@ -56,8 +60,15 @@ export class LabExperimentDetailPageState {
     this.experiment$.next(experiment);
     this.experimentDescription$.next(experiment.description);
 
-    // save the main protocol id to differentiate it from the others
-    this.mainProtocolId = experiment.protocol.id;
+    this.protocolService.getProtocol(experiment.protocol.id).subscribe({
+      next: protocol => this.onMainProtocolLoaded(protocol),
+      error: error => this.mainProtocol$.error(error)
+    });
+  }
+
+  private onMainProtocolLoaded(protocol: LabProtocol): void {
+    this.workflow = this.workflowFactory.protocolToWorkflow(protocol);
+    this.mainProtocol$.next(protocol);
   }
 
   public getExperiment$(): Observable<LabExperiment> {
@@ -113,13 +124,13 @@ export class LabExperimentDetailPageState {
   public checkAndStartRefreshProtocol(): void {
     this.timeout = setTimeout(() => {
 
-      const mainProtocol = this.getCurrentProtocol();
+      const mainProtocol = this.getCurrentMainProtocol();
       const experiment = this.currentExperiment;
       // Stop refresh if experiment is not running (including queue) and the main protocol is finished
       if ((!experiment.isRunning() && experiment.status.value !== 'IN_QUEUE') || mainProtocol.isFinished()) return;
 
       // retrieve all not finished protocols
-      const notFinishedProtocolIds: string[] = Object.values(this.protocols)
+      const notFinishedProtocolIds: string[] = this.getProtocols()
         .filter(protocol => !protocol.isFinished()).map(protocol => protocol.id);
       this.refreshProtocolsTick(notFinishedProtocolIds);
       this.refreshExperiment();
@@ -131,9 +142,7 @@ export class LabExperimentDetailPageState {
    */
   public startProtocolsRefresh(): void {
     // retrieve all not finished protocols
-    const allProtocols: string[] = [
-      ...Object.values(this.protocols).map(protocol => protocol.id)
-    ];
+    const allProtocols: string[] = this.getProtocols().map(protocol => protocol.id);
     this.refreshProtocolsTick(allProtocols);
   }
 
@@ -151,7 +160,12 @@ export class LabExperimentDetailPageState {
   }
 
   private refreshAllProtocols(): void {
-    this.refreshProtocols(Object.keys(this.protocols)).subscribe();
+    this.refreshProtocols(this.getProtocols().map(process => process.id)).subscribe();
+  }
+
+  private getProtocols(): LabProcess[] {
+    const protocolNodes: PrWorkflowNodeProtocol[] = this.workflow.getAllProtocolNodes();
+    return [this.getCurrentMainProtocol(), ...protocolNodes.map(node => node.currentObject as LabProcess)];
   }
 
   private refreshProtocols(flowIds: string[]): Observable<LabProtocol> {
@@ -172,60 +186,60 @@ export class LabExperimentDetailPageState {
 
   /////////////////////////////////// FLOW ////////////////////////////////////
 
-  /**
-   * Get a protocol from cache is possible, otherwise load it
-   * @param protocolId
-   */
-  public getProtocol(protocolId: string): Observable<LabProtocol> {
-    if (this.protocols[protocolId]) return of(this.protocols[protocolId]);
+  public getOrLoadLayer$(protocolId: string): Observable<PrWorkflowLayer> {
+    // if the layer was already loaded
+    if (this.workflow.hasLayer(protocolId)) {
+      return of(this.workflow.findLayerWithId(protocolId));
+    } else {
+      const node = this.workflow.findNodeByProcessId(protocolId);
+      if (!(node instanceof PrWorkflowNodeProtocol)) {
+        console.error('The node is not a protocol node');
+        return of(null);
+      }
 
-    return this.protocolService.getProtocol(protocolId).pipe(tap({
-      next: protocol => this.cacheProtocol(protocol),
-    }));
+      this.workflow.loadSubProtocolLayer(node, false);
+      return node.getSubLayer$();
+    }
   }
 
   private refreshProtocolSuccess(protocol: LabProtocol): void {
-    this.cacheProtocol(protocol);
-    this.protocolChange$.next(protocol);
-  }
 
+    const layer = this.workflow.findLayerWithId(protocol.id);
+    if (layer) {
+      for (const labProcess of Object.values(protocol.data.graph.nodes)) {
+        const node: PrWorkflowNode = layer.findNodeByName(labProcess.instanceName);
 
-  private cacheProtocol(protocol: LabProtocol): void {
-    // save the sub protocol
-    this.protocols[protocol.id] = protocol;
+        if (node == null) continue;
+        node.updateObject(labProcess);
+      }
+    }
   }
 
 
   public getMainProtocol$(): Observable<LabProtocol> {
-    return this.getProtocol(this.mainProtocolId);
+    return this.mainProtocol$.pipe(filter(protocol => protocol != null));
   }
 
-  private getCurrentProtocol(): LabProtocol {
-    return this.protocols[this.mainProtocolId];
-  }
-
-  /**
-   * Notify each time of protocol is retrieved
-   */
-  public getProtocolUpdate$(): Observable<LabProtocol> {
-    return this.protocolChange$.asObservable();
+  private getCurrentMainProtocol(): LabProtocol {
+    return this.mainProtocol$.value;
   }
 
 
   ////////////////////// OTHER ///////////////////////
-  public updateProcessConfig(protocolId: string, processInstanceName: string, config: LabConfigValues): void {
-    const node = this.findNodeWithName(protocolId, processInstanceName);
+  public updateProcessConfig(protocolId: string, processInstanceName: string, config: PrConfigValues): void {
+    const node = this.workflow.findNodeByName(protocolId, processInstanceName);
 
-    if (node == null){
+    if (node == null) {
       console.error(`Could not find node with name ${processInstanceName} in protocol ${protocolId}`);
       return;
     }
 
-    const protocol = this.protocols[protocolId];
+    if (!(node instanceof PrWorkflowNodeProcess)) {
+      console.error(`Node with name ${processInstanceName} in protocol ${protocolId} is not a process node, it can't be configured`);
+      return;
+    }
 
-    node.updateConfig(config);
-    // refresh the complete protocol to trigger object update
-    this.refreshProtocolSuccess(protocol);
+    node.updateConfigValues(config);
 
     const obs = this.protocolService.saveProcessConfig(protocolId, processInstanceName, config);
     this.actionsService.addAction({
@@ -235,17 +249,12 @@ export class LabExperimentDetailPageState {
     });
   }
 
-  private findNodeWithName(protocolId: string, processInstanceName: string): LabProcess {
-    const protocol = this.protocols[protocolId];
-    if (!protocol) return null;
-
-    return protocol.getProcess(processInstanceName);
-  }
 
   public clear(): void {
     this.experiment$.complete();
-    this.protocolChange$.complete();
+    this.mainProtocol$.complete();
     this.experimentDescription$.complete();
     this.stopProtocolsRefresh();
+    this.workflow?.destroy();
   }
 }

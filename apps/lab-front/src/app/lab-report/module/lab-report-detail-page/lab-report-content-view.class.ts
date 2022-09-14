@@ -1,8 +1,8 @@
-import {LabConfigValues} from '../../../lab-core/model/entities/lab-config.entity';
 import {LabReportContentViewComponent} from './component/lab-report-content-view/lab-report-content-view.component';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlQuillEmbed} from '@monorepo/front-core-lib';
 import {RvTransformerParams} from '@monorepo/resource-view';
+import {PrConfigValues} from '@monorepo/protocol';
 
 
 export interface LabReportContentView {
@@ -10,7 +10,7 @@ export interface LabReportContentView {
   resource_id: string;
   experiment_id?: string;
   view_method_name: string;
-  view_config: LabConfigValues;
+  view_config: PrConfigValues;
   transformers: RvTransformerParams[];
   title: string;
   caption: string;

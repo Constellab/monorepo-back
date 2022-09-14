@@ -11,16 +11,12 @@ import {
 import {Observable} from 'rxjs';
 import {LabExperiment, LabExperimentDatasource, LabExperimentSimpleForm} from '../model/entities/lab-experiment.entity';
 import {ClGetPageFunction, ClPageI} from '@monorepo/core-lib';
-import {LabProtocolGraph} from '../model/entities/process/lab-protocol.entity';
-import {LabExperimentFlowFactory} from '../utils/lab-experiment-flow.factory';
-import {mergeMap} from 'rxjs/operators';
 import {LabProject} from '../model/entities/lab-project.class';
 import {LabTag} from '../model/entities/lab-tag.entity';
 import {
   LabExperimentSearch,
   LabExperimentSearchFields
 } from '../entity-module/lab-experiment-core/model/lab-experiment-advanced-search.class';
-import {PrWorkflow} from '@monorepo/protocol';
 
 
 @Injectable({
@@ -64,12 +60,6 @@ export class LabExperimentService {
     return this.apiService.put(`${this.route}/${experimentId}/description`, description, LabExperiment);
   }
 
-  public updateExperimentProtocol(experimentId: string, workflow: PrWorkflow): Observable<LabExperiment> {
-    // convert the workflow to a protocol
-    const graph: LabProtocolGraph = LabExperimentFlowFactory.convertWorkflowToProtocolGraph(workflow);
-    return this.apiService.put(`${this.route}/${experimentId}/protocol`, graph, LabExperiment);
-  }
-
   public syncWithCentral(id: string): Observable<LabExperiment> {
     return this.apiService.put(`${this.route}/${id}/sync-with-central`, null, LabExperiment);
   }
@@ -87,12 +77,6 @@ export class LabExperimentService {
   // stop (kill) an experiment
   public resetExperiment(experimentId: string): Observable<LabExperiment> {
     return this.apiService.put(`${this.route}/${experimentId}/reset`, null, LabExperiment);
-  }
-
-  public saveAndStartExperiment(experimentId: string, workflow: PrWorkflow): Observable<LabExperiment> {
-    return this.updateExperimentProtocol(experimentId, workflow).pipe(
-      mergeMap(() => this.startExperiment(experimentId))
-    );
   }
 
   public validateExperiment(experimentId: string, project: LabProject): Observable<LabExperiment> {

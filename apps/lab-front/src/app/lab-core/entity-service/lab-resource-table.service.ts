@@ -2,9 +2,9 @@ import {Injectable} from '@angular/core';
 import {FlApiService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
 import {LabResourceView} from '../model/entities/resource/lab-resource-view.entity';
-import {LabConfigValues} from '../model/entities/lab-config.entity';
 import {RvResourceViewTable, RvTransformerParams} from '@monorepo/resource-view';
 import {LabResourceService} from './lab-resource.service';
+import {PrConfigValues} from '@monorepo/protocol';
 
 export type LabTableChartType = 'line-plot-2d' | 'scatter-plot-2d' | 'vulcano-plot' |
   'bar-plot' | 'stack-bar-plot' | 'histogram' |
@@ -31,9 +31,9 @@ export class LabResourceTableService {
   /**
    * Method used by the Table view to call a Chart view on it
    */
-  public callChartOnTable(resourceId: string, tableViewMethodName: string, tableViewConfig: LabConfigValues,
+  public callChartOnTable(resourceId: string, tableViewMethodName: string, tableViewConfig: PrConfigValues,
                           tableViewTransformers: RvTransformerParams[],
-                          chartType: LabTableChartType, chartConfig: LabConfigValues): Observable<LabResourceView> {
+                          chartType: LabTableChartType, chartConfig: PrConfigValues): Observable<LabResourceView> {
 
     const data = {
       table_view_name: tableViewMethodName,
@@ -54,7 +54,7 @@ export class LabResourceTableService {
    * @param transformers
    * @param fromRow the first row to load (including)
    */
-  public callNextPage(id: string, viewMethodName: string, config: LabConfigValues,
+  public callNextPage(id: string, viewMethodName: string, config: PrConfigValues,
                       transformers: RvTransformerParams[],
                       fromRow: number): Observable<RvResourceViewTable> {
     // merge config with pagination config,
@@ -73,7 +73,7 @@ export class LabResourceTableService {
    * @param transformers
    * @param toRow the last row to load (excluding)
    */
-  public callPreviousPage(id: string, viewMethodName: string, config: LabConfigValues,
+  public callPreviousPage(id: string, viewMethodName: string, config: PrConfigValues,
                           transformers: RvTransformerParams[],
                           toRow: number): Observable<RvResourceViewTable> {
     let pageSize = config[this.tableViewNbOfRowsPerPageParam] ?? this.tableDefaultPageSize;
