@@ -15,8 +15,11 @@ export class PrWorkflowNodeComponent extends PrWorkflowNodeProcessDirective impl
 
   ngOnInit(): void {
     this.initNode();
-    this.layerIsLoading$ = this.workflowManager.layerIsLoading$;
     this.isProtocol = this.node instanceof PrWorkflowNodeProtocol;
+
+    if (this.isProtocol) {
+      this.layerIsLoading$ = (this.node as PrWorkflowNodeProtocol).subLayerIsLoading$();
+    }
   }
 
   zoomInProtocol(): void {

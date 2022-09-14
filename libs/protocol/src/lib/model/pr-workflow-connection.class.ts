@@ -19,8 +19,8 @@ export class PrWorkflowConnection {
    */
   public getHTMLElement(): HTMLElement | null {
     const element: HTMLElement = document.getElementsByClassName(
-      `${PrWorkflowConnection.nodeInPrefix}${this.inputNode.nodeId}
-      ${PrWorkflowConnection.nodeOutPrefix}${this.outputNode.nodeId}
+      `${PrWorkflowConnection.nodeInPrefix}${this.inputNode.drawflowId}
+      ${PrWorkflowConnection.nodeOutPrefix}${this.outputNode.drawflowId}
       ${this.inputPort.drawFlowName}
       ${this.outputPort.drawFlowName}`)[0] as HTMLElement;
 

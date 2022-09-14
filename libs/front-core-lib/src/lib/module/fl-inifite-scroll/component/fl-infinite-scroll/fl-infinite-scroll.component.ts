@@ -60,8 +60,6 @@ export class FlInfiniteScrollComponent implements OnInit {
     if (this.datasource == null) {
       console.error('[FlInfiniteScrollComponent] missing datasource');
     }
-
-    // this.datasource.getStatus$().pipe(clRxjsDebug()).subscribe();
   }
 
   getNextPage(): void {

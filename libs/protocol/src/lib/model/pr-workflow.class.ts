@@ -5,6 +5,8 @@ import {PrWorkflowLayer} from './pr-workflow-layer.class';
 import {BehaviorSubject, map, Observable, Subject} from 'rxjs';
 import {NgZone} from '@angular/core';
 import {PrWorkflowPort} from './pr-workflow-port.class';
+import {PrWorkflowNodeProtocol} from './node/pr-workflow-node-protocol.class';
+import {PrWorkflowNodeProcess} from './node/pr-workflow-node-process.class';
 
 export type PrWorkflowMode = 'edit' | 'readOnly';
 
@@ -31,40 +33,49 @@ export interface PrWorkflowConnectionEvent {
  */
 export class PrWorkflow {
 
-  private readonly editor: Drawflow;
+  private editor: Drawflow;
 
   private readonly layers: PrWorkflowLayer[];
   private currentLayer$: BehaviorSubject<PrWorkflowLayer>;
-
-  // subject to trigger event when selected a workflow connection
-  private connectionSelected$: Subject<PrWorkflowConnection> = new Subject<PrWorkflowConnection>();
 
   private mode: PrWorkflowMode;
 
   private workflowEvent$: Subject<PrWorkflowEvent> = new Subject<PrWorkflowEvent>();
 
-  constructor(private element: HTMLElement,
-              name: string,
-              id: string,
+  constructor(layer: PrWorkflowLayer,
               mode: PrWorkflowMode = 'edit',
               private ngZone: NgZone) {
-
-    this.editor = new Drawflow(element);
-
-    this.editor.zoom_value = 0.1;
 
 
     // set edit or readonly mode
     this.setMode(mode);
 
     // init layers
-    const currentLayer: PrWorkflowLayer = new PrWorkflowLayer(this.editor, name, id, null);
-    this.layers = [currentLayer];
+    this.layers = [layer];
 
     // init subject
-    this.currentLayer$ = new BehaviorSubject<PrWorkflowLayer>(currentLayer);
+    this.currentLayer$ = new BehaviorSubject<PrWorkflowLayer>(layer);
+  }
 
 
+  public start(element: HTMLElement): void {
+    this.editor = new Drawflow(element);
+    this.editor.zoom_value = 0.1;
+    // use always edit mode
+    this.editor.editor_mode = 'edit';
+
+    // run the start outside angular to prevent all drawflow event from triggering change detection
+    this.ngZone.runOutsideAngular(() => {
+      this.editor.start();
+
+      this.selectAndInitLayer(this.currentLayer);
+    });
+
+
+    this.initListeners();
+  }
+
+  private initListeners(): void {
     this.editor.on('connectionCreated',
       (connection) => this.ngZone.run(() => this.onConnectionCreated(connection)));
 
@@ -73,8 +84,6 @@ export class PrWorkflow {
 
     this.editor.on('nodeRemoved', node => this.ngZone.run(() => this.onNodeRemoved(node)));
 
-    this.editor.on('connectionSelected',
-      event => this.ngZone.run(() => this.emitConnectionSelected(event)));
 
     this.editor.on('connectionStart',
       event => this.ngZone.run(() => this.onConnectionStarted(event)));
@@ -87,27 +96,13 @@ export class PrWorkflow {
     );
   }
 
-
-  public start(): void {
-    // run the start outside angular to prevent all drawflow event from triggering change detection
-    this.ngZone.runOutsideAngular(() => {
-      this.editor.start();
-      // create and selection the default module
-      this.editor.addModule(this.currentLayer.id);
-      this.editor.changeModule(this.currentLayer.id);
-
-    });
-  }
-
-  public setData(data: any): void {
-    this.editor.drawflow = data;
-    // this.editor.import(data);
-  }
-
-
   ////////////////////// LAYERS ///////////////////////////
   get currentLayer(): PrWorkflowLayer {
     return this.currentLayer$.value;
+  }
+
+  public selectRootLayer(): void {
+    this.selectLayer(this.getRootLayer().id);
   }
 
   public selectLayer(layerId: string): void {
@@ -121,25 +116,42 @@ export class PrWorkflow {
       throw new Error(`The layer with id ${layerId} doesn't exist`);
     }
 
-    // update the current layer
-    this.currentLayer$.next(layer);
-    this.editor.changeModule(layerId);
-    layer.selectLayer();
+    this.selectAndInitLayer(layer);
   }
 
-  public createSubLayerIfNotExists(name: string, title: string, id: string, selectLayer: boolean = true): PrWorkflowLayer {
+  private selectAndInitLayer(layer: PrWorkflowLayer): void {
+    // update the current layer before initializing the layer
+    this.currentLayer$.next(layer);
 
-    let layer: PrWorkflowLayer = this.findLayerWithId(id);
-    if (layer == null) {
-      this.editor.addModule(id);
-      layer = this.currentLayer.createSubLayer(name, title, id);
-      this.layers.push(layer);
+    if (this.isDrawflowReady()) {
+      // if the added layer is not initialized, initialize it
+      const initializeModule = !layer.isDrawflowReady();
+
+      if (initializeModule) {
+        this.editor.addModule(layer.drawflowId);
+      }
+
+      // update the drawflow module before initialized the layer
+      this.editor.changeModule(layer.drawflowId);
+
+      if (initializeModule) {
+        layer.init(this.editor);
+      }
     }
 
-    if (selectLayer) {
-      this.selectLayer(id);
+    layer.initOnSelect();
+  }
+
+  public addLayer(layer: PrWorkflowLayer, parentLayerId: string = null, selectLayer: boolean = false): void {
+    if (parentLayerId != null) {
+      layer.parentLayer = this.findLayerWithId(parentLayerId);
     }
-    return layer;
+    this.layers.push(layer);
+
+    if (this.isDrawflowReady() && selectLayer) {
+      this.selectLayer(layer.id);
+    }
+
   }
 
   public hasLayer(layerId: string): boolean {
@@ -170,6 +182,22 @@ export class PrWorkflow {
     return this.layers[0];
   }
 
+  public loadSubProtocolLayer(protocol: PrWorkflowNodeProtocol, selectLayer: boolean): void {
+    const currentLayerId = this.currentLayer.id;
+
+    protocol.markSubLayerAsLoading();
+    protocol.getSubLayer$().subscribe({
+      next: layer => {
+        if (!this.hasLayer(layer.id)) {
+          this.addLayer(layer, currentLayerId, selectLayer);
+        }
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
+  }
+
   ////////////////////// NODE ///////////////////////////
 
   private onNodeRemoved(nodeId: number): void {
@@ -185,54 +213,68 @@ export class PrWorkflow {
     }
   }
 
-  public findNodeWithId(nodeId: string): PrWorkflowNode {
+  public findNodeByDrawflowId(drawflowNodeId: string): PrWorkflowNode {
     for (const layer of this.layers) {
-      const node = layer.findNodeWithId(nodeId);
+      const node = layer.findNodeByDrawflowId(drawflowNodeId);
       if (node != null) {
         return node;
       }
     }
     return null;
+  }
+
+  public findNodeByProcessId(processId: string): PrWorkflowNodeProcess {
+    for (const layer of this.layers) {
+      const node = layer.findNodeByProcessId(processId);
+      if (node != null) {
+        return node;
+      }
+    }
+    return null;
+  }
+
+  public findNodeByName(layerId: string, nodeName: string): PrWorkflowNode {
+    const layer = this.findLayerWithId(layerId);
+    if (layer == null) return null;
+    return layer.findNodeByName(nodeName);
   }
 
   /**
    * Find (in the current layer) the node with the given name
    * We must search in current layer because in multiple layer we can have the same
    */
-  public findNodeWithNameInCurrentLayer(nodeName: string): PrWorkflowNode {
-    return this.currentLayer.findNodeWithName(nodeName);
-  }
-
-  public findNode(predicate: (node: PrWorkflowNode) => boolean): PrWorkflowNode {
-    for (const layer of this.layers) {
-      const node = layer.findNode(predicate);
-      if (node != null) {
-        return node;
-      }
-    }
-    return null;
+  public findNodeByNameInCurrentLayer(nodeName: string): PrWorkflowNode {
+    return this.currentLayer.findNodeByName(nodeName);
   }
 
   // refresh the node position in the object
   private onNodeMoved(nodeId: string): void {
-    const node = this.currentLayer.findNodeWithId(nodeId.toString());
+    const node = this.currentLayer.findNodeByDrawflowId(nodeId.toString());
     if (node) {
       node.refreshCoords();
     }
+  }
+
+  public getAllProtocolNodes(): PrWorkflowNodeProtocol[] {
+    const nodes: PrWorkflowNodeProtocol[] = [];
+    for (const layer of this.layers) {
+      nodes.push(...layer.getSubProtocolNodes());
+    }
+    return nodes;
   }
 
   ////////////////////// CONNECTION ///////////////////////////
 
   private onConnectionCreated(connectionEvent: ConnectionEvent): void {
     // check if input is available for the node
-    const inputNode: PrWorkflowNode = this.findNodeWithId(connectionEvent.input_id);
-    const outputNode: PrWorkflowNode = this.findNodeWithId(connectionEvent.output_id);
+    const inputNode: PrWorkflowNode = this.findNodeByDrawflowId(connectionEvent.input_id);
+    const outputNode: PrWorkflowNode = this.findNodeByDrawflowId(connectionEvent.output_id);
     const inputPort: PrWorkflowPort = inputNode.findInputPortByDrawflowName(connectionEvent.input_class);
     const outputPort: PrWorkflowPort = outputNode.findOutputPortByDrawflowName(connectionEvent.output_class);
 
     // if the connection already exists, we don't need to do anything
     // this happened when the add_connection is called and the connection is added by code not user
-    if (this.findConnection(outputNode.nodeId, inputNode.nodeId, outputPort.name, inputPort.name) != null) {
+    if (this.findConnection(outputNode.drawflowId, inputNode.drawflowId, outputPort.name, inputPort.name) != null) {
       return;
     }
 
@@ -280,8 +322,8 @@ export class PrWorkflow {
       // was deleted because a node was deleted
       setTimeout(() => {
         layer.saveUserConnectionRemoved(connection);
-        if (layer.findNodeWithName(connection.inputNode.nodeName) == null
-          || layer.findNodeWithName(connection.outputNode.nodeName) == null) {
+        if (layer.findNodeByName(connection.inputNode.nodeName) == null
+          || layer.findNodeByName(connection.outputNode.nodeName) == null) {
           return;
         }
 
@@ -294,12 +336,6 @@ export class PrWorkflow {
     }
   }
 
-  private emitConnectionSelected(connectionEvent: ConnectionEvent): void {
-    const connectionIndex: number = this.currentLayer.findConnectionIndexByConnectionEvent(connectionEvent);
-    if (connectionIndex >= 0) {
-      this.connectionSelected$.next(this.currentLayer.connections[connectionIndex]);
-    }
-  }
 
   public findConnection(outputNodeId: string, inputNodeId: string,
                         outputPortName: string, inputPortName: string): PrWorkflowConnection {
@@ -314,11 +350,12 @@ export class PrWorkflow {
 
   //////////////////// OTHER ///////////////////////
 
+  private isDrawflowReady(): boolean {
+    return this.editor != null;
+  }
+
   public setMode(mode: PrWorkflowMode): void {
     this.mode = mode;
-
-    // use always edit mode
-    this.editor.editor_mode = 'edit';
   }
 
 
@@ -326,9 +363,23 @@ export class PrWorkflow {
     return this.workflowEvent$.asObservable();
   }
 
+  /**
+   * Method to cancel all drawflow information
+   */
+  public deInitDrawflow(): void {
+    this.editor?.clear();
+    this.editor = null;
+    for (const layer of this.layers) {
+      layer.deInitDrawflow();
+    }
+  }
+
   public destroy(): void {
-    this.connectionSelected$.complete();
+    this.deInitDrawflow();
     this.currentLayer$.complete();
     this.workflowEvent$.complete();
+    for (const layer of this.layers) {
+      layer.destroy();
+    }
   }
 }
