@@ -9,6 +9,7 @@ const flDateI18nFr: FlLangTranslation = {
   flDate: {
     created_by: 'Created by',
     last_modified_by: 'Last modified by',
+    last_sync_by: 'Dernière synchronisation par',
   }
 };
 
@@ -16,6 +17,7 @@ const flDateI18nEn: FlLangTranslation = {
   flDate: {
     created_by: 'Créé par',
     last_modified_by: 'Dernière modification par',
+    last_sync_by: 'Last synchronisation by',
   }
 };
 

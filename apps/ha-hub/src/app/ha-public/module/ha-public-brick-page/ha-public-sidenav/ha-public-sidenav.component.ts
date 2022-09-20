@@ -60,6 +60,8 @@ export class HaPublicSidenavComponent implements OnInit {
   menuOpen: boolean;
   openedMenu: FlOverlayRef;
 
+  trackByIdentity = (index: number, item: any) => item;
+
   private _transformer = (node: HaNode, level: number): any => {
     return {
       expandable: !!node.children,

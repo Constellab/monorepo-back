@@ -80,6 +80,7 @@ export abstract class PrWorkflowNodeProcessDirective extends PrWorkflowNodeDirec
     const element: HTMLElement = event.target as any;
 
     const classes: string[] = FlHtmlHelper.domTokenListToArray(element.classList);
+
     if (classes.includes('input')) {
       const inputName: string = classes.find((cls) => cls.startsWith('input_'));
       if (inputName == null) return;
@@ -103,17 +104,17 @@ export abstract class PrWorkflowNodeProcessDirective extends PrWorkflowNodeDirec
   private onInputClick(port: PrWorkflowPort, element: Element): void {
     const menuDynamics: FlMenuDynamic[] = this.workflowManager.viewConfig.getInputMenu(port, this.node,
       this.workflowManager.getCurrentMode());
-    this.openPortPortal(port, menuDynamics, element);
+    this.openPortPortal(port, menuDynamics, element, true);
   }
 
   private onOutputClick(port: PrWorkflowPort, element: Element): void {
     const menuDynamics: FlMenuDynamic[] = this.workflowManager.viewConfig.getOutputMenu(port, this.node,
       this.workflowManager.getCurrentMode());
-    this.openPortPortal(port, menuDynamics, element);
+    this.openPortPortal(port, menuDynamics, element, false);
   }
 
   // open the portal for the input or output port
-  private openPortPortal(port: PrWorkflowPort, menuDynamics: FlMenuDynamic[], element: Element): void {
+  private openPortPortal(port: PrWorkflowPort, menuDynamics: FlMenuDynamic[], element: Element, isInput: boolean): void {
     const data: PrWorkflowPortActionPortalInput = {
       port: port,
       menuDynamics: menuDynamics

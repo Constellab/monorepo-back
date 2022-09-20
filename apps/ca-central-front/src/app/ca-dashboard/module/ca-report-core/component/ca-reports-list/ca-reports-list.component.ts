@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CaReport} from '../../../../../ca-core/model/entities/ca-report.class';
-import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
+import {FlTableColumn} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'ca-reports-list',
@@ -12,15 +12,12 @@ import {CaRouterService} from '../../../../../ca-core/service/ca-router.service'
 export class CaReportsListComponent implements OnInit {
 
   @Input() reports$: Observable<CaReport[]>;
+  columns: FlTableColumn<CaReport>[] = ['title', 'lastSync', 'status'];
 
   constructor() {
   }
 
   ngOnInit(): void {
-  }
-
-  getReportLink(report: CaReport): string {
-    return CaRouterService.getReportDetailRoute(report.projectId, report.id);
   }
 
 }

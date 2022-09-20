@@ -45,6 +45,7 @@
   "description": "Description",
   "no_description": "Aucune description",
   "status": "Statut",
+  "lastSync": "Dernière synchronisation",
   "same_status_error": "Le statut n'a pas changé",
   "update_status": "Modifier le status",
   "status_updated": "Statut modifié",
@@ -136,5 +137,7 @@
   "no_technical_report": "Aucun rapport technique",
   "list": "Liste",
   "protocol": "Protocole",
-  "node_process_name": "Processus"
+  "node_process_name": "Processus",
+  "config": "Configuration",
+  "detail": "Détail"
 }

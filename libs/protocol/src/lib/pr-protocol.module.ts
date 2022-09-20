@@ -36,6 +36,10 @@ import {
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {PrWorkflowNodeViewerComponent} from './component/pr-workflow-node-viewer/pr-workflow-node-viewer.component';
+import {
+  PrWorkflowProcessConfigInfoDialogComponent
+} from './component/pr-workflow-process-config-info-dialog/pr-workflow-process-config-info-dialog.component';
+import {MatTableModule} from '@angular/material/table';
 
 
 @NgModule({
@@ -59,6 +63,7 @@ import {PrWorkflowNodeViewerComponent} from './component/pr-workflow-node-viewer
     FlIconModule,
 
     TdTechnicalDocModule,
+    MatTableModule,
   ],
   exports: [
     PrWorkflowComponent
@@ -72,6 +77,7 @@ import {PrWorkflowNodeViewerComponent} from './component/pr-workflow-node-viewer
     PrWorkflowLayersBreadcrumbComponent,
     PrWorkflowPortActionPortalComponent,
     PrWorkflowNodeViewerComponent,
+    PrWorkflowProcessConfigInfoDialogComponent
   ]
 })
 export class PrProtocolModule {

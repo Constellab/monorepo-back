@@ -1,0 +1,69 @@
+<mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
+  <!-- Title -->
+  <ng-container matColumnDef="title">
+    <mat-header-cell *matHeaderCellDef class="g-cell-header-with-left-border">
+      <span> {{'title' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let experiment" class="g-cell-with-left-border"
+              [style.borderLeftColor]="experiment.project?.id | flStringToRgb">
+      <div>
+        <div>{{experiment.title}}</div>
+        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="experiment.project"
+                      gap="0">
+          <mat-icon flIcon="project" class="g-icon-tiny"></mat-icon>
+          {{experiment.project.title}}
+        </fl-text-icon>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- LastSync -->
+  <ng-container matColumnDef="lastSync">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'last_sync' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let experiment">
+      <div>
+        <fl-last-sync-info [lastSyncAt]="experiment.lastSyncAt" [lastSyncBy]="experiment.lastSyncBy?.fullname">
+        </fl-last-sync-info>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Status -->
+  <ng-container matColumnDef="status">
+    <mat-header-cell *matHeaderCellDef>
+      <span>{{'status' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let experiment">
+      <mat-icon *ngIf="experiment.isValidated"
+                [matTooltip]="'experiment_validated' | translate"
+                class="verified-icon" flIcon="validated">
+      </mat-icon>
+
+      <fl-status-chip [status]="experiment.status" mode="iconText">
+      </fl-status-chip>
+    </mat-cell>
+  </ng-container>
+
+
+
+  <!-- Dynamic columns -->
+  <ng-container *ngFor="let column of dynamicColumns" [matColumnDef]="column.accessor">
+    <mat-header-cell *matHeaderCellDef>
+      {{column.columnName | translate}}
+    </mat-header-cell>
+    <mat-cell *matCellDef="let experiment">
+      <div>
+        <span>{{experiment[column.accessor]}}</span>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+
+  <mat-header-row *matHeaderRowDef="_columns; sticky: true"></mat-header-row>
+
+  <mat-row *matRowDef="let row; columns: _columns;" class="g-table-row-selectable"
+           [routerLink]="getExperimentRoute(row)">
+  </mat-row>
+</mat-table>

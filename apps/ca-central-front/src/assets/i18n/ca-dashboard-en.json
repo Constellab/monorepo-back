@@ -52,6 +52,7 @@
   "configuration_data": "Configuration's data",
   "experiment_validated": "Validated experiment",
   "report_validated": "Validated report",
+  "last_sync": "Last synchronisation",
   "last_sync_info": "Last sync {{date}} by {{user}}",
   "validation_info": "Validated on {{date}} by {{user}}"
 }

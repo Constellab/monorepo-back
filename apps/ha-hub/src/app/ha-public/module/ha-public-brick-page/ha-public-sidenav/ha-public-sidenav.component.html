@@ -11,7 +11,7 @@
 
       <mat-tree *ngIf="dataSource$ | async" [dataSource]="dataSource$ | async" [treeControl]="treeControl"
                 class="tree item g-full-height g-drag-anim-order"
-                cdkDropList (cdkDropListDropped)="drop($event)">
+                cdkDropList (cdkDropListDropped)="drop($event)" [trackBy]="trackByIdentity">
         <!-- This is the tree node template for leaf nodes -->
         <mat-tree-node *matTreeNodeDef="let node" cdkDrag
                        [cdkDragDisabled]="(isAdmin | async) === false || node.name == null"

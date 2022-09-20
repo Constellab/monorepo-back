@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CaExperiment} from '../../../../../ca-core/model/entities/ca-experiment.class';
 import {Observable} from 'rxjs';
-import {CaRouterService} from '../../../../../ca-core/service/ca-router.service';
+import {FlTableColumn} from '@monorepo/front-core-lib';
 
 /**
  * In the project detail page, show the list of experiments
@@ -14,14 +14,12 @@ import {CaRouterService} from '../../../../../ca-core/service/ca-router.service'
 export class CaExperimentsListComponent implements OnInit {
 
   @Input() experiments$: Observable<CaExperiment[]>;
+  experiment: CaExperiment;
+  columns: FlTableColumn<CaExperiment>[] = ['title', 'lastSync', 'status'];
 
   constructor() {
   }
 
   ngOnInit(): void {
-  }
-
-  getExperimentRoute(experiment: CaExperiment): string {
-    return CaRouterService.getExperimentDetailRoute(experiment.projectId, experiment.id);
   }
 }

@@ -5,6 +5,8 @@ import {CaCoreModule} from '../../../ca-core/ca-core.module';
 import {CaReportsListComponent} from './component/ca-reports-list/ca-reports-list.component';
 import {RouterModule} from '@angular/router';
 import {CaReportContentViewComponent} from './component/ca-report-content-view/ca-report-content-view.component';
+import {CaReportTableComponent} from './component/ca-report-table/ca-report-table.component';
+import {FlColorModule} from "@monorepo/front-core-lib";
 
 /**
  * Core module for Report entity
@@ -14,6 +16,7 @@ import {CaReportContentViewComponent} from './component/ca-report-content-view/c
     CaReportCardComponent,
     CaReportsListComponent,
     CaReportContentViewComponent,
+    CaReportTableComponent,
   ],
   exports: [
     CaReportCardComponent,
@@ -25,6 +28,7 @@ import {CaReportContentViewComponent} from './component/ca-report-content-view/c
     RouterModule,
 
     CaCoreModule,
+    FlColorModule,
   ]
 })
 export class CaReportCoreModule {

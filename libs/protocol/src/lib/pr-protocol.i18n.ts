@@ -22,6 +22,9 @@ const prProtocolI18nFr: FlLangTranslation = {
     deleting_outerface: "Suppression de l'outerface '{{name}}'",
     adding_connection: "Ajout de la connexion",
     deleting_connection: "Suppression de la connexion",
+    human_name: "Nom humain",
+    short_description: "Brève description",
+    default_value: "Valeur par défaut"
   }
 };
 
@@ -42,6 +45,9 @@ const prProtocolI18nEn: FlLangTranslation = {
     deleting_outerface: "Deleting outerface '{{name}}'",
     adding_connection: "Adding connection",
     deleting_connection: "Deleting connection",
+    human_name: "Human name",
+    short_description: "Short description",
+    default_value: "Default value"
   }
 };
 

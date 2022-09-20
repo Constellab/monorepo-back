@@ -11,6 +11,7 @@ export interface TdProcessType extends TdTypeEntity {
 }
 
 export interface TdIOSpec {
+
   resource_types: TdResourceTypeDTO[];
 
   human_name: string;

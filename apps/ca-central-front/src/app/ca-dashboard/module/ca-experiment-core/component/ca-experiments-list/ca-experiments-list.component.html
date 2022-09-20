@@ -9,17 +9,7 @@
   <fl-card-body>
     <fl-async-section [object]="experiments$" emptyText="no_experiment">
       <ng-container *flSectionBody="let experiments">
-        <mat-nav-list>
-          <ng-container *ngFor="let experiment of experiments">
-            <a mat-list-item class="g-full g-full-height"
-               [routerLink]=" getExperimentRoute(experiment)">
-              <mat-icon mat-list-icon flIcon="validated" [matTooltip]="'experiment_validated' | translate"
-                        class="validated-icon" *ngIf="experiment.isValidated"></mat-icon>
-              {{ experiment.title }}
-            </a>
-            <mat-divider></mat-divider>
-          </ng-container>
-        </mat-nav-list>
+        <ca-experiment-table [datasource]="experiments" [columns]="columns"></ca-experiment-table>
       </ng-container>
     </fl-async-section>
 

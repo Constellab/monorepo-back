@@ -30,7 +30,17 @@ import {
 import {TdTechnicalDocModule} from "@monorepo/technical-doc";
 import {MatTabsModule} from "@angular/material/tabs";
 import {CaDashboardCoreModule} from "../ca-dashboard-core/ca-dashboard-core.module";
-import { CaExperimentTechnicalReportWorkflowDrawerComponent } from './component/ca-experiment-technical-report-workflow-drawer/ca-experiment-technical-report-workflow-drawer.component';
+import {
+  CaExperimentTechnicalReportWorkflowDrawerComponent
+} from './component/ca-experiment-technical-report-workflow-drawer/ca-experiment-technical-report-workflow-drawer.component';
+import {
+  CaExperimentTechnicalReportResourceDialogComponent
+} from './component/ca-experiment-technical-report-resource-dialog/ca-experiment-technical-report-resource-dialog.component';
+import {
+  CaExperimentTechnicalReportResourceInfoComponent
+} from './component/ca-experiment-technical-report-resource-info/ca-experiment-technical-report-resource-info.component';
+import {FlColorModule, FlDragModule} from '@monorepo/front-core-lib';
+import {CaExperimentTableComponent} from './component/ca-experiment-table/ca-experiment-table.component';
 
 
 @NgModule({
@@ -45,6 +55,9 @@ import { CaExperimentTechnicalReportWorkflowDrawerComponent } from './component/
     CaExperimentTechnicalReportIntOutComponent,
     CaExperimentTechnicalReportProcessDocDialogComponent,
     CaExperimentTechnicalReportWorkflowDrawerComponent,
+    CaExperimentTechnicalReportResourceDialogComponent,
+    CaExperimentTechnicalReportResourceInfoComponent,
+    CaExperimentTableComponent
   ],
   exports: [
     CaExperimentInfoComponent,
@@ -61,7 +74,9 @@ import { CaExperimentTechnicalReportWorkflowDrawerComponent } from './component/
     CaLabCoreModule,
     TdTechnicalDocModule,
     MatTabsModule,
-    CaDashboardCoreModule
+    CaDashboardCoreModule,
+    FlColorModule,
+    FlDragModule
   ]
 })
 export class CaExperimentCoreModule {

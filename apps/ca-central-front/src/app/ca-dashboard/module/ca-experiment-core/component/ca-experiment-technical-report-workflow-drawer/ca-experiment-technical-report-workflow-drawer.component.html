@@ -16,8 +16,23 @@
 
   <div fxFlex="auto">
 
-    <div class="g-text-light">
-      <p>{{'node_process_name' | translate}} : {{nodeSelected.currentObject.instanceName}}</p>
+    <div *ngIf="nodeSelected.getObject$() | async as object">
+      <fl-key-value class="kv">
+        <fl-key>{{'node_process_name' | translate}}</fl-key>
+        {{nodeSelected.currentObject.instanceName}}
+      </fl-key-value>
+
+      <fl-key-value *ngIf="object.config" class="kv">
+        <fl-key>
+            {{'config' | translate}}
+        </fl-key>
+        <fl-pretty-json [object]="object.config" [dense]="true"></fl-pretty-json>
+        <button mat-stroked-button type="button"
+                (click)="openConfigInfo(object.config)" class="g-button-small">
+          <mat-icon>info</mat-icon>
+          <span>{{'detail' | translate}}</span>
+        </button>
+      </fl-key-value>
 
 
       <!--          <button mat-stroked-button type="button" class="g-button-small doc-button"-->

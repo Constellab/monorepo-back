@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {PrWorkflowNodeProcess} from '@monorepo/protocol';
+import {PrConfig, PrWorkflowNodeProcess, PrWorkflowProcessConfigInfoDialogComponent} from '@monorepo/protocol';
+import {FlDialogService} from '@monorepo/front-core-lib';
 
 @Component({
   selector: 'ca-experiment-technical-report-workflow-drawer',
@@ -11,10 +12,14 @@ export class CaExperimentTechnicalReportWorkflowDrawerComponent implements OnIni
 
   @Input() nodeSelected$: Observable<PrWorkflowNodeProcess>;
 
-  constructor() {
+  constructor(private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
   }
 
+
+  openConfigInfo(config: PrConfig): void{
+    this.dialogService.openMediumDialog(PrWorkflowProcessConfigInfoDialogComponent, {data: config})
+  }
 }

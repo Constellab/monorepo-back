@@ -45,6 +45,7 @@
   "description": "Description",
   "no_description": "No description",
   "status": "Status",
+  "lastSync": "Last synchronisation",
   "same_status_error": "The status has not changed",
   "update_status": "Update status",
   "status_updated": "Status updated",
@@ -136,5 +137,7 @@
   "no_technical_report": "No technical report",
   "list": "List",
   "protocol": "Protocol",
-  "node_process_name": "Process"
+  "node_process_name": "Process",
+  "config": "Config",
+  "detail": "Detail"
 }

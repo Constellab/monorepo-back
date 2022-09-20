@@ -40,6 +40,7 @@ export * from './lib/component/pr-workflow-node-interface/pr-workflow-node-inter
 export * from './lib/component/pr-workflow-layers-breadcrumb/pr-workflow-layers-breadcrumb.component';
 export * from './lib/component/pr-workflow-node-viewer/pr-workflow-node-viewer.component';
 export * from './lib/component/pr-workflow-port-action-portal/pr-workflow-port-action-portal.component';
+export * from './lib/component/pr-workflow-process-config-info-dialog/pr-workflow-process-config-info-dialog.component';
 
 // directive
 export * from './lib/directive/pr-workflow-node-process.directive';

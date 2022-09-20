@@ -29,6 +29,7 @@ export class PrWorkflowPortActionPortalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
   }
 
   closePortal(): void {
