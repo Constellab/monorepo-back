@@ -55,6 +55,11 @@ export class CnExperimentDTO extends CnBaseEntityDTO {
 
   isValidated: boolean;
 
+  lastSyncBy?: string;
+
+  @ClLuxonDateTimeTransform()
+  lastSyncAt?: DateTime;
+
 
   copyEntity(entity: CnExperiment): this {
     super.copyEntity(entity);
@@ -62,6 +67,8 @@ export class CnExperimentDTO extends CnBaseEntityDTO {
     this.projectId = entity.projectId;
     this.status = entity.status;
     this.isValidated = entity.isValidated;
+    this.lastSyncAt = entity.lastSyncAt;
+    this.lastSyncBy = entity.lastSyncBy?.id;
     return this;
   }
 }
