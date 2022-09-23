@@ -3,6 +3,8 @@ import {HaBrickVersion} from '../../../../ha-core/ha-model/ha-entities/ha-brick-
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {HaBrickVersionReferenceState, HaReferenceDTO} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
 import {HaBrickVersionService} from '../../../../ha-core/ha-service/ha-brick-version.service';
+import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ha-public-brick-version-detail-dialog',
@@ -23,7 +25,8 @@ export class HaPublicBrickVersionDetailDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA)
     private input: HaBrickVersion,
-    private brickVersionService: HaBrickVersionService
+    private brickVersionService: HaBrickVersionService,
+    private authUserService: HaAuthenticatedUserService
   ) {
   }
 
@@ -37,6 +40,10 @@ export class HaPublicBrickVersionDetailDialogComponent implements OnInit {
         console.log(this.directReferences, this.indirectReferences)
       }
     });
+  }
+
+  isAdmin$(): Observable<boolean>{
+    return this.authUserService.isAdmin();
   }
 
 

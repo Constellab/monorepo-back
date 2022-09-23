@@ -30,7 +30,7 @@
   </fl-key-value>
 </div>
 
-<div *ngIf="bv.technicalInfo | flIsNotEmpty">
+<div *ngIf="(bv.technicalInfo | flIsNotEmpty) && (isAdmin$() | async)">
   <fl-key-value>
     <fl-key>{{'technical_information' | translate}}</fl-key>
     <div *ngFor="let tI of bv.technicalInfo | flObjectKeys" class="tab-left">

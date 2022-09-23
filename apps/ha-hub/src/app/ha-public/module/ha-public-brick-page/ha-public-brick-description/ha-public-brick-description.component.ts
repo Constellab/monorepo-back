@@ -8,6 +8,8 @@ import {FlDialogService, FlFormDialogInput} from '@monorepo/front-core-lib';
 import {HaPublicEditBrickDialogComponent} from '../ha-public-edit-brick-dialog/ha-public-edit-brick-dialog.component';
 import {HaReferenceDTO} from '../../../../ha-core/ha-model/ha-entities/ha-version.class';
 import {HaBrickVersionService} from '../../../../ha-core/ha-service/ha-brick-version.service';
+import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'ha-public-brick-description-page',
@@ -26,6 +28,7 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
     private brickService: HaBrickService,
     private brickVersionService: HaBrickVersionService,
     private dialogService: FlDialogService,
+    private authUserService: HaAuthenticatedUserService
   ) {
   }
 
@@ -79,5 +82,9 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
         }
       }
     );
+  }
+
+  isAdmin$(): Observable<boolean>{
+    return this.authUserService.isAdmin()
   }
 }
