@@ -1,10 +1,6 @@
 <div class="user-icon" [style.height]="size+'em'" [style.width]="size+'em'"
-     [style.line-height]="size+'em'" [style.font-size]="fontSize+'em'" *ngIf="user.photo == null">
-  {{ initials }}
-</div>
-
-<div class="user-icon" [style.height]="size+'em'" [style.width]="size+'em'"
-     [style.line-height]="size+'em'" [style.font-size]="fontSize+'em'" *ngIf="user.photo">
-  <img [src]="getPhotoLink()" class="user-icon-image"/>
+     [style.line-height]="size+'em'" [style.font-size]="fontSize+'em'">
+  <img [src]="imgSrc" class="user-icon-image" *ngIf="hasPhoto$ | async"/>
+  <span>{{ initials }}</span>
 </div>
 
