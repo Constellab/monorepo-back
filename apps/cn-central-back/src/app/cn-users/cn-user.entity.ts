@@ -5,7 +5,7 @@ import * as argon2 from 'argon2';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
-import {BlEntityWithId, BlLuxonDateTimeColumn, BlUser} from '@monorepo/back-core-lib';
+import {BlEntityWithId, BlFile, BlLuxonDateTimeColumn, BlUser} from '@monorepo/back-core-lib';
 import {CnOrganization} from '../cn-organizations/cn-organization.entity';
 
 
@@ -65,6 +65,9 @@ export class CnUser extends BlEntityWithId implements BlUser {
   @Column({nullable: true})
   organizationId: string;
 
+  @Column({nullable: true})
+  photo: string
+
   //////////////////// TRANSIENT METHODS //////////////////
 
   @BeforeInsert()
@@ -102,4 +105,9 @@ export class CnUser extends BlEntityWithId implements BlUser {
   hasOrganization(): boolean {
     return this.organizationId != null;
   }
+}
+
+export class CnUserEditDTO{
+  userInfo: Partial<CnUser>;
+  userNewPhoto: File;
 }

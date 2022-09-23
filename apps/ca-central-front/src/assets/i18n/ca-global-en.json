@@ -16,6 +16,7 @@
   "connection_lost": "The connection has been lost",
   "session_expired": "Session expired",
   "dashboard": "Dashboard",
+  "profile": "Profile",
   "settings": "Settings",
   "theme": "Theme",
   "light": "Light",
@@ -115,6 +116,7 @@
   "organization_remove_user_confirmation": "Are you sure you want to remove this user from the organization ? He will not be able to access organization's objects",
   "organization_user_removed": "User removed from organization",
   "group": "Group",
+  "team": "Team",
   "no_team": "No team",
   "my_teams": "My teams",
   "create_team": "Create team",
@@ -139,5 +141,6 @@
   "protocol": "Protocol",
   "node_process_name": "Process",
   "config": "Config",
-  "detail": "Detail"
+  "detail": "Detail",
+  "edit_user_success": "User edited"
 }

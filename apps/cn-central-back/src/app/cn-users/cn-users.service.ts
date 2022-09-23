@@ -1,17 +1,21 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {CnUser} from './cn-user.entity';
+import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {Repository} from 'typeorm';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {clLangIsSupported, ClPage, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
-import {BlAbstractService, BlUserService} from '@monorepo/back-core-lib';
+import {BlAbstractService, BlFile, BlObjectStorageService, BlUserService} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
+import {IncomingMessage} from 'http';
+import {CnCoreConfigService} from '../cn-core/modules/cn-core-config/cn-core-config.service';
 
 @Injectable()
 export class CnUsersService extends BlAbstractService<CnUser> implements BlUserService {
 
   constructor(
-    @InjectRepository(CnUser) private repository: Repository<CnUser>) {
+    @InjectRepository(CnUser) private repository: Repository<CnUser>,
+    private objectStorageService: BlObjectStorageService,
+    private configService: CnCoreConfigService) {
     super(repository, CnUser);
   }
 
@@ -83,5 +87,44 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
         }
       }
     );
+  }
+
+  async editUser(userEdit: CnUserEditDTO): Promise<CnUser>{
+    const user: CnUser = await this.repository.findOne(userEdit.userInfo.id);
+    if(userEdit.userNewPhoto){
+      console.log(userEdit.userNewPhoto);
+      //user = await this.saveNewPhoto(userEdit.userNewPhoto, user);
+    }
+    return this.repository.save(user);
+  }
+
+  async saveNewPhoto(file: BlFile, userId: string): Promise<CnUser> {
+    const user: CnUser = await this.repository.findOne(userId);
+    const newPhoto: string =
+      await this.objectStorageService.uploadObject(file, this.getUserProfilePictureBucket(), true);
+    if(user.photo && newPhoto) {
+      const lastPhoto: string = user.photo;
+      await this.objectStorageService.deleteObject(lastPhoto, this.getUserProfilePictureBucket());
+    }
+    user.photo = newPhoto;
+    return await this.repository.save(user);
+  }
+
+  async deleteCurrentPhoto(userId: string): Promise<void>{
+    const user: CnUser = await this.repository.findOne(userId);
+    if(user.photo){
+      await this.objectStorageService.deleteObject(user.photo, this.getUserProfilePictureBucket());
+      user.photo = null;
+      await this.repository.save(user);
+    }
+  }
+
+  async getUserPhoto(userId: string): Promise<IncomingMessage> {
+    const user: CnUser = await this.repository.findOne(userId);
+    return this.objectStorageService.getObject(user.photo, this.getUserProfilePictureBucket());
+  }
+
+  private getUserProfilePictureBucket(): string {
+    return this.configService.getUserProfilePictureObjectStorageBucket();
   }
 }

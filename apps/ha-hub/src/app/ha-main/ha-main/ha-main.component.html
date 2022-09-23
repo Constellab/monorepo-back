@@ -16,8 +16,7 @@
     {{'login' | translate}}
   </button>
   <span class="g-centered-forced span-initials" [matMenuTriggerFor]="userMenu" *ngIf="userConnected$ | async as user">
-    <fl-user-profile-picture [firstName]="user.firstname"
-                             [lastName]="user.lastname">
+    <fl-user-profile-picture [user]="user">
     </fl-user-profile-picture></span>
   <mat-menu #userMenu="matMenu">
     <button mat-menu-item [routerLink]="'../admin'">{{'admin_dashboard' | translate}}</button>
@@ -41,8 +40,7 @@
     {{'login' | translate}}
   </button>
   <span class="g-centered-forced span-initials" [matMenuTriggerFor]="userMenu" *ngIf="userConnected$ | async as user">
-    <fl-user-profile-picture [firstName]="user.firstname"
-                             [lastName]="user.lastname">
+    <fl-user-profile-picture [user]="user">
     </fl-user-profile-picture></span>
   <mat-menu #userMenu="matMenu">
     <button mat-menu-item [routerLink]="'../admin'">{{'admin_dashboard' | translate}}</button>

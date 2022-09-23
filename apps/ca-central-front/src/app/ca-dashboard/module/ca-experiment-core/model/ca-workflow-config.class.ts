@@ -1,8 +1,18 @@
 import {PrConfigView, PrWorkflowMode, PrWorkflowNodeProcess, PrWorkflowPort} from '@monorepo/protocol';
 import {FlMenuDynamicButton} from '@monorepo/front-core-lib';
 import {ClHelpService} from '@monorepo/core-lib';
+import {CaLabInstanceService} from '../../../../ca-core/service-api/ca-lab-instance.service';
 
 export class CaWorkflowConfig extends PrConfigView {
+
+  constructor(
+    private labInstanceId: string,
+    private labInstanceService: CaLabInstanceService
+  ) {
+    super();
+  }
+
+
 
   getInputMenu(port: PrWorkflowPort, node: PrWorkflowNodeProcess,
                workflowMode: PrWorkflowMode): FlMenuDynamicButton[] {
@@ -33,7 +43,14 @@ export class CaWorkflowConfig extends PrConfigView {
   }
 
   private openResourceDetail(resourceId: string): void {
-    
+    this.labInstanceService.logUserToLab(this.labInstanceId).subscribe(
+      result => this.loginSuccess(result.url, resourceId)
+    );
+  }
+
+  private loginSuccess(url: string, resourceId: string): void{
+    // redirect to the lab resource page url
+    window.location.href = url + '/app/databox/resource/' + resourceId;
   }
 
 }

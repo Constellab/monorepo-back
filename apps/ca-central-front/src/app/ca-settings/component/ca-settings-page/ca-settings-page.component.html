@@ -1,11 +1,14 @@
 <div class="g-page">
 
-  <h1 class="g-page-title">{{'settings' | translate}}</h1>
+  <h1 class="g-page-title">{{'profile' | translate}}</h1>
+
+  <ca-user-profile-section></ca-user-profile-section>
+
+  <h1 class="g-page-title g-section">{{'settings' | translate}}</h1>
 
   <ca-theme-selection></ca-theme-selection>
 
   <ca-language-selection class="g-section"></ca-language-selection>
-
 
   <div class="g-section">
     <button mat-flat-button type="button" color="warn" (click)="logout()">

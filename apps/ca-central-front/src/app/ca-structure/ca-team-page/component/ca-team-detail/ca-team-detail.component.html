@@ -1,6 +1,11 @@
 <fl-card>
   <fl-card-header>
-    <h1>{{team.label}}</h1>
+    <h1>
+      <fl-key-value>
+        <fl-key>{{'team' | translate}}</fl-key>{{team.label}}
+      </fl-key-value>
+
+    </h1>
 
     <fl-card-actions>
       <button mat-icon-button type="button" (click)="openUpdateDialog()"

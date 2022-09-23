@@ -16,8 +16,20 @@ export class CaUsersService {
   constructor(private apiService: FlApiService) {
   }
 
+  public getUserPhoto(userId: string): string{
+    return this.apiService.getBaseRouteUrl(`${this.route}/photo/${userId}`);
+  }
+
   public findAll(): Observable<CaUser[]> {
     return this.apiService.get(this.route, CaUser);
   }
+
+  public editUser(newUserInfo: Partial<CaUser>, newUserPhoto: File): Observable<CaUser>{
+    const formData = new FormData();
+    formData.append('photo', newUserPhoto);
+    return this.apiService.put(this.route + '/new-photo/' + newUserInfo.id, formData);
+  }
+
+
 
 }

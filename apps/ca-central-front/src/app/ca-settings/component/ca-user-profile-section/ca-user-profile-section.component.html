@@ -1,0 +1,19 @@
+<div fxLayout="row" class="profile">
+  <fl-user-profile-picture [user]="user" [size]="6">
+  </fl-user-profile-picture>
+  <div class="user-info">
+    <fl-key-value>
+      <fl-key class="k">{{'name' | translate}}</fl-key>
+      {{user.fullname}}
+    </fl-key-value>
+    <fl-key-value>
+      <fl-key class="k">{{'email' | translate}}</fl-key>
+      {{user.email}}
+    </fl-key-value>
+  </div>
+  <div class="edit-profile">
+    <button mat-stroked-button type="button" (click)="openEditProfileDialog()">{{'edit' | translate}}</button>
+  </div>
+</div>
+
+

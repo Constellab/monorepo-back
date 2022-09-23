@@ -31,6 +31,7 @@ import {CaWorkflowConfig} from '../../model/ca-workflow-config.class';
 import {ClStringHelper} from '@monorepo/core-lib';
 import {TdTypingName} from '@monorepo/technical-doc';
 import {map} from 'rxjs/operators';
+import {CaLabInstanceService} from '../../../../../ca-core/service-api/ca-lab-instance.service';
 
 @Component({
   selector: 'ca-experiment-technical-report',
@@ -56,6 +57,7 @@ export class CaExperimentTechnicalReportComponent implements OnInit, OnDestroy {
   constructor(private experimentService: CaExperimentService,
               private dialogService: FlDialogService,
               private actionState: PrWorkflowActionState,
+              private labInstanceService: CaLabInstanceService,
               private ngZone: NgZone) {
   }
 
@@ -65,7 +67,7 @@ export class CaExperimentTechnicalReportComponent implements OnInit, OnDestroy {
       this.workflow = this.technicalReportToWorkflow(res.data.graph, ClStringHelper.generateUUID());
     });
 
-    this.workflowConfig = new CaWorkflowConfig();
+    this.workflowConfig = new CaWorkflowConfig(this.experiment.labInstance.id, this.labInstanceService);
     this.actionState.init();
 
 

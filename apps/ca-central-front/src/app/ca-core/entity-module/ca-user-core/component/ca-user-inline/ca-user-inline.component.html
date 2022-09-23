@@ -1,6 +1,6 @@
 <div fxLayout="row" fxLayoutAlign="start center"
      fxLayoutGap="0.4em">
-  <fl-user-profile-picture [firstName]="user.firstname" [lastName]="user.lastname"
+  <fl-user-profile-picture [user]="user"
                            class="person-picture"></fl-user-profile-picture>
 
   <div class="g-text-small" *ngIf="showName">

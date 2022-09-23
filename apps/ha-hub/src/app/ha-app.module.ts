@@ -16,7 +16,7 @@ import {
   FlTextEditorModule,
   FlTextEditorVideoBlot,
   FlTextEditorVideoComponent,
-  FlTranslateModule
+  FlTranslateModule, FlUserModule
 } from '@monorepo/front-core-lib';
 import {HaApiServiceConfig} from './ha-core/ha-model/ha-config/ha-api-module.config';
 import {HaApiErrorService} from './ha-core/ha-model/ha-config/ha-api-error.service';
@@ -28,6 +28,7 @@ import {HaAuthService} from './ha-core/ha-service/ha-auth.service';
 import {HaAuthenticatedUserService} from './ha-core/ha-service/ha-authenticated-user.service';
 import {TdTechnicalDocModule} from '@monorepo/technical-doc';
 import {HaTdServiceConfig} from './ha-core/ha-model/ha-config/ha-td-service.config';
+import {HaUserConfig} from './ha-core/ha-model/ha-config/ha-user-config.config';
 
 function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): () => void {
   return (): void => authenticatedUserService.init();
@@ -42,6 +43,8 @@ function loadUserOnInit(authenticatedUserService: HaAuthenticatedUserService): (
 
     HaAppRoutingModule,
     HaCoreModule,
+
+    FlUserModule.forRoot(HaUserConfig),
 
     FlApiModule.forRoot(HaApiServiceConfig, HaApiErrorService),
 

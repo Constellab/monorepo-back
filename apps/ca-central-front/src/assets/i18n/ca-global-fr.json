@@ -16,6 +16,7 @@
   "connection_lost": "La connexion a été perdue",
   "session_expired": "Session expirée",
   "dashboard": "Dashboard",
+  "profile": "Profile",
   "settings": "Paramètres",
   "theme": "Thème",
   "light": "Clair",
@@ -115,6 +116,7 @@
   "organization_remove_user_confirmation": "Êtes-vous sûr de vouloir retirer l'utilisateur de l'organisation ? Il ne pourra plus accéder aux objects de l'organisation",
   "organization_user_removed": "Utilisateur retirer de l'organisation",
   "group": "Groupe",
+  "team": "Équipe",
   "no_team": "Aucune équipe",
   "my_teams": "Mes équipes",
   "create_team": "Créer une équipe",
@@ -139,5 +141,6 @@
   "protocol": "Protocole",
   "node_process_name": "Processus",
   "config": "Configuration",
-  "detail": "Détail"
+  "detail": "Détail",
+  "edit_user_success": "Utilisateur modifié"
 }

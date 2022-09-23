@@ -1,4 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {FlUserConfig} from '../service/fl-user-config.config';
+
+export interface FlUserProfilePicture{
+  firstname: string;
+  lastname: string;
+  photo: string;
+  id: string;
+}
+
 
 @Component({
   selector: 'fl-user-profile-picture',
@@ -8,17 +17,24 @@ import {Component, Input, OnInit} from '@angular/core';
 export class FlUserProfilePictureComponent implements OnInit {
 
   @Input()
-  firstName: string;
+  user: FlUserProfilePicture;
 
   @Input()
-  lastName: string;
+  size: number = 3;
+
+  fontSize: number;
 
   initials: string;
 
-  constructor() { }
+  constructor(private userConfig: FlUserConfig) { }
 
   ngOnInit(): void {
-    this.initials = (this.firstName?.charAt(0) ?? '') + (this.lastName?.charAt(0) ?? '');
+    this.initials = (this.user.firstname?.charAt(0) ?? '') + (this.user.lastname?.charAt(0) ?? '');
+    this.fontSize = this.size/4;
+  }
+
+  getPhotoLink(): string{
+    return this.userConfig.getUserPhoto(this.user.id);
   }
 
 }

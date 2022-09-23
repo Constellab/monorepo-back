@@ -25,7 +25,7 @@ import {
   FlTextEditorFigureComponent,
   FlTextEditorModule,
   FlThemeService,
-  FlTranslateModule
+  FlTranslateModule, FlUserModule
 } from '@monorepo/front-core-lib';
 import {caSvgIcons} from './ca-core/model/config/ca-svg-icon-config';
 import {CaApiServiceConfig} from './ca-core/model/config/ca-api-module.config';
@@ -41,6 +41,7 @@ import {
 import {TdTechnicalDocModule} from '@monorepo/technical-doc';
 import {CaTdServiceConfig} from './ca-core/model/config/ca-td-service.config';
 import {PrProtocolModule} from '@monorepo/protocol';
+import {CaUserConfig} from './ca-core/model/config/ca-user-config.service';
 
 function loadThemeOnInit(themeService: FlThemeService): () => void {
   return (): void => themeService.init();
@@ -99,6 +100,9 @@ function checkSWWebsiteVersion(swService: FlServiceWorkerService): () => void {
           blot: CaReportContentViewBlot, componentType: CaReportContentViewComponent
         }]
     }),
+
+    FlUserModule.forRoot(CaUserConfig),
+
     RvResourceViewModule.forRoot({availableViews: rvDefaultViewTypeInfos}),
 
     TdTechnicalDocModule.forRoot(CaTdServiceConfig),

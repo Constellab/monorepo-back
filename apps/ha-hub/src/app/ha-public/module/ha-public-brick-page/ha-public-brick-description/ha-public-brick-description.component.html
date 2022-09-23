@@ -67,8 +67,7 @@
     </fl-key-value>
     <br>
     <div class="display-inline">
-      <fl-user-profile-picture [firstName]="brick.createdBy.firstname"
-                               [lastName]="brick.createdBy.lastname"></fl-user-profile-picture>
+      <fl-user-profile-picture [user]="brick.createdBy"></fl-user-profile-picture>
       <fl-creation-info [createdAt]="brick.createdAt" [createdBy]="brick.createdBy.fullname"
                         class="creator-info"></fl-creation-info>
     </div>

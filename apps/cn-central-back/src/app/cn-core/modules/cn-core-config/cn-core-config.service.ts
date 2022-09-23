@@ -137,5 +137,9 @@ export class CnCoreConfigService {
   public getLogPath(): string {
     return this.configService.get('LOG_PATH');
   }
+
+  public getUserProfilePictureObjectStorageBucket(): string {
+    return this.isProduction() ? 'constellab-user-profile-picture' : 'constellab-user-profile-picture';
+  }
 }
 

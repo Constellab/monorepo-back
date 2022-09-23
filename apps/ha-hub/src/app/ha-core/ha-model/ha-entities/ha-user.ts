@@ -11,6 +11,8 @@ export class HaUser implements FlEntity {
 
   email: string;
 
+  photo: string;
+
   @ClLuxonDateTimeTransform()
   createdAt: DateTime;
 
