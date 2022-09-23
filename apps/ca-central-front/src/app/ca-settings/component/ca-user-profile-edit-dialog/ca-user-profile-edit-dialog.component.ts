@@ -106,10 +106,11 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   activeInput(event: Event): void {
     const photoDiv: HTMLDivElement = event.currentTarget as HTMLDivElement;
     const inputPhoto: HTMLInputElement = photoDiv.querySelector('input');
-    this.editPhotoImgElement = photoDiv.querySelector('img');
-    this.currentImgLink = this.editPhotoImgElement.src;
+    if(this.user.photo){
+      this.editPhotoImgElement = photoDiv.querySelector('img');
+      this.currentImgLink = this.editPhotoImgElement.src;
+    }
     inputPhoto.click();
-
   }
 
   private compressBlob(blob: Blob): void {
