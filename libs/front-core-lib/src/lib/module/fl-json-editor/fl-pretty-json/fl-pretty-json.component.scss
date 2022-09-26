@@ -61,11 +61,11 @@ mat-tree-node {
 }
 
 .boolean {
-  color: #569cd6;
+  color: var(--warn-color);
 }
 
 .number {
-  color: #a0d982;
+  color: var(--primary-color);
 }
 
 .string {
