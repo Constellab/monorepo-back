@@ -165,7 +165,8 @@ export class FlBioNetworkHelper {
       }
     }
 
-    return clusters;
+    // set the default cluster at last position
+    return clusters.sort(cluster => cluster.clusterId === FlBioNetworkHelper.defaultClusterId ? 1 : -1);
   }
 
   /**
@@ -188,6 +189,8 @@ export class FlBioNetworkHelper {
 
       const metabolitesClusters = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
       for (const cluster of metabolitesClusters) {
+        // skip the default cluster
+        if(cluster.clusterId === FlBioNetworkHelper.defaultClusterId) continue;
 
         if (clusterCount[cluster.clusterId] == null) {
           clusterCount[cluster.clusterId] = 1;
@@ -210,7 +213,7 @@ export class FlBioNetworkHelper {
 
     // find the cluster with the most metabolites
     let maxCount = 0;
-    let maxClusterId = null;
+    let maxClusterId = FlBioNetworkHelper.defaultClusterId;
     for (const [key, value] of Object.entries(clusterCount)) {
       if (value > maxCount) {
         maxCount = value;

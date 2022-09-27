@@ -57,6 +57,9 @@ export class FlBioNetworkFactory {
     const reactionNodes: FlBioNetworkNodeReaction[] = [];
 
     for (const reaction of reactions) {
+      if(reaction.id === 'RHEA_23300_2_5_1_68'){
+        console.log('AAA')
+      }
 
       const reactionsClusters: FlBioNetworkClusterInfo[] = FlBioNetworkHelper.getReactionClusters(reaction, metabolites);
       const existsInMultipleCluster: boolean = reactionsClusters.length > 1;
