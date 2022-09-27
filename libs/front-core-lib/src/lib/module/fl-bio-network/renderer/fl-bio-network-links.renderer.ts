@@ -7,6 +7,7 @@ import {Observable} from 'rxjs';
 import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.class';
 import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
 import {FlBioNetworkLinkColorFunction, FlBioNetworkParticleColor} from '../model/fl-bio-network-particle-color.class';
+import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
 
 
 export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
@@ -91,25 +92,34 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
       // disable the particles
       this.graphRenderer.graph.linkDirectionalParticles(0);
     }
+
+    this.graphRenderer.graph.linkLineDash((link: FlBioNetworkLink) =>
+      link.type === 'cross-cluster-link' ? [5, 15] : null);
   }
 
-  protected updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[], showRelatedCofactor: boolean): void {
+  protected updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[],
+                             selectedNode: FlBioNetworkNode | null,
+                             showRelatedCofactor: boolean): void {
     const levelVisibility = this.getLevelVisibilityFunction(visibleLevels);
 
     let visibilityLink: (object: FlBioNetworkLink) => boolean;
 
     if (showRelatedCofactor) {
-      // show all links and links to cofactors if the cofactor parent reaction is selection
+      // show all links and links to cofactors if the cofactor parent reaction is selected
       visibilityLink = (link: FlBioNetworkLink) => {
         if (link.source instanceof FlBioNetworkNodeCofactor) {
           return link.source.showCofactor(visibleLevels);
         } else if (link.target instanceof FlBioNetworkNodeCofactor) {
           return link.target.showCofactor(visibleLevels);
+          // only show the cross cluster link for the selected node
+        } else if (selectedNode && link.type === 'cross-cluster-link') {
+          return link.target.id === selectedNode.id || link.source.id === selectedNode.id;
         }
         return levelVisibility(link);
       };
     } else {
-      visibilityLink = (object: FlBioNetworkLink) => object.isVisible && levelVisibility(object);
+      // only show the visible links of basic type
+      visibilityLink = (object: FlBioNetworkLink) => object.isVisible && object.type === 'link' && levelVisibility(object);
     }
 
     this.graphRenderer.graph.linkVisibility(visibilityLink);

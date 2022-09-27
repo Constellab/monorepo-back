@@ -58,6 +58,14 @@ export class FlBioNetworkGraph {
     return [...this.getAllNodes(), ...this.links];
   }
 
+  public getNormalLinks(): FlBioNetworkLink[] {
+    return this.links.filter(link => link.type === 'link');
+  }
+
+  public getCrossClusterLinks(): FlBioNetworkLink[] {
+    return this.links.filter(link => link.type === 'cross-cluster-link');
+  }
+
   // return the min and max value of all links
   public getLinksDomain(): [number, number] {
     let min: number = 0;

@@ -39,6 +39,8 @@ export class FlBioNetworkLinkPoint implements FlCoord {
   }
 }
 
+export type FlBioNetworkLinkType = 'link' | 'cofactor-link' | 'cross-cluster-link';
+
 
 export class FlBioNetworkLink extends FlBioNetworkGraphObject
   implements SimulationLinkDatum<FlBioNetworkNode> {
@@ -62,7 +64,8 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
 
   constructor(source: FlBioNetworkNode, target: FlBioNetworkNode,
               public reactionData: FlBioNetworkReactionData,
-              public defaultColor: string) {
+              public defaultColor: string,
+              public type: FlBioNetworkLinkType) {
     super();
     this.source = source;
     this.target = target;

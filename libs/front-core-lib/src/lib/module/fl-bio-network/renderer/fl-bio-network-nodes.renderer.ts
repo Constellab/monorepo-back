@@ -71,7 +71,9 @@ export class FlBioNetworkNodesRenderer extends FlBioNetworkObjectRenderer {
       this.nodePaint(node, ctx, colorFunc, options.showTexts));
   }
 
-  public updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[], showRelatedCofactor: boolean): void {
+  public updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[],
+                          selectedNode: FlBioNetworkNode | null,
+                          showRelatedCofactor: boolean): void {
     let visibilityNode: (object: FlBioNetworkGraphObject) => boolean;
 
     const levelVisibility = this.getLevelVisibilityFunction(visibleLevels);

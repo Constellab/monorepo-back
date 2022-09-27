@@ -3,8 +3,13 @@ import {FlBioNetworkOptions} from '../state/fl-bio-network-options.state';
 import {FlBioNetworkGraphRenderer} from './fl-bio-network-main.renderer';
 import {FlBioNetworkClusterSelection, FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
 import {FlBioNetworkGraphObject} from '../model/fl-bio-network-graph.class';
-import {FlBioNetworkSelectionEvent, FlBioNetworkSelectionMode} from '../model/fl-bio-network-selection.class';
+import {
+  FlBioNetworkSelectionEvent,
+  FlBioNetworkSelectionEventSingleNode,
+  FlBioNetworkSelectionMode
+} from '../model/fl-bio-network-selection.class';
 import {FlBioNetworkNodeReaction} from '../model/fl-bio-network-node-reaction.class';
+import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
 
 
 export type FlBioNetworkObjectColorFunction = (node: FlBioNetworkGraphObject) => string;
@@ -36,22 +41,29 @@ export abstract class FlBioNetworkObjectRenderer {
     const modeToShowCofactor: FlBioNetworkSelectionMode[] = ['singleNodeByClick', 'singleNode', 'multipleNodes'];
     const showRelatedCofactors = modeToShowCofactor.includes(selection.mode);
 
+    let selectedNodes: FlBioNetworkNode = null;
+    if(selection.mode === 'singleNode' || selection.mode === 'singleNodeByClick'){
+      selectedNodes = (selection as FlBioNetworkSelectionEventSingleNode).selectedNode;
+    }
+
     // when showing related cofactor, firstly we reset the cofactor position (useful for the live drawing mode)
-    if(showRelatedCofactors){
-      for(const node of selection.nodes){
-        if(node instanceof FlBioNetworkNodeReaction){
+    if (showRelatedCofactors) {
+      for (const node of selection.nodes) {
+        if (node instanceof FlBioNetworkNodeReaction) {
           node.setCofactorsPositions();
         }
       }
     }
 
-    this.updateVisibility(options.visibleLevels, showRelatedCofactors);
+    this.updateVisibility(options.visibleLevels, selectedNodes, showRelatedCofactors);
   }
 
 
   protected abstract updateObjectColors(options: FlBioNetworkOptions): void;
 
-  protected abstract updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[], showRelatedCofactor: boolean): void;
+  protected abstract updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[],
+                                      selectedNode: FlBioNetworkNode | null,
+                                      showRelatedCofactor: boolean): void;
 
 
   protected getClusterColorFunction(clusters: FlBioNetworkClusterSelection[])

@@ -76,6 +76,35 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     this.selection$.next({mode: 'multipleNodes', nodes: connectedNodes, links: links, selectedNodes: nodes});
   }
 
+  /**
+   * Select the nodes and direct links and hide all other node and links
+   */
+  public selectNode(node: FlBioNetworkNode, mode: 'singleNode' | 'singleNodeByClick'): void {
+    this.unselectAll();
+
+    node.selected = true;
+
+    this.selection$.next({mode: mode, nodes: [node], links: [], selectedNode: node});
+
+    // open the drawer with detail
+    this.drawerState.newAction({
+      action: 'nodeDetail',
+      selectedNode: node
+    });
+  }
+
+  public selectNodes(nodes: FlBioNetworkNode[]): void {
+    this.unselectAll();
+    if (nodes.length === 0) return;
+
+    for (const node of nodes) {
+      node.selected = true;
+    }
+
+    this.selection$.next({mode: 'multipleNodes', nodes: nodes, links: [], selectedNodes: nodes});
+  }
+
+
   public selectMetabolite(metaboliteId: string): void {
 
     // retrieve all the nodes that correspond to this metabolite
@@ -84,10 +113,10 @@ export class FlBioNetworkSelectionState implements OnDestroy {
     if (nodes.length === 0) {
       console.error(`No node found for metabolite ${metaboliteId}`);
     } else if (nodes.length === 1) {
-      this.selectNodeAndDirectLinks(nodes[0], 'singleNode');
+      this.selectNode(nodes[0], 'singleNode');
     } else {
       // select them
-      this.selectNodesAndDirectLinks(nodes);
+      this.selectNodes(nodes);
     }
   }
 

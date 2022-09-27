@@ -3,7 +3,6 @@ import {ForceManyBody, Simulation} from 'd3-force';
 import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
 import {ForceCenter, forceCenter, ForceLink, forceLink, forceManyBody, forceSimulation} from 'd3';
 import {FlBioNetworkGraph} from '../model/fl-bio-network-graph.class';
-import {FlBioNetworkMetaboliteLevel} from '../model/fl-bio-network.class';
 import {FlBioNetworkEngineConfig} from './fl-bio-network-engine.state';
 import {Observable, Subject} from 'rxjs';
 
@@ -55,7 +54,7 @@ export class FlBioNetworkSimulationState implements OnDestroy {
   }
 
   public getLinkForce(data: FlBioNetworkGraph, config: FlBioNetworkEngineConfig): ForceLink<any, any> {
-    return forceLink(data.links.filter(link => link.getLevel() !== FlBioNetworkMetaboliteLevel.COFACTOR)).distance(config.linkDistance);
+    return forceLink(data.getNormalLinks()).distance(config.linkDistance);
   }
 
   public getChargeForce(config: FlBioNetworkEngineConfig): ForceManyBody<any> {

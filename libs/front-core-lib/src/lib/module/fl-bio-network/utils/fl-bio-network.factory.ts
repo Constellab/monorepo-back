@@ -4,7 +4,6 @@ import {
   FlBioNetworkCompartment,
   FlBioNetworkMetabolite,
   FlBioNetworkReaction,
-  FlBioNetworkReactionData,
   FlPathwayDatabase
 } from '../model/fl-bio-network.class';
 import {FlBioNetworkHelper} from './fl-bio-network.helper';
@@ -12,9 +11,8 @@ import {FlBioNetworkNodeMetabolite} from '../model/fl-bio-network-node-metabolit
 import {FlBioNetworkGraph} from '../model/fl-bio-network-graph.class';
 import {FlBioNetworkNodeReaction} from '../model/fl-bio-network-node-reaction.class';
 import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
-import {FlBioNetworkLink} from '../model/fl-bio-network-node-link.class';
+import {FlBioNetworkLink, FlBioNetworkLinkType} from '../model/fl-bio-network-node-link.class';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
-import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 
@@ -60,22 +58,17 @@ export class FlBioNetworkFactory {
 
     for (const reaction of reactions) {
 
-      const reactionsClusters: FlBioNetworkClusterInfo[] = FlBioNetworkHelper.getReactionClusters(reaction, metabolites);
+      // todo need to handle the selected cluster
+      const reactionCluster: string = FlBioNetworkHelper.getReactionDefaultCluster(reaction, metabolites);
       const reactionPathways: string[] = FlBioNetworkHelper.getReactionPathwayId(reaction, pathwayDatabase);
 
-      for (const cluster of selectedCluster) {
-        const reactionCluster: FlBioNetworkClusterInfo = reactionsClusters.find(c => c.clusterId === cluster);
-
-        if (!reactionCluster) continue;
-
-        // add the reaction
-        const reactionNode = new FlBioNetworkNodeReaction(
-          reaction.name ? reaction.name : reaction.id,
-          reactionCluster,
-          this.themeDetail.greyHighContrast, this.themeDetail.foreground, reaction, reactionPathways
-        );
-        reactionNodes.push(reactionNode);
-      }
+      // add the reaction
+      const reactionNode = new FlBioNetworkNodeReaction(
+        reaction.name ? reaction.name : reaction.id,
+        reactionCluster,
+        this.themeDetail.greyHighContrast, this.themeDetail.foreground, reaction, reactionPathways
+      );
+      reactionNodes.push(reactionNode);
     }
 
     this.reactions = reactionNodes;
@@ -127,8 +120,6 @@ export class FlBioNetworkFactory {
   private initLinksAndCofactors(metabolites: FlBioNetworkMetabolite[]): void {
 
     for (const reactionNode of this.reactions) {
-
-      let find = false;
       for (const metaboliteId of Object.keys(reactionNode.data.metabolites)) {
 
         const metabolite: FlBioNetworkMetabolite = metabolites.find(metabolite => metabolite.id === metaboliteId);
@@ -138,51 +129,43 @@ export class FlBioNetworkFactory {
           continue;
         }
 
-
-        let metaboliteNode: FlBioNetworkNode;
-
         if (metabolite.is_cofactor) {
 
           // create the cofactor node (ignore its cluster)
-          metaboliteNode = this.createCofactor(metabolite);
-          reactionNode.addChildNode(metaboliteNode);
+          const cofactorNode = this.createCofactor(metabolite);
+          this.createLink(reactionNode, cofactorNode);
+          reactionNode.addChildNode(cofactorNode);
         } else {
-          metaboliteNode = this.metabolites.find(metabolite => metabolite.data.id === metaboliteId
-            && metabolite.cluster.clusterId === reactionNode.cluster.clusterId);
+          for (const metaboliteNode of this.metabolites.filter(metabolite => metabolite.data.id === metaboliteId)) {
+            this.createLink(reactionNode, metaboliteNode);
+          }
         }
-
-        if (metaboliteNode == null) {
-          // console.error(`Could find metabolite with id ${metaboliteId} and cluster ${reactionNode.clusterId}
-          //       used in reaction ${reactionNode.name}`);
-          continue;
-        }
-
-
-        // get the estimate with a default value if it doesn't exist
-        const reactionData: FlBioNetworkReactionData = FlBioNetworkHelper.getReactionData(reactionNode.data);
-        const reactionValue = reactionNode.data.metabolites[metaboliteId];
-
-        // right side of the link
-        // if the estimate is negative, the link is inverted
-        const simulation = FlBioNetworkHelper.getReactionFlux(reactionNode.data.data);
-        const estimateValue: number = (simulation && typeof simulation.value === 'number') ? simulation.value : 1;
-        if (reactionValue * estimateValue > 0) {
-          this.links.push(new FlBioNetworkLink(reactionNode, metaboliteNode,
-            reactionData, this.themeDetail.greyLowContrast));
-        }
-        // left side of the link
-        else {
-          this.links.push(new FlBioNetworkLink(metaboliteNode, reactionNode,
-            reactionData, this.themeDetail.greyLowContrast));
-        }
-
-        find = true;
-
       }
+    }
+  }
 
-      if (!find) {
-        console.log(reactionNode);
-      }
+  private createLink(reactionNode: FlBioNetworkNodeReaction, metaboliteNode: FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor): void {
+
+    let linkType: FlBioNetworkLinkType;
+
+    if (metaboliteNode instanceof FlBioNetworkNodeCofactor) {
+      linkType = 'cofactor-link';
+    } else {
+      linkType = metaboliteNode.cluster.clusterId === reactionNode.clusterId
+        ? 'link' : 'cross-cluster-link';
+    }
+
+    // if(linkType=== 'cross-cluster-link') return;
+
+    // is the metabolite is consumed, the link goes from the metabolite to the reaction
+    if (FlBioNetworkHelper.metaboliteIsConsumed(metaboliteNode.data.id, reactionNode.data)) {
+      this.links.push(new FlBioNetworkLink(metaboliteNode, reactionNode,
+        reactionNode.data.data, this.themeDetail.greyLowContrast, linkType));
+    }
+    // left side of the link
+    else {
+      this.links.push(new FlBioNetworkLink(reactionNode, metaboliteNode,
+        reactionNode.data.data, this.themeDetail.greyLowContrast, linkType));
     }
   }
 
@@ -201,8 +184,9 @@ export class FlBioNetworkFactory {
   private initReactionPositions(): void {
     for (const reaction of this.reactions) {
       if (!reaction.hasPositions()) {
-        // get the connected nodes sorted by level
-        let nodes = reaction.getConnectedNodes().filter(n => n.hasPositions());
+        // get the connected metabolites that are in the same cluster sorted by level
+        let nodes = reaction.getConnectedNodes().filter(n => n.hasPositions()
+          && n instanceof FlBioNetworkNodeMetabolite && n.cluster.clusterId === reaction.clusterId);
 
         nodes = nodes.sort((a, b) => a.getLevel() - b.getLevel());
 

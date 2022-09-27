@@ -161,13 +161,77 @@ export class FlBioNetworkHelper {
         } else {
           // todo merge sub cluster ids and remove duplicate
           reactionCluster.subClusterIds = reactionCluster.subClusterIds.concat(cluster.subClusterIds);
+        }
+      }
+    }
 
+    return clusters;
+  }
+
+  /**
+   * Return the default reaction cluster. Take the cluster where the count of metabolites
+   * that are consumed is the highest
+   * @param reaction
+   * @param metabolites
+   */
+  public static getReactionDefaultCluster(reaction: FlBioNetworkReaction,
+                                          metabolites: FlBioNetworkMetabolite[]): string {
+    const clusterCount: Record<string, number> = {};
+
+    // the reaction is in the clusters of all metabolites associated to the reaction (excluding the cofactors)
+    for (const metaboliteId of Object.keys(reaction.metabolites)) {
+      const metabolite: FlBioNetworkMetabolite = metabolites.find(m => m.id === metaboliteId);
+      if (!metabolite || metabolite.is_cofactor) continue;
+
+      // only keep cluster where the metabolite is consumed (value < 0)
+      if (!FlBioNetworkHelper.metaboliteIsConsumed(metaboliteId, reaction)) continue;
+
+      const metabolitesClusters = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
+      for (const cluster of metabolitesClusters) {
+
+        if (clusterCount[cluster.clusterId] == null) {
+          clusterCount[cluster.clusterId] = 1;
+        } else {
+          clusterCount[cluster.clusterId]++;
         }
 
       }
     }
 
-    return clusters;
+    // if there are no consumed metabolites, return the default cluster
+    if (Object.keys(clusterCount).length === 0) {
+      const clusters = FlBioNetworkHelper.getReactionClusters(reaction, metabolites);
+      if (clusters.length > 0) {
+        return clusters[0].clusterId;
+      } else {
+        return FlBioNetworkHelper.defaultClusterId;
+      }
+    }
+
+    // find the cluster with the most metabolites
+    let maxCount = 0;
+    let maxClusterId = null;
+    for (const [key, value] of Object.entries(clusterCount)) {
+      if (value > maxCount) {
+        maxCount = value;
+        maxClusterId = key;
+      }
+    }
+    return maxClusterId;
+  }
+
+  /**
+   * Return true if the metabolite is consumed in a reaction.
+   */
+  public static metaboliteIsConsumed(metaboliteId: string, reaction: FlBioNetworkReaction): boolean {
+    const simulation = FlBioNetworkHelper.getReactionSimulationValue(reaction.data);
+    // if the simulation value is negative, the link is inverted
+    return simulation * reaction.metabolites[metaboliteId] < 0;
+  }
+
+  public static getReactionSimulationValue(reactionData: FlBioNetworkReactionData): number {
+    const simulation = FlBioNetworkHelper.getReactionFlux(reactionData);
+    return (simulation && typeof simulation.value === 'number') ? simulation.value : 1;
   }
 
   public static getReactionFlux(reactionData: FlBioNetworkReactionData): FlBioNetworkReactionDataFlux | null {
