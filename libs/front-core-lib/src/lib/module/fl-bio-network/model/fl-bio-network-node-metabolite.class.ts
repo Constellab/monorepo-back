@@ -9,7 +9,8 @@ export class FlBioNetworkNodeMetabolite extends FlBioNetworkNode {
   public data: FlBioNetworkMetabolite;
 
   constructor(name: string, public cluster: FlBioNetworkClusterInfo, public level: FlBioNetworkMetaboliteLevel,
-              defaultColor: string, strokeColor: string, data: FlBioNetworkMetabolite) {
+              defaultColor: string, strokeColor: string, data: FlBioNetworkMetabolite,
+              public existsInMultipleCluster: boolean) {
     super(name, 'metabolite', defaultColor, strokeColor, data);
   }
 

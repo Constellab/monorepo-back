@@ -10,6 +10,7 @@ export class FlBioNetworkReactionRenderer {
   public static size: number = 4;
   public static strokeWidth: number = 1;
   public static borderRadius: number = 1;
+  public static existsInMultipleClusterRadius: number = 0.75;
 
   public static draw(ctx: CanvasRenderingContext2D, reaction: FlBioNetworkNodeReaction,
                      colorFunc: FlBioNetworkObjectColorFunction): void {
@@ -37,6 +38,12 @@ export class FlBioNetworkReactionRenderer {
     const size = FlBioNetworkReactionRenderer.size;
     FlBioNetworkCanvasHelper.roundedRect(ctx, reaction.x - (size / 2),
       reaction.y - (size / 2), size, size, FlBioNetworkReactionRenderer.borderRadius);
+
+    // if reaction also exist in another cluster, draw a small circle inside it
+    if(reaction.existsInMultipleCluster){
+      ctx.fillStyle = '#ffffff';
+      FlBioNetworkCanvasHelper.circle(ctx, reaction.x, reaction.y, FlBioNetworkReactionRenderer.existsInMultipleClusterRadius);
+    }
 
     ctx.globalAlpha = 1;
   }

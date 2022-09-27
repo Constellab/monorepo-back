@@ -2,14 +2,14 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {Observable, Subscription} from 'rxjs';
 import {FlBioNetworkGraph} from '../../model/fl-bio-network-graph.class';
-import {FlBioNetworkNodeMetabolite} from '../../model/fl-bio-network-node-metabolite.class';
 import {FormControl} from '@ngneat/reactive-forms';
 import {debounceTime, map, startWith} from 'rxjs/operators';
-import {FlBioNetworkMetabolite} from '../../model/fl-bio-network.class';
+import {FlBioNetworkObject} from '../../model/fl-bio-network.class';
 import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.state';
+import {ClHelpService, ClStringHelper} from '@monorepo/core-lib';
 
 /**
- * Component to search on metabolite and select a metabolite
+ * Component to search on metabolite and reactions and select the object
  */
 @Component({
   selector: 'fl-bio-network-node-search',
@@ -19,10 +19,10 @@ import {FlBioNetworkSelectionState} from '../../state/fl-bio-network-selection.s
 })
 export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
 
-  metabolites: FlBioNetworkMetabolite[];
-  filteredMetabolite: Observable<FlBioNetworkMetabolite[]>;
+  objects: FlBioNetworkObject[];
+  filteredObjects$: Observable<FlBioNetworkObject[]>;
 
-  searchControl: FormControl<string | FlBioNetworkMetabolite> = new FormControl();
+  searchControl: FormControl<string | FlBioNetworkObject> = new FormControl();
 
   private subscription: Subscription;
 
@@ -35,12 +35,12 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
     this.getChartData();
 
     // Observable that refresh the filteredOptions each time a key is typed
-    this.filteredMetabolite = this.searchControl.valueChanges
+    this.filteredObjects$ = this.searchControl.valueChanges
       .pipe(
         startWith(''),
         debounceTime(250),
-        map((value: string | FlBioNetworkMetabolite) => typeof value === 'string' ? value : value.name),
-        map(name => name ? this.filter(name) : this.metabolites.slice())
+        map((value: string | FlBioNetworkObject) => typeof value === 'string' ? value : value.name),
+        map(name => name ? this.filter(name) : this.objects.slice())
       );
   }
 
@@ -52,29 +52,30 @@ export class FlBioNetworkNodeSearchComponent implements OnInit, OnDestroy {
 
   private onNewChartData(bioNetwork: FlBioNetworkGraph): void {
     if (bioNetwork) {
-      this.metabolites = bioNetwork.getMetabolitesData();
+      this.objects = ClHelpService.sortAlphabeticalOrder(bioNetwork.getMetabolitesAndReactionData(), object => object.name);
     } else {
-      this.metabolites = [];
+      this.objects = [];
     }
     this.searchControl.patchValue('');
     this.cdr.markForCheck();
   }
 
-  displayFn(metabolite: FlBioNetworkNodeMetabolite): string {
+  displayFn(metabolite: FlBioNetworkObject): string {
     return metabolite ? metabolite.name : '';
   }
 
-  selectMetabolite(): void {
-    const metabolite: string | FlBioNetworkMetabolite = this.searchControl.value;
-    if (metabolite == null || typeof metabolite === 'string') return;
+  selectObject(): void {
+    const object: string | FlBioNetworkObject = this.searchControl.value;
+    if (object == null || typeof object === 'string') return;
 
-    this.selectionState.selectMetabolite(metabolite.id);
+    this.selectionState.selectMetaboliteAndReaction(object.id);
   }
 
   // method to filter metabolites based on string
-  private filter(name: string): FlBioNetworkMetabolite[] {
-    const filterValue = name.toLowerCase();
-    return this.metabolites.filter(metabolite => metabolite.name.toLowerCase().includes(filterValue));
+  private filter(searchValue: string): FlBioNetworkObject[] {
+    return this.objects.filter(object => ClStringHelper.stringContains(object.name, searchValue, true, true, true) ||
+      ClStringHelper.stringContains(object.id, searchValue, true, true, true)
+    );
   }
 
   ngOnDestroy(): void {

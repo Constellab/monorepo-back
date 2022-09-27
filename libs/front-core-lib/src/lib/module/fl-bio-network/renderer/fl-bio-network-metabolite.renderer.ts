@@ -11,6 +11,7 @@ export class FlBioNetworkMetaboliteRenderer {
   public static biomassMetaboliteRadius: number = 8;
   public static minorMetaboliteRadius: number = 3;
   public static majorMetaboliteRadius: number = 6;
+  public static existsInMultipleClusterRadius: number = 1.5;
   public static majorMetaboliteStroke: number = 1.5;
   public static minorMetaboliteStroke: number = 0.75;
   public static majorMetaboliteFontSize: string = '0.7em';
@@ -50,6 +51,12 @@ export class FlBioNetworkMetaboliteRenderer {
             color: '#000000', // todo to fix
           }
         });
+    }
+
+    // if this is a duplicated metabolites, draw a small circle inside it
+    if(metabolite.existsInMultipleCluster){
+      ctx.fillStyle = '#ffffff';
+      FlBioNetworkCanvasHelper.circle(ctx, metabolite.x, metabolite.y, FlBioNetworkMetaboliteRenderer.existsInMultipleClusterRadius);
     }
 
     ctx.globalAlpha = 1;

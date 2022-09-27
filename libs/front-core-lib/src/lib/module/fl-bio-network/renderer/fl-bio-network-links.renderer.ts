@@ -94,7 +94,7 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
     }
 
     this.graphRenderer.graph.linkLineDash((link: FlBioNetworkLink) =>
-      link.type === 'cross-cluster-link' ? [5, 15] : null);
+      link.type === 'cross-cluster-link' ? [5, 2] : null);
   }
 
   protected updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[],
@@ -115,7 +115,7 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
         } else if (selectedNode && link.type === 'cross-cluster-link') {
           return link.target.id === selectedNode.id || link.source.id === selectedNode.id;
         }
-        return levelVisibility(link);
+        return link.isVisible && link.type === 'link' && levelVisibility(link);
       };
     } else {
       // only show the visible links of basic type

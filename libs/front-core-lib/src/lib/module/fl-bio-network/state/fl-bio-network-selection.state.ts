@@ -105,13 +105,13 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   }
 
 
-  public selectMetabolite(metaboliteId: string): void {
+  public selectMetaboliteAndReaction(objectId: string): void {
 
     // retrieve all the nodes that correspond to this metabolite
-    const nodes = this.data.getMetabolitesNodes(metaboliteId);
+    const nodes = this.data.getMetaboliteAndReactionByObjectId(objectId);
 
     if (nodes.length === 0) {
-      console.error(`No node found for metabolite ${metaboliteId}`);
+      console.error(`No node found for metabolite ${objectId}`);
     } else if (nodes.length === 1) {
       this.selectNode(nodes[0], 'singleNode');
     } else {

@@ -49,7 +49,7 @@ export class FlBioNetworkZoomRenderer {
   }
 
   private zoomToSelectedElements(graph: ForceGraphInstance): void {
-    graph.zoomToFit(this.zoomDuration, 20,
+    graph.zoomToFit(this.zoomDuration, 100,
       (node: FlBioNetworkNode) => node.selected);
   }
 }

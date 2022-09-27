@@ -3,7 +3,7 @@ import {FlBioNetworkNodeReaction} from './fl-bio-network-node-reaction.class';
 import {FlBioNetworkNodeCofactor} from './fl-bio-network-node-cofactor.class';
 import {FlBioNetworkLink} from './fl-bio-network-node-link.class';
 import {FlBioNetworkNode} from './fl-bio-network-node.class';
-import {FlBioNetworkMetabolite, FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
+import {FlBioNetworkMetaboliteLevel, FlBioNetworkObject} from './fl-bio-network.class';
 
 
 /**
@@ -114,19 +114,27 @@ export class FlBioNetworkGraph {
   /**
    * return the metabolite data (not the nodes) and not duplicated
    */
-  public getMetabolitesData(): FlBioNetworkMetabolite[] {
-    const metabolitesData: FlBioNetworkMetabolite[] = [];
+  public getMetabolitesAndReactionData(): FlBioNetworkObject[] {
+    const metabolitesData: FlBioNetworkObject[] = [];
     for (const metabolite of this.metabolites) {
       if (metabolitesData.find(metaboliteData => metaboliteData.id === metabolite.data.id) == null) {
         metabolitesData.push(metabolite.data);
       }
     }
+    for(const reaction of this.reactions) {
+      if (metabolitesData.find(metaboliteData => metaboliteData.id === reaction.data.id) == null) {
+        metabolitesData.push(reaction.data);
+      }
+    }
     return metabolitesData;
   }
 
-  public getMetabolitesNodes(metaboliteId: string): FlBioNetworkNodeMetabolite[] {
-    return this.metabolites.filter(metabolite => metabolite.data.id === metaboliteId);
+  public getMetaboliteAndReactionByObjectId(objectId: string): FlBioNetworkNode[] {
+    const metabolites = this.metabolites.filter(node => node.data.id === objectId);
+    const reactions = this.reactions.filter(node => node.data.id === objectId);
+    return [...metabolites, ...reactions];
   }
+
 
   /**
    * Set all the cofactors position based on reaction position

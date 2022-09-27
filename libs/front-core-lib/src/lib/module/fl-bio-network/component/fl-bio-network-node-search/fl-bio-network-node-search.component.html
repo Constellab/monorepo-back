@@ -2,11 +2,11 @@
   <mat-label>{{'flBioNetwork.search_node' | translate}}</mat-label>
   <input type="text" matInput [formControl]="searchControl" [matAutocomplete]="auto">
   <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" [autoActiveFirstOption]="true"
-                    (optionSelected)="selectMetabolite()">
-    <mat-option *ngFor="let metabolite of filteredMetabolite | async" [value]="metabolite"
+                    (optionSelected)="selectObject()">
+    <mat-option *ngFor="let object of filteredObjects$ | async" [value]="object"
                 class="g-mat-option-multi-line">
-      <div>{{metabolite.name}}</div>
-      <div class="g-text-light g-text-small">{{metabolite.id}}</div>
+      <div>{{object.name}}</div>
+      <div class="g-text-light g-text-small">{{object.id}}</div>
     </mat-option>
   </mat-autocomplete>
 </mat-form-field>

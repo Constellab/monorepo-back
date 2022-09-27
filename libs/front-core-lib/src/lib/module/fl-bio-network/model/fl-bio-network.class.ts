@@ -18,31 +18,31 @@ export enum FlBioNetworkMetaboliteLevel {
   COFACTOR = 3
 }
 
-
-export interface FlBioNetworkMetabolite {
+export interface FlBioNetworkObject{
   id: string;
   name: string;
+  level: FlBioNetworkMetaboliteLevel;
+}
+
+
+export interface FlBioNetworkMetabolite extends FlBioNetworkObject{
   compartment: string;
   charge?: any;
   mass?: any;
   formula?: string;
   chebi_id?: string;
   layout?: FlBioNetworkLayout;
-  level: FlBioNetworkMetaboliteLevel;
   is_cofactor: boolean;
 }
 
 
-export interface FlBioNetworkReaction {
-  id: string;
-  name: string;
+export interface FlBioNetworkReaction extends FlBioNetworkObject{
   metabolites: Record<string, number>;
   lower_bound?: number;
   upper_bound?: number;
   enzyme?: FlBioNetworkEnzyme;
   data: FlBioNetworkReactionData;
   layout?: FlCoord;
-  level?: FlBioNetworkMetaboliteLevel;
 }
 
 export interface FlBioNetworkLayout {

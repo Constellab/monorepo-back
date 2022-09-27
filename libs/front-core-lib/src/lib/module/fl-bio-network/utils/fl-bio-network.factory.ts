@@ -58,6 +58,9 @@ export class FlBioNetworkFactory {
 
     for (const reaction of reactions) {
 
+      const reactionsClusters: FlBioNetworkClusterInfo[] = FlBioNetworkHelper.getReactionClusters(reaction, metabolites);
+      const existsInMultipleCluster: boolean = reactionsClusters.length > 1;
+
       // todo need to handle the selected cluster
       const reactionCluster: string = FlBioNetworkHelper.getReactionDefaultCluster(reaction, metabolites);
       const reactionPathways: string[] = FlBioNetworkHelper.getReactionPathwayId(reaction, pathwayDatabase);
@@ -66,7 +69,8 @@ export class FlBioNetworkFactory {
       const reactionNode = new FlBioNetworkNodeReaction(
         reaction.name ? reaction.name : reaction.id,
         reactionCluster,
-        this.themeDetail.greyHighContrast, this.themeDetail.foreground, reaction, reactionPathways
+        this.themeDetail.greyHighContrast, this.themeDetail.foreground, reaction, reactionPathways,
+        existsInMultipleCluster
       );
       reactionNodes.push(reactionNode);
     }
@@ -86,24 +90,27 @@ export class FlBioNetworkFactory {
       }
       const metaboliteClusters: FlBioNetworkClusterInfo[] = FlBioNetworkHelper.getMetaboliteClusters(metabolite);
 
-      // add one metabolite node for each cluster of the metabolite
-      for (const cluster of selectedClusters) {
-        const metaboliteCluster: FlBioNetworkClusterInfo = metaboliteClusters.find(c => c.clusterId === cluster);
+      // for each selected cluster of the metabolites, add a node
+      const clusters: FlBioNetworkClusterInfo[] =
+        metaboliteClusters.filter(cluster => selectedClusters.includes(cluster.clusterId));
 
-        if (!metaboliteCluster) continue;
+      const existsInMultipleCluster: boolean = clusters.length > 1;
+
+      // add one metabolite node for each cluster of the metabolite
+      for (const cluster of clusters) {
 
         // retrieve level of the metabolite
-        const positionCluster = metabolite.layout.clusters[metaboliteCluster.subClusterIds[0]];
+        const positionCluster = metabolite.layout.clusters[cluster.subClusterIds[0]];
         const level = positionCluster?.level ?? metabolite.level;
 
         // find compartment info
         const compartmentColor = this.getCompartmentColor(metabolite.compartment);
 
         const metaboliteNode = new FlBioNetworkNodeMetabolite(metabolite.name ? metabolite.name : metabolite.id,
-          metaboliteCluster, level, compartmentColor, this.themeDetail.foreground, metabolite);
+          cluster, level, compartmentColor, this.themeDetail.foreground, metabolite, existsInMultipleCluster);
 
         // for the metabolite position, take the position of the first sub cluster
-        const clusterPosition = metabolite.layout.clusters[metaboliteCluster.subClusterIds[0]];
+        const clusterPosition = metabolite.layout.clusters[cluster.subClusterIds[0]];
         if (!this.ignoreNodePositions && clusterPosition && clusterPosition.x != null && clusterPosition.y != null) {
           metaboliteNode.setPositionAndFreeze(clusterPosition);
         }

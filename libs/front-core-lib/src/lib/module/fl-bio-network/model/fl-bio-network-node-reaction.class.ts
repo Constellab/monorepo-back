@@ -14,7 +14,8 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
 
   constructor(name: string, cluster: string,
               defaultColor: string, strokeColor: string,
-              data: FlBioNetworkReaction, pathwayIds: string[]) {
+              data: FlBioNetworkReaction, pathwayIds: string[],
+              public existsInMultipleCluster: boolean) {
     super(name, 'reaction', defaultColor, strokeColor, data);
     this.clusterId = cluster;
     this.pathwayIds = pathwayIds;
