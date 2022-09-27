@@ -64,6 +64,13 @@ import {FlDateModule} from '../fl-date/fl-date.module';
 import {
   FlBioNetworkReactionFluxComponent
 } from './component/fl-bio-network-reaction-flux/fl-bio-network-reaction-flux.component';
+import {
+  FlBioNetworkNodeMetaboliteDetailComponent
+} from './component/fl-bio-network-node-metabolite-detail/fl-bio-network-node-metabolite-detail.component';
+import {
+  FlBioNetworkNodeReactionDetailComponent
+} from './component/fl-bio-network-node-reaction-detail/fl-bio-network-node-reaction-detail.component';
+import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -85,6 +92,8 @@ import {
     FlBioNetworkEngineConfigComponent,
     FlBioNetworkEngineProgressComponent,
     FlBioNetworkReactionFluxComponent,
+    FlBioNetworkNodeMetaboliteDetailComponent,
+    FlBioNetworkNodeReactionDetailComponent,
   ],
   exports: [
     FlBioNetworkComponent,
@@ -118,6 +127,7 @@ import {
     FlDrawerModule,
     FlKeyValueModule,
     FlDateModule,
+    FlTextIconModule,
   ],
 })
 export class FlBioNetworkModule {

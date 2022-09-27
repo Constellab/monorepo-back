@@ -16,7 +16,7 @@ export class FlBioNetworkReactionDetailComponent implements OnInit {
       this.pathways = this.getPathways(value);
     }
   })
-  @Input() node: FlBioNetworkReaction;
+  @Input() reaction: FlBioNetworkReaction;
 
   pathways: FlBioNetworkPathwayDetail[];
 

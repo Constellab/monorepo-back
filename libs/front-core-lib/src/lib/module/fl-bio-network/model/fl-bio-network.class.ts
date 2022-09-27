@@ -43,6 +43,7 @@ export interface FlBioNetworkReaction extends FlBioNetworkObject{
   enzyme?: FlBioNetworkEnzyme;
   data: FlBioNetworkReactionData;
   layout?: FlCoord;
+  rhea_id?: string;
 }
 
 export interface FlBioNetworkLayout {

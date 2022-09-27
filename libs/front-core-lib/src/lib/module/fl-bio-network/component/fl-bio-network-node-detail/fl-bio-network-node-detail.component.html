@@ -1,9 +1,8 @@
 <div *ngIf="node$ | async as node; else noNode">
 
-  <fl-bio-network-reaction-detail *ngIf="node.type === 'reaction'; else metabolite"
-                                  [node]="$any(node.data)"></fl-bio-network-reaction-detail>
+  <fl-bio-network-node-reaction-detail *ngIf="node.type === 'reaction'; else metabolite"></fl-bio-network-node-reaction-detail>
   <ng-template #metabolite>
-    <fl-bio-network-metabolite-detail [node]="$any(node.data)"></fl-bio-network-metabolite-detail>
+    <fl-bio-network-node-metabolite-detail></fl-bio-network-node-metabolite-detail>
   </ng-template>
 
   <mat-expansion-panel class="detail-panel">

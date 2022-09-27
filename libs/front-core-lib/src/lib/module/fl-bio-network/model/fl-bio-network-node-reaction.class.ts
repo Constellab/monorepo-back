@@ -1,6 +1,8 @@
 import {FlBioNetworkMetaboliteLevel, FlBioNetworkReaction} from './fl-bio-network.class';
 import {FlBioNetworkNode} from './fl-bio-network-node.class';
 import {FlBioNetworkNodeCofactor} from './fl-bio-network-node-cofactor.class';
+import {ClHelpService} from '@monorepo/core-lib';
+import {FlExternalLinkService} from '../../../service/fl-external-link.service';
 
 export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
 
@@ -68,6 +70,14 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
       node.setPositionAndFreeze({x, y});
       t += tSpaces;
     }
+  }
 
+  public getRheaId(): string | null {
+    return ClHelpService.isNullOrEmpty(this.data.rhea_id) ? null : this.data.rhea_id;
+  }
+
+  public getReadIdLink(): string | null {
+    const rheaId = this.getRheaId();
+    return rheaId ? FlExternalLinkService.getRheaDatabaseReactionLink(rheaId) : null;
   }
 }

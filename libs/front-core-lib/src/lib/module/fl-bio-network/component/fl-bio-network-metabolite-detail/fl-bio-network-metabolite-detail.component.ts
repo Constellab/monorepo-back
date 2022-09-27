@@ -1,6 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlBioNetworkMetabolite} from '../../model/fl-bio-network.class';
 
+/**
+ * Detail information for a Metabolite object
+ */
 @Component({
   selector: 'fl-bio-network-metabolite-detail',
   templateUrl: './fl-bio-network-metabolite-detail.component.html',
@@ -8,7 +11,7 @@ import {FlBioNetworkMetabolite} from '../../model/fl-bio-network.class';
 })
 export class FlBioNetworkMetaboliteDetailComponent implements OnInit {
 
-  @Input() node: FlBioNetworkMetabolite;
+  @Input() metabolite: FlBioNetworkMetabolite;
 
   constructor() {
   }

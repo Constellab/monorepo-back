@@ -1,0 +1,37 @@
+<ng-container *ngIf="node$ | async as node">
+
+  <fl-bio-network-metabolite-detail [metabolite]="node.data">
+  </fl-bio-network-metabolite-detail>
+
+  <div *ngIf="node.existsInMultipleCluster" class="section">
+    <p>{{'flBioNetwork.metabolite_exist_in_multiple_pathways' | translate}} :</p>
+
+    <ul>
+      <li *ngFor="let metaboliteNode of duplicateMetabolite$ | async"
+          class="g-text-link" (click)="selectNode(metaboliteNode)">
+        {{metaboliteNode.cluster.clusterId}}
+      </li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <p>{{'flBioNetwork.connected_reactions' | translate}} :</p>
+
+    <ul>
+      <li *ngFor="let connectedReaction of connectedReaction$ | async">
+        <span class="g-text-link" (click)="selectNode(connectedReaction)">
+            {{connectedReaction.name}}
+        </span>
+
+        <a class="rhea-id g-text-small g-text-light g-text-link"
+           *ngIf="connectedReaction.getRheaId() as id" target="_blank"
+           [href]="connectedReaction.getReadIdLink()">
+          <fl-text-icon gap="0" iconPosition="end">
+            <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
+            ({{id}})
+          </fl-text-icon>
+        </a>
+      </li>
+    </ul>
+  </div>
+</ng-container>

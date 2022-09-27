@@ -121,7 +121,7 @@ export class FlBioNetworkGraph {
         metabolitesData.push(metabolite.data);
       }
     }
-    for(const reaction of this.reactions) {
+    for (const reaction of this.reactions) {
       if (metabolitesData.find(metaboliteData => metaboliteData.id === reaction.data.id) == null) {
         metabolitesData.push(reaction.data);
       }
@@ -129,12 +129,18 @@ export class FlBioNetworkGraph {
     return metabolitesData;
   }
 
-  public getMetaboliteAndReactionByObjectId(objectId: string): FlBioNetworkNode[] {
-    const metabolites = this.metabolites.filter(node => node.data.id === objectId);
-    const reactions = this.reactions.filter(node => node.data.id === objectId);
-    return [...metabolites, ...reactions];
+  public getMetaboliteNodesByObjectId(metaboliteId: string): FlBioNetworkNodeMetabolite[] {
+    return this.metabolites.filter(node => node.data.id === metaboliteId);
   }
 
+  public getReactionNodesByObjectId(reactionId: string): FlBioNetworkNodeReaction[] {
+    return this.reactions.filter(node => node.data.id === reactionId);
+  }
+
+
+  public getMetaboliteAndReactionNodesByObjectId(objectId: string): FlBioNetworkNode[] {
+    return [...this.getMetaboliteNodesByObjectId(objectId), ...this.getReactionNodesByObjectId(objectId)];
+  }
 
   /**
    * Set all the cofactors position based on reaction position
