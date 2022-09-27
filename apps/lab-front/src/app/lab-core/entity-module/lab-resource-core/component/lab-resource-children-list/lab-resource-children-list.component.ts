@@ -18,7 +18,7 @@ export class LabResourceChildrenListComponent implements OnInit {
 
   resources$: FlArrayObs<LabResource>;
 
-  columns: FlTableColumn<LabResource>[] = ['name', 'type', 'tags', 'preview'];
+  columns: FlTableColumn<LabResource>[] = ['name', 'type', 'preview'];
 
 
   constructor(private resourceService: LabResourceService,
