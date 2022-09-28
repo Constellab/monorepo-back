@@ -1,8 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlBioNetworkPathwayDetail, FlBioNetworkReaction} from '../../model/fl-bio-network.class';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
-import {ClOnChange} from '@monorepo/core-lib';
+import {ClHelpService, ClOnChange} from '@monorepo/core-lib';
 import {FlBioNetworkHelper} from '../../utils/fl-bio-network.helper';
+import {FlExternalLinkService} from '../../../../service/fl-external-link.service';
 
 @Component({
   selector: 'fl-bio-network-reaction-detail',
@@ -32,5 +33,17 @@ export class FlBioNetworkReactionDetailComponent implements OnInit {
 
     if (!pathways) return null;
     return FlBioNetworkHelper.splitReactionPathway(pathways);
+  }
+
+  get rheaUrl(): string {
+    if (ClHelpService.isNullOrEmpty(this.reaction.rhea_id)) return null;
+
+    return FlExternalLinkService.getRheaDatabaseReactionLink(this.reaction.rhea_id);
+  }
+
+  get brendaUrl(): string {
+    if (ClHelpService.isNullOrEmpty(this.reaction.enzyme.ec_number)) return null;
+
+    return FlExternalLinkService.getBrendaLink(this.reaction.enzyme.ec_number);
   }
 }

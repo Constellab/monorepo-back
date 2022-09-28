@@ -34,7 +34,7 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     select_all_pathway: 'Tout sélectionner',
     highlight_pathway: 'Coloriser le pathway',
     highlight_all_pathway: 'Coloriser tous les pathways sélectionnés',
-    search_node: 'Rechercher un metabolite',
+    search_node: 'Rechercher',
     toggle_show_cofactor: 'Afficher les cofacteurs',
     toggle_show_texts: 'Afficher les textes',
     toggle_show_minor: 'Afficher les mineurs',
@@ -70,6 +70,12 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     select_pathway_help_text: 'Sélectionner un pathway pour voir les options ici',
     calculating_positions: 'Calcul des positions...',
     last_calculation_duration: 'Durée du dernier calcul',
+    metabolite_exist_in_multiple_pathways: 'Le métabolite existe dans plusieurs pathways',
+    connected_reactions: 'Réactions connectées',
+    reaction_products: 'Produits',
+    reaction_substrate: 'Substrats',
+    rhea_id: 'Rhea id',
+    chebi_id: 'ChEBI ID',
   }
 };
 
@@ -101,7 +107,7 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     select_all_pathway: 'Select all',
     highlight_pathway: 'Colorize pathway',
     highlight_all_pathway: 'Colorize all selected pathways',
-    search_node: 'Search metabolite',
+    search_node: 'Search',
     toggle_show_cofactor: 'Show cofactors',
     toggle_show_texts: 'Show texts',
     toggle_show_minor: 'Show minors',
@@ -137,6 +143,12 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     select_pathway_help_text: 'Select a pathway to view options here',
     calculating_positions: 'Calculating positions...',
     last_calculation_duration: 'Last calculation duration',
+    metabolite_exist_in_multiple_pathways: 'The metabolite exists in several pathways',
+    connected_reactions: 'Connected reactions',
+    reaction_products: 'Products',
+    reaction_substrate: 'Substrates',
+    rhea_id: 'Rhea id',
+    chebi_id: 'ChEBI ID',
   }
 };
 

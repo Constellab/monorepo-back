@@ -1,10 +1,18 @@
+.text{
+  word-break: break-word;
+}
+
 .flux{
   margin-top: 1em;
   display: block;
 }
 
-
 .pathways{
   margin-top: 1em;
-  word-break: break-word;
+}
+
+
+.link{
+  display: inline-flex;
+  vertical-align: bottom;
 }

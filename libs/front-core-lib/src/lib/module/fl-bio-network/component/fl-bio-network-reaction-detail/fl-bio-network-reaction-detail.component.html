@@ -1,31 +1,47 @@
-<fl-key-value>
-  <fl-key>{{'flBioNetwork.id' | translate}}</fl-key>
-  {{reaction.id}}
-</fl-key-value>
-
-<fl-key-value>
-  <fl-key>{{'flBioNetwork.name' | translate}}</fl-key>
-  {{reaction.name}}
-</fl-key-value>
-
-<fl-key-value>
-  <fl-key>{{'flBioNetwork.enzyme_name' | translate}}</fl-key>
-  {{reaction.enzyme.title}}
-</fl-key-value>
-
-<fl-key-value>
-  <fl-key>{{'flBioNetwork.enzyme_ec_number' | translate}}</fl-key>
-  {{reaction.enzyme.ec_number}}
-</fl-key-value>
-
-
-<fl-bio-network-reaction-flux [reaction]="reaction"></fl-bio-network-reaction-flux>
-
-<ng-container *ngIf="pathways?.length > 0">
-  <fl-key-value class="pathways">
-    <fl-key>{{'flBioNetwork.pathways' | translate}}</fl-key>
-    <ul *ngFor="let pathway of pathways">
-      <li>{{pathway.name}}</li>
-    </ul>
+<div class="text">
+  <fl-key-value>
+    <fl-key>{{'flBioNetwork.id' | translate}}</fl-key>
+    {{reaction.id}}
   </fl-key-value>
-</ng-container>
+
+  <fl-key-value>
+    <fl-key>{{'flBioNetwork.name' | translate}}</fl-key>
+    {{reaction.name}}
+  </fl-key-value>
+
+  <fl-key-value>
+    <fl-key>{{'flBioNetwork.enzyme_name' | translate}}</fl-key>
+    {{reaction.enzyme.title}}
+  </fl-key-value>
+
+  <fl-key-value *ngIf="reaction.enzyme.ec_number">
+    <fl-key>{{'flBioNetwork.enzyme_ec_number' | translate}}</fl-key>
+    <a [href]="brendaUrl" class="g-text-link link" target="_blank">
+      <fl-text-icon gap="0" iconPosition="end">
+        <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
+        {{reaction.enzyme.ec_number}}
+      </fl-text-icon>
+    </a>
+  </fl-key-value>
+
+  <fl-key-value *ngIf="reaction.rhea_id">
+    <fl-key>{{'flBioNetwork.rhea_id' | translate}}</fl-key>
+    <a [href]="rheaUrl" class="g-text-link link" target="_blank">
+      <fl-text-icon gap="0" iconPosition="end">
+        <mat-icon class="g-icon-tiny">open_in_new</mat-icon>
+        {{reaction.rhea_id}}
+      </fl-text-icon>
+    </a>
+  </fl-key-value>
+
+  <fl-bio-network-reaction-flux [reaction]="reaction"></fl-bio-network-reaction-flux>
+
+  <ng-container *ngIf="pathways?.length > 0">
+    <fl-key-value class="pathways">
+      <fl-key>{{'flBioNetwork.pathways' | translate}}</fl-key>
+      <ul *ngFor="let pathway of pathways">
+        <li>{{pathway.name}}</li>
+      </ul>
+    </fl-key-value>
+  </ng-container>
+</div>

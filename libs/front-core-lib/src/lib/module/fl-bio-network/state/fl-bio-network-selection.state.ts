@@ -108,7 +108,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   public selectMetaboliteAndReaction(objectId: string): void {
 
     // retrieve all the nodes that correspond to this metabolite
-    const nodes = this.data.getMetaboliteAndReactionByObjectId(objectId);
+    const nodes = this.data.getMetaboliteAndReactionNodesByObjectId(objectId);
 
     if (nodes.length === 0) {
       console.error(`No node found for metabolite ${objectId}`);
@@ -194,6 +194,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
 
     for (const link of this.data.links) {
 
+
       let otherNode: FlBioNetworkNode;
       if (nodeIds.includes(link.target.id)) {
         otherNode = link.source;
@@ -206,8 +207,9 @@ export class FlBioNetworkSelectionState implements OnDestroy {
         links.push(link);
 
         // if the other part of the connection is a reaction, get also all the links of the reaction
+        // exclude the link that are crossed cluster
         if (otherNode instanceof FlBioNetworkNodeReaction) {
-          links.push(...otherNode.getAllLinks());
+          links.push(...otherNode.getAllLinks().filter(link => link.type !== 'cross-cluster-link'));
         }
       }
     }
