@@ -3,11 +3,16 @@
   <fl-bio-network-metabolite-detail [metabolite]="node.data">
   </fl-bio-network-metabolite-detail>
 
+  <fl-key-value>
+    <fl-key>{{'flBioNetwork.pathway' | translate}}</fl-key>
+    {{node.cluster.clusterId}}
+  </fl-key-value>
+
   <div *ngIf="node.existsInMultipleCluster" class="section">
-    <p>{{'flBioNetwork.metabolite_exist_in_multiple_pathways' | translate}} :</p>
+    <p>{{'flBioNetwork.metabolite_exists_in_multiple_pathways' | translate}} :</p>
 
     <ul>
-      <li *ngFor="let metaboliteNode of duplicateMetabolite$ | async"
+      <li *ngFor="let metaboliteNode of duplicateMetabolites$ | async"
           class="g-text-link" (click)="selectNode(metaboliteNode)">
         {{metaboliteNode.cluster.clusterId}}
       </li>

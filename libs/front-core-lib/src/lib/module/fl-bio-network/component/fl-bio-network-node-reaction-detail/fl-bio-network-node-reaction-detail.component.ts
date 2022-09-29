@@ -3,12 +3,13 @@ import {Observable} from 'rxjs';
 import {
   FlBioNetworkDrawerState,
   FlBioNetworkNode,
+  FlBioNetworkNodeCofactor,
   FlBioNetworkNodeMetabolite,
   FlBioNetworkNodeReaction,
   FlBioNetworkSelectionState,
   FlBioNetworkState
 } from '@monorepo/front-core-lib';
-import {map} from 'rxjs/operators';
+import {filter, map, switchMap} from 'rxjs/operators';
 
 /**
  * Detail information about one reaction node
@@ -23,9 +24,12 @@ export class FlBioNetworkNodeReactionDetailComponent implements OnInit {
 
   node$: Observable<FlBioNetworkNodeReaction>;
 
-  reactionProducts$: Observable<FlBioNetworkNodeMetabolite[]>;
+  // list of the same metabolite node
+  duplicateReactions$: Observable<FlBioNetworkNodeReaction[]>;
 
-  reactionSubstrate$: Observable<FlBioNetworkNodeMetabolite[]>;
+  reactionProducts$: Observable<(FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor)[]>;
+
+  reactionSubstrate$: Observable<(FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor)[]>;
 
   constructor(private drawerState: FlBioNetworkDrawerState,
               private state: FlBioNetworkState,
@@ -34,15 +38,22 @@ export class FlBioNetworkNodeReactionDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.node$ = this.drawerState.getState$().pipe(
+      filter(state => state.selectedNode instanceof FlBioNetworkNodeReaction),
       map(state => state.selectedNode as FlBioNetworkNodeReaction)
     );
 
+    // retrieve all the nodes with the same metabolite id
+    this.duplicateReactions$ = this.node$.pipe(
+      switchMap(node => this.state.getChartData$().pipe(
+        map(chartData => chartData?.getReactionNodesByObjectId(node.data.id) ?? [])
+      )));
+
     this.reactionProducts$ = this.node$.pipe(
-      map(node => node.getPreviousNodes() as FlBioNetworkNodeMetabolite[])
+      map(node => node?.getPreviousMetabolites() ?? []),
     );
 
     this.reactionSubstrate$ = this.node$.pipe(
-      map(node => node.getNextNodes() as FlBioNetworkNodeMetabolite[])
+      map(node => node?.getNextMetabolites() ?? []),
     );
   }
 

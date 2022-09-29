@@ -14,7 +14,9 @@ export class FlBioNetworkGraph {
   constructor(public metabolites: FlBioNetworkNodeMetabolite[],
               public reactions: FlBioNetworkNodeReaction[],
               public cofactors: FlBioNetworkNodeCofactor[],
-              public links: FlBioNetworkLink[]) {
+              public links: FlBioNetworkLink[],
+              // link between the same reaction of 2 different clusters
+              public interClusterLinks: FlBioNetworkLink[]) {
   }
 
   /**
@@ -38,6 +40,11 @@ export class FlBioNetworkGraph {
   // return all the nodes of a level
   public getNodes(level: FlBioNetworkMetaboliteLevel): FlBioNetworkNode[] {
     return this.getAllNodes().filter(link => link.getLevel() === level);
+  }
+
+  // return basic links and the links between the same reaction of 2 different clusters
+  public getAllLinks(): FlBioNetworkLink[] {
+    return [...this.links, ...this.interClusterLinks];
   }
 
   // return all the link of a level

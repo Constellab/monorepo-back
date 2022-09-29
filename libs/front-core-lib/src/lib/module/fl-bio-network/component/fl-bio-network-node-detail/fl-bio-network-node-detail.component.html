@@ -1,9 +1,11 @@
 <div *ngIf="node$ | async as node; else noNode">
 
-  <fl-bio-network-node-reaction-detail *ngIf="node.type === 'reaction'; else metabolite"></fl-bio-network-node-reaction-detail>
-  <ng-template #metabolite>
-    <fl-bio-network-node-metabolite-detail></fl-bio-network-node-metabolite-detail>
-  </ng-template>
+
+  <ng-container [ngSwitch]="node.type">
+    <fl-bio-network-node-reaction-detail *ngSwitchCase="'reaction'"></fl-bio-network-node-reaction-detail>
+    <fl-bio-network-node-metabolite-detail *ngSwitchCase="'metabolite'"></fl-bio-network-node-metabolite-detail>
+    <fl-bio-network-node-cofactor-detail *ngSwitchCase="'cofactor'"></fl-bio-network-node-cofactor-detail>
+  </ng-container>
 
   <mat-expansion-panel class="detail-panel">
     <mat-expansion-panel-header>

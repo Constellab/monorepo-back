@@ -3,8 +3,28 @@
   <fl-bio-network-reaction-detail [reaction]="node.data">
   </fl-bio-network-reaction-detail>
 
+  <fl-key-value>
+    <fl-key>{{'flBioNetwork.pathway' | translate}}</fl-key>
+    {{node.cluster.clusterId}}
+  </fl-key-value>
+
+  <div *ngIf="node.existsInMultipleCluster" class="section">
+    <p>{{'flBioNetwork.reaction_exists_in_multiple_pathways' | translate}} :</p>
+
+    <ul>
+      <li *ngFor="let reaction of duplicateReactions$ | async"
+          class="g-text-link" (click)="selectNode(reaction)">
+        {{reaction.cluster.clusterId}}
+      </li>
+    </ul>
+  </div>
+
   <div class="section">
-    <p>{{'flBioNetwork.reaction_products' | translate}} :</p>
+    <fl-text-icon>
+      <mat-icon>swipe_right_alt</mat-icon>
+      <p>{{'flBioNetwork.reaction_products' | translate}} :</p>
+    </fl-text-icon>
+
 
     <ul>
       <li *ngFor="let product of reactionProducts$ | async">
@@ -25,7 +45,10 @@
   </div>
 
   <div class="section">
-    <p>{{'flBioNetwork.reaction_substrate' | translate}} :</p>
+    <fl-text-icon>
+      <mat-icon>swipe_left_alt</mat-icon>
+      <p>{{'flBioNetwork.reaction_substrate' | translate}} :</p>
+    </fl-text-icon>
 
     <ul>
       <li *ngFor="let substrate of reactionSubstrate$ | async">

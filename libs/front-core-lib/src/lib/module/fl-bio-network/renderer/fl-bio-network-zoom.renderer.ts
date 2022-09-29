@@ -15,7 +15,7 @@ export class FlBioNetworkZoomRenderer {
   public static readonly defaultZoomScale: number = 0.25;
 
   // Default zoom scale when zooming to a position
-  private readonly zoomToPositionScale: number = 0.5;
+  private readonly zoomToPositionScale: number = 1;
 
   private readonly zoomDuration: number = 750;
 

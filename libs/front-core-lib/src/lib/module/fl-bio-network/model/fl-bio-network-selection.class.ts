@@ -18,7 +18,7 @@ export interface FlBioNetworkSelectionEventBase {
 }
 
 export interface FlBioNetworkSelectionEventSingleNode extends FlBioNetworkSelectionEventBase {
-  mode: 'singleNode' | 'singleNodeByClick'; // to distinguish single node selection by click and by other selectoin
+  mode: 'singleNode' | 'singleNodeByClick'; // to distinguish single node selection by click and by other selection
   selectedNode: FlBioNetworkNode;
 }
 

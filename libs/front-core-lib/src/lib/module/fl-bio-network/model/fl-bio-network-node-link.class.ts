@@ -1,11 +1,10 @@
 import {curveCatmullRom, line, select, SimulationLinkDatum} from 'd3';
-import {FlBioNetworkMetaboliteLevel, FlBioNetworkReactionData} from './fl-bio-network.class';
+import {FlBioNetworkMetaboliteLevel} from './fl-bio-network.class';
 import {FlBioNetworkNode} from './fl-bio-network-node.class';
 import {FlBioNetworkNodeCofactor} from './fl-bio-network-node-cofactor.class';
 import {FlBioNetworkNodeReaction} from './fl-bio-network-node-reaction.class';
 import {FlBioNetworkGraphObject} from './fl-bio-network-graph.class';
 import {FlCoord, FlCoordHelper} from '../../../model/shared/fl-coord.class';
-import {FlBioNetworkHelper} from '../utils/fl-bio-network.helper';
 
 
 // const lineFunction = line<FlCoord>().x(d => d.x).y(d => d.y);
@@ -63,7 +62,7 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
   isVisible: boolean = true;
 
   constructor(source: FlBioNetworkNode, target: FlBioNetworkNode,
-              public reactionData: FlBioNetworkReactionData,
+              fluxValue: number,
               public defaultColor: string,
               public type: FlBioNetworkLinkType) {
     super();
@@ -80,8 +79,7 @@ export class FlBioNetworkLink extends FlBioNetworkGraphObject
     this.source.departureLinks.push(this);
     this.target.arrivalLinks.push(this);
 
-    const flux = FlBioNetworkHelper.getReactionFlux(this.reactionData);
-    this.value = flux ? flux.value : 0;
+    this.value = fluxValue ? fluxValue : 0;
     this.absValue = Math.abs(this.value);
   }
 

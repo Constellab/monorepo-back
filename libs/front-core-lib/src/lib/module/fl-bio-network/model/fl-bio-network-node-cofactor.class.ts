@@ -10,6 +10,8 @@ export class FlBioNetworkNodeCofactor extends FlBioNetworkNode {
 
   public data: FlBioNetworkMetabolite;
 
+  public parentNode: FlBioNetworkNodeReaction;
+
   constructor(name: string, defaultColor: string, data: FlBioNetworkMetabolite) {
     super(name, 'cofactor', '#ffaa33', defaultColor, data);
   }

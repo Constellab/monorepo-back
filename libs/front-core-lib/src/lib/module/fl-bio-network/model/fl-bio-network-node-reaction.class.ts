@@ -1,25 +1,26 @@
-import {FlBioNetworkMetaboliteLevel, FlBioNetworkReaction} from './fl-bio-network.class';
+import {FlBioNetworkClusterInfo, FlBioNetworkMetaboliteLevel, FlBioNetworkReaction} from './fl-bio-network.class';
 import {FlBioNetworkNode} from './fl-bio-network-node.class';
 import {FlBioNetworkNodeCofactor} from './fl-bio-network-node-cofactor.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlExternalLinkService} from '../../../service/fl-external-link.service';
+import {FlBioNetworkNodeMetabolite} from './fl-bio-network-node-metabolite.class';
 
 export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
 
   public type: 'reaction';
   public data: FlBioNetworkReaction;
   public pathwayIds: string[]; // list of pathway for the reaction
-  public clusterId: string;
+  public cluster: FlBioNetworkClusterInfo;
 
   private readonly cofactorDistance = 20;
 
 
-  constructor(name: string, cluster: string,
+  constructor(name: string, cluster: FlBioNetworkClusterInfo,
               defaultColor: string, strokeColor: string,
               data: FlBioNetworkReaction, pathwayIds: string[],
               public existsInMultipleCluster: boolean) {
     super(name, 'reaction', defaultColor, strokeColor, data);
-    this.clusterId = cluster;
+    this.cluster = cluster;
     this.pathwayIds = pathwayIds;
   }
 
@@ -29,7 +30,7 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
   }
 
   isInCluster(id: string): boolean {
-    return this.clusterId === id;
+    return this.cluster.clusterId === id;
   }
 
 
@@ -80,4 +81,30 @@ export class FlBioNetworkNodeReaction extends FlBioNetworkNode {
     const rheaId = this.getRheaId();
     return rheaId ? FlExternalLinkService.getRheaDatabaseReactionLink(rheaId) : null;
   }
+
+  /**
+   * Return the next connected metabolite or cofactor
+   */
+  public getNextMetabolites(): (FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor)[] {
+    return this.getConnectedNodes()
+      .filter(node => node instanceof FlBioNetworkNodeMetabolite || node instanceof FlBioNetworkNodeCofactor)
+      .map(node => node as FlBioNetworkNodeMetabolite);
+  }
+
+  /**
+   * Return the previous connected metabolite or cofactor
+   */
+  public getPreviousMetabolites(): (FlBioNetworkNodeMetabolite | FlBioNetworkNodeCofactor)[] {
+    return this.getConnectedNodes()
+      .filter(node => node instanceof FlBioNetworkNodeMetabolite || node instanceof FlBioNetworkNodeCofactor)
+      .map(node => node as FlBioNetworkNodeMetabolite);
+  }
+
+  /**
+   * return the list of same reaction that are in another cluster
+   */
+  public getSameReactionNodesInOtherCluster(): FlBioNetworkNode[] {
+    return this.getConnectedNodes().filter(node => node instanceof FlBioNetworkNodeReaction);
+  }
+
 }

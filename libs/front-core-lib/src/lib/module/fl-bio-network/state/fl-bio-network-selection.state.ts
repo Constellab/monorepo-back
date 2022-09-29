@@ -45,8 +45,15 @@ export class FlBioNetworkSelectionState implements OnDestroy {
   public selectNodeAndDirectLinks(node: FlBioNetworkNode, mode: 'singleNode' | 'singleNodeByClick'): void {
     this.unselectAll();
 
+    const nodeIds = [node.id];
+
+    // when a reaction is selected, we also select the same reaction in the other cluster
+    if (node instanceof FlBioNetworkNodeReaction) {
+      nodeIds.push(...node.getSameReactionNodesInOtherCluster().map(n => n.id));
+    }
+
     // TODO fix when the node does not have links
-    const links: FlBioNetworkLink[] = this.getConnectedReactionsLinks([node.id]);
+    const links: FlBioNetworkLink[] = this.getConnectedReactionsLinks(nodeIds);
 
     // select the connected nodes
     const nodes: FlBioNetworkNode[] = this.selectNodesAndLinksFromLinks(links);
@@ -209,7 +216,7 @@ export class FlBioNetworkSelectionState implements OnDestroy {
         // if the other part of the connection is a reaction, get also all the links of the reaction
         // exclude the link that are crossed cluster
         if (otherNode instanceof FlBioNetworkNodeReaction) {
-          links.push(...otherNode.getAllLinks().filter(link => link.type !== 'cross-cluster-link'));
+          links.push(...otherNode.getAllLinks());
         }
       }
     }

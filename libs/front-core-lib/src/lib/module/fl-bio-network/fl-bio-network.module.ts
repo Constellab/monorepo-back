@@ -71,6 +71,9 @@ import {
   FlBioNetworkNodeReactionDetailComponent
 } from './component/fl-bio-network-node-reaction-detail/fl-bio-network-node-reaction-detail.component';
 import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
+import {
+  FlBioNetworkNodeCofactorDetailComponent
+} from './component/fl-bio-network-node-cofactor-detail/fl-bio-network-node-cofactor-detail.component';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -94,6 +97,7 @@ import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
     FlBioNetworkReactionFluxComponent,
     FlBioNetworkNodeMetaboliteDetailComponent,
     FlBioNetworkNodeReactionDetailComponent,
+    FlBioNetworkNodeCofactorDetailComponent,
   ],
   exports: [
     FlBioNetworkComponent,

@@ -17,7 +17,6 @@ import {FlThemeService} from '../../../service/fl-theme.service';
 import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 import {FlBioNetworkEngineState} from '../state/fl-bio-network-engine.state';
-import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
 
 export interface FlBioNetworkGraphRenderer {
   graph: ForceGraphInstance;
@@ -133,12 +132,6 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
       data: data
     };
 
-    for (const link of data.links) {
-      if (link.source instanceof FlBioNetworkNodeCofactor && link.target instanceof FlBioNetworkNodeCofactor) {
-        console.log(link);
-      }
-    }
-
     const themeDetail: FlThemeDetail = this.themeService.getCurrentThemeDetail();
     const grey = themeDetail.greyLowContrast;
 
@@ -190,7 +183,7 @@ export class FlBioNetworkMainRenderer implements OnDestroy {
     if (includeCofactors) {
       return {
         nodes: data.getAllNodes(),
-        links: data.links
+        links: data.getAllLinks()
       };
     } else {
       return {

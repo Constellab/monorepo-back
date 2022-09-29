@@ -4,10 +4,11 @@ import {FlBioNetworkOptions} from '../state/fl-bio-network-options.state';
 import {FlBioNetworkGraphRenderer} from './fl-bio-network-main.renderer';
 import {FlBioNetworkObjectColorFunction, FlBioNetworkObjectRenderer} from './fl-bio-network-object.renderer';
 import {Observable} from 'rxjs';
-import {FlBioNetworkSelectionEvent} from '../model/fl-bio-network-selection.class';
+import {FlBioNetworkSelectionEvent, FlBioNetworkSelectionMode} from '../model/fl-bio-network-selection.class';
 import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
 import {FlBioNetworkLinkColorFunction, FlBioNetworkParticleColor} from '../model/fl-bio-network-particle-color.class';
 import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';
+import {FlBioNetworkNodeReaction} from '../model/fl-bio-network-node-reaction.class';
 
 
 export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
@@ -38,7 +39,11 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
     // link arrow visibility
     if (options.showArrows) {
       this.graphRenderer.graph.linkDirectionalArrowLength(
-        (link: FlBioNetworkLink) => link.isLinkedToCofactor() ? 3 : 10)
+        (link: FlBioNetworkLink) => {
+          // don't show arrows for cross cluster links
+          if (link.type === 'cross-cluster-link') return 0;
+          return link.isLinkedToCofactor() ? 3 : 10;
+        })
         .linkDirectionalArrowRelPos(0.5);
     } else {
       this.graphRenderer.graph.linkDirectionalArrowLength(null);
@@ -98,9 +103,10 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
   }
 
   protected updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[],
+                             selectionMode: FlBioNetworkSelectionMode,
                              selectedNode: FlBioNetworkNode | null,
                              showRelatedCofactor: boolean): void {
-    const levelVisibility = this.getLevelVisibilityFunction(visibleLevels);
+    const levelVisibility = this.getLevelVisibilityFunction(visibleLevels, selectionMode);
 
     let visibilityLink: (object: FlBioNetworkLink) => boolean;
 
@@ -111,12 +117,19 @@ export class FlBioNetworkLinksRenderer extends FlBioNetworkObjectRenderer {
           return link.source.showCofactor(visibleLevels);
         } else if (link.target instanceof FlBioNetworkNodeCofactor) {
           return link.target.showCofactor(visibleLevels);
-          // only show the cross cluster link for the selected node
-        } else if (selectedNode && link.type === 'cross-cluster-link') {
-          return link.target.id === selectedNode.id || link.source.id === selectedNode.id;
+        } else if (link.type === 'cross-cluster-link') {
+          if (!selectedNode || !levelVisibility(link)) return false;
+          return selectedNode instanceof FlBioNetworkNodeReaction &&
+            link.target.id === selectedNode.id || link.source.id === selectedNode.id;
+          // show the cross cluster link for the selected node
+          // if (selectedNode && (link.target.id === selectedNode.id || link.source.id === selectedNode.id)) return true;
+          // show the cross cluster of the connected reactions
+          // return (link.target.selected && link.target.type === 'reaction') || (link.source.selected && link.source.type === 'reaction');
         }
         return link.isVisible && link.type === 'link' && levelVisibility(link);
       };
+
+
     } else {
       // only show the visible links of basic type
       visibilityLink = (object: FlBioNetworkLink) => object.isVisible && object.type === 'link' && levelVisibility(object);

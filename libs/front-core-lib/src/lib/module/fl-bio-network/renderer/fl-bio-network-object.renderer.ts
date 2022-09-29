@@ -42,7 +42,7 @@ export abstract class FlBioNetworkObjectRenderer {
     const showRelatedCofactors = modeToShowCofactor.includes(selection.mode);
 
     let selectedNodes: FlBioNetworkNode = null;
-    if(selection.mode === 'singleNode' || selection.mode === 'singleNodeByClick'){
+    if (selection.mode === 'singleNode' || selection.mode === 'singleNodeByClick') {
       selectedNodes = (selection as FlBioNetworkSelectionEventSingleNode).selectedNode;
     }
 
@@ -55,13 +55,14 @@ export abstract class FlBioNetworkObjectRenderer {
       }
     }
 
-    this.updateVisibility(options.visibleLevels, selectedNodes, showRelatedCofactors);
+    this.updateVisibility(options.visibleLevels, selection.mode, selectedNodes, showRelatedCofactors);
   }
 
 
   protected abstract updateObjectColors(options: FlBioNetworkOptions): void;
 
   protected abstract updateVisibility(visibleLevels: FlBioNetworkMetaboliteLevel[],
+                                      selectionMode: FlBioNetworkSelectionMode,
                                       selectedNode: FlBioNetworkNode | null,
                                       showRelatedCofactor: boolean): void;
 
@@ -82,8 +83,15 @@ export abstract class FlBioNetworkObjectRenderer {
     return (node: FlBioNetworkGraphObject) => node.defaultColor;
   }
 
-  protected getLevelVisibilityFunction(levels: FlBioNetworkMetaboliteLevel[]): (object: FlBioNetworkGraphObject) => boolean {
-    return (object: FlBioNetworkGraphObject): boolean => levels.includes(object.getLevel());
+  protected getLevelVisibilityFunction(levels: FlBioNetworkMetaboliteLevel[],
+                                       selectionMode: FlBioNetworkSelectionMode): (object: FlBioNetworkGraphObject) => boolean {
+    // when 1 node is selected, show node based on level and selected nodes
+    if (selectionMode === 'singleNode' || selectionMode === 'singleNodeByClick') {
+      return (object: FlBioNetworkGraphObject): boolean => object.selected || levels.includes(object.getLevel());
+      // for other selection, show node based on level
+    } else {
+      return (object: FlBioNetworkGraphObject): boolean => levels.includes(object.getLevel());
+    }
   }
 
 
