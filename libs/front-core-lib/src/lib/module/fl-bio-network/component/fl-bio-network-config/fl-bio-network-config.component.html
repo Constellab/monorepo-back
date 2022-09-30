@@ -15,16 +15,16 @@
     </mat-form-field>
 
     <!--  Select the database  -->
-<!--    <mat-form-field>-->
-<!--      <mat-label>{{'flBioNetwork.select_db' | translate}}</mat-label>-->
-<!--      <mat-select placeholder="{{'flBioNetwork.select_db' | translate}}"-->
-<!--                  [(ngModel)]="database" (selectionChange)="onDatabaseChange($event)"-->
-<!--                  class="g-mat-select-capitalize">-->
-<!--        <mat-option *ngFor="let db of pathwayDatabases" [value]="db">-->
-<!--          <div class="g-text-capitalize-first">{{db}}</div>-->
-<!--        </mat-option>-->
-<!--      </mat-select>-->
-<!--    </mat-form-field>-->
+    <!--    <mat-form-field>-->
+    <!--      <mat-label>{{'flBioNetwork.select_db' | translate}}</mat-label>-->
+    <!--      <mat-select placeholder="{{'flBioNetwork.select_db' | translate}}"-->
+    <!--                  [(ngModel)]="database" (selectionChange)="onDatabaseChange($event)"-->
+    <!--                  class="g-mat-select-capitalize">-->
+    <!--        <mat-option *ngFor="let db of pathwayDatabases" [value]="db">-->
+    <!--          <div class="g-text-capitalize-first">{{db}}</div>-->
+    <!--        </mat-option>-->
+    <!--      </mat-select>-->
+    <!--    </mat-form-field>-->
 
 
     <fl-bio-network-clusters-list></fl-bio-network-clusters-list>
@@ -34,6 +34,13 @@
   <fl-bio-network-engine-config class="block"></fl-bio-network-engine-config>
 
   <fl-bio-network-engine-progress class="block"></fl-bio-network-engine-progress>
+
+  <div class="g-text-centered legend">
+    <button mat-stroked-button type="button" class="g-button-small"
+            (click)="openLegendDialog()">
+      {{'flBioNetwork.legend' | translate}}
+    </button>
+  </div>
 </div>
 
 

@@ -2,6 +2,8 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FlBioNetworkState} from '../../state/fl-bio-network.state';
 import {FlBioNetwork} from '../../model/fl-bio-network.class';
 import {MatSelectChange} from '@angular/material/select';
+import {FlDialogService} from '../../../fl-dialog/fl-dialog.service';
+import {FlBioNetworkLegendComponent} from '../fl-bio-network-legend/fl-bio-network-legend.component';
 
 /**
  * Component to select the network and the pathways database
@@ -20,7 +22,8 @@ export class FlBioNetworkConfigComponent implements OnInit {
   // database: FlPathwayDatabase;
   // pathwayDatabases: FlPathwayDatabase[] = flPathwayDatabases;
 
-  constructor(private state: FlBioNetworkState) {
+  constructor(private state: FlBioNetworkState,
+              private dialogService: FlDialogService) {
   }
 
   ngOnInit(): void {
@@ -40,5 +43,9 @@ export class FlBioNetworkConfigComponent implements OnInit {
   // onDatabaseChange(change: MatSelectChange): void {
   //   this.state.selectDatabase(change.value);
   // }
+
+  openLegendDialog(): void {
+    this.dialogService.openSmallDialog(FlBioNetworkLegendComponent);
+  }
 
 }

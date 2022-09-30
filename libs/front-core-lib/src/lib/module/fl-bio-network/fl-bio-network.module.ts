@@ -74,6 +74,8 @@ import {FlTextIconModule} from '../fl-text-icon/fl-text-icon.module';
 import {
   FlBioNetworkNodeCofactorDetailComponent
 } from './component/fl-bio-network-node-cofactor-detail/fl-bio-network-node-cofactor-detail.component';
+import {FlBioNetworkLegendComponent} from './component/fl-bio-network-legend/fl-bio-network-legend.component';
+import {FlDialogModule} from '../fl-dialog/fl-dialog.module';
 
 /**
  * Module to handle specific chart to show a pathway
@@ -98,6 +100,7 @@ import {
     FlBioNetworkNodeMetaboliteDetailComponent,
     FlBioNetworkNodeReactionDetailComponent,
     FlBioNetworkNodeCofactorDetailComponent,
+    FlBioNetworkLegendComponent,
   ],
   exports: [
     FlBioNetworkComponent,
@@ -132,6 +135,7 @@ import {
     FlKeyValueModule,
     FlDateModule,
     FlTextIconModule,
+    FlDialogModule,
   ],
 })
 export class FlBioNetworkModule {

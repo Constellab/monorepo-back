@@ -4,6 +4,7 @@ import {FlBioNetworkNodeReaction} from './fl-bio-network-node-reaction.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlExternalLinkService} from '../../../service/fl-external-link.service';
 
+export const flBioNetworkCofactorColor = '#ffaa33';
 
 export class FlBioNetworkNodeCofactor extends FlBioNetworkNode {
   public type: 'cofactor';
@@ -13,7 +14,7 @@ export class FlBioNetworkNodeCofactor extends FlBioNetworkNode {
   public parentNode: FlBioNetworkNodeReaction;
 
   constructor(name: string, defaultColor: string, data: FlBioNetworkMetabolite) {
-    super(name, 'cofactor', '#ffaa33', defaultColor, data);
+    super(name, 'cofactor', flBioNetworkCofactorColor, defaultColor, data);
   }
 
   protected _getLevel(): FlBioNetworkMetaboliteLevel {

@@ -77,6 +77,14 @@ const flBioNetworkI18nFr: FlLangTranslation = {
     reaction_substrate: 'Substrats',
     rhea_id: 'Rhea id',
     chebi_id: 'ChEBI ID',
+    legend: 'Légende',
+    legend_metabolite: 'Métabolite',
+    legend_metabolite_duplicated: 'Métabolite présent dans plusieurs pathway (dupliqué)',
+    legend_reaction: 'Réaction',
+    legend_reaction_duplicated: 'Réaction présente dans plusieurs pathway (dupliquée)',
+    legend_cofactor: 'Cofacteur',
+    legend_link: 'Lien',
+    legend_dotted_link: 'Lien entre les reaction dupliquées',
   }
 };
 
@@ -151,6 +159,14 @@ const flBioNetworkI18nEn: FlLangTranslation = {
     reaction_substrate: 'Substrates',
     rhea_id: 'Rhea id',
     chebi_id: 'ChEBI ID',
+    legend: 'Legend',
+    legend_metabolite: 'Metabolite',
+    legend_metabolite_duplicated: 'Metabolite present in several pathways (duplicated)',
+    legend_reaction: 'Reaction',
+    legend_reaction_duplicated: 'Reaction present in several pathways (duplicated)',
+    legend_cofactor: 'Cofactor',
+    legend_link: 'Link',
+    legend_dotted_link: 'Link between duplicated reactions',
   }
 };
 
