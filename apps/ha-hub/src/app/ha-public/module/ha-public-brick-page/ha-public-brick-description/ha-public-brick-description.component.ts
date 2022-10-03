@@ -22,6 +22,7 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
   latestBrickVersion: HaBrickVersion;
   lastVersion: CmVersion;
   references: HaReferenceDTO[];
+  isAdmin: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -38,7 +39,7 @@ export class HaPublicBrickDescriptionComponent implements OnInit {
       this.brickService.getByName(params.brickName).subscribe(brick => {
         this.brick = brick;
       });
-
+      this.isAdmin$().subscribe(admin => this.isAdmin = admin);
 
     });
   }

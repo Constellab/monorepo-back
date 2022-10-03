@@ -89,16 +89,25 @@ export class HnBrickService {
   }
 
   async findByName(name: string): Promise<HnBrick> {
-    return this.isCurrentAdmin() ? this.bricksRepository.findOne({
+    const isAdmin: boolean = this.isCurrentAdmin();
+    const brick: HnBrick =  isAdmin ? await this.bricksRepository.findOne({
       where: {
         name: name
       }
-    }) : this.bricksRepository.findOne({
+    }) : await this.bricksRepository.findOne({
       where: {
         name: name,
         visibility: 'public'
       }
     });
+
+    if(!isAdmin){
+      brick.gitRepo = null;
+      brick.pipRepo = null;
+    }
+
+    return brick;
+
   }
 
   async findById(id: string): Promise<HnBrick> {

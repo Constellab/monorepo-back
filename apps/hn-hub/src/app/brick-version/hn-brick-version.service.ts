@@ -6,13 +6,14 @@ import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version
 import {BlAbstractService, BlTransportService} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
-import {ClPageI} from '@monorepo/core-lib';
+import {ClPageI, ClStringHelper} from '@monorepo/core-lib';
 import {CmVersion} from '@monorepo/common-model';
 import {HnBrickVersionReferenceService} from '../brick-version-reference/hn-brick-version-reference.service';
 import {
   HnBrickVersionReference,
   HnBrickVersionRefState
 } from '../brick-version-reference/hn-brick-version-reference.entity';
+import {HnUserService} from '../users/hn-user.service';
 
 @Injectable()
 export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
@@ -22,6 +23,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     private brickVersionsRepository: Repository<HnBrickVersion>,
     private transportService: BlTransportService,
     private brickVersionReferenceService: HnBrickVersionReferenceService,
+    private userService: HnUserService
   ) {
     super(brickVersionsRepository, HnBrickVersion);
   }
@@ -146,7 +148,9 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   }
 
   async getCurrentBrickVersion(page: number, size: number, brickId: string): Promise<ClPageI<HnBrickVersion>> {
-    return this.findPaginated(page, size,
+    const isAdmin: boolean = (await this.userService.getCurrent())?.isAdmin();
+
+    const pageBrickVersion: ClPageI<HnBrickVersion> = await this.findPaginated(page, size,
       {
         where: {
           brickMajorVersion: {
@@ -161,6 +165,18 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         relations: ['brickMajorVersion']
       }
     );
+    if(!isAdmin){
+      for(const bV of pageBrickVersion.objects){
+        if(bV.technicalInfo){
+          for(const tInfoKey of Object.keys(bV.technicalInfo)){
+            if(ClStringHelper.isHttpLink(bV.technicalInfo[tInfoKey])){
+              bV.technicalInfo[tInfoKey] = null;
+            }
+          }
+        }
+      }
+    }
+    return pageBrickVersion;
   }
 
   async getLatestBrickVersion(brickMajorVersionId: string): Promise<HnBrickVersion> {

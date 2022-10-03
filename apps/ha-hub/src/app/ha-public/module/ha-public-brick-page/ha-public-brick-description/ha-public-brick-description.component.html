@@ -43,13 +43,13 @@
   </div>
   <div class="right-side-div side-description-div">
     <h2>{{'technical_information' | translate}}</h2>
-    <br *ngIf="brick.gitRepo && isAdmin$() | async">
-    <fl-key-value *ngIf="brick.gitRepo">
+    <br *ngIf="brick.gitRepo && isAdmin">
+    <fl-key-value *ngIf="brick.gitRepo && isAdmin">
       <fl-key>{{'repo_git' | translate}}</fl-key>
       {{brick.gitRepo}}
     </fl-key-value>
-    <br *ngIf="brick.pipRepo && isAdmin$() | async">
-    <fl-key-value *ngIf="brick.pipRepo">
+    <br *ngIf="brick.pipRepo && isAdmin">
+    <fl-key-value *ngIf="brick.pipRepo && isAdmin">
       <fl-key>{{'repo_pip' | translate}}</fl-key>
       {{brick.pipRepo}}
     </fl-key-value>

@@ -20,16 +20,19 @@ import {HnProtocolService} from '../protocol/hn-protocol.service';
 import {HnProtocolModule} from '../protocol/hn-protocol.module';
 import {HnBrickVersionReferenceModule} from '../brick-version-reference/hn-brick-version-reference.module';
 import {HnBrickVersionReferenceService} from '../brick-version-reference/hn-brick-version-reference.service';
+import {HnUserService} from '../users/hn-user.service';
+import {HnUserModule} from '../users/hn-user.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([HnBrickMajorVersion]),
     HnBrickVersionModule, HnFolderModule, HnDocumentationModule,
-    HnCoreModule, HnTechnicalFolderModule, HnResourceModule, HnTaskModule, HnProtocolModule, HnBrickVersionReferenceModule],
+    HnCoreModule, HnTechnicalFolderModule, HnResourceModule, HnTaskModule, HnProtocolModule,
+    HnBrickVersionReferenceModule, HnUserModule],
   exports: [TypeOrmModule],
   controllers: [HnBrickMajorVersionController],
   providers: [HnBrickMajorVersionService, HnBrickVersionService, HnFolderService,
     HnDocumentationService, HnTechnicalFolderService, HnResourceService,
-    HnTaskService, HnProtocolService, HnBrickVersionReferenceService]
+    HnTaskService, HnProtocolService, HnBrickVersionReferenceService, HnUserService]
 })
 export class HnBrickMajorVersionModule {
 }
