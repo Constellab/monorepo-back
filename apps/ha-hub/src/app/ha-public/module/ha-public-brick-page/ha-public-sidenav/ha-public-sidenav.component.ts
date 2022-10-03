@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {
   HaMateTreeFlatDataSource,
   HaNode,
@@ -60,7 +60,7 @@ export class HaPublicSidenavComponent implements OnInit {
   menuOpen: boolean;
   openedMenu: FlOverlayRef;
 
-  trackByIdentity = (index: number, item: any) => item;
+  trackByIdentity = (index: number, item: any): any => item;
 
   private _transformer = (node: HaNode, level: number): any => {
     return {
@@ -111,6 +111,7 @@ export class HaPublicSidenavComponent implements OnInit {
     private folderService: HaFolderService,
     private dialogService: FlDialogService,
     public mediaObserver: MediaObserver,
+    private changeDetectorRefs: ChangeDetectorRef
   ) {
   }
 
@@ -160,12 +161,12 @@ export class HaPublicSidenavComponent implements OnInit {
 
   private getDocumentations(): void{
     this.brickService.getBrickDocs(this.brickId, this.brickVersion).subscribe((data) => {
-      this.dataSource.data = data.children;
+      this.rebuildTreeForData(data.children);
       if (this.dataSource.data.length > 0) {
         this.dataSource$ = of(this.dataSource);
         this.mainFolderId = this.dataSource.data[0].parentId;
         this.docData = data.children;
-        this.updateDataSource();
+        this.changeDetectorRefs.detectChanges();
       }
     });
   }
@@ -496,54 +497,8 @@ export class HaPublicSidenavComponent implements OnInit {
     );
   }
 
-  private updateDataSource(): void {
-    this.dataSource$ = this.searchTechDocControl.valueChanges.pipe(
-      startWith(''),
-      map(value => {
-        const res: HaMateTreeFlatDataSource<HaNode, any, any> = new HaMateTreeFlatDataSource(this.treeControl, this.treeFlattener);
-        if (value == '') {
-          return this.dataSource;
-        }
-        res.data = this.filterDocData(value, JSON.parse(JSON.stringify(this.docData)));
-        return res;
-      }),
-      tap(() => {
-        if (this.searchTechDocControl.value.length > 0) {
-          this.expandNonEmptyDocNode();
-        }
-      })
-    );
-  }
-
-  private filterDocData(value: string, data: HaNode[]): HaNode[] {
-    const res: HaNode[] = [];
-    for (const node of data) {
-      if (node.children) {
-        const childRes: HaNode[] = this.filterDocData(value, node.children);
-        if (childRes && childRes.length > 0) {
-          res.push(node);
-          res[res.length - 1].children = childRes;
-        }
-      } else {
-        if (ClStringHelper.stringContains(node.name, value, true, true, true)) {
-          res.push(node);
-        }
-      }
-    }
-    return res;
-  }
-
   private expandNode(node: HaNode): void {
     this.treeControl.expand(this.treeControl.dataNodes.find(n => n.completePath === node.completePath));
-  }
-
-  private expandNonEmptyDocNode(nodes?: HaNode[]): void {
-    for (const node of (nodes ? nodes : this.dataSource.data)) {
-      if (node.children && node.children.length > 0) {
-        this.expandNode(node);
-        this.expandNonEmptyDocNode(node.children);
-      }
-    }
   }
 
 }

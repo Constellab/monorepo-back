@@ -71,7 +71,7 @@ export class HnDocumentationService {
         relations: ['folder']
       })).find(d => d.folder.brickMajorVersion.id == brickMajorVersion.id);
 
-    if (documentation.content && documentation.content.ops) {
+    if (documentation && documentation.content && documentation.content.ops) {
       const links: CmRichTextLink[] = CmRichText.getLinks(documentation.content as CmRichTextI);
       for (const l of links) {
         if (l.attributes.id) {
