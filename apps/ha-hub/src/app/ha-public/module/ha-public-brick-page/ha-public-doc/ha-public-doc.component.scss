@@ -22,19 +22,34 @@
 .side h3, .side h4{
   overflow: hidden;
   text-overflow: ellipsis;
+  height: 40px;
+  line-height: 40px;
+  width: 96%;
+  padding-left: 0.5em;
+}
+
+.side h3:hover, .side h4:hover{
+  background-color: var(--grey-low-contrast);
+}
+
+.side h3{
+  font-weight: normal;
+  font-size: 14px;
 }
 
 .side h4{
-  border-left: 1px solid var(--grey-low-contrast);
+  font-size: 12px;
 }
 
 .title-doc-side{
   width: 100%;
+  padding-left: 0.2em;
 }
 
 .title-side-line{
-  width: 80%;
+  width: 98%;
   border-bottom: 2px solid var(--grey-low-contrast);
+  margin-bottom: 1em;
 }
 
 .side h4{

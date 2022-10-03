@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {HaPublicDocComponent} from './ha-public-doc.component';
 
-describe('DaPublicDocPageComponent', () => {
+describe('HaPublicDocPageComponent', () => {
   let component: HaPublicDocComponent;
   let fixture: ComponentFixture<HaPublicDocComponent>;
 
