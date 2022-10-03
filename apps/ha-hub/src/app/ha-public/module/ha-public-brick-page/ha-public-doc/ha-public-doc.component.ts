@@ -7,7 +7,7 @@ import {
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {HaDocumentationService} from '../../../../ha-core/ha-service/ha-documentation.service';
-import {FlDebouncer, FlDialogService, FlPortalService, FlTextEditorConfig} from '@monorepo/front-core-lib';
+import {FlDebouncer, FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
 import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {Observable} from 'rxjs';
@@ -34,6 +34,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   isLoading: boolean = true;
   textEditorConfig: HaDocTextEditorConfig;
   docNotFound: boolean = false;
+  isDisabled: boolean = true;
 
   constructor(
     private brickService: HaBrickService,
@@ -150,6 +151,10 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
       }
     });
 
+  }
+
+  changeTextEditorState(): void{
+    this.isDisabled = !this.isDisabled;
   }
 
   ngOnDestroy(): void {

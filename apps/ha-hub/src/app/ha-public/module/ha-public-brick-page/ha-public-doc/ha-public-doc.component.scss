@@ -65,13 +65,17 @@
   height: 5em;
 }
 
-.doc-title{
-  padding-top: 1em;
+.doc-title-bt{
   margin: auto;
   width: calc(65rem - 105px);
-  padding-left: 35px;
+  display: flex;
+  flex-direction: row;
   border-bottom: 3px solid var(--grey-low-contrast);
-  padding-bottom: 0.2em;
+  padding: 1em 30px 0.2em;
+}
+
+.doc-bt{
+  margin-left: auto;
 }
 
 .loader{
