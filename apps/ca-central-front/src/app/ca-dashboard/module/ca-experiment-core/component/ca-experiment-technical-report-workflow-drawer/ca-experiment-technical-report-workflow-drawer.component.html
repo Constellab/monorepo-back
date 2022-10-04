@@ -22,11 +22,11 @@
         {{nodeSelected.currentObject.instanceName}}
       </fl-key-value>
 
-      <fl-key-value *ngIf="object.config" class="kv">
+      <fl-key-value *ngIf="object.config | flIsNotEmpty" class="kv">
         <fl-key>
             {{'config' | translate}}
         </fl-key>
-        <fl-pretty-json [object]="object.config" [dense]="true"></fl-pretty-json>
+        <fl-pretty-json [object]="object.config.values" [dense]="true" *ngIf="object.config.values | flIsNotEmpty"></fl-pretty-json>
         <button mat-stroked-button type="button"
                 (click)="openConfigInfo(object.config)" class="g-button-small">
           <mat-icon>info</mat-icon>
