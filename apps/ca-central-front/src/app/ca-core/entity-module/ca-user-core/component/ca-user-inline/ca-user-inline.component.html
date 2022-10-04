@@ -1,7 +1,7 @@
 <div fxLayout="row" fxLayoutAlign="start center"
      fxLayoutGap="0.4em">
   <fl-user-profile-picture [user]="user"
-                           class="person-picture"></fl-user-profile-picture>
+                           class="person-picture" [size]="'medium'"></fl-user-profile-picture>
 
   <div class="g-text-small" *ngIf="showName">
     {{user.fullname}}

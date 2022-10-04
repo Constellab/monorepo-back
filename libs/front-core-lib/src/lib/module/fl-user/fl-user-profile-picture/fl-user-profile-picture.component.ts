@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FlUserConfig} from '../service/fl-user-config.config';
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 
 export interface FlUserProfilePicture{
   firstname: string;
@@ -9,6 +9,11 @@ export interface FlUserProfilePicture{
   id: string;
 }
 
+export enum FlUserProfilePictureSize {
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  BIG = 'big'
+}
 
 @Component({
   selector: 'fl-user-profile-picture',
@@ -21,7 +26,9 @@ export class FlUserProfilePictureComponent implements OnInit {
   user: FlUserProfilePicture;
 
   @Input()
-  size: number = 3;
+  size: FlUserProfilePictureSize | string = FlUserProfilePictureSize.MEDIUM;
+
+  sizeNumber: number = 3;
 
   fontSize: number;
 
@@ -36,7 +43,20 @@ export class FlUserProfilePictureComponent implements OnInit {
 
   ngOnInit(): void {
     this.initials = (this.user.firstname?.charAt(0) ?? '') + (this.user.lastname?.charAt(0) ?? '');
-    this.fontSize = this.size / 4;
+    switch (this.size) {
+      case FlUserProfilePictureSize.SMALL:
+        this.sizeNumber = 2.5;
+        break;
+      case FlUserProfilePictureSize.MEDIUM:
+        this.sizeNumber = 3;
+        break;
+      case FlUserProfilePictureSize.BIG:
+        this.sizeNumber = 6;
+        break;
+      default:
+        this.sizeNumber = +this.size;
+    }
+    this.fontSize = this.sizeNumber / 4;
     this.getPhotoLink();
   }
 

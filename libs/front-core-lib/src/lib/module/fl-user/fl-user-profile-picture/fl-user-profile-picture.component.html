@@ -1,5 +1,5 @@
-<div class="user-icon" [style.height]="size+'em'" [style.width]="size+'em'"
-     [style.line-height]="size+'em'" [style.font-size]="fontSize+'em'">
+<div class="user-icon" [style.height]="sizeNumber+'em'" [style.width]="sizeNumber+'em'"
+     [style.line-height]="sizeNumber+'em'" [style.font-size]="fontSize+'em'">
   <img [src]="imgSrc" class="user-icon-image" *ngIf="hasPhoto$ | async"/>
   <span>{{ initials }}</span>
 </div>
