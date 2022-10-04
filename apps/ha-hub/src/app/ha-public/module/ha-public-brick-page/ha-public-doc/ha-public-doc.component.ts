@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
 import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {
   HaDocumentation,
@@ -7,11 +7,24 @@ import {
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {HaDocumentationService} from '../../../../ha-core/ha-service/ha-documentation.service';
-import {FlDebouncer, FlDialogService, FlPortalService} from '@monorepo/front-core-lib';
+import {
+  FlConfirmDialogInput,
+  FlDebouncer,
+  FlDialogService,
+  FlFormDialogInput,
+  FlMenuDynamic,
+  FlMenuDynamicService,
+  FlOverlayRef,
+  FlPortalService
+} from '@monorepo/front-core-lib';
 import {HaAuthenticatedUserService} from '../../../../ha-core/ha-service/ha-authenticated-user.service';
 import {CmRichText, CmRichTextI} from '@monorepo/common-model';
 import {Observable} from 'rxjs';
 import {HaDocTextEditorConfig} from '../ha-doc-text-editor-config.class';
+import {HaNodeDTO} from '../../../../ha-core/ha-model/ha-entities/ha-node.class';
+import {
+  HaPublicSidenavCreateFormDialogComponent
+} from '../ha-public-sidenav-create-form-dialog/ha-public-sidenav-create-form-dialog.component';
 
 @Component({
   selector: 'ha-public-doc-page',
@@ -19,6 +32,8 @@ import {HaDocTextEditorConfig} from '../ha-doc-text-editor-config.class';
   styleUrls: ['./ha-public-doc.component.scss'],
 })
 export class HaPublicDocComponent implements OnInit, OnDestroy {
+
+  @Output() newItemEvent: EventEmitter<string> = new EventEmitter<string>();
 
   private contentDebouncer: FlDebouncer<CmRichTextI>;
   documentation: HaDocumentation;
@@ -35,6 +50,8 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
   textEditorConfig: HaDocTextEditorConfig;
   docNotFound: boolean = false;
   isDisabled: boolean = true;
+  menuOpen: boolean;
+  openedMenu: FlOverlayRef;
 
   constructor(
     private brickService: HaBrickService,
@@ -42,6 +59,7 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     private authUserService: HaAuthenticatedUserService,
     private dialogService: FlDialogService,
     private portalService: FlPortalService,
+    private contextMenuService: FlMenuDynamicService,
     private route: ActivatedRoute,
     private router: Router) {
   }
@@ -153,8 +171,115 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
 
   }
 
-  changeTextEditorState(): void{
+  onClickMenu(event: MouseEvent): void {
+    this.isAdmin.subscribe(isAdmin => {
+      if (isAdmin) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (this.menuOpen) {
+          this.openedMenu.overlayRef.detach();
+        }
+        this.openedMenu =
+          this.contextMenuService.openDynamicMenuFromMouseEvent(this.getContextMenuConfig(), event);
+        this.menuOpen = true;
+      }
+    });
+  }
+
+  openResourceDelete(): void {
+    const input: FlConfirmDialogInput = {
+      title: 'confirm_deletion',
+      content: 'confirm_deletion_message',
+      translateTitleAndContent: true,
+      observable: this.documentationService.deleteById(this.documentation.id),
+      successMessage: 'documentation_deleted',
+      translateMessage: true
+    };
+
+    this.dialogService.openConfirmDialog(input).afterClosed().subscribe(res => {
+
+      if (res.choice) {
+        this.newItemEvent.emit('delete');
+      }
+    });
+  }
+
+  private getContextMenuConfig(): FlMenuDynamic[] {
+    if (this.isDisabled) {
+      return [
+        {
+          type: 'button',
+          text: {text: 'edit', translateText: true},
+          icon: 'edit_note',
+          onClick: () => this.changeTextEditorState()
+        },
+        {
+          type: 'button',
+          text: {text: 'edit_title', translateText: true},
+          icon: 'edit',
+          onClick: () => this.prepareEditDialog()
+        },
+        {
+          type: 'button',
+          text: {text: 'delete', translateText: true},
+          icon: 'delete',
+          onClick: () => this.openResourceDelete(),
+        }
+      ];
+    }
+    return [
+      {
+        type: 'button',
+        text: {text: 'view', translateText: true},
+        icon: 'visibility',
+        onClick: () => this.changeTextEditorState()
+      },
+      {
+        type: 'button',
+        text: {text: 'edit_title', translateText: true},
+        icon: 'edit',
+        onClick: () => this.prepareEditDialog()
+      },
+      {
+        type: 'button',
+        text: {text: 'delete', translateText: true},
+        icon: 'delete',
+        onClick: () => this.openResourceDelete()
+      }
+    ];
+  }
+
+  private changeTextEditorState(): void {
     this.isDisabled = !this.isDisabled;
+  }
+
+  private prepareEditDialog(): void {
+    this.createEditDialog(this.documentation);
+  }
+
+  private createEditDialog(object: HaDocumentation): void {
+    const node: HaNodeDTO = new HaNodeDTO();
+    node.id = object.id;
+    node.path = object.path;
+    node.title = object.title;
+
+    const input: FlFormDialogInput<HaNodeDTO> = {
+      mode: 'update',
+      object: node
+    };
+
+    this.openSmallDialog(input);
+  }
+
+  private openSmallDialog(input: any): void {
+    this.dialogService.openSmallDialog(HaPublicSidenavCreateFormDialogComponent, {data: input}).afterClosed().subscribe(
+      (res: HaDocumentation) => {
+        if (res != null) {
+          this.router.navigate(['..', res.path], {relativeTo: this.route});
+          this.newItemEvent.emit('rename');
+        }
+      }
+    );
   }
 
   ngOnDestroy(): void {

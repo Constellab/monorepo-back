@@ -30,6 +30,7 @@
   background-color: var(--main-background);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 @media (max-width: 959px) {
@@ -92,25 +93,29 @@
 }
 
 .line-mat{
-  width: 100%;
-  display: flex !important;
-  flex-direction: row;
+  max-width: calc(100% - 15px);
   vertical-align: middle;
-  align-items: center;
   height: 100%;
+  display: inline-flex;
 }
 
 .line-text{
   flex: auto;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 1em;
+  display: block;
 }
 
 .line-icons{
-  width: 3em;
-  display: flex;
-  flex-direction: row-reverse;
+  width: auto;
   font-size: 10px;
   align-items: center;
   margin-left: auto;
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .placeholder-level{

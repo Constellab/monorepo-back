@@ -10,9 +10,10 @@
       <div class="doc-title-bt">
         <h1 class="doc-title">{{documentation.title}}</h1>
         <div class="doc-bt" *ngIf="isAdmin | async">
-          <button mat-icon-button (click)="changeTextEditorState()" type="button">
-            <mat-icon *ngIf="isDisabled">edit</mat-icon>
-            <mat-icon *ngIf="!isDisabled">visibility</mat-icon>
+          <button mat-icon-button type="button" (click)="onClickMenu($event)">
+            <mat-icon>
+              more_vert
+            </mat-icon>
           </button>
         </div>
       </div>

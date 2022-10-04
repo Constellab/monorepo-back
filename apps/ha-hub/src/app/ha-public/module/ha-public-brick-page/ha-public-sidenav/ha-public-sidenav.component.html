@@ -20,20 +20,15 @@
           <a (click)="closeSideNav()" [routerLink]="node.completePath"
              [relativeTo]="activatedRoute" [routerLinkActive]="'active'" class="line item" draggable="false"
              *ngIf="node.id != null">
-            <div matLine [matTreeNodePadding]="node.level+1" matTreeNodePaddingIndent="15px" class="link-item">
-              <span [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}">
+            <div matLine [matTreeNodePadding]="node.level+1" matTreeNodePaddingIndent="15px" class="link-item line-mat">
+              <span [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}" class="line-text">
                   {{node.name}}
               </span>
-              <div class="line-icons" *ngIf="(isAdmin | async) && hoverId===node.id">
+              <div class="line-icons" *ngIf="(isAdmin | async) && hoverId === node.id">
                 <button type="button" mat-icon-button matTooltip="{{'drag_and_drop_to_move' | translate}}"
                         class="g-button-icon-small">
                   <mat-icon cdkDragHandle class="drag-drop-bt">
                     drag_handle
-                  </mat-icon>
-                </button>
-                <button type="button" mat-icon-button class="g-button-icon-small">
-                  <mat-icon (click)="onClickMenu($event, false, false, node.id)">
-                    more_vert
                   </mat-icon>
                 </button>
               </div>
@@ -51,27 +46,26 @@
                [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}" (click)="expansionModel.toggle(node)"
                matTreeNodeToggle (mouseenter)="hoverId=node.id" (mouseleave)="hoverId=null">
 
-            <div matLine class="line-mat" [matTreeNodePadding]="node.level+1" matTreeNodePaddingIndent="15px">
-              <div class="line-text">
+            <div matLine class="line-mat link-item" [matTreeNodePadding]="node.level+1" matTreeNodePaddingIndent="15px">
+              <span class="line-text" [ngStyle]="{'font-size': node.level > 0 ? '12px' : '14px'}">
                 {{node.name}}
-              </div>
-
+              </span>
               <div class="line-icons">
                 <button type="button" mat-icon-button class="g-button-icon-small">
                   <mat-icon>
                     {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                   </mat-icon>
                 </button>
-                <button type="button" mat-icon-button matTooltip="{{'drag_and_drop_to_move' | translate}}"
-                        class="g-button-icon-small" *ngIf="(isAdmin | async) && hoverId===node.id">
-                  <mat-icon cdkDragHandle class="drag-drop-bt">
-                    drag_handle
-                  </mat-icon>
-                </button>
                 <button type="button" mat-icon-button class="g-button-icon-small"
                         *ngIf="(isAdmin | async) && hoverId===node.id">
                   <mat-icon (click)="onClickMenu($event, true, false, node.id)">
                     more_vert
+                  </mat-icon>
+                </button>
+                <button type="button" mat-icon-button matTooltip="{{'drag_and_drop_to_move' | translate}}"
+                        class="g-button-icon-small" *ngIf="(isAdmin | async) && hoverId===node.id">
+                  <mat-icon cdkDragHandle class="drag-drop-bt">
+                    drag_handle
                   </mat-icon>
                 </button>
               </div>
@@ -132,7 +126,7 @@
       <mat-icon (click)="openSideNav()" class="bt-open-side-nav">menu</mat-icon>
     </div>
     <div [class]="isSmallScreen ? 'small-router' : 'router'">
-      <router-outlet></router-outlet>
+      <router-outlet (activate)="componentAdded($event)"></router-outlet>
     </div>
   </mat-drawer-content>
 </mat-drawer-container>

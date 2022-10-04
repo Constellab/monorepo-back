@@ -10,7 +10,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {HaFolderService} from '../../../../ha-core/ha-service/ha-folder.service';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,
@@ -34,6 +34,7 @@ import {MediaChange, MediaObserver} from '@angular/flex-layout';
 import {FormControl} from '@ngneat/reactive-forms';
 import {ClStringHelper} from '@monorepo/core-lib';
 import {map} from 'rxjs/operators';
+import {HaPublicDocComponent} from '../ha-public-doc/ha-public-doc.component';
 
 
 interface FlatNode {
@@ -106,6 +107,7 @@ export class HaPublicSidenavComponent implements OnInit {
     private brickService: HaBrickService,
     private authUserService: HaAuthenticatedUserService,
     private route: ActivatedRoute,
+    private router: Router,
     private contextMenuService: FlMenuDynamicService,
     private documentationService: HaDocumentationService,
     private folderService: HaFolderService,
@@ -499,6 +501,21 @@ export class HaPublicSidenavComponent implements OnInit {
 
   private expandNode(node: HaNode): void {
     this.treeControl.expand(this.treeControl.dataNodes.find(n => n.completePath === node.completePath));
+  }
+
+
+
+  componentAdded(event: HaPublicDocComponent): void{
+    event.newItemEvent.subscribe(e => {
+      if(e == 'rename'){
+        this.getDocumentations();
+      } else if(e == 'delete'){
+        this.brickService.getBrickDocs(this.brickId, this.brickVersion).subscribe((data) => {
+          this.rebuildTreeForData(data.children);
+          this.router.navigate(['.'], {relativeTo: this.route})
+        });
+      }
+    });
   }
 
 }
