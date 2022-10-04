@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Put,
-  Res,
-  UploadedFile,
-  UploadedFiles,
-  UseInterceptors
-} from '@nestjs/common';
+import {Body, Controller, Get, Param, Put, Res, UploadedFiles, UseInterceptors} from '@nestjs/common';
 import {CnUsersService} from './cn-users.service';
 import {CnUser, CnUserEditDTO} from './cn-user.entity';
 import {CnUserCategories} from '../cn-core/decorators/cn-user-category.decorator';
@@ -47,20 +36,18 @@ export class CnUsersController {
     return this.usersService.findAll();
   }
 
-  @UseInterceptors(FilesInterceptor('userNewPhoto'))
-  @Post('edit')
+  @Put('edit')
   editUser(@Body( new BlParsePipe(CnUserEditDTO)) userEdit: CnUserEditDTO): Promise<CnUser>{
-    console.log(userEdit);
     return this.usersService.editUser(userEdit);
   }
 
   @UseInterceptors(FilesInterceptor('photo'))
-  @Put('new-photo/:userId')
+  @Put('edit-photo/:userId')
   saveNewPhoto(@Param('userId') userId: string, @UploadedFiles() files: BlFile[]): Promise<CnUser>{
-    console.log(files)
     return files[0] ? this.usersService.saveNewPhoto(files[0], userId) : null;
   }
 
+  @BlPublic()
   @Get('photo/:userId')
   public async getUserPhoto(@Param('userId') userId: string,
                    @Res() response: Response): Promise<any> {

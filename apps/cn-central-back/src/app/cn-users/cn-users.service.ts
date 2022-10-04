@@ -89,15 +89,6 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
     );
   }
 
-  async editUser(userEdit: CnUserEditDTO): Promise<CnUser>{
-    const user: CnUser = await this.repository.findOne(userEdit.userInfo.id);
-    if(userEdit.userNewPhoto){
-      console.log(userEdit.userNewPhoto);
-      //user = await this.saveNewPhoto(userEdit.userNewPhoto, user);
-    }
-    return this.repository.save(user);
-  }
-
   async saveNewPhoto(file: BlFile, userId: string): Promise<CnUser> {
     const user: CnUser = await this.repository.findOne(userId);
     const newPhoto: string =
@@ -126,5 +117,13 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
 
   private getUserProfilePictureBucket(): string {
     return this.configService.getUserProfilePictureObjectStorageBucket();
+  }
+
+  async editUser(userEdit: CnUserEditDTO): Promise<CnUser> {
+    const user: CnUser = await this.repository.findOne(userEdit.id);
+    user.firstname = userEdit.firstname;
+    user.lastname = userEdit.lastname;
+    user.email = userEdit.email;
+    return this.repository.save(user);
   }
 }

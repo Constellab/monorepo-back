@@ -108,6 +108,8 @@ export class CnUser extends BlEntityWithId implements BlUser {
 }
 
 export class CnUserEditDTO{
-  userInfo: Partial<CnUser>;
-  userNewPhoto: File;
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
 }

@@ -28,7 +28,7 @@ export class CaUserProfileSectionComponent implements OnInit {
       mode: 'update',
       object: this.user
     };
-    this.dialogService.openBigDialog(CaUserProfileEditDialogComponent, {data: input}).afterClosed().subscribe(
+    this.dialogService.openMediumDialog(CaUserProfileEditDialogComponent, {data: input}).afterClosed().subscribe(
       (res) => {
         if(res){
           window.location.reload();

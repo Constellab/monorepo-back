@@ -62,7 +62,6 @@ export class FlUserProfilePictureComponent implements OnInit {
 
   getPhotoLink(): string {
     const link: string = this.userConfig.getUserPhoto(this.user.id);
-    console.log(link);
     this.checkIfImage(link);
     return link;
   }

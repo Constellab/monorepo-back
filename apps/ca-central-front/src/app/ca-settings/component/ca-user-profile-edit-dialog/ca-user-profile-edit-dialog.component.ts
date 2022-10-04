@@ -42,9 +42,9 @@ export class CaUserProfileEditDialogComponent extends FlFormDialogAbstractDirect
   buildForm(): FormGroup<Partial<CaUser>> {
     return new FormBuilder().group({
       id: [null],
-      lastname: [{value: null, disabled: true}, Validators.required],
-      firstname: [{value: null, disabled: true}, Validators.required],
-      email: [{value: null, disabled: true}, [Validators.required]],
+      lastname: [{value: null}, Validators.required],
+      firstname: [{value: null}, Validators.required],
+      email: [{value: null}, [Validators.required]],
       photo: [null],
     });
   }

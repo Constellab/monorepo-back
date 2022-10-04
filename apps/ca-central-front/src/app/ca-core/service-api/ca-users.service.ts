@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {mergeMap, Observable} from 'rxjs';
 import {CaUser} from '../model/entities/ca-user.class';
 import {FlApiService} from '@monorepo/front-core-lib';
+import {map} from 'rxjs/operators';
 
 /**
  * Service for the User entities
@@ -25,9 +26,13 @@ export class CaUsersService {
   }
 
   public editUser(newUserInfo: Partial<CaUser>, newUserPhoto: File): Observable<CaUser>{
+
     const formData = new FormData();
     formData.append('photo', newUserPhoto);
-    return this.apiService.put(this.route + '/new-photo/' + newUserInfo.id, formData);
+    return this.apiService.put(this.route + '/edit-photo/' + newUserInfo.id, formData).pipe(
+      mergeMap(() => this.apiService.put(this.route + '/edit', newUserInfo, CaUser)),
+      map((res) => res)
+    );
   }
 
 
