@@ -31,12 +31,10 @@
     <div *ngIf="documentation" class="title-side-line"></div>
     <ng-container *ngFor="let title of titles; let i = index">
       <ng-container *ngIf="title.level === 2; else e">
-        <h3><a [routerLink]="'.'" [fragment]="title.id">{{title.title}}</a></h3>
+        <a [routerLink]="'.'" [fragment]="title.id"><h3>{{title.title}}</h3></a>
       </ng-container>
       <ng-template #e>
-        <h4>
-          <a [routerLink]="'.'" [fragment]="title.id">{{title.title}}</a>
-        </h4>
+        <a [routerLink]="'.'" [fragment]="title.id"><h4>{{title.title}}</h4></a>
       </ng-template>
     </ng-container>
   </div>
