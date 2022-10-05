@@ -56,7 +56,7 @@ export const flThemeDetailDark: FlThemeDetail = {
   accentContrast: '#E8E8E8',
   warnContrast: '#010202',
 
-  greyLowContrast: '#545454',
+  greyLowContrast: '#404444',
   greyLowContrastText: '#ffffff',
   greyContrast: '#6c6c6c',
   greyContrastText: '#ffffff',
