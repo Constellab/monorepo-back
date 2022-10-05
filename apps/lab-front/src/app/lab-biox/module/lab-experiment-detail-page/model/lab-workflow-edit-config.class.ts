@@ -290,8 +290,6 @@ export class LabWorkflowEditConfig implements OnDestroy {
   private onWorkflowActionResult(actionResult: FlPortalActionResult): void {
     if (actionResult.status === 'success') {
       if (actionResult.action.type === LabWorkflowAction.ADD_PROCESS) {
-        const layer: PrWorkflowLayer = this.workflow.findLayerWithId(actionResult.additionalInformation);
-        layer.addNode(actionResult.result);
         this.onNewNode(actionResult.result, actionResult.additionalInformation);
       } else if (actionResult.action.type === LabWorkflowAction.ADD_PROCESS_WITH_CONNECTIONS) {
         this.onNewNodeWithConnector(actionResult.result, actionResult.additionalInformation);
@@ -314,9 +312,11 @@ export class LabWorkflowEditConfig implements OnDestroy {
         .includes(actionResult.action.type as any)) {
         // re-create the node and connection
         const info: LabWorkflowEventNodeAdditionalInfo = actionResult.additionalInformation;
-        const layer = this.workflow.findLayerWithId(info.protocolId);
+
         // re-create the node
-        layer.addNode(info.node);
+        this.onNewNode(info.node, info.protocolId)
+
+        const layer: PrWorkflowLayer = this.workflow.findLayerWithId(info.protocolId);
         // re-create the connections
         for (const connection of info.connections) {
           layer.addConnection(connection);
@@ -326,7 +326,6 @@ export class LabWorkflowEditConfig implements OnDestroy {
   }
 
   private onNewNode(node: PrWorkflowNode, layerId: string,): void {
-
     // add the node to the workflow
     const layer: PrWorkflowLayer = this.workflow.findLayerWithId(layerId);
     layer.addNode(node);
