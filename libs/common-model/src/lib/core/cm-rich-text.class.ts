@@ -37,19 +37,33 @@ export interface CmRichTextFigureOp extends CmRichTextOp {
 
 
 export interface CmRichTextLink {
-  attributes: CmRichTextTitleAttribute,
+  attributes: CmRichTextTitleAttribute;
   insert: string;
+}
+
+export interface CmRichTextHeader {
+  attributes: CmRichTextHeaderAttribute;
+  insert: string;
+}
+
+export interface CmRichTextHeaderAttribute {
+  header: CmRichTextHeaderConfig;
+}
+
+export interface CmRichTextHeaderConfig {
+  level: number;
+  id?: string;
 }
 
 export interface CmRichTextImageCP {
   insert: CmRichTextInsertImage | CmRichTextInsertFigure;
 }
 
-export interface CmRichTextInsertImage{
+export interface CmRichTextInsertImage {
   image: string;
 }
 
-export interface CmRichTextInsertFigure{
+export interface CmRichTextInsertFigure {
   figure: CmRichTextFigure
 }
 
@@ -82,6 +96,19 @@ export class CmRichText {
     return titles;
   }
 
+  public static getHeaders(content: CmRichTextI): CmRichTextHeader[] {
+    const headers: CmRichTextHeader[] = [];
+    const contentData: any[] = content.ops;
+    if (contentData) {
+      contentData.forEach((c) => {
+        if (c.attributes && c.insert && c.attributes.header) {
+          headers.push(c);
+        }
+      })
+    }
+    return headers;
+  }
+
   public static getImageCP(content: CmRichTextI): CmRichTextImageCP[] {
     const imgs: CmRichTextImageCP[] = [];
     const contentData: any[] = content.ops;
@@ -89,7 +116,7 @@ export class CmRichText {
       contentData.forEach((c) => {
         if (c.insert && c.insert.image) {
           const imgLink: string = c.insert.image;
-          if(imgLink.startsWith('data:image/')){
+          if (imgLink.startsWith('data:image/')) {
             imgs.push(c);
           }
         }
@@ -107,21 +134,40 @@ export class CmRichText {
     const headers: any[] = [];
     const contentData: any[] = this.getContent().ops;
     if (contentData != null) {
+      const listId: string[] = [];
       contentData.forEach((c, i) => {
         if (contentData[i + 1] && contentData[i + 1].attributes && contentData[i + 1].attributes.header
           && (headersSize.includes(contentData[i + 1].attributes.header.level))) {
           const inserts: string[] = c.insert.split('\n');
+
+          if (contentData[i + 1].attributes.header.id) {
+
+            contentData[i + 1].attributes.header.id =
+              contentData[i + 1].attributes.header.id.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
+
+            if (contentData[i + 1].attributes.header.id.length > 0) {
+              const nbSame: number = listId.filter(value => value == contentData[i + 1].attributes.header.id).length;
+              if (nbSame > 0)
+                contentData[i + 1].attributes.header.id = contentData[i + 1].attributes.header.id + nbSame;
+              listId.push(contentData[i + 1].attributes.header.id);
+            } else {
+              delete contentData[i + 1].attributes.header.id;
+            }
+          }
+
+
           if (inserts.length > 1) {
             headers.push({
               level: contentData[i + 1].attributes.header.level,
-              id: contentData[i + 1].attributes.header.id,
+              id: contentData[i + 1].attributes.header.id ?? null,
               title: inserts[inserts.length - 1]
             });
           } else headers.push({
             level: contentData[i + 1].attributes.header.level,
-            id: contentData[i + 1].attributes.header.id,
+            id: contentData[i + 1].attributes.header.id ?? null,
             title: c.insert
           });
+
         }
       });
     }

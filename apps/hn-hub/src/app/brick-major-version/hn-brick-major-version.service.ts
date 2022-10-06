@@ -49,11 +49,11 @@ export class HnBrickMajorVersionService {
   }
 
   async findBrickMajorVersionByBrickAndVersion(brick: HnBrick, version: string): Promise<HnBrickMajorVersion> {
-    let major: string;
+    let major: number;
 
     if (version != 'latest') {
-      version = version.slice();
-      major = version.split('.')[0]
+      version = version.slice(1);
+      major = +(version.split('.')[0]);
       return await this.brickMajorVersionsRepository.findOne({where: {brick: brick, major: major}})
     }
 

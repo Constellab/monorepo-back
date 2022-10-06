@@ -112,17 +112,26 @@ export class HaPublicDocComponent implements OnInit, OnDestroy {
     if (url.length == 0) {
       isFirstDoc = true;
       this.brickService.getFirstDoc(this.brickName, this.brickVersion).subscribe(doc => {
-        this.isCheck = true;
-        this.actionOnDoc(isFirstDoc, doc);
+        if(doc){
+          this.docNotFound = false;
+          this.isCheck = true;
+          this.actionOnDoc(isFirstDoc, doc);
+        } else {
+          this.docNotFound = true;
+        }
+
       });
     } else {
       path = url.join('/') + '/';
       this.brickService.getDocByPath(this.brickName, path, this.brickVersion).subscribe(doc => {
-        if(doc == null){
+        if(doc){
+          this.docNotFound = false;
+          this.isCheck = true;
+          this.actionOnDoc(isFirstDoc, doc);
+        } else {
           this.docNotFound = true;
         }
-        this.isCheck = true;
-        this.actionOnDoc(isFirstDoc, doc);
+
       });
     }
   }

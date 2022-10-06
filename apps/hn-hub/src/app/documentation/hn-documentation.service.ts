@@ -10,7 +10,7 @@ import {HnCoreConfigService} from '../core/modules/core-config/hn-core-config.se
 import {IncomingMessage} from 'http';
 import imageSize from 'image-size';
 import {HnNodeDTO} from '../folder/hn-folder.dto';
-import {CmRichText, CmRichTextI, CmRichTextImageCP, CmRichTextLink} from '@monorepo/common-model';
+import {CmRichText, CmRichTextHeader, CmRichTextI, CmRichTextImageCP, CmRichTextLink} from '@monorepo/common-model';
 import {HnFolder} from '../folder/hn-folder.entity';
 import {ISizeCalculationResult} from 'image-size/dist/types/interface';
 
@@ -50,6 +50,7 @@ export class HnDocumentationService {
     const doc: HnDocumentation = await this.documentationsRepository.findOne(updatedDocumentation.id, {relations: ['folder']});
     doc.path = updatedDocumentation.title.toLowerCase().trim();
     doc.path = doc.path.replace(/ /gi, '-');
+    doc.path = doc.path.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
     doc.title = updatedDocumentation.title;
     doc.completePath = doc.folder.completePath ? doc.folder.completePath + doc.path + '/' : doc.path + '/';
     return this.documentationsRepository.save(doc);
@@ -73,14 +74,22 @@ export class HnDocumentationService {
 
     if (documentation && documentation.content && documentation.content.ops) {
       const links: CmRichTextLink[] = CmRichText.getLinks(documentation.content as CmRichTextI);
+
       for (const l of links) {
         if (l.attributes.id) {
           const linkDoc: HnDocumentation = await this.documentationsRepository.findOne(l.attributes.id, {relations: ['folder']});
           if (linkDoc) {
-
+            const insert: string[] = l.insert.split('> ');
+            let path: string = linkDoc.completePath.slice(0, -1);
+            if (insert.length > 1) {
+              l.insert = linkDoc.title + ' > ' + insert[1];
+              path += '#' + insert[1];
+            } else {
+              l.insert = linkDoc.title;
+            }
 
             // eslint-disable-next-line max-len
-            l.attributes.link = `${this.configService.getFrontRootUrl()}bricks/${linkDoc.folder.brickMajorVersion.brick.name}/v${linkDoc.folder.brickMajorVersion.major}/doc/${l.attributes.link}`;
+            l.attributes.link = `${this.configService.getFrontRootUrl()}bricks/${linkDoc.folder.brickMajorVersion.brick.name}/v${linkDoc.folder.brickMajorVersion.major}/doc/${path}`;
 
             documentation.content.ops.find(
               (o: CmRichTextLink) => o.attributes && o.attributes.id && o.attributes.id === l.attributes.id)
@@ -89,7 +98,6 @@ export class HnDocumentationService {
         }
       }
     }
-
     return documentation;
   }
 
@@ -107,6 +115,8 @@ export class HnDocumentationService {
 
   async editContent(content: CmRichTextI): Promise<CmRichTextI> {
     const links: CmRichTextLink[] = CmRichText.getLinks(content);
+    const headers: CmRichTextHeader[] = CmRichText.getHeaders(content);
+
     for (const l of links) {
       if (l.attributes.link.startsWith(this.configService.getFrontRootUrl())) {
         const link: string[] = l.attributes.link.substring(this.configService.getFrontRootUrl().length).split('/');
@@ -119,6 +129,23 @@ export class HnDocumentationService {
         }
       }
     }
+
+    const listId: string[] = [];
+    for(const h of headers){
+      if(h.attributes.header.id){
+        h.attributes.header.id = h.attributes.header.id.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
+        if(h.attributes.header.id.length > 0 ){
+          const sameTitleNumber: number = listId.filter(value => value == h.attributes.header.id).length;
+          if(sameTitleNumber > 0){
+            h.attributes.header.id = h.attributes.header.id + sameTitleNumber;
+          }
+          listId.push(h.attributes.header.id);
+        } else {
+          delete h.attributes.header.id;
+        }
+      }
+    }
+
     const imageCP: CmRichTextImageCP[] = CmRichText.getImageCP(content);
     for(const im of imageCP){
       if('image' in im.insert){
@@ -149,7 +176,7 @@ export class HnDocumentationService {
 
   async getDocumentationIdAndCPByUrl(link: string[]): Promise<[string, string]> {
     const brickName: string = link[1];
-    const majorVersion: number = 0;//+(link[2].slice(1))
+    const majorVersion: number = +(link[2].slice(1));
     link.splice(0, 4)
     if (link[link.length - 1] == '') {
       link.pop();

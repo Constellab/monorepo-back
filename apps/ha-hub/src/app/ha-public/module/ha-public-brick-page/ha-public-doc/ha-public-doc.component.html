@@ -1,4 +1,7 @@
-<ha-ha404 [errorText]="'error_doc_not_found'" *ngIf="docNotFound"></ha-ha404>
+
+<div class="no-doc-div"*ngIf="docNotFound">
+  <ha-ha404 [errorText]="'error_doc_not_found'" ></ha-ha404>
+</div>
 
 <div class="sidenavBody" *ngIf="!docNotFound">
 
@@ -31,10 +34,12 @@
     <div *ngIf="documentation" class="title-side-line"></div>
     <ng-container *ngFor="let title of titles; let i = index">
       <ng-container *ngIf="title.level === 2; else e">
-        <a [routerLink]="'.'" [fragment]="title.id"><h3>{{title.title}}</h3></a>
+        <a [routerLink]="'.'" [fragment]="title.id" *ngIf="title.id"><h3>{{title.title}}</h3></a>
+        <a [routerLink]="'.'" *ngIf="!title.id"><h3>{{title.title}}</h3></a>
       </ng-container>
       <ng-template #e>
-        <a [routerLink]="'.'" [fragment]="title.id"><h4>{{title.title}}</h4></a>
+        <a [routerLink]="'.'" [fragment]="title.id" *ngIf="title.id"><h4>{{title.title}}</h4></a>
+        <a [routerLink]="'.'" *ngIf="!title.id"><h4>{{title.title}}</h4></a>
       </ng-template>
     </ng-container>
   </div>

@@ -14,9 +14,12 @@ export class FlTextEditorHeaderId extends FlQuillHeader {
       return super.create(value);
     } else {
       const node: HTMLElement = super.create(value.level) as any;
-      if (value.id) {
+      if (value.id && value.id.length > 0) {
         node.setAttribute('id', value.id);
+      } else {
+        node.setAttribute('id', ClStringHelper.generateUUID());
       }
+      console.log(value.id)
       return node;
     }
   }
