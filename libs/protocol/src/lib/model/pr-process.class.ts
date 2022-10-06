@@ -1,15 +1,11 @@
 import {FlStatus, FlStatusDict, FlStatusHelper} from '@monorepo/front-core-lib';
 import {PrIO} from './pr-io.class';
 import {PrConfig} from './pr-config.class';
-import {
-  LabProcessStatus
-} from '../../../../../apps/lab-front/src/app/lab-core/model/entities/process/lab-process.entity';
-
 
 export type PrProcessStatus = 'DRAFT' | 'RUNNING' | 'SUCCESS' | 'ERROR';
 
 
-export const prProcessStatusDict: FlStatusDict<LabProcessStatus> = {
+export const prProcessStatusDict: FlStatusDict<PrProcessStatus> = {
   DRAFT: FlStatusHelper.getDraftStatus('DRAFT'),
   RUNNING: FlStatusHelper.getRunningStatus('RUNNING'),
   SUCCESS: FlStatusHelper.getSuccessStatus('SUCCESS'),
