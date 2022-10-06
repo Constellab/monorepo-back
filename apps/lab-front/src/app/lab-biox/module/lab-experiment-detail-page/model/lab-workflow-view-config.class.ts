@@ -1,4 +1,11 @@
-import {PrConfigView, PrWorkflowMode, PrWorkflowNode, PrWorkflowNodeProcess, PrWorkflowPort} from '@monorepo/protocol';
+import {
+  PrConfigView,
+  PrWorkflowMode,
+  PrWorkflowNode,
+  PrWorkflowNodeProcess,
+  PrWorkflowNodeSource,
+  PrWorkflowPort
+} from '@monorepo/protocol';
 import {FlDialogService, FlMenuDynamicButton, FlSavedSearch, flThemeDetailLight} from '@monorepo/front-core-lib';
 import {
   LabResourceDetailDialogComponent
@@ -146,12 +153,22 @@ export class LabWorkflowViewConfig extends PrConfigView {
 
   private openProcessSuggestion(port: PrWorkflowPort, node: PrWorkflowNode,
                                 portType: 'input' | 'output'): void {
+
+    let typingNames: string[] = [];
+    // special case for the source input where we take the type of the resource instead
+    // of the type of the port
+    if(node instanceof PrWorkflowNodeSource && node.getCurrentResource() != null){
+      typingNames = [node.getCurrentResource().resourceTypingName];
+    }else{
+      // use the port typing names
+      typingNames =  port.getResourceTypingNames()
+    }
     const data: LabSelectTypeDialogInput = {
       searchConfig: {
         mode: 'processSuggestion',
         // if the port type selected is an input, we need to suggest process where output matches the input
         suggestBy: portType === 'input' ? 'outputs' : 'inputs',
-        resourceTypingNames: port.getResourceTypingNames()
+        resourceTypingNames: typingNames
       }
     };
     this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: data}).afterClosed().subscribe(

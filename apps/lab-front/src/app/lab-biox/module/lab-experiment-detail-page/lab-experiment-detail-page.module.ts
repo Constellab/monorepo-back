@@ -41,9 +41,6 @@ import {LabConfigureTaskComponent} from './component/lab-configure-task/lab-conf
 import {
   LabWorkflowNodeProgressComponent
 } from './component/lab-workflow-node-progress/lab-workflow-node-progress.component';
-import {
-  LabWorkflowPortActionPortalComponent
-} from './component/lab-workflow-port-action-portal/lab-workflow-port-action-portal.component';
 import {LabEntityCoreModule} from '../../../lab-core/entity-module/lab-entity-core/lab-entity-core.module';
 import {
   LabConfigureViewerDialogComponent
@@ -75,7 +72,6 @@ import {LabReportCoreModule} from '../../../lab-core/entity-module/lab-report-co
     LabConfigureProcessComponent,
     LabConfigureTaskComponent,
     LabWorkflowNodeProgressComponent,
-    LabWorkflowPortActionPortalComponent,
     LabConfigureViewerDialogComponent,
     LabTaskViewerConfigComponent,
     LabTaskViewerShowConfigComponent,
