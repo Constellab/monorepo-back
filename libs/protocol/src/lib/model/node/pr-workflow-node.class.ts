@@ -72,7 +72,6 @@ export abstract class PrWorkflowNode<T = any> {
   }
 
   public updateObject(object: T): void {
-    console.log('Update object', object);
     this.object$.next(object);
   }
 

@@ -148,11 +148,11 @@ export class LabExperimentDetailPageState {
 
   /**
    * One tick to refresh the protocol, after getting all protocol, it calls get protocol again
-   * @param flowIds
+   * @param protocolIds
    * @private
    */
-  private refreshProtocolsTick(flowIds: string[]): void {
-    this.refreshSubscription = this.refreshProtocols(flowIds).subscribe(
+  private refreshProtocolsTick(protocolIds: string[]): void {
+    this.refreshSubscription = this.refreshProtocols(protocolIds).subscribe(
       {
         complete: () => this.checkAndStartRefreshProtocol()
       }
@@ -168,8 +168,8 @@ export class LabExperimentDetailPageState {
     return [this.getCurrentMainProtocol(), ...protocolNodes.map(node => node.currentObject as LabProcess)];
   }
 
-  private refreshProtocols(flowIds: string[]): Observable<LabProtocol> {
-    const obs: Observable<LabProtocol>[] = flowIds.map(id => this.protocolService.getProtocol(id));
+  private refreshProtocols(protocolIds: string[]): Observable<LabProtocol> {
+    const obs: Observable<LabProtocol>[] = protocolIds.map(id => this.protocolService.getProtocol(id));
     return merge(...obs).pipe(
       tap(protocol => this.refreshProtocolSuccess(protocol)),
     );
@@ -212,6 +212,11 @@ export class LabExperimentDetailPageState {
         if (node == null) continue;
         node.updateObject(labProcess);
       }
+    }
+
+    // if the refreshed protocol is the main protocol, update the main protocol
+    if(protocol.id === this.mainProtocol$.value?.id){
+      this.mainProtocol$.next(protocol);
     }
   }
 
