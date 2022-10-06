@@ -10,7 +10,7 @@ import {FlatTreeControl} from '@angular/cdk/tree';
 import {MatTreeFlattener} from '@angular/material/tree';
 import {HaFolderService} from '../../../../ha-core/ha-service/ha-folder.service';
 import {HaBrickService} from '../../../../ha-core/ha-service/ha-brick.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, UrlSegment} from '@angular/router';
 import {
   FlConfirmDialogInput,
   FlConfirmDialogResult,
@@ -43,6 +43,7 @@ interface FlatNode {
   level: number;
   id: string;
   completePath?: string;
+  path?: string;
 }
 
 @Component({
@@ -91,7 +92,6 @@ export class HaPublicSidenavComponent implements OnInit {
 
   dataSource = new HaMateTreeFlatDataSource(this.treeControl, this.treeFlattener);
   dataSource$: Observable<HaMateTreeFlatDataSource<HaNode, any, any>>;
-  docData: HaNode[];
   technicalDataSource = new HaMateTreeFlatDataSource(this.treeControl, this.treeFlattener);
   technicalDataSource$: Observable<HaMateTreeFlatDataSource<HaNode, any, any>>;
   technicalDocResources: HaNode[];
@@ -167,10 +167,21 @@ export class HaPublicSidenavComponent implements OnInit {
       if (this.dataSource.data.length > 0) {
         this.dataSource$ = of(this.dataSource);
         this.mainFolderId = this.dataSource.data[0].parentId;
-        this.docData = data.children;
         this.changeDetectorRefs.detectChanges();
+
+        this.route.children[0].url.subscribe((cp) => {
+          this.expandToOpenedDoc(cp);
+        });
       }
     });
+  }
+
+  private expandToOpenedDoc(cp: UrlSegment[]): void{
+    for(const dN of this.treeControl.dataNodes){
+      if(dN.expandable && cp.find(c => c.path == dN.path)){
+        this.treeControl.expand(dN);
+      }
+    }
   }
 
   setIsSmallScreen(mediaChanges: MediaChange[]): void {
