@@ -78,7 +78,7 @@ export class LabWorkflowViewConfig extends PrConfigView {
         type: 'button',
         text: {text: 'biox.add_transformer', translateText: true},
         icon: 'transformer',
-        onClick: () => this.openTransformerSelection(node.nodeName, port),
+        onClick: () => this.openTransformerSelection(node.nodeName, port, node),
         disabled: workflowMode === 'readOnly'
       },
       this.getProcessSuggestionButton(port, node, 'output', workflowMode),
@@ -153,22 +153,12 @@ export class LabWorkflowViewConfig extends PrConfigView {
 
   private openProcessSuggestion(port: PrWorkflowPort, node: PrWorkflowNode,
                                 portType: 'input' | 'output'): void {
-
-    let typingNames: string[] = [];
-    // special case for the source input where we take the type of the resource instead
-    // of the type of the port
-    if(node instanceof PrWorkflowNodeSource && node.getCurrentResource() != null){
-      typingNames = [node.getCurrentResource().resourceTypingName];
-    }else{
-      // use the port typing names
-      typingNames =  port.getResourceTypingNames()
-    }
     const data: LabSelectTypeDialogInput = {
       searchConfig: {
         mode: 'processSuggestion',
         // if the port type selected is an input, we need to suggest process where output matches the input
         suggestBy: portType === 'input' ? 'outputs' : 'inputs',
-        resourceTypingNames: typingNames
+        resourceTypingNames: this.getPortTypingNames(port, node)
       }
     };
     this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: data}).afterClosed().subscribe(
@@ -197,16 +187,31 @@ export class LabWorkflowViewConfig extends PrConfigView {
 
 
   ///////////////////////////////// TRANSFORMER /////////////////////////////////
-  private openTransformerSelection(outputProcessName: string, port: PrWorkflowPort): void {
+  private openTransformerSelection(outputProcessName: string, port: PrWorkflowPort, node: PrWorkflowNodeProcess): void {
     const data: LabSelectTypeDialogInput = {
       searchConfig: {
         mode: 'transformer',
-        resourceTypingNames: port.getResourceTypingNames()
+        resourceTypingNames: this.getPortTypingNames(port, node)
       }
     };
     this.dialogService.openBigDialog(LabSelectTypeDialogComponent, {data: data}).afterClosed().subscribe(
       processType => this.addProcessConnectedToOutput(processType, outputProcessName, port.name)
     );
+  }
+
+  /**
+   * Return the typing names for a port.
+   * If the node is a Source, we take the type of the resource instead (if configured)
+   */
+  private getPortTypingNames(port: PrWorkflowPort, node: PrWorkflowNode): string[] {
+    // special case
+    // of the type of the port
+    if (node instanceof PrWorkflowNodeSource && node.getCurrentResource() != null) {
+      return [node.getCurrentResource().resourceTypingName];
+    } else {
+      // use the port typing names
+      return port.getResourceTypingNames();
+    }
   }
 
 }
