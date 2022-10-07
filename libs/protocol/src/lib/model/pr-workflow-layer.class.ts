@@ -166,7 +166,7 @@ export class PrWorkflowLayer {
   public getRelativeNodePosition(nodeName: string, position: 'before' | 'after'): FlCoord {
 
     const node: PrWorkflowNode = this.findNodeByName(nodeName);
-    if (node == null) return {x: 0, y: 0};
+    if (node == null || !node.hasCoords()) return {x: 0, y: 0};
 
     // calculate the X pos based on relative node
     const baseNodeCoord = node.getCoords();
@@ -188,7 +188,7 @@ export class PrWorkflowLayer {
   }
 
   ////////////////////////////////// INTERFACE & OUTERFACE ////////////////////////////////
-  public addInterface(interfaceName: string, nodeName: string, portName: string): void {
+  public addInterface(interfaceName: string, nodeName: string, portName: string, coords?: FlCoord): void {
     const node = this.findNodeByName(nodeName);
 
     if (node == null) {
@@ -201,7 +201,14 @@ export class PrWorkflowLayer {
       name: 'i_' + interfaceName,
       portName: port.name,
       portType: port.specs
-    }, this.id);
+    }, this.id, interfaceName);
+
+    if (coords == null) {
+      // calculate and set the position of the interface node
+      coords = this.getRelativeNodePosition(nodeName, 'before');
+    }
+    interfaceNode.setCoords(coords);
+
     this.nodes.push(interfaceNode);
 
     // add to connection of the interface
@@ -210,7 +217,7 @@ export class PrWorkflowLayer {
     this.connections.push(connection);
   }
 
-  public addOuterface(outerfaceName: string, nodeName: string, portName: string): void {
+  public addOuterface(outerfaceName: string, nodeName: string, portName: string, coords?: FlCoord): void {
     const node = this.findNodeByName(nodeName);
 
     if (node == null) {
@@ -223,7 +230,14 @@ export class PrWorkflowLayer {
       name: 'o_' + outerfaceName,
       portName: port.name,
       portType: port.specs
-    }, this.id);
+    }, this.id, outerfaceName);
+
+    if (coords == null) {
+      // calculate and set the position of the outerface node
+      coords = this.getRelativeNodePosition(nodeName, 'after');
+    }
+    outerfaceNode.setCoords(coords);
+
     this.nodes.push(outerfaceNode);
 
     // add to connection of the outerface
@@ -394,7 +408,7 @@ export class PrWorkflowLayer {
   private createAndInitDrawflowNode(node: PrWorkflowNode): void {
     const nodeId: number = this.editor.addNode(node.getCurrentTitle(),
       node.countInputs(), node.countOutputs(), node.x ?? 0,
-      node.y ?? 0 , node.getClassName(), {}, node.getHTML(), false);
+      node.y ?? 0, node.getClassName(), {}, node.getHTML(), false);
 
     // set the nodeId in workflow node
     node.initNode(nodeId.toString(), (id: string) => this.editor.getNodeFromId(id));
@@ -424,9 +438,9 @@ export class PrWorkflowLayer {
   }
 
   public exportLayout(): Record<string, FlCoord> {
-    const layout: Record<string, FlCoord> = {}
-    for(const node of this.nodes){
-      layout[node.nodeName] = {x: node.x, y: node.y}
+    const layout: Record<string, FlCoord> = {};
+    for (const node of this.nodes) {
+      layout[node.nodeName] = {x: node.x, y: node.y};
     }
     return layout;
   }

@@ -4,6 +4,40 @@ import {LabProtocolIOFace, LabProtocolLink} from '../lab-protocol-link.entity';
 import {Expose, Type} from 'class-transformer';
 import {LabProcess, LabProcessData} from './lab-process.entity';
 
+export interface LabProcessLayout {
+  x: number;
+  y: number;
+}
+
+export class LabProtocolLayout {
+  /**
+   * Record with key = instance_name, value = layout of the process
+   */
+  @Expose({name: 'process_layouts'})
+  processLayouts: Record<string, LabProcessLayout>;
+
+  @Expose({name: 'interface_layouts'})
+  interfaceLayouts : Record<string, LabProcessLayout>;
+
+  @Expose({name: 'outerface_layouts'})
+  outerfaceLayouts : Record<string, LabProcessLayout>;
+
+  getProcess(instanceName: string): LabProcessLayout | null {
+    if(this.processLayouts == null) return null;
+    return this.processLayouts[instanceName];
+  }
+
+  getInterface(name: string): LabProcessLayout | null {
+    if(this.interfaceLayouts == null) return null;
+    return this.interfaceLayouts[name];
+  }
+
+  getOuterface(name: string): LabProcessLayout | null {
+    if(this.outerfaceLayouts == null) return null;
+    return this.outerfaceLayouts[name];
+  }
+}
+
 export class LabProtocolGraph extends LabEntity {
 
   title: string;
@@ -20,6 +54,9 @@ export class LabProtocolGraph extends LabEntity {
   @Type(() => LabProtocolLink)
   links: LabProtocolLink[];
 
+  @Type(() => LabProtocolLayout)
+  layout?: LabProtocolLayout;
+
   public static empty(): LabProtocolGraph {
     const graph: LabProtocolGraph = new LabProtocolGraph();
     graph.interfaces = {};
@@ -31,23 +68,7 @@ export class LabProtocolGraph extends LabEntity {
   }
 }
 
-export interface LabProcessLayout {
-  x: number;
-  y: number;
-}
 
-export class LabProtocolLayout {
-  /**
-   * Record with key = instance_name, value = layout of the process
-   */
-  @Expose({name: 'process_layouts'})
-  processLayouts: Record<string, LabProcessLayout>;
-
-  getProcess(instanceName: string): LabProcessLayout | null {
-    if(this.processLayouts == null) return null;
-    return this.processLayouts[instanceName];
-  }
-}
 
 export class LabProtocolData implements LabProcessData {
 
@@ -57,9 +78,6 @@ export class LabProtocolData implements LabProcessData {
 
   @Type(() => LabProtocolGraph)
   graph: LabProtocolGraph;
-
-  @Type(() => LabProtocolLayout)
-  layout?: LabProtocolLayout;
 
   public static empty(): LabProtocolData {
     const data: LabProtocolData = new LabProtocolData();

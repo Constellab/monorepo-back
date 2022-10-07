@@ -40,10 +40,12 @@ export class LabWorkflowFactory {
       layer = new PrWorkflowLayer(protocol.id, protocol.id, protocol.instanceName);
     }
 
+    const protocolLayout = protocol.data.graph.layout;
+
     for (const key in protocol.data.graph.nodes) {
       const process: LabProcess = protocol.data.graph.nodes[key];
       // retrieve the layout of the process if it exists
-      const processLayout = protocol.data.layout.getProcess(key);
+      const processLayout = protocolLayout?.getProcess(key) ?? null;
       const node: PrWorkflowNodeProcess = this.labProcessToWorkflowNode(process, processLayout);
       layer.addNode(node);
     }
@@ -58,10 +60,12 @@ export class LabWorkflowFactory {
     }
 
     for (const inter of Object.values(protocol.data.graph.interfaces)) {
-      layer.addInterface(inter.name, inter.to.nodeName, inter.to.port);
+      const layout = protocolLayout?.getInterface(inter.name) ?? null;
+      layer.addInterface(inter.name, inter.to.nodeName, inter.to.port, layout);
     }
     for (const outer of Object.values(protocol.data.graph.outerfaces)) {
-      layer.addOuterface(outer.name, outer.from.nodeName, outer.from.port);
+      const layout = protocolLayout?.getOuterface(outer.name) ?? null;
+      layer.addOuterface(outer.name, outer.from.nodeName, outer.from.port, layout);
     }
     layer.initNodesPositions();
 

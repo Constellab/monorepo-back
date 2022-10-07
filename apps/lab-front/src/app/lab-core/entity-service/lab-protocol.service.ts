@@ -129,6 +129,15 @@ export class LabProtocolService {
   }
 
   public saveProcessLayout(protocolId: string, processName: string, layout: LabProcessLayout): Observable<void> {
-    return this.apiService.put(`${this.baseRoute}/${protocolId}/layout/${processName}`, layout);
+    return this.apiService.put(`${this.baseRoute}/${protocolId}/layout/process/${processName}`, layout);
   }
+
+  public saveInterfaceLayout(protocolId: string, interfaceName: string, layout: LabProcessLayout): Observable<void> {
+    return this.apiService.put(`${this.baseRoute}/${protocolId}/layout/interface/${interfaceName}`, layout);
+  }
+
+  public saveOuterfaceLayout(protocolId: string, outerfaceName: string, layout: LabProcessLayout): Observable<void> {
+    return this.apiService.put(`${this.baseRoute}/${protocolId}/layout/outerface/${outerfaceName}`, layout);
+  }
+
 }

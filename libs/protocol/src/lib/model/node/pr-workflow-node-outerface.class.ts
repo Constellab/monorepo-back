@@ -9,8 +9,13 @@ import {FlStatus} from '@monorepo/front-core-lib';
  * Node for the outerfaces
  */
 export class PrWorkflowNodeOuterface extends PrWorkflowNode<PrOuterface> {
-  constructor(outerfaceNode: PrOuterface, parentLayerId: string) {
+
+  // real name of the outerface (the name might have been changed to make it unique)
+  public outerfaceName: string;
+
+  constructor(outerfaceNode: PrOuterface, parentLayerId: string, outerfaceName: string) {
     super(outerfaceNode.name, parentLayerId, outerfaceNode);
+    this.outerfaceName = outerfaceName;
   }
 
   getClassName(): string {

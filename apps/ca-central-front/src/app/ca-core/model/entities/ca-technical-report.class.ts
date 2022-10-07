@@ -1,9 +1,16 @@
 import {PrConfigValues, PrIO, PrProcessStatus} from '@monorepo/protocol';
+import {FlCoord} from '@monorepo/front-core-lib';
 
 export class CaTechnicalReport {
   version: number;
 
   data: CaTechnicalReportData;
+}
+
+export interface ProtocolLayout{
+  process_layouts: Record<string, FlCoord>;
+  interface_layouts: Record<string, FlCoord>;
+  outerface_layouts: Record<string, FlCoord>;
 }
 
 export interface CaTechnicalReportData {
@@ -20,6 +27,7 @@ export interface CaTechnicalReportGraph {
 
   outerfaces: Record<string, CaTechnicalReportIntOut>;
 
+  layout?: ProtocolLayout;
 }
 
 export interface CaTechnicalReportProcess {

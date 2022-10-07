@@ -9,8 +9,12 @@ import {FlStatus} from '@monorepo/front-core-lib';
  */
 export class PrWorkflowNodeInterface extends PrWorkflowNode<PrInterface> {
 
-  constructor(interfaceNode: PrInterface, parentLayerId: string) {
+  // real name of the interface (the name might have been changed to make it unique)
+  public interfaceName: string
+
+  constructor(interfaceNode: PrInterface, parentLayerId: string, interfaceName: string) {
     super(interfaceNode.name, parentLayerId, interfaceNode);
+    this.interfaceName = interfaceName;
   }
 
   getClassName(): string {

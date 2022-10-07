@@ -7,7 +7,8 @@ import {
   PrWorkflowLayer,
   PrWorkflowNode,
   PrWorkflowNodeInterface,
-  PrWorkflowNodeOuterface
+  PrWorkflowNodeOuterface,
+  PrWorkflowNodeProcess
 } from '@monorepo/protocol';
 import {Observable, Subscription} from 'rxjs';
 import {LabProtocolService} from '../../../../lab-core/entity-service/lab-protocol.service';
@@ -283,9 +284,17 @@ export class LabWorkflowEditConfig implements OnDestroy {
         }
         break;
       case 'nodeMoved':
-        // save the node positions
-        this.protocolService.saveProcessLayout(workflowEvent.protocolId, workflowEvent.node.nodeName,
-          workflowEvent.node.getCoords()).subscribe();
+        if (workflowEvent.node instanceof PrWorkflowNodeProcess) {
+          // save the node positions
+          this.protocolService.saveProcessLayout(workflowEvent.protocolId, workflowEvent.node.nodeName,
+            workflowEvent.node.getCoords()).subscribe();
+        } else if (workflowEvent.node instanceof PrWorkflowNodeInterface) {
+          this.protocolService.saveInterfaceLayout(workflowEvent.protocolId, workflowEvent.node.interfaceName,
+            workflowEvent.node.getCoords()).subscribe();
+        } else if (workflowEvent.node instanceof PrWorkflowNodeOuterface) {
+          this.protocolService.saveOuterfaceLayout(workflowEvent.protocolId, workflowEvent.node.outerfaceName,
+            workflowEvent.node.getCoords()).subscribe();
+        }
         return;
     }
 
