@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlApiWithCacheService} from '@monorepo/front-core-lib';
 import {Observable} from 'rxjs';
-import {LabProtocol} from '../model/entities/process/lab-protocol.entity';
+import {LabProcessLayout, LabProtocol, LabProtocolLayout} from '../model/entities/process/lab-protocol.entity';
 import {LabProcess} from '../model/entities/process/lab-process.entity';
 import {LabAddProcessWithLink} from '../../lab-biox/module/lab-experiment-detail-page/model/lab-workflow-action.class';
 import {labInstantiateProcess} from '../model/entities/process/lab-process.transform';
@@ -121,5 +121,14 @@ export class LabProtocolService {
                                   outputPortName: string): Observable<LabAddProcessWithLink> {
     return this.apiService.post(`${this.baseRoute}/${protocolId}/add-viewer/${processName}/${outputPortName}`,
       null, LabAddProcessWithLink);
+  }
+
+  ///////////////////////////////////////////////// LAYOUT /////////////////////////////////////////////////
+  public saveLayout(protocolId: string, layout: LabProtocolLayout): Observable<void> {
+    return this.apiService.put(`${this.baseRoute}/${protocolId}/layout`, layout);
+  }
+
+  public saveProcessLayout(protocolId: string, processName: string, layout: LabProcessLayout): Observable<void> {
+    return this.apiService.put(`${this.baseRoute}/${protocolId}/layout/${processName}`, layout);
   }
 }

@@ -13,6 +13,7 @@ export type PrWorkflowMode = 'edit' | 'readOnly';
 export type PrWorkflowEvent =
   PrWorkflowDeleteNodeEvent
   | PrWorkflowConnectionEvent
+  | PrWorkflowNodeMovedEvent;
 
 export interface PrWorkflowDeleteNodeEvent {
   action: 'deleteNode';
@@ -24,6 +25,12 @@ export interface PrWorkflowDeleteNodeEvent {
 export interface PrWorkflowConnectionEvent {
   action: 'addConnection' | 'deleteConnection';
   connection: PrWorkflowConnection;
+  protocolId: string;
+}
+
+export interface PrWorkflowNodeMovedEvent {
+  action: 'nodeMoved';
+  node: PrWorkflowNode;
   protocolId: string;
 }
 
@@ -249,9 +256,15 @@ export class PrWorkflow {
 
   // refresh the node position in the object
   private onNodeMoved(nodeId: string): void {
-    const node = this.currentLayer.findNodeByDrawflowId(nodeId.toString());
+    const layer = this.currentLayer;
+    const node = layer.findNodeByDrawflowId(nodeId.toString());
     if (node) {
       node.refreshCoords();
+      this.workflowEvent$.next({
+        action: 'nodeMoved',
+        node: node,
+        protocolId: layer.id
+      });
     }
   }
 

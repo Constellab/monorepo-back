@@ -1,4 +1,4 @@
-import {LabProtocol} from '../../../../lab-core/model/entities/process/lab-protocol.entity';
+import {LabProcessLayout, LabProtocol} from '../../../../lab-core/model/entities/process/lab-protocol.entity';
 import {
   PrAddNodeWithConnection,
   PrWorkflow,
@@ -42,7 +42,9 @@ export class LabWorkflowFactory {
 
     for (const key in protocol.data.graph.nodes) {
       const process: LabProcess = protocol.data.graph.nodes[key];
-      const node: PrWorkflowNodeProcess = this.labProcessToWorkflowNode(process);
+      // retrieve the layout of the process if it exists
+      const processLayout = protocol.data.layout.getProcess(key);
+      const node: PrWorkflowNodeProcess = this.labProcessToWorkflowNode(process, processLayout);
       layer.addNode(node);
     }
 
@@ -67,22 +69,30 @@ export class LabWorkflowFactory {
   }
 
 
-  public labProcessToWorkflowNode(process: LabProcess): PrWorkflowNodeProcess {
+  public labProcessToWorkflowNode(process: LabProcess, processLayout?: LabProcessLayout): PrWorkflowNodeProcess {
     const getResource = (id: string): Observable<LabResource> => this.resourceService.getById(id);
+
+    let processNode: PrWorkflowNodeProcess;
     if (process.isSource()) {
-      return new PrWorkflowNodeSource(process, getResource);
+      processNode = new PrWorkflowNodeSource(process, getResource);
     } else if (process.isOutput()) {
-      return new PrWorkflowNodeOutput(process, getResource);
+      processNode = new PrWorkflowNodeOutput(process, getResource);
     } else if (process.isViewer()) {
-      return new PrWorkflowNodeViewer(process, getResource);
+      processNode = new PrWorkflowNodeViewer(process, getResource);
     } else if (process.isProtocol) {
       const layer$: Observable<PrWorkflowLayer> = this.protocolService.getProtocol(process.id).pipe(
         map(protocol => this.createLayer(protocol, false))
       );
-      return new PrWorkflowNodeProtocol(process, layer$);
+      processNode = new PrWorkflowNodeProtocol(process, layer$);
     } else {
-      return new PrWorkflowNodeProcess(process);
+      processNode = new PrWorkflowNodeProcess(process);
     }
+
+    // if the position of this process were saved in the protocol, use it
+    if (processLayout) {
+      processNode.setCoords(processLayout)
+    }
+    return processNode;
   }
 
   public labProcessWithLinkToNodeWithLink(processWithLink: LabAddProcessWithLink): PrAddNodeWithConnection {

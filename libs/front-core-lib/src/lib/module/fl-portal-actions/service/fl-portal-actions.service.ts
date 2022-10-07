@@ -38,6 +38,7 @@ export class FlPortalActionsService {
    */
   public addAction(actions: FlPortalAction | FlPortalAction[], autoClose?: boolean,
                    openPortal: boolean = true): void {
+    if(actions == null) return;
     // clear the auto close timer if it exists
     this.clearAutoCloseTimer();
 

@@ -282,6 +282,11 @@ export class LabWorkflowEditConfig implements OnDestroy {
           };
         }
         break;
+      case 'nodeMoved':
+        // save the node positions
+        this.protocolService.saveProcessLayout(workflowEvent.protocolId, workflowEvent.node.nodeName,
+          workflowEvent.node.getCoords()).subscribe();
+        return;
     }
 
     this.actionsService.addAction(portalAction);
@@ -314,7 +319,7 @@ export class LabWorkflowEditConfig implements OnDestroy {
         const info: LabWorkflowEventNodeAdditionalInfo = actionResult.additionalInformation;
 
         // re-create the node
-        this.onNewNode(info.node, info.protocolId)
+        this.onNewNode(info.node, info.protocolId);
 
         const layer: PrWorkflowLayer = this.workflow.findLayerWithId(info.protocolId);
         // re-create the connections

@@ -393,8 +393,8 @@ export class PrWorkflowLayer {
    */
   private createAndInitDrawflowNode(node: PrWorkflowNode): void {
     const nodeId: number = this.editor.addNode(node.getCurrentTitle(),
-      node.countInputs(), node.countOutputs(), node.x + 20,
-      node.y + 20, node.getClassName(), {}, node.getHTML(), false);
+      node.countInputs(), node.countOutputs(), node.x ?? 0,
+      node.y ?? 0 , node.getClassName(), {}, node.getHTML(), false);
 
     // set the nodeId in workflow node
     node.initNode(nodeId.toString(), (id: string) => this.editor.getNodeFromId(id));
@@ -421,5 +421,13 @@ export class PrWorkflowLayer {
     for (const node of this.nodes) {
       node.deInitDrawflow();
     }
+  }
+
+  public exportLayout(): Record<string, FlCoord> {
+    const layout: Record<string, FlCoord> = {}
+    for(const node of this.nodes){
+      layout[node.nodeName] = {x: node.x, y: node.y}
+    }
+    return layout;
   }
 }

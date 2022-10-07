@@ -31,6 +31,23 @@ export class LabProtocolGraph extends LabEntity {
   }
 }
 
+export interface LabProcessLayout {
+  x: number;
+  y: number;
+}
+
+export class LabProtocolLayout {
+  /**
+   * Record with key = instance_name, value = layout of the process
+   */
+  @Expose({name: 'process_layouts'})
+  processLayouts: Record<string, LabProcessLayout>;
+
+  getProcess(instanceName: string): LabProcessLayout | null {
+    if(this.processLayouts == null) return null;
+    return this.processLayouts[instanceName];
+  }
+}
 
 export class LabProtocolData implements LabProcessData {
 
@@ -41,12 +58,16 @@ export class LabProtocolData implements LabProcessData {
   @Type(() => LabProtocolGraph)
   graph: LabProtocolGraph;
 
+  @Type(() => LabProtocolLayout)
+  layout?: LabProtocolLayout;
+
   public static empty(): LabProtocolData {
     const data: LabProtocolData = new LabProtocolData();
     data.graph = LabProtocolGraph.empty();
     return data;
   }
 }
+
 
 export class LabProtocol extends LabProcess {
 
@@ -73,3 +94,4 @@ export class LabProtocol extends LabProcess {
     return this.getNodes()[instanceName];
   }
 }
+
