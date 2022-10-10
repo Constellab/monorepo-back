@@ -5,6 +5,8 @@ import {Type} from 'class-transformer';
 import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
 import {CnEntityDTO} from '../../cn-core/model/entities/cn.entity';
+import {CnUser} from '../../cn-users/cn-user.entity';
+import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
 
 
 export class CnCreateReportDto extends CnEntityDTO {
@@ -38,11 +40,18 @@ export class CnReportDTO extends CnEntityDTO {
   projectId: string;
   isValidated: boolean;
 
+  lastSyncBy?: CnUser;
+
+  @ClLuxonDateTimeTransform()
+  lastSyncAt?: DateTime;
+
   copyEntity(entity: CnReport): this {
     super.copyEntity(entity);
     this.title = entity.title;
     this.projectId = entity.projectId;
     this.isValidated = entity.isValidated;
+    this.lastSyncBy = entity.lastSyncBy;
+    this.lastSyncAt = entity.lastSyncAt;
     return this;
   }
 }

@@ -6,7 +6,8 @@ import {CaReportsListComponent} from './component/ca-reports-list/ca-reports-lis
 import {RouterModule} from '@angular/router';
 import {CaReportContentViewComponent} from './component/ca-report-content-view/ca-report-content-view.component';
 import {CaReportTableComponent} from './component/ca-report-table/ca-report-table.component';
-import {FlColorModule} from "@monorepo/front-core-lib";
+import {FlColorModule} from '@monorepo/front-core-lib';
+import {CaDashboardCoreModule} from '../ca-dashboard-core/ca-dashboard-core.module';
 
 /**
  * Core module for Report entity
@@ -28,6 +29,8 @@ import {FlColorModule} from "@monorepo/front-core-lib";
     RouterModule,
 
     CaCoreModule,
+    CaDashboardCoreModule,
+
     FlColorModule,
   ]
 })

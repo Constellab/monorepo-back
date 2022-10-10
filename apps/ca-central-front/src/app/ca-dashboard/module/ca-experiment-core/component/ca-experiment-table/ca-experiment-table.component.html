@@ -1,19 +1,17 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
   <!-- Title -->
   <ng-container matColumnDef="title">
-    <mat-header-cell *matHeaderCellDef class="g-cell-header-with-left-border">
+    <mat-header-cell *matHeaderCellDef>
       <span> {{'title' | translate}}</span>
     </mat-header-cell>
-    <mat-cell *matCellDef="let experiment" class="g-cell-with-left-border"
-              [style.borderLeftColor]="experiment.project?.id | flStringToRgb">
-      <div>
+    <mat-cell *matCellDef="let experiment">
+      <fl-text-icon>
+        <mat-icon *ngIf="experiment.isValidated"
+                  [matTooltip]="'experiment_validated' | translate"
+                  flIcon="validated">
+        </mat-icon>
         <div>{{experiment.title}}</div>
-        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="experiment.project"
-                      gap="0">
-          <mat-icon flIcon="project" class="g-icon-tiny"></mat-icon>
-          {{experiment.project.title}}
-        </fl-text-icon>
-      </div>
+      </fl-text-icon>
     </mat-cell>
   </ng-container>
 
@@ -43,11 +41,6 @@
       <span>{{'status' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let experiment">
-      <mat-icon *ngIf="experiment.isValidated"
-                [matTooltip]="'experiment_validated' | translate"
-                class="verified-icon" flIcon="validated">
-      </mat-icon>
-
       <fl-status-chip [status]="experiment.status" mode="iconText">
       </fl-status-chip>
     </mat-cell>

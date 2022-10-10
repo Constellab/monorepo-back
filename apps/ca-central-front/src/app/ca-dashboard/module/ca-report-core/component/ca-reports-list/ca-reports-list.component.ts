@@ -12,7 +12,7 @@ import {FlTableColumn} from '@monorepo/front-core-lib';
 export class CaReportsListComponent implements OnInit {
 
   @Input() reports$: Observable<CaReport[]>;
-  columns: FlTableColumn<CaReport>[] = ['title', 'lastSync', 'status'];
+  columns: FlTableColumn<CaReport>[] = ['title', 'createdBy', 'lastSync'];
 
   constructor() {
   }

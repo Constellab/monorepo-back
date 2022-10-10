@@ -12,7 +12,7 @@ export class CaReportTableComponent extends FlTableAbstractDirective<CaReport>
   implements OnInit {
 
   constructor() {
-    super(['title', 'lastSync', 'status']);
+    super(['title', 'createdBy', 'lastSync',]);
   }
 
   ngOnInit(): void {

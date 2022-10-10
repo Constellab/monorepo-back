@@ -100,7 +100,7 @@
   "version": "Version",
   "gws_core_brick_version": "Version de la brique gws_core",
   "creation_info": "Creation info",
-  "last_modification_info": "Last modification info",
+  "last_modification_info": "Info de dernière modification",
   "organization_list": "Organisations",
   "create_organization": "Créer une organisation",
   "update_organization": "Modifier l'organisation",

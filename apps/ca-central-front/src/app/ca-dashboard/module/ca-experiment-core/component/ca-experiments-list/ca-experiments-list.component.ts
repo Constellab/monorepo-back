@@ -14,12 +14,16 @@ import {FlTableColumn} from '@monorepo/front-core-lib';
 export class CaExperimentsListComponent implements OnInit {
 
   @Input() experiments$: Observable<CaExperiment[]>;
+
+  @Input() mode: 'small' | 'large' = 'large';
+
   experiment: CaExperiment;
-  columns: FlTableColumn<CaExperiment>[] = ['title', 'createdBy', 'status', 'lastSync'];
+  columns: FlTableColumn<CaExperiment>[] = ['title', 'createdBy', 'status'];
 
   constructor() {
   }
 
   ngOnInit(): void {
+    this.columns = this.mode === 'small' ? ['title', 'status'] : ['title', 'createdBy', 'status', 'lastSync'];
   }
 }

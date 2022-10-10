@@ -1,19 +1,17 @@
 <mat-table fxFlex="100" mat-table [dataSource]="datasource" class="table">
   <!-- Title -->
   <ng-container matColumnDef="title">
-    <mat-header-cell *matHeaderCellDef class="g-cell-header-with-left-border">
+    <mat-header-cell *matHeaderCellDef>
       <span> {{'title' | translate}}</span>
     </mat-header-cell>
-    <mat-cell *matCellDef="let report" class="g-cell-with-left-border"
-              [style.borderLeftColor]="report.project?.id | flStringToRgb">
-      <div>
+    <mat-cell *matCellDef="let report">
+      <fl-text-icon>
+        <mat-icon *ngIf="report.isValidated"
+                  [matTooltip]="'report_validated' | translate"
+                  flIcon="validated">
+        </mat-icon>
         <div>{{report.title}}</div>
-        <fl-text-icon class="g-text-tiny g-text-light" *ngIf="report.project"
-                      gap="0">
-          <mat-icon flIcon="project" class="g-icon-tiny"></mat-icon>
-          {{report.project.title}}
-        </fl-text-icon>
-      </div>
+      </fl-text-icon>
     </mat-cell>
   </ng-container>
 
@@ -23,29 +21,19 @@
       <span> {{'last_sync' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let report">
-      <div>
-        <fl-last-sync-info [lastSyncAt]="report.lastSyncAt" [lastSyncBy]="report.lastSyncBy?.fullname">
-        </fl-last-sync-info>
-      </div>
+      <ca-sync-object-info [object]="report" [showText]="false"></ca-sync-object-info>
     </mat-cell>
   </ng-container>
 
-  <!-- Status -->
-  <ng-container matColumnDef="status">
+  <!-- CreatedBy -->
+  <ng-container matColumnDef="createdBy">
     <mat-header-cell *matHeaderCellDef>
-      <span>{{'status' | translate}}</span>
+      <span> {{'created_by' | translate}}</span>
     </mat-header-cell>
-    <mat-cell *matCellDef="let report">
-      <mat-icon *ngIf="report.isValidated"
-                [matTooltip]="'biox.experiment_validated' | translate"
-                class="verified-icon" flIcon="validated">
-      </mat-icon>
-
-      <fl-status-chip [status]="report.status" mode="iconText">
-      </fl-status-chip>
+    <mat-cell *matCellDef="let experiment">
+      <ca-user-inline [user]="experiment.createdBy"></ca-user-inline>
     </mat-cell>
   </ng-container>
-
 
 
   <!-- Dynamic columns -->
