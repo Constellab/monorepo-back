@@ -1,10 +1,10 @@
 import {Inject, Injectable, Renderer2, RendererFactory2} from '@angular/core';
-import {FlPlatformService} from './fl-plateform.service';
-import {FlLocalStorageService} from './fl-local-storage.service';
+import {FlPlatformService} from '../../service/fl-plateform.service';
+import {FlLocalStorageService} from '../../service/fl-local-storage.service';
 import {DOCUMENT} from '@angular/common';
 import {clDefaultTheme, ClTheme, clThemeIsSupported} from '@monorepo/core-lib';
 import {FlThemeDetail, flThemeDetailDark, flThemeDetailLight} from './model/fl-theme-detail.class';
-import {flRootInjector} from '../utils/fl-root-injector';
+import {flRootInjector} from '../../utils/fl-root-injector';
 
 /**
  * Service to manage light and dark theme

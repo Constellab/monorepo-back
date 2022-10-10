@@ -10,7 +10,7 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import {FlThemeService} from '../../../../service/fl-theme.service';
+import {FlThemeService} from '../../../fl-theme/fl-theme.service';
 import {FlChartState} from '../../state/fl-chart.state';
 import {FlMenuDynamic} from '../../../fl-menu-dynamic/model/fl-menu-dynamic.class';
 import {ClHelpService} from '@monorepo/core-lib';

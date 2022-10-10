@@ -13,8 +13,8 @@ import {filter} from 'rxjs/operators';
 import {FlBioNetworkNodesRenderer} from './fl-bio-network-nodes.renderer';
 import {FlBioNetworkLinksRenderer} from './fl-bio-network-links.renderer';
 import {FlBioNetworkGridState} from '../state/fl-bio-network-grid.state';
-import {FlThemeService} from '../../../service/fl-theme.service';
-import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
+import {FlThemeService} from '../../fl-theme/fl-theme.service';
+import {FlThemeDetail} from '../../fl-theme/model/fl-theme-detail.class';
 import {FlCoord} from '../../../model/shared/fl-coord.class';
 import {FlBioNetworkEngineState} from '../state/fl-bio-network-engine.state';
 

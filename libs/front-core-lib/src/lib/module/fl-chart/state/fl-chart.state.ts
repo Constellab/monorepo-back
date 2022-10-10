@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {FlChartSvg} from '../model/drawer/fl-chart-svg.class';
 import {FlChartContainer, FlChartContainer2Axis} from '../model/drawer/fl-chart-container.class';
-import {FlThemeService} from '../../../service/fl-theme.service';
+import {FlThemeService} from '../../fl-theme/fl-theme.service';
 import {FlChartConfig} from '../model/fl-chart-config.class';
 import {FlChartBrush} from '../model/drawer/fl-chart-brush.class';
 

@@ -7,11 +7,12 @@ import {RvResourceViewDirective} from './rv-resource-view.directive';
 import {RvViewNetworkComponent} from '../component/rv-view-network/rv-view-network.component';
 import {RvViewSpreadsheetComponent} from '../component/rv-view-spreadsheet/rv-view-spreadsheet.component';
 import {RvViewTextComponent} from '../component/rv-view-text/rv-view-text.component';
+import {FlThemeSwitch} from '@monorepo/front-core-lib';
 
 // Information of the view type
 export interface RvResourceViewTypeInfo {
   icon: string;
-  image: string;
+  image: FlThemeSwitch<string>;
   text: string;
   // Whether the view show in a portal or component by default
   defaultDisplayMode: RvViewDisplayMode;
@@ -31,7 +32,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewJsonComponent,
-    image: '',
+    image: null,
   },
   'text-view': {
     icon: 'text_snippet',
@@ -39,7 +40,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewTextComponent,
-    image: ''
+    image: null,
   },
   'table-view': {
     icon: 'calendar_view_month',
@@ -47,7 +48,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: RvViewSpreadsheetComponent,
-    image: 'assets/views/tabular.png'
+    image: {
+      lightTheme: 'assets/views/light/tabular-view.svg',
+      darkTheme: 'assets/views/dark/tabular-view.svg',
+    }
   },
   'tabular-view': {
     icon: 'calendar_view_month',
@@ -55,7 +59,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: RvViewSpreadsheetComponent,
-    image: 'assets/views/tabular.png'
+    image: {
+      lightTheme: 'assets/views/light/tabular-view.svg',
+      darkTheme: 'assets/views/dark/tabular-view.svg',
+    }
   },
   'dataset-view': {
     icon: 'calendar_view_month',
@@ -63,7 +70,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: RvViewSpreadsheetComponent,
-    image: 'assets/views/tabular.png'
+    image: {
+      lightTheme: 'assets/views/light/tabular-view.svg',
+      darkTheme: 'assets/views/dark/tabular-view.svg',
+    }
   },
   'network-view': {
     icon: 'share',
@@ -71,7 +81,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: RvViewNetworkComponent,
-    image: 'assets/views/network.png'
+    image: {
+      lightTheme: 'assets/views/light/network-view.svg',
+      darkTheme: 'assets/views/dark/network-view.svg',
+    }
   },
   'image-view': {
     icon: 'insert_photo',
@@ -79,7 +92,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: null,
-    image: '',
+    image: null,
   },
   'scatter-plot-2d-view': {
     icon: 'scatter_plot',
@@ -87,7 +100,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
-    image: 'assets/views/scatter-plot.png'
+    image: {
+      lightTheme: 'assets/views/light/scatter-plot.svg',
+      darkTheme: 'assets/views/dark/scatter-plot.svg',
+    }
   },
   'line-plot-2d-view': {
     icon: 'show_chart',
@@ -95,7 +111,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
-    image: 'assets/views/line-plot.png'
+    image: {
+      lightTheme: 'assets/views/light/line-plot.svg',
+      darkTheme: 'assets/views/dark/line-plot.svg',
+    }
   },
   'vulcano-plot-view': {
     icon: 'scatter_plot',
@@ -103,7 +122,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
-    image: 'assets/views/scatter-plot.png'
+    image: {
+      lightTheme: 'assets/views/light/scatter-plot.svg',
+      darkTheme: 'assets/views/dark/scatter-plot.svg',
+    }
   },
   'bar-plot-view': {
     icon: 'bar_chart',
@@ -111,7 +133,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
-    image: 'assets/views/bar-plot.png'
+    image: {
+      lightTheme: 'assets/views/light/bar-plot.svg',
+      darkTheme: 'assets/views/dark/bar-plot.svg',
+    }
   },
   'stacked-bar-plot-view': {
     icon: 'stacked_bar_chart',
@@ -119,7 +144,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
-    image: 'assets/views/stacked-bar-plot.png'
+    image: {
+      lightTheme: 'assets/views/light/stacked-bar-plot.svg',
+      darkTheme: 'assets/views/dark/stacked-bar-plot.svg',
+    }
   },
   'histogram-view': {
     icon: 'bar_chart',
@@ -127,7 +155,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
-    image: 'assets/views/histogram.png'
+    image: {
+      lightTheme: 'assets/views/light/histogram.svg',
+      darkTheme: 'assets/views/dark/histogram.svg',
+    }
   },
   'box-plot-view': {
     icon: 'multiline_chart',
@@ -135,7 +166,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
-    image: 'assets/views/box-plot.png'
+    image: {
+      lightTheme: 'assets/views/light/box-plot.svg',
+      darkTheme: 'assets/views/dark/box-plot.svg',
+    }
   },
   'multi-view': {
     icon: 'multiline_chart',
@@ -143,7 +177,7 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewMultiViewsComponent,
-    image: ''
+    image: null
   },
   'venn-diagram-view': {
     icon: 'join_full',
@@ -151,7 +185,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
-    image: 'assets/views/venn.png'
+    image: {
+      lightTheme: 'assets/views/light/venn-diagram.svg',
+      darkTheme: 'assets/views/dark/venn-diagram.svg',
+    }
   },
   'heatmap-view': {
     icon: 'multiline_chart',
@@ -159,7 +196,10 @@ export const rvDefaultViewTypeInfos: Record<RvResourceViewType, RvResourceViewTy
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: RvViewChart2dComponent,
-    image: 'assets/views/heatmap.png'
+    image: {
+      lightTheme: 'assets/views/light/heatmap.svg',
+      darkTheme: 'assets/views/dark/heatmap.svg',
+    }
   },
 };
 

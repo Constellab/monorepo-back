@@ -1,6 +1,6 @@
 <ng-container *ngIf="viewType | labViewTypeInfo as viewTypeInfo">
   <img *ngIf="viewTypeInfo.image; else icon"
-       [src]="viewTypeInfo.image" [alt]="viewTypeInfo.text"
+       [src]="viewTypeInfo.image | flThemeSwitch" [alt]="viewTypeInfo.text"
        [style.width]="size"/>
   <ng-template #icon>
     <mat-icon [flIcon]="viewTypeInfo.icon" class="view-icon"

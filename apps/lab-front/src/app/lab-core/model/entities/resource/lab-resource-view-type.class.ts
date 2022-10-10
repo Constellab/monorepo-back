@@ -22,7 +22,10 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: LabResourceViewSpreadsheetComponent,
-    image: 'assets/views/tabular.png'
+    image: {
+      lightTheme: 'assets/views/light/tabular-view.svg',
+      darkTheme: 'assets/views/dark/tabular-view.svg',
+    }
   },
   // override the table view to add functionalities like chart from api
   'tabular-view': {
@@ -31,7 +34,10 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: LabResourceViewSpreadsheetComponent,
-    image: 'assets/views/tabular.png'
+    image: {
+      lightTheme: 'assets/views/light/tabular-view.svg',
+      darkTheme: 'assets/views/dark/tabular-view.svg',
+    }
   },
   // override the table view to add functionalities like chart from api
   'dataset-view': {
@@ -40,7 +46,10 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: true,
     viewComponent: LabResourceViewSpreadsheetComponent,
-    image: 'assets/views/tabular.png'
+    image: {
+      lightTheme: 'assets/views/light/tabular-view.svg',
+      darkTheme: 'assets/views/dark/tabular-view.svg',
+    }
   },
   // override the text view to enable pagination
   'text-view': {
@@ -49,7 +58,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: LabResourceViewTextComponent,
-    image: ''
+    image: null
   },
   view: {
     icon: 'view_quilt',
@@ -57,7 +66,10 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'portal',
     forceDefaultDisplayMode: false,
     viewComponent: null,
-    image: ''
+    image: {
+      lightTheme: 'assets/views/light/default-view.svg',
+      darkTheme: 'assets/views/dark/default-view.svg',
+    }
   },
   'resources-list-view': {
     icon: 'list',
@@ -65,7 +77,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: LabResourceViewListComponent,
-    image: ''
+    image: null
   },
   'folder-view': {
     icon: 'folder',
@@ -73,7 +85,7 @@ export const labConstResourceViewTypeInfos: Record<string, RvResourceViewTypeInf
     defaultDisplayMode: 'fullScreen',
     forceDefaultDisplayMode: false,
     viewComponent: LabResourceViewFolderComponent,
-    image: ''
+    image: null
   }
 };
 

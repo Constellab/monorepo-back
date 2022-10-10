@@ -36,6 +36,7 @@ import {
   FlTagModule,
   FlTextEditorModule,
   FlTextIconModule,
+  FlThemeModule,
   FlTranslateModule
 } from '@monorepo/front-core-lib';
 import {RvResourceViewModule} from '@monorepo/resource-view';
@@ -87,6 +88,7 @@ import {PrProtocolModule} from '@monorepo/protocol';
     FlDragModule,
     FlMenuDynamicModule,
     FlAutocompleteMultipleModule,
+    FlThemeModule,
 
     //  Other lib
     RvResourceViewModule,

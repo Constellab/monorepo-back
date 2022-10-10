@@ -1,4 +1,4 @@
-import {flThemeClass} from '../../../service/model/fl-theme-detail.class';
+import {flThemeClass} from '../../fl-theme/model/fl-theme-detail.class';
 
 /**
  * Status interface to describe it with detail

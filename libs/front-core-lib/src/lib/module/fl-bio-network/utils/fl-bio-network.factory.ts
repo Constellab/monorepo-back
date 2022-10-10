@@ -12,7 +12,7 @@ import {FlBioNetworkGraph} from '../model/fl-bio-network-graph.class';
 import {FlBioNetworkNodeReaction} from '../model/fl-bio-network-node-reaction.class';
 import {FlBioNetworkNodeCofactor} from '../model/fl-bio-network-node-cofactor.class';
 import {FlBioNetworkLink} from '../model/fl-bio-network-node-link.class';
-import {FlThemeDetail} from '../../../service/model/fl-theme-detail.class';
+import {FlThemeDetail} from '../../fl-theme/model/fl-theme-detail.class';
 import {ClHelpService} from '@monorepo/core-lib';
 import {FlColorHelper} from '../../../utils/fl-color-helper.class';
 import {FlBioNetworkNode} from '../model/fl-bio-network-node.class';

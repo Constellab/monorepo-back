@@ -40,6 +40,7 @@ export * from './lib/module/fl-svg-icon/public-api';
 export * from './lib/module/fl-tag/public-api';
 export * from './lib/module/fl-text-editor/public-api';
 export * from './lib/module/fl-text-icon/public-api';
+export * from './lib/module/fl-theme/public-api';
 export * from './lib/module/fl-translate/public-api';
 export * from './lib/module/fl-user/public-api';
 
