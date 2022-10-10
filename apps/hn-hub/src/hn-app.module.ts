@@ -28,7 +28,7 @@ import {jwtConfig} from './app/auth/jwt.config';
 import {HnJwtAuthGuard} from './app/core/guards/hn-jwt-auth.guard';
 import {HnFolderModule} from './app/folder/hn-folder.module';
 import {WinstonModule, WinstonModuleOptions} from 'nest-winston';
-import {I18nJsonParser, I18nModule} from 'nestjs-i18n';
+import {I18nJsonLoader, I18nModule} from 'nestjs-i18n';
 import {clDefaultLang} from '@monorepo/core-lib';
 import {HnBrickModule} from './app/brick/hn-brick.module';
 import {HnBrickVersionModule} from './app/brick-version/hn-brick-version.module';
@@ -112,8 +112,8 @@ function configureObjectStorageModule(
 
     I18nModule.forRoot({
       fallbackLanguage: clDefaultLang,
-      parser: I18nJsonParser,
-      parserOptions: {
+      loader: I18nJsonLoader,
+      loaderOptions: {
         path: join(__dirname, 'assets/i18n/'),
         watch: true, //    // enable live translation
       },

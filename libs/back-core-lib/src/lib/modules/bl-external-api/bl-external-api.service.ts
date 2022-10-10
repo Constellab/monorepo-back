@@ -24,7 +24,7 @@ export class BlExternalApiService {
    */
   public post(route: string, body: any, classReference?: ClDeserializationRef,
               options: BlExternalApiHttpOption = {}): Observable<any> {
-    return this.httpService.post(route, this.convertObjectToPlain(body), options).pipe(
+    return this.httpService.post(route, this.convertObjectToPlain(body), options as any).pipe(
       map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
       catchError(err => this.catchError(err, route)),
     );
@@ -39,7 +39,7 @@ export class BlExternalApiService {
    */
   public put(route: string, body: any, classReference?: ClDeserializationRef,
              options: BlExternalApiHttpOption = {}): Observable<any> {
-    return this.httpService.put(route, this.convertObjectToPlain(body), options).pipe(
+    return this.httpService.put(route, this.convertObjectToPlain(body), options as any).pipe(
       map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
       catchError(err => this.catchError(err, route)),
     );
@@ -53,7 +53,7 @@ export class BlExternalApiService {
    */
   public delete(route: string, classReference?: ClDeserializationRef,
                 options: BlExternalApiHttpOption = {}): Observable<any> {
-    return this.httpService.delete(route, options).pipe(
+    return this.httpService.delete(route, options as any).pipe(
       map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
       catchError(err => this.catchError(err, route)),
     );
@@ -67,7 +67,7 @@ export class BlExternalApiService {
    */
   public get(route: string, classReference?: ClDeserializationRef,
              options: BlExternalApiHttpOption = {}): Observable<any> {
-    return this.httpService.get(route, options).pipe(
+    return this.httpService.get(route, options as any).pipe(
       map(result => this.deserialize(result as any, classReference, options.observe, options.resultIsPaginated)),
       catchError(err => this.catchError(err, route)),
     );
@@ -139,7 +139,7 @@ export class BlExternalApiService {
       error: error
     };
 
-    const errorData = error.response?.data ?? {};
+    const errorData: any = error.response?.data ?? {};
     // If the error is formatted like : CmNestApiError
     if (errorData && errorData.status && errorData.code && errorData.detail && errorData.instanceId) {
       apiError.knownError = errorData;

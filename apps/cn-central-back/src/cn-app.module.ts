@@ -1,37 +1,31 @@
-import {
-  ClassSerializerInterceptor,
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from '@nestjs/common';
-import { CnUsersModule } from './app/cn-users/cn-users.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { CnAuthModule } from './app/cn-auth/cn-auth.module';
-import { ConfigModule } from '@nestjs/config';
-import { CnCoreModule } from './app/cn-core/cn-core.module';
-import { CnProjectsModule } from './app/cn-projects-aggregate/cn-projects/cn-projects.module';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { CnCoreConfigService } from './app/cn-core/modules/cn-core-config/cn-core-config.service';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
-import { CnCoreConfigModule } from './app/cn-core/modules/cn-core-config/cn-core-config.module';
-import { I18nJsonParser, I18nModule } from 'nestjs-i18n';
-import { join } from 'path';
-import { CnLabConfigsModule } from './app/cn-lab-configs/cn-lab-configs.module';
-import { CnExperimentsModule } from './app/cn-projects-aggregate/cn-experiments/cn-experiments.module';
-import { CnBricksModule } from './app/cn-bricks/cn-bricks.module';
-import { CnGroupsModule } from './app/cn-groups/cn-groups.module';
-import { CnOrganizationsModule } from './app/cn-organizations/cn-organizations.module';
-import { CnLabInstancesModule } from './app/cn-lab-instances/cn-lab-instances.module';
-import { CnJwtAuthGuard } from './app/cn-core/guards/cn-jwt-auth.guard';
-import { CnUserCategoryGuard } from './app/cn-core/guards/cn-user-category-guard.service';
-import { CnExternalLabsModule } from './app/cn-external-labs/cn-external-labs.module';
-import { CnServersInfoModule } from './app/cn-servers-info/cn-servers-info.module';
-import { CnCoreExceptionHandlerFilter } from './app/cn-core/filters/cn-core-exception-handler.filter';
-import { CnReportsModule } from './app/cn-projects-aggregate/cn-reports/cn-reports.module';
-import { clDefaultLang } from '@monorepo/core-lib';
-import { CnFrontErrorsModule } from './app/cn-front-errors/cn-front-errors.module';
-import { WinstonModule, WinstonModuleOptions } from 'nest-winston';
+import {ClassSerializerInterceptor, MiddlewareConsumer, Module, NestModule, RequestMethod,} from '@nestjs/common';
+import {CnUsersModule} from './app/cn-users/cn-users.module';
+import {TypeOrmModule} from '@nestjs/typeorm';
+import {CnAuthModule} from './app/cn-auth/cn-auth.module';
+import {ConfigModule} from '@nestjs/config';
+import {CnCoreModule} from './app/cn-core/cn-core.module';
+import {CnProjectsModule} from './app/cn-projects-aggregate/cn-projects/cn-projects.module';
+import {APP_FILTER, APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
+import {CnCoreConfigService} from './app/cn-core/modules/cn-core-config/cn-core-config.service';
+import {TypeOrmModuleOptions} from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
+import {CnCoreConfigModule} from './app/cn-core/modules/cn-core-config/cn-core-config.module';
+import {I18nJsonLoader, I18nModule} from 'nestjs-i18n';
+import {join} from 'path';
+import {CnLabConfigsModule} from './app/cn-lab-configs/cn-lab-configs.module';
+import {CnExperimentsModule} from './app/cn-projects-aggregate/cn-experiments/cn-experiments.module';
+import {CnBricksModule} from './app/cn-bricks/cn-bricks.module';
+import {CnGroupsModule} from './app/cn-groups/cn-groups.module';
+import {CnOrganizationsModule} from './app/cn-organizations/cn-organizations.module';
+import {CnLabInstancesModule} from './app/cn-lab-instances/cn-lab-instances.module';
+import {CnJwtAuthGuard} from './app/cn-core/guards/cn-jwt-auth.guard';
+import {CnUserCategoryGuard} from './app/cn-core/guards/cn-user-category-guard.service';
+import {CnExternalLabsModule} from './app/cn-external-labs/cn-external-labs.module';
+import {CnServersInfoModule} from './app/cn-servers-info/cn-servers-info.module';
+import {CnCoreExceptionHandlerFilter} from './app/cn-core/filters/cn-core-exception-handler.filter';
+import {CnReportsModule} from './app/cn-projects-aggregate/cn-reports/cn-reports.module';
+import {clDefaultLang} from '@monorepo/core-lib';
+import {CnFrontErrorsModule} from './app/cn-front-errors/cn-front-errors.module';
+import {WinstonModule, WinstonModuleOptions} from 'nest-winston';
 import {
   blConfigureLogger,
   BlCookieHelper,
@@ -47,15 +41,15 @@ import {
   BlTransportModule,
   BlTransportModuleConfig,
 } from '@monorepo/back-core-lib';
-import { cnJwtConfig } from './app/cn-auth/cn-jwt.config';
-import { Request } from 'express';
-import { CnUsersService } from './app/cn-users/cn-users.service';
-import { CnDatabaseConfig } from './app/cn-core/model/config/cn-config.class';
-import { SnSmartDbModule } from './app/sn-smart-db/sn-smart-db.module';
-import { CnProjectsAggregateModule } from './app/cn-projects-aggregate/cn-project-aggregate.module';
-import { CnStatsModule } from './app/cn-stats/cn-stats.module';
-import { CnCountryModule } from './app/cn-country/cn-country.module';
-import { CnCityModule } from './app/cn-city/cn-city.module';
+import {cnJwtConfig} from './app/cn-auth/cn-jwt.config';
+import {Request} from 'express';
+import {CnUsersService} from './app/cn-users/cn-users.service';
+import {CnDatabaseConfig} from './app/cn-core/model/config/cn-config.class';
+import {SnSmartDbModule} from './app/sn-smart-db/sn-smart-db.module';
+import {CnProjectsAggregateModule} from './app/cn-projects-aggregate/cn-project-aggregate.module';
+import {CnStatsModule} from './app/cn-stats/cn-stats.module';
+import {CnCountryModule} from './app/cn-country/cn-country.module';
+import {CnCityModule} from './app/cn-city/cn-city.module';
 
 function typeOrmConfig(
   configService: CnCoreConfigService
@@ -139,8 +133,8 @@ function configureTransportModule(
 
     I18nModule.forRoot({
       fallbackLanguage: clDefaultLang,
-      parser: I18nJsonParser,
-      parserOptions: {
+      loader: I18nJsonLoader,
+      loaderOptions: {
         path: join(__dirname, 'assets/i18n/'),
         watch: true, //    // enable live translation
       },
