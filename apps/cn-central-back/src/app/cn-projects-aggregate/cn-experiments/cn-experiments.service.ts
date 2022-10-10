@@ -21,11 +21,12 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
   }
 
   getExperimentsByProject(projectId: string): Promise<CnExperiment[]> {
+    this.repository.findOne({where: {id: ''}});
     return this.repository.find({
       where: {
         projectId: projectId
       },
-      order: {lastModifiedAt: 'DESC'}
+      order: {lastModifiedAt: 'DESC' as any}
     });
   }
 
@@ -34,7 +35,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
       where: {
         labInstance: {id: labInstanceId}
       },
-      order: {lastModifiedAt: 'DESC'}
+      order: {lastModifiedAt: 'DESC' as any}
     });
   }
 
@@ -103,7 +104,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
   }
 
   findByIdAndCheckWithReports(id: string): Promise<CnExperiment> {
-    return this.findByIdAndCheck(id, {relations: ['reports']});
+    return this.findByIdAndCheck(id, {reports: true});
   }
 
 
@@ -116,7 +117,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
         }
       },
       order: {
-        lastModifiedAt: 'DESC'
+        lastModifiedAt: 'DESC' as any
       },
       relations: ['project']
     });
@@ -128,7 +129,11 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
   }
 
   public async getExperimentLabConfig(experimentId: string): Promise<CnLabConfig> {
-    const labConf: CnLabConfig = (await this.repository.findOne(experimentId, {relations: ['labConfig']})).labConfig;
-    return this.labConfigService.findByIdAndCheck(labConf.id, {relations: ['brickVersions']});
+    const labConf: CnLabConfig = (await this.repository.findOne({
+      where: {id: experimentId},
+      relations: {labConfig: true},
+    })).labConfig;
+    return this.labConfigService.findByIdAndCheck(labConf.id,
+      {brickVersions: true});
   }
 }

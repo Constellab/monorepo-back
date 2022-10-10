@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {Injectable} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
 import {HnUser} from './hn-user.entity';
 import {BlUserService} from '@monorepo/back-core-lib';
 import {HnCurrentUserHelper} from '../core/utils/hn-current-user.helper';
@@ -18,7 +18,7 @@ export class HnUserService implements BlUserService{
   }
 
   async findOne(id: string): Promise<HnUser> {
-    return await this.userRepository.findOne(id);
+    return await this.userRepository.findOneBy({id: id});
   }
 
   async getCurrent(): Promise<HnUser>{

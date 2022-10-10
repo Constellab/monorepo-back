@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable, Logger, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {DeleteResult, EntityManager, ObjectLiteral, Repository} from 'typeorm';
+import {DeleteResult, EntityManager, Repository} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabInstanceStatus} from './cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
@@ -56,8 +56,8 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
 
     return this.findPaginated(page, size, {
-      where: {owner: user.id},
-      order: {lastModifiedAt: 'DESC'}
+      where: {owner: {id: user.id}},
+      order: {lastModifiedAt: 'DESC' as any}
     });
   }
 
@@ -76,7 +76,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
     // });
 
     return this.repository.find({
-      where:{
+      where: {
         owner: {
           id: user.id
         },
@@ -86,9 +86,9 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
       },
       relations: ['currentStatus'],
       order: {
-        lastModifiedAt: 'DESC'
+        lastModifiedAt: 'DESC' as any
       }
-    })
+    });
   }
 
   public startInstance(id: string): Promise<CnLabInstance> {
@@ -132,7 +132,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
   public findAll(): Promise<CnLabInstance[]> {
     return this.repository.find(
       {
-        order: {lastModifiedAt: 'DESC'},
+        order: {lastModifiedAt: 'DESC' as any},
       },
     );
   }
@@ -187,7 +187,7 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
 
   public async getLabConfig(labInstanceId: string): Promise<CnLabConfig> {
     const labInstance = await this.findByIdAndCheck(labInstanceId, {
-      relations: ['labConfig', 'labConfig.brickVersions', 'labConfig.brickVersions.brick']
+      labConfig: {brickVersions: {brick: true}}
     });
     return labInstance.labConfig;
   }

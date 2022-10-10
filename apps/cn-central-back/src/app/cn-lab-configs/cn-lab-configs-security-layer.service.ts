@@ -27,10 +27,6 @@ export class CnLabConfigsSecurityLayer extends CnAbstractSecurityLayer<CnLabConf
     return false;
   }
 
-  getCurrentLabs(): Promise<CnLabConfig[]> {
-    // no security because it is filtered by user id
-    return this.service.getCurrentLabs();
-  }
 
   // need to be an admin to get all
   async findAll(): Promise<CnLabConfig[]> {

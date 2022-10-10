@@ -11,14 +11,6 @@ export class CnLabConfigsController {
   }
 
   /**
-   * return the list of labs created by the current user
-   */
-  @Get('current')
-  public getCurrentLabs(): Promise<CnLabConfig[]> {
-    return this.securityLayer.getCurrentLabs();
-  }
-
-  /**
    * return the list of all labs
    */
   @CnUserCategories(CmUserCategory.ADMIN)

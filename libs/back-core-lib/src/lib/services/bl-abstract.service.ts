@@ -5,6 +5,7 @@ import {BlEntityWithId} from '../models/bl-entity-with-id.entity';
 import {BlPersistenceAction, BlPersistenceLogger} from './bl-persistence-logger';
 import {blPropertyIsNotUpdatable} from '../decorators/bl-not-updatable.decorator';
 import {BlAbstractPaginatedService} from './bl-abstract-paginated.service';
+import {FindOptionsRelations} from 'typeorm/find-options/FindOptionsRelations';
 
 export abstract class BlAbstractService<T extends BlEntityWithId>
   extends BlAbstractPaginatedService<T> {
@@ -72,16 +73,21 @@ export abstract class BlAbstractService<T extends BlEntityWithId>
     return deleteResult;
   }
 
-  findById(id: string, options?: FindOneOptions<T>, entityManager?: EntityManager): Promise<T | null> {
+  findById(id: string, relations?: FindOptionsRelations<T>,
+           entityManager?: EntityManager): Promise<T | null> {
     if (id == null) {
       throw new BadRequestException('Id not provided');
     }
 
-    return this.getEntityManager(entityManager).findOne(this.entityClass, id, options);
+    // const options: FindOneOptions<T> = {where
+    return this.getEntityManager(entityManager).findOne(this.entityClass,
+      {where: {id: id}, relations: relations} as FindOneOptions<T>);
   }
 
-  async findByIdAndCheck(id: string, options?: FindOneOptions<T>, entityManager?: EntityManager): Promise<T> {
-    const entity: T = await this.findById(id, options, entityManager);
+  async findByIdAndCheck(id: string,
+                         relations?: FindOptionsRelations<T>,
+                         entityManager?: EntityManager): Promise<T> {
+    const entity: T = await this.findById(id, relations, entityManager);
     if (entity == null) {
       throw new NotFoundException();
     }

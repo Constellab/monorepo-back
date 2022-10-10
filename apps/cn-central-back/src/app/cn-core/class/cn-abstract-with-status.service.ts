@@ -98,7 +98,7 @@ export abstract class CnAbstractWithStatusService<T extends CnEntityWithStatus<C
         entity: {id: id}
       },
       order: {
-        createdAt: 'DESC'
+        createdAt: 'DESC' as any
       }
     });
   }

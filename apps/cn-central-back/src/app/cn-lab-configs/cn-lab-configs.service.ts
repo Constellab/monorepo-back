@@ -2,8 +2,6 @@ import {Injectable} from '@nestjs/common';
 import {CnLabConfig} from './cn-lab-config.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {getManager, Repository} from 'typeorm';
-import {CnUser} from '../cn-users/cn-user.entity';
-import {CnCurrentUserHelper} from '../cn-core/utils/cn-current-user.helper';
 import {CnLabConfigDto} from './cn-lab-config.dto';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
@@ -17,18 +15,6 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
   constructor(@InjectRepository(CnLabConfig) private repository: Repository<CnLabConfig>,
               private brickService: CnBricksService) {
     super(repository, CnLabConfig);
-  }
-
-
-  public getCurrentLabs(): Promise<CnLabConfig[]> {
-    const user: CnUser = CnCurrentUserHelper.getAndCheckCurrentUser();
-
-    return this.repository.find({
-      where: {
-        createdBy: {id: user.id},
-      },
-      order: {label: 'ASC'}
-    });
   }
 
   public findAll(): Promise<CnLabConfig[]> {

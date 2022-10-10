@@ -7,6 +7,7 @@ import {BlLuxonDateColumn} from '@monorepo/back-core-lib';
 import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {BadRequestException} from '@nestjs/common';
 import {ClHelpService} from '@monorepo/core-lib';
+import {CnProjectLevel} from './cn-project-level.enum';
 
 /**
  * A project is an ensemble of experiments
@@ -39,6 +40,26 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   @JoinTable({name: 'project_group'})
   sharedGroups: CnGroup[];
 
+  // level of this project, work package or task
+  @Column({
+    nullable: false, default: CnProjectLevel.PROJECT,
+    type: 'enum', enum: CnProjectLevel
+  })
+  level: CnProjectLevel;
+
+  // store the leaf level (lowest level) for the PROJECT
+  // the leaf level is the same for all sur work packages and tasks
+  @Column({
+    nullable: false, default: CnProjectLevel.PROJECT,
+    type: 'enum', enum: CnProjectLevel
+  })
+  leafLevel: CnProjectLevel
+
+  // parent project of this project, can be null if this project is a project
+  // @Exclude()
+  // @Type(() => CnProject)
+  // parent?: CnProject;
+
   public isSharedToGroup(groupId: string | string[]): boolean {
     if (this.sharedGroups == null) {
       throw new BadRequestException('The sharedGroups are not loaded in the project entity');
@@ -55,5 +76,9 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
     if (index >= 0) {
       this.sharedGroups.splice(index, 1);
     }
+  }
+
+  public isLeafLevel(): boolean {
+    return this.level === this.leafLevel;
   }
 }

@@ -87,7 +87,7 @@ export class CnProjectAggregateService {
     return this.projectService.getProjectsOfUserId(userId);
   }
 
-  public async getOnGoingProjectsNumber(): Promise<number>{
+  public async getOnGoingProjectsNumber(): Promise<number> {
     return this.projectService.getOnGoingProjectsNumber();
   }
 
@@ -137,22 +137,22 @@ export class CnProjectAggregateService {
     await this.experimentService.saveLabExperiment(project, createLabExperimentDto);
   }
 
-  async deleteLabExperiment(projectId: string, experimentId: string): Promise<void>{
+  async deleteLabExperiment(projectId: string, experimentId: string): Promise<void> {
     // check that the user can update the project
     await this.getAndCheckAuthorizationForUpdate(projectId);
 
     await this.experimentService.deleteExperiment(experimentId);
   }
 
-  async getCurrentUserLastExperiments(): Promise<CnExperiment[]>{
+  async getCurrentUserLastExperiments(): Promise<CnExperiment[]> {
     return this.experimentService.getCurrentUserLastExperiments();
   }
 
-  async findExperimentTechnicalReport(experimentId: string): Promise<CnExperimentProtocol>{
+  async findExperimentTechnicalReport(experimentId: string): Promise<CnExperimentProtocol> {
     return (await this.findExperiment(experimentId)).protocol;
   }
 
-  async findExperimentLabConfig(experimentId: string): Promise<CnLabConfig>{
+  async findExperimentLabConfig(experimentId: string): Promise<CnLabConfig> {
     return this.experimentService.getExperimentLabConfig(experimentId);
   }
 
@@ -185,7 +185,7 @@ export class CnProjectAggregateService {
     return this.reportService.createReport(createReportDto, experiments, project);
   }
 
-  async deleteLabReport(projectId: string, reportId: string): Promise<void>{
+  async deleteLabReport(projectId: string, reportId: string): Promise<void> {
     // check that the user can update the project
     await this.getAndCheckAuthorizationForUpdate(projectId);
 
@@ -211,7 +211,7 @@ export class CnProjectAggregateService {
 
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
-    if(content.getFigureOp(filename) == null) {
+    if (content.getFigureOp(filename) == null) {
       throw new UnauthorizedException();
     }
     return this.reportService.getImage(filename);
@@ -222,7 +222,7 @@ export class CnProjectAggregateService {
 
     // check that the filename is in the report
     const content = new CnReportContent(report.content);
-    if(content.getViewsOp(filename) == null) {
+    if (content.getViewsOp(filename) == null) {
       throw new UnauthorizedException();
     }
     return this.reportService.getView(filename);

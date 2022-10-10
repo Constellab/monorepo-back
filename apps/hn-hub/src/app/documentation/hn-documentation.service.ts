@@ -43,11 +43,17 @@ export class HnDocumentationService {
   }
 
   findOne(id: string): Promise<HnDocumentation> {
-    return this.documentationsRepository.findOne(id, {relations: ['folder']});
+    return this.documentationsRepository.findOne({
+      where: {id},
+      relations: {
+        folder: true
+      }
+    });
   }
 
   async update(updatedDocumentation: HnNodeDTO): Promise<HnDocumentation> {
-    const doc: HnDocumentation = await this.documentationsRepository.findOne(updatedDocumentation.id, {relations: ['folder']});
+    const doc: HnDocumentation = await this.documentationsRepository.findOne(
+      {where: {id: updatedDocumentation.id}, relations: {folder: true}});
     doc.path = updatedDocumentation.title.toLowerCase().trim();
     doc.path = doc.path.replace(/ /gi, '-');
     doc.path = doc.path.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
@@ -77,7 +83,8 @@ export class HnDocumentationService {
 
       for (const l of links) {
         if (l.attributes.id) {
-          const linkDoc: HnDocumentation = await this.documentationsRepository.findOne(l.attributes.id, {relations: ['folder']});
+          const linkDoc: HnDocumentation = await this.documentationsRepository.findOne(
+            {where: {id: l.attributes.id}, relations: {folder: true}});
           if (linkDoc) {
             const insert: string[] = l.insert.split('> ');
             let path: string = linkDoc.completePath.slice(0, -1);
@@ -102,7 +109,7 @@ export class HnDocumentationService {
   }
 
   async updateContent(id: string, updateContentDoc: CmRichTextI): Promise<HnDocumentation> {
-    const doc: HnDocumentation = await this.documentationsRepository.findOne(id);
+    const doc: HnDocumentation = await this.documentationsRepository.findOneBy({id: id});
     if (doc) {
       doc.content = await this.editContent(updateContentDoc);
       const currentUser: HnUser = HnCurrentUserHelper.getCurrentUser();
@@ -131,12 +138,12 @@ export class HnDocumentationService {
     }
 
     const listId: string[] = [];
-    for(const h of headers){
-      if(h.attributes.header.id){
+    for (const h of headers) {
+      if (h.attributes.header.id) {
         h.attributes.header.id = h.attributes.header.id.replace(new RegExp(/[&?~/|\\'"[()\]%!§:;.,*^¨}{@°`]/g), '');
-        if(h.attributes.header.id.length > 0 ){
+        if (h.attributes.header.id.length > 0) {
           const sameTitleNumber: number = listId.filter(value => value == h.attributes.header.id).length;
-          if(sameTitleNumber > 0){
+          if (sameTitleNumber > 0) {
             h.attributes.header.id = h.attributes.header.id + sameTitleNumber;
           }
           listId.push(h.attributes.header.id);
@@ -147,19 +154,19 @@ export class HnDocumentationService {
     }
 
     const imageCP: CmRichTextImageCP[] = CmRichText.getImageCP(content);
-    for(const im of imageCP){
-      if('image' in im.insert){
+    for (const im of imageCP) {
+      if ('image' in im.insert) {
         const base64Img: string = im.insert.image.split(',')[1];
-        const imgBuffer: Buffer = new Buffer(base64Img, "base64");
+        const imgBuffer: Buffer = new Buffer(base64Img, 'base64');
         const imgBlFile: BlFile = {
           buffer: imgBuffer,
           encoding: null,
           mimetype: 'image',
           size: null,
           originalname: 'any.png'
-        }
+        };
         const imgSize: ISizeCalculationResult = imageSize(imgBuffer);
-        const imgName: string = await this.objectStorageService.uploadObject(imgBlFile, this.getReportBucket(),true);
+        const imgName: string = await this.objectStorageService.uploadObject(imgBlFile, this.getReportBucket(), true);
         im.insert = {
           figure: {
             filename: imgName,
@@ -168,7 +175,7 @@ export class HnDocumentationService {
             naturalWidth: imgSize.width,
             naturalHeight: imgSize.height
           }
-        }
+        };
       }
     }
     return content;
@@ -177,7 +184,7 @@ export class HnDocumentationService {
   async getDocumentationIdAndCPByUrl(link: string[]): Promise<[string, string]> {
     const brickName: string = link[1];
     const majorVersion: number = +(link[2].slice(1));
-    link.splice(0, 4)
+    link.splice(0, 4);
     if (link[link.length - 1] == '') {
       link.pop();
     }
@@ -250,6 +257,6 @@ export class HnDocumentationService {
       anchor: anchor ? anchor : null,
       major: brickMajorVersion.major.toString(),
       brickName: brickMajorVersion.brick.name
-    } : null
+    } : null;
   }
 }

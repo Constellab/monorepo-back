@@ -141,7 +141,7 @@ export class CnLabInstancesController {
   /**
    * Check the lab status and returns settings if ok
    */
-  @Get(':id/la-config')
+  @Get(':id/lab-config')
   public getLabInstanceConfig(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnLabConfig> {
     return this.securityLayer.getLabInstanceConfig(id);
   }

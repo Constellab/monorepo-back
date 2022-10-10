@@ -32,7 +32,7 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
       brickVersion.major = versionDTO.major;
       brickVersion.minor = versionDTO.minor;
       brickVersion.patch = versionDTO.patch;
-      brickVersion.subPatch = versionDTO.subPatch
+      brickVersion.subPatch = versionDTO.subPatch;
       brickVersion.versionType = versionDTO.versionType;
       brickVersion.versionState = versionDTO.versionState;
       brickVersion.repoType = versionDTO.repoType;
@@ -93,6 +93,9 @@ export class CnBricksService extends BlAbstractService<CnBrick> {
   }
 
   public async getByBrickVersionId(brickVersionId: string): Promise<CnBrick> {
-    return (await this.brickVersionRepo.findOne(brickVersionId, {relations: ['brick']})).brick;
+    return (await this.brickVersionRepo.findOne({
+      where: {id: brickVersionId},
+      relations: ['brick']
+    })).brick;
   }
 }

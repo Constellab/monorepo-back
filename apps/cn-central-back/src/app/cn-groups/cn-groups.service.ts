@@ -1,5 +1,5 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
-import {CnGroup, CnGroupTeam, CnUserGroup} from './cn-group.entity';
+import {CnGroup, CnGroupSingleUser, CnGroupTeam, CnUserGroup} from './cn-group.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DeleteResult, EntityManager, Repository} from 'typeorm';
 import {BlAbstractService} from '@monorepo/back-core-lib';
@@ -11,6 +11,7 @@ import {CnUser} from '../cn-users/cn-user.entity';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {SelectQueryBuilder} from 'typeorm/query-builder/SelectQueryBuilder';
 import {CnUserGroupService} from './cn-user-group.service';
+import {FindOptionsWhere} from 'typeorm/find-options/FindOptionsWhere';
 
 @Injectable()
 export class CnGroupsService extends BlAbstractService<CnGroup> {
@@ -209,7 +210,7 @@ export class CnGroupsService extends BlAbstractService<CnGroup> {
       where: {
         user: {id: userId},
         type: CnGroupType.SINGLE_USER
-      }
+      } as FindOptionsWhere<CnGroupSingleUser>
     });
 
     if (group == null) {

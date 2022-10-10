@@ -190,7 +190,7 @@ export class CnUserAccountsService {
   findUsersToAdminActivate(): Promise<CnUser[]> {
     return this.repository.find({
       where: {status: CmUserStatus.WAITING_FOR_ADMIN},
-      order: {createdAt: 'DESC'}
+      order: {createdAt: 'DESC' as any}
     });
   }
 

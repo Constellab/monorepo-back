@@ -33,7 +33,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
       where: {
         projectId: projectId
       },
-      order: {lastModifiedAt: 'DESC'}
+      order: {lastModifiedAt: 'DESC' as any}
     });
   }
 
@@ -97,7 +97,7 @@ export class CnReportsService extends BlAbstractService<CnReport> {
   }
 
   findByIdAndCheckWithExperiments(id: string): Promise<CnReport> {
-    return this.findByIdAndCheck(id, {relations: ['experiments']});
+    return this.findByIdAndCheck(id, {experiments: true});
   }
 
   async getImage(filename: string): Promise<IncomingMessage> {

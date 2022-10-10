@@ -40,7 +40,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   findOne(id: string): Promise<CnUser> {
-    return this.repository.findOne(id);
+    return this.repository.findOneBy({id: id});
   }
 
   findByEmail(username: string): Promise<CnUser> {
@@ -90,7 +90,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   async saveNewPhoto(file: BlFile, userId: string): Promise<CnUser> {
-    const user: CnUser = await this.repository.findOne(userId);
+    const user: CnUser = await this.repository.findOneBy({id: userId});
     const newPhoto: string =
       await this.objectStorageService.uploadObject(file, this.getUserProfilePictureBucket(), true);
     if(user.photo && newPhoto) {
@@ -102,7 +102,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   async deleteCurrentPhoto(userId: string): Promise<void>{
-    const user: CnUser = await this.repository.findOne(userId);
+    const user: CnUser = await this.repository.findOneBy({id: userId});
     if(user.photo){
       await this.objectStorageService.deleteObject(user.photo, this.getUserProfilePictureBucket());
       user.photo = null;
@@ -111,7 +111,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   async getUserPhoto(userId: string): Promise<IncomingMessage> {
-    const user: CnUser = await this.repository.findOne(userId);
+    const user: CnUser = await this.repository.findOneBy({id: userId});
     return this.objectStorageService.getObject(user.photo, this.getUserProfilePictureBucket());
   }
 
@@ -120,7 +120,7 @@ export class CnUsersService extends BlAbstractService<CnUser> implements BlUserS
   }
 
   async editUser(userEdit: CnUserEditDTO): Promise<CnUser> {
-    const user: CnUser = await this.repository.findOne(userEdit.id);
+    const user: CnUser = await this.repository.findOneBy({id: userEdit.id});
     user.firstname = userEdit.firstname;
     user.lastname = userEdit.lastname;
     user.email = userEdit.email;
