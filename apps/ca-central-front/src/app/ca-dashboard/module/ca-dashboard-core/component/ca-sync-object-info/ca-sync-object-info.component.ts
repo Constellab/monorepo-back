@@ -13,6 +13,11 @@ export class CaSyncObjectInfoComponent implements OnInit {
 
   @Input() object: CaProjectObject;
 
+  /**
+   * If true show the icon and last synchronisation text
+   */
+  @Input() showText: boolean = true;
+
   constructor() {
   }
 

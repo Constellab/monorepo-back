@@ -23,10 +23,17 @@
       <span> {{'last_sync' | translate}}</span>
     </mat-header-cell>
     <mat-cell *matCellDef="let experiment">
-      <div>
-        <fl-last-sync-info [lastSyncAt]="experiment.lastSyncAt" [lastSyncBy]="experiment.lastSyncBy?.fullname">
-        </fl-last-sync-info>
-      </div>
+      <ca-sync-object-info [object]="experiment" [showText]="false"></ca-sync-object-info>
+    </mat-cell>
+  </ng-container>
+
+  <!-- CreatedBy -->
+  <ng-container matColumnDef="createdBy">
+    <mat-header-cell *matHeaderCellDef>
+      <span> {{'created_by' | translate}}</span>
+    </mat-header-cell>
+    <mat-cell *matCellDef="let experiment">
+      <ca-user-inline [user]="experiment.createdBy"></ca-user-inline>
     </mat-cell>
   </ng-container>
 
@@ -45,7 +52,6 @@
       </fl-status-chip>
     </mat-cell>
   </ng-container>
-
 
 
   <!-- Dynamic columns -->

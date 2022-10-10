@@ -1,13 +1,13 @@
-import {CnBaseEntityDTO} from '../../cn-core/model/entities/cn-base.entity';
 import {CnReport} from './cn-report.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnLabConfigDto} from '../../cn-lab-configs/cn-lab-config.dto';
 import {Type} from 'class-transformer';
 import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
+import {CnEntityDTO} from '../../cn-core/model/entities/cn.entity';
 
 
-export class CnCreateReportDto extends CnBaseEntityDTO {
+export class CnCreateReportDto extends CnEntityDTO {
   title: string;
   content: CmRichTextI;
 
@@ -32,7 +32,7 @@ export class CnCreateReportWithConfigDto {
 
 
 // DTO used to lighten the weight of the report
-export class CnReportDTO extends CnBaseEntityDTO {
+export class CnReportDTO extends CnEntityDTO {
 
   title: string;
   projectId: string;

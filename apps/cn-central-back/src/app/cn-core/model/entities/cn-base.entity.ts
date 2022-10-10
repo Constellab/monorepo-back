@@ -1,60 +1,25 @@
-import {BeforeInsert, BeforeUpdate, ManyToOne} from 'typeorm';
-import {CnUser} from '../../../cn-users/cn-user.entity';
-import {Type} from 'class-transformer';
+import {BeforeInsert, BeforeUpdate} from 'typeorm';
 import {ClDateHelper} from '@monorepo/core-lib';
-import {DateTime} from 'luxon';
-import {BlEntityWithId, BlEntityWithIdDTO, BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {CnCurrentUserHelper} from '../../utils/cn-current-user.helper';
+import {CnEntity} from './cn.entity';
 
-export abstract class CnBaseEntity extends BlEntityWithId {
-
-  @BlLuxonDateTimeColumn({nullable: false, update: false})
-  createdAt: DateTime;
-
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true, nullable: false})
-  createdBy: CnUser;
-
-  @BlLuxonDateTimeColumn()
-  lastModifiedAt: DateTime;
-
-  @Type(() => CnUser)
-  @ManyToOne(() => CnUser, {eager: true})
-  lastModifiedBy: CnUser;
+/**
+ * Basic entity with same info as CnEntity,
+ * but with the @BeforeInsert() and @BeforeUpdate() methods
+ * to set the creation and modification info automatically
+ */
+export abstract class CnBaseEntity extends CnEntity {
 
   @BeforeInsert()
-  setCreatedByUser(): void {
+  setCreatedInfo(): void {
     this.createdBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.createdAt = ClDateHelper.getDate();
   }
 
   @BeforeInsert()
   @BeforeUpdate()
-  setLastModifiedByUser(): void {
+  setLastModifiedInfo(): void {
     this.lastModifiedBy = CnCurrentUserHelper.getAndCheckCurrentUser();
     this.lastModifiedAt = ClDateHelper.getDate();
-  }
-}
-
-export class CnBaseEntityDTO extends BlEntityWithIdDTO {
-  @BlLuxonDateTimeColumn({nullable: false, update: false})
-  createdAt: DateTime;
-
-  @Type(() => CnUser)
-  createdBy: CnUser;
-
-  @BlLuxonDateTimeColumn()
-  lastModifiedAt: DateTime;
-
-  @Type(() => CnUser)
-  lastModifiedBy: CnUser;
-
-  copyEntity(entity: CnBaseEntity): this {
-    super.copyEntity(entity);
-    this.createdAt = entity.createdAt;
-    this.createdBy = entity.createdBy;
-    this.lastModifiedAt = entity.lastModifiedAt;
-    this.lastModifiedBy = entity.lastModifiedBy;
-    return this;
   }
 }

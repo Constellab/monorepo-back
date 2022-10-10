@@ -15,7 +15,7 @@ export class CaExperimentsListComponent implements OnInit {
 
   @Input() experiments$: Observable<CaExperiment[]>;
   experiment: CaExperiment;
-  columns: FlTableColumn<CaExperiment>[] = ['title', 'lastSync', 'status'];
+  columns: FlTableColumn<CaExperiment>[] = ['title', 'createdBy', 'status', 'lastSync'];
 
   constructor() {
   }

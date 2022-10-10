@@ -1,4 +1,3 @@
-import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
 import {Column, Entity, JoinTable, ManyToMany, ManyToOne} from 'typeorm';
 import {CnExperiment} from '../cn-experiments/cn-experiment.entity';
 import {Type} from 'class-transformer';
@@ -8,9 +7,10 @@ import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {BlLuxonDateTimeColumn} from '@monorepo/back-core-lib';
 import {DateTime} from 'luxon';
+import {CnEntity} from '../../cn-core/model/entities/cn.entity';
 
 @Entity('report')
-export class CnReport extends CnBaseEntity {
+export class CnReport extends CnEntity {
 
   @Column()
   title: string;

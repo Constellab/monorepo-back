@@ -1,27 +1,21 @@
 import {CnExperimentStatus} from './cn-experiment-status.enum';
 import {DateTime} from 'luxon';
 import {ClLuxonDateTimeTransform} from '@monorepo/core-lib';
-import {CnBaseEntityDTO} from '../../cn-core/model/entities/cn-base.entity';
 import {CnExperiment, CnExperimentProtocol} from './cn-experiment.entity';
 import {CnLabConfigDto} from '../../cn-lab-configs/cn-lab-config.dto';
 import {CmRichTextI} from '@monorepo/common-model';
 import {Type} from 'class-transformer';
+import {CnEntityDTO} from '../../cn-core/model/entities/cn.entity';
+import {CnUser} from '../../cn-users/cn-user.entity';
 
 
 /**
  * Experiment object from the Lab
  */
-export class CnLabExperimentDto {
-  id: string;
+export class CnLabExperimentDto extends CnEntityDTO {
   title: string;
   description: CmRichTextI;
   status: CnExperimentStatus;
-
-  @ClLuxonDateTimeTransform()
-  created_at: DateTime;
-
-  @ClLuxonDateTimeTransform()
-  last_modified_at: DateTime;
 
   is_validated: boolean;
 
@@ -46,7 +40,7 @@ export class CnCreateLabExperimentDto {
 
 
 // experiment object smaller
-export class CnExperimentDTO extends CnBaseEntityDTO {
+export class CnExperimentDTO extends CnEntityDTO {
   title: string;
 
   status: CnExperimentStatus;
@@ -55,7 +49,7 @@ export class CnExperimentDTO extends CnBaseEntityDTO {
 
   isValidated: boolean;
 
-  lastSyncBy?: string;
+  lastSyncBy?: CnUser;
 
   @ClLuxonDateTimeTransform()
   lastSyncAt?: DateTime;
@@ -68,7 +62,7 @@ export class CnExperimentDTO extends CnBaseEntityDTO {
     this.status = entity.status;
     this.isValidated = entity.isValidated;
     this.lastSyncAt = entity.lastSyncAt;
-    this.lastSyncBy = entity.lastSyncBy?.id;
+    this.lastSyncBy = entity.lastSyncBy;
     return this;
   }
 }

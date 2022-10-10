@@ -1,8 +1,8 @@
-<!--  Sync info  -->
-<fl-text-icon *ngIf="object && object.lastSyncAt" [matTooltip]="object.lastSyncAt | flDate:'DATETIME_MED'">
-  <mat-icon>sync</mat-icon>
-  {{'last_sync_info' | translate: {
-  date: object.lastSyncAt | flFromNow,
-  user: object.lastSyncBy.fullname
-} }}
-</fl-text-icon>
+<div *ngIf="object" fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="0.5em">
+  <ng-container *ngIf="showText">
+    <mat-icon>sync</mat-icon>
+    <div>{{'last_sync' | translate}} :</div>
+  </ng-container>
+  <ca-user-inline [user]="object.lastSyncBy" [showName]="false"></ca-user-inline>
+  <fl-from-now [date]="object.lastSyncAt"></fl-from-now>
+</div>

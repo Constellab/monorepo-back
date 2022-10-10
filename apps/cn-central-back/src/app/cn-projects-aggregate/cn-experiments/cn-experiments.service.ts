@@ -53,11 +53,15 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     experiment.projectId = project.id;
     experiment.title = labExperimentDto.title;
     experiment.description = labExperimentDto.description;
-    experiment.createdAt = labExperimentDto.created_at;
-    experiment.lastModifiedAt = labExperimentDto.last_modified_at;
     experiment.status = labExperimentDto.status;
     experiment.labConfig = labConfig;
     experiment.protocol = createLabExperimentDto.protocol;
+
+    experiment.createdBy = labExperimentDto.createdBy;
+    experiment.createdAt = labExperimentDto.createdAt;
+
+    experiment.lastModifiedBy = labExperimentDto.lastModifiedBy;
+    experiment.lastModifiedAt = labExperimentDto.lastModifiedAt;
 
     // handle validated
     experiment.isValidated = labExperimentDto.is_validated;
@@ -70,7 +74,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
 
     // handle last_sync
     experiment.lastSyncAt = labExperimentDto.last_sync_at;
-    if(labExperimentDto.last_sync_by){
+    if (labExperimentDto.last_sync_by) {
       const lastSyncBy = new CnUser();
       lastSyncBy.id = labExperimentDto.last_sync_by.id;
       experiment.lastSyncBy = lastSyncBy;
@@ -123,7 +127,7 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
     return (await this.getCurrentUserValidatedExperiment()).slice(0, 3);
   }
 
-  public async getExperimentLabConfig(experimentId: string): Promise<CnLabConfig>{
+  public async getExperimentLabConfig(experimentId: string): Promise<CnLabConfig> {
     const labConf: CnLabConfig = (await this.repository.findOne(experimentId, {relations: ['labConfig']})).labConfig;
     return this.labConfigService.findByIdAndCheck(labConf.id, {relations: ['brickVersions']});
   }

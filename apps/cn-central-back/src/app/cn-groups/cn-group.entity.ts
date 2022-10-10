@@ -52,10 +52,10 @@ export class CnGroupSingleUser extends CnGroup {
 
   // don't set the createdBy and lastModifiedBy automatically
   // because this group is created on user signup (so no current user)
-  setCreatedByUser(): void {
+  setCreatedInfo(): void {
   }
 
-  setLastModifiedByUser(): void {
+  setLastModifiedInfo(): void {
   }
 }
 

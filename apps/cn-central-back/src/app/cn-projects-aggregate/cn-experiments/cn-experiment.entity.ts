@@ -5,11 +5,11 @@ import {BlLuxonDateTimeColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnProject} from '../cn-projects/cn-project.entity';
 import {CnReport} from '../cn-reports/cn-report.entity';
 import {CnExperimentStatus} from './cn-experiment-status.enum';
-import {CnBaseEntity} from '../../cn-core/model/entities/cn-base.entity';
 import {CnLabConfig} from '../../cn-lab-configs/cn-lab-config.entity';
 import {CmRichTextI} from '@monorepo/common-model';
 import {CnUser} from '../../cn-users/cn-user.entity';
 import {DateTime} from 'luxon';
+import {CnEntity} from '../../cn-core/model/entities/cn.entity';
 
 export interface CnExperimentProtocol {
   version: number;
@@ -23,7 +23,7 @@ export interface CnExperimentProtocol {
  * It is defined as a succession of jobs
  */
 @Entity('experiment')
-export class CnExperiment extends CnBaseEntity {
+export class CnExperiment extends CnEntity {
 
   @Column({nullable: false, length: 50})
   title: string;
@@ -55,7 +55,7 @@ export class CnExperiment extends CnBaseEntity {
   reports: CnReport[];
 
   @Exclude()
-  @Column({ type: 'simple-json', nullable: false})
+  @Column({type: 'simple-json', nullable: false})
   protocol: CnExperimentProtocol;
 
   @Column({nullable: false, default: false})
@@ -76,5 +76,4 @@ export class CnExperiment extends CnBaseEntity {
   @Column({nullable: true})
   @BlLuxonDateTimeColumn()
   lastSyncAt: DateTime;
-
 }

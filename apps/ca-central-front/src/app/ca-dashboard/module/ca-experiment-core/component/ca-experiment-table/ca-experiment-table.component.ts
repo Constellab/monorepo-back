@@ -12,7 +12,7 @@ export class CaExperimentTableComponent extends FlTableAbstractDirective<CaExper
   implements OnInit {
 
   constructor() {
-    super(['title', 'lastSync', 'status']);
+    super(['title', 'lastSync', 'status', 'createdBy']);
   }
 
   ngOnInit(): void {
