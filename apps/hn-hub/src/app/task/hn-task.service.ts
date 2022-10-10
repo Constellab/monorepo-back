@@ -99,7 +99,7 @@ export class HnTaskService {
 
   async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnGeneratedDocEntity> {
 
-    const task: HnTask = await this.tasksRepository.findOne({
+    const task: HnTask = await this.tasksRepository.findOneBy({
       technicalFolder: {
         id: tecFolder.id
       },

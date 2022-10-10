@@ -90,7 +90,7 @@ export class HnProtocolService {
 
   async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<any> {
 
-    const proto: HnProtocol = await this.protocolsRepository.findOne({
+    const proto: HnProtocol = await this.protocolsRepository.findOneBy({
       technicalFolder: {
         id: tecFolder.id
       },

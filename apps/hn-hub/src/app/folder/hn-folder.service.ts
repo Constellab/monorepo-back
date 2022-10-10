@@ -1,6 +1,6 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository, TreeRepository} from 'typeorm';
+import {EntityManager, Equal, IsNull, Repository, TreeRepository} from 'typeorm';
 import {HnFolder} from './hn-folder.entity';
 import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
@@ -24,7 +24,7 @@ export class HnFolderService {
     if (title != null) {
       const path: string = title.toLowerCase().trim();
       const re = / /gi;
-      return path.replace(re, "-");
+      return path.replace(re, '-');
     }
     return title;
   }
@@ -35,7 +35,10 @@ export class HnFolderService {
 
     let folder: HnFolder;
     if (createFolderRes.folderId) {
-      folder = await this.foldersRepository.findOne(createFolderRes.folderId, {relations: ['documentations', 'folders']});
+      folder = await this.foldersRepository.findOne({
+        where: {id: createFolderRes.folderId},
+        relations: {documentations: true, folders: true}
+      });
     }
     const createFolder: HnFolder = new HnFolder();
     createFolder.title = createFolderRes.title;
@@ -70,7 +73,10 @@ export class HnFolderService {
 
     if (createDocumentationRes.folder == null) {
       createDocumentationRes.folder =
-        await this.foldersRepository.findOne(createDocumentationRes.folderId, {relations: ['documentations', 'folders']});
+        await this.foldersRepository.findOne({
+          where: {id: createDocumentationRes.folderId},
+          relations: {documentations: true, folders: true}
+        });
     }
 
     createDocumentationRes.path = HnFolderService.generatePathWithTitle(createDocumentationRes.title);
@@ -94,8 +100,8 @@ export class HnFolderService {
 
   async findFolderByBrickMajorVersion(brickMajorVersion: HnBrickMajorVersion): Promise<HnFolder> {
     return this.foldersRepository.findOne({
-      where: {brickMajorVersion: brickMajorVersion, completePath: null},
-      relations: ['documentations']
+      where: {brickMajorVersion: Equal(brickMajorVersion), completePath: IsNull()},
+      relations: {documentations: true}
     });
   }
 
@@ -142,7 +148,7 @@ export class HnFolderService {
     if (folder.folders != null) {
       folder.folders.forEach(f => {
         currentChild.push(this.createTree(f));
-      })
+      });
     }
 
     currentParent.children = currentChild;
@@ -180,7 +186,10 @@ export class HnFolderService {
   }
 
   async update(updatedFolder: HnNodeDTO): Promise<HnFolder> {
-    let folder: HnFolder = await this.foldersRepository.findOne(updatedFolder.id, {relations: ['folder', 'documentations', 'folders']});
+    let folder: HnFolder = await this.foldersRepository.findOne({
+      where: {id: updatedFolder.id},
+      relations: {folder: true, documentations: true, folders: true}
+    });
 
     folder.path = HnFolderService.generatePathWithTitle(updatedFolder.title);
     folder.title = updatedFolder.title;
@@ -218,7 +227,7 @@ export class HnFolderService {
     for (const node of updatedTree) {
       let isUpdated = false;
       if (node.children) {
-        const f: HnFolder = await this.foldersRepository.findOne(node.id, {relations: ['folder']});
+        const f: HnFolder = await this.foldersRepository.findOne({where: {id: node.id}, relations: {folder: true}});
         if (f.order != node.order || f.folder.id != node.parentId) {
           isUpdated = true;
           f.order = node.order;
@@ -245,7 +254,12 @@ export class HnFolderService {
   }
 
   async remove(id: string): Promise<void> {
-    const folderToDelete: HnFolder = await this.foldersRepository.findOne(id, {relations: ['documentations', 'folders']});
+    const folderToDelete: HnFolder = await this.foldersRepository.findOne({
+      where: {id: id}, relations: {
+        documentations: true,
+        folders: true
+      }
+    });
     if (folderToDelete.documentations.length <= 0 && folderToDelete.folders.length <= 0) {
       await this.foldersRepository.delete(id);
     } else {
@@ -254,7 +268,7 @@ export class HnFolderService {
   }
 
   async getDocsByBrickNameMajor(brickMajorVersion: HnBrickMajorVersion, major: string, brickName: string):
-    Promise<HnDocumentationSearchDTO[]>{
+    Promise<HnDocumentationSearchDTO[]> {
     const brickDocs: HnFolder =
       await this.foldersTreeRepository.findDescendantsTree(
         await this.findFolderByBrickMajorVersion(brickMajorVersion),
@@ -263,10 +277,10 @@ export class HnFolderService {
     return this.getDocsByFolder(brickDocs, major, brickName);
   }
 
-  private getDocsByFolder(folder: HnFolder, major: string, brickName: string): HnDocumentationSearchDTO[]{
+  private getDocsByFolder(folder: HnFolder, major: string, brickName: string): HnDocumentationSearchDTO[] {
     const documentations: HnDocumentationSearchDTO[] = [];
 
-    for(const doc of folder.documentations){
+    for (const doc of folder.documentations) {
       documentations.push({
         name: doc.title,
         id: doc.id,
@@ -277,10 +291,10 @@ export class HnFolderService {
       });
     }
 
-    for(const fol of folder.folders){
+    for (const fol of folder.folders) {
       this.getDocsByFolder(fol, major, brickName).forEach(d => {
         documentations.push(d);
-      })
+      });
     }
     return documentations;
   }

@@ -160,7 +160,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
           }
         },
         order: {
-          createdAt: 'DESC'
+          createdAt: 'DESC' as any
         },
         relations: ['brickMajorVersion']
       }
@@ -259,13 +259,13 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   async bVRToRef(bVR: HnBrickVersionReference): Promise<HnReferenceDTO> {
     return {
       name: await this.getBrickName(bVR.referenceId),
-      version: (await this.brickVersionsRepository.findOne(bVR.referenceId)).version.toString(),
+      version: (await this.brickVersionsRepository.findOneBy({id: bVR.referenceId})).version.toString(),
       referenceState: bVR.versionState
     };
   }
 
   async getBrickName(id: string): Promise<string> {
-    return (await this.brickVersionsRepository.findOne(id)).brickMajorVersion.brick.name;
+    return (await this.brickVersionsRepository.findOneBy({id: id})).brickMajorVersion.brick.name;
   }
 
   private sendBrickVersionToTransport(brickVersion: HnBrickVersion): void {

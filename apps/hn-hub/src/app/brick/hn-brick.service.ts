@@ -1,5 +1,5 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
-import {HnBrick, HnCreateBrickDTO} from './hn-brick.entity';
+import {HnBrick, HnBrickVisibility, HnCreateBrickDTO} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
 import {getManager, Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
@@ -61,7 +61,7 @@ export class HnBrickService {
 
 
       return brick;
-    })
+    });
 
     await this.brickVersionService.sendBrickVersionIdToTransport(brickVersion.id);
 
@@ -70,10 +70,10 @@ export class HnBrickService {
 
   async find(): Promise<HnBrickListDTO[]> {
     const bricks: HnBrick[] = this.isCurrentAdmin() ? await this.bricksRepository.find() :
-      await this.bricksRepository.find({where: {visibility: 'public'}});
+      await this.bricksRepository.find({where: {visibility: HnBrickVisibility.PUBLIC}});
     const res: HnBrickListDTO[] = [];
     for (const brick of bricks) {
-      const resBrick = new HnBrickListDTO()
+      const resBrick = new HnBrickListDTO();
       resBrick.id = brick.id;
       resBrick.name = brick.name;
       resBrick.description = brick.description;
@@ -90,18 +90,18 @@ export class HnBrickService {
 
   async findByName(name: string): Promise<HnBrick> {
     const isAdmin: boolean = this.isCurrentAdmin();
-    const brick: HnBrick =  isAdmin ? await this.bricksRepository.findOne({
+    const brick: HnBrick = isAdmin ? await this.bricksRepository.findOne({
       where: {
         name: name
       }
     }) : await this.bricksRepository.findOne({
       where: {
         name: name,
-        visibility: 'public'
+        visibility: HnBrickVisibility.PUBLIC
       }
     });
 
-    if(!isAdmin){
+    if (!isAdmin) {
       brick.gitRepo = null;
       brick.pipRepo = null;
     }
@@ -111,8 +111,8 @@ export class HnBrickService {
   }
 
   async findById(id: string): Promise<HnBrick> {
-    return this.isCurrentAdmin() ? this.bricksRepository.findOne(id) :
-      this.bricksRepository.findOne(id, {where: {visibility: 'public'}});
+    return this.isCurrentAdmin() ? this.bricksRepository.findOneBy({id: id}) :
+      this.bricksRepository.findOneBy({id: id, visibility: HnBrickVisibility.PUBLIC});
   }
 
   async findDocsByBrickAndVersion(brick: HnBrick, version: string): Promise<HnNode> {
@@ -140,7 +140,7 @@ export class HnBrickService {
   }
 
   async createNewVersion(newVersion: HnNewVersionDTO): Promise<HnNewVersionDTO> {
-    const brick: HnBrick = await this.bricksRepository.findOne(newVersion.brickId);
+    const brick: HnBrick = await this.bricksRepository.findOneBy({id: newVersion.brickId});
     newVersion.repoType = (await this.getLatestBrickVersion(brick.name)).repoType;
     return this.brickMajorVersionService.createNewVersion(brick, newVersion);
   }
@@ -156,7 +156,7 @@ export class HnBrickService {
 
     const brick: HnBrick = this.isCurrentAdmin() ?
       await this.bricksRepository.findOne({where: {name: content.brickName}}) :
-      await this.bricksRepository.findOne({where: {name: content.brickName, visibility: 'public'}});
+      await this.bricksRepository.findOne({where: {name: content.brickName, visibility: HnBrickVisibility.PUBLIC}});
 
     if (brick == null) {
       return false;
@@ -172,7 +172,7 @@ export class HnBrickService {
   }
 
   async editBrick(editedBrick: HnEditBrickDTO): Promise<HnBrick> {
-    const brick: HnBrick = await this.bricksRepository.findOne(editedBrick.id);
+    const brick: HnBrick = await this.bricksRepository.findOneBy({id: editedBrick.id});
     if (brick) {
       brick.description = editedBrick.description;
       brick.gitRepo = editedBrick.gitRepo;
@@ -186,8 +186,8 @@ export class HnBrickService {
   }
 
   async isActualBrickAndNewVersion(content: HnIsActualBrickAndNewVersionDTO): Promise<[boolean, boolean]> {
-    const brick: HnBrick = this.isCurrentAdmin() ? await this.bricksRepository.findOne(content.brickId) :
-      await this.bricksRepository.findOne(content.brickId, {where: {visibility: 'public'}});
+    const brick: HnBrick = this.isCurrentAdmin() ? await this.bricksRepository.findOneBy({id: content.brickId}) :
+      await this.bricksRepository.findOneBy({id: content.brickId, visibility: HnBrickVisibility.PUBLIC});
 
     if (!content.inputBrickName || (brick && brick.name.toUpperCase() != content.inputBrickName.toUpperCase())) {
       return [false, false];
@@ -205,7 +205,7 @@ export class HnBrickService {
 
   async findTechDoc(input: HnTechnicalDocInputDTO): Promise<HnGeneratedDocEntity> {
     const brick: HnBrick = this.isCurrentAdmin() ? await this.bricksRepository.findOne({where: {name: input.brickName}}) :
-      await this.bricksRepository.findOne({where: {name: input.brickName, visibility: 'public'}});
+      await this.bricksRepository.findOne({where: {name: input.brickName, visibility: HnBrickVisibility.PUBLIC}});
     const brickMajorVersion: HnBrickMajorVersion =
       await this.brickMajorVersionService.findBrickMajorVersionByBrickAndVersion(brick, input.brickVersion);
     return this.brickMajorVersionService.findCurrentTecDoc(brickMajorVersion, input);

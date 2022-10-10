@@ -25,7 +25,7 @@ export class HnResourceService {
     });
 
     for (const r of oldResources) {
-      await this.resourceRepository.delete(r);
+      await this.resourceRepository.delete(r.id);
     }
 
     for (const r of resources) {
@@ -76,7 +76,7 @@ export class HnResourceService {
 
   async findCurrentTecDoc(tecFolder: HnTechnicalFolder, uniqueName: string): Promise<HnGeneratedDocEntity> {
 
-    const resource: HnResource = await this.resourceRepository.findOne({
+    const resource: HnResource = await this.resourceRepository.findOneBy({
       technicalFolder: {
         id: tecFolder.id
       },
