@@ -1,12 +1,12 @@
 import {BeforeInsert, Column, Entity, ManyToMany, ManyToOne, OneToOne} from 'typeorm';
 import {Exclude} from 'class-transformer';
-import {CnGroupSingleUser, CnGroupTeam} from '../cn-groups/cn-group.entity';
+import type {CnGroupSingleUser, CnGroupTeam} from '../cn-groups/cn-group.entity';
 import * as argon2 from 'argon2';
 import {ClDateHelper, clDefaultLang, clDefaultTheme, ClSupportedLanguage, ClTheme} from '@monorepo/core-lib';
 import {DateTime} from 'luxon';
 import {CmUserCategory, CmUserStatus} from '@monorepo/common-model';
-import {BlEntityWithId, BlFile, BlLuxonDateTimeColumn, BlUser} from '@monorepo/back-core-lib';
-import {CnOrganization} from '../cn-organizations/cn-organization.entity';
+import {BlEntityWithId, BlLuxonDateTimeColumn, BlUser} from '@monorepo/back-core-lib';
+import type {CnOrganization} from '../cn-organizations/cn-organization.entity';
 
 
 @Entity('user')
@@ -45,11 +45,12 @@ export class CnUser extends BlEntityWithId implements BlUser {
   @Column({nullable: false, type: 'enum', enum: ClTheme, default: clDefaultTheme})
   theme: ClTheme;
 
-  @ManyToMany(() => CnGroupTeam, (group: CnGroupTeam) => group.users)
+  // use the string name and import type to avoid circular dependency
+  @ManyToMany('CnGroupTeam', (group: CnGroupTeam) => group.users)
   groups: CnGroupTeam[];
 
   @Exclude()
-  @OneToOne(() => CnGroupSingleUser, (group: CnGroupSingleUser) => group.user,
+  @OneToOne('CnGroupSingleUser', (group: CnGroupSingleUser) => group.user,
     {cascade: ['insert']})
   ownGroup: CnGroupSingleUser;
 
@@ -59,14 +60,14 @@ export class CnUser extends BlEntityWithId implements BlUser {
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
-  @ManyToOne(() => CnOrganization, {nullable: true})
+  @ManyToOne('CnOrganization', {nullable: true})
   organization: CnOrganization;
 
   @Column({nullable: true})
   organizationId: string;
 
   @Column({nullable: true})
-  photo: string
+  photo: string;
 
   //////////////////// TRANSIENT METHODS //////////////////
 
@@ -107,7 +108,7 @@ export class CnUser extends BlEntityWithId implements BlUser {
   }
 }
 
-export class CnUserEditDTO{
+export class CnUserEditDTO {
   id: string;
   firstname: string;
   lastname: string;

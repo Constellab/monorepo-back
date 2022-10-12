@@ -1,5 +1,5 @@
 import {CnStatusHistory} from '../model/entities/cn-status-history.entity';
-import {EntityManager, getManager, Repository} from 'typeorm';
+import {DataSource, EntityManager, Repository} from 'typeorm';
 import {CnEntityWithStatus} from '../model/entities/cn-entity-with-status.entity';
 import {BadRequestException} from '@nestjs/common';
 import {CnErrorText} from '../model/config/cn-error-text.class';
@@ -16,7 +16,8 @@ export abstract class CnAbstractWithStatusService<T extends CnEntityWithStatus<C
   protected constructor(private entityRepo: Repository<T>,
                         entityClass: new() => T,
                         private statusHistoRepo: Repository<CnStatusHistory<S>>,
-                        private statusHistoryReference: new() => CnStatusHistory<S>) {
+                        private statusHistoryReference: new() => CnStatusHistory<S>,
+                        protected datasource: DataSource) {
     super(entityRepo, entityClass);
   }
 
@@ -24,7 +25,7 @@ export abstract class CnAbstractWithStatusService<T extends CnEntityWithStatus<C
    * Create the entity and set its current status
    */
   async createWithStatus(entity: T, status: S): Promise<T> {
-    return await getManager().transaction(async entityManager => {
+    return await this.datasource.transaction(async entityManager => {
       return await this.createWithStatusTransaction(entity, status, entityManager);
     });
   }
@@ -60,7 +61,7 @@ export abstract class CnAbstractWithStatusService<T extends CnEntityWithStatus<C
       throw new BadRequestException(CnErrorText.STATUS_NOT_CHANGED);
     }
 
-    return await getManager().transaction(async entityManager => {
+    return await this.datasource.transaction(async entityManager => {
       return await this.updateCurrentStatusWithDbEntityTransaction(status, dbEntity, entityManager);
     });
   }
@@ -103,7 +104,4 @@ export abstract class CnAbstractWithStatusService<T extends CnEntityWithStatus<C
     });
   }
 
-  // private getEntityManager(entityManager?: EntityManager): EntityManager {
-  //   return entityManager ?? getManager();
-  // }
 }

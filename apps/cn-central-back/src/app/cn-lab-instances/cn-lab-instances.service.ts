@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable, Logger, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CnLabInstance} from './cn-lab-instance.entity';
-import {DeleteResult, EntityManager, Repository} from 'typeorm';
+import {DataSource, DeleteResult, EntityManager, Repository} from 'typeorm';
 import {CnUser} from '../cn-users/cn-user.entity';
 import {CnLabInstanceStatus} from './cn-lab-instance-status.enum';
 import {CnAbstractWithStatusService} from '../cn-core/class/cn-abstract-with-status.service';
@@ -33,8 +33,9 @@ export class CnLabInstancesService extends CnAbstractWithStatusService<CnLabInst
               private externalLabApiService: CnExternalLabApiService,
               private userService: CnUsersService,
               private experimentService: CnExperimentsService,
-              private labConfigService: CnLabConfigsService) {
-    super(repository, CnLabInstance, statusHistoRepo, CnLabInstanceStatusHistory);
+              private labConfigService: CnLabConfigsService,
+              datasource: DataSource) {
+    super(repository, CnLabInstance, statusHistoRepo, CnLabInstanceStatusHistory, datasource);
   }
 
 

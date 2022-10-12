@@ -129,11 +129,9 @@ export class CnExperimentsService extends BlAbstractService<CnExperiment> {
   }
 
   public async getExperimentLabConfig(experimentId: string): Promise<CnLabConfig> {
-    const labConf: CnLabConfig = (await this.repository.findOne({
+    return (await this.repository.findOne({
       where: {id: experimentId},
-      relations: {labConfig: true},
+      relations: {labConfig: {brickVersions: true}},
     })).labConfig;
-    return this.labConfigService.findByIdAndCheck(labConf.id,
-      {brickVersions: true});
   }
 }

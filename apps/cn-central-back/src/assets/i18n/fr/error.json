@@ -31,5 +31,7 @@
   "user_already_in_organization": "l'utilisateur est déjà dans l'organisation",
   "user_in_other_organization": "l'utilisateur n'est pas dans la même organisation que vous",
   "remove_group_last_user": "Vous ne pouvez pas enlever le dernier utilisateur du groupe",
-  "project_must_have_a_group": "Le projet doit être partagé par au moins un group"
+  "project_must_have_a_group": "Le projet doit être partagé par au moins un group",
+  "exp_must_be_associated_with_leaf_project": "L'expérience doit être associée à un projet feuille (le plus bas dans l'arborescence)",
+  "report_must_be_associated_with_leaf_project": "Le rapport doit être associé à un projet feuille (le plus bas dans l'arborescence)"
 }

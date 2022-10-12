@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: 'cn-central-back',
+  displayName: 'hn-hub',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {

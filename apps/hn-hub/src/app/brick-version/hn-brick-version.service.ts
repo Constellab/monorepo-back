@@ -1,7 +1,7 @@
 import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {HnBrickVersion, HnNewVersionDTO, HnReferenceDTO} from './hn-brick-version.entity';
-import {EntityManager, getManager, Repository} from 'typeorm';
+import {DataSource, EntityManager, Repository} from 'typeorm';
 import {HnBrickMajorVersion} from '../brick-major-version/hn-brick-major-version.entity';
 import {BlAbstractService, BlTransportService} from '@monorepo/back-core-lib';
 import {HnBrickTransportDto} from '../brick/hn-brick.dto';
@@ -23,8 +23,8 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
     private brickVersionsRepository: Repository<HnBrickVersion>,
     private transportService: BlTransportService,
     private brickVersionReferenceService: HnBrickVersionReferenceService,
-    private userService: HnUserService
-  ) {
+    private userService: HnUserService,
+    private dataSource: DataSource) {
     super(brickVersionsRepository, HnBrickVersion);
   }
 
@@ -37,7 +37,8 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
   async createNewBrickVersion(brickMajorVersion: HnBrickMajorVersion, newVersion: HnNewVersionDTO,
                               entityManager?: EntityManager): Promise<HnBrickVersion> {
     let res: HnBrickVersion = null;
-    res = await getManager().transaction(async entityManager2 => {
+    await this.dataSource.transaction(async entityManager2 => {
+
       if (entityManager != null) {
         entityManager2 = entityManager;
       }
@@ -52,7 +53,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
           patch: version.patch,
           subPatch: version.subPatch
         }
-      })
+      });
       if (bv != null) {
         bv.initialize(brickMajorVersion, version, newVersion.repoType, newVersion.technicalInfo);
         res = await entityManager2.save(bv);
@@ -104,6 +105,7 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
 
       return res;
     });
+
     if (entityManager == null) {
       await this.sendBrickVersionIdToTransport(res.id);
     }
@@ -165,11 +167,11 @@ export class HnBrickVersionService extends BlAbstractService<HnBrickVersion> {
         relations: ['brickMajorVersion']
       }
     );
-    if(!isAdmin){
-      for(const bV of pageBrickVersion.objects){
-        if(bV.technicalInfo){
-          for(const tInfoKey of Object.keys(bV.technicalInfo)){
-            if(ClStringHelper.isHttpLink(bV.technicalInfo[tInfoKey])){
+    if (!isAdmin) {
+      for (const bV of pageBrickVersion.objects) {
+        if (bV.technicalInfo) {
+          for (const tInfoKey of Object.keys(bV.technicalInfo)) {
+            if (ClStringHelper.isHttpLink(bV.technicalInfo[tInfoKey])) {
               bV.technicalInfo[tInfoKey] = null;
             }
           }

@@ -3,7 +3,7 @@ import {BlTranslateService} from './bl-translate.service';
 
 @Module({
   providers: [BlTranslateService],
-  exports: [BlTranslateService]
+  exports: [BlTranslateService],
 })
 export class BlTranslateModule {
 }

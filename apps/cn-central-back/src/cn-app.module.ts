@@ -50,6 +50,7 @@ import {CnProjectsAggregateModule} from './app/cn-projects-aggregate/cn-project-
 import {CnStatsModule} from './app/cn-stats/cn-stats.module';
 import {CnCountryModule} from './app/cn-country/cn-country.module';
 import {CnCityModule} from './app/cn-city/cn-city.module';
+import {AppService} from './app.service';
 
 function typeOrmConfig(
   configService: CnCoreConfigService
@@ -62,7 +63,7 @@ function typeOrmConfig(
     username: dbConfig.username,
     password: dbConfig.password,
     database: dbConfig.database,
-    synchronize: configService.isLocal(), // only activate synchronization in local
+    synchronize: configService.isDev(), // only activate synchronization in local
     autoLoadEntities: true,
     maxQueryExecutionTime: 1000, // log query longer than 1s,
     logger: BlPersistenceLogger.getInstance(),
@@ -196,6 +197,7 @@ function configureTransportModule(
   ],
   controllers: [],
   providers: [
+    AppService,
     // set global interceptor
     {
       provide: APP_INTERCEPTOR,

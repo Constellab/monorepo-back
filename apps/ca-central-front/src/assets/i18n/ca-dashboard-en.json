@@ -53,5 +53,6 @@
   "experiment_validated": "Validated experiment",
   "report_validated": "Validated report",
   "last_sync": "Last synchronisation",
-  "validation_info": "Validated"
+  "validation_info": "Validated",
+  "project_level_nb": "Number of level for this project (this is not updatable once the project is created)"
 }

@@ -29,6 +29,14 @@ export class CaProjectStatusHistory extends CaStatusHistory<CaProjectStatus> {
   status: FlStatus<CaProjectStatus>;
 }
 
+export enum CaProjectLevel {
+  // main level of the project
+  PROJECT = 1,
+  // sub-level of the project
+  WORK_PACKAGE = 2,
+  // sub-level of the work package
+  TASK = 3,
+}
 
 export class CaProject extends CaBaseEntity {
 
@@ -47,6 +55,21 @@ export class CaProject extends CaBaseEntity {
 
   @Type(() => CaProjectStatusHistory)
   currentStatus: CaProjectStatusHistory;
+
+  // level of this project, work package or task
+  level: CaProjectLevel;
+
+  // store the leaf level (lowest level) for the PROJECT
+  // the leaf level is the same for all sur work packages and tasks
+  leafLevel: CaProjectLevel;
+
+  isLeaf(): boolean {
+    return this.level === this.leafLevel;
+  }
+
+  isRoot(): boolean {
+    return this.level === CaProjectLevel.PROJECT;
+  }
 }
 
 export type CaProjectDatasource = FlEntityPaginatedDatasource<CaProject>;

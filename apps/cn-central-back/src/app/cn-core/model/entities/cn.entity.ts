@@ -1,4 +1,4 @@
-import {ManyToOne} from 'typeorm';
+import {ManyToOne, Relation} from 'typeorm';
 import {CnUser} from '../../../cn-users/cn-user.entity';
 import {Type} from 'class-transformer';
 import {DateTime} from 'luxon';
@@ -14,16 +14,16 @@ export abstract class CnEntity extends BlEntityWithId {
   @BlLuxonDateTimeColumn({nullable: false, update: false})
   createdAt: DateTime;
 
-  @Type(() => CnUser)
+  // @Type(() => CnUser)
   @ManyToOne(() => CnUser, {eager: true, nullable: false})
-  createdBy: CnUser;
+  createdBy: Relation<CnUser>;
 
   @BlLuxonDateTimeColumn()
   lastModifiedAt: DateTime;
 
-  @Type(() => CnUser)
+  // @Type(() => CnUser)
   @ManyToOne(() => CnUser, {eager: true})
-  lastModifiedBy: CnUser;
+  lastModifiedBy: Relation<CnUser>;
 }
 
 export class CnEntityDTO extends BlEntityWithIdDTO {

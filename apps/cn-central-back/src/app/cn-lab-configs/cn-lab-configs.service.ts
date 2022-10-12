@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {CnLabConfig} from './cn-lab-config.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {getManager, Repository} from 'typeorm';
+import {DataSource, Repository} from 'typeorm';
 import {CnLabConfigDto} from './cn-lab-config.dto';
 import {ClHelpService} from '@monorepo/core-lib';
 import {CnBricksService} from '../cn-bricks/cn-bricks.service';
@@ -13,7 +13,8 @@ import {BlAbstractService} from '@monorepo/back-core-lib';
 export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
 
   constructor(@InjectRepository(CnLabConfig) private repository: Repository<CnLabConfig>,
-              private brickService: CnBricksService) {
+              private brickService: CnBricksService,
+              private datasource: DataSource) {
     super(repository, CnLabConfig);
   }
 
@@ -40,7 +41,7 @@ export class CnLabConfigsService extends BlAbstractService<CnLabConfig> {
     labConfig.brickVersionsHash = hash;
     labConfig.label = '';
     labConfig.brickVersions = [];
-    return await getManager().transaction(async entityManager => {
+    return await this.datasource.transaction(async entityManager => {
 
       for (const version of labConfigDto.brick_versions) {
         const brickVersion = await this.brickService.getBrickVersionAndCheck(version.name, CmVersion.fromString(version.version));

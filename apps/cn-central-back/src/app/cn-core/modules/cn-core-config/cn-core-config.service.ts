@@ -32,6 +32,14 @@ export class CnCoreConfigService {
     return this.getEnvironmentProfile() === CN_ENVIRONMENT_PROFILE_PROD_VALUE;
   }
 
+  public isDev(): boolean {
+    return this.getEnvironmentProfile() === 'dev';
+  }
+
+  public isTest(): boolean {
+    return this.getEnvironmentProfile() === 'test';
+  }
+
   public isLocal(): boolean {
     const env: CnEnvironmentProfile = this.getEnvironmentProfile();
     return env === 'dev' || env === 'docker' || env === 'test';

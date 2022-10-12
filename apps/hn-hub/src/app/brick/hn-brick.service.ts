@@ -1,7 +1,7 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {HnBrick, HnBrickVisibility, HnCreateBrickDTO} from './hn-brick.entity';
 import {InjectRepository} from '@nestjs/typeorm';
-import {getManager, Repository} from 'typeorm';
+import {DataSource, Repository} from 'typeorm';
 import {HnDocumentation, HnDocumentationSearchDTO} from '../documentation/hn-documentation.entity';
 import {HnDocumentationService} from '../documentation/hn-documentation.service';
 import {HnBrickVersion, HnNewVersionDTO} from '../brick-version/hn-brick-version.entity';
@@ -36,8 +36,8 @@ export class HnBrickService {
     private brickVersionService: HnBrickVersionService,
     private technicalFolderService: HnTechnicalFolderService,
     private userService: HnUserService,
-    private configService: HnCoreConfigService
-  ) {
+    private configService: HnCoreConfigService,
+    private dataSource: DataSource) {
   }
 
   async create(createdBrick: HnCreateBrickDTO): Promise<HnBrick> {
@@ -54,7 +54,7 @@ export class HnBrickService {
         createdBrick.visibility, createdBrick.repoPip, createdBrick.repoGit);
     }
 
-    brick = await getManager().transaction(async entityManager => {
+    brick = await this.dataSource.transaction(async entityManager => {
       brick = await entityManager.save(brick);
       if (createdBrick.isBeta) createdBrick.version.subPatch = createdBrick.subPatch;
       brickVersion = await this.brickMajorVersionService.create(brick, createdBrick, entityManager);

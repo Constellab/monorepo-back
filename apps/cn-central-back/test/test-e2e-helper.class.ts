@@ -7,10 +7,13 @@ import supertest, {SuperTest} from 'supertest';
 import {Test} from '@nestjs/testing';
 import {TestRequest} from './test-request.class';
 import {TestGetOptions, TestIdOptions} from './test-e2e-helper.config';
+import {CnTestDbInitializerService} from './cn-test.module';
 
 export class TestE2EHelper {
 
   public app: INestApplication;
+
+  private token?: string;
 
   constructor(private routeBase: string) {
   }
@@ -25,24 +28,24 @@ export class TestE2EHelper {
   public async initAppModule(): Promise<INestApplication> {
     const moduleRef = await Test.createTestingModule({
       imports: [
-        CnAppModule
+        CnAppModule,
       ],
+      providers: [
+        CnTestDbInitializerService
+      ]
     })
       // override the config service to set the test database and test profile
       .overrideProvider(CnCoreConfigService).useClass(TestConfigService)
       .compile();
-
     this.app = moduleRef.createNestApplication();
     await this.app.init();
 
+    // clean the database
+    const dbInitializer = moduleRef.get(CnTestDbInitializerService);
+    await dbInitializer.initDb();
+
     return this.app;
   }
-
-  ///////////////////////////// TEST CRUD /////////////////////////////
-  public async testCrud(): Promise<void> {
-
-  }
-
 
   ///////////////////////////// REQUESTS /////////////////////////////
 
@@ -62,9 +65,7 @@ export class TestE2EHelper {
    * @param body
    */
   public post(route: string, body: any): TestRequest {
-    return new TestRequest(
-      this.getSuperTest().post(this.constructRoute(route)).send(body)
-    );
+    return this.buildTestRequest(this.getSuperTest().post(this.constructRoute(route)).send(body));
   }
 
   /**
@@ -83,9 +84,7 @@ export class TestE2EHelper {
    * @param body
    */
   public put(route: string, body: any): TestRequest {
-    return new TestRequest(
-      this.getSuperTest().put(this.constructRoute(route)).send(body)
-    );
+    return this.buildTestRequest(this.getSuperTest().put(this.constructRoute(route)).send(body));
   }
 
   /**
@@ -104,9 +103,7 @@ export class TestE2EHelper {
    * @param options
    */
   public delete(route: string, options?: TestIdOptions): TestRequest {
-    return new TestRequest(
-      this.getSuperTest().delete(this.constructRoute(route, options))
-    );
+    return this.buildTestRequest(this.getSuperTest().delete(this.constructRoute(route, options)));
   }
 
   /**
@@ -125,13 +122,19 @@ export class TestE2EHelper {
    * @param options option for the get
    */
   public get(route: string, options ?: TestGetOptions): TestRequest {
-    return new TestRequest(
-      this.getSuperTest().get(this.constructGetRoute(route, options))
-    );
+    return this.buildTestRequest(this.getSuperTest().get(this.constructGetRoute(route, options)));
   }
 
   private getSuperTest(): SuperTest<supertest.Test> {
     return request(this.app.getHttpServer());
+  }
+
+  private buildTestRequest(superTest: supertest.Test): TestRequest {
+    const testRequest = new TestRequest(superTest);
+    if (this.token) {
+      testRequest.setTokenInCookie(this.token);
+    }
+    return testRequest;
   }
 
   ///////////////////////////// INTERNAL /////////////////////////////
@@ -145,7 +148,7 @@ export class TestE2EHelper {
     let fullRoute: string = this.constructRoute(route, options);
 
     // manage the pagination
-    if (options && options.page != null || options.pageSize != null) {
+    if (options?.page != null || options?.pageSize != null) {
       let firstCharacter: string;
 
       // check if there are already some url parameters
@@ -195,5 +198,15 @@ export class TestE2EHelper {
    */
   public async close(): Promise<void> {
     await this.app.close();
+  }
+
+  ///////////////////////////// OTHER /////////////////////////////
+
+  /**
+   * Set the token to all the requests
+   * @param token
+   */
+  public setToken(token: string): void {
+    this.token = token;
   }
 }

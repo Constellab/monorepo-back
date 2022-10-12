@@ -1,9 +1,20 @@
-import {Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne} from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToOne,
+  Tree,
+  TreeChildren,
+  TreeParent
+} from 'typeorm';
 import {Exclude, Type} from 'class-transformer';
 import {CnProjectStatusHistory} from './cn-project-status-history.entity';
 import {CnEntityWithStatus} from '../../cn-core/model/entities/cn-entity-with-status.entity';
 import {DateTime} from 'luxon';
-import {BlLuxonDateColumn} from '@monorepo/back-core-lib';
+import {BlLuxonDateColumn, BlNotUpdatable} from '@monorepo/back-core-lib';
 import {CnGroup} from '../../cn-groups/cn-group.entity';
 import {BadRequestException} from '@nestjs/common';
 import {ClHelpService} from '@monorepo/core-lib';
@@ -13,6 +24,7 @@ import {CnProjectLevel} from './cn-project-level.enum';
  * A project is an ensemble of experiments
  */
 @Entity('project')
+@Tree('materialized-path')
 export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
 
   @Column({nullable: false, length: 20})
@@ -43,7 +55,8 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   // level of this project, work package or task
   @Column({
     nullable: false, default: CnProjectLevel.PROJECT,
-    type: 'enum', enum: CnProjectLevel
+    type: 'enum', enum: CnProjectLevel,
+    name: 'currentLevel', update: false
   })
   level: CnProjectLevel;
 
@@ -51,14 +64,25 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
   // the leaf level is the same for all sur work packages and tasks
   @Column({
     nullable: false, default: CnProjectLevel.PROJECT,
-    type: 'enum', enum: CnProjectLevel
+    type: 'enum', enum: CnProjectLevel, update: false
   })
-  leafLevel: CnProjectLevel
+  leafLevel: CnProjectLevel;
 
   // parent project of this project, can be null if this project is a project
-  // @Exclude()
-  // @Type(() => CnProject)
-  // parent?: CnProject;
+  @Exclude()
+  @TreeParent()
+  @BlNotUpdatable()
+  parent?: CnProject;
+
+  @TreeChildren()
+  children: CnProject[];
+
+  @Exclude()
+  @ManyToOne(() => CnProject, {nullable: true})
+  rootParent?: CnProject
+
+  @Column({nullable: true, update: false})
+  rootParentId?: string;
 
   public isSharedToGroup(groupId: string | string[]): boolean {
     if (this.sharedGroups == null) {
@@ -82,3 +106,4 @@ export class CnProject extends CnEntityWithStatus<CnProjectStatusHistory> {
     return this.level === this.leafLevel;
   }
 }
+

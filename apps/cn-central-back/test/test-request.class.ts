@@ -44,8 +44,12 @@ export class TestRequest {
   /**
    * Must call this method in the end of the test to return a promise
    */
-  public getPromise(): Promise<any> {
+  public getResponse(): Promise<Response> {
     return this.superTest;
+  }
+
+  public async getResponseBody(): Promise<any> {
+    return (await this.superTest).body;
   }
 }
 

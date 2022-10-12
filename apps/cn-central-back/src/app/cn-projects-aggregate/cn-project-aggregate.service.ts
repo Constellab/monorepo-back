@@ -18,6 +18,7 @@ import {CnGroupsService} from '../cn-groups/cn-groups.service';
 import {CnErrorText} from '../cn-core/model/config/cn-error-text.class';
 import {CnReportContent} from './cn-reports/cn-report-content.class';
 import {CnLabConfig} from '../cn-lab-configs/cn-lab-config.entity';
+import {CnProjectLevel} from './cn-projects/cn-project-level.enum';
 
 @Injectable()
 export class CnProjectAggregateService {
@@ -33,7 +34,35 @@ export class CnProjectAggregateService {
   /////////////////////////////////////// PROJECT //////////////////////////////////
 
   async createProject(entity: CnProject): Promise<CnProject> {
-    return this.projectService.create(entity);
+    return this.projectService.createProject(entity);
+  }
+
+  async createWorkPackage(entity: CnProject, projectId: string): Promise<CnProject> {
+    const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    if (project.level !== CnProjectLevel.PROJECT) {
+      throw new BadRequestException('The work package must be create inside a project');
+    }
+
+    if (project.leafLevel < CnProjectLevel.WORK_PACKAGE) {
+      throw new BadRequestException('This project does not support work packages');
+    }
+
+    return this.projectService.createWorkPackage(entity, project);
+  }
+
+  async createTask(entity: CnProject, workPackageId: string): Promise<CnProject> {
+    const workPackage = await this.getAndCheckAuthorizationForUpdate(workPackageId);
+
+    if (workPackage.level !== CnProjectLevel.WORK_PACKAGE) {
+      throw new BadRequestException('The task must be create inside a work package');
+    }
+
+    if (workPackage.leafLevel < CnProjectLevel.TASK) {
+      throw new BadRequestException('This project does not support tasks');
+    }
+
+    return this.projectService.createTask(entity, workPackage);
   }
 
   async updateProject(entity: CnProject): Promise<CnProject> {
@@ -58,6 +87,10 @@ export class CnProjectAggregateService {
 
   public async shareProject(projectId: string, groupId: string): Promise<CnGroup> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    if (project.level !== CnProjectLevel.PROJECT) {
+      throw new BadRequestException('Only projects can be shared');
+    }
 
     // the user must be an admin or be in the group he shared the project
     const user = CnCurrentUserHelper.getAndCheckCurrentUser();
@@ -91,6 +124,11 @@ export class CnProjectAggregateService {
     return this.projectService.getOnGoingProjectsNumber();
   }
 
+  public async getProjectTree(projectId: string): Promise<CnProject> {
+    const project = await this.getAndCheckAuthorizationForFindOne(projectId);
+
+    return await this.projectService.getProjectTree(project);
+  }
 
   /////////////////////////////////////// PROJECT STATUS //////////////////////////////////
 
@@ -134,6 +172,10 @@ export class CnProjectAggregateService {
     // check that the user can update the project
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
 
+    if (!project.isLeafLevel()) {
+      throw new BadRequestException(CnErrorText.EXP_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
+    }
+
     await this.experimentService.saveLabExperiment(project, createLabExperimentDto);
   }
 
@@ -167,6 +209,10 @@ export class CnProjectAggregateService {
 
   async createLabReport(createReportDto: CnCreateReportWithConfigDto, projectId: string): Promise<CnReport> {
     const project = await this.getAndCheckAuthorizationForUpdate(projectId);
+
+    if (!project.isLeafLevel()) {
+      throw new BadRequestException(CnErrorText.REPORT_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT);
+    }
 
     // get and check all experiment
     const experiments: CnExperiment[] = [];
@@ -233,14 +279,14 @@ export class CnProjectAggregateService {
 
 
   private async getAndCheckAuthorizationForFindOne(projectId: string): Promise<CnProject> {
-    const dbProject = await this.projectService.getProjectWithSharedGroups(projectId);
+    const dbProject = await this.projectService.findWithSharedGroups(projectId);
 
     await this.projectSecurity.checkFindOne(dbProject, CnCurrentUserHelper.getAndCheckCurrentUser());
     return dbProject;
   }
 
   private async getAndCheckAuthorizationForUpdate(projectId: string): Promise<CnProject> {
-    const dbProject = await this.projectService.getProjectWithSharedGroups(projectId);
+    const dbProject = await this.projectService.findWithSharedGroups(projectId);
 
     await this.projectSecurity.checkUpdate(dbProject, CnCurrentUserHelper.getAndCheckCurrentUser());
     return dbProject;

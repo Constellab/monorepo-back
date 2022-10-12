@@ -18,6 +18,18 @@ export class CnProjectsController {
     return this.projectAggregate.createProject(project);
   }
 
+  @Post(':id/work-package')
+  createWorkPackage(@Param('id', ParseUUIDPipe) id: string,
+                    @Body(new BlParsePipe(CnProject)) project: CnProject): Promise<CnProject> {
+    return this.projectAggregate.createWorkPackage(project, id);
+  }
+
+  @Post(':id/task')
+  createTask(@Param('id', ParseUUIDPipe) id: string,
+             @Body(new BlParsePipe(CnProject)) project: CnProject): Promise<CnProject> {
+    return this.projectAggregate.createTask(project, id);
+  }
+
   @Put()
   update(@Body(new BlParsePipe(CnProject)) project: CnProject): Promise<CnProject> {
     return this.projectAggregate.updateProject(project);
@@ -39,7 +51,7 @@ export class CnProjectsController {
     return this.projectAggregate.getProjectOfTeam(groupId, page, size);
   }
 
-  @Put('/:id/status/:status')
+  @Put(':id/status/:status')
   updateStatus(@Param('id', new ParseUUIDPipe()) id: string,
                @Param('status', new BlParseEnumPipe(CnProjectStatus)) status: CnProjectStatus): Promise<CnProject> {
     return this.projectAggregate.updateProjectCurrentStatus(status, id);
@@ -71,6 +83,11 @@ export class CnProjectsController {
   @Get(':id/status-history')
   getStatusHistory(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnProjectStatusHistory[]> {
     return this.projectAggregate.getProjectStatusHistory(id);
+  }
+
+  @Get(':id/tree')
+  getProjectTree(@Param('id', new ParseUUIDPipe()) id: string): Promise<CnProject> {
+    return this.projectAggregate.getProjectTree(id);
   }
 
   @Get(':id')

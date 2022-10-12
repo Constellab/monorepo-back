@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {CaProject} from '../../../../model/entities/ca-project.class';
+import {CaProject, CaProjectLevel} from '../../../../model/entities/ca-project.class';
 import {CaProjectService} from '../../../../service-api/ca-project.service';
 import {FormBuilder, FormGroup} from '@ngneat/reactive-forms';
 import {Observable} from 'rxjs';
@@ -48,6 +48,7 @@ export class CaProjectFormDialogComponent extends FlFormDialogAbstractDirective<
       description: [null],
       startingDate: [null, Validators.required],
       endingDate: [null],
+      leafLevel: [{value: CaProjectLevel.PROJECT, disabled: this.isUpdateMode()}]
     });
   }
 

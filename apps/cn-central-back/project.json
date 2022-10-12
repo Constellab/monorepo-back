@@ -1,13 +1,15 @@
 {
+  "name": "cn-central-back",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/cn-central-back/src",
   "projectType": "application",
-  "prefix": "cn-central-back",
   "targets": {
     "build": {
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "target": "node",
+        "compiler": "tsc",
         "outputPath": "dist/apps/cn-central-back",
         "main": "apps/cn-central-back/src/main.ts",
         "tsConfig": "apps/cn-central-back/tsconfig.app.json",
@@ -25,13 +27,14 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nrwl/js:node",
       "options": {
         "buildTarget": "cn-central-back:build"
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/cn-central-back/**/*.ts"]
       }

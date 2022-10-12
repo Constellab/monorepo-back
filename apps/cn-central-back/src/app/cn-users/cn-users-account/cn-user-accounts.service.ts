@@ -2,7 +2,7 @@ import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/co
 import {CnUser} from '../cn-user.entity';
 import {CnMailTemplate} from '../../cn-core/model/config/cn-mail-template.class';
 import {InjectRepository} from '@nestjs/typeorm';
-import {getManager, Repository} from 'typeorm';
+import {DataSource, Repository} from 'typeorm';
 import {CnCoreConfigService} from '../../cn-core/modules/cn-core-config/cn-core-config.service';
 import {CnUsersService} from '../cn-users.service';
 import {CnErrorText} from '../../cn-core/model/config/cn-error-text.class';
@@ -27,11 +27,12 @@ export class CnUserAccountsService {
     @InjectRepository(CnUser) private repository: Repository<CnUser>,
     private configService: CnCoreConfigService,
     private mailService: BlMailService,
-    private usersService: CnUsersService) {
+    private usersService: CnUsersService,
+    private datasource: DataSource) {
   }
 
   async signup(user: CnUser): Promise<CnUser> {
-    return await getManager().transaction(async entityManager => {
+    return await this.datasource.transaction(async entityManager => {
 
       if (user.category === CmUserCategory.ADMIN) {
         throw new UnauthorizedException();

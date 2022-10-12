@@ -34,5 +34,7 @@ export enum CnErrorText {
   USER_ALREADY_IN_ORGANIZATION = 'error.user_already_in_organization',
   USER_IN_OTHER_ORGANIZATION = 'error.user_in_other_organization',
   REMOVE_GROUP_LAST_USER = 'error.remove_group_last_user',
-  PROJECT_MUST_HAVE_A_GROUP ='error.project_must_have_a_group'
+  PROJECT_MUST_HAVE_A_GROUP ='error.project_must_have_a_group',
+  EXP_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT = 'error.exp_must_be_associated_with_leaf_project',
+  REPORT_MUST_BE_ASSOCIATED_WITH_LEAF_PROJECT = 'error.report_must_be_associated_with_leaf_project',
 }
